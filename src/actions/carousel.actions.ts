@@ -22,6 +22,7 @@ import type {
   CarouselSlideUpdateInput,
 } from "@mohasinac/appkit";
 import type { CarouselSlideDocument } from "@mohasinac/appkit";
+import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 const createSlideSchema = z.object({
   title: z.string().min(1),
@@ -39,7 +40,7 @@ const updateSlideSchema = createSlideSchema.partial();
 export async function createCarouselSlideAction(input: CarouselSlideInput): Promise<CarouselSlideDocument> {
   const admin = await requireRoleUser(["admin"]);
   const rl = await rateLimitByIdentifier(`carousel:create:${admin.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   const parsed = createSlideSchema.safeParse(input);
   if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid slide data");
   return createCarouselSlide(admin.uid, parsed.data as CarouselSlideInput) as any;
@@ -48,17 +49,17 @@ export async function createCarouselSlideAction(input: CarouselSlideInput): Prom
 export async function updateCarouselSlideAction(id: string, input: CarouselSlideUpdateInput): Promise<CarouselSlideDocument> {
   const admin = await requireRoleUser(["admin"]);
   const rl = await rateLimitByIdentifier(`carousel:update:${admin.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   if (!id?.trim()) throw new ValidationError("Invalid id");
   const parsed = updateSlideSchema.safeParse(input);
-  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid update data");
+  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE);
   return updateCarouselSlide(admin.uid, id, parsed.data as CarouselSlideUpdateInput) as any;
 }
 
 export async function deleteCarouselSlideAction(id: string): Promise<void> {
   const admin = await requireRoleUser(["admin"]);
   const rl = await rateLimitByIdentifier(`carousel:delete:${admin.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   if (!id?.trim()) throw new ValidationError("Invalid id");
   return deleteCarouselSlide(admin.uid, id);
 }
@@ -66,7 +67,7 @@ export async function deleteCarouselSlideAction(id: string): Promise<void> {
 export async function reorderCarouselSlidesAction(slideIds: string[]): Promise<CarouselSlideDocument[]> {
   const admin = await requireRoleUser(["admin"]);
   const rl = await rateLimitByIdentifier(`carousel:reorder:${admin.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   if (!Array.isArray(slideIds) || slideIds.length === 0) throw new ValidationError("Invalid order");
   return reorderCarouselSlides(admin.uid, slideIds) as any;
 }

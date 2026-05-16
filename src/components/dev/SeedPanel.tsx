@@ -28,6 +28,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import type { SeedCollectionName } from "@/actions/demo-seed.types";
+import { Heading, Text } from "@mohasinac/appkit";
 
 // ─── Collection order ─────────────────────────────────────────────────────────
 
@@ -1302,11 +1303,11 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
   });
 
   return (
-    <div>
+    <>
       <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
-        <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider m-0">
+        <Text className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider m-0">
           📐 Schema Fields <span className="text-zinc-400 dark:text-slate-500 font-normal normal-case tracking-normal">({fields.length} fields)</span>
-        </p>
+        </Text>
         <div className="flex items-center gap-2">
           <input
             type="text"
@@ -1325,7 +1326,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
           >
             🔒 PII only
           </button>
-        </div>
+        </>
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-slate-700">
@@ -1414,19 +1415,142 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
   );
 }
 
+// ─── Resource Accordion Card helpers ─────────────────────────────────────────
+
+function renderAccordionCollapsedHeader({
+  meta, runState, isLoadingStatus, dbStatus, existingCount, seedCount, isComplete, isEmpty,
+  statusVariant, statusLabel, expanded, col, selected, onToggle, isRunning,
+}: {
+  meta: CollectionMeta;
+  runState: ColRunState;
+  isLoadingStatus: boolean;
+  dbStatus: ColStatus | undefined;
+  existingCount: number;
+  seedCount: number;
+  isComplete: boolean;
+  isEmpty: boolean;
+  statusVariant: string;
+  statusLabel: string;
+  expanded: boolean;
+  col: SeedCollectionName;
+  selected: boolean;
+  onToggle: () => void;
+  isRunning: boolean;
+}) {
+  return (
+    <>
+      <span className="text-lg leading-none shrink-0">{meta.icon}</span>
+      <span className="text-sm font-semibold text-zinc-900 dark:text-white flex-1">{meta.label}</span>
+      <StatusDot state={runState} />
+      <Div className="flex items-center gap-2 shrink-0">
+        {isLoadingStatus ? (
+          <span className="text-xs text-zinc-400 dark:text-slate-500">…</span>
+        ) : dbStatus ? (
+          <span className={`text-xs font-mono px-2 py-0.5 rounded-full font-semibold ${isComplete ? "text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/40" : isEmpty ? "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30" : "text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/40"}`}>
+            {existingCount}/{seedCount}
+          </span>
+        ) : null}
+        <Badge variant={statusVariant as "success" | "warning" | "danger" | "default"}>{statusLabel}</Badge>
+        <span className="text-zinc-400 dark:text-slate-500 text-xs w-4 text-center select-none">{expanded ? "▲" : "▼"}</span>
+      </Div>
+      <Div className="shrink-0 ml-1" onClick={(e) => { e.stopPropagation(); onToggle(); }}>
+        <Checkbox id={`col-${col}`} checked={selected} onChange={onToggle} disabled={isRunning} label="" />
+      </Div>
+    </>
+  );
+}
+
+function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number, seedCount: number, target: number) {
+  return (
+    <Div className="border-t border-zinc-200 dark:border-slate-700 px-5 py-4 bg-white dark:bg-slate-900/60">
+      <Stack gap="md">
+        <Text className="text-sm text-zinc-600 dark:text-slate-300 leading-relaxed m-0">{meta.description}</Text>
+
+        <div className="flex flex-wrap gap-2">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800/40 text-xs text-indigo-700 dark:text-indigo-300 font-mono">🔑 {meta.slugPattern}</span>
+          {meta.mediaFields?.map((f) => (
+            <span key={f} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/40 text-xs text-violet-700 dark:text-violet-300 font-mono">🖼️ {f}</span>
+          ))}
+        </div>
+
+        {meta.mediaSlugPatterns && meta.mediaSlugPatterns.length > 0 && (
+          <Div>
+            <Text className="text-xs font-bold text-violet-700 dark:text-violet-400 uppercase tracking-wider mb-2 m-0">🖼️ Media Slug Patterns (SEO filenames)</Text>
+            <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-slate-700">
+              <table className="w-full text-xs border-collapse">
+                <thead>
+                  <tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
+                    <th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[22%]">Context type</th>
+                    <th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[40%]">Pattern</th>
+                    <th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300">Example</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {meta.mediaSlugPatterns.map((p) => (
+                    <tr key={p.type} className="border-b border-zinc-100 dark:border-slate-800 last:border-0 hover:bg-zinc-50/60 dark:hover:bg-slate-800/30">
+                      <td className="px-3 py-2 font-mono text-indigo-700 dark:text-indigo-300 whitespace-nowrap">{p.type}</td>
+                      <td className="px-3 py-2 font-mono text-zinc-700 dark:text-slate-300 text-[10px] break-all">{p.pattern}</td>
+                      <td className="px-3 py-2 font-mono text-zinc-400 dark:text-slate-500 italic text-[10px] break-all">{p.example}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Div>
+        )}
+
+        <Div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-zinc-700 dark:text-slate-200">Target: {target} docs</span>
+            <span className="text-xs font-mono text-zinc-500 dark:text-slate-400">DB: {existingCount} · Seed file: {seedCount}</span>
+          </div>
+          <SeedProgressBar seeded={existingCount} target={target} />
+        </Div>
+
+        <Div>
+          <Text className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider mb-2 m-0">✓ What&apos;s Seeded</Text>
+          <div className="flex flex-col gap-1.5">
+            {meta.seededItems.map((item, i) => (
+              <Text key={i} className="text-sm text-zinc-700 dark:text-slate-300 leading-snug pl-3 border-l-2 border-emerald-400 dark:border-emerald-700 m-0">{item}</Text>
+            ))}
+          </div>
+        </Div>
+
+        {meta.pendingItems.length > 0 && (
+          <Div>
+            <Text className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-2 m-0">⏳ Pending / Needed</Text>
+            <div className="flex flex-col gap-1.5">
+              {meta.pendingItems.map((item, i) => (
+                <Text key={i} className="text-sm text-zinc-600 dark:text-slate-400 leading-snug pl-3 border-l-2 border-amber-400 dark:border-amber-700 m-0">{item}</Text>
+              ))}
+            </div>
+          </Div>
+        )}
+
+        <SchemaFieldsTable fields={meta.fields} />
+
+        {meta.piiFields && meta.piiFields.length > 0 && (
+          <Div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/40">
+            <span className="text-xs text-red-700 dark:text-red-300 leading-relaxed">
+              🔒 PII fields: <strong>{meta.piiFields.join(", ")}</strong> — masked in DB with Firestore encryption. Never returned in full to client.
+            </span>
+          </Div>
+        )}
+
+        <>
+          <a href={meta.uiPath} target="_blank" rel="noopener noreferrer" className="text-sm text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 hover:underline font-medium">
+            → View in app: {meta.uiPath}
+          </a>
+        </>
+      </Stack>
+    </Div>
+  );
+}
+
 // ─── Resource Accordion Card ──────────────────────────────────────────────────
 
 function ResourceAccordionCard({
-  col,
-  meta,
-  selected,
-  onToggle,
-  dbStatus,
-  runState,
-  runError,
-  isRunning,
-  isLoadingStatus,
-  onRefreshOne,
+  col, meta, selected, onToggle, dbStatus, runState, runError, isRunning, isLoadingStatus, onRefreshOne,
 }: {
   col: SeedCollectionName;
   meta: CollectionMeta;
@@ -1444,7 +1568,6 @@ function ResourceAccordionCard({
   function toggleExpanded() {
     const next = !expanded;
     setExpanded(next);
-    // Refresh this card's count when expanding so it always shows live DB state
     if (next) onRefreshOne();
   }
 
@@ -1457,237 +1580,38 @@ function ResourceAccordionCard({
   const isEmpty = existingCount === 0;
   const isPartial = !isComplete && !isEmpty;
 
-  const statusVariant = runState === "done"
-    ? "success"
-    : runState === "error"
-    ? "danger"
-    : isComplete
-    ? "success"
-    : isPartial
-    ? "warning"
-    : "default";
-
-  const statusLabel = runState === "running"
-    ? "seeding…"
-    : runState === "done"
-    ? "done"
-    : runState === "error"
-    ? "error"
-    : isComplete
-    ? "seeded"
-    : isPartial
-    ? `${pct}%`
-    : "empty";
+  const statusVariant = runState === "done" ? "success" : runState === "error" ? "danger" : isComplete ? "success" : isPartial ? "warning" : "default";
+  const statusLabel = runState === "running" ? "seeding…" : runState === "done" ? "done" : runState === "error" ? "error" : isComplete ? "seeded" : isPartial ? `${pct}%` : "empty";
 
   const borderColor =
-    runState === "running"
-      ? "border-amber-400 dark:border-amber-500"
-      : runState === "done"
-      ? "border-emerald-400 dark:border-emerald-600"
-      : runState === "error"
-      ? "border-red-400 dark:border-red-600"
-      : runState === "queued"
-      ? "border-zinc-300 dark:border-slate-600"
-      : expanded
-      ? "border-zinc-300 dark:border-slate-600"
-      : "border-zinc-200 dark:border-slate-800";
+    runState === "running" ? "border-amber-400 dark:border-amber-500" :
+    runState === "done" ? "border-emerald-400 dark:border-emerald-600" :
+    runState === "error" ? "border-red-400 dark:border-red-600" :
+    runState === "queued" ? "border-zinc-300 dark:border-slate-600" :
+    expanded ? "border-zinc-300 dark:border-slate-600" : "border-zinc-200 dark:border-slate-800";
 
   const bgColor =
-    runState === "running"
-      ? "bg-amber-50 dark:bg-amber-900/10"
-      : runState === "done"
-      ? "bg-emerald-50 dark:bg-emerald-900/10"
-      : runState === "error"
-      ? "bg-red-50 dark:bg-red-900/10"
-      : "";
+    runState === "running" ? "bg-amber-50 dark:bg-amber-900/10" :
+    runState === "done" ? "bg-emerald-50 dark:bg-emerald-900/10" :
+    runState === "error" ? "bg-red-50 dark:bg-red-900/10" : "";
 
   return (
     <Div className={`rounded-xl border transition-colors ${borderColor} ${bgColor} overflow-hidden`}>
-      {/* ── Collapsed header ── */}
-      <button
-        type="button"
-        onClick={toggleExpanded}
-        className="w-full flex items-center gap-2 px-4 py-3 text-left"
-      >
-        <span className="text-lg leading-none shrink-0">{meta.icon}</span>
-        <span className="text-sm font-semibold text-zinc-900 dark:text-white flex-1">
-          {meta.label}
-        </span>
-        <StatusDot state={runState} />
-        {/* Counts */}
-        <Div className="flex items-center gap-2 shrink-0">
-          {isLoadingStatus ? (
-            <span className="text-xs text-zinc-400 dark:text-slate-500">…</span>
-          ) : dbStatus ? (
-            <span
-              className={`text-xs font-mono px-2 py-0.5 rounded-full font-semibold ${
-                isComplete
-                  ? "text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/40"
-                  : isEmpty
-                  ? "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30"
-                  : "text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/40"
-              }`}
-            >
-              {existingCount}/{seedCount}
-            </span>
-          ) : null}
-          <Badge variant={statusVariant as "success" | "warning" | "danger" | "default"}>
-            {statusLabel}
-          </Badge>
-          <span className="text-zinc-400 dark:text-slate-500 text-xs w-4 text-center select-none">
-            {expanded ? "▲" : "▼"}
-          </span>
-        </Div>
-        {/* Checkbox outside accordion, on the far right */}
-        <Div
-          className="shrink-0 ml-1"
-          onClick={(e) => { e.stopPropagation(); onToggle(); }}
-        >
-          <Checkbox
-            id={`col-${col}`}
-            checked={selected}
-            onChange={onToggle}
-            disabled={isRunning}
-            label=""
-          />
-        </Div>
+      <button type="button" onClick={toggleExpanded} className="w-full flex items-center gap-2 px-4 py-3 text-left">
+        {renderAccordionCollapsedHeader({ meta, runState, isLoadingStatus, dbStatus, existingCount, seedCount, isComplete, isEmpty, statusVariant, statusLabel, expanded, col, selected, onToggle, isRunning })}
       </button>
 
-      {/* Inline seed progress bar */}
       {dbStatus && seedCount > 0 && (
-        <div className="px-4 pb-2">
-          <SeedProgressBar seeded={existingCount} target={seedCount} size="sm" />
-        </div>
+        <div className="px-4 pb-2"><SeedProgressBar seeded={existingCount} target={seedCount} size="sm" /></div>
       )}
 
-      {/* Error message */}
       {runError && (
         <div className="px-4 pb-2">
-          <span className="text-xs text-red-600 dark:text-red-400" title={runError}>
-            ✗ {runError}
-          </span>
+          <span className="text-xs text-red-600 dark:text-red-400" title={runError}>✗ {runError}</span>
         </div>
       )}
 
-      {/* ── Expanded body ── */}
-      {expanded && (
-        <Div className="border-t border-zinc-200 dark:border-slate-700 px-5 py-4 bg-white dark:bg-slate-900/60">
-          <Stack gap="md">
-            {/* Description */}
-            <p className="text-sm text-zinc-600 dark:text-slate-300 leading-relaxed m-0">
-              {meta.description}
-            </p>
-
-            {/* Slug pattern + media fields */}
-            <div className="flex flex-wrap gap-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800/40 text-xs text-indigo-700 dark:text-indigo-300 font-mono">
-                🔑 {meta.slugPattern}
-              </span>
-              {meta.mediaFields?.map((f) => (
-                <span key={f} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/40 text-xs text-violet-700 dark:text-violet-300 font-mono">
-                  🖼️ {f}
-                </span>
-              ))}
-            </div>
-
-            {/* Media slug patterns table */}
-            {meta.mediaSlugPatterns && meta.mediaSlugPatterns.length > 0 && (
-              <Div>
-                <p className="text-xs font-bold text-violet-700 dark:text-violet-400 uppercase tracking-wider mb-2 m-0">
-                  🖼️ Media Slug Patterns (SEO filenames)
-                </p>
-                <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-slate-700">
-                  <table className="w-full text-xs border-collapse">
-                    <thead>
-                      <tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
-                        <th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[22%]">Context type</th>
-                        <th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[40%]">Pattern</th>
-                        <th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300">Example</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {meta.mediaSlugPatterns.map((p) => (
-                        <tr key={p.type} className="border-b border-zinc-100 dark:border-slate-800 last:border-0 hover:bg-zinc-50/60 dark:hover:bg-slate-800/30">
-                          <td className="px-3 py-2 font-mono text-indigo-700 dark:text-indigo-300 whitespace-nowrap">{p.type}</td>
-                          <td className="px-3 py-2 font-mono text-zinc-700 dark:text-slate-300 text-[10px] break-all">{p.pattern}</td>
-                          <td className="px-3 py-2 font-mono text-zinc-400 dark:text-slate-500 italic text-[10px] break-all">{p.example}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </Div>
-            )}
-
-            {/* Target progress */}
-            <Div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-zinc-700 dark:text-slate-200">
-                  Target: {target} docs
-                </span>
-                <span className="text-xs font-mono text-zinc-500 dark:text-slate-400">
-                  DB: {existingCount} · Seed file: {seedCount}
-                </span>
-              </div>
-              <SeedProgressBar seeded={existingCount} target={target} />
-            </Div>
-
-            {/* What's seeded */}
-            <Div>
-              <p className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider mb-2 m-0">
-                ✓ What&apos;s Seeded
-              </p>
-              <div className="flex flex-col gap-1.5">
-                {meta.seededItems.map((item, i) => (
-                  <p key={i} className="text-sm text-zinc-700 dark:text-slate-300 leading-snug pl-3 border-l-2 border-emerald-400 dark:border-emerald-700 m-0">
-                    {item}
-                  </p>
-                ))}
-              </div>
-            </Div>
-
-            {/* Pending items */}
-            {meta.pendingItems.length > 0 && (
-              <Div>
-                <p className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-2 m-0">
-                  ⏳ Pending / Needed
-                </p>
-                <div className="flex flex-col gap-1.5">
-                  {meta.pendingItems.map((item, i) => (
-                    <p key={i} className="text-sm text-zinc-600 dark:text-slate-400 leading-snug pl-3 border-l-2 border-amber-400 dark:border-amber-700 m-0">
-                      {item}
-                    </p>
-                  ))}
-                </div>
-              </Div>
-            )}
-
-            {/* Schema fields table */}
-            <SchemaFieldsTable fields={meta.fields} />
-
-            {/* PII note */}
-            {meta.piiFields && meta.piiFields.length > 0 && (
-              <Div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/40">
-                <span className="text-xs text-red-700 dark:text-red-300 leading-relaxed">
-                  🔒 PII fields: <strong>{meta.piiFields.join(", ")}</strong> — masked in DB with Firestore encryption. Never returned in full to client.
-                </span>
-              </Div>
-            )}
-
-            {/* View in app link */}
-            <div>
-              <a
-                href={meta.uiPath}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 hover:underline font-medium"
-              >
-                → View in app: {meta.uiPath}
-              </a>
-            </div>
-          </Stack>
-        </Div>
-      )}
+      {expanded && renderAccordionExpandedBody(meta, existingCount, seedCount, target)}
     </Div>
   );
 }
@@ -1723,6 +1647,69 @@ function GroupDivider({
       </button>
     </div>
   );
+}
+
+// ─── NDJSON stream helpers ────────────────────────────────────────────────────
+
+interface NdjsonProgressEvent {
+  type: string;
+  collection?: string;
+  status?: string;
+  error?: string;
+  done?: number;
+}
+
+type ColRunStateSetter = React.Dispatch<React.SetStateAction<Record<string, ColRunState>>>;
+type ColErrorsSetter = React.Dispatch<React.SetStateAction<Record<string, string>>>;
+type CompletedCountSetter = React.Dispatch<React.SetStateAction<number>>;
+
+/**
+ * Parse a single NDJSON line from the seed stream and dispatch the
+ * appropriate state update. Extracted to reduce nesting inside the
+ * stream reader loop.
+ */
+async function streamNdjsonResponse(
+  body: ReadableStream<Uint8Array>,
+  setColRunStates: ColRunStateSetter,
+  setColErrors: ColErrorsSetter,
+  setCompletedCount: CompletedCountSetter,
+): Promise<void> {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+    lines.forEach((line) => parseNdjsonLine(line, setColRunStates, setColErrors, setCompletedCount));
+  }
+}
+
+function parseNdjsonLine(
+  line: string,
+  setColRunStates: ColRunStateSetter,
+  setColErrors: ColErrorsSetter,
+  setCompletedCount: CompletedCountSetter,
+): void {
+  if (!line.trim()) return;
+  try {
+    const event = JSON.parse(line) as NdjsonProgressEvent;
+    if (event.type === "progress" && event.collection) {
+      if (event.status === "running") {
+        setColRunStates((prev) => ({ ...prev, [event.collection!]: "running" }));
+      } else if (event.status === "done") {
+        setColRunStates((prev) => ({ ...prev, [event.collection!]: "done" }));
+        setCompletedCount(event.done ?? 0);
+      } else if (event.status === "error") {
+        setColRunStates((prev) => ({ ...prev, [event.collection!]: "error" }));
+        setColErrors((prev) => ({ ...prev, [event.collection!]: event.error ?? "Unknown error" }));
+        setCompletedCount(event.done ?? 0);
+      }
+    }
+  } catch { /* malformed line — skip */ }
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
@@ -1810,39 +1797,7 @@ export function SeedPanel() {
 
       if (contentType.includes("x-ndjson") && res.body) {
         // Stream NDJSON — server emits one line per collection as it completes
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = "";
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split("\n");
-          buffer = lines.pop() ?? "";
-
-          for (const line of lines) {
-            if (!line.trim()) continue;
-            try {
-              const event = JSON.parse(line) as {
-                type: string; collection?: string; status?: string;
-                error?: string; done?: number;
-              };
-              if (event.type === "progress" && event.collection) {
-                if (event.status === "running") {
-                  setColRunStates((prev) => ({ ...prev, [event.collection!]: "running" }));
-                } else if (event.status === "done") {
-                  setColRunStates((prev) => ({ ...prev, [event.collection!]: "done" }));
-                  setCompletedCount(event.done ?? 0);
-                } else if (event.status === "error") {
-                  setColRunStates((prev) => ({ ...prev, [event.collection!]: "error" }));
-                  setColErrors((prev) => ({ ...prev, [event.collection!]: event.error ?? "Unknown error" }));
-                  setCompletedCount(event.done ?? 0);
-                }
-              }
-            } catch { /* malformed line */ }
-          }
-        }
+        await streamNdjsonResponse(res.body, setColRunStates, setColErrors, setCompletedCount);
       } else {
         // Dry-run returns plain JSON — mark all done at once
         const data = await res.json();
@@ -1946,372 +1901,276 @@ export function SeedPanel() {
 
   return (
     <Section className="min-h-screen bg-white dark:bg-slate-950 text-zinc-900 dark:text-white">
+      {renderSeedPanelToolbar({ selectedCollections, setSelectedCollections, isFiltered, filteredCollections, isRunning, fetchStatus, isLoadingStatus, searchQuery, setSearchQuery, sortBy, setSortBy, dryRun, setDryRun, run, filterGroup, setFilterGroup, filterStatus, setFilterStatus })}
 
-      {/* ── Sticky control toolbar ── */}
-      <div
-        className="sticky z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-zinc-200 dark:border-slate-800 shadow-sm"
-        style={{ top: "var(--header-height, 0px)" }}
-      >
-        <Container size="2xl">
-          <div className="py-2.5 flex flex-col gap-2">
-
-            {/* Row 1: title + selection count + quick-select + refresh */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-              <div className="flex-1 min-w-0">
-                <h2 className="text-sm font-bold text-zinc-900 dark:text-white m-0 leading-none">
-                  📋 Resource Collections
-                  <span className="ml-2 text-xs font-normal text-zinc-500 dark:text-slate-400">
-                    {selectedCollections.size} / {ALL_COLLECTIONS.length} selected
-                    {isFiltered && (
-                      <span className="ml-1 text-amber-600 dark:text-amber-400">
-                        · {filteredCollections.length} match
-                      </span>
-                    )}
-                  </span>
-                </h2>
-              </div>
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <Button size="sm" variant="outline" onClick={() => setSelectedCollections(new Set(ALL_COLLECTIONS))} disabled={isRunning}>Select All</Button>
-                <Button size="sm" variant="outline" onClick={() => setSelectedCollections(new Set(DEFAULT_SELECTED))} disabled={isRunning}>Default</Button>
-                <Button size="sm" variant="outline" onClick={() => setSelectedCollections(new Set())} disabled={isRunning}>Clear</Button>
-                <Button size="sm" variant="outline" onClick={fetchStatus} disabled={isRunning || isLoadingStatus}>
-                  {isLoadingStatus ? "…" : "↻ Refresh"}
-                </Button>
-              </div>
-            </div>
-
-            {/* Row 2: search + sort | dry-run checkbox + action buttons */}
-            <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-              {/* Search */}
-              <div className="relative flex-1">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-slate-500 text-sm pointer-events-none">🔍</span>
-                <input
-                  type="text"
-                  placeholder="Search collections…"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-8 py-1.5 text-sm rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400"
-                />
-                {searchQuery && (
-                  <button onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-white text-xs">✕</button>
-                )}
-              </div>
-              {/* Sort */}
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortKey)}
-                className="text-sm rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-white px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 shrink-0"
-              >
-                <option value="default">Sort: Default</option>
-                <option value="name-asc">Name A → Z</option>
-                <option value="name-desc">Name Z → A</option>
-                <option value="target-desc">Target ↑ highest</option>
-                <option value="target-asc">Target ↓ lowest</option>
-                <option value="db-desc">DB count ↑ most</option>
-                <option value="db-asc">DB count ↓ fewest</option>
-              </select>
-              {/* Divider */}
-              <div className="hidden sm:block w-px h-6 bg-zinc-200 dark:bg-slate-700 shrink-0" />
-              {/* Dry-run toggle + seed buttons */}
-              <div className="flex items-center gap-2 flex-wrap shrink-0">
-                <label className="flex items-center gap-1.5 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={dryRun}
-                    onChange={(e) => setDryRun(e.target.checked)}
-                    disabled={isRunning}
-                    className="w-3.5 h-3.5 rounded accent-amber-500 cursor-pointer"
-                  />
-                  <span className="text-xs text-zinc-600 dark:text-slate-300 whitespace-nowrap">Dry run</span>
-                </label>
-                <Button
-                  size="sm"
-                  variant="primary"
-                  isLoading={isRunning}
-                  onClick={() => run("load")}
-                  disabled={isRunning || selectedCollections.size === 0}
-                >
-                  {dryRun ? "⚡ Dry Add" : "⚡ Add Seed"}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="danger"
-                  onClick={() => run("delete")}
-                  disabled={isRunning || selectedCollections.size === 0}
-                >
-                  {dryRun ? "🗑️ Dry Remove" : "🗑️ Remove"}
-                </Button>
-              </div>
-            </div>
-
-            {/* Row 3: group chips | status chips | clear */}
-            <div className="flex flex-col sm:flex-row gap-1.5 sm:items-center sm:gap-3">
-              {/* Group filter */}
-              <div className="flex items-center gap-1 flex-wrap">
-                <span className="text-xs text-zinc-500 dark:text-slate-400 font-medium shrink-0">Group:</span>
-                {(["all", "core", "listings", "transactional", "content", "system", "moderation"] as const).map((g) => {
-                  const active = filterGroup === g;
-                  const cfg = g === "all" ? { label: "All", icon: "☰" } : { label: GROUP_CONFIG[g].label, icon: GROUP_CONFIG[g].icon };
-                  return (
-                    <button
-                      key={g}
-                      onClick={() => setFilterGroup(g)}
-                      className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors ${
-                        active
-                          ? "bg-amber-500 text-white"
-                          : "bg-zinc-200 dark:bg-slate-700 text-zinc-700 dark:text-slate-300 hover:bg-zinc-300 dark:hover:bg-slate-600"
-                      }`}
-                    >
-                      <span>{cfg.icon}</span>
-                      <span className="hidden sm:inline ml-0.5">{cfg.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="hidden sm:block w-px h-4 bg-zinc-200 dark:bg-slate-700 shrink-0" />
-              {/* Status filter */}
-              <div className="flex items-center gap-1 flex-wrap">
-                <span className="text-xs text-zinc-500 dark:text-slate-400 font-medium shrink-0">Status:</span>
-                {([
-                  { key: "all",     label: "All",        activeClass: "bg-amber-500 text-white" },
-                  { key: "seeded",  label: "✓ Seeded",   activeClass: "bg-emerald-500 text-white" },
-                  { key: "partial", label: "⏳ Partial",  activeClass: "bg-amber-500 text-white" },
-                  { key: "empty",   label: "✗ Empty",    activeClass: "bg-red-500 text-white" },
-                ] as const).map(({ key, label, activeClass }) => (
-                  <button
-                    key={key}
-                    onClick={() => setFilterStatus(key as StatusFilter)}
-                    className={`px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors ${
-                      filterStatus === key
-                        ? activeClass
-                        : "bg-zinc-200 dark:bg-slate-700 text-zinc-700 dark:text-slate-300 hover:bg-zinc-300 dark:hover:bg-slate-600"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-                {isFiltered && (
-                  <button
-                    onClick={() => { setSearchQuery(""); setFilterGroup("all"); setFilterStatus("all"); setSortBy("default"); }}
-                    className="text-[11px] text-amber-600 dark:text-amber-400 hover:underline ml-1 shrink-0"
-                  >
-                    ✕ Clear
-                  </button>
-                )}
-              </div>
-            </div>
-
-          </div>
-        </Container>
-      </div>
-
-      {/* ── Scrollable content ── */}
       <Container size="2xl">
         <Stack gap="lg" className="py-8">
+          {renderSeedPanelHero()}
+          {renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDocs, totalTargetDocs })}
 
-          {/* Hero header */}
-          <div className="flex flex-col items-center text-center gap-3 pt-2">
-            <span className="text-5xl leading-none">🎮</span>
-            <h1 className="text-3xl font-extrabold text-amber-600 dark:text-amber-400 m-0">
-              LetItRip Demo Seed
-            </h1>
-            <p className="text-base text-zinc-600 dark:text-slate-300 max-w-xl m-0">
-              Admin seed tool — expand each resource card to see what&apos;s seeded, pending counts, live DB state, and the UI path to verify.
-            </p>
-          </div>
-
-          {/* DB overview stats — always visible */}
-          <Div className="grid grid-cols-3 gap-3 sm:gap-4">
-            <Div className="rounded-xl p-4 bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-center flex flex-col gap-1">
-              <span className="text-2xl font-extrabold text-zinc-900 dark:text-white font-mono leading-none">
-                {isLoadingStatus ? <span className="text-zinc-300 dark:text-slate-600">—</span> : totalExistingDocs.toLocaleString()}
-              </span>
-              <span className="text-xs text-zinc-500 dark:text-slate-400">docs in DB</span>
-            </Div>
-            <Div className="rounded-xl p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 text-center flex flex-col gap-1">
-              <span className="text-2xl font-extrabold text-amber-600 dark:text-amber-400 font-mono leading-none">
-                {isLoadingStatus ? <span className="text-amber-200 dark:text-amber-900">—</span> : totalSeedDocs.toLocaleString()}
-              </span>
-              <span className="text-xs text-zinc-500 dark:text-slate-400">docs in seed files</span>
-            </Div>
-            <Div className="rounded-xl p-4 bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-center flex flex-col gap-1">
-              <span className="text-2xl font-extrabold text-zinc-500 dark:text-slate-300 font-mono leading-none">
-                {totalTargetDocs.toLocaleString()}
-              </span>
-              <span className="text-xs text-zinc-500 dark:text-slate-400">total target docs</span>
-            </Div>
-          </Div>
-
-          {/* Progress bar — visible while running */}
           {isRunning && (
             <Div className="rounded-xl p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-300 dark:border-amber-700">
-              <Text className="text-sm font-semibold text-amber-800 dark:text-amber-300 mb-2">
-                {dryRun ? "Dry-running" : "Seeding"} collections…
-              </Text>
+              <Text className="text-sm font-semibold text-amber-800 dark:text-amber-300 mb-2">{dryRun ? "Dry-running" : "Seeding"} collections…</Text>
               <ProgressBar value={completedCount} total={totalQueued} />
             </Div>
           )}
 
-          {/* Done summary */}
-          {!isRunning && totalQueued > 0 && (
-            <Div
-              className={`rounded-xl p-4 border ${
-                errorCount > 0
-                  ? "bg-red-50 dark:bg-red-900/10 border-red-300 dark:border-red-700"
-                  : "bg-emerald-50 dark:bg-emerald-900/10 border-emerald-300 dark:border-emerald-700"
-              }`}
-            >
-              <Text
-                className={`text-sm font-semibold ${
-                  errorCount > 0 ? "text-red-700 dark:text-red-300" : "text-emerald-700 dark:text-emerald-300"
-                }`}
-              >
-                {errorCount > 0
-                  ? `✗ Completed with ${errorCount} error${errorCount > 1 ? "s" : ""} — ${completedCount - errorCount} succeeded`
-                  : `✓ ${dryRun ? "Dry run" : "Seed"} complete — all ${completedCount} collections processed`}
-              </Text>
-              {errorCount > 0 && (
-                <Stack gap="xs" className="mt-2">
-                  {Object.entries(colErrors).map(([col, msg]) => (
-                    <Text key={col} className="text-xs text-red-600 dark:text-red-400">
-                      <strong>{COLLECTION_META[col as SeedCollectionName]?.label ?? col}:</strong> {msg}
-                    </Text>
-                  ))}
-                </Stack>
-              )}
-            </Div>
-          )}
+          {!isRunning && totalQueued > 0 && renderSeedPanelDoneSummary({ errorCount, dryRun, completedCount, colErrors })}
 
-          {/* Collection list — grouped or flat */}
-          {filteredCollections.length === 0 ? (
-            <div className="py-10 text-center text-sm text-zinc-500 dark:text-slate-400">
-              No collections match your filters.
-            </div>
-          ) : isFiltered ? (
-            <div className="flex flex-col gap-1.5">
-              {paginatedCollections.map((col) => (
-                <ResourceAccordionCard
-                  key={col}
-                  col={col}
-                  meta={COLLECTION_META[col]}
-                  selected={selectedCollections.has(col)}
-                  onToggle={() => toggleCollection(col)}
-                  dbStatus={getColStatus(col)}
-                  runState={colRunStates[col] ?? "idle"}
-                  runError={colErrors[col]}
-                  isRunning={isRunning}
-                  isLoadingStatus={isLoadingStatus}
-                  onRefreshOne={fetchStatus}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col gap-1">
-              {groups.map(({ key, cols }) => {
-                const allGroupSelected = cols.every((c) => selectedCollections.has(c));
-                return (
-                  <div key={key}>
-                    <GroupDivider
-                      groupKey={key}
-                      allSelected={allGroupSelected}
-                      onSelectAll={(select) => toggleGroup(cols, select)}
-                      isRunning={isRunning}
-                    />
-                    <div className="flex flex-col gap-1.5 mt-2">
-                      {cols.map((col) => (
-                        <ResourceAccordionCard
-                          key={col}
-                          col={col}
-                          meta={COLLECTION_META[col]}
-                          selected={selectedCollections.has(col)}
-                          onToggle={() => toggleCollection(col)}
-                          dbStatus={getColStatus(col)}
-                          runState={colRunStates[col] ?? "idle"}
-                          runError={colErrors[col]}
-                          isRunning={isRunning}
-                          isLoadingStatus={isLoadingStatus}
-                          onRefreshOne={fetchStatus}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          {renderSeedPanelCollectionList({ filteredCollections, isFiltered, paginatedCollections, selectedCollections, toggleCollection, getColStatus, colRunStates, colErrors, isRunning, isLoadingStatus, fetchStatus, groups, toggleGroup })}
 
-          {/* Pagination */}
-          {isFiltered && totalPages > 1 && (
-            <div className="flex items-center justify-between pt-2 border-t border-zinc-200 dark:border-slate-700">
-              <span className="text-xs text-zinc-500 dark:text-slate-400">
-                Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filteredCollections.length)} of {filteredCollections.length}
-              </span>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="px-2.5 py-1 rounded-lg text-sm font-medium border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-slate-700 transition-colors"
-                >
-                  ‹ Prev
-                </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-                  <button
-                    key={n}
-                    onClick={() => setPage(n)}
-                    className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
-                      n === page
-                        ? "bg-amber-500 text-white font-bold"
-                        : "border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 hover:bg-zinc-50 dark:hover:bg-slate-700"
-                    }`}
-                  >
-                    {n}
-                  </button>
-                ))}
-                <button
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                  className="px-2.5 py-1 rounded-lg text-sm font-medium border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-slate-700 transition-colors"
-                >
-                  Next ›
-                </button>
-              </div>
-            </div>
-          )}
+          {isFiltered && totalPages > 1 && renderSeedPanelPagination({ page, setPage, totalPages, PAGE_SIZE, filteredCollections })}
 
-          {/* Seed scale summary */}
-          <Div className="rounded-2xl p-5 bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200 dark:border-white/10">
-            <h3 className="text-base font-bold text-amber-600 dark:text-amber-400 m-0 mb-4">
-              📊 Target Seed Scale
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-0">
-              {[
-                ["Standard Products", "100+"],
-                ["Auction Listings", "20"],
-                ["Pre-orders", "10"],
-                ["Categories (3-tier)", "55+"],
-                ["Users (all roles)", "15+"],
-                ["Stores", "8"],
-                ["Brands", "25+"],
-                ["Reviews", "60+"],
-                ["Orders (all statuses)", "35+"],
-                ["Bids (auction history)", "120+"],
-                ["FAQs (all categories)", "55+"],
-                ["Blog Posts", "20+"],
-                ["Events", "15+"],
-                ["Coupons (global + store)", "20+"],
-                ["Notifications (all types)", "40+"],
-                ["Wishlists", "40+"],
-              ].map(([label, count]) => (
-                <div key={label} className="flex items-center justify-between py-2 border-b border-zinc-100 dark:border-white/5 last:border-0">
-                  <span className="text-sm text-zinc-700 dark:text-slate-300">{label}</span>
-                  <span className="text-sm font-mono font-bold text-amber-600 dark:text-amber-400 tabular-nums">{count}</span>
-                </div>
-              ))}
-            </div>
-          </Div>
-
+          {renderSeedScaleSummary()}
         </Stack>
       </Container>
     </Section>
+  );
+}
+
+// ─── SeedPanel sub-renderers ──────────────────────────────────────────────────
+
+type SortKey = "default" | "name-asc" | "name-desc" | "target-asc" | "target-desc" | "db-asc" | "db-desc";
+type StatusFilter = "all" | "seeded" | "partial" | "empty";
+
+function renderSeedPanelToolbar({
+  selectedCollections, setSelectedCollections, isFiltered, filteredCollections, isRunning, fetchStatus, isLoadingStatus,
+  searchQuery, setSearchQuery, sortBy, setSortBy, dryRun, setDryRun, run, filterGroup, setFilterGroup, filterStatus, setFilterStatus,
+}: {
+  selectedCollections: Set<SeedCollectionName>;
+  setSelectedCollections: React.Dispatch<React.SetStateAction<Set<SeedCollectionName>>>;
+  isFiltered: boolean;
+  filteredCollections: SeedCollectionName[];
+  isRunning: boolean;
+  fetchStatus: () => void;
+  isLoadingStatus: boolean;
+  searchQuery: string;
+  setSearchQuery: (v: string) => void;
+  sortBy: SortKey;
+  setSortBy: React.Dispatch<React.SetStateAction<SortKey>>;
+  dryRun: boolean;
+  setDryRun: (v: boolean) => void;
+  run: (action: "load" | "delete") => void;
+  filterGroup: GroupKey | "all";
+  setFilterGroup: React.Dispatch<React.SetStateAction<GroupKey | "all">>;
+  filterStatus: StatusFilter;
+  setFilterStatus: React.Dispatch<React.SetStateAction<StatusFilter>>;
+}) {
+  return (
+    <div className="sticky z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-zinc-200 dark:border-slate-800 shadow-sm" style={{ top: "var(--header-height, 0px)" }}>
+      <Container size="2xl">
+        <div className="py-2.5 flex flex-col gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+            <div className="flex-1 min-w-0">
+              <Heading level={2} className="text-sm font-bold text-zinc-900 dark:text-white m-0 leading-none">
+                📋 Resource Collections
+                <span className="ml-2 text-xs font-normal text-zinc-500 dark:text-slate-400">
+                  {selectedCollections.size} / {ALL_COLLECTIONS.length} selected
+                  {isFiltered && <span className="ml-1 text-amber-600 dark:text-amber-400">· {filteredCollections.length} match</span>}
+                </span>
+              </Heading>
+            </div>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <Button size="sm" variant="outline" onClick={() => setSelectedCollections(new Set(ALL_COLLECTIONS))} disabled={isRunning}>Select All</Button>
+              <Button size="sm" variant="outline" onClick={() => setSelectedCollections(new Set(DEFAULT_SELECTED))} disabled={isRunning}>Default</Button>
+              <Button size="sm" variant="outline" onClick={() => setSelectedCollections(new Set())} disabled={isRunning}>Clear</Button>
+              <Button size="sm" variant="outline" onClick={fetchStatus} disabled={isRunning || isLoadingStatus}>{isLoadingStatus ? "…" : "↻ Refresh"}</Button>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+            <div className="relative flex-1">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-slate-500 text-sm pointer-events-none">🔍</span>
+              <input type="text" placeholder="Search collections…" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-9 pr-8 py-1.5 text-sm rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400" />
+              {searchQuery && <button onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-white text-xs">✕</button>}
+            </div>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value as SortKey)} className="text-sm rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-white px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 shrink-0">
+              <option value="default">Sort: Default</option>
+              <option value="name-asc">Name A → Z</option>
+              <option value="name-desc">Name Z → A</option>
+              <option value="target-desc">Target ↑ highest</option>
+              <option value="target-asc">Target ↓ lowest</option>
+              <option value="db-desc">DB count ↑ most</option>
+              <option value="db-asc">DB count ↓ fewest</option>
+            </select>
+            <div className="hidden sm:block w-px h-6 bg-zinc-200 dark:bg-slate-700 shrink-0" />
+            <div className="flex items-center gap-2 flex-wrap shrink-0">
+              <label className="flex items-center gap-1.5 cursor-pointer select-none">
+                <input type="checkbox" checked={dryRun} onChange={(e) => setDryRun(e.target.checked)} disabled={isRunning} className="w-3.5 h-3.5 rounded accent-amber-500 cursor-pointer" />
+                <span className="text-xs text-zinc-600 dark:text-slate-300 whitespace-nowrap">Dry run</span>
+              </label>
+              <Button size="sm" variant="primary" isLoading={isRunning} onClick={() => run("load")} disabled={isRunning || selectedCollections.size === 0}>{dryRun ? "⚡ Dry Add" : "⚡ Add Seed"}</Button>
+              <Button size="sm" variant="danger" onClick={() => run("delete")} disabled={isRunning || selectedCollections.size === 0}>{dryRun ? "🗑️ Dry Remove" : "🗑️ Remove"}</Button>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-1.5 sm:items-center sm:gap-3">
+            <div className="flex items-center gap-1 flex-wrap">
+              <span className="text-xs text-zinc-500 dark:text-slate-400 font-medium shrink-0">Group:</span>
+              {(["all", "core", "listings", "transactional", "content", "system", "moderation"] as const).map((g) => {
+                const active = filterGroup === g;
+                const cfg = g === "all" ? { label: "All", icon: "☰" } : { label: GROUP_CONFIG[g].label, icon: GROUP_CONFIG[g].icon };
+                return (
+                  <button key={g} onClick={() => setFilterGroup(g)} className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors ${active ? "bg-amber-500 text-white" : "bg-zinc-200 dark:bg-slate-700 text-zinc-700 dark:text-slate-300 hover:bg-zinc-300 dark:hover:bg-slate-600"}`}>
+                    <span>{cfg.icon}</span>
+                    <span className="hidden sm:inline ml-0.5">{cfg.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="hidden sm:block w-px h-4 bg-zinc-200 dark:bg-slate-700 shrink-0" />
+            <div className="flex items-center gap-1 flex-wrap">
+              <span className="text-xs text-zinc-500 dark:text-slate-400 font-medium shrink-0">Status:</span>
+              {([
+                { key: "all", label: "All", activeClass: "bg-amber-500 text-white" },
+                { key: "seeded", label: "✓ Seeded", activeClass: "bg-emerald-500 text-white" },
+                { key: "partial", label: "⏳ Partial", activeClass: "bg-amber-500 text-white" },
+                { key: "empty", label: "✗ Empty", activeClass: "bg-red-500 text-white" },
+              ] as const).map(({ key, label, activeClass }) => (
+                <button key={key} onClick={() => setFilterStatus(key as StatusFilter)} className={`px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors ${filterStatus === key ? activeClass : "bg-zinc-200 dark:bg-slate-700 text-zinc-700 dark:text-slate-300 hover:bg-zinc-300 dark:hover:bg-slate-600"}`}>{label}</button>
+              ))}
+              {isFiltered && (
+                <button onClick={() => { setSearchQuery(""); setFilterGroup("all"); setFilterStatus("all"); setSortBy("default"); }} className="text-[11px] text-amber-600 dark:text-amber-400 hover:underline ml-1 shrink-0">✕ Clear</button>
+              )}
+            </div>
+          </div>
+        </div>
+      </Container>
+    </div>
+  );
+}
+
+function renderSeedPanelHero() {
+  return (
+    <div className="flex flex-col items-center text-center gap-3 pt-2">
+      <span className="text-5xl leading-none">🎮</span>
+      <Heading level={1} className="text-3xl font-extrabold text-amber-600 dark:text-amber-400 m-0">LetItRip Demo Seed</Heading>
+      <Text className="text-base text-zinc-600 dark:text-slate-300 max-w-xl m-0">Admin seed tool — expand each resource card to see what&apos;s seeded, pending counts, live DB state, and the UI path to verify.</Text>
+    </div>
+  );
+}
+
+function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDocs, totalTargetDocs }: { isLoadingStatus: boolean; totalExistingDocs: number; totalSeedDocs: number; totalTargetDocs: number }) {
+  return (
+    <Div className="grid grid-cols-3 gap-3 sm:gap-4">
+      <Div className="rounded-xl p-4 bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-center flex flex-col gap-1">
+        <span className="text-2xl font-extrabold text-zinc-900 dark:text-white font-mono leading-none">{isLoadingStatus ? <span className="text-zinc-300 dark:text-slate-600">—</span> : totalExistingDocs.toLocaleString()}</span>
+        <span className="text-xs text-zinc-500 dark:text-slate-400">docs in DB</span>
+      </Div>
+      <Div className="rounded-xl p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 text-center flex flex-col gap-1">
+        <span className="text-2xl font-extrabold text-amber-600 dark:text-amber-400 font-mono leading-none">{isLoadingStatus ? <span className="text-amber-200 dark:text-amber-900">—</span> : totalSeedDocs.toLocaleString()}</span>
+        <span className="text-xs text-zinc-500 dark:text-slate-400">docs in seed files</span>
+      </Div>
+      <Div className="rounded-xl p-4 bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-center flex flex-col gap-1">
+        <span className="text-2xl font-extrabold text-zinc-500 dark:text-slate-300 font-mono leading-none">{totalTargetDocs.toLocaleString()}</span>
+        <span className="text-xs text-zinc-500 dark:text-slate-400">total target docs</span>
+      </Div>
+    </Div>
+  );
+}
+
+function renderSeedPanelDoneSummary({ errorCount, dryRun, completedCount, colErrors }: { errorCount: number; dryRun: boolean; completedCount: number; colErrors: Record<string, string> }) {
+  return (
+    <Div className={`rounded-xl p-4 border ${errorCount > 0 ? "bg-red-50 dark:bg-red-900/10 border-red-300 dark:border-red-700" : "bg-emerald-50 dark:bg-emerald-900/10 border-emerald-300 dark:border-emerald-700"}`}>
+      <Text className={`text-sm font-semibold ${errorCount > 0 ? "text-red-700 dark:text-red-300" : "text-emerald-700 dark:text-emerald-300"}`}>
+        {errorCount > 0 ? `✗ Completed with ${errorCount} error${errorCount > 1 ? "s" : ""} — ${completedCount - errorCount} succeeded` : `✓ ${dryRun ? "Dry run" : "Seed"} complete — all ${completedCount} collections processed`}
+      </Text>
+      {errorCount > 0 && (
+        <Stack gap="xs" className="mt-2">
+          {Object.entries(colErrors).map(([col, msg]) => (
+            <Text key={col} className="text-xs text-red-600 dark:text-red-400"><strong>{COLLECTION_META[col as SeedCollectionName]?.label ?? col}:</strong> {msg}</Text>
+          ))}
+        </Stack>
+      )}
+    </Div>
+  );
+}
+
+function renderAccordionCard(col: SeedCollectionName, props: { selectedCollections: Set<SeedCollectionName>; toggleCollection: (col: SeedCollectionName) => void; getColStatus: (col: SeedCollectionName) => ColStatus | undefined; colRunStates: Record<string, ColRunState>; colErrors: Record<string, string>; isRunning: boolean; isLoadingStatus: boolean; fetchStatus: () => void }) {
+  return (
+    <ResourceAccordionCard
+      key={col}
+      col={col}
+      meta={COLLECTION_META[col]}
+      selected={props.selectedCollections.has(col)}
+      onToggle={() => props.toggleCollection(col)}
+      dbStatus={props.getColStatus(col)}
+      runState={props.colRunStates[col] ?? "idle"}
+      runError={props.colErrors[col]}
+      isRunning={props.isRunning}
+      isLoadingStatus={props.isLoadingStatus}
+      onRefreshOne={props.fetchStatus}
+    />
+  );
+}
+
+function renderSeedPanelCollectionList(p: {
+  filteredCollections: SeedCollectionName[];
+  isFiltered: boolean;
+  paginatedCollections: SeedCollectionName[];
+  selectedCollections: Set<SeedCollectionName>;
+  toggleCollection: (col: SeedCollectionName) => void;
+  getColStatus: (col: SeedCollectionName) => ColStatus | undefined;
+  colRunStates: Record<string, ColRunState>;
+  colErrors: Record<string, string>;
+  isRunning: boolean;
+  isLoadingStatus: boolean;
+  fetchStatus: () => void;
+  groups: Array<{ key: GroupKey; cols: SeedCollectionName[] }>;
+  toggleGroup: (cols: SeedCollectionName[], select: boolean) => void;
+}) {
+  if (p.filteredCollections.length === 0) {
+    return <div className="py-10 text-center text-sm text-zinc-500 dark:text-slate-400">No collections match your filters.</div>;
+  }
+  if (p.isFiltered) {
+    return <div className="flex flex-col gap-1.5">{p.paginatedCollections.map((col) => renderAccordionCard(col, p))}</div>;
+  }
+  return (
+    <div className="flex flex-col gap-1">
+      {p.groups.map(({ key, cols }) => {
+        const allGroupSelected = cols.every((c) => p.selectedCollections.has(c));
+        return (
+          <div key={key}>
+            <GroupDivider groupKey={key} allSelected={allGroupSelected} onSelectAll={(select) => p.toggleGroup(cols, select)} isRunning={p.isRunning} />
+            <div className="flex flex-col gap-1.5 mt-2">{cols.map((col) => renderAccordionCard(col, p))}</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function renderSeedPanelPagination({ page, setPage, totalPages, PAGE_SIZE, filteredCollections }: { page: number; setPage: React.Dispatch<React.SetStateAction<number>>; totalPages: number; PAGE_SIZE: number; filteredCollections: SeedCollectionName[] }) {
+  return (
+    <div className="flex items-center justify-between pt-2 border-t border-zinc-200 dark:border-slate-700">
+      <span className="text-xs text-zinc-500 dark:text-slate-400">Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filteredCollections.length)} of {filteredCollections.length}</span>
+      <div className="flex items-center gap-1">
+        <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-2.5 py-1 rounded-lg text-sm font-medium border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-slate-700 transition-colors">‹ Prev</button>
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+          <button key={n} onClick={() => setPage(n)} className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${n === page ? "bg-amber-500 text-white font-bold" : "border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 hover:bg-zinc-50 dark:hover:bg-slate-700"}`}>{n}</button>
+        ))}
+        <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-2.5 py-1 rounded-lg text-sm font-medium border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-slate-700 transition-colors">Next ›</button>
+      </div>
+    </div>
+  );
+}
+
+function renderSeedScaleSummary() {
+  return (
+    <Div className="rounded-2xl p-5 bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200 dark:border-white/10">
+      <Heading level={3} className="text-base font-bold text-amber-600 dark:text-amber-400 m-0 mb-4">📊 Target Seed Scale</Heading>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-0">
+        {[
+          ["Standard Products", "100+"], ["Auction Listings", "20"], ["Pre-orders", "10"],
+          ["Categories (3-tier)", "55+"], ["Users (all roles)", "15+"], ["Stores", "8"],
+          ["Brands", "25+"], ["Reviews", "60+"], ["Orders (all statuses)", "35+"],
+          ["Bids (auction history)", "120+"], ["FAQs (all categories)", "55+"], ["Blog Posts", "20+"],
+          ["Events", "15+"], ["Coupons (global + store)", "20+"], ["Notifications (all types)", "40+"], ["Wishlists", "40+"],
+        ].map(([label, count]) => (
+          <div key={label} className="flex items-center justify-between py-2 border-b border-zinc-100 dark:border-white/5 last:border-0">
+            <span className="text-sm text-zinc-700 dark:text-slate-300">{label}</span>
+            <span className="text-sm font-mono font-bold text-amber-600 dark:text-amber-400 tabular-nums">{count}</span>
+          </div>
+        ))}
+      </div>
+    </Div>
   );
 }

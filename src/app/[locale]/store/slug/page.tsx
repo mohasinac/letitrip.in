@@ -112,11 +112,7 @@ export default function Page() {
   };
 
   const isUnchanged = newSlug === currentSlug;
-  const canSave =
-    !isUnchanged &&
-    checkState === "available" &&
-    !saving;
-
+  const canSave = !isUnchanged && checkState === "available" && !saving;
   const checkColor =
     checkState === "available"
       ? "text-emerald-600 dark:text-emerald-400"
@@ -140,76 +136,87 @@ export default function Page() {
       )}
 
       <Stack gap="md" className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-5">
-        <Div>
-          <Text className="text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">
-            Current URL
-          </Text>
-          <Text className="text-sm font-mono text-zinc-700 dark:text-zinc-300">
-            {SITE_BASE}
-            <span className="font-semibold text-zinc-900 dark:text-zinc-100">
-              {currentSlug ?? "—"}
-            </span>
-          </Text>
-        </Div>
-
-        <Div>
-          <Input
-            id="store-slug"
-            label="New Store Slug"
-            value={newSlug}
-            onChange={handleSlugChange}
-            placeholder="e.g. pokemon-palace"
-            autoComplete="off"
-            spellCheck={false}
-            helperText={`${SITE_BASE}${newSlug || "your-store-slug"}`}
-          />
-          {checkMessage && (
-            <Text className={`mt-1 text-xs ${checkColor}`}>
-              {checkState === "checking" ? "Checking availability…" : checkMessage}
-            </Text>
-          )}
-          {checkState === "checking" && (
-            <Text className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
-              Checking availability…
-            </Text>
-          )}
-          {checkState === "available" && !checkMessage && (
-            <Text className="mt-1 text-xs text-emerald-600 dark:text-emerald-400">
-              This slug is available.
-            </Text>
-          )}
-        </Div>
-
-        {saveError && (
-          <Div className="rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/30 px-3 py-2 text-sm text-red-700 dark:text-red-400">
-            {saveError}
-          </Div>
-        )}
-
-        {saveSuccess && (
-          <Div className="rounded-lg border border-emerald-200 dark:border-emerald-900/40 bg-emerald-50 dark:bg-emerald-950/30 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-400">
-            Store slug updated successfully. Your new store URL is{" "}
-            <span className="font-mono font-semibold">{SITE_BASE}{currentSlug}</span>.
-          </Div>
-        )}
+        {renderCurrentUrl(currentSlug)}
+        {renderSlugInput({ newSlug, checkState, checkMessage, checkColor, handleSlugChange })}
+        {renderFeedbackBanners({ saveError, saveSuccess, currentSlug })}
 
         <Div className="rounded-lg border border-amber-200 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-950/30 px-3 py-2 text-xs text-amber-700 dark:text-amber-400">
-          Changing your slug will update your store URL immediately. Any saved links or bookmarks
-          to the old URL will stop working.
+          Changing your slug will update your store URL immediately. Any saved links or bookmarks to the old URL will stop working.
         </Div>
 
         <Row justify="end">
-          <Button
-            variant="primary"
-            size="sm"
-            isLoading={saving}
-            disabled={!canSave}
-            onClick={handleSave}
-          >
+          <Button variant="primary" size="sm" isLoading={saving} disabled={!canSave} onClick={handleSave}>
             {isUnchanged ? "No Changes" : "Update Slug"}
           </Button>
         </Row>
       </Stack>
     </Div>
+  );
+}
+
+function renderCurrentUrl(currentSlug: string | null) {
+  return (
+    <Div>
+      <Text className="text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">Current URL</Text>
+      <Text className="text-sm font-mono text-zinc-700 dark:text-zinc-300">
+        {SITE_BASE}<span className="font-semibold text-zinc-900 dark:text-zinc-100">{currentSlug ?? "—"}</span>
+      </Text>
+    </Div>
+  );
+}
+
+function renderSlugInput({ newSlug, checkState, checkMessage, checkColor, handleSlugChange }: {
+  newSlug: string;
+  checkState: CheckState;
+  checkMessage: string | null;
+  checkColor: string;
+  handleSlugChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) {
+  return (
+    <Div>
+      <Input
+        id="store-slug"
+        label="New Store Slug"
+        value={newSlug}
+        onChange={handleSlugChange}
+        placeholder="e.g. pokemon-palace"
+        autoComplete="off"
+        spellCheck={false}
+        helperText={`${SITE_BASE}${newSlug || "your-store-slug"}`}
+      />
+      {checkMessage && (
+        <Text className={`mt-1 text-xs ${checkColor}`}>
+          {checkState === "checking" ? "Checking availability…" : checkMessage}
+        </Text>
+      )}
+      {checkState === "checking" && !checkMessage && (
+        <Text className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">Checking availability…</Text>
+      )}
+      {checkState === "available" && !checkMessage && (
+        <Text className="mt-1 text-xs text-emerald-600 dark:text-emerald-400">This slug is available.</Text>
+      )}
+    </Div>
+  );
+}
+
+function renderFeedbackBanners({ saveError, saveSuccess, currentSlug }: {
+  saveError: string | null;
+  saveSuccess: boolean;
+  currentSlug: string | null;
+}) {
+  return (
+    <>
+      {saveError && (
+        <Div className="rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/30 px-3 py-2 text-sm text-red-700 dark:text-red-400">
+          {saveError}
+        </Div>
+      )}
+      {saveSuccess && (
+        <Div className="rounded-lg border border-emerald-200 dark:border-emerald-900/40 bg-emerald-50 dark:bg-emerald-950/30 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-400">
+          Store slug updated successfully. Your new store URL is{" "}
+          <span className="font-mono font-semibold">{SITE_BASE}{currentSlug}</span>.
+        </Div>
+      )}
+    </>
   );
 }

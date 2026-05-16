@@ -3,6 +3,7 @@
 
 import { useRouter } from "next/navigation";
 import { AddressForm, useAddress, useUpdateAddress, useToast, ROUTES } from "@mohasinac/appkit/client";
+import { Heading, Text } from "@mohasinac/appkit";
 
 interface Props {
   addressId: string;
@@ -36,13 +37,13 @@ export function EditAddressClient({ addressId }: Props) {
 
   if (!address) {
     return (
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">Address not found.</p>
+      <Text className="text-sm text-zinc-500 dark:text-zinc-400">Address not found.</Text>
     );
   }
 
   return (
     <div className="max-w-lg space-y-4">
-      <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Edit Address</h1>
+      <Heading level={1} className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Edit Address</Heading>
       <AddressForm
         initialData={address}
         onSubmit={async (data) => { await update.mutateAsync(data); }}

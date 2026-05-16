@@ -35,6 +35,7 @@ import type { ReviewDocument } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
 import { mediaUrlSchema } from "@/validation/request-schemas";
 import type { UpdateReviewActionInput } from "@mohasinac/appkit";
+import { ERR_RATE_LIMIT, ERR_REVIEW_ID_REQUIRED } from "./_constants";
 
 // --- Validation schemas ----------------------------------------------------
 
@@ -78,7 +79,7 @@ export async function createReviewAction(
     RateLimitPresets.STRICT,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const parsed = createReviewSchema.safeParse(input);
   if (!parsed.success) {
@@ -104,10 +105,10 @@ export async function updateReviewAction(
     RateLimitPresets.STRICT,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   if (!reviewId || typeof reviewId !== "string") {
-    throw new ValidationError("reviewId is required");
+    throw new ValidationError(ERR_REVIEW_ID_REQUIRED);
   }
 
   const parsed = updateReviewSchema.safeParse(input);
@@ -127,7 +128,7 @@ export async function deleteReviewAction(reviewId: string): Promise<void> {
   const user = await requireAuthUser();
 
   if (!reviewId || typeof reviewId !== "string") {
-    throw new ValidationError("reviewId is required");
+    throw new ValidationError(ERR_REVIEW_ID_REQUIRED);
   }
 
   await deleteReviewDomain(user.uid, reviewId);
@@ -158,10 +159,10 @@ export async function adminUpdateReviewAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   if (!reviewId || typeof reviewId !== "string") {
-    throw new ValidationError("reviewId is required");
+    throw new ValidationError(ERR_REVIEW_ID_REQUIRED);
   }
 
   const parsed = adminUpdateReviewSchema.safeParse(input);
@@ -181,7 +182,7 @@ export async function adminDeleteReviewAction(reviewId: string): Promise<void> {
   const admin = await requireRoleUser(["admin", "moderator"]);
 
   if (!reviewId || typeof reviewId !== "string") {
-    throw new ValidationError("reviewId is required");
+    throw new ValidationError(ERR_REVIEW_ID_REQUIRED);
   }
 
   await adminDeleteReviewDomain(admin.uid, reviewId);
@@ -201,10 +202,10 @@ export async function voteReviewHelpfulAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   if (!reviewId || typeof reviewId !== "string") {
-    throw new ValidationError("reviewId is required");
+    throw new ValidationError(ERR_REVIEW_ID_REQUIRED);
   }
 
   await voteReviewHelpfulDomain(reviewId, helpful);

@@ -226,183 +226,159 @@ export default function WishlistPage() {
   return (
     <>
     <ListingLayout
-      headerSlot={
-        <Div>
-          <Row gap="sm" className="items-center flex-wrap">
-            <Heading level={1} className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
-              My Wishlist
-            </Heading>
-            <Row gap="sm" className="items-center ml-auto flex-wrap">
-              {selectedIds.size > 0 && (
-                <>
-                  <Text className="text-sm text-zinc-600 dark:text-zinc-300">
-                    {selectedIds.size} selected
-                  </Text>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleRemoveSelected}
-                    disabled={isBulkRemoving}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
-                  >
-                    {isBulkRemoving ? "Removing…" : "Remove selected"}
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={clearSelection} disabled={isBulkRemoving}>
-                    Deselect
-                  </Button>
-                </>
-              )}
-              {!isLoading && wl.total > 0 && selectedIds.size === 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleRemoveAll}
-                  disabled={isBulkRemoving}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
-                >
-                  {isBulkRemoving ? "Clearing…" : "Remove all"}
-                </Button>
-              )}
-            </Row>
-          </Row>
-          {!isLoading && wl.total > 0 && selectedIds.size === 0 && (
-            <Text variant="secondary" className="text-sm mt-0.5">
-              {wl.total} saved item{wl.total !== 1 ? "s" : ""}
-            </Text>
-          )}
-        </Div>
-      }
-      searchSlot={
-        <Input
-          placeholder="Search wishlist…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="h-9 text-sm"
-        />
-      }
-      sortSlot={
-        <Select
-          options={SORT_OPTIONS}
-          value={sort}
-          onValueChange={setSort}
-          className="h-9 text-sm min-w-[160px]"
-        />
-      }
-      filterContent={
-        <Stack gap="md" className="p-4">
-          {/* Type */}
-          <Div>
-            <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-              Type
-            </Text>
-            <Stack gap="xs">
-              {TYPE_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setPending((p) => ({ ...p, type: opt.value }))}
-                  className={[
-                    "w-full rounded-lg px-3 py-2 text-left text-sm transition-colors",
-                    pending.type === opt.value
-                      ? "bg-primary-50 dark:bg-primary-900/20 font-medium text-primary-700 dark:text-primary-300"
-                      : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800",
-                  ].join(" ")}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </Stack>
-          </Div>
-
-          {/* Price range — values entered as ₹ (rupees), converted to paise internally */}
-          <Div className="border-t border-zinc-200 dark:border-zinc-700 pt-4">
-            <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-              Price range (₹)
-            </Text>
-            <Row gap="sm">
-              <Input
-                type="number"
-                placeholder="Min"
-                min={0}
-                value={pending.minPrice}
-                onChange={(e) => setPending((p) => ({ ...p, minPrice: e.target.value }))}
-                className="h-8 text-sm"
-              />
-              <span className="flex items-center text-zinc-400">–</span>
-              <Input
-                type="number"
-                placeholder="Max"
-                min={0}
-                value={pending.maxPrice}
-                onChange={(e) => setPending((p) => ({ ...p, maxPrice: e.target.value }))}
-                className="h-8 text-sm"
-              />
-            </Row>
-          </Div>
-        </Stack>
-      }
+      headerSlot={renderWishlistHeader({ isLoading, wl, selectedIds, isBulkRemoving, handleRemoveSelected, clearSelection, handleRemoveAll })}
+      searchSlot={<Input placeholder="Search wishlist…" value={search} onChange={(e) => setSearch(e.target.value)} className="h-9 text-sm" />}
+      sortSlot={<Select options={SORT_OPTIONS} value={sort} onValueChange={setSort} className="h-9 text-sm min-w-[160px]" />}
+      filterContent={renderWishlistFilterContent({ pending, setPending })}
       filterActiveCount={activeFilterCount}
       onFilterApply={handleApply}
       onFilterClear={handleClear}
     >
-      {isLoading ? (
-        <Div className="fluid-grid-card gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <Div
-              key={i}
-              className="animate-pulse rounded-xl border border-zinc-200 dark:border-slate-700 aspect-[3/4] bg-zinc-100 dark:bg-slate-800"
-            />
-          ))}
-        </Div>
-      ) : filteredItems.length === 0 ? (
-        <Div className="py-24 text-center">
-          <Text variant="secondary">
-            {wl.items.length === 0
-              ? "Your wishlist is empty."
-              : "No items match your search or filters."}
-          </Text>
-          {(search || activeFilterCount > 0) && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="mt-3"
-              onClick={() => { setSearch(""); handleClear(); }}
-            >
-              Clear all
-            </Button>
-          )}
-        </Div>
-      ) : (
-        <Div className="fluid-grid-card gap-4">
-          {filteredItems.map((item) => {
-            const slug = item.product?.slug ?? item.productSlug ?? item.productId;
-            return (
-              <InteractiveProductCard
-                key={item.id}
-                href={String(ROUTES.PUBLIC.PRODUCT_DETAIL(slug))}
-                isWishlisted
-                onToggleWishlist={user?.uid ? handleToggleWishlist : undefined}
-                selectable={selectedIds.size > 0}
-                isSelected={selectedIds.has(item.productId)}
-                onSelect={toggleSelect}
-                product={{
-                  id:        item.productId,
-                  title:     item.product?.title     ?? item.productTitle ?? "",
-                  price:     item.product?.price     ?? item.productPrice ?? 0,
-                  currency:  item.product?.currency  ?? "INR",
-                  mainImage: item.product?.images?.[0] ?? item.productImage,
-                  status:    item.product?.status    ?? ("published" as const),
-                  featured:  item.product?.isFeatured ?? false,
-                  listingType: item.product?.listingType,
-                  slug,
-                }}
-              />
-            );
-          })}
-        </Div>
-      )}
+      {renderWishlistItems({ isLoading, filteredItems, wl, search, activeFilterCount, user, selectedIds, handleToggleWishlist, toggleSelect, handleClear, setSearch })}
     </ListingLayout>
     <LoginRequiredModal isOpen={modalOpen} onClose={closeModal} message={modalMessage} />
     </>
+  );
+}
+
+// ─── Sub-renderers ────────────────────────────────────────────────────────────
+
+function renderWishlistHeader({
+  isLoading, wl, selectedIds, isBulkRemoving, handleRemoveSelected, clearSelection, handleRemoveAll,
+}: {
+  isLoading: boolean;
+  wl: ReturnType<typeof useWishlistWithGuest>;
+  selectedIds: Set<string>;
+  isBulkRemoving: boolean;
+  handleRemoveSelected: () => void;
+  clearSelection: () => void;
+  handleRemoveAll: () => void;
+}) {
+  return (
+    <Div>
+      <Row gap="sm" className="items-center flex-wrap">
+        <Heading level={1} className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+          My Wishlist
+        </Heading>
+        <Row gap="sm" className="items-center ml-auto flex-wrap">
+          {selectedIds.size > 0 && (
+            <>
+              <Text className="text-sm text-zinc-600 dark:text-zinc-300">{selectedIds.size} selected</Text>
+              <Button variant="ghost" size="sm" onClick={handleRemoveSelected} disabled={isBulkRemoving} className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30">
+                {isBulkRemoving ? "Removing…" : "Remove selected"}
+              </Button>
+              <Button variant="ghost" size="sm" onClick={clearSelection} disabled={isBulkRemoving}>Deselect</Button>
+            </>
+          )}
+          {!isLoading && wl.total > 0 && selectedIds.size === 0 && (
+            <Button variant="ghost" size="sm" onClick={handleRemoveAll} disabled={isBulkRemoving} className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30">
+              {isBulkRemoving ? "Clearing…" : "Remove all"}
+            </Button>
+          )}
+        </Row>
+      </Row>
+      {!isLoading && wl.total > 0 && selectedIds.size === 0 && (
+        <Text variant="secondary" className="text-sm mt-0.5">
+          {wl.total} saved item{wl.total !== 1 ? "s" : ""}
+        </Text>
+      )}
+    </Div>
+  );
+}
+
+function renderWishlistFilterContent({
+  pending, setPending,
+}: {
+  pending: WishlistFilters;
+  setPending: React.Dispatch<React.SetStateAction<WishlistFilters>>;
+}) {
+  return (
+    <Stack gap="md" className="p-4">
+      <Div>
+        <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Type</Text>
+        <Stack gap="xs">
+          {TYPE_OPTIONS.map((opt) => (
+            <button key={opt.value} type="button" onClick={() => setPending((p) => ({ ...p, type: opt.value }))}
+              className={["w-full rounded-lg px-3 py-2 text-left text-sm transition-colors", pending.type === opt.value ? "bg-primary-50 dark:bg-primary-900/20 font-medium text-primary-700 dark:text-primary-300" : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"].join(" ")}
+            >{opt.label}</button>
+          ))}
+        </Stack>
+      </Div>
+      <Div className="border-t border-zinc-200 dark:border-zinc-700 pt-4">
+        <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Price range (₹)</Text>
+        <Row gap="sm">
+          <Input type="number" placeholder="Min" min={0} value={pending.minPrice} onChange={(e) => setPending((p) => ({ ...p, minPrice: e.target.value }))} className="h-8 text-sm" />
+          <span className="flex items-center text-zinc-400">–</span>
+          <Input type="number" placeholder="Max" min={0} value={pending.maxPrice} onChange={(e) => setPending((p) => ({ ...p, maxPrice: e.target.value }))} className="h-8 text-sm" />
+        </Row>
+      </Div>
+    </Stack>
+  );
+}
+
+function renderWishlistItems({
+  isLoading, filteredItems, wl, search, activeFilterCount, user, selectedIds, handleToggleWishlist, toggleSelect, handleClear, setSearch,
+}: {
+  isLoading: boolean;
+  filteredItems: EnrichedWishlistItem[];
+  wl: ReturnType<typeof useWishlistWithGuest>;
+  search: string;
+  activeFilterCount: number;
+  user: ReturnType<typeof useSession>["user"];
+  selectedIds: Set<string>;
+  handleToggleWishlist: (id: string) => Promise<void>;
+  toggleSelect: (id: string, next: boolean) => void;
+  handleClear: () => void;
+  setSearch: (v: string) => void;
+}) {
+  if (isLoading) {
+    return (
+      <Div className="fluid-grid-card gap-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <Div key={i} className="animate-pulse rounded-xl border border-zinc-200 dark:border-slate-700 aspect-[3/4] bg-zinc-100 dark:bg-slate-800" />
+        ))}
+      </Div>
+    );
+  }
+  if (filteredItems.length === 0) {
+    return (
+      <Div className="py-24 text-center">
+        <Text variant="secondary">
+          {wl.items.length === 0 ? "Your wishlist is empty." : "No items match your search or filters."}
+        </Text>
+        {(search || activeFilterCount > 0) && (
+          <Button variant="ghost" size="sm" className="mt-3" onClick={() => { setSearch(""); handleClear(); }}>Clear all</Button>
+        )}
+      </Div>
+    );
+  }
+  return (
+    <Div className="fluid-grid-card gap-4">
+      {filteredItems.map((item) => {
+        const slug = item.product?.slug ?? item.productSlug ?? item.productId;
+        return (
+          <InteractiveProductCard
+            key={item.id}
+            href={String(ROUTES.PUBLIC.PRODUCT_DETAIL(slug))}
+            isWishlisted
+            onToggleWishlist={user?.uid ? handleToggleWishlist : undefined}
+            selectable={selectedIds.size > 0}
+            isSelected={selectedIds.has(item.productId)}
+            onSelect={toggleSelect}
+            product={{
+              id: item.productId,
+              title: item.product?.title ?? item.productTitle ?? "",
+              price: item.product?.price ?? item.productPrice ?? 0,
+              currency: item.product?.currency ?? "INR",
+              mainImage: item.product?.images?.[0] ?? item.productImage,
+              status: item.product?.status ?? ("published" as const),
+              featured: item.product?.isFeatured ?? false,
+              listingType: item.product?.listingType,
+              slug,
+            }}
+          />
+        );
+      })}
+    </Div>
   );
 }

@@ -2,8 +2,10 @@
 /* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-04: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-04) */
 
 import React, { useState } from "react";
+
+const CLS_LABEL = "block text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-1";
 import { useRouter } from "next/navigation";
-import { ROUTES } from "@mohasinac/appkit";
+import { Heading, ROUTES, Text } from "@mohasinac/appkit";
 import { API_ROUTES } from "@/constants/api";
 
 export default function Page() {
@@ -45,18 +47,18 @@ export default function Page() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+        <Heading level={1} className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
           New Sub-listing Category
-        </h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        </Heading>
+        <Text className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
           Group listings of the same real-world collectible across grades, conditions, or prices.
           Example: &ldquo;Base Set Charizard 108/120&rdquo; groups PSA 10, PSA 9, raw copies, etc.
-        </p>
+        </Text>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-1">
+        <>
+          <label className={CLS_LABEL}>
             Category name <span className="text-red-500">*</span>
           </label>
           <input
@@ -68,10 +70,10 @@ export default function Page() {
             placeholder="e.g. Base Set Charizard 108/120"
             className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
           />
-        </div>
+        </>
 
-        <div>
-          <label className="block text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-1">
+        <>
+          <label className={CLS_LABEL}>
             Item code
           </label>
           <input
@@ -82,13 +84,13 @@ export default function Page() {
             placeholder="e.g. PSA 10, 108/120, WOTC, STH"
             className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
           />
-          <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
+          <Text className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
             Grade, card number, set code, or series. Optional but helps buyers find matches.
-          </p>
-        </div>
+          </Text>
+        </>
 
-        <div>
-          <label className="block text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-1">
+        <>
+          <label className={CLS_LABEL}>
             Description
           </label>
           <textarea
@@ -99,7 +101,7 @@ export default function Page() {
             placeholder="Brief description shown on the public category page…"
             className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)] resize-none"
           />
-        </div>
+        </>
 
         {error && (
           <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-4 py-3 text-sm text-red-700 dark:text-red-300">

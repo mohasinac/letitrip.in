@@ -36,6 +36,7 @@ import {
 import type { EventDocument, EventEntryDocument } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
 import { maskPublicEventEntry } from "@mohasinac/appkit";
+import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 // --- Schemas --------------------------------------------------------------
 
@@ -113,7 +114,7 @@ export async function createEventAction(
 ): Promise<EventDocument> {
   const admin = await requireRoleUser(["admin", "moderator"]);
   const rl = await rateLimitByIdentifier(`event:create:${admin.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   const parsed = createEventSchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid event data");
@@ -126,19 +127,19 @@ export async function updateEventAction(
 ): Promise<EventDocument> {
   const admin = await requireRoleUser(["admin", "moderator"]);
   const rl = await rateLimitByIdentifier(`event:update:${admin.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   const idParsed = eventIdSchema.safeParse({ id });
   if (!idParsed.success) throw new ValidationError("Invalid id");
   const parsed = updateEventSchema.safeParse(input);
   if (!parsed.success)
-    throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid update data");
+    throw new ValidationError(parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE);
   return updateEvent(admin.uid, id, parsed.data as UpdateEventInput);
 }
 
 export async function deleteEventAction(id: string): Promise<void> {
   const admin = await requireRoleUser(["admin", "moderator"]);
   const rl = await rateLimitByIdentifier(`event:delete:${admin.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   const idParsed = eventIdSchema.safeParse({ id });
   if (!idParsed.success) throw new ValidationError("Invalid id");
   return deleteEvent(admin.uid, id);
@@ -149,7 +150,7 @@ export async function changeEventStatusAction(
 ): Promise<EventDocument> {
   const admin = await requireRoleUser(["admin", "moderator"]);
   const rl = await rateLimitByIdentifier(`event:status:${admin.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   const parsed = changeStatusSchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
@@ -161,7 +162,7 @@ export async function adminUpdateEventEntryAction(
 ): Promise<void> {
   const admin = await requireRoleUser(["admin", "moderator"]);
   const rl = await rateLimitByIdentifier(`event:entry:${admin.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   const parsed = updateEntrySchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");

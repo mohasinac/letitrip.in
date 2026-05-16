@@ -45,6 +45,7 @@ import {
   validateRequestBody,
   productCreateSchema,
 } from "@/validation/request-schemas";
+import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 // --- Schemas --------------------------------------------------------------
 
@@ -71,7 +72,7 @@ export async function revokeSessionAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const parsed = revokeSessionSchema.safeParse(input);
   if (!parsed.success) {
@@ -97,7 +98,7 @@ export async function revokeUserSessionsAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const parsed = revokeUserSessionsSchema.safeParse(input);
   if (!parsed.success) {
@@ -130,14 +131,14 @@ export async function adminUpdateOrderAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   if (!id?.trim()) throw new ValidationError("id is required");
 
   const parsed = orderUpdateSchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid update data",
+      parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
     );
 
   return adminUpdateOrderDomain(
@@ -166,14 +167,14 @@ export async function adminUpdatePayoutAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   if (!id?.trim()) throw new ValidationError("id is required");
 
   const parsed = payoutUpdateSchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid update data",
+      parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
     );
 
   return adminUpdatePayoutDomain(
@@ -202,14 +203,14 @@ export async function adminUpdateUserAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   if (!uid?.trim()) throw new ValidationError("uid is required");
 
   const parsed = userUpdateSchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid update data",
+      parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
     );
 
   return adminUpdateUserDomain(admin.uid, uid, parsed.data as UserAdminUpdateInput);
@@ -223,7 +224,7 @@ export async function adminDeleteUserAction(uid: string): Promise<void> {
     RateLimitPresets.STRICT,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   if (!uid?.trim()) throw new ValidationError("uid is required");
   if (uid === admin.uid)
@@ -249,7 +250,7 @@ export async function adminUpdateStoreStatusAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const parsed = storeApprovalSchema.safeParse(input);
   if (!parsed.success)
@@ -284,14 +285,14 @@ export async function adminUpdateProductAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   if (!id?.trim()) throw new ValidationError("id is required");
 
   const parsed = productAdminUpdateSchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid update data",
+      parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
     );
 
   return adminUpdateProductDomain(
@@ -311,7 +312,7 @@ export async function adminCreateProductAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   // Delegate product creation to repository with validation
   const validation = validateRequestBody(productCreateSchema, input);
@@ -336,7 +337,7 @@ export async function adminDeleteProductAction(id: string): Promise<void> {
     RateLimitPresets.STRICT,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   if (!id?.trim()) throw new ValidationError("id is required");
 

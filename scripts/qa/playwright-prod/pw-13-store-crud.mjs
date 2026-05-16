@@ -31,6 +31,7 @@ export async function run() {
   // ── Create store product ──────────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000);
     const label = "store create product";
     try {
       await gotoAndWait(page, localizedUrl("/store/products/new"));
@@ -61,6 +62,7 @@ export async function run() {
   // ── Create store coupon ───────────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000);
     const label = "store create coupon";
     try {
       await gotoAndWait(page, localizedUrl("/store/coupons/new"));
@@ -87,6 +89,7 @@ export async function run() {
   {
     const id = await fetchFirstId(BASE_URL, "/api/store/products", { cookieHeader });
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000);
     const label = "store edit product";
     if (!id) {
       rec(`${label}: found product`, false, "no store products");
@@ -114,6 +117,7 @@ export async function run() {
   // ── Store storefront settings ─────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000);
     const label = "store storefront settings";
     try {
       await gotoAndWait(page, localizedUrl("/store/storefront"));
@@ -129,6 +133,7 @@ export async function run() {
   // ── Store shipping settings ────────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000);
     const label = "store shipping settings";
     try {
       await gotoAndWait(page, localizedUrl("/store/shipping"));
@@ -143,6 +148,7 @@ export async function run() {
   // ── Store payout settings ──────────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000);
     const label = "store payout settings";
     try {
       await gotoAndWait(page, localizedUrl("/store/payout-settings"));
@@ -157,6 +163,7 @@ export async function run() {
   // ── Store slug page ────────────────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000);
     const label = "store slug page";
     try {
       await gotoAndWait(page, localizedUrl("/store/slug"));
@@ -171,6 +178,7 @@ export async function run() {
   // ── Store analytics ────────────────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000);
     const label = "store analytics";
     try {
       await gotoAndWait(page, localizedUrl("/store/analytics"));

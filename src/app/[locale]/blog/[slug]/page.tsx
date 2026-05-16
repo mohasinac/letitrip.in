@@ -64,10 +64,10 @@ export default async function Page({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ldBreadcrumb) }}
       />
-      <div>
+      <>
         <BlogPostPageClient slug={slug} locale={locale} />
         <ShareButtons title={post.title} />
-      </div>
+      </>
     </>
   );
 }

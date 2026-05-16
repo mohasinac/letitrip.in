@@ -23,6 +23,10 @@ import {
   getAddressByIdForUser,
 } from "@mohasinac/appkit";
 import type { AddressDocument } from "@mohasinac/appkit";
+import {
+  ERR_RATE_LIMIT,
+  ERR_ADDRESS_ID_REQUIRED,
+} from "./_constants";
 
 // --- Validation schemas ----------------------------------------------------
 
@@ -53,7 +57,7 @@ export async function createAddressAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const parsed = addressBodySchema.safeParse(input);
   if (!parsed.success)
@@ -74,9 +78,9 @@ export async function updateAddressAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
-  if (!addressId?.trim()) throw new ValidationError("addressId is required");
+  if (!addressId?.trim()) throw new ValidationError(ERR_ADDRESS_ID_REQUIRED);
 
   const parsed = addressBodySchema.partial().safeParse(input);
   if (!parsed.success)
@@ -94,9 +98,9 @@ export async function deleteAddressAction(addressId: string): Promise<void> {
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
-  if (!addressId?.trim()) throw new ValidationError("addressId is required");
+  if (!addressId?.trim()) throw new ValidationError(ERR_ADDRESS_ID_REQUIRED);
 
   return deleteAddressForUser(user.uid, addressId);
 }
@@ -110,9 +114,9 @@ export async function setDefaultAddressAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
-  if (!addressId?.trim()) throw new ValidationError("addressId is required");
+  if (!addressId?.trim()) throw new ValidationError(ERR_ADDRESS_ID_REQUIRED);
 
   return setDefaultAddressForUser(user.uid, addressId) as Promise<AddressDocument>;
 }

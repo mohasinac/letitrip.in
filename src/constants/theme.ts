@@ -14,6 +14,9 @@
  */
 import { THEME_CONSTANTS as _base } from "@mohasinac/appkit/tokens";
 
+/** Shared base classes for all badge variants */
+const BADGE_BASE = "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full";
+
 export const THEME_CONSTANTS = {
   // -- Base sections — sourced from @mohasinac/tokens ----------------------
   // Identity (spread first so project overrides win):
@@ -249,31 +252,20 @@ export const THEME_CONSTANTS = {
    * Enhanced badge system with ring borders and role-specific variants
    */
   badge: {
-    active:
-      "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-400/20",
-    inactive:
-      "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-zinc-100 text-zinc-600 ring-1 ring-zinc-500/10 dark:bg-slate-800 dark:text-zinc-400 dark:ring-zinc-400/20",
-    pending:
-      "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-50 text-amber-700 ring-1 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-400/20",
-    approved:
-      "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-400/20",
-    rejected:
-      "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-rose-50 text-rose-700 ring-1 ring-rose-600/20 dark:bg-rose-900/30 dark:text-rose-300 dark:ring-rose-400/20",
-    danger:
-      "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-rose-50 text-rose-700 ring-1 ring-rose-600/20 dark:bg-rose-900/30 dark:text-rose-300 dark:ring-rose-400/20",
-    info: "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-sky-50 text-sky-700 ring-1 ring-sky-600/20 dark:bg-sky-900/30 dark:text-sky-300 dark:ring-sky-400/20",
-    warning:
-      "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-50 text-amber-700 ring-1 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-400/20",
-    success:
-      "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-400/20",
+    active:   `${BADGE_BASE} bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-400/20`,
+    inactive: `${BADGE_BASE} bg-zinc-100 text-zinc-600 ring-1 ring-zinc-500/10 dark:bg-slate-800 dark:text-zinc-400 dark:ring-zinc-400/20`,
+    pending:  `${BADGE_BASE} bg-amber-50 text-amber-700 ring-1 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-400/20`,
+    approved: `${BADGE_BASE} bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-400/20`,
+    rejected: `${BADGE_BASE} bg-rose-50 text-rose-700 ring-1 ring-rose-600/20 dark:bg-rose-900/30 dark:text-rose-300 dark:ring-rose-400/20`,
+    danger:   `${BADGE_BASE} bg-rose-50 text-rose-700 ring-1 ring-rose-600/20 dark:bg-rose-900/30 dark:text-rose-300 dark:ring-rose-400/20`,
+    info:     `${BADGE_BASE} bg-sky-50 text-sky-700 ring-1 ring-sky-600/20 dark:bg-sky-900/30 dark:text-sky-300 dark:ring-sky-400/20`,
+    warning:  `${BADGE_BASE} bg-amber-50 text-amber-700 ring-1 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-400/20`,
+    success:  `${BADGE_BASE} bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300 dark:ring-emerald-400/20`,
     // Role-specific badges
-    admin:
-      "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-purple-50 text-purple-700 ring-1 ring-purple-600/20 dark:bg-purple-900/30 dark:text-purple-300 dark:ring-purple-400/20",
-    moderator:
-      "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-sky-50 text-sky-700 ring-1 ring-sky-600/20 dark:bg-sky-900/30 dark:text-sky-300 dark:ring-sky-400/20",
-    seller:
-      "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-secondary-50 text-secondary-700 ring-1 ring-secondary-600/20 dark:bg-secondary-900/30 dark:text-secondary-300 dark:ring-secondary-400/20",
-    user: "inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-zinc-100 text-zinc-700 ring-1 ring-zinc-500/10 dark:bg-slate-800 dark:text-zinc-300 dark:ring-zinc-400/20",
+    admin:     `${BADGE_BASE} bg-purple-50 text-purple-700 ring-1 ring-purple-600/20 dark:bg-purple-900/30 dark:text-purple-300 dark:ring-purple-400/20`,
+    moderator: `${BADGE_BASE} bg-sky-50 text-sky-700 ring-1 ring-sky-600/20 dark:bg-sky-900/30 dark:text-sky-300 dark:ring-sky-400/20`,
+    seller:    `${BADGE_BASE} bg-secondary-50 text-secondary-700 ring-1 ring-secondary-600/20 dark:bg-secondary-900/30 dark:text-secondary-300 dark:ring-secondary-400/20`,
+    user:      `${BADGE_BASE} bg-zinc-100 text-zinc-700 ring-1 ring-zinc-500/10 dark:bg-slate-800 dark:text-zinc-300 dark:ring-zinc-400/20`,
     // Compact role text colors (for TitleBar/BottomNavbar)
     roleText: {
       admin: "text-purple-600 dark:text-purple-400",

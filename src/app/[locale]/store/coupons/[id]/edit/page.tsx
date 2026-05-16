@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { SellerCouponEditorView } from "@mohasinac/appkit";
+import { SellerCouponEditorView, Text } from "@mohasinac/appkit";
 import type { CouponEditorDraft } from "@mohasinac/appkit";
 import { API_ROUTES } from "@/constants/api";
 
@@ -95,7 +95,7 @@ export default function Page() {
   if (loadError) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-sm text-red-600 dark:text-red-400">{loadError}</p>
+        <Text className="text-sm text-red-600 dark:text-red-400">{loadError}</Text>
       </div>
     );
   }

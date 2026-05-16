@@ -5,6 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useSession, useToast, ROUTES } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants/api";
+import { Text } from "@mohasinac/appkit";
 
 interface PollOption {
   id: string;
@@ -39,10 +40,10 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
   if (requiresLogin && !user) {
     return (
       <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-6 py-8 text-center space-y-3">
-        <p className="font-semibold text-zinc-900 dark:text-zinc-100">Login required to vote</p>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <Text className="font-semibold text-zinc-900 dark:text-zinc-100">Login required to vote</Text>
+        <Text className="text-sm text-zinc-500 dark:text-zinc-400">
           Please log in to cast your vote in this poll.
-        </p>
+        </Text>
         <Link
           href={String(ROUTES.AUTH.LOGIN)}
           className="inline-block rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-600"
@@ -56,10 +57,10 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
   if (isSubmitted) {
     return (
       <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 px-6 py-8 text-center space-y-2">
-        <p className="text-lg font-semibold text-emerald-800 dark:text-emerald-300">Vote recorded!</p>
-        <p className="text-sm text-emerald-700 dark:text-emerald-400">
+        <Text className="text-lg font-semibold text-emerald-800 dark:text-emerald-300">Vote recorded!</Text>
+        <Text className="text-sm text-emerald-700 dark:text-emerald-400">
           Thank you for participating. Results will be shown after the poll closes.
-        </p>
+        </Text>
       </div>
     );
   }
@@ -67,7 +68,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
   if (!isActive) {
     return (
       <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-6 py-6 text-center">
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">This poll has ended.</p>
+        <Text className="text-sm text-zinc-500 dark:text-zinc-400">This poll has ended.</Text>
       </div>
     );
   }
@@ -112,9 +113,9 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+      <Text className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
         {isMultiSelect ? "Select all that apply:" : "Choose one:"}
-      </p>
+      </Text>
       <div className="space-y-2">
         {pollConfig.options.map((opt) => (
           <label
@@ -142,7 +143,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
           className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
         />
       )}
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <Text className="text-sm text-red-500">{error}</Text>}
       <button
         type="button"
         disabled={isLoading || selectedVotes.length === 0}

@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-16: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-16) */
 import { useEffect, useState } from "react";
+import { Text } from "@mohasinac/appkit";
 
 const FONT_KEY = "font-style";
 
@@ -27,14 +28,14 @@ export function FontToggleClient() {
 
   return (
     <div className="flex items-center justify-between rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3">
-      <div>
-        <p className="text-sm font-medium text-zinc-800 dark:text-zinc-100">
+      <>
+        <Text className="text-sm font-medium text-zinc-800 dark:text-zinc-100">
           Cursive font
-        </p>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+        </Text>
+        <Text className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
           Switch between Playfair Display and the default sans-serif
-        </p>
-      </div>
+        </Text>
+      </>
       <button
         type="button"
         role="switch"

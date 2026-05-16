@@ -108,12 +108,12 @@ export function localizedUrl(path = "/") {
  * Navigate to a localized URL and wait for recognizable content to attach.
  * Returns { status, finalUrl }.
  */
-export async function gotoAndWait(page, url, { timeout = 20000 } = {}) {
+export async function gotoAndWait(page, url, { timeout = 15000 } = {}) {
   const res = await page.goto(url, { waitUntil: "domcontentloaded", timeout }).catch(() => null);
   await page
     .locator("h1, h2, [data-section], [data-testid], .appkit-card, table, form")
     .first()
-    .waitFor({ state: "attached", timeout: 8000 })
+    .waitFor({ state: "attached", timeout: 6000 })
     .catch(() => {});
   return { status: res?.status() ?? 0, finalUrl: page.url() };
 }

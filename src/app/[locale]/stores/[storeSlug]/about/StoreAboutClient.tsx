@@ -2,6 +2,8 @@
 /* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-14: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-14) */
 import { StoreAboutView, type StoreDetail } from "@mohasinac/appkit/client";
 
+const REL_EXTERNAL = "noopener noreferrer";
+
 export function StoreAboutClient({ store }: { store: StoreDetail }) {
   return (
     <StoreAboutView
@@ -34,22 +36,22 @@ export function StoreAboutClient({ store }: { store: StoreDetail }) {
         links && Object.values(links).some(Boolean) ? (
           <div className="flex gap-3 flex-wrap">
             {links.twitter && (
-              <a href={links.twitter} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">
+              <a href={links.twitter} target="_blank" rel={REL_EXTERNAL} className="text-sm text-primary hover:underline">
                 Twitter
               </a>
             )}
             {links.instagram && (
-              <a href={links.instagram} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">
+              <a href={links.instagram} target="_blank" rel={REL_EXTERNAL} className="text-sm text-primary hover:underline">
                 Instagram
               </a>
             )}
             {links.facebook && (
-              <a href={links.facebook} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">
+              <a href={links.facebook} target="_blank" rel={REL_EXTERNAL} className="text-sm text-primary hover:underline">
                 Facebook
               </a>
             )}
             {links.linkedin && (
-              <a href={links.linkedin} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">
+              <a href={links.linkedin} target="_blank" rel={REL_EXTERNAL} className="text-sm text-primary hover:underline">
                 LinkedIn
               </a>
             )}

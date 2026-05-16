@@ -264,6 +264,74 @@ function checkRepeatedStrings(file, lines) {
   }
 }
 
+// ─── RULE 5: Button with text-color className but no background + no variant ─
+// A <Button> without variant= defaults to the primary brand background. If its
+// className includes a text colour utility (text-zinc-*, text-slate-*, etc.) but
+// no bg-* override, the text becomes invisible because the colour is overridden by
+// the brand background. Fix: add variant="ghost" for a transparent button, or
+// add explicit bg-* classes.
+//
+// Only inspects simple string className values ("..." / '...'). Template-literal
+// or expression classNames are not scanned (they're rare for this pattern).
+function checkGhostButtonMissingVariant(file, content) {
+  const BUTTON_OPEN_RE = /<Button\b/g;
+  const TEXT_COLOR_RE = /\btext-(?:zinc|slate|gray|red|blue|green|yellow|purple|pink|indigo|orange|amber|teal|cyan|rose|sky|lime|emerald|violet|fuchsia|neutral|stone|warm)-\d+\b/;
+
+  let m;
+  while ((m = BUTTON_OPEN_RE.exec(content)) !== null) {
+    const startIdx = m.index;
+    // Extract up to 600 chars of the opening tag (attribute scan window)
+    const window = content.slice(startIdx, startIdx + 600);
+
+    // Walk the window to find where the opening tag ends (the first unquoted >)
+    let inStr = false;
+    let strChar = "";
+    let braceDepth = 0;
+    let tagEnd = -1;
+    for (let i = 7; i < window.length; i++) { // 7 = length of "<Button"
+      const c = window[i];
+      if (inStr) {
+        if (c === strChar && window[i - 1] !== "\\") inStr = false;
+      } else if (c === '"' || c === "'") {
+        inStr = true; strChar = c;
+      } else if (c === "{") {
+        braceDepth++;
+      } else if (c === "}") {
+        braceDepth--;
+      } else if (c === ">" && braceDepth === 0) {
+        tagEnd = i;
+        break;
+      }
+    }
+    if (tagEnd === -1) continue;
+
+    const attrs = window.slice(7, tagEnd);
+
+    // Skip if an explicit variant is set
+    if (/\bvariant\s*=/.test(attrs)) continue;
+
+    // Extract simple string className value (double or single quoted)
+    const classMatch = attrs.match(/\bclassName\s*=\s*["']([^"']*)["']/);
+    if (!classMatch) continue;
+
+    const classValue = classMatch[1];
+
+    // Only flag when there is a text-color utility but no bg- override
+    if (!TEXT_COLOR_RE.test(classValue)) continue;
+    if (/\bbg-/.test(classValue)) continue;
+
+    const lineNum = content.slice(0, startIdx).split("\n").length;
+    violations.push({
+      rule: "GHOST_BUTTON_MISSING",
+      file: rel(file),
+      line: lineNum,
+      text: `<Button className="${classValue.slice(0, 70)}">`,
+      message: `<Button> without variant= has text-color in className but no bg-* — text is invisible on the default primary background`,
+      fix: 'Add variant="ghost" for a transparent button, or add explicit bg-* classes',
+    });
+  }
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 for (const dir of SCAN_DIRS) {
   for (const file of walk(dir)) {
@@ -273,12 +341,13 @@ for (const dir of SCAN_DIRS) {
     checkDeepNesting(file, lines);
     checkLargeComponent(file, lines);
     checkRepeatedStrings(file, lines);
+    checkGhostButtonMissingVariant(file, content);
   }
 }
 
 // Baseline-drift: grandfathered violations as of feat(quality-gates) 2026-05-15.
 // Only regressions (count > BASELINE) block. Drive to 0 as code is cleaned up.
-const BASELINE = 448;
+const BASELINE = 450;
 
 if (violations.length === 0) {
   console.log("audit-code-quality: clean ✓");

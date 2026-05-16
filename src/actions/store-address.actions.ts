@@ -21,6 +21,7 @@ import {
   deleteStoreAddressForSeller,
 } from "@mohasinac/appkit";
 import type { StoreAddressDocument } from "@mohasinac/appkit";
+import { ERR_RATE_LIMIT, ERR_ADDRESS_ID_REQUIRED } from "./_constants";
 
 // --- Validation ------------------------------------------------------------
 
@@ -51,7 +52,7 @@ export async function listStoreAddressesAction(): Promise<
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
   return listStoreAddressesForSeller(user.uid) as Promise<StoreAddressDocument[]>;
 }
 
@@ -64,7 +65,7 @@ export async function createStoreAddressAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const parsed = storeAddressBodySchema.safeParse(input);
   if (!parsed.success)
@@ -85,9 +86,9 @@ export async function updateStoreAddressAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
-  if (!addressId?.trim()) throw new ValidationError("addressId is required");
+  if (!addressId?.trim()) throw new ValidationError(ERR_ADDRESS_ID_REQUIRED);
 
   const parsed = storeAddressBodySchema.partial().safeParse(input);
   if (!parsed.success)
@@ -107,7 +108,7 @@ export async function deleteStoreAddressAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   return deleteStoreAddressForSeller(user.uid, addressId);
 }

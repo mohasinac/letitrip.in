@@ -5,6 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
+import { Heading, Text } from "@mohasinac/appkit";
   AddressBook,
   useAddresses,
   useDeleteAddress,
@@ -65,7 +66,7 @@ export function UserAddressesClient() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">My Addresses</h1>
+        <Heading level={1} className="text-xl font-bold text-zinc-900 dark:text-zinc-100">My Addresses</Heading>
         <Link
           href={String(ROUTES.USER.ADDRESSES_ADD)}
           className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600"
@@ -76,9 +77,9 @@ export function UserAddressesClient() {
 
       {confirmDeleteId && (
         <div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950 p-4 space-y-3">
-          <p className="text-sm font-medium text-red-800 dark:text-red-200">
+          <Text className="text-sm font-medium text-red-800 dark:text-red-200">
             Delete this address? This cannot be undone.
-          </p>
+          </Text>
           <div className="flex gap-3">
             <button
               type="button"

@@ -58,6 +58,7 @@ async function selectRows(page, count = 2) {
 
 async function testBulkSelection(ctx, listPath, actionLabel) {
   const page = await ctx.newPage();
+  page.setDefaultTimeout(5000); // checkbox/click interactions fail fast if row absent
   const label = `${listPath} bulk`;
 
   try {

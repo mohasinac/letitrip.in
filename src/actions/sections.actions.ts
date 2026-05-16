@@ -31,6 +31,7 @@ import {
 } from "@mohasinac/appkit";
 import type { HomepageSectionDocument } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
+import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 
 const sectionIdSchema = z.object({ id: z.string().min(1, "id is required") });
@@ -45,7 +46,7 @@ export async function createHomepageSectionAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const parsed = createSectionSchema.safeParse(input);
   if (!parsed.success)
@@ -67,7 +68,7 @@ export async function updateHomepageSectionAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const idParsed = sectionIdSchema.safeParse({ id });
   if (!idParsed.success) throw new ValidationError("Invalid id");
@@ -75,7 +76,7 @@ export async function updateHomepageSectionAction(
   const parsed = updateSectionSchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid update data",
+      parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
     );
 
   const existing = await getHomepageSectionById(id);
@@ -92,7 +93,7 @@ export async function deleteHomepageSectionAction(id: string): Promise<void> {
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const idParsed = sectionIdSchema.safeParse({ id });
   if (!idParsed.success) throw new ValidationError("Invalid id");
@@ -113,7 +114,7 @@ export async function reorderHomepageSectionsAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const parsed = z
     .object({ sectionIds: z.array(z.string().min(1)).min(1) })

@@ -34,6 +34,7 @@ import {
 } from "@mohasinac/appkit";
 import type { BlogPostDocument } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
+import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 
 const blogIdSchema = z.object({ id: z.string().min(1, "id is required") });
@@ -48,7 +49,7 @@ export async function createBlogPostAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const parsed = createBlogPostSchema.safeParse(input);
   if (!parsed.success)
@@ -75,7 +76,7 @@ export async function updateBlogPostAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const idParsed = blogIdSchema.safeParse({ id });
   if (!idParsed.success) throw new ValidationError("Invalid id");
@@ -83,7 +84,7 @@ export async function updateBlogPostAction(
   const parsed = updateBlogPostSchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid update data",
+      parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
     );
 
   const existing = await getBlogPostById(id);
@@ -100,7 +101,7 @@ export async function deleteBlogPostAction(id: string): Promise<void> {
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const idParsed = blogIdSchema.safeParse({ id });
   if (!idParsed.success) throw new ValidationError("Invalid id");

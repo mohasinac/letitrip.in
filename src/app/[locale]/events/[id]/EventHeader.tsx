@@ -8,6 +8,8 @@ import {
 } from "./_helpers";
 import { ShareEventButton } from "./ShareEventButton";
 
+const CLS_LABEL = "font-medium text-zinc-700 dark:text-zinc-300";
+
 interface Props {
   title: string;
   coverImage: string | null;
@@ -71,7 +73,7 @@ export function EventHeader({
           {startsAtFormatted ? (
             <Text as="span">
               {EVENT_LABELS.HEADER_START}{" "}
-              <Text as="span" className="font-medium text-zinc-700 dark:text-zinc-300">
+              <Text as="span" className={CLS_LABEL}>
                 {startsAtFormatted}
               </Text>
             </Text>
@@ -79,7 +81,7 @@ export function EventHeader({
           {endsAtFormatted ? (
             <Text as="span">
               {EVENT_LABELS.HEADER_END}{" "}
-              <Text as="span" className="font-medium text-zinc-700 dark:text-zinc-300">
+              <Text as="span" className={CLS_LABEL}>
                 {endsAtFormatted}
               </Text>
             </Text>
@@ -87,7 +89,7 @@ export function EventHeader({
           {totalEntries !== undefined ? (
             <Text as="span">
               {EVENT_LABELS.HEADER_PARTICIPANTS}{" "}
-              <Text as="span" className="font-medium text-zinc-700 dark:text-zinc-300">
+              <Text as="span" className={CLS_LABEL}>
                 {totalEntries.toLocaleString()}
               </Text>
             </Text>

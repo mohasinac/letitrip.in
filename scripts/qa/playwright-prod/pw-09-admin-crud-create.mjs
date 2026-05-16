@@ -68,6 +68,7 @@ export async function run() {
   // ── Brand ─────────────────────────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000); // fills/selects fail fast if field absent
     const label = "create brand";
     try {
       await gotoAndWait(page, localizedUrl("/admin/brands/new"));
@@ -82,6 +83,7 @@ export async function run() {
   // ── Category ──────────────────────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000);
     const label = "create category";
     try {
       await gotoAndWait(page, localizedUrl("/admin/categories/new"));
@@ -95,6 +97,7 @@ export async function run() {
   // ── FAQ ────────────────────────────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000);
     const label = "create faq";
     try {
       await gotoAndWait(page, localizedUrl("/admin/faqs/new"));
@@ -112,6 +115,7 @@ export async function run() {
   // ── Coupon ─────────────────────────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000);
     const label = "create coupon";
     try {
       await gotoAndWait(page, localizedUrl("/admin/coupons/new"));
@@ -127,6 +131,7 @@ export async function run() {
   // ── Blog post ──────────────────────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000);
     const label = "create blog post";
     try {
       await gotoAndWait(page, localizedUrl("/admin/blog/new"));
@@ -142,6 +147,7 @@ export async function run() {
   // ── Event ──────────────────────────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000);
     const label = "create event";
     try {
       await gotoAndWait(page, localizedUrl("/admin/events/new"));
@@ -161,6 +167,7 @@ export async function run() {
   // ── Carousel slide ─────────────────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000);
     const label = "create carousel slide";
     try {
       await gotoAndWait(page, localizedUrl("/admin/carousel/new"));
@@ -173,6 +180,7 @@ export async function run() {
   // ── Sublisting category ────────────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000);
     const label = "create sublisting category";
     try {
       await gotoAndWait(page, localizedUrl("/admin/sublisting-categories/new"));
@@ -186,6 +194,7 @@ export async function run() {
   // ── Product feature ────────────────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000);
     const label = "create product feature";
     try {
       await gotoAndWait(page, localizedUrl("/admin/features/new"));
@@ -198,6 +207,7 @@ export async function run() {
   // ── Bundle ─────────────────────────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(3000);
     const label = "create bundle";
     try {
       await gotoAndWait(page, localizedUrl("/admin/bundles/new"));

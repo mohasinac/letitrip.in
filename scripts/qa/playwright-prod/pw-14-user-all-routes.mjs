@@ -196,7 +196,10 @@ export async function run() {
     try {
       await gotoAndWait(page, localizedUrl("/cart"));
       const cartItems = await page.locator('[class*=cart-item], [data-testid=cart-item], [class*=CartItem]').count();
-      const emptyMsg = await page.locator('[data-testid=empty-state], text=/empty/i, text=/no items/i').count();
+      const emptyMsg = await page.locator('[data-testid=empty-state]')
+        .or(page.locator('text=/empty/i'))
+        .or(page.locator('text=/no items/i'))
+        .count();
       rec(`${label}: cart renders`, cartItems + emptyMsg > 0, `items=${cartItems} empty=${emptyMsg}`);
 
       if (cartItems > 0) {
@@ -225,7 +228,10 @@ export async function run() {
     try {
       await gotoAndWait(page, localizedUrl("/wishlist"));
       const items = await page.locator('.appkit-card, [class*=wishlist-item], [class*=WishlistItem]').count();
-      const emptyMsg = await page.locator('[data-testid=empty-state], text=/empty/i, text=/no items/i').count();
+      const emptyMsg = await page.locator('[data-testid=empty-state]')
+        .or(page.locator('text=/empty/i'))
+        .or(page.locator('text=/no items/i'))
+        .count();
       rec(`${label}: wishlist renders`, items + emptyMsg > 0, `items=${items} empty=${emptyMsg}`);
 
       if (items > 0) {

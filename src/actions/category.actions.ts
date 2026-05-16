@@ -38,6 +38,7 @@ import type {
   CategoryTreeNode,
 } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
+import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 const categoryIdSchema = z.object({ id: z.string().min(1, "id is required") });
 
@@ -69,7 +70,7 @@ export async function createCategoryAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const parsed = categoryCreateSchema.safeParse(input);
   if (!parsed.success) {
@@ -120,7 +121,7 @@ export async function updateCategoryAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const idParsed = categoryIdSchema.safeParse({ id });
   if (!idParsed.success) throw new ValidationError("Invalid id");
@@ -128,7 +129,7 @@ export async function updateCategoryAction(
   const parsed = categoryUpdateSchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid update data",
+      parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
     );
 
   const existing = await getCategoryById(id);
@@ -145,7 +146,7 @@ export async function deleteCategoryAction(id: string): Promise<void> {
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const idParsed = categoryIdSchema.safeParse({ id });
   if (!idParsed.success) throw new ValidationError("Invalid id");

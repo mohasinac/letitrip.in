@@ -25,6 +25,7 @@ import {
 } from "@mohasinac/appkit";
 import type { CouponDocument, CouponCreateInput, CouponUpdateInput } from "@mohasinac/appkit";
 import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit";
+import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 // --- Schemas --------------------------------------------------------------
 
@@ -86,7 +87,7 @@ export async function adminCreateCouponAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const parsed = createCouponSchema.safeParse(input);
   if (!parsed.success)
@@ -118,7 +119,7 @@ export async function adminUpdateCouponAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const idParsed = couponIdSchema.safeParse({ id });
   if (!idParsed.success) throw new ValidationError("Invalid id");
@@ -126,7 +127,7 @@ export async function adminUpdateCouponAction(
   const parsed = updateCouponSchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid update data",
+      parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
     );
 
   const data = parsed.data;
@@ -154,7 +155,7 @@ export async function adminDeleteCouponAction(id: string): Promise<void> {
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const idParsed = couponIdSchema.safeParse({ id });
   if (!idParsed.success) throw new ValidationError("Invalid id");

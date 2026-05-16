@@ -155,89 +155,98 @@ export const FOOTER_LINK_GROUPS = [
 // Admin dashboard sidebar
 // ---------------------------------------------------------------------------
 
+/** Build an admin nav item without repeating `requiredPermission:` on every line. */
+function adminItem(
+  href: string,
+  label: string,
+  requiredPermission: string,
+): { href: string; label: string; requiredPermission: string } {
+  return { href, label, requiredPermission };
+}
+
 export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
   {
     title: "Management",
     items: [
-      { href: String(ROUTES.ADMIN.DASHBOARD),       label: "Dashboard",       requiredPermission: "admin:dashboard:view"    },
-      { href: String(ROUTES.ADMIN.USERS),           label: "Users",           requiredPermission: "admin:users:read"        },
-      { href: String(ROUTES.ADMIN.PRODUCTS),        label: "Products",        requiredPermission: "admin:products:read"     },
-      { href: String(ROUTES.ADMIN.ORDERS),          label: "Orders",          requiredPermission: "admin:orders:read"       },
-      { href: String(ROUTES.ADMIN.RETURN_REQUESTS), label: "Returns",         requiredPermission: "admin:returns:read"      },
-      { href: String(ROUTES.ADMIN.STORES),          label: "Stores",          requiredPermission: "admin:stores:read"       },
-      { href: String(ROUTES.ADMIN.STORE_ADDRESSES), label: "Store Addresses", requiredPermission: "admin:store-addresses:read" },
+      adminItem(String(ROUTES.ADMIN.DASHBOARD),       "Dashboard",       "admin:dashboard:view"),
+      adminItem(String(ROUTES.ADMIN.USERS),           "Users",           "admin:users:read"),
+      adminItem(String(ROUTES.ADMIN.PRODUCTS),        "Products",        "admin:products:read"),
+      adminItem(String(ROUTES.ADMIN.ORDERS),          "Orders",          "admin:orders:read"),
+      adminItem(String(ROUTES.ADMIN.RETURN_REQUESTS), "Returns",         "admin:returns:read"),
+      adminItem(String(ROUTES.ADMIN.STORES),          "Stores",          "admin:stores:read"),
+      adminItem(String(ROUTES.ADMIN.STORE_ADDRESSES), "Store Addresses", "admin:store-addresses:read"),
     ],
   },
   {
     title: "Finance",
     items: [
-      { href: String(ROUTES.ADMIN.ANALYTICS), label: "Analytics", requiredPermission: "admin:analytics:view" },
-      { href: String(ROUTES.ADMIN.PAYOUTS),   label: "Payouts",   requiredPermission: "admin:payouts:read"   },
+      adminItem(String(ROUTES.ADMIN.ANALYTICS), "Analytics", "admin:analytics:view"),
+      adminItem(String(ROUTES.ADMIN.PAYOUTS),   "Payouts",   "admin:payouts:read"),
     ],
   },
   {
     title: "Catalog",
     items: [
-      { href: String(ROUTES.ADMIN.CATEGORIES),          label: "Categories",    requiredPermission: "admin:categories:read" },
-      { href: String(ROUTES.ADMIN.BRANDS),              label: "Brands",        requiredPermission: "admin:brands:read"     },
-      { href: String(ROUTES.ADMIN.SUBLISTING_CATEGORIES), label: "Sub-listings", requiredPermission: "admin:categories:read" },
-      { href: String(ROUTES.ADMIN.FEATURES),            label: "Feature Badges", requiredPermission: "admin:categories:read" },
-      { href: String(ROUTES.ADMIN.BUNDLES),             label: "Bundles",       requiredPermission: "admin:categories:read" },
-      { href: String(ROUTES.ADMIN.PRIZE_DRAWS),         label: "Prize Draws",   requiredPermission: "admin:products:read"   },
-      { href: String(ROUTES.ADMIN.COUPONS),             label: "Coupons",       requiredPermission: "admin:coupons:read"    },
-      { href: String(ROUTES.ADMIN.DEALS),               label: "Deals",         requiredPermission: "admin:deals:read"      },
-      { href: String(ROUTES.ADMIN.FEATURED),            label: "Featured",      requiredPermission: "admin:featured:read"   },
+      adminItem(String(ROUTES.ADMIN.CATEGORIES),            "Categories",    "admin:categories:read"),
+      adminItem(String(ROUTES.ADMIN.BRANDS),                "Brands",        "admin:brands:read"),
+      adminItem(String(ROUTES.ADMIN.SUBLISTING_CATEGORIES), "Sub-listings",  "admin:categories:read"),
+      adminItem(String(ROUTES.ADMIN.FEATURES),              "Feature Badges","admin:categories:read"),
+      adminItem(String(ROUTES.ADMIN.BUNDLES),               "Bundles",       "admin:categories:read"),
+      adminItem(String(ROUTES.ADMIN.PRIZE_DRAWS),           "Prize Draws",   "admin:products:read"),
+      adminItem(String(ROUTES.ADMIN.COUPONS),               "Coupons",       "admin:coupons:read"),
+      adminItem(String(ROUTES.ADMIN.DEALS),                 "Deals",         "admin:deals:read"),
+      adminItem(String(ROUTES.ADMIN.FEATURED),              "Featured",      "admin:featured:read"),
     ],
   },
   {
     title: "Content",
     items: [
-      { href: String(ROUTES.ADMIN.REVIEWS), label: "Reviews", requiredPermission: "admin:reviews:read" },
-      { href: String(ROUTES.ADMIN.BLOG),    label: "Blog",    requiredPermission: "admin:blog:read"    },
-      { href: String(ROUTES.ADMIN.BIDS),    label: "Bids",    requiredPermission: "admin:bids:read"    },
-      { href: String(ROUTES.ADMIN.MEDIA),   label: "Media",   requiredPermission: "admin:media:read"   },
+      adminItem(String(ROUTES.ADMIN.REVIEWS), "Reviews", "admin:reviews:read"),
+      adminItem(String(ROUTES.ADMIN.BLOG),    "Blog",    "admin:blog:read"),
+      adminItem(String(ROUTES.ADMIN.BIDS),    "Bids",    "admin:bids:read"),
+      adminItem(String(ROUTES.ADMIN.MEDIA),   "Media",   "admin:media:read"),
     ],
   },
   {
     title: "Site",
     items: [
-      { href: String(ROUTES.ADMIN.SITE),                 label: "Site Settings",       requiredPermission: "admin:site:read"       },
-      { href: String(ROUTES.ADMIN.NAVIGATION),           label: "Navigation",          requiredPermission: "admin:navigation:read" },
-      { href: String(ROUTES.ADMIN.SECTIONS),             label: "Sections",            requiredPermission: "admin:sections:read"   },
-      { href: String(ROUTES.ADMIN.CAROUSEL),             label: "Carousel",            requiredPermission: "admin:carousel:read"   },
-      { href: String(ROUTES.ADMIN.SETTINGS_ACTIONS),     label: "Action Permissions",  requiredPermission: "admin:settings:write"  },
-      { href: String(ROUTES.ADMIN.SETTINGS_NAVIGATION),  label: "Nav Permissions",     requiredPermission: "admin:settings:write"  },
-      { href: String(ROUTES.ADMIN.ADS),        label: "Ads",           requiredPermission: "admin:ads:read"        },
-      { href: String(ROUTES.ADMIN.FAQS),       label: "FAQs",          requiredPermission: "admin:faqs:read"       },
-      { href: String(ROUTES.ADMIN.NEWSLETTER), label: "Newsletter",    requiredPermission: "admin:newsletter:read" },
-      { href: String(ROUTES.ADMIN.CONTACT),    label: "Contact",       requiredPermission: "admin:contact:read"    },
+      adminItem(String(ROUTES.ADMIN.SITE),                "Site Settings",      "admin:site:read"),
+      adminItem(String(ROUTES.ADMIN.NAVIGATION),          "Navigation",         "admin:navigation:read"),
+      adminItem(String(ROUTES.ADMIN.SECTIONS),            "Sections",           "admin:sections:read"),
+      adminItem(String(ROUTES.ADMIN.CAROUSEL),            "Carousel",           "admin:carousel:read"),
+      adminItem(String(ROUTES.ADMIN.SETTINGS_ACTIONS),    "Action Permissions", "admin:settings:write"),
+      adminItem(String(ROUTES.ADMIN.SETTINGS_NAVIGATION), "Nav Permissions",    "admin:settings:write"),
+      adminItem(String(ROUTES.ADMIN.ADS),                 "Ads",                "admin:ads:read"),
+      adminItem(String(ROUTES.ADMIN.FAQS),                "FAQs",               "admin:faqs:read"),
+      adminItem(String(ROUTES.ADMIN.NEWSLETTER),          "Newsletter",         "admin:newsletter:read"),
+      adminItem(String(ROUTES.ADMIN.CONTACT),             "Contact",            "admin:contact:read"),
     ],
   },
   {
     title: "Events",
     items: [
-      { href: String(ROUTES.ADMIN.EVENTS),            label: "Events",      requiredPermission: "admin:events:read"        },
-      { href: String(ROUTES.ADMIN.ALL_EVENT_ENTRIES), label: "All Entries", requiredPermission: "admin:event-entries:read" },
+      adminItem(String(ROUTES.ADMIN.EVENTS),            "Events",      "admin:events:read"),
+      adminItem(String(ROUTES.ADMIN.ALL_EVENT_ENTRIES), "All Entries", "admin:event-entries:read"),
     ],
   },
   {
     title: "Trust & Safety",
     items: [
-      { href: String(ROUTES.ADMIN.SUPPORT_TICKETS), label: "Support Tickets", requiredPermission: "admin:support-tickets:read" },
-      { href: String(ROUTES.ADMIN.SCAMMERS),        label: "Scam Registry",   requiredPermission: "admin:scammers:read"       },
+      adminItem(String(ROUTES.ADMIN.SUPPORT_TICKETS), "Support Tickets", "admin:support-tickets:read"),
+      adminItem(String(ROUTES.ADMIN.SCAMMERS),        "Scam Registry",   "admin:scammers:read"),
     ],
   },
   {
     title: "System",
     items: [
-      { href: String(ROUTES.ADMIN.SESSIONS),      label: "Sessions",      requiredPermission: "admin:sessions:read"      },
-      { href: String(ROUTES.ADMIN.NOTIFICATIONS), label: "Notifications", requiredPermission: "admin:notifications:read" },
-      { href: String(ROUTES.ADMIN.CARTS),         label: "Carts",         requiredPermission: "admin:carts:read"         },
-      { href: String(ROUTES.ADMIN.WISHLISTS),     label: "Wishlists",     requiredPermission: "admin:wishlists:read"     },
-      { href: String(ROUTES.ADMIN.HISTORY),       label: "History",       requiredPermission: "admin:sessions:read"      },
-      { href: String(ROUTES.ADMIN.FEATURE_FLAGS), label: "Feature Flags", requiredPermission: "admin:feature-flags:read" },
-      { href: String(ROUTES.ADMIN.COPILOT),       label: "Copilot",       requiredPermission: "admin:copilot:view"       },
-      { href: String(ROUTES.ADMIN.TEAM),          label: "Team",          requiredPermission: "admin:team:read"          },
+      adminItem(String(ROUTES.ADMIN.SESSIONS),      "Sessions",      "admin:sessions:read"),
+      adminItem(String(ROUTES.ADMIN.NOTIFICATIONS), "Notifications", "admin:notifications:read"),
+      adminItem(String(ROUTES.ADMIN.CARTS),         "Carts",         "admin:carts:read"),
+      adminItem(String(ROUTES.ADMIN.WISHLISTS),     "Wishlists",     "admin:wishlists:read"),
+      adminItem(String(ROUTES.ADMIN.HISTORY),       "History",       "admin:sessions:read"),
+      adminItem(String(ROUTES.ADMIN.FEATURE_FLAGS), "Feature Flags", "admin:feature-flags:read"),
+      adminItem(String(ROUTES.ADMIN.COPILOT),       "Copilot",       "admin:copilot:view"),
+      adminItem(String(ROUTES.ADMIN.TEAM),          "Team",          "admin:team:read"),
     ],
   },
 ];

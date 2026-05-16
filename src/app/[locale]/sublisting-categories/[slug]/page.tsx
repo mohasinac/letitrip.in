@@ -2,12 +2,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import {
-  categoriesRepository,
-  ROUTES,
-  isAuctionListing,
-  isPreOrderListing,
-} from "@mohasinac/appkit";
+import { Heading, ROUTES, Text, categoriesRepository, isAuctionListing, isPreOrderListing } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 function fmt(paise: number, currency = "INR"): string {
@@ -85,16 +80,16 @@ export default async function SublistingCategoryPage({ params }: Props) {
           )}
 
           <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 sm:text-3xl">
+            <>
+              <Heading level={1} className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 sm:text-3xl">
                 {displayName}
-              </h1>
+              </Heading>
               {category.description && (
-                <p className="mt-1.5 max-w-2xl text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                <Text className="mt-1.5 max-w-2xl text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
                   {category.description}
-                </p>
+                </Text>
               )}
-            </div>
+            </>
             <span className="mt-2 inline-flex h-fit shrink-0 items-center rounded-full bg-[var(--appkit-color-primary)]/10 px-3 py-1 text-sm font-semibold text-[var(--appkit-color-primary)] sm:mt-0">
               {listings.length} listing{listings.length !== 1 ? "s" : ""}
             </span>
@@ -105,10 +100,10 @@ export default async function SublistingCategoryPage({ params }: Props) {
         {listings.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-700 py-20 text-center">
             <span className="text-4xl mb-3">📦</span>
-            <p className="text-base font-semibold text-zinc-700 dark:text-zinc-300">No listings yet</p>
-            <p className="mt-1 text-sm text-zinc-400 dark:text-zinc-500">
+            <Text className="text-base font-semibold text-zinc-700 dark:text-zinc-300">No listings yet</Text>
+            <Text className="mt-1 text-sm text-zinc-400 dark:text-zinc-500">
               Check back soon — sellers are still adding items.
-            </p>
+            </Text>
             <Link
               href={String(ROUTES.PUBLIC.PRODUCTS)}
               className="mt-5 rounded-lg bg-[var(--appkit-color-primary)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
@@ -184,12 +179,12 @@ export default async function SublistingCategoryPage({ params }: Props) {
                         )}
                       </div>
                     )}
-                    <p className="line-clamp-2 text-xs font-medium text-zinc-800 dark:text-zinc-200 leading-snug">
+                    <Text className="line-clamp-2 text-xs font-medium text-zinc-800 dark:text-zinc-200 leading-snug">
                       {title}
-                    </p>
-                    <p className="text-sm font-bold text-zinc-900 dark:text-zinc-50">
+                    </Text>
+                    <Text className="text-sm font-bold text-zinc-900 dark:text-zinc-50">
                       {fmt(price, currency)}
-                    </p>
+                    </Text>
                   </div>
                 </Link>
               );

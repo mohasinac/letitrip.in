@@ -76,7 +76,7 @@ export default function Page() {
       )}
       renderRecentOrders={() =>
         orders.length > 0 || ordersLoading ? (
-          <div>
+          <>
             <div className="mb-3 flex items-center justify-between">
               <span className="text-sm font-semibold text-[var(--appkit-color-text)]">
                 Recent Orders
@@ -87,7 +87,7 @@ export default function Page() {
               >
                 View all →
               </Link>
-            </div>
+            </>
             <OrdersList orders={orders} isLoading={ordersLoading} emptyLabel="No orders yet" />
           </div>
         ) : null

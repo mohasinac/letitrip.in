@@ -21,6 +21,7 @@ import {
 } from "@mohasinac/appkit";
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
 import type { NotificationDocument } from "@mohasinac/appkit";
+import { ERR_RATE_LIMIT } from "./_constants";
 
 
 /**
@@ -34,7 +35,7 @@ export async function markNotificationReadAction(id: string): Promise<void> {
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   if (!id || typeof id !== "string") {
     throw new ValidationError("Notification id is required");
@@ -54,7 +55,7 @@ export async function markAllNotificationsReadAction(): Promise<number> {
     RateLimitPresets.STRICT,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   return markAllNotificationsRead(user.uid);
 }
@@ -70,7 +71,7 @@ export async function deleteNotificationAction(id: string): Promise<void> {
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   if (!id || typeof id !== "string") {
     throw new ValidationError("Notification id is required");

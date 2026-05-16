@@ -175,7 +175,7 @@ export default function Page() {
     }
   }
 
-  const filtered = useMemo(() => {
+  const filtered = useMemo<TemplateRow[]>(() => {
     let result = rows;
     if (q) result = result.filter((r) => r.name.toLowerCase().includes(q.toLowerCase()));
     if (condition) result = result.filter((r) => r.condition === condition);
@@ -186,208 +186,140 @@ export default function Page() {
   return (
     <>
       <Div className="mx-auto max-w-4xl px-4 py-6">
-        <Row justify="between" align="start" className="mb-6" gap="md">
-          <Div>
-            <Heading level={1} className="text-2xl font-bold">
-              Product Templates
-            </Heading>
-            <Text variant="secondary" className="mt-1 text-sm">
-              Save common field sets as templates to pre-fill new listings faster.
-            </Text>
-          </Div>
-          <Button variant="primary" size="sm" onClick={openCreate}>
-            + New Template
-          </Button>
-        </Row>
-
-        <Row gap="sm" className="mb-4" align="center">
-          <Div className="flex-1">
-            <Input
-              placeholder="Search templates…"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && commitSearch()}
-              aria-label="Search templates"
-            />
-          </Div>
-          <select
-            value={sort}
-            onChange={(e) => table.set("sort", e.target.value)}
-            className="rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
-            aria-label="Sort templates"
-          >
-            {SORT_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </select>
-          <select
-            value={condition}
-            onChange={(e) => table.set("condition", e.target.value)}
-            className="rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
-            aria-label="Filter by condition"
-          >
-            {CONDITION_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </select>
-        </Row>
-
-        {loading ? (
-          <Div className="flex items-center justify-center py-16">
-            <Text variant="secondary" className="text-sm">Loading…</Text>
-          </Div>
-        ) : filtered.length === 0 ? (
-          <Div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--appkit-color-border)] py-16 text-center">
-            <Text className="text-3xl mb-2">📋</Text>
-            <Text className="text-sm font-semibold">
-              {q || condition ? "No templates match your filters" : "No templates yet"}
-            </Text>
-            <Text variant="secondary" className="mt-1 text-xs">
-              {q || condition
-                ? "Try clearing your search or filters"
-                : "Create a template to pre-fill category, brand, condition and more when listing."}
-            </Text>
-            {!q && !condition && (
-              <Button variant="primary" size="sm" className="mt-4" onClick={openCreate}>
-                Create Template
-              </Button>
-            )}
-          </Div>
-        ) : (
-          <Div className="divide-y divide-[var(--appkit-color-border-subtle)] rounded-xl border border-[var(--appkit-color-border)] overflow-hidden">
-            {filtered.map((t) => (
-              <Row
-                key={t.id}
-                align="center"
-                gap="md"
-                className="bg-[var(--appkit-color-surface)] px-4 py-3 hover:bg-[var(--appkit-color-border-subtle)] transition-colors"
-              >
-                <Div className="flex-1 min-w-0">
-                  <Text className="text-sm font-medium truncate">
-                    {t.name}
-                  </Text>
-                  <Row gap="xs" className="mt-0.5 flex-wrap">
-                    {t.category && (
-                      <Text variant="secondary" className="text-xs">
-                        {t.category}
-                      </Text>
-                    )}
-                    {t.brand && (
-                      <Text variant="secondary" className="text-xs">
-                        · {t.brand}
-                      </Text>
-                    )}
-                    {t.condition && (
-                      <Text variant="secondary" className="text-xs capitalize">
-                        · {t.condition.replace(/_/g, " ")}
-                      </Text>
-                    )}
-                  </Row>
-                </Div>
-                <Row gap="xs" className="shrink-0">
-                  <Button variant="outline" size="sm" onClick={() => openEdit(t)}>
-                    Edit
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    isLoading={deletingId === t.id}
-                    onClick={() => handleDelete(t.id, t.name)}
-                  >
-                    Delete
-                  </Button>
-                </Row>
-              </Row>
-            ))}
-          </Div>
-        )}
-
+        {renderPageHeader(openCreate)}
+        {renderToolbar({ searchInput, setSearchInput, commitSearch, sort, table, condition })}
+        {renderTemplateList({ loading, filtered, q, condition, openCreate, openEdit, deletingId, handleDelete })}
         <Text variant="secondary" className="mt-3 text-xs">
           {filtered.length} template{filtered.length !== 1 ? "s" : ""}
           {(q || condition) && " (filtered)"}
         </Text>
       </Div>
-
-      <SideDrawer
-        isOpen={drawerOpen}
-        onClose={closeDrawer}
-        title={drawerMode === "create" ? "New Template" : "Edit Template"}
-        mode={drawerMode}
-        isDirty={draft.name !== "" || draft.category !== "" || draft.brand !== ""}
-        footer={
-          <Row gap="sm" justify="end">
-            <Button variant="outline" size="sm" onClick={closeDrawer} disabled={saving}>
-              Cancel
-            </Button>
-            <Button variant="primary" size="sm" isLoading={saving} onClick={handleSave}>
-              {drawerMode === "create" ? "Create Template" : "Save Changes"}
-            </Button>
-          </Row>
-        }
-      >
-        <Stack gap="md">
-          {savingError && (
-            <Div className="rounded-lg border border-[var(--appkit-color-error)] bg-[var(--appkit-color-error-surface)] px-3 py-2 text-sm text-[var(--appkit-color-error-text)]">
-              {savingError}
-            </Div>
-          )}
-
-          <Input
-            id="tpl-name"
-            label="Template Name"
-            value={draft.name}
-            onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
-            placeholder="e.g. Pokémon Card Standard"
-            required
-            autoComplete="off"
-          />
-
-          <Input
-            id="tpl-description"
-            label="Description (optional)"
-            value={draft.description}
-            onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))}
-            placeholder="Short note about when to use this template"
-            autoComplete="off"
-          />
-
-          <Input
-            id="tpl-category"
-            label="Category (optional)"
-            value={draft.category}
-            onChange={(e) => setDraft((d) => ({ ...d, category: e.target.value }))}
-            placeholder="e.g. trading-cards"
-            autoComplete="off"
-          />
-
-          <Input
-            id="tpl-brand"
-            label="Brand (optional)"
-            value={draft.brand}
-            onChange={(e) => setDraft((d) => ({ ...d, brand: e.target.value }))}
-            placeholder="e.g. Pokémon Company"
-            autoComplete="off"
-          />
-
-          <Div>
-            <Text className="mb-1.5 text-sm font-medium">
-              Condition (optional)
-            </Text>
-            <select
-              value={draft.condition}
-              onChange={(e) => setDraft((d) => ({ ...d, condition: e.target.value }))}
-              className="w-full rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
-              aria-label="Condition"
-            >
-              {CONDITION_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </Div>
-        </Stack>
-      </SideDrawer>
+      {renderTemplateDrawer({ drawerOpen, closeDrawer, drawerMode, draft, setDraft, savingError, saving, handleSave })}
     </>
+  );
+}
+
+// ─── Sub-renderers ────────────────────────────────────────────────────────────
+
+function renderPageHeader(openCreate: () => void) {
+  return (
+    <Row justify="between" align="start" className="mb-6" gap="md">
+      <Div>
+        <Heading level={1} className="text-2xl font-bold">Product Templates</Heading>
+        <Text variant="secondary" className="mt-1 text-sm">Save common field sets as templates to pre-fill new listings faster.</Text>
+      </Div>
+      <Button variant="primary" size="sm" onClick={openCreate}>+ New Template</Button>
+    </Row>
+  );
+}
+
+function renderToolbar({ searchInput, setSearchInput, commitSearch, sort, table, condition }: {
+  searchInput: string;
+  setSearchInput: (v: string) => void;
+  commitSearch: () => void;
+  sort: string;
+  table: ReturnType<typeof useUrlTable>;
+  condition: string;
+}) {
+  return (
+    <Row gap="sm" className="mb-4" align="center">
+      <Div className="flex-1">
+        <Input placeholder="Search templates…" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && commitSearch()} aria-label="Search templates" />
+      </Div>
+      <select value={sort} onChange={(e) => table.set("sort", e.target.value)} className="rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]" aria-label="Sort templates">
+        {SORT_OPTIONS.map((o) => (<option key={o.value} value={o.value}>{o.label}</option>))}
+      </select>
+      <select value={condition} onChange={(e) => table.set("condition", e.target.value)} className="rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]" aria-label="Filter by condition">
+        {CONDITION_OPTIONS.map((o) => (<option key={o.value} value={o.value}>{o.label}</option>))}
+      </select>
+    </Row>
+  );
+}
+
+function renderTemplateList({ loading, filtered, q, condition, openCreate, openEdit, deletingId, handleDelete }: {
+  loading: boolean;
+  filtered: TemplateRow[];
+  q: string;
+  condition: string;
+  openCreate: () => void;
+  openEdit: (row: TemplateRow) => void;
+  deletingId: string | null;
+  handleDelete: (id: string, name: string) => Promise<void>;
+}) {
+  if (loading) return <Div className="flex items-center justify-center py-16"><Text variant="secondary" className="text-sm">Loading…</Text></Div>;
+  if (filtered.length === 0) {
+    return (
+      <Div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--appkit-color-border)] py-16 text-center">
+        <Text className="text-3xl mb-2">📋</Text>
+        <Text className="text-sm font-semibold">{q || condition ? "No templates match your filters" : "No templates yet"}</Text>
+        <Text variant="secondary" className="mt-1 text-xs">{q || condition ? "Try clearing your search or filters" : "Create a template to pre-fill category, brand, condition and more when listing."}</Text>
+        {!q && !condition && <Button variant="primary" size="sm" className="mt-4" onClick={openCreate}>Create Template</Button>}
+      </Div>
+    );
+  }
+  return (
+    <Div className="divide-y divide-[var(--appkit-color-border-subtle)] rounded-xl border border-[var(--appkit-color-border)] overflow-hidden">
+      {filtered.map((t) => (
+        <Row key={t.id} align="center" gap="md" className="bg-[var(--appkit-color-surface)] px-4 py-3 hover:bg-[var(--appkit-color-border-subtle)] transition-colors">
+          <Div className="flex-1 min-w-0">
+            <Text className="text-sm font-medium truncate">{t.name}</Text>
+            <Row gap="xs" className="mt-0.5 flex-wrap">
+              {t.category && <Text variant="secondary" className="text-xs">{t.category}</Text>}
+              {t.brand && <Text variant="secondary" className="text-xs">· {t.brand}</Text>}
+              {t.condition && <Text variant="secondary" className="text-xs capitalize">· {t.condition.replace(/_/g, " ")}</Text>}
+            </Row>
+          </Div>
+          <Row gap="xs" className="shrink-0">
+            <Button variant="outline" size="sm" onClick={() => openEdit(t)}>Edit</Button>
+            <Button variant="danger" size="sm" isLoading={deletingId === t.id} onClick={() => handleDelete(t.id, t.name)}>Delete</Button>
+          </Row>
+        </Row>
+      ))}
+    </Div>
+  );
+}
+
+function renderTemplateDrawer({ drawerOpen, closeDrawer, drawerMode, draft, setDraft, savingError, saving, handleSave }: {
+  drawerOpen: boolean;
+  closeDrawer: () => void;
+  drawerMode: "create" | "edit";
+  draft: DraftTemplate;
+  setDraft: React.Dispatch<React.SetStateAction<DraftTemplate>>;
+  savingError: string | null;
+  saving: boolean;
+  handleSave: () => Promise<void>;
+}) {
+  return (
+    <SideDrawer
+      isOpen={drawerOpen}
+      onClose={closeDrawer}
+      title={drawerMode === "create" ? "New Template" : "Edit Template"}
+      mode={drawerMode}
+      isDirty={draft.name !== "" || draft.category !== "" || draft.brand !== ""}
+      footer={
+        <Row gap="sm" justify="end">
+          <Button variant="outline" size="sm" onClick={closeDrawer} disabled={saving}>Cancel</Button>
+          <Button variant="primary" size="sm" isLoading={saving} onClick={handleSave}>
+            {drawerMode === "create" ? "Create Template" : "Save Changes"}
+          </Button>
+        </Row>
+      }
+    >
+      <Stack gap="md">
+        {savingError && (
+          <Div className="rounded-lg border border-[var(--appkit-color-error)] bg-[var(--appkit-color-error-surface)] px-3 py-2 text-sm text-[var(--appkit-color-error-text)]">{savingError}</Div>
+        )}
+        <Input id="tpl-name" label="Template Name" value={draft.name} onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))} placeholder="e.g. Pokémon Card Standard" required autoComplete="off" />
+        <Input id="tpl-description" label="Description (optional)" value={draft.description} onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))} placeholder="Short note about when to use this template" autoComplete="off" />
+        <Input id="tpl-category" label="Category (optional)" value={draft.category} onChange={(e) => setDraft((d) => ({ ...d, category: e.target.value }))} placeholder="e.g. trading-cards" autoComplete="off" />
+        <Input id="tpl-brand" label="Brand (optional)" value={draft.brand} onChange={(e) => setDraft((d) => ({ ...d, brand: e.target.value }))} placeholder="e.g. Pokémon Company" autoComplete="off" />
+        <Div>
+          <Text className="mb-1.5 text-sm font-medium">Condition (optional)</Text>
+          <select value={draft.condition} onChange={(e) => setDraft((d) => ({ ...d, condition: e.target.value }))} className="w-full rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]" aria-label="Condition">
+            {CONDITION_OPTIONS.map((o) => (<option key={o.value} value={o.value}>{o.label}</option>))}
+          </select>
+        </Div>
+      </Stack>
+    </SideDrawer>
   );
 }

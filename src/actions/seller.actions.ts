@@ -72,13 +72,14 @@ import type { CouponDocument } from "@mohasinac/appkit";
 import type { ProductDocument } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
 import { getStoreCapabilities } from "@mohasinac/appkit/server";
+import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 // --- Become Seller ------------------------------------------------------------
 
 export async function becomeSellerAction(): Promise<BecomeSellerResult> {
   const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(`become-seller:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   return becomeSeller(user.uid);
 }
 
@@ -95,7 +96,7 @@ export async function createStoreAction(
 ): Promise<{ store: StoreDocument }> {
   const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`create-store:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   const parsed = createStoreSchema.safeParse(input);
   if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
   return createStore(user.uid, user.name ?? "seller", parsed.data as CreateStoreInput) as any;
@@ -130,7 +131,7 @@ export async function updateStoreAction(
 ): Promise<{ store: StoreDocument }> {
   const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`update-store:${user.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   const parsed = updateStoreSchema.safeParse(input);
   if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
   return updateStore(user.uid, parsed.data as UpdateStoreInput) as any;
@@ -156,7 +157,7 @@ export async function updatePayoutSettingsAction(
 ): Promise<unknown> {
   const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`update-payout-settings:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   const parsed = updatePayoutSettingsSchema.safeParse(input);
   if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
   return updatePayoutSettings(user.uid, parsed.data as UpdatePayoutSettingsInput);
@@ -184,7 +185,7 @@ export async function requestPayoutAction(
 ): Promise<unknown> {
   const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`request-payout:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   const parsed = payoutRequestSchema.safeParse(input);
   if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
   return requestPayout(user.uid, user.name ?? user.email ?? user.uid, user.email ?? "", parsed.data as RequestPayoutInput);
@@ -197,7 +198,7 @@ export async function bulkSellerOrderAction(
 ): Promise<BulkSellerOrderResult> {
   const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`bulk-order-action:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   if (!Array.isArray(orderIds) || orderIds.length === 0)
     throw new ValidationError("At least one order ID is required");
   const profile = await userRepository.findById(user.uid);
@@ -209,7 +210,7 @@ export async function bulkSellerOrderAction(
 export async function createSellerProductAction(input: unknown): Promise<void> {
   const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`create-seller-product:${user.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   const parsed = productCreateSchema.safeParse(input);
   if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
 
@@ -290,7 +291,7 @@ export async function sellerUpdateProductAction(
   const user = await requireAuthUser();
   if (!id?.trim()) throw new ValidationError("id is required");
   const parsed = productUpdateSchema.partial().safeParse(input);
-  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid update data");
+  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE);
   const profile = await userRepository.findById(user.uid);
   return sellerUpdateProduct(user.uid, profile?.role ?? "user", id, parsed.data as Record<string, unknown>) as any;
 }
@@ -328,7 +329,7 @@ export async function shipOrderAction(
 ): Promise<{ orderId: string; method: string; awb?: string; trackingUrl?: string; pickupScheduledDate?: string }> {
   const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`ship-order:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   const parsed = shipOrderSchema.safeParse(input);
   if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
 
@@ -464,7 +465,7 @@ export async function updateSellerShippingAction(
 ): Promise<unknown> {
   const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`update-shipping:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   const parsed = updateShippingSchema.safeParse(input);
   if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
 
@@ -530,7 +531,7 @@ export async function verifyShiprocketPickupOtpAction(
 ): Promise<{ message: string }> {
   const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`verify-pickup-otp:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const parsed = z.object({ otp: z.number().int().min(100000).max(999999), pickupLocationId: z.number().int().positive() }).safeParse(input);
   if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");

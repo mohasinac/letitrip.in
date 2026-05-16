@@ -27,6 +27,7 @@ async function editOneField(page, label, { apiPath, editPath, fieldSelector, suc
     rec(`${label}: found item`, true, `id=${id}`);
 
     const page = await ctx.newPage();
+    page.setDefaultTimeout(5000); // fills/clicks fail fast if element absent
     const path = typeof editPath === "function" ? editPath(id) : editPath.replace("{id}", id);
 
     const { finalUrl } = await gotoAndWait(page, localizedUrl(path));
@@ -148,6 +149,7 @@ export async function run() {
   // ── Site settings edit ────────────────────────────────────────────────────
   {
     const page = await ctx.newPage();
+    page.setDefaultTimeout(5000);
     const label = "edit site settings";
     try {
       await gotoAndWait(page, localizedUrl("/admin/site"));

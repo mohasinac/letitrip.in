@@ -15,6 +15,8 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 
+const BORDER_SLATE = "1px solid var(--appkit-color-slate-700)";
+
 const STORAGE_KEY = "letitrip_dev_prefs";
 const IS_DEV = false &&
   typeof window !== "undefined" &&
@@ -104,13 +106,51 @@ function Toggle({ label, description, enabled, onChange, color = "var(--appkit-c
           }}
         />
       </button>
-      <div>
+      <>
         <div style={{ fontSize: 12, fontWeight: 600, color: "var(--appkit-color-slate-50)", lineHeight: 1.3 }}>{label}</div>
         <div style={{ fontSize: 11, color: "var(--appkit-color-slate-400)", lineHeight: 1.4 }}>{description}</div>
-      </div>
+      </>
     </div>
   );
 }
+
+// ─── Sub-renderers ────────────────────────────────────────────────────────────
+
+function renderToolbarHeader(collapsed: boolean, onToggle: () => void) {
+  return (
+    <div
+      style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", borderBottom: BORDER_SLATE, background: "var(--appkit-color-slate-950)", cursor: "pointer" }}
+      onClick={onToggle}
+    >
+      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--appkit-color-purple-400)" }}>⚙ DEV TOOLBAR</span>
+      <span style={{ display: "flex", gap: 6, alignItems: "center" }}>
+        <span style={{ fontSize: 10, padding: "1px 6px", borderRadius: 4, background: "var(--appkit-color-cobalt-800)", color: "var(--appkit-color-cobalt-200)" }}>localhost</span>
+        <span style={{ fontSize: 12, color: "var(--appkit-color-slate-500)" }}>{collapsed ? "▸" : "▾"}</span>
+      </span>
+    </div>
+  );
+}
+
+function renderMockIndicator(prefs: DevPrefs) {
+  if (!prefs.mockRazorpay && !prefs.mockShiprocket) return null;
+  return (
+    <div style={{ marginBottom: 10, padding: "4px 8px", background: "var(--appkit-color-amber-800)", borderRadius: 6, fontSize: 11, color: "var(--appkit-color-amber-100)" }}>
+      ⚠ Mock services active — payment/shipping calls go to local routes
+    </div>
+  );
+}
+
+function renderToolbarFooter(onHide: () => void) {
+  return (
+    <div style={{ borderTop: BORDER_SLATE, paddingTop: 8, display: "flex", gap: 8 }}>
+      <a href="/api/dev/mock-razorpay" target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: "var(--appkit-color-cobalt-300)", textDecoration: "none" }}>Razorpay Docs ↗</a>
+      <a href="/api/dev/mock-shiprocket?action=status" target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: "var(--appkit-color-cobalt-300)", textDecoration: "none" }}>Shiprocket Status ↗</a>
+      <button onClick={onHide} style={{ marginLeft: "auto", fontSize: 10, color: "var(--appkit-color-slate-500)", background: "none", border: "none", cursor: "pointer", padding: 0 }}>Hide</button>
+    </div>
+  );
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
 
 export function DevToolbar() {
   const [mounted, setMounted] = useState(false);
@@ -128,26 +168,13 @@ export function DevToolbar() {
     savePrefs(next);
   }, [prefs]);
 
-  // Don't render in production or before hydration
   if (!mounted || !IS_DEV) return null;
 
   if (!prefs.showToolbar) {
     return (
       <button
         onClick={() => update({ showToolbar: true })}
-        style={{
-          position: "fixed",
-          bottom: 16,
-          right: 16,
-          zIndex: 9999,
-          background: "var(--appkit-color-slate-900)",
-          border: "1px solid var(--appkit-color-slate-700)",
-          borderRadius: 8,
-          color: "var(--appkit-color-slate-400)",
-          fontSize: 11,
-          padding: "4px 8px",
-          cursor: "pointer",
-        }}
+        style={{ position: "fixed", bottom: 16, right: 16, zIndex: 9999, background: "var(--appkit-color-slate-900)", border: BORDER_SLATE, borderRadius: 8, color: "var(--appkit-color-slate-400)", fontSize: 11, padding: "4px 8px", cursor: "pointer" }}
         title="Show Dev Toolbar"
       >
         DEV
@@ -156,137 +183,26 @@ export function DevToolbar() {
   }
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        bottom: 16,
-        right: 16,
-        zIndex: 9999,
-        background: "var(--appkit-color-slate-900)",
-        border: "1px solid var(--appkit-color-slate-700)",
-        borderRadius: 10,
-        boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
-        color: "var(--appkit-color-slate-50)",
-        fontFamily: "monospace",
-        minWidth: 240,
-        overflow: "hidden",
-      }}
-    >
-      {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "8px 12px",
-          borderBottom: "1px solid var(--appkit-color-slate-700)",
-          background: "var(--appkit-color-slate-950)",
-          cursor: "pointer",
-        }}
-        onClick={() => setCollapsed((c) => !c)}
-      >
-        <span style={{ fontSize: 12, fontWeight: 700, color: "var(--appkit-color-purple-400)" }}>
-          ⚙ DEV TOOLBAR
-        </span>
-        <span style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          <span
-            style={{
-              fontSize: 10,
-              padding: "1px 6px",
-              borderRadius: 4,
-              background: "var(--appkit-color-cobalt-800)",
-              color: "var(--appkit-color-cobalt-200)",
-            }}
-          >
-            localhost
-          </span>
-          <span style={{ fontSize: 12, color: "var(--appkit-color-slate-500)" }}>
-            {collapsed ? "▸" : "▾"}
-          </span>
-        </span>
-      </div>
-
+    <div style={{ position: "fixed", bottom: 16, right: 16, zIndex: 9999, background: "var(--appkit-color-slate-900)", border: BORDER_SLATE, borderRadius: 10, boxShadow: "0 8px 32px rgba(0,0,0,0.5)", color: "var(--appkit-color-slate-50)", fontFamily: "monospace", minWidth: 240, overflow: "hidden" }}>
+      {renderToolbarHeader(collapsed, () => setCollapsed((c) => !c))}
       {!collapsed && (
         <div style={{ padding: 12 }}>
-          {/* Active mocks indicator */}
-          {(prefs.mockRazorpay || prefs.mockShiprocket) && (
-            <div
-              style={{
-                marginBottom: 10,
-                padding: "4px 8px",
-                background: "var(--appkit-color-amber-800)",
-                borderRadius: 6,
-                fontSize: 11,
-                color: "var(--appkit-color-amber-100)",
-              }}
-            >
-              ⚠ Mock services active — payment/shipping calls go to local routes
-            </div>
-          )}
-
+          {renderMockIndicator(prefs)}
           <Toggle
             label="Mock Razorpay"
-            description={
-              prefs.mockRazorpay
-                ? "→ /api/dev/mock-razorpay (active)"
-                : "Use mock Razorpay instead of live keys"
-            }
+            description={prefs.mockRazorpay ? "→ /api/dev/mock-razorpay (active)" : "Use mock Razorpay instead of live keys"}
             enabled={prefs.mockRazorpay}
             onChange={(v) => update({ mockRazorpay: v })}
             color="var(--appkit-color-amber-500)"
           />
-
           <Toggle
             label="Mock Shiprocket"
-            description={
-              prefs.mockShiprocket
-                ? "→ /api/dev/mock-shiprocket (active)"
-                : "Use mock Shiprocket for shipping flows"
-            }
+            description={prefs.mockShiprocket ? "→ /api/dev/mock-shiprocket (active)" : "Use mock Shiprocket for shipping flows"}
             enabled={prefs.mockShiprocket}
             onChange={(v) => update({ mockShiprocket: v })}
             color="var(--appkit-color-emerald-500)"
           />
-
-          <div
-            style={{
-              borderTop: "1px solid var(--appkit-color-slate-700)",
-              paddingTop: 8,
-              display: "flex",
-              gap: 8,
-            }}
-          >
-            <a
-              href="/api/dev/mock-razorpay"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ fontSize: 10, color: "var(--appkit-color-cobalt-300)", textDecoration: "none" }}
-            >
-              Razorpay Docs ↗
-            </a>
-            <a
-              href="/api/dev/mock-shiprocket?action=status"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ fontSize: 10, color: "var(--appkit-color-cobalt-300)", textDecoration: "none" }}
-            >
-              Shiprocket Status ↗
-            </a>
-            <button
-              onClick={() => update({ showToolbar: false })}
-              style={{
-                marginLeft: "auto",
-                fontSize: 10,
-                color: "var(--appkit-color-slate-500)",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: 0,
-              }}
-            >
-              Hide
-            </button>
-          </div>
+          {renderToolbarFooter(() => update({ showToolbar: false }))}
         </div>
       )}
     </div>

@@ -87,7 +87,10 @@ async function testAuctionListing(ctx) {
   const page = await ctx.newPage();
   try {
     await gotoAndWait(page, localizedUrl("/auctions"));
-    const countdown = await page.locator('[data-testid=countdown], .appkit-countdown, text=/\d+[dhms]/, text=/Ended/').count();
+    const countdown = await page.locator('[data-testid=countdown], .appkit-countdown')
+      .or(page.locator('text=/\\d+[dhms]/'))
+      .or(page.locator('text=/Ended/'))
+      .count();
     rec("/auctions: countdown timer", countdown > 0, `n=${countdown}`);
   } catch (e) {
     rec("/auctions: countdown timer", false, e.message);

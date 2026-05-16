@@ -2,6 +2,7 @@
 /* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-15: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-15) */
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { Text } from "@mohasinac/appkit";
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -38,8 +39,8 @@ export default function Page() {
     return (
       <div className="flex min-h-screen items-center justify-center p-6 text-center">
         <div className="space-y-3">
-          <p className="text-lg font-semibold text-rose-600">Sign-in failed</p>
-          <p className="text-sm text-zinc-500">{decodeURIComponent(error)}</p>
+          <Text className="text-lg font-semibold text-rose-600">Sign-in failed</Text>
+          <Text className="text-sm text-zinc-500">{decodeURIComponent(error)}</Text>
           <button
             type="button"
             onClick={() => window.close()}
@@ -54,7 +55,7 @@ export default function Page() {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <p className="text-sm text-zinc-400">Signing in… closing window</p>
+      <Text className="text-sm text-zinc-400">Signing in… closing window</Text>
     </div>
   );
 }

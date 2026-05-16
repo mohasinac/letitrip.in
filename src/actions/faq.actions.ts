@@ -33,6 +33,7 @@ import {
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import type { FAQDocument } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
+import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 export type AdminCreateFaqInput = FaqCreateInput;
 export type AdminUpdateFaqInput = FaqUpdateInput;
@@ -67,7 +68,7 @@ export async function adminCreateFaqAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const parsed = faqCreateSchema.safeParse(input);
   if (!parsed.success)
@@ -89,14 +90,14 @@ export async function adminUpdateFaqAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   if (!id?.trim()) throw new ValidationError("id is required");
 
   const parsed = faqUpdateSchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid update data",
+      parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
     );
 
   const existing = await getFaqById(id);
@@ -113,7 +114,7 @@ export async function adminDeleteFaqAction(id: string): Promise<void> {
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   if (!id?.trim()) throw new ValidationError("id is required");
 

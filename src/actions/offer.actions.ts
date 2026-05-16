@@ -29,6 +29,7 @@ import {
 } from "@mohasinac/appkit";
 import type { CartDocument } from "@mohasinac/appkit";
 import type { OfferDocument } from "@mohasinac/appkit";
+import { ERR_RATE_LIMIT } from "./_constants";
 
 // --- Validation schemas ----------------------------------------------------
 
@@ -66,7 +67,7 @@ export async function makeOfferAction(
 ): Promise<OfferDocument> {
   const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(`offer:make:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   const parsed = makeOfferSchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid offer data");
@@ -78,7 +79,7 @@ export async function respondToOfferAction(
 ): Promise<OfferDocument> {
   const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(`offer:respond:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   const parsed = respondToOfferSchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
@@ -99,7 +100,7 @@ export async function counterOfferByBuyerAction(
 ): Promise<OfferDocument> {
   const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(`offer:buyer-counter:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   const parsed = buyerCounterSchema.safeParse(input);
   if (!parsed.success)
     throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid counter offer data");
@@ -130,7 +131,7 @@ export async function checkoutOfferAction(
 ): Promise<CartDocument> {
   const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(`offer:checkout:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   return checkoutOffer(user.uid, offerId);
 }
 

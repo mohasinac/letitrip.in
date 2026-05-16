@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useToast, useOrder, ROUTES } from "@mohasinac/appkit/client";
 import { cancelOrderAction } from "@/actions/order.actions";
+import { Heading, Text } from "@mohasinac/appkit";
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -46,7 +47,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 
   if (!order) {
     return (
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">Order not found.</p>
+      <Text className="text-sm text-zinc-500 dark:text-zinc-400">Order not found.</Text>
     );
   }
 
@@ -54,16 +55,16 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 
   return (
     <div className="w-full max-w-lg space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Cancel Order</h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Order #{id}</p>
-      </div>
+      <>
+        <Heading level={1} className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Cancel Order</Heading>
+        <Text className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Order #{id}</Text>
+      </>
 
       {!cancellable ? (
         <div className="rounded-xl border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950 p-5 space-y-3">
-          <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+          <Text className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
             This order cannot be cancelled because it is already <strong>{order.orderStatus.toLowerCase()}</strong>.
-          </p>
+          </Text>
           <Link
             href={String(ROUTES.USER.ORDER_DETAIL(id))}
             className="inline-block text-sm font-medium text-primary hover:underline"
@@ -92,7 +93,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
               placeholder="Tell us why you are cancelling this order…"
               className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
             />
-            <p className="text-right text-xs text-zinc-400">{reason.length}/500</p>
+            <Text className="text-right text-xs text-zinc-400">{reason.length}/500</Text>
           </div>
 
           <div className="flex gap-3">

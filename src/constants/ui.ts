@@ -4,6 +4,18 @@
  * Centralized UI strings and labels used throughout the application
  */
 
+// ─── Shared string literals (each repeated ≥3× in this file) ─────────────────
+const STR_NO_DATA_AVAILABLE = "No data available";
+const STR_NO_RESULTS_FOUND = "No results found";
+const STR_NO_SAVED_ADDRESSES = "No saved addresses";
+const STR_SECURITY_SETTINGS = "Security Settings";
+const STR_THIS_SELLER_HASNT_LISTED = "This seller hasn't listed any products yet.";
+const STR_VERIFIED_PURCHASE = "Verified Purchase";
+const STR_TAGS_COMMA_SEP = "Tags (comma-separated)";
+const STR_TRACKING_NUMBER = "Tracking Number";
+const STR_SHIPPING_ADDRESS = "Shipping Address";
+const STR_PRODUCTS_LISTED = "Products Listed";
+
 export const UI_LABELS = {
   // Loading states
   LOADING: {
@@ -21,13 +33,13 @@ export const UI_LABELS = {
 
   // Empty states
   EMPTY: {
-    NO_DATA: "No data available",
+    NO_DATA: STR_NO_DATA_AVAILABLE,
     NO_USERS: "No users found",
-    NO_RESULTS: "No results found",
+    NO_RESULTS: STR_NO_RESULTS_FOUND,
     NO_ITEMS: "No items to display",
     NO_EMAIL: "No email address",
     NO_PHONE: "No phone number",
-    NO_ADDRESSES: "No saved addresses",
+    NO_ADDRESSES: STR_NO_SAVED_ADDRESSES,
     NOT_SET: "Not set",
   },
 
@@ -67,14 +79,14 @@ export const UI_LABELS = {
     NAME: "Name",
     STATUS: "Status",
     NO_DATA_TITLE: "No Data",
-    NO_DATA_DESCRIPTION: "No data available",
+    NO_DATA_DESCRIPTION: STR_NO_DATA_AVAILABLE,
     SHOWING: "Showing",
     OF: "of",
     ENTRIES: "entries",
     SORT_BY: "Sort by",
     PER_PAGE: "Per page",
     RESULTS: "results",
-    NO_RESULTS: "No results found",
+    NO_RESULTS: STR_NO_RESULTS_FOUND,
     LOAD_MORE: "Load 10 more",
     PAGINATION_LABEL: "Pagination",
   },
@@ -270,7 +282,7 @@ export const UI_LABELS = {
     PROFILE_INFORMATION: "Profile Information",
     ACCOUNT_INFORMATION: "Account Information",
     SAVED_ADDRESSES: "Saved Addresses",
-    SECURITY_SETTINGS: "Security Settings",
+    SECURITY_SETTINGS: STR_SECURITY_SETTINGS,
     USER_ID: "User ID",
     DISPLAY_NAME: "Display Name",
     ROLE: "Role",
@@ -279,11 +291,11 @@ export const UI_LABELS = {
     SELLER_PRODUCTS_TITLE: "Listed Products",
     SELLER_REVIEWS_TITLE: "Reviews Received",
     NO_PRODUCTS: "No products listed yet",
-    NO_PRODUCTS_DESC: "This seller hasn't listed any products yet.",
+    NO_PRODUCTS_DESC: STR_THIS_SELLER_HASNT_LISTED,
     NO_REVIEWS: "No reviews yet",
     NO_REVIEWS_DESC: "This seller hasn't received any reviews yet.",
     VIEW_PRODUCT: "View Product",
-    VERIFIED_PURCHASE: "Verified Purchase",
+    VERIFIED_PURCHASE: STR_VERIFIED_PURCHASE,
     MEMBER_SINCE: "Member since",
     STAT_ORDERS: "Orders",
     STAT_AUCTIONS_WON: "Auctions Won",
@@ -547,7 +559,7 @@ export const UI_LABELS = {
       SUBTITLE: "Configure global site settings, branding, and appearance",
       GENERAL: "General Settings",
       SEO: "SEO Settings",
-      SECURITY: "Security Settings",
+      SECURITY: STR_SECURITY_SETTINGS,
       SAVE_SETTINGS: "Save Settings",
       SAVE_ALL_CHANGES: "Save All Changes",
       SETTINGS_SAVED: "Settings saved successfully",
@@ -634,7 +646,7 @@ export const UI_LABELS = {
       PRIORITY_HELP: "Higher priority appears first",
       FEATURED: "Featured",
       FEATURED_LABEL: "Featured (show on homepage)",
-      TAGS: "Tags (comma-separated)",
+      TAGS: STR_TAGS_COMMA_SEP,
       TAGS_PLACEHOLDER: "e.g. payment, refund, shipping",
       ORDER_HELP: "Display order within same priority",
       SHOW_VARIABLES: "Show Variables",
@@ -679,7 +691,7 @@ export const UI_LABELS = {
       DELETE_FAILED: "Failed to delete review",
       NO_PENDING: "No pending reviews to approve",
       VERIFIED: "Verified",
-      VERIFIED_PURCHASE: "Verified Purchase",
+      VERIFIED_PURCHASE: STR_VERIFIED_PURCHASE,
       HELPFUL_VOTES: "Helpful Votes",
       PRODUCT: "Product",
       USER: "User",
@@ -711,7 +723,7 @@ export const UI_LABELS = {
       FILTER_ALL: "All Statuses",
       SELLER_LABEL: "Seller",
       FEATURED_LABEL: "Featured",
-      TAGS_LABEL: "Tags (comma-separated)",
+      TAGS_LABEL: STR_TAGS_COMMA_SEP,
       TAGS_PLACEHOLDER: "e.g. electronics, gadgets, sale",
       SHIPPING_LABEL: "Shipping Info",
       RETURN_POLICY_LABEL: "Return Policy",
@@ -734,7 +746,7 @@ export const UI_LABELS = {
       ICON: "🛒",
       UPDATE_STATUS: "Update Status",
       FILTER_ALL: "All Orders",
-      TRACKING_NUMBER: "Tracking Number",
+      TRACKING_NUMBER: STR_TRACKING_NUMBER,
       NOTES: "Admin Notes",
       UPDATE_ORDER: "Update Order",
       CANCELLATION_REASON: "Cancellation Reason",
@@ -784,7 +796,7 @@ export const UI_LABELS = {
       FORM_CONTENT: "Content",
       FORM_COVER: "Cover Image URL",
       FORM_CATEGORY: "Category",
-      FORM_TAGS: "Tags (comma-separated)",
+      FORM_TAGS: STR_TAGS_COMMA_SEP,
       FORM_STATUS: "Status",
       FORM_FEATURED: "Featured Post",
       FORM_READ_TIME: "Read Time (minutes)",
@@ -954,7 +966,7 @@ export const UI_LABELS = {
         ICON: "🛒",
         UPDATE_STATUS: "Update Status",
         FILTER_ALL: "All Orders",
-        TRACKING_NUMBER: "Tracking Number",
+        TRACKING_NUMBER: STR_TRACKING_NUMBER,
         NOTES: "Admin Notes",
         UPDATE_ORDER: "Update Order",
         CANCELLATION_REASON: "Cancellation Reason",
@@ -1022,7 +1034,7 @@ export const UI_LABELS = {
       VIEW: "View Profile",
       INFORMATION: "Profile Information",
       ACCOUNT_INFO: "Account Information",
-      SECURITY: "Security Settings",
+      SECURITY: STR_SECURITY_SETTINGS,
     },
     SETTINGS: {
       TITLE: "Settings",
@@ -1055,7 +1067,7 @@ export const UI_LABELS = {
       SHIPPING: "Shipping",
       TAX: "Tax",
       TOTAL: "Total",
-      SHIPPING_ADDRESS: "Shipping Address",
+      SHIPPING_ADDRESS: STR_SHIPPING_ADDRESS,
       PAYMENT_INFO: "Payment Information",
       PAYMENT_METHOD: "Payment Method",
       PAYMENT_STATUS: "Payment Status",
@@ -1069,7 +1081,7 @@ export const UI_LABELS = {
       TRACK_TITLE: "Order Tracking",
       TRACK_SUBTITLE: "Real-time order status",
       TRACK_BACK: "Back to Order",
-      TRACKING_NUMBER_LABEL: "Tracking Number",
+      TRACKING_NUMBER_LABEL: STR_TRACKING_NUMBER,
       TRACKING_NUMBER_COPY: "Copy",
       TRACKING_NUMBER_COPIED: "Copied!",
       ESTIMATED_DELIVERY: "Estimated Delivery",
@@ -1113,11 +1125,11 @@ export const UI_LABELS = {
         "Are you sure you want to delete this address? This action cannot be undone.",
       DELETE_CONFIRM:
         "Are you sure you want to delete this address? This action cannot be undone.",
-      EMPTY: "No saved addresses",
+      EMPTY: STR_NO_SAVED_ADDRESSES,
       EMPTY_SUBTITLE: "Add an address to use for shipping",
       DEFAULT: "Default Address",
       SET_DEFAULT: "Set as Default",
-      SHIPPING_ADDRESS: "Shipping Address",
+      SHIPPING_ADDRESS: STR_SHIPPING_ADDRESS,
       BILLING_ADDRESS: "Billing Address",
     },
   },
@@ -1258,7 +1270,7 @@ export const UI_LABELS = {
     TITLE: "Search",
     SUBTITLE: "Find products across the store",
     PLACEHOLDER: "Search for products...",
-    NO_RESULTS: "No results found",
+    NO_RESULTS: STR_NO_RESULTS_FOUND,
     NO_RESULTS_SUBTITLE: (q: string) =>
       `We couldn't find anything matching "${q}". Try a different search term.`,
     RESULTS_COUNT: (count: number, q: string) =>
@@ -1392,7 +1404,7 @@ export const UI_LABELS = {
     REVIEWS_BE_FIRST: "Be the first to review this product",
     WRITE_REVIEW: "Write a Review",
     AVERAGE_RATING: "Average Rating",
-    VERIFIED_PURCHASE: "Verified Purchase",
+    VERIFIED_PURCHASE: STR_VERIFIED_PURCHASE,
     HELPFUL: (count: number) => `${count} found this helpful`,
     RELATED_TITLE: "You might also like",
     PRODUCT_NOT_FOUND: "Product not found",
@@ -1439,13 +1451,13 @@ export const UI_LABELS = {
   // Checkout page labels
   CHECKOUT: {
     TITLE: "Checkout",
-    STEP_ADDRESS: "Shipping Address",
+    STEP_ADDRESS: STR_SHIPPING_ADDRESS,
     STEP_REVIEW: "Review Order",
     STEP_PAYMENT: "Payment",
     STEP_1_OF_2: "Step 1 of 2",
     STEP_2_OF_2: "Step 2 of 2",
     SELECT_ADDRESS: "Select a shipping address",
-    NO_ADDRESSES: "No saved addresses",
+    NO_ADDRESSES: STR_NO_SAVED_ADDRESSES,
     ADD_ADDRESS: "Add a New Address",
     DELIVERY_TO: "Deliver to",
     CHANGE_ADDRESS: "Change",
@@ -1674,7 +1686,7 @@ export const UI_LABELS = {
     // Stats bar
     STAT_SELLERS_LABEL: "Active Sellers",
     STAT_SELLERS_VALUE: "500+",
-    STAT_PRODUCTS_LABEL: "Products Listed",
+    STAT_PRODUCTS_LABEL: STR_PRODUCTS_LISTED,
     STAT_PRODUCTS_VALUE: "10,000+",
     STAT_BUYERS_LABEL: "Monthly Buyers",
     STAT_BUYERS_VALUE: "25,000+",
@@ -1687,14 +1699,14 @@ export const UI_LABELS = {
     MEMBER_SINCE: "Member since",
     PRODUCTS_TITLE: "Products",
     REVIEWS_TITLE: "Reviews",
-    TOTAL_PRODUCTS: "Products Listed",
+    TOTAL_PRODUCTS: STR_PRODUCTS_LISTED,
     TOTAL_SALES: "Items Sold",
     TOTAL_REVIEWS: "Reviews",
     LOADING: "Loading storefront...",
     NOT_FOUND: "Seller not found",
     NOT_FOUND_DESC: "This seller profile could not be found.",
     NO_PRODUCTS: "No products listed",
-    NO_PRODUCTS_DESC: "This seller hasn't listed any products yet.",
+    NO_PRODUCTS_DESC: STR_THIS_SELLER_HASNT_LISTED,
     NO_REVIEWS: "No reviews yet",
     NO_REVIEWS_DESC: "Be the first to review this seller's products.",
     VISIT_PROFILE: "View Full Profile",
@@ -1736,7 +1748,7 @@ export const UI_LABELS = {
     ORDERS_CHART_TITLE: "Monthly Orders",
     TOP_PRODUCTS_TITLE: "Top Products by Revenue",
     LOADING: "Loading analytics...",
-    NO_DATA: "No data available",
+    NO_DATA: STR_NO_DATA_AVAILABLE,
     MONTH_LABEL: "Month",
     REVENUE_LABEL: "Revenue",
     ORDERS_LABEL: "Orders",
@@ -1748,7 +1760,7 @@ export const UI_LABELS = {
     PAGE_SUBTITLE: "Sales performance and revenue overview",
     TOTAL_REVENUE: "Total Revenue",
     TOTAL_ORDERS: "Total Orders",
-    TOTAL_PRODUCTS: "Products Listed",
+    TOTAL_PRODUCTS: STR_PRODUCTS_LISTED,
     PUBLISHED_PRODUCTS: "Published Products",
     REVENUE_CHART_TITLE: "Revenue Last 6 Months",
     TOP_PRODUCTS_TITLE: "Top Products by Revenue",

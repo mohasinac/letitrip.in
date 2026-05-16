@@ -24,6 +24,7 @@ import {
   updateCartItemShipping,
 } from "@mohasinac/appkit";
 import type { CartDocument } from "@mohasinac/appkit";
+import { ERR_RATE_LIMIT } from "./_constants";
 
 // --- Validation schemas ----------------------------------------------------
 
@@ -84,7 +85,7 @@ export async function addToCartAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   const parsed = addToCartSchema.safeParse(input);
   if (!parsed.success)
@@ -106,7 +107,7 @@ export async function updateCartItemAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   if (!itemId || typeof itemId !== "string")
     throw new ValidationError("itemId is required");
@@ -129,7 +130,7 @@ export async function removeFromCartAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(ERR_RATE_LIMIT);
 
   if (!itemId || typeof itemId !== "string")
     throw new ValidationError("itemId is required");
@@ -162,7 +163,7 @@ export async function updateCartItemShippingAction(
 ): Promise<CartDocument> {
   const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(`cart:shipping:${user.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");
+  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   return updateCartItemShipping(user.uid, itemId, providerId, feeInPaise) as Promise<CartDocument>;
 }
 

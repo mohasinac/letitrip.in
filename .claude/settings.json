@@ -33,7 +33,8 @@
       "Bash(node scripts/claude-hooks/check-on-stop.mjs)",
       "Bash(node -e ' *)",
       "Bash(taskkill /F /IM node.exe)",
-      "Bash(taskkill //F //IM node.exe)"
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(node scripts/audit-code-quality.mjs --verbose)"
     ],
     "additionalDirectories": [
       "d:\\proj\\letitrip.in\\src\\app\\api\\store\\reviews\\[id]",

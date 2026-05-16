@@ -100,16 +100,68 @@ export default function Page() {
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
+  return renderPage({ filtered, loading, search, setSearch, sort, total, totalPages, page, table, deletingId, handleDelete });
+}
+
+function renderCategoryRow(
+  cat: CategoryRow,
+  deletingId: string | null,
+  handleDelete: (id: string, name: string) => void,
+) {
+  return (
+    <Row
+      key={cat.id}
+      align="center"
+      gap="md"
+      className="bg-[var(--appkit-color-surface)] px-4 py-3 hover:bg-[var(--appkit-color-surface-raised)] transition-colors"
+    >
+      <Div className="flex-1 min-w-0">
+        <Row gap="xs" align="center" className="flex-wrap">
+          <Text className="text-sm font-medium truncate">{cat.name}</Text>
+          {cat.itemCode && <Badge variant="secondary" className="text-[10px]">{cat.itemCode}</Badge>}
+          {typeof cat.productCount === "number" && (
+            <Badge variant="primary" className="text-[10px]">{cat.productCount} listing{cat.productCount !== 1 ? "s" : ""}</Badge>
+          )}
+        </Row>
+        {cat.description && <Text variant="secondary" className="mt-0.5 text-xs truncate">{cat.description}</Text>}
+      </Div>
+      <Row gap="xs" align="center" className="shrink-0">
+        <Button variant="outline" size="sm" asChild>
+          <Link href={String(ROUTES.PUBLIC.SUBLISTING_CATEGORY(cat.id))} target="_blank" rel="noopener noreferrer">View</Link>
+        </Button>
+        <Button variant="outline" size="sm" asChild>
+          <Link href={String(ROUTES.STORE.SUBLISTING_CATEGORIES_EDIT(cat.id))}>Edit</Link>
+        </Button>
+        <Button variant="danger" size="sm" isLoading={deletingId === cat.id} onClick={() => handleDelete(cat.id, cat.name)}>
+          Delete
+        </Button>
+      </Row>
+    </Row>
+  );
+}
+
+function renderPage({
+  filtered, loading, search, setSearch, sort, total, totalPages, page, table, deletingId, handleDelete,
+}: {
+  filtered: CategoryRow[];
+  loading: boolean;
+  search: string;
+  setSearch: (v: string) => void;
+  sort: string;
+  total: number;
+  totalPages: number;
+  page: number;
+  table: ReturnType<typeof useUrlTable>;
+  deletingId: string | null;
+  handleDelete: (id: string, name: string) => void;
+}) {
   return (
     <Div className="mx-auto max-w-4xl px-4 py-6">
       <Row justify="between" align="start" className="mb-6" gap="md">
         <Div>
-          <Heading level={1} className="text-2xl font-bold">
-            Sub-listing Categories
-          </Heading>
+          <Heading level={1} className="text-2xl font-bold">Sub-listing Categories</Heading>
           <Text variant="secondary" className="mt-1 text-sm">
-            Group your listings of the same collectible across conditions, grades, or prices.
-            Buyers browsing one listing will see all others in the group.
+            Group your listings of the same collectible across conditions, grades, or prices. Buyers browsing one listing will see all others in the group.
           </Text>
         </Div>
         <Button variant="primary" size="sm" asChild>
@@ -119,19 +171,9 @@ export default function Page() {
 
       <Row gap="sm" className="mb-4" align="center">
         <Div className="flex-1">
-          <Input
-            placeholder="Search by name or item code…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            aria-label="Search sub-listing categories"
-          />
+          <Input placeholder="Search by name or item code…" value={search} onChange={(e) => setSearch(e.target.value)} aria-label="Search sub-listing categories" />
         </Div>
-        <Select
-          value={sort}
-          onChange={(e) => table.set("sort", e.target.value)}
-          aria-label="Sort categories"
-          options={SORT_OPTIONS}
-        />
+        <Select value={sort} onChange={(e) => table.set("sort", e.target.value)} aria-label="Sort categories" options={SORT_OPTIONS} />
       </Row>
 
       {loading ? (
@@ -159,60 +201,7 @@ export default function Page() {
         </Div>
       ) : (
         <Div className="divide-y divide-[var(--appkit-color-border)] rounded-xl border border-[var(--appkit-color-border)] overflow-hidden">
-          {filtered.map((cat) => (
-            <Row
-              key={cat.id}
-              align="center"
-              gap="md"
-              className="bg-[var(--appkit-color-surface)] px-4 py-3 hover:bg-[var(--appkit-color-surface-raised)] transition-colors"
-            >
-              <Div className="flex-1 min-w-0">
-                <Row gap="xs" align="center" className="flex-wrap">
-                  <Text className="text-sm font-medium truncate">{cat.name}</Text>
-                  {cat.itemCode && (
-                    <Badge variant="secondary" className="text-[10px]">
-                      {cat.itemCode}
-                    </Badge>
-                  )}
-                  {typeof cat.productCount === "number" && (
-                    <Badge variant="primary" className="text-[10px]">
-                      {cat.productCount} listing{cat.productCount !== 1 ? "s" : ""}
-                    </Badge>
-                  )}
-                </Row>
-                {cat.description && (
-                  <Text variant="secondary" className="mt-0.5 text-xs truncate">
-                    {cat.description}
-                  </Text>
-                )}
-              </Div>
-
-              <Row gap="xs" align="center" className="shrink-0">
-                <Button variant="outline" size="sm" asChild>
-                  <Link
-                    href={String(ROUTES.PUBLIC.SUBLISTING_CATEGORY(cat.id))}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View
-                  </Link>
-                </Button>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href={String(ROUTES.STORE.SUBLISTING_CATEGORIES_EDIT(cat.id))}>
-                    Edit
-                  </Link>
-                </Button>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  isLoading={deletingId === cat.id}
-                  onClick={() => handleDelete(cat.id, cat.name)}
-                >
-                  Delete
-                </Button>
-              </Row>
-            </Row>
-          ))}
+          {filtered.map((cat) => renderCategoryRow(cat, deletingId, handleDelete))}
         </Div>
       )}
 

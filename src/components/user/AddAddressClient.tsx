@@ -3,6 +3,7 @@
 
 import { useRouter } from "next/navigation";
 import { AddressForm, useCreateAddress, useToast, ROUTES } from "@mohasinac/appkit/client";
+import { Heading } from "@mohasinac/appkit";
 
 export function AddAddressClient() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export function AddAddressClient() {
 
   return (
     <div className="max-w-lg space-y-4">
-      <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Add New Address</h1>
+      <Heading level={1} className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Add New Address</Heading>
       <AddressForm
         onSubmit={async (data) => { await create.mutateAsync(data); }}
         onCancel={() => router.push(String(ROUTES.USER.ADDRESSES))}

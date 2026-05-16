@@ -2,9 +2,11 @@
 /* eslint-disable lir/no-raw-html-elements -- LR1-17: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-17) */
 
 const JSON_HEADERS = { "Content-Type": "application/json" } as const;
+const FETCH_CREDENTIALS = "include" as const;
+const CLS_CHECKOUT_BTN = "w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200";
 
 async function deleteCartItem(itemId: string) {
-  return fetch(`/api/cart/${encodeURIComponent(itemId)}`, { method: "DELETE", credentials: "include" });
+  return fetch(`/api/cart/${encodeURIComponent(itemId)}`, { method: "DELETE", credentials: FETCH_CREDENTIALS });
 }
 
 async function addToWishlistAndRemoveFromCart(item: CartItem, failedIds: string[]) {
@@ -12,7 +14,7 @@ async function addToWishlistAndRemoveFromCart(item: CartItem, failedIds: string[
     method: "POST",
     headers: JSON_HEADERS,
     body: JSON.stringify({ productId: item.productId }),
-    credentials: "include",
+    credentials: FETCH_CREDENTIALS,
   });
   if (!res.ok) { failedIds.push(item.productId); return; }
   await deleteCartItem(item.id);
@@ -362,7 +364,7 @@ export function CartRouteClient() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code }),
-        credentials: "include",
+        credentials: FETCH_CREDENTIALS,
       });
       const data = await res.json() as { data?: AppliedCoupon; error?: string };
       if (!res.ok) {
@@ -400,7 +402,7 @@ export function CartRouteClient() {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ code }),
-          credentials: "include",
+          credentials: FETCH_CREDENTIALS,
         }).catch(() => {});
         refetch?.();
       }
@@ -439,7 +441,7 @@ export function CartRouteClient() {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ itemIds: next ? Array.from(next) : null }),
-          credentials: "include",
+          credentials: FETCH_CREDENTIALS,
         }).catch(() => {});
       }
     },
@@ -453,7 +455,7 @@ export function CartRouteClient() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ itemIds: null }),
-        credentials: "include",
+        credentials: FETCH_CREDENTIALS,
       }).catch(() => {});
     }
   }, [isAuthenticated]);
@@ -550,7 +552,7 @@ export function CartRouteClient() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ productId }),
-          credentials: "include",
+          credentials: FETCH_CREDENTIALS,
         });
         if (!wishlistRes.ok) {
           const errData = (await wishlistRes.json().catch(() => ({}))) as { code?: string };
@@ -563,7 +565,7 @@ export function CartRouteClient() {
         }
         await fetch(`/api/cart/${encodeURIComponent(cartItemId)}`, {
           method: "DELETE",
-          credentials: "include",
+          credentials: FETCH_CREDENTIALS,
         });
         setMoveableIds((prev) => { const next = new Set(prev); next.delete(productId); return next; });
         refetch?.();
@@ -592,7 +594,7 @@ export function CartRouteClient() {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ quantity: qty }),
-          credentials: "include",
+          credentials: FETCH_CREDENTIALS,
         });
         if (!res.ok) {
           showToast("Could not update quantity. Please try again.", "error");
@@ -617,7 +619,7 @@ export function CartRouteClient() {
       try {
         const res = await fetch(`/api/cart/${encodeURIComponent(id)}`, {
           method: "DELETE",
-          credentials: "include",
+          credentials: FETCH_CREDENTIALS,
         });
         if (!res.ok) {
           showToast("Could not remove item. Please try again.", "error");
@@ -904,21 +906,21 @@ export function CartRouteClient() {
           {isEmpty || selectedCount === 0 || hasOnlyOos ? (
             <Button
               disabled
-              className="w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+              className={CLS_CHECKOUT_BTN}
             >
               Checkout
             </Button>
           ) : !isAuthenticated ? (
             <Button
               onClick={() => requireAuth(ACTION_ID.CHECKOUT, () => {})}
-              className="w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+              className={CLS_CHECKOUT_BTN}
             >
               Checkout
             </Button>
           ) : (
             <Button
               asChild
-              className="w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+              className={CLS_CHECKOUT_BTN}
             >
               <Link href={String(ROUTES.USER.CHECKOUT)}>
                 {!isAllSelected && selectedCount > 0

@@ -14,6 +14,51 @@
 
 let initPromise: Promise<void> | null = null;
 
+// ─── Email credential helpers ─────────────────────────────────────────────────
+
+/**
+ * Fetch the Resend API key from site settings, falling back to the env var.
+ * Extracted to avoid deeply nested try/catch inside registerProviders.
+ */
+async function getResendApiKey(
+  getSiteSettingsCredentials: () => Promise<{ resendApiKey?: string }>,
+): Promise<string> {
+  try {
+    const creds = await getSiteSettingsCredentials();
+    return creds.resendApiKey || process.env.RESEND_API_KEY || "";
+  } catch {
+    return process.env.RESEND_API_KEY || "";
+  }
+}
+
+/**
+ * Fetch the email "from" display name from site settings, falling back to env var.
+ */
+async function getEmailFromName(
+  getSingleton: () => Promise<{ emailSettings?: { fromName?: string } } | null>,
+): Promise<string> {
+  try {
+    const settings = await getSingleton();
+    return settings?.emailSettings?.fromName || process.env.EMAIL_FROM_NAME || "App";
+  } catch {
+    return process.env.EMAIL_FROM_NAME || "App";
+  }
+}
+
+/**
+ * Fetch the email "from" address from site settings, falling back to env var.
+ */
+async function getEmailFromAddress(
+  getSingleton: () => Promise<{ emailSettings?: { fromEmail?: string } } | null>,
+): Promise<string> {
+  try {
+    const settings = await getSingleton();
+    return settings?.emailSettings?.fromEmail || process.env.EMAIL_FROM || "";
+  } catch {
+    return process.env.EMAIL_FROM || "";
+  }
+}
+
 /**
  * Idempotent — safe to call multiple times; runs exactly once per process.
  */
@@ -54,30 +99,9 @@ export function initProviders(): Promise<void> {
       session: firebaseSessionProvider,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       email: (createResendProvider as any)({
-        apiKey: async () => {
-          try {
-            const creds = await siteSettingsRepository.getDecryptedCredentials();
-            return creds.resendApiKey || process.env.RESEND_API_KEY || "";
-          } catch {
-            return process.env.RESEND_API_KEY || "";
-          }
-        },
-        fromName: async () => {
-          try {
-            const settings = await siteSettingsRepository.getSingleton();
-            return settings?.emailSettings?.fromName || process.env.EMAIL_FROM_NAME || "App";
-          } catch {
-            return process.env.EMAIL_FROM_NAME || "App";
-          }
-        },
-        fromEmail: async () => {
-          try {
-            const settings = await siteSettingsRepository.getSingleton();
-            return settings?.emailSettings?.fromEmail || process.env.EMAIL_FROM || "";
-          } catch {
-            return process.env.EMAIL_FROM || "";
-          }
-        },
+        apiKey: () => getResendApiKey(() => siteSettingsRepository.getDecryptedCredentials()),
+        fromName: () => getEmailFromName(() => siteSettingsRepository.getSingleton()),
+        fromEmail: () => getEmailFromAddress(() => siteSettingsRepository.getSingleton()),
       }),
       storage: firebaseStorageProvider,
       style: tailwindAdapter,

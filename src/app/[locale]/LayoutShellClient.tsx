@@ -32,6 +32,62 @@ import { SEARCH_LABELS } from "@/constants/search";
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
+/** Build CSS custom property blocks from admin-controlled theme colors. */
+function buildThemeStyle(
+  siteTheme: {
+    primary?: string; secondary?: string; accent?: string;
+    primaryDark?: string; secondaryDark?: string; accentDark?: string;
+  } | undefined,
+): string | null {
+  if (!siteTheme) return null;
+  const lightEntries: string[] = [];
+  const darkEntries: string[] = [];
+  const DARK_SUFFIX = "Dark";
+  for (const [k, v] of Object.entries(siteTheme)) {
+    if (!v) continue;
+    if (k.endsWith(DARK_SUFFIX)) {
+      const baseKey = k.slice(0, -DARK_SUFFIX.length);
+      darkEntries.push(`--appkit-color-${baseKey}: ${v}`);
+    } else {
+      lightEntries.push(`--appkit-color-${k}: ${v}`);
+      if (!(siteTheme as Record<string, string | undefined>)[k + DARK_SUFFIX]) {
+        darkEntries.push(`--appkit-color-${k}: ${v}`);
+      }
+    }
+  }
+  const parts: string[] = [];
+  if (lightEntries.length) parts.push(`:root { ${lightEntries.join("; ")} }`);
+  if (darkEntries.length) parts.push(`.dark { ${darkEntries.join("; ")} }`);
+  return parts.length ? parts.join("\n") : null;
+}
+
+/** Map session user to the shape expected by AppLayoutShell. */
+function buildShellUser(user: ReturnType<typeof import("@mohasinac/appkit/client").useSession>["user"]): AppLayoutShellProps["user"] {
+  if (!user) return null;
+  return {
+    displayName: user.displayName,
+    email: user.email,
+    photoURL: user.photoURL,
+    role: user.role,
+    avatarMetadata: user.avatarMetadata
+      ? {
+          url: user.avatarMetadata.url,
+          position: user.avatarMetadata.position ?? { x: 50, y: 50 },
+          zoom: user.avatarMetadata.zoom ?? 1,
+        }
+      : null,
+    stats: user.stats
+      ? {
+          totalOrders: user.stats.totalOrders as number | undefined,
+          auctionsWon: user.stats.auctionsWon as number | undefined,
+          itemsSold: user.stats.itemsSold as number | undefined,
+          reviewsCount: user.stats.reviewsCount as number | undefined,
+          rating: user.stats.rating as number | undefined,
+        }
+      : null,
+  };
+}
+
 const SEARCH_RESOURCE_TYPES: SearchResourceTypeOption[] = [
   { value: "products",    label: "Products" },
   { value: "auctions",    label: "Auctions" },
@@ -149,30 +205,7 @@ export default function LayoutShellClient({
     ) : null;
 
 
-  const shellUser: AppLayoutShellProps["user"] = user
-    ? {
-        displayName: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
-        role: user.role,
-        avatarMetadata: user.avatarMetadata
-          ? {
-              url: user.avatarMetadata.url,
-              position: user.avatarMetadata.position ?? { x: 50, y: 50 },
-              zoom: user.avatarMetadata.zoom ?? 1,
-            }
-          : null,
-        stats: user.stats
-          ? {
-              totalOrders: user.stats.totalOrders as number | undefined,
-              auctionsWon: user.stats.auctionsWon as number | undefined,
-              itemsSold: user.stats.itemsSold as number | undefined,
-              reviewsCount: user.stats.reviewsCount as number | undefined,
-              rating: user.stats.rating as number | undefined,
-            }
-          : null,
-      }
-    : null;
+  const shellUser = buildShellUser(user);
 
   const footer = useMemo<AppLayoutShellProps["footer"]>(() => ({
     brandName: BRAND.NAME,
@@ -187,33 +220,7 @@ export default function LayoutShellClient({
     bottomLinks: FOOTER_BOTTOM_LINKS,
   }), []);
 
-  // Build CSS custom property blocks from admin-controlled theme colors.
-  // `:root` carries light-mode overrides; `.dark` carries dark-mode overrides.
-  // Dark-mode-specific keys (primaryDark etc.) are extracted to the .dark block;
-  // light keys without a dark counterpart also appear in .dark as fallback.
-  const themeStyle = (() => {
-    if (!siteTheme) return null;
-    const lightEntries: string[] = [];
-    const darkEntries: string[] = [];
-    const DARK_SUFFIX = "Dark";
-    for (const [k, v] of Object.entries(siteTheme)) {
-      if (!v) continue;
-      if (k.endsWith(DARK_SUFFIX)) {
-        const baseKey = k.slice(0, -DARK_SUFFIX.length);
-        darkEntries.push(`--appkit-color-${baseKey}: ${v}`);
-      } else {
-        lightEntries.push(`--appkit-color-${k}: ${v}`);
-        // fallback: if no dark variant provided, light value is reused in dark
-        if (!(siteTheme as Record<string, string | undefined>)[k + DARK_SUFFIX]) {
-          darkEntries.push(`--appkit-color-${k}: ${v}`);
-        }
-      }
-    }
-    const parts: string[] = [];
-    if (lightEntries.length) parts.push(`:root { ${lightEntries.join("; ")} }`);
-    if (darkEntries.length) parts.push(`.dark { ${darkEntries.join("; ")} }`);
-    return parts.length ? parts.join("\n") : null;
-  })();
+  const themeStyle = buildThemeStyle(siteTheme);
 
   const showScamModal =
     !scamModalDismissed &&
@@ -232,7 +239,7 @@ export default function LayoutShellClient({
       sidebarPrimaryActions={
         !user
           ? [
-              { href: String(ROUTES.AUTH.LOGIN), label: tNav("login"), variant: "solid" },
+              { href: String(ROUTES.AUTH.LOGIN), label: tNav("login"), variant: "primary" },
               { href: String(ROUTES.AUTH.REGISTER), label: tNav("register"), variant: "outline" },
             ]
           : []
