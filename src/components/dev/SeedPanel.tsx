@@ -1326,7 +1326,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
           >
             🔒 PII only
           </button>
-        </>
+        </div>
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-slate-700">
