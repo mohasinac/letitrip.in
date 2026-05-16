@@ -41,6 +41,26 @@
 
 ---
 
+### SB-UNI-T — Public listing pages + search facets: classified / digital-codes / live (2026-05-16)
+
+Extended search dropdown and created 3 public listing pages with faceted filters for the new listing types.
+
+| Area | Detail |
+|------|--------|
+| `Search.tsx` | `SearchResourceType` union extended: `\| "classified" \| "digital-codes" \| "live"`. |
+| `table-keys.ts` | Added `CITY`, `ACCEPTS_SHIPPING`, `NEGOTIABLE`, `DELIVERY_METHOD`, `SPECIES`, `JURISDICTION`. |
+| `features/classified/` | `ClassifiedFilters.tsx` (city/negotiable/acceptsShipping facets) + `ClassifiedIndexListing.tsx` + `ClassifiedListView.tsx` (SSR, `listingType==classified` sieve). |
+| `features/digital-codes/` | `DigitalCodeFilters.tsx` (deliveryMethod facet) + `DigitalCodesIndexListing.tsx` + `DigitalCodesListView.tsx`. |
+| `features/live/` | `LiveItemFilters.tsx` (species/jurisdiction/sex/transport facets) + `LiveItemsIndexListing.tsx` + `LiveItemsListView.tsx`. |
+| `guest-wishlist.ts` + `useGuestWishlist.ts` + `pending-ops.ts` | `GuestWishlistItem.type` + `WishlistOp.type` extended with 3 new types. |
+| `server-entry.ts` + `index.ts` | 3 RSC views exported from server-entry; 3 client IndexListing components exported from index. |
+| `route-map.ts` | `ROUTES.PUBLIC.{CLASSIFIED,CLASSIFIED_DETAIL,DIGITAL_CODES,DIGITAL_CODE_DETAIL,LIVE,LIVE_DETAIL}` added. |
+| Page shims | `classified/page.tsx`, `digital-codes/page.tsx`, `live/page.tsx` — 3 public listing pages. |
+| `LayoutShellClient.tsx` + `search/page.tsx` | `SEARCH_RESOURCE_TYPES` + `SEARCH_ROUTE_MAP` updated with 3 new entries each. |
+| Quality | Deep-nesting violations fixed via `handleToggleWishlist` helper. `npm run check` exits 0. appkit rebuilt v2.7.29. |
+
+---
+
 ### SB-UNI-R — Per-type seller create/edit forms: classified / digital-code / live (2026-05-16)
 
 Extended `SellerProductShell` with all three new listing types and shipped 9 page shims + routes.

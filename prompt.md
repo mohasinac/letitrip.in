@@ -133,26 +133,29 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — SB-UNI-R: Per-type seller create/edit forms (classified/digital-code/live) (2026-05-16)
+### ✅ LAST COMPLETED — SB-UNI-T: Public listing pages + search facets for classified/digital-codes/live (2026-05-16)
 
-- Extended `ProductListingMode` union + `SellerProductDraft` with 20 new fields (city/locality/contact/shipping/negotiable for classified; delivery/pool/instructions/expiry for digital-code; species/age/sex/care/transport/fee/jurisdictions/cites for live).
-- Added `StepClassifiedSettings`, `StepDigitalCodeSettings`, `StepLiveItemSettings` step components in `SellerProductShell.tsx`.
-- Wired all three into `typeSpecificStep`, `listingTypeLabel`, `editSections`, and edit-mode section JSX.
-- Added 9 seller page shims (list/new/edit × 3 types): `store/classified`, `store/digital-codes`, `store/live`.
-- Added `ROUTES.STORE.CLASSIFIED/CLASSIFIED_NEW/CLASSIFIED_EDIT`, `DIGITAL_CODES/DIGITAL_CODES_NEW/DIGITAL_CODES_EDIT`, `LIVE_ITEMS/LIVE_ITEMS_NEW/LIVE_ITEMS_EDIT` to route-map.ts.
+- Extended `SearchResourceType` union with `"classified" | "digital-codes" | "live"` in `Search.tsx`.
+- Added `ROUTES.PUBLIC.CLASSIFIED / CLASSIFIED_DETAIL / DIGITAL_CODES / DIGITAL_CODE_DETAIL / LIVE / LIVE_DETAIL` to route-map.ts.
+- Added `TABLE_KEYS.CITY / ACCEPTS_SHIPPING / NEGOTIABLE / DELIVERY_METHOD / SPECIES / JURISDICTION` constants.
+- Created 3 appkit feature folders: `features/classified/`, `features/digital-codes/`, `features/live/` — each with `XFilters.tsx`, `XIndexListing.tsx`, `XListView.tsx`, `index.ts`.
+- Extended `GuestWishlistItem.type` + all hook/pending-ops type annotations to include the 3 new types.
+- Exported 3 RSC views from `server-entry.ts`; exported 3 index listing components from `index.ts`.
+- Created 3 public page shims: `/classified/page.tsx`, `/digital-codes/page.tsx`, `/live/page.tsx`.
+- Wired `SEARCH_RESOURCE_TYPES` + `SEARCH_ROUTE_MAP` in `LayoutShellClient.tsx` + `search/page.tsx`.
+- Fixed deep-nesting audit violations in 3 listing components (extracted `handleToggleWishlist`).
+- `npm run check` exits 0 (0 errors, 529 warnings pre-existing). appkit rebuilt v2.7.29.
+
+### ✅ Previous — SB-UNI-R: Per-type seller create/edit forms (classified/digital-code/live) (2026-05-16)
+
+- Extended `ProductListingMode` union + `SellerProductDraft` with 20 new fields.
+- Added `StepClassifiedSettings`, `StepDigitalCodeSettings`, `StepLiveItemSettings` step components.
+- Added 9 seller page shims (list/new/edit × 3 types). ROUTES.STORE + STORE_NAV_GROUPS wired.
 - Extended `listingType` enum in both appkit product API Zod schemas + `request-schemas.ts`.
-- Wired all 3 into `STORE_NAV_GROUPS` Listings section.
-- `npm run check` exits 0 (0 errors, 520 warnings pre-existing). appkit rebuilt v2.7.28.
 
-### ✅ Previous — S-infra-indexes: Firestore composite index audit + 5 missing indexes deployed (2026-05-16)
+### 🔄 CURRENT — Tier SB-UNI Phase 3–9: CTA sweeps
 
-- Full audit of all repository queries vs. deployed index set — 14 candidates checked against source code, 5 confirmed missing.
-- Added: `offers(storeId, status, createdAt ASC)` · `blogPosts(status, isFeatured, publishedAt DESC)` · `productTemplates(storeId, createdAt DESC)` · `bids(productId, userId, status)` · `events(status, type, startsAt ASC)`.
-- `firebase deploy --only firestore:indexes --force` — clean, 0 errors. `vercel --prod` deployed.
-
-### 🔄 CURRENT — Tier SB-UNI Phase 3–9: CTA sweeps + search facets
-
-*(SB-UNI-R completed 2026-05-16 — per-type seller forms for classified/digital-code/live. Next: SB-UNI-T (search facets) or SB-UNI-W-2 (public CTA sweep).)*
+*(SB-UNI-T completed 2026-05-16 — public listing pages + search facets for classified/digital-codes/live. Next: SB-UNI-W-2/3/4 (CTA sweep public/seller/admin) or SB-UNI-Y FormShell migration.)*
 
 ### ⏳ NEXT UP
 
