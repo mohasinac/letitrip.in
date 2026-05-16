@@ -1,6 +1,5 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-21: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-21) */
-import { AdminDashboardView, ROUTES, Text } from "@mohasinac/appkit/client";
+import { AdminDashboardView, ROUTES, Text, Div, Button } from "@mohasinac/appkit/client";
 import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -36,12 +35,13 @@ function ToggleRow({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 py-3 border-b border-[var(--appkit-color-border-subtle)] last:border-0">
-      <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-[var(--appkit-color-text)]">{label}</div>
-        <div className="text-xs text-[var(--appkit-color-text-muted)] mt-0.5">{description}</div>
-      </div>
-      <button
+    <Div className="flex items-center justify-between gap-4 py-3 border-b border-[var(--appkit-color-border-subtle)] last:border-0">
+      <Div className="flex-1 min-w-0">
+        <Div className="text-sm font-medium text-[var(--appkit-color-text)]">{label}</Div>
+        <Div className="text-xs text-[var(--appkit-color-text-muted)] mt-0.5">{description}</Div>
+      </Div>
+      <Button
+        variant="ghost"
         role="switch"
         aria-checked={enabled}
         onClick={() => onChange(!enabled)}
@@ -49,13 +49,13 @@ function ToggleRow({
           enabled ? "bg-primary" : "bg-zinc-300 dark:bg-slate-600"
         }`}
       >
-        <span
+        <Div
           className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${
             enabled ? "left-5" : "left-1"
           }`}
         />
-      </button>
-    </div>
+      </Button>
+    </Div>
   );
 }
 
@@ -125,31 +125,31 @@ export default function Page() {
     <AdminDashboardView
       labels={{ title: "Admin Dashboard" }}
       renderQuickActions={() => (
-        <div className="space-y-8">
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Div className="space-y-8">
+          <Div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {QUICK_ACTIONS.map(({ label, href, Icon }) => (
               <Link
                 key={label}
                 href={String(href)}
                 className="group flex items-center gap-3 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3.5 text-sm font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
               >
-                <span className="flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center" style={{ background: BRAND_GRAD }}>
+                <Div className="flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center" style={{ background: BRAND_GRAD }}>
                   <Icon className="w-3.5 h-3.5 text-white" />
-                </span>
+                </Div>
                 {label}
               </Link>
             ))}
-          </div>
+          </Div>
 
-          <div className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-sm font-semibold text-[var(--appkit-color-text)]">Dev Settings</span>
+          <Div className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-5">
+            <Div className="flex items-center gap-2 mb-4">
+              <Div className="text-sm font-semibold text-[var(--appkit-color-text)]">Dev Settings</Div>
               {(prefs.mockRazorpay || prefs.mockShiprocket || adminBypassEnabled) && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium">
+                <Div className="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium">
                   Mock active
-                </span>
+                </Div>
               )}
-            </div>
+            </Div>
             <ToggleRow
               label="Mock Razorpay"
               description={prefs.mockRazorpay ? "Routing to /api/dev/mock-razorpay" : "Use mock instead of live Razorpay keys"}
@@ -174,7 +174,7 @@ export default function Page() {
               enabled={adminBypassEnabled}
               onChange={toggleAdminBypass}
             />
-            <div className="flex items-center justify-between gap-4 py-3">
+            <Div className="flex items-center justify-between gap-4 py-3">
               <>
                 <Text className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Seed Data</Text>
                 <Text className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Load or reset Firestore seed collections</Text>
@@ -185,9 +185,9 @@ export default function Page() {
               >
                 Open Seed Panel →
               </Link>
-            </div>
-          </div>
-        </div>
+            </Div>
+          </Div>
+        </Div>
       )}
     />
   );

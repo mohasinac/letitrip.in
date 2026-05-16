@@ -26,6 +26,9 @@ import {
   sendConsentOtpAction,
   verifyConsentOtpAction,
 } from "@/actions/checkout.actions";
+import { UI_LABELS } from "@/constants/ui";
+
+const CK = UI_LABELS.CHECKOUT;
 
 // --- Razorpay helpers --------------------------------------------------------
 
@@ -122,14 +125,12 @@ function renderAddressDrawer({
   );
 }
 
-const STEP_LABELS = ["Shipping Address", "Identity Verification", "Payment"];
-
 function renderStepIndicator(activeStep: number, totalSteps: number) {
   return (
     <Text className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
       Step {activeStep + 1} of {totalSteps}:{" "}
       <span className="font-medium text-zinc-700 dark:text-zinc-300">
-        {STEP_LABELS[activeStep] ?? ""}
+        {CK.STEP_LABELS[activeStep] ?? ""}
       </span>
     </Text>
   );
@@ -148,7 +149,7 @@ function renderAddressStep({
 }) {
   return (
     <CheckoutAddressStep
-      labels={{ title: "Select Shipping Address" }}
+      labels={{ title: CK.SELECT_ADDRESS }}
       addresses={addresses}
       selectedAddressId={selectedAddress?.id ?? null}
       getAddressId={(a) => a.id}
@@ -225,14 +226,13 @@ function renderOtpConsentStep({
   return (
     <Div className={STEP_CARD_CLS}>
       <Heading level={2} className="mb-1 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-        Verify Your Identity
+        {CK.OTP_CONSENT_HEADING}
       </Heading>
       <Text className={STEP_SUBLABEL_CLS}>
-        Step 2 of 3 — Identity Verification
+        {CK.OTP_CONSENT_SUBLABEL}
       </Text>
       <Text className="mb-5 text-sm text-zinc-600 dark:text-zinc-400">
-        To keep your account secure, we need to verify it's really you before placing this order.
-        We'll send a one-time code to{" "}
+        {CK.OTP_CONSENT_BODY_PREFIX}{" "}
         <span className="font-medium text-zinc-800 dark:text-zinc-200">{maskedDisplay}</span>.
       </Text>
       <Stack gap="md">
@@ -242,15 +242,15 @@ function renderOtpConsentStep({
           disabled={isSendingOtp}
           className={PRIMARY_BTN_CLS}
         >
-          {isSendingOtp ? "Sending code…" : "Send verification code"}
+          {isSendingOtp ? CK.OTP_SENDING_BTN : CK.OTP_SEND_BTN}
         </Button>
         {adminBypassEnabled && (
           <Div className="rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/30 p-3">
             <Text className="mb-1 text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
-              Admin Test Mode
+              {CK.ADMIN_BYPASS_PANEL_LABEL}
             </Text>
             <Text className="mb-2 text-xs text-amber-600 dark:text-amber-500">
-              Skip email verification and place a test order without payment.
+              {CK.ADMIN_BYPASS_CONSENT_DESC}
             </Text>
             <Button
               type="button"
@@ -258,7 +258,7 @@ function renderOtpConsentStep({
               disabled={isProcessingPayment}
               className="w-full border border-amber-400 dark:border-amber-600 bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-900/60 text-sm"
             >
-              Skip Verification — Admin Bypass
+              {CK.ADMIN_BYPASS_CONSENT_BTN}
             </Button>
           </Div>
         )}
@@ -289,22 +289,22 @@ function renderOtpStep({
   return (
     <Div className={STEP_CARD_CLS}>
       <Heading level={2} className="mb-1 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-        Enter Verification Code
+        {CK.OTP_ENTRY_HEADING}
       </Heading>
       <Text className={STEP_SUBLABEL_CLS}>
-        Step 2 of 3 — Identity Verification
+        {CK.OTP_ENTRY_SUBLABEL}
       </Text>
       <Text className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
-        A 6-digit code was sent to{" "}
-        <span className="font-medium text-zinc-800 dark:text-zinc-200">{maskedEmail}</span>.
-        Enter it below to continue.
+        {CK.OTP_ENTRY_BODY_PREFIX}{" "}
+        <span className="font-medium text-zinc-800 dark:text-zinc-200">{maskedEmail}</span>.{" "}
+        {CK.OTP_ENTRY_BODY_SUFFIX}
       </Text>
       <Stack gap="md">
         <Input
           type="text"
           inputMode="numeric"
           maxLength={6}
-          placeholder="6-digit code"
+          placeholder={CK.OTP_PLACEHOLDER}
           value={otpCode}
           onChange={(e) => setOtpCode(e.target.value)}
           className="tracking-widest text-center text-xl"
@@ -318,7 +318,7 @@ function renderOtpStep({
           disabled={isVerifyingOtp || otpCode.length < 6}
           className={PRIMARY_BTN_CLS}
         >
-          {isVerifyingOtp ? "Verifying…" : "Verify & Continue"}
+          {isVerifyingOtp ? CK.OTP_VERIFYING_BTN : CK.OTP_VERIFY_BTN}
         </Button>
         <Button
           type="button"
@@ -327,7 +327,7 @@ function renderOtpStep({
           disabled={isSendingOtp}
           className="w-full text-sm text-zinc-600 dark:text-zinc-400 underline"
         >
-          {isSendingOtp ? "Resending…" : "Resend code"}
+          {isSendingOtp ? CK.OTP_RESENDING_BTN : CK.OTP_RESEND_BTN}
         </Button>
       </Stack>
     </Div>
@@ -357,11 +357,11 @@ function renderPaymentStep({
     <Div className={STEP_CARD_CLS}>
       {step !== "processing" && (
         <Text className={STEP_SUBLABEL_CLS}>
-          Step 3 of 3 — Payment
+          {CK.PAYMENT_SUBLABEL}
         </Text>
       )}
       <Heading level={2} className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-        {step === "processing" ? "Processing your order…" : "Choose Payment Method"}
+        {step === "processing" ? CK.PAYMENT_PROCESSING_HEADING : CK.PAYMENT_HEADING}
       </Heading>
       {step === "processing" ? (
         <Div className="h-20 animate-pulse rounded-lg bg-zinc-100 dark:bg-slate-800" />
@@ -376,7 +376,7 @@ function renderPaymentStep({
             disabled={isProcessingPayment || cartIsEmpty}
             className={PRIMARY_BTN_CLS}
           >
-            Pay Online (Razorpay)
+            {CK.PAYMENT_ONLINE_BTN}
           </Button>
           <Button
             type="button"
@@ -384,12 +384,12 @@ function renderPaymentStep({
             disabled={isProcessingPayment || cartIsEmpty}
             className="w-full border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-slate-700"
           >
-            Cash on Delivery
+            {CK.PAYMENT_COD_BTN}
           </Button>
           {adminBypassEnabled && (
             <Div className="mt-1 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/30 p-3">
               <Text className="mb-2 text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
-                Admin Test Mode
+                {CK.ADMIN_BYPASS_PANEL_LABEL}
               </Text>
               <Button
                 type="button"
@@ -397,10 +397,10 @@ function renderPaymentStep({
                 disabled={isProcessingPayment || cartIsEmpty}
                 className="w-full border border-amber-400 dark:border-amber-600 bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-900/60 text-sm"
               >
-                No Payment — Admin Bypass Order
+                {CK.ADMIN_BYPASS_PAYMENT_BTN}
               </Button>
               <Text className="mt-1.5 text-xs text-amber-600 dark:text-amber-500">
-                Creates a real order record. No money charged.
+                {CK.ADMIN_BYPASS_PAYMENT_NOTE}
               </Text>
             </Div>
           )}
@@ -428,12 +428,12 @@ function renderOrderSummary({
   return (
     <Div className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
       <Heading level={3} className="mb-3 text-base font-semibold text-zinc-900 dark:text-zinc-100">
-        Order Summary
+        {CK.ORDER_SUMMARY_HEADING}
       </Heading>
       {selectedAddress && (
         <Div className="mb-3 rounded-lg bg-zinc-50 dark:bg-slate-800 p-3">
           <Text className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase mb-1">
-            Shipping to
+            {CK.SHIPPING_TO}
           </Text>
           <Text className="text-sm text-zinc-900 dark:text-zinc-100">
             {selectedAddress.fullName}
@@ -444,7 +444,7 @@ function renderOrderSummary({
         </Div>
       )}
       <Div className="flex justify-between items-center border-t border-zinc-200 dark:border-slate-700 pt-3">
-        <Text className="font-semibold text-zinc-900 dark:text-zinc-100">Total</Text>
+        <Text className="font-semibold text-zinc-900 dark:text-zinc-100">{CK.ORDER_SUMMARY_TOTAL}</Text>
         <Text className="font-semibold text-zinc-900 dark:text-zinc-100">{formattedTotal}</Text>
       </Div>
       {step === "address" && (
@@ -454,7 +454,7 @@ function renderOrderSummary({
           disabled={!selectedAddress || addressesLoading}
           className="mt-4 w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
         >
-          Continue to Verification
+          {CK.ADDRESS_CONTINUE_BTN}
         </Button>
       )}
       {actionError && step === "address" && (
@@ -536,7 +536,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
       const result = await sendConsentOtpAction(selectedAddress.id);
       setMaskedEmail(result.maskedEmail);
       setStep("otp");
-      showToast("Verification code sent to your email.", "success");
+      showToast(CK.OTP_SENT_TOAST, "success");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to send OTP";
       setActionError(msg);
@@ -553,9 +553,9 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
     try {
       await verifyConsentOtpAction(selectedAddress.id, otpCode);
       setStep("payment");
-      showToast("Identity verified. Choose a payment method.", "success");
+      showToast(CK.OTP_VERIFIED_TOAST, "success");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Invalid code. Please try again.";
+      const msg = err instanceof Error ? err.message : CK.OTP_ERROR_DEFAULT;
       setOtpError(msg);
       showToast(msg, "error");
     } finally {
@@ -696,7 +696,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
       }
       const data = await res.json().catch(() => ({}));
       const firstOrderId = (data?.data?.orderIds as string[] | undefined)?.[0];
-      showToast("Admin bypass order placed (test). No real payment charged.", "success");
+      showToast(CK.ADMIN_BYPASS_TOAST, "success");
       router.push(firstOrderId ? `/checkout/success?orderId=${firstOrderId}` : "/checkout/success");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Admin bypass failed. Please retry.";
@@ -735,7 +735,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
     <Div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       {renderAddressDrawer({ addAddressDrawerOpen, setAddAddressDrawerOpen, handleAddressFormSubmit, isCreatingAddress })}
       <CheckoutView
-        labels={{ title: "Checkout" }}
+        labels={{ title: CK.TITLE }}
         totalSteps={3}
         activeStep={stepIndex}
         renderStepIndicator={(activeStep, totalSteps) => renderStepIndicator(activeStep, totalSteps)}

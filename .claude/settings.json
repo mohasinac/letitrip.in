@@ -34,7 +34,10 @@
       "Bash(node -e ' *)",
       "Bash(taskkill /F /IM node.exe)",
       "Bash(taskkill //F //IM node.exe)",
-      "Bash(node scripts/audit-code-quality.mjs --verbose)"
+      "Bash(node scripts/audit-code-quality.mjs --verbose)",
+      "Bash(npm view *)",
+      "Bash(npm run audit:*)",
+      "Bash(vercel logs *)"
     ],
     "additionalDirectories": [
       "d:\\proj\\letitrip.in\\src\\app\\api\\store\\reviews\\[id]",

@@ -30,9 +30,34 @@ const PUBLIC_LISTING_CACHE_CONTROL =
 
 const LISTING_TYPE_CLAUSE = sieveFilter(PRODUCT_FIELDS.LISTING_TYPE, SIEVE_OP.EQ, "pre-order");
 
+const SAFE_PRE_ORDER_FILTER_FIELDS = new Set([
+  PRODUCT_FIELDS.STATUS,
+  PRODUCT_FIELDS.CATEGORY,
+  PRODUCT_FIELDS.CATEGORY_SLUG,
+  PRODUCT_FIELDS.BRAND,
+  PRODUCT_FIELDS.STORE_ID,
+  PRODUCT_FIELDS.CONDITION,
+  PRODUCT_FIELDS.PRICE,
+  PRODUCT_FIELDS.PRE_ORDER_DELIVERY_DATE,
+  PRODUCT_FIELDS.PRE_ORDER_PRODUCTION_STATUS,
+  PRODUCT_FIELDS.FEATURED,
+  PRODUCT_FIELDS.IS_PROMOTED,
+]);
+
+function validateSieveFilters(raw: string, allowed: ReadonlySet<string>): string {
+  return raw
+    .split(",")
+    .map((c) => c.trim())
+    .filter((c) => {
+      const m = c.match(/^([^<>=!@]+)\s*(?:==|!=|<=|>=|<|>|@=\*?)/);
+      return m ? allowed.has(m[1].trim()) : false;
+    })
+    .join(",");
+}
+
 function mergeListingTypeFilter(filters: string | null | undefined): string {
-  if (!filters) return LISTING_TYPE_CLAUSE;
-  const parts = filters
+  const safe = filters ? validateSieveFilters(filters, SAFE_PRE_ORDER_FILTER_FIELDS) : "";
+  const parts = safe
     .split(",")
     .map((c) => c.trim())
     .filter(Boolean)

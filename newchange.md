@@ -41,6 +41,24 @@
 
 ---
 
+### S-product-form-shell — Wire paginated pickers across all listing-type forms (2026-05-16)
+
+**Root cause fixed:** `SellerCreateProductView` / `SellerEditProductView` accept optional
+`renderCategorySelector` + `renderBrandSelector` render props. When absent they fall back
+to `<input type="text">` — sellers could only free-type categories and brands instead of
+searching the paginated Firestore collections.
+
+| Area | Detail |
+|------|--------|
+| `src/components/store/SellerProductFormShell.tsx` | New `"use client"` wrapper exports `StoreCreateProductShell` + `StoreEditProductShell`. Both inject `CategoryInlineSelect` (paginated search, 20/page, no create) and `BrandInlineSelect` (paginated search + inline "Create Brand" drawer). Render-prop functions lifted to module scope to avoid per-render re-allocation. |
+| **15 pages rewired** | All `SellerCreateProductView` / `SellerEditProductView` usages in consumer pages replaced with wrapper: `store/products` (create+edit), `store/auctions` (create+edit), `store/live` (create+edit), `store/prize-draws` (create+edit), `store/pre-orders` (create+edit), `store/classified` (create+edit), `store/digital-codes` (create+edit), `admin/prize-draws` (edit). Admin products pages already wired internally via `AdminProductEditorView`. |
+| **Firebase deploy** | Ran `firebase-merge.mjs` then `firebase deploy --only firestore:indexes,firestore:rules,storage,database` — 322 composite indexes deployed successfully. |
+| **`scripts/audit-product-form-shell.mjs`** | New audit: walks `src/` and flags any `<SellerCreateProductView` or `<SellerEditProductView` JSX that bypasses the shell wrappers. Suppress per-line with `// audit-product-form-shell-ok` if custom render props are needed. |
+| `package.json` | Added `audit:product-form-shell` script; appended to `check:audits` chain. |
+| Quality gates | `npm run check:audits` → all clean (including new audit). `npm run check:types` → 0 errors. |
+
+---
+
 ### S-uni-W4 — Admin CTA registry sweep (2026-05-16)
 
 | Area | Detail |

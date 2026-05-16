@@ -14,6 +14,7 @@ const STR_VERIFIED_PURCHASE = "Verified Purchase";
 const STR_TAGS_COMMA_SEP = "Tags (comma-separated)";
 const STR_TRACKING_NUMBER = "Tracking Number";
 const STR_SHIPPING_ADDRESS = "Shipping Address";
+const STR_COD = "Cash on Delivery";
 const STR_PRODUCTS_LISTED = "Products Listed";
 
 export const UI_LABELS = {
@@ -1451,23 +1452,60 @@ export const UI_LABELS = {
   // Checkout page labels
   CHECKOUT: {
     TITLE: "Checkout",
+    // Step indicator
+    STEP_LABELS: [STR_SHIPPING_ADDRESS, "Identity Verification", "Payment"] as readonly string[],
     STEP_ADDRESS: STR_SHIPPING_ADDRESS,
-    STEP_REVIEW: "Review Order",
+    STEP_IDENTITY: "Identity Verification",
     STEP_PAYMENT: "Payment",
-    STEP_1_OF_2: "Step 1 of 2",
-    STEP_2_OF_2: "Step 2 of 2",
-    SELECT_ADDRESS: "Select a shipping address",
+    // Address step
+    SELECT_ADDRESS: "Select Shipping Address",
     NO_ADDRESSES: STR_NO_SAVED_ADDRESSES,
     ADD_ADDRESS: "Add a New Address",
+    ADDRESS_CONTINUE_BTN: "Continue to Verification",
+    SHIPPING_TO: "Shipping to",
+    ORDER_SUMMARY_HEADING: "Order Summary",
+    ORDER_SUMMARY_TOTAL: "Total",
+    // OTP consent step
+    OTP_CONSENT_HEADING: "Verify Your Identity",
+    OTP_CONSENT_SUBLABEL: "Step 2 of 3 — Identity Verification",
+    OTP_CONSENT_BODY_PREFIX: "To keep your account secure, we need to verify it's really you before placing this order. We'll send a one-time code to",
+    OTP_SEND_BTN: "Send verification code",
+    OTP_SENDING_BTN: "Sending code…",
+    // OTP code entry step
+    OTP_ENTRY_HEADING: "Enter Verification Code",
+    OTP_ENTRY_SUBLABEL: "Step 2 of 3 — Identity Verification",
+    OTP_ENTRY_BODY_PREFIX: "A 6-digit code was sent to",
+    OTP_ENTRY_BODY_SUFFIX: "Enter it below to continue.",
+    OTP_VERIFY_BTN: "Verify & Continue",
+    OTP_VERIFYING_BTN: "Verifying…",
+    OTP_RESEND_BTN: "Resend code",
+    OTP_RESENDING_BTN: "Resending…",
+    OTP_PLACEHOLDER: "6-digit code",
+    OTP_ERROR_DEFAULT: "Invalid code. Please try again.",
+    OTP_SENT_TOAST: "Verification code sent to your email.",
+    OTP_VERIFIED_TOAST: "Identity verified. Choose a payment method.",
+    // Payment step
+    PAYMENT_HEADING: "Choose Payment Method",
+    PAYMENT_PROCESSING_HEADING: "Processing your order…",
+    PAYMENT_SUBLABEL: "Step 3 of 3 — Payment",
+    PAYMENT_ONLINE_BTN: "Pay Online (Razorpay)",
+    PAYMENT_COD_BTN: STR_COD,
+    // Admin bypass
+    ADMIN_BYPASS_PANEL_LABEL: "Admin Test Mode",
+    ADMIN_BYPASS_CONSENT_BTN: "Skip Verification — Admin Bypass",
+    ADMIN_BYPASS_CONSENT_DESC: "Skip email verification and place a test order without payment.",
+    ADMIN_BYPASS_PAYMENT_BTN: "No Payment — Admin Bypass Order",
+    ADMIN_BYPASS_PAYMENT_NOTE: "Creates a real order record. No money charged.",
+    ADMIN_BYPASS_TOAST: "Admin bypass order placed (test). No real payment charged.",
+    // Legacy / other
+    STEP_REVIEW: "Review Order",
     DELIVERY_TO: "Deliver to",
     CHANGE_ADDRESS: "Change",
     REVIEW_TITLE: "Review Your Order",
     ORDER_ITEMS: "Order Items",
-    SHIPPING_TO: "Shipping To",
     PAYMENT_METHOD: "Payment Method",
-    COD: "Cash on Delivery",
+    COD: STR_COD,
     ONLINE_PAYMENT: "Online Payment",
-    ONLINE_PAYMENT_HINT: "(Razorpay — coming soon)",
     PLACE_ORDER: "Place Order",
     PLACING_ORDER: "Placing Order...",
     BACK_TO_CART: "Back to Cart",
@@ -1488,7 +1526,7 @@ export const UI_LABELS = {
     ORDER_DETAILS: "Order Details",
     ORDER_ID_LABEL: "Order ID",
     PAYMENT_METHOD_LABEL: "Payment Method",
-    COD_LABEL: "Cash on Delivery",
+    COD_LABEL: STR_COD,
     ONLINE_PAYMENT_LABEL: "Online Payment",
     SHIPPING_TO_LABEL: "Shipping To",
     QTY_LABEL: "Qty",
