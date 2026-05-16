@@ -10,8 +10,8 @@ import {
   storeRepository,
   productRepository,
   bidRepository,
-  notificationRepository,
 } from "@mohasinac/appkit";
+import { sendNotification } from "@mohasinac/appkit/server";
 import { getAdminAuth } from "@mohasinac/appkit/server";
 
 const schema = z.object({
@@ -76,16 +76,15 @@ export const POST = withProviders(
 
       // 6. Notify user
       try {
-        await notificationRepository.create({
+        await sendNotification({
           userId: uid,
           type: "account_action",
+          priority: "high",
           title: "Account permanently suspended",
-          body: `Your account has been permanently suspended. Reason: ${body!.reason}. You may appeal by emailing support@letitrip.in.`,
-          isRead: false,
-          entityId: uid,
-          entityType: "user",
-          createdAt: new Date(),
-        } as any);
+          message: `Your account has been permanently suspended. Reason: ${body!.reason}. You may appeal by emailing support@letitrip.in.`,
+          relatedId: uid,
+          relatedType: "user",
+        });
       } catch { /* non-fatal */ }
 
       return successResponse({ uid }, "User hard-banned");

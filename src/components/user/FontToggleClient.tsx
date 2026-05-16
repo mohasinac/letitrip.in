@@ -1,7 +1,6 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-16: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-16) */
 import { useEffect, useState } from "react";
-import { Text } from "@mohasinac/appkit";
+import { Text, Div, Button, Span } from "@mohasinac/appkit/ui";
 
 const FONT_KEY = "font-style";
 
@@ -27,7 +26,7 @@ export function FontToggleClient() {
   }
 
   return (
-    <div className="flex items-center justify-between rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3">
+    <Div className="flex items-center justify-between rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3">
       <>
         <Text className="text-sm font-medium text-zinc-800 dark:text-zinc-100">
           Cursive font
@@ -36,7 +35,7 @@ export function FontToggleClient() {
           Switch between Playfair Display and the default sans-serif
         </Text>
       </>
-      <button
+      <Button
         type="button"
         role="switch"
         aria-checked={cursive}
@@ -47,12 +46,12 @@ export function FontToggleClient() {
             : "bg-zinc-300 dark:bg-zinc-600"
         }`}
       >
-        <span
+        <Span
           className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0 transition-transform duration-200 ${
             cursive ? "translate-x-5" : "translate-x-0"
           }`}
         />
-      </button>
-    </div>
+      </Button>
+    </Div>
   );
 }

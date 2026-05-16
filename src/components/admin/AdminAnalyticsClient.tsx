@@ -1,7 +1,6 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-12: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-12) */
 import { useState } from "react";
-import { AdminAnalyticsView } from "@mohasinac/appkit/client";
+import { AdminAnalyticsView, Div, Label, Input } from "@mohasinac/appkit/client";
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -22,20 +21,20 @@ export function AdminAnalyticsClient() {
     <AdminAnalyticsView
       endpoint={endpoint}
       renderDateRange={() => (
-        <div className="flex flex-wrap items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900">
-          <label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+        <Div className="flex flex-wrap items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900">
+          <Label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
             From
-            <input
+            <Input
               type="date"
               value={startDate}
               max={endDate}
               onChange={(e) => setStartDate(e.target.value)}
               className="rounded-lg border border-zinc-300 bg-white px-2.5 py-1.5 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
             />
-          </label>
-          <label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+          </Label>
+          <Label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
             To
-            <input
+            <Input
               type="date"
               value={endDate}
               min={startDate}
@@ -43,8 +42,8 @@ export function AdminAnalyticsClient() {
               onChange={(e) => setEndDate(e.target.value)}
               className="rounded-lg border border-zinc-300 bg-white px-2.5 py-1.5 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
             />
-          </label>
-        </div>
+          </Label>
+        </Div>
       )}
     />
   );

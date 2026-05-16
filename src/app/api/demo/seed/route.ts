@@ -55,6 +55,7 @@ import {
   scammersSeedData,
   supportTicketsSeedData,
   productFeaturesSeedData,
+  offersSeedData,
 } from "@mohasinac/appkit";
 import {
   CAROUSEL_SLIDES_COLLECTION,
@@ -88,6 +89,7 @@ import { SCAMMER_COLLECTION } from "@mohasinac/appkit";
 import { SUPPORT_TICKET_COLLECTION } from "@mohasinac/appkit";
 import { WISHLIST_COLLECTION, HISTORY_COLLECTION } from "@mohasinac/appkit";
 import { PRODUCT_FEATURES_COLLECTION } from "@mohasinac/appkit";
+import { OFFER_COLLECTION } from "@mohasinac/appkit";
 
 type CollectionName =
   | "users"
@@ -118,7 +120,8 @@ type CollectionName =
   | "couponUsage"
   | "scammerProfiles"
   | "supportTickets"
-  | "productFeatures";
+  | "productFeatures"
+  | "offers";
 
 interface SeedRequest {
   action: "load" | "delete";
@@ -157,6 +160,7 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   scammerProfiles: SCAMMER_COLLECTION,
   supportTickets: SUPPORT_TICKET_COLLECTION,
   productFeatures: PRODUCT_FEATURES_COLLECTION,
+  offers: OFFER_COLLECTION,
 };
 
 // SB-UNI-A 2026-05-13 — addresses merges both legacy seed files; each entry
@@ -209,6 +213,7 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   scammerProfiles: scammersSeedData,
   supportTickets: supportTicketsSeedData,
   productFeatures: productFeaturesSeedData,
+  offers: offersSeedData,
 };
 
 const PII_ENCRYPTED_COLLECTIONS = new Set<CollectionName>([
@@ -220,6 +225,7 @@ const PII_ENCRYPTED_COLLECTIONS = new Set<CollectionName>([
   "bids",
   "payouts",
   "eventEntries",
+  "offers",
 ]);
 
 /** Delete every document in a Firestore collection (in batches of 500). */

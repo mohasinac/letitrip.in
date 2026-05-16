@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-29: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-29) */
 import { useState } from "react";
 import Link from "next/link";
 import {
@@ -35,7 +34,7 @@ function SectionCard({ children }: { children: React.ReactNode }) {
       gap="md"
       className="relative rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden p-5 shadow-sm"
     >
-      <div
+      <Div
         className="absolute top-0 left-0 right-0 h-[3px]"
         style={{ background: "linear-gradient(to right,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)" }}
         aria-hidden="true"
@@ -238,7 +237,7 @@ export default function Page() {
 
       <Row gap="xs" className="mb-6 border-b border-[var(--appkit-color-border)]">
         {(Object.keys(TAB_LABELS) as Tab[]).map((tab) => (
-          <button
+          <Button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={[
@@ -249,7 +248,7 @@ export default function Page() {
             ].join(" ")}
           >
             {TAB_LABELS[tab]}
-          </button>
+          </Button>
         ))}
       </Row>
 

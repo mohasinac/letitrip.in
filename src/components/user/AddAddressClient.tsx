@@ -1,8 +1,7 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-36: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-36) */
 
 import { useRouter } from "next/navigation";
-import { AddressForm, useCreateAddress, useToast, ROUTES } from "@mohasinac/appkit/client";
+import { AddressForm, useCreateAddress, useToast, ROUTES, Div } from "@mohasinac/appkit/client";
 import { Heading } from "@mohasinac/appkit";
 
 export function AddAddressClient() {
@@ -20,7 +19,7 @@ export function AddAddressClient() {
   });
 
   return (
-    <div className="max-w-lg space-y-4">
+    <Div className="max-w-lg space-y-4">
       <Heading level={1} className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Add New Address</Heading>
       <AddressForm
         onSubmit={async (data) => { await create.mutateAsync(data); }}
@@ -29,6 +28,6 @@ export function AddAddressClient() {
         submitLabel="Save Address"
         defaultCountry="India"
       />
-    </div>
+    </Div>
   );
 }

@@ -1,8 +1,7 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-22: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-22) */
 
 import { useRouter } from "next/navigation";
-import { AddressForm, useAddress, useUpdateAddress, useToast, ROUTES } from "@mohasinac/appkit/client";
+import { AddressForm, useAddress, useUpdateAddress, useToast, ROUTES, Div } from "@mohasinac/appkit/client";
 import { Heading, Text } from "@mohasinac/appkit";
 
 interface Props {
@@ -27,11 +26,11 @@ export function EditAddressClient({ addressId }: Props) {
 
   if (isLoading) {
     return (
-      <div className="max-w-lg space-y-4 animate-pulse">
+      <Div className="max-w-lg space-y-4 animate-pulse">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="h-10 bg-zinc-200 dark:bg-slate-700 rounded-lg" />
+          <Div key={i} className="h-10 bg-zinc-200 dark:bg-slate-700 rounded-lg" />
         ))}
-      </div>
+      </Div>
     );
   }
 
@@ -42,7 +41,7 @@ export function EditAddressClient({ addressId }: Props) {
   }
 
   return (
-    <div className="max-w-lg space-y-4">
+    <Div className="max-w-lg space-y-4">
       <Heading level={1} className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Edit Address</Heading>
       <AddressForm
         initialData={address}
@@ -52,6 +51,6 @@ export function EditAddressClient({ addressId }: Props) {
         submitLabel="Update Address"
         defaultCountry="India"
       />
-    </div>
+    </Div>
   );
 }

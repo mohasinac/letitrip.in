@@ -4,8 +4,8 @@ import {
   successResponse,
   errorResponse,
   userRepository,
-  notificationRepository,
 } from "@mohasinac/appkit";
+import { sendNotification } from "@mohasinac/appkit/server";
 import { getAdminAuth } from "@mohasinac/appkit/server";
 
 export const POST = withProviders(
@@ -33,16 +33,15 @@ export const POST = withProviders(
 
       // Notify user
       try {
-        await notificationRepository.create({
+        await sendNotification({
           userId: uid,
           type: "account_action",
+          priority: "normal",
           title: "Account access restored",
-          body: "Your account access has been restored by an administrator.",
-          isRead: false,
-          entityId: uid,
-          entityType: "user",
-          createdAt: new Date(),
-        } as any);
+          message: "Your account access has been restored by an administrator.",
+          relatedId: uid,
+          relatedType: "user",
+        });
       } catch { /* non-fatal */ }
 
       return successResponse({ uid }, "User unbanned");

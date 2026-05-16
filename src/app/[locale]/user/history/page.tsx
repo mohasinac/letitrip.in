@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-23: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-23) */
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
@@ -17,6 +16,7 @@ import {
   Button,
   type GuestHistoryItem,
 } from "@mohasinac/appkit/client";
+import { Span } from "@mohasinac/appkit/ui";
 
 type FilterKey = "all" | "product" | "auction" | "preorder";
 
@@ -95,7 +95,7 @@ function HistoryRow({ item, onRemove }: HistoryRowProps) {
           {title}
         </Link>
         <Row gap="sm" className="mt-1 items-center text-xs">
-          <span className={TYPE_CHIP}>{TYPE_LABEL[item.productType]}</span>
+          <Span className={TYPE_CHIP}>{TYPE_LABEL[item.productType]}</Span>
           {item.productSnapshot?.storeName && (
             <Text variant="secondary" className="line-clamp-1 text-xs">
               {item.productSnapshot.storeName}
@@ -106,7 +106,7 @@ function HistoryRow({ item, onRemove }: HistoryRowProps) {
           </Text>
         </Row>
       </Div>
-      <button
+      <Button
         type="button"
         onClick={() => onRemove(item.productId)}
         aria-label={`Remove ${title} from history`}
@@ -116,7 +116,7 @@ function HistoryRow({ item, onRemove }: HistoryRowProps) {
         <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M6 18L18 6" />
         </svg>
-      </button>
+      </Button>
     </Row>
   );
 }
@@ -153,14 +153,14 @@ export default function UserHistoryPage() {
 
       <Row gap="sm" className="flex-wrap">
         {TABS.map((tab) => (
-          <button
+          <Button
             key={tab.key}
             type="button"
             onClick={() => setFilter(tab.key)}
             className={`${TAB_BTN_BASE} ${filter === tab.key ? TAB_BTN_ACTIVE : TAB_BTN_IDLE}`}
           >
             {tab.label}
-          </button>
+          </Button>
         ))}
       </Row>
 

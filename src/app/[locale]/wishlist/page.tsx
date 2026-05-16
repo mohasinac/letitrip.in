@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-30: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-30) */
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import {
   useWishlistWithGuest,
@@ -23,6 +22,7 @@ import {
   LoginRequiredModal,
 } from "@mohasinac/appkit/client";
 import type { EnrichedWishlistItem } from "@mohasinac/appkit/client";
+import { Span } from "@mohasinac/appkit/ui";
 import { removeFromWishlistAction } from "@/actions/wishlist.actions";
 // audit-auth-gates-ok
 
@@ -298,9 +298,9 @@ function renderWishlistFilterContent({
         <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Type</Text>
         <Stack gap="xs">
           {TYPE_OPTIONS.map((opt) => (
-            <button key={opt.value} type="button" onClick={() => setPending((p) => ({ ...p, type: opt.value }))}
+            <Button key={opt.value} type="button" onClick={() => setPending((p) => ({ ...p, type: opt.value }))}
               className={["w-full rounded-lg px-3 py-2 text-left text-sm transition-colors", pending.type === opt.value ? "bg-primary-50 dark:bg-primary-900/20 font-medium text-primary-700 dark:text-primary-300" : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"].join(" ")}
-            >{opt.label}</button>
+            >{opt.label}</Button>
           ))}
         </Stack>
       </Div>
@@ -308,7 +308,7 @@ function renderWishlistFilterContent({
         <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Price range (₹)</Text>
         <Row gap="sm">
           <Input type="number" placeholder="Min" min={0} value={pending.minPrice} onChange={(e) => setPending((p) => ({ ...p, minPrice: e.target.value }))} className="h-8 text-sm" />
-          <span className="flex items-center text-zinc-400">–</span>
+          <Span className="flex items-center text-zinc-400">–</Span>
           <Input type="number" placeholder="Max" min={0} value={pending.maxPrice} onChange={(e) => setPending((p) => ({ ...p, maxPrice: e.target.value }))} className="h-8 text-sm" />
         </Row>
       </Div>

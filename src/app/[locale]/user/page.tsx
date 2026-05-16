@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-27: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-27) */
 import {
   UserAccountHubView,
   useAuth,
@@ -34,6 +33,7 @@ export default function Page() {
             {/* gradient top accent */}
             <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: BRAND_GRAD }} aria-hidden="true" />
             {user.photoURL ? (
+              // eslint-disable-next-line lir/no-raw-media-elements
               <img
                 src={user.photoURL}
                 alt={user.displayName ?? ""}

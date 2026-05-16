@@ -1,8 +1,7 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-15: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-15) */
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Text } from "@mohasinac/appkit";
+import { Text, Div, Button } from "@mohasinac/appkit/ui";
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -37,25 +36,25 @@ export default function Page() {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center p-6 text-center">
-        <div className="space-y-3">
+      <Div className="flex min-h-screen items-center justify-center p-6 text-center">
+        <Div className="space-y-3">
           <Text className="text-lg font-semibold text-rose-600">Sign-in failed</Text>
           <Text className="text-sm text-zinc-500">{decodeURIComponent(error)}</Text>
-          <button
+          <Button
             type="button"
             onClick={() => window.close()}
             className="mt-4 rounded-lg border border-zinc-300 px-4 py-2 text-sm hover:bg-zinc-50 transition-colors"
           >
             Close window
-          </button>
-        </div>
-      </div>
+          </Button>
+        </Div>
+      </Div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <Div className="flex min-h-screen items-center justify-center">
       <Text className="text-sm text-zinc-400">Signing in… closing window</Text>
-    </div>
+    </Div>
   );
 }

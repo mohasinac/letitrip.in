@@ -1,9 +1,8 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-25: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-25) */
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { SellerCouponEditorView, Text } from "@mohasinac/appkit";
+import { SellerCouponEditorView, Text, Div } from "@mohasinac/appkit";
 import type { CouponEditorDraft } from "@mohasinac/appkit";
 import { API_ROUTES } from "@/constants/api";
 
@@ -94,28 +93,28 @@ export default function Page() {
 
   if (loadError) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <Div className="flex min-h-screen items-center justify-center">
         <Text className="text-sm text-red-600 dark:text-red-400">{loadError}</Text>
-      </div>
+      </Div>
     );
   }
 
   if (!initial) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--appkit-color-primary)] border-t-transparent" />
-      </div>
+      <Div className="flex min-h-screen items-center justify-center">
+        <Div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--appkit-color-primary)] border-t-transparent" />
+      </Div>
     );
   }
 
   return (
-    <div className="py-8 px-4">
+    <Div className="py-8 px-4">
       <SellerCouponEditorView
         couponId={couponId}
         initial={initial}
         onSave={handleSave}
         onCancel={() => router.push("/store/coupons")}
       />
-    </div>
+    </Div>
   );
 }

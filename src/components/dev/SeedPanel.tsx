@@ -127,7 +127,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     ],
     seededItems: [
       "27 users total: 1 admin, 1 employee, 1 moderator, 7 sellers, 17 buyers",
-      "Admin — admin@letitrip.in / Admin@123 — owns store-letitrip-official, has 4 buyer orders (incl. 1 auction win), wishlist, history",
+      "Admin — admin@letitrip.in / Admin@123 — owns store-letitrip-official, has 7 buyer orders (1 auction win, 2 prize draws, 1 digital code), wishlist ×8, history ×10, conversation",
       "Sellers — aryan (Pokémon Palace), nisha (CardGame Hub), vikram-mehta (Diecast Depot), rohit-joshi (Beyblade Arena), admin-letitrip (LetItRip Official), priya-singh (Tokyo Toys), amit (Gundam Galaxy)",
       "17 buyers with realistic Indian names, phone numbers, cities across India",
       "Password hash, displayName, photoURL, role claims per user",
@@ -464,10 +464,10 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { type: "invoice", pattern: "invoice-{orderId}-{YYYYMMDD}.pdf", example: "invoice-order-3-20260507-ab12cd-20260507.pdf" },
     ],
     seededItems: [
-      "35 orders in all statuses (P26 expansion: +25 new orders)",
-      "DELIVERED ×17, SHIPPED ×5, PROCESSING ×3, PENDING ×2, RETURN_REQUESTED ×1, CANCELLED ×2, REFUNDED ×1",
-      "Line items with product snapshots (title, image, price at order time)",
-      "Multi-item orders (bundles), single-item orders",
+      "46 orders across all statuses (admin buyer orders: 9 across standard, auction, prize-draw, digital-code, offer)",
+      "DELIVERED ×23, SHIPPED ×5, PROCESSING ×4, PENDING ×2, RETURN_REQUESTED ×2, CANCELLED ×2, REFUNDED ×2",
+      "2 offer-linked orders (offerId set): order-admin-043-alter-rem-offer + order-arjun-044-bx01-offer",
+      "1 grouped-listing bundle order with 3 line items (order-kiran-045-gundam-bundle)",
       "All 8 stores represented, all 7 buyer cohorts",
     ],
     pendingItems: [
@@ -494,6 +494,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "orderDate",     type: "timestamp", sortable: true, filterable: true, indexed: true },
       // Order discriminators set by checkout actions when items are split into prize-draw/bundle/pre-order groups.
       { name: "orderType",     type: "enum",      filterable: true, indexed: true, note: "standard|preorder|auction|offer|prize-draw|bundle (drives reveal + refund flows)" },
+      { name: "offerId",       type: "ref",       filterable: true, indexed: true, note: "Set when orderType=offer; reverse-pointer to offers/{id}" },
       { name: "bundleId",      type: "ref",       filterable: true, indexed: true, note: "Set when orderType=bundle; reverse-pointer to bundles/{id}" },
       // SB4 / SB6-C / SB8-A — prize-draw order fields. Populated when orderType=prize-draw.
       { name: "prizeDrawProductId",   type: "ref",      filterable: true, indexed: true, note: "Source product id — reveal API verifies this matches the URL param" },
@@ -978,16 +979,13 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     description: "In-app notifications dispatched via sendNotification() (S-notif-channels). Fans out to inApp + email (Resend) + WhatsApp per admin channel config + user per-type prefs. 10 notification types, mix of read and unread.",
     slugPattern: "notif-*",
     seededItems: [
-      "10 notifications across all types: order-shipped, auction-outbid, auction-won, preorder-update, review-reply, coupon-expiring, payout-sent, new-follower, system-alert, wishlist-sale",
+      "47 notifications across all 20 types — buyers, sellers, and admin (7 admin SYSTEM/operational)",
+      "Admin notifications: new seller registration, flagged listing, payout batch, escalated ticket, weekly platform summary",
       "Mix of isRead: true/false for notification badge testing",
       "Linked entityId + entityType for deep-linking",
       "priority: normal/high per notification; actionUrl + actionLabel CTA fields",
     ],
-    pendingItems: [
-      "30 more to reach target 40",
-      "Bulk system announcements",
-      "Push notification delivery status",
-    ],
+    pendingItems: [],
     uiPath: "/user/notifications",
     fields: [
       { name: "userId",      type: "ref",       filterable: true, indexed: true },
@@ -1015,13 +1013,11 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     description: "Active user sessions for auth testing. Device info, IP (masked), last active timestamp.",
     slugPattern: "auto-ID",
     seededItems: [
-      "19 session records across all user accounts",
-      "Mix of mobile / desktop / tablet userAgent",
+      "21 session records — admin has 3 sessions (Chrome desktop + Chrome Android + Safari macOS)",
+      "Mix of mobile / desktop / tablet userAgent across Chrome, Safari, Firefox",
       "isActive, expiresAt, lastActiveAt per session",
     ],
-    pendingItems: [
-      "1 more to reach target 20",
-    ],
+    pendingItems: [],
     uiPath: "/admin/users",
     fields: [
       { name: "userId",              type: "ref",       filterable: true, indexed: true },
@@ -1077,7 +1073,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     description: "Buyer–seller message threads. Messages embedded as an array per doc (up to ~200 entries). RTDB ping paths `chats/{id}/lastUpdate` + `chats/user/{uid}/lastUpdate` drive live refetch on send/mark-read.",
     slugPattern: "conv-{product-slug}-{buyer}-{seller}-NNN",
     seededItems: [
-      "8 buyer↔seller threads — pre-purchase QA, shipping delays, returns, offers, bulk orders",
+      "9 buyer↔seller threads — pre-purchase QA, shipping delays, returns, offers, bulk orders; 1 thread has admin as buyer",
       "Mixed read/unread states + unreadBuyer / unreadSeller counters",
       "Indexed (buyerId, lastMessageAt desc) + (storeId, lastMessageAt desc)",
     ],
@@ -1170,6 +1166,8 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       "ticket-meera-dispute-001 — listing_dispute, resolved, normal",
       "ticket-rahul-auction-001 — auction_dispute, closed, low",
       "ticket-kavya-general-001 — general, open, low",
+      "ticket-meera-fraud-002 — scam_report, resolved, HIGH, assigned to admin (buyer received empty box; seller suspended)",
+      "ticket-rohit-ban-appeal-001 — account (ban appeal), in_progress, HIGH, assigned to admin",
     ],
     pendingItems: [],
     uiPath: "/admin/support-tickets",
@@ -1191,6 +1189,44 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "closedAt",         type: "timestamp" },
       { name: "createdAt",        type: "timestamp", sortable: true, indexed: true },
       { name: "updatedAt",        type: "timestamp", sortable: true, indexed: true },
+    ],
+  },
+  offers: {
+    label: "Offers (Make-an-Offer)",
+    icon: "🤝",
+    group: "transactional",
+    target: 25,
+    description: "Make-an-Offer negotiations between buyers and sellers. Buyers submit offers on listed products; sellers can accept, decline, or counter. Accepted offers lock the price and the buyer is redirected to checkout. A paid offer creates a linked order with offerId set.",
+    slugPattern: "offer-{buyerName}-{productName}-{status}  (semantic seed IDs only; production uses Firestore auto-IDs)",
+    seededItems: [
+      "12 offers across all 7 statuses: pending ×3, accepted ×1, declined ×2, countered ×2, expired ×2, withdrawn ×1, paid ×2",
+      "Admin as buyer: offer-admin-hw-banana-pending (PENDING) + offer-admin-alter-rem-paid (PAID → order-admin-043)",
+      "Arjun as buyer: offer-arjun-bx01-paid (PAID → order-arjun-044)",
+      "All 8 stores represented across the 12 offers",
+    ],
+    pendingItems: [],
+    uiPath: "/admin/offers",
+    fields: [
+      { name: "productId",     type: "ref",       filterable: true, indexed: true },
+      { name: "productTitle",  type: "string",    searchable: true },
+      { name: "storeId",       type: "ref",       filterable: true, indexed: true },
+      { name: "storeName",     type: "string",    searchable: true },
+      { name: "buyerUid",      type: "ref",       filterable: true, indexed: true },
+      { name: "buyerName",     type: "string",    searchable: true, pii: true },
+      { name: "buyerEmail",    type: "string",    filterable: true, pii: true, indexed: true },
+      { name: "listedPrice",   type: "number",    sortable: true, note: "paise" },
+      { name: "offerAmount",   type: "number",    sortable: true, note: "paise — buyer's initial offer" },
+      { name: "counterAmount", type: "number",    note: "paise — seller counter (status=countered)" },
+      { name: "lockedPrice",   type: "number",    note: "paise — final agreed price (status=accepted|paid)" },
+      { name: "currency",      type: "string",    filterable: true },
+      { name: "status",        type: "enum",      filterable: true, indexed: true, note: "pending|accepted|declined|countered|expired|withdrawn|paid" },
+      { name: "buyerNote",     type: "string",    searchable: true },
+      { name: "sellerNote",    type: "string",    searchable: true },
+      { name: "expiresAt",     type: "timestamp", filterable: true, indexed: true },
+      { name: "acceptedAt",    type: "timestamp", sortable: true },
+      { name: "respondedAt",   type: "timestamp", sortable: true },
+      { name: "createdAt",     type: "timestamp", sortable: true, indexed: true },
+      { name: "updatedAt",     type: "timestamp", sortable: true },
     ],
   },
   productFeatures: {
@@ -2201,9 +2237,9 @@ function renderSeedScaleSummary() {
         {[
           ["Standard Products", "100+"], ["Auction Listings", "20"], ["Pre-orders", "10"],
           ["Categories (3-tier)", "55+"], ["Users (all roles)", "15+"], ["Stores", "8"],
-          ["Brands", "25+"], ["Reviews", "60+"], ["Orders (all statuses)", "35+"],
+          ["Brands", "25+"], ["Reviews", "60+"], ["Orders (all statuses)", "42+"],
           ["Bids (auction history)", "120+"], ["FAQs (all categories)", "55+"], ["Blog Posts", "20+"],
-          ["Events", "15+"], ["Coupons (global + store)", "20+"], ["Notifications (all types)", "40+"], ["Wishlists", "40+"],
+          ["Events", "15+"], ["Coupons (global + store)", "20+"], ["Notifications (all types)", "47+"], ["Wishlists", "40+"],
         ].map(([label, count]) => (
           <div key={label} className="flex items-center justify-between py-2 border-b border-zinc-100 dark:border-white/5 last:border-0">
             <span className="text-sm text-zinc-700 dark:text-slate-300">{label}</span>

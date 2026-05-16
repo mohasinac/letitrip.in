@@ -1,8 +1,7 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-18: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-18) */
 
 import { useState } from "react";
-import { Div, Text } from "@mohasinac/appkit/ui";
+import { Div, Text, Label, Input, Button } from "@mohasinac/appkit/ui";
 import { useToast } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
@@ -47,10 +46,10 @@ export function FooterNewsletterSlot() {
         Get deals &amp; drops in your inbox
       </Text>
       <Div className="flex gap-2 w-full">
-        <label htmlFor="footer-newsletter-email" className="sr-only">
+        <Label htmlFor="footer-newsletter-email" className="sr-only">
           Email address
-        </label>
-        <input
+        </Label>
+        <Input
           id="footer-newsletter-email"
           type="email"
           value={email}
@@ -61,13 +60,13 @@ export function FooterNewsletterSlot() {
           disabled={pending}
           className="flex-1 min-w-0 rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-[color:var(--appkit-color-primary)] disabled:opacity-60"
         />
-        <button
+        <Button
           type="submit"
           disabled={pending}
           className="flex-shrink-0 rounded-lg bg-[color:var(--appkit-color-primary)] hover:opacity-90 px-4 py-2 text-sm font-medium text-white transition-opacity focus:outline-none focus:ring-2 focus:ring-[color:var(--appkit-color-primary)] focus:ring-offset-2 disabled:opacity-60"
         >
           {pending ? "…" : "Subscribe"}
-        </button>
+        </Button>
       </Div>
     </form>
   );

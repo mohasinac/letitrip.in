@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-13: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-13) */
 /**
  * /user/messages — buyer-side conversation list + chat window (D5 + VC7).
  *
@@ -17,12 +16,15 @@ import {
   Row,
   Stack,
   Text,
+  Button,
+  Textarea,
   type ConversationDocument,
   type ConversationMessage,
   useConversation,
   useConversations,
   useSession,
 } from "@mohasinac/appkit/client";
+import { Span } from "@mohasinac/appkit/ui";
 
 const PAGE_CONTAINER = "w-full max-w-6xl mx-auto h-full min-h-[600px]";
 const ITEM_BASE =
@@ -61,7 +63,7 @@ interface ConversationListItemProps {
 
 function ConversationListItem({ conversation, active, onSelect }: ConversationListItemProps) {
   return (
-    <button
+    <Button
       type="button"
       onClick={onSelect}
       className={`${ITEM_BASE} ${active ? ITEM_ACTIVE : ITEM_IDLE}`}
@@ -85,11 +87,11 @@ function ConversationListItem({ conversation, active, onSelect }: ConversationLi
             {relativeTime(conversation.lastMessageAt)}
           </Text>
           {conversation.unreadBuyer > 0 && (
-            <span className={UNREAD_DOT}>{conversation.unreadBuyer}</span>
+            <Span className={UNREAD_DOT}>{conversation.unreadBuyer}</Span>
           )}
         </Stack>
       </Row>
-    </button>
+    </Button>
   );
 }
 
@@ -134,7 +136,7 @@ function MessageInput({ disabled, onSend, placeholder, sendLabel }: MessageInput
 
   return (
     <Row className={INPUT_ROW} gap="sm">
-      <textarea
+      <Textarea
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
         onKeyDown={(e) => {
@@ -148,14 +150,14 @@ function MessageInput({ disabled, onSend, placeholder, sendLabel }: MessageInput
         disabled={disabled || submitting}
         className="flex-1 resize-none rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:border-primary focus:outline-none"
       />
-      <button
+      <Button
         type="button"
         onClick={() => void handleSubmit()}
         disabled={disabled || submitting || draft.trim().length === 0}
         className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {sendLabel}
-      </button>
+      </Button>
     </Row>
   );
 }
@@ -252,13 +254,13 @@ export default function UserMessagesPage() {
           />
         )}
         renderMobileBack={() => (
-          <button
+          <Button
             type="button"
             onClick={() => setActiveId(null)}
             className="md:hidden self-start text-sm text-primary hover:underline pb-2"
           >
             ← Back to conversations
-          </button>
+          </Button>
         )}
         renderChatWindow={() =>
           conversation ? (

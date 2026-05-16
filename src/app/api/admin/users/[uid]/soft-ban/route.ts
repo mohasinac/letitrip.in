@@ -5,8 +5,8 @@ import {
   successResponse,
   errorResponse,
   userRepository,
-  notificationRepository,
 } from "@mohasinac/appkit";
+import { sendNotification } from "@mohasinac/appkit/server";
 import type { BannedAction } from "@mohasinac/appkit/server";
 
 const BANNED_ACTIONS = [
@@ -55,16 +55,15 @@ export const POST = withProviders(
         : "This restriction has no expiry date.";
 
       try {
-        await notificationRepository.create({
+        await sendNotification({
           userId: uid,
           type: "account_action",
+          priority: "normal",
           title: `Account restriction applied: ${body!.action.replace(/_/g, " ")}`,
-          body: `Your account has been restricted from ${body!.action.replace(/_/g, " ")}. Reason: ${body!.reason}. ${expiryText}`,
-          isRead: false,
-          entityId: uid,
-          entityType: "user",
-          createdAt: new Date(),
-        } as any);
+          message: `Your account has been restricted from ${body!.action.replace(/_/g, " ")}. Reason: ${body!.reason}. ${expiryText}`,
+          relatedId: uid,
+          relatedType: "user",
+        });
       } catch { /* non-fatal */ }
 
       return successResponse({ uid, action: body!.action }, "Soft ban applied");

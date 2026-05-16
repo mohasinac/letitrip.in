@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-20: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-20) */
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
@@ -13,6 +12,7 @@ import {
   Button,
   useToast,
 } from "@mohasinac/appkit/client";
+import { Span } from "@mohasinac/appkit/ui";
 
 interface NotifItem {
   id: string;
@@ -66,7 +66,7 @@ function NotifCard({
         <Div className="space-y-0.5 min-w-0">
           <Row gap="sm" align="center">
             {!notif.isRead && (
-              <span className="inline-block h-2 w-2 rounded-full bg-primary shrink-0" />
+              <Span className="inline-block h-2 w-2 rounded-full bg-primary shrink-0" />
             )}
             <Text className="text-sm font-semibold text-[var(--appkit-color-text)] line-clamp-1">
               {notif.title}
@@ -88,21 +88,22 @@ function NotifCard({
           </Link>
         )}
         {!notif.isRead && (
-          <button
+          <Button
             type="button"
             onClick={() => onMarkRead(notif.id)}
             className="text-xs text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text)] transition-colors"
           >
             Mark read
-          </button>
+          </Button>
         )}
-        <button
+        <Button
           type="button"
+          variant="ghost"
           onClick={() => onDelete(notif.id)}
           className="text-xs text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors ml-auto"
         >
           Delete
-        </button>
+        </Button>
       </Row>
     </Div>
   );
@@ -180,7 +181,7 @@ export default function NotificationsPage() {
         <Row justify="between" wrap gap="3" align="center">
           <Row gap="sm" className="flex-wrap">
             {tabs.map((tab) => (
-              <button
+              <Button
                 key={tab.key}
                 type="button"
                 onClick={() => setFilter(tab.key)}
@@ -191,7 +192,7 @@ export default function NotificationsPage() {
                 }`}
               >
                 {tab.label}
-              </button>
+              </Button>
             ))}
           </Row>
           {unreadCount > 0 && (
