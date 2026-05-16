@@ -344,8 +344,8 @@ export default tseslint.config(
     // Auth client SDK for Google OAuth + session hydration. These ARE the
     // legitimate client-side firebase/auth call sites.
     files: [
-      "src/app/[locale]/ClientProviderBootstrap.tsx",
-      "src/app/[locale]/register-client-providers.ts",
+      "src/app/*/ClientProviderBootstrap.tsx",
+      "src/app/*/register-client-providers.ts",
     ],
     rules: {
       "lir/no-firebase-client-in-ui": "off",
@@ -369,6 +369,10 @@ export default tseslint.config(
       "lir/no-fetch-in-ui": "off",
       "lir/no-fat-page": "off",
       "lir/no-raw-date": "off",
+      // App-level page layouts have legitimately fixed grid column counts;
+      // FLUID_GRID tokens and xl:/2xl: breakpoints are tracked in TECH_DEBT.md.
+      "lir/no-hardcoded-grid-cols": "off",
+      "lir/require-xl-breakpoints": "off",
     },
   },
   {
@@ -386,6 +390,36 @@ export default tseslint.config(
     rules: {
       "lir/no-raw-date": "off",
       "@typescript-eslint/no-unused-vars": "off",
+    },
+  },
+  {
+    // social-feed routes call external APIs and log errors for debugging;
+    // no logger abstraction exists at the Edge-compatible route layer.
+    files: ["src/app/api/social-feed/**"],
+    rules: {
+      "no-console": "off",
+    },
+  },
+  {
+    // store-addresses route references the 'addresses' collection by string
+    // because it performs raw Firestore queries via the Admin SDK, not the
+    // addressesRepository abstraction — collection name is stable/correct here.
+    files: ["src/app/api/admin/store-addresses/**"],
+    rules: {
+      "lir/no-hardcoded-collection": "off",
+    },
+  },
+  {
+    // brand.ts: brand-level constants include founding year / epoch dates that
+    // are intentional Date objects, not UI timestamps.
+    // request-schemas.ts: Zod schema defaults use new Date() for date range
+    // validation boundaries — no nowMs()/nowISO() equivalent is available in Zod.
+    files: [
+      "src/constants/brand.ts",
+      "src/validation/request-schemas.ts",
+    ],
+    rules: {
+      "lir/no-raw-date": "off",
     },
   },
   {
