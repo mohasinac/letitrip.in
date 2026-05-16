@@ -113,6 +113,8 @@ export const API_ROUTES = {
     PRODUCT_GROUP_CHILD: (id: string, childId: string) => `/api/store/products/${id}/group/children/${childId}`,
     // SB-UNI-N — digital-code pool management (Z1)
     PRODUCT_CODES: (id: string) => `/api/store/products/${id}/codes`,
+    PRODUCTS_BULK_LOCATION: "/api/store/products/bulk-location",
+    ORDERS_BULK_LOCATION: "/api/store/orders/bulk-location",
     TEMPLATES: "/api/store/templates",
     TEMPLATE_BY_ID: (id: string) => `/api/store/templates/${id}`,
     PROFILE: "/api/store/profile",
