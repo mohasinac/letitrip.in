@@ -187,7 +187,7 @@ export default function Page() {
 
   return (
     <>
-      <Div className="mx-auto max-w-4xl px-4 py-6">
+      <Div className="mx-auto max-w-4xl">
         {renderPageHeader(openCreate)}
         {renderToolbar({ searchInput, setSearchInput, commitSearch, sort, table, condition })}
         {renderTemplateList({ loading, filtered, q, condition, openCreate, openEdit, deletingId, handleDelete })}

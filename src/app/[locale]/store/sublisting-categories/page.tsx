@@ -157,7 +157,7 @@ function renderPage({
   handleDelete: (id: string, name: string) => void;
 }) {
   return (
-    <Div className="mx-auto max-w-4xl px-4 py-6">
+    <Div className="mx-auto max-w-4xl">
       <Row justify="between" align="start" className="mb-6" gap="md">
         <Div>
           <Heading level={1} className="text-2xl font-bold">Sub-listing Categories</Heading>

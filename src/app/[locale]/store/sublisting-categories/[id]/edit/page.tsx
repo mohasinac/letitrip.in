@@ -66,7 +66,7 @@ export default function Page() {
 
   if (loadError) {
     return (
-      <Div className="mx-auto max-w-2xl px-4 py-6">
+      <Div className="mx-auto max-w-2xl">
         <Text className="text-sm text-red-600 dark:text-red-400">{loadError}</Text>
       </Div>
     );
