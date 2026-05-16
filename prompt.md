@@ -133,7 +133,16 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — SB-UNI-T: Public listing pages + search facets for classified/digital-codes/live (2026-05-16)
+### ✅ LAST COMPLETED — SB-UNI-W-2: CTA registry sweep — public surfaces (2026-05-16)
+
+- `Button` gains `action?: ActionDef` prop: auto-fills children (label), aria-label, variant from `def.kind`, and renders a confirmation dialog via React portal when `def.confirmation` is set.
+- ACTIONS registry filled for public surfaces: PRODUCT (+5: wishlist/remove-wishlist/share/compare/make-offer), AUCTION (+2: watch/unwatch), PRE_ORDER (+2: reserve-now/cancel-reservation), PRIZE_DRAW (+2: enter-draw/reveal-code), DIGITAL_CODE, LIVE, STORE (+3: follow/unfollow/view-all), EVENT (+2: register/cancel-registration), CART (+3: remove-item/checkout/continue-shopping), NAV (+3: sign-in/sign-up/sign-out).
+- `DEFAULT_LABELS` in 5 card/detail components wired to registry: MarketplaceAuctionCard, MarketplacePreorderCard, MarketplacePrizeDrawCard, PrizeDrawEntryActions, PrizeDrawDetailPageView.
+- CartDrawer: `aria-label` for remove button + checkout label fallback use ACTIONS.
+- CartRouteClient: all 3 checkout button variants use `ACTIONS.CART["checkout"].label`.
+- `npm run check` exits 0 (0 errors, 527 warnings pre-existing). appkit rebuilt v2.7.29.
+
+### ✅ Previous — SB-UNI-T: Public listing pages + search facets for classified/digital-codes/live (2026-05-16)
 
 - Extended `SearchResourceType` union with `"classified" | "digital-codes" | "live"` in `Search.tsx`.
 - Added `ROUTES.PUBLIC.CLASSIFIED / CLASSIFIED_DETAIL / DIGITAL_CODES / DIGITAL_CODE_DETAIL / LIVE / LIVE_DETAIL` to route-map.ts.
@@ -153,9 +162,9 @@ After deploy: smoke-test the production URL for all touched routes.
 - Added 9 seller page shims (list/new/edit × 3 types). ROUTES.STORE + STORE_NAV_GROUPS wired.
 - Extended `listingType` enum in both appkit product API Zod schemas + `request-schemas.ts`.
 
-### 🔄 CURRENT — Tier SB-UNI Phase 3–9: CTA sweeps
+### 🔄 CURRENT — Tier SB-UNI Phase 7–9: remaining CTA sweeps + FormShell
 
-*(SB-UNI-T completed 2026-05-16 — public listing pages + search facets for classified/digital-codes/live. Next: SB-UNI-W-2/3/4 (CTA sweep public/seller/admin) or SB-UNI-Y FormShell migration.)*
+*(SB-UNI-W-2 completed 2026-05-16 — public surface CTA registry sweep. Next: SB-UNI-W-3 (dashboard sweep) or SB-UNI-Y-1 (FormShell primitive).)*
 
 ### ⏳ NEXT UP
 

@@ -40,6 +40,7 @@ import {
   ROUTES,
   useAuthGate,
   ACTION_ID,
+  ACTIONS,
   LoginRequiredModal,
 } from "@mohasinac/appkit/client";
 import type { CartItem } from "@mohasinac/appkit/client";
@@ -908,14 +909,14 @@ export function CartRouteClient() {
               disabled
               className={CLS_CHECKOUT_BTN}
             >
-              Checkout
+              {ACTIONS.CART["checkout"].label}
             </Button>
           ) : !isAuthenticated ? (
             <Button
               onClick={() => requireAuth(ACTION_ID.CHECKOUT, () => {})}
               className={CLS_CHECKOUT_BTN}
             >
-              Checkout
+              {ACTIONS.CART["checkout"].label}
             </Button>
           ) : (
             <Button
@@ -924,8 +925,8 @@ export function CartRouteClient() {
             >
               <Link href={String(ROUTES.USER.CHECKOUT)}>
                 {!isAllSelected && selectedCount > 0
-                  ? `Checkout ${selectedCount} item${selectedCount !== 1 ? "s" : ""}`
-                  : "Checkout"}
+                  ? `${ACTIONS.CART["checkout"].label} ${selectedCount} item${selectedCount !== 1 ? "s" : ""}`
+                  : ACTIONS.CART["checkout"].label}
               </Link>
             </Button>
           )}

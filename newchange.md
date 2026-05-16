@@ -41,6 +41,39 @@
 
 ---
 
+### SB-UNI-W-2 — CTA registry sweep: public surfaces (2026-05-16)
+
+Wired the ACTIONS registry across public marketplace surfaces. Completed the Button `action` prop that was deferred from W-1.
+
+| Area | Detail |
+|------|--------|
+| `Button.tsx` | `action?: ActionDef` prop: auto-fills children from `def.label`, `aria-label` from `def.ariaLabel`, variant from `def.kind`. Confirmation dialog via React portal when `def.confirmation` is set. |
+| `action-registry.ts` | ACTIONS registry filled: PRODUCT (+5), AUCTION (+2), PRE_ORDER (+2), PRIZE_DRAW (+2), DIGITAL_CODE, LIVE, STORE (+3), EVENT (+2), CART (+3), NAV (+3 with sign-out confirmation). |
+| Card DEFAULT_LABELS | `MarketplaceAuctionCard`, `MarketplacePreorderCard`, `MarketplacePrizeDrawCard` — string literals → `ACTIONS.X["y"].label`. |
+| `PrizeDrawEntryActions.tsx` | `action={ACTIONS.PRIZE_DRAW["enter-draw"]}` wired. |
+| `PrizeDrawDetailPageView.tsx` | Mobile buy-bar "Enter draw" → `ACTIONS.PRIZE_DRAW["enter-draw"].label`. |
+| `CartDrawer.tsx` | Remove `aria-label` + checkout fallback → ACTIONS. |
+| `CartRouteClient.tsx` | All checkout buttons → `ACTIONS.CART["checkout"].label`. |
+| Quality | `npm run check` exits 0. appkit rebuilt. |
+
+---
+
+### S-media-upload-fix — Media upload form bugs + pw-17 Playwright suite (2026-05-16)
+
+Found and fixed three root-cause bugs in the media upload flow, wrote the pw-17 Playwright test suite, and wired proper cleanup of tmp files after each test run.
+
+| Bug | Fix |
+|-----|-----|
+| MEDIA-BUG-01: `useCamera.takePhoto()` always `null` | `canvas.toBlob()` is async; previous implementation returned before callback fired. Changed to `Promise<Blob \| null>` using `new Promise(resolve => canvas.toBlob(resolve, ...))`. `CameraCapture.handleTakePhoto` made `async/await`. |
+| MEDIA-BUG-02: `DELETE /api/media` route at wrong path — all staged-file cleanup 404ed silently | Route was at `src/app/api/media/delete/route.ts` (URL `/api/media/delete`) but every caller targets `DELETE /api/media?url=…`. Moved to `src/app/api/media/route.ts`. Updated `fix-provider-guards.mjs`. Cleared stale `.next/types` cache. |
+| MEDIA-BUG-03: `AdminMediaView` staged-URL state overwritten per component | Both `MediaUploadField` and `MediaUploadList` wired to same `setStagedUrls` — second emission overwrote first; "Discard staged" left orphaned tmp files. Split into `heroStagedUrls`/`galleryStagedUrls` merged via `useMemo`. |
+| pw-17 suite | 19 checks: page shell, upload zone, camera UI, full sign→PUT→finalize flow, oversized-file client rejection, discard-staged DELETE. Persistent `page.on("response")` collector (not `waitForResponse`). Dual selector for pre/post-testid HTML. |
+| pw-17 cleanup | Intercepts finalize response bodies to collect all finalized URLs; sends `DELETE /api/media?url=…` for each at end of `run()` unconditionally. `getCookieHeader(adminCtx)` provides auth. |
+
+`npm run check` exits 0.
+
+---
+
 ### SB-UNI-T — Public listing pages + search facets: classified / digital-codes / live (2026-05-16)
 
 Extended search dropdown and created 3 public listing pages with faceted filters for the new listing types.
