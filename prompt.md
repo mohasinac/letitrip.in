@@ -133,10 +133,42 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-quality-pass: CTA registry quality consolidation (2026-05-16)
+### ✅ LAST COMPLETED — S-uni-W4: Admin CTA registry sweep (2026-05-16)
 
-- Fixed ACTIONS registry: moved store-dashboard leaves from `SELLER` bucket → `STORE` bucket (edit-listing, delete-listing, publish-listing, unpublish-listing, mark-shipped, request-payout, save-changes). `ACTIONS.SELLER` now empty.
-- Replaced `window.confirm()` in `SellerProductsView.handleDelete` with `action={ACTIONS.STORE["delete-listing"]}` on Delete Button — uses the registry confirmation dialog via portal.
+**SB-UNI-W-4 — ACTIONS.ADMIN populated + admin view sweep:**
+- Added 17 action leaves to `ACTIONS.ADMIN` in `appkit/src/_internal/shared/actions/action-registry.ts`: approve-product, reject-product, ban-user, unban-user, verify-vendor, unverify-vendor, verify-store, suspend-store, approve-review, reject-review, approve-return, reject-return, grant-payout, hold-payout, rebuild-bundle, reset-seed-data, save-changes.
+- Swept `AdminReviewsView.tsx` — RowActionMenu + BulkActionBar labels use `ACTIONS.ADMIN["approve-review"].label` / `ACTIONS.ADMIN["reject-review"].label`.
+- Swept `AdminReturnRequestsView.tsx` — RowActionMenu labels + `ConfirmDeleteModal` title/confirmText use `ACTIONS.ADMIN["approve-return"]` / `ACTIONS.ADMIN["reject-return"]` confirmation fields.
+- `npm run check` exits 0. All 7 appkit audits + 4 consumer audits clean.
+
+### ✅ Previous LAST — S-uni-formshell-part2: Admin CRUD form Card sections + Ad slots + Address editor (2026-05-16)
+
+**Track E1+H — AdminProductEditorView**: Two-panel Card-section layout (`grid lg:grid-cols-[1fr_280px]`). Form sections: Listing Type, Classification (store DynamicSelect + category InlineCreateSelect + brand InlineCreateSelect). Sticky action sidebar with Save (cross-form `form="product-editor-form"`) + Delete. Mobile fallback buttons inside form. Matches plan H5 diagram.
+
+**Track E2+H — AdminCategoryEditorView**: Two-panel layout. Identity Card (name, slug, description, parent InlineCreateSelect). Display Card (order, Active toggle, Show in Menu toggle). Sticky sidebar with Save + Delete. Matches plan H5 diagram.
+
+**Track E3+H — AdminAddressEditorView** (new): Full two-panel admin CRUD for the unified `addresses` collection. Ownership Card (ownerType radio: user/store, ownerId text). Contact & Location Card (label, fullName, phone, addressLine1, city, state `Select` via `onValueChange`, postalCode, country). Flags Card (isDefault toggle). TanStack v5 pattern: `useQuery` + `React.useEffect` for hydration (no `onSuccess`). API routes: `GET/POST /api/admin/addresses` + `GET/PATCH/DELETE /api/admin/addresses/[id]`. Page shims: `/admin/addresses/new` + `/admin/addresses/[id]/edit`. Nav link added to Management group in `ADMIN_NAV_GROUPS`.
+
+**Track K — Ad slots**: `CartView` gains `<AdSlot id="cart-upsell">` after promo code. `CheckoutView` gains `<AdSlot id="checkout-upsell">` after renderStep. Both slots are in appkit so they flow to all consumers automatically.
+
+**Track F — asciiDiagrams.md**: Updated section headers for Product Editor, Category Editor, Feature Flags to reflect Card-section + sticky side panel design. Added Address Editor section diagram. Added index entries: PaginatedMultiSelect ✅, AsyncFacetSection ✅, AuctionBidsTable ✅, Address Editor ✅.
+
+- appkit rebuilt. `npm run check` exits 0 (0 errors, 542 warnings pre-existing).
+- J2–J6 dashboard redesign: confirmed already implemented; no work needed.
+
+### ✅ Previous — S-uni-formshell-prep: PaginatedMultiSelect + AsyncFacetSection + categorySlugs + feature flags grouping (2026-05-16)
+
+**Track A — PaginatedMultiSelect** (`appkit/src/ui/components/PaginatedMultiSelect.tsx`): new multi-value paginated async select primitive. Chips + checkbox dropdown + load-more. Exported from `index.ts` + `client.ts`.
+
+**Track B — AsyncFacetSection** (`appkit/src/features/filters/AsyncFacetSection.tsx`): accordion filter section with async paginated `loadOptions`. Applied to all 6 filter components: `ProductFilters`, `AuctionFilters`, `PreOrderFilters`, `ClassifiedFilters`, `DigitalCodeFilters`, `LiveItemFilters`. Each gained optional `loadCategoryOptions?`, `loadBrandOptions?`, `loadStoreOptions?` props that override static option lists with async loading.
+
+**Track C — `categorySlugs: string[]` migration**: `ProductDocument.category: string` deprecated; `categorySlugs: string[]` is now primary. `mapDoc` override normalises legacy docs on read. `findByCategory()` uses `array-contains`. Sieve alias added for backward-compat URL params. 4 seed files updated. 6 Firestore indexes updated (`arrayConfig: CONTAINS`). 12+ consumer files swept (adapters, views, types, columns, API routes). `npm run check` exits 0.
+
+**Track D1 — Feature flags page grouping** (`AdminFeatureFlagsView.tsx`): 3 collapsible accordion sections — Platform Features (11 flags + rollout %), Listing Types (7 flags), Category Types (4 flags). `FlagData.flags` widened to `Record<string, unknown>` to hold nested `listingTypes`/`categoryTypes` sub-objects.
+
+**Track J1 — Dashboard centering fix** (`AppLayoutShell.tsx` line ~736): removed `container mx-auto max-w-screen-2xl` from default content wrapper — full-width layouts now possible.
+
+- appkit rebuilt v2.7.31. `npm run check` exits 0 (0 errors, 528 warnings pre-existing).
 - Swept 3 seller views for raw HTML wrappers: `div/span/button` → `Div/Row/Text/Button` throughout filter drawers + column renders + outer containers.
 - Fixed `AdminSiteSettingsView.PRIORITY_OPTIONS`: typed as `SelectOption[]` (TS4104 — readonly array not assignable to mutable).
 - Removed `listingTypeScope: undefined` from `ACTIONS.USER["cancel-order"]` (omit-not-undefined pattern).
@@ -181,9 +213,28 @@ After deploy: smoke-test the production URL for all touched routes.
 - Added 9 seller page shims (list/new/edit × 3 types). ROUTES.STORE + STORE_NAV_GROUPS wired.
 - Extended `listingType` enum in both appkit product API Zod schemas + `request-schemas.ts`.
 
-### 🔄 CURRENT — Tier SB-UNI Phase 7–9: remaining CTA sweeps + FormShell
+### ✅ CURRENT — SB-UNI Phase 7 CTA registry sweeps: W-4 done, W-5 next (2026-05-16)
 
-*(S-quality-pass completed 2026-05-16 — CTA registry quality consolidation + HTML wrapper sweep. Next: SB-UNI-W-4 (admin dashboard CTA sweep) or SB-UNI-Y-1 (FormShell primitive).)*
+All tracks from `~/.claude/plans/each-listing-type-category-playful-fairy.md` are complete.
+
+| Track | Task | Status |
+|-------|------|--------|
+| A | PaginatedMultiSelect primitive | ✅ |
+| B | AsyncFacetSection + filter drawer migration (all 6 filters) | ✅ |
+| C | `categorySlugs[]` schema + repo + seed + indexes + consumer sweep | ✅ |
+| D1 | Feature flags page: 3 accordion groups | ✅ |
+| D2 | `enabledListingTypes`/`enabledCategoryTypes` wiring into tabs/forms | ✅ |
+| E1+H | AdminProductEditorView Card sections + sticky side panel | ✅ |
+| E2+H | AdminCategoryEditorView Card sections + sticky side panel | ✅ |
+| E3+H | AdminAddressEditorView new + API routes + page shims + nav link | ✅ |
+| F | asciiDiagrams.md updates | ✅ |
+| G | Playwright `pw-18-feature-flags-forms.mjs` | ✅ |
+| I | Notification schema + user settings panel + admin channel config | ✅ |
+| J1 | Dashboard full-width centering fix | ✅ |
+| J2–J6 | Dashboard landing pages (already implemented) | ✅ |
+| K | Cart + checkout AdSlots | ✅ |
+| L | Buyer section pages (pre-orders/digital-codes/prize-draws/events) | ✅ |
+| M | AuctionBidsTable collapsible + buyer bids page | ✅ |
 
 ### ⏳ NEXT UP
 

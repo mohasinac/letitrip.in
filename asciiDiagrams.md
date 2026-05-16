@@ -19,6 +19,10 @@
   - [RefundRequestView](#shared--refundrequestview-)
   - [OrderSiblingPayments](#shared--ordersiblingpayments-)
   - [ShippingPicker](#shared--shippingpicker-)
+  - [PaginatedMultiSelect ✅](#shared--paginatedmultiselect-)
+  - [AsyncFacetSection ✅](#shared--asyncfacetsection-)
+  - [AuctionBidsTable ✅](#shared--auctionbidstable-collapsible)
+  - [CTA Action Registry — ACTIONS.ADMIN ✅](#shared--cta-action-registry--actionsadmin-)
 - **Card Components & List Views** *(all collections)*
   - [Card Inventory Table](#card-components--card-inventory-table)
   - [BaseListingCard (compound primitive)](#card-components--baselistingcard-compound-primitive)
@@ -104,6 +108,7 @@
   - [Contact Editor SideDrawer](#admin--contact-editor-sidedrawer-)
   - [Return Requests](#admin--return-requests-)
   - [Store Addresses](#admin--store-addresses-)
+  - [Address Editor](#admin--address-editor-)
   - [Seed & Docs Panel](#admin--seed--docs-panel-)
   - [Sessions](#admin--sessions-adminsessionsview--ll11)
   - [Event Entries](#admin--event-entries-adminallentryview--ll12)
@@ -1623,7 +1628,7 @@ Row ⋮ menu:
 
 ---
 
-## Admin > Product Editor ✅ (3-mode: standard / auction / pre-order)
+## Admin > Product Editor ✅ (enhanced — Card sections + sticky side panel + DynamicSelect store + InlineCreateSelect category/brand)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -1988,7 +1993,7 @@ FeatureBadge resolution:
 
 ---
 
-## Admin > Category Editor ✅ (X3 — responsive 2-col, dark mode labels)
+## Admin > Category Editor ✅ (enhanced — Card sections [Identity + Display] + sticky side panel)
 
 ```
 StackedViewShell (full page):
@@ -3311,7 +3316,7 @@ SideDrawer (3+ fields → SideDrawer rule):
 
 ---
 
-## Admin > Feature Flags ✅ (VA17)
+## Admin > Feature Flags ✅ (VA17 — enhanced: 3 accordion groups: Platform Features / Listing Types / Category Types)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -3581,6 +3586,45 @@ SideDrawer (read-only display + actions):
           [Reject return]
       → PATCH /api/admin/orders/[id] { status: "DELIVERED" }
       → invalidates ["admin","return-requests"] + ["admin","orders"]
+```
+
+---
+
+## Admin > Address Editor ✅ (E3+H — Card sections + sticky side panel)
+
+```
+Route:      /admin/addresses/new | /admin/addresses/[id]/edit
+Component:  AdminAddressEditorView (appkit/src/features/admin/components/)
+APIs:       GET/POST /api/admin/addresses
+            GET/PATCH/DELETE /api/admin/addresses/[id]
+Repository: addressesRepository (unified top-level addresses collection, SB-UNI-A)
+
+lg: grid-cols-[1fr_280px]                           Action Sidebar
+┌─────────────────────────────────────────┐   ┌────────────────────┐
+│ ╔═══════════════════════════════════╗   │   │  [    Save ▸   ]   │
+│ ║  OWNERSHIP                        ║   │   │  [    Cancel   ]   │
+│ ║  Owner Type  ◉ User  ○ Store      ║   │   ├────────────────────┤
+│ ║  Owner *  [owner id / ref input]  ║   │   │  [    Delete   ]   │
+│ ╚═══════════════════════════════════╝   │   │  (edit only)       │
+│                                         │   └────────────────────┘
+│ ╔═══════════════════════════════════╗   │   (sticky top of page)
+│ ║  CONTACT & LOCATION (PII encrypted║   │
+│ ║  Label *     [text]               ║   │
+│ ║  Full Name * [text]  Phone * [tel]║   │
+│ ║  Address Line 1 *    [text]       ║   │
+│ ║  Address Line 2      [text opt]   ║   │
+│ ║  Landmark            [text opt]   ║   │
+│ ║  City *    [text]  State * [▾]    ║   │
+│ ║  Postal * [6-digit]  Country [txt]║   │
+│ ╚═══════════════════════════════════╝   │
+│                                         │
+│ ╔═══════════════════════════════════╗   │
+│ ║  FLAGS                            ║   │
+│ ║  Is Default [toggle]              ║   │
+│ ╚═══════════════════════════════════╝   │
+└─────────────────────────────────────────┘
+
+Mobile (<lg): Cards stack full-width; action buttons inline below form.
 ```
 
 ---
@@ -11208,4 +11252,54 @@ Props:
 Fee resolution: resolveProviderFee(p, subtotal):
   if freeAboveInPaise defined and subtotal >= threshold → 0
   else flat + ceil(percent/100 × subtotal), clamped to minInPaise
+```
+
+---
+
+## Shared > CTA Action Registry — ACTIONS.ADMIN ✅ (W-4)
+
+```
+File: appkit/src/_internal/shared/actions/action-registry.ts
+Bucket: ACTIONS.ADMIN  (17 leaves as of W-4, 2026-05-16)
+
+Usage pattern:
+  import { ACTIONS } from "../../../_internal/shared/actions/action-registry";
+  <Button>{ACTIONS.ADMIN["save-changes"].label}</Button>
+  ACTIONS.ADMIN["ban-user"].confirmation!.title   // → "Ban this user?"
+
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│  id                    kind        permissions          label                    │
+├──────────────────────────────────────────────────────────────────────────────────┤
+│  save-changes          mutation    admin,moderator      Save changes             │
+│  approve-product       mutation    admin,moderator      Approve product          │
+│  reject-product        mutation    admin,moderator      Reject product           │
+│  ban-user              danger      admin                Ban user                 │
+│  unban-user            mutation    admin                Unban user               │
+│  verify-vendor         mutation    admin,moderator      Verify vendor            │
+│  unverify-vendor       mutation    admin,moderator      Unverify vendor          │
+│  verify-store          mutation    admin,moderator      Verify store             │
+│  suspend-store         danger      admin                Suspend store            │
+│  approve-review        mutation    admin,moderator      Approve review           │
+│  reject-review         danger      admin,moderator      Reject review            │
+│  approve-return        mutation    admin,moderator      Approve return           │
+│  reject-return         danger      admin,moderator      Reject return            │
+│  grant-payout          mutation    admin                Grant payout             │
+│  hold-payout           danger      admin                Hold payout              │
+│  rebuild-bundle        mutation    admin,moderator      Rebuild bundle           │
+│  reset-seed-data       danger      admin                Reset seed data          │
+└──────────────────────────────────────────────────────────────────────────────────┘
+
+Confirmation dialogs (subset with confirmation field):
+  ban-user       → "Ban this user?"  / "They will lose access immediately. This can be reversed later."
+  suspend-store  → "Suspend this store?"  / "All listings will be hidden. Notify the seller."
+  reject-review  → "Reject this review?"  / "This review will be removed from the product page."
+  reject-return  → "Reject this return?"  / "The return request will be closed. Notify the buyer."
+  hold-payout    → "Hold this payout?"  / "Payment will be delayed until manually released."
+  reset-seed-data→ "Reset seed data?"  / "All existing seed documents will be deleted and recreated."
+  rebuild-bundle → "Rebuild bundle stock?"  / (no extra message, immediate)
+
+Consumer sweep completed:
+  AdminReviewsView      — BulkActionBar + RowActionMenu labels → ACTIONS.ADMIN["approve-review"/"reject-review"]
+  AdminReturnRequestsView — RowActionMenu + ConfirmDeleteModal → ACTIONS.ADMIN["approve-return"/"reject-return"]
+  AdminAddressEditorView  — Save button → ACTIONS.ADMIN["save-changes"].label
 ```

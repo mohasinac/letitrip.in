@@ -41,6 +41,46 @@
 
 ---
 
+### S-uni-W4 — Admin CTA registry sweep (2026-05-16)
+
+| Area | Detail |
+|------|--------|
+| `action-registry.ts` | Added 17 leaves to `ACTIONS.ADMIN`: approve-product, reject-product, ban-user, unban-user, verify-vendor, unverify-vendor, verify-store, suspend-store, approve-review, reject-review, approve-return, reject-return, grant-payout, hold-payout, rebuild-bundle, reset-seed-data, save-changes — each with label, ariaLabel, description, kind, permissions, and confirmation where appropriate |
+| `AdminReviewsView.tsx` | RowActionMenu approve/reject labels + BulkActionBar labels wired to `ACTIONS.ADMIN["approve-review"].label` / `ACTIONS.ADMIN["reject-review"].label` |
+| `AdminReturnRequestsView.tsx` | RowActionMenu labels + ConfirmDeleteModal title + confirmText wired to `ACTIONS.ADMIN["approve-return"]` / `ACTIONS.ADMIN["reject-return"]` confirmation fields |
+| Quality gates | `npm run check:types` + all 7 appkit audits + 4 consumer audits → all clean |
+
+---
+
+### S-uni-formshell-part3 — Playwright pw-18: Feature flags + admin CRUD form smoke tests (2026-05-16)
+
+| Area | Detail |
+|------|--------|
+| `pw-18-feature-flags-forms.mjs` | New suite: **A** Feature Flags page — 3 accordion sections (Platform Features / Listing Types / Category Types), save button, toggles count. **B** Product Editor — Listing Type card, Standard tab, Classification card, title input, save button; B2 Edit loads existing product with pre-populated title. **C** Category Editor — Identity card, name/slug inputs, Display card, save button, slug auto-generation from name. **D** Address Editor — Ownership card, owner-type radios, Contact card, Full Name/City/State fields, Flags card, save button. **E** Address API round-trip — POST→201, GET by id, DELETE cleanup. |
+| `smoke-pw.mjs` | Added `"pw-18": 3 * 60_000` to `SUITE_TIMEOUTS_MS`. Suite auto-discovered by the `pw-NN-*` glob. |
+| Quality | `npm run check:audits` + `check:audits:appkit` — all clean. |
+
+---
+
+### S-uni-formshell-part2 — Admin CRUD form Card sections + Ad slots + Address editor (2026-05-16)
+
+Completed all remaining tracks from `~/.claude/plans/each-listing-type-category-playful-fairy.md`.
+
+| Area | Detail |
+|------|--------|
+| E1+H `AdminProductEditorView` | Two-panel `grid lg:grid-cols-[1fr_280px]` layout. LISTING TYPE Card (Tabs filtered by `enabledListingTypes`), CLASSIFICATION Card (store `DynamicSelect`, category `InlineCreateSelect`, brand `InlineCreateSelect`). Sticky action sidebar (Save via `form="product-editor-form"`, Delete danger). Mobile-only fallback buttons inside form. |
+| E2+H `AdminCategoryEditorView` | Two-panel layout. IDENTITY Card (name, slug, description, parent `InlineCreateSelect` — callback arg renamed `n` to avoid shadow). DISPLAY Card (order, Active toggle, Show in Menu toggle). Sticky sidebar with status + Save + Delete. |
+| E3+H `AdminAddressEditorView` (new) | Full admin CRUD for unified `addresses` collection. OWNERSHIP Card (ownerType radio: user/store). CONTACT & LOCATION Card (label, fullName, phone, line1, city, state via `onValueChange`, postalCode, country). FLAGS Card (isDefault). TanStack v5 pattern (`useQuery` + `React.useEffect` for hydration). `Text` primitives throughout (audit-html-wrappers). |
+| API routes | `GET/POST /api/admin/addresses` + `GET/PATCH/DELETE /api/admin/addresses/[id]`. `NOT_FOUND` const extracted (audit-code-quality). |
+| Page shims | `/admin/addresses/new/page.tsx` + `/admin/addresses/[id]/edit/page.tsx`. |
+| Nav | Addresses link added to Management group in `ADMIN_NAV_GROUPS`. `ADMIN_ENDPOINTS.ADDRESSES` + `ADDRESS_BY_ID` added to both `appkit/src/constants/api-endpoints.ts` and `src/constants/api.ts`. `ROUTES.ADMIN.ADDRESSES` added to `route-map.ts`. |
+| K — Ad slots | `CartView`: `<AdSlot id="cart-upsell">` after promo code. `CheckoutView`: `<AdSlot id="checkout-upsell">` after renderStep. Both in appkit — flow to all consumers. |
+| F — asciiDiagrams.md | Product Editor + Category Editor + Feature Flags headers updated. Address Editor section + diagram added. Index: PaginatedMultiSelect ✅, AsyncFacetSection ✅, AuctionBidsTable ✅, Address Editor ✅. |
+| J2–J6 | Survey confirmed already implemented — no work needed. |
+| Quality | `npm run check` exits 0 (0 errors, 542 warnings). appkit rebuilt. |
+
+---
+
 ### S-quality-pass — CTA registry quality consolidation + HTML wrapper sweep (2026-05-16)
 
 Post-W-3 quality pass: corrected STORE vs SELLER naming, replaced raw HTML with appkit primitives, fixed TS4104 error, removed anti-pattern.

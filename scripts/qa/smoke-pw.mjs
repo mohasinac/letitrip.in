@@ -76,6 +76,7 @@ const SUITE_TIMEOUTS_MS = {
   "pw-15": 2 * 60_000,  // public expanded deep content (~10 pages)
   "pw-16": 2 * 60_000,  // accessibility audit (~8 pages × 8 checks)
   "pw-17": 4 * 60_000,  // media upload flow (sign+PUT+finalize × 3 uploads + error cases)
+  "pw-18": 3 * 60_000,  // feature flags grouping + admin CRUD form card sections + address API
 };
 
 console.log(

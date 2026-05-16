@@ -175,6 +175,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.RETURN_REQUESTS), "Returns",         "admin:returns:read"),
       adminItem(String(ROUTES.ADMIN.STORES),          "Stores",          "admin:stores:read"),
       adminItem(String(ROUTES.ADMIN.STORE_ADDRESSES), "Store Addresses", "admin:store-addresses:read"),
+      adminItem(String(ROUTES.ADMIN.ADDRESSES),       "Addresses",       "admin:addresses:read"),
     ],
   },
   {
@@ -314,23 +315,27 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
 
 export const USER_NAV_GROUPS: UserNavGroup[] = [
   {
-    title: "Shopping",
-    items: [
-      { href: String(ROUTES.USER.ORDERS),    label: "My Orders"   },
-      { href: String(ROUTES.USER.RETURNS),   label: "Returns"     },
-      { href: String(ROUTES.USER.BIDS),      label: "My Bids"     },
-      { href: String(ROUTES.USER.REVIEWS),   label: "My Reviews"  },
-      { href: String(ROUTES.USER.OFFERS),    label: "My Offers"   },
-      { href: String(ROUTES.USER.ADDRESSES), label: "Addresses"   },
-    ],
-  },
-  {
     title: "Account",
     items: [
       { href: String(ROUTES.USER.PROFILE),       label: "My Profile"    },
       { href: String(ROUTES.USER.SETTINGS),      label: "Settings"      },
       { href: String(ROUTES.USER.NOTIFICATIONS), label: "Notifications" },
       { href: String(ROUTES.USER.MESSAGES),      label: "Messages"      },
+    ],
+  }, 
+  {
+    title: "Shopping",
+    items: [
+      { href: String(ROUTES.USER.ORDERS),        label: "My Orders"     },
+      { href: String(ROUTES.USER.RETURNS),        label: "Returns"       },
+      { href: String(ROUTES.USER.BIDS),           label: "My Bids"       },
+      { href: String(ROUTES.USER.PRE_ORDERS),     label: "Pre-Orders"    },
+      { href: String(ROUTES.USER.DIGITAL_CODES),  label: "Digital Codes" },
+      { href: String(ROUTES.USER.PRIZE_DRAWS),    label: "Prize Draws"   },
+      { href: String(ROUTES.USER.EVENTS),         label: "My Events"     },
+      { href: String(ROUTES.USER.REVIEWS),        label: "My Reviews"    },
+      { href: String(ROUTES.USER.OFFERS),         label: "My Offers"     },
+      { href: String(ROUTES.USER.ADDRESSES),      label: "Addresses"     },
     ],
   },
   {

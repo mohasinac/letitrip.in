@@ -79,6 +79,8 @@ export const API_ROUTES = {
     SITE_SETTINGS: "/api/admin/site-settings",
     SUBLISTING_CATEGORIES: "/api/admin/sublisting-categories",
     SUBLISTING_CATEGORY_BY_ID: (id: string) => `/api/admin/sublisting-categories/${id}`,
+    ADDRESSES: "/api/admin/addresses",
+    ADDRESS_BY_ID: (id: string) => `/api/admin/addresses/${id}`,
   },
   SUBLISTING_CATEGORIES: {
     BY_SLUG: (slug: string) => `/api/sublisting-categories/${slug}`,
@@ -149,5 +151,6 @@ export const API_ROUTES = {
     NOTIFICATION_PREFERENCES: "/api/user/notification-preferences",
     CHANGE_PASSWORD: "/api/user/change-password",
     OFFERS: "/api/user/offers",
+    EVENTS: "/api/user/events",
   },
 } as const;
