@@ -133,7 +133,19 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-polish-pass Phase 8b: appkit v2.7.36 + TextLink client export + OG polish (2026-05-16)
+### ✅ LAST COMPLETED — S-security-admin: Payment integrity + sendNotification wiring + ACTIONS admin wiring (2026-05-16)
+
+- `/api/payment/create-order`: removed client-supplied `amount`; server now recomputes subtotal from live Firestore product prices (prevents price-manipulation attacks)
+- `createCheckoutOrderAction` (COD/UPI): added `unitPriceFor()` helper — bundle lines use locked price, regular lines use `product.price`
+- `onScamReportCreate/Verified/Rejected`: converted from `notificationRepository.create()` to `sendNotification()` (respects user prefs, fans out email+WhatsApp); `relatedType` union extended with `"scammer"`
+- `AdminUsersView`: ban-user/unban-user row actions with ban-reason modal (uses ACTIONS labels + confirmation)
+- `AdminStoresView`: verify-store/suspend-store row actions; fixed broken PATCH `/api/admin/stores/[uid]` (was calling wrong function with wrong ID type)
+- `AdminBundlesView`: Rebuild bundle button → new POST `/api/admin/bundles/[id]/rebuild` route
+- `SeedPanel`: reset-seed-data button label sourced from `ACTIONS.ADMIN`
+- `ADMIN_ENDPOINTS`: `BUNDLES` / `BUNDLE_BY_ID` / `BUNDLE_REBUILD` added
+- `npm run check` exits 0 (0 errors, 527 warnings pre-existing). Two commits: appkit + consumer.
+
+### ✅ PREVIOUS LAST — S-polish-pass Phase 8b: appkit v2.7.36 + TextLink client export + OG polish (2026-05-16)
 
 - appkit v2.7.36: export `TextLink` + `TextLinkProps` from `client.ts` (needed by `StoreAboutClient`)
 - `resolveOgImageUrl()` helper added to `seo/og.tsx`; exported from `server.ts`. All 13 per-feature OG renderers updated to use it for image URLs.

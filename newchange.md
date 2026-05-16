@@ -62,6 +62,22 @@
 
 ---
 
+### S-security-admin — Payment integrity + sendNotification wiring + ACTIONS admin wiring (2026-05-16)
+
+| Area | Detail |
+|------|--------|
+| **Payment security** | `/api/payment/create-order` no longer accepts client-supplied `amount`. Amount is computed server-side from live Firestore product prices + platform fee + GST. Prevents price-manipulation attacks where a client sends ₹10 for a ₹1000 item. |
+| **COD/UPI checkout** | `createCheckoutOrderAction`: added `unitPriceFor(item, product)` helper. Bundle lines use `item.price` (locked at add-time); regular lines use `product.price` (current Firestore). Prevents stale cart-cached prices from being charged. |
+| **sendNotification wiring** | `onScamReportCreate/Verified/Rejected` converted from `notificationRepository.create()` to `sendNotification()`. Now respects user notification prefs; fans out email+WhatsApp. `NotificationDocument.relatedType` union extended with `"scammer"`. |
+| **AdminUsersView** | Ban-user/unban-user row actions with ban-reason modal. Uses `ACTIONS.ADMIN` labels. `useMutation` + `useQueryClient` pattern (follows AdminPayoutsView). |
+| **AdminStoresView** | Verify-store/suspend-store row actions via `PATCH /api/admin/stores/[uid]`. Also fixed the broken PATCH route (was calling `adminUpdateStoreStatus` with wrong function signature and wrong ID type — store slug vs owner UID). |
+| **AdminBundlesView** | "Rebuild bundle" button → new `POST /api/admin/bundles/[id]/rebuild` route. Recomputes `bundleStockStatus` from current member product statuses. |
+| **SeedPanel** | Reset button label now sourced from `ACTIONS.ADMIN["reset-seed-data"].label`. |
+| **ADMIN_ENDPOINTS** | Added `BUNDLES`, `BUNDLE_BY_ID`, `BUNDLE_REBUILD` constants. |
+| Quality gates | `npm run check` exits 0 (0 errors, 527 warnings pre-existing). Two commits: appkit (4a2aa7b) + consumer (d6abd164c). |
+
+---
+
 ### S-orphan-wirewup — Dead-code wiring + UI polish pass (2026-05-16)
 
 **Audit of git history, prompt.md, and crud-tracker.md (2 weeks back) identified orphaned/dead code and missing prop wiring. All issues fixed.**
