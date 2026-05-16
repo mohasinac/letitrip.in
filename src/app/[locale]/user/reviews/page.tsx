@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-28: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-28) */
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
@@ -11,6 +10,7 @@ import {
   Text,
   Stack,
   Row,
+  Button,
 } from "@mohasinac/appkit/client";
 
 interface ReviewItem {
@@ -34,16 +34,17 @@ function StarDisplay({ rating }: { rating: number }) {
   return (
     <Row gap="xs" className="items-center">
       {Array.from({ length: 5 }).map((_, i) => (
-        <span
+        <Text
+          as="span"
           key={i}
           className={`text-base ${i < rating ? "text-yellow-400" : "text-zinc-300 dark:text-zinc-600"}`}
         >
           ★
-        </span>
+        </Text>
       ))}
-      <span className="ml-1 text-xs text-zinc-500 dark:text-zinc-400">
+      <Text as="span" className="ml-1 text-xs text-zinc-500 dark:text-zinc-400">
         {STAR_LABELS[rating] ?? ""}
-      </span>
+      </Text>
     </Row>
   );
 }
@@ -96,9 +97,10 @@ export default function UserReviewsPage() {
       {/* Tab filter */}
       <Row gap="sm" className="flex-wrap">
         {tabs.map((tab) => (
-          <button
+          <Button
             key={tab.key}
             type="button"
+            variant={filter === tab.key ? "primary" : "ghost"}
             onClick={() => setFilter(tab.key)}
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
               filter === tab.key
@@ -107,7 +109,7 @@ export default function UserReviewsPage() {
             }`}
           >
             {tab.label}
-          </button>
+          </Button>
         ))}
       </Row>
 
@@ -153,13 +155,13 @@ export default function UserReviewsPage() {
                   </Div>
                   <Row gap="sm" className="shrink-0 items-center">
                     {review.verified && (
-                      <span className="rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-0.5 text-xs font-medium">
+                      <Text as="span" className="rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-0.5 text-xs font-medium">
                         Verified
-                      </span>
+                      </Text>
                     )}
-                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusColor}`}>
+                    <Text as="span" className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusColor}`}>
                       {review.status}
-                    </span>
+                    </Text>
                   </Row>
                 </Row>
                 <StarDisplay rating={review.rating} />

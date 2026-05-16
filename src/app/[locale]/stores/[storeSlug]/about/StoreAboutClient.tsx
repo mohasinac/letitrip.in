@@ -1,8 +1,7 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-14: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-14) */
 import { StoreAboutView, type StoreDetail } from "@mohasinac/appkit/client";
-
-const REL_EXTERNAL = "noopener noreferrer";
+import { Div, Text } from "@mohasinac/appkit/client";
+import { TextLink } from "@mohasinac/appkit";
 
 export function StoreAboutClient({ store }: { store: StoreDetail }) {
   return (
@@ -10,52 +9,52 @@ export function StoreAboutClient({ store }: { store: StoreDetail }) {
       store={store}
       renderStats={(s) =>
         s.itemsSold != null || s.totalReviews != null || s.averageRating != null ? (
-          <div className="flex gap-6 text-sm text-neutral-600 border-y py-4">
+          <Div className="flex gap-6 text-sm text-neutral-600 border-y py-4">
             {s.itemsSold != null && (
-              <div className="text-center">
-                <div className="text-lg font-bold text-neutral-900">{s.itemsSold}</div>
-                <div>Items Sold</div>
-              </div>
+              <Div className="text-center">
+                <Div className="text-lg font-bold text-neutral-900">{s.itemsSold}</Div>
+                <Div>Items Sold</Div>
+              </Div>
             )}
             {s.totalReviews != null && (
-              <div className="text-center">
-                <div className="text-lg font-bold text-neutral-900">{s.totalReviews}</div>
-                <div>Reviews</div>
-              </div>
+              <Div className="text-center">
+                <Div className="text-lg font-bold text-neutral-900">{s.totalReviews}</Div>
+                <Div>Reviews</Div>
+              </Div>
             )}
             {s.averageRating != null && (
-              <div className="text-center">
-                <div className="text-lg font-bold text-neutral-900">{s.averageRating.toFixed(1)}</div>
-                <div>Avg Rating</div>
-              </div>
+              <Div className="text-center">
+                <Div className="text-lg font-bold text-neutral-900">{s.averageRating.toFixed(1)}</Div>
+                <Div>Avg Rating</Div>
+              </Div>
             )}
-          </div>
+          </Div>
         ) : null
       }
       renderSocialLinks={(links) =>
         links && Object.values(links).some(Boolean) ? (
-          <div className="flex gap-3 flex-wrap">
+          <Div className="flex gap-3 flex-wrap">
             {links.twitter && (
-              <a href={links.twitter} target="_blank" rel={REL_EXTERNAL} className="text-sm text-primary hover:underline">
-                Twitter
-              </a>
+              <TextLink href={links.twitter} external className="text-sm text-primary hover:underline">
+                <Text as="span">Twitter</Text>
+              </TextLink>
             )}
             {links.instagram && (
-              <a href={links.instagram} target="_blank" rel={REL_EXTERNAL} className="text-sm text-primary hover:underline">
-                Instagram
-              </a>
+              <TextLink href={links.instagram} external className="text-sm text-primary hover:underline">
+                <Text as="span">Instagram</Text>
+              </TextLink>
             )}
             {links.facebook && (
-              <a href={links.facebook} target="_blank" rel={REL_EXTERNAL} className="text-sm text-primary hover:underline">
-                Facebook
-              </a>
+              <TextLink href={links.facebook} external className="text-sm text-primary hover:underline">
+                <Text as="span">Facebook</Text>
+              </TextLink>
             )}
             {links.linkedin && (
-              <a href={links.linkedin} target="_blank" rel={REL_EXTERNAL} className="text-sm text-primary hover:underline">
-                LinkedIn
-              </a>
+              <TextLink href={links.linkedin} external className="text-sm text-primary hover:underline">
+                <Text as="span">LinkedIn</Text>
+              </TextLink>
             )}
-          </div>
+          </Div>
         ) : null
       }
     />

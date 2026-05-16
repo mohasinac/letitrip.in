@@ -57,14 +57,6 @@ export const metadata: Metadata = {
     siteName: SEO_CONFIG.siteName,
     title: SEO_CONFIG.defaultTitle,
     description: SEO_CONFIG.defaultDescription,
-    images: [
-      {
-        url: SEO_CONFIG.defaultImage,
-        width: 1200,
-        height: 630,
-        alt: SEO_CONFIG.siteName,
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -72,7 +64,6 @@ export const metadata: Metadata = {
     creator: SEO_CONFIG.twitterHandle,
     title: SEO_CONFIG.defaultTitle,
     description: SEO_CONFIG.defaultDescription,
-    images: [SEO_CONFIG.defaultImage],
   },
   icons: {
     icon: [

@@ -14,7 +14,7 @@ export default async function Image({ params }: Props) {
   const { id } = await params;
   const doc = await getAuctionForDetail(id).catch(() => null);
   return new ImageResponse(
-    renderAuctionOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip" }),
+    renderAuctionOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip", baseUrl: SEO_CONFIG.siteUrl }),
     { ...size },
   );
 }

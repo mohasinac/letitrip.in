@@ -41,6 +41,34 @@
 
 ---
 
+### S-orphan-wirewup — Dead-code wiring + UI polish pass (2026-05-16)
+
+**Audit of git history, prompt.md, and crud-tracker.md (2 weeks back) identified orphaned/dead code and missing prop wiring. All issues fixed.**
+
+| Area | Detail |
+|------|--------|
+| **Form fields — Select.style.css** | Added hover (`border-color` shift), strengthened focus ring (`box-shadow: 0 0 0 3px primary/25, inset 0 0 0 1px primary/15`), error + disabled states; full dark mode variants. |
+| **Form fields — Textarea.style.css** | Added hover, placeholder, disabled, dark mode; focus ring matches Input pattern; `transition` for border/shadow/bg. |
+| **FormField card variant** | `card?: boolean` prop on `FormField`; `.appkit-form-field--card` CSS in `FormField.style.css` — `bg-zinc-50 dark:bg-slate-900/40` + border + radius + padding. |
+| **OtpInput.tsx + OtpInput.style.css** | N-box digit input; auto-focus-advance, backspace-retreat, paste handling; `appkit-otp-input` class (2.75rem square, mono, text-center). Exported from `index.ts` + `client.ts`. |
+| **DateInput.tsx / DateRangeInput.tsx** | Native `<input type="date">` wrappers with `appkit-input` class system; `DateRangeInput` cross-links min/max. Exported. |
+| **HorizontalScroller.tsx** | Dynamic `colCount` from ResizeObserver; multi-row grid `rows × colCount` items/slide (was hardcoded 6). Removed unused `cloneElement` import. |
+| **FeaturedProductsSection.tsx** | Removed static `ProductGrid` multi-row path; all modes use `SectionCarousel` with `autoScroll` + `scrollInterval`. |
+| **FeaturedAuctionsSection / FeaturedPreOrdersSection** | Added `rows`, `autoScroll`, `scrollInterval` props; passed to `SectionCarousel`. |
+| **SectionCarousel.tsx** | `loop={autoScroll && rows === 1}` for seamless infinite single-row scroll. |
+| **section-renderer.tsx** | Passes `autoScroll`, `scrollInterval`, `rows` to all 3 section renderers. |
+| **Seed data** | `section-featured-products/auctions/pre-orders`: `autoScroll: true, scrollInterval: 5000`. `section-featured-stores`: `autoScroll: true, scrollInterval: 5000`. `section-upcoming-events`: `autoScroll: true, scrollInterval: 6000`. |
+| **ACTIONS registry** | `AdminProductsView`: approve-product + reject-product row actions via `ACTIONS.ADMIN`. `AdminPayoutsView`: grant-payout label via `ACTIONS.ADMIN`. |
+| **scams/report/page.tsx** | `<Div as="select">` × 2 → native `<select>`; fixes TS `ChangeEventHandler<HTMLDivElement>` mismatch. |
+| **ProfilePageClient.tsx** | Self-closing `<Text as="span" />` (toggle thumb, missing required `children`) → `<span aria-hidden="true" />`. |
+| **StoreAboutClient.tsx** | `TextLink` + `TextLinkProps` were missing from `client.ts`; added. |
+| **CartRouteClient.tsx** | 3× raw `<button>` → `<Button variant="ghost">` (remove-coupon, checkout-all, save-to-wishlist). |
+| **Filter facets, SectionTabs** | Audited: all 6 filter drawers already use accordion + vertical radio. All `<Tabs>` usages are inline (not page-nav). No changes needed. |
+| **Render props (Issue 3b-d)** | All render props are optional chaining `?.()` — return `null` when not passed; views degrade gracefully. No changes needed. |
+| Quality gates | appkit rebuilt v2.7.35. `npm run check` exits 0 (0 errors, 526 warnings pre-existing). |
+
+---
+
 ### S-product-form-shell — Wire paginated pickers across all listing-type forms (2026-05-16)
 
 **Root cause fixed:** `SellerCreateProductView` / `SellerEditProductView` accept optional

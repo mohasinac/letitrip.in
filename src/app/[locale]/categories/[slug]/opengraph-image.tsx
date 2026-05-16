@@ -17,7 +17,7 @@ export default async function Image({ params }: Props) {
   const { slug } = await params;
   const doc = await getCategoryForDetail(slug).catch(() => null);
   return new ImageResponse(
-    renderCategoryOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip" }),
+    renderCategoryOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip", baseUrl: SEO_CONFIG.siteUrl }),
     { ...size },
   );
 }

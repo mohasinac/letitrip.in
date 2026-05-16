@@ -16,7 +16,7 @@ export default async function Image({ params }: Props) {
   const { slug } = await params;
   const doc = await getBundleForDetail(slug).catch(() => null);
   return new ImageResponse(
-    renderBundleOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip" }),
+    renderBundleOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip", baseUrl: SEO_CONFIG.siteUrl }),
     { ...size },
   );
 }

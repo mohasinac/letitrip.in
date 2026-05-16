@@ -14,7 +14,7 @@ export default async function Image({ params }: Props) {
   const { id } = await params;
   const doc = await getPreOrderForDetail(id).catch(() => null);
   return new ImageResponse(
-    renderPreOrderOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip" }),
+    renderPreOrderOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip", baseUrl: SEO_CONFIG.siteUrl }),
     { ...size },
   );
 }

@@ -841,14 +841,15 @@ export function CartRouteClient() {
                       <Text className="text-xs font-medium text-[var(--appkit-color-success)]">
                         {c.code}{c.scope === "seller" ? " — this seller" : ""}
                       </Text>
-                      <button
+                      <Button
                         type="button"
+                        variant="ghost"
                         onClick={() => handleRemoveCoupon(c.code)}
                         disabled={removingCode === c.code}
                         className="text-xs text-zinc-500 dark:text-zinc-400 underline hover:text-zinc-700 dark:hover:text-zinc-200 disabled:opacity-50"
                       >
                         {removingCode === c.code ? "…" : "Remove"}
-                      </button>
+                      </Button>
                     </Div>
                   ))}
 
@@ -937,13 +938,14 @@ export function CartRouteClient() {
             </Text>
           )}
           {!isAllSelected && selectedCount > 0 && !hasOnlyOos && (
-            <button
+            <Button
               type="button"
+              variant="ghost"
               onClick={async () => { await selectAll(); router.push(String(ROUTES.USER.CHECKOUT)); }}
               className="w-full text-xs text-zinc-500 dark:text-zinc-400 underline underline-offset-2 hover:text-zinc-700 dark:hover:text-zinc-200"
             >
               Or checkout all {allItemIds.length} items
-            </button>
+            </Button>
           )}
         </Div>
       )}
@@ -1137,13 +1139,14 @@ function SellerGroupSection({
                   onRemove={onRemove}
                 />
                 {isOutOfStock && (
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
                     onClick={() => onMoveToWishlist(iid, item.productId)}
                     className="mt-1 text-xs text-primary-600 dark:text-primary-400 hover:underline underline-offset-2"
                   >
                     Save to wishlist
-                  </button>
+                  </Button>
                 )}
               </Div>
             </Div>

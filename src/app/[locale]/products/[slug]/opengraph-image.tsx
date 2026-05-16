@@ -14,7 +14,7 @@ export default async function Image({ params }: Props) {
   const { slug } = await params;
   const doc = await getProductForDetail(slug).catch(() => null);
   return new ImageResponse(
-    renderProductOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip" }),
+    renderProductOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip", baseUrl: SEO_CONFIG.siteUrl }),
     { ...size },
   );
 }

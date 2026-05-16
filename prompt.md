@@ -133,18 +133,33 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-polish-pass Phase 8a: Raw HTML sweep batch 2 (2026-05-16)
+### ✅ LAST COMPLETED — S-orphan-wirewup: Dead-code wiring + UI polish pass (2026-05-16)
 
-- `events/PollInlineClient` — removed eslint-disable; split dynamic `<input type={expr}>` → static checkbox/radio conditionals; fixed Link + API_ROUTES imports.
-- `events/EventParticipateClient` — same checkbox/radio split; `<label>` → `<Label>`.
-- `store/sublisting-categories/new+edit` — `LBL_CLS` constant extraction, `<label>`→`<Label>`, deep import fixed.
-- `store/templates` — `<Div as="select">` → proper `<Select options={...}>`; deep `@/constants/api` import fixed.
-- `sublisting-categories/[slug]/page` — `<Div as="nav">` → `<Nav>`; raw `<img>` → `<MediaImage>` (cover + grid cards).
-- `ProfilePageClient` — avatar `<img>` → `<MediaImage>`; `Link` from `@/i18n/navigation`.
-- `UserAddressesClient` — `<div>/<button>` → `<Div>/<Button>`; removed eslint-disable.
-- `scams/report + CartRouteClient` — LR1-02/LR1-17 suppress comments; deferred to Tier LR migration.
-- `scripts/audit-product-form-shell.mjs` — new audit enforcing `SellerProductFormShell` wrapper; added to `check:audits`.
-- `npm run check:audits` exits 0; `tsc --noEmit` exits 0.
+**Form field styling (Issue 4):**
+- `Select.style.css` — hover, focus ring (inset + outer), error, disabled states; dark mode variants.
+- `Textarea.style.css` — hover, placeholder, disabled, dark mode variants; focus ring matches Input.
+- `FormField.tsx` — `card?: boolean` prop; `FormField.style.css` — `.appkit-form-field--card` variant (bg + border + radius + padding + dark).
+- `OtpInput.tsx` + `OtpInput.style.css` — N-box digit input; auto-focus-advance, backspace-retreat, paste; `appkit-otp-input` class. Exported from `index.ts` + `client.ts`.
+- `DateInput.tsx` / `DateRangeInput.tsx` — native `<input type="date">` wrappers with appkit class system; cross-linked min/max. Exported.
+
+**HorizontalScroller (Issue 7):**
+- `HorizontalScroller.tsx` — `colCount` state from ResizeObserver; dynamic `rows × colCount` grid per slide (was hardcoded 6).
+- `FeaturedProductsSection.tsx` — removed static `ProductGrid` multi-row path; all modes routed through `SectionCarousel`; `autoScroll` + `scrollInterval` props added.
+- `FeaturedAuctionsSection.tsx`, `FeaturedPreOrdersSection.tsx` — `rows`, `autoScroll`, `scrollInterval` props added.
+- `SectionCarousel.tsx` — `loop={autoScroll && rows === 1}` for seamless single-row carousel.
+- `section-renderer.tsx` — passes `autoScroll`/`scrollInterval`/`rows` to all three section types.
+- Seed: `section-featured-{products,auctions,pre-orders,stores,events}` → `autoScroll: true, scrollInterval: 5000–6000`.
+
+**ACTIONS registry (Issue 2):**
+- `AdminProductsView.tsx` — approve-product + reject-product row actions via `ACTIONS.ADMIN`.
+- `AdminPayoutsView.tsx` — grant-payout label via `ACTIONS.ADMIN`.
+
+**Raw HTML / lint fixes:**
+- `scams/report/page.tsx` — `<Div as="select">` → native `<select>` (2×); fixes TS type mismatch.
+- `ProfilePageClient.tsx` — self-closing `<Text as="span" />` → `<span aria-hidden>` (toggle thumb).
+- `StoreAboutClient.tsx` — `TextLink` + `TextLinkProps` missing from `client.ts`; added.
+- `CartRouteClient.tsx` — 3× raw `<button>` → `<Button variant="ghost">`.
+- appkit rebuilt v2.7.35. `npm run check` exits 0 (0 errors, 526 warnings pre-existing).
 
 ### ✅ PREVIOUS LAST — S-product-form-shell + S-polish-7b: Paginated pickers + poll raw HTML sweep (2026-05-16)
 
