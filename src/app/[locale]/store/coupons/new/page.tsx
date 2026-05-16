@@ -34,11 +34,9 @@ export default function Page() {
   };
 
   return (
-    <div className="py-8 px-4">
-      <SellerCouponEditorView
-        onSave={handleSave}
-        onCancel={() => router.push(String(ROUTES.STORE.COUPONS))}
-      />
-    </div>
+    <SellerCouponEditorView
+      onSave={handleSave}
+      onCancel={() => router.push(String(ROUTES.STORE.COUPONS))}
+    />
   );
 }
