@@ -38,7 +38,7 @@ const placeBidSchema = z.object({
 
 export type PlaceBidActionResult =
   | { ok: true; data: PlaceBidResult }
-  | { ok: false; error: string };
+  | { ok: false; error: string; code?: string };
 
 export async function placeBidAction(
   input: PlaceBidInput,
@@ -66,7 +66,11 @@ export async function placeBidAction(
     if (err instanceof AuthorizationError)
       return { ok: false, error: "Please sign in to place a bid." };
     if (err instanceof ValidationError)
-      return { ok: false, error: err.message };
+      return {
+        ok: false,
+        error: err.message,
+        code: (err.data as { code?: string } | undefined)?.code,
+      };
     if (err instanceof Error && err.message)
       return { ok: false, error: err.message };
     return { ok: false, error: "Failed to place bid. Please try again." };

@@ -6,7 +6,7 @@ import { ROUTES } from "@mohasinac/appkit/client";
 
 export default function Page() {
   return (
-    <Div className="mx-auto max-w-4xl px-4 py-6">
+    <Div className="mx-auto max-w-4xl">
       <Row justify="between" align="center" className="mb-6">
         <Heading level={1} className="text-2xl font-semibold">Digital Codes</Heading>
         <Button asChild variant="primary" size="sm">
