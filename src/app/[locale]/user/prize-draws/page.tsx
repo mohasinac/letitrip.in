@@ -1,7 +1,7 @@
 "use client";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import {
   useSession,
   ROUTES,
@@ -12,7 +12,7 @@ import {
   Row,
   Badge,
 } from "@mohasinac/appkit/client";
-import { API_ROUTES } from "@/constants/api";
+import { API_ROUTES } from "@/constants";
 
 interface OrderItem {
   productId: string;

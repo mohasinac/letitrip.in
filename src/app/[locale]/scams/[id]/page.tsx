@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getScammerProfilePageData, getScamType } from "@mohasinac/appkit";
 import { ScamProfileView } from "@mohasinac/appkit";
-import { generateMetadata as _gm } from "@/constants/seo.server";
+import { generateMetadata as _gm } from "@/constants";
 import { SCAM_TYPE_LABELS, breadcrumbJsonLd, faqJsonLd, ROUTES } from "@mohasinac/appkit";
 
 export const revalidate = 300;

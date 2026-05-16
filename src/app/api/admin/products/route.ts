@@ -5,7 +5,7 @@ import { withProviders } from "@/providers.config";
  * POST /api/admin/products — Create a new product (admin, local)
  */
 
-import { NextRequest } from "next/server";
+
 import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse, errorResponse } from "@mohasinac/appkit";
 import { productRepository } from "@mohasinac/appkit";
@@ -62,7 +62,7 @@ export const POST = withProviders(createApiHandler({
   auth: true,
   roles: ["admin", "moderator"],
   permission: "admin:products:write",
-    handler: async ({ request, user }) => {
+    handler: async ({ request, user: _user }) => {
     const body = await request.json();
     const validation = validateRequestBody(productCreateSchema, body);
 

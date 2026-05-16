@@ -1,4 +1,4 @@
-import { ProfilePageClient } from "@/components/user/ProfilePageClient";
+import { ProfilePageClient } from "@/components";
 
 export default function Page() {
   return <ProfilePageClient />;

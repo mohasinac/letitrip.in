@@ -7,7 +7,7 @@ import {
   serverLogger,
   bundleCreateSchema,
 } from "@mohasinac/appkit";
-import { ROLES_ADMIN_MOD } from "@/constants/api-roles";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 /**
  * Admin bundles API — S-SBUNI-4 2026-05-13.

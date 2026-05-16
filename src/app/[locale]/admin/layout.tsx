@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 import { getServerPermissions } from "@mohasinac/appkit/server";
 import { DashboardLayoutClient } from "@mohasinac/appkit/client";
-import { ADMIN_NAV_GROUPS } from "@/constants/navigation";
-import { ROUTES } from "@/constants/routes";
+import { ADMIN_NAV_GROUPS } from "@/constants";
+import { ROUTES } from "@/constants";
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const user = await getServerSessionUser();

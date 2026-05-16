@@ -1,5 +1,5 @@
 import React from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { carouselsRepository } from "@mohasinac/appkit";
 import { ROUTES } from "@mohasinac/appkit/client";
 import { Heading, Section, Container, Row, Div, Text, Badge } from "@mohasinac/appkit/client";

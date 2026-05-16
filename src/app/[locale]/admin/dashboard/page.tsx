@@ -1,7 +1,7 @@
 "use client";
 import { AdminDashboardView, ROUTES, Text, Div, Button } from "@mohasinac/appkit/client";
 import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const STORAGE_KEY = "letitrip_dev_prefs";

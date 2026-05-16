@@ -12,7 +12,7 @@ import { z } from "zod";
 import {
   storeRepository,
   encryptPii,
-  decryptPii,
+
   createRouteHandler,
   successResponse,
   errorResponse,

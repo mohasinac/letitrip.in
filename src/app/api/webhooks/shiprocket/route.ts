@@ -16,7 +16,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { ORDER_FIELDS } from "@/constants/field-names";
+import { ORDER_FIELDS } from "@/constants";
 import { createHmac, timingSafeEqual } from "crypto";
 import { orderRepository } from "@mohasinac/appkit";
 import { handleApiError } from "@mohasinac/appkit";

@@ -8,7 +8,7 @@ import {
   type StoreDetail,
 } from "@mohasinac/appkit";
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 
 type StoreTab = "products" | "auctions" | "reviews" | "about";
 type StoreSortKey = "relevance" | "newest" | "price-asc" | "price-desc";

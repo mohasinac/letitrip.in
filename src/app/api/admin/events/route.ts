@@ -1,5 +1,5 @@
 import { withProviders } from "@/providers.config";
-import { EVENT_FIELDS } from "@/constants/field-names";
+import { EVENT_FIELDS } from "@/constants";
 import { sortBy } from "@mohasinac/appkit";
 
 const DEFAULT_SORTS = sortBy(EVENT_FIELDS.CREATED_AT);

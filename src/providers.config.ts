@@ -97,7 +97,7 @@ export function initProviders(): Promise<void> {
       db: firebaseDbProvider,
       auth: firebaseAuthProvider,
       session: firebaseSessionProvider,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       email: (createResendProvider as any)({
         apiKey: () => getResendApiKey(() => siteSettingsRepository.getDecryptedCredentials()),
         fromName: () => getEmailFromName(() => siteSettingsRepository.getSingleton()),

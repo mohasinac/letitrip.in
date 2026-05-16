@@ -5,7 +5,7 @@ import {
   getProductFeaturesForPreOrder,
 } from "@mohasinac/appkit";
 import { reservePreOrderAction } from "@/actions/pre-order.actions";
-import { generateMetadata as _gm } from "@/constants/seo.server";
+import { generateMetadata as _gm } from "@/constants";
 
 export const revalidate = 60;
 

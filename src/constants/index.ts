@@ -31,6 +31,15 @@ export type { ThemeMode } from "./theme";
 export {
   SEO_CONFIG,
 } from "./seo";
+export {
+  generateMetadata,
+  generateProductMetadata,
+  generateCategoryMetadata,
+  generateBlogMetadata,
+  generateAuctionMetadata,
+  generateProfileMetadata,
+  generateSearchMetadata,
+} from "./seo.server";
 export type { ProductSeoInput, CategorySeoInput, BlogSeoInput, AuctionSeoInput } from "./seo.server";
 
 // Navigation constants
@@ -42,6 +51,7 @@ export {
   STORE_NAV_GROUPS,
   USER_NAV_GROUPS,
   USER_NAV_ALL_ITEMS,
+  getUserNavGroups,
 } from "./navigation";
 // Note: NavItem type not exported to avoid conflict with NavItem component in @/components/layout
 export type { NavItem as NavigationItem } from "./navigation";
@@ -105,6 +115,20 @@ export type {
   UserOrdersTabId,
   UserProfileTabId,
 } from "./dashboard-tabs";
+
+// API role tuples for createRouteHandler({ roles })
+export {
+  USER_ROLE,
+  ROLES_ADMIN_ONLY,
+  ROLES_ADMIN_MOD,
+  ROLES_TRUST_SAFETY,
+  ROLES_STORE_WRITE,
+  ROLES_STORE_READ,
+  ROLES_ANY_STAFF,
+} from "./api-roles";
+
+// UI labels
+export { UI_LABELS } from "./ui";
 
 // Schema field name & status constants
 export {

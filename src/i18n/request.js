@@ -10,7 +10,7 @@ const { getRequestConfig } = require("next-intl/server");
 // const { setupZodErrorMap } = require("@mohasinac/appkit");
 const { routing } = require("./routing");
 // const { mergeFeatureMessages } = require("@mohasinac/appkit");
-const features = require("../features.config");
+const _features = require("../features.config");
 const { LOCALE_CONFIG } = require("../constants");
 
 module.exports = getRequestConfig(async ({ requestLocale }) => {

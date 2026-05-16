@@ -7,7 +7,7 @@ import {
   breadcrumbJsonLd,
 } from "@mohasinac/appkit";
 import { placeBidAction } from "@/actions/bid.actions";
-import { generateAuctionMetadata } from "@/constants/seo.server";
+import { generateAuctionMetadata } from "@/constants";
 
 export const revalidate = 30;
 

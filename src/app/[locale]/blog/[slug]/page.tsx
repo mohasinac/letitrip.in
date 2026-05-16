@@ -1,7 +1,7 @@
 import { getBlogPostForDetail, blogPostJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { generateBlogMetadata } from "@/constants/seo.server";
+import { generateBlogMetadata } from "@/constants";
 import { BlogPostPageClient } from "./BlogPostPageClient";
 import { ShareButtons } from "./ShareButtons";
 

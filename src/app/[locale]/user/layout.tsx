@@ -2,7 +2,7 @@
 
 import { useMemo, type ReactNode } from "react";
 import { DashboardLayoutClient, RoleGuard, useSession } from "@mohasinac/appkit/client";
-import { getUserNavGroups } from "@/constants/navigation";
+import { getUserNavGroups } from "@/constants";
 
 export default function UserLayout({ children }: { children: ReactNode }) {
   const { user } = useSession();

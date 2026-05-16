@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getLiveItemForDetail } from "@mohasinac/appkit";
 import { buildLiveItemMetadata } from "@mohasinac/appkit/server";
 import { LiveItemDetailView } from "@mohasinac/appkit/client";
-import { LiveItemActionsClient } from "@/components/live/LiveItemActionsClient";
+import { LiveItemActionsClient } from "@/components";
 import { SEO_CONFIG } from "@/constants";
 
 export const revalidate = 60;

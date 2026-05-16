@@ -14,7 +14,7 @@ import {
   faqJsonLd,
 } from "@mohasinac/appkit";
 import { listPublicFaqs } from "@mohasinac/appkit/server";
-import { generateMetadata as _gm } from "@/constants/seo.server";
+import { generateMetadata as _gm } from "@/constants";
 
 export const metadata: Metadata = _gm({
   title: "Scam Awareness FAQs — LetItRip",

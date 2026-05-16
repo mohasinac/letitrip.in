@@ -1,7 +1,7 @@
 "use client";
 
 import { use } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { AdminBundleEditorView, ROUTES } from "@mohasinac/appkit";
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {

@@ -1,5 +1,5 @@
 import { withProviders } from "@/providers.config";
-import { AD_FIELDS } from "@/constants/field-names";
+import { AD_FIELDS } from "@/constants";
 
 import {
   createApiHandler as createRouteHandler,

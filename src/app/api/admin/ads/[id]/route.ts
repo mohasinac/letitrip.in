@@ -1,7 +1,7 @@
 import { withProviders } from "@/providers.config";
 
 import { z } from "zod";
-import { AD_FIELDS } from "@/constants/field-names";
+import { AD_FIELDS } from "@/constants";
 import {
   createApiHandler as createRouteHandler,
   errorResponse,

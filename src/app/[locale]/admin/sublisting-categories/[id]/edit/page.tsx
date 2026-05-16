@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation"
+import { useParams } from "next/navigation";
 import { AdminSublistingCategoryEditorView } from "@mohasinac/appkit";
 import { ROUTES } from "@mohasinac/appkit/client";
 

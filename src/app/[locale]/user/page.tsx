@@ -7,7 +7,7 @@ import {
   ROUTES,
 } from "@mohasinac/appkit/client";
 import { ShoppingBag, Heart, MapPin, Settings, MessageCircle, Bell } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 const BRAND_GRAD = "linear-gradient(135deg,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)";
 

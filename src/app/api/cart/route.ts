@@ -8,13 +8,12 @@ import { withProviders } from "@/providers.config";
  */
 
 import { z } from "zod";
-import { handleApiError } from "@mohasinac/appkit";
 import { successResponse, ApiErrors } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { cartRepository } from "@mohasinac/appkit";
 import { productRepository, normalizeListingType } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
+
 import { createRouteHandler } from "@mohasinac/appkit";
 import { ProductStatusValues } from "@mohasinac/appkit";
 import { CART_MAX_ITEMS } from "@mohasinac/appkit";

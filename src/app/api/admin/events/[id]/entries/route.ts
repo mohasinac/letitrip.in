@@ -12,7 +12,7 @@ import {
 } from "@mohasinac/appkit";
 import { eventEntryRepository } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
+
 import { requireRoleFromRequest } from "@/lib/firebase/auth-server";
 
 type RouteContext = { params: Promise<{ id: string }> };

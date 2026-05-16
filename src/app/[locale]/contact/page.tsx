@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ContactPageView } from "@mohasinac/appkit";
-import { generateMetadata as _gm } from "@/constants/seo.server";
+import { generateMetadata as _gm } from "@/constants";
 
 export const metadata: Metadata = _gm({
   title: "Contact Us — LetItRip",

@@ -5,7 +5,7 @@ import {
   ROUTES,
 } from "@mohasinac/appkit/client";
 import { TrendingUp, ShoppingBag, Clock, Package, Plus, BarChart2, Wallet, Store } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 // Brand gradient mirrors the SiteLogo wordmark — using CSS var tokens
 const BRAND_GRAD = "linear-gradient(135deg,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)";

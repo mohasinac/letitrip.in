@@ -1,8 +1,8 @@
 import { ROUTES } from "@mohasinac/appkit";
 import type { SellerProductDraft } from "@mohasinac/appkit";
 import { createSellerProductAction } from "@/actions/seller.actions";
-import { redirect } from "next/navigation";
-import { StoreCreateProductShell } from "@/components/store/SellerProductFormShell";
+import { redirect } from "@/i18n/navigation";
+import { StoreCreateProductShell } from "@/components";
 
 /**
  * Store-side prize-draw create page (SB4-E + SB4-D).

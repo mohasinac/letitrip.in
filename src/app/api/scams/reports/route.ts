@@ -1,6 +1,6 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
+import { createRouteHandler, successResponse } from "@mohasinac/appkit";
 import { scammerRepository } from "@mohasinac/appkit";
 
 const createReportSchema = z.object({

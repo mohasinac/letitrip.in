@@ -19,7 +19,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { OAUTH_STATE_VALUES } from "@/constants/field-names";
+import { OAUTH_STATE_VALUES } from "@/constants";
 import { getAdminRealtimeDb } from "@mohasinac/appkit";
 import { RTDB_PATHS } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";

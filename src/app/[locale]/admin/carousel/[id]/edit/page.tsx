@@ -1,7 +1,8 @@
 "use client";
 
 import { AdminCarouselEditorView, ROUTES } from "@mohasinac/appkit";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation"
+import { useParams } from "next/navigation";
 
 export default function Page() {
   const router = useRouter();

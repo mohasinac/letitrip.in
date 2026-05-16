@@ -10,7 +10,7 @@ import {
   SCAMMER_FIELDS,
 } from "@mohasinac/appkit";
 import type { SieveModel } from "@mohasinac/appkit";
-import { ROLES_TRUST_SAFETY } from "@/constants/api-roles";
+import { ROLES_TRUST_SAFETY } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(SCAMMER_FIELDS.CREATED_AT);
 

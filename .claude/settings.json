@@ -37,7 +37,16 @@
       "Bash(node scripts/audit-code-quality.mjs --verbose)",
       "Bash(npm view *)",
       "Bash(npm run audit:*)",
-      "Bash(vercel logs *)"
+      "Bash(vercel logs *)",
+      "Bash(ls -la \"d:/proj/\" | grep packages)",
+      "Read(//d/proj/**)",
+      "Bash(node -e \"require\\('qrcode'\\)\")",
+      "Bash(node -e \"require\\('jsbarcode'\\)\")",
+      "Bash(node -e \"require\\('jspdf'\\)\")",
+      "Bash(grep -v \"^\\\\s*$\")",
+      "Bash(grep -v \"^--$\")",
+      "Bash(git -C appkit status --short)",
+      "Bash(dir \"d:\\\\proj\\\\letitrip.in\\\\appkit\\\\src\\\\_internal\\\\client\\\\features\\\\seller\" /s /b)"
     ],
     "additionalDirectories": [
       "d:\\proj\\letitrip.in\\src\\app\\api\\store\\reviews\\[id]",

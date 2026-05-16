@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { useSession, ROUTES, SCAM_TYPES, SCAM_PLATFORM_LABELS, Div, Button, Label, Input, Textarea, Select } from "@mohasinac/appkit/client";
 import { Alert, Stack, Heading, Text, Row, Card, CardBody, Main, Ul, Li } from "@mohasinac/appkit";
 import { ChevronLeft, Loader2, Plus, X } from "lucide-react";
-import { API_ROUTES } from "@/constants/api";
+import { API_ROUTES } from "@/constants";
 
 const LOGIN_HREF =
   `${String(ROUTES.AUTH.LOGIN)}?redirect=${encodeURIComponent("/scams/report")}` as const;

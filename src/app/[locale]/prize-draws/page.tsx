@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { PrizeDrawsListingView } from "@mohasinac/appkit";
-import { generateMetadata as _gm } from "@/constants/seo.server";
+import { generateMetadata as _gm } from "@/constants";
 
 /**
  * Public Prize Draws listing page (SB4-E + SB4-F).

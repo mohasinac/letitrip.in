@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { SellerCouponsView } from "@mohasinac/appkit";
-import { API_ROUTES } from "@/constants/api";
+import { API_ROUTES } from "@/constants";
 
 export default function Page() {
   const router = useRouter();

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { generateMetadata as _gm } from "@/constants/seo.server";
+import { generateMetadata as _gm } from "@/constants";
 import { HowReviewsWorkView } from "@mohasinac/appkit";
 
 export const metadata: Metadata = _gm({

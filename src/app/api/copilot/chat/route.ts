@@ -7,7 +7,7 @@
  */
 
 import { withProviders } from "@/providers.config";
-import { NextResponse } from "next/server";
+
 import { z } from "zod";
 import { createApiHandler } from "@mohasinac/appkit";
 import { copilotLogRepository } from "@mohasinac/appkit";

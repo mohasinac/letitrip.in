@@ -1,5 +1,5 @@
 import { withProviders } from "@/providers.config";
-import { EVENT_FIELDS } from "@/constants/field-names";
+import { EVENT_FIELDS } from "@/constants";
 import {
   eventRepository,
   eventEntryRepository,

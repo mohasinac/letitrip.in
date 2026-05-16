@@ -31,7 +31,7 @@ declare module "@mohasinac/appkit/providers/db-firebase" {
   ): Partial<T>;
   export function deserializeTimestamps<T>(data: T): T;
 
-  export class FirebaseRepository<T extends DocumentData> {
+  export class FirebaseRepository<_T extends DocumentData> {
     constructor(collection: string);
   }
 

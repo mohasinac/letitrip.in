@@ -5,7 +5,7 @@ import {
   successResponse,
   errorResponse,
   userRepository,
-  orderRepository,
+
   sessionRepository,
   storeRepository,
   productRepository,

@@ -1,6 +1,6 @@
 "use server";
 import { z } from "zod";
-import { EVENT_FIELDS } from "@/constants/field-names";
+import { EVENT_FIELDS } from "@/constants";
 import { requireRoleUser, requireAuthUser } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier, RateLimitPresets, } from "@mohasinac/appkit";

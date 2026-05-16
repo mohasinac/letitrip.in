@@ -1,4 +1,4 @@
-import { AD_FIELDS } from "@/constants/field-names";
+import { AD_FIELDS } from "@/constants";
 
 type AdProvider = "manual" | "adsense" | "thirdParty";
 type AdStatus = typeof AD_FIELDS.STATUS_VALUES[keyof typeof AD_FIELDS.STATUS_VALUES];

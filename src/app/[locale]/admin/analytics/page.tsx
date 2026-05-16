@@ -1,4 +1,4 @@
-import { AdminAnalyticsClient } from "@/components/admin/AdminAnalyticsClient";
+import { AdminAnalyticsClient } from "@/components";
 
 export default function Page() {
   return <AdminAnalyticsClient />;

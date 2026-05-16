@@ -16,7 +16,7 @@ import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { getOptionalSessionCookie } from "@mohasinac/appkit";
 import { sessionRepository, userRepository } from "@mohasinac/appkit";
 import { parseUserAgent } from "@mohasinac/appkit";
-import { SCHEMA_DEFAULTS } from "@/constants/field-names";
+import { SCHEMA_DEFAULTS } from "@/constants";
 import { serverLogger } from "@mohasinac/appkit";
 import { getAuth } from "firebase-admin/auth";
 import { getAdminApp } from "@mohasinac/appkit";
@@ -143,7 +143,7 @@ export async function DELETE(request: NextRequest) {
         if (decodedToken) {
           await sessionRepository.revokeSession(sessionId, decodedToken.uid);
         }
-      } catch (e) {
+      } catch {
         // Session may be expired, still clear cookies
         serverLogger.debug("Session already expired, clearing cookies");
       }

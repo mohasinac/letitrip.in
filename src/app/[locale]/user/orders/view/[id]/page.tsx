@@ -1,6 +1,6 @@
 "use client";
 import { use } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import {
   useOrder,
   OrderDetailView,

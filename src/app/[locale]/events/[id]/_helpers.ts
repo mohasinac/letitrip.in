@@ -39,7 +39,7 @@ export function toIsoOrUndefined(value: unknown): string | undefined {
   }
 }
 
-// eslint-disable-next-line lir/no-raw-date -- consumer has no @/utils nowMs() helper
+ 
 export function eventIsActive(event: RawEvent, now: number = Date.now()): boolean {
   const status = typeof event.status === "string" ? event.status : "";
   if (status === EVENT_STATUS.ACTIVE) return true;

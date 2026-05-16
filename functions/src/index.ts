@@ -54,6 +54,8 @@ import {
   bundleStockSyncHandler,
   triggerEventRaffleHandler,
   assignSpinPrizeHandler,
+  // SB-UNI-Y-1 — 30-day draft prune
+  draftPruneHandler,
   // BAN9 — support ticket lifecycle + ban audit
   onSupportTicketCreateHandler,
   onSupportTicketUpdateHandler,
@@ -156,6 +158,12 @@ export const mediaTmpCleanup = bindToFirebase.schedule(
   "mediaTmpCleanup",
   mediaTmpCleanupHandler,
   { schedule: "30 4 * * *", timeZone: "Asia/Kolkata", region: REGION, timeoutSeconds: 540, memory: "256MiB", maxInstances: 1 },
+);
+
+export const draftPrune = bindToFirebase.schedule(
+  "draftPrune",
+  draftPruneHandler,
+  { schedule: "0 3 * * 0", timeZone: "UTC", region: REGION, timeoutSeconds: 300, memory: "256MiB", maxInstances: 1 },
 );
 
 // ── Firestore triggers ────────────────────────────────────────────────────

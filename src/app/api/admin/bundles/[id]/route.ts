@@ -7,7 +7,7 @@ import {
   serverLogger,
   bundleUpdateSchema,
 } from "@mohasinac/appkit";
-import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants/api-roles";
+import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 /**
  * Admin bundle [id] route — S-SBUNI-4 2026-05-13.

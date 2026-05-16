@@ -10,7 +10,7 @@ import {
   Stack,
   Text,
 } from "@mohasinac/appkit/client";
-import { API_ROUTES } from "@/constants/api";
+import { API_ROUTES } from "@/constants";
 
 type CheckState = "idle" | "checking" | "available" | "taken" | "invalid";
 

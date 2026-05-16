@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { FAQPageView, faqJsonLd } from "@mohasinac/appkit";
 import { listPublicFaqs } from "@mohasinac/appkit/server";
-import { generateMetadata as _gm } from "@/constants/seo.server";
+import { generateMetadata as _gm } from "@/constants";
 
 export const metadata: Metadata = _gm({
   title: "FAQ — LetItRip Help Centre",

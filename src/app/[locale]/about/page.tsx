@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AboutView } from "@mohasinac/appkit";
 import { siteSettingsRepository } from "@mohasinac/appkit";
 import { getTranslations } from "next-intl/server";
-import { generateMetadata as _gm } from "@/constants/seo.server";
+import { generateMetadata as _gm } from "@/constants";
 
 export const revalidate = 3600;
 

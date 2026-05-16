@@ -22,13 +22,13 @@ import {
   type SearchResourceType,
   type SearchResourceTypeOption,
 } from "@mohasinac/appkit/client";
-import { AdRuntimeInitializer } from "@/components/ads/AdRuntimeInitializer";
-import { FooterNewsletterSlot } from "@/components/layout/FooterNewsletterSlot";
+import { AdRuntimeInitializer } from "@/components";
+import { FooterNewsletterSlot } from "@/components";
 import { API_ROUTES } from "@/constants";
-import { MAIN_NAV_ITEMS, SIDEBAR_SUPPORT_LINKS, FOOTER_LINK_GROUPS } from "@/constants/navigation";
-import { BRAND, getBrandCopyright } from "@/constants/brand";
-import { FOOTER_TRUST_BAR_ITEMS, FOOTER_SOCIAL_LINKS, FOOTER_BOTTOM_LINKS } from "@/constants/footer";
-import { SEARCH_LABELS } from "@/constants/search";
+import { MAIN_NAV_ITEMS, SIDEBAR_SUPPORT_LINKS, FOOTER_LINK_GROUPS } from "@/constants";
+import { BRAND, getBrandCopyright } from "@/constants";
+import { FOOTER_TRUST_BAR_ITEMS, FOOTER_SOCIAL_LINKS, FOOTER_BOTTOM_LINKS } from "@/constants";
+import { SEARCH_LABELS } from "@/constants";
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 

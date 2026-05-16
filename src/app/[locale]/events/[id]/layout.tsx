@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Div } from "@mohasinac/appkit/ui";
 import { ROUTES } from "@mohasinac/appkit";
-import { generateMetadata as _gm } from "@/constants/seo.server";
+import { generateMetadata as _gm } from "@/constants";
 import { EVENT_LABELS, EVENT_META, EVENT_TAB } from "./_constants";
 import { eventIsActive, metaDescriptionFromEvent } from "./_helpers";
 import { getEventCached, getLeaderboardCached } from "./_data";

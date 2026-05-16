@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { CategoryDetailPageView, getCategoryBySlug } from "@mohasinac/appkit";
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound, redirect } from "@/i18n/navigation";
 
 type CategoryTab = "products";
 type CategorySortKey = "relevance" | "newest" | "price-asc" | "price-desc";

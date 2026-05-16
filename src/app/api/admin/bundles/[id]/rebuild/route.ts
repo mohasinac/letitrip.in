@@ -6,7 +6,7 @@ import {
   categoriesRepository,
   productRepository,
 } from "@mohasinac/appkit";
-import { ROLES_ADMIN_ONLY } from "@/constants/api-roles";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const UNAVAILABLE_STATUSES = new Set(["sold", "out_of_stock", "discontinued"]);
 

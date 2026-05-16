@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import {
   Badge,
   Button,
@@ -14,7 +14,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { ROUTES } from "@mohasinac/appkit/client";
 import { useUrlTable } from "@mohasinac/appkit/client";
-import { API_ROUTES } from "@/constants/api";
+import { API_ROUTES } from "@/constants";
 
 interface CategoryRow {
   id: string;

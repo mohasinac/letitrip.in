@@ -66,7 +66,6 @@ import { NotFoundError } from "@mohasinac/appkit";
 import { orderRepository } from "@mohasinac/appkit";
 import { OrderStatusValues, ShippingMethodValues } from "@mohasinac/appkit";
 import type { StoreDocument } from "@mohasinac/appkit";
-import type { SellerPayoutDetails, SellerShippingConfig } from "@mohasinac/appkit";
 import type { OrderDocument } from "@mohasinac/appkit";
 import type { CouponDocument } from "@mohasinac/appkit";
 import type { ProductDocument } from "@mohasinac/appkit";

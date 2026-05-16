@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, use } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { useToast, useOrder, ROUTES, Div, Button, Label, Textarea } from "@mohasinac/appkit/client";
 import { cancelOrderAction } from "@/actions/order.actions";
 import { Heading, Text } from "@mohasinac/appkit";

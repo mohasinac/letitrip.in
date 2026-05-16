@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { Heading, Text } from "@mohasinac/appkit";
 import {
   AddressBook,
@@ -18,7 +18,7 @@ import {
 export function UserAddressesClient() {
   const router = useRouter();
   const { showToast } = useToast();
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [_deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const { data: addresses = [], isLoading } = useAddresses();

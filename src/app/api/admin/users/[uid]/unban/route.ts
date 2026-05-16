@@ -13,7 +13,7 @@ export const POST = withProviders(
     auth: true,
     roles: ["admin"],
     permission: "admin:user-bans:write",
-    handler: async ({ params, user }) => {
+    handler: async ({ params, user: _user }) => {
       const uid = (params as { uid: string }).uid;
       const target = await userRepository.findById(uid);
       if (!target) return errorResponse("User not found", 404);

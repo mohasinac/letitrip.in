@@ -6,7 +6,7 @@ import {
   errorResponse,
   payoutRepository,
 } from "@mohasinac/appkit";
-import { ROLES_ADMIN_ONLY } from "@/constants/api-roles";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 /**
  * POST /api/admin/payouts/[id]/deduction

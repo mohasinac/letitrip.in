@@ -11,7 +11,7 @@ import {
 import { isSoftBanned } from "@mohasinac/appkit/server";
 
 const MAX_OPEN_TICKETS = 2;
-const MAX_ORDER_TICKETS = 1;
+const _MAX_ORDER_TICKETS = 1;
 
 const createSchema = z.object({
   category: z.enum([

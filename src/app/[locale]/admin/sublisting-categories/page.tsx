@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { AdminSublistingCategoriesView, Heading } from "@mohasinac/appkit";
 import { ROUTES, Div } from "@mohasinac/appkit/client";
 

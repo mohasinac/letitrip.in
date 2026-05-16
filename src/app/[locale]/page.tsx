@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { MarketplaceHomepageView } from "@mohasinac/appkit";
-import { HomepageNewsletterForm } from "@/components/homepage/HomepageNewsletterForm";
+import { HomepageNewsletterForm } from "@/components";
 import {
   AfterHeroAdSlot,
   AfterFeaturedProductsAdSlot,
   AfterReviewsAdSlot,
   AfterFAQAdSlot,
-} from "@/components/homepage/AdSlots";
-import { generateMetadata as _gm } from "@/constants/seo.server";
+} from "@/components";
+import { generateMetadata as _gm } from "@/constants";
 
 export const metadata: Metadata = _gm({
   title: "LetItRip — India's Collectibles Marketplace",

@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import type { Metadata } from "next";
 import type { SearchResourceType } from "@mohasinac/appkit";
 

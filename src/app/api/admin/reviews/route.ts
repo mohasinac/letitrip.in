@@ -7,7 +7,7 @@ import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { buildSieveFilters } from "@mohasinac/appkit";
 import { piiBlindIndex } from "@mohasinac/appkit";
-import { REVIEW_FIELDS } from "@/constants/field-names";
+import { REVIEW_FIELDS } from "@/constants";
 import { reviewRepository } from "@mohasinac/appkit";
 
 export const GET = withProviders(createApiHandler({

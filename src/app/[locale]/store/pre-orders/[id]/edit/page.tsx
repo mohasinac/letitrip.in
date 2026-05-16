@@ -1,8 +1,8 @@
 import { ROUTES } from "@mohasinac/appkit";
 import type { SellerProductDraft } from "@mohasinac/appkit";
 import { sellerUpdateProductAction } from "@/actions/seller.actions";
-import { redirect } from "next/navigation";
-import { StoreEditProductShell } from "@/components/store/SellerProductFormShell";
+import { redirect } from "@/i18n/navigation";
+import { StoreEditProductShell } from "@/components";
 
 interface Props {
   params: Promise<{ id: string }>;

@@ -10,10 +10,10 @@ import {
   Stack,
   Row,
   Button,
-  Badge,
+
 } from "@mohasinac/appkit/client";
-import Link from "next/link";
-import { API_ROUTES } from "@/constants/api";
+import { Link } from "@/i18n/navigation";
+import { API_ROUTES } from "@/constants";
 
 interface OrderItem {
   productId: string;

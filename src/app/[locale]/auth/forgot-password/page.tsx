@@ -1,4 +1,4 @@
-import { ForgotPasswordPageClient } from "@/components/auth/ForgotPasswordPageClient";
+import { ForgotPasswordPageClient } from "@/components";
 
 export default function Page() {
   return <ForgotPasswordPageClient />;

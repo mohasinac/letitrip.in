@@ -4,7 +4,7 @@ import { createRouteHandler, userRepository } from "@mohasinac/appkit";
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    handler: async ({ user, request }) => {
+    handler: async ({ user }) => {
       const { auth } = await import("@mohasinac/appkit").then((m) => ({
         auth: m.getProviders().auth,
       }));

@@ -9,8 +9,7 @@ import {
   BottomActionsProvider,
   DashboardNavProvider,
   LayoutClient,
-  SkipToMain,
-  SessionProvider,
+SessionProvider,
   ThemeProvider,
   ToastProvider,
   WishlistCapWatcher,
@@ -22,7 +21,7 @@ import LayoutShellClient from "./LayoutShellClient";
 import { LOCALE_CONFIG } from "@/constants";
 import { resolveLocale } from "@/i18n/resolve-locale";
 import ClientProviderInitializer from "@/app/ClientProviderInitializer";
-import { ScrollToTop } from "@/components/ScrollToTop";
+import { ScrollToTop } from "@/components";
 
 const getCachedSiteSettings = cache(() =>
   siteSettingsRepository.getSingleton().catch(() => null)

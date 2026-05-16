@@ -22,10 +22,10 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { getUserFromRequest } from "@/lib/firebase/auth-server";
 import { siteSettingsUpdateSchema } from "@/validation/request-schemas";
-import { handleApiError } from "@mohasinac/appkit";
+
 import { serverLogger } from "@mohasinac/appkit";
 import { sendSiteSettingsChangedEmail } from "@mohasinac/appkit";
-import { SCHEMA_DEFAULTS } from "@/constants/field-names";
+import { SCHEMA_DEFAULTS } from "@/constants";
 import { createApiHandler } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { invalidateIntegrationKeysCache } from "@mohasinac/appkit";
@@ -63,7 +63,7 @@ export const GET = withProviders(createApiHandler({
       responseData = { ...settingsWithoutCreds, credentialsMasked };
     } else {
       // Public: strip admin-only fields, expose the Razorpay key ID for the checkout modal
-      const { emailSettings, legalPages, ...publicFields } =
+      const { emailSettings: _emailSettings, legalPages: _legalPages, ...publicFields } =
         settingsWithoutCreds;
 
       // Resolve the public Razorpay key ID: DB wins over env var

@@ -305,7 +305,7 @@ export function CartRouteClient() {
     } catch {
       // Validation is best-effort; don't surface errors
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [isAuthenticated, cartItems, refetch, guest, guestWishlist, showToast]);
 
   useEffect(() => {

@@ -8,7 +8,7 @@
  * responsible for redirecting to checkout after this resolves.
  */
 
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { requireAuthUser, rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit";
 import { addBundleToCartAction } from "@mohasinac/appkit/server";
 import { ROUTES } from "@mohasinac/appkit";

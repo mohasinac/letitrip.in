@@ -1,6 +1,6 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { requireAuthUser } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,

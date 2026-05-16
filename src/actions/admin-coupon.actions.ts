@@ -24,7 +24,7 @@ import {
   ValidationError,
 } from "@mohasinac/appkit";
 import type { CouponDocument, CouponCreateInput, CouponUpdateInput } from "@mohasinac/appkit";
-import type { FirebaseSieveResult, SieveModel } from "@mohasinac/appkit";
+import type { FirebaseSieveResult } from "@mohasinac/appkit";
 import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 // --- Schemas --------------------------------------------------------------

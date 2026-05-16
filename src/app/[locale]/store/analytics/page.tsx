@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { SellerAnalyticsView, SellerAnalyticsStats, SellerTopProducts, Div, Text } from "@mohasinac/appkit/client";
-import { API_ROUTES } from "@/constants/api";
+import { API_ROUTES } from "@/constants";
 
 interface AnalyticsData {
   summary?: {

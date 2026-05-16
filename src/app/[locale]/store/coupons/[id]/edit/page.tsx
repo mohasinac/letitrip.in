@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation"
+import { useParams } from "next/navigation";
 import { SellerCouponEditorView, Text, Div } from "@mohasinac/appkit";
 import type { CouponEditorDraft } from "@mohasinac/appkit";
-import { API_ROUTES } from "@/constants/api";
+import { API_ROUTES } from "@/constants";
 
 interface CouponData {
   id: string;

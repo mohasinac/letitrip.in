@@ -6,7 +6,7 @@ import {
   OrdersList,
   ROUTES,
 } from "@mohasinac/appkit/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 
 export default function Page() {
   const table = useUrlTable({ defaults: { pageSize: "12", sort: "-createdAt" } });

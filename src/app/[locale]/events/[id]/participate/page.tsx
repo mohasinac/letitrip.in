@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function Page({ params }: Props) {
-  const { locale, id } = await params;
+  const { locale: _locale, id } = await params;
   const event = await getEventCached(id);
   if (!event) notFound();
 
@@ -33,7 +33,7 @@ export default async function Page({ params }: Props) {
   // Polls are participated via the inline vote on the Overview tab.
   // Ended events have nothing to submit. Send users back to Overview.
   if (eventType === EVENT_TYPE.POLL || !isActive) {
-    redirect({ href: String(ROUTES.PUBLIC.EVENT_DETAIL(id)), locale });
+    redirect(String(ROUTES.PUBLIC.EVENT_DETAIL(id)));
   }
 
   const hasLeaderboard =

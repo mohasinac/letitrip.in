@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
-import { CheckoutRouteClient } from "@/components/routing/CheckoutRouteClient";
+import { CheckoutRouteClient } from "@/components";
 import { ROUTES, siteSettingsRepository } from "@mohasinac/appkit";
 
 export default async function Page() {

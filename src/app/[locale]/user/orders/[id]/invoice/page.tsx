@@ -1,6 +1,6 @@
 "use client";
 import { use } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useOrder, ROUTES, Div, Row, Stack, Text, Heading, Button } from "@mohasinac/appkit/client";
 
 function paise(n: number, currency = "INR") {

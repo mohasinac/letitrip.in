@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { getCategoryBySlug } from "@mohasinac/appkit";
-import { generateCategoryMetadata } from "@/constants/seo.server";
+import { generateCategoryMetadata } from "@/constants";
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>;

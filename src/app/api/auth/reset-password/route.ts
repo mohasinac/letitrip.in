@@ -9,7 +9,7 @@ import { withProviders } from "@/providers.config";
  * endpoint to log/acknowledge the change.
  */
 
-import { getAdminAuth } from "@mohasinac/appkit";
+
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { resetPasswordSchema } from "@mohasinac/appkit";

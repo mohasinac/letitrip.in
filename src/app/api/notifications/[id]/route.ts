@@ -4,7 +4,6 @@ import {
   notificationRepository,
   createRouteHandler,
   successResponse,
-  errorResponse,
 } from "@mohasinac/appkit";
 
 export const PATCH = withProviders(

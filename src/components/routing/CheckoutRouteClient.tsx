@@ -21,12 +21,12 @@ import {
   ROUTES,
 } from "@mohasinac/appkit/client";
 import type { Address, AddressFormData } from "@mohasinac/appkit/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import {
   sendConsentOtpAction,
   verifyConsentOtpAction,
 } from "@/actions/checkout.actions";
-import { UI_LABELS } from "@/constants/ui";
+import { UI_LABELS } from "@/constants";
 
 const CK = UI_LABELS.CHECKOUT;
 
@@ -61,7 +61,7 @@ function openRazorpayModal(opts: {
   prefill?: { email?: string; name?: string };
 }): Promise<RazorpayResponse> {
   return new Promise((resolve, reject) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const Rzp = (window as any).Razorpay;
     const rzp = new Rzp({
       key: opts.keyId,

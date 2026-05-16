@@ -5,7 +5,7 @@ import {
   getBrandForDetail,
   getBrandCategoryForDetail,
 } from "@mohasinac/appkit";
-import { generateMetadata as _gm } from "@/constants/seo.server";
+import { generateMetadata as _gm } from "@/constants";
 
 export const revalidate = 300;
 

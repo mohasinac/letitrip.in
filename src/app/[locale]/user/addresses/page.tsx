@@ -1,4 +1,4 @@
-import { UserAddressesClient } from "@/components/user/UserAddressesClient";
+import { UserAddressesClient } from "@/components";
 
 export default function Page() {
   return <UserAddressesClient />;

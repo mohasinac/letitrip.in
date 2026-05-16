@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { DashboardLayoutClient, RoleGuard } from "@mohasinac/appkit/client";
-import { STORE_NAV_GROUPS } from "@/constants/navigation";
+import { STORE_NAV_GROUPS } from "@/constants";
 
 export default function StoreLayout({ children }: { children: ReactNode }) {
   return (

@@ -6,7 +6,7 @@ import {
   errorResponse,
   scammerRepository,
 } from "@mohasinac/appkit";
-import { ROLES_ADMIN_ONLY, ROLES_TRUST_SAFETY } from "@/constants/api-roles";
+import { ROLES_ADMIN_ONLY, ROLES_TRUST_SAFETY } from "@/constants";
 import type { ScammerDocument } from "@mohasinac/appkit";
 
 const MSG_SCAMMER_NOT_FOUND = "Scammer profile not found.";

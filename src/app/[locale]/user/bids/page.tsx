@@ -9,7 +9,7 @@ import {
   AuctionBidsTable,
 } from "@mohasinac/appkit/client";
 import type { BidDocument } from "@mohasinac/appkit";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 export default function UserBidsPage() {
   const { user, loading: sessionLoading } = useSession();

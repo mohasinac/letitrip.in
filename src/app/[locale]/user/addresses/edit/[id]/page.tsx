@@ -1,4 +1,4 @@
-import { EditAddressClient } from "@/components/user/EditAddressClient";
+import { EditAddressClient } from "@/components";
 
 interface Props {
   params: Promise<{ id: string }>;

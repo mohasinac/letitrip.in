@@ -1,5 +1,5 @@
 import { withProviders } from "@/providers.config";
-import { STORE_FIELDS } from "@/constants/field-names";
+import { STORE_FIELDS } from "@/constants";
 import { z } from "zod";
 import {
   storeRepository,

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Heading, ROUTES, Text, Main, Nav, MediaImage, categoriesRepository, isAuctionListing, isPreOrderListing } from "@mohasinac/appkit";
 import { Div } from "@mohasinac/appkit/client";
-import { generateMetadata as _gm } from "@/constants/seo.server";
+import { generateMetadata as _gm } from "@/constants";
 
 function fmt(paise: number, currency = "INR"): string {
   return new Intl.NumberFormat("en-IN", {

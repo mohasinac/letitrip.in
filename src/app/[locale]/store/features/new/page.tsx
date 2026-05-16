@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { Button, Div, Heading, Input, Row, Stack, Text } from "@mohasinac/appkit/client";
 import { useState } from "react";
 import { ROUTES } from "@mohasinac/appkit/client";

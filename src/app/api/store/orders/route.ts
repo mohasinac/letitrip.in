@@ -17,7 +17,7 @@ import {
 } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { sortBy, ORDER_FIELDS } from "@mohasinac/appkit";
-import { ROLES_STORE_WRITE } from "@/constants/api-roles";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(ORDER_FIELDS.ORDER_DATE);
 

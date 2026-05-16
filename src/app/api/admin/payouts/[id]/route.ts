@@ -1,5 +1,5 @@
 import { withProviders } from "@/providers.config";
-import { PAYOUT_FIELDS } from "@/constants/field-names";
+import { PAYOUT_FIELDS } from "@/constants";
 import { z } from "zod";
 import {
   adminUpdatePayout,

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { BundlesListView } from "@mohasinac/appkit";
-import { generateMetadata as _gm } from "@/constants/seo.server";
+import { generateMetadata as _gm } from "@/constants";
 import { buyBundleAction } from "@/actions/bundle.actions";
 
 export const metadata: Metadata = _gm({

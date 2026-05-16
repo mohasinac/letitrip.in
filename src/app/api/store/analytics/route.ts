@@ -15,7 +15,7 @@ import { withProviders } from "@/providers.config";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
-import { ROLES_STORE_WRITE } from "@/constants/api-roles";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 export const GET = withProviders(
   createRouteHandler({
