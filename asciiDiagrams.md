@@ -5999,35 +5999,70 @@ Data flow:
 
 ---
 
-## Public > Checkout ✅ (stub)
+## Public > Checkout ✅
 
 ```
+Component: src/components/routing/CheckoutRouteClient.tsx
+Strings:   src/constants/ui.ts → UI_LABELS.CHECKOUT (CK.*)
+Actions:   appkit action-registry.ts → ACTIONS.CHECKOUT.*
+Steps:     address → otp-consent → otp → payment → processing
+
+Step indicator (3 pills):
+  [① Shipping Address] [② Identity Verification] [③ Payment]
+  (otp-consent + otp both map to step index 1 — same pill)
+
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  Checkout                                                                    │
-│  [① Address] [② Shipping] [③ Payment] [④ Confirm]                          │
+│  ①──────────②──────────③                                                   │
+│  Address  Identity   Payment                                                 │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  STEP ① Address                                                              │
+│  STEP ① — Shipping Address                                                   │
+│    Order Summary (sticky sidebar):                                           │
+│      ₹6,437 total · 2 items                                                 │
 │    Saved addresses (radio):                                                  │
 │    (•) 🏠 Home — 123 MG Road, Mumbai 400050                                 │
 │    ( ) 🏢 Office — 45 BKC, Kurla, Mumbai                                    │
-│    [ + Add New Address (inline AddressForm) ]                               │
-│    [Continue →]                                                              │
+│    [ + Add a New Address (inline AddressForm) ]                             │
+│    [Continue to Verification →]                                              │
 │                                                                              │
-│  STEP ② Shipping                                                             │
-│    (•) Standard — ₹50 (3–5 days)                                            │
-│    ( ) Express  — ₹150 (1–2 days)                                           │
-│    ( ) Pickup   — Free (from CardGame Hub warehouse)                         │
-│    [Continue →]                                                              │
+│  STEP ②a — Verify Your Identity (otp-consent sub-step)                      │
+│    "To keep your account secure, we need to verify it's really you before   │
+│     placing this order. We'll send a one-time code to user@email.com."      │
+│    [Send verification code]                                                  │
 │                                                                              │
-│  STEP ③ Payment                                                              │
-│    (•) Razorpay (UPI/Card/NetBanking)                                       │
-│    ( ) COD — ₹25 fee                                                        │
-│    [Pay ₹6,437 →] → opens Razorpay modal                                   │
+│    ┌── Admin Test Mode (amber panel, admin-only) ──────────────────────┐    │
+│    │  [Skip Verification — Admin Bypass]                                │    │
+│    │  Skip email verification and place a test order without payment.  │    │
+│    └────────────────────────────────────────────────────────────────────┘    │
 │                                                                              │
-│  STEP ④ Confirm / Success                                                   │
-│    ✓ Order placed! #order-3-0508-a1b2c3                                     │
-│    [View Order] [Continue Shopping]                                          │
+│  STEP ②b — Enter Verification Code (otp sub-step)                           │
+│    "A 6-digit code was sent to user@email.com. Enter it below."             │
+│    [ _ _ _ _ _ _ ]  ← 6-digit input                                        │
+│    [Verify & Continue]                                                       │
+│    [Resend code]                                                             │
+│                                                                              │
+│  STEP ③ — Choose Payment Method                                              │
+│    [Pay Online (Razorpay)]  ← opens Razorpay modal                         │
+│    [Cash on Delivery]                                                        │
+│                                                                              │
+│    ┌── Admin Test Mode (amber panel, admin-only) ──────────────────────┐    │
+│    │  [No Payment — Admin Bypass Order]                                 │    │
+│    │  Creates a real order record. No money charged.                   │    │
+│    └────────────────────────────────────────────────────────────────────┘    │
+│                                                                              │
+│  STEP processing — (spinner, no interaction)                                 │
+│    Processing your order…                                                    │
+│    → redirects to /orders/[id] on success                                   │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+Flow:
+  address ──[Continue to Verification]──► otp-consent
+  otp-consent ──[Send verification code]──► OTP sent via email ──► otp
+  otp-consent ──[Admin Bypass]──► payment (admin only, no OTP sent)
+  otp ──[Verify & Continue]──► payment
+  payment ──[Pay Online]──► Razorpay ──► processing ──► /orders/[id]
+  payment ──[COD]──► processing ──► /orders/[id]
+  payment ──[Admin Bypass Order]──► processing ──► /orders/[id]
 ```
 
 ---
