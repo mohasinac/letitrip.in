@@ -1,9 +1,9 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements -- LR1-24: legacy <input>/<label> in poll form — migration tracked in crud-tracker.md Tier LR (row LR1-24) */
 
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { Button, Div, Heading, RichText, Text, Textarea } from "@mohasinac/appkit/ui";
+import { Label } from "@mohasinac/appkit/client";
 import { EventParticipateView, useSession, useToast, ROUTES } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
@@ -94,20 +94,31 @@ function renderPollForm({
       </Text>
       <Div className="space-y-2">
         {pollConfig.options.map((opt) => (
-          <label
+          <Label
             key={opt.id}
             className="flex items-center gap-3 cursor-pointer rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
           >
-            <input
-              type={isMultiSelect ? "checkbox" : "radio"}
-              name="poll-option"
-              value={opt.id}
-              checked={selectedVotes.includes(opt.id)}
-              onChange={() => toggleVote(opt.id)}
-              className="accent-primary"
-            />
+            {isMultiSelect ? (
+              <input
+                type="checkbox"
+                name="poll-option"
+                value={opt.id}
+                checked={selectedVotes.includes(opt.id)}
+                onChange={() => toggleVote(opt.id)}
+                className="accent-primary"
+              />
+            ) : (
+              <input
+                type="radio"
+                name="poll-option"
+                value={opt.id}
+                checked={selectedVotes.includes(opt.id)}
+                onChange={() => toggleVote(opt.id)}
+                className="accent-primary"
+              />
+            )}
             <Text className="text-zinc-700 dark:text-zinc-300">{opt.label}</Text>
-          </label>
+          </Label>
         ))}
       </Div>
       {pollConfig.allowComment ? (

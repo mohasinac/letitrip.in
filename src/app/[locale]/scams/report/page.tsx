@@ -1,11 +1,10 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-02: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-02) */
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "@/i18n/navigation";
-import { useSession, ROUTES, SCAM_TYPES, SCAM_PLATFORM_LABELS } from "@mohasinac/appkit/client";
-import { Alert, Stack, Heading, Text, Row, Card, CardBody } from "@mohasinac/appkit";
+import { useSession, ROUTES, SCAM_TYPES, SCAM_PLATFORM_LABELS, Div, Button, Label, Input, Textarea, Select } from "@mohasinac/appkit/client";
+import { Alert, Stack, Heading, Text, Row, Card, CardBody, Main, Ul, Li } from "@mohasinac/appkit";
 import { ChevronLeft, Loader2, Plus, X } from "lucide-react";
 import { API_ROUTES } from "@/constants/api";
 
@@ -18,6 +17,16 @@ const PLATFORM_OPTIONS = Object.entries(SCAM_PLATFORM_LABELS).map(([value, label
   value,
   label,
 }));
+
+const SCAM_TYPE_OPTIONS = [
+  { value: "", label: "Select scam type…" },
+  ...SCAM_TYPES.map((t) => ({ value: t.id, label: t.label })),
+];
+
+const SCAM_PLATFORM_OPTIONS = [
+  { value: "", label: "Select platform…" },
+  ...PLATFORM_OPTIONS,
+];
 
 function TagInput({
   label,
@@ -47,23 +56,24 @@ function TagInput({
       <Text className="text-sm font-medium">{label}</Text>
       <Row gap="xs" wrap>
         {values.map((v) => (
-          <span
+          <Div
             key={v}
             className="inline-flex items-center gap-1 rounded-full bg-[color:var(--appkit-color-surface-elevated,theme(colors.zinc.100))] px-2.5 py-1 text-xs font-medium"
           >
             {v}
-            <button
+            <Button
               type="button"
+              variant="ghost"
               onClick={() => onChange(values.filter((x) => x !== v))}
               className="text-[color:var(--appkit-color-text-muted,theme(colors.zinc.400))] hover:text-[color:var(--appkit-color-danger,theme(colors.red.600))]"
             >
               <X className="h-3 w-3" />
-            </button>
-          </span>
+            </Button>
+          </Div>
         ))}
       </Row>
       <Row gap="xs">
-        <input
+        <Input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -76,13 +86,13 @@ function TagInput({
           placeholder={placeholder}
           className="flex-1 rounded-lg border border-[color:var(--appkit-color-border,theme(colors.zinc.200))] bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[color:var(--appkit-color-primary,theme(colors.blue.500))]/40"
         />
-        <button
+        <Button
           type="button"
+          variant="outline"
           onClick={add}
-          className="appkit-button appkit-button--outline appkit-button--sm"
         >
           <Plus className="h-4 w-4" />
-        </button>
+        </Button>
       </Row>
       {helpText && (
         <Text variant="secondary" className="text-xs">{helpText}</Text>
@@ -120,10 +130,10 @@ function ScammerIdentitySection({
         <Stack gap="md">
           <Heading level={2} className="text-base font-semibold">Section 1 — Scammer Identity</Heading>
           <Stack gap="xs">
-            <label className="text-sm font-medium" htmlFor="displayName">
-              Name / Display Name <span className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</span>
-            </label>
-            <input id="displayName" type="text" required value={form.displayName} onChange={(e) => field("displayName")(e.target.value)} placeholder="The name they used to scam you" className={CLS_INPUT} />
+            <Label className="text-sm font-medium" htmlFor="displayName">
+              Name / Display Name <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
+            </Label>
+            <Input id="displayName" type="text" required value={form.displayName} onChange={(e) => field("displayName")(e.target.value)} placeholder="The name they used to scam you" className={CLS_INPUT} />
           </Stack>
           <TagInput label="Phone Numbers" placeholder="e.g. 9876543210" values={form.phones} onChange={field("phones")} helpText="Add each number and press Enter. 10-digit Indian mobile numbers." />
           <TagInput label="UPI IDs" placeholder="e.g. name@upi" values={form.upiIds} onChange={field("upiIds")} helpText="Add each UPI ID and press Enter." />
@@ -148,39 +158,33 @@ function WhatHappenedSection({
         <Stack gap="md">
           <Heading level={2} className="text-base font-semibold">Section 2 — What Happened</Heading>
           <Stack gap="xs">
-            <label className="text-sm font-medium" htmlFor="scamType">
-              Scam Type <span className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</span>
-            </label>
-            <select id="scamType" required value={form.scamType} onChange={(e) => field("scamType")(e.target.value)} className={CLS_INPUT}>
-              <option value="">Select scam type…</option>
-              {SCAM_TYPES.map((t) => (<option key={t.id} value={t.id}>{t.label}</option>))}
-            </select>
+            <Label className="text-sm font-medium" htmlFor="scamType">
+              Scam Type <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
+            </Label>
+            <Select id="scamType" value={form.scamType} onValueChange={(v) => field("scamType")(v)} options={SCAM_TYPE_OPTIONS} className={CLS_INPUT} />
             {selectedScamType && (<Alert variant="info" compact><Text className="text-xs leading-relaxed">{selectedScamType.howItHappens.slice(0, 180)}…</Text></Alert>)}
           </Stack>
           <Stack gap="xs">
-            <label className="text-sm font-medium" htmlFor="scamPlatform">
-              Platform where scam occurred <span className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</span>
-            </label>
-            <select id="scamPlatform" required value={form.scamPlatform} onChange={(e) => field("scamPlatform")(e.target.value)} className={CLS_INPUT}>
-              <option value="">Select platform…</option>
-              {PLATFORM_OPTIONS.map((p) => (<option key={p.value} value={p.value}>{p.label}</option>))}
-            </select>
+            <Label className="text-sm font-medium" htmlFor="scamPlatform">
+              Platform where scam occurred <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
+            </Label>
+            <Select id="scamPlatform" value={form.scamPlatform} onValueChange={(v) => field("scamPlatform")(v)} options={SCAM_PLATFORM_OPTIONS} className={CLS_INPUT} />
           </Stack>
           <Row gap="md" className="flex-wrap">
             <Stack gap="xs" className="flex-1 min-w-[140px]">
-              <label className="text-sm font-medium" htmlFor="amountLost">Amount Lost (₹) — optional</label>
-              <input id="amountLost" type="number" min="0" step="1" value={form.amountLost} onChange={(e) => field("amountLost")(e.target.value)} placeholder="e.g. 2500" className={CLS_INPUT} />
+              <Label className="text-sm font-medium" htmlFor="amountLost">Amount Lost (₹) — optional</Label>
+              <Input id="amountLost" type="number" min="0" step="1" value={form.amountLost} onChange={(e) => field("amountLost")(e.target.value)} placeholder="e.g. 2500" className={CLS_INPUT} />
             </Stack>
             <Stack gap="xs" className="flex-1 min-w-[140px]">
-              <label className="text-sm font-medium" htmlFor="itemInvolved">Item Involved — optional</label>
-              <input id="itemInvolved" type="text" value={form.itemInvolved} onChange={(e) => field("itemInvolved")(e.target.value)} placeholder="e.g. Charizard PSA 9" className={CLS_INPUT} />
+              <Label className="text-sm font-medium" htmlFor="itemInvolved">Item Involved — optional</Label>
+              <Input id="itemInvolved" type="text" value={form.itemInvolved} onChange={(e) => field("itemInvolved")(e.target.value)} placeholder="e.g. Charizard PSA 9" className={CLS_INPUT} />
             </Stack>
           </Row>
           <Stack gap="xs">
-            <label className="text-sm font-medium" htmlFor="description">
-              What exactly happened? <span className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</span>
-            </label>
-            <textarea id="description" required minLength={100} rows={6} value={form.description} onChange={(e) => field("description")(e.target.value)} placeholder="Describe exactly what happened — dates, amounts promised, what you received, any communication details…" className="w-full resize-y rounded-lg border border-[color:var(--appkit-color-border,theme(colors.zinc.200))] bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[color:var(--appkit-color-primary,theme(colors.blue.500))]/40" />
+            <Label className="text-sm font-medium" htmlFor="description">
+              What exactly happened? <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
+            </Label>
+            <Textarea id="description" required minLength={100} rows={6} value={form.description} onChange={(e) => field("description")(e.target.value)} placeholder="Describe exactly what happened — dates, amounts promised, what you received, any communication details…" className="w-full resize-y rounded-lg border border-[color:var(--appkit-color-border,theme(colors.zinc.200))] bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[color:var(--appkit-color-primary,theme(colors.blue.500))]/40" />
             <Text variant="secondary" className="text-right text-xs">{form.description.length} / 5000 chars (min 100)</Text>
           </Stack>
         </Stack>
@@ -201,22 +205,22 @@ function PrivacyAgreementSection({
       <CardBody>
         <Stack gap="md">
           <Heading level={2} className="text-base font-semibold">Section 3 — Privacy & Agreement</Heading>
-          <label className="flex cursor-pointer items-start gap-3">
+          <Label className="flex cursor-pointer items-start gap-3">
             <input type="checkbox" checked={form.reportedByAnon} onChange={(e) => field("reportedByAnon")(e.target.checked)} className="mt-0.5 h-4 w-4 rounded" />
             <Stack gap="none">
               <Text className="text-sm font-medium">Keep my identity private</Text>
               <Text variant="secondary" className="text-xs">Your name will not appear on the public profile page — shown as "Anonymous reporter".</Text>
             </Stack>
-          </label>
-          <label className="flex cursor-pointer items-start gap-3">
+          </Label>
+          <Label className="flex cursor-pointer items-start gap-3">
             <input type="checkbox" required checked={form.agreed} onChange={(e) => field("agreed")(e.target.checked)} className="mt-0.5 h-4 w-4 rounded" />
             <Stack gap="none">
               <Text className="text-sm font-medium">
-                I confirm this report is truthful to the best of my knowledge. <span className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</span>
+                I confirm this report is truthful to the best of my knowledge. <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
               </Text>
               <Text variant="secondary" className="text-xs">False reports may result in account action. All submissions are reviewed before publication.</Text>
             </Stack>
-          </label>
+          </Label>
         </Stack>
       </CardBody>
     </Card>
@@ -300,7 +304,7 @@ function ScamReportForm({ userId }: { userId: string }) {
   }
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <Div className="mx-auto max-w-2xl">
       <Link
         href={String(ROUTES.PUBLIC.SCAMS)}
         className="mb-6 inline-flex items-center gap-1.5 text-sm text-[color:var(--appkit-color-text-muted,theme(colors.zinc.500))] hover:text-[color:var(--appkit-color-text,theme(colors.zinc.700))]"
@@ -321,11 +325,11 @@ function ScamReportForm({ userId }: { userId: string }) {
           </Stack>
 
           <Alert variant="warning" title="Before you submit">
-            <ul className="list-disc space-y-1 pl-4 text-sm">
-              <li>Only report genuine scam incidents — false reports can be contested.</li>
-              <li>Max 5 pending reports per user. Verified reports are not counted.</li>
-              <li>Evidence (screenshots, receipts) significantly speeds up verification.</li>
-            </ul>
+            <Ul className="list-disc space-y-1 pl-4 text-sm">
+              <Li>Only report genuine scam incidents — false reports can be contested.</Li>
+              <Li>Max 5 pending reports per user. Verified reports are not counted.</Li>
+              <Li>Evidence (screenshots, receipts) significantly speeds up verification.</Li>
+            </Ul>
           </Alert>
 
           <ScammerIdentitySection form={form} field={field} />
@@ -345,18 +349,19 @@ function ScamReportForm({ userId }: { userId: string }) {
             >
               Cancel
             </Link>
-            <button
+            <Button
               type="submit"
+              variant="primary"
               disabled={isSubmitting || !form.agreed}
-              className="appkit-button appkit-button--primary appkit-button--md flex items-center gap-2 disabled:opacity-60"
+              className="flex items-center gap-2 disabled:opacity-60"
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
               {isSubmitting ? "Submitting…" : "Submit Report"}
-            </button>
+            </Button>
           </Row>
         </Stack>
       </form>
-    </div>
+    </Div>
   );
 }
 
@@ -372,9 +377,9 @@ export default function Page() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center">
+      <Div className="flex min-h-[50vh] items-center justify-center">
         <Loader2 className="h-6 w-6 animate-spin text-[color:var(--appkit-color-text-muted,theme(colors.zinc.400))]" />
-      </div>
+      </Div>
     );
   }
 
@@ -383,8 +388,8 @@ export default function Page() {
   }
 
   return (
-    <main className="px-4 py-10 sm:px-6 lg:px-8">
+    <Main className="px-4 py-10 sm:px-6 lg:px-8">
       <ScamReportForm userId={user.uid} />
-    </main>
+    </Main>
   );
 }

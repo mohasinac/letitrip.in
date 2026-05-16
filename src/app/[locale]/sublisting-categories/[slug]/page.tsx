@@ -1,8 +1,8 @@
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-07: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-07) */
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Heading, ROUTES, Text, categoriesRepository, isAuctionListing, isPreOrderListing } from "@mohasinac/appkit";
+import { Heading, ROUTES, Text, Main, Nav, MediaImage, categoriesRepository, isAuctionListing, isPreOrderListing } from "@mohasinac/appkit";
+import { Div } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 function fmt(paise: number, currency = "INR"): string {
@@ -52,34 +52,29 @@ export default async function SublistingCategoryPage({ params }: Props) {
   const displayName = category.name + (category.itemCode ? ` (${category.itemCode})` : "");
 
   return (
-    <main className="min-h-screen bg-zinc-50 dark:bg-slate-950">
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <Main className="min-h-screen bg-zinc-50 dark:bg-slate-950">
+      <Div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
 
         {/* Breadcrumb */}
-        <nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 flex-wrap">
+        <Nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 flex-wrap">
           <Link href={String(ROUTES.HOME)} className="hover:text-[var(--appkit-color-primary)] transition-colors">
             Home
           </Link>
-          <span aria-hidden>/</span>
-          <span className="text-zinc-700 dark:text-zinc-300 font-medium truncate max-w-[260px]">
+          <Text as="span" aria-hidden>/</Text>
+          <Text as="span" className="text-zinc-700 dark:text-zinc-300 font-medium truncate max-w-[260px]">
             {displayName}
-          </span>
-        </nav>
+          </Text>
+        </Nav>
 
         {/* Category header */}
-        <div className="mb-8">
+        <Div className="mb-8">
           {category.display?.coverImage && (
-            <div className="mb-4 h-36 w-full overflow-hidden rounded-2xl">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={category.display.coverImage}
-                alt={displayName}
-                className="h-full w-full object-cover"
-              />
-            </div>
+            <Div className="mb-4 h-36 w-full overflow-hidden rounded-2xl relative">
+              <MediaImage src={category.display.coverImage} alt={displayName} priority />
+            </Div>
           )}
 
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+          <Div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
             <>
               <Heading level={1} className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 sm:text-3xl">
                 {displayName}
@@ -90,16 +85,16 @@ export default async function SublistingCategoryPage({ params }: Props) {
                 </Text>
               )}
             </>
-            <span className="mt-2 inline-flex h-fit shrink-0 items-center rounded-full bg-[var(--appkit-color-primary)]/10 px-3 py-1 text-sm font-semibold text-[var(--appkit-color-primary)] sm:mt-0">
+            <Text as="span" className="mt-2 inline-flex h-fit shrink-0 items-center rounded-full bg-[var(--appkit-color-primary)]/10 px-3 py-1 text-sm font-semibold text-[var(--appkit-color-primary)] sm:mt-0">
               {listings.length} listing{listings.length !== 1 ? "s" : ""}
-            </span>
-          </div>
-        </div>
+            </Text>
+          </Div>
+        </Div>
 
         {/* Listings grid */}
         {listings.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-700 py-20 text-center">
-            <span className="text-4xl mb-3">📦</span>
+          <Div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-700 py-20 text-center">
+            <Text as="span" className="text-4xl mb-3">📦</Text>
             <Text className="text-base font-semibold text-zinc-700 dark:text-zinc-300">No listings yet</Text>
             <Text className="mt-1 text-sm text-zinc-400 dark:text-zinc-500">
               Check back soon — sellers are still adding items.
@@ -110,9 +105,9 @@ export default async function SublistingCategoryPage({ params }: Props) {
             >
               Browse all products
             </Link>
-          </div>
+          </Div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          <Div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {listings.map((listing) => {
               const l = listing as Record<string, unknown>;
               const id = String(l.id ?? "");
@@ -144,40 +139,34 @@ export default async function SublistingCategoryPage({ params }: Props) {
                   href={href}
                   className="group flex flex-col overflow-hidden rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 hover:border-[var(--appkit-color-primary)]/50 hover:shadow-md transition-all"
                 >
-                  <div className="aspect-square w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                    {image ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={image}
-                        alt={title}
-                        className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-zinc-400 text-2xl">
-                        📦
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col gap-1 p-2.5">
+                  <Div className="aspect-square w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 relative">
+                    <MediaImage
+                      src={image || undefined}
+                      alt={title}
+                      className="group-hover:scale-105 transition-transform"
+                      loading="lazy"
+                      fallback="📦"
+                    />
+                  </Div>
+                  <Div className="flex flex-col gap-1 p-2.5">
                     {(isAuction || isPreOrder || condition) && (
-                      <div className="flex flex-wrap gap-1">
+                      <Div className="flex flex-wrap gap-1">
                         {isAuction && (
-                          <span className="rounded-full bg-amber-100 dark:bg-amber-900/30 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300">
+                          <Text as="span" className="rounded-full bg-amber-100 dark:bg-amber-900/30 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300">
                             Auction
-                          </span>
+                          </Text>
                         )}
                         {isPreOrder && (
-                          <span className="rounded-full bg-indigo-100 dark:bg-indigo-900/30 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-700 dark:text-indigo-300">
+                          <Text as="span" className="rounded-full bg-indigo-100 dark:bg-indigo-900/30 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-700 dark:text-indigo-300">
                             Pre-Order
-                          </span>
+                          </Text>
                         )}
                         {condition && (
-                          <span className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 text-[10px] capitalize text-zinc-500 dark:text-zinc-400">
+                          <Text as="span" className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 text-[10px] capitalize text-zinc-500 dark:text-zinc-400">
                             {condition}
-                          </span>
+                          </Text>
                         )}
-                      </div>
+                      </Div>
                     )}
                     <Text className="line-clamp-2 text-xs font-medium text-zinc-800 dark:text-zinc-200 leading-snug">
                       {title}
@@ -185,13 +174,13 @@ export default async function SublistingCategoryPage({ params }: Props) {
                     <Text className="text-sm font-bold text-zinc-900 dark:text-zinc-50">
                       {fmt(price, currency)}
                     </Text>
-                  </div>
+                  </Div>
                 </Link>
               );
             })}
-          </div>
+          </Div>
         )}
-      </div>
-    </main>
+      </Div>
+    </Main>
   );
 }

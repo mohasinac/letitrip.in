@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements -- LR1-17: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-17) */
 
 const JSON_HEADERS = { "Content-Type": "application/json" } as const;
 const FETCH_CREDENTIALS = "include" as const;
@@ -30,6 +29,7 @@ import {
   Div,
   Heading,
   Input,
+  Label,
   Text,
   useAuth,
   useCartQuery,
@@ -717,14 +717,15 @@ export function CartRouteClient() {
               {CART_TABS.map(({ key, label }) => {
                 const count = tabCounts[key];
                 return (
-                <button
+                <Button
                   key={key}
                   type="button"
+                  variant="ghost"
                   onClick={() => { setActiveTab(key); setSearchQuery(""); }}
                   className={["flex-1 rounded-lg px-3 py-1.5 font-medium transition-colors", activeTab === key ? "bg-white dark:bg-slate-700 text-zinc-900 dark:text-zinc-100 shadow-sm" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"].join(" ")}
                 >
-                  {label}{count > 0 && <span className="ml-1.5 text-xs opacity-60">({count})</span>}
-                </button>
+                  {label}{count > 0 && <Text as="span" className="ml-1.5 text-xs opacity-60">({count})</Text>}
+                </Button>
                 );
               })}
             </Div>
@@ -734,7 +735,7 @@ export function CartRouteClient() {
               <Div className="relative">
                 <Input type="search" placeholder="Search by name, store, price or type (auction, raffle…)" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full text-sm pr-8" />
                 {searchQuery && (
-                  <button type="button" aria-label="Clear search" onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-base leading-none">×</button>
+                  <Button type="button" variant="ghost" aria-label="Clear search" onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-base leading-none">×</Button>
                 )}
               </Div>
             )}
@@ -745,19 +746,19 @@ export function CartRouteClient() {
                 {isAuthenticated && allItemIds.length > 1 && (
                   <Div className="flex items-center gap-2">
                     <input type="checkbox" id="cart-select-all" checked={isAllSelected} onChange={isAllSelected ? undefined : selectAll} onClick={!isAllSelected ? undefined : (e) => { e.preventDefault(); selectAll(); }} className="h-4 w-4 rounded border-zinc-300 dark:border-slate-600 accent-zinc-900 dark:accent-zinc-100" />
-                    <label htmlFor="cart-select-all" className="cursor-pointer text-sm text-zinc-600 dark:text-zinc-300">
+                    <Label htmlFor="cart-select-all" className="cursor-pointer text-sm text-zinc-600 dark:text-zinc-300">
                       Select all ({allItemIds.length} item{allItemIds.length !== 1 ? "s" : ""})
-                    </label>
+                    </Label>
                   </Div>
                 )}
                 {effectiveSelected && effectiveSelected.size > 0 && (
-                  <button type="button" onClick={() => { void handleRemoveSelectedItems(); }} disabled={isRemoving} className={`text-sm ${ERROR_TEXT_CLASS} hover:underline underline-offset-2 disabled:opacity-50`}>
+                  <Button type="button" variant="ghost" onClick={() => { void handleRemoveSelectedItems(); }} disabled={isRemoving} className={`text-sm ${ERROR_TEXT_CLASS} hover:underline underline-offset-2 disabled:opacity-50`}>
                     {isRemoving ? "Removing…" : `Remove selected (${effectiveSelected.size})`}
-                  </button>
+                  </Button>
                 )}
-                <button type="button" onClick={() => { void handleRemoveAll(); }} disabled={isRemoving} className={`ml-auto text-sm ${ERROR_TEXT_CLASS} hover:underline underline-offset-2 disabled:opacity-50`}>
+                <Button type="button" variant="ghost" onClick={() => { void handleRemoveAll(); }} disabled={isRemoving} className={`ml-auto text-sm ${ERROR_TEXT_CLASS} hover:underline underline-offset-2 disabled:opacity-50`}>
                   {isRemoving ? "Clearing…" : "Remove all"}
-                </button>
+                </Button>
               </Div>
             )}
 

@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-35: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-35) */
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -8,12 +7,13 @@ import {
   Heading,
   Input,
   Row,
+  Select,
   SideDrawer,
   Stack,
   Text,
 } from "@mohasinac/appkit/client";
 import { useUrlTable } from "@mohasinac/appkit/client";
-import { API_ROUTES } from "@/constants/api";
+import { API_ROUTES } from "@/constants";
 
 interface TemplateRow {
   id: string;
@@ -226,12 +226,20 @@ function renderToolbar({ searchInput, setSearchInput, commitSearch, sort, table,
       <Div className="flex-1">
         <Input placeholder="Search templates…" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && commitSearch()} aria-label="Search templates" />
       </Div>
-      <select value={sort} onChange={(e) => table.set("sort", e.target.value)} className="rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]" aria-label="Sort templates">
-        {SORT_OPTIONS.map((o) => (<option key={o.value} value={o.value}>{o.label}</option>))}
-      </select>
-      <select value={condition} onChange={(e) => table.set("condition", e.target.value)} className="rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]" aria-label="Filter by condition">
-        {CONDITION_OPTIONS.map((o) => (<option key={o.value} value={o.value}>{o.label}</option>))}
-      </select>
+      <Select
+        value={sort}
+        onValueChange={(v) => table.set("sort", v)}
+        options={SORT_OPTIONS}
+        aria-label="Sort templates"
+        className="rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
+      />
+      <Select
+        value={condition}
+        onValueChange={(v) => table.set("condition", v)}
+        options={CONDITION_OPTIONS}
+        aria-label="Filter by condition"
+        className="rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
+      />
     </Row>
   );
 }
@@ -313,12 +321,13 @@ function renderTemplateDrawer({ drawerOpen, closeDrawer, drawerMode, draft, setD
         <Input id="tpl-description" label="Description (optional)" value={draft.description} onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))} placeholder="Short note about when to use this template" autoComplete="off" />
         <Input id="tpl-category" label="Category (optional)" value={draft.category} onChange={(e) => setDraft((d) => ({ ...d, category: e.target.value }))} placeholder="e.g. trading-cards" autoComplete="off" />
         <Input id="tpl-brand" label="Brand (optional)" value={draft.brand} onChange={(e) => setDraft((d) => ({ ...d, brand: e.target.value }))} placeholder="e.g. Pokémon Company" autoComplete="off" />
-        <Div>
-          <Text className="mb-1.5 text-sm font-medium">Condition (optional)</Text>
-          <select value={draft.condition} onChange={(e) => setDraft((d) => ({ ...d, condition: e.target.value }))} className="w-full rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]" aria-label="Condition">
-            {CONDITION_OPTIONS.map((o) => (<option key={o.value} value={o.value}>{o.label}</option>))}
-          </select>
-        </Div>
+        <Select
+          label="Condition (optional)"
+          name="tpl-condition"
+          value={draft.condition}
+          onChange={(e) => setDraft((d) => ({ ...d, condition: e.target.value }))}
+          options={CONDITION_OPTIONS}
+        />
       </Stack>
     </SideDrawer>
   );

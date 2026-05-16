@@ -1,12 +1,13 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-04: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-04) */
 
 import React, { useState } from "react";
 
-const CLS_LABEL = "block text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-1";
 import { useRouter } from "next/navigation";
 import { Heading, ROUTES, Text } from "@mohasinac/appkit";
-import { API_ROUTES } from "@/constants/api";
+import { Div, Button, Label, Input, Textarea } from "@mohasinac/appkit/client";
+import { API_ROUTES } from "@/constants";
+
+const LBL_CLS = "block text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-1";
 
 export default function Page() {
   const router = useRouter();
@@ -45,8 +46,8 @@ export default function Page() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6">
-      <div className="mb-6">
+    <Div className="mx-auto max-w-2xl px-4 py-6">
+      <Div className="mb-6">
         <Heading level={1} className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
           New Sub-listing Category
         </Heading>
@@ -54,14 +55,14 @@ export default function Page() {
           Group listings of the same real-world collectible across grades, conditions, or prices.
           Example: &ldquo;Base Set Charizard 108/120&rdquo; groups PSA 10, PSA 9, raw copies, etc.
         </Text>
-      </div>
+      </Div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <>
-          <label className={CLS_LABEL}>
-            Category name <span className="text-red-500">*</span>
-          </label>
-          <input
+          <Label className={LBL_CLS}>
+            Category name <Text as="span" className="text-red-500">*</Text>
+          </Label>
+          <Input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -73,10 +74,10 @@ export default function Page() {
         </>
 
         <>
-          <label className={CLS_LABEL}>
+          <Label className={LBL_CLS}>
             Item code
-          </label>
-          <input
+          </Label>
+          <Input
             type="text"
             value={itemCode}
             onChange={(e) => setItemCode(e.target.value)}
@@ -90,10 +91,10 @@ export default function Page() {
         </>
 
         <>
-          <label className={CLS_LABEL}>
+          <Label className={LBL_CLS}>
             Description
-          </label>
-          <textarea
+          </Label>
+          <Textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             maxLength={500}
@@ -104,28 +105,30 @@ export default function Page() {
         </>
 
         {error && (
-          <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-4 py-3 text-sm text-red-700 dark:text-red-300">
+          <Div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-4 py-3 text-sm text-red-700 dark:text-red-300">
             {error}
-          </div>
+          </Div>
         )}
 
-        <div className="flex gap-3 pt-2">
-          <button
+        <Div className="flex gap-3 pt-2">
+          <Button
             type="submit"
+            variant="primary"
             disabled={!name.trim() || saving}
-            className="rounded-lg bg-[var(--appkit-color-primary)] px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="rounded-lg px-5 py-2.5 text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {saving ? "Creating…" : "Create category"}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="outline"
             onClick={() => router.back()}
-            className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-5 py-2.5 text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+            className="rounded-lg px-5 py-2.5 text-sm font-medium"
           >
             Cancel
-          </button>
-        </div>
+          </Button>
+        </Div>
       </form>
-    </div>
+    </Div>
   );
 }

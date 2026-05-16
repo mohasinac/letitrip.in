@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements, lir/no-raw-media-elements -- LR1-11: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-11) */
 
 import { useState } from "react";
 import Link from "next/link";
@@ -12,6 +11,8 @@ import {
   useSetDefaultAddress,
   useToast,
   ROUTES,
+  Div,
+  Button,
 } from "@mohasinac/appkit/client";
 
 export function UserAddressesClient() {
@@ -51,21 +52,21 @@ export function UserAddressesClient() {
 
   if (isLoading) {
     return (
-      <div className="grid sm:grid-cols-2 gap-4">
+      <Div className="grid sm:grid-cols-2 gap-4">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="rounded-xl border border-zinc-200 dark:border-slate-700 animate-pulse p-4 space-y-2">
-            <div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-1/3" />
-            <div className="h-3 bg-zinc-200 dark:bg-slate-700 rounded w-3/4" />
-            <div className="h-3 bg-zinc-200 dark:bg-slate-700 rounded w-1/2" />
-          </div>
+          <Div key={i} className="rounded-xl border border-zinc-200 dark:border-slate-700 animate-pulse p-4 space-y-2">
+            <Div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-1/3" />
+            <Div className="h-3 bg-zinc-200 dark:bg-slate-700 rounded w-3/4" />
+            <Div className="h-3 bg-zinc-200 dark:bg-slate-700 rounded w-1/2" />
+          </Div>
         ))}
-      </div>
+      </Div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <Div className="space-y-6">
+      <Div className="flex items-center justify-between">
         <Heading level={1} className="text-xl font-bold text-zinc-900 dark:text-zinc-100">My Addresses</Heading>
         <Link
           href={String(ROUTES.USER.ADDRESSES_ADD)}
@@ -73,31 +74,33 @@ export function UserAddressesClient() {
         >
           + Add Address
         </Link>
-      </div>
+      </Div>
 
       {confirmDeleteId && (
-        <div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950 p-4 space-y-3">
+        <Div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950 p-4 space-y-3">
           <Text className="text-sm font-medium text-red-800 dark:text-red-200">
             Delete this address? This cannot be undone.
           </Text>
-          <div className="flex gap-3">
-            <button
+          <Div className="flex gap-3">
+            <Button
               type="button"
+              variant="danger"
               onClick={handleDeleteConfirm}
               disabled={deleteAddress.isPending}
-              className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60 transition-colors"
+              className="rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-60 transition-colors"
             >
               {deleteAddress.isPending ? "Deleting…" : "Delete"}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="outline"
               onClick={() => setConfirmDeleteId(null)}
-              className="rounded-lg border border-zinc-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors"
+              className="rounded-lg px-4 py-2 text-sm font-medium transition-colors"
             >
               Cancel
-            </button>
-          </div>
-        </div>
+            </Button>
+          </Div>
+        </Div>
       )}
 
       <AddressBook
@@ -109,6 +112,6 @@ export function UserAddressesClient() {
         emptyLabel="You have no saved addresses yet."
         addLabel="Add New Address"
       />
-    </div>
+    </Div>
   );
 }
