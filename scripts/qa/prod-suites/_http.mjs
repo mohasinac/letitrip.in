@@ -33,12 +33,15 @@ export function makeJar() {
   return new CookieJar();
 }
 
-export async function request(method, path, { jar, json, headers = {} } = {}) {
+export const REQUEST_TIMEOUT_MS = 15_000; // 15 s per individual request
+
+export async function request(method, path, { jar, json, headers = {}, timeoutMs = REQUEST_TIMEOUT_MS } = {}) {
   const url = path.startsWith("http") ? path : `${BASE_URL}${path}`;
   const init = {
     method,
     headers: { ...headers },
     redirect: "follow",
+    signal: AbortSignal.timeout(timeoutMs),
   };
   if (json !== undefined) {
     init.headers["Content-Type"] = "application/json";
@@ -49,17 +52,25 @@ export async function request(method, path, { jar, json, headers = {} } = {}) {
     if (cookieHeader) init.headers["Cookie"] = cookieHeader;
   }
   const started = Date.now();
-  const res = await fetch(url, init);
-  const elapsedMs = Date.now() - started;
-  if (jar) jar.ingest(res.headers.getSetCookie?.() ?? res.headers.get("set-cookie"));
-  const text = await res.text();
-  let body = null;
   try {
-    body = text ? JSON.parse(text) : null;
-  } catch {
-    body = text;
+    const res = await fetch(url, init);
+    const elapsedMs = Date.now() - started;
+    if (jar) jar.ingest(res.headers.getSetCookie?.() ?? res.headers.get("set-cookie"));
+    const text = await res.text();
+    let body = null;
+    try {
+      body = text ? JSON.parse(text) : null;
+    } catch {
+      body = text;
+    }
+    return { status: res.status, body, headers: res.headers, elapsedMs, timedOut: false };
+  } catch (err) {
+    const elapsedMs = Date.now() - started;
+    if (err.name === "AbortError" || err.name === "TimeoutError") {
+      return { status: 0, body: null, headers: new Headers(), elapsedMs, timedOut: true, timeoutMs };
+    }
+    throw err;
   }
-  return { status: res.status, body, headers: res.headers, elapsedMs };
 }
 
 const _sessionCache = new Map();

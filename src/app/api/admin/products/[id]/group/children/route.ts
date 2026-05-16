@@ -34,7 +34,7 @@ export const POST = withProviders(createApiHandler({
         slug: childSlug,
         storeId: parent.storeId,
         storeName: parent.storeName,
-        category: parent.category,
+        categorySlugs: parent.categorySlugs ?? [],
         brand: parent.brand,
         tags: parent.tags ?? [],
         images: [],

@@ -213,6 +213,10 @@ export default function LayoutShellClient({
 
   const shellUser = buildShellUser(user);
 
+  // Dashboard routes provide their own padding via DashboardLayoutClient;
+  // remove the AppLayoutShell container constraint so content fills full width.
+  const isDashboard = /\/(admin|store|user)(\/|$)/.test(pathname);
+
   const footer = useMemo<AppLayoutShellProps["footer"]>(() => ({
     brandName: BRAND.NAME,
     brandDescription: BRAND.DESCRIPTION,
@@ -286,6 +290,7 @@ export default function LayoutShellClient({
         logout: tNav("logout"),
       }}
       footer={footer}
+      contentClassName={isDashboard ? "w-full" : undefined}
       searchSlotRenderer={(onClose) => (
         <Div className="border-b border-zinc-200 bg-white/95 dark:border-slate-800 dark:bg-slate-950/95">
           <Div className="mx-auto flex w-full max-w-screen-xl items-center gap-2 px-4 py-2 sm:px-6 lg:px-8">

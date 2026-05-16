@@ -76,10 +76,7 @@ export const DELETE = withProviders(createRouteHandler({
     }
 
     // Safety: only allow deleting files under the authenticated user's uid
-    const expectedUserSegment = `${TMP_PREFIX}`;
     const pathAfterTmp = storagePath.slice(TMP_PREFIX.length);
-    const [, uidSegment] = pathAfterTmp.split("/"); // structure: tmp/{folder}/{uid}/{filename}
-    // Alternatively the structure may be tmp/{uid}/{filename} — handle both
     const pathSegments = pathAfterTmp.split("/");
     const ownerUid = pathSegments.length >= 2 ? pathSegments[pathSegments.length - 2] : pathSegments[0];
 
@@ -118,4 +115,3 @@ export const DELETE = withProviders(createRouteHandler({
     }
   },
 }));
-

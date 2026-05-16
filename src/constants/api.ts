@@ -146,6 +146,7 @@ export const API_ROUTES = {
     NOTIFICATIONS: "/api/user/notifications",
     NOTIFICATION_BY_ID: (id: string) => `/api/user/notifications/${id}`,
     NOTIFICATIONS_READ_ALL: "/api/user/notifications/read-all",
+    NOTIFICATION_PREFERENCES: "/api/user/notification-preferences",
     CHANGE_PASSWORD: "/api/user/change-password",
     OFFERS: "/api/user/offers",
   },

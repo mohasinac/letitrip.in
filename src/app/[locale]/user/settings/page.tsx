@@ -15,13 +15,16 @@ import {
   Text,
   Input,
   Button,
+  NotificationPreferencesPanel,
 } from "@mohasinac/appkit/client";
 import { FontToggleClient } from "@/components/user/FontToggleClient";
+import { API_ROUTES } from "@/constants/api";
 
-type Tab = "account" | "privacy" | "appearance";
+type Tab = "account" | "privacy" | "appearance" | "notifications";
 
 const TAB_LABELS: Record<Tab, string> = {
   account: "Account",
+  notifications: "Notifications",
   privacy: "Privacy",
   appearance: "Appearance",
 };
@@ -230,7 +233,7 @@ export default function Page() {
   };
 
   return (
-    <Div className="max-w-2xl mx-auto px-4 py-8">
+    <Div className="w-full max-w-3xl">
       <Text className="text-xl font-bold text-[var(--appkit-color-text)] mb-6">Settings</Text>
 
       <Row gap="xs" className="mb-6 border-b border-[var(--appkit-color-border)]">
@@ -251,6 +254,12 @@ export default function Page() {
       </Row>
 
       {activeTab === "account" && renderAccountTab({ user, newEmail, setNewEmail, emailPassword, setEmailPassword, handleEmailSubmit, changeEmail, currentPassword, setCurrentPassword, newPassword, setNewPassword, confirmPassword, setConfirmPassword, handlePasswordSubmit, changePassword })}
+      {activeTab === "notifications" && (
+        <NotificationPreferencesPanel
+          fetchUrl={API_ROUTES.USER.NOTIFICATION_PREFERENCES}
+          saveUrl={API_ROUTES.USER.NOTIFICATION_PREFERENCES}
+        />
+      )}
       {activeTab === "privacy" && renderPrivacyTab()}
       {activeTab === "appearance" && renderAppearanceTab()}
     </Div>

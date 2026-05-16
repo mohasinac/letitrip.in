@@ -2,7 +2,9 @@
  * Shared sieve-test helpers. Instantiate with `makeSuite()` at the top of
  * each suite file to get a scoped `rec`, `results`, and assertion functions.
  *
- * `sieveDiff` and `probe` need a `request` reference — pass it in.
+ * Every probe / request is given a per-test timeout (REQUEST_TIMEOUT_MS from
+ * _http.mjs). A timed-out request records a hard failure so timeouts are
+ * always visible in the report rather than crashing the suite.
  */
 
 export function makeSuite(requestFn) {
@@ -15,6 +17,7 @@ export function makeSuite(requestFn) {
     if (Array.isArray(body?.data?.items)) return body.data.items;
     if (Array.isArray(body?.data?.posts)) return body.data.posts; // blog
     if (Array.isArray(body?.data?.users)) return body.data.users; // admin users
+    if (Array.isArray(body?.data?.orders)) return body.data.orders; // admin orders
     if (Array.isArray(body?.data)) return body.data;
     return [];
   }
@@ -88,6 +91,10 @@ export function makeSuite(requestFn) {
 
   async function probe(label, path, opts = {}, predicate = (r) => r.status === 200) {
     const r = await requestFn("GET", path, opts);
+    if (r.timedOut) {
+      rec(label, false, `TIMEOUT after ${r.timeoutMs}ms`);
+      return r;
+    }
     const ok = predicate(r);
     rec(label, ok, `status=${r.status} count=${countOf(r.body)} ${r.elapsedMs}ms`);
     return r;
@@ -98,6 +105,10 @@ export function makeSuite(requestFn) {
       requestFn("GET", aPath, opts),
       requestFn("GET", bPath, opts),
     ]);
+    if (a.timedOut || b.timedOut) {
+      rec(`sieve diff: ${label}`, false, `TIMEOUT: a=${a.timedOut} b=${b.timedOut}`);
+      return;
+    }
     const ac = countOf(a.body);
     const bc = countOf(b.body);
     const aFirst = itemsOf(a.body)[0]?.id;
