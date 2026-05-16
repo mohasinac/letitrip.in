@@ -131,6 +131,7 @@
   - [Shipping Config](#store--shipping-config-)
   - [Payout Settings](#store--payout-settings-)
   - [Addresses (Pickup Locations)](#store--addresses-pickup-locations-)
+  - [Print & Label Center ✅](#store--print--label-center-)
 - **User Area**
   - [Layout Shell](#user--layout-shell)
   - [Account Hub](#user--account-hub-)
@@ -11337,4 +11338,119 @@ Consumer sweep completed:
   AdminReviewsView      — BulkActionBar + RowActionMenu labels → ACTIONS.ADMIN["approve-review"/"reject-review"]
   AdminReturnRequestsView — RowActionMenu + ConfirmDeleteModal → ACTIONS.ADMIN["approve-return"/"reject-return"]
   AdminAddressEditorView  — Save button → ACTIONS.ADMIN["save-changes"].label
+```
+
+---
+
+## Store > Print & Label Center ✅ (S-print-center — 2026-05-17)
+
+PrintCenterView is a 4-tab hub accessible at /store/print-center and /admin/print-center.
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  PrintCenterView  (appkit/_internal/client/features/seller/print-center)│
+│                                                                         │
+│  Tabs: [Product Labels] [Packing Slips] [Store Cards] [Website Cards]  │
+│                                                                         │
+│  ┌──────────────────────────────────────────┐  ┌────────────────────┐  │
+│  │  Tab content (product list / order list  │  │  LabelDesignPicker │  │
+│  │  / copies selector / preview)            │  │  ─────────────────  │  │
+│  │                                          │  │  Template chips     │  │
+│  │  Select items → Print / Download PDF     │  │  Minimal/Detailed/  │  │
+│  │                                          │  │  Branded            │  │
+│  │  [Print]  [Download PDF]  [Back]         │  │                     │  │
+│  │                                          │  │  Color scheme       │  │
+│  │  When showGrid=true:                     │  │  Light/Dark/Brand   │  │
+│  │  → PrintGrid (auto-print on mount)       │  │                     │  │
+│  │    ├── InventoryLabel × N                │  │  Size (W × H mm)    │  │
+│  │    ├── OrderPackingLabel × N             │  │                     │  │
+│  │    ├── StoreCard × copies                │  │  Show toggles       │  │
+│  │    └── WebsiteCard × copies              │  │  logo/price/stock/  │  │
+│  └──────────────────────────────────────────┘  │  barcode/location   │  │
+│                                                 └────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+Label components (all in appkit/_internal/client/features/seller/print-center/):
+
+```
+InventoryLabel (62×38mm default)
+┌─────────────────────────────────────────┐
+│ [thumbnail 12mm]  Product Name          │
+│                   [AUCTION badge]       │
+│                   ₹1,999 · Used         │
+│                   Stock: 3              │
+│  ▓▓▓▓▓▓▓▓▓▓▓▓▓  Zone A / Shelf 3 / Box │
+│  ▓▓ QR ▓▓▓▓▓▓▓  |||||||||| barcode     │
+└─────────────────────────────────────────┘
+  Listing-type badges: AUCTION | PRE-ORDER | BUNDLE | PRIZE DRAW | (none for standard)
+
+OrderPackingLabel (85×54mm default)
+┌─────────────────────────────────────────┐
+│  PACKING SLIP           order-3-202605  │
+│  ─────────────────────────────────────  │
+│  • Product A ×2                ₹1,998   │
+│  • Product B ×1                  ₹999   │
+│  • Product C ×1                  ₹499   │
+│    +2 more items                        │
+│  Ravi · Mumbai    Staging: Zone B/Shelf1│
+│  ▓▓▓QR▓▓▓  ||||||||||||| barcode        │
+└─────────────────────────────────────────┘
+
+StoreCard (85×54mm — business card)
+┌─────────────────────────────────────────┐
+│  [logo]  Store Name                     │
+│          Trading Cards                  │
+│  Description text (truncated 80 chars)  │
+│  123 Main St, Mumbai                    │
+│  ▓QR▓  ||||barcode||||                  │
+│  LetItRip · letitrip.in                 │
+└─────────────────────────────────────────┘
+
+WebsiteCard (62×38mm — purple promo)
+┌─────────────────────────────────────────┐
+│           LetItRip                      │  ← brandName prop (not hardcoded)
+│  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓                  │
+│  ▓▓ QR 16mm ▓▓▓▓▓▓▓▓▓▓                  │
+│         Scan to shop                    │
+│    Store Name on LetItRip               │
+│    letitrip.in                          │
+└─────────────────────────────────────────┘
+```
+
+PhysicalLocation data model:
+```ts
+interface PhysicalLocation { zone: string; shelf: string; bin: string }
+// All fields optional in the UI modal (no validation)
+// API enforces: productIds/orderIds array (max 50), storeId gate (403 on mismatch)
+// PATCH /api/store/products/bulk-location
+// PATCH /api/store/orders/bulk-location
+```
+
+LabelDesign type:
+```ts
+interface LabelDesign {
+  template: "minimal" | "detailed" | "branded";
+  colorScheme: "light" | "dark" | "store-primary";
+  size: { widthMm: number; heightMm: number };
+  show: { logo: boolean; price: boolean; stock: boolean;
+          barcode: boolean; location: boolean; listingTypeBadge: boolean };
+}
+// Defaults: products 62×38mm, cards 85×54mm
+// Persisted to localStorage["letitrip:label-design"]
+```
+
+ACTIONS.STORE additions (print-center bulk actions):
+```
+print-labels        secondary  seller,admin  Print Labels
+set-location        ghost      seller,admin  Set Location
+print-packing-slips secondary  seller,admin  Print Packing Slips
+open-print-center   ghost      seller,admin  Print Center
+```
+
+Routes added:
+```
+ROUTES.STORE.PRINT_CENTER    /store/print-center
+ROUTES.STORE.INVENTORY_PRINT /store/inventory/print   (?type=product|order&ids=...&autoprint=1)
+ROUTES.ADMIN.PRINT_CENTER    /admin/print-center
 ```

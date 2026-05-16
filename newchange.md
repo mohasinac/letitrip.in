@@ -41,6 +41,30 @@
 
 ---
 
+### S-print-center — Physical Inventory Labeling + Print & Label Center (2026-05-17)
+
+**Full print-center feature delivered: QR + Code128 barcode labels for all listing types, order packing slips, store business cards, website promo cards, bulk location assignment, and label design system.**
+
+| Area | Detail |
+|------|--------|
+| **10 appkit components** | `InventoryLabel` (QR+barcode+listing-type badge), `OrderPackingLabel` (packing slip up to 4 items+overflow), `StoreCard` (business card w/ logo+QR+barcode), `WebsiteCard` (purple promo card), `LabelDesignPicker` (template/size/color/show toggles, localStorage persist), `PrintGrid` (auto-print on mount), `PhysicalLocationModal` (zone/shelf/bin, all optional), `useInventoryPdf` (jsPDF+qrcode+jsbarcode dynamic import), `PrintCenterView` (4 tabs), `types.ts` (LabelDesign interface + defaults) |
+| **3 letitrip pages** | `/store/print-center` (RSC → PrintCenterView), `/store/inventory/print` (auto-print RSC), `/admin/print-center` (RSC → PrintCenterView isAdmin) |
+| **2 API routes** | `PATCH /api/store/products/bulk-location` (up to 50 products, storeId gate), `PATCH /api/store/orders/bulk-location` (up to 50 orders, storeId gate) |
+| **Schema** | `physicalLocation: { zone, shelf, bin }` added to `ProductDocument`, `OrderDocument`, `ProductItem` |
+| **SellerProductsView** | physicalLocation column (Zone/Shelf/Bin display), Set Location bulk action → `PhysicalLocationModal` → `SELLER_ENDPOINTS.PRODUCTS_BULK_LOCATION` |
+| **SellerOrdersView** | physicalLocation staging column, Print Packing Slips bulk action → inventory/print auto-print, Set Location bulk action, row checkboxes wired to `useBulkSelection` |
+| **Navigation** | Print Center in `STORE_NAV_GROUPS` (Tools group) + `ADMIN_NAV_GROUPS` (Operations group) |
+| **ACTIONS.STORE** | `print-labels`, `set-location`, `print-packing-slips`, `open-print-center` (4 new registry leaves) |
+| **SELLER_ENDPOINTS** | `PRODUCTS_BULK_LOCATION` + `ORDERS_BULK_LOCATION` added to appkit api-endpoints |
+| **Route cleanup** | Hardcoded `redirect("/checkout")` → `redirect(String(ROUTES.USER.CHECKOUT))` in pre-order actions; 8 store/user pages fixed; `i18n/navigation.ts` adds `notFound` re-export |
+| **Design persistence** | `LabelDesignPicker` saves to `localStorage["letitrip:label-design"]`; loads on mount — each browser/user keeps their own layout, color, size, and show/hide preferences |
+| **Physical location** | Fully optional — no required fields in `PhysicalLocationModal`; column shows "—" when unset |
+| **Brand strings** | All brand references (`brandName`) threaded as props from consumer pages (not hardcoded in `_internal/`); `WebsiteCard` + `useInventoryPdf` accept `brandName?: string` |
+| **Quality gates** | All 18 audits clean. `npm run check:audits` exits 0. appkit tsc 0 errors. |
+| **Commits** | `e26fe4e` (appkit: print-center components + view updates) · `957d8d63a` (consumer: pages + nav + route cleanup) |
+
+---
+
 ### S-checkout-otp-ux — Checkout OTP consent UX refactor + constants + registry (2026-05-16)
 
 **Redesigned checkout flow: explicit consent screen before OTP, admin bypass button in consent step.**
