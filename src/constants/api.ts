@@ -45,6 +45,7 @@ export const API_ROUTES = {
     // SB-UNI-4 2026-05-13 — admin CRUD for categoryType:"bundle" rows.
     BUNDLES: "/api/admin/bundles",
     BUNDLE_BY_ID: (id: string) => `/api/admin/bundles/${id}`,
+    BUNDLE_REBUILD: (id: string) => `/api/admin/bundles/${id}/rebuild`,
     PRODUCT_BY_ID: (id: string) => `/api/admin/products/${id}`,
     CATEGORIES: "/api/admin/categories",
     CATEGORY_BY_ID: (id: string) => `/api/admin/categories/${id}`,

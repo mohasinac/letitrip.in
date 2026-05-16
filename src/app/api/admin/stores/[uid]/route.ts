@@ -2,8 +2,6 @@ import { withProviders } from "@/providers.config";
 import { STORE_FIELDS } from "@/constants/field-names";
 import { z } from "zod";
 import {
-  adminUpdateStoreStatus,
-  userRepository,
   storeRepository,
   createRouteHandler,
   successResponse,
@@ -16,6 +14,7 @@ const updateStoreSchema = z.object({
   isFeatured: z.boolean().optional(),
   isVerified: z.boolean().optional(),
   suspensionReason: z.string().optional(),
+  capabilities: z.array(z.string()).optional(),
 });
 
 export const GET = withProviders(
@@ -24,13 +23,10 @@ export const GET = withProviders(
     roles: ["admin", "moderator"],
     permission: "admin:stores:read",
     handler: async ({ params }) => {
-      const uid = (params as { uid: string }).uid;
-      const user = await userRepository.findById(uid);
-      if (!user) return errorResponse("User not found", 404);
-      const store = user.storeSlug
-        ? await storeRepository.findBySlug(user.storeSlug).catch(() => null)
-        : null;
-      return successResponse({ user, store });
+      const storeId = (params as { uid: string }).uid;
+      const store = await storeRepository.findById(storeId);
+      if (!store) return errorResponse("Store not found", 404);
+      return successResponse(store);
     },
   }),
 );
@@ -42,9 +38,23 @@ export const PATCH = withProviders(
     permission: "admin:stores:write",
     schema: updateStoreSchema,
     handler: async ({ body, params }) => {
-      const uid = (params as { uid: string }).uid;
-      await adminUpdateStoreStatus(uid, body! as any);
-      return successResponse({ uid, ...body }, "Store updated");
+      const storeId = (params as { uid: string }).uid;
+      const store = await storeRepository.findById(storeId);
+      if (!store) return errorResponse("Store not found", 404);
+
+      const update: Record<string, unknown> = {};
+      if (body!.storeStatus !== undefined) update.status = body!.storeStatus;
+      if (body!.adminNotes !== undefined) update.adminNotes = body!.adminNotes;
+      if (body!.isFeatured !== undefined) update.isFeatured = body!.isFeatured;
+      if (body!.isVerified !== undefined) update.isVerified = body!.isVerified;
+      if (body!.suspensionReason !== undefined) update.suspensionReason = body!.suspensionReason;
+      if (body!.capabilities !== undefined) update.capabilities = body!.capabilities;
+
+      if (Object.keys(update).length > 0) {
+        await storeRepository.update(storeId, update as any);
+      }
+
+      return successResponse({ storeId, ...body }, "Store updated");
     },
   }),
 );

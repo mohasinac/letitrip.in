@@ -15,6 +15,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import {
+  ACTIONS,
   Badge,
   Button,
   Checkbox,
@@ -2075,7 +2076,7 @@ function renderSeedPanelToolbar({
                 <span className="text-xs text-zinc-600 dark:text-slate-300 whitespace-nowrap">Dry run</span>
               </label>
               <Button size="sm" variant="primary" isLoading={isRunning} onClick={() => run("load")} disabled={isRunning || selectedCollections.size === 0}>{dryRun ? "⚡ Dry Add" : "⚡ Add Seed"}</Button>
-              <Button size="sm" variant="danger" onClick={() => run("delete")} disabled={isRunning || selectedCollections.size === 0}>{dryRun ? "🗑️ Dry Remove" : "🗑️ Remove"}</Button>
+              <Button size="sm" variant="danger" onClick={() => run("delete")} disabled={isRunning || selectedCollections.size === 0}>{dryRun ? "🗑️ Dry Remove" : ACTIONS.ADMIN["reset-seed-data"].label}</Button>
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-1.5 sm:items-center sm:gap-3">
