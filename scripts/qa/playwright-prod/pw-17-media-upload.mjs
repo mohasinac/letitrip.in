@@ -127,10 +127,10 @@ export async function run() {
       const fileInputCount = await page.locator(FILE_INPUT_SEL).count();
       rec(`${label}: file input present`, fileInputCount > 0, `count=${fileInputCount}`);
 
-      // Upload trigger: either the dashed "Choose file" button (camera unsupported)
-      // or the "Upload File" mode-toggle button (camera supported in headless Chromium)
+      // Upload trigger: compact "Click to upload" button (file mode) or "Use Camera" (camera mode).
+      // The camera toggle buttons were removed in the compact UI redesign — only the action buttons remain.
       const uploadBtn = page.locator(
-        'button:has-text("Choose file"), button:has-text("Upload File"), button:has-text("Upload"), button:has-text("Add image")',
+        'button:has-text("Click to upload"), button:has-text("Upload Image"), button:has-text("Upload"), button:has-text("Add image")',
       );
       const btnCount = await uploadBtn.count();
       rec(`${label}: upload trigger button visible`, btnCount > 0, `count=${btnCount}`);
@@ -158,12 +158,11 @@ export async function run() {
       const fileInput = await page.locator(FILE_INPUT_SEL).count();
       rec(`${label}: file input always present`, fileInput > 0, `count=${fileInput}`);
 
-      // The "Use Camera" button appears when isCameraSupported=true (Chromium headless)
+      // Compact UI: "Click to upload" (file-only) + optional "Use Camera" (if supported).
+      // No separate mode-toggle buttons — camera switches inline via the "Use Camera" action button.
+      const uploadFileBtn = await page.locator('button:has-text("Click to upload"), button:has-text("Upload Image")').count();
       const cameraBtn = await page.locator('button:has-text("Use Camera")').count();
-      const uploadFileBtn = await page.locator('button:has-text("Upload File")').count();
-      // At least one of: camera toggle present OR plain file-only drop area
-      const hasUploadUi = cameraBtn > 0 || uploadFileBtn > 0 ||
-        (await page.locator('button:has-text("Choose file")').count()) > 0;
+      const hasUploadUi = uploadFileBtn > 0 || cameraBtn > 0;
       rec(`${label}: upload UI present`, hasUploadUi,
         `cameraBtn=${cameraBtn} uploadFileBtn=${uploadFileBtn}`);
 
