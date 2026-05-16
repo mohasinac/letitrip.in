@@ -36,6 +36,8 @@ import {
 } from "@mohasinac/appkit";
 import { shipOrderAction } from "@/actions/seller.actions";
 
+const ORDER_NOT_FOUND = "Order not found";
+
 // ─── Validation ────────────────────────────────────────────────────────────
 
 const shiprocketPackageSchema = z.object({
@@ -128,12 +130,12 @@ export const GET = withProviders(
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const order = await orderRepository.findById(id);
-      if (!order) return errorResponse("Order not found", 404);
+      if (!order) return errorResponse(ORDER_NOT_FOUND, 404);
 
       if (user!.role !== "admin") {
         const storeId = await resolveSellerStoreId(user!.uid);
         if (!storeId || order.storeId !== storeId)
-          return errorResponse("Order not found", 404);
+          return errorResponse(ORDER_NOT_FOUND, 404);
       }
 
       return successResponse(order);
@@ -149,13 +151,13 @@ export const PATCH = withProviders(
     handler: async ({ user, body, params }) => {
       const id = (params as { id: string }).id;
       const order = await orderRepository.findById(id);
-      if (!order) return errorResponse("Order not found", 404);
+      if (!order) return errorResponse(ORDER_NOT_FOUND, 404);
 
       const isAdmin = user!.role === "admin";
       if (!isAdmin) {
         const storeId = await resolveSellerStoreId(user!.uid);
         if (!storeId || order.storeId !== storeId)
-          return errorResponse("Order not found", 404);
+          return errorResponse(ORDER_NOT_FOUND, 404);
 
         if (
           body!.status &&

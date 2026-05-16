@@ -36,6 +36,8 @@ const SKIP_DIRS = new Set([
   "validators",
 ]);
 const SKIP_FILE_RE = /\.(d\.ts|test\.tsx?|spec\.tsx?)$/;
+// Skip the UI primitive implementations — they define the wrappers themselves
+const SKIP_PATH_RE = /[/\\]ui[/\\]components[/\\]/;
 
 const RULES = [
   {
@@ -80,7 +82,7 @@ function walk(dir, files = []) {
     const full = join(dir, entry.name);
     if (entry.isDirectory()) {
       walk(full, files);
-    } else if (extname(entry.name) === ".tsx" && !SKIP_FILE_RE.test(entry.name)) {
+    } else if (extname(entry.name) === ".tsx" && !SKIP_FILE_RE.test(entry.name) && !SKIP_PATH_RE.test(full)) {
       files.push(full);
     }
   }
@@ -115,9 +117,7 @@ for (const dir of SCAN_DIRS) {
   }
 }
 
-// Baseline-drift: grandfathered violations as of feat(quality-gates) 2026-05-15.
-// Only regressions (count > BASELINE) block. Drive to 0 as components are migrated.
-const BASELINE = 315;
+const BASELINE = 0;
 
 if (violations.length === 0) {
   console.log("audit-html-wrappers: clean ✓");
