@@ -133,18 +133,16 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — SB-UNI-Q: SSR layering for new listing-type detail views (2026-05-16)
+### ✅ LAST COMPLETED — S-infra-indexes: Firestore composite index audit + 5 missing indexes deployed (2026-05-16)
 
-- **adapters.ts** added for classified, digital-code, live — `toClientClassified` / `toClientDigitalCode` / `toClientLiveItem` strip internal/operational fields and produce clean client shapes.
-- **metadata.ts** added for all three — `buildClassifiedMetadata` / `buildDigitalCodeMetadata` / `buildLiveItemMetadata` with full OG/twitter/canonical/robots shape; seoDescription field preferred over truncated description.
-- **og.tsx** added for all three — `renderXOg` + `renderXOgImage` pattern matching auctions/blog reference impl; type-themed backgrounds (cyan classified, violet digital-code, green live).
-- **opengraph-image.tsx** page routes created at `classified/[slug]/`, `digital-codes/[slug]/`, `live/[slug]/`.
-- **generateMetadata** in all 3 page shims upgraded from inline title/description to full `buildXMetadata` helper imported from `@mohasinac/appkit/server`.
-- Feature `index.ts` barrels updated to re-export adapters/metadata/og. All new functions exported from `server.ts`.
-- Switched app back to `file:./appkit` (was on npm 2.7.27 from prior deploy session); bumped appkit to 2.7.28 to break npm dedup. `npm run check` exits 0.
-- `CatalogProductDetailView` not built — awaits SB-UNI-L (Phase 4 catalog product infrastructure not yet implemented).
+- Full audit of all repository queries vs. deployed index set — 14 candidates checked against source code, 5 confirmed missing.
+- Added: `offers(storeId, status, createdAt ASC)` · `blogPosts(status, isFeatured, publishedAt DESC)` · `productTemplates(storeId, createdAt DESC)` · `bids(productId, userId, status)` · `events(status, type, startsAt ASC)`.
+- Fixed stale `"featured"` field name in blogPosts featured index (schema field is `"isFeatured"`).
+- Also fixed 47 TDZ circular-ref constants in appkit, JSX attribute syntax errors, `ERR_*` constant stripping from prior session.
+- `firebase deploy --only firestore:indexes --force` — clean, 0 errors. `vercel --prod` deployed.
+- `npm run check:audits` exits 0.
 
-### ✅ Previous — S-E2E-Playwright: Full Playwright suite expansion + classified/digital-code/live view polish (2026-05-15)
+### ✅ Previous — SB-UNI-Q: SSR layering for new listing-type detail views (2026-05-16)
 
 - **Playwright suites pw-01…pw-16** (10 new + 4 expanded): `_pw-setup.mjs` helpers (`gotoAndWait` / `fetchFirstId` / `getCookieHeader`); `pw-01` expanded to 60+ static+dynamic public routes; `pw-02` expanded to 13 listing pages; `pw-04` expanded to 57 admin + 31 store paths with DataTable/toolbar assertions; `pw-07` deep admin content assertions per listing page; `pw-08` dynamic edit/detail routes with real IDs; `pw-09` CRUD create (9 entities); `pw-10` CRUD edit; `pw-11` bulk select+actions; `pw-12` all store routes + dynamic edit routes for all 7 entity types; `pw-13` store CRUD+bulk; `pw-14` all user routes + order cancel/invoice/support ticket detail; `pw-15` full public expansion + classified/digital-codes/live listings + event sub-tabs + sublisting-categories + seller detail + auth utility routes; `pw-16` accessibility (skip-to-main, landmarks, empty buttons, image alt, input labels, h1, Tab focus).
 - **data-testid additions**: `DataTable` / `BulkActionBar` / `ListingToolbar` / `EmptyState` / `SiteLogo` / `Toast` / `TablePagination` / `CountdownDisplay` — all now have stable test selectors.

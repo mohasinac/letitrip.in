@@ -41,6 +41,43 @@
 
 ---
 
+### S-infra-indexes — Firestore composite index audit + 5 missing indexes added (2026-05-16)
+
+Full audit of all repository Firestore queries vs. the deployed index set. Fixed stale field-name errors from the prior circular-ref session, then verified 14 audit-flagged candidates against actual repository source code.
+
+| Fix | Detail |
+|-----|--------|
+| `offers(storeId, status, createdAt ASC)` | `findPendingByStore()` — storeId+status two-where + orderBy |
+| `blogPosts(status, isFeatured, publishedAt DESC)` | `listPublished(featuredOnly)` — existing index used wrong field name `"featured"` instead of `"isFeatured"` |
+| `productTemplates(storeId, createdAt DESC)` | `findByStore()` — no productTemplates index existed at all |
+| `bids(productId, userId, status)` | `findOneByProductAndUser()` — 3-field equality |
+| `events(status, type, startsAt ASC)` | Sieve public event list filtered by type ordered by startsAt |
+| Firebase deploy | `firebase deploy --only firestore:indexes --force` — clean deploy, 0 errors |
+
+False positives resolved (already correctly indexed): `orders(userId, orderDate)`, `orders(status, paymentStatus, createdAt)`, `orders(payoutStatus, status, updatedAt)`, `orders(payoutStatus, shippingMethod, status)`, `blogPosts(status, category, publishedAt)`, all bid amount/status indexes.
+
+Also deployed: `vercel --prod` (end-of-session infra deploy).
+
+---
+
+### S-E2E-PW-FIX — Playwright smoke failure analysis + root cause fixes (2026-05-16)
+
+Analyzed 238 failures from the pw-01…pw-16 production smoke run. Fixed 6 root-cause clusters across appkit + consumer.
+
+| Fix | Files changed | Result |
+|-----|--------------|--------|
+| PW-BUG-01: CSS selector `.or()` fix | `pw-14-user-all-routes.mjs`, `pw-15-public-expanded.mjs` | `text=/regex/` invalid in compound selectors → chained `.or()` |
+| PW-BUG-02: BulkActionBar wired in 8 views | `AdminReviewsView`, `AdminBidsView`, `AdminNotificationsView`, `AdminSessionsView`, `AdminFeaturesView`, `AdminPrizeDrawsView`, `AdminPayoutsView`, `AdminEventsView` | `<BulkActionBar>` JSX inserted between ListingToolbar and pagination |
+| PW-BUG-03: `<h1>` added to 4 admin listing views | `AdminProductsView`, `AdminCategoriesView`, `AdminBlogView`, `AdminFaqsView` | `<h1 className="sr-only">` added |
+| PW-BUG-04: 6 missing page.tsx routes created | `store/bundles/page.tsx`, `store/bundles/new/page.tsx`, `store/templates/new/page.tsx`, `store/features/new/page.tsx`, `admin/features/new/page.tsx`, `admin/features/[id]/edit/page.tsx` | All 6 routes now return 200 |
+| PW-BUG-05: Double-navigation removed | `AdminSublistingCategoriesView`, `AdminFeaturesView` | Removed redundant `table.setPage(1)` after `table.set("q", v)` |
+| PW-BUG-06: 30+ pre-existing TS errors fixed | 20+ files across appkit + consumer | JSX close-tag swaps, stray imports, circular self-refs, wrong relative paths, Semantic.tsx infinite recursion |
+| Timeout tuning | `smoke-pw.mjs` | pw-02 3→5 min, pw-12 4→6 min |
+
+`npm run check` exits 0. All 6 bug IDs logged in `crud-tracker.md` Tier 0.
+
+---
+
 ### SB-UNI-Q — SSR layering for classified/digital-code/live listing-type detail views (2026-05-16)
 
 Completed the missing SSR layer (adapters/metadata/og) for the three new listing types introduced in SB-UNI Phase 2. No schema changes, no new Firestore indexes, no seed changes.
