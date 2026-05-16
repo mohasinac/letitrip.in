@@ -139,27 +139,22 @@ Pull the next ⏳ task from `crud-tracker.md`. Candidates: SB-UNI-Q (per-type de
 
 ---
 
-### ✅ LAST COMPLETED — S-print-center-cleanup: Auction improvements + UI polish (2026-05-17)
+### ✅ LAST COMPLETED — S-formshells-padding: FormShell action buttons + RowActionMenu portal + 5% x-padding + double-padding sweep (2026-05-17)
 
-- `RowActionMenu`: rewritten with `createPortal` portal dropdown — fixed clipping by `overflow:hidden` table containers; `fixed` positioning via `getBoundingClientRect`; z-index via `--appkit-z-modal`
-- `ProductDocument.leadingBidderId`: new field tracking current auction bid winner; `incrementBidCountInBatch` updated to write it; `onBidPlaced` job passes `userId`
-- `BID_ERROR_CODES` + `OFFER_ERROR_CODES` constants in `error-codes.ts`; re-exported from `errors/index.ts`; `ERROR_MESSAGES.AUCTIONS.INCREMENT_TOO_LOW` added
-- `bids/route.ts`: `placeBid` wrapped in typed error catch — `NotFoundError→404`, `ValidationError→400`, `AuthorizationError→403`
-- `SellerProductShell`: step navigation moved to `FormShell.renderBottomBar` using `hideActions` prop on `StepForm`; step validation errors shown inline below the action bar
-- `StepForm.hideActions` prop + `StepFormActions` padding px-4→px-5 harmonized
-- `runPromotions`: `Promise.allSettled` — partial failures log warning, return available data instead of throwing
-- Layout gutter: `px-4→px-5` / `1rem→1.25rem` across `DashboardLayoutClient`, `AppLayoutShell`, `FormShell`, `AutoBreadcrumbs`, `SideDrawer.style.css`
-- `pw-17-media-upload`: button text selectors updated for compact upload UI redesign
-- appkit: `f84ca72` → `01333cc` → `186ac90` → `f3bfe23` → `c2f2a3c` → `01333cc` (all committed). `npm run check:audits` clean.
+- `StepForm.hideActions` prop: suppresses built-in `StepFormActions` inside scrollable body — use with `FormShell.renderBottomBar` so step nav is always visible
+- `SellerProductShell` create mode: `renderBottomBar` now passes `StepFormActions` + `stepError` to FormShell's sticky footer; `handleNext` + `stepError` state hoisted out of StepForm body
+- `RowActionMenu`: rewritten with `createPortal` into `document.body` at `position:fixed` — escapes `overflow:hidden` DataTable wrapper; position via `getBoundingClientRect()`; `mousedown` outside handler checks both trigger ref and portal dropdown ref
+- `px-4`→`px-5` (5.3% at 375 px ✓) across: `DashboardLayoutClient`, `AppLayoutShell`, `FormShell` (4 locations), `StepForm` StepFormActions bar, `AutoBreadcrumbs`; CSS: `SideDrawer.style.css` (content + footer `1rem`→`1.25rem`), `FormShell.style.css` (step-content + footer x-padding + `--bottom-nav-height` fallback 56→64 px)
+- Double-padding removed from 15 store dashboard pages (`mx-auto max-w-* px-4 py-6` → `mx-auto max-w-*` only) + `CheckoutRouteClient` inner wrapper
+- `offer.actions.ts` pre-existing violations fixed: `ERR_RATE_LIMIT` constant, removed `code:` fields from `ActionResult` returns, inline catch blocks matching `bid.actions.ts`
+- New `scripts/audit-dashboard-padding.mjs`: blocks on any `px-4 py-*` in dashboard `page.tsx` files; wired into stop hook + `check:audits`
+- `crud-tracker.md`: LAYOUT-BUG-01…05 + OFFER-BUG-01 rows added; `asciiDiagrams.md` updated (FormShell ✅, StepForm ✅, RowActionMenu portal note, SellerProductShell create-mode diagram)
 
-### ✅ PREVIOUS LAST — S-ts-cleanup: Print-center removal + lint cleanup (2026-05-17)
+### ✅ PREVIOUS LAST — S-print-center-cleanup: Auction improvements + UI polish (2026-05-17)
 
-- Removed entire `_internal/client/features/seller/print-center/` directory from appkit (`PrintCenterView`, `LabelDesignPicker`, `PrintGrid`, `StoreCard`, `WebsiteCard`, `useInventoryPdf`, `InventoryLabel`, `OrderPackingLabel`, `types.ts`)
-- `PhysicalLocationModal` preserved — moved to `features/seller/components/` (still used by `SellerProductsView` + `SellerOrdersView`)
-- Deleted 3 RSC app pages that imported removed `PrintCenterView` (`admin/print-center`, `store/print-center`, `store/inventory/print`)
-- Removed `PRINT_CENTER` nav groups from `ADMIN_NAV_GROUPS` + `STORE_NAV_GROUPS` in `navigation.tsx`
-- Committed pre-existing `eslint.config.mjs` lint overrides + `firestore.indexes.json` sync
-- Tracker: X9 ✅. `npm run check` exits 0. 2 commits: appkit `f247f70` + main `99c9a66e9`.
+- `RowActionMenu` initial portal rewrite + `ProductDocument.leadingBidderId` + `BID_ERROR_CODES` / `OFFER_ERROR_CODES` + `bids/route.ts` typed error catch + `runPromotions` `Promise.allSettled`
+- `pw-17-media-upload` button text selector updates
+- appkit rebuild. `npm run check:audits` clean.
 
 ### ✅ PREVIOUS LAST — S-media-upload-bugs: Media upload wildcard MIME + next/image domain + accept overrides (2026-05-17)
 

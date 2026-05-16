@@ -131,7 +131,7 @@
   - [Shipping Config](#store--shipping-config-)
   - [Payout Settings](#store--payout-settings-)
   - [Addresses (Pickup Locations)](#store--addresses-pickup-locations-)
-  - [Print & Label Center ✅](#store--print--label-center-)
+  - [Print & Label Center ~~✅~~ REMOVED](#store--print--label-center-)
 - **User Area**
   - [Layout Shell](#user--layout-shell)
   - [Account Hub](#user--account-hub-)
@@ -383,7 +383,12 @@ Filter drawer (fixed left overlay, z-50, w-80):
   Clear all = clears pendingFilters ONLY (no URL touch)
   ✕ = closes drawer, discards pending changes
 
-Row action menu (⋮) — table view only:
+Row action menu (⋮) — table view only — RowActionMenu:
+  IMPLEMENTATION: dropdown rendered via createPortal into document.body at position:fixed.
+  This escapes the DataTable wrapper's overflow:hidden — dropdown is never clipped.
+  Position computed via getBoundingClientRect() on trigger; z-index: var(--appkit-z-modal).
+  Outside-click handled by mousedown listener checking both trigger ref + portal dropdown ref.
+
   [Edit]           → opens SideDrawer or navigates to /admin/{resource}/{id}/edit
   [View]           → opens SideDrawer or navigates
   [Approve]        → PATCH mutation + queryClient.invalidateQueries
@@ -1117,6 +1122,7 @@ variant="user"   →  UserSidebar
   --header-height is set by ResizeObserver on the sticky <header> wrapper.
   All sticky offsets throughout the app: style={{ top: "var(--header-height, 0px)" }}
   Main content: mb-28 (has bottom actions) or mb-16 (no actions) on mobile, md:mb-0
+  FormShell footer offset: bottom: var(--bottom-nav-height, 64px)  ← BN-1 is h-16 = 64 px
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   HAMBURGER ROUTING TABLE
@@ -1146,9 +1152,11 @@ Key implementation files:
 
 > Every create/edit interaction across admin, store, and user areas uses one of these three shells. Never navigate to a new page for a form — use a shell to keep the user in context with a fast, overlay-based experience.
 
-## UX > FormShell — Full-Width Side Panel ⏳
+## UX > FormShell — Full-Width Side Panel ✅
 
 The primary create/edit UX. A full-viewport-width overlay panel that slides in from the right. Sticky top bar + optional left section nav + scrollable body + sticky bottom bar.
+> **Padding contract**: top bar `px-5`, body inner wrapper `px-5 py-6 sm:px-6`, bottom bar `px-5`. All ≥5% at 375 px.
+> **`renderBottomBar` prop**: in create mode (no `onSaveDraft`/`onPublish`), callers MUST pass `renderBottomBar` to get a sticky action bar — otherwise the panel has no footer. `StepForm` passes `hideActions` when this is used so actions don't duplicate in the scrollable body.
 
 ```
 DESKTOP (≥ 768px)
@@ -1230,9 +1238,11 @@ Other QuickFormDrawer uses (all the same shell, different fields):
 
 ---
 
-## UX > StepForm — Multi-Step Create Wizard ⏳
+## UX > StepForm — Multi-Step Create Wizard ✅
 
 Rendered inside FormShell body (replaces section nav for CREATE flows). Bottom bar CTA labels change per step. Progress auto-saved to `localStorage` on each step advance.
+> **`hideActions` prop**: when `true`, suppresses built-in `StepFormActions` + `stepError` inside body. Use with `FormShell.renderBottomBar` so actions are pinned to the sticky footer, not scrolled away.
+> **Action bar padding**: `px-5 py-3` (≥5% at 375 px).
 
 ```
 STEP INDICATOR  (sticky below top bar, ~48px)
@@ -9299,17 +9309,28 @@ Backdrop  z: z-modal+1
   [●]         [✓]           [○]            [○]             [○]
   active      done(click)   locked
 
-  <step content renders here>
-
-  [errorMessage if validate() fails]
+  <step content renders here — overflow-y: auto>
 
   ─────────────────────────────────────────────────────
-  [← Back]                         2 / 5  [Next →]
-  (isFirst: Back hidden)          (isLast: Publish Now)
+  ↑ When hideActions=false (default — standalone use):
+    errorMessage if validate() fails (inside scrollable body)
+    [← Back]                         2 / 5  [Next →]
+    px-5 py-3 border-t action bar (inside scrollable body)
+
+  ─────────────────────────────────────────────────────
+  ↑ When hideActions=true (inside FormShell with renderBottomBar):
+    No action bar inside body — FormShell footer is the action bar:
+
+FormShell STICKY BOTTOM BAR (always visible, never scrolls away):
+  ┌─────────────────────────────────────────────────────────────────┐
+  │  px-5 py-3   [← Back]               2/5  [Next →]              │
+  │  px-5 pb-3   [errorMessage if validate() fails]                 │
+  └─────────────────────────────────────────────────────────────────┘
 
  StepDef<T>.render({ values, onChange, errors }) → ReactNode
  StepDef<T>.validate?(values: T) → string | null
  formId prop → localStorage["stepform:{id}"] persists step index
+ hideActions?: boolean  — suppress built-in action bar (use with renderBottomBar)
 ```
 
 ### SellerProductShell (UX6)
@@ -9317,18 +9338,28 @@ Backdrop  z: z-modal+1
 ```
 mode="create"                        mode="edit"
 ────────────────────                 ─────────────────────────────────
-FormShell (isOpen, no sections)      FormShell (sections: Basic/Media/
-  └─ StepForm<SellerProductDraft>        Pricing/Shipping/Publish +
-       steps (5 or 6):                   Auction|PreOrder if applicable)
-         1. Basic (title,desc,cat,         All sections rendered as
-            brand,tags,condition)         <section id="…"> anchors.
-         2. Media (main img,              Save/Update in top + bottom bar.
+FormShell (isOpen, no sections,      FormShell (sections: Basic/Media/
+  renderBottomBar={StepFormActions})     Pricing/Shipping/Publish +
+  └─ StepForm<SellerProductDraft>        Auction|PreOrder if applicable)
+       hideActions  ← suppresses        All sections rendered as
+       built-in action bar inside       <section id="…"> anchors.
+       scrollable body                 Save/Update in top + bottom bar.
+       steps (5 or 6):
+         1. Basic (title,desc,cat,
+            brand,tags,condition)
+         2. Media (main img,
             gallery, youtubeId)
          3. [Auction Settings] ← if listingType=auction
             [Pre-Order Settings] ← if listingType=pre-order
          4. Pricing (price, compare-at, stock, featured, isNew)
          5. Shipping (paidBy, address, insurance)
          6. Publish (status, seoTitle, seoDesc, isOnSale)
+
+ FormShell sticky footer (create mode — always visible):
+   ┌────────────────────────────────────────────────────┐
+   │  [← Back]          Step 1 / 5       [Next →]      │
+   │  [stepError message if validate() fails]           │  ← px-5 pb-3
+   └────────────────────────────────────────────────────┘
 
 SellerProductShellProps:
   mode: "create" | "edit"
@@ -11342,9 +11373,11 @@ Consumer sweep completed:
 
 ---
 
-## Store > Print & Label Center ✅ (S-print-center — 2026-05-17)
+## Store > Print & Label Center ~~✅~~ REMOVED (S-ts-cleanup — 2026-05-17)
 
-PrintCenterView is a 4-tab hub accessible at /store/print-center and /admin/print-center.
+> **REMOVED in S-ts-cleanup (2026-05-17).** The entire `_internal/client/features/seller/print-center/` directory was deleted. The 3 RSC app pages (`/store/print-center`, `/admin/print-center`, `/store/inventory/print`) and their nav entries were deleted. `PrintCenterView`, `LabelDesignPicker`, `PrintGrid`, `InventoryLabel`, `OrderPackingLabel`, `StoreCard`, `WebsiteCard`, `useInventoryPdf` are gone. **Preserved**: `PhysicalLocationModal` was moved to `appkit/src/features/seller/components/PhysicalLocationModal.tsx` (still exported from `@mohasinac/appkit/client`); used by `SellerProductsView` and `SellerOrdersView` for bulk warehouse location assignment.
+
+~~PrintCenterView is a 4-tab hub accessible at /store/print-center and /admin/print-center.~~
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐

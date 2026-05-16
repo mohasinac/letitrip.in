@@ -19,6 +19,7 @@
  *   - scripts/audit-inline-actions.mjs           (inline action IDs/labels duplicating registry)
  *   - appkit/scripts/audit-query-provider.mjs    (component both provides QueryClientProvider and calls react-query hooks)
  *   - appkit/scripts/audit-export-paths.mjs     (broken re-exports in client.ts/index.ts/server.ts → deleted source files)
+ *   - scripts/audit-dashboard-padding.mjs       (double px-4/py-* padding on dashboard pages that DashboardLayoutClient already covers)
  *
  * Baseline-drift audits: audit-ssr-in-appkit, audit-html-wrappers, audit-code-quality block
  * only when the violation count EXCEEDS the recorded baseline (regressions only).
@@ -155,6 +156,12 @@ const checks = [
     cmd: "node",
     args: ["scripts/audit-export-paths.mjs"],
     cwd: join(ROOT, "appkit"),
+  },
+  {
+    label: "audit-dashboard-padding",
+    cmd: "node",
+    args: ["scripts/audit-dashboard-padding.mjs"],
+    cwd: ROOT,
   },
 ];
 

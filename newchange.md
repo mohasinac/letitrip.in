@@ -41,6 +41,27 @@
 
 ---
 
+### S-formshells-padding — FormShell create-mode action buttons + RowActionMenu portal + 5% x-padding + double-padding sweep (2026-05-17)
+
+**Fixed 5 layout/visibility bugs + 1 pre-existing code-quality violation. New audit-dashboard-padding script. `npm run check:audits` clean.**
+
+| Area | Detail |
+|------|--------|
+| **LAYOUT-BUG-01: FormShell create-mode buttons** | `StepForm` gained `hideActions?: boolean` prop. `StepFormActions` re-exported from shell module. `SellerProductShell` create mode now passes `renderBottomBar` with `StepFormActions` + `stepError` to FormShell's sticky footer; `handleNext` + `stepError` state hoisted. Buttons always pinned at bottom, never scroll away. |
+| **LAYOUT-BUG-02: RowActionMenu portal** | Full rewrite using `createPortal` into `document.body` at `position:fixed`. Dropdown computes position via `getBoundingClientRect()` on trigger. Outside-click uses `mousedown` listener checking both `wrapperRef` and `dropdownRef`. Escapes `overflow:hidden` on `.appkit-data-table__wrapper`. Z-index: `var(--appkit-z-modal)` inline style. |
+| **LAYOUT-BUG-03: 5% x-padding** | `px-4`→`px-5` in: `DashboardLayoutClient`, `AppLayoutShell`, `FormShell` (top bar + mobile section strip + body wrapper + bottom bar), `StepForm` StepFormActions bar, `AutoBreadcrumbs`. CSS: `SideDrawer.style.css` content + footer `1rem`→`1.25rem`; `FormShell.style.css` step-content + footer x-padding. |
+| **LAYOUT-BUG-04: Double-padding** | 14 store dashboard `page.tsx` files had `mx-auto max-w-* px-4 py-6` inside `DashboardLayoutClient` which already provides `px-5 py-8`. Removed `px-4 py-6`/`py-8 px-4` from all 14. Coupon editor pages: removed outer `<div className="py-8 px-4">` wrapper entirely. `CheckoutRouteClient`: stripped `px-4 py-6 sm:px-6 lg:px-8` from inner div. |
+| **LAYOUT-BUG-05: `--bottom-nav-height` fallback** | `FormShell.style.css` `@media (max-width: 1023px) .appkit-formshell__footer` had `bottom: var(--bottom-nav-height, 56px)`. `BottomNavbar` is `h-16` = 64 px. Corrected to `64px`. |
+| **OFFER-BUG-01: offer.actions.ts pre-existing** | Removed non-existent `handleActionError`/`handleApiError` imports. Removed `code:` field from all `ActionResult` returns. Replaced 4× repeated `"Too many requests. Please slow down."` with `ERR_RATE_LIMIT` constant. Inline catch blocks matching `bid.actions.ts` pattern. |
+| **New audit** | `scripts/audit-dashboard-padding.mjs`: scans store/admin/user `page.tsx` files for `px-4 py-*` patterns. Wired into stop hook + `check:audits` + `package.json audit:dashboard-padding`. |
+| **crud-tracker.md** | LAYOUT-BUG-01…05 + OFFER-BUG-01 rows added. Last updated header updated. |
+| **asciiDiagrams.md** | FormShell ✅ + `renderBottomBar` note. StepForm ✅ + `hideActions` diagrams. SellerProductShell create-mode diagram updated. RowActionMenu portal implementation note. Layout C2 `--bottom-nav-height` fallback annotation. |
+| **prompt.md** | LAST COMPLETED block updated; PREVIOUS LAST pruned. |
+
+**No deferred items.**
+
+---
+
 ### S-ts-cleanup — Print-center removal + PhysicalLocationModal rescue + lint cleanup (2026-05-17)
 
 **Cleaned up the incomplete print-center removal and committed pre-existing lint changes. `npm run check` exits 0.**
