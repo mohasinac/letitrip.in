@@ -87,9 +87,9 @@ export default function Page() {
               >
                 View all →
               </Link>
-            </>
+            </div>
             <OrdersList orders={orders} isLoading={ordersLoading} emptyLabel="No orders yet" />
-          </div>
+          </>
         ) : null
       }
     />
