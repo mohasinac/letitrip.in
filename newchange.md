@@ -41,6 +41,21 @@
 
 ---
 
+### S-sb-uni-n-partial — SB-UNI-M verified ✅ + CodeRevealPanel wired to digital-code flows (2026-05-17)
+
+**appkit 2.7.43: `CodeRevealPanel` + `RevealedCode` exported from `client.ts`. `npm run check` exits 0.**
+
+- `SB-UNI-M` (classified chat flow): verified fully done — `ClassifiedDetailView` + `startClassifiedConversationAction` + consumer PDP all wired. Marked ✅ in tracker.
+- appkit `client.ts`: added `CodeRevealPanel` + `RevealedCode` exports (previously only `DigitalCodeDetailView` was exported).
+- `/user/orders/view/[id]/page.tsx`: detects `listingType === "digital-code"` items on confirmed/processing/delivered orders; renders `<CodeRevealPanel orderId=... fetchCode=... />` via `GET /api/orders/{id}/code`.
+- `/user/digital-codes/page.tsx`: bespoke `CodeRevealRow` (read stale `item.digitalCode` from order items) replaced with `<CodeRevealPanel>` using the API endpoint. `Button` + `useState` imports removed.
+- SB-UNI-N still ⏳ — remaining: atomic code claim at payment success (checkout Txn), email on claim, refund revocation + redeemed-code refund block.
+- SB-UNI-O still ⏳ — remaining: cart-level jurisdiction check, transport ack page before checkout, vendor-verification gate at listing creation.
+
+**Commits:** 1 (appkit 2.7.42→2.7.43 + consumer + order-detail + digital-codes wiring)
+
+---
+
 ### S-user-pages + S-auction-modal — Buyer-dashboard overhaul + auction bid modal + footer build stamp (2026-05-17)
 
 **8-cohort user-dashboard overhaul (appkit 2.7.40→2.7.42). `npm run check` exits 0. `audit-user-pages-overhaul` 37 checks ✓.**

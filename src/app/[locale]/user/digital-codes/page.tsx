@@ -1,25 +1,33 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   useSession,
   useUrlTable,
+  CodeRevealPanel,
+  type RevealedCode,
   ROUTES,
   Div,
   Heading,
   Text,
   Stack,
   Row,
-  Button,
 } from "@mohasinac/appkit/client";
 import { ListingToolbar } from "@mohasinac/appkit/ui";
+import { Link } from "@/i18n/navigation";
+import { API_ROUTES } from "@/constants";
 
 const SORT_OPTIONS = [
   { value: "-createdAt", label: "Newest" },
   { value: "createdAt",  label: "Oldest" },
 ];
-import { Link } from "@/i18n/navigation";
-import { API_ROUTES } from "@/constants";
+
+async function fetchOrderCode(orderId: string): Promise<RevealedCode> {
+  const res = await fetch(`/api/orders/${orderId}/code`);
+  const body = await res.json();
+  if (!res.ok) throw new Error(body?.error ?? "Could not retrieve code");
+  return body.data as RevealedCode;
+}
 
 interface OrderItem {
   productId: string;
@@ -27,7 +35,6 @@ interface OrderItem {
   quantity: number;
   price: number;
   listingType?: string;
-  digitalCode?: string;
 }
 
 interface OrderDoc {
@@ -46,18 +53,6 @@ function paise(amount: number) {
 }
 
 function CodeRevealRow({ item, orderId }: { item: OrderItem; orderId: string }) {
-  const [revealed, setRevealed] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const code = item.digitalCode;
-
-  const handleCopy = () => {
-    if (!code) return;
-    navigator.clipboard.writeText(code).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
   return (
     <Div className="rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-4 space-y-3">
       <Row justify="between" align="start">
@@ -77,33 +72,7 @@ function CodeRevealRow({ item, orderId }: { item: OrderItem; orderId: string }) 
           View order
         </Link>
       </Row>
-      {code ? (
-        <Div className="rounded-md bg-[var(--appkit-color-surface-input)] border border-[var(--appkit-color-border)] p-3">
-          <Row justify="between" align="center" gap="3">
-            <Text className="font-mono text-sm text-[var(--appkit-color-text)] break-all">
-              {revealed ? code : "•••• •••• •••• ••••"}
-            </Text>
-            <Row gap="xs" className="shrink-0">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setRevealed((v) => !v)}
-              >
-                {revealed ? "Hide" : "Reveal"}
-              </Button>
-              {revealed && (
-                <Button variant="ghost" size="sm" onClick={handleCopy}>
-                  {copied ? "Copied!" : "Copy"}
-                </Button>
-              )}
-            </Row>
-          </Row>
-        </Div>
-      ) : (
-        <Text variant="secondary" className="text-xs">
-          Code will appear here once your order is confirmed.
-        </Text>
-      )}
+      <CodeRevealPanel orderId={orderId} fetchCode={fetchOrderCode} />
     </Div>
   );
 }

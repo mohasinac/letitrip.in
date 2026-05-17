@@ -133,11 +133,14 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### 🔄 CURRENT — S-user-pages + S-auction-modal (closed 2026-05-17): Next: SB-UNI Phase 3–9 or S-polish-pass
+### 🔄 CURRENT — S-sb-uni-n-partial (2026-05-17): SB-UNI-M ✅ verified + CodeRevealPanel wired to order detail + digital-codes pages
 
-S-user-pages overhaul committed at `44a16901d` (8 cohorts, appkit 2.7.40→2.7.42).
-S-auction-modal + build-stamp committed at `c860c85a0`.
-LR1-11 + LR1-16 marked ✅. Pull next ⏳ task from `crud-tracker.md`.
+SB-UNI-M verified fully done (classified chat flow — classified PDP Contact Seller + action + consumer shim). Marked ✅.
+appkit `client.ts` gained `CodeRevealPanel` + `RevealedCode` exports (2.7.43).
+`/user/orders/view/[id]/page.tsx` wired CodeRevealPanel for confirmed digital-code orders.
+`/user/digital-codes/page.tsx` CodeRevealRow replaced with CodeRevealPanel (uses `/api/orders/{id}/code` not stale `item.digitalCode`).
+SB-UNI-N still ⏳ — remaining: atomic claim at payment success, email on claim, refund revocation.
+SB-UNI-O still ⏳ — remaining: cart-level jurisdiction check, transport ack page, vendor gate.
 
 ---
 

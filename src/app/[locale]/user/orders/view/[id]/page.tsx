@@ -4,6 +4,8 @@ import { Link } from "@/i18n/navigation";
 import {
   useOrder,
   OrderDetailView,
+  CodeRevealPanel,
+  type RevealedCode,
   ROUTES,
   ACTIONS,
   Div,
@@ -37,6 +39,15 @@ function paise(n: number, currency = "INR") {
 }
 
 // ─── Order group renderer ───────────────────────────────────────────────────
+
+const CODE_REVEAL_STATUSES = new Set(["confirmed", "processing", "delivered"]);
+
+async function fetchOrderCode(orderId: string): Promise<RevealedCode> {
+  const res = await fetch(`/api/orders/${orderId}/code`);
+  const body = await res.json();
+  if (!res.ok) throw new Error(body?.error ?? "Could not retrieve code");
+  return body.data as RevealedCode;
+}
 
 type OrderItemT = {
   listingType?: string;
@@ -195,15 +206,22 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
 function renderOrderItems(order: NonNullable<OrderData>) {
   if (!order.items?.length) return null;
   const groups = groupOrderItemsByBundle<OrderItemT>(order.items as OrderItemT[]);
+  const hasDigitalCode = order.items.some((i: any) => i.listingType === "digital-code");
+  const canReveal = CODE_REVEAL_STATUSES.has((order.orderStatus ?? "").toLowerCase());
   return (
-    <Div className={CLS_PANEL}>
-      <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
-        Items ({order.items.length})
-      </Text>
-      <Stack gap="md">
-        {groups.map((g, gi) => renderOrderGroup(g as OrderGroup, gi))}
-      </Stack>
-    </Div>
+    <Stack gap="md">
+      <Div className={CLS_PANEL}>
+        <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
+          Items ({order.items.length})
+        </Text>
+        <Stack gap="md">
+          {groups.map((g, gi) => renderOrderGroup(g as OrderGroup, gi))}
+        </Stack>
+      </Div>
+      {hasDigitalCode && canReveal && (
+        <CodeRevealPanel orderId={order.id} fetchCode={fetchOrderCode} />
+      )}
+    </Stack>
   );
 }
 
