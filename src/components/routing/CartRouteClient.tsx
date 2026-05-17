@@ -231,9 +231,24 @@ export function CartRouteClient() {
     ? serverItemsToCartItems(serverCart?.cart?.items ?? [])
     : guestItemsToCartItems(guest.items);
 
+  // ---------------------------------------------------------------------------
+  // Optimistic UI — qty overrides + pending remove with undo
+  // ---------------------------------------------------------------------------
+  const [optimisticQty, setOptimisticQty] = useState<Map<string, number>>(new Map());
+  const [pendingRemoveIds, setPendingRemoveIds] = useState<Set<string>>(new Set());
+  const undoTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+
+  // Apply optimistic qty override when rendering
+  const effectiveItems = useMemo(
+    () => cartItems
+      .filter((i) => !pendingRemoveIds.has(i.id))
+      .map((i) => optimisticQty.has(i.id) ? { ...i, quantity: optimisticQty.get(i.id)! } : i),
+    [cartItems, optimisticQty, pendingRemoveIds],
+  );
+
   const subtotal = isAuthenticated
     ? (serverCart?.subtotal ?? 0)
-    : cartItems.reduce((sum, i) => sum + i.meta.price * i.quantity, 0);
+    : effectiveItems.reduce((sum, i) => sum + i.meta.price * i.quantity, 0);
 
   // ---------------------------------------------------------------------------
   // W1: Stale + unavailability validation — run once on cart load
@@ -324,18 +339,19 @@ export function CartRouteClient() {
 
   // ---------------------------------------------------------------------------
   // W3: Split items into in-stock and unavailable (moveable)
+  // effectiveItems already excludes pending-remove items + applies optimistic qty
   // ---------------------------------------------------------------------------
   const [inStockItems, oosItems] = useMemo(() => {
-    const inStock: typeof cartItems = [];
-    const oos: typeof cartItems = [];
-    for (const item of cartItems) {
+    const inStock: typeof effectiveItems = [];
+    const oos: typeof effectiveItems = [];
+    for (const item of effectiveItems) {
       if (moveableIds.has(item.productId)) oos.push(item);
       else inStock.push(item);
     }
     return [inStock, oos];
-  }, [cartItems, moveableIds]);
+  }, [effectiveItems, moveableIds]);
 
-  const isEmpty = cartItems.length === 0;
+  const isEmpty = effectiveItems.length === 0;
   const hasOnlyOos = inStockItems.length === 0 && oosItems.length > 0;
   const isLoading = loading || (isAuthenticated && serverLoading);
 
@@ -588,8 +604,9 @@ export function CartRouteClient() {
         else guest.updateQuantity(id, qty);
         return;
       }
-      // Auth cart — PATCH item via API
       if (qty <= 0) return; // guard; remove handled by handleRemove
+      // Optimistic: apply immediately, revert on failure
+      setOptimisticQty((prev) => { const m = new Map(prev); m.set(id, qty); return m; });
       try {
         const res = await fetch(`/api/cart/${encodeURIComponent(id)}`, {
           method: "PATCH",
@@ -598,11 +615,14 @@ export function CartRouteClient() {
           credentials: FETCH_CREDENTIALS,
         });
         if (!res.ok) {
+          setOptimisticQty((prev) => { const m = new Map(prev); m.delete(id); return m; });
           showToast("Could not update quantity. Please try again.", "error");
         } else {
           refetch?.();
+          setOptimisticQty((prev) => { const m = new Map(prev); m.delete(id); return m; });
         }
       } catch {
+        setOptimisticQty((prev) => { const m = new Map(prev); m.delete(id); return m; });
         showToast("Could not update quantity. Please try again.", "error");
       }
     },
@@ -610,27 +630,47 @@ export function CartRouteClient() {
   );
 
   const handleRemove = useCallback(
-    async (id: string) => {
+    (id: string) => {
       if (!isAuthenticated) {
         guest.remove(id);
         showToast("Item removed from cart.", "info");
         return;
       }
-      // Auth cart — DELETE item via API
-      try {
-        const res = await fetch(`/api/cart/${encodeURIComponent(id)}`, {
-          method: "DELETE",
-          credentials: FETCH_CREDENTIALS,
-        });
-        if (!res.ok) {
+      // Optimistic hide + 5s undo window before actual DELETE
+      setPendingRemoveIds((prev) => new Set([...prev, id]));
+      const timer = setTimeout(async () => {
+        undoTimers.current.delete(id);
+        try {
+          const res = await fetch(`/api/cart/${encodeURIComponent(id)}`, {
+            method: "DELETE",
+            credentials: FETCH_CREDENTIALS,
+          });
+          if (!res.ok) {
+            setPendingRemoveIds((prev) => { const s = new Set(prev); s.delete(id); return s; });
+            showToast("Could not remove item. Please try again.", "error");
+          } else {
+            refetch?.();
+            setPendingRemoveIds((prev) => { const s = new Set(prev); s.delete(id); return s; });
+          }
+        } catch {
+          setPendingRemoveIds((prev) => { const s = new Set(prev); s.delete(id); return s; });
           showToast("Could not remove item. Please try again.", "error");
-        } else {
-          showToast("Item removed from cart.", "info");
-          refetch?.();
         }
-      } catch {
-        showToast("Could not remove item. Please try again.", "error");
-      }
+      }, 5000);
+      undoTimers.current.set(id, timer);
+      showToast(
+        "Item removed from cart.",
+        "info",
+        5500,
+        {
+          label: "Undo",
+          onClick: () => {
+            const t = undoTimers.current.get(id);
+            if (t) { clearTimeout(t); undoTimers.current.delete(id); }
+            setPendingRemoveIds((prev) => { const s = new Set(prev); s.delete(id); return s; });
+          },
+        },
+      );
     },
     [isAuthenticated, guest, showToast, refetch],
   );
