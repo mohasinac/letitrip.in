@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Link } from "@/i18n/navigation";
 import { Button, Div, Heading, RichText, Text, Textarea } from "@mohasinac/appkit/ui";
 import { Label } from "@mohasinac/appkit/client";
 import { EventParticipateView, useSession, useToast, ROUTES } from "@mohasinac/appkit/client";
+import { SpinWheelView } from "@mohasinac/appkit";
+
+type SpinPrize = { id: string; label: string; weight: number; isActive: boolean; couponId?: string };
 import { API_ROUTES } from "@/constants";
 
 export interface ParticipateEventInput {
@@ -19,6 +22,9 @@ export interface ParticipateEventInput {
     allowComment: boolean;
     requireLogin?: boolean;
   };
+  spinPrizes?: SpinPrize[];
+  spinWindowStart?: string | null;
+  spinWindowEnd?: string | null;
 }
 
 interface Props {
@@ -186,6 +192,33 @@ function renderSuccessState() {
   );
 }
 
+// ─── Spin-wheel handler ───────────────────────────────────────────────────────
+
+function SpinWheelParticipate({ event }: { event: ParticipateEventInput }) {
+  const onSpin = useCallback(async (eventId: string) => {
+    const res = await fetch(`/api/events/${eventId}/spin`, {
+      method: "POST",
+      credentials: "include",
+    });
+    const data = await res.json().catch(() => ({})) as {
+      data?: { spinPrizeId?: string; spinPrizeTitle?: string; spinPrizeCouponCode?: string };
+      error?: string;
+    };
+    if (!res.ok) throw new Error(data.error ?? "Spin failed");
+    return data.data ?? {};
+  }, []);
+
+  return (
+    <SpinWheelView
+      eventId={event.id}
+      prizes={event.spinPrizes ?? []}
+      windowStart={event.spinWindowStart ?? null}
+      windowEnd={event.spinWindowEnd ?? null}
+      onSpin={onSpin}
+    />
+  );
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function EventParticipateClient({ event, hasLeaderboard, embedded = false }: Props) {
@@ -198,6 +231,16 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
   const [pollComment, setPollComment] = useState("");
 
   if (hasLeaderboard && !user) return renderLoginRequired();
+
+  // Spin-wheel events get their own dedicated UI (not the generic form)
+  if (event.type === "spin_wheel") {
+    return (
+      <>
+        {!embedded && renderEventInfoBlock(event)}
+        <SpinWheelParticipate event={event} />
+      </>
+    );
+  }
 
   const handleSubmit = async () => {
     setIsLoading(true);

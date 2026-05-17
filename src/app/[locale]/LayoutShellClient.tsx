@@ -24,7 +24,6 @@ import {
 } from "@mohasinac/appkit/client";
 import { AdRuntimeInitializer } from "@/components";
 import { FooterNewsletterSlot } from "@/components";
-import { API_ROUTES } from "@/constants";
 import { MAIN_NAV_ITEMS, SIDEBAR_SUPPORT_LINKS, FOOTER_LINK_GROUPS } from "@/constants";
 import { BRAND, getBrandCopyright } from "@/constants";
 import { FOOTER_TRUST_BAR_ITEMS, FOOTER_SOCIAL_LINKS, FOOTER_BOTTOM_LINKS } from "@/constants";
@@ -144,7 +143,7 @@ export default function LayoutShellClient({
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
-  const { user } = useSession();
+  const { user, signOut } = useSession();
   const { showToast } = useToast();
   const [queryClient] = useState(() => new QueryClient());
   const [searchQuery, setSearchQuery] = useState("");
@@ -154,17 +153,20 @@ export default function LayoutShellClient({
 
   const handleLogout = useCallback(async () => {
     try {
-      await fetch(API_ROUTES.AUTH.LOGOUT, {
-        method: "POST",
-        credentials: "include",
-      });
+      // signOut() clears UI state immediately, revokes server session, and signs
+      // out of Firebase — covers the full logout flow.
+      await signOut();
+      // Clear per-user react-query caches so counts reset to 0 at once.
+      void queryClient.invalidateQueries({ queryKey: ["wishlist"] });
+      void queryClient.invalidateQueries({ queryKey: ["cart"] });
+      void queryClient.invalidateQueries({ queryKey: ["notifications"] });
       showToast("Signed out successfully", "info");
       router.push(String(ROUTES.AUTH.LOGIN));
     } catch {
       showToast("Signed out", "info");
       router.push(String(ROUTES.AUTH.LOGIN));
     }
-  }, [router, showToast]);
+  }, [signOut, queryClient, router, showToast]);
 
   const navItems = useMemo<MainNavbarItem[]>(
     () => MAIN_NAV_ITEMS.map((item) => ({ ...item, label: tNav(item.key as Parameters<typeof tNav>[0]) })),

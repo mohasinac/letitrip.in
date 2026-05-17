@@ -92,7 +92,7 @@ export default async function Page({
       />
 
       {/* Tab navigation */}
-      <Div className="sticky top-[var(--header-height,0px)] z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-zinc-200 dark:border-slate-700">
+      <Div className="bg-white dark:bg-slate-900 border-b border-zinc-200 dark:border-slate-700">
         <Div className="mx-auto flex max-w-5xl items-center gap-1 px-4 py-2 sm:px-6 lg:px-8 overflow-x-auto scrollbar-hide">
           {VALID_TABS.map((tabValue) => {
             const isActive = tabValue === activeTab;

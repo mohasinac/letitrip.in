@@ -78,6 +78,7 @@ const SAFE_PRODUCT_FILTER_FIELDS = new Set([
   PRODUCT_FIELDS.STATUS,
   PRODUCT_FIELDS.CATEGORY,
   PRODUCT_FIELDS.CATEGORY_SLUG,
+  PRODUCT_FIELDS.CATEGORY_SLUGS,
   PRODUCT_FIELDS.BRAND,
   PRODUCT_FIELDS.CONDITION,
   PRODUCT_FIELDS.STORE_ID,
@@ -95,6 +96,7 @@ const SAFE_PRODUCT_FILTER_FIELDS = new Set([
   PRODUCT_FIELDS.PRE_ORDER_PRODUCTION_STATUS,
   PRODUCT_FIELDS.PRIZE_REVEAL_STATUS,
   PRODUCT_FIELDS.SHIPPING_PAID_BY,
+  "isPartOfBundle",
 ]);
 
 function validateSieveFilters(
@@ -124,26 +126,34 @@ function validateSieveFilters(
 function buildFilters(url: URL, rawFilters: string | null): string {
   const parts: string[] = [];
 
-  const status = expandSieveParam(PRODUCT_FIELDS.STATUS, param(url, TABLE_KEYS.STATUS));
-  if (status) parts.push(status);
+  // Multi-select EQ fields use pipe-joined values (`field==v1|v2`) so that
+  // sievejs parses them as a single OR-group, which the enhanced Firebase
+  // adapter translates to a Firestore `in` query. Using comma-separated AND
+  // clauses (old `expandSieveParam` behaviour) would return zero results when
+  // multiple values are selected because a document can't satisfy both at once.
+  const statusParam = param(url, TABLE_KEYS.STATUS);
+  if (statusParam) parts.push(sieveFilter(PRODUCT_FIELDS.STATUS, SIEVE_OP.EQ, statusParam));
 
-  const category = expandSieveParam(PRODUCT_FIELDS.CATEGORY, param(url, TABLE_KEYS.CATEGORY));
-  if (category) parts.push(category);
+  // categorySlugs is an array field — use @= (array-contains). Accepts either
+  // ?category= or ?categorySlug= from callers; both map to the same array field.
+  const categoryParam = param(url, TABLE_KEYS.CATEGORY) || param(url, TABLE_KEYS.CATEGORY_SLUG);
+  if (categoryParam) parts.push(expandSieveParam(PRODUCT_FIELDS.CATEGORY_SLUGS, categoryParam, SIEVE_OP.CONTAINS));
 
-  const categorySlug = expandSieveParam(PRODUCT_FIELDS.CATEGORY_SLUG, param(url, TABLE_KEYS.CATEGORY_SLUG));
-  if (categorySlug) parts.push(categorySlug);
+  const brandParam = param(url, TABLE_KEYS.BRAND);
+  if (brandParam) parts.push(sieveFilter(PRODUCT_FIELDS.BRAND, SIEVE_OP.EQ, brandParam));
 
-  const brand = expandSieveParam(PRODUCT_FIELDS.BRAND, param(url, TABLE_KEYS.BRAND));
-  if (brand) parts.push(brand);
+  const conditionParam = param(url, TABLE_KEYS.CONDITION);
+  if (conditionParam) parts.push(sieveFilter(PRODUCT_FIELDS.CONDITION, SIEVE_OP.EQ, conditionParam));
 
-  const condition = expandSieveParam(PRODUCT_FIELDS.CONDITION, param(url, TABLE_KEYS.CONDITION));
-  if (condition) parts.push(condition);
+  const storeIdParam = param(url, TABLE_KEYS.STORE_ID);
+  if (storeIdParam) parts.push(sieveFilter(PRODUCT_FIELDS.STORE_ID, SIEVE_OP.EQ, storeIdParam));
 
-  const storeId = expandSieveParam(PRODUCT_FIELDS.STORE_ID, param(url, TABLE_KEYS.STORE_ID));
-  if (storeId) parts.push(storeId);
-
-  const query = param(url, TABLE_KEYS.QUERY);
-  if (query) parts.push(sieveFilter(PRODUCT_FIELDS.TITLE, SIEVE_OP.CONTAINS_CI, query));
+  // NOTE: 'q' (title search) is intentionally NOT included here.
+  // Firestore can't combine a prefix-range on `title` with other inequality/orderBy
+  // fields without a per-combination composite index. Instead, we apply title search:
+  //   - as a Sieve clause in the upstream Firebase Function (which handles it server-side)
+  //   - as in-memory post-filtering in the local fallback repo path
+  // See the _GET handler below for how q is threaded through.
 
   const minPrice = param(url, TABLE_KEYS.MIN_PRICE);
   if (minPrice !== null && !Number.isNaN(Number(minPrice))) {
@@ -154,8 +164,13 @@ function buildFilters(url: URL, rawFilters: string | null): string {
     parts.push(sieveFilter(PRODUCT_FIELDS.PRICE, SIEVE_OP.LTE, maxPrice));
   }
 
-  const inStock = param(url, TABLE_KEYS.IN_STOCK);
-  if (inStock === "true") parts.push(sieveFilter(PRODUCT_FIELDS.STOCK_QUANTITY, SIEVE_OP.GT, 0));
+  // NOTE: 'inStock' (stockQuantity>0) is intentionally NOT included here.
+  // Firestore can't combine a stockQuantity inequality with arbitrary orderBy fields
+  // (title, viewCount, price, etc.) without per-combination composite indexes.
+  // Instead, we apply the in-stock filter:
+  //   - as a Sieve clause in the upstream Firebase Function (which handles it server-side)
+  //   - as in-memory post-filtering in the local fallback repo path
+  // See the _GET handler below for how inStock is threaded through.
 
   // SB1-G — canonical listingType discriminator
   const listingTypeParam = param(url, TABLE_KEYS.LISTING_TYPE);
@@ -178,15 +193,15 @@ function buildFilters(url: URL, rawFilters: string | null): string {
     parts.push(sieveFilter(PRODUCT_FIELDS.CURRENT_BID, SIEVE_OP.LTE, maxBid));
   }
 
-  const dateFrom = param(url, TABLE_KEYS.DATE_FROM);
-  const dateTo = param(url, TABLE_KEYS.DATE_TO);
-  if (listingTypeParam === "auction") {
-    if (dateFrom) parts.push(sieveFilter(PRODUCT_FIELDS.AUCTION_END_DATE, SIEVE_OP.GTE, dateFrom));
-    if (dateTo) parts.push(sieveFilter(PRODUCT_FIELDS.AUCTION_END_DATE, SIEVE_OP.LTE, dateTo));
-  } else if (listingTypeParam === "pre-order") {
-    if (dateFrom) parts.push(sieveFilter(PRODUCT_FIELDS.PRE_ORDER_DELIVERY_DATE, SIEVE_OP.GTE, dateFrom));
-    if (dateTo) parts.push(sieveFilter(PRODUCT_FIELDS.PRE_ORDER_DELIVERY_DATE, SIEVE_OP.LTE, dateTo));
-  }
+  // NOTE: dateFrom/dateTo are intentionally NOT included here.
+  // Combining an inequality on auctionEndDate or preOrderDeliveryDate with
+  // arbitrary orderBy fields (currentBid, createdAt, price, etc.) requires
+  // per-combination composite indexes AND Firestore's restriction that the
+  // inequality field must be the first orderBy. Instead we apply date-range
+  // filters the same way as inStock:
+  //   - as Sieve clauses in the upstream Firebase Function (handled server-side)
+  //   - as in-memory post-filtering in the local fallback repo path
+  // See the _GET handler below for how dateFrom/dateTo are threaded through.
 
   const preOrderProductionStatus = param(url, TABLE_KEYS.PREORDER_STATUS) ?? param(url, "preOrderStatus");
   if (preOrderProductionStatus) {
@@ -202,6 +217,17 @@ function buildFilters(url: URL, rawFilters: string | null): string {
   if (freeShipping === "true") {
     parts.push(sieveFilter(PRODUCT_FIELDS.SHIPPING_PAID_BY, SIEVE_OP.EQ, PRODUCT_FIELDS.SHIPPING_PAID_BY_VALUES.SELLER));
   }
+
+  const isPartOfBundle = param(url, TABLE_KEYS.IS_PART_OF_BUNDLE);
+  if (isPartOfBundle === "true") {
+    parts.push(sieveFilter("isPartOfBundle", SIEVE_OP.EQ, true));
+  }
+
+  // NOTE: 'features' filter is intentionally NOT included here.
+  // Firestore `array-contains-any` (needed for multi-select OR across the
+  // features array field) is not supported by the sievejs Firebase adapter.
+  // Applied in-memory in the fallback path and passed as Sieve @= to the
+  // Firebase Function. See the _GET handler below.
 
   if (rawFilters) {
     const safe = validateSieveFilters(rawFilters, SAFE_PRODUCT_FILTER_FIELDS);
@@ -253,11 +279,47 @@ async function _GET(request: Request): Promise<NextResponse> {
   const page = std.page ?? DEFAULT_PAGE;
   const pageSize = std.pageSize ?? DEFAULT_PAGE_SIZE;
   const sorts = std.sorts ?? DEFAULT_SORTS;
-  // `q` is folded into title sieve clause via buildFilters → keep that contract.
-  // We pass it through the existing per-field `q` param so the buildFilters
-  // helper keeps reading both short and long names identically.
-  const filters = buildFilters(url, std.filters);
   const cursor = std.cursor;
+  // 'q' and 'inStock' are extracted here and handled separately from other Sieve filters.
+  // Firestore can't combine a title prefix-range or stockQuantity inequality with arbitrary
+  // orderBy fields without per-combination composite indexes. So we pass both to the upstream
+  // Firebase Function (which handles Sieve server-side) but apply them as in-memory filters
+  // for the local repo fallback.
+  const q = param(url, TABLE_KEYS.QUERY);
+  const inStock = param(url, TABLE_KEYS.IN_STOCK) === "true";
+  const featuresParam = param(url, TABLE_KEYS.FEATURES);
+  const featureIds = featuresParam ? featuresParam.split("|").filter(Boolean) : [];
+  const listingTypeForDate = param(url, TABLE_KEYS.LISTING_TYPE);
+  const dateFrom = param(url, TABLE_KEYS.DATE_FROM);
+  const dateTo = param(url, TABLE_KEYS.DATE_TO);
+  const filtersBase = buildFilters(url, std.filters);
+
+  // Build date-range Sieve clauses for the Firebase Function (which handles them
+  // server-side). Not applied in filtersBase — see comment in buildFilters.
+  const dateFromClause =
+    dateFrom && listingTypeForDate === "auction"
+      ? sieveFilter(PRODUCT_FIELDS.AUCTION_END_DATE, SIEVE_OP.GTE, dateFrom)
+      : dateFrom && listingTypeForDate === "pre-order"
+        ? sieveFilter(PRODUCT_FIELDS.PRE_ORDER_DELIVERY_DATE, SIEVE_OP.GTE, dateFrom)
+        : null;
+  const dateToClause =
+    dateTo && listingTypeForDate === "auction"
+      ? sieveFilter(PRODUCT_FIELDS.AUCTION_END_DATE, SIEVE_OP.LTE, dateTo)
+      : dateTo && listingTypeForDate === "pre-order"
+        ? sieveFilter(PRODUCT_FIELDS.PRE_ORDER_DELIVERY_DATE, SIEVE_OP.LTE, dateTo)
+        : null;
+
+  // For the Firebase Function: include all inequality + array filters so it can filter server-side.
+  // For features, pass each selected feature as a separate @= clause (array-contains AND semantics
+  // on the function side); the function handles the OR case differently.
+  const filters = sieveAnd(
+    filtersBase,
+    ...(q ? [sieveFilter(PRODUCT_FIELDS.TITLE, SIEVE_OP.CONTAINS_CI, q)] : []),
+    ...(inStock ? [sieveFilter(PRODUCT_FIELDS.STOCK_QUANTITY, SIEVE_OP.GT, 0)] : []),
+    ...(dateFromClause ? [dateFromClause] : []),
+    ...(dateToClause ? [dateToClause] : []),
+    ...(featureIds.length === 1 ? [sieveFilter(PRODUCT_FIELDS.FEATURES, SIEVE_OP.CONTAINS, featureIds[0])] : []),
+  );
 
   try {
     // Q3: prefer the colocated listingProcessor Firebase Function when the
@@ -301,9 +363,65 @@ async function _GET(request: Request): Promise<NextResponse> {
       totalPages = upstream.totalPages;
       hasMore = upstream.hasMore;
       nextCursor = upstream.cursor;
+    } else if (q || inStock || dateFromClause || dateToClause || featureIds.length > 0) {
+      // Fallback repo + in-memory filtering: Firestore can't combine inequality
+      // filters (stockQuantity>0, auctionEndDate>=now, etc.) with arbitrary
+      // orderBy fields without per-combination composite indexes (and even then
+      // the inequality field must be the first orderBy). Fetch up to
+      // SEARCH_FETCH_LIMIT docs using only the base filters, then apply all
+      // inequality and text filters in memory.
+      const SEARCH_FETCH_LIMIT = 500;
+      const allResult = await productRepository.list({
+        filters: filtersBase,
+        sorts,
+        page: 1,
+        pageSize: SEARCH_FETCH_LIMIT,
+      });
+      const qLower = q ? q.toLowerCase() : null;
+      const dateFromMs = dateFrom ? new Date(dateFrom).getTime() : null;
+      const dateToMs = dateTo ? new Date(dateTo).getTime() : null;
+      const dateField =
+        listingTypeForDate === "auction"
+          ? "auctionEndDate"
+          : listingTypeForDate === "pre-order"
+            ? "preOrderDeliveryDate"
+            : null;
+      const filtered = (allResult.items as unknown as Record<string, unknown>[]).filter(
+        (item) => {
+          if (qLower !== null) {
+            const title = String(item.title ?? item.name ?? "").toLowerCase();
+            const tags = Array.isArray(item.tags)
+              ? (item.tags as string[]).join(" ").toLowerCase()
+              : "";
+            if (!title.includes(qLower) && !tags.includes(qLower)) return false;
+          }
+          if (inStock) {
+            const stock = Number(item.stockQuantity ?? item.availableQuantity ?? 0);
+            if (stock <= 0) return false;
+          }
+          if ((dateFromMs !== null || dateToMs !== null) && dateField) {
+            const raw = item[dateField];
+            const ts = raw instanceof Date ? raw.getTime() : typeof raw === "string" ? new Date(raw).getTime() : Number(raw);
+            const tsValid = !isNaN(ts);
+            if (tsValid && dateFromMs !== null && ts < dateFromMs) return false;
+            if (tsValid && dateToMs !== null && ts > dateToMs) return false;
+          }
+          if (featureIds.length > 0) {
+            const docFeatures = Array.isArray(item.features) ? (item.features as string[]) : [];
+            if (!featureIds.some((fid) => docFeatures.includes(fid))) return false;
+          }
+          return true;
+        },
+      );
+      total = filtered.length;
+      const start = (page - 1) * pageSize;
+      items = filtered.slice(start, start + pageSize);
+      resultPage = page;
+      totalPages = total === 0 ? 0 : Math.max(1, Math.ceil(total / pageSize));
+      hasMore = start + pageSize < total;
     } else {
       const result = await productRepository.list({
-        filters,
+        filters: filtersBase,
         sorts,
         page,
         pageSize,

@@ -731,6 +731,37 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
     maximumFractionDigits: 2,
   });
 
+  // Mobile sticky bottom CTA — mirrors the primary action for the current step
+  const mobileStickyBtn = (() => {
+    const cls = "w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900";
+    if (step === "address") {
+      return (
+        <Button type="button" onClick={handleAdvanceToVerification} disabled={!selectedAddress || addressesLoading} className={cls}>
+          {CK.ADDRESS_CONTINUE_BTN}
+        </Button>
+      );
+    }
+    if (step === "otp-consent") {
+      return (
+        <Button type="button" onClick={handleSendOtp} disabled={isSendingOtp || isProcessingPayment} className={cls}>
+          {isSendingOtp ? CK.OTP_SENDING_BTN : CK.OTP_SEND_BTN}
+        </Button>
+      );
+    }
+    if (step === "otp") {
+      return (
+        <Button type="button" onClick={handleVerifyOtp} disabled={isVerifyingOtp || otpCode.length < 6} className={cls}>
+          {isVerifyingOtp ? CK.OTP_VERIFYING_BTN : CK.OTP_VERIFY_BTN}
+        </Button>
+      );
+    }
+    return (
+      <Button type="button" onClick={handlePayOnline} disabled={isProcessingPayment || cartIsEmpty} className={cls}>
+        {CK.PAYMENT_ONLINE_BTN}
+      </Button>
+    );
+  })();
+
   return (
     <Div className="mx-auto w-full max-w-7xl">
       {renderAddressDrawer({ addAddressDrawerOpen, setAddAddressDrawerOpen, handleAddressFormSubmit, isCreatingAddress })}
@@ -753,6 +784,12 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
         }}
         renderOrderSummary={() => renderOrderSummary({ selectedAddress, formattedTotal, step, addressesLoading, actionError, handleAdvanceToVerification })}
       />
+
+      {/* Mobile sticky bottom bar — hidden on lg+ */}
+      <Div className="lg:hidden fixed bottom-0 left-0 right-0 z-20 border-t border-zinc-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm px-4 pb-4 pt-3 pb-[env(safe-area-inset-bottom,0px)]">
+        {mobileStickyBtn}
+      </Div>
+      <Div className="lg:hidden h-20" />
     </Div>
   );
 }

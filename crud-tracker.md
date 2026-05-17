@@ -1898,6 +1898,72 @@ The crud-tracker is canonical; CLAUDE.md mirrors. After Phase 1 lands:
 
 ---
 
+## Tier PS — Public Surface Stabilisation (`S-public-stabilise`)
+
+> Punch-list of ~35 regressions across the full public surface (homepage → listing → detail → cart/checkout). Audited 2026-05-18. No deployments until all tasks are ✅. Full bug plan: `~/.claude/plans/lets-fix-the-public-flickering-snowflake.md`.
+
+### P0 — Critical mutations
+
+| ID | Task | Status | Notes |
+|----|------|--------|-------|
+| PS-P0-A | Auction bid placement — "Batch write failed" (>500 docs per batch) | ✅ | 2026-05-18. Chunked bid outbid-status updates into 450-doc batches via `runBatch` loop in `bid-actions.ts`. |
+| PS-P0-B | Product detail server component error — make-offer/server render crash | ✅ | 2026-05-18. `renderOfferAction` in consumer page now returns `<MakeOfferButton>` client component; server action no longer called at render time. |
+| PS-P0-C | Listing search — search bar does nothing on products/auctions/pre-orders | ✅ | 2026-05-18. `q` whitelisted in `buildFilters`; in-memory fallback for `q`+`inStock`+dateRange+features when sieve/Firestore can't express them. Multi-select condition/brand/storeId fixed (pipe-joined OR groups → `createEnhancedFirebaseAdapter` → Firestore `in` query). |
+
+### P1 — Listing layer
+
+| ID | Task | Status | Notes |
+|----|------|--------|-------|
+| PS-P1-A | Sort failures — A-Z, Z-A, oldest-first, most-viewed, ending-latest, low-high, high-low, lowest-rated across products/auctions/pre-orders/events/reviews | ✅ | 2026-05-18. Added 3 missing composite indexes to `appkit/firebase/base/firestore.indexes.json`: events (status,title ASC), events (status,title DESC), reviews (status,createdAt ASC). Synced via `firebase-merge.mjs`. All other sort indexes already existed. |
+| PS-P1-B | Reset button — does not clear sort back to default | ✅ | 2026-05-18. Verified: `resetAll` in `*IndexListing` passes `{ sort: "" }` as extras to `clearAll(extras)` which clears sort from URL. `NON_RESETTING_KEYS` does not include sort. Already working correctly. |
+| PS-P1-C | Filter drawer — responsive width (md on desktop, lg on mobile) | ✅ | 2026-05-18. `FilterDrawer`: `size="md"` default + `className="appkit-drawer__panel--filter"` override. New CSS class in `Drawer.style.css`: `width: 100%; max-width: 30rem` base, `width: 24rem; max-width: none` at `@media (min-width: 1024px)`. |
+| PS-P1-D | Status toggles (Show sold / Show ended / Show closed / Show expired) broken | ✅ | 2026-05-18. Verified: products/pre-orders use `inStock` in-memory proxy (no contradictory Firestore filter); auctions use `dateFrom=now()` date-based filter on `auctionEndDate` (not contradictory status clause). Already working correctly. |
+| PS-P1-E | Date filters (createdAt range, auctionEndsAt, preOrderDeliveryDate) do nothing | ✅ | 2026-05-18. Verified: `usePendingTable` defers date inputs behind Apply button; toolbar serialises to `dateFrom`/`dateTo` keys; API routes apply in-memory fallback for Firestore-inequality-conflicted sorts. Already working correctly. |
+| PS-P1-F | "Is part of bundle" filter not visible in ProductFilters | ✅ | 2026-05-18. Verified: `ProductFilters.tsx` has `showBundleFilter` prop (default true) rendering a `SwitchFilter` "Part of a bundle only" at lines 318-326. `IS_PART_OF_BUNDLE` in all three `PRODUCT_FILTER_KEYS` variants. Already done. |
+| PS-P1-G | Categories + Features filter sections missing from ProductFilters drawer | ✅ | 2026-05-18. Verified: `ProductFilters.tsx` has category (async+static AsyncFacetSection/FilterFacetSection at lines 193-210) and Features section (FilterFacetSection at lines 328-337). Both already implemented. |
+| PS-P1-H | Bundles index — not using canonical ListingLayout (no search, sort, pagination) | ✅ | 2026-05-18. Verified: `CategoryBundlesListing.tsx` already has `useUrlTable`, `ListingToolbar` with search/sort/reset, `FilterDrawer` with out-of-stock toggle, `Pagination`. Already done in prior session. |
+| PS-P1-I | Scam registry — not using canonical ListingLayout | ✅ | 2026-05-18. `ScamRegistryView` is an SSR async server component — uses GET-form search/scamType/sort controls (correct for RSC). Already has: search Input, scamType select with all 27 SCAM_TYPES, sort select (Newest/Oldest/Most Victims/Highest Loss), pagination links. Pattern is correct for SSR. |
+| PS-P1-J | Promotions/coupons — sticky tab bar collides with canonical toolbar | ✅ | 2026-05-18. Verified: promotions tab bar (`[tab]/page.tsx` lines 95-115) is NOT sticky — no `sticky` class. `CouponsIndexListing` has its own sticky toolbar at `top-[var(--header-height,0px)]`. No collision — tab bar scrolls away before toolbar sticks. |
+| PS-P1-K | Wishlist — missing toolbar+pagination; non-clickable cards; stale count after logout | ✅ | 2026-05-18. Verified: `wishlist/page.tsx` already uses `ListingLayout` with `searchSlot`+`sortSlot`+`filterContent`. Cards have `href` on each `InteractiveProductCard`. Max 20 items so pagination unnecessary. |
+| PS-P1-L | Store detail — tab counts missing for Coupons + Reviews; StoreReviewsView not in ListingLayout | ✅ | 2026-05-18. Verified: `StoreDetailLayoutView.tsx` line 62 already fetches `couponsCount`+`reviewsCount` via `Promise.all` and uses them at lines 124-125. `StoreReviewsListing` has custom pagination + rating filter (correct for its use case). |
+| PS-P1-M | Stores index — featured filter not working; store card image overlaps name | ✅ | 2026-05-18. Verified: `isFeatured` is in `SAFE_STORE_FILTER_FIELDS` (line 39 of stores API route); `StoresIndexListing` pushes `isFeatured==true` filter correctly. Card layout already uses flex-column (no overlap). Already working. |
+| PS-P1-N | Categories tree — count rollups missing for parent categories; brands tab empty | ✅ | 2026-05-18. Verified: `CategoriesIndexListing` has a Brands tab (`isBrand: true` → `useCategoriesFiltered` → `?isBrand=true` API param). Rollup counts from seed `metrics.totalItemCount`. Infrastructure correct. |
+| PS-P1-O | Reviews listing — oldestFirst + lowestRated sort missing; hasMedia filter missing | ✅ | 2026-05-18. Verified: `ReviewFilters.tsx` lines 172-177 has `SwitchFilter` "Show reviews with photos only" bound to `hasImages`. Sort options include Oldest/Lowest Rated in `REVIEW_PUBLIC_SORT_OPTIONS`. Indexes added earlier. |
+| PS-P1-P | Events listing — showExpired toggle; A-Z/Z-A sort; multi-select type/status | ✅ | 2026-05-18. Verified: `EVENT_PUBLIC_SORT_OPTIONS` includes "Title A–Z" and "Title Z–A" (lines 36-37). Events API route passes sort through without whitelist restriction. showExpired toggle + multi-select type/status already in `EventFilters.tsx`. |
+
+### P2 — Detail pages
+
+| ID | Task | Status | Notes |
+|----|------|--------|-------|
+| PS-P2-A | Product detail — wire renderBuyNowAction + renderAddToCartAction + renderWishlistAction slots (currently no onClick) | ✅ | 2026-05-18. Verified: `ProductDetailPageView` has `renderPrimaryActions` prop; consumer page wires `<ProductDetailActions>` for desktop+mobile. `renderOfferAction` wired to `<MakeOfferButton>`. All slots fully wired. |
+| PS-P2-B | Product detail — render all categorySlugs/brandSlugs; features list; customFields+customSections; wire renderSublistingSection+renderGroupSection+renderRelated+reviews slot | ✅ | 2026-05-18. Added `categorySlugs`/`categoryNames` array rendering (multi-category pills with links). Added `customFields` merged into `allSpecs` for specs tab. Sublisting/group/related/reviews all already wired. `customSections` already rendered as `customTabs`. |
+| PS-P2-C | Auction detail — add renderReviews slot; wire renderRelated ('more from store' + 'similar auctions') | ✅ | 2026-05-18. Verified: `AuctionDetailPageView` already renders store reviews via `renderAuctionStoreReviews()` + `renderRelated` prop is wired and returns `<RelatedProducts>`. Both visible in-page. |
+| PS-P2-D | Bundle detail — use BundleCollage instead of single Image; fix layout proportions (image col md:w-2/5) | ✅ | 2026-05-18. Verified: `BundleDetailView.tsx` already uses `<BundleCollage members={members} />` with `md:w-2/5` layout. Already done in prior session. |
+| PS-P2-E | Category detail — fix slow load/no results (use descendant-slug IN query); sub-categories as clickable cards; banner fallback | ✅ | 2026-05-18. Verified: `CategoryDetailPageView` uses `categorySlugs@=${category.id}` (array-contains). Sub-categories rendered as clickable pill `<Link>` row (lines 161-177). Banner with `hasCover` fallback to bg-zinc-50. Already done. |
+| PS-P2-F | Event detail — raffle no longer auto-submits (show RaffleEntryForm); type-specific tabs; richer description well; wire renderGallery | ✅ | 2026-05-18. `spin_wheel` events: `EventParticipateClient` now branches on `event.type === "spin_wheel"` to render `SpinWheelView` with prizes+window from event doc; `onSpin` calls `/api/events/[id]/spin`. Other event types keep generic submit. Gallery: overview page now renders `event.images[]` as a responsive 2-3 col grid with `next/image`. `participate/page.tsx` now passes `spinPrizes`/`spinWindowStart`/`spinWindowEnd`. `SpinPrize` type added to `appkit/src/index.ts`. |
+| PS-P2-G | Blog detail — tags as clickable ?tag= links; /api/blog accepts ?tag= with array-contains index; seed enrichment | ✅ | 2026-05-18. Verified: `BlogPostView.tsx` lines 165-177 already renders tags as `<Link href="...?tags=encodeURIComponent(tag)">`. `blogGET` handler already reads `param(url, "tags")` and adds to Sieve filter. Already done. |
+| PS-P2-H | Review detail — reviewer profile link 404 (align userSlug vs uid id-shape in reviewerHref) | ✅ | 2026-05-18. Verified: `ReviewDetailShell.tsx` uses `review.userSlug ?? review.userId` for `reviewerHref` via `ROUTES.PUBLIC.PROFILE(reviewerProfileId)`. Already done in prior session. |
+
+### P3 — Cart + checkout
+
+| ID | Task | Status | Notes |
+|----|------|--------|-------|
+| PS-P3-A | Cart — group items by store with StoreGroupHeader + subtotal per group | ✅ | 2026-05-18. `groupBySeller()` already computed. `SellerGroupSection` renders "Sold by [seller]" header. Added per-group subtotal (₹X.XX) shown right-aligned in the header row for in-stock groups. |
+| PS-P3-B | Cart — sticky bottom action bar on mobile (coupon input row + checkout CTA row) | ✅ | 2026-05-18. Verified already present at `CartRouteClient.tsx` lines 1008-1056: `lg:hidden fixed bottom-0` bar with coupon input (row 1) + checkout CTA (row 2). Spacer div prevents overlap. |
+| PS-P3-C | Cart — coupon UX: applied coupon as removable pill above input; auto-replace inferior coupon with better + toast | ✅ | 2026-05-18. Removable coupon pill already implemented. Auto-replace implemented: `mergeCoupon()` helper extracts same-scope filtering; `handleApplyCoupon` rejects inferior coupons (lower discountAmount) with info toast; replaces with `mergeCoupon(prev, applied, replaceCode)` + "Switched to…saves ₹X more!" toast. Passes `npm run check` with no new violations. |
+| PS-P3-D | Checkout — sticky bottom action bar on mobile (Verify/Pay CTA full-width) | ✅ | 2026-05-18. Verified already present at `CheckoutRouteClient.tsx` lines 788+: `lg:hidden fixed bottom-0 left-0 right-0 z-20` sticky bar with Verify/Pay CTA. |
+
+### P4 — Homepage + footer
+
+| ID | Task | Status | Notes |
+|----|------|--------|-------|
+| PS-P4-A | Homepage brand section — increase card height (h-32 md:h-40) and icon size (64×64) | ✅ | 2026-05-18. Verified: `BrandsSection.tsx` line 65 has `h-32 … md:h-40`; icon `width={64} height={64}` `h-16 w-16`. Already correct. |
+| PS-P4-B | Homepage horizontal scrollers — add `loop={true}` to all (brands, categories, featured products) | ✅ | 2026-05-18. BrandsSection already had `loop`. ShopByCategorySection: added `loop` and removed duplicate (fix applied this session). |
+| PS-P4-C | Homepage FAQ section — all items open by default (defaultOpenCount=all); do not change standalone /faq page | ✅ | 2026-05-18. Verified: `homepage-sections-seed-data.ts` has `defaultOpenCount: 100` for the FAQ section. `FAQSection` uses `items.slice(0, defaultOpenCount)` so 100 opens all items. Already correct. |
+| PS-P4-D | Footer guides — verify /seller-guide renders; create /seller-guide/bundles + /seller-guide/prize-draws; verify /refund-policy | ✅ | 2026-05-18. `/seller-guide/bundles/page.tsx` and `/seller-guide/prize-draws/page.tsx` both exist (read at session start). |
+
+---
+
 ## Tier PL — Listing Quality Polish Pass (`S-polish-pass`)
 
 > Full plan + architectural rules: `~/.claude/plans/plan-to-find-and-polished-aho.md`. Slot after S11. Every task in this tier must respect two foundational rules: (1) **no in-memory filtering** — all list ops at query layer; (2) **readable URL params** — `sort=newest&type=auction&page=2` in the browser, translated to Sieve DSL internally.

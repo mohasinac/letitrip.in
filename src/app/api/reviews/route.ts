@@ -64,6 +64,9 @@ function buildPublicFilters(url: URL, baseFilters: string[]): string {
   const q = param(url, "q")?.trim();
   if (q) parts.push(`productTitle@=*${q}`);
 
+  const hasImages = param(url, "hasImages");
+  if (hasImages === "true") parts.push("hasImages==true");
+
   return parts.filter(Boolean).join(",");
 }
 

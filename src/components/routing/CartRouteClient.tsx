@@ -80,6 +80,11 @@ interface AppliedCoupon {
   applicableItemIds?: string[];
 }
 
+function mergeCoupon(base: AppliedCoupon[], incoming: AppliedCoupon, removeCode: string | null): AppliedCoupon[] {
+  const filtered = base.filter((c) => c.code !== removeCode && c.code !== incoming.code);
+  return [...filtered, incoming];
+}
+
 interface SellerGroup {
   sellerId: string;
   sellerName: string;
@@ -390,16 +395,27 @@ export function CartRouteClient() {
         showToast(errMsg, "error");
       } else {
         const applied = data.data!;
-        setLocalCoupons((prev) => [
-          ...(prev ?? effectiveCoupons).filter((c) => c.code !== applied.code),
-          applied,
-        ]);
-        setCouponCode("");
-        showToast(
-          `Coupon "${applied.code}" applied! You saved ₹${applied.discountAmount.toFixed(2)}.`,
-          "success",
-        );
-        refetch?.();
+        const current = effectiveCoupons;
+        const sameScope = applied.scope
+          ? current.find((c) => c.scope === applied.scope && (applied.scope !== "seller" || c.sellerId === applied.sellerId))
+          : null;
+
+        if (sameScope && applied.discountAmount <= sameScope.discountAmount) {
+          // New coupon is inferior — reject and inform user
+          const errMsg = `"${sameScope.code}" already saves more (₹${sameScope.discountAmount.toFixed(2)} vs ₹${applied.discountAmount.toFixed(2)})`;
+          setCouponError(errMsg);
+          showToast(errMsg, "info");
+        } else {
+          // Auto-replace same-scope inferior coupon or add new coupon
+          const replaceCode = sameScope?.code ?? null;
+          setLocalCoupons((prev) => mergeCoupon(prev ?? current, applied, replaceCode));
+          setCouponCode("");
+          const msg = sameScope
+            ? `Switched to "${applied.code}" — saves ₹${(applied.discountAmount - sameScope.discountAmount).toFixed(2)} more!`
+            : `Coupon "${applied.code}" applied! You saved ₹${applied.discountAmount.toFixed(2)}.`;
+          showToast(msg, "success");
+          refetch?.();
+        }
       }
     } catch {
       const errMsg = "Failed to apply coupon. Please try again.";
@@ -1004,6 +1020,56 @@ export function CartRouteClient() {
       )}
     />
     <LoginRequiredModal isOpen={modalOpen} onClose={closeModal} message={modalMessage} />
+
+    {/* ── Mobile sticky bottom bar (hidden on lg+) ────────────────────── */}
+    {!isEmpty && !isLoading && (
+      <Div className="lg:hidden fixed bottom-0 left-0 right-0 z-20 border-t border-zinc-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm px-4 pb-4 pt-3 space-y-2 pb-[env(safe-area-inset-bottom,0px)]">
+        {/* Row 1: coupon input (auth only) */}
+        {isAuthenticated && (
+          <Div className="flex gap-2">
+            <Input
+              type="text"
+              placeholder="Coupon code"
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+              onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+              className="flex-1 text-sm"
+              maxLength={50}
+            />
+            <Button
+              type="button"
+              onClick={handleApplyCoupon}
+              disabled={isCouponLoading || !couponCode.trim()}
+              className="shrink-0 text-sm bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
+            >
+              {isCouponLoading ? "…" : "Apply"}
+            </Button>
+          </Div>
+        )}
+        {/* Row 2: checkout CTA */}
+        {isEmpty || selectedCount === 0 || hasOnlyOos ? (
+          <Button disabled className={CLS_CHECKOUT_BTN}>
+            {ACTIONS.CART["checkout"].label}
+          </Button>
+        ) : !isAuthenticated ? (
+          <Button onClick={() => requireAuth(ACTION_ID.CHECKOUT, () => {})} className={CLS_CHECKOUT_BTN}>
+            {ACTIONS.CART["checkout"].label}
+          </Button>
+        ) : (
+          <Button asChild className={CLS_CHECKOUT_BTN}>
+            <Link href={String(ROUTES.USER.CHECKOUT)}>
+              {!isAllSelected && selectedCount > 0
+                ? `${ACTIONS.CART["checkout"].label} ${selectedCount} item${selectedCount !== 1 ? "s" : ""}`
+                : ACTIONS.CART["checkout"].label}
+            </Link>
+          </Button>
+        )}
+      </Div>
+    )}
+    {/* Spacer so sticky bar doesn't overlap content */}
+    {!isEmpty && !isLoading && (
+      <Div className="lg:hidden h-28" />
+    )}
     </>
   );
 }
@@ -1123,33 +1189,41 @@ function SellerGroupSection({
   return (
     <Div>
       {/* Seller header */}
-      <Div className="mb-2 flex flex-wrap items-center gap-1.5">
-        <Text className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-          Sold by
-        </Text>
-        {group.sellerSlug ? (
-          <Link
-            href={String(ROUTES.PUBLIC.STORE_DETAIL(group.sellerSlug))}
-            className="text-xs font-semibold uppercase tracking-wide text-zinc-800 dark:text-zinc-200 hover:underline underline-offset-2"
-          >
-            {group.sellerName}
-          </Link>
-        ) : (
-          <Text className="text-xs font-semibold uppercase tracking-wide text-zinc-800 dark:text-zinc-200">
-            {group.sellerName}
+      <Div className="mb-2 flex flex-wrap items-center justify-between gap-1.5">
+        <Div className="flex flex-wrap items-center gap-1.5">
+          <Text className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+            Sold by
+          </Text>
+          {group.sellerSlug ? (
+            <Link
+              href={String(ROUTES.PUBLIC.STORE_DETAIL(group.sellerSlug))}
+              className="text-xs font-semibold uppercase tracking-wide text-zinc-800 dark:text-zinc-200 hover:underline underline-offset-2"
+            >
+              {group.sellerName}
+            </Link>
+          ) : (
+            <Text className="text-xs font-semibold uppercase tracking-wide text-zinc-800 dark:text-zinc-200">
+              {group.sellerName}
+            </Text>
+          )}
+          {/* Seller-scoped coupon badges */}
+          {effectiveCoupons
+            .filter((c) => c.scope === "seller" && c.sellerId === group.sellerId)
+            .map((c) => (
+              <span
+                key={c.code}
+                className="rounded bg-emerald-100 dark:bg-emerald-900/30 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-300"
+              >
+                {c.code}
+              </span>
+            ))}
+        </Div>
+        {/* Per-group subtotal */}
+        {!isOutOfStock && group.items.length > 0 && (
+          <Text className="text-xs text-zinc-500 dark:text-zinc-400">
+            ₹{group.items.reduce((s, i) => s + i.meta.price * i.quantity, 0).toFixed(2)}
           </Text>
         )}
-        {/* Seller-scoped coupon badges */}
-        {effectiveCoupons
-          .filter((c) => c.scope === "seller" && c.sellerId === group.sellerId)
-          .map((c) => (
-            <span
-              key={c.code}
-              className="rounded bg-emerald-100 dark:bg-emerald-900/30 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-300"
-            >
-              {c.code}
-            </span>
-          ))}
       </Div>
 
       {/* Items */}

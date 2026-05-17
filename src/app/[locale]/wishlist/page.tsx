@@ -364,7 +364,7 @@ function renderWishlistItems({
             onToggleWishlist={user?.uid ? handleToggleWishlist : undefined}
             selectable={selectedIds.size > 0}
             isSelected={selectedIds.has(item.productId)}
-            onSelect={toggleSelect}
+            onSelect={selectedIds.size > 0 ? toggleSelect : undefined}
             product={{
               id: item.productId,
               title: item.product?.title ?? item.productTitle ?? "",

@@ -81,9 +81,7 @@ export default async function Page({ params }: Props) {
             productId={productId}
             listedPrice={price}
             minOfferPercent={minOfferPercent}
-            onMakeOffer={(pid, amount, note) =>
-              submitProductOffer(pid, amount, note)
-            }
+            onMakeOffer={submitProductOffer}
           />
         )}
         renderPrimaryActions={(ctx) => (

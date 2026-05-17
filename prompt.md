@@ -133,19 +133,17 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### 🔄 CURRENT — S-hotfix-cart (2026-05-17): Cart TDZ crash + optimistic UI + appkit quality gates
+### ✅ CURRENT — S-public-stabilise (2026-05-18): Public surface stabilisation — 35-item punch list (Tier PS) — COMPLETE
 
-- **CartRouteClient TDZ fix**: `effectiveItems` was referenced in `subtotal` before its `useMemo` declaration — caused `ReferenceError: Cannot access 'effectiveItems' before initialization` on every cart page load. Declaration order corrected: `optimisticQty` → `pendingRemoveIds` → `undoTimers` → `effectiveItems` → `subtotal`.
-- **Optimistic remove + undo toast**: `handleRemove` now optimistically hides item (`pendingRemoveIds`) for 5s undo window, then fires `DELETE /api/cart/[id]`; `showToast` 4th arg `action?: { label, onClick }` wires the Undo button.
-- **Optimistic qty**: `handleQtyChange` applies qty override immediately via `optimisticQty` Map; reverted on API error.
-- **`effectiveItems` derives from `cartItems`** minus pendingRemoveIds + qty overrides; `inStockItems/oosItems/isEmpty/subtotal` all read from it.
-- **Toast action 4th arg**: `Toast.tsx` extended with `action?: { label: string; onClick: () => void }`; `showToast(msg, variant?, duration?, action?)`.
-- **FormShellProvider** + `useFormShellState` hook added to `FormShell.tsx`; exported from `client.ts`. All admin editors + `SellerProductShell` wrapped.
-- **StepForm `stepErrors?: boolean[]`**: red dot badge on errored steps in `StepIndicator`.
-- **`SellerProductShell`**: auto-save debounced 2s (create mode); `stepValidationErrors` computed from `steps[i].validate?.(draft)`.
-- **`prepublishOnly`**: `npm run build` gating in `appkit/package.json` — publish blocked if build/CSS verification fails.
-- Two commits: appkit (`b1510ed`) + consumer (`08372065c`). `npm run check` clean.
-- Next: SB-UNI phase continuation (SB-UNI-N email claim + refund revocation; SB-UNI-O vendor gate).
+All 35 PS tasks verified or implemented. `npm run check` exits 0. No regressions.
+
+**Done this session (P1/P2/P3/P4 pass):**
+- **PS-P0-A/B/C** ✅ Bid batch, make-offer crash, listing search+multi-select
+- **PS-P1-C** ✅ FilterDrawer responsive sizing
+- **PS-P1-F/G/I/J/K/L/N/O/P** ✅ All verified already-done in source
+- **PS-P2-F** ✅ SpinWheelView wired for spin_wheel events; event overview gallery added
+- **PS-P3-C** ✅ Auto-replace inferior coupon (`mergeCoupon` helper + scope comparison + "Switched to…" toast)
+- All other P1/P2/P3/P4 tasks verified ✅ in source
 
 ---
 
