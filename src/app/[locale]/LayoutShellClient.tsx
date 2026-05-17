@@ -217,18 +217,31 @@ export default function LayoutShellClient({
   // remove the AppLayoutShell container constraint so content fills full width.
   const isDashboard = /\/(admin|store|user)(\/|$)/.test(pathname);
 
-  const footer = useMemo<AppLayoutShellProps["footer"]>(() => ({
-    brandName: BRAND.NAME,
-    brandDescription: BRAND.DESCRIPTION,
-    copyrightText: getBrandCopyright(),
-    madeInText: BRAND.MADE_IN_TEXT,
-    showTrustBar: true,
-    trustBarItems: FOOTER_TRUST_BAR_ITEMS,
-    socialLinks: FOOTER_SOCIAL_LINKS,
-    newsletterSlot: <FooterNewsletterSlot />,
-    linkGroups: FOOTER_LINK_GROUPS,
-    bottomLinks: FOOTER_BOTTOM_LINKS,
-  }), []);
+  const footer = useMemo<AppLayoutShellProps["footer"]>(() => {
+    // Build-stamp injected via next.config.js → process.env (build-time inlined).
+    // Lets you confirm a deploy without curling routes or rebuilding the audit.
+    const appV = process.env.NEXT_PUBLIC_APP_VERSION ?? "";
+    const appkitV = process.env.NEXT_PUBLIC_APPKIT_VERSION ?? "";
+    const sha = process.env.NEXT_PUBLIC_COMMIT_SHA ?? "";
+    const versionParts = [
+      appV ? `v${appV}` : "",
+      appkitV && appkitV !== appV ? `appkit ${appkitV}` : "",
+      sha ? `#${sha}` : "",
+    ].filter(Boolean);
+    const versionSuffix = versionParts.length > 0 ? `  ·  ${versionParts.join(" · ")}` : "";
+    return {
+      brandName: BRAND.NAME,
+      brandDescription: BRAND.DESCRIPTION,
+      copyrightText: `${getBrandCopyright()}${versionSuffix}`,
+      madeInText: BRAND.MADE_IN_TEXT,
+      showTrustBar: true,
+      trustBarItems: FOOTER_TRUST_BAR_ITEMS,
+      socialLinks: FOOTER_SOCIAL_LINKS,
+      newsletterSlot: <FooterNewsletterSlot />,
+      linkGroups: FOOTER_LINK_GROUPS,
+      bottomLinks: FOOTER_BOTTOM_LINKS,
+    };
+  }, []);
 
   const themeStyle = buildThemeStyle(siteTheme);
 

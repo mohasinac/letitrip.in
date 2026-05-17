@@ -3,11 +3,27 @@ const createNextIntlPlugin = require("next-intl/plugin");
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.js");
 const { defineNextConfig } = require("@mohasinac/appkit/configs");
 const appkitConfig = require("./appkit.config.js");
+const consumerPkg = require("./package.json");
+const appkitPkg = require("./appkit/package.json");
+
+// Build-time version stamping — exposed via NEXT_PUBLIC_* so the footer can show
+// what's actually deployed. Lets us visually confirm a redeploy without curling
+// pages or rebuilding the audit.
+const APP_VERSION = consumerPkg.version || "0.0.0";
+const APPKIT_VERSION = appkitPkg.version || "0.0.0";
+const COMMIT_SHA = (process.env.VERCEL_GIT_COMMIT_SHA || "").slice(0, 7);
+const BUILD_TIME = new Date().toISOString();
 
 // Firebase/GCP tracing and base remotePatterns are managed by appkit defaults.
 // Unsplash + picsum are used by seed/demo data only; prod listings use Firebase Storage.
 module.exports = withNextIntl(
   defineNextConfig({
+    env: {
+      NEXT_PUBLIC_APP_VERSION: APP_VERSION,
+      NEXT_PUBLIC_APPKIT_VERSION: APPKIT_VERSION,
+      NEXT_PUBLIC_COMMIT_SHA: COMMIT_SHA,
+      NEXT_PUBLIC_BUILD_TIME: BUILD_TIME,
+    },
     images: {
       remotePatterns: appkitConfig.externalImagePatterns ?? [],
     },

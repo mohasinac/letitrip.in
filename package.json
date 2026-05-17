@@ -1,6 +1,6 @@
 {
   "name": "letitrip.in",
-  "version": "1.0.0",
+  "version": "2.7.42",
   "private": true,
   "scripts": {
     "dev": "concurrently --kill-others --restart-tries 0 --names \"appkit,css,next\" \"npm run watch:appkit\" \"npm run watch:css\" \"npm run dev:only\"",
@@ -56,7 +56,7 @@
     "@auth/firebase-adapter": "^2.11.1",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",
-    "@mohasinac/appkit": "2.7.41",
+    "@mohasinac/appkit": "2.7.42",
     "@mohasinac/sievejs": "^1.0.0",
     "@tanstack/react-query": "^5.90.21",
     "@types/qrcode": "^1.5.6",
