@@ -1,65 +1,192 @@
 "use client";
+import { useRef, useState } from "react";
 import {
   UserAccountHubView,
   useAuth,
   useOrders,
+  useWishlistCount,
+  useMediaUpload,
+  useUpdateProfile,
+  useToast,
   OrdersList,
   ROUTES,
 } from "@mohasinac/appkit/client";
-import { ShoppingBag, Heart, MapPin, Settings, MessageCircle, Bell } from "lucide-react";
+import { useNotifications } from "@mohasinac/appkit";
+import {
+  ShoppingBag,
+  Heart,
+  MapPin,
+  Settings,
+  MessageCircle,
+  Bell,
+  Star,
+  Tag,
+  CalendarDays,
+  Gift,
+  Clock,
+  KeyRound,
+  Undo2,
+  LifeBuoy,
+  Gavel,
+  Store,
+  Camera,
+} from "lucide-react";
 import { Link } from "@/i18n/navigation";
 
 const BRAND_GRAD = "linear-gradient(135deg,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)";
 
 const NAV_LINKS = [
-  { label: "My Orders",    href: ROUTES.USER.ORDERS,        Icon: ShoppingBag },
-  { label: "Wishlist",     href: ROUTES.USER.WISHLIST,       Icon: Heart },
-  { label: "Addresses",    href: ROUTES.USER.ADDRESSES,      Icon: MapPin },
-  { label: "Settings",     href: ROUTES.USER.SETTINGS,       Icon: Settings },
-  { label: "Messages",     href: ROUTES.USER.MESSAGES,       Icon: MessageCircle },
-  { label: "Notifications",href: ROUTES.USER.NOTIFICATIONS,  Icon: Bell },
+  { label: "My Orders",         href: ROUTES.USER.ORDERS,         Icon: ShoppingBag },
+  { label: "My Bids",           href: ROUTES.USER.BIDS,           Icon: Gavel },
+  { label: "My Offers",         href: ROUTES.USER.OFFERS,         Icon: Tag },
+  { label: "Wishlist",          href: ROUTES.USER.WISHLIST,       Icon: Heart },
+  { label: "Pre-Orders",        href: ROUTES.USER.PRE_ORDERS,     Icon: Clock },
+  { label: "Digital Codes",     href: ROUTES.USER.DIGITAL_CODES,  Icon: KeyRound },
+  { label: "Prize Draws",       href: ROUTES.USER.PRIZE_DRAWS,    Icon: Gift },
+  { label: "Events",            href: ROUTES.USER.EVENTS,         Icon: CalendarDays },
+  { label: "Reviews",           href: ROUTES.USER.REVIEWS,        Icon: Star },
+  { label: "Returns & Refunds", href: ROUTES.USER.RETURNS,        Icon: Undo2 },
+  { label: "Addresses",         href: ROUTES.USER.ADDRESSES,      Icon: MapPin },
+  { label: "Messages",          href: ROUTES.USER.MESSAGES,       Icon: MessageCircle },
+  { label: "Notifications",     href: ROUTES.USER.NOTIFICATIONS,  Icon: Bell },
+  { label: "Support",           href: ROUTES.USER.SUPPORT,        Icon: LifeBuoy },
+  { label: "Settings",          href: ROUTES.USER.SETTINGS,       Icon: Settings },
+  { label: "Become a Seller",   href: ROUTES.USER.BECOME_SELLER,  Icon: Store },
 ];
+
+function StatCard({ label, value, href }: { label: string; value: string | number; href: string }) {
+  return (
+    <Link
+      href={href}
+      className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3 shadow-sm hover:border-[var(--appkit-color-primary)] hover:shadow-md transition-colors"
+    >
+      <div className="text-2xl font-bold text-[var(--appkit-color-text)] leading-tight">{value}</div>
+      <div className="text-xs text-[var(--appkit-color-text-muted)] mt-0.5">{label}</div>
+    </Link>
+  );
+}
+
+function formatINR(paise: number): string {
+  const rupees = Math.round(paise / 100);
+  return `₹${rupees.toLocaleString("en-IN")}`;
+}
 
 export default function Page() {
   const { user, loading: userLoading } = useAuth();
   const { orders, isLoading: ordersLoading } = useOrders({ page: 1, perPage: 3 });
+  const { orders: allOrdersForStats } = useOrders({ page: 1, perPage: 100 });
+  const { unreadCount } = useNotifications();
+  const wishlistCount = useWishlistCount(user?.uid ?? null);
+  const { upload } = useMediaUpload();
+  const { showToast } = useToast();
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const updateProfile = useUpdateProfile({
+    onSuccess: () => showToast("Profile photo updated.", "success"),
+    onError: (err) => showToast(err?.message ?? "Failed to update photo.", "error"),
+  });
+
+  async function onPickFile(file: File | null) {
+    if (!file || !user) return;
+    setUploading(true);
+    try {
+      const parts = (user.displayName ?? user.email ?? "user").split(" ");
+      const url = await upload(file, "avatars", true, {
+        type: "user-avatar",
+        firstName: parts[0] ?? "user",
+        lastName: parts[1] ?? "",
+      });
+      await updateProfile.mutateAsync({ photoURL: url });
+    } catch (e: any) {
+      showToast(e?.message ?? "Upload failed.", "error");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  const totalOrders = allOrdersForStats.length;
+  const totalSpentPaise = allOrdersForStats.reduce(
+    (acc: number, o: any) => acc + (typeof o?.totalAmount === "number" ? o.totalAmount : 0),
+    0,
+  );
 
   return (
     <UserAccountHubView
       labels={{ title: "My Account" }}
       renderProfile={() =>
         userLoading ? null : user ? (
-          <div className="relative flex items-center gap-4 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden p-5 shadow-sm">
-            {/* gradient top accent */}
-            <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: BRAND_GRAD }} aria-hidden="true" />
-            {user.photoURL ? (
-              // eslint-disable-next-line lir/no-raw-media-elements, @next/next/no-img-element
-              <img
-                src={user.photoURL}
-                alt={user.displayName ?? ""}
-                className="h-14 w-14 rounded-full object-cover ring-2 ring-[var(--appkit-color-border)]"
-              />
-            ) : (
-              <div
-                className="flex h-14 w-14 items-center justify-center rounded-full text-white text-xl font-bold flex-shrink-0"
-                style={{ background: BRAND_GRAD }}
+          <div className="space-y-4">
+            <div className="relative flex items-center gap-4 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden p-5 shadow-sm">
+              <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: BRAND_GRAD }} aria-hidden="true" />
+              {/* eslint-disable-next-line lir/no-raw-html-elements -- avatar tile needs custom hover overlay; not a form button */}
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                disabled={uploading}
+                aria-label="Change profile photo"
+                className="group relative h-16 w-16 flex-shrink-0 rounded-full overflow-hidden ring-2 ring-[var(--appkit-color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
               >
-                {(user.displayName ?? user.email ?? "U")[0].toUpperCase()}
+                {user.photoURL ? (
+                  // eslint-disable-next-line lir/no-raw-media-elements, @next/next/no-img-element
+                  <img
+                    src={user.photoURL}
+                    alt={user.displayName ?? ""}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div
+                    className="flex h-full w-full items-center justify-center text-white text-xl font-bold"
+                    style={{ background: BRAND_GRAD }}
+                  >
+                    {(user.displayName ?? user.email ?? "U")[0].toUpperCase()}
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <Camera className="w-5 h-5 text-white" />
+                </div>
+                {uploading && (
+                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white text-[10px] font-semibold">
+                    Saving…
+                  </div>
+                )}
+              </button>
+              {/* eslint-disable-next-line lir/no-raw-html-elements -- hidden native file picker, no FormField equivalent */}
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={(e) => onPickFile(e.target.files?.[0] ?? null)}
+              />
+              <div className="min-w-0 flex-1">
+                <div className="font-semibold text-[var(--appkit-color-text)] truncate">
+                  {user.displayName ?? "My Account"}
+                </div>
+                {user.email && (
+                  <div className="text-sm text-[var(--appkit-color-text-muted)] truncate">{user.email}</div>
+                )}
+                <Link
+                  href={String(ROUTES.USER.PROFILE)}
+                  className="text-xs font-medium text-[var(--appkit-color-primary)] hover:underline"
+                >
+                  View / edit profile →
+                </Link>
               </div>
-            )}
-            <div className="min-w-0">
-              <div className="font-semibold text-[var(--appkit-color-text)] truncate">
-                {user.displayName ?? "My Account"}
-              </div>
-              {user.email && (
-                <div className="text-sm text-[var(--appkit-color-text-muted)] truncate">{user.email}</div>
-              )}
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+              <StatCard label="Orders"        value={totalOrders}                   href={String(ROUTES.USER.ORDERS)} />
+              <StatCard label="Total spent"   value={formatINR(totalSpentPaise)}    href={String(ROUTES.USER.ORDERS)} />
+              <StatCard label="Wishlist"      value={wishlistCount ?? 0}            href={String(ROUTES.USER.WISHLIST)} />
+              <StatCard label="Unread alerts" value={unreadCount ?? 0}              href={String(ROUTES.USER.NOTIFICATIONS)} />
+              <StatCard label="Support"       value={"Open"}                         href={String(ROUTES.USER.SUPPORT)} />
             </div>
           </div>
         ) : null
       }
       renderNav={() => (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {NAV_LINKS.map(({ label, href, Icon }) => (
             <Link
               key={label}

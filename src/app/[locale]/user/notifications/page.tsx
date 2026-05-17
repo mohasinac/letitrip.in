@@ -1,9 +1,10 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@/i18n/navigation";
 import {
   useSession,
+  useUrlTable,
   UserNotificationsView,
   Div,
   Text,
@@ -12,7 +13,7 @@ import {
   Button,
   useToast,
 } from "@mohasinac/appkit/client";
-import { Span } from "@mohasinac/appkit/ui";
+import { ListingToolbar, Span } from "@mohasinac/appkit/ui";
 
 interface NotifItem {
   id: string;
@@ -23,6 +24,7 @@ interface NotifItem {
   actionUrl?: string;
   actionLabel?: string;
   createdAt: string | Date;
+  priority?: number;
 }
 
 interface NotifResponse {
@@ -31,11 +33,32 @@ interface NotifResponse {
   unreadCount: number;
 }
 
-type FilterKey = "all" | "unread" | "orders" | "bids" | "system";
+const SORT_OPTIONS = [
+  { value: "-createdAt", label: "Newest" },
+  { value: "createdAt",  label: "Oldest" },
+  { value: "-priority",  label: "Highest priority" },
+];
 
-const ORDER_TYPES = new Set(["order_placed", "order_confirmed", "order_shipped", "order_delivered", "order_cancelled"]);
-const BID_TYPES   = new Set(["bid_placed", "bid_outbid", "bid_won", "bid_lost"]);
-const SYSTEM_TYPES = new Set(["system", "welcome", "promotion"]);
+const TYPE_OPTIONS = [
+  { value: "",         label: "All types" },
+  { value: "orders",   label: "Orders" },
+  { value: "bids",     label: "Bids" },
+  { value: "system",   label: "System" },
+  { value: "promotions", label: "Promotions" },
+];
+
+const READ_OPTIONS = [
+  { value: "",       label: "Read & unread" },
+  { value: "unread", label: "Unread only" },
+  { value: "read",   label: "Read only" },
+];
+
+const TYPE_BUCKETS: Record<string, Set<string>> = {
+  orders:     new Set(["order_placed", "order_confirmed", "order_shipped", "order_delivered", "order_cancelled"]),
+  bids:       new Set(["bid_placed", "bid_outbid", "bid_won", "bid_lost"]),
+  system:     new Set(["system", "welcome"]),
+  promotions: new Set(["promotion"]),
+};
 
 function timeAgo(dateVal: string | Date) {
   const ms = Date.now() - new Date(dateVal).getTime();
@@ -114,12 +137,16 @@ export default function NotificationsPage() {
   const { user, loading: sessionLoading } = useSession();
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  const [filter, setFilter] = useState<FilterKey>("all");
+  const table = useUrlTable({ defaults: { pageSize: "50", sort: "-createdAt" } });
+  const search = table.get("q") ?? "";
+  const typeFilter = table.get("type") ?? "";
+  const readFilter = table.get("read") ?? "";
+  const sort = table.get("sort") ?? "-createdAt";
 
   const { data, isLoading } = useQuery<NotifResponse>({
     queryKey: ["user-notifications"],
     queryFn: () =>
-      fetch("/api/user/notifications?pageSize=50")
+      fetch("/api/user/notifications?pageSize=100")
         .then((r) => r.json())
         .then((r) => r.data),
     enabled: !sessionLoading && !!user,
@@ -155,58 +182,90 @@ export default function NotificationsPage() {
 
   const filtered = useMemo(() => {
     const all = data?.items ?? [];
-    switch (filter) {
-      case "unread":  return all.filter((n) => !n.isRead);
-      case "orders":  return all.filter((n) => ORDER_TYPES.has(n.type));
-      case "bids":    return all.filter((n) => BID_TYPES.has(n.type));
-      case "system":  return all.filter((n) => SYSTEM_TYPES.has(n.type));
-      default:        return all;
-    }
-  }, [data, filter]);
+    const q = search.trim().toLowerCase();
+    const bucket = typeFilter ? TYPE_BUCKETS[typeFilter] : null;
+    const filteredList = all
+      .filter((n) => (readFilter === "unread" ? !n.isRead : readFilter === "read" ? n.isRead : true))
+      .filter((n) => (bucket ? bucket.has(n.type) : true))
+      .filter((n) =>
+        q
+          ? n.title?.toLowerCase().includes(q) || n.message?.toLowerCase().includes(q)
+          : true,
+      );
+    return [...filteredList].sort((a, b) => {
+      switch (sort) {
+        case "createdAt":  return +new Date(a.createdAt) - +new Date(b.createdAt);
+        case "-priority":  return (b.priority ?? 0) - (a.priority ?? 0);
+        case "-createdAt":
+        default:           return +new Date(b.createdAt) - +new Date(a.createdAt);
+      }
+    });
+  }, [data, search, typeFilter, readFilter, sort]);
 
   const loading = sessionLoading || isLoading;
   const unreadCount = data?.unreadCount ?? 0;
-
-  const tabs: { key: FilterKey; label: string }[] = [
-    { key: "all",    label: "All" },
-    { key: "unread", label: `Unread${unreadCount > 0 ? ` (${unreadCount})` : ""}` },
-    { key: "orders", label: "Orders" },
-    { key: "bids",   label: "Bids" },
-    { key: "system", label: "System" },
-  ];
+  const filterCount = (typeFilter ? 1 : 0) + (readFilter ? 1 : 0);
 
   return (
     <UserNotificationsView
       labels={{ title: "Notifications" }}
       renderToolbar={() => (
-        <Row justify="between" wrap gap="3" align="center">
-          <Row gap="sm" className="flex-wrap">
-            {tabs.map((tab) => (
+        <Stack gap="md">
+          <Row justify="between" wrap gap="3" align="center">
+            <Div className="flex-1 min-w-0">
+              <ListingToolbar
+                searchValue={search}
+                searchPlaceholder="Search notifications…"
+                onSearchChange={(v) => table.set("q", v)}
+                sortValue={sort}
+                sortOptions={SORT_OPTIONS}
+                onSortChange={(v) => table.set("sort", v)}
+                hideViewToggle
+                filterCount={filterCount}
+                hasActiveState={filterCount > 0 || !!search}
+                onResetAll={() => table.clear()}
+              />
+            </Div>
+            {unreadCount > 0 && (
               <Button
-                key={tab.key}
-                type="button"
-                onClick={() => setFilter(tab.key)}
-                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                  filter === tab.key
-                    ? "bg-primary text-white"
-                    : "bg-[var(--appkit-color-border-subtle)] text-[var(--appkit-color-text-muted)] hover:bg-[var(--appkit-color-border)]"
-                }`}
+                variant="outline"
+                size="sm"
+                onClick={() => markAllRead()}
+                disabled={markingAll}
               >
-                {tab.label}
+                {markingAll ? "Marking…" : "Mark all read"}
               </Button>
-            ))}
+            )}
           </Row>
-          {unreadCount > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => markAllRead()}
-              disabled={markingAll}
-            >
-              {markingAll ? "Marking…" : "Mark all read"}
-            </Button>
-          )}
-        </Row>
+          <Row gap="md" className="flex-wrap">
+            <Div>
+              {/* eslint-disable-next-line lir/no-raw-html-elements -- short filter; <Select> drops UX */}
+              <select
+                value={typeFilter}
+                onChange={(e) => table.set("type", e.target.value)}
+                className="rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-1.5 text-sm text-[var(--appkit-color-text)]"
+                aria-label="Filter by type"
+              >
+                {TYPE_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </Div>
+            <Div>
+              {/* eslint-disable-next-line lir/no-raw-html-elements -- short filter */}
+              <select
+                value={readFilter}
+                onChange={(e) => table.set("read", e.target.value)}
+                className="rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-1.5 text-sm text-[var(--appkit-color-text)]"
+                aria-label="Filter by read status"
+              >
+                {READ_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </Div>
+          </Row>
+        </Stack>
       )}
       renderList={() => {
         if (loading) {
@@ -224,9 +283,7 @@ export default function NotificationsPage() {
         if (filtered.length === 0) {
           return (
             <Div className="py-24 text-center">
-              <Text variant="secondary">
-                {filter === "all" ? "You have no notifications." : `No ${filter} notifications.`}
-              </Text>
+              <Text variant="secondary">No notifications match the current filters.</Text>
             </Div>
           );
         }

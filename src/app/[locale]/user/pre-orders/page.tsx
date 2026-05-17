@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "@/i18n/navigation";
 import {
   useSession,
+  useUrlTable,
   ROUTES,
   Div,
   Heading,
@@ -12,6 +13,14 @@ import {
   Row,
   Badge,
 } from "@mohasinac/appkit/client";
+import { ListingToolbar } from "@mohasinac/appkit/ui";
+
+const SORT_OPTIONS = [
+  { value: "-createdAt", label: "Newest" },
+  { value: "createdAt",  label: "Oldest" },
+  { value: "-totalAmount", label: "Highest total" },
+  { value: "totalAmount",  label: "Lowest total" },
+];
 import { API_ROUTES } from "@/constants";
 
 interface OrderItem {
@@ -48,6 +57,9 @@ const STATUS_VARIANT: Record<string, "active" | "pending" | "danger" | "info" | 
 
 export default function UserPreOrdersPage() {
   const { user, loading: sessionLoading } = useSession();
+  const table = useUrlTable({ defaults: { pageSize: "12", sort: "-createdAt" } });
+  const search = table.get("q") ?? "";
+  const sort = table.get("sort") ?? "-createdAt";
 
   const { data, isLoading } = useQuery<{ items: OrderDoc[] }>({
     queryKey: ["user-pre-orders"],
@@ -59,18 +71,32 @@ export default function UserPreOrdersPage() {
     staleTime: 30_000,
   });
 
-  const orders = useMemo(
-    () =>
-      (data?.items ?? []).filter((o) =>
-        o.items?.some((item) => item.listingType === "pre-order"),
-      ),
-    [data],
-  );
+  const orders = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    const base = (data?.items ?? []).filter((o) =>
+      o.items?.some((item) => item.listingType === "pre-order"),
+    );
+    const filtered = q
+      ? base.filter((o) =>
+          o.id.toLowerCase().includes(q) ||
+          o.items.some((it) => it.productTitle?.toLowerCase().includes(q)),
+        )
+      : base;
+    return [...filtered].sort((a, b) => {
+      switch (sort) {
+        case "createdAt":     return +new Date(a.createdAt) - +new Date(b.createdAt);
+        case "-totalAmount":  return (b.totalAmount ?? 0) - (a.totalAmount ?? 0);
+        case "totalAmount":   return (a.totalAmount ?? 0) - (b.totalAmount ?? 0);
+        case "-createdAt":
+        default:              return +new Date(b.createdAt) - +new Date(a.createdAt);
+      }
+    });
+  }, [data, search, sort]);
 
   const loading = sessionLoading || isLoading;
 
   return (
-    <Div className="w-full max-w-3xl space-y-6">
+    <Div className="w-full space-y-6">
       <Div>
         <Heading level={1} className="text-2xl font-semibold text-[var(--appkit-color-text)]">
           My Pre-Orders
@@ -81,6 +107,18 @@ export default function UserPreOrdersPage() {
           </Text>
         )}
       </Div>
+
+      <ListingToolbar
+        searchValue={search}
+        searchPlaceholder="Search pre-orders…"
+        onSearchChange={(v) => table.set("q", v)}
+        sortValue={sort}
+        sortOptions={SORT_OPTIONS}
+        onSortChange={(v) => table.set("sort", v)}
+        hideViewToggle
+        hasActiveState={!!search}
+        onResetAll={() => table.clear()}
+      />
 
       {loading ? (
         <Stack gap="md">

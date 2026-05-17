@@ -1,8 +1,10 @@
 "use client";
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@/i18n/navigation";
 import {
   useSession,
+  useUrlTable,
   ROUTES,
   Div,
   Heading,
@@ -11,7 +13,21 @@ import {
   Row,
   Badge,
 } from "@mohasinac/appkit/client";
+import { ListingToolbar } from "@mohasinac/appkit/ui";
 import { API_ROUTES } from "@/constants";
+
+const SORT_OPTIONS = [
+  { value: "-submittedAt", label: "Newest" },
+  { value: "submittedAt",  label: "Oldest" },
+];
+
+const STATUS_OPTIONS = [
+  { value: "",         label: "All statuses" },
+  { value: "approved", label: "Approved" },
+  { value: "pending",  label: "Pending" },
+  { value: "flagged",  label: "Flagged" },
+  { value: "rejected", label: "Rejected" },
+];
 
 interface EventDoc {
   id: string;
@@ -50,6 +66,10 @@ const EVENT_TYPE_LABELS: Record<string, string> = {
 
 export default function UserEventsPage() {
   const { user, loading: sessionLoading } = useSession();
+  const table = useUrlTable({ defaults: { pageSize: "12", sort: "-submittedAt" } });
+  const search = table.get("q") ?? "";
+  const status = table.get("status") ?? "";
+  const sort = table.get("sort") ?? "-submittedAt";
 
   const { data, isLoading } = useQuery<{ items: EntryItem[] }>({
     queryKey: ["user-events"],
@@ -61,11 +81,25 @@ export default function UserEventsPage() {
     staleTime: 30_000,
   });
 
-  const entries = data?.items ?? [];
+  const entries = useMemo(() => {
+    const all = data?.items ?? [];
+    const q = search.trim().toLowerCase();
+    const filtered = all
+      .filter((e) => (status ? e.reviewStatus === status : true))
+      .filter((e) =>
+        q ? e.event?.title?.toLowerCase().includes(q) || e.eventId.toLowerCase().includes(q) : true,
+      );
+    return [...filtered].sort((a, b) =>
+      sort === "submittedAt"
+        ? +new Date(a.submittedAt) - +new Date(b.submittedAt)
+        : +new Date(b.submittedAt) - +new Date(a.submittedAt),
+    );
+  }, [data, search, status, sort]);
   const loading = sessionLoading || isLoading;
+  const filterCount = status ? 1 : 0;
 
   return (
-    <Div className="w-full max-w-3xl space-y-6">
+    <Div className="w-full space-y-6">
       <Div>
         <Heading level={1} className="text-2xl font-semibold text-[var(--appkit-color-text)]">
           My Events
@@ -75,6 +109,33 @@ export default function UserEventsPage() {
             {entries.length} event{entries.length !== 1 ? "s" : ""} entered
           </Text>
         )}
+      </Div>
+
+      <ListingToolbar
+        searchValue={search}
+        searchPlaceholder="Search your event entries…"
+        onSearchChange={(v) => table.set("q", v)}
+        sortValue={sort}
+        sortOptions={SORT_OPTIONS}
+        onSortChange={(v) => table.set("sort", v)}
+        hideViewToggle
+        filterCount={filterCount}
+        hasActiveState={filterCount > 0 || !!search}
+        onResetAll={() => table.clear()}
+      />
+
+      <Div>
+        {/* eslint-disable-next-line lir/no-raw-html-elements -- short status filter; <Select> wrapper drops this UX */}
+        <select
+          value={status}
+          onChange={(e) => table.set("status", e.target.value)}
+          className="rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-1.5 text-sm text-[var(--appkit-color-text)]"
+          aria-label="Filter by review status"
+        >
+          {STATUS_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
       </Div>
 
       {loading ? (

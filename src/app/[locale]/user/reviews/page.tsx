@@ -1,17 +1,18 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@/i18n/navigation";
 import {
   useSession,
+  useUrlTable,
   ROUTES,
   Div,
   Heading,
   Text,
   Stack,
   Row,
-  Button,
 } from "@mohasinac/appkit/client";
+import { ListingToolbar } from "@mohasinac/appkit/ui";
 
 interface ReviewItem {
   id: string;
@@ -29,6 +30,20 @@ interface ReviewItem {
 }
 
 const STAR_LABELS: Record<number, string> = { 1: "Terrible", 2: "Poor", 3: "Average", 4: "Good", 5: "Excellent" };
+
+const SORT_OPTIONS = [
+  { value: "-createdAt", label: "Newest" },
+  { value: "createdAt",  label: "Oldest" },
+  { value: "-rating",    label: "Highest rated" },
+  { value: "rating",     label: "Lowest rated" },
+];
+
+const STATUS_OPTIONS = [
+  { value: "",         label: "All statuses" },
+  { value: "approved", label: "Published" },
+  { value: "pending",  label: "Pending" },
+  { value: "rejected", label: "Rejected" },
+];
 
 function StarDisplay({ rating }: { rating: number }) {
   return (
@@ -57,7 +72,10 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function UserReviewsPage() {
   const { user, loading: sessionLoading } = useSession();
-  const [filter, setFilter] = useState<"all" | "approved" | "pending" | "rejected">("all");
+  const table = useUrlTable({ defaults: { pageSize: "12", sort: "-createdAt" } });
+  const search = table.get("q") ?? "";
+  const status = table.get("status") ?? "";
+  const sort = table.get("sort") ?? "-createdAt";
 
   const { data, isLoading } = useQuery<{ reviews: ReviewItem[]; total: number }>({
     queryKey: ["user-reviews"],
@@ -68,21 +86,32 @@ export default function UserReviewsPage() {
 
   const reviews = useMemo(() => {
     const all = data?.reviews ?? [];
-    if (filter === "all") return all;
-    return all.filter((r) => r.status === filter);
-  }, [data, filter]);
+    const q = search.trim().toLowerCase();
+    const filtered = all
+      .filter((r) => (status ? r.status === status : true))
+      .filter((r) =>
+        q
+          ? r.productTitle?.toLowerCase().includes(q) ||
+            r.title?.toLowerCase().includes(q) ||
+            r.comment?.toLowerCase().includes(q)
+          : true,
+      );
+    return [...filtered].sort((a, b) => {
+      switch (sort) {
+        case "createdAt":  return +new Date(a.createdAt) - +new Date(b.createdAt);
+        case "-rating":    return b.rating - a.rating;
+        case "rating":     return a.rating - b.rating;
+        case "-createdAt":
+        default:           return +new Date(b.createdAt) - +new Date(a.createdAt);
+      }
+    });
+  }, [data, status, search, sort]);
 
   const loading = sessionLoading || isLoading;
-
-  const tabs = [
-    { key: "all",      label: "All" },
-    { key: "approved", label: "Published" },
-    { key: "pending",  label: "Pending" },
-    { key: "rejected", label: "Rejected" },
-  ] as const;
+  const filterCount = (status ? 1 : 0);
 
   return (
-    <Div className="w-full max-w-3xl space-y-6">
+    <Div className="w-full space-y-6">
       <Div>
         <Heading level={1} className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
           My Reviews
@@ -94,24 +123,32 @@ export default function UserReviewsPage() {
         )}
       </Div>
 
-      {/* Tab filter */}
-      <Row gap="sm" className="flex-wrap">
-        {tabs.map((tab) => (
-          <Button
-            key={tab.key}
-            type="button"
-            variant={filter === tab.key ? "primary" : "ghost"}
-            onClick={() => setFilter(tab.key)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-              filter === tab.key
-                ? "bg-primary text-white"
-                : "bg-zinc-100 dark:bg-slate-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-slate-700"
-            }`}
-          >
-            {tab.label}
-          </Button>
-        ))}
-      </Row>
+      <ListingToolbar
+        searchValue={search}
+        searchPlaceholder="Search your reviews…"
+        onSearchChange={(v) => table.set("q", v)}
+        sortValue={sort}
+        sortOptions={SORT_OPTIONS}
+        onSortChange={(v) => table.set("sort", v)}
+        hideViewToggle
+        filterCount={filterCount}
+        hasActiveState={filterCount > 0 || !!search}
+        onResetAll={() => table.clear()}
+      />
+
+      <Div>
+        {/* eslint-disable-next-line lir/no-raw-html-elements -- short status filter; <Select> wrapper drops this UX */}
+        <select
+          value={status}
+          onChange={(e) => table.set("status", e.target.value)}
+          className="rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-1.5 text-sm text-[var(--appkit-color-text)]"
+          aria-label="Filter by review status"
+        >
+          {STATUS_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+      </Div>
 
       {loading ? (
         <Stack gap="md">
@@ -126,7 +163,7 @@ export default function UserReviewsPage() {
       ) : reviews.length === 0 ? (
         <Div className="py-24 text-center">
           <Text variant="secondary">
-            {filter === "all" ? "You haven't written any reviews yet." : `No ${filter} reviews.`}
+            {status ? `No ${status} reviews.` : "You haven't written any reviews yet."}
           </Text>
         </Div>
       ) : (

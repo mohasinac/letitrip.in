@@ -16,6 +16,9 @@ import {
   Button,
   NotificationPreferencesPanel,
 } from "@mohasinac/appkit/client";
+import { TabStrip, Accordion, DynamicSelect } from "@mohasinac/appkit/ui";
+import type { AsyncPage, DynamicSelectOption } from "@mohasinac/appkit/ui";
+import { SUPPORTED_LANGUAGES, LANGUAGES_PAGE_SIZE } from "@/constants";
 import { FontToggleClient } from "@/components";
 import { API_ROUTES } from "@/constants";
 
@@ -110,25 +113,45 @@ function renderAccountTab({
       </SectionCard>
 
       <SectionCard>
-        <SectionTitle>Change Email</SectionTitle>
-        <Text variant="secondary" className="text-xs">
-          A verification link will be sent to your new address. Your email updates after you click the link.
-        </Text>
-        <form onSubmit={handleEmailSubmit} className="space-y-3">
-          <Input id="new-email" type="email" label="New Email Address" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required autoComplete="email" placeholder="new@example.com" />
-          <Input id="email-password" type="password" label="Current Password" value={emailPassword} onChange={(e) => setEmailPassword(e.target.value)} required autoComplete="current-password" />
-          <Button type="submit" isLoading={changeEmail.isPending} size="sm">{ACTIONS.USER["send-verification-email"].label}</Button>
-        </form>
+        <Accordion title="Change Email">
+          <Stack gap="md" className="pt-3">
+            <Text variant="secondary" className="text-xs">
+              A verification link will be sent to your new address. Your email updates after you click the link.
+            </Text>
+            <form onSubmit={handleEmailSubmit} className="grid gap-4 md:grid-cols-[1fr_240px] md:items-start">
+              <Stack gap="sm">
+                <Input id="new-email" type="email" label="New Email Address" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required autoComplete="email" placeholder="new@example.com" />
+                <Input id="email-password" type="password" label="Current Password" value={emailPassword} onChange={(e) => setEmailPassword(e.target.value)} required autoComplete="current-password" />
+                <Div>
+                  <Button type="submit" isLoading={changeEmail.isPending} size="sm">{ACTIONS.USER["send-verification-email"].label}</Button>
+                </Div>
+              </Stack>
+              <Text variant="secondary" className="text-xs md:mt-1">
+                We will email a confirmation link to your new address. Until you click it, your sign-in email stays the same. The link expires after 24 hours.
+              </Text>
+            </form>
+          </Stack>
+        </Accordion>
       </SectionCard>
 
       <SectionCard>
-        <SectionTitle>Change Password</SectionTitle>
-        <form onSubmit={handlePasswordSubmit} className="space-y-3">
-          <Input id="current-password" type="password" label="Current Password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required autoComplete="current-password" />
-          <Input id="new-password" type="password" label="New Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={8} autoComplete="new-password" />
-          <Input id="confirm-password" type="password" label="Confirm New Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required autoComplete="new-password" />
-          <Button type="submit" isLoading={changePassword.isPending} size="sm">{ACTIONS.USER["update-password"].label}</Button>
-        </form>
+        <Accordion title="Change Password">
+          <Stack gap="md" className="pt-3">
+            <form onSubmit={handlePasswordSubmit} className="grid gap-4 md:grid-cols-[1fr_240px] md:items-start">
+              <Stack gap="sm">
+                <Input id="current-password" type="password" label="Current Password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required autoComplete="current-password" />
+                <Input id="new-password" type="password" label="New Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={8} autoComplete="new-password" />
+                <Input id="confirm-password" type="password" label="Confirm New Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required autoComplete="new-password" />
+                <Div>
+                  <Button type="submit" isLoading={changePassword.isPending} size="sm">{ACTIONS.USER["update-password"].label}</Button>
+                </Div>
+              </Stack>
+              <Text variant="secondary" className="text-xs md:mt-1">
+                Pick at least 8 characters. We recommend a mix of upper-case, numbers, and a symbol. After changing, you stay signed in on this device; other sessions are not signed out.
+              </Text>
+            </form>
+          </Stack>
+        </Accordion>
       </SectionCard>
     </Stack>
   );
@@ -165,7 +188,33 @@ function renderPrivacyTab() {
   );
 }
 
-function renderAppearanceTab() {
+function renderAppearanceTab({
+  language,
+  setLanguage,
+}: {
+  language: string;
+  setLanguage: (v: string) => void;
+}) {
+  const loadLanguages = async (
+    query: string,
+    page: number,
+  ): Promise<AsyncPage<DynamicSelectOption<string>>> => {
+    const filtered = SUPPORTED_LANGUAGES.filter((l) =>
+      l.label.toLowerCase().includes(query.toLowerCase()),
+    );
+    const start = (page - 1) * LANGUAGES_PAGE_SIZE;
+    const slice = filtered.slice(start, start + LANGUAGES_PAGE_SIZE);
+    return {
+      items: slice.map((l) => ({
+        value: l.code,
+        label: l.available ? l.label : `${l.label} — coming soon`,
+        meta: { available: l.available },
+      })),
+      hasMore: start + LANGUAGES_PAGE_SIZE < filtered.length,
+      nextPage: page + 1,
+    };
+  };
+
   return (
     <Stack gap="lg">
       <SectionCard>
@@ -175,7 +224,22 @@ function renderAppearanceTab() {
 
       <SectionCard>
         <SectionTitle>Language</SectionTitle>
-        <Input id="language" label="Display Language" disabled defaultValue="English" helperText="Additional languages coming soon." />
+        <Stack gap="xs">
+          <Text variant="secondary" className="text-xs">Choose your display language. More are on the way.</Text>
+          <DynamicSelect<string>
+            value={language}
+            onChange={(v, opt) => {
+              if (!v || !opt) return;
+              const meta = opt.meta as { available?: boolean } | undefined;
+              if (meta?.available === false) return;
+              setLanguage(v);
+            }}
+            loadOptions={loadLanguages}
+            placeholder="Select language"
+            searchPlaceholder="Search languages…"
+            ariaLabel="Display language"
+          />
+        </Stack>
       </SectionCard>
     </Stack>
   );
@@ -213,6 +277,16 @@ export default function Page() {
 
   const [emailPassword, setEmailPassword] = useState("");
   const [newEmail, setNewEmail] = useState("");
+  const [language, setLanguage] = useState<string>(() => {
+    if (typeof window === "undefined") return "en";
+    return localStorage.getItem("display-language") ?? "en";
+  });
+
+  const handleLanguageChange = (next: string) => {
+    setLanguage(next);
+    if (typeof window !== "undefined") localStorage.setItem("display-language", next);
+    showToast("Language preference saved.", "success");
+  };
 
   const changeEmail = useChangeEmail({
     onSuccess: () => {
@@ -232,25 +306,16 @@ export default function Page() {
   };
 
   return (
-    <Div className="w-full max-w-3xl">
+    <Div className="w-full max-w-5xl">
       <Text className="text-xl font-bold text-[var(--appkit-color-text)] mb-6">Settings</Text>
 
-      <Row gap="xs" className="mb-6 border-b border-[var(--appkit-color-border)]">
-        {(Object.keys(TAB_LABELS) as Tab[]).map((tab) => (
-          <Button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={[
-              "px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px",
-              activeTab === tab
-                ? "border-[var(--appkit-color-cobalt)] text-[var(--appkit-color-cobalt)]"
-                : "border-transparent text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text)]",
-            ].join(" ")}
-          >
-            {TAB_LABELS[tab]}
-          </Button>
-        ))}
-      </Row>
+      <Div className="mb-6">
+        <TabStrip
+          tabs={(Object.keys(TAB_LABELS) as Tab[]).map((key) => ({ key, label: TAB_LABELS[key] }))}
+          activeKey={activeTab}
+          onChange={(key: string) => setActiveTab(key as Tab)}
+        />
+      </Div>
 
       {activeTab === "account" && renderAccountTab({ user, newEmail, setNewEmail, emailPassword, setEmailPassword, handleEmailSubmit, changeEmail, currentPassword, setCurrentPassword, newPassword, setNewPassword, confirmPassword, setConfirmPassword, handlePasswordSubmit, changePassword })}
       {activeTab === "notifications" && (
@@ -260,7 +325,7 @@ export default function Page() {
         />
       )}
       {activeTab === "privacy" && renderPrivacyTab()}
-      {activeTab === "appearance" && renderAppearanceTab()}
+      {activeTab === "appearance" && renderAppearanceTab({ language, setLanguage: handleLanguageChange })}
     </Div>
   );
 }

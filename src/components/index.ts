@@ -21,4 +21,5 @@ export { AddAddressClient } from "./user/AddAddressClient";
 export { EditAddressClient } from "./user/EditAddressClient";
 export { FontToggleClient } from "./user/FontToggleClient";
 export { ProfilePageClient } from "./user/ProfilePageClient";
+export { ProfileActivityPanel } from "./user/ProfileActivityPanel";
 export { UserAddressesClient } from "./user/UserAddressesClient";

@@ -85,6 +85,12 @@ export { SEARCH_LABELS } from "./search";
 export { FAQ_CATEGORIES } from "./faq";
 export type { FAQCategoryKey } from "./faq";
 
+// Languages + Ticket constants (added 2026-05-17 user-pages cohort)
+export { SUPPORTED_LANGUAGES, LANGUAGES_PAGE_SIZE } from "./languages";
+export type { LanguageOption } from "./languages";
+export { TICKET_CATEGORIES, TICKET_STATUSES } from "./tickets";
+export type { TicketCategory } from "./tickets";
+
 // Dashboard tab configuration (SB10-B / Tier TC2)
 export {
   STORE_LISTINGS_TABS,

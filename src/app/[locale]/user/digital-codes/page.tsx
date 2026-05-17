@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   useSession,
+  useUrlTable,
   ROUTES,
   Div,
   Heading,
@@ -10,8 +11,13 @@ import {
   Stack,
   Row,
   Button,
-
 } from "@mohasinac/appkit/client";
+import { ListingToolbar } from "@mohasinac/appkit/ui";
+
+const SORT_OPTIONS = [
+  { value: "-createdAt", label: "Newest" },
+  { value: "createdAt",  label: "Oldest" },
+];
 import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
 
@@ -104,6 +110,8 @@ function CodeRevealRow({ item, orderId }: { item: OrderItem; orderId: string }) 
 
 export default function UserDigitalCodesPage() {
   const { user, loading: sessionLoading } = useSession();
+  const table = useUrlTable({ defaults: { pageSize: "12", sort: "-createdAt" } });
+  const search = table.get("q") ?? "";
 
   const { data, isLoading } = useQuery<{ items: OrderDoc[] }>({
     queryKey: ["user-digital-codes"],
@@ -116,21 +124,22 @@ export default function UserDigitalCodesPage() {
   });
 
   const codeItems = useMemo(() => {
+    const q = search.trim().toLowerCase();
     const result: Array<{ orderId: string; item: OrderItem }> = [];
     for (const order of data?.items ?? []) {
       for (const item of order.items ?? []) {
-        if (item.listingType === "digital-code") {
-          result.push({ orderId: order.id, item });
-        }
+        if (item.listingType !== "digital-code") continue;
+        if (q && !(item.productTitle?.toLowerCase().includes(q) || order.id.toLowerCase().includes(q))) continue;
+        result.push({ orderId: order.id, item });
       }
     }
     return result;
-  }, [data]);
+  }, [data, search]);
 
   const loading = sessionLoading || isLoading;
 
   return (
-    <Div className="w-full max-w-3xl space-y-6">
+    <Div className="w-full space-y-6">
       <Div>
         <Heading level={1} className="text-2xl font-semibold text-[var(--appkit-color-text)]">
           My Digital Codes
@@ -141,6 +150,18 @@ export default function UserDigitalCodesPage() {
           </Text>
         )}
       </Div>
+
+      <ListingToolbar
+        searchValue={search}
+        searchPlaceholder="Search by product or order…"
+        onSearchChange={(v) => table.set("q", v)}
+        sortValue={table.get("sort") ?? "-createdAt"}
+        sortOptions={SORT_OPTIONS}
+        onSortChange={(v) => table.set("sort", v)}
+        hideViewToggle
+        hasActiveState={!!search}
+        onResetAll={() => table.clear()}
+      />
 
       {loading ? (
         <Stack gap="md">

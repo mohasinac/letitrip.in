@@ -6,7 +6,7 @@ import {
   loadProductFeaturesForStore,
 } from "@mohasinac/appkit";
 import { getProductForDetail } from "@mohasinac/appkit";
-import { MakeOfferButton } from "@mohasinac/appkit/client";
+import { MakeOfferButton, ProductDetailActions } from "@mohasinac/appkit/client";
 import { submitProductOffer } from "./actions";
 import { generateProductMetadata } from "@/constants";
 
@@ -81,7 +81,21 @@ export default async function Page({ params }: Props) {
             productId={productId}
             listedPrice={price}
             minOfferPercent={minOfferPercent}
-            onMakeOffer={submitProductOffer}
+            onMakeOffer={(pid, amount, note) =>
+              submitProductOffer(pid, amount, note)
+            }
+          />
+        )}
+        renderPrimaryActions={(ctx) => (
+          <ProductDetailActions
+            productId={ctx.productId}
+            productSlug={ctx.productSlug}
+            productTitle={ctx.productTitle}
+            productImage={ctx.productImage}
+            price={ctx.price ?? undefined}
+            currency={ctx.currency}
+            inStock={ctx.inStock}
+            variant={ctx.variant}
           />
         )}
       />

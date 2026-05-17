@@ -75,7 +75,19 @@ export async function makeOfferAction(
     const data = await makeOffer(user.uid, user.email ?? "", parsed.data as MakeOfferInput);
     return { ok: true, data };
   } catch (err) {
-    if (err instanceof Error && err.message) return { ok: false, error: err.message };
+    // Log unexpected failures so Vercel's digest-only prod errors are debuggable.
+    if (err instanceof Error && err.message) {
+      // eslint-disable-next-line no-console
+      console.error("[makeOfferAction]", {
+        productId: input?.productId,
+        offerAmount: input?.offerAmount,
+        message: err.message,
+        stack: err.stack,
+      });
+      return { ok: false, error: err.message };
+    }
+    // eslint-disable-next-line no-console
+    console.error("[makeOfferAction] non-Error throw", { input, err });
     return { ok: false, error: "Failed to submit offer. Please try again." };
   }
 }

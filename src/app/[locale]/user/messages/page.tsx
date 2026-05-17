@@ -7,6 +7,7 @@
  * (`chats/{convId}/lastUpdate`, `chats/user/{uid}/lastUpdate`) — no polling.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, Link as I18nLink } from "@/i18n/navigation";
 import {
   ChatList,
   ChatWindow,
@@ -18,6 +19,8 @@ import {
   Text,
   Button,
   Textarea,
+  ROUTES,
+  useUrlTable,
   type ConversationDocument,
   type ConversationMessage,
   useConversation,
@@ -25,6 +28,10 @@ import {
   useSession,
 } from "@mohasinac/appkit/client";
 import { Span } from "@mohasinac/appkit/ui";
+
+interface UserMessagesPageProps {
+  initialActiveId?: string;
+}
 
 const PAGE_CONTAINER = "w-full max-w-6xl mx-auto h-full min-h-[600px]";
 const ITEM_BASE =
@@ -59,14 +66,21 @@ interface ConversationListItemProps {
   conversation: ConversationDocument;
   active: boolean;
   onSelect: () => void;
+  mobileHref: string;
 }
 
-function ConversationListItem({ conversation, active, onSelect }: ConversationListItemProps) {
+function ConversationListItem({ conversation, active, onSelect, mobileHref }: ConversationListItemProps) {
   return (
-    <Button
-      type="button"
-      onClick={onSelect}
-      className={`${ITEM_BASE} ${active ? ITEM_ACTIVE : ITEM_IDLE}`}
+    <I18nLink
+      href={mobileHref}
+      onClick={(e) => {
+        // Desktop: in-page select (and let mobile navigate normally).
+        if (typeof window !== "undefined" && window.matchMedia?.("(min-width: 1024px)")?.matches) {
+          e.preventDefault();
+          onSelect();
+        }
+      }}
+      className={`${ITEM_BASE} block ${active ? ITEM_ACTIVE : ITEM_IDLE}`}
     >
       <Row justify="between" align="start" gap="sm">
         <Div className="min-w-0 flex-1">
@@ -91,7 +105,7 @@ function ConversationListItem({ conversation, active, onSelect }: ConversationLi
           )}
         </Stack>
       </Row>
-    </Button>
+    </I18nLink>
   );
 }
 
@@ -162,20 +176,34 @@ function MessageInput({ disabled, onSend, placeholder, sendLabel }: MessageInput
   );
 }
 
-export default function UserMessagesPage() {
+export default function UserMessagesPage({ initialActiveId }: UserMessagesPageProps = {}) {
   const { user } = useSession();
   const userId = user?.uid ?? null;
   const { conversations, isLoading, refetch } = useConversations(userId);
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const table = useUrlTable({ defaults: {} });
+  const router = useRouter();
+  const urlActive = table.get("c") ?? null;
+  const [activeId, setActiveIdState] = useState<string | null>(initialActiveId ?? urlActive ?? null);
   const { conversation, sendMessage, markRead, isConnected } = useConversation(activeId);
   const messageListRef = useRef<HTMLDivElement | null>(null);
 
-  // Auto-select first conversation on first load.
+  const setActiveId = (id: string | null) => {
+    setActiveIdState(id);
+    table.set("c", id ?? "");
+  };
+
+  // Keep state synced when URL changes (back/forward).
   useEffect(() => {
-    if (!activeId && conversations.length > 0) {
-      setActiveId(conversations[0].id);
-    }
-  }, [activeId, conversations]);
+    if (urlActive !== activeId) setActiveIdState(urlActive);
+  }, [urlActive]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto-select first conversation on desktop if no active selection.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (activeId || conversations.length === 0) return;
+    if (!window.matchMedia?.("(min-width: 1024px)")?.matches) return;
+    setActiveId(conversations[0].id);
+  }, [activeId, conversations]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Mark read whenever the active conversation has unread messages from the seller.
   const messageCount = conversation?.messages.length ?? 0;
@@ -247,6 +275,7 @@ export default function UserMessagesPage() {
                     conversation={c}
                     active={activeId === c.id}
                     onSelect={() => setActiveId(c.id)}
+                    mobileHref={`/user/messages/${c.id}`}
                   />
                 ))}
               </Stack>
@@ -256,7 +285,10 @@ export default function UserMessagesPage() {
         renderMobileBack={() => (
           <Button
             type="button"
-            onClick={() => setActiveId(null)}
+            onClick={() => {
+              setActiveId(null);
+              router.push(String(ROUTES.USER.MESSAGES));
+            }}
             className="md:hidden self-start text-sm text-primary hover:underline pb-2"
           >
             ← Back to conversations

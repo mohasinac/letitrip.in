@@ -1139,12 +1139,38 @@ variant="user"   →  UserSidebar
 ```
 
 Key implementation files:
-- `TitleBarLayout.tsx` — TB1 + TB2 + promo strip
-- `TitleBar.tsx` — domain shell: injects cartCount/wishlistCount/dashboardNav
+- `TitleBarLayout.tsx` — TB1 + TB2 + promo strip; profile icon now carries an unread-notifications badge (red 99+ pill) driven by `unreadNotificationCount` prop (2026-05-17)
+- `TitleBar.tsx` — domain shell: injects cartCount/wishlistCount/dashboardNav; also `useNotifications()` → unread count passed to `TitleBarLayout`
 - `NavbarLayout.tsx` — MNB-1 with scroll arrows
 - `BottomNavLayout.tsx` + `BottomNavbar.tsx` — BN-1
 - `AppLayoutShell.tsx` — assembles everything + public SidebarLayout
-- `DashboardLayoutClient.tsx` — dashboard drawer state + DashboardNavContext registration
+- `DashboardLayoutClient.tsx` — dashboard drawer state + DashboardNavContext registration; content gutter widened to `md:pl-14 lg:pl-16` so the sidebar toggle pill never overlaps content; wrap children in `max-w-screen-2xl mx-auto` so wide screens center (2026-05-17)
+- `UserSidebar.tsx` — toggle tab background switched from hardcoded green gradient to `var(--appkit-color-primary-700)` → `var(--appkit-color-secondary-500)` so it themes light/dark (2026-05-17); `UserNavItem.confirm?: { title?; message }` field intercepts nav with `window.confirm()` (e.g. the buyer→store dashboard link)
+
+---
+
+## Shared > Bid + Offer Modals ✅ (Buzzing Wreath 2026-05-17)
+
+Both flows were inline state machines that took over half the product-detail viewport. They now open in a `<Modal>` from a single CTA button.
+
+```
+PRODUCT / AUCTION DETAIL                    ON BUTTON CLICK
+┌────────────────────────────┐              ┌─────────────────────────┐
+│ ${gallery}     ${meta}      │              │  Place your bid      ✕ │
+│ ${descr}                    │              ├─────────────────────────┤
+│  [Place Bid] ← PlaceBidModalButton  ──→   │  Current: ₹3,00,000    │
+│  [Make Offer] ← MakeOfferButton    ──→    │  Min next:  ₹3,01,000  │
+└────────────────────────────┘              │  Your max: [ 500000 ]   │
+                                            │  (we'll bid in ₹1k steps│
+                                            │   up to your max)       │
+                                            ├─────────────────────────┤
+                                            │           [Cancel][Bid] │
+                                            └─────────────────────────┘
+```
+
+- `appkit/src/features/auctions/components/PlaceBidFormClient.tsx` — body unchanged; new `PlaceBidModalButton` companion wraps the same `<PlaceBidFormClient>` inside `<Modal size="md" title="Place your bid">`.
+- `appkit/src/features/products/components/MakeOfferButton.tsx` — inline state-machine "confirm" stage replaced by `<Modal>`-hosted form; success / pending banners still render inline after the modal closes.
+- `appkit/src/features/auctions/actions/bid-actions.ts` — eBay-style proxy bidding: the buyer's `bidAmount` (or explicit `autoMaxBid`) is treated as their cap; server computes `visibleBid = min(cap, prevCap + minIncrement)` and bumps the previous winner's visible price when their cap still beats the challenger. See verification script `scripts/qa/verify-proxy-bid-logic.mjs` (10 scenarios).
 
 ---
 
@@ -4377,23 +4403,39 @@ MOBILE (<lg) — BottomSheet + double-row header + fixed bottom nav
 
 ---
 
-## User > Account Hub ✅
+## User > Account Hub ✅ (Buzzing Wreath overhaul 2026-05-17 — stats strip + 16-item nav + clickable avatar)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  My Account                                                                  │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  ┌──────────────────────────────────┐                                        │
-│  │ 👤 Ravi Kumar   buyer  ★4.9       │                                        │
-│  │ Joined Apr 2026 · 12 orders      │                                        │
-│  └──────────────────────────────────┘                                        │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │ ┌────┐  Ravi Kumar                                                    │   │
+│  │ │ 👤 │  ravi@example.com                                              │   │
+│  │ │📷  │  View / edit profile →                                         │   │
+│  │ └────┘  ^ avatar is clickable — opens hidden <input type="file">       │   │
+│  │         hover overlay: black/40 + Camera icon ; uploads via            │   │
+│  │         useMediaUpload({type:"user-avatar"}) then useUpdateProfile     │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+│  ┌──────┐ ┌──────────┐ ┌──────────┐ ┌───────────┐ ┌────────┐                │
+│  │ 12   │ │ ₹13,547  │ │ 24       │ │ 3 unread  │ │ Open   │                │
+│  │Orders│ │Total spnt│ │Wishlist  │ │alerts     │ │Support │                │
+│  └──────┘ └──────────┘ └──────────┘ └───────────┘ └────────┘                │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Quick Nav:  [Orders]  [Wishlist]  [Addresses]  [Profile]  [Notifications]  │
+│  Nav grid (2 / 3 / 4 cols at sm/md/lg — 16 links):                          │
+│  [Orders] [Bids] [Offers] [Wishlist] [Pre-Orders] [Digital Codes]            │
+│  [Prize Draws] [Events] [Reviews] [Returns & Refunds] [Addresses]            │
+│  [Messages] [Notifications] [Support] [Settings] [Become a Seller]           │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Recent Orders                                                               │
+│  Recent Orders (3 items via useOrders perPage:3)                            │
 │  order-3-0508  3 items  ₹13,497  SHIPPED   [Track]  [View Details]          │
 │  order-1-0507  1 item   ₹4,999   DELIVERED [Invoice] [Review]               │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+Component: src/app/[locale]/user/page.tsx
+Shell:     <UserAccountHubView renderProfile / renderNav / renderRecentOrders>
+Hooks:     useAuth · useOrders · useNotifications · useWishlistCount ·
+           useMediaUpload · useUpdateProfile · useToast
 ```
 
 ---
@@ -4443,7 +4485,16 @@ MOBILE (<lg) — BottomSheet + double-row header + fixed bottom nav
 
 ---
 
-## User > Wishlist ✅ (VC6 + Session 89a filter drawer)
+## User > Wishlist ✅ (VC6 + Session 89a filter drawer, Phase1 add-path wired 2026-05-17)
+
+> **Phase1 (2026-05-17)**: the `POST /api/wishlist` add-path is now reachable
+> from the product-detail "♡ Add to Wishlist" button via the new
+> `ProductDetailActions` client component. Auth path: `apiClient.post` →
+> 201 / 409 WISHLIST_FULL → toast. Anon path: 401 → `addToGuestWishlist()` →
+> localStorage. Auth-gated via `useAuthGate(ACTION_ID.ADD_TO_WISHLIST)` so
+> anon users see the LoginRequiredModal before any storage write.
+> Prior to Phase1 the button rendered with no onClick handler.
+
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -4510,7 +4561,7 @@ Delete:      two-step — confirmDeleteId state → confirm banner → useDelete
 
 ---
 
-## User > Profile Edit ⏳ (VC3/D2)
+## User > Profile Edit ✅ (Buzzing Wreath 2026-05-17 — + ProfileActivityPanel)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -4519,48 +4570,84 @@ Delete:      two-step — confirmDeleteId state → confirm banner → useDelete
 │  Profile Photo         │  Display Name  [input]                             │
 │  [ImageCropModal]      │  Bio           [textarea]                          │
 │  [Change Photo]        │  Public Profile [tog]                              │
-│                        │  Social Links:                                     │
-│                        │    Twitter/X   [input url]                         │
-│                        │    Instagram   [input url]                         │
-│                        │    YouTube     [input url]                         │
+│                        │  Phone         [input tel]                         │
 └────────────────────────┴────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Your activity                                  <ProfileActivityPanel/>     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  ┌──────────────┐ ┌─────────────────┐ ┌────────────┐ ┌──────────────┐       │
+│  │ Lifetime     │ │ Lifetime spent  │ │ Bids placed│ │ Member since │       │
+│  │ orders: 12   │ │ ₹13,547         │ │ 7          │ │ 2024         │       │
+│  └──────────────┘ └─────────────────┘ └────────────┘ └──────────────┘       │
+├──────────────────────┬──────────────────────┬───────────────────────────────┤
+│ Recent orders        │ Recent bids          │ Recent reviews                 │
+│ • order-3-0508 ₹4.5k │ • Charizard ₹3,00k   │ • ★★★★★ Hot Wheels Redline    │
+│ • order-1-0507 ₹4.9k │ • Gundam ₹1,200      │ • ★★★★  Beyblade BX01         │
+│ [View all]           │ [View all]           │ [View all]                     │
+└──────────────────────┴──────────────────────┴───────────────────────────────┘
+
+Hooks: useAuth + useOrders + useQuery(/api/user/bids?limit=5) +
+       useQuery(/api/user/reviews?limit=5)
+Files: src/app/[locale]/user/profile/page.tsx (mounts both)
+       src/components/user/ProfilePageClient.tsx (form)
+       src/components/user/ProfileActivityPanel.tsx (stats + recent)
 ```
 
 ---
 
-## User > Settings ⏳ (VC4/D3)
+## User > Settings ✅ (Buzzing Wreath 2026-05-17 — TabStrip + Accordion + DynamicSelect)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  Settings                                                                    │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  [Account] [Privacy] [Appearance]                                            │
+│  <TabStrip> — appkit primitive, dark-theme tokens                           │
+│  [ Account  Notifications  Privacy  Appearance ]                            │
+│  ──────                                                                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  TAB: Account                                                                │
-│    Email       current@email.com  [Change Email]                             │
-│    Password    ************       [Change Password]                          │
-│    Phone       +91-XXXXX-XXXXX    [Change Phone]                            │
-│                                                                              │
-│  TAB: Privacy                                                                │
-│    Data Export  [Request Export]                                             │
-│    Delete Account [Delete My Account — confirm modal with reason]           │
-│                                                                              │
+│    ┌── ▾ Change Email ───────────────────────────────────────────────────┐  │
+│    │  ┌─────────────────────────┐  We email a confirmation link to your   │  │
+│    │  │ New email   [input]      │  new address. Until you click it, your │  │
+│    │  │ Current pwd [input]      │  sign-in email stays the same. Link    │  │
+│    │  │ [Send verification email]│  expires after 24 h.                   │  │
+│    │  └─────────────────────────┘                                          │  │
+│    └────────────────────────────────────────────────────────────────────────┘ │
+│    ┌── ▸ Change Password ──────────────────────────────────────────────────┐ │
+│    └────────────────────────────────────────────────────────────────────────┘ │
 │  TAB: Appearance                                                             │
-│    Theme       [sel: light/dark/system]                                     │
-│    Language    [sel: English/Hindi/...]                                      │
-│    Font Size   [sel: small/medium/large]                                    │
+│    ┌──────────────────────────────────────────────┐                          │
+│    │ Cursive font   [<Toggle>]  ← appkit primitive│                          │
+│    └──────────────────────────────────────────────┘                          │
+│    ┌────────────────────────────────────────────────────────────────────┐    │
+│    │ Display language  [<DynamicSelect>  English ▾]                      │    │
+│    │ Searchable + paginated (5/page) over SUPPORTED_LANGUAGES.           │    │
+│    │ Locked entries render "हिन्दी — coming soon"; selecting them is no-op. │    │
+│    └────────────────────────────────────────────────────────────────────┘    │
+│  TAB: Privacy   Download my data · Contact support to delete account         │
+│  TAB: Notifications  <NotificationPreferencesPanel> (multi-channel prefs)   │
 └─────────────────────────────────────────────────────────────────────────────┘
+
+Container: <Div className="w-full max-w-5xl"> (widened from max-w-3xl for accordion 2-col)
+Primitives: TabStrip + Accordion + DynamicSelect + Toggle (all from @mohasinac/appkit/ui)
+Files:      src/app/[locale]/user/settings/page.tsx
+            src/constants/languages.ts  (SUPPORTED_LANGUAGES — 12 Indian + EN)
+            src/components/user/FontToggleClient.tsx (uses appkit <Toggle>)
 ```
 
 ---
 
-## User > Notifications ✅ (VC5/D4)
+## User > Notifications ✅ (Buzzing Wreath 2026-05-17 — tabs dropped, ListingToolbar adopted)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  Notifications                                      [Mark All Read]          │
+│  Notifications                                                               │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  [All] [Unread] [Orders] [Bids] [Offers] [System]                           │
+│  <ListingToolbar>                                       [Mark all read]      │
+│  [🔍 Search notifications…]   [Sort ▾ Newest]   [Reset]                     │
+│  Filters drawer-style row:                                                   │
+│    Type:  [All ▾ / Orders / Bids / System / Promotions]                    │
+│    Read:  [Read & unread ▾ / Unread only / Read only]                       │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  🔵 Order Shipped — Your order #order-3-0508 has been shipped!    May 08 ⋮  │
 │     Carrier: BlueDart · Track: TN123456789                                  │
@@ -5370,7 +5457,19 @@ API key: integrations.googlePlacesApiKey in siteSettings
 
 ---
 
-## Public > Product Detail ✅ *(VD13 updated 2026-05-15)*
+## Public > Product Detail ✅ *(VD13 updated 2026-05-15, Phase1 wired 2026-05-17)*
+
+> **Phase1 (2026-05-17)**: `Buy Now`, `Add to Cart`, `Add to Wishlist` and the
+> mobile sticky BuyBar buttons now have onClick handlers. Previously rendered
+> as bare `<Button>` primitives with no handler (silent no-op in prod).
+> Wiring lives in a new client component `ProductDetailActions` (auth-gated
+> via `useAuthGate` + `ACTION_ID.BUY_NOW`/`ADD_TO_WISHLIST`; `Add to Cart`
+> falls back to guest cart for anon users). `ProductDetailPageView` now
+> exposes a `renderPrimaryActions?: (ctx, variant: 'desktop'|'mobile')` slot;
+> the consumer page `src/app/[locale]/products/[slug]/page.tsx` wires it.
+> Fallback when slot omitted: disabled buttons with `title="Action not wired"`
+> as a loud drift signal.
+
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -5462,7 +5561,30 @@ STICKY BUY BAR (on scroll past buy box):
 
 ---
 
-## Public > Auction Detail ✅ *(VD13 updated 2026-05-15)*
+## Public > Auction Detail ✅ *(VD13 updated 2026-05-15, Phase1 bid-fix 2026-05-17, proxy-bid semantics 2026-05-17)*
+
+> **Phase1 bid placement (2026-05-17)**: previously `placeBid` loaded *every*
+> bid on the auction and rewrote `status: outbid` in a single Firestore batch,
+> overflowing the 500-op cap on auctions with hundreds of bids
+> ("Batch write failed"). Now uses `bidRepository.getWinningBid(productId)`
+> to flip only the previous winner (→ outbid) + the new bid (→ active) +
+> the product document. 3 writes per bid regardless of total bid history.
+>
+> **Proxy-bid semantics (2026-05-17, eBay-style)**: `bidAmount` is treated as
+> the buyer's *maximum* they're willing to pay (or `autoMaxBid` if supplied
+> separately as the secret cap). The visible `currentBid` only steps up in
+> `minIncrement` units as needed to stay ahead of the previous high bid.
+> Decision matrix (computed in `decideBidOutcome`):
+> - **Same bidder raises own cap** → keeps winning, visible unchanged
+> - **New cap > prev cap** → new wins, visible = `min(newCap, prevCap + minIncrement)`
+> - **New cap ≤ prev cap** → prev keeps winning (first-bidder advantage on ties);
+>   their visible bumps up to `min(prevCap, newCap + minIncrement)` to outpace
+> - **No previous winner** → wins, visible = `min(newCap, baseBid + minIncrement)`
+>
+> Verification: `node scripts/qa/verify-proxy-bid-logic.mjs` runs 10 table-driven
+> scenarios against a mirror of the pure decision logic. Keep mirror in sync
+> with `bid-actions.ts` or the script will (correctly) flag drift.
+
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -5977,7 +6099,16 @@ FAQs: static RSC — no toolbar, ?q= silently accepted but not filtered.
 
 ---
 
-## Public > Cart ✅ Session 79
+## Public > Cart ✅ Session 79 *(Phase1 add-path wired 2026-05-17)*
+
+> **Phase1 (2026-05-17)**: the cart's `POST /api/cart` entry is now reachable
+> from product detail via `ProductDetailActions` → `useAddToCart` mutation
+> (already had guest fallback via `addToGuestCart` on 401/403). "Buy Now" =
+> add-to-cart + `router.push(ROUTES.USER.CHECKOUT)`. Auth-gated via
+> `useAuthGate(ACTION_ID.BUY_NOW)` for the buy path; `Add to Cart` itself
+> stays anon-friendly via guest cart. Prior to Phase1 these buttons rendered
+> with no onClick handler — silent no-op in prod.
+
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -9713,6 +9844,169 @@ Tab bar:  [Account]  [Privacy]  [Appearance]
 │  LANGUAGE                                                                    │
 │  Display Language  [English ▾] (disabled — coming soon)                     │
 └─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## User > Data Pages — Listing Toolbar Adoption ✅ (Buzzing Wreath 2026-05-17)
+
+All eleven buyer-dashboard data pages share the same chrome: `useUrlTable()` driving
+URL state (search `q`, sort, status filter, page), `<ListingToolbar>` for the chrome,
+and a `<select>` next to it for the status filter. Filters deep-link; pagination is
+URL-driven; sort changes the URL.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ${Page Title}                                       (server total count)    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  <ListingToolbar>                                                            │
+│  [🔍 Search ${entity}…]  [Sort ▾ ${default}]  [Filters (N)]  [Reset]        │
+│  [Status ▾ ${entity-specific options}]                                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  ${cards or rows — pagination at bottom}                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+Adoption table (all pages live under `src/app/[locale]/user/${slug}/page.tsx`):
+
+| Page          | Sorts                                | Status filter values                                              | Notes                            |
+|---------------|--------------------------------------|-------------------------------------------------------------------|----------------------------------|
+| orders        | -createdAt · createdAt · ±totalAmount | pending / processing / shipped / delivered / cancelled / refunded / return_requested | uses appkit `useOrders`          |
+| returns       | -updatedAt · ±createdAt              | (server filter pinned to return_requested)                        | reuses OrdersList                |
+| reviews       | ±createdAt · ±rating                 | approved / pending / rejected                                     | client-side filter+sort          |
+| pre-orders    | ±createdAt · ±totalAmount            | —                                                                 | filters orders by listingType    |
+| prize-draws   | ±createdAt                           | —                                                                 | filters orders by listingType    |
+| digital-codes | ±createdAt                           | —                                                                 | flattens to {orderId,item} rows  |
+| events        | ±submittedAt                         | approved / pending / flagged / rejected                           | from /api/user/events            |
+| bids          | -bidTime · ±amount                   | active / outbid / won / cancelled                                 | uses appkit AuctionBidsTable     |
+| notifications | -createdAt · -priority               | (type+read selects instead of status)                             | mark-all-read action in toolbar  |
+| support       | -updatedAt · ±createdAt              | open / in_progress / waiting_on_user / resolved / closed          | + "[+ New ticket]" CTA           |
+| addresses     | (inline search + label filter only)  | label filter from address.label set                                | few-rows surface; no pagination  |
+
+---
+
+## User > My Bids ✅ (Buzzing Wreath 2026-05-17 — listing toolbar + status filter)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  My Bids                                                    7 bids           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [🔍 Search by auction id…]  [Sort ▾ Newest first]   [Reset]                │
+│  [Status ▾ All statuses]                                                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  <AuctionBidsTable portal="buyer">                                          │
+│  Auction               Your bid    Status       When                         │
+│  Charizard PSA9 1st    ₹3,00,000   OUTBID       2 days ago    [View auction]│
+│  Goku Ultra Ego        ₹6,999      ACTIVE       3 h ago       [View auction]│
+│  ──────────────────────────────────────────────────────────────────────────│
+│  Empty state: "You haven't placed any bids yet. Browse auctions →"          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Click "View auction" → /auctions/${productId} (full bid history with proxy-bid info).
+```
+
+---
+
+## User > Support Tickets ✅ (Buzzing Wreath 2026-05-17 — listing layout + dedicated new/edit/detail pages)
+
+```
+LIST  /user/support
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Support Tickets                            5 tickets         [+ New ticket]│
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [🔍 Search tickets…]  [Sort ▾ Recently updated]   [Reset]                  │
+│  [Status ▾ All statuses]                                                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Wrong item delivered                                       [open ⋯]         │
+│  order issue · Order order-3-0508-a1b2c3 · Updated May 08                    │
+│  ──────────────────────────────────────────────────────────────────────────│
+│  Refund for Charizard                                       [resolved ⋯]    │
+│  refund request · Updated May 06                                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+NEW   /user/support/new
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ← All tickets                                                               │
+│  New support ticket                                                          │
+│  Tell us what happened. Include as much detail as you can…                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Category    [order issue ▾]   ← TICKET_CATEGORIES                          │
+│  Order ID    [text input]      ← only when category=order_issue             │
+│  Subject     [text]    helper: 0/200 — min 3 chars                          │
+│  Describe the issue                                                          │
+│  [────────── textarea ──────────]   helper: 0/5000 — min 10 chars            │
+│                                                                              │
+│  [Submit ticket]   [Cancel]                                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+DETAIL  /user/support/[id]
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ← All tickets                                                               │
+│  Wrong item delivered                                       [open]           │
+│  order issue · Order order-3-0508-a1b2c3 · Opened May 08, 14:23              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  ▸ Your original message                                                    │
+│    Received a Pikachu plush instead of the Charizard ETB…                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Conversation                                                                │
+│  ┌── Support · May 08, 16:05 ──────────────────────────────────────────────┐ │
+│  │  Apologies for the mix-up — please send back what you received…         │ │
+│  └──────────────────────────────────────────────────────────────────────────┘ │
+│  ┌── You · May 08, 17:10 ──────────────────────────────────────────────────┐ │
+│  │  Done, shipped via BlueDart, AWB 12345…                                 │ │
+│  └──────────────────────────────────────────────────────────────────────────┘ │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  Add a reply                                                                 │
+│  [──────────── textarea ────────────]                                        │
+│  [Send reply]                                                                │
+│  (For closed/resolved tickets: input replaced by                            │
+│   "This ticket is ${status}. Open a new ticket if you need further help.")   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+API:
+  GET  /api/support/tickets              list (existed)
+  POST /api/support/tickets              create (existed)
+  GET  /api/support/tickets/[id]         single + messages (NEW in this cohort)
+  POST /api/support/tickets/[id]/messages reply / status change (existed)
+
+Constants: src/constants/tickets.ts → TICKET_CATEGORIES (8) + TICKET_STATUSES (6)
+Status enum mirrors server: open · in_progress · waiting_on_user · resolved · closed
+Message fields:             authorId · authorRole ("user"|"support"|"admin") · body · createdAt
+```
+
+---
+
+## User > Messages — deep-linkable [id] route ✅ (Buzzing Wreath 2026-05-17)
+
+```
+DESKTOP (lg+) — /user/messages or /user/messages/[id] — master-detail
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Messages                                              7 conversations · 3 unread│
+├──────────────────────────────────┬──────────────────────────────────────────┤
+│  Conversation list               │  ChatWindow                              │
+│  (≤ ConversationListItem rows)   │  (active conversation messages + input)  │
+│                                  │                                          │
+│  Click row → e.preventDefault()  │  URL: /user/messages?c=${convId}          │
+│              setActiveId(c.id)    │  Refresh / share-tab works.              │
+│              URL gains ?c=…       │                                          │
+└──────────────────────────────────┴──────────────────────────────────────────┘
+
+MOBILE (< lg) — list or chat, never both
+  /user/messages         → list view (no right pane)
+  /user/messages/[id]    → chat view (← Back to conversations)
+
+Row implementation:
+  <I18nLink href={`/user/messages/${c.id}`}
+            onClick={e => {
+              if (window.matchMedia("(min-width: 1024px)").matches) {
+                e.preventDefault();        // desktop: in-page swap
+                setActiveId(c.id);
+              }                            // mobile: let Link push the route
+            }}>
+
+Files:
+  src/app/[locale]/user/messages/page.tsx          → master-detail (`useUrlTable` `c` key)
+  src/app/[locale]/user/messages/[id]/page.tsx     → server shim, passes initialActiveId
 ```
 
 ---

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { Heading, Text } from "@mohasinac/appkit";
@@ -12,6 +12,8 @@ import {
   useToast,
   ROUTES,
   Div,
+  Row,
+  Input,
   Button,
 } from "@mohasinac/appkit/client";
 
@@ -20,8 +22,10 @@ export function UserAddressesClient() {
   const { showToast } = useToast();
   const [_deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [labelFilter, setLabelFilter] = useState<string>("");
 
-  const { data: addresses = [], isLoading } = useAddresses();
+  const { data: rawAddresses = [], isLoading } = useAddresses();
 
   const deleteAddress = useDeleteAddress({
     onSuccess: () => {
@@ -50,6 +54,23 @@ export function UserAddressesClient() {
     deleteAddress.mutate({ id: confirmDeleteId });
   };
 
+  const labels = useMemo(() => {
+    const set = new Set<string>();
+    for (const a of (rawAddresses as any[]) ?? []) if (a?.label) set.add(a.label);
+    return Array.from(set).sort();
+  }, [rawAddresses]);
+
+  const addresses = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return ((rawAddresses as any[]) ?? []).filter((a) => {
+      if (labelFilter && a?.label !== labelFilter) return false;
+      if (!q) return true;
+      return [a?.fullName, a?.addressLine1, a?.city, a?.state, a?.postalCode]
+        .filter(Boolean)
+        .some((v: string) => v.toLowerCase().includes(q));
+    });
+  }, [rawAddresses, search, labelFilter]);
+
   if (isLoading) {
     return (
       <Div className="grid sm:grid-cols-2 gap-4">
@@ -75,6 +96,35 @@ export function UserAddressesClient() {
           + Add Address
         </Link>
       </Div>
+
+      <Row gap="md" className="flex-wrap items-end">
+        <Div className="flex-1 min-w-[200px]">
+          <Input
+            id="address-search"
+            label="Search"
+            placeholder="Name, street, city, state, pincode…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </Div>
+        {labels.length > 0 && (
+          <Div className="min-w-[160px]">
+            <Text className="text-xs font-medium text-[var(--appkit-color-text-muted)] mb-1">Label</Text>
+            {/* eslint-disable-next-line lir/no-raw-html-elements -- inline filter; small surface */}
+            <select
+              value={labelFilter}
+              onChange={(e) => setLabelFilter(e.target.value)}
+              className="w-full rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)]"
+              aria-label="Filter by label"
+            >
+              <option value="">All labels</option>
+              {labels.map((l) => (
+                <option key={l} value={l}>{l}</option>
+              ))}
+            </select>
+          </Div>
+        )}
+      </Row>
 
       {confirmDeleteId && (
         <Div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950 p-4 space-y-3">

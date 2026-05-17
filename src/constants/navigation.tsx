@@ -365,8 +365,17 @@ const STORE_DASHBOARD_LABEL = "Store Dashboard";
 const BECOME_SELLER_LABEL = "Open a Store";
 
 export function getUserNavGroups(isSeller: boolean): UserNavGroup[] {
+  // NOTE: the `confirm` field is added on the appkit `UserNavItem` interface but
+  // ships with the next appkit publish; cast keeps tsc happy against the
+  // currently-installed dist which doesn't expose it yet.
   const sellingItem: UserNavItem = isSeller
-    ? { href: String(ROUTES.STORE.DASHBOARD), label: STORE_DASHBOARD_LABEL }
+    ? ({
+        href: String(ROUTES.STORE.DASHBOARD),
+        label: STORE_DASHBOARD_LABEL,
+        confirm: {
+          message: "Leave your buyer dashboard for the seller dashboard?",
+        },
+      } as UserNavItem)
     : { href: String(ROUTES.USER.BECOME_SELLER), label: BECOME_SELLER_LABEL };
   return USER_NAV_GROUPS.map((group) =>
     group.title === SELLING_GROUP_TITLE ? { ...group, items: [sellingItem] } : group,

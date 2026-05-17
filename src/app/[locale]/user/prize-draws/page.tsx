@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "@/i18n/navigation";
 import {
   useSession,
+  useUrlTable,
   ROUTES,
   Div,
   Heading,
@@ -12,6 +13,12 @@ import {
   Row,
   Badge,
 } from "@mohasinac/appkit/client";
+import { ListingToolbar } from "@mohasinac/appkit/ui";
+
+const SORT_OPTIONS = [
+  { value: "-createdAt", label: "Newest" },
+  { value: "createdAt",  label: "Oldest" },
+];
 import { API_ROUTES } from "@/constants";
 
 interface OrderItem {
@@ -47,6 +54,9 @@ const STATUS_VARIANT: Record<string, "active" | "pending" | "danger" | "info" | 
 
 export default function UserPrizeDrawsPage() {
   const { user, loading: sessionLoading } = useSession();
+  const table = useUrlTable({ defaults: { pageSize: "12", sort: "-createdAt" } });
+  const search = table.get("q") ?? "";
+  const sort = table.get("sort") ?? "-createdAt";
 
   const { data, isLoading } = useQuery<{ items: OrderDoc[] }>({
     queryKey: ["user-prize-draws"],
@@ -58,18 +68,28 @@ export default function UserPrizeDrawsPage() {
     staleTime: 30_000,
   });
 
-  const orders = useMemo(
-    () =>
-      (data?.items ?? []).filter((o) =>
-        o.items?.some((item) => item.listingType === "prize-draw"),
-      ),
-    [data],
-  );
+  const orders = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    const base = (data?.items ?? []).filter((o) =>
+      o.items?.some((item) => item.listingType === "prize-draw"),
+    );
+    const filtered = q
+      ? base.filter((o) =>
+          o.id.toLowerCase().includes(q) ||
+          o.items.some((it) => it.productTitle?.toLowerCase().includes(q)),
+        )
+      : base;
+    return [...filtered].sort((a, b) =>
+      sort === "createdAt"
+        ? +new Date(a.createdAt) - +new Date(b.createdAt)
+        : +new Date(b.createdAt) - +new Date(a.createdAt),
+    );
+  }, [data, search, sort]);
 
   const loading = sessionLoading || isLoading;
 
   return (
-    <Div className="w-full max-w-3xl space-y-6">
+    <Div className="w-full space-y-6">
       <Div>
         <Heading level={1} className="text-2xl font-semibold text-[var(--appkit-color-text)]">
           My Prize Draws
@@ -80,6 +100,18 @@ export default function UserPrizeDrawsPage() {
           </Text>
         )}
       </Div>
+
+      <ListingToolbar
+        searchValue={search}
+        searchPlaceholder="Search prize draws…"
+        onSearchChange={(v) => table.set("q", v)}
+        sortValue={sort}
+        sortOptions={SORT_OPTIONS}
+        onSortChange={(v) => table.set("sort", v)}
+        hideViewToggle
+        hasActiveState={!!search}
+        onResetAll={() => table.clear()}
+      />
 
       {loading ? (
         <Stack gap="md">
