@@ -1183,6 +1183,7 @@ PRODUCT / AUCTION DETAIL                    ON BUTTON CLICK
 The primary create/edit UX. A full-viewport-width overlay panel that slides in from the right. Sticky top bar + optional left section nav + scrollable body + sticky bottom bar.
 > **Padding contract**: top bar `px-5`, body inner wrapper `px-5 py-6 sm:px-6`, bottom bar `px-5`. All ≥5% at 375 px.
 > **`renderBottomBar` prop**: in create mode (no `onSaveDraft`/`onPublish`), callers MUST pass `renderBottomBar` to get a sticky action bar — otherwise the panel has no footer. `StepForm` passes `hideActions` when this is used so actions don't duplicate in the scrollable body.
+> **`FormShellProvider`**: wrap any form (or the whole FormShell body) in `<FormShellProvider isDirty={isDirty} values={draft}>` to expose dirty/save state via `useFormShellState()`. Used by `SellerProductShell` + all admin editors. Auto-save (debounced 2s, create mode only) fires when `isDirty` is true inside `SellerProductShell`.
 
 ```
 DESKTOP (≥ 768px)
@@ -1269,13 +1270,15 @@ Other QuickFormDrawer uses (all the same shell, different fields):
 Rendered inside FormShell body (replaces section nav for CREATE flows). Bottom bar CTA labels change per step. Progress auto-saved to `localStorage` on each step advance.
 > **`hideActions` prop**: when `true`, suppresses built-in `StepFormActions` + `stepError` inside body. Use with `FormShell.renderBottomBar` so actions are pinned to the sticky footer, not scrolled away.
 > **Action bar padding**: `px-5 py-3` (≥5% at 375 px).
+> **`stepErrors?: boolean[]` prop**: when a step has a validation error (`stepErrors[i] === true`), a red dot badge appears on the step indicator. Computed via `useMemo(() => steps.map(s => Boolean(s.validate?.(draft))), [draft])` in `SellerProductShell`. Powered by `FormShellProvider` context (dirty/save state tracking). Use `useFormShellState()` hook to read `isDirty` + `values` anywhere inside the form.
 
 ```
 STEP INDICATOR  (sticky below top bar, ~48px)
 ┌─────────────────────────────────────────────────────────────────────────────────────┐
 │  ① Basic Info  ──────  ② Media  ──────  ③ Pricing  ──────  ④ Shipping  ──  ⑤ SEO   │
-│   [●]                  [●]              [◑ current]         [○]              [○]    │
-│   ✓ complete           ✓ complete       ← active             locked          locked  │
+│   [●]                  [●] ●            [◑ current]         [○]              [○]    │
+│   ✓ complete     ✓ + ● error dot        ← active             locked          locked  │
+│                  (red dot = stepErrors[i] === true)                                  │
 └─────────────────────────────────────────────────────────────────────────────────────┘
 
 STEP BODY  (scrollable, only current step visible at a time):
@@ -6134,9 +6137,12 @@ Data flow:
   CartRouteClient → POST /api/cart/validate → { stale[], outOfStock[] }
   Stale items → DELETE /api/cart/[id] (auth) or localStorage.remove (guest)
   OOS items → shown grayed, qty locked, checkout disabled if only OOS remain
-  Qty change → PATCH /api/cart/[id] (auth) with error toast
-  Remove → DELETE /api/cart/[id] (auth) with success/error toast
+  Qty change → PATCH /api/cart/[id] (auth) with optimistic qty override; reverted on error
+  Remove → optimistic hide (pendingRemoveIds set) → 5s undo timer →
+           DELETE /api/cart/[id] on expiry; Undo button in toast cancels the timer
+  showToast 4th arg: action?: { label, onClick } — used for Undo button on remove
   Item title → getProductHref() maps slug prefix to ROUTES.PUBLIC.PRODUCT/AUCTION/PRE_ORDER_DETAIL
+  TDZ fix: effectiveItems useMemo declared before subtotal (was ReferenceError crash)
 ```
 
 ---

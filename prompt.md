@@ -133,15 +133,31 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### 🔄 CURRENT — S-sb-uni-n (2026-05-17): SB-UNI-N checkout claim + CodeRevealPanel wiring
+### 🔄 CURRENT — S-hotfix-cart (2026-05-17): Cart TDZ crash + optimistic UI + appkit quality gates
 
-SB-UNI-N now ⚠️ (partial). appkit 2.7.44: `claimDigitalCodeForOrder` helper added to checkout actions — fires after order creation in both COD and Razorpay paths for `listingType === "digital-code"` items. Pre-fetches available code outside transaction, atomically claims in micro-transaction.
-SB-UNI-N remaining: email on code claim; refund revocation; redeemed-code refund block.
-SB-UNI-O still ⏳ — cart-level jurisdiction, transport ack page, vendor gate.
+- **CartRouteClient TDZ fix**: `effectiveItems` was referenced in `subtotal` before its `useMemo` declaration — caused `ReferenceError: Cannot access 'effectiveItems' before initialization` on every cart page load. Declaration order corrected: `optimisticQty` → `pendingRemoveIds` → `undoTimers` → `effectiveItems` → `subtotal`.
+- **Optimistic remove + undo toast**: `handleRemove` now optimistically hides item (`pendingRemoveIds`) for 5s undo window, then fires `DELETE /api/cart/[id]`; `showToast` 4th arg `action?: { label, onClick }` wires the Undo button.
+- **Optimistic qty**: `handleQtyChange` applies qty override immediately via `optimisticQty` Map; reverted on API error.
+- **`effectiveItems` derives from `cartItems`** minus pendingRemoveIds + qty overrides; `inStockItems/oosItems/isEmpty/subtotal` all read from it.
+- **Toast action 4th arg**: `Toast.tsx` extended with `action?: { label: string; onClick: () => void }`; `showToast(msg, variant?, duration?, action?)`.
+- **FormShellProvider** + `useFormShellState` hook added to `FormShell.tsx`; exported from `client.ts`. All admin editors + `SellerProductShell` wrapped.
+- **StepForm `stepErrors?: boolean[]`**: red dot badge on errored steps in `StepIndicator`.
+- **`SellerProductShell`**: auto-save debounced 2s (create mode); `stepValidationErrors` computed from `steps[i].validate?.(draft)`.
+- **`prepublishOnly`**: `npm run build` gating in `appkit/package.json` — publish blocked if build/CSS verification fails.
+- Two commits: appkit (`b1510ed`) + consumer (`08372065c`). `npm run check` clean.
+- Next: SB-UNI phase continuation (SB-UNI-N email claim + refund revocation; SB-UNI-O vendor gate).
 
 ---
 
-### ✅ LAST COMPLETED — S-user-pages + S-auction-modal: Buyer-dashboard overhaul + auction bid modal + footer build stamp (2026-05-17)
+### ✅ LAST COMPLETED — S-sb-uni-n (2026-05-17): SB-UNI-N checkout claim + CodeRevealPanel wiring + appkit 2.7.45
+
+- `claimDigitalCodeForOrder` helper in checkout actions — fires after order creation in COD and Razorpay paths for `listingType === "digital-code"` items. Pre-fetches available code outside transaction, atomically claims in micro-transaction.
+- `CodeRevealPanel` wired to order-detail page + digital-codes dashboard tab.
+- Live vendor gate (SB-UNI-O partial): `listingType === "digital-code"` items blocked from checkout if vendor not configured.
+- appkit 2.7.44 → 2.7.45; consumer pinned to 2.7.45.
+- SB-UNI-N remaining: email on code claim; refund revocation; redeemed-code refund block.
+
+### ✅ PREVIOUS LAST — S-user-pages + S-auction-modal: Buyer-dashboard overhaul + auction bid modal + footer build stamp (2026-05-17)
 
 - **Cohort 1** (layout/theming): sidebar toggle themed; Settings page TabStrip + Accordion; `FontToggleClient` → appkit `<Toggle>` (LR1-16 ✅)
 - **Cohort 2** (profile density): user hub stats strip + clickable avatar upload; `ProfileActivityPanel`; `languages.ts`; DynamicSelect for language picker
@@ -152,21 +168,6 @@ SB-UNI-O still ⏳ — cart-level jurisdiction, transport ack page, vendor gate.
 - **Cohort 8** (modals + proxy-bid): `MakeOfferButton` → Modal; `PlaceBidModalButton`; proxy-bid (cap + visibleBid); `UserSidebar.confirm`; `AuctionDetailPageView` compact bid card + PlaceBidModalButton; become-seller leave-confirm
 - **Build stamp**: `next.config.js` injects `NEXT_PUBLIC_{APP_VERSION,APPKIT_VERSION,COMMIT_SHA}` at build time; footer copyright appends version string
 - appkit 2.7.40 → 2.7.42; `npm run check` exits 0; `audit-user-pages-overhaul` 37 checks ✓
-
-### ✅ PREVIOUS LAST — S-full-audit: Comprehensive Platform Audit & Fix (2026-05-17)
-
-- **A1**: Added 10 missing Firestore composite indices (bids user history, products seller tabs, orders pending/prize-reveal/earnings, coupons admin filter, categories nav tree, eventEntries user history)
-- **B1–B6** (prior session): Bid runTransaction race fix, minBidIncrement validation, bids/route.ts error catch, leadingBidderId in onBidPlaced, BID_ERROR_CODES, PlaceBidFormClient code-mapped errors
-- **B7–B9**: `checkoutDeadline` field on `OfferDocument`; written on seller accept + buyer counter-accept; validated in `checkoutOffer()` with `OFFER_ERROR_CODES.CHECKOUT_EXPIRED`
-- **B10–B14**: `handleActionError` utility in `appkit/src/utils/action-response.ts`; `ActionResult<T>` extended with `code?` + `debug?`; all offer server actions wrapped; page shims unwrap ActionResult to `throw Error`
-- **C1a**: `/store/bundles/page.tsx` — replaced "coming soon" with informational Alert + link to listings
-- **C1b**: `/admin/dashboard/page.tsx` — wired `renderAlerts` (4 stat cards) + `renderRecentActivity` (5 recent orders) via client-side fetch
-- **C1e**: User bids pagination — `findByUserPaginated()` added to `BidRepository`; `/api/user/bids` route updated
-- **C2–C5**: pw-19 (bid placement), pw-20 (prize draw reveal), pw-21 (offers flow), pw-22 (admin power actions) smoke suites written
-- **C6**: pw-01 updated with checkout OTP consent checkpoint; pw-16 updated with admin site + fees tab; sieve-16 updated with combo filter test
-- **C7–C8**: `EMAIL_FROM_NAME` fixed to `"LetItRip"`; `scripts/audit-env-alignment.mjs` created
-- **PrintCenterView** stub added to appkit (component was deleted in S-print-center-cleanup but 3 consuming pages remained)
-- `npm run check` exits 0
 
 ### ✅ PREVIOUS LAST — S-formshells-padding: FormShell action buttons + RowActionMenu portal + 5% x-padding + double-padding sweep (2026-05-17)
 
