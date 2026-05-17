@@ -41,6 +41,28 @@
 
 ---
 
+### S-user-pages + S-auction-modal — Buyer-dashboard overhaul + auction bid modal + footer build stamp (2026-05-17)
+
+**8-cohort user-dashboard overhaul (appkit 2.7.40→2.7.42). `npm run check` exits 0. `audit-user-pages-overhaul` 37 checks ✓.**
+
+| Area | Detail |
+|------|--------|
+| **Cohort 1: layout/theming** | Sidebar toggle themed (no hardcoded green gradient). `FontToggleClient` → appkit `<Toggle>` (bespoke iOS switch removed; giant-circle render bug fixed). Settings page TabStrip + Accordion replaces hand-rolled tab buttons. LR1-16 ✅. |
+| **Cohort 2: profile density** | User hub: stats strip (orders/spent/wishlist/unread/support), 16-item nav grid, clickable avatar with Camera overlay → `useMediaUpload + useUpdateProfile`. `ProfileActivityPanel` (lifetime stats + recent orders/bids/reviews). Settings: Email+Password → Accordion, language → `DynamicSelect`. `src/constants/languages.ts` (12 Indian languages + English). |
+| **Cohort 3: TitleBar unread badge** | `TitleBar` wires `useNotifications`; unread count drives numeric badge on avatar. |
+| **Cohort 4+5: toolbar adoption** | `useUrlTable + ListingToolbar` on: bids (status filter), orders (search+sort+7 statuses), pre-orders, events (reviewStatus), digital-codes (product+order search), prize-draws, returns, reviews (URL filters). `UserAddressesClient`: inline search + label dropdown. LR1-11 ✅. Notifications: tabs removed, type+read toolbar selects only. |
+| **Cohort 6: messages deep-link** | `/user/messages/[id]` route reads `?c=` URL param to open conversation directly in `ChatWindow`. |
+| **Cohort 7: support tickets** | `/user/support/page.tsx` — listing layout + status select + "New ticket" CTA. `/user/support/new/page.tsx` — full-page create form (category/subject/description/attachments). `/user/support/[id]/page.tsx` — ticket thread + reply + mark-as-resolved. `GET /api/support/tickets/[id]` — new detail route. `src/constants/tickets.ts` — `TICKET_CATEGORIES` + `TICKET_STATUSES`. |
+| **Cohort 8: modals + proxy-bid** | `MakeOfferButton` renders offer form inside `<Modal>`. `PlaceBidModalButton` companion exported from `PlaceBidFormClient`. `bid-actions` implements proxy-bid (cap + visibleBid + bumpedPreviousVisible). `UserSidebar.confirm` intercept prop + seller-dashboard leave-confirm copy. `pw-23-phase1-public-mutations` + `verify-proxy-bid-logic` scripts. |
+| **S-auction-modal** | `AuctionDetailPageView`: compact bid-summary card (current bid + count + min-increment) + full-width `PlaceBidModalButton` trigger. appkit 2.7.42. |
+| **Build stamp** | `next.config.js`: injects `NEXT_PUBLIC_{APP_VERSION,APPKIT_VERSION,COMMIT_SHA}` at build time. `LayoutShellClient`: footer copyright appends `v2.7.42 · appkit 2.7.42 · #sha7` for deploy observability. |
+| **Tracker** | LR1-11 ✅, LR1-16 ✅. Header updated. |
+| **Commits** | `44a16901d` (user-pages overhaul, appkit 2.7.40) · `8bb959807` (appkit 2.7.41 + Firebase/Vercel deploy) · `16052e7` (appkit 2.7.42 AuctionDetailPageView) · `c860c85a0` (auction modal + build stamp) |
+
+**No deferred items.**
+
+---
+
 ### S-full-audit — Comprehensive Platform Audit & Fix (2026-05-17)
 
 **Sub-sessions A (indices), B (bid/offer business logic), C (UI + QA). `npm run check` exits 0.**

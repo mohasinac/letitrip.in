@@ -133,13 +133,27 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### 🔄 CURRENT — S-full-audit (closed 2026-05-17): Next: SB-UNI Phase 3–9 or S-polish-pass
+### 🔄 CURRENT — S-user-pages + S-auction-modal (closed 2026-05-17): Next: SB-UNI Phase 3–9 or S-polish-pass
 
-S-full-audit completed. All A/B/C sub-sessions done. Pull next ⏳ task from `crud-tracker.md`.
+S-user-pages overhaul committed at `44a16901d` (8 cohorts, appkit 2.7.40→2.7.42).
+S-auction-modal + build-stamp committed at `c860c85a0`.
+LR1-11 + LR1-16 marked ✅. Pull next ⏳ task from `crud-tracker.md`.
 
 ---
 
-### ✅ LAST COMPLETED — S-full-audit: Comprehensive Platform Audit & Fix (2026-05-17)
+### ✅ LAST COMPLETED — S-user-pages + S-auction-modal: Buyer-dashboard overhaul + auction bid modal + footer build stamp (2026-05-17)
+
+- **Cohort 1** (layout/theming): sidebar toggle themed; Settings page TabStrip + Accordion; `FontToggleClient` → appkit `<Toggle>` (LR1-16 ✅)
+- **Cohort 2** (profile density): user hub stats strip + clickable avatar upload; `ProfileActivityPanel`; `languages.ts`; DynamicSelect for language picker
+- **Cohort 3** (TitleBar): `useNotifications` wired; unread badge on title bar avatar
+- **Cohort 4+5** (toolbar adoption): `useUrlTable + ListingToolbar` on bids, orders, pre-orders, events, digital-codes, prize-draws, returns, reviews; `UserAddressesClient` inline search + label filter (LR1-11 ✅)
+- **Cohort 6** (messages): `/user/messages/[id]` deep-link route; notifications toolbar-only (tabs removed)
+- **Cohort 7** (tickets): `/user/support/new`, `/user/support/[id]`, `GET /api/support/tickets/[id]`, `src/constants/tickets.ts`
+- **Cohort 8** (modals + proxy-bid): `MakeOfferButton` → Modal; `PlaceBidModalButton`; proxy-bid (cap + visibleBid); `UserSidebar.confirm`; `AuctionDetailPageView` compact bid card + PlaceBidModalButton; become-seller leave-confirm
+- **Build stamp**: `next.config.js` injects `NEXT_PUBLIC_{APP_VERSION,APPKIT_VERSION,COMMIT_SHA}` at build time; footer copyright appends version string
+- appkit 2.7.40 → 2.7.42; `npm run check` exits 0; `audit-user-pages-overhaul` 37 checks ✓
+
+### ✅ PREVIOUS LAST — S-full-audit: Comprehensive Platform Audit & Fix (2026-05-17)
 
 - **A1**: Added 10 missing Firestore composite indices (bids user history, products seller tabs, orders pending/prize-reveal/earnings, coupons admin filter, categories nav tree, eventEntries user history)
 - **B1–B6** (prior session): Bid runTransaction race fix, minBidIncrement validation, bids/route.ts error catch, leadingBidderId in onBidPlaced, BID_ERROR_CODES, PlaceBidFormClient code-mapped errors
