@@ -133,14 +133,11 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### 🔄 CURRENT — S-sb-uni-n-partial (2026-05-17): SB-UNI-M ✅ verified + CodeRevealPanel wired to order detail + digital-codes pages
+### 🔄 CURRENT — S-sb-uni-n (2026-05-17): SB-UNI-N checkout claim + CodeRevealPanel wiring
 
-SB-UNI-M verified fully done (classified chat flow — classified PDP Contact Seller + action + consumer shim). Marked ✅.
-appkit `client.ts` gained `CodeRevealPanel` + `RevealedCode` exports (2.7.43).
-`/user/orders/view/[id]/page.tsx` wired CodeRevealPanel for confirmed digital-code orders.
-`/user/digital-codes/page.tsx` CodeRevealRow replaced with CodeRevealPanel (uses `/api/orders/{id}/code` not stale `item.digitalCode`).
-SB-UNI-N still ⏳ — remaining: atomic claim at payment success, email on claim, refund revocation.
-SB-UNI-O still ⏳ — remaining: cart-level jurisdiction check, transport ack page, vendor gate.
+SB-UNI-N now ⚠️ (partial). appkit 2.7.44: `claimDigitalCodeForOrder` helper added to checkout actions — fires after order creation in both COD and Razorpay paths for `listingType === "digital-code"` items. Pre-fetches available code outside transaction, atomically claims in micro-transaction.
+SB-UNI-N remaining: email on code claim; refund revocation; redeemed-code refund block.
+SB-UNI-O still ⏳ — cart-level jurisdiction, transport ack page, vendor gate.
 
 ---
 

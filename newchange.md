@@ -41,6 +41,19 @@
 
 ---
 
+### S-sb-uni-n — Digital-code checkout claim + SB-UNI-N wiring (2026-05-17)
+
+**appkit 2.7.44: `claimDigitalCodeForOrder` in checkout actions. `npm run check` exits 0.**
+
+- `claimDigitalCodeForOrder(db, productId, orderId, userId)`: pre-fetches available code outside transaction, atomically marks `status:"claimed"` + `orderId` + `claimedByUserId` + `claimedAt` in a micro-transaction. Fire-and-forget — logs on pool exhaustion, never fails the already-created order.
+- Wired in both checkout paths: COD (`createCheckoutOrder` for loop) + Razorpay (`verifyRazorpayPayment` for loop), gated on `listingType === "digital-code"`.
+- SB-UNI-N marked ⚠️ (partial). Remaining: email on claim; refund revocation; redeemed-code refund block.
+- Import added: `PRODUCT_CODES_SUBCOLLECTION` from products schema.
+
+**Commits:** 2 (appkit 2.7.43 CodeRevealPanel exports, appkit 2.7.44 checkout claim)
+
+---
+
 ### S-sb-uni-n-partial — SB-UNI-M verified ✅ + CodeRevealPanel wired to digital-code flows (2026-05-17)
 
 **appkit 2.7.43: `CodeRevealPanel` + `RevealedCode` exported from `client.ts`. `npm run check` exits 0.**
