@@ -144,7 +144,10 @@ type CollectionName =
   | "reports"
   | "itemRequests"
   | "storeWhatsAppConfig"
-  | "storeGoogleConfig";
+  | "storeGoogleConfig"
+  | "roleOverrides"
+  | "customRoles"
+  | "adminNotifications";
 
 interface SeedRequest {
   action: "load" | "delete";
@@ -197,6 +200,9 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   itemRequests: "itemRequests",
   storeWhatsAppConfig: "storeWhatsAppConfig",
   storeGoogleConfig: "storeGoogleConfig",
+  roleOverrides: "roleOverrides",
+  customRoles: "customRoles",
+  adminNotifications: "adminNotifications",
 };
 
 // SB-UNI-A 2026-05-13 — addresses merges both legacy seed files; each entry
@@ -262,6 +268,10 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   itemRequests: itemRequestsSeedData,
   storeWhatsAppConfig: storeWhatsAppConfigSeedData,
   storeGoogleConfig: storeGoogleConfigSeedData,
+  // RBAC + admin inbox — no seed docs yet; entries kept so SeedPanel can list them.
+  roleOverrides: [],
+  customRoles: [],
+  adminNotifications: [],
 };
 
 const PII_ENCRYPTED_COLLECTIONS = new Set<CollectionName>([

@@ -60,7 +60,7 @@ const MODERATION_COLLECTIONS: SeedCollectionName[] = [
   "supportTickets",
 ];
 
-// S-STORE-CROSS-D — Quick Seed group: 11 new S-STORE collections.
+// S-STORE-CROSS-D — Quick Seed group: 14 new S-STORE collections (11 + 3 RBAC).
 const STORE_COLLECTIONS: SeedCollectionName[] = [
   "payoutMethods",
   "shippingConfigs",
@@ -73,6 +73,9 @@ const STORE_COLLECTIONS: SeedCollectionName[] = [
   "itemRequests",
   "storeWhatsAppConfig",
   "storeGoogleConfig",
+  "roleOverrides",
+  "customRoles",
+  "adminNotifications",
 ];
 
 const ALL_COLLECTIONS: SeedCollectionName[] = [
