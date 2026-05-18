@@ -95,6 +95,66 @@
 | **S-SBUNI** *(new — single session, slot after S11 or whenever scheduled)* | **Tier SB-UNI Phase 0 + Phase 1 (all-in-one cohort)** — Future-expansion infra (X1 capability registry + `assertNever`, X2 listing-type plugin folders, X3 `schemaVersion` field) + collection unification (A addresses top-level, B sublistings→categories, C brands→categories, D bundles→`categoryType` with `bundleQueryRule`, V `GroupedListingDocument` re-scope + duplicate `bundles/` folder deletion, E discriminator audit cleanup). One large prod-deployable cohort. Seed-only, no live data, delete-outright. Sequence inside the session: X1 → X2 → X3 → B → C → D → V → E → A. |
 | **Tier SB-UNI follow-ups** *(pull when prioritised — NOT slotted into specific sessions yet)* | Phase 2 (F ListingType expansion: classified/digital-code/live) · Phase 3 (G–K per-type fields: TCGPlayer grading, eBay hybrid, classified, digital-code, live) · Phase 4 (L catalog/offer split — Amazon/TCGPlayer multi-seller) · Phase 5 (M–O per-type checkout flows) · Phase 6 (P–T downstream surfaces) · Phase 7 (W-1…W-5 CTA registry) · Phase 8 (Y-1…Y-7 FormShell migration) · Phase 9 polish (Z4 HEVC hint, Z5 MediaUploadField error UX). Each is its own future cohort — pull individually as priorities emerge. |
 | **Post-beta backlog** | Tier AK (DI refactor) · Tier AP (GoF patterns) · Tier LP (custom ESLint rules) · Tier DX (38 docs-portal rows) · Tier PAY (EMG1 EMI) · Tier CHAT (EMG4 live chat) · EMG2/EMG3 holding · Tier AO (add-on cross-sell at checkout — reuses existing `groupedListings`; planned separately) |
+| **S-STORE sprint** | 12-session store/admin/buyer overhaul. See `~/.claude/plans/store-pages-dashboard-langing-dazzling-abelson.md` for full spec. |
+
+---
+
+## Tier S-STORE — Store Dashboard + Pages Overhaul
+
+> Plan: `~/.claude/plans/store-pages-dashboard-langing-dazzling-abelson.md`. Start each sub-session with S-STORE-1 (critical fixes). 12 sessions total.
+
+| Row ID | Description | Status |
+|--------|-------------|--------|
+| S-STORE-1-A | Create `src/app/api/store/dashboard/route.ts` (missing — stats cards 404) | ✅ |
+| S-STORE-1-B | Fix product create/edit crash (`/store/products/new` + `/[id]/edit`) | ⏳ |
+| S-STORE-1-C | Fix storefront media upload NetworkError (storefront logo/banner/video) | ⏳ |
+| S-STORE-1-D | Fix category/brand inline selectors (InlineSelector + pagination failing) | ⏳ |
+| S-STORE-1-E | Fix analytics data loading (Firestore fallback when Firebase Function env var absent) | ⏳ |
+| S-STORE-2-A | Listing type dropdown (replaces TypeChips tabs) — all 10 types including bundles/classifieds/digital-code/live/templates/grouped | ⏳ |
+| S-STORE-2-B | Expand products page filters to match public page (category, brand, condition, price, status, tags, badges) | ⏳ |
+| S-STORE-2-C | Per-row "..." action menu (Edit/Duplicate/Delete/View on site + type-specific actions) | ⏳ |
+| S-STORE-2-D | Row click → detail/preview (not edit); edit only via "..." menu | ⏳ |
+| S-STORE-2-E | Add "New Listing" create button to products toolbar | ⏳ |
+| S-STORE-2-F | Remove redundant listing-type pages + add redirects to `/store/products?listingType=X` | ⏳ |
+| S-STORE-3-A | Product create form: step 1 = type selector + mandatory fields (submittable standalone) | ⏳ |
+| S-STORE-3-B | Product create: step 2 details (rich text, category, brand, media — video upload OR 3rd-party URL with moderation gate) | ⏳ |
+| S-STORE-3-C | Product create: step 3 SEO + advanced type-specific fields; auto-fill slug + SEO from title/desc | ⏳ |
+| S-STORE-3-D | FormShell split layout for product create/edit (60/40 desktop, Preview modal on mobile) | ⏳ |
+| S-STORE-3-E | Storage upload test script `scripts/test-storage-upload.mjs` | ⏳ |
+| S-STORE-4-A | Orders: enhanced listing (shipping/weight fields, per-row "...", bulk actions, payout request, clickable items) | ⏳ |
+| S-STORE-4-B | Bids: grouped by auction, collapsible rows, cancel/retract actions, bulk actions | ⏳ |
+| S-STORE-4-C | Reviews: listing layout, bulk reply, contest review, feedback to buyer | ⏳ |
+| S-STORE-5-A | Payouts: request per order, contest, bulk order selection → single payout | ⏳ |
+| S-STORE-5-B | Payout settings: new `payoutMethods` collection, multiple UPI/bank/card/other, set default | ⏳ |
+| S-STORE-5-C | Analytics: more built-in cards + custom cards (`analyticsCards`) + alerts (`analyticsAlerts`) collections | ⏳ |
+| S-STORE-6-A | Storefront: fix media upload, desktop live preview, vacation mode banners on product + checkout pages | ⏳ |
+| S-STORE-6-B | Storefront: store categories (`storeCategories` collection), rich text policies + PDF/HTML upload | ⏳ |
+| S-STORE-6-C | Shipping: `shippingConfigs` collection, multiple configs, listing layout, pending shipments tab | ⏳ |
+| S-STORE-6-D | Addresses: listing layout with DataTable + table support | ⏳ |
+| S-STORE-6-E | WhatsApp: `storeWhatsAppConfig` collection, paid service notice, message preview, catalog preview | ⏳ |
+| S-STORE-6-F | Google Business Reviews: `storeGoogleConfig` collection, separate tab, OAuth connect, sync | ⏳ |
+| S-STORE-7-A | Bundles: full CRUD with 3-step form + live preview, listing layout | ⏳ |
+| S-STORE-7-B | Grouped listings: `groupedListings` collection, full CRUD, listing layout + grid, product multi-select | ⏳ |
+| S-STORE-7-C | Templates: `listingTemplates` collection, all 8 listing types, integrate with product create step 1 | ⏳ |
+| S-STORE-7-D | Sub-listing categories: listing layout + full CRUD + bulk actions | ⏳ |
+| S-STORE-7-E | Feature badges: listing layout + full CRUD, badge preview panel | ⏳ |
+| S-STORE-7-F | Offers: listing layout, respond actions (accept/counter/decline), bulk actions | ⏳ |
+| S-STORE-8 | Global form shell migration: all store + admin + buyer/user forms → left-form + right-preview | ⏳ |
+| S-STORE-9-A | Admin pages listing layout audit: all 18 admin sections get "..." menus + filter drawers + bulk actions | ⏳ |
+| S-STORE-9B-A | Homepage sections: dedicated create/edit pages + live section preview | ⏳ |
+| S-STORE-9B-B | Multiple carousels: `carousels` collection, carousel editor, slide drag-reorder | ⏳ |
+| S-STORE-9B-C | Events: full CRUD with type-specific form steps (poll/survey field builder, raffle prize editor) | ⏳ |
+| S-STORE-9B-D | Blog posts: rich editor + rendered post preview, listing layout | ⏳ |
+| S-STORE-9B-E | Users admin: enhanced filters, user detail tabs (Orders/Store/Reviews/Sessions/Bids/Reports) | ⏳ |
+| S-STORE-9B-F | Feature flags + nav items admin pages (enable/disable, reorder, role-gate) | ⏳ |
+| S-STORE-9B-G | RBAC roles + permissions: `roleOverrides` + `customRoles` collections, roles listing, permissions listing | ⏳ |
+| S-STORE-9B-H | Admin gap audit: scam registry CRUD, support tickets CRUD, sessions revoke | ⏳ |
+| S-STORE-9B-I | Admin analytics cards + alerts + notifications center (`adminAnalyticsCards`, `adminAnalyticsAlerts`, `adminNotifications`) | ⏳ |
+| S-STORE-10 | Buyer/user pages: listing layouts + invoice/label/QR PDF downloads | ⏳ |
+| S-STORE-11 | **[After S-STORE-10]** Seed data rewrite: anime/collectibles images via public APIs, all new collections seeded | ⏳ |
+| S-STORE-12-A | Community: Report store/listing (`reports` collection, rate limits, admin review) | ⏳ |
+| S-STORE-12-B | Item Request Bulletin Board (`itemRequests` collection, approval gate, OP-initiated chat, PII filter on replies) | ⏳ |
+| S-STORE-MOD | Video moderation queue (`moderationQueue` collection, `/admin/moderation` review page) | ⏳ |
 
 ---
 

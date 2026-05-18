@@ -2,13 +2,26 @@
 
 import { useState, useCallback } from "react";
 import { Link } from "@/i18n/navigation";
-import { Button, Div, Heading, RichText, Text, Textarea } from "@mohasinac/appkit/ui";
+import { Button, Div, Heading, Input, RichText, Select, Text, Textarea } from "@mohasinac/appkit/ui";
 import { Label } from "@mohasinac/appkit/client";
 import { EventParticipateView, useSession, useToast, ROUTES } from "@mohasinac/appkit/client";
 import { SpinWheelView } from "@mohasinac/appkit";
 
 type SpinPrize = { id: string; label: string; weight: number; isActive: boolean; couponId?: string };
 import { API_ROUTES } from "@/constants";
+
+type FormFieldType = "text" | "textarea" | "email" | "phone" | "number" | "select" | "multiselect" | "checkbox" | "radio" | "date" | "rating" | "file";
+
+interface SurveyFormField {
+  id: string;
+  type: FormFieldType;
+  label: string;
+  placeholder?: string;
+  required: boolean;
+  options?: string[];
+  validation?: { minLength?: number; maxLength?: number; min?: number; max?: number; pattern?: string };
+  order: number;
+}
 
 export interface ParticipateEventInput {
   id: string;
@@ -21,6 +34,19 @@ export interface ParticipateEventInput {
     allowMultiSelect: boolean;
     allowComment: boolean;
     requireLogin?: boolean;
+  };
+  surveyConfig?: {
+    requireLogin: boolean;
+    maxEntriesPerUser: number;
+    hasLeaderboard: boolean;
+    hasPointSystem: boolean;
+    pointsLabel?: string;
+    entryReviewRequired: boolean;
+    formFields: SurveyFormField[];
+  };
+  feedbackConfig?: {
+    anonymous: boolean;
+    formFields: SurveyFormField[];
   };
   spinPrizes?: SpinPrize[];
   spinWindowStart?: string | null;
@@ -192,6 +218,158 @@ function renderSuccessState() {
   );
 }
 
+// ─── Dynamic form field renderer ─────────────────────────────────────────────
+
+function validateField(field: SurveyFormField, value: unknown): string | null {
+  const v = field.validation;
+  if (field.required && (value === undefined || value === null || value === "" || (Array.isArray(value) && value.length === 0))) {
+    return `${field.label || "This field"} is required.`;
+  }
+  if (typeof value === "string") {
+    if (v?.minLength && value.length < v.minLength) return `Minimum ${v.minLength} characters required.`;
+    if (v?.maxLength && value.length > v.maxLength) return `Maximum ${v.maxLength} characters allowed.`;
+    if (v?.pattern) {
+      try {
+        if (!new RegExp(v.pattern).test(value)) return `Value does not match the required format.`;
+      } catch { /* invalid pattern — skip */ }
+    }
+  }
+  if (typeof value === "number" || (typeof value === "string" && field.type === "number")) {
+    const num = Number(value);
+    if (!isNaN(num)) {
+      if (v?.min !== undefined && num < v.min) return `Minimum value is ${v.min}.`;
+      if (v?.max !== undefined && num > v.max) return `Maximum value is ${v.max}.`;
+    }
+  }
+  return null;
+}
+
+function renderDynamicField(
+  field: SurveyFormField,
+  value: unknown,
+  onChange: (v: unknown) => void,
+  error: string | null,
+) {
+  let control: React.ReactNode;
+
+  if (field.type === "textarea") {
+    control = (
+      <Textarea
+        value={String(value ?? "")}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={field.placeholder}
+        rows={4}
+      />
+    );
+  } else if (field.type === "select") {
+    const selectOptions = [
+      { label: "— Select —", value: "" },
+      ...(field.options ?? []).map((opt) => ({ label: opt, value: opt })),
+    ];
+    control = (
+      <Select
+        value={String(value ?? "")}
+        options={selectOptions}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    );
+  } else if (field.type === "multiselect" || field.type === "checkbox") {
+    const selected = Array.isArray(value) ? (value as string[]) : [];
+    control = (
+      <div className="space-y-1">
+        {(field.options ?? []).map((opt) => (
+          <Label key={opt} className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={selected.includes(opt)}
+              onChange={() =>
+                onChange(
+                  selected.includes(opt)
+                    ? selected.filter((s) => s !== opt)
+                    : [...selected, opt],
+                )
+              }
+              className="accent-primary"
+            />
+            <Text className="text-sm text-zinc-700 dark:text-zinc-300">{opt}</Text>
+          </Label>
+        ))}
+      </div>
+    );
+  } else if (field.type === "radio") {
+    control = (
+      <div className="space-y-1">
+        {(field.options ?? []).map((opt) => (
+          <Label key={opt} className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name={field.id}
+              checked={value === opt}
+              onChange={() => onChange(opt)}
+              className="accent-primary"
+            />
+            <Text className="text-sm text-zinc-700 dark:text-zinc-300">{opt}</Text>
+          </Label>
+        ))}
+      </div>
+    );
+  } else if (field.type === "rating") {
+    const rating = Number(value ?? 0);
+    control = (
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Button
+            key={star}
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => onChange(star)}
+            className={star <= rating ? "text-yellow-400 border-yellow-400" : ""}
+            aria-label={`${star} star`}
+          >
+            ★
+          </Button>
+        ))}
+      </div>
+    );
+  } else {
+    const inputType =
+      field.type === "email" ? "email"
+      : field.type === "phone" ? "tel"
+      : field.type === "number" ? "number"
+      : field.type === "date" ? "date"
+      : field.type === "file" ? "file"
+      : "text";
+    control = (
+      <Input
+        type={inputType}
+        value={field.type === "file" ? undefined : String(value ?? "")}
+        onChange={(e) =>
+          onChange(field.type === "file" ? (e.target as HTMLInputElement).files?.[0]?.name ?? "" : e.target.value)
+        }
+        placeholder={field.placeholder}
+        required={field.required}
+        min={field.validation?.min}
+        max={field.validation?.max}
+        minLength={field.validation?.minLength}
+        maxLength={field.validation?.maxLength}
+        pattern={field.validation?.pattern}
+      />
+    );
+  }
+
+  return (
+    <Div key={field.id} className="space-y-1">
+      <Label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        {field.label}
+        {field.required && <Text as="span" className="text-red-500 ml-1">*</Text>}
+      </Label>
+      {control}
+      {error && <Text className="text-xs text-red-500 dark:text-red-400">{error}</Text>}
+    </Div>
+  );
+}
+
 // ─── Spin-wheel handler ───────────────────────────────────────────────────────
 
 function SpinWheelParticipate({ event }: { event: ParticipateEventInput }) {
@@ -226,11 +404,29 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
   const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submissionCount, setSubmissionCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [selectedVotes, setSelectedVotes] = useState<string[]>([]);
   const [pollComment, setPollComment] = useState("");
+  const [formResponses, setFormResponses] = useState<Record<string, unknown>>({});
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  if (hasLeaderboard && !user) return renderLoginRequired();
+  const isSurvey = event.type === "survey";
+  const isFeedback = event.type === "feedback";
+  const formFields = isSurvey
+    ? (event.surveyConfig?.formFields ?? [])
+    : isFeedback
+      ? (event.feedbackConfig?.formFields ?? [])
+      : [];
+  const maxEntries = event.surveyConfig?.maxEntriesPerUser ?? 1;
+  const atEntryLimit = submissionCount >= maxEntries;
+
+  const requireLogin =
+    (isSurvey && event.surveyConfig?.requireLogin !== false) ||
+    (isFeedback && false) ||
+    hasLeaderboard;
+
+  if (requireLogin && !user) return renderLoginRequired();
 
   // Spin-wheel events get their own dedicated UI (not the generic form)
   if (event.type === "spin_wheel") {
@@ -242,7 +438,28 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
     );
   }
 
+  const setFieldValue = (fieldId: string, value: unknown) => {
+    setFormResponses((prev) => ({ ...prev, [fieldId]: value }));
+    setFormErrors((prev) => {
+      const next = { ...prev };
+      delete next[fieldId];
+      return next;
+    });
+  };
+
+  const validateAllFields = (): boolean => {
+    const errors: Record<string, string> = {};
+    for (const field of formFields) {
+      const err = validateField(field, formResponses[field.id]);
+      if (err) errors[field.id] = err;
+    }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async () => {
+    if ((isSurvey || isFeedback) && formFields.length > 0 && !validateAllFields()) return;
+
     setIsLoading(true);
     setError(null);
     try {
@@ -250,6 +467,9 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
       if (event.type === "poll" && selectedVotes.length > 0) {
         body.pollVotes = selectedVotes;
         if (pollComment) body.pollComment = pollComment;
+      }
+      if ((isSurvey || isFeedback) && Object.keys(formResponses).length > 0) {
+        body.formResponses = formResponses;
       }
       const res = await fetch(API_ROUTES.EVENTS.ENTRIES(event.id), {
         method: "POST",
@@ -261,6 +481,9 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
         throw new Error((data as Record<string, string>).error ?? "Failed to submit entry");
       }
       setIsSubmitted(true);
+      setSubmissionCount((c) => c + 1);
+      setFormResponses({});
+      setFormErrors({});
       showToast("Your entry has been submitted!", "success");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Something went wrong";
@@ -286,19 +509,68 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
 
   const canSubmit =
     !isLoading &&
+    !atEntryLimit &&
     !(pollConfig?.options?.length && !isMultiSelect && selectedVotes.length === 0);
+
+  const dynamicForm =
+    (isSurvey || isFeedback) && formFields.length > 0 ? (
+      <div className="space-y-4">
+        {formFields
+          .slice()
+          .sort((a, b) => a.order - b.order)
+          .map((field) =>
+            renderDynamicField(
+              field,
+              formResponses[field.id],
+              (v) => setFieldValue(field.id, v),
+              formErrors[field.id] ?? null,
+            ),
+          )}
+      </div>
+    ) : null;
+
+  // After a successful submission allow re-submit if maxEntries > 1
+  if (isSubmitted && !atEntryLimit) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center space-y-2 py-6">
+          <Heading level={2} className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+            Entry submitted!
+          </Heading>
+          <Text className="text-zinc-500 dark:text-zinc-400 text-sm">
+            {submissionCount} of {maxEntries} entries submitted.
+          </Text>
+        </div>
+        <Button variant="primary" className="w-full" onClick={() => setIsSubmitted(false)}>
+          Submit another entry
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <EventParticipateView
       isLoading={isLoading}
-      isSubmitted={isSubmitted}
+      isSubmitted={isSubmitted && atEntryLimit}
       renderEventInfo={embedded ? undefined : () => renderEventInfoBlock(event)}
       renderForm={
         pollConfig?.options?.length
           ? () => renderPollForm({ pollConfig, isMultiSelect, selectedVotes, pollComment, toggleVote, setPollComment })
-          : undefined
+          : dynamicForm
+            ? () => dynamicForm
+            : undefined
       }
-      renderAction={() => renderSubmitAction({ error, pollConfig, isMultiSelect, selectedVotes, canSubmit, isLoading, handleSubmit })}
+      renderAction={() =>
+        atEntryLimit && !isSubmitted ? (
+          <div className="text-center py-4">
+            <Text className="text-sm text-zinc-500 dark:text-zinc-400">
+              You have reached the maximum of {maxEntries} {maxEntries === 1 ? "entry" : "entries"} for this event.
+            </Text>
+          </div>
+        ) : (
+          renderSubmitAction({ error, pollConfig, isMultiSelect, selectedVotes, canSubmit, isLoading, handleSubmit })
+        )
+      }
       renderSuccess={renderSuccessState}
     />
   );

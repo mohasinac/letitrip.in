@@ -20,9 +20,11 @@
  *   - appkit/scripts/audit-query-provider.mjs    (component both provides QueryClientProvider and calls react-query hooks)
  *   - appkit/scripts/audit-export-paths.mjs     (broken re-exports in client.ts/index.ts/server.ts → deleted source files)
  *   - scripts/audit-dashboard-padding.mjs       (double px-4/py-* padding on dashboard pages that DashboardLayoutClient already covers)
+ *   - scripts/audit-root-cause.mjs             (in-memory fallbacks, // HACK/WORKAROUND/Fallback comments, deferred TODOs in production code)
  *
  * Baseline-drift audits: audit-ssr-in-appkit, audit-html-wrappers, audit-code-quality block
  * only when the violation count EXCEEDS the recorded baseline (regressions only).
+ * audit-root-cause manages its own baseline internally (exits 1 only on regressions).
  * audit-sieve-constants manages its own baseline internally (exits 0 on no regression).
  *
  * Total runtime: ~3–5s. Heavy gates (tsc + lint) live in `npm run check`.
@@ -161,6 +163,12 @@ const checks = [
     label: "audit-dashboard-padding",
     cmd: "node",
     args: ["scripts/audit-dashboard-padding.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-root-cause",
+    cmd: "node",
+    args: ["scripts/audit-root-cause.mjs"],
     cwd: ROOT,
   },
 ];

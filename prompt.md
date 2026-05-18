@@ -48,6 +48,9 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
                 multi-where + orderBy query. Run firebase-merge.mjs after.
 □ HOBBY CAPS    Paginate ≤50, ≤3 sequential Firestore round-trips per handler, no
                 full-collection .get(). Heavy work → functions/. (CLAUDE.md Rule #6)
+□ ASCII DIAGRAMS  If a component layout, data flow, or architecture changed: update
+                  the relevant section in appkit/asciiDiagrams.md before the commit.
+                  Add a new section if the component is new. Index entry required.
 □ CHECK         npm run check exits 0 before the session is marked ✅. (Rule #5)
 ```
 
@@ -56,6 +59,7 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 ## 🚢 PER-SESSION PROD-DEPLOY CHECKLIST (run before the closing commit)
 
 ```
+□ ASCII DIAGRAMS  Updated appkit/asciiDiagrams.md for every changed component/flow.
 □ INDICES       If indexes changed: appkit/scripts/firebase-merge.mjs →
                 firebase deploy --only firestore:indexes
 □ FUNCTIONS     If functions/ changed: firebase deploy --only functions
@@ -133,7 +137,14 @@ After deploy: smoke-test the production URL for all touched routes.
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ CURRENT — S-public-stabilise (2026-05-18): Public surface stabilisation — 35-item punch list (Tier PS) — COMPLETE
+### 🔄 CURRENT — (no active sprint — pick from NEXT list below)
+
+> Last completed: **S-public-stabilise** (2026-05-18) — all 35 PS tasks verified. `npm run check` exits 0.
+> Partial: `src/app/api/store/dashboard/route.ts` created (S-STORE-1-A ✅) as a standalone fix.
+
+---
+
+### ✅ LAST COMPLETED — S-public-stabilise (2026-05-18): Public surface stabilisation — 35-item punch list (Tier PS) — COMPLETE
 
 All 35 PS tasks verified or implemented. `npm run check` exits 0. No regressions.
 
@@ -359,6 +370,7 @@ All tracks from `~/.claude/plans/each-listing-type-category-playful-fairy.md` ar
 |---|---------|-------|---------------|
 | 1 | **Tier SB-UNI Phase 3–9** *(pull individually)* | SB-UNI-Q (per-type detail/list views) · R (per-type forms + seller flow) · T (search facets) · W-2/3/4 (CTA sweep public/seller/admin) · W-5 (lint rule) · Y-1..Y-7 (FormShell migration). | Phase 2 (M/N/O) now closed. Pull next sub-tier when prioritised. |
 | – | **S-polish-pass** | 10-phase listing quality polish. Full plan: `~/.claude/plans/plan-to-find-and-polished-aho.md`. Task rows in `Tier PL`. **Foundational rules**: (a) no in-memory filtering; (b) human-readable URL params; (c) `useUrlTable` + `usePendingFilters`. | After SB-UNI-Phase2 — quality polish + test foundation. |
+| – | **S-STORE sprint** *(12 sessions — pull when explicitly scheduled)* | Store seller dashboard + pages overhaul. See `~/.claude/plans/store-pages-dashboard-langing-dazzling-abelson.md`. Rows in `Tier S-STORE` in tracker. S-STORE-1-A (dashboard route) already done as a standalone fix. | Start with S-STORE-1 (critical fixes) when sprint is prioritised. |
 | – | **S6-followup** | Q6-views: switch the 4 listing views (`ProductsIndexListing`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`) from `useQuery` to `useInfiniteQuery` to wire the existing `useInfiniteScroll` primitive. Substantial refactor with regression surface. | Pull when prioritised. |
 | – | **OG-coverage-followup** | Drive `verify-og-coverage.mjs` baseline to 0 — per-feature OG renderers for `bundles/[slug]`, `faqs/[category]`, `reviews/[id]`, `scams/[id]`, `sellers/[id]`. | Pull when prioritised. |
 | – | **S1-polish** | Slot-shell polish deferred from S1: admin alerts/charts/recent-activity, user notifications filters, seller analytics charts/top-products. Feature work — new endpoints + hooks. | Pull when prioritised. |
@@ -366,6 +378,85 @@ All tracks from `~/.claude/plans/each-listing-type-category-playful-fairy.md` ar
 
 **Post-beta backlog** (not in S1–S11; pull only when explicitly scheduled):
 AK1–3 (DI refactor) · AP1–16 (GoF patterns) · LP1–3 (custom ESLint rules) · Tier DX 38 tasks (`docs.letitrip.in` portal) · EMG1 → Tier PAY (EMI/installments) · EMG4 → Tier CHAT (live chat) · EMG2/EMG3 (loyalty + gift cards holding bay)
+
+---
+
+---
+
+## 🛑 Rule #7 — No Workarounds, No Deferrals, No Backward Compat Hacks
+
+This project is **pre-launch**. That means: change code directly, fix root causes, add proper indexes. Never paper over a gap with a shim that makes the problem invisible.
+
+### The four prohibited patterns
+
+**1. In-memory fallbacks instead of Firestore indexes**
+
+Wrong:
+```ts
+// fetch 500 docs and filter in memory because Firestore can't combine these filters
+const all = await repo.list({ pageSize: 500 });
+const filtered = all.items.filter(item => item.title.includes(q));
+```
+Right: add the composite index to `appkit/firebase/base/firestore.indexes.json`, run `firebase-merge.mjs`, deploy. If the filter combination can't be expressed in Firestore at all, route it through the `listingProcessor` Firebase Function — that's what it's for. Never load >50 docs for filtering.
+
+**2. Deferred items with no tracker row**
+
+Wrong: ship a partial and leave a `// TODO: fix later` comment in production code.  
+Right: either fix it in the same session or create an explicit `⏳` row in `crud-tracker.md` with a clear description. The tracker is the single source of truth. `// TODO` in production API code is an audit violation (`audit-root-cause.mjs`).
+
+**3. Backward compatibility shims**
+
+Wrong:
+```ts
+const price = doc.newPriceField ?? doc.legacyPriceField; // backward compat
+```
+Right: run the migration (update seed data + all callers) and delete the old field. This is pre-launch — there is no live user data to protect. Shims stay in the codebase forever and hide the debt.
+
+**4. `// Fallback` / `// HACK` / `// WORKAROUND` comments in production code**
+
+These are hard signals that the root cause was not addressed. Before writing any fix, read the current source, identify *why* the problem exists, then fix that layer. A comment labelled "fallback" in an API route is an audit violation.
+
+### Workflow when you hit a limitation
+
+```
+Symptom: Firestore query can't combine two inequality filters
+DO NOT:   fetch 500 docs and filter in memory
+DO:       1. Check if a composite index covers the combination
+          2. If not, add the index (appkit/firebase/base/firestore.indexes.json)
+          3. If the combination is fundamentally unsupported, offload to listingProcessor
+          4. If none of the above, create a tracker row + ask before proceeding
+```
+
+```
+Symptom: A field was renamed / schema changed
+DO NOT:   add ?? fallback to old field name
+DO:       1. Update the schema type
+          2. Update all callers (Rule #3)
+          3. Update seed data
+          4. Delete the old field reference
+```
+
+The `audit-root-cause.mjs` script (`npm run audit:root-cause`) blocks on new violations. The existing known violation in `src/app/api/products/route.ts` (in-memory search fallback) is tracked as baseline and must be fixed before the S-STORE-1-E analytics task closes.
+
+---
+
+---
+
+## 📦 Where to Write Code — appkit vs letitrip.in
+
+Both repos are always in play. Code goes to whichever layer owns it:
+
+| Code type | Write it in |
+|-----------|-------------|
+| UI primitives, feature views, hooks, repositories, schemas, seed data, actions | **`appkit/`** — shared library, consumed by letitrip.in via `file:./appkit` |
+| Next.js page shims, route handlers, server actions specific to letitrip.in, i18n routing, middleware | **`letitrip.in/src/`** — consumer app |
+| Both a library component AND a consumer page need to change | **Both** — appkit first, then wire it in letitrip.in |
+
+**Default: prefer appkit.** If a piece of logic could ever be reused by a second consumer (another storefront, an admin-only app, a white-label), it belongs in `appkit/src/`. Letitrip.in pages should be thin shims (≤30 lines) that import from `@mohasinac/appkit` and pass consumer-specific props (server actions, route constants, i18n helpers).
+
+**When letitrip.in is the right place:** Next.js framework-forced files (`page.tsx`, `layout.tsx`, `route.ts`, `opengraph-image.tsx`, `sitemap.ts`, `robots.ts`, `middleware.ts`, `proxy.ts`), and anything that reads from `.env.local` or calls Vercel-specific APIs directly.
+
+**Workflow:** `npm run watch:appkit` compiles `appkit/src/` → `appkit/dist/` continuously. Changes are picked up by the Next.js dev server immediately — no publish step needed during local development. Only publish to npm when the user explicitly asks to deploy.
 
 ---
 
@@ -388,6 +479,7 @@ AK1–3 (DI refactor) · AP1–16 (GoF patterns) · LP1–3 (custom ESLint rules
 - **Rule #4** — never fix without first verifying the bug is still present in the current source
 - **Rule #5** — task is not done until `npm run check` exits 0
 - **Rule #6** — code within Vercel Hobby caps (2048 MB / 10 s / 4.5 MB payload)
+- **Rule #7** — no workarounds, no deferrals, no backward compat hacks (see § below)
 
 ### Per-task loop (repeat for every task)
 

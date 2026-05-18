@@ -33,9 +33,8 @@ import {
   type UpdateEventInput,
   type EnterEventInput,
 } from "@mohasinac/appkit";
-import type { EventDocument, EventEntryDocument } from "@mohasinac/appkit";
+import type { EventDocument, EventEntryDocument, LeaderboardEntry } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
-import { maskPublicEventEntry } from "@mohasinac/appkit";
 import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 // --- Schemas --------------------------------------------------------------
@@ -191,7 +190,7 @@ export async function getPublicEventByIdAction(
 
 export async function getEventLeaderboardAction(
   eventId: string,
-): Promise<ReturnType<typeof maskPublicEventEntry<EventEntryDocument>>[]> {
+): Promise<LeaderboardEntry[]> {
   return getEventLeaderboard(eventId);
 }
 

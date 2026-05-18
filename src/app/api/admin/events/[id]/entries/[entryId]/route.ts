@@ -18,9 +18,15 @@ export const PATCH = withProviders(
     roles: ["admin", "moderator"],
     permission: "admin:events:write",
     schema: reviewEntrySchema,
-    handler: async ({ body, params }) => {
+    handler: async ({ body, params, user }) => {
       const { id: eventId, entryId } = params as { id: string; entryId: string };
-      await eventEntryRepository.reviewEntry(entryId, body!.status as any, "admin", body!.reviewNote);
+      await eventEntryRepository.reviewEntry(
+        entryId,
+        body!.status as any,
+        user?.uid ?? "admin",
+        body!.reviewNote,
+        body!.points,
+      );
       return successResponse({ entryId, eventId, ...body }, "Entry reviewed");
     },
   }),
