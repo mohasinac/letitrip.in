@@ -122,7 +122,40 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 4. Pull and verify locally: vercel env pull .env.local
 ```
 
-### Step 5 — Deploy to Vercel prod
+### Step 5 — Deploy Firebase (indices + rules + functions)
+
+```
+# Always run from the project root (not appkit/).
+# Source of truth: appkit/firebase/base/firestore.indexes.json
+# Never edit root firestore.indexes.json directly — use firebase-merge.mjs.
+
+# 1. Merge appkit base indexes into root firestore.indexes.json:
+node appkit/scripts/firebase-merge.mjs
+
+# 2a. If Firestore indexes changed this session:
+firebase deploy --only firestore:indexes
+
+# 2b. If Firestore rules changed this session:
+firebase deploy --only firestore:rules
+
+# 2c. If Firebase Storage rules changed:
+firebase deploy --only storage
+
+# 2d. If any Firebase Function changed (functions/ dir):
+firebase deploy --only functions
+
+# 2e. Deploy everything Firebase at once (safe to run even if nothing changed):
+firebase deploy --only firestore:indexes,firestore:rules,storage
+```
+
+When to run each:
+- Index change → always `firebase-merge.mjs` first, then `firebase deploy --only firestore:indexes`
+- Firestore rules edit → `firebase deploy --only firestore:rules`
+- Storage rules edit → `firebase deploy --only storage`
+- functions/ code change → `firebase deploy --only functions`
+- Full session end (safe default) → deploy all at once with the combined command above
+
+### Step 6 — Deploy to Vercel prod
 
 ```
 vercel --prod
