@@ -20,6 +20,7 @@ import {
   useAuthGate,
   ACTION_ID,
   LoginRequiredModal,
+  StickyBottomBar,
 } from "@mohasinac/appkit/client";
 import type { EnrichedWishlistItem } from "@mohasinac/appkit/client";
 import { Span } from "@mohasinac/appkit/ui";
@@ -236,6 +237,28 @@ export default function WishlistPage() {
     >
       {renderWishlistItems({ isLoading, filteredItems, wl, search, activeFilterCount, user, selectedIds, handleToggleWishlist, toggleSelect, handleClear, setSearch })}
     </ListingLayout>
+    {/* Mobile sticky bulk-action toolbar — appears once anything is selected
+        and floats above the BottomNavLayout via StickyBottomBar's CSS-var
+        positioning. Desktop keeps the header-row controls. */}
+    {selectedIds.size > 0 && (
+      <StickyBottomBar className="px-4 pt-3 pb-4 flex items-center gap-2">
+        <Text className="text-sm text-zinc-700 dark:text-zinc-200 mr-auto">
+          {selectedIds.size} selected
+        </Text>
+        <Button variant="ghost" size="sm" onClick={clearSelection} disabled={isBulkRemoving}>
+          Deselect
+        </Button>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={handleRemoveSelected}
+          disabled={isBulkRemoving}
+          className="bg-red-600 hover:bg-red-700"
+        >
+          {isBulkRemoving ? "Removing…" : `Remove ${selectedIds.size}`}
+        </Button>
+      </StickyBottomBar>
+    )}
     <LoginRequiredModal isOpen={modalOpen} onClose={closeModal} message={modalMessage} />
     </>
   );
@@ -298,9 +321,15 @@ function renderWishlistFilterContent({
         <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Type</Text>
         <Stack gap="xs">
           {TYPE_OPTIONS.map((opt) => (
-            <Button key={opt.value} type="button" onClick={() => setPending((p) => ({ ...p, type: opt.value }))}
-              className={["w-full rounded-lg px-3 py-2 text-left text-sm transition-colors", pending.type === opt.value ? "bg-primary-50 dark:bg-primary-900/20 font-medium text-primary-700 dark:text-primary-300" : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"].join(" ")}
-            >{opt.label}</Button>
+            <Button
+              key={opt.value}
+              type="button"
+              onClick={() => setPending((p) => ({ ...p, type: opt.value }))}
+              variant={pending.type === opt.value ? "primary" : "ghost"}
+              className="w-full justify-start text-sm"
+            >
+              {opt.label}
+            </Button>
           ))}
         </Stack>
       </Div>
@@ -362,9 +391,11 @@ function renderWishlistItems({
             href={String(ROUTES.PUBLIC.PRODUCT_DETAIL(slug))}
             isWishlisted
             onToggleWishlist={user?.uid ? handleToggleWishlist : undefined}
+            // Always pass onSelect so the hover-fade checkbox is reachable;
+            // selectable flips to "always visible" once the user picks anything.
             selectable={selectedIds.size > 0}
             isSelected={selectedIds.has(item.productId)}
-            onSelect={selectedIds.size > 0 ? toggleSelect : undefined}
+            onSelect={toggleSelect}
             product={{
               id: item.productId,
               title: item.product?.title ?? item.productTitle ?? "",

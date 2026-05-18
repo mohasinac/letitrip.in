@@ -15,7 +15,32 @@ import { withProviders } from "@/providers.config";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
+import { orderRepository, storeRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
+
+// S-STORE-1-E — Direct Firestore fallback when the analytics Firebase
+// Function isn't configured (dev / preview deploys without the env vars).
+// Bounded to last 30 days + pageSize 50 to respect Vercel Hobby caps.
+async function firestoreFallback(uid: string) {
+  const store = await storeRepository.findByOwnerId(uid).catch(() => null);
+  if (!store) {
+    return { summary: { revenue: 0, orders: 0, aov: 0 }, revenueByMonth: [], topProducts: [] };
+  }
+  const since = new Date(Date.now() - 30 * 86400_000);
+  const raw = await orderRepository
+    .findBy("storeId", store.id)
+    .catch(() => [] as unknown[]);
+  const orders = (raw as Array<{ totalAmount?: number; createdAt?: Date | string }>)
+    .filter((o) => new Date(o.createdAt ?? 0).getTime() >= since.getTime())
+    .slice(0, 50);
+  const revenue = orders.reduce((s, o) => s + Number(o.totalAmount ?? 0), 0);
+  const count = orders.length;
+  return {
+    summary: { revenue, orders: count, aov: count > 0 ? Math.round(revenue / count) : 0 },
+    revenueByMonth: [],
+    topProducts: [],
+  };
+}
 
 export const GET = withProviders(
   createRouteHandler({
@@ -26,10 +51,11 @@ export const GET = withProviders(
       const secret = process.env.LETITRIP_INTERNAL_SECRET;
 
       if (!functionUrl || !secret) {
-        serverLogger.error(
-          "storeAnalytics: FIREBASE_FUNCTION_STORE_ANALYTICS_URL or LETITRIP_INTERNAL_SECRET not set",
+        serverLogger.warn(
+          "storeAnalytics: Firebase Function env vars absent — falling back to direct Firestore (S-STORE-1-E)",
         );
-        return Response.json({ error: "Analytics service not configured" }, { status: 503 });
+        const fallback = await firestoreFallback(user!.uid);
+        return successResponse(fallback);
       }
 
       const uid = user!.uid;

@@ -38,6 +38,7 @@ import {
   bidsSeedData,
   couponsSeedData,
   couponUsageSeedData,
+  claimedCouponsSeedData,
   eventsSeedData,
   eventEntriesSeedData,
   payoutsSeedData,
@@ -56,6 +57,17 @@ import {
   supportTicketsSeedData,
   productFeaturesSeedData,
   offersSeedData,
+  payoutMethodsSeedData,
+  shippingConfigsSeedData,
+  analyticsCardsSeedData,
+  analyticsAlertsSeedData,
+  storeCategoriesSeedData,
+  listingTemplatesSeedData,
+  moderationQueueSeedData,
+  reportsSeedData,
+  itemRequestsSeedData,
+  storeWhatsAppConfigSeedData,
+  storeGoogleConfigSeedData,
 } from "@mohasinac/appkit";
 import {
   CAROUSEL_SLIDES_COLLECTION,
@@ -117,10 +129,22 @@ type CollectionName =
   | "conversations"
   | "groupedListings"
   | "couponUsage"
+  | "claimedCoupons"
   | "scammerProfiles"
   | "supportTickets"
   | "productFeatures"
-  | "offers";
+  | "offers"
+  | "payoutMethods"
+  | "shippingConfigs"
+  | "analyticsCards"
+  | "analyticsAlerts"
+  | "storeCategories"
+  | "listingTemplates"
+  | "moderationQueue"
+  | "reports"
+  | "itemRequests"
+  | "storeWhatsAppConfig"
+  | "storeGoogleConfig";
 
 interface SeedRequest {
   action: "load" | "delete";
@@ -140,6 +164,7 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   reviews: REVIEW_COLLECTION,
   bids: BID_COLLECTION,
   coupons: COUPONS_COLLECTION,
+  claimedCoupons: "claimedCoupons",
   carousels: CAROUSELS_COLLECTION,
   carouselSlides: CAROUSEL_SLIDES_COLLECTION,
   homepageSections: HOMEPAGE_SECTIONS_COLLECTION,
@@ -160,6 +185,18 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   supportTickets: SUPPORT_TICKET_COLLECTION,
   productFeatures: PRODUCT_FEATURES_COLLECTION,
   offers: OFFER_COLLECTION,
+  // S-STORE foundation collections (literal names — schemas live in store-extensions feature)
+  payoutMethods: "payoutMethods",
+  shippingConfigs: "shippingConfigs",
+  analyticsCards: "analyticsCards",
+  analyticsAlerts: "analyticsAlerts",
+  storeCategories: "storeCategories",
+  listingTemplates: "listingTemplates",
+  moderationQueue: "moderationQueue",
+  reports: "reports",
+  itemRequests: "itemRequests",
+  storeWhatsAppConfig: "storeWhatsAppConfig",
+  storeGoogleConfig: "storeGoogleConfig",
 };
 
 // SB-UNI-A 2026-05-13 — addresses merges both legacy seed files; each entry
@@ -193,6 +230,7 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   bids: bidsSeedData,
   coupons: couponsSeedData,
   couponUsage: couponUsageSeedData,
+  claimedCoupons: claimedCouponsSeedData,
   carousels: carouselsSeedData,
   carouselSlides: carouselSlidesSeedData,
   homepageSections: homepageSectionsSeedData,
@@ -213,6 +251,17 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   supportTickets: supportTicketsSeedData,
   productFeatures: productFeaturesSeedData,
   offers: offersSeedData,
+  payoutMethods: payoutMethodsSeedData,
+  shippingConfigs: shippingConfigsSeedData,
+  analyticsCards: analyticsCardsSeedData,
+  analyticsAlerts: analyticsAlertsSeedData,
+  storeCategories: storeCategoriesSeedData,
+  listingTemplates: listingTemplatesSeedData,
+  moderationQueue: moderationQueueSeedData,
+  reports: reportsSeedData,
+  itemRequests: itemRequestsSeedData,
+  storeWhatsAppConfig: storeWhatsAppConfigSeedData,
+  storeGoogleConfig: storeGoogleConfigSeedData,
 };
 
 const PII_ENCRYPTED_COLLECTIONS = new Set<CollectionName>([

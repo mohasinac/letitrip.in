@@ -48,7 +48,8 @@
       "Bash(git -C appkit status --short)",
       "Bash(dir \"d:\\\\proj\\\\letitrip.in\\\\appkit\\\\src\\\\_internal\\\\client\\\\features\\\\seller\" /s /b)",
       "Read(//c/Users/mohsi/.claude/plans/**)",
-      "Bash(node scripts/audit-root-cause.mjs)"
+      "Bash(node scripts/audit-root-cause.mjs)",
+      "Bash(echo \"exit=$?\")"
     ],
     "additionalDirectories": [
       "d:\\proj\\letitrip.in\\src\\app\\api\\store\\reviews\\[id]",

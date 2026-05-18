@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { Button, Div, Heading, Input, Row, Stack, Text } from "@mohasinac/appkit/client";
+import { Button, Div, Heading, Input, Row, Stack, Text, ACTIONS } from "@mohasinac/appkit/client";
 import { useState } from "react";
 import { ROUTES } from "@mohasinac/appkit/client";
 
@@ -31,10 +31,8 @@ export default function Page() {
             required
           />
           <Row gap="sm" justify="end">
-            <Button type="button" variant="outline" onClick={() => router.push(String(ROUTES.STORE.TEMPLATES))}>
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary">Create Template</Button>
+            <Button type="button" onClick={() => router.push(String(ROUTES.STORE.TEMPLATES))} action={ACTIONS.STORE["cancel-form"]} />
+            <Button type="submit" action={ACTIONS.STORE["create-template"]} />
           </Row>
         </Stack>
       </form>

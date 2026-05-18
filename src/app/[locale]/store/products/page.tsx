@@ -1,5 +1,13 @@
-import { SellerProductsView } from "@mohasinac/appkit";
+"use client";
+
+import { SellerProductsView, ROUTES } from "@mohasinac/appkit/client";
+import { useRouter } from "@/i18n/navigation";
 
 export default function Page() {
-  return <SellerProductsView />;
+  const router = useRouter();
+  return (
+    <SellerProductsView
+      onCreateClick={() => router.push(String(ROUTES.STORE.PRODUCTS_NEW))}
+    />
+  );
 }

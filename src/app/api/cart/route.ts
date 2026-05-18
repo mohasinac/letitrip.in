@@ -11,7 +11,7 @@ import { z } from "zod";
 import { successResponse, ApiErrors } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-import { cartRepository } from "@mohasinac/appkit";
+import { cartRepository, storeRepository } from "@mohasinac/appkit";
 import { productRepository, normalizeListingType } from "@mohasinac/appkit";
 
 import { createRouteHandler } from "@mohasinac/appkit";
@@ -30,6 +30,29 @@ export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     const cart = await cartRepository.getOrCreate(user!.uid);
+
+    // Hydrate any cart line missing its `storeName` snapshot from the canonical
+    // store doc. One findById per distinct storeId — bounded by distinct stores
+    // (typically ≤5) and only fires when the product snapshot lacks it.
+    const missing = new Set<string>();
+    for (const it of cart.items) {
+      if (it.storeId && !it.storeName) missing.add(it.storeId);
+    }
+    if (missing.size > 0) {
+      const entries = await Promise.all(
+        Array.from(missing).map(async (sid) => {
+          const store = await storeRepository.findById(sid).catch(() => null);
+          return [sid, store?.storeName ?? ""] as const;
+        }),
+      );
+      const lookup = new Map(entries);
+      cart.items = cart.items.map((it) =>
+        it.storeId && !it.storeName
+          ? { ...it, storeName: lookup.get(it.storeId) || it.storeName }
+          : it,
+      );
+    }
+
     return successResponse({
       cart,
       itemCount: cartRepository.getItemCount(cart),
@@ -90,6 +113,15 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
       );
     }
 
+    // Hydrate storeName from the canonical store doc when the denormalised
+    // product snapshot lacks it — prevents the cart UI from falling back to
+    // the storeId slug for the group header.
+    let storeName = product.storeName ?? "";
+    if (!storeName && product.storeId) {
+      const store = await storeRepository.findById(product.storeId).catch(() => null);
+      storeName = store?.storeName ?? "";
+    }
+
     const cart = await cartRepository.addItem(user!.uid, {
       productId: product.id,
       productTitle: product.title,
@@ -98,7 +130,7 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
       currency: product.currency,
       quantity,
       storeId: product.storeId,
-      storeName: product.storeName ?? "",
+      storeName,
       listingType: normalizeListingType(product),
     });
 

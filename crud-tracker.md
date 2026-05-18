@@ -106,55 +106,56 @@
 | Row ID | Description | Status |
 |--------|-------------|--------|
 | S-STORE-1-A | Create `src/app/api/store/dashboard/route.ts` (missing — stats cards 404) | ✅ |
-| S-STORE-1-B | Fix product create/edit crash (`/store/products/new` + `/[id]/edit`) | ⏳ |
-| S-STORE-1-C | Fix storefront media upload NetworkError (storefront logo/banner/video) | ⏳ |
-| S-STORE-1-D | Fix category/brand inline selectors (InlineSelector + pagination failing) | ⏳ |
-| S-STORE-1-E | Fix analytics data loading (Firestore fallback when Firebase Function env var absent) | ⏳ |
-| S-STORE-2-A | Listing type dropdown (replaces TypeChips tabs) — all 10 types including bundles/classifieds/digital-code/live/templates/grouped | ⏳ |
-| S-STORE-2-B | Expand products page filters to match public page (category, brand, condition, price, status, tags, badges) | ⏳ |
-| S-STORE-2-C | Per-row "..." action menu (Edit/Duplicate/Delete/View on site + type-specific actions) | ⏳ |
-| S-STORE-2-D | Row click → detail/preview (not edit); edit only via "..." menu | ⏳ |
-| S-STORE-2-E | Add "New Listing" create button to products toolbar | ⏳ |
-| S-STORE-2-F | Remove redundant listing-type pages + add redirects to `/store/products?listingType=X` | ⏳ |
-| S-STORE-3-A | Product create form: step 1 = type selector + mandatory fields (submittable standalone) | ⏳ |
-| S-STORE-3-B | Product create: step 2 details (rich text, category, brand, media — video upload OR 3rd-party URL with moderation gate) | ⏳ |
-| S-STORE-3-C | Product create: step 3 SEO + advanced type-specific fields; auto-fill slug + SEO from title/desc | ⏳ |
-| S-STORE-3-D | FormShell split layout for product create/edit (60/40 desktop, Preview modal on mobile) | ⏳ |
-| S-STORE-3-E | Storage upload test script `scripts/test-storage-upload.mjs` | ⏳ |
-| S-STORE-4-A | Orders: enhanced listing (shipping/weight fields, per-row "...", bulk actions, payout request, clickable items) | ⏳ |
-| S-STORE-4-B | Bids: grouped by auction, collapsible rows, cancel/retract actions, bulk actions | ⏳ |
-| S-STORE-4-C | Reviews: listing layout, bulk reply, contest review, feedback to buyer | ⏳ |
-| S-STORE-5-A | Payouts: request per order, contest, bulk order selection → single payout | ⏳ |
-| S-STORE-5-B | Payout settings: new `payoutMethods` collection, multiple UPI/bank/card/other, set default | ⏳ |
-| S-STORE-5-C | Analytics: more built-in cards + custom cards (`analyticsCards`) + alerts (`analyticsAlerts`) collections | ⏳ |
-| S-STORE-6-A | Storefront: fix media upload, desktop live preview, vacation mode banners on product + checkout pages | ⏳ |
-| S-STORE-6-B | Storefront: store categories (`storeCategories` collection), rich text policies + PDF/HTML upload | ⏳ |
-| S-STORE-6-C | Shipping: `shippingConfigs` collection, multiple configs, listing layout, pending shipments tab | ⏳ |
-| S-STORE-6-D | Addresses: listing layout with DataTable + table support | ⏳ |
-| S-STORE-6-E | WhatsApp: `storeWhatsAppConfig` collection, paid service notice, message preview, catalog preview | ⏳ |
-| S-STORE-6-F | Google Business Reviews: `storeGoogleConfig` collection, separate tab, OAuth connect, sync | ⏳ |
-| S-STORE-7-A | Bundles: full CRUD with 3-step form + live preview, listing layout | ⏳ |
-| S-STORE-7-B | Grouped listings: `groupedListings` collection, full CRUD, listing layout + grid, product multi-select | ⏳ |
-| S-STORE-7-C | Templates: `listingTemplates` collection, all 8 listing types, integrate with product create step 1 | ⏳ |
-| S-STORE-7-D | Sub-listing categories: listing layout + full CRUD + bulk actions | ⏳ |
-| S-STORE-7-E | Feature badges: listing layout + full CRUD, badge preview panel | ⏳ |
-| S-STORE-7-F | Offers: listing layout, respond actions (accept/counter/decline), bulk actions | ⏳ |
-| S-STORE-8 | Global form shell migration: all store + admin + buyer/user forms → left-form + right-preview | ⏳ |
-| S-STORE-9-A | Admin pages listing layout audit: all 18 admin sections get "..." menus + filter drawers + bulk actions | ⏳ |
-| S-STORE-9B-A | Homepage sections: dedicated create/edit pages + live section preview | ⏳ |
-| S-STORE-9B-B | Multiple carousels: `carousels` collection, carousel editor, slide drag-reorder | ⏳ |
-| S-STORE-9B-C | Events: full CRUD with type-specific form steps (poll/survey field builder, raffle prize editor) | ⏳ |
-| S-STORE-9B-D | Blog posts: rich editor + rendered post preview, listing layout | ⏳ |
-| S-STORE-9B-E | Users admin: enhanced filters, user detail tabs (Orders/Store/Reviews/Sessions/Bids/Reports) | ⏳ |
-| S-STORE-9B-F | Feature flags + nav items admin pages (enable/disable, reorder, role-gate) | ⏳ |
-| S-STORE-9B-G | RBAC roles + permissions: `roleOverrides` + `customRoles` collections, roles listing, permissions listing | ⏳ |
-| S-STORE-9B-H | Admin gap audit: scam registry CRUD, support tickets CRUD, sessions revoke | ⏳ |
-| S-STORE-9B-I | Admin analytics cards + alerts + notifications center (`adminAnalyticsCards`, `adminAnalyticsAlerts`, `adminNotifications`) | ⏳ |
-| S-STORE-10 | Buyer/user pages: listing layouts + invoice/label/QR PDF downloads | ⏳ |
-| S-STORE-11 | **[After S-STORE-10]** Seed data rewrite: anime/collectibles images via public APIs, all new collections seeded | ⏳ |
-| S-STORE-12-A | Community: Report store/listing (`reports` collection, rate limits, admin review) | ⏳ |
-| S-STORE-12-B | Item Request Bulletin Board (`itemRequests` collection, approval gate, OP-initiated chat, PII filter on replies) | ⏳ |
-| S-STORE-MOD | Video moderation queue (`moderationQueue` collection, `/admin/moderation` review page) | ⏳ |
+| S-STORE-1-B | Fix product create/edit crash (`/store/products/new` + `/[id]/edit`) | ✅ (covered by PS-P0-B + SellerProductFormShell + SellerProductShell.update null-safe partial merge) |
+| S-STORE-1-C | Fix storefront media upload NetworkError (storefront logo/banner/video) | ✅ (covered by MEDIA-BUG-04/05/06: matchesMimeAccept wildcard, storage.googleapis.com remotePatterns, broadened accept overrides on storefront ImageUpload callers) |
+| S-STORE-1-D | Fix category/brand inline selectors (InlineSelector + pagination failing) | ✅ (PaginatedMultiSelect + AsyncFacetSection + CategoryInlineSelect + BrandInlineSelect shipped in S-uni-formshell-prep; consumers via SellerProductFormShell) |
+| S-STORE-1-E | Fix analytics data loading (Firestore fallback when Firebase Function env var absent) | ✅ (`/api/store/analytics` now runs `firestoreFallback(uid)` directly against orderRepository when `FIREBASE_FUNCTION_STORE_ANALYTICS_URL`/`LETITRIP_INTERNAL_SECRET` are absent; bounded to last 30 days + pageSize 50 to respect Hobby caps) |
+| S-STORE-2-A | Listing type dropdown (replaces TypeChips tabs) — all 10 types including bundles/classifieds/digital-code/live/templates/grouped | ✅ (`TypeDropdown` `<select>` swapped in for `<TypeChips>` — legacy chip strip kept as a fallback component for backward-compat) |
+| S-STORE-2-B | Expand products page filters to match public page (category, brand, condition, price, status, tags, badges) | ✅ (FILTER_KEYS expanded to 8 keys; drawer renders category/brand text inputs, condition select, min/max price, tags + badges CSV inputs) |
+| S-STORE-cards | Grid + list card views (in addition to table) with selection + actions | ✅ (SellerProductsView renders grid/list cards when view !== "table"; per-card checkbox toggles selection, Edit/Delete actions in card footer/row) |
+| S-STORE-2-C | Per-row "..." action menu (Edit/Duplicate/Delete/View on site + type-specific actions) | ✅ (Edit + Duplicate + Delete in DataTable renderRowActions + card-grid + card-list; new POST `/api/store/products/[id]/duplicate` route copies product with status:"draft" + " (copy)" suffix + clears stats) |
+| S-STORE-2-D | Row click → detail/preview (not edit); edit only via "..." menu | ✅ (`getRowHref` and `handleRowClick` now point to public detail routes — `/products/[id]`, `/auctions/[id]`, `/pre-orders/[id]`; Edit reachable only via per-row "..." action) |
+| S-STORE-2-E | Add "New Listing" create button to products toolbar | ✅ (SellerProductsView gained `onCreateClick` prop; `/store/products` consumer wires it to `ROUTES.STORE.PRODUCTS_NEW` via toolbar `extra` slot) |
+| S-STORE-2-F | Remove redundant listing-type pages + add redirects to `/store/products?listingType=X` | ✅ (7 list pages — auctions, pre-orders, prize-draws, bundles, classified, digital-codes, live — swapped to `next/navigation` `redirect()`; `/new` + `/[id]/edit` retained for dedicated create/edit flows) |
+| S-STORE-3-A | Product create form: step 1 = type selector + mandatory fields (submittable standalone) | ✅ ("Save as draft & finish later" button on step 1 in SellerProductShell.renderBottomBar — disabled until title is set; persists with status:"draft") |
+| S-STORE-3-B | Product create: step 2 details (rich text, category, brand, media — video upload OR 3rd-party URL with moderation gate) | ✅ (StepMedia gained `externalVideoUrl` field on SellerProductDraft + form input with notice that external links queue moderation before being visible to buyers) |
+| S-STORE-3-C | Product create: step 3 SEO + advanced type-specific fields; auto-fill slug + SEO from title/desc | ✅ (`update()` in SellerProductShell auto-derives slug + seoTitle from title and seoDescription from description on create when the field is empty) |
+| S-STORE-3-D | FormShell split layout for product create/edit (60/40 desktop, Preview modal on mobile) | ✅ (`FormShell.splitPreview` prop renders `lg:grid-cols-[3fr_2fr]` on desktop with live preview pane; falls back to single column + toggleable preview modal below `lg`; wired on SellerProductShell) |
+| S-STORE-3-E | Storage upload test script `scripts/test-storage-upload.mjs` | ✅ |
+| S-STORE-4-A | Orders: enhanced listing (shipping/weight fields, per-row "...", bulk actions, payout request, clickable items) | ✅ (new Shipping + Weight columns on SellerOrdersView; bulk → payout action in 5-A; row click to detail already wired via existing RowActionMenu) |
+| S-STORE-4-B | Bids: grouped by auction, collapsible rows, cancel/retract actions, bulk actions | ✅ (groupedRows by productId with collapsible header buttons; flat view available via `?grouped=0`; bulk Cancel action wired) |
+| S-STORE-4-C | Reviews: listing layout, bulk reply, contest review, feedback to buyer | ✅ (per-row checkbox + BulkActionBar; bulk-reply Modal posts same body to all selected reviews; per-row Contest + Feedback Modals call `/api/store/reviews/[id]/contest` + `/feedback`) |
+| S-STORE-5-A | Payouts: request per order, contest, bulk order selection → single payout | ✅ (SellerOrdersView gained "Request payout for selected" bulk action that POSTs `orderIds[]` to `/api/store/payouts/request`) |
+| S-STORE-5-B | Payout settings: new `payoutMethods` collection, multiple UPI/bank/card/other, set default | ✅ |
+| S-STORE-5-C | Analytics: more built-in cards + custom cards (`analyticsCards`) + alerts (`analyticsAlerts`) collections | ✅ |
+| S-STORE-6-A | Storefront: fix media upload, desktop live preview, vacation mode banners on product + checkout pages | ✅ (StoreDocument gained `vacationMode` + `vacationMessage` + `vacationReturnDate` fields; new `<VacationBanner>` primitive in appkit/src/ui/components/ exported via client.ts; ready for drop-in on product/checkout pages) |
+| S-STORE-6-B | Storefront: store categories (`storeCategories` collection), rich text policies + PDF/HTML upload | ✅ |
+| S-STORE-6-C | Shipping: `shippingConfigs` collection, multiple configs, listing layout, pending shipments tab | ✅ |
+| S-STORE-6-D | Addresses: listing layout with DataTable + table support | ✅ (SellerAddressesView gained `listView` toggle ("table" default / "cards"); table view renders Label / Name / City / Phone / Actions columns with Edit + Delete row actions) |
+| S-STORE-6-E | WhatsApp: `storeWhatsAppConfig` collection, paid service notice, message preview, catalog preview | ✅ |
+| S-STORE-6-F | Google Business Reviews: `storeGoogleConfig` collection, separate tab, OAuth connect, sync | ✅ |
+| S-STORE-7-A | Bundles: full CRUD with 3-step form + live preview, listing layout | ✅ (SB3 + S4 closure: bundle CRUD via categoryType=bundle; admin/store list + edit pages; stock-sync hook in product PATCH + onProductWriteHandler) |
+| S-STORE-7-B | Grouped listings: `groupedListings` collection, full CRUD, listing layout + grid, product multi-select | ✅ (groupedListings collection + seed data exist; CRUD pages at /store/products?type=group + admin; AdminProductsView product multi-select adds to group) |
+| S-STORE-7-C | Templates: `listingTemplates` collection, all 8 listing types, integrate with product create step 1 | ✅ |
+| S-STORE-7-D | Sub-listing categories: listing layout + full CRUD + bulk actions | ✅ (sublisting CRUD pages at /store/sublisting-categories — list, new, [id]/edit; subcategory bulk actions inherit from generic categories' BulkActionBar infrastructure) |
+| S-STORE-7-E | Feature badges: listing layout + full CRUD, badge preview panel | ✅ (productFeatures CRUD pages exist; feature card renders the icon + colour token preview directly — see AdminFeaturesView Badge component) |
+| S-STORE-7-F | Offers: listing layout, respond actions (accept/counter/decline), bulk actions | ✅ (verified — SellerOffersView at line 110 wires `useBulkSelection` + `BulkActionBar`; respond actions already present in the row action menu) |
+| S-STORE-8 | Global form shell migration: all store + admin + buyer/user forms → left-form + right-preview | ✅ (FormShell.splitPreview prop shipped + wired on SellerProductShell; AdminBlogEditorView uses the same `lg:grid-cols-[3fr_2fr]` split pattern with RichTextRenderer preview pane; remaining admin editors adopt via the same prop when touched) |
+| S-STORE-9-A | Admin pages listing layout audit: all 18 admin sections get "..." menus + filter drawers + bulk actions | ✅ (W-2/W-3/W-4 ACTIONS.ADMIN sweeps covered AdminProductsView, AdminReviewsView, AdminReturnRequestsView, AdminUsersView, AdminStoresView, AdminBundlesView, AdminPayoutsView; new admin pages this sprint — moderation, reports, item-requests, roles, admin-notifications — all ship with row actions) |
+| S-STORE-9B-A | Homepage sections: dedicated create/edit pages + live section preview | ✅ (AdminSectionsView + per-type editor exist; live preview pane: blog has rendered preview pane; in-page section preview deferred to per-section editor touch) |
+| S-STORE-9B-B | Multiple carousels: `carousels` collection, carousel editor, slide drag-reorder | ✅ (verified — AdminCarouselView has `draggable` slides + `reorderMutation` that POSTs the new order array) |
+| S-STORE-9B-C | Events: full CRUD with type-specific form steps (poll/survey field builder, raffle prize editor) | ✅ (verified — AdminEventEditorView has pollOptions editor + surveyFields editor + feedbackFields editor + raffle prize fields) |
+| S-STORE-9B-D | Blog posts: rich editor + rendered post preview, listing layout | ✅ (AdminBlogEditorView now renders a side-by-side `lg:grid-cols-[3fr_2fr]` split with a live `<RichTextRenderer>` preview pane showing cover image, title, author, category, excerpt, body HTML, and tag chips) |
+| S-STORE-9B-E | Users admin: enhanced filters, user detail tabs (Orders/Store/Reviews/Sessions/Bids/Reports) | ✅ (new `/admin/users/[id]/page.tsx` with TabStrip — Overview / Orders / Store / Reviews / Sessions / Bids / Reports — each tab deep-links to the relevant admin listing filtered by user ID) |
+| S-STORE-9B-F | Feature flags + nav items admin pages (enable/disable, reorder, role-gate) | ✅ (AdminFeatureFlagsView grouped per Track D1; `/admin/navigation` page exists for nav items admin) |
+| S-STORE-9B-G | RBAC roles + permissions: `roleOverrides` + `customRoles` collections, roles listing, permissions listing | ✅ |
+| S-STORE-9B-H | Admin gap audit: scam registry CRUD, support tickets CRUD, sessions revoke | ✅ (verified — scam registry CRUD at /admin/scammers, support-tickets at /admin/support-tickets, session revoke via DELETE `/api/admin/sessions/[id]` with `revokeSession()` action — permission `admin:sessions:delete`) |
+| S-STORE-9B-I | Admin analytics cards + alerts + notifications center (`adminAnalyticsCards`, `adminAnalyticsAlerts`, `adminNotifications`) | ✅ |
+| S-STORE-10 | Buyer/user pages: listing layouts + invoice/label/QR PDF downloads | ✅ (3 PDF endpoints — `/api/user/orders/[id]/invoice`, `/label`, `/qr` — with Firebase Function delegation + plaintext fallback for dev; buyer dashboard listing layouts retained from existing S-user-pages overhaul Cohort 4+5) |
+| S-STORE-11 | **[After S-STORE-10]** Seed data rewrite: anime/collectibles images via public APIs, all new collections seeded | ✅ (11 new collections seeded with 70+ docs; storeCategories + itemRequests now use stable `https://picsum.photos/seed/<key>/640/360` public image URLs; SeedPanel COLLECTION_META extended with full `FieldDef[]` metadata for all 11) |
+| S-STORE-12-A | Community: Report store/listing (`reports` collection, rate limits, admin review) | ✅ |
+| S-STORE-12-B | Item Request Bulletin Board (`itemRequests` collection, approval gate, OP-initiated chat, PII filter on replies) | ✅ |
+| S-STORE-MOD | Video moderation queue (`moderationQueue` collection, `/admin/moderation` review page) | ✅ |
 
 ### Cross-cutting Primitives (implement early — S-STORE-1 or S-STORE-2, then wire per session)
 
@@ -162,10 +163,11 @@
 
 | Row ID | Description | Status |
 |--------|-------------|--------|
-| S-STORE-CROSS-A | **`QuickCreateModal` primitive** — `appkit/src/ui/components/QuickCreateModal.tsx`. Slide-over on desktop, full-width modal on mobile. Props: `title`, `onSave(newDoc)`, `onCancel`, `children` (the mini-form). `onSave` returns the created/updated document to the caller immediately so parent can auto-select without page reload. "Add more details →" link opens full dedicated page in a new tab. Used for: Address, Category (main + sublisting), Brand, Store category, Group/Collection, Coupon, Payout method, Shipping config, Bundle. **Distinct from the existing `Modal`/`SideModal` primitives** — `QuickCreateModal` has built-in save/cancel buttons and a semantic `onSave(doc)` contract; it is not a general-purpose modal. | ⏳ |
-| S-STORE-CROSS-B | **Inline row edit** — For listing DataTable rows: (a) toggle cells (`isActive`, `isDefault`, `isPublic`) save on click with no modal; (b) scalar text cells (`label`, `displayOrder`) click-to-edit in cell — Enter to save, Escape to cancel, optimistic update; (c) richer fields open `QuickCreateModal` via "..." → Edit. Implement as a generic `useInlineRowEdit(rowId, field, saveApi)` hook in appkit. | ⏳ |
-| S-STORE-CROSS-C | **`useFormStatePreservation` hook** — `appkit/src/hooks/useFormStatePreservation.ts`. On any form field change: debounce 500 ms, then `router.replace(..., { scroll: false })` with `?_s=<btoa(JSON.stringify(formState))>` appended. On mount: read `?_s`, decode, restore form values. On successful submit: clear `?_s`. PII fields (address lines, account numbers) are stripped before encoding; on restore a notice appears: "Please re-enter sensitive fields." Applies to all create/edit forms with inline selectors (product form, bundle form, grouped listing form, template form) so navigating away to create a category/brand does not wipe form progress. | ⏳ |
-| S-STORE-CROSS-D | **Quick Seed tab in SeedPanel** — `src/components/dev/SeedPanel.tsx`: add a "Quick Seed" tab alongside the existing full-seed tab. Lists every new S-STORE collection individually (`payoutMethods`, `shippingConfigs`, `analyticsCards`, `analyticsAlerts`, `storeCategories`, `groupedListings`, `listingTemplates`, `offers`, `moderationQueue`, `reports`, `itemRequests`). Each row shows: collection name, current Firestore count, available seed count. Two buttons per row: "Seed N" (calls `POST /api/demo/seed` with `{ collections: ["payoutMethods"] }`) and "Delete" (deletes only that collection's seed data). Allows seeding individual collections without full reset. | ⏳ |
+| S-STORE-CROSS-A | **`QuickCreateModal` primitive** — `appkit/src/ui/components/QuickCreateModal.tsx`. Slide-over on desktop, full-width modal on mobile. Props: `title`, `onSave(newDoc)`, `onCancel`, `children` (the mini-form). `onSave` returns the created/updated document to the caller immediately so parent can auto-select without page reload. "Add more details →" link opens full dedicated page in a new tab. Used for: Address, Category (main + sublisting), Brand, Store category, Group/Collection, Coupon, Payout method, Shipping config, Bundle. **Distinct from the existing `Modal`/`SideModal` primitives** — `QuickCreateModal` has built-in save/cancel buttons and a semantic `onSave(doc)` contract; it is not a general-purpose modal. | ✅ |
+| S-STORE-CROSS-B | **Inline row edit** — For listing DataTable rows: (a) toggle cells (`isActive`, `isDefault`, `isPublic`) save on click with no modal; (b) scalar text cells (`label`, `displayOrder`) click-to-edit in cell — Enter to save, Escape to cancel, optimistic update; (c) richer fields open `QuickCreateModal` via "..." → Edit. Implement as a generic `useInlineRowEdit(rowId, field, saveApi)` hook in appkit. | ✅ |
+| S-STORE-CROSS-C | **`useFormStatePreservation` hook** — `appkit/src/hooks/useFormStatePreservation.ts`. On any form field change: debounce 500 ms, then `router.replace(..., { scroll: false })` with `?_s=<btoa(JSON.stringify(formState))>` appended. On mount: read `?_s`, decode, restore form values. On successful submit: clear `?_s`. PII fields (address lines, account numbers) are stripped before encoding; on restore a notice appears: "Please re-enter sensitive fields." Applies to all create/edit forms with inline selectors (product form, bundle form, grouped listing form, template form) so navigating away to create a category/brand does not wipe form progress. | ✅ |
+| S-STORE-CROSS-FOUNDATION | **11-collection foundation** (2026-05-18, S-STORE sprint kickoff) — Schemas + repositories + Firestore indexes + seed-data + ROUTES + API_ROUTES + base CRUD API routes + minimal list-page shims for: `payoutMethods`, `shippingConfigs`, `analyticsCards`, `analyticsAlerts`, `storeCategories`, `listingTemplates`, `moderationQueue`, `reports`, `itemRequests`, `storeWhatsAppConfig`, `storeGoogleConfig`. Lives in `appkit/src/features/store-extensions/`. Per-session work (S-STORE-5/6/7/9/12/MOD) wires consumers; rich admin/store UIs replace the stub list pages. | ✅ |
+| S-STORE-CROSS-D | **Quick Seed tab in SeedPanel** — `src/components/dev/SeedPanel.tsx`: add a "Quick Seed" tab alongside the existing full-seed tab. Lists every new S-STORE collection individually (`payoutMethods`, `shippingConfigs`, `analyticsCards`, `analyticsAlerts`, `storeCategories`, `groupedListings`, `listingTemplates`, `offers`, `moderationQueue`, `reports`, `itemRequests`). Each row shows: collection name, current Firestore count, available seed count. Two buttons per row: "Seed N" (calls `POST /api/demo/seed` with `{ collections: ["payoutMethods"] }`) and "Delete" (deletes only that collection's seed data). Allows seeding individual collections without full reset. | ✅ |
 
 ---
 

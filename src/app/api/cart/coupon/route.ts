@@ -3,11 +3,12 @@ import { z } from "zod";
 import {
   ApiErrors,
   cartRepository,
+  claimedCouponsRepository,
   createRouteHandler,
   successResponse,
   validateCouponForCart,
 } from "@mohasinac/appkit";
-import type { CartAppliedCoupon } from "@mohasinac/appkit";
+import type { CartAppliedCoupon, CouponDocument } from "@mohasinac/appkit";
 
 const couponSchema = z.object({
   code: z.string().min(1, "Coupon code is required").max(50),
@@ -143,6 +144,37 @@ export const POST = withProviders(
         // Store the combine flag so conflict detection works for future coupons
         combineWithSellerCoupons: combineFlag,
       });
+
+      // Auto-bind to the user's wallet — if they typed a code they hadn't
+      // claimed yet, this surfaces it under My Coupons so they can reapply
+      // later without re-typing. claim() is idempotent so re-applying an
+      // already-claimed coupon is a no-op.
+      if (couponDoc?.id) {
+        const fullCoupon = result.coupon as CouponDocument | undefined;
+        void claimedCouponsRepository
+          .claim({
+            userId: user!.uid,
+            couponId: couponDoc.id,
+            couponCode: normalised,
+            source: "manual",
+            couponSnapshot: {
+              name: fullCoupon?.name ?? normalised,
+              description: fullCoupon?.description,
+              type: fullCoupon?.type ?? "fixed",
+              scope: fullCoupon?.scope ?? incomingScope,
+              storeId: fullCoupon?.storeId,
+              discount: fullCoupon?.discount ?? { value: result.discountAmount ?? 0 },
+              restrictions: fullCoupon?.restrictions ?? {
+                firstTimeUserOnly: false,
+                combineWithSellerCoupons: true,
+              },
+            },
+            expiresAt: fullCoupon?.validity?.endDate ?? null,
+          })
+          .catch(() => {
+            /* best-effort wallet bind — checkout still validates fresh */
+          });
+      }
 
       return successResponse({
         code: normalised,

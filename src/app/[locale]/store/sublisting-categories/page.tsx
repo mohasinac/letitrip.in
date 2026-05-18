@@ -11,6 +11,7 @@ import {
   Row,
   Select,
   Text,
+  ACTIONS,
 } from "@mohasinac/appkit/client";
 import { ROUTES } from "@mohasinac/appkit/client";
 import { useUrlTable } from "@mohasinac/appkit/client";
@@ -132,10 +133,7 @@ function renderCategoryRow(
         <Button variant="outline" size="sm" asChild>
           <Link href={String(ROUTES.STORE.SUBLISTING_CATEGORIES_EDIT(cat.id))}>Edit</Link>
         </Button>
-        {/* eslint-disable-next-line lir/prefer-action-registry */}
-        <Button variant="danger" size="sm" isLoading={deletingId === cat.id} onClick={() => handleDelete(cat.id, cat.name)}>
-          Delete
-        </Button>
+        <Button size="sm" isLoading={deletingId === cat.id} onClick={() => handleDelete(cat.id, cat.name)} action={ACTIONS.STORE["delete-sublisting-category"]} />
       </Row>
     </Row>
   );

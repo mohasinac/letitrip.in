@@ -3,7 +3,9 @@
   "version": "2.7.42",
   "private": true,
   "scripts": {
+    "predev": "node scripts/stop-dev.mjs",
     "dev": "concurrently --kill-others --restart-tries 0 --names \"appkit,css,next\" \"npm run watch:appkit\" \"npm run watch:css\" \"npm run dev:only\"",
+    "stop": "node scripts/stop-dev.mjs",
     "dev:only": "cross-env NODE_OPTIONS=--max-old-space-size=3072 VERCEL_HOBBY_TIER=1 node scripts/dev-next.mjs",
     "prewarm": "node scripts/prewarm.mjs",
     "watch:appkit": "npm --prefix ./appkit run watch",
@@ -57,7 +59,7 @@
     "@auth/firebase-adapter": "^2.11.1",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",
-    "@mohasinac/appkit": "2.7.49",
+    "@mohasinac/appkit": "file:./appkit",
     "@mohasinac/sievejs": "^1.0.0",
     "@tanstack/react-query": "^5.90.21",
     "@types/qrcode": "^1.5.6",

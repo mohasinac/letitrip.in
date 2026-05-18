@@ -21,6 +21,7 @@ async function addToWishlistAndRemoveFromCart(item: CartItem, failedIds: string[
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   Button,
   CartItemRow,
@@ -42,6 +43,7 @@ import {
   ACTION_ID,
   ACTIONS,
   LoginRequiredModal,
+  StickyBottomBar,
 } from "@mohasinac/appkit/client";
 import type { CartItem } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
@@ -58,9 +60,10 @@ interface ServerCartItem {
   price: number;
   currency: string;
   quantity: number;
-  sellerId?: string;
-  sellerName?: string;
-  sellerSlug?: string;
+  /** Canonical store identifier (= store.id = store slug). Cart groups are keyed by storeId. */
+  storeId?: string;
+  /** Display name for the store header — purely UI. */
+  storeName?: string;
   /** Canonical listing-kind snapshot from CartItemDocument (SB1-G Phase 4). */
   listingType?: "standard" | "auction" | "pre-order" | "prize-draw";
 }
@@ -146,13 +149,20 @@ function getProductHref(
   return String(ROUTES.PUBLIC.PRODUCT_DETAIL(productId));
 }
 
+// Cart groups are keyed by storeId (canonical store identifier = store slug);
+// sellerName on SellerGroup is display-only. The legacy "Marketplace Seller"
+// placeholder is intentionally absent — when storeName is missing we fall back
+// to storeId, which is itself the human-readable store slug (e.g. `store-pokemon-palace`).
 function groupBySeller(items: CartItemWithListingType[]): SellerGroup[] {
   const map = new Map<string, SellerGroup>();
   for (const item of items) {
     const meta = item.meta as unknown as Record<string, unknown>;
-    const sid = (meta.sellerId as string | undefined) ?? "unknown";
-    const sname = (item.meta.attributes?.sellerName as string | undefined) ?? "Marketplace Seller";
-    const sslug = meta.sellerSlug as string | undefined;
+    const sid = (meta.storeId as string | undefined) ?? "unknown";
+    const sname =
+      (item.meta.attributes?.storeName as string | undefined) ||
+      sid;
+    // storeId IS the store slug (memory: project_store_identity) — link target.
+    const sslug = sid !== "unknown" ? sid : undefined;
     if (!map.has(sid)) {
       map.set(sid, { sellerId: sid, sellerName: sname, sellerSlug: sslug, items: [] });
     }
@@ -176,10 +186,9 @@ function serverItemsToCartItems(
       image: item.productImage,
       price: item.price,
       currency: item.currency ?? "INR",
-      sellerId: item.sellerId,
-      sellerSlug: item.sellerSlug,
+      storeId: item.storeId,
       attributes: {
-        sellerName: item.sellerName ?? "Marketplace Seller",
+        storeName: item.storeName ?? "",
       },
     },
   }));
@@ -445,6 +454,27 @@ export function CartRouteClient() {
     [isAuthenticated, effectiveCoupons, showToast, refetch],
   );
 
+  // ?coupon=CODE deep-link — wallet "Apply at checkout" CTA + SpinWheel
+  // ClaimCouponButton both land here. Auto-fill the input and auto-apply
+  // once on mount when the user is authenticated. Guarded by a ref so a
+  // re-render doesn't re-apply.
+  const searchParams = useSearchParams();
+  const deepLinkAppliedRef = useRef(false);
+  useEffect(() => {
+    if (deepLinkAppliedRef.current) return;
+    if (!isAuthenticated) return;
+    const incoming = searchParams.get("coupon");
+    if (!incoming) return;
+    deepLinkAppliedRef.current = true;
+    const code = incoming.trim().toUpperCase();
+    if (effectiveCoupons.some((c) => c.code === code)) return;
+    setCouponCode(code);
+    // Schedule apply so handleApplyCoupon reads the freshly set state.
+    setTimeout(() => {
+      void handleApplyCoupon();
+    }, 0);
+  }, [isAuthenticated, searchParams, effectiveCoupons, handleApplyCoupon]);
+
   // ---------------------------------------------------------------------------
   // Item selection for partial checkout
   // ---------------------------------------------------------------------------
@@ -702,8 +732,8 @@ export function CartRouteClient() {
       if (!normalizedQuery) return true;
       const q = normalizedQuery;
       if ((item.meta.title ?? "").toLowerCase().includes(q)) return true;
-      const seller = ((item.meta.attributes?.sellerName as string | undefined) ?? "").toLowerCase();
-      if (seller.includes(q)) return true;
+      const store = ((item.meta.attributes?.storeName as string | undefined) ?? "").toLowerCase();
+      if (store.includes(q)) return true;
       const price = item.meta.price;
       if (String(Math.round(price)).includes(q) || price.toFixed(2).includes(q)) return true;
       const lt = item.listingType ?? "standard";
@@ -923,9 +953,11 @@ export function CartRouteClient() {
                       />
                       <Button
                         type="button"
+                        variant="primary"
+                        size="sm"
                         onClick={handleApplyCoupon}
                         disabled={isCouponLoading || !couponCode.trim()}
-                        className="text-sm bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
+                        className="shrink-0"
                       >
                         {isCouponLoading ? "…" : "Apply"}
                       </Button>
@@ -1021,9 +1053,11 @@ export function CartRouteClient() {
     />
     <LoginRequiredModal isOpen={modalOpen} onClose={closeModal} message={modalMessage} />
 
-    {/* ── Mobile sticky bottom bar (hidden on lg+) ────────────────────── */}
+    {/* ── Mobile sticky bottom bar (hidden on lg+) ──────────────────────
+        Positioned via `var(--bottom-nav-height)` so it floats above the
+        BottomNavLayout instead of being clipped behind it. */}
     {!isEmpty && !isLoading && (
-      <Div className="lg:hidden fixed bottom-0 left-0 right-0 z-20 border-t border-zinc-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm px-4 pb-4 pt-3 space-y-2 pb-[env(safe-area-inset-bottom,0px)]">
+      <StickyBottomBar className="px-4 pb-4 pt-3 space-y-2">
         {/* Row 1: coupon input (auth only) */}
         {isAuthenticated && (
           <Div className="flex gap-2">
@@ -1040,7 +1074,9 @@ export function CartRouteClient() {
               type="button"
               onClick={handleApplyCoupon}
               disabled={isCouponLoading || !couponCode.trim()}
-              className="shrink-0 text-sm bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
+              variant="primary"
+              size="sm"
+              className="shrink-0"
             >
               {isCouponLoading ? "…" : "Apply"}
             </Button>
@@ -1064,11 +1100,15 @@ export function CartRouteClient() {
             </Link>
           </Button>
         )}
-      </Div>
+      </StickyBottomBar>
     )}
-    {/* Spacer so sticky bar doesn't overlap content */}
+    {/* Spacer so sticky bar doesn't overlap content — bar height (~7rem) + bottom-nav height (4rem) */}
     {!isEmpty && !isLoading && (
-      <Div className="lg:hidden h-28" />
+      <Div
+        className="lg:hidden"
+        // eslint-disable-next-line lir/no-inline-static-style
+        style={{ height: "calc(7rem + var(--bottom-nav-height, 0px))" }}
+      />
     )}
     </>
   );

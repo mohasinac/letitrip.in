@@ -113,8 +113,10 @@ function NotifCard({
         {!notif.isRead && (
           <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={() => onMarkRead(notif.id)}
-            className="text-xs text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text)] transition-colors"
+            className="text-xs"
           >
             Mark read
           </Button>

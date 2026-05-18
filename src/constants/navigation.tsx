@@ -114,6 +114,8 @@ export const FOOTER_LINK_GROUPS = [
       { label: "Track Order",   href: String(ROUTES.PUBLIC.TRACK_ORDER) },
       { label: "About Us",      href: String(ROUTES.PUBLIC.ABOUT)       },
       { label: "Scam Registry", href: String(ROUTES.PUBLIC.SCAMS)       },
+      { label: "Item Requests", href: String(ROUTES.PUBLIC.ITEM_REQUESTS) },
+      { label: "Report a Problem", href: String(ROUTES.PUBLIC.REPORT_ENTITY) },
     ],
   },
   {
@@ -235,6 +237,9 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     items: [
       adminItem(String(ROUTES.ADMIN.SUPPORT_TICKETS), "Support Tickets", "admin:support-tickets:read"),
       adminItem(String(ROUTES.ADMIN.SCAMMERS),        "Scam Registry",   "admin:scammers:read"),
+      adminItem(String(ROUTES.ADMIN.MODERATION),      "Moderation",      "admin:moderation:read"),
+      adminItem(String(ROUTES.ADMIN.REPORTS),         "Reports",         "admin:moderation:read"),
+      adminItem(String(ROUTES.ADMIN.ITEM_REQUESTS),   "Item Requests",   "admin:moderation:read"),
     ],
   },
   {
@@ -246,8 +251,10 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.WISHLISTS),     "Wishlists",     "admin:wishlists:read"),
       adminItem(String(ROUTES.ADMIN.HISTORY),       "History",       "admin:sessions:read"),
       adminItem(String(ROUTES.ADMIN.FEATURE_FLAGS), "Feature Flags", "admin:feature-flags:read"),
-      adminItem(String(ROUTES.ADMIN.COPILOT),       "Copilot",       "admin:copilot:view"),
-      adminItem(String(ROUTES.ADMIN.TEAM),          "Team",          "admin:team:read"),
+      adminItem(String(ROUTES.ADMIN.COPILOT),              "Copilot",             "admin:copilot:view"),
+      adminItem(String(ROUTES.ADMIN.TEAM),                 "Team",                "admin:team:read"),
+      adminItem(String(ROUTES.ADMIN.ROLES),                "Custom Roles",        "admin:roles:read"),
+      adminItem(String(ROUTES.ADMIN.ADMIN_NOTIFICATIONS),  "Admin Notifications", "admin:notifications:read"),
     ],
   },
 ];
@@ -278,6 +285,7 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
       { href: String(ROUTES.STORE.SUBLISTING_CATEGORIES),   label: "Sub-listing Groups"},
       { href: String(ROUTES.STORE.FEATURES),                label: "Feature Badges"    },
       { href: String(ROUTES.STORE.TEMPLATES),               label: "Templates"         },
+      { href: String(ROUTES.STORE.LISTING_TEMPLATES),       label: "Listing Templates" },
     ],
   },
   {
@@ -292,19 +300,24 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
     title: "Finance",
     items: [
       { href: String(ROUTES.STORE.ANALYTICS),       label: "Analytics"        },
+      { href: String(ROUTES.STORE.ANALYTICS_CARDS), label: "Analytics Cards"  },
       { href: String(ROUTES.STORE.PAYOUTS),         label: "Payouts"          },
       { href: String(ROUTES.STORE.PAYOUT_SETTINGS), label: "Payout Settings"  },
+      { href: String(ROUTES.STORE.PAYOUT_METHODS),  label: "Payout Methods"   },
     ],
   },
   {
     title: "Store",
     items: [
-      { href: String(ROUTES.STORE.STOREFRONT),   label: "Storefront"    },
-      { href: String(ROUTES.STORE.SHIPPING),     label: "Shipping"      },
-      { href: String(ROUTES.STORE.ADDRESSES),    label: "Addresses"     },
-      { href: String(ROUTES.STORE.COUPONS),      label: "Coupons"       },
-      { href: String(ROUTES.STORE.WHATSAPP),     label: "WhatsApp"      },
-      { href: String(ROUTES.STORE.SLUG),         label: "Store URL"     },
+      { href: String(ROUTES.STORE.STOREFRONT),         label: "Storefront"          },
+      { href: String(ROUTES.STORE.SHIPPING),           label: "Shipping"            },
+      { href: String(ROUTES.STORE.SHIPPING_CONFIGS),   label: "Shipping Configs"    },
+      { href: String(ROUTES.STORE.STORE_CATEGORIES),   label: "Store Categories"    },
+      { href: String(ROUTES.STORE.ADDRESSES),          label: "Addresses"           },
+      { href: String(ROUTES.STORE.COUPONS),            label: "Coupons"             },
+      { href: String(ROUTES.STORE.WHATSAPP),           label: "WhatsApp"            },
+      { href: String(ROUTES.STORE.GOOGLE_REVIEWS),     label: "Google Reviews"      },
+      { href: String(ROUTES.STORE.SLUG),               label: "Store URL"           },
     ],
   },
 ];
@@ -335,6 +348,7 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
       { href: String(ROUTES.USER.EVENTS),         label: "My Events"     },
       { href: String(ROUTES.USER.REVIEWS),        label: "My Reviews"    },
       { href: String(ROUTES.USER.OFFERS),         label: "My Offers"     },
+      { href: String(ROUTES.USER.CLAIMED_COUPONS), label: "My Coupons"   },
       { href: String(ROUTES.USER.ADDRESSES),      label: "Addresses"     },
     ],
   },

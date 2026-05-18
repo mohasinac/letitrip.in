@@ -1,6 +1,6 @@
-"use client";
-import { SellerPrizeDrawsView } from "@mohasinac/appkit";
+import { redirect } from "@/i18n/navigation";
 
+// S-STORE-2-F
 export default function Page() {
-  return <SellerPrizeDrawsView />;
+  redirect("/store/products?listingType=prize-draw");
 }

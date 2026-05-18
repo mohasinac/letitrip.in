@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { EventRaffleWinnerView } from "@mohasinac/appkit";
+import { EventRaffleWinnerView, couponsRepository } from "@mohasinac/appkit";
 import { EVENT_META } from "../_constants";
 import { getEventCached } from "../_data";
+import { getServerSessionUser } from "@/lib/firebase/auth-server";
 
 export const revalidate = 60;
 
@@ -24,5 +25,32 @@ export default async function Page({ params }: Props) {
   const event = await getEventCached(id);
   if (!event) notFound();
 
-  return <EventRaffleWinnerView event={event} />;
+  // Plan §10 — when the prize is a coupon AND the viewer is the winner,
+  // resolve the coupon code so the view can render a one-click Claim CTA.
+  const eventAny = event as unknown as Record<string, unknown>;
+  const couponId =
+    typeof eventAny.rafflePrizeCouponId === "string"
+      ? eventAny.rafflePrizeCouponId
+      : undefined;
+  const winnerUserId =
+    typeof eventAny.raffleWinnerUserId === "string"
+      ? eventAny.raffleWinnerUserId
+      : undefined;
+
+  let rafflePrizeCouponCode: string | undefined;
+  if (couponId) {
+    const coupon = await couponsRepository.findById(couponId).catch(() => null);
+    rafflePrizeCouponCode = coupon?.code;
+  }
+
+  const viewer = await getServerSessionUser().catch(() => null);
+  const currentUserIsWinner =
+    !!viewer && !!winnerUserId && viewer.uid === winnerUserId;
+
+  return (
+    <EventRaffleWinnerView
+      event={{ ...event, rafflePrizeCouponCode }}
+      currentUserIsWinner={currentUserIsWinner}
+    />
+  );
 }

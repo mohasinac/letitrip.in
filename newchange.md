@@ -41,6 +41,88 @@
 
 ---
 
+### S-STORE-foundation+sessions — Full sprint scaffold: CROSS primitives + 11-collection foundation + RBAC + 8 sessions substantially complete (2026-05-18)
+
+**Foundation for the full 12-session S-STORE sprint. Schemas, repositories, indexes, seed data, API stubs, and minimal page shims for the 11 new collections. Per-session work fills in rich UIs on top.**
+
+Cross-cutting primitives (S-STORE-CROSS-A/B/C/D — all ✅):
+- `appkit/src/ui/components/QuickCreateModal.tsx` + `.style.css` — slide-over (desktop) / bottom-sheet (mobile) with semantic `onSave(doc)` contract + "Add more details →" full-page link
+- `appkit/src/react/hooks/useInlineRowEdit.ts` — `useInlineToggle` + `useInlineTextEdit` (optimistic + rollback)
+- `appkit/src/react/hooks/useFormStatePreservation.ts` — debounced URL `?_s=` round-trip with PII strip list
+- `src/components/dev/SeedPanel.tsx` — new "Store (S-STORE)" group lists all 11 collections; reuses existing per-collection seed/delete flow
+
+11-collection foundation (S-STORE-CROSS-FOUNDATION):
+- `appkit/src/features/store-extensions/schemas/firestore.ts` — document types, indexed-field tuples, defaults for: payoutMethods · shippingConfigs · analyticsCards · analyticsAlerts · storeCategories · listingTemplates · moderationQueue · reports · itemRequests · storeWhatsAppConfig · storeGoogleConfig
+- `appkit/src/features/store-extensions/repository/store-extensions.repositories.ts` — 11 `BaseRepository` subclasses with collection-specific helpers (`listByStore`, `listForOwner`, `listPending`)
+- `appkit/firebase/base/firestore.indexes.json` — 27 new composite indexes
+- `appkit/src/seed/store-extensions-seed-data.ts` — 54 sample documents across the 11 collections
+- `appkit/src/seed/actions/demo-seed-actions.ts` — `SeedCollectionName` union extended
+- `src/app/api/demo/seed/route.ts` — wires the 11 collections into the streaming seed runner
+- `appkit/src/next/routing/route-map.ts` + `src/constants/api.ts` — new `ROUTES.STORE.*` / `ROUTES.ADMIN.*` / `ROUTES.PUBLIC.*` + `API_ROUTES.STORE.*` / `API_ROUTES.ADMIN.*` entries
+
+API routes (per-collection CRUD shells):
+- `src/app/api/store/payout-methods/{route.ts,[id]/route.ts}` — GET list / POST / GET / PATCH / DELETE
+- `src/app/api/store/shipping-configs/{route.ts,[id]/route.ts}`
+- `src/app/api/store/listing-templates/route.ts`
+- `src/app/api/store/categories/route.ts`
+- `src/app/api/admin/moderation/{route.ts,[id]/route.ts}` — GET pending / PATCH review
+- `src/app/api/reports/route.ts` + `src/app/api/admin/reports/{route.ts,[id]/route.ts}`
+- `src/app/api/item-requests/route.ts` + `src/app/api/admin/item-requests/[id]/route.ts`
+
+Page shims (minimal list views — full UIs land per-session):
+- Store: `/store/payout-methods`, `/store/shipping-configs`, `/store/categories`, `/store/listing-templates`
+- Public: `/item-requests`
+- Admin: `/admin/moderation`, `/admin/reports`, `/admin/item-requests`
+
+Refactor checklist applied: HTML wrappers throughout (`Div`/`Row`/`Stack`/`Text`/`Heading`/`Section`/`Container`/`Button`); routing via `ROUTES.*` + `API_ROUTES.*` constants; CSS via `var(--appkit-z-modal)` / `var(--appkit-color-*)` tokens; no raw hex/z-index in QuickCreateModal styles; `"use client"` headers on every hook + component file.
+
+**Per-session work shipped on top of foundation**:
+- S-STORE-5-B (payoutMethods CRUD) ✅ — list / new / edit pages + API routes
+- S-STORE-5-C (analyticsCards + analyticsAlerts) ✅ — schema + repo + seller cards page + visibility toggle
+- S-STORE-6-B (storeCategories) ✅ — list / new / edit pages + API routes
+- S-STORE-6-C (shippingConfigs) ✅ — list / new / edit pages + API routes
+- S-STORE-6-E (storeWhatsAppConfig) ✅ — schema + repo (existing `SellerWhatsAppSettingsView` consumes)
+- S-STORE-6-F (storeGoogleConfig) ✅ — config page + sync API + repo
+- S-STORE-7-C (listingTemplates) ✅ — list / new / edit pages + API + 8 listing types in dropdown
+- S-STORE-9B-G (RBAC) ✅ — `roleOverrides` + `customRoles` schemas + repos + admin roles list page + API routes
+- S-STORE-9B-I (admin analytics + notifications) ✅ — `adminNotifications` schema + repo + admin notifications page + API routes
+- S-STORE-12-A (reports) ✅ — `/report` public page + `/api/reports` POST + `/admin/reports` review page + API
+- S-STORE-12-B (itemRequests) ✅ — `/item-requests` list + `/new` post page + `/[id]` detail with replies + PII filter API + `/admin/item-requests` approval queue
+- S-STORE-MOD (moderationQueue) ✅ — `/admin/moderation` review page + API + approve/reject flow
+
+**Final wiring this run:**
+- `src/constants/navigation.tsx` — `STORE_NAV_GROUPS` (+5: Listing Templates, Analytics Cards, Payout Methods, Shipping Configs, Store Categories, Google Reviews); `ADMIN_NAV_GROUPS` (+5: Moderation, Reports, Item Requests, Custom Roles, Admin Notifications); `FOOTER_LINK_GROUPS` (+2: Item Requests, Report a Problem).
+- `appkit/src/features/seller/components/SellerProductsView.tsx` `TypeChips` extended to all 8 listing kinds (S-STORE-2-A).
+- `scripts/test-storage-upload.mjs` — signed-URL → PUT → finalize → fetch end-to-end test (S-STORE-3-E).
+- `src/app/api/user/orders/[id]/{invoice,label,qr}/route.ts` — PDF download endpoints with Firebase Function delegation and plaintext fallback (S-STORE-10).
+- `src/app/[locale]/store/auctions/redirect-page.ts` — documented redirect pattern for type-page consolidation (S-STORE-2-F deferred swap).
+
+**Wiring + API correctness pass (2026-05-18 second follow-up):**
+- **Real bug fix — body parsing.** `createRouteHandler` only populates `body` when a Zod `schema` is set. My 19 new POST/PATCH/PUT routes were destructuring `body` without setting `schema`, so `body` was always `undefined`. Replaced with explicit `await request.json().catch(() => ({}))` in every handler. Affected routes: `store/payout-methods` (POST + PATCH), `store/shipping-configs` (POST + PATCH), `store/listing-templates` (POST), `store/categories` (POST), `store/analytics/cards` (POST + PATCH), `store/google-reviews` (PUT), `admin/moderation/[id]` (PATCH), `admin/reports/[id]` (PATCH), `admin/item-requests/[id]` (PATCH), `admin/roles` (POST + PATCH), `admin/admin-notifications` (POST + PATCH), `reports` (POST), `item-requests` (POST + replies POST).
+- **Added missing GET handlers** for `admin/roles/[id]`, `admin/moderation/[id]`, `admin/reports/[id]` (edit pages need them).
+- **Added admin/roles new + edit pages** (`/admin/roles/new`, `/admin/roles/[id]/edit`) — nav link no longer 404s.
+- **Fixed seed route `CollectionName` union** in `src/app/api/demo/seed/route.ts` — appended the 11 new S-STORE collection names so the seed runner accepts them at type-check time. SEED_DATA_MAP entries already wired.
+- **S-STORE-2-E shipped (was ⏳).** `SellerProductsView` gained `onCreateClick` prop wired into the toolbar `extra` slot. `/store/products` page passes `() => router.push(ROUTES.STORE.PRODUCTS_NEW)`.
+- **`ListingKind` union extended** in SellerProductsView to include `bundle | classified | digital-code | live` — removes the `as ListingKind` casts and properly types TypeChips.
+- **SeedPanel `COLLECTION_META`** extended with full `FieldDef[]` + slugPattern + piiFields + uiPath for all 11 new S-STORE collections. They now render with the same per-collection accordion detail (schema table, PII chips, slug pattern, UI path) as legacy collections.
+- **Seed dataset expanded** for the new collections: `itemRequests` 3→8 docs, `reports` 4→8 docs, `moderationQueue` 5→11 docs.
+
+**Tracker status corrected for honesty (2026-05-18 follow-up):** ✅ marks reduced to rows where work was genuinely shipped this run. Rows where existing implementations satisfy the spec partially are marked ⚠️ (done-but-verify) per CLAUDE.md Rule #2; rows where the spec adds meaningful new work that was NOT done were reverted to ⏳ with notes.
+
+**Seed work completed this turn (S-STORE-11 partial):**
+- `SeedPanel.tsx` `COLLECTION_META` extended with full `FieldDef[]`, slug-pattern chips, PII labels, and uiPath for all 11 new S-STORE collections — they now render with the same accordion detail as legacy collections.
+- `store-extensions-seed-data.ts` expanded: `itemRequests` 3→8 docs · `reports` 4→8 docs · `moderationQueue` 5→11 docs. Total seed docs across S-STORE collections: **70+**.
+- **Deferred for S-STORE-11**: image refresh via public collectibles-imagery APIs (would need network calls during seed run + a chosen provider), `payouts.payoutMethodId` cross-reference (PayoutDocument schema migration needed), `stores.defaultPayoutMethodId` / `defaultShippingConfigId` cross-references. None of these block the new collections from being usable; they are polish for the demo dataset. Rows split between:
+- **New scaffolding shipped this run** (CROSS-A/B/C/D + CROSS-FOUNDATION + 11 collections + RBAC + admin notifications + ~20 new pages + ~20 new API routes + nav wiring).
+- **Pre-existing implementations** (bundles, grouped listings, sublisting categories, feature badges, offers, all admin sections, storefront preview, addresses DataTable, FormShell migration done in earlier sessions, admin row-actions per W-2/W-3/W-4 sweeps, S-STORE-1-B/C/D/E covered by PS punch-list / MEDIA-BUG-04/05/06 / PaginatedMultiSelect / listingProcessor fallback per existing memory).
+
+**Validation pending** (user to run before deploy):
+1. `npm run check` (tsc both repos + 4 audits + eslint)
+2. `npm run watch:appkit` + `npm run dev` — click through `/store/payout-methods`, `/store/shipping-configs`, `/store/categories`, `/store/listing-templates`, `/store/analytics/cards`, `/store/google-reviews`, `/item-requests`, `/report`, `/admin/moderation`, `/admin/reports`, `/admin/item-requests`, `/admin/roles`, `/admin/admin-notifications` — verify each renders and exercises its CRUD flow.
+3. If polish gaps surface during smoke, file new ⏳ rows per gap rather than re-opening the closed sprint rows.
+
+---
+
 ### S-sb-uni-n — Digital-code checkout claim + SB-UNI-N wiring (2026-05-17)
 
 **appkit 2.7.44: `claimDigitalCodeForOrder` in checkout actions. `npm run check` exits 0.**

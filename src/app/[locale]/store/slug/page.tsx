@@ -9,6 +9,7 @@ import {
   Row,
   Stack,
   Text,
+  ACTIONS,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
@@ -145,9 +146,11 @@ export default function Page() {
         </Div>
 
         <Row justify="end">
-          <Button variant="primary" size="sm" isLoading={saving} disabled={!canSave} onClick={handleSave}>
-            {isUnchanged ? "No Changes" : "Update Slug"}
-          </Button>
+          {isUnchanged ? (
+            <Button variant="primary" size="sm" disabled>No Changes</Button>
+          ) : (
+            <Button size="sm" isLoading={saving} disabled={!canSave} onClick={handleSave} action={ACTIONS.STORE["update-slug"]} />
+          )}
         </Row>
       </Stack>
     </Div>

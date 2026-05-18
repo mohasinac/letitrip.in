@@ -11,6 +11,7 @@ import {
   SideDrawer,
   Stack,
   Text,
+  ACTIONS,
 } from "@mohasinac/appkit/client";
 import { useUrlTable } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
@@ -210,7 +211,7 @@ function renderPageHeader(openCreate: () => void) {
         <Heading level={1} className="text-2xl font-bold">Product Templates</Heading>
         <Text variant="secondary" className="mt-1 text-sm">Save common field sets as templates to pre-fill new listings faster.</Text>
       </Div>
-      <Button variant="primary" size="sm" onClick={openCreate}>+ New Template</Button>
+      <Button variant="primary" size="sm" onClick={openCreate} action={ACTIONS.STORE["new-template"]} />
     </Row>
   );
 }
@@ -263,7 +264,7 @@ function renderTemplateList({ loading, filtered, q, condition, openCreate, openE
         <Text className="text-3xl mb-2">📋</Text>
         <Text className="text-sm font-semibold">{q || condition ? "No templates match your filters" : "No templates yet"}</Text>
         <Text variant="secondary" className="mt-1 text-xs">{q || condition ? "Try clearing your search or filters" : "Create a template to pre-fill category, brand, condition and more when listing."}</Text>
-        {!q && !condition && <Button variant="primary" size="sm" className="mt-4" onClick={openCreate}>Create Template</Button>}
+        {!q && !condition && <Button size="sm" className="mt-4" onClick={openCreate} action={ACTIONS.STORE["create-template"]} />}
       </Div>
     );
   }
@@ -280,10 +281,8 @@ function renderTemplateList({ loading, filtered, q, condition, openCreate, openE
             </Row>
           </Div>
           <Row gap="xs" className="shrink-0">
-            {/* eslint-disable-next-line lir/prefer-action-registry */}
-            <Button variant="outline" size="sm" onClick={() => openEdit(t)}>Edit</Button>
-            {/* eslint-disable-next-line lir/prefer-action-registry */}
-            <Button variant="danger" size="sm" isLoading={deletingId === t.id} onClick={() => handleDelete(t.id, t.name)}>Delete</Button>
+            <Button size="sm" onClick={() => openEdit(t)} action={ACTIONS.STORE["edit-template"]} />
+            <Button size="sm" isLoading={deletingId === t.id} onClick={() => handleDelete(t.id, t.name)} action={ACTIONS.STORE["delete-template"]} />
           </Row>
         </Row>
       ))}
@@ -310,10 +309,13 @@ function renderTemplateDrawer({ drawerOpen, closeDrawer, drawerMode, draft, setD
       isDirty={draft.name !== "" || draft.category !== "" || draft.brand !== ""}
       footer={
         <Row gap="sm" justify="end">
-          <Button variant="outline" size="sm" onClick={closeDrawer} disabled={saving}>Cancel</Button>
-          <Button variant="primary" size="sm" isLoading={saving} onClick={handleSave}>
-            {drawerMode === "create" ? "Create Template" : "Save Changes"}
-          </Button>
+          <Button size="sm" onClick={closeDrawer} disabled={saving} action={ACTIONS.STORE["cancel-form"]} />
+          <Button
+            size="sm"
+            isLoading={saving}
+            onClick={handleSave}
+            action={drawerMode === "create" ? ACTIONS.STORE["create-template"] : ACTIONS.STORE["update-template"]}
+          />
         </Row>
       }
     >

@@ -2,13 +2,17 @@
 
 import { useState, useCallback } from "react";
 import { Link } from "@/i18n/navigation";
-import { Button, Div, Heading, Input, RichText, Select, Text, Textarea } from "@mohasinac/appkit/ui";
+import { Button, Div, Heading, Input, RichText, Select, Span, Text, Textarea } from "@mohasinac/appkit/ui";
 import { Label } from "@mohasinac/appkit/client";
 import { EventParticipateView, useSession, useToast, ROUTES } from "@mohasinac/appkit/client";
 import { SpinWheelView } from "@mohasinac/appkit";
+import { API_ROUTES } from "@/constants";
 
 type SpinPrize = { id: string; label: string; weight: number; isActive: boolean; couponId?: string };
-import { API_ROUTES } from "@/constants";
+
+// Shared className for the two info-row tiles rendered in the post-submit
+// confirmation panel (leaderboard link + event-home link).
+const CLS_PARTICIPATE_INFO_ROW = "rounded-xl border border-zinc-200 dark:border-zinc-700 px-4 py-3 flex items-center justify-between gap-3";
 
 type FormFieldType = "text" | "textarea" | "email" | "phone" | "number" | "select" | "multiselect" | "checkbox" | "radio" | "date" | "rating" | "file";
 
@@ -205,15 +209,59 @@ function renderSubmitAction({
   );
 }
 
-function renderSuccessState() {
+function renderSuccessState({
+  eventId,
+  eventTitle,
+  hasLeaderboard,
+}: {
+  eventId: string;
+  eventTitle: string;
+  hasLeaderboard: boolean;
+}) {
   return (
-    <Div className="text-center space-y-2 py-10">
-      <Heading level={2} className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
-        You&apos;re in!
-      </Heading>
-      <Text className="text-zinc-500 dark:text-zinc-400">
-        Your entry has been recorded successfully.
-      </Text>
+    <Div className="space-y-4 py-6">
+      <Div className="rounded-2xl border border-emerald-200 dark:border-emerald-900/40 bg-emerald-50 dark:bg-emerald-950/30 px-5 py-5 space-y-2">
+        <Div className="flex items-center gap-2">
+          <Span className="inline-flex items-center rounded-full bg-emerald-600 text-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
+            Confirmed
+          </Span>
+          <Heading level={2} className="text-lg font-bold text-emerald-900 dark:text-emerald-100">
+            You&apos;re in!
+          </Heading>
+        </Div>
+        <Text className="text-sm text-emerald-800 dark:text-emerald-200">
+          Your entry for <strong>{eventTitle}</strong> has been recorded. We&apos;ll notify you of any updates here and over email.
+        </Text>
+      </Div>
+      {hasLeaderboard && (
+        <Div className={CLS_PARTICIPATE_INFO_ROW}>
+          <Div>
+            <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              Track your standing
+            </Text>
+            <Text className="text-xs text-zinc-500 dark:text-zinc-400">
+              See where you rank against other participants.
+            </Text>
+          </Div>
+          <Link
+            href={String(ROUTES.PUBLIC.EVENT_LEADERBOARD?.(eventId) ?? ROUTES.PUBLIC.EVENT_DETAIL(eventId))}
+            className="text-sm font-semibold text-primary hover:underline shrink-0"
+          >
+            View leaderboard →
+          </Link>
+        </Div>
+      )}
+      <Div className={CLS_PARTICIPATE_INFO_ROW}>
+        <Text className="text-sm text-zinc-700 dark:text-zinc-300">
+          Want to revisit event details, prize info or chat with other entrants?
+        </Text>
+        <Link
+          href={String(ROUTES.PUBLIC.EVENT_DETAIL(eventId))}
+          className="text-sm font-semibold text-primary hover:underline shrink-0"
+        >
+          Event home →
+        </Link>
+      </Div>
     </Div>
   );
 }
@@ -532,18 +580,36 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
   // After a successful submission allow re-submit if maxEntries > 1
   if (isSubmitted && !atEntryLimit) {
     return (
-      <div className="space-y-6">
-        <div className="text-center space-y-2 py-6">
-          <Heading level={2} className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
-            Entry submitted!
-          </Heading>
-          <Text className="text-zinc-500 dark:text-zinc-400 text-sm">
-            {submissionCount} of {maxEntries} entries submitted.
+      <div className="space-y-4">
+        <Div className="rounded-2xl border border-emerald-200 dark:border-emerald-900/40 bg-emerald-50 dark:bg-emerald-950/30 px-5 py-5 space-y-2">
+          <Div className="flex items-center gap-2">
+            <Span className="inline-flex items-center rounded-full bg-emerald-600 text-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
+              Confirmed
+            </Span>
+            <Heading level={2} className="text-lg font-bold text-emerald-900 dark:text-emerald-100">
+              Entry submitted
+            </Heading>
+          </Div>
+          <Text className="text-sm text-emerald-800 dark:text-emerald-200">
+            {submissionCount} of {maxEntries} {maxEntries === 1 ? "entry" : "entries"} recorded for <strong>{event.title}</strong>.
           </Text>
-        </div>
+        </Div>
         <Button variant="primary" className="w-full" onClick={() => setIsSubmitted(false)}>
           Submit another entry
         </Button>
+        {hasLeaderboard && (
+          <Div className={CLS_PARTICIPATE_INFO_ROW}>
+            <Text className="text-sm text-zinc-700 dark:text-zinc-300">
+              See where you rank against other participants.
+            </Text>
+            <Link
+              href={String(ROUTES.PUBLIC.EVENT_LEADERBOARD?.(event.id) ?? ROUTES.PUBLIC.EVENT_DETAIL(event.id))}
+              className="text-sm font-semibold text-primary hover:underline shrink-0"
+            >
+              View leaderboard →
+            </Link>
+          </Div>
+        )}
       </div>
     );
   }
@@ -571,7 +637,13 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
           renderSubmitAction({ error, pollConfig, isMultiSelect, selectedVotes, canSubmit, isLoading, handleSubmit })
         )
       }
-      renderSuccess={renderSuccessState}
+      renderSuccess={() =>
+        renderSuccessState({
+          eventId: event.id,
+          eventTitle: event.title,
+          hasLeaderboard: Boolean(hasLeaderboard),
+        })
+      }
     />
   );
 }
