@@ -338,6 +338,59 @@ function checkGhostButtonMissingVariant(file, content) {
   }
 }
 
+// ─── RULE 6: Button used as toggle switch ────────────────────────────────────
+// Using <Button role="switch"> to build a toggle pill causes the Button's
+// internal padding and display styles to override custom sizing classes
+// (w-10 h-6, rounded-full), so the element renders as a grey circle instead
+// of a pill with a sliding thumb.
+// Fix: use the appkit <Toggle checked onChange size> primitive, which renders
+// a native <button role="switch"> internally with correct pill CSS classes.
+function checkButtonAsToggle(file, content) {
+  const BUTTON_OPEN_RE = /<Button\b/g;
+
+  let m;
+  while ((m = BUTTON_OPEN_RE.exec(content)) !== null) {
+    const startIdx = m.index;
+    // Extract up to 400 chars of the opening tag
+    const window = content.slice(startIdx, startIdx + 400);
+
+    // Walk to find where the opening tag ends (first unquoted >)
+    let inStr = false;
+    let strChar = "";
+    let braceDepth = 0;
+    let tagEnd = -1;
+    for (let i = 7; i < window.length; i++) {
+      const c = window[i];
+      if (inStr) {
+        if (c === strChar && window[i - 1] !== "\\") inStr = false;
+      } else if (c === '"' || c === "'") {
+        inStr = true; strChar = c;
+      } else if (c === "{") {
+        braceDepth++;
+      } else if (c === "}") {
+        braceDepth--;
+      } else if (c === ">" && braceDepth === 0) {
+        tagEnd = i;
+        break;
+      }
+    }
+    if (tagEnd === -1) continue;
+
+    const attrs = window.slice(7, tagEnd);
+    if (!/\brole\s*=\s*["']switch["']/.test(attrs)) continue;
+
+    const lineNum = content.slice(0, startIdx).split("\n").length;
+    violations.push({
+      rule: "BUTTON_AS_TOGGLE",
+      file: rel(file),
+      line: lineNum,
+      text: `<Button role="switch" ...>`,
+      message: `<Button role="switch"> — appkit Button styles override sizing classes (w-10 h-6) and render as a grey circle instead of a toggle pill`,
+      fix: 'Use the appkit <Toggle checked onChange size> primitive instead (renders a native button role="switch" internally with correct pill CSS)',
+    });
+  }
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 for (const dir of SCAN_DIRS) {
   for (const file of walk(dir)) {
@@ -348,6 +401,7 @@ for (const dir of SCAN_DIRS) {
     checkLargeComponent(file, lines);
     checkRepeatedStrings(file, lines);
     checkGhostButtonMissingVariant(file, content);
+    checkButtonAsToggle(file, content);
   }
 }
 

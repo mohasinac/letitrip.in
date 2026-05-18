@@ -1,5 +1,5 @@
 "use client";
-import { AdminDashboardView, ROUTES, Text, Div, Button } from "@mohasinac/appkit/client";
+import { AdminDashboardView, ROUTES, Text, Div, Toggle } from "@mohasinac/appkit/client";
 import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -40,21 +40,7 @@ function ToggleRow({
         <Div className="text-sm font-medium text-[var(--appkit-color-text)]">{label}</Div>
         <Div className="text-xs text-[var(--appkit-color-text-muted)] mt-0.5">{description}</Div>
       </Div>
-      <Button
-        variant="ghost"
-        role="switch"
-        aria-checked={enabled}
-        onClick={() => onChange(!enabled)}
-        className={`relative flex-shrink-0 w-10 h-6 rounded-full transition-colors ${
-          enabled ? "bg-primary" : "bg-zinc-300 dark:bg-slate-600"
-        }`}
-      >
-        <Div
-          className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${
-            enabled ? "left-5" : "left-1"
-          }`}
-        />
-      </Button>
+      <Toggle checked={enabled} onChange={onChange} size="md" />
     </Div>
   );
 }
