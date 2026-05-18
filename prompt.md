@@ -99,16 +99,16 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
    └── Confirm success: npm view @mohasinac/appkit version should show new version
 ```
 
-### Step 3 — Switch letitrip to npm package + rebuild
+### Step 3 — Switch letitrip to exact npm version + rebuild
 
 ```
 1. Edit letitrip/package.json: "@mohasinac/appkit": "X.Y.Z"  (exact version, no ^ caret)
 2. Run: npm install
-   └── NOTE: In this monorepo, npm will STILL resolve via the local ./appkit directory
-       because the appkit/ folder exists at root. The lockfile will show:
-         "resolved": "appkit", "link": true
-       This is EXPECTED and correct — Vercel uploads appkit/dist/ alongside the app.
-       Do NOT delete package-lock.json expecting this to change. It won't.
+   └── Verify lockfile shows the npm URL (not file:./appkit):
+         "resolved": "https://registry.npmjs.org/@mohasinac/appkit/-/appkit-X.Y.Z.tgz"
+       If lockfile still shows old version or file: link:
+         rm -rf node_modules/@mohasinac/appkit && npm install
+       The lockfile must match the package.json version or Vercel's `npm ci` will fail.
 3. Run: npm run build                   # verify build succeeds with updated version ref
    └── Must produce full route table — no compilation errors
 ```
@@ -163,6 +163,16 @@ vercel --prod
 
 Auto-deploy is **disabled** (`vercel.json` → `"deploymentEnabled": false`). Always deploy via CLI.
 After deploy: smoke-test the production URL for all touched routes.
+
+### Step 7 — Restore local dev link
+
+```
+1. Edit letitrip/package.json: "@mohasinac/appkit": "file:./appkit"
+2. Run: npm install                    # regenerates lockfile with file: link
+3. Commit: chore: restore file:./appkit local dev link after prod deploy
+```
+
+This restores the `npm run watch:appkit` live-reload workflow for the next session.
 
 ---
 
