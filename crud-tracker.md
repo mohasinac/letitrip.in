@@ -156,6 +156,17 @@
 | S-STORE-12-B | Item Request Bulletin Board (`itemRequests` collection, approval gate, OP-initiated chat, PII filter on replies) | ⏳ |
 | S-STORE-MOD | Video moderation queue (`moderationQueue` collection, `/admin/moderation` review page) | ⏳ |
 
+### Cross-cutting Primitives (implement early — S-STORE-1 or S-STORE-2, then wire per session)
+
+> These are shared infrastructure tasks that span multiple S-STORE sessions. They must land **before** the sessions that depend on them (product form, bundle form, checkout, etc.). Do not defer them to their first consumer session.
+
+| Row ID | Description | Status |
+|--------|-------------|--------|
+| S-STORE-CROSS-A | **`QuickCreateModal` primitive** — `appkit/src/ui/components/QuickCreateModal.tsx`. Slide-over on desktop, full-width modal on mobile. Props: `title`, `onSave(newDoc)`, `onCancel`, `children` (the mini-form). `onSave` returns the created/updated document to the caller immediately so parent can auto-select without page reload. "Add more details →" link opens full dedicated page in a new tab. Used for: Address, Category (main + sublisting), Brand, Store category, Group/Collection, Coupon, Payout method, Shipping config, Bundle. **Distinct from the existing `Modal`/`SideModal` primitives** — `QuickCreateModal` has built-in save/cancel buttons and a semantic `onSave(doc)` contract; it is not a general-purpose modal. | ⏳ |
+| S-STORE-CROSS-B | **Inline row edit** — For listing DataTable rows: (a) toggle cells (`isActive`, `isDefault`, `isPublic`) save on click with no modal; (b) scalar text cells (`label`, `displayOrder`) click-to-edit in cell — Enter to save, Escape to cancel, optimistic update; (c) richer fields open `QuickCreateModal` via "..." → Edit. Implement as a generic `useInlineRowEdit(rowId, field, saveApi)` hook in appkit. | ⏳ |
+| S-STORE-CROSS-C | **`useFormStatePreservation` hook** — `appkit/src/hooks/useFormStatePreservation.ts`. On any form field change: debounce 500 ms, then `router.replace(..., { scroll: false })` with `?_s=<btoa(JSON.stringify(formState))>` appended. On mount: read `?_s`, decode, restore form values. On successful submit: clear `?_s`. PII fields (address lines, account numbers) are stripped before encoding; on restore a notice appears: "Please re-enter sensitive fields." Applies to all create/edit forms with inline selectors (product form, bundle form, grouped listing form, template form) so navigating away to create a category/brand does not wipe form progress. | ⏳ |
+| S-STORE-CROSS-D | **Quick Seed tab in SeedPanel** — `src/components/dev/SeedPanel.tsx`: add a "Quick Seed" tab alongside the existing full-seed tab. Lists every new S-STORE collection individually (`payoutMethods`, `shippingConfigs`, `analyticsCards`, `analyticsAlerts`, `storeCategories`, `groupedListings`, `listingTemplates`, `offers`, `moderationQueue`, `reports`, `itemRequests`). Each row shows: collection name, current Firestore count, available seed count. Two buttons per row: "Seed N" (calls `POST /api/demo/seed` with `{ collections: ["payoutMethods"] }`) and "Delete" (deletes only that collection's seed data). Allows seeding individual collections without full reset. | ⏳ |
+
 ---
 
 ## 🌱 Seed Data Source of Truth

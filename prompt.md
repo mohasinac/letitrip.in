@@ -413,7 +413,7 @@ All tracks from `~/.claude/plans/each-listing-type-category-playful-fairy.md` ar
 |---|---------|-------|---------------|
 | 1 | **Tier SB-UNI Phase 3–9** *(pull individually)* | SB-UNI-Q (per-type detail/list views) · R (per-type forms + seller flow) · T (search facets) · W-2/3/4 (CTA sweep public/seller/admin) · W-5 (lint rule) · Y-1..Y-7 (FormShell migration). | Phase 2 (M/N/O) now closed. Pull next sub-tier when prioritised. |
 | – | **S-polish-pass** | 10-phase listing quality polish. Full plan: `~/.claude/plans/plan-to-find-and-polished-aho.md`. Task rows in `Tier PL`. **Foundational rules**: (a) no in-memory filtering; (b) human-readable URL params; (c) `useUrlTable` + `usePendingFilters`. | After SB-UNI-Phase2 — quality polish + test foundation. |
-| – | **S-STORE sprint** *(12 sessions — pull when explicitly scheduled)* | Store seller dashboard + pages overhaul. See `~/.claude/plans/store-pages-dashboard-langing-dazzling-abelson.md`. Rows in `Tier S-STORE` in tracker. S-STORE-1-A (dashboard route) already done as a standalone fix. | Start with S-STORE-1 (critical fixes) when sprint is prioritised. |
+| – | **S-STORE sprint** *(12 sessions — pull when explicitly scheduled)* | Store seller dashboard + pages overhaul. See `~/.claude/plans/store-pages-dashboard-langing-dazzling-abelson.md`. Rows in `Tier S-STORE` in tracker. S-STORE-1-A (dashboard route) already done as a standalone fix. **Always implement S-STORE-CROSS-A/B/C/D primitives at the start of S-STORE-1 or S-STORE-2** — they are shared infrastructure every other session depends on. See § S-STORE Cross-cutting Primitives below. | Start with S-STORE-1 (critical fixes) when sprint is prioritised. |
 | – | **S6-followup** | Q6-views: switch the 4 listing views (`ProductsIndexListing`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`) from `useQuery` to `useInfiniteQuery` to wire the existing `useInfiniteScroll` primitive. Substantial refactor with regression surface. | Pull when prioritised. |
 | – | **OG-coverage-followup** | Drive `verify-og-coverage.mjs` baseline to 0 — per-feature OG renderers for `bundles/[slug]`, `faqs/[category]`, `reviews/[id]`, `scams/[id]`, `sellers/[id]`. | Pull when prioritised. |
 | – | **S1-polish** | Slot-shell polish deferred from S1: admin alerts/charts/recent-activity, user notifications filters, seller analytics charts/top-products. Feature work — new endpoints + hooks. | Pull when prioritised. |
@@ -480,6 +480,120 @@ DO:       1. Update the schema type
 ```
 
 The `audit-root-cause.mjs` script (`npm run audit:root-cause`) blocks on new violations. The existing known violation in `src/app/api/products/route.ts` (in-memory search fallback) is tracked as baseline and must be fixed before the S-STORE-1-E analytics task closes.
+
+---
+
+---
+
+## 🔌 S-STORE Cross-cutting Primitives
+
+> **These four primitives underpin multiple S-STORE sessions.** Implement them at the start of S-STORE-1 or S-STORE-2 before any session that uses them. Tracker rows: `S-STORE-CROSS-A` through `S-STORE-CROSS-D`.
+
+### A — `QuickCreateModal` (`appkit/src/ui/components/QuickCreateModal.tsx`)
+
+A purpose-built create/edit modal **distinct from the existing `Modal`, `SideModal`, and `SideDrawer` primitives**. The existing primitives are general-purpose overlays — `QuickCreateModal` has a semantic `onSave(newDoc)` contract that returns the created document directly to the caller so the parent can auto-select it without a page reload.
+
+```tsx
+<QuickCreateModal
+  title="New Address"
+  onSave={(newDoc) => { /* auto-select the new address in caller */ }}
+  onCancel={() => {}}
+>
+  <AddressQuickForm />          {/* only required fields */}
+</QuickCreateModal>
+```
+
+**Behaviour:**
+- Desktop: centered slide-over panel (not full-screen)
+- Mobile: full-width bottom sheet
+- Built-in Save + Cancel buttons (children provide only the form fields, not the buttons)
+- "Add more details →" link opens the full dedicated page in a **new tab** so the caller's context is preserved
+- `onSave(doc)` fires after the API call resolves with the created document — caller uses it immediately
+
+**Entities that use QuickCreateModal** (triggered from inline selectors, pickers, checkout):
+
+| Entity | Triggered from | Minimum fields |
+|--------|---------------|----------------|
+| Address | Checkout, order form, address picker | fullName, phone, addressLine1, city, state, postalCode |
+| Category (main) | Product form category picker | name → auto-slug, parentId, isActive |
+| Sub-listing category | Product form sub-category picker | name, parentId |
+| Brand | Product form brand picker | name → auto-slug, logoURL (optional), country |
+| Store category | Storefront editor | label, displayOrder |
+| Group/Collection | Product form "Add to group" | title → auto-slug, or pick existing |
+| Coupon | Checkout coupon field (seller only) | code, type, value, expiresAt |
+| Payout method | Payout settings, checkout | type, label, upiId or bank fields |
+| Shipping config | Order create form | label, method, customShippingPrice |
+| Bundle (quick-add) | Product form "Add to bundle" | title, price |
+
+**Entities that are full-page only** (too complex for quick create): Products, Stores, Events, Blog posts, Orders, Templates, Grouped listings.
+
+**Why not reuse `Modal`/`SideModal`?** Those primitives require the caller to manage open/close state, render their own buttons, and handle the document lifecycle. `QuickCreateModal` encapsulates all of that — callers get a clean `onSave(doc)` callback and never touch Firestore directly.
+
+---
+
+### B — Inline row edit (DataTable cells)
+
+For listing DataTable rows, three levels of inline editing — no navigation required:
+
+| Field type | Behaviour | Implementation |
+|------------|-----------|----------------|
+| Toggle (`isActive`, `isDefault`, `isPublic`) | Click toggle cell → fires PATCH immediately, optimistic update | `useInlineToggle(rowId, field, saveApi)` |
+| Scalar text (`label`, `displayOrder`) | Click cell → input appears; Enter = save, Escape = cancel, click-away = cancel | `useInlineTextEdit(rowId, field, saveApi)` |
+| Richer field | "..." → Edit → opens `QuickCreateModal` with full field set for that entity | reuse `QuickCreateModal` |
+
+Both hooks live in `appkit/src/hooks/useInlineRowEdit.ts`. They emit an optimistic local state update, then fire the API call, rolling back on failure with a toast.
+
+---
+
+### C — `useFormStatePreservation` (`appkit/src/hooks/useFormStatePreservation.ts`)
+
+**Problem:** A seller filling a long product form clicks "Create Category" in the inline selector → gets navigated away → loses all form progress when they return.
+
+**Solution:** Persist form state in the URL as an obfuscated query param `?_s=…` using `router.replace` (no history entry added). Restored automatically on mount.
+
+```ts
+const { clearPreservedState } = useFormStatePreservation({
+  form,                        // react-hook-form instance
+  stripFields: ["bankAccount", "upiVpa"],  // PII — never serialised
+});
+// Call clearPreservedState() on successful submit
+```
+
+**Behaviour:**
+- On any form field change: debounce 500 ms → `router.replace(url + "?_s=" + btoa(JSON.stringify(form.getValues())))` with `scroll: false`
+- On mount: if `?_s` present → `JSON.parse(atob(param))` → `form.reset(values)`
+- `stripFields` list: fields whose values are dropped before encoding (PII — addresses, payment credentials). On restore a yellow notice appears: "Sensitive fields were cleared for security — please re-enter them."
+- On submit success: `clearPreservedState()` removes `?_s` from the URL
+
+**Note:** `btoa` is not encryption — it obfuscates the state and keeps URLs short. It is **not** intended as a security boundary; the `stripFields` list handles PII.
+
+**Applies to:** All create/edit forms that contain inline selectors or that navigate away during the flow:
+- Product create/edit form (`S-STORE-3`)
+- Bundle create/edit form (`S-STORE-7-A`)
+- Grouped listing form (`S-STORE-7-B`)
+- Template form (`S-STORE-7-C`)
+
+---
+
+### D — Quick Seed tab in SeedPanel (`src/components/dev/SeedPanel.tsx`)
+
+Add a **"Quick Seed"** tab alongside the existing "Full Seed" tab. Required because the S-STORE sprint introduces 11 new collections — resetting and re-seeding everything to test one collection is wasteful.
+
+**UI (per-collection row):**
+```
+payoutMethods      3 in Firestore / 6 available    [Seed 6]  [Delete]
+shippingConfigs    0 in Firestore / 4 available    [Seed 4]  [Delete]
+analyticsCards     0 in Firestore / 9 available    [Seed 9]  [Delete]
+...
+```
+
+**Behaviour:**
+- "Seed N" → `POST /api/demo/seed { action: "load", collections: ["payoutMethods"] }` (single-collection seed)
+- "Delete" → `POST /api/demo/seed { action: "delete", collections: ["payoutMethods"] }`
+- Counts refresh after each operation via `GET /api/demo/seed`
+
+**New collections to list** (all S-STORE additions):
+`payoutMethods` · `shippingConfigs` · `analyticsCards` · `analyticsAlerts` · `storeCategories` · `groupedListings` · `listingTemplates` · `offers` · `moderationQueue` · `reports` · `itemRequests`
 
 ---
 
