@@ -1,6 +1,6 @@
+import React, { Suspense } from "react";
 import { Link } from "@/i18n/navigation";
-import { AdminSublistingCategoriesView, Heading } from "@mohasinac/appkit";
-import { ROUTES, Div } from "@mohasinac/appkit/client";
+import { AdminSublistingCategoriesView, ROUTES, Heading, Div } from "@mohasinac/appkit/client";
 
 export const metadata = { title: "Sub-listing Categories — Admin" };
 
@@ -18,7 +18,9 @@ export default function Page() {
           + New Category
         </Link>
       </Div>
-      <AdminSublistingCategoriesView />
+      <Suspense>
+        <AdminSublistingCategoriesView />
+      </Suspense>
     </>
   );
 }
