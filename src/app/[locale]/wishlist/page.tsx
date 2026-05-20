@@ -164,6 +164,9 @@ export default function WishlistPage() {
     })();
   }, [user?.uid, wl.isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // In-memory filter is acceptable here: wishlist is a single-doc array capped at
+  // WISHLIST_MAX (20) items. Firestore arrays cannot be range-filtered server-side, and
+  // 20 items is trivially fast in memory. No pagination or ?type= param needed. (PL6-A exception.)
   const filteredItems = useMemo(() => {
     let result = (wl.items as EnrichedWishlistItem[]).slice();
 
