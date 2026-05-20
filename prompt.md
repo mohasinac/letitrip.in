@@ -193,18 +193,19 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 ---
 
-### 🔄 CURRENT — S-polish-pass Phase 2 (2026-05-21): GD2–GD6 store guide pages
+### 🔄 CURRENT — S-polish-pass Phase 2 (2026-05-21): GD tier complete → next PL6-A or GD7
 
 **Done this session:**
-- **PL5-A** `/admin/carousels` — `AdminCarouselView` already in appkit; wired as thin `<Suspense>` shim + `force-dynamic`
-- **PL5-B** `/admin/carousels/[id]` — replaced "coming soon" stub with `<EmptyState>` + breadcrumb back-link
-- **PL5-C** `/admin/sublisting-categories` — `AdminSublistingCategoriesView` already in appkit; wired header + "New Category" link + Suspense; added to `client.ts` exports
-- **PL5-D** `/admin/deals` + `/admin/featured` — full `useUrlTable` + `useBulkSelection` + `DataTable` + `BulkActionBar` pattern; 6 sort options; bulk remove from deals/featured; `DataTable`, `useBulkSelection`, `BulkActionItem`, `apiClient` added to `client.ts`
-- **PL6-B** history page in-memory tab filter — verified exception rule applies (HISTORY_MAX ≤ 50 items); exception comment added; no code change
-- **PL6-C** "coming soon" placeholder sweep — verified; carousel stub done by PL5-B
-- **PL2-G** `AdminBundlesView` upgraded: `useUrlTable` + `useAdminListingData` + `DataTable` (custom columns) + filter drawer (Status + Stock) + sort (Name/Price/Newest/Oldest) + pagination + BulkActionBar (Activate/Deactivate/Delete) + Rebuild per-row with toast. Bundles API GET updated to support `page`/`pageSize`/`sorts`/`filters`/`q` with in-memory processing. Consumer page wrapped in `<Suspense>` + metadata.
-- **GD2** `StoreListingsGuideView` — 7-section guide (listing types table, standard/auction/pre-order walkthroughs, status lifecycle, media guide, common mistakes). Consumer page at `/store/guide/listings`. appkit committed + rebuilt. ✅
-- `npm run check` exits 0 (0 errors).
+- **PL5-A/B/C/D** admin page upgrades (carousels, sublisting-categories, deals, featured) ✅
+- **PL6-B/C** history tab + placeholder sweep ✅
+- **PL2-G** AdminBundlesView full upgrade + bundles API pagination ✅
+- **GD2** `/store/guide/listings` — 7 sections (StoreListingsGuideView) ✅
+- **GD3** `/store/guide/orders` — 7 sections (StoreOrdersGuideView) ✅
+- **GD4** `/store/guide/finance` — 5 sections (StoreFinanceGuideView) ✅
+- **GD5** `/store/guide/capabilities` — 5 sections (StoreCapabilitiesGuideView) ✅
+- **GD6** `/store/guide/settings` — 6 sections (StoreSettingsGuideView) ✅
+- listing-processor.ts extracted from products route; logError 3-arg fix ✅
+- `npm run check:audits` exits 0 (no regressions).
 
 ---
 

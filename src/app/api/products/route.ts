@@ -111,13 +111,15 @@ function buildFilters(url: URL, rawFilters: string | null): string {
   //   - as in-memory post-filtering in the local fallback repo path
   // See the _GET handler below for how q is threaded through.
 
-  const minPrice = param(url, TABLE_KEYS.MIN_PRICE);
-  if (minPrice !== null && !Number.isNaN(Number(minPrice))) {
-    parts.push(sieveFilter(PRODUCT_FIELDS.PRICE, SIEVE_OP.GTE, minPrice));
+  // RangeFilter UI sends values in rupees (maxBound=500000 = ₹5 lakh, step=500).
+  // Firestore stores price in paise (1 INR = 100 paise) so multiply by 100.
+  const minPriceRs = param(url, TABLE_KEYS.MIN_PRICE);
+  if (minPriceRs !== null && !Number.isNaN(Number(minPriceRs))) {
+    parts.push(sieveFilter(PRODUCT_FIELDS.PRICE, SIEVE_OP.GTE, String(Math.round(Number(minPriceRs) * 100))));
   }
-  const maxPrice = param(url, TABLE_KEYS.MAX_PRICE);
-  if (maxPrice !== null && !Number.isNaN(Number(maxPrice))) {
-    parts.push(sieveFilter(PRODUCT_FIELDS.PRICE, SIEVE_OP.LTE, maxPrice));
+  const maxPriceRs = param(url, TABLE_KEYS.MAX_PRICE);
+  if (maxPriceRs !== null && !Number.isNaN(Number(maxPriceRs))) {
+    parts.push(sieveFilter(PRODUCT_FIELDS.PRICE, SIEVE_OP.LTE, String(Math.round(Number(maxPriceRs) * 100))));
   }
 
   // NOTE: 'inStock' (stockQuantity>0) is intentionally NOT included here.
@@ -140,13 +142,14 @@ function buildFilters(url: URL, rawFilters: string | null): string {
   const isPromoted = param(url, "isPromoted");
   if (isPromoted === "true") parts.push(sieveFilter(PRODUCT_FIELDS.IS_PROMOTED, SIEVE_OP.EQ, true));
 
-  const minBid = param(url, TABLE_KEYS.MIN_BID);
-  if (minBid !== null && !Number.isNaN(Number(minBid))) {
-    parts.push(sieveFilter(PRODUCT_FIELDS.CURRENT_BID, SIEVE_OP.GTE, minBid));
+  // Same paise conversion as minPrice/maxPrice — AuctionFilters sends rupees.
+  const minBidRs = param(url, TABLE_KEYS.MIN_BID);
+  if (minBidRs !== null && !Number.isNaN(Number(minBidRs))) {
+    parts.push(sieveFilter(PRODUCT_FIELDS.CURRENT_BID, SIEVE_OP.GTE, String(Math.round(Number(minBidRs) * 100))));
   }
-  const maxBid = param(url, TABLE_KEYS.MAX_BID);
-  if (maxBid !== null && !Number.isNaN(Number(maxBid))) {
-    parts.push(sieveFilter(PRODUCT_FIELDS.CURRENT_BID, SIEVE_OP.LTE, maxBid));
+  const maxBidRs = param(url, TABLE_KEYS.MAX_BID);
+  if (maxBidRs !== null && !Number.isNaN(Number(maxBidRs))) {
+    parts.push(sieveFilter(PRODUCT_FIELDS.CURRENT_BID, SIEVE_OP.LTE, String(Math.round(Number(maxBidRs) * 100))));
   }
 
   // NOTE: dateFrom/dateTo are intentionally NOT included here.
