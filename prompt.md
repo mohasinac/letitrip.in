@@ -180,23 +180,13 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-STORE browser-smoke fixes (2026-05-20): Critical crash + UX regressions fixed; `npm run check` exits 0; appkit 2.7.51 published + Vercel prod deployed
+### ✅ LAST COMPLETED — S-SB-UNI-Y (2026-05-20): FormShell adoption wave complete — Y-2/3/5/6/7 all ✅
 
-**Fixed this session (appkit commit `94d4e86` · consumer commit `325e11c`):**
-- `SellerProductsView`: publish/unpublish Eye/EyeOff toggle with optimistic `statusOverrides` map + row actions unconditional
-- `CategoryInlineSelect` / `BrandInlineSelect`: two-loader pattern — public endpoints for sellers (no admin 403); admin endpoints only when `allowCreate=true`
-- `SellerProductsFilterDrawer`: replaced raw `<input>` fields with `CategoryInlineSelect` + `BrandInlineSelect`; price label "paise" → "₹ Rupees"
-- All 7 listing-type **create pages**: removed `redirect()` from `handleSave` (auto-save was navigating user away from the form)
-- All 7 listing-type **edit pages**: pre-fetch product via `getSellerProductAction` + map `initialValues` (forms were blank on load)
-- `getSellerProductAction`: new server action with seller ownership gate
-- Dashboard: +2 stat cards (Pending Payouts + Avg. Rating); grid `sm:grid-cols-3` for clean 2×3 layout
-- Dashboard API: fixed `activeListings` count (`status==="published"` not `"active"`)
-- `SellerOrdersView`: added `confirmed` / `delivered` / `cancelled` to status dropdown; quick Truck icon "mark shipped" row action button
-- **Bundles new**: rewrote client-only stub to use `StoreCreateProductShell` with `listingType="bundle"`
-- **Bundles edit**: created missing `[id]/edit/page.tsx`
-- `SellerProductShell`: added `"bundle"` to `ProductListingMode` union + label
-- **Offers page**: switched to `SellerOffersView` from main appkit entry (was `SellerOffersPanel` which doesn't exist)
-- **Storefront**: `isPublic` now reads from `store.isPublic` field (was deriving from `status` — desync after save)
+**Done this session:**
+- `AdminBundleEditorView`: migrated from raw `useState` to `useFormShellState` — `FieldInput name="name"` + `FieldInput name="price"` with `onChange={(v) => ...}` signature; `clearErrors()` + `setFieldError()` in `handleSave`; `FormShellContext.Provider` wrapper; api-level errors kept in separate `apiError` state
+- SB-UNI-Y-2 verified ✅ (SellerProductFormShell + SellerProductShell already use `useFormShellState`)
+- SB-UNI-Y-5/6/7 verified ✅ (admin content/user/admin-ops editors all use `useFormShellState`)
+- appkit 2.7.51 rebuilt. `npm run check` exits 0.
 
 ---
 

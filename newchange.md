@@ -41,6 +41,22 @@
 
 ---
 
+### S-SB-UNI-Y — FormShell adoption wave (2026-05-20)
+
+**appkit 2.7.51 rebuilt (no version bump) · `npm run check` exits 0**
+
+- `AdminBundleEditorView`: migrated from raw `useState` to `useFormShellState`
+  - `FieldInput name="name"` + `FieldInput name="price"` (uses `(v: string) =>` onChange, not event)
+  - `clearErrors()` + `setFieldError("name"|"price", msg)` in `handleSave`
+  - `<FormShellContext.Provider value={shellCtx}>` wraps all JSX
+  - Separate `apiError` state for load/save/delete API-level errors
+- SB-UNI-Y-2/3/5/6/7 marked ✅ in crud-tracker.md — FormShell Phase 8 complete
+
+**Files changed:**
+- `appkit/src/features/admin/components/AdminBundleEditorView.tsx` — FormShell migration
+
+---
+
 ### S-STORE-smoke-fixes-2 — Grouped listings, analytics alerts, WhatsApp catalog preview (2026-05-20)
 
 **appkit 2.7.51 rebuilt (no version bump) · npm install @mohasinac/appkit@file:./appkit to refresh node_modules**
