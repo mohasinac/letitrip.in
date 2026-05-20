@@ -21,8 +21,9 @@ import { ROLES_ADMIN_MOD } from "@/constants";
  * routes share one validator (S-SBUNI-4 follow-up).
  */
 
-const DEFAULT_LIST_LIMIT = 50;
 const MAX_LIST_LIMIT = 200;
+const DEFAULT_PAGE_SIZE = 25;
+const MAX_PAGE_SIZE = 100;
 
 function slugify(input: string): string {
   return input
@@ -38,16 +39,63 @@ export const GET = withProviders(
     permission: "admin:categories:read",
     handler: async ({ request }) => {
       const url = new URL(request!.url);
-      const activeOnlyParam = url.searchParams.get("activeOnly");
-      const requested = Number(url.searchParams.get("limit") ?? DEFAULT_LIST_LIMIT);
-      const limit = Number.isFinite(requested)
-        ? Math.min(Math.max(1, requested), MAX_LIST_LIMIT)
-        : DEFAULT_LIST_LIMIT;
-      const items = await categoriesRepository.listByType("bundle", {
-        activeOnly: activeOnlyParam !== "false",
-        limit,
+
+      const page = Math.max(1, parseInt(url.searchParams.get("page") ?? "1", 10));
+      const pageSize = Math.min(
+        MAX_PAGE_SIZE,
+        Math.max(1, parseInt(url.searchParams.get("pageSize") ?? String(DEFAULT_PAGE_SIZE), 10)),
+      );
+      const q = url.searchParams.get("q")?.trim().toLowerCase() ?? "";
+      const sorts = url.searchParams.get("sorts") ?? "name";
+      const filters = url.searchParams.get("filters") ?? "";
+
+      // Bundles are low cardinality — load all and process in memory
+      let items = await categoriesRepository.listByType("bundle", {
+        activeOnly: false,
+        limit: MAX_LIST_LIMIT,
       });
-      return successResponse({ items, total: items.length });
+
+      if (q) {
+        items = items.filter(
+          (b) =>
+            b.name?.toLowerCase().includes(q) ||
+            b.slug?.toLowerCase().includes(q),
+        );
+      }
+
+      if (filters.includes("isActive==true")) {
+        items = items.filter((b) => b.isActive === true);
+      } else if (filters.includes("isActive==false")) {
+        items = items.filter((b) => b.isActive === false);
+      }
+      if (filters.includes("bundleStockStatus==out_of_stock")) {
+        items = items.filter((b) => b.bundleStockStatus === "out_of_stock");
+      }
+
+      const sortDesc = sorts.startsWith("-");
+      const sortKey = sortDesc ? sorts.slice(1) : sorts;
+      items = [...items].sort((a, b) => {
+        let va: string | number, vb: string | number;
+        if (sortKey === "bundlePriceInPaise" || sortKey === "price") {
+          va = a.bundlePriceInPaise ?? 0;
+          vb = b.bundlePriceInPaise ?? 0;
+        } else if (sortKey === "createdAt") {
+          va = String(a.createdAt ?? "");
+          vb = String(b.createdAt ?? "");
+        } else {
+          va = a.name ?? "";
+          vb = b.name ?? "";
+        }
+        const cmp =
+          typeof va === "number" && typeof vb === "number"
+            ? va - vb
+            : String(va).localeCompare(String(vb), "en-IN");
+        return sortDesc ? -cmp : cmp;
+      });
+
+      const total = items.length;
+      const start = (page - 1) * pageSize;
+      return successResponse({ items: items.slice(start, start + pageSize), total });
     },
   }),
 );
