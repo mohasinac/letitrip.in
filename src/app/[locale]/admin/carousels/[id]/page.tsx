@@ -3,7 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { carouselsRepository } from "@mohasinac/appkit";
 import { ROUTES } from "@mohasinac/appkit/client";
-import { Heading, Section, Container, Row, Div, Text, Badge } from "@mohasinac/appkit/client";
+import { Heading, Section, Container, Row, Div, Text, Badge, EmptyState } from "@mohasinac/appkit/client";
 import { MAX_SLIDES_PER_CAROUSEL } from "@mohasinac/appkit";
 
 export const dynamic = "force-dynamic";
@@ -18,16 +18,29 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
     return (
       <Section className="py-8">
         <Container>
-          <Heading level={1} className="mb-6 text-2xl font-bold">New Carousel</Heading>
-          <Text variant="muted">
-            Use the API or CLI to create a named carousel. Admin UI form coming soon.
-          </Text>
-          <Link
-            href={String(ROUTES.ADMIN.CAROUSELS)}
-            className="mt-4 inline-block text-sm text-[var(--appkit-color-primary)] hover:underline"
-          >
-            ← Back to carousels
-          </Link>
+          <Row className="mb-6 items-center gap-2">
+            <Link
+              href={String(ROUTES.ADMIN.CAROUSELS)}
+              className="text-sm text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text)]"
+            >
+              ← Carousels
+            </Link>
+          </Row>
+          <Heading level={1} className="mb-6 text-2xl font-bold">New Named Carousel</Heading>
+          <EmptyState
+            title="Named carousel creation via API"
+            description={
+              <span>
+                Named carousels group and organise slides for contextual use (e.g. homepage,
+                category pages). To create one, POST to{" "}
+                <code className="font-mono text-xs bg-[var(--appkit-color-border)] px-1 py-0.5 rounded">/api/admin/carousel</code>{" "}
+                with a <code className="font-mono text-xs bg-[var(--appkit-color-border)] px-1 py-0.5 rounded">name</code> field,
+                or use the LetItRip CLI. An admin UI form is planned for a future session.
+              </span>
+            }
+            actionLabel="Back to carousels"
+            actionHref={String(ROUTES.ADMIN.CAROUSELS)}
+          />
         </Container>
       </Section>
     );
