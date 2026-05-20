@@ -41,6 +41,25 @@
 
 ---
 
+### S-GD1-guide-hub — Store Guide Hub (2026-05-21)
+
+**appkit commit `2fe6652` · consumer `051a3c3ba` · `npm run check` exits 0**
+
+- `route-map.ts`: added `ROUTES.STORE.GUIDE` + 5 sub-routes (`GUIDE_LISTINGS/ORDERS/FINANCE/CAPABILITIES/SETTINGS`)
+- `StoreGuideHubView` (new RSC-safe component in `appkit/src/features/stores/components/`):
+  - Welcome banner — gradient header with store name + "Seller Guide" chip
+  - 6 guide cards in 2-column grid: Listings, Orders, Finance, Settings, Capabilities, Support
+  - "Getting started" checklist sidebar: 5 steps with live ✅ from `StoreDocument` fields
+    - Complete profile (`storeDescription`), upload logo (`storeLogoURL`), first listing (`stats.totalProducts`), configure shipping (`shippingConfig.providers`), request badge (`isVerified`)
+  - Progress bar shows completion %
+  - All CSS via `var(--appkit-color-*)` tokens
+- Exported from `components/index.ts` + `index.ts` (no RSC guard needed — no firebase-admin imports)
+- `src/app/[locale]/store/guide/page.tsx` — Server Component, calls `getSellerStoreAction()`
+- `STORE_NAV_GROUPS` — new "Help" group with "Seller Guide" item
+- `crud-tracker.md`: GD1 ✅, PL4-A/B/C ✅
+
+---
+
 ### S-PL2-toolbar-toggles — ListingToolbarToggle pill primitive (2026-05-21)
 
 **appkit commit `02a209b` · `npm run check` exits 0**
