@@ -7,8 +7,8 @@ import { StoreCreateProductShell } from "@/components";
 export default function Page() {
   async function handleSave(draft: SellerProductDraft) {
     "use server";
+    // Auto-save: create as draft but do NOT redirect — user is still editing.
     await createSellerProductAction({ ...draft, status: "draft" });
-    redirect(String(ROUTES.STORE.PRODUCTS));
   }
 
   async function handlePublish(draft: SellerProductDraft) {

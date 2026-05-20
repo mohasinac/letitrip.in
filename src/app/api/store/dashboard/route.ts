@@ -53,7 +53,7 @@ export const GET = withProviders(
         ]);
 
       const productIds = allProducts.map((p) => p.id);
-      const activeListings = allProducts.filter((p) => (p as any).status === "active").length;
+      const activeListings = allProducts.filter((p) => (p as any).status === "published").length;
 
       // Fetch orders in a second wave (needs productIds)
       const [ordersResult, pendingOrdersResult] = await Promise.all([

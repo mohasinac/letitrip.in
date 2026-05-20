@@ -3,7 +3,6 @@ import type { SellerProductDraft } from "@mohasinac/appkit";
 import { sellerUpdateProductAction, getSellerProductAction } from "@/actions/seller.actions";
 import { redirect, notFound } from "@/i18n/navigation";
 import { StoreEditProductShell } from "@/components";
-import type { ProductListingMode } from "@mohasinac/appkit";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -35,34 +34,22 @@ export default async function Page({ params }: Props) {
     status: (product as any).status === "published" ? "published" : "draft",
     seoTitle: (product as any).seoTitle ?? (product as any).seo?.title,
     seoDescription: (product as any).seoDescription ?? (product as any).seo?.description,
-    // Auction
-    startingBid: (product as any).startingBid,
-    reservePrice: (product as any).reservePrice,
-    buyNowPrice: (product as any).buyNowPrice,
-    auctionEndDate: (product as any).auctionEndDate,
-    // Pre-order
-    preOrderDeliveryDate: (product as any).preOrderDeliveryDate,
-    preOrderDepositPercent: (product as any).preOrderDepositPercent,
-    preOrderMaxQuantity: (product as any).preOrderMaxQuantity,
-    preOrderProductionStatus: (product as any).preOrderProductionStatus,
   };
-
-  const listingType: ProductListingMode = (product as any).listingType ?? "standard";
 
   async function handleSave(draft: SellerProductDraft) {
     "use server";
-    await sellerUpdateProductAction(id, { ...draft });
+    await sellerUpdateProductAction(id, { ...draft, listingType: "bundle" });
   }
 
   async function handlePublish(draft: SellerProductDraft) {
     "use server";
-    await sellerUpdateProductAction(id, { ...draft, status: "published" });
-    redirect(String(ROUTES.STORE.PRODUCTS));
+    await sellerUpdateProductAction(id, { ...draft, listingType: "bundle", status: "published" });
+    redirect(String(ROUTES.STORE.BUNDLES));
   }
 
   return (
     <StoreEditProductShell
-      listingType={listingType}
+      listingType="bundle"
       productId={id}
       initialValues={initialValues}
       onSave={handleSave}

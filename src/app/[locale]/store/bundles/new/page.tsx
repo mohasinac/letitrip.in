@@ -1,41 +1,27 @@
-"use client";
-
-import { useRouter } from "@/i18n/navigation";
-import { Button, Div, Heading, Input, Row, Stack, Text, ACTIONS } from "@mohasinac/appkit/client";
-import { useState } from "react";
-import { ROUTES } from "@mohasinac/appkit/client";
+import { ROUTES } from "@mohasinac/appkit";
+import type { SellerProductDraft } from "@mohasinac/appkit";
+import { createSellerProductAction } from "@/actions/seller.actions";
+import { redirect } from "@/i18n/navigation";
+import { StoreCreateProductShell } from "@/components";
 
 export default function Page() {
-  const router = useRouter();
-  const [name, setName] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  async function handleSave(draft: SellerProductDraft) {
+    "use server";
+    // Auto-save: create as draft but do NOT redirect — user is still editing.
+    await createSellerProductAction({ ...draft, listingType: "bundle", status: "draft" });
+  }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) { setError("Bundle name is required."); return; }
-    router.push(String(ROUTES.STORE.BUNDLES));
-  };
+  async function handlePublish(draft: SellerProductDraft) {
+    "use server";
+    await createSellerProductAction({ ...draft, listingType: "bundle", status: "published" });
+    redirect(String(ROUTES.STORE.BUNDLES));
+  }
 
   return (
-    <Div className="mx-auto max-w-2xl">
-      <Heading level={1} className="mb-6 text-2xl font-semibold">New Bundle</Heading>
-      <form onSubmit={handleSubmit}>
-        <Stack gap="md">
-          {error && <Text color="danger">{error}</Text>}
-          <Input
-            name="name"
-            label="Bundle Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Starter Pack"
-            required
-          />
-          <Row gap="sm" justify="end">
-            <Button type="button" onClick={() => router.push(String(ROUTES.STORE.BUNDLES))} action={ACTIONS.STORE["cancel-form"]} />
-            <Button type="submit" action={ACTIONS.STORE["create-bundle"]} />
-          </Row>
-        </Stack>
-      </form>
-    </Div>
+    <StoreCreateProductShell
+      listingType="bundle"
+      onSave={handleSave}
+      onPublish={handlePublish}
+    />
   );
 }

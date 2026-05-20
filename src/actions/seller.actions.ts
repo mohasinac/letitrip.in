@@ -63,7 +63,7 @@ import {
 import { resolveDate } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { NotFoundError } from "@mohasinac/appkit";
-import { orderRepository } from "@mohasinac/appkit";
+import { orderRepository, productRepository } from "@mohasinac/appkit";
 import { OrderStatusValues, ShippingMethodValues } from "@mohasinac/appkit";
 import type { StoreDocument } from "@mohasinac/appkit";
 import type { OrderDocument } from "@mohasinac/appkit";
@@ -281,6 +281,16 @@ export async function listSellerMyProductsAction(params?: {
 }) {
   const user = await requireAuthUser();
   return listSellerMyProducts(user.uid, params);
+}
+
+export async function getSellerProductAction(id: string): Promise<ProductDocument | null> {
+  const user = await requireAuthUser();
+  if (!id?.trim()) throw new ValidationError("id is required");
+  const product = await productRepository.findById(id);
+  if (!product) return null;
+  const profile = await userRepository.findById(user.uid);
+  if (profile?.role !== "admin" && (product as any).storeId !== user.uid) return null;
+  return product as unknown as ProductDocument;
 }
 
 export async function sellerUpdateProductAction(

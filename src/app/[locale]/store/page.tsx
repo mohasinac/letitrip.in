@@ -4,7 +4,7 @@ import {
   useStoreDashboard,
   ROUTES,
 } from "@mohasinac/appkit/client";
-import { TrendingUp, ShoppingBag, Clock, Package, Plus, BarChart2, Wallet, Store } from "lucide-react";
+import { TrendingUp, ShoppingBag, Clock, Package, Plus, BarChart2, Wallet, Store, Star } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 
 // Brand gradient mirrors the SiteLogo wordmark — using CSS var tokens
@@ -12,6 +12,7 @@ const BRAND_GRAD = "linear-gradient(135deg,var(--appkit-color-primary-700) 0%,va
 const BLUE_GRAD  = "linear-gradient(135deg,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 100%)";
 const GREEN_GRAD = "linear-gradient(135deg,var(--appkit-color-cobalt) 0%,var(--appkit-color-secondary-400) 100%)";
 const AMBER_GRAD = "linear-gradient(135deg,var(--appkit-color-amber-500) 0%,var(--appkit-color-amber-600) 100%)";
+const GOLD_GRAD  = "linear-gradient(135deg,var(--appkit-color-amber-600) 0%,var(--appkit-color-secondary-400) 100%)";
 
 const QUICK_ACTIONS = [
   { label: "Add Product",    href: ROUTES.STORE.PRODUCTS_NEW,  Icon: Plus },
@@ -63,7 +64,7 @@ export default function Page() {
       labels={{ title: "Store Dashboard" }}
       isLoading={isLoading}
       renderStats={(busy) => (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           <StatCard
             label="Total Revenue"
             value={stats ? `${stats.currency} ${stats.totalRevenue.toLocaleString()}` : "—"}
@@ -91,6 +92,20 @@ export default function Page() {
             isLoading={busy}
             gradient={BLUE_GRAD}
             Icon={Package}
+          />
+          <StatCard
+            label="Pending Payouts"
+            value={stats ? `${stats.currency} ${stats.pendingPayouts.toLocaleString()}` : "—"}
+            isLoading={busy}
+            gradient={GOLD_GRAD}
+            Icon={Wallet}
+          />
+          <StatCard
+            label="Avg. Rating"
+            value={stats?.averageRating != null ? `${stats.averageRating} ★` : "—"}
+            isLoading={busy}
+            gradient={GREEN_GRAD}
+            Icon={Star}
           />
         </div>
       )}

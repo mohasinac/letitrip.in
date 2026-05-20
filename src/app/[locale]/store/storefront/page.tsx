@@ -17,9 +17,9 @@ export default async function Page() {
     website: (store as any)?.website,
     location: (store as any)?.location,
     socialLinks: (store as any)?.socialLinks,
-    isVacationMode: (store as any)?.isVacationMode,
+    isVacationMode: store?.isVacationMode,
     vacationMessage: (store as any)?.vacationMessage,
-    isPublic: store?.status === "active",
+    isPublic: store?.isPublic ?? store?.status === "active",
   };
 
   async function handleSave(data: StorefrontDraft) {
