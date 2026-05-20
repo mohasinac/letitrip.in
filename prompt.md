@@ -193,16 +193,30 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 ---
 
-### 🔄 CURRENT — S-STORE browser-smoke fixes 2 (2026-05-20): Grouped listings, analytics alerts, WhatsApp catalog preview implemented; `npm run check` exits 0
+### 🔄 CURRENT — S-polish-pass Phase 2 (2026-05-21): GD2–GD6 store guide pages
 
-**Implemented this session:**
-- **Grouped listings (S-STORE-7-B)**: `SellerGroupedListingsView` + `GroupedListingsRepository`; GET/POST `/api/store/grouped-listings` + GET/PATCH/DELETE `/api/store/grouped-listings/[id]`; 3 page shims at `/store/grouped-listings`, `/store/grouped-listings/new`, `/store/grouped-listings/[id]/edit`; `ROUTES.STORE.GROUPED_LISTINGS*` + `SELLER_ENDPOINTS.GROUPED_LISTINGS*` constants
-- **Analytics alerts (S-STORE-5-C)**: `SellerAnalyticsAlertsView` (TanStack Query inline create form with metric/operator/threshold/windowHours/notifyChannels); GET/POST `/api/store/analytics/alerts` + PATCH/DELETE `/api/store/analytics/alerts/[id]`; page at `/store/analytics/alerts`
-- **WhatsApp catalog preview (S-STORE-6-E)**: Section 5 in `SellerWhatsAppSettingsView` — simulated WhatsApp UI with 2-col catalog tile grid, sync count, connectivity warning
+**Done this session:**
+- **PL5-A** `/admin/carousels` — `AdminCarouselView` already in appkit; wired as thin `<Suspense>` shim + `force-dynamic`
+- **PL5-B** `/admin/carousels/[id]` — replaced "coming soon" stub with `<EmptyState>` + breadcrumb back-link
+- **PL5-C** `/admin/sublisting-categories` — `AdminSublistingCategoriesView` already in appkit; wired header + "New Category" link + Suspense; added to `client.ts` exports
+- **PL5-D** `/admin/deals` + `/admin/featured` — full `useUrlTable` + `useBulkSelection` + `DataTable` + `BulkActionBar` pattern; 6 sort options; bulk remove from deals/featured; `DataTable`, `useBulkSelection`, `BulkActionItem`, `apiClient` added to `client.ts`
+- **PL6-B** history page in-memory tab filter — verified exception rule applies (HISTORY_MAX ≤ 50 items); exception comment added; no code change
+- **PL6-C** "coming soon" placeholder sweep — verified; carousel stub done by PL5-B
+- **PL2-G** `AdminBundlesView` upgraded: `useUrlTable` + `useAdminListingData` + `DataTable` (custom columns) + filter drawer (Status + Stock) + sort (Name/Price/Newest/Oldest) + pagination + BulkActionBar (Activate/Deactivate/Delete) + Rebuild per-row with toast. Bundles API GET updated to support `page`/`pageSize`/`sorts`/`filters`/`q` with in-memory processing. Consumer page wrapped in `<Suspense>` + metadata.
+- **GD2** `StoreListingsGuideView` — 7-section guide (listing types table, standard/auction/pre-order walkthroughs, status lifecycle, media guide, common mistakes). Consumer page at `/store/guide/listings`. appkit committed + rebuilt. ✅
+- `npm run check` exits 0 (0 errors).
 
 ---
 
-### ✅ LAST COMPLETED — S-STORE sprint (2026-05-18): Full sprint scaffold — foundation + 13 sub-sessions substantially complete
+### ✅ PREVIOUS LAST — S-STORE browser-smoke fixes 2 (2026-05-20): Grouped listings, analytics alerts, WhatsApp catalog preview
+
+- **Grouped listings (S-STORE-7-B)**: `SellerGroupedListingsView` + `GroupedListingsRepository`; GET/POST `/api/store/grouped-listings` + GET/PATCH/DELETE `/api/store/grouped-listings/[id]`
+- **Analytics alerts (S-STORE-5-C)**: `SellerAnalyticsAlertsView`; GET/POST `/api/store/analytics/alerts` + PATCH/DELETE `[id]`
+- **WhatsApp catalog preview (S-STORE-6-E)**: Section 5 in `SellerWhatsAppSettingsView`
+
+---
+
+### ✅ PREVIOUS LAST — S-STORE sprint (2026-05-18): Full sprint scaffold — foundation + 13 sub-sessions substantially complete
 
 CROSS primitives (all ✅):
 - `QuickCreateModal` (appkit/src/ui/components/) — slide-over modal with `onSave(doc)` semantic contract
