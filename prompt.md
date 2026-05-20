@@ -180,13 +180,16 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-SB-UNI-Y (2026-05-20): FormShell adoption wave complete — Y-2/3/5/6/7 all ✅
+### ✅ LAST COMPLETED — S-PL2-toolbar-toggles (2026-05-21): ListingToolbarToggle primitive + show-sold/ended/closed pill toggles on 5 views
 
 **Done this session:**
-- `AdminBundleEditorView`: migrated from raw `useState` to `useFormShellState` — `FieldInput name="name"` + `FieldInput name="price"` with `onChange={(v) => ...}` signature; `clearErrors()` + `setFieldError()` in `handleSave`; `FormShellContext.Provider` wrapper; api-level errors kept in separate `apiError` state
-- SB-UNI-Y-2 verified ✅ (SellerProductFormShell + SellerProductShell already use `useFormShellState`)
-- SB-UNI-Y-5/6/7 verified ✅ (admin content/user/admin-ops editors all use `useFormShellState`)
-- appkit 2.7.51 rebuilt. `npm run check` exits 0.
+- `ListingToolbar`: new `ListingToolbarToggle` interface + `toggles?: ListingToolbarToggle[]` prop renders pill buttons (active = primary bg via CSS var) between reset and `extra`; exported from `ui/index.ts`
+- `ProductsIndexListing`: removed raw `<button role="switch">` BUTTON_AS_TOGGLE anti-pattern; wired `toggles` with "Show sold" / `SHOW_SOLD`
+- `AuctionsIndexListing`: same — "Show ended" / `SHOW_ENDED`
+- `PreOrdersIndexListing`: same — "Show closed" / `SHOW_CLOSED`
+- `AdminProductsView`: added `showSold` state + `isSold==false` Sieve filter by default; `toggles` + `resetAll` updated
+- `SellerProductsView`: same pattern — `soldFilter` inserted into filter array
+- PL2-A/B/C/D/E/F all ✅. appkit 2.7.51 rebuilt. `npm run check` exits 0.
 
 ---
 

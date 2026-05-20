@@ -41,6 +41,31 @@
 
 ---
 
+### S-PL2-toolbar-toggles — ListingToolbarToggle pill primitive (2026-05-21)
+
+**appkit commit `02a209b` · `npm run check` exits 0**
+
+- `ListingToolbar`: `ListingToolbarToggle` interface + `toggles?: ListingToolbarToggle[]` prop
+  - Renders pill buttons between reset button and `extra` slot
+  - Active = `bg-[var(--appkit-color-primary,...)]` + `text-white`; inactive = bordered muted
+  - Exported from `ui/index.ts` as `ListingToolbarToggle`
+- `ProductsIndexListing`: replaced raw `<button role="switch">` switch with `toggles` prop ("Show sold")
+- `AuctionsIndexListing`: same ("Show ended")
+- `PreOrdersIndexListing`: same ("Show closed" via `SHOW_CLOSED`)
+- `AdminProductsView`: added `showSold` state, `isSold==false` Sieve filter by default, `toggles` entry, `resetAll` clears `showSold`
+- `SellerProductsView`: same pattern — `soldFilter` in filter array
+
+**Files changed (appkit):**
+- `appkit/src/ui/components/ListingToolbar.tsx`
+- `appkit/src/ui/index.ts`
+- `appkit/src/features/products/components/ProductsIndexListing.tsx`
+- `appkit/src/features/products/components/AuctionsIndexListing.tsx`
+- `appkit/src/features/pre-orders/components/PreOrdersIndexListing.tsx`
+- `appkit/src/features/admin/components/AdminProductsView.tsx`
+- `appkit/src/features/seller/components/SellerProductsView.tsx`
+
+---
+
 ### S-SB-UNI-Y — FormShell adoption wave (2026-05-20)
 
 **appkit 2.7.51 rebuilt (no version bump) · `npm run check` exits 0**
