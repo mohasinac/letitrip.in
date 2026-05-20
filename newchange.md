@@ -41,6 +41,41 @@
 
 ---
 
+### S-GD-buyer-admin-guides — Buyer & Admin Guide Pages (2026-05-21)
+
+**appkit rebuilt (dist updated) · consumer new files · `npm run check` exits 0**
+
+**Buyer guide pages (GD7–GD11):**
+- `HelpPageView` — updated to link to new sub-pages; added scam awareness Alert; replaced old topic keys
+- `messages/en.json` — new `helpPage` keys: `topicShopping/Auctions/Orders/Account` + scam awareness strings
+- `appkit/src/features/_guide-cls.ts` — NEW: shared `GC` className constants for all guide views
+- `BuyerShoppingGuideView` — 7 sections (browsing, product page, cart, checkout, coupons, confirmation, guest)
+- `BuyerAuctionsGuideView` — 7 sections (mechanics, bidding, winning, retraction, pre-orders, cancellations, safety)
+- `BuyerOrdersGuideView` — 7 sections (lifecycle, tracking, damage, returns, refund, support, disputes)
+- `BuyerAccountGuideView` — 7 sections (profile, notifications, wishlist, reviews, security, scam awareness, reporting)
+- 4 new RSC page shims: `/help/shopping`, `/help/auctions`, `/help/orders`, `/help/account`
+- All use `SECTIONS.map()` pattern + GC constants to satisfy REPEATED_STRING audit
+
+**Admin guide hub + sub-pages (GD13–GD22):**
+- `AdminGuideHubView` — permission-aware 9-card hub; props `{ permissions, isFullAdmin }`
+- 9 admin guide views: `AdminUsersGuideView`, `AdminCatalogGuideView`, `AdminStoresGuideView`, `AdminOrdersGuideView`, `AdminContentGuideView`, `AdminSiteConfigGuideView`, `AdminTeamGuideView`, `AdminAnalyticsGuideView`, `AdminTrustGuideView`
+- All 9 import `GC` from `_guide-cls.ts` + use `SECTIONS.map()` pattern
+- `AdminSiteConfigGuideView` manually written sections use `GC.sectionWrap/sectionHeader/sectionTitle`
+- `AdminTrustGuideView` — `STILL_ALLOWED` const for the 3× repeated table string
+- `src/app/[locale]/admin/guide/layout.tsx` — `makeAdminSectionLayout("admin:dashboard:view")`
+- `src/app/[locale]/admin/guide/page.tsx` + 9 sub-page shims, all with `revalidate = 3600`
+
+**Navigation & routes (both tiers):**
+- `route-map.ts` — `ROUTES.ADMIN.GUIDE` + 9 sub-routes + `ROUTES.PUBLIC.HELP_SHOPPING/AUCTIONS/ORDERS/ACCOUNT`
+- `ADMIN_NAV_GROUPS` — new "Help" group with "Admin Guide" item
+- `USER_NAV_GROUPS` — "Help Center" entry pointing to `ROUTES.PUBLIC.HELP`
+
+**appkit `index.ts` additions:** 14 new exports — 10 admin guide views + type + 4 buyer guide views
+
+**Tracker:** GD7–GD11 ✅, GD13–GD22 ✅ (GD12 ⏳ — depends on RBAC8)
+
+---
+
 ### S-GD1-guide-hub — Store Guide Hub (2026-05-21)
 
 **appkit commit `2fe6652` · consumer `051a3c3ba` · `npm run check` exits 0**

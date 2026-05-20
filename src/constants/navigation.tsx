@@ -257,6 +257,12 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.ADMIN_NOTIFICATIONS),  "Admin Notifications", "admin:notifications:read"),
     ],
   },
+  {
+    title: "Help",
+    items: [
+      adminItem(String(ROUTES.ADMIN.GUIDE), "Admin Guide", "admin:dashboard:view"),
+    ],
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -370,6 +376,7 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
     title: "Help",
     items: [
       { href: String(ROUTES.USER.SUPPORT), label: "Support Tickets" },
+      { href: String(ROUTES.PUBLIC.HELP), label: "Help Center" },
     ],
   },
 ];
