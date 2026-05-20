@@ -322,6 +322,12 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
       { href: String(ROUTES.STORE.SLUG),               label: "Store URL"           },
     ],
   },
+  {
+    title: "Help",
+    items: [
+      { href: String(ROUTES.STORE.GUIDE), label: "Seller Guide" },
+    ],
+  },
 ];
 
 // ---------------------------------------------------------------------------
