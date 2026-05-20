@@ -193,19 +193,23 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 ---
 
-### 🔄 CURRENT — S-polish-pass Phase 2 (2026-05-21): GD tier complete → next PL6-A or GD7
+### 🔄 CURRENT — S-polish-pass Phase 3 (2026-05-21): PL tier + listingProcessor extension
 
 **Done this session:**
-- **PL5-A/B/C/D** admin page upgrades (carousels, sublisting-categories, deals, featured) ✅
-- **PL6-B/C** history tab + placeholder sweep ✅
-- **PL2-G** AdminBundlesView full upgrade + bundles API pagination ✅
-- **GD2** `/store/guide/listings` — 7 sections (StoreListingsGuideView) ✅
-- **GD3** `/store/guide/orders` — 7 sections (StoreOrdersGuideView) ✅
-- **GD4** `/store/guide/finance` — 5 sections (StoreFinanceGuideView) ✅
-- **GD5** `/store/guide/capabilities` — 5 sections (StoreCapabilitiesGuideView) ✅
-- **GD6** `/store/guide/settings` — 6 sections (StoreSettingsGuideView) ✅
-- listing-processor.ts extracted from products route; logError 3-arg fix ✅
-- `npm run check:audits` exits 0 (no regressions).
+- **PL3** Orphaned view audit: deleted AuctionsView, PreOrdersView, CategoriesListView, ReviewsListView, StoresListView ✅
+- **PL6-A** Exception rationale confirmed (single-doc 20-item array, in-memory acceptable) ✅
+- **PL8-A** 6-incompatibility block in sieve.ts ✅
+- **PL8-B** Already implemented (verified in source) ✅
+- **PL8-D** Paise conversion for minPrice/maxPrice/minBid/maxBid in products route ✅
+- **PL8-E** All 6 public list routes already safe (audit confirmed) ✅
+- **PL9** listingProcessor extended to events/stores/coupons + store products/auctions inlined ✅
+  - `callListingProcessor` accepts: products | blog | events | stores | coupons
+  - `/api/events`: inlined eventsGET + listingProcessor → eventRepository.list fallback
+  - `/api/stores`: inlined storesGET + listingProcessor → storeRepository.listStores fallback
+  - `/api/coupons`: added listingProcessor → couponsRepository.list fallback + Cache-Control
+  - `/api/stores/[storeSlug]/products`: fully inlined with storeRepository.findBySlug + productRepository.list
+  - `/api/stores/[storeSlug]/auctions`: new route (was thin wrapper) with same pattern
+- `npm run check` exits 0 (tsc + audits + lint).
 
 ---
 

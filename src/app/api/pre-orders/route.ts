@@ -10,6 +10,7 @@ import {
 } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
+import { validateSieveFilters } from "@/lib/sieve-validators";
 
 /**
  * GET /api/pre-orders
@@ -43,17 +44,6 @@ const SAFE_PRE_ORDER_FILTER_FIELDS = new Set([
   PRODUCT_FIELDS.FEATURED,
   PRODUCT_FIELDS.IS_PROMOTED,
 ]);
-
-function validateSieveFilters(raw: string, allowed: ReadonlySet<string>): string {
-  return raw
-    .split(",")
-    .map((c) => c.trim())
-    .filter((c) => {
-      const m = c.match(/^([^<>=!@]+)\s*(?:==|!=|<=|>=|<|>|@=\*?)/);
-      return m ? allowed.has(m[1].trim()) : false;
-    })
-    .join(",");
-}
 
 function mergeListingTypeFilter(filters: string | null | undefined): string {
   const safe = filters ? validateSieveFilters(filters, SAFE_PRE_ORDER_FILTER_FIELDS) : "";

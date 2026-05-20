@@ -14,7 +14,8 @@
     "prebuild": "npm run build:css",
     "build": "next build",
     "start": "next start",
-    "test": "jest",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
     "test:smoke": "node scripts/qa/smoke-prod.mjs",
     "test:smoke:only": "node scripts/qa/smoke-prod.mjs --only",
     "test:pw": "node scripts/qa/smoke-pw.mjs",
@@ -106,6 +107,7 @@
     "eslint-plugin-react": "^7.37.5",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
+    "jsdom": "^29.1.1",
     "playwright": "^1.53.1",
     "postcss": "8.4.49",
     "prettier": "^3.8.1",
@@ -113,7 +115,8 @@
     "ts-node": "^10.9.2",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.58.0"
+    "typescript-eslint": "^8.58.0",
+    "vitest": "^4.1.7"
   },
   "overrides": {
     "@types/react": "^19",

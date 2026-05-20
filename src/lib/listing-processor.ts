@@ -37,8 +37,15 @@ export interface ListingProcessorArgs {
  * Throws on HTTP errors so callers can decide whether to surface them or
  * swallow and fall back — wrap in try/catch accordingly.
  */
+export type ListingProcessorCollection =
+  | "products"
+  | "blog"
+  | "events"
+  | "stores"
+  | "coupons";
+
 export async function callListingProcessor(
-  collection: "products",
+  collection: ListingProcessorCollection,
   args: ListingProcessorArgs,
 ): Promise<ListingProcessorResponse | null> {
   const url = process.env.FIREBASE_FUNCTION_LISTING_URL;

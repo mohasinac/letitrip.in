@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements -- LR1-01: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-01) */
 // audit-auth-gates-ok — imports @/actions/demo-seed.types (types only, no function calls)
 
 /**
@@ -21,8 +20,10 @@ import {
   Checkbox,
   Container,
   Heading,
+  Input,
   Row,
   Section,
+  Select,
   Stack,
   Text,
   Div,
@@ -1821,14 +1822,16 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
           📐 Schema Fields <span className="text-zinc-400 dark:text-slate-500 font-normal normal-case tracking-normal">({fields.length} fields)</span>
         </Text>
         <div className="flex items-center gap-2">
-          <input
+          <Input
+            bare
             type="text"
             placeholder="filter fields…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="text-xs px-2 py-1 rounded border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-indigo-400 w-32"
           />
-          <button
+          <Button
+            type="button"
             onClick={() => setShowPiiOnly((v) => !v)}
             className={`text-[10px] px-2 py-1 rounded-full border font-medium transition-colors ${
               showPiiOnly
@@ -1837,7 +1840,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
             }`}
           >
             🔒 PII only
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -2050,9 +2053,9 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         )}
 
         <>
-          <a href={meta.uiPath} target="_blank" rel="noopener noreferrer" className="text-sm text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 hover:underline font-medium">
+          <Button type="button" variant="ghost" onClick={() => window.open(meta.uiPath, "_blank")} className="text-sm text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 hover:underline font-medium p-0 h-auto">
             → View in app: {meta.uiPath}
-          </a>
+          </Button>
         </>
       </Stack>
     </Div>
@@ -2109,9 +2112,9 @@ function ResourceAccordionCard({
 
   return (
     <Div className={`rounded-xl border transition-colors ${borderColor} ${bgColor} overflow-hidden`}>
-      <button type="button" onClick={toggleExpanded} className="w-full flex items-center gap-2 px-4 py-3 text-left">
+      <Button type="button" onClick={toggleExpanded} className="w-full flex items-center gap-2 px-4 py-3 text-left">
         {renderAccordionCollapsedHeader({ meta, runState, isLoadingStatus, dbStatus, existingCount, seedCount, isComplete, isEmpty, statusVariant, statusLabel, expanded, col, selected, onToggle, isRunning })}
-      </button>
+      </Button>
 
       {dbStatus && seedCount > 0 && (
         <div className="px-4 pb-2"><SeedProgressBar seeded={existingCount} target={seedCount} size="sm" /></div>
@@ -2149,14 +2152,15 @@ function GroupDivider({
         {label}
       </span>
       <div className="flex-1 h-px bg-zinc-200 dark:bg-slate-700" />
-      <button
+      <Button
         type="button"
+        variant="ghost"
         onClick={() => onSelectAll(!allSelected)}
         disabled={isRunning}
         className="text-xs text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 shrink-0 disabled:opacity-40 transition-colors"
       >
         {allSelected ? "deselect group" : "select group"}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -2493,24 +2497,34 @@ function renderSeedPanelToolbar({
           <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
             <div className="relative flex-1">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-slate-500 text-sm pointer-events-none">🔍</span>
-              <input type="text" placeholder="Search collections…" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-9 pr-8 py-1.5 text-sm rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400" />
-              {searchQuery && <button onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-white text-xs">✕</button>}
+              <Input bare type="text" placeholder="Search collections…" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-9 pr-8 py-1.5 text-sm rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400" />
+              {searchQuery && <Button type="button" variant="ghost" onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-white text-xs p-0 h-auto">✕</Button>}
             </div>
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value as SortKey)} className="text-sm rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-white px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 shrink-0">
-              <option value="default">Sort: Default</option>
-              <option value="name-asc">Name A → Z</option>
-              <option value="name-desc">Name Z → A</option>
-              <option value="target-desc">Target ↑ highest</option>
-              <option value="target-asc">Target ↓ lowest</option>
-              <option value="db-desc">DB count ↑ most</option>
-              <option value="db-asc">DB count ↓ fewest</option>
-            </select>
+            <div className="shrink-0">
+              <Select
+                variant="ghost"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortKey)}
+                className="text-sm rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-white px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400"
+                options={[
+                  { value: "default", label: "Sort: Default" },
+                  { value: "name-asc", label: "Name A → Z" },
+                  { value: "name-desc", label: "Name Z → A" },
+                  { value: "target-desc", label: "Target ↑ highest" },
+                  { value: "target-asc", label: "Target ↓ lowest" },
+                  { value: "db-desc", label: "DB count ↑ most" },
+                  { value: "db-asc", label: "DB count ↓ fewest" },
+                ]}
+              />
+            </div>
             <div className="hidden sm:block w-px h-6 bg-zinc-200 dark:bg-slate-700 shrink-0" />
             <div className="flex items-center gap-2 flex-wrap shrink-0">
-              <label className="flex items-center gap-1.5 cursor-pointer select-none">
-                <input type="checkbox" checked={dryRun} onChange={(e) => setDryRun(e.target.checked)} disabled={isRunning} className="w-3.5 h-3.5 rounded accent-amber-500 cursor-pointer" />
-                <span className="text-xs text-zinc-600 dark:text-slate-300 whitespace-nowrap">Dry run</span>
-              </label>
+              <Checkbox
+                label={<span className="text-xs text-zinc-600 dark:text-slate-300 whitespace-nowrap">Dry run</span>}
+                checked={dryRun}
+                onChange={(e) => setDryRun(e.target.checked)}
+                disabled={isRunning}
+              />
               <Button size="sm" variant="primary" isLoading={isRunning} onClick={() => run("load")} disabled={isRunning || selectedCollections.size === 0}>{dryRun ? "⚡ Dry Add" : "⚡ Add Seed"}</Button>
               <Button size="sm" variant="danger" onClick={() => run("delete")} disabled={isRunning || selectedCollections.size === 0}>{dryRun ? "🗑️ Dry Remove" : ACTIONS.ADMIN["reset-seed-data"].label}</Button>
             </div>
@@ -2522,10 +2536,10 @@ function renderSeedPanelToolbar({
                 const active = filterGroup === g;
                 const cfg = g === "all" ? { label: "All", icon: "☰" } : { label: GROUP_CONFIG[g].label, icon: GROUP_CONFIG[g].icon };
                 return (
-                  <button key={g} onClick={() => setFilterGroup(g)} className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors ${active ? "bg-amber-500 text-white" : "bg-zinc-200 dark:bg-slate-700 text-zinc-700 dark:text-slate-300 hover:bg-zinc-300 dark:hover:bg-slate-600"}`}>
+                  <Button type="button" key={g} onClick={() => setFilterGroup(g)} className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors ${active ? "bg-amber-500 text-white" : "bg-zinc-200 dark:bg-slate-700 text-zinc-700 dark:text-slate-300 hover:bg-zinc-300 dark:hover:bg-slate-600"}`}>
                     <span>{cfg.icon}</span>
                     <span className="hidden sm:inline ml-0.5">{cfg.label}</span>
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -2538,10 +2552,10 @@ function renderSeedPanelToolbar({
                 { key: "partial", label: "⏳ Partial", activeClass: "bg-amber-500 text-white" },
                 { key: "empty", label: "✗ Empty", activeClass: "bg-red-500 text-white" },
               ] as const).map(({ key, label, activeClass }) => (
-                <button key={key} onClick={() => setFilterStatus(key as StatusFilter)} className={`px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors ${filterStatus === key ? activeClass : "bg-zinc-200 dark:bg-slate-700 text-zinc-700 dark:text-slate-300 hover:bg-zinc-300 dark:hover:bg-slate-600"}`}>{label}</button>
+                <Button type="button" key={key} onClick={() => setFilterStatus(key as StatusFilter)} className={`px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors ${filterStatus === key ? activeClass : "bg-zinc-200 dark:bg-slate-700 text-zinc-700 dark:text-slate-300 hover:bg-zinc-300 dark:hover:bg-slate-600"}`}>{label}</Button>
               ))}
               {isFiltered && (
-                <button onClick={() => { setSearchQuery(""); setFilterGroup("all"); setFilterStatus("all"); setSortBy("default"); }} className="text-[11px] text-amber-600 dark:text-amber-400 hover:underline ml-1 shrink-0">✕ Clear</button>
+                <Button type="button" variant="ghost" onClick={() => { setSearchQuery(""); setFilterGroup("all"); setFilterStatus("all"); setSortBy("default"); }} className="text-[11px] text-amber-600 dark:text-amber-400 hover:underline ml-1 shrink-0 p-0 h-auto">✕ Clear</Button>
               )}
             </div>
           </div>
@@ -2656,11 +2670,11 @@ function renderSeedPanelPagination({ page, setPage, totalPages, PAGE_SIZE, filte
     <div className="flex items-center justify-between pt-2 border-t border-zinc-200 dark:border-slate-700">
       <span className="text-xs text-zinc-500 dark:text-slate-400">Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filteredCollections.length)} of {filteredCollections.length}</span>
       <div className="flex items-center gap-1">
-        <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-2.5 py-1 rounded-lg text-sm font-medium border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-slate-700 transition-colors">‹ Prev</button>
+        <Button type="button" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-2.5 py-1 rounded-lg text-sm font-medium border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-slate-700 transition-colors">‹ Prev</Button>
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-          <button key={n} onClick={() => setPage(n)} className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${n === page ? "bg-amber-500 text-white font-bold" : "border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 hover:bg-zinc-50 dark:hover:bg-slate-700"}`}>{n}</button>
+          <Button type="button" key={n} onClick={() => setPage(n)} className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${n === page ? "bg-amber-500 text-white font-bold" : "border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 hover:bg-zinc-50 dark:hover:bg-slate-700"}`}>{n}</Button>
         ))}
-        <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-2.5 py-1 rounded-lg text-sm font-medium border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-slate-700 transition-colors">Next ›</button>
+        <Button type="button" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-2.5 py-1 rounded-lg text-sm font-medium border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-slate-700 transition-colors">Next ›</Button>
       </div>
     </div>
   );

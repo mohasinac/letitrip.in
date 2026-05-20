@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable lir/no-raw-html-elements -- LR1-10: legacy raw HTML — migration tracked in crud-tracker.md Tier LR (row LR1-10) */
 
 /**
  * Dev Toolbar — development environment only.
@@ -14,6 +13,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
+import { Button } from "@mohasinac/appkit/client";
 
 const BORDER_SLATE = "1px solid var(--appkit-color-slate-700)";
 
@@ -75,7 +75,8 @@ interface ToggleProps {
 function Toggle({ label, description, enabled, onChange, color = "var(--appkit-color-cobalt)" }: ToggleProps) {
   return (
     <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 10 }}>
-      <button
+      <Button
+        type="button"
         onClick={() => onChange(!enabled)}
         style={{
           flexShrink: 0,
@@ -105,7 +106,7 @@ function Toggle({ label, description, enabled, onChange, color = "var(--appkit-c
             display: "block",
           }}
         />
-      </button>
+      </Button>
       <>
         <div style={{ fontSize: 12, fontWeight: 600, color: "var(--appkit-color-slate-50)", lineHeight: 1.3 }}>{label}</div>
         <div style={{ fontSize: 11, color: "var(--appkit-color-slate-400)", lineHeight: 1.4 }}>{description}</div>
@@ -143,9 +144,9 @@ function renderMockIndicator(prefs: DevPrefs) {
 function renderToolbarFooter(onHide: () => void) {
   return (
     <div style={{ borderTop: BORDER_SLATE, paddingTop: 8, display: "flex", gap: 8 }}>
-      <a href="/api/dev/mock-razorpay" target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: "var(--appkit-color-cobalt-300)", textDecoration: "none" }}>Razorpay Docs ↗</a>
-      <a href="/api/dev/mock-shiprocket?action=status" target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: "var(--appkit-color-cobalt-300)", textDecoration: "none" }}>Shiprocket Status ↗</a>
-      <button onClick={onHide} style={{ marginLeft: "auto", fontSize: 10, color: "var(--appkit-color-slate-500)", background: "none", border: "none", cursor: "pointer", padding: 0 }}>Hide</button>
+      <Button type="button" variant="ghost" onClick={() => window.open("/api/dev/mock-razorpay", "_blank")} style={{ fontSize: 10, color: "var(--appkit-color-cobalt-300)", padding: 0, background: "none", border: "none" }}>Razorpay Docs ↗</Button>
+      <Button type="button" variant="ghost" onClick={() => window.open("/api/dev/mock-shiprocket?action=status", "_blank")} style={{ fontSize: 10, color: "var(--appkit-color-cobalt-300)", padding: 0, background: "none", border: "none" }}>Shiprocket Status ↗</Button>
+      <Button type="button" variant="ghost" onClick={onHide} style={{ marginLeft: "auto", fontSize: 10, color: "var(--appkit-color-slate-500)", background: "none", border: "none", cursor: "pointer", padding: 0 }}>Hide</Button>
     </div>
   );
 }
@@ -172,13 +173,15 @@ export function DevToolbar() {
 
   if (!prefs.showToolbar) {
     return (
-      <button
+      <Button
+        type="button"
+        variant="ghost"
         onClick={() => update({ showToolbar: true })}
         style={{ position: "fixed", bottom: 16, right: 16, zIndex: 9999, background: "var(--appkit-color-slate-900)", border: BORDER_SLATE, borderRadius: 8, color: "var(--appkit-color-slate-400)", fontSize: 11, padding: "4px 8px", cursor: "pointer" }}
         title="Show Dev Toolbar"
       >
         DEV
-      </button>
+      </Button>
     );
   }
 

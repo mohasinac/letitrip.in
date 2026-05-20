@@ -17,6 +17,7 @@ import {
   callListingProcessor,
   type ListingProcessorResponse,
 } from "@/lib/listing-processor";
+import { validateSieveFilters } from "@/lib/sieve-validators";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 20;
@@ -54,20 +55,6 @@ const SAFE_PRODUCT_FILTER_FIELDS = new Set([
   PRODUCT_FIELDS.SHIPPING_PAID_BY,
   "isPartOfBundle",
 ]);
-
-function validateSieveFilters(
-  raw: string,
-  allowedFields: ReadonlySet<string>,
-): string {
-  return raw
-    .split(",")
-    .map((clause) => clause.trim())
-    .filter((clause) => {
-      const match = clause.match(/^([^<>=!@]+)\s*(?:==|!=|<=|>=|<|>|@=\*?)/);
-      return match ? allowedFields.has(match[1].trim()) : false;
-    })
-    .join(",");
-}
 
 /**
  * Builds a Sieve filter string by combining:
