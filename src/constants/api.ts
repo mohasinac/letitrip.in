@@ -146,6 +146,8 @@ export const API_ROUTES = {
     STORE_CATEGORY_BY_ID: (id: string) => `/api/store/categories/${id}`,
     LISTING_TEMPLATES: "/api/store/listing-templates",
     LISTING_TEMPLATE_BY_ID: (id: string) => `/api/store/listing-templates/${id}`,
+    GROUPED_LISTINGS: "/api/store/grouped-listings",
+    GROUPED_LISTING_BY_ID: (id: string) => `/api/store/grouped-listings/${id}`,
     GOOGLE_REVIEWS: "/api/store/google-reviews",
     GOOGLE_REVIEWS_SYNC: "/api/store/google-reviews/sync",
   },

@@ -286,6 +286,7 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
       { href: String(ROUTES.STORE.FEATURES),                label: "Feature Badges"    },
       { href: String(ROUTES.STORE.TEMPLATES),               label: "Templates"         },
       { href: String(ROUTES.STORE.LISTING_TEMPLATES),       label: "Listing Templates" },
+      { href: String(ROUTES.STORE.GROUPED_LISTINGS),        label: "Grouped Listings"  },
     ],
   },
   {
@@ -300,8 +301,9 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
     title: "Finance",
     items: [
       { href: String(ROUTES.STORE.ANALYTICS),       label: "Analytics"        },
-      { href: String(ROUTES.STORE.ANALYTICS_CARDS), label: "Analytics Cards"  },
-      { href: String(ROUTES.STORE.PAYOUTS),         label: "Payouts"          },
+      { href: String(ROUTES.STORE.ANALYTICS_CARDS),  label: "Analytics Cards"  },
+      { href: String(ROUTES.STORE.ANALYTICS_ALERTS), label: "Analytics Alerts" },
+      { href: String(ROUTES.STORE.PAYOUTS),          label: "Payouts"          },
       { href: String(ROUTES.STORE.PAYOUT_SETTINGS), label: "Payout Settings"  },
       { href: String(ROUTES.STORE.PAYOUT_METHODS),  label: "Payout Methods"   },
     ],

@@ -41,6 +41,36 @@
 
 ---
 
+### S-STORE-smoke-fixes-2 — Grouped listings, analytics alerts, WhatsApp catalog preview (2026-05-20)
+
+**appkit 2.7.51 rebuilt (no version bump) · npm install @mohasinac/appkit@file:./appkit to refresh node_modules**
+
+Three S-STORE gaps implemented (verified by Rule #4 before coding — only 3 of 8 items were genuinely missing):
+
+**appkit changes:**
+- `GroupedListingsRepository` (`appkit/src/features/grouped/repository/grouped-listings.repository.ts`): extends `BaseRepository<GroupedListingDocument>`; `listByStore(storeId)` method; exported via `repositories/index.ts` + `index.ts` + `client.ts`
+- `SellerGroupedListingsView` (`appkit/src/features/seller/components/SellerGroupedListingsView.tsx`): `useUrlTable` + `useBulkSelection` + `useSellerListingData`; columns: title, theme Badge, productCount, visibilityStatus Badge, isActive Badge, createdAt; `onCreateClick`/`onEditClick`/`onDeleteClick` props; exported via `client.ts` + `index.ts`
+- `SellerAnalyticsAlertsView` (`appkit/src/features/seller/components/SellerAnalyticsAlertsView.tsx`): TanStack Query `useQuery`/`useMutation`; inline create form (label, metric select, operator select, threshold, windowHours, notifyChannels pill toggles); `AlertCard` sub-component with Toggle for isActive + delete; exported via `client.ts` + `index.ts`
+- `SellerWhatsAppSettingsView`: Section 5 "Catalog Preview" added — simulated WhatsApp UI with green "W" avatar, 2-col catalog tile grid, sync count from `cfg.lastSyncCount`, connectivity warning if not connected; `Div` primitive added to import
+- `SELLER_ENDPOINTS.GROUPED_LISTINGS` + `GROUPED_LISTING_BY_ID` + `ANALYTICS_ALERTS` + `ANALYTICS_ALERT_BY_ID` added to `api-endpoints.ts`
+- `ROUTES.STORE.GROUPED_LISTINGS` + `GROUPED_LISTINGS_NEW` + `GROUPED_LISTINGS_EDIT` added to `route-map.ts`
+
+**consumer changes:**
+- `src/app/api/store/grouped-listings/route.ts`: GET (list by store) + POST (create with storeId/createdBy/productIds)
+- `src/app/api/store/grouped-listings/[id]/route.ts`: GET + PATCH + DELETE with ownership gate (`doc.storeId !== store.id`)
+- `src/app/api/store/analytics/alerts/route.ts`: GET (listForOwner seller) + POST (create with scope/ownerId)
+- `src/app/api/store/analytics/alerts/[id]/route.ts`: PATCH + DELETE with ownership gate (`doc.ownerId !== user.uid`)
+- `src/app/[locale]/store/grouped-listings/page.tsx`: `SellerGroupedListingsView` shim with router navigation
+- `src/app/[locale]/store/grouped-listings/new/page.tsx`: form with title/description/groupTheme/isActive/isFeatured, POSTs to API
+- `src/app/[locale]/store/grouped-listings/[id]/edit/page.tsx`: fetches doc on mount, PATCHes on save; `useParams` from `next/navigation`
+- `src/app/[locale]/store/analytics/alerts/page.tsx`: `SellerAnalyticsAlertsView` shim
+- `src/constants/api.ts`: `API_ROUTES.STORE.GROUPED_LISTINGS` + `GROUPED_LISTING_BY_ID` added
+- `src/constants/navigation.tsx`: Grouped Listings link in Listings group; Analytics Alerts link in Finance group
+
+**Quality:** `npm run check` exits 0 (0 errors, 29 pre-existing warnings). BOM artifact fixed from PowerShell write (removed from `appkit/src/index.ts`).
+
+---
+
 ### S-STORE-smoke-fixes — Store page crash/UX regressions fixed (2026-05-20)
 
 **appkit 2.7.50 → 2.7.51 · commits: appkit `94d4e86`, consumer `325e11c`**

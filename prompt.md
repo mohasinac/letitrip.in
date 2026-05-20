@@ -180,7 +180,7 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### 🔄 CURRENT — S-STORE browser-smoke fixes (2026-05-20): Critical crash + UX regressions fixed; `npm run check` exits 0; appkit 2.7.51 published + Vercel prod deployed
+### ✅ LAST COMPLETED — S-STORE browser-smoke fixes (2026-05-20): Critical crash + UX regressions fixed; `npm run check` exits 0; appkit 2.7.51 published + Vercel prod deployed
 
 **Fixed this session (appkit commit `94d4e86` · consumer commit `325e11c`):**
 - `SellerProductsView`: publish/unpublish Eye/EyeOff toggle with optimistic `statusOverrides` map + row actions unconditional
@@ -198,7 +198,14 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 - **Offers page**: switched to `SellerOffersView` from main appkit entry (was `SellerOffersPanel` which doesn't exist)
 - **Storefront**: `isPublic` now reads from `store.isPublic` field (was deriving from `status` — desync after save)
 
-**Remaining S-STORE work (not yet browser-verified):** bids grouping UI, reviews bulk-reply flow, grouped listings feature, listing templates upgrade, analytics alerts, addresses DataTable view, WhatsApp preview, form shell 60/40 split migration.
+---
+
+### 🔄 CURRENT — S-STORE browser-smoke fixes 2 (2026-05-20): Grouped listings, analytics alerts, WhatsApp catalog preview implemented; `npm run check` exits 0
+
+**Implemented this session:**
+- **Grouped listings (S-STORE-7-B)**: `SellerGroupedListingsView` + `GroupedListingsRepository`; GET/POST `/api/store/grouped-listings` + GET/PATCH/DELETE `/api/store/grouped-listings/[id]`; 3 page shims at `/store/grouped-listings`, `/store/grouped-listings/new`, `/store/grouped-listings/[id]/edit`; `ROUTES.STORE.GROUPED_LISTINGS*` + `SELLER_ENDPOINTS.GROUPED_LISTINGS*` constants
+- **Analytics alerts (S-STORE-5-C)**: `SellerAnalyticsAlertsView` (TanStack Query inline create form with metric/operator/threshold/windowHours/notifyChannels); GET/POST `/api/store/analytics/alerts` + PATCH/DELETE `/api/store/analytics/alerts/[id]`; page at `/store/analytics/alerts`
+- **WhatsApp catalog preview (S-STORE-6-E)**: Section 5 in `SellerWhatsAppSettingsView` — simulated WhatsApp UI with 2-col catalog tile grid, sync count, connectivity warning
 
 ---
 
