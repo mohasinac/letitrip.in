@@ -127,6 +127,9 @@ export default function UserHistoryPage() {
   const [filter, setFilter] = useState<FilterKey>("all");
   const [confirmClear, setConfirmClear] = useState(false);
 
+  // In-memory tab filter is acceptable here: history is a single-doc array capped at
+  // HISTORY_MAX (50) items, so the full set always fits in one fetch. No Firestore
+  // pagination or server-side ?type= param needed. (PL6-B exception rule.)
   const filtered = useMemo(
     () => (filter === "all" ? items : items.filter((i) => i.productType === filter)),
     [items, filter],
