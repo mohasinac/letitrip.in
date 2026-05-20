@@ -41,6 +41,35 @@
 
 ---
 
+### S-STORE-smoke-fixes — Store page crash/UX regressions fixed (2026-05-20)
+
+**appkit 2.7.50 → 2.7.51 · commits: appkit `94d4e86`, consumer `325e11c`**
+
+Critical fixes found during browser smoke of the S-STORE sprint output:
+
+**appkit changes:**
+- `SellerProductsView`: publish/unpublish Eye/EyeOff toggle row action; optimistic `statusOverrides` Map; row actions unconditional (not gated on `onDeleteProduct`)
+- `CategoryInlineSelect` / `BrandInlineSelect`: two-loader pattern — `loadPublicCategoryOptions` / `loadPublicBrandOptions` use `/api/categories?flat=true` + `/api/brands` (unauthenticated); `loadAdmin*` variants for `allowCreate=true` context. Fixes 403 errors for sellers in filter drawer + product form.
+- `SellerProductsFilterDrawer`: category + brand raw `<input>` replaced with `CategoryInlineSelect` + `BrandInlineSelect`; price label "paise" → "₹ Rupees"
+- `SellerOrdersView`: `confirmed` / `delivered` / `cancelled` added to UPDATE_STATUS_OPTIONS; quick Truck "mark shipped" row action button (visible when status is PENDING/PROCESSING/CONFIRMED); raw `<button>` → appkit `<Button>` in row action
+- `SellerProductShell`: `"bundle"` added to `ProductListingMode` union + label chain
+
+**consumer changes:**
+- All 7 listing-type create pages (`products/new`, `auctions/new`, `pre-orders/new`, `prize-draws/new`, `classified/new`, `digital-codes/new`, `live/new`): removed `redirect()` from `handleSave` server action — auto-save debounce was navigating user away from the form immediately
+- All 7 listing-type edit pages: pre-fetch product via `getSellerProductAction` + map to `initialValues: SellerProductDraft` — forms were blank on load
+- `getSellerProductAction`: new server action in `seller.actions.ts` with seller ownership gate (`product.storeId !== user.uid` check for non-admins)
+- `src/app/[locale]/store/page.tsx` (store dashboard): +2 stat cards — Pending Payouts (GOLD_GRAD + Wallet icon) + Avg. Rating (GREEN_GRAD + Star icon); grid changed from `lg:grid-cols-4` to `sm:grid-cols-3` for clean 2×3 layout at all tablet+ viewports
+- `src/app/api/store/dashboard/route.ts`: `activeListings` count fixed (`status === "published"` not `"active"`)
+- `bundles/new/page.tsx`: rewrote client-only stub to full server component using `StoreCreateProductShell` with `listingType="bundle"`
+- `bundles/[id]/edit/page.tsx`: created missing edit route (was 404)
+- `store/offers/page.tsx`: switched from non-existent `SellerOffersPanel` to `SellerOffersView`
+- `store/storefront/page.tsx`: `isPublic` reads from `store.isPublic` field directly (was incorrectly derived from `store.status === "active"` — caused desync after storefront save)
+- `store/products/page.tsx`: `onDeleteProduct` + `onCreateClick` props wired
+
+`npm run check` exits 0 (0 errors, 29 pre-existing warnings). appkit 2.7.51 published to npm. Vercel prod deployed.
+
+---
+
 ### S-STORE-foundation+sessions — Full sprint scaffold: CROSS primitives + 11-collection foundation + RBAC + 8 sessions substantially complete (2026-05-18)
 
 **Foundation for the full 12-session S-STORE sprint. Schemas, repositories, indexes, seed data, API stubs, and minimal page shims for the 11 new collections. Per-session work fills in rich UIs on top.**

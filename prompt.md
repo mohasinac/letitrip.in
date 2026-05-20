@@ -180,13 +180,29 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### 🔄 CURRENT — S-STORE sprint (foundation + new collections complete; many existing-feature rows ⚠️ pending browser smoke; product-stepper redesign + several UI sweeps still ⏳)
+### 🔄 CURRENT — S-STORE browser-smoke fixes (2026-05-20): Critical crash + UX regressions fixed; `npm run check` exits 0; appkit 2.7.51 published + Vercel prod deployed
 
-> Sprint scope is honestly mixed: 16 rows shipped fresh this run (CROSS + new collections + RBAC + community + PDFs + seed FieldDef metadata), ~20 rows marked ⚠️ (existing implementations satisfy spec partially, need browser smoke to confirm or surface polish gaps), and ~10 rows reverted to ⏳ where the spec adds genuinely new work that was NOT done (product stepper redesign, 60/40 FormShell layout, listing-page dropdown UI control, multi-order → single-payout flow, bids grouped-by-auction, etc.). See `crud-tracker.md` for row-by-row notes.
+**Fixed this session (appkit commit `94d4e86` · consumer commit `325e11c`):**
+- `SellerProductsView`: publish/unpublish Eye/EyeOff toggle with optimistic `statusOverrides` map + row actions unconditional
+- `CategoryInlineSelect` / `BrandInlineSelect`: two-loader pattern — public endpoints for sellers (no admin 403); admin endpoints only when `allowCreate=true`
+- `SellerProductsFilterDrawer`: replaced raw `<input>` fields with `CategoryInlineSelect` + `BrandInlineSelect`; price label "paise" → "₹ Rupees"
+- All 7 listing-type **create pages**: removed `redirect()` from `handleSave` (auto-save was navigating user away from the form)
+- All 7 listing-type **edit pages**: pre-fetch product via `getSellerProductAction` + map `initialValues` (forms were blank on load)
+- `getSellerProductAction`: new server action with seller ownership gate
+- Dashboard: +2 stat cards (Pending Payouts + Avg. Rating); grid `sm:grid-cols-3` for clean 2×3 layout
+- Dashboard API: fixed `activeListings` count (`status==="published"` not `"active"`)
+- `SellerOrdersView`: added `confirmed` / `delivered` / `cancelled` to status dropdown; quick Truck icon "mark shipped" row action button
+- **Bundles new**: rewrote client-only stub to use `StoreCreateProductShell` with `listingType="bundle"`
+- **Bundles edit**: created missing `[id]/edit/page.tsx`
+- `SellerProductShell`: added `"bundle"` to `ProductListingMode` union + label
+- **Offers page**: switched to `SellerOffersView` from main appkit entry (was `SellerOffersPanel` which doesn't exist)
+- **Storefront**: `isPublic` now reads from `store.isPublic` field (was deriving from `status` — desync after save)
+
+**Remaining S-STORE work (not yet browser-verified):** bids grouping UI, reviews bulk-reply flow, grouped listings feature, listing templates upgrade, analytics alerts, addresses DataTable view, WhatsApp preview, form shell 60/40 split migration.
 
 ---
 
-### ✅ LAST COMPLETED — S-STORE-foundation+sessions (2026-05-18): Full sprint scaffold — foundation + 13 sub-sessions substantially complete
+### ✅ LAST COMPLETED — S-STORE sprint (2026-05-18): Full sprint scaffold — foundation + 13 sub-sessions substantially complete
 
 CROSS primitives (all ✅):
 - `QuickCreateModal` (appkit/src/ui/components/) — slide-over modal with `onSave(doc)` semantic contract
