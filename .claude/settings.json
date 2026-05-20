@@ -49,7 +49,8 @@
       "Bash(dir \"d:\\\\proj\\\\letitrip.in\\\\appkit\\\\src\\\\_internal\\\\client\\\\features\\\\seller\" /s /b)",
       "Read(//c/Users/mohsi/.claude/plans/**)",
       "Bash(node scripts/audit-root-cause.mjs)",
-      "Bash(echo \"exit=$?\")"
+      "Bash(echo \"exit=$?\")",
+      "Bash(node scripts/audit-gitignore.mjs)"
     ],
     "additionalDirectories": [
       "d:\\proj\\letitrip.in\\src\\app\\api\\store\\reviews\\[id]",
