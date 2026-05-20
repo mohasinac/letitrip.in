@@ -13,6 +13,10 @@ import {
 } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
+import {
+  callListingProcessor,
+  type ListingProcessorResponse,
+} from "@/lib/listing-processor";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 20;
@@ -21,54 +25,6 @@ const DEFAULT_SORTS = sortBy(PRODUCT_FIELDS.CREATED_AT);
 /** Matches the Cache-Control used by listingProcessor on Firebase side. */
 const PUBLIC_LISTING_CACHE_CONTROL =
   "public, max-age=60, s-maxage=120, stale-while-revalidate=60";
-
-interface ListingProcessorResponse {
-  items: unknown[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  hasMore: boolean;
-  cursor: string | null;
-}
-
-async function callListingProcessor(
-  collection: "products",
-  args: {
-    filters: string;
-    sorts: string;
-    page: number;
-    pageSize: number;
-    cursor: string | null;
-    baseOpts?: { status?: string; storeId?: string; categoriesIn?: string[] };
-  },
-): Promise<ListingProcessorResponse | null> {
-  const url = process.env.FIREBASE_FUNCTION_LISTING_URL;
-  const secret = process.env.LETITRIP_INTERNAL_SECRET;
-  if (!url || !secret) return null;
-  const upstream = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-internal-secret": secret,
-    },
-    body: JSON.stringify({
-      collection,
-      f: args.filters,
-      s: args.sorts,
-      p: args.page,
-      ps: args.pageSize,
-      cursor: args.cursor ?? undefined,
-      baseOpts: args.baseOpts,
-    }),
-  });
-  if (!upstream.ok) {
-    throw new Error(
-      `listingProcessor returned ${upstream.status}: ${await upstream.text().catch(() => "")}`,
-    );
-  }
-  return (await upstream.json()) as ListingProcessorResponse;
-}
 
 function param(url: URL, key: string): string | null {
   return url.searchParams.get(key);
