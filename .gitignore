@@ -123,3 +123,4 @@ GEMINI.md
 *.heapsnapshot
 functions/.npmrc
 functions/.npmrc
+functions/.env.letitrip-in-app
