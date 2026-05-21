@@ -180,7 +180,19 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-PL2-toolbar-toggles (2026-05-21): ListingToolbarToggle primitive + show-sold/ended/closed pill toggles on 5 views
+### ✅ LAST COMPLETED — S-page-form-audit-sweep (2026-05-21): 7-wave admin/store/user page & form audit sweep
+
+**Done this session:**
+- W4: 5 new SellerView components (StoreCategoriesView, TemplatesView, PayoutMethodsView, ShippingConfigsView, GoogleReviewsView) + Google Reviews removed from SellerStorefrontView
+- W5: 4 listing-type views (BundlesView, ClassifiedView, DigitalCodesView, LiveView) + page shim redirects replaced
+- W6: StepForm added to SellerStorefrontView (4 steps), SellerShippingView (3 steps), SellerPayoutSettingsView (3 steps)
+- W7: StepForm added to AdminBlogEditorView (4 steps), AdminEventEditorView (4 steps); FormFieldBuilder extracted as standalone component
+- DataTable/useBulkSelection/RowActionMenu/ConfirmDeleteModal API fixes across all new files
+- All 9 new components exported from appkit index.ts. `npm run check` exits 0.
+
+---
+
+### ✅ PREVIOUS LAST — S-PL2-toolbar-toggles (2026-05-21): ListingToolbarToggle primitive + show-sold/ended/closed pill toggles on 5 views
 
 **Done this session:**
 - `ListingToolbar`: new `ListingToolbarToggle` interface + `toggles?: ListingToolbarToggle[]` prop renders pill buttons (active = primary bg via CSS var) between reset and `extra`; exported from `ui/index.ts`

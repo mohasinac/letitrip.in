@@ -1,6 +1,7 @@
-import { redirect } from "@/i18n/navigation";
+"use client";
 
-// S-STORE-2-F
+import { SellerBundlesView } from "@mohasinac/appkit/client";
+
 export default function Page() {
-  redirect("/store/products?listingType=bundle");
+  return <SellerBundlesView />;
 }

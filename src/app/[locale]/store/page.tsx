@@ -1,11 +1,14 @@
 "use client";
+import { useEffect, useState } from "react";
 import {
   StoreDashboardView,
+  SellerTopProducts,
   useStoreDashboard,
   ROUTES,
 } from "@mohasinac/appkit/client";
 import { TrendingUp, ShoppingBag, Clock, Package, Plus, BarChart2, Wallet, Store, Star } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { API_ROUTES } from "@/constants";
 
 // Brand gradient mirrors the SiteLogo wordmark — using CSS var tokens
 const BRAND_GRAD = "linear-gradient(135deg,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)";
@@ -56,8 +59,28 @@ function StatCard({
   );
 }
 
+interface TopProduct {
+  productId: string;
+  title: string;
+  revenue: number;
+  orders: number;
+  mainImage?: string;
+}
+
+function rupees(paise: number) {
+  return `₹${(paise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`;
+}
+
 export default function Page() {
   const { stats, isLoading } = useStoreDashboard();
+  const [topProducts, setTopProducts] = useState<TopProduct[]>([]);
+
+  useEffect(() => {
+    fetch(API_ROUTES.STORE.ANALYTICS)
+      .then((r) => r.json())
+      .then((json) => { if (json?.data?.topProducts) setTopProducts(json.data.topProducts); })
+      .catch(() => {});
+  }, []);
 
   return (
     <StoreDashboardView
@@ -125,6 +148,15 @@ export default function Page() {
           ))}
         </div>
       )}
+      renderTopProducts={() =>
+        topProducts.length > 0 ? (
+          <SellerTopProducts
+            products={topProducts}
+            formatRevenue={rupees}
+            labels={{ title: "Top Products (30d)" }}
+          />
+        ) : null
+      }
     />
   );
 }
