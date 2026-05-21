@@ -2,7 +2,7 @@
  * pw-13 — Store CRUD: create + edit operations from the seller dashboard.
  *
  * Creates a new product (draft), a new coupon, edits both.
- * Run as seller (pokemon palace — aryan@pokemonpalace.in).
+ * Run as seller (kaiba corp — kaiba@kaibalandmark.in).
  */
 
 import { getContext, localizedUrl, gotoAndWait, fetchFirstId, getCookieHeader } from "./_pw-setup.mjs";

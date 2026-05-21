@@ -8,7 +8,12 @@ import {
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
-const UNAVAILABLE_STATUSES = new Set(["sold", "out_of_stock", "discontinued"]);
+function isProductAvailable(p: { status?: string; isSold?: boolean; availableQuantity?: number } | null): boolean {
+  if (!p) return false;
+  if (p.isSold) return false;
+  if (typeof p.availableQuantity === "number" && p.availableQuantity <= 0) return false;
+  return p.status === "published";
+}
 
 export const POST = withProviders(
   createRouteHandler({
@@ -30,7 +35,7 @@ export const POST = withProviders(
       if (productIds.length > 0) {
         const products = await Promise.all(productIds.map((pid) => productRepository.findById(pid)));
         const allAvailable = products.every(
-          (p) => p && p.status && !UNAVAILABLE_STATUSES.has(p.status),
+          (p) => isProductAvailable(p as any),
         );
         bundleStockStatus = allAvailable ? "in_stock" : "out_of_stock";
       }

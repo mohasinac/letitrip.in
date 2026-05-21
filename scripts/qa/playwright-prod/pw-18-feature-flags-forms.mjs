@@ -313,7 +313,7 @@ export async function run() {
       // POST /api/admin/addresses — create a test address
       const postBody = {
         ownerType: "user",
-        ownerId: "user-ravi-kumar",
+        ownerId: "user-yugi-muto",
         label: "pw-18 smoke",
         fullName: "Playwright Smoke",
         phone: "9000000018",

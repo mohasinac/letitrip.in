@@ -18,6 +18,9 @@ export const API_ROUTES = {
   ADS: {
     BY_SLOT: (slotId: string) => `/api/ads?slot=${encodeURIComponent(slotId)}`,
   },
+  AUCTIONS: {
+    BUY_NOW: (id: string) => `/api/auctions/${id}/buy-now`,
+  },
   BRANDS: {
     LIST: "/api/brands",
     BY_ID: (id: string) => `/api/brands/${id}`,

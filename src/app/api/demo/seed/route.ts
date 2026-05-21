@@ -30,7 +30,7 @@ import {
   sessionsSeedData,
   productsStandardSeedData,
   productsAuctionsSeedData,
-  productsPreOrdersSeedData,
+  productsPreordersSeedData,
   productsPrizeDrawsSeedData,
   ordersSeedData,
   reviewsSeedData,
@@ -205,15 +205,11 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   adminNotifications: "adminNotifications",
 };
 
-// SB-UNI-A 2026-05-13 — addresses merges both legacy seed files; each entry
-// is tagged with the canonical ownerType + ownerId before write.
+// SB-UNI-A 2026-05-13 — addressesSeedData has ownerType+ownerId set.
+// storeAddressesSeedData uses legacy storeSlug — map to ownerType/ownerId.
 const mergedAddressesSeedData = [
-  ...addressesSeedData.map((a) => ({
-    ...a,
-    ownerType: "user" as const,
-    ownerId: a.userId,
-  })),
-  ...storeAddressesSeedData.map((a) => ({
+  ...addressesSeedData,
+  ...storeAddressesSeedData.map((a: any) => ({
     ...a,
     ownerType: "store" as const,
     ownerId: a.storeSlug,
@@ -228,7 +224,7 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   products: [
     ...productsStandardSeedData,
     ...productsAuctionsSeedData,
-    ...productsPreOrdersSeedData,
+    ...productsPreordersSeedData,
     ...productsPrizeDrawsSeedData,
   ],
   orders: ordersSeedData,

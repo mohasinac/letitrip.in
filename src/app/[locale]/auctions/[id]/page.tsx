@@ -6,7 +6,7 @@ import {
   auctionJsonLd,
   breadcrumbJsonLd,
 } from "@mohasinac/appkit";
-import { placeBidAction } from "@/actions/bid.actions";
+import { placeBidAction, buyNowAction } from "@/actions/bid.actions";
 import { generateAuctionMetadata } from "@/constants";
 
 export const revalidate = 30;
@@ -78,6 +78,7 @@ export default async function Page({ params }: Props) {
         initialAuction={auction}
         productFeatures={productFeatures}
         onPlaceBid={placeBidAction}
+        onBuyNow={buyNowAction.bind(null, id)}
       />
     </>
   );

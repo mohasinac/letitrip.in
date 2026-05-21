@@ -36,22 +36,18 @@ export const POST = withProviders(
           stale.push(productId);
           return;
         }
-        const { status, availableQuantity } = result.value;
+        const { status, availableQuantity, isSold } = result.value;
 
         if (
           status === ProductStatusValues.ARCHIVED ||
-          status === ProductStatusValues.DISCONTINUED ||
-          status === ProductStatusValues.DRAFT
+          status === ProductStatusValues.DRAFT ||
+          status === ProductStatusValues.IN_REVIEW
         ) {
-          // Seller/admin explicitly hid or removed the listing.
           stale.push(productId);
         } else if (
-          status === ProductStatusValues.SOLD ||
-          status === ProductStatusValues.OUT_OF_STOCK ||
-          (status === ProductStatusValues.PUBLISHED && (availableQuantity ?? 0) === 0)
+          isSold ||
+          (availableQuantity !== undefined && availableQuantity <= 0)
         ) {
-          // Sold (auction won), out of stock, or stock fully depleted — item may
-          // return (restock, relist), so preserve in wishlist.
           moveable.push(productId);
         }
       });

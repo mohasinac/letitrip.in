@@ -106,11 +106,11 @@ export async function run() {
     // ── Search submit ────────────────────────────────────────────────────────
     if (searchCount > 0) {
       try {
-        await search.first().fill("pokemon");
+        await search.first().fill("blue eyes");
         await search.first().press("Enter");
         await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => {});
         const finalUrl = page.url();
-        const hasQuery = finalUrl.includes("pokemon") || finalUrl.includes("q=");
+        const hasQuery = finalUrl.includes("blue") || finalUrl.includes("q=");
         rec(`${path}: search updates URL or navigates`, hasQuery || true, finalUrl); // soft pass
       } catch (e) {
         rec(`${path}: search submits without error`, false, e.message);

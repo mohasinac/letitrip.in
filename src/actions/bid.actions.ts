@@ -16,12 +16,14 @@ import {
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
 import {
   placeBid,
+  buyNowAuction,
   listBidsByProduct,
   getBidById,
 } from "@mohasinac/appkit";
 import type {
   PlaceBidInput,
   PlaceBidResult,
+  BuyNowAuctionResult,
 } from "@mohasinac/appkit";
 import type { BidDocument } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
@@ -90,5 +92,46 @@ export async function getBidByIdAction(
   id: string,
 ): Promise<BidDocument | null> {
   return getBidById(id);
+}
+
+export type BuyNowActionResult =
+  | { ok: true; data: BuyNowAuctionResult }
+  | { ok: false; error: string; code?: string };
+
+export async function buyNowAction(
+  productId: string,
+): Promise<BuyNowActionResult> {
+  try {
+    const user = await requireAuthUser();
+
+    const rl = await rateLimitByIdentifier(
+      `auction:buynow:${user.uid}`,
+      RateLimitPresets.STRICT,
+    );
+    if (!rl.success)
+      return { ok: false, error: "Too many requests. Please slow down." };
+
+    const data = await buyNowAuction(
+      user.uid,
+      (user as any).displayName ?? user.email ?? "Unknown User",
+      user.email ?? "",
+      { productId },
+    );
+    return { ok: true, data };
+  } catch (err: unknown) {
+    if (err instanceof AuthorizationError)
+      return { ok: false, error: "Please sign in to purchase." };
+    if (err instanceof ValidationError) {
+      const veData = "data" in err ? (err as { data?: unknown }).data : undefined;
+      return {
+        ok: false,
+        error: err.message,
+        code: (veData as { code?: string } | undefined)?.code,
+      };
+    }
+    if (err instanceof Error && err.message)
+      return { ok: false, error: err.message };
+    return { ok: false, error: "Buy Now failed. Please try again." };
+  }
 }
 

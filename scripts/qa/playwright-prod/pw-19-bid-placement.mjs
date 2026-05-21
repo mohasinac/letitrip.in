@@ -23,7 +23,7 @@ const results = [];
 const rec = (name, ok, detail) => results.push({ name, ok, detail });
 
 export async function run() {
-  const ctx = await getContext("user");
+  const ctx = await getContext("buyer");
   const adminCtx = await getContext("admin");
   const cookieHeader = await getCookieHeader(ctx, BASE_URL);
 

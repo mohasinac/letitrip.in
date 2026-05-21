@@ -74,10 +74,9 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
     }
 
     if (
-      product.status === ProductStatusValues.OUT_OF_STOCK ||
-      product.status === ProductStatusValues.DISCONTINUED ||
-      product.status === ProductStatusValues.SOLD ||
-      product.status === ProductStatusValues.DRAFT
+      product.status !== ProductStatusValues.PUBLISHED ||
+      product.isSold ||
+      (product.availableQuantity !== undefined && product.availableQuantity <= 0)
     ) {
       return ApiErrors.badRequest(ERROR_MESSAGES.CART.OUT_OF_STOCK);
     }

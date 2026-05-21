@@ -35,8 +35,8 @@ export const POST = withProviders(
         // (restock, relist after auction, pre-order reopened) so we keep them.
         if (
           status === ProductStatusValues.ARCHIVED ||
-          status === ProductStatusValues.DISCONTINUED ||
-          status === ProductStatusValues.DRAFT
+          status === ProductStatusValues.DRAFT ||
+          status === ProductStatusValues.IN_REVIEW
         ) {
           staleProductIds.push(item.productId);
         }

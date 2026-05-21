@@ -22,7 +22,7 @@ const results = [];
 const rec = (name, ok, detail) => results.push({ name, ok, detail });
 
 export async function run() {
-  const ctx = await getContext("user");
+  const ctx = await getContext("buyer");
   const cookieHeader = await getCookieHeader(ctx, BASE_URL);
 
   // ── A — Prize draw listing page ───────────────────────────────────────────

@@ -6,7 +6,7 @@
  * Also checks specific content per page type.
  */
 
-import { getContext, localizedUrl, withErrorCollector, fetchFirstId, getCookieHeader } from "./_pw-setup.mjs";
+import { getContext, localizedUrl, withErrorCollector, fetchFirstId, getCookieHeader, gotoAndWait } from "./_pw-setup.mjs";
 import { BASE_URL } from "../prod-suites/_fixtures.mjs";
 
 const results = [];
@@ -160,7 +160,11 @@ async function buildDynamicPaths() {
   paths.push({ path: "/profile/user-admin-letitrip", name: "user profile" });
 
   // Search with query
-  paths.push({ path: "/search?q=pokemon", name: "search with query" });
+  paths.push({ path: "/search?q=blue+eyes", name: "search with query" });
+
+  // YGO-specific known slugs
+  paths.push({ path: "/blog/blog-identify-1st-edition-yugioh", name: "blog: 1st edition guide" });
+  paths.push({ path: "/products/bundle-exodia-complete-set", name: "bundle: exodia set" });
 
   return paths;
 }
@@ -278,7 +282,7 @@ export async function run() {
 
   // ── Checkout OTP consent step checkpoint ────────────────────────────────
   {
-    const userCtx = await getContext("user");
+    const userCtx = await getContext("buyer");
     const page = await userCtx.newPage();
     page.setDefaultTimeout(20000);
     const label = "checkout-otp-consent";

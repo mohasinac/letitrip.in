@@ -158,11 +158,11 @@ export async function run() {
 
   // ── PRODUCTS — category filter ────────────────────────────────────────────
   // probe-only: categorySlug param may not be wired; returning 0 items is valid
-  await probe("products category=trading-cards", "/api/products?pageSize=10&category=category-trading-cards");
+  await probe("products category=trading-cards", "/api/products?pageSize=10&category=category-singles");
 
   // ── PRODUCTS — brand filter ───────────────────────────────────────────────
   // probe-only: brand filter may not be wired; returning 0 items is valid
-  await probe("products brand=Pokemon", "/api/products?pageSize=10&brand=Pokemon");
+  await probe("products brand=Konami", "/api/products?pageSize=10&brand=Konami");
 
   // ── PRODUCTS — price range filter ────────────────────────────────────────
   const minP = 100000;
@@ -229,7 +229,7 @@ export async function run() {
   // ── PRODUCTS — title query (`q`) ──────────────────────────────────────────
   // probe-only: Firestore contains-CI is not natively supported; server returns
   // a best-effort match that may include non-matching items.
-  await probe("products q=pokemon", "/api/products?pageSize=12&q=pokemon");
+  await probe("products q=dark+magician", "/api/products?pageSize=12&q=dark+magician");
 
   // ── PRODUCTS — sort order ─────────────────────────────────────────────────
   const sortAsc = await request("GET", `/api/products?pageSize=10&sorts=${sortBy("price", "ASC")}`);
@@ -399,7 +399,7 @@ export async function run() {
 
   // ── SEARCH ────────────────────────────────────────────────────────────────
   // probe-only: Firestore full-text search is best-effort and may return non-matching items
-  await probe("search pokemon", "/api/search?q=pokemon&pageSize=12");
+  await probe("search dark magician", "/api/search?q=dark+magician&pageSize=12");
   await probe("search empty q", "/api/search?q=&pageSize=12");
   await probe("search nonsense", "/api/search?q=xyzdoesnotexist&pageSize=12");
 
@@ -439,7 +439,7 @@ export async function run() {
 
   // q search — probe-only: storeName search uses Firestore tokenised search
   // which may not strictly filter to the query term.
-  await probe("stores q=pokemon", "/api/stores?q=pokemon&pageSize=12");
+  await probe("stores q=dark+magician", "/api/stores?q=dark+magician&pageSize=12");
 
   // Single-store sub-listings — verify storeId in returned products
   const oneStore = SEED.storesWithProducts[0];
@@ -577,7 +577,7 @@ export async function run() {
   assertSort("blog sort=-publishedAt descending", itemsOf(blogSortDesc.body), "publishedAt", "desc");
 
   // q search
-  await probe("blog q=pokemon", "/api/blog?q=pokemon&perPage=12");
+  await probe("blog q=dark+magician", "/api/blog?q=dark+magician&perPage=12");
 
   // ── EVENTS ────────────────────────────────────────────────────────────────
   // Note: events always enforces status==active in the public listing API
@@ -614,7 +614,7 @@ export async function run() {
   assertSort("events sort=-startsAt descending", itemsOf(eventsSortDesc.body), "startsAt", "desc");
 
   // q search — events API may return 500 if q param is unsupported; allow both
-  await probe("events q=pokemon", "/api/events?q=pokemon&pageSize=12", (r) => [200, 500].includes(r.status));
+  await probe("events q=dark+magician", "/api/events?q=dark+magician&pageSize=12", (r) => [200, 500].includes(r.status));
 
   // ── REVIEWS ───────────────────────────────────────────────────────────────
   // featured mode — returns array directly at body.data (not wrapped in items)
@@ -680,7 +680,7 @@ export async function run() {
   );
 
   // q search in latest mode
-  await probe("reviews q=pokemon (latest)", "/api/reviews?latest=true&q=pokemon&pageSize=12");
+  await probe("reviews q=dark+magician (latest)", "/api/reviews?latest=true&q=dark+magician&pageSize=12");
 
   // Product-specific reviews — probe-only: product may have 0 reviews in prod
   if (pid) {
@@ -702,7 +702,7 @@ export async function run() {
 
   // ── SIEVE DIFF: differentiation checks ───────────────────────────────────
   // sieveDiff: search — probe-only (Firestore full-text search returns best-effort results)
-  await probe("search q=pokemon (diff probe)", "/api/search?q=pokemon&pageSize=12");
+  await probe("search q=dark+magician (diff probe)", "/api/search?q=dark+magician&pageSize=12");
   await probe("search q=hotwheels (diff probe)", "/api/search?q=hotwheels&pageSize=12");
 
   await sieveDiff(

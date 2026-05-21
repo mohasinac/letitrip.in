@@ -68,7 +68,7 @@ export async function run() {
   // Search page renders results
   {
     const page = await ctx.newPage();
-    await page.goto(localizedUrl("/search/pokemon/tab/products/sort/relevance/page/1"), {
+    await page.goto(localizedUrl("/search/dark+magician/tab/products/sort/relevance/page/1"), {
       waitUntil: "domcontentloaded",
       timeout: 30000,
     });

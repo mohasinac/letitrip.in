@@ -69,24 +69,44 @@ export const SLUG_PREFIXES = Object.freeze({
 // Mirrors appkit/src/seed/categories-seed-data.ts (root tier). Smoke suites
 // use this to verify tier=0 results match the seeded set exactly.
 export const SEEDED_TIER0_CATEGORIES = Object.freeze([
-  "category-action-figures",
-  "category-trading-cards",
-  "category-diecast-vehicles",
-  "category-spinning-tops",
-  "category-model-kits",
-  "category-vintage-rare",
+  "category-singles",
+  "category-sealed-products",
+  "category-graded-cards",
+  "category-duel-monsters-era",
+  "category-gx-era",
 ]);
 
 // ── Seeded stores with products ──────────────────────────────────────────────
-// Mirrors appkit/src/seed/stores-seed-data.ts (subset that has products).
+// Mirrors appkit/src/seed/stores-seed-data.ts — 2 YGO stores (admin + Kaiba).
 export const SEEDED_STORES_WITH_PRODUCTS = Object.freeze([
-  "store-pokemon-palace",
-  "store-diecast-depot",
-  "store-cardgame-hub",
-  "store-beyblade-arena",
-  "store-tokyo-toys-india",
-  "store-gundam-galaxy",
+  "store-letitrip-official",
+  "store-kaiba-corp-cards",
 ]);
+
+// ── Seeded brands ────────────────────────────────────────────────────────────
+// Mirrors categories-seed-data.ts brand rows (categoryType: "brand").
+export const SEEDED_BRANDS = Object.freeze([
+  "brand-konami",
+  "brand-upper-deck",
+  "brand-bandai",
+  "brand-toei-animation",
+  "brand-score-entertainment",
+]);
+
+// ── Expected seed counts ─────────────────────────────────────────────────────
+// Mirrors actual seed array lengths. Used by seed-health suites to verify
+// GET /api/demo/seed returns correct totals.
+export const EXPECTED_SEED_COUNTS = Object.freeze({
+  products_standard: 59,
+  auctions: 20,
+  preorders: 5,
+  bundles: 8,
+  categories: 25,
+  brands: 5,
+  stores: 2,
+  users: 3,
+  orders: 50,
+});
 
 // ── Currency ────────────────────────────────────────────────────────────────
 // All monetary fields are stored in INR paise (1 INR = 100 paise). Used by
@@ -196,9 +216,8 @@ export const LISTING_COLLECTIONS = Object.freeze({
 export const PRODUCT_STATUS = Object.freeze({
   DRAFT: "draft",
   PUBLISHED: "published",
-  OUT_OF_STOCK: "out_of_stock",
-  DISCONTINUED: "discontinued",
-  SOLD: "sold",
+  IN_REVIEW: "in_review",
+  ARCHIVED: "archived",
 });
 
 // ── Product condition values ────────────────────────────────────────────────

@@ -77,6 +77,15 @@ const SUITE_TIMEOUTS_MS = {
   "pw-16": 2 * 60_000,  // accessibility audit (~8 pages × 8 checks)
   "pw-17": 4 * 60_000,  // media upload flow (sign+PUT+finalize × 3 uploads + error cases)
   "pw-18": 3 * 60_000,  // feature flags grouping + admin CRUD form card sections + address API
+  "pw-24": 10 * 60_000,  // seller comprehensive workflows (22 flows A-V: products CRUD, bulk, TypeDropdown, filter, StepForms, vacation toggle)
+  "pw-25": 8 * 60_000,  // buyer comprehensive workflows (16 flows A-P: browse, wishlist, cart, checkout, bid, pre-order, reviews, notifications, profile, history)
+  "pw-26": 10 * 60_000,  // admin comprehensive workflows (22 flows A-V: user ban/restore, store approval, product feature/delete, blog/events/categories CRUD, coupons, payouts, moderation, site settings)
+  "pw-27": 4 * 60_000,  // bundle detail (items/savings/cart)
+  "pw-28": 4 * 60_000,  // inline variant selector (group parent/child)
+  "pw-29": 4 * 60_000,  // category detail (children/chips/breadcrumbs)
+  "pw-30": 6 * 60_000,  // seller create-to-purchase flow
+  "pw-31": 5 * 60_000,  // auction bid flow
+  "pw-32": 5 * 60_000,  // pre-order flow
 };
 
 console.log(

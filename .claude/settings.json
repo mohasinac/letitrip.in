@@ -50,13 +50,17 @@
       "Read(//c/Users/mohsi/.claude/plans/**)",
       "Bash(node scripts/audit-root-cause.mjs)",
       "Bash(echo \"exit=$?\")",
-      "Bash(node scripts/audit-gitignore.mjs)"
+      "Bash(node scripts/audit-gitignore.mjs)",
+      "Read(//c/Users/mohsi/.claude/**)",
+      "Bash(git status *)"
     ],
     "additionalDirectories": [
       "d:\\proj\\letitrip.in\\src\\app\\api\\store\\reviews\\[id]",
       "C:\\Users\\mohsi\\Documents",
-      "c:\\Users\\mohsi\\.claude\\plans"
+      "c:\\Users\\mohsi\\.claude\\plans",
+      "C:\\Users\\mohsi\\.claude"
     ]
   },
+  "model": "claude-opus-4-6",
   "hooks": {}
 }

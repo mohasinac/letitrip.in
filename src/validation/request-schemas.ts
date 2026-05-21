@@ -189,7 +189,7 @@ export const productCreateSchema = productBaseSchema
 
 export const productUpdateSchema = productBaseSchema.partial().extend({
   status: z
-    .enum(["draft", "published", "out_of_stock", "discontinued", "sold"])
+    .enum(["draft", "published", "in_review", "archived"])
     .optional(),
   version: z.number().optional(),
   featured: z.boolean().optional(),

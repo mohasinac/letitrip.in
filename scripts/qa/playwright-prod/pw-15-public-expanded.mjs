@@ -103,7 +103,7 @@ async function testAuctionListing(ctx) {
 async function testSearchPage(ctx) {
   const page = await ctx.newPage();
   try {
-    await gotoAndWait(page, localizedUrl("/search?q=pokemon"));
+    await gotoAndWait(page, localizedUrl("/search?q=dark+magician"));
     const searchBar = await page.locator('input[type=search], input[name=q], input[placeholder*="Search" i]').count();
     rec("/search: search bar", searchBar > 0, `n=${searchBar}`);
 

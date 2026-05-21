@@ -182,8 +182,8 @@ export async function run() {
   assertSort("admin stores sort=storeName ascending", itemsOf(storSortName.body), "storeName", "asc");
 
   // admin stores q search — probe-only (both return 500; q filter unsupported or unindexed)
-  await probe("admin stores q=pokemon", "/api/admin/stores?pageSize=12&q=pokemon", {}, (r) => [200, 500].includes(r.status));
-  await probe("admin stores q=diecast", "/api/admin/stores?pageSize=12&q=diecast", {}, (r) => [200, 500].includes(r.status));
+  await probe("admin stores q=kaiba", "/api/admin/stores?pageSize=12&q=kaiba", {}, (r) => [200, 500].includes(r.status));
+  await probe("admin stores q=letitrip", "/api/admin/stores?pageSize=12&q=letitrip", {}, (r) => [200, 500].includes(r.status));
 
   // ── REVIEWS ─────────────────────────────────────────────────────────────────
   const revList = await probe("admin reviews list", "/api/admin/reviews?pageSize=12");

@@ -5,8 +5,8 @@
  *   SMOKE_BASE_URL              default https://www.letitrip.in
  *   SMOKE_LOCALE                default en
  *   SMOKE_ADMIN_EMAIL/PASSWORD  default admin@letitrip.in / TempPass123!
- *   SMOKE_SELLER_EMAIL/PASSWORD default seller-pokemon@letitrip.in / TempPass123!
- *   SMOKE_BUYER_EMAIL/PASSWORD  default buyer-ravi@letitrip.in / TempPass123!
+ *   SMOKE_SELLER_EMAIL/PASSWORD default kaiba@kaibalandmark.in / TempPass123!
+ *   SMOKE_BUYER_EMAIL/PASSWORD  default yugi@duelkingdom.in / TempPass123!
  *   FIREBASE_ADMIN_PROJECT_ID / FIREBASE_ADMIN_CLIENT_EMAIL / FIREBASE_ADMIN_PRIVATE_KEY
  *     — service-account creds for the OTP bypass.
  */
@@ -22,12 +22,12 @@ export const ROLES = {
     expectedRole: "admin",
   },
   seller: {
-    email: process.env.SMOKE_SELLER_EMAIL || "aryan@pokemonpalace.in",
+    email: process.env.SMOKE_SELLER_EMAIL || "kaiba@kaibalandmark.in",
     password: process.env.SMOKE_SELLER_PASSWORD || "TempPass123!",
     expectedRole: "seller",
   },
   buyer: {
-    email: process.env.SMOKE_BUYER_EMAIL || "rahul.sharma@gmail.com",
+    email: process.env.SMOKE_BUYER_EMAIL || "yugi@duelkingdom.in",
     password: process.env.SMOKE_BUYER_PASSWORD || "TempPass123!",
     expectedRole: "buyer",
   },
