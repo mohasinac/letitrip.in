@@ -5937,9 +5937,6 @@
       ]
     },
     {
-      "__comment": "=== Phase 2C: Two-Axis Status Model indexes (isSold) ==="
-    },
-    {
       "collectionGroup": "products",
       "queryScope": "COLLECTION",
       "fields": [
@@ -6094,9 +6091,6 @@
       ]
     },
     {
-      "__comment": "=== Phase 2D: Standard product sort indexes ==="
-    },
-    {
       "collectionGroup": "products",
       "queryScope": "COLLECTION",
       "fields": [
@@ -6215,9 +6209,6 @@
           "order": "DESCENDING"
         }
       ]
-    },
-    {
-      "__comment": "=== Phase 2D: Auction sort indexes ==="
     },
     {
       "collectionGroup": "products",
@@ -6358,9 +6349,6 @@
       ]
     },
     {
-      "__comment": "=== Phase 2D: Pre-order sort indexes ==="
-    },
-    {
       "collectionGroup": "products",
       "queryScope": "COLLECTION",
       "fields": [
@@ -6433,9 +6421,6 @@
       ]
     },
     {
-      "__comment": "=== Phase 2D: Bundle sort indexes ==="
-    },
-    {
       "collectionGroup": "products",
       "queryScope": "COLLECTION",
       "fields": [
@@ -6476,9 +6461,6 @@
       ]
     },
     {
-      "__comment": "=== Phase 5B: Product searchTokens indexes ==="
-    },
-    {
       "collectionGroup": "products",
       "queryScope": "COLLECTION",
       "fields": [
@@ -6531,9 +6513,6 @@
           "order": "DESCENDING"
         }
       ]
-    },
-    {
-      "__comment": "=== Phase 2D: Store sort indexes ==="
     },
     {
       "collectionGroup": "stores",
@@ -6624,9 +6603,6 @@
       ]
     },
     {
-      "__comment": "=== Phase 2D: Review sort indexes ==="
-    },
-    {
       "collectionGroup": "reviews",
       "queryScope": "COLLECTION",
       "fields": [
@@ -6701,9 +6677,6 @@
       ]
     },
     {
-      "__comment": "=== Phase 2D: Event sort indexes ==="
-    },
-    {
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
@@ -6758,9 +6731,6 @@
           "order": "DESCENDING"
         }
       ]
-    },
-    {
-      "__comment": "=== Phase 2D: Blog post sort indexes ==="
     },
     {
       "collectionGroup": "blogPosts",
