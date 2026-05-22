@@ -17,5 +17,5 @@ export async function buyBundleAction(input: { bundleSlug: string }): Promise<vo
   const user = await requireAuthUser();
   await rateLimitByIdentifier(`bundle:buy:${user.uid}`, RateLimitPresets.STRICT);
   await addBundleToCartAction(user.uid, input.bundleSlug);
-  redirect(String(ROUTES.USER.CHECKOUT));
+  redirect(`${String(ROUTES.USER.CHECKOUT)}?directItem=${encodeURIComponent(input.bundleSlug)}&type=bundle`);
 }

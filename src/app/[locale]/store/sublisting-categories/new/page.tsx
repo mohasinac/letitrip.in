@@ -85,7 +85,7 @@ export default function Page() {
             placeholder="e.g. PSA 10, 108/120, WOTC, STH"
             className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
           />
-          <Text className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
+          <Text className="mt-1 text-xs text-zinc-400 dark:text-zinc-400">
             Grade, card number, set code, or series. Optional but helps buyers find matches.
           </Text>
         </>

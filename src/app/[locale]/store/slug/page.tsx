@@ -119,7 +119,7 @@ export default function Page() {
       ? "text-emerald-600 dark:text-emerald-400"
       : checkState === "taken" || checkState === "invalid"
       ? "text-red-600 dark:text-red-400"
-      : "text-zinc-400 dark:text-zinc-500";
+      : "text-zinc-400 dark:text-zinc-400";
 
   return (
     <Div className="mx-auto max-w-2xl">
@@ -193,7 +193,7 @@ function renderSlugInput({ newSlug, checkState, checkMessage, checkColor, handle
         </Text>
       )}
       {checkState === "checking" && !checkMessage && (
-        <Text className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">Checking availability…</Text>
+        <Text className="mt-1 text-xs text-zinc-400 dark:text-zinc-400">Checking availability…</Text>
       )}
       {checkState === "available" && !checkMessage && (
         <Text className="mt-1 text-xs text-emerald-600 dark:text-emerald-400">This slug is available.</Text>

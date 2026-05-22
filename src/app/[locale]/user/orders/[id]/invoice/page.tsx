@@ -25,7 +25,7 @@ function renderInvoiceActionBar(id: string) {
     >
       <Link
         href={String(ROUTES.USER.ORDER_DETAIL(id))}
-        className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+        className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
       >
         ← Back to order
       </Link>
@@ -61,7 +61,7 @@ function renderInvoiceHeader(order: OrderData, orderDate: string) {
 function renderInvoiceAddress(a: NonNullable<OrderData["address"]>) {
   return (
     <Stack gap="xs" className="mb-6">
-      <Text className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 print:text-gray-500">
+      <Text className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 print:text-gray-500">
         Delivered to
       </Text>
       <Text className="text-sm text-zinc-800 dark:text-zinc-200 print:text-black">{a.line1}</Text>
@@ -87,7 +87,7 @@ function renderInvoiceItemsTable(order: OrderData) {
             <th
               key={h}
               className={[
-                "py-2 text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 print:text-gray-500",
+                "py-2 text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 print:text-gray-500",
                 i === 0 ? "text-left" : i === 1 ? "text-center" : "text-right",
               ].join(" ")}
             >
@@ -103,7 +103,7 @@ function renderInvoiceItemsTable(order: OrderData) {
               <td className="py-2.5 text-zinc-800 dark:text-zinc-200 print:text-black">
                 {item.title}
                 {item.attributes && Object.keys(item.attributes).length > 0 && (
-                  <span className="ml-1.5 text-zinc-400 dark:text-zinc-500 print:text-gray-500 text-xs">
+                  <span className="ml-1.5 text-zinc-400 dark:text-zinc-400 print:text-gray-500 text-xs">
                     ({Object.entries(item.attributes).map(([k, v]) => `${k}: ${v}`).join(", ")})
                   </span>
                 )}

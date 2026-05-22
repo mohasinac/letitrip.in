@@ -143,7 +143,7 @@ export default async function Page({
             />
             {promotedProducts.length === 0 && (
               <Div className="py-12 text-center">
-                <Text className="text-zinc-400 dark:text-zinc-500">
+                <Text className="text-zinc-400 dark:text-zinc-400">
                   No deals available right now. Check back soon!
                 </Text>
               </Div>
@@ -162,7 +162,7 @@ export default async function Page({
             />
             {featuredProducts.length === 0 && activeTab === "featured" && (
               <Div className="py-12 text-center">
-                <Text className="text-zinc-400 dark:text-zinc-500">
+                <Text className="text-zinc-400 dark:text-zinc-400">
                   No featured products right now. Check back soon!
                 </Text>
               </Div>

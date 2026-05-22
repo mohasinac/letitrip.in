@@ -60,7 +60,7 @@ export default function Page() {
           </Stack>
 
           <Stack gap="xs">
-            <Text className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+            <Text className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-400">
               What you get
             </Text>
             <Ul className="list-disc pl-5 text-sm text-zinc-700 dark:text-zinc-300 space-y-1">

@@ -58,7 +58,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
         <Row className="mb-2 items-center gap-2">
           <Link
             href={String(ROUTES.ADMIN.CAROUSELS)}
-            className="text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+            className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300"
           >
             ← Carousels
           </Link>

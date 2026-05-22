@@ -529,8 +529,8 @@ export const THEME_CONSTANTS = {
       textMuted: "text-zinc-500 dark:text-zinc-400",
       textWeak: "text-zinc-600 dark:text-zinc-400",
       textSubtle: "text-zinc-500 dark:text-zinc-500",
-      textIcon: "text-zinc-400 dark:text-zinc-500",
-      textFaint: "text-zinc-400 dark:text-zinc-500",
+      textIcon: "text-zinc-400 dark:text-zinc-400",
+      textFaint: "text-zinc-400 dark:text-zinc-400",
       brandHover:
         "text-zinc-900 dark:text-zinc-50 group-hover:text-zinc-600 dark:group-hover:text-zinc-300",
       navItemActive:
@@ -541,7 +541,7 @@ export const THEME_CONSTANTS = {
       iconBgInactive:
         "bg-transparent group-hover:bg-zinc-100 dark:group-hover:bg-slate-800",
       divider: "h-px flex-1 border-zinc-200 dark:border-slate-700",
-      sectionLabel: "text-zinc-400 dark:text-zinc-500",
+      sectionLabel: "text-zinc-400 dark:text-zinc-400",
       logoutBtn:
         "bg-zinc-100 dark:bg-slate-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-slate-700 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-400",
       ghostOutlineBtn:
@@ -717,7 +717,7 @@ export const THEME_CONSTANTS = {
   sectionHeader: {
     pill: "inline-flex items-center gap-2 rounded-full border border-primary-500/30 bg-primary-500/10 px-5 py-1.5 text-xs font-medium tracking-[0.2em] uppercase text-primary-700 dark:text-primary-400 backdrop-blur-sm",
     ornament:
-      "flex items-center gap-2 mt-1 text-zinc-400 dark:text-zinc-500 text-xs select-none",
+      "flex items-center gap-2 mt-1 text-zinc-400 dark:text-zinc-400 text-xs select-none",
   },
 
   /**

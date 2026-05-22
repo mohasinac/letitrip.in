@@ -96,7 +96,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
           <Div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-700 py-20 text-center">
             <Text as="span" className="text-4xl mb-3">📦</Text>
             <Text className="text-base font-semibold text-zinc-700 dark:text-zinc-300">No listings yet</Text>
-            <Text className="mt-1 text-sm text-zinc-400 dark:text-zinc-500">
+            <Text className="mt-1 text-sm text-zinc-400 dark:text-zinc-400">
               Check back soon — sellers are still adding items.
             </Text>
             <Link

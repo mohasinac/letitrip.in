@@ -58,7 +58,7 @@ function renderProfileViewMode({
         )}
         <Div className="space-y-0.5 min-w-0">
           <Text className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 truncate">
-            {resolvedName || <Text as="span" className="text-zinc-400 dark:text-zinc-500 italic">{namePlaceholder}</Text>}
+            {resolvedName || <Text as="span" className="text-zinc-400 dark:text-zinc-400 italic">{namePlaceholder}</Text>}
           </Text>
           <Text className="text-sm text-zinc-500 dark:text-zinc-400 truncate">{profile.email}</Text>
           {profile.phoneNumber && (
@@ -171,7 +171,7 @@ function renderProfileEditForm({
           placeholder="Tell buyers a little about yourself…"
           className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
         />
-        <Text className="text-right text-xs text-zinc-400 dark:text-zinc-500">{bio.length}/500</Text>
+        <Text className="text-right text-xs text-zinc-400 dark:text-zinc-400">{bio.length}/500</Text>
       </Div>
       <Div className="flex items-center justify-between rounded-lg border border-zinc-200 dark:border-slate-700 px-4 py-3">
         <>
