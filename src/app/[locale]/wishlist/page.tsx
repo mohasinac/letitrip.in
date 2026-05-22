@@ -256,7 +256,7 @@ export default function WishlistPage() {
           size="sm"
           onClick={handleRemoveSelected}
           disabled={isBulkRemoving}
-          className="bg-red-600 hover:bg-red-700"
+          className="bg-red-600 hover:bg-red-700 text-white"
         >
           {isBulkRemoving ? "Removing…" : `Remove ${selectedIds.size}`}
         </Button>

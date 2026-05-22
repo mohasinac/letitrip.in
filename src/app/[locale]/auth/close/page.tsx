@@ -38,12 +38,13 @@ export default function Page() {
     return (
       <Div className="flex min-h-screen items-center justify-center p-6 text-center">
         <Div className="space-y-3">
-          <Text className="text-lg font-semibold text-rose-600">Sign-in failed</Text>
-          <Text className="text-sm text-zinc-500">{decodeURIComponent(error)}</Text>
+          <Text className="text-lg font-semibold text-rose-600 dark:text-rose-400">Sign-in failed</Text>
+          <Text className="text-sm text-zinc-500 dark:text-zinc-400">{decodeURIComponent(error)}</Text>
           <Button
             type="button"
+            variant="outline"
             onClick={() => window.close()}
-            className="mt-4 rounded-lg border border-zinc-300 px-4 py-2 text-sm hover:bg-zinc-50 transition-colors"
+            className="mt-4"
           >
             Close window
           </Button>
