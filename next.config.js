@@ -24,6 +24,7 @@ module.exports = withNextIntl(
       NEXT_PUBLIC_COMMIT_SHA: COMMIT_SHA,
       NEXT_PUBLIC_BUILD_TIME: BUILD_TIME,
     },
+    cacheMaxMemorySize: 0,
     images: {
       remotePatterns: appkitConfig.externalImagePatterns ?? [],
     },

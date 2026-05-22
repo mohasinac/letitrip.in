@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "predev": "node scripts/stop-dev.mjs",
-    "dev": "concurrently --kill-others --restart-tries 0 --names \"appkit,css,next\" \"npm run watch:appkit\" \"npm run watch:css\" \"npm run dev:only\"",
+    "dev": "node scripts/dev-light.mjs",
+    "dev:hot": "concurrently --kill-others --restart-tries 0 --names \"appkit,css,next\" \"npm run watch:appkit\" \"npm run watch:css\" \"npm run dev:only\"",
     "stop": "node scripts/stop-dev.mjs",
     "dev:only": "cross-env NODE_OPTIONS=--max-old-space-size=3072 VERCEL_HOBBY_TIER=1 node scripts/dev-next.mjs",
     "prewarm": "node scripts/prewarm.mjs",

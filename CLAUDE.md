@@ -116,7 +116,7 @@ For lint-fixable issues use `npm run check:fix` (runs `lint:fix` first, then ful
 
 ## 🛑 RULE #6 — CODE WITHIN VERCEL HOBBY (FLUID COMPUTE) TIER LIMITS
 
-This project deploys to Vercel **Hobby** with **Fluid Compute enabled** (1 vCPU Standard, 2 GB function memory, 8 GB build machine, Node 22.x, region `iad1`). Every API route, server action, and Server Component you write must respect the ceilings below. Local dev (`npm run dev`) enforces these via `VERCEL_HOBBY_TIER=1` in `scripts/dev-next.mjs` so anything that breaks in production breaks here first.
+This project deploys to Vercel **Hobby** with **Fluid Compute enabled** (1 vCPU Standard, 2 GB function memory, 8 GB build machine, Node 22.x, region `iad1`). Every API route, server action, and Server Component you write must respect the ceilings below. Local dev (`npm run dev:hot`) enforces these via `VERCEL_HOBBY_TIER=1` in `scripts/dev-next.mjs`. The default `npm run dev` (build+start) runs a production server that matches Vercel's runtime behavior.
 
 | Limit | Ceiling | Env var | Implication for new code |
 |------|---------|---------|--------------------------|
@@ -152,6 +152,31 @@ This project deploys to Vercel **Hobby** with **Fluid Compute enabled** (1 vCPU 
 | `d:\proj\letitrip.in\appkit\` | Internal component library — UI primitives, feature views, Firestore schemas, seed data, repositories |
 
 **Stack**: Next.js 15 (App Router) · Firebase (Firestore + Auth + Storage) · Tailwind CSS · TypeScript · `@mohasinac/appkit` (local package)
+
+---
+
+## Dev Workflow
+
+| Command | Memory | Feedback loop | Best for |
+|---------|--------|---------------|----------|
+| `npm run dev` | ~500 MB | Rebuild ~15-45s | **Default.** Server logic, Claude sessions, low-RAM machines |
+| `npm run dev:hot` | ~3.5 GB | Hot-reload <1s | UI iteration, CSS tweaks, live preview |
+
+### `npm run dev` — Build-and-Serve (default)
+
+Runs `scripts/dev-light.mjs`: appkit build → Tailwind CSS → `next build` → `next start`. The production server uses ~300-500 MB vs ~3.5 GB for the hot-reload dev server.
+
+- **First run**: ~60-120s (cold `next build`)
+- **Subsequent runs**: ~15-45s (incremental via `.next/cache/`)
+- **To rebuild after code changes**: Ctrl+C, then `npm run dev` again
+- **Prewarm is unnecessary**: all routes pre-compiled by `next build`
+- **Do NOT delete `.next/`** between runs — the cache enables fast incremental rebuilds
+
+`next.config.js` sets `cacheMaxMemorySize: 0` so the production server uses disk cache only, keeping heap low.
+
+### `npm run dev:hot` — Hot-Reload (when needed)
+
+Traditional dev server with webpack HMR + file watchers. Uses ~3.5 GB. Best for rapid UI iteration. Same as the old `npm run dev`.
 
 ---
 
