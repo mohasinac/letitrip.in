@@ -55,12 +55,12 @@ export default function Page() {
         <Stack gap="lg" className="py-6">
           <Stack gap="xs">
             <Heading level={1}>{doc.title}</Heading>
-            <Text className="text-xs text-zinc-500">
+            <Text className="text-xs text-zinc-500 dark:text-zinc-400">
               by {doc.opDisplayName} · {doc.replyCount} replies · status {doc.status}
             </Text>
           </Stack>
           <Text>{doc.description}</Text>
-          <Row className="gap-4 text-sm text-zinc-500">
+          <Row className="gap-4 text-sm text-zinc-500 dark:text-zinc-400">
             {doc.category ? <Text>Category: {doc.category}</Text> : null}
             {doc.brand ? <Text>Brand: {doc.brand}</Text> : null}
             {doc.maxBudgetInPaise ? (
@@ -79,7 +79,7 @@ export default function Page() {
                   gap="xs"
                   className="p-3 rounded border border-zinc-200 dark:border-slate-700"
                 >
-                  <Text className="text-xs text-zinc-500">
+                  <Text className="text-xs text-zinc-500 dark:text-zinc-400">
                     {r.authorName ?? r.authorId} ·{" "}
                     {new Date(r.createdAt).toLocaleString()}
                     {r.isOpInitiatedThread ? " · OP-initiated chat" : ""}

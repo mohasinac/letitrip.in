@@ -61,12 +61,12 @@ export default function Page() {
                     <Text className="font-medium">
                       {m.mediaType} · {m.entityType} · {m.entityId}
                     </Text>
-                    <Text className="text-xs text-zinc-500">
+                    <Text className="text-xs text-zinc-500 dark:text-zinc-400">
                       Submitted by {m.ownerId} ·{" "}
                       {new Date(m.submittedAt).toLocaleString()}
                     </Text>
                     {m.mediaUrl ? (
-                      <Text className="text-xs text-zinc-500 truncate">
+                      <Text className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
                         {m.mediaUrl}
                       </Text>
                     ) : null}

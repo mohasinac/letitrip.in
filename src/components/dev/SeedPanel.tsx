@@ -1964,7 +1964,7 @@ function ResourceAccordionCard({
 
   return (
     <Div className={`rounded-xl border transition-colors ${borderColor} ${bgColor} overflow-hidden`}>
-      <Button type="button" onClick={toggleExpanded} className="w-full flex items-center gap-2 px-4 py-3 text-left">
+      <Button type="button" variant="ghost" onClick={toggleExpanded} className="w-full flex items-center gap-2 px-4 py-3 text-left">
         {renderAccordionCollapsedHeader({ meta, runState, isLoadingStatus, dbStatus, existingCount, seedCount, isComplete, isEmpty, statusVariant, statusLabel, expanded, col, selected, onToggle, isRunning })}
       </Button>
 

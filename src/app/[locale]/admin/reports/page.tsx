@@ -60,10 +60,10 @@ export default function Page() {
                     <Text className="font-medium">
                       {r.reason} · {r.entityType} · {r.entityId}
                     </Text>
-                    <Text className="text-xs text-zinc-500 line-clamp-2">
+                    <Text className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2">
                       {r.detail}
                     </Text>
-                    <Text className="text-xs text-zinc-500">
+                    <Text className="text-xs text-zinc-500 dark:text-zinc-400">
                       by {r.reporterId} · {new Date(r.createdAt).toLocaleString()}
                     </Text>
                   </Stack>

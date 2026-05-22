@@ -176,7 +176,7 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
   const date = order.createdAt
     ? new Date(order.createdAt).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })
     : "";
-  const statusColor = STATUS_COLORS[order.orderStatus] ?? "bg-zinc-100 text-zinc-600";
+  const statusColor = STATUS_COLORS[order.orderStatus] ?? "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
   return (
     <Div className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 space-y-3">
       <Row justify="between" wrap gap="3" align="start">

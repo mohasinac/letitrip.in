@@ -172,7 +172,7 @@ export default function UserReviewsPage() {
             const date = review.createdAt
               ? new Date(review.createdAt).toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" })
               : "";
-            const statusColor = STATUS_COLORS[review.status] ?? "bg-zinc-100 text-zinc-600";
+            const statusColor = STATUS_COLORS[review.status] ?? "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
             const productHref = String(ROUTES.PUBLIC.PRODUCT_DETAIL(review.productId));
             return (
               <Div

@@ -62,10 +62,10 @@ export default function Page() {
                 >
                   <Stack gap="xs" className="flex-1">
                     <Text className="font-medium">{r.title}</Text>
-                    <Text className="text-xs text-zinc-500 line-clamp-2">
+                    <Text className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2">
                       {r.description}
                     </Text>
-                    <Text className="text-xs text-zinc-500">
+                    <Text className="text-xs text-zinc-500 dark:text-zinc-400">
                       by {r.opDisplayName} · status: {r.status}
                     </Text>
                   </Stack>

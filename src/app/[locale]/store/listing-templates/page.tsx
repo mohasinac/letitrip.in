@@ -58,7 +58,7 @@ export default function Page() {
                 >
                   <Stack gap="xs">
                     <Text className="font-medium">{t.name}</Text>
-                    <Text className="text-xs text-zinc-500">
+                    <Text className="text-xs text-zinc-500 dark:text-zinc-400">
                       {t.listingType} · used {t.usageCount}× ·{" "}
                       {t.isShared ? "Shared" : "Private"}
                     </Text>

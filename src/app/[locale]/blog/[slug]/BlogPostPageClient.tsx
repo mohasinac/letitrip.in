@@ -11,7 +11,7 @@ export function BlogPostPageClient({ slug, locale }: Props) {
       renderBackButton={() => (
         <Link
           href={`/${locale}${String(ROUTES.PUBLIC.BLOG)}`}
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-500 hover:text-primary transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:text-primary transition-colors"
         >
           ← Back to Blog
         </Link>

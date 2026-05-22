@@ -80,7 +80,7 @@ export default function Page() {
     return (
       <Section>
         <Container size="md">
-          <div className="py-6 text-sm text-zinc-500">Loading…</div>
+          <div className="py-6 text-sm text-zinc-500 dark:text-zinc-400">Loading…</div>
         </Container>
       </Section>
     );

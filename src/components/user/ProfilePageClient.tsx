@@ -69,7 +69,7 @@ function renderProfileViewMode({
       {profileBio && (
         <Text className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">{profileBio}</Text>
       )}
-      <Text className="text-xs text-zinc-400 dark:text-zinc-500">
+      <Text className="text-xs text-zinc-400 dark:text-zinc-400">
         Profile visibility:{" "}
         <Text as="span" className={profileIsPublic ? "text-green-600 dark:text-green-400 font-medium" : "text-zinc-500 font-medium"}>
           {profileIsPublic ? "Public" : "Private"}
@@ -171,7 +171,7 @@ function renderProfileEditForm({
           placeholder="Tell buyers a little about yourself…"
           className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
         />
-        <Text className="text-right text-xs text-zinc-400">{bio.length}/500</Text>
+        <Text className="text-right text-xs text-zinc-400 dark:text-zinc-500">{bio.length}/500</Text>
       </Div>
       <Div className="flex items-center justify-between rounded-lg border border-zinc-200 dark:border-slate-700 px-4 py-3">
         <>

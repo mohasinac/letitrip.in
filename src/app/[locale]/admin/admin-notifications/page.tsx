@@ -65,8 +65,8 @@ export default function Page() {
                       </Badge>
                       <Badge variant="default">{n.category}</Badge>
                     </Row>
-                    <Text className="text-sm text-zinc-500">{n.body}</Text>
-                    <Text className="text-xs text-zinc-500">
+                    <Text className="text-sm text-zinc-500 dark:text-zinc-400">{n.body}</Text>
+                    <Text className="text-xs text-zinc-500 dark:text-zinc-400">
                       {new Date(n.createdAt).toLocaleString()}
                     </Text>
                   </Stack>

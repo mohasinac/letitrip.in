@@ -70,7 +70,7 @@ export default function Page() {
                 >
                   <Stack gap="xs">
                     <Text className="font-medium">{c.title}</Text>
-                    <Text className="text-xs text-zinc-500">
+                    <Text className="text-xs text-zinc-500 dark:text-zinc-400">
                       {c.type} · metric {c.metric}
                       {c.isBuiltIn ? " · built-in" : ""}
                     </Text>
