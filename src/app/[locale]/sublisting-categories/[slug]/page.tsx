@@ -162,7 +162,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
                           </Text>
                         )}
                         {condition && (
-                          <Text as="span" className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 text-[10px] capitalize text-zinc-500 dark:text-zinc-400">
+                          <Text as="span" className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 text-[10px] capitalize text-zinc-600 dark:text-zinc-400">
                             {condition}
                           </Text>
                         )}

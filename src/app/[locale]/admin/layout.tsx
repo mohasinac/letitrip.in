@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { redirect } from "@/i18n/navigation";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 import { getServerPermissions } from "@mohasinac/appkit/server";
@@ -23,7 +23,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
   return (
     <DashboardLayoutClient variant="admin" groups={ADMIN_NAV_GROUPS} permissions={permissions}>
-      {children}
+      <Suspense>{children}</Suspense>
     </DashboardLayoutClient>
   );
 }

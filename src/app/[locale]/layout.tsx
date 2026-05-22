@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { cache } from "react";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
@@ -81,7 +81,7 @@ export default async function Layout({ children, params }: Props) {
             <BottomActionsProvider>
               <DashboardNavProvider>
                 <LayoutClient>
-                  <LayoutShellClient seedPanelEnabled={seedPanelEnabled} siteLogoUrl={siteLogoUrl} siteTheme={siteTheme}>{children}</LayoutShellClient>
+                  <LayoutShellClient seedPanelEnabled={seedPanelEnabled} siteLogoUrl={siteLogoUrl} siteTheme={siteTheme}><Suspense>{children}</Suspense></LayoutShellClient>
                 </LayoutClient>
               </DashboardNavProvider>
             </BottomActionsProvider>

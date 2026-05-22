@@ -317,6 +317,21 @@
   color: var(--appkit-color-text-on-primary, #fff);
 }
 
+/* ── Dark-mode auto-contrast safety net ───────────────────────────────
+   Darkest text classes (zinc/gray/slate-900/950, text-black) become
+   invisible on default dark-mode backgrounds. If the element lacks an
+   explicit dark:text-* override, auto-lighten it.
+   :not([class*="dark:text-"]) prevents interference when a dark-mode
+   text class IS present — specificity (0,3,0) for :is+:not. ──────── */
+.dark :is(
+  .text-zinc-900, .text-zinc-950,
+  .text-gray-900, .text-gray-950,
+  .text-slate-900, .text-slate-950,
+  .text-black
+):not([class*="dark:text-"]):not([class*="dark:bg-white"]) {
+  color: var(--appkit-color-text, #f4f4f5);
+}
+
 /* Animation Keyframes */
 @keyframes slideDown {
   from {

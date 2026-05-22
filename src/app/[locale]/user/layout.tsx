@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, type ReactNode } from "react";
+import { Suspense, useMemo, type ReactNode } from "react";
 import { DashboardLayoutClient, RoleGuard, useSession } from "@mohasinac/appkit/client";
 import { getUserNavGroups } from "@/constants";
 
@@ -12,7 +12,7 @@ export default function UserLayout({ children }: { children: ReactNode }) {
   return (
     <RoleGuard>
       <DashboardLayoutClient variant="user" groups={groups}>
-        {children}
+        <Suspense>{children}</Suspense>
       </DashboardLayoutClient>
     </RoleGuard>
   );

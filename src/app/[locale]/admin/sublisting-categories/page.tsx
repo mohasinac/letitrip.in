@@ -1,4 +1,3 @@
-import React, { Suspense } from "react";
 import { Link } from "@/i18n/navigation";
 import { AdminSublistingCategoriesView, ROUTES, Heading, Div } from "@mohasinac/appkit/client";
 
@@ -18,9 +17,7 @@ export default function Page() {
           + New Category
         </Link>
       </Div>
-      <Suspense>
-        <AdminSublistingCategoriesView />
-      </Suspense>
+      <AdminSublistingCategoriesView />
     </>
   );
 }
