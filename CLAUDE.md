@@ -30,6 +30,7 @@
 - [Recurrent Root Cause Patterns](#recurrent-root-cause-patterns)
 - [Known TS Patterns to Avoid](#known-ts-patterns-to-avoid)
 - [CTA Registry Rules](#cta-registry-rules)
+- [Codebase Exports Catalog](#codebase-exports-catalog)
 
 ---
 
@@ -189,6 +190,7 @@ Traditional dev server with webpack HMR + file watchers. Uses ~3.5 GB. Best for 
 | `appkit/src/seed/` | All seed data files |
 | `src/app/api/demo/seed/route.ts` | Seed API endpoint (streaming NDJSON) |
 | `src/components/dev/SeedPanel.tsx` | Seed admin UI |
+| `codebaseexports.md` | Comprehensive export catalog — every component, hook, action, route, constant, type, util, registry, schema, seed file. Read before creating anything new. |
 | `docs.letitrip.in` (when live) | Authoritative deep docs — developer (UI/server/API), buyer help, seller guides, employee/admin guides. `appkit/index.md` + `src/index.md` remain the in-editor quick-reference. See Tier DX in `crud-tracker.md` for build status. |
 
 ---
@@ -628,3 +630,24 @@ The 4 layout shells (`AdminLayoutShell`, `StoreLayoutShell`, `UserLayoutShell`, 
 4. **`<Button action={...}>`** — the appkit Button component auto-resolves label, ariaLabel, variant, and confirmation dialog from an ActionDef. Use it instead of manual `<Button variant="danger" onClick={...}>Delete</Button>`.
 5. **New actions** — add to BOTH registries: `ACTIONS.{RESOURCE}["new-action"]` in `action-registry.ts` AND the relevant preset array in `action-defs.ts`. Never create an action that only exists as an inline object in one view component.
 6. **Confirmation copy** — all confirmation dialog strings (title, body, confirmLabel) live in the `ActionDef.confirmation` field. Never write `window.confirm()` or inline modal copy in view components.
+
+---
+
+## Codebase Exports Catalog
+
+> **`codebaseexports.md`** at project root is the comprehensive catalog of every export from every source file in the monorepo. It covers UI components, feature views, repositories, hooks, server actions, API routes, constants, types, utils, registries, schemas, seed data, page shims, config, tokens, routes, and Firebase jobs.
+
+### Maintenance Rule
+
+**After every code change that adds, removes, renames, or moves an export**, update `codebaseexports.md` to reflect the change. This includes:
+
+1. **New component/function/constant** — add a row to the appropriate section table.
+2. **Renamed export** — update the export name in the table.
+3. **Deleted export** — remove the row.
+4. **Moved file** — update the file path.
+5. **New feature domain** — add a new subsection.
+6. **Changed props/signature** — update the Props/Signature column.
+
+**Why:** This catalog prevents duplicate work (e.g., building a store products page when an admin products page already exists that differs only by storeId). It is the single reference for "what exists where" and must stay current.
+
+**When to read it:** Before creating any new component, view, hook, or utility — check if one already exists. Before any refactoring session — understand the blast radius.
