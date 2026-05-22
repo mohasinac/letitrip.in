@@ -68,7 +68,7 @@ function CouponWalletCard({
   removable: boolean;
 }) {
   return (
-    <Div className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 flex flex-col gap-2 shadow-sm">
+    <Div surface="card" padding="md" className="flex flex-col gap-2">
       <Row align="center" gap="sm" className="flex-wrap">
         <Text className="font-mono text-xs px-2 py-0.5 rounded bg-zinc-100 dark:bg-slate-800 text-zinc-700 dark:text-zinc-200">
           {claim.couponCode}

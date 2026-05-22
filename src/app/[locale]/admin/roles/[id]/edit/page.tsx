@@ -88,7 +88,7 @@ export default function Page() {
             <Textarea label="Permissions" value={permissionsText} onChange={(e) => setPermissionsText(e.target.value)} rows={6} />
             <Toggle checked={f.isActive !== false} onChange={(v) => setForm({ ...form, isActive: v })} label="Active" />
           </Stack>
-          <Row className="gap-2 justify-between">
+          <Row justify="between" className="gap-2">
             <Button variant="danger" onClick={() => setConfirmDelete(true)}>{ACTIONS.STORE["delete-listing"].label}</Button>
             <Row className="gap-2">
               <Button variant="ghost" onClick={() => router.back()}>Cancel</Button>

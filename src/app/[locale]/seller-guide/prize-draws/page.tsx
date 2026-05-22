@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { generateMetadata as _gm } from "@/constants";
-import { SellerGuideView, Heading, Text, Stack, Section, Ol, Ul, Li } from "@mohasinac/appkit";
+import { SellerGuideView, Heading, Span, Text, Stack, Section, Ol, Ul, Li } from "@mohasinac/appkit";
 
 export const metadata: Metadata = _gm({
   title: "Prize Draws Seller Guide — LetItRip",
@@ -31,7 +31,7 @@ export default function Page() {
           <Section>
             <Heading level={2} className={H2}>Creating a Prize Draw</Heading>
             <Ol className="list-decimal space-y-2 pl-5 text-sm text-zinc-600 dark:text-zinc-400">
-              <Li>Go to <strong>Store Dashboard → Listings → Prize Draws → New Prize Draw</strong>.</Li>
+              <Li>Go to <Span weight="bold">Store Dashboard → Listings → Prize Draws → New Prize Draw</Span>.</Li>
               <Li>Set the listing title, description, entry price, and total number of entries.</Li>
               <Li>Upload your prize codes (CSV or one-per-line). Codes are encrypted and never shown until reveal.</Li>
               <Li>Set the reveal window — buyers can reveal their result only within this period.</Li>
@@ -42,7 +42,7 @@ export default function Page() {
           <Section>
             <Heading level={2} className={H2}>The Reveal Flow</Heading>
             <Text className="text-zinc-600 dark:text-zinc-400 mb-3">
-              Once a buyer purchases an entry they can hit <strong>Reveal</strong> during the reveal window.
+              Once a buyer purchases an entry they can hit <Span weight="bold">Reveal</Span> during the reveal window.
               A randomly assigned code is shown once. Codes are assigned using a cryptographically secure
               random draw — each entry has an equal chance.
             </Text>

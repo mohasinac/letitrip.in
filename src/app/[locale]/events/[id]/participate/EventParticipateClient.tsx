@@ -189,7 +189,7 @@ function renderSubmitAction({
   return (
     <Div className="space-y-2">
       {error ? (
-        <Text className="text-red-500 dark:text-red-400 text-sm">{error}</Text>
+        <Text className="text-error text-sm">{error}</Text>
       ) : null}
       {pollConfig?.options?.length && !isMultiSelect && selectedVotes.length === 0 ? (
         <Text className="text-sm text-zinc-500 dark:text-zinc-400">
@@ -220,17 +220,17 @@ function renderSuccessState({
 }) {
   return (
     <Div className="space-y-4 py-6">
-      <Div className="rounded-2xl border border-emerald-200 dark:border-emerald-900/40 bg-emerald-50 dark:bg-emerald-950/30 px-5 py-5 space-y-2">
+      <Div className="rounded-2xl border border-success/20 bg-success-surface px-5 py-5 space-y-2">
         <Div className="flex items-center gap-2">
-          <Span className="inline-flex items-center rounded-full bg-emerald-600 text-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
+          <Span className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
             Confirmed
           </Span>
-          <Heading level={2} className="text-lg font-bold text-emerald-900 dark:text-emerald-100">
+          <Heading level={2} className="text-lg font-bold text-success">
             You&apos;re in!
           </Heading>
         </Div>
-        <Text className="text-sm text-emerald-800 dark:text-emerald-200">
-          Your entry for <strong>{eventTitle}</strong> has been recorded. We&apos;ll notify you of any updates here and over email.
+        <Text className="text-sm text-success">
+          Your entry for <Span weight="bold">{eventTitle}</Span> has been recorded. We&apos;ll notify you of any updates here and over email.
         </Text>
       </Div>
       {hasLeaderboard && (
@@ -410,10 +410,10 @@ function renderDynamicField(
     <Div key={field.id} className="space-y-1">
       <Label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
         {field.label}
-        {field.required && <Text as="span" className="text-red-500 ml-1">*</Text>}
+        {field.required && <Text as="span" className="text-error ml-1">*</Text>}
       </Label>
       {control}
-      {error && <Text className="text-xs text-red-500 dark:text-red-400">{error}</Text>}
+      {error && <Text className="text-xs text-error">{error}</Text>}
     </Div>
   );
 }
@@ -581,17 +581,17 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
   if (isSubmitted && !atEntryLimit) {
     return (
       <div className="space-y-4">
-        <Div className="rounded-2xl border border-emerald-200 dark:border-emerald-900/40 bg-emerald-50 dark:bg-emerald-950/30 px-5 py-5 space-y-2">
+        <Div className="rounded-2xl border border-success/20 bg-success-surface px-5 py-5 space-y-2">
           <Div className="flex items-center gap-2">
-            <Span className="inline-flex items-center rounded-full bg-emerald-600 text-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
+            <Span className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
               Confirmed
             </Span>
-            <Heading level={2} className="text-lg font-bold text-emerald-900 dark:text-emerald-100">
+            <Heading level={2} className="text-lg font-bold text-success">
               Entry submitted
             </Heading>
           </Div>
-          <Text className="text-sm text-emerald-800 dark:text-emerald-200">
-            {submissionCount} of {maxEntries} {maxEntries === 1 ? "entry" : "entries"} recorded for <strong>{event.title}</strong>.
+          <Text className="text-sm text-success">
+            {submissionCount} of {maxEntries} {maxEntries === 1 ? "entry" : "entries"} recorded for <Span weight="bold">{event.title}</Span>.
           </Text>
         </Div>
         <Button variant="primary" className="w-full" onClick={() => setIsSubmitted(false)}>

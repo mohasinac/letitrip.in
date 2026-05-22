@@ -53,9 +53,9 @@ export const EVENT_TYPE_BADGE: Record<string, string> = {
 } as const;
 
 export const EVENT_STATUS_BADGE: Record<string, string> = {
-  active: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-  ended: "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
-  draft: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+  active: "bg-success-surface text-success",
+  ended: "bg-error-surface text-error",
+  draft: "bg-warning-surface text-warning",
 } as const;
 
 export const EVENT_BADGE_FALLBACK =

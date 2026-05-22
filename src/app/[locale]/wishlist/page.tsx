@@ -281,22 +281,22 @@ function renderWishlistHeader({
 }) {
   return (
     <Div>
-      <Row gap="sm" className="items-center flex-wrap">
+      <Row gap="sm" className="flex-wrap">
         <Heading level={1} className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
           My Wishlist
         </Heading>
-        <Row gap="sm" className="items-center ml-auto flex-wrap">
+        <Row gap="sm" className="ml-auto flex-wrap">
           {selectedIds.size > 0 && (
             <>
               <Text className="text-sm text-zinc-600 dark:text-zinc-300">{selectedIds.size} selected</Text>
-              <Button variant="ghost" size="sm" onClick={handleRemoveSelected} disabled={isBulkRemoving} className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30">
+              <Button variant="ghost" size="sm" onClick={handleRemoveSelected} disabled={isBulkRemoving} className="text-error hover:opacity-80 hover:bg-error-surface">
                 {isBulkRemoving ? "Removing…" : "Remove selected"}
               </Button>
               <Button variant="ghost" size="sm" onClick={clearSelection} disabled={isBulkRemoving}>Deselect</Button>
             </>
           )}
           {!isLoading && wl.total > 0 && selectedIds.size === 0 && (
-            <Button variant="ghost" size="sm" onClick={handleRemoveAll} disabled={isBulkRemoving} className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30">
+            <Button variant="ghost" size="sm" onClick={handleRemoveAll} disabled={isBulkRemoving} className="text-error hover:opacity-80 hover:bg-error-surface">
               {isBulkRemoving ? "Clearing…" : "Remove all"}
             </Button>
           )}

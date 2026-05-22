@@ -95,7 +95,7 @@ export default function Page() {
               label="Featured on homepage"
             />
           </Stack>
-          <Row className="gap-2 justify-end">
+          <Row justify="end" className="gap-2">
             <Button variant="ghost" onClick={() => router.back()}>Cancel</Button>
             <Button variant="primary" onClick={onSave} disabled={saving} isLoading={saving}>
               Create Group

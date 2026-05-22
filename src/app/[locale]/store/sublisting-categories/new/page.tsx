@@ -60,7 +60,7 @@ export default function Page() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <>
           <Label className={LBL_CLS}>
-            Category name <Text as="span" className="text-red-500">*</Text>
+            Category name <Text as="span" className="text-error">*</Text>
           </Label>
           <Input
             type="text"
@@ -105,7 +105,7 @@ export default function Page() {
         </>
 
         {error && (
-          <Div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-4 py-3 text-sm text-red-700 dark:text-red-300">
+          <Div className="rounded-xl bg-error-surface border border-error/20 px-4 py-3 text-sm text-error">
             {error}
           </Div>
         )}

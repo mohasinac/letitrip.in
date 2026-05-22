@@ -140,7 +140,7 @@ function renderInvoiceTotals(order: OrderData) {
           <Text variant="secondary">
             Discount{order.couponCode ? ` (${order.couponCode})` : ""}
           </Text>
-          <Text className="text-emerald-600 dark:text-emerald-400 print:text-black">
+          <Text className="text-success print:text-black">
             −{paise(order.discount, order.currency)}
           </Text>
         </Row>

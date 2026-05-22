@@ -43,7 +43,8 @@ export default function Page() {
       renderGuide={() => (
         <Stack
           gap="lg"
-          className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6"
+          surface="card"
+          padding="lg"
         >
           <Stack gap="sm">
             <Heading
@@ -87,7 +88,7 @@ export default function Page() {
           ) : null}
 
           {mutation.isError ? (
-            <Text className="text-sm text-rose-600 dark:text-rose-400">
+            <Text className="text-sm text-error">
               {mutation.error?.message ?? "Could not submit application. Please try again."}
             </Text>
           ) : null}
@@ -96,15 +97,16 @@ export default function Page() {
       renderSuccess={() => (
         <Stack
           gap="md"
-          className="rounded-xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/30 p-6"
+          padding="lg"
+          className="rounded-xl border border-success/20 bg-success-surface"
         >
           <Heading
             level={2}
-            className="text-lg font-semibold text-emerald-900 dark:text-emerald-200"
+            className="text-lg font-semibold text-success"
           >
             Application received
           </Heading>
-          <Text className="text-sm text-emerald-800 dark:text-emerald-300">
+          <Text className="text-sm text-success">
             Thanks for applying. We&apos;ll review your account and notify you
             once your seller status is approved. In the meantime, you can set
             up your store profile.
@@ -117,7 +119,8 @@ export default function Page() {
       renderAlreadySeller={() => (
         <Stack
           gap="md"
-          className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6"
+          surface="card"
+          padding="lg"
         >
           <Heading
             level={2}

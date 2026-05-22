@@ -81,7 +81,7 @@ export default async function Page({
 
   return (
     <ProductFeaturesProvider features={platformFeatures}>
-    <Div className="min-h-screen bg-white dark:bg-slate-900">
+    <Div surface="default" className="min-h-screen">
       {/* Hero */}
       <PromotionsHero
         labels={{
@@ -92,7 +92,7 @@ export default async function Page({
       />
 
       {/* Tab navigation */}
-      <Div className="bg-white dark:bg-slate-900 border-b border-zinc-200 dark:border-slate-700">
+      <Div surface="default" className="border-b border-zinc-200 dark:border-slate-700">
         <Div className="mx-auto flex max-w-5xl items-center gap-1 px-4 py-2 sm:px-6 lg:px-8 overflow-x-auto scrollbar-hide">
           {VALID_TABS.map((tabValue) => {
             const isActive = tabValue === activeTab;

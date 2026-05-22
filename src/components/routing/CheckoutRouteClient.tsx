@@ -258,18 +258,18 @@ function renderOtpConsentStep({
           {isSendingOtp ? CK.OTP_SENDING_BTN : CK.OTP_SEND_BTN}
         </Button>
         {adminBypassEnabled && (
-          <Div className="rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/30 p-3">
-            <Text className="mb-1 text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
+          <Div className="rounded-lg border border-warning/30 bg-warning-surface p-3">
+            <Text className="mb-1 text-xs font-semibold text-warning uppercase tracking-wide">
               {CK.ADMIN_BYPASS_PANEL_LABEL}
             </Text>
-            <Text className="mb-2 text-xs text-amber-600 dark:text-amber-500">
+            <Text className="mb-2 text-xs text-warning">
               {CK.ADMIN_BYPASS_CONSENT_DESC}
             </Text>
             <Button
               type="button"
               onClick={handleAdminBypass}
               disabled={isProcessingPayment}
-              className="w-full border border-amber-400 dark:border-amber-600 bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-900/60 text-sm"
+              className="w-full border border-warning/40 bg-warning-surface text-warning hover:opacity-80 text-sm"
             >
               {CK.ADMIN_BYPASS_CONSENT_BTN}
             </Button>
@@ -323,7 +323,7 @@ function renderOtpStep({
           className="tracking-widest text-center text-xl"
         />
         {otpError && (
-          <Text className="text-sm text-red-600">{otpError}</Text>
+          <Text className="text-sm text-error">{otpError}</Text>
         )}
         <Button
           type="button"
@@ -381,7 +381,7 @@ function renderPaymentStep({
       ) : (
         <Stack gap="md">
           {actionError && (
-            <Text className="text-sm text-red-600">{actionError}</Text>
+            <Text className="text-sm text-error">{actionError}</Text>
           )}
           <Button
             type="button"
@@ -400,19 +400,19 @@ function renderPaymentStep({
             {CK.PAYMENT_COD_BTN}
           </Button>
           {adminBypassEnabled && (
-            <Div className="mt-1 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/30 p-3">
-              <Text className="mb-2 text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
+            <Div className="mt-1 rounded-lg border border-warning/30 bg-warning-surface p-3">
+              <Text className="mb-2 text-xs font-semibold text-warning uppercase tracking-wide">
                 {CK.ADMIN_BYPASS_PANEL_LABEL}
               </Text>
               <Button
                 type="button"
                 onClick={handleAdminBypass}
                 disabled={isProcessingPayment || cartIsEmpty}
-                className="w-full border border-amber-400 dark:border-amber-600 bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-amber-900/60 text-sm"
+                className="w-full border border-warning/40 bg-warning-surface text-warning hover:opacity-80 text-sm"
               >
                 {CK.ADMIN_BYPASS_PAYMENT_BTN}
               </Button>
-              <Text className="mt-1.5 text-xs text-amber-600 dark:text-amber-500">
+              <Text className="mt-1.5 text-xs text-warning">
                 {CK.ADMIN_BYPASS_PAYMENT_NOTE}
               </Text>
             </Div>
@@ -448,10 +448,10 @@ function renderCouponSection({
       {effectiveCoupons.length > 0 && (
         <Stack gap="xs" className="mb-3">
           {effectiveCoupons.map((c) => (
-            <Row key={c.code} className="items-center justify-between rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 px-3 py-2">
+            <Row key={c.code} justify="between" className="rounded-lg bg-success-surface border border-green-200 dark:border-green-800 px-3 py-2">
               <Div>
-                <Text className="text-sm font-medium text-green-800 dark:text-green-300">{c.code}</Text>
-                <Text className="text-xs text-green-600 dark:text-green-400">
+                <Text className="text-sm font-medium text-success">{c.code}</Text>
+                <Text className="text-xs text-success">
                   −₹{(c.discountAmount / 100).toFixed(2)} off
                 </Text>
               </Div>
@@ -460,7 +460,7 @@ function renderCouponSection({
                 variant="ghost"
                 size="sm"
                 onClick={() => handleRemoveCoupon(c.code)}
-                className="text-red-500 hover:text-red-700 dark:text-red-400"
+                className="text-error"
               >
                 Remove
               </Button>
@@ -489,7 +489,7 @@ function renderCouponSection({
         </Button>
       </Row>
       {couponError && (
-        <Text className="mt-1.5 text-xs text-red-600 dark:text-red-400">{couponError}</Text>
+        <Text className="mt-1.5 text-xs text-error">{couponError}</Text>
       )}
     </Div>
   );
@@ -515,7 +515,7 @@ function renderOrderSummary({
   handleAdvanceToVerification: () => void;
 }) {
   return (
-    <Div className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
+    <Div surface="card" padding="sm">
       <Heading level={3} className="mb-3 text-base font-semibold text-zinc-900 dark:text-zinc-100">
         {CK.ORDER_SUMMARY_HEADING}
       </Heading>
@@ -537,7 +537,7 @@ function renderOrderSummary({
         <Text>{formattedSubtotal}</Text>
       </Div>
       {totalDiscount > 0 && (
-        <Div className="flex justify-between items-center text-sm text-green-600 dark:text-green-400 mb-1">
+        <Div className="flex justify-between items-center text-sm text-success mb-1">
           <Text>Coupon discount</Text>
           <Text>−₹{(totalDiscount / 100).toFixed(2)}</Text>
         </Div>
@@ -557,7 +557,7 @@ function renderOrderSummary({
         </Button>
       )}
       {actionError && step === "address" && (
-        <Text className="mt-2 text-sm text-red-600">{actionError}</Text>
+        <Text className="mt-2 text-sm text-error">{actionError}</Text>
       )}
     </Div>
   );

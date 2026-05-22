@@ -88,7 +88,7 @@ export default function Page() {
             />
             <Toggle checked={form.isActive} onChange={(v) => setForm({ ...form, isActive: v })} label="Active" />
           </Stack>
-          <Row className="gap-2 justify-end">
+          <Row justify="end" className="gap-2">
             <Button variant="ghost" onClick={() => router.back()}>Cancel</Button>
             <Button variant="primary" onClick={onSave} disabled={saving} isLoading={saving}>{ACTIONS.ADMIN["save-changes"].label}</Button>
           </Row>

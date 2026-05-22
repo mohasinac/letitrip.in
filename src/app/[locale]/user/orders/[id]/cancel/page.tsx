@@ -5,7 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
 import { useToast, useOrder, ROUTES, Div, Button, Label, Textarea } from "@mohasinac/appkit/client";
 import { cancelOrderAction } from "@/actions/order.actions";
-import { Heading, Text } from "@mohasinac/appkit";
+import { Heading, Span, Text } from "@mohasinac/appkit";
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -60,9 +60,9 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       </>
 
       {!cancellable ? (
-        <Div className="rounded-xl border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950 p-5 space-y-3">
-          <Text className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-            This order cannot be cancelled because it is already <strong>{order.orderStatus.toLowerCase()}</strong>.
+        <Div className="rounded-xl border border-warning/20 bg-warning-surface p-5 space-y-3">
+          <Text className="text-sm font-medium text-warning">
+            This order cannot be cancelled because it is already <Span weight="bold">{order.orderStatus.toLowerCase()}</Span>.
           </Text>
           <Link
             href={String(ROUTES.USER.ORDER_DETAIL(id))}
@@ -81,7 +81,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
               htmlFor="reason"
               className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
             >
-              Reason for cancellation <Text as="span" className="text-red-500">*</Text>
+              Reason for cancellation <Text as="span" className="text-error">*</Text>
             </Label>
             <Textarea
               id="reason"

@@ -72,7 +72,7 @@ export default function Page() {
             <Input type="number" label="Display order" value={String(f.displayOrder ?? 0)} onChange={(e) => setForm({ ...form, displayOrder: Number(e.target.value) || 0 })} />
             <Toggle checked={f.isActive !== false} onChange={(v) => setForm({ ...form, isActive: v })} label="Active" />
           </Stack>
-          <Row className="gap-2 justify-between">
+          <Row justify="between" className="gap-2">
             <Button variant="danger" onClick={() => setConfirmDelete(true)}>{ACTIONS.STORE["delete-listing"].label}</Button>
             <Row className="gap-2">
               <Button variant="ghost" onClick={() => router.back()}>Cancel</Button>

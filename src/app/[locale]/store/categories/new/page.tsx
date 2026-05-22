@@ -60,7 +60,7 @@ export default function Page() {
             <Input label="Cover image URL" value={form.coverImageUrl} onChange={(e) => setForm({ ...form, coverImageUrl: e.target.value })} />
             <Input type="number" label="Display order" value={String(form.displayOrder)} onChange={(e) => setForm({ ...form, displayOrder: Number(e.target.value) || 0 })} />
           </Stack>
-          <Row className="gap-2 justify-end">
+          <Row justify="end" className="gap-2">
             <Button variant="ghost" onClick={() => router.back()}>Cancel</Button>
             <Button variant="primary" onClick={onSave} disabled={saving} isLoading={saving}>{ACTIONS.STORE["save-changes"].label}</Button>
           </Row>

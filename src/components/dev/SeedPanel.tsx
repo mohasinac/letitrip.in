@@ -27,6 +27,7 @@ import {
   Stack,
   Text,
   Div,
+  Span,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import type { SeedCollectionName } from "@/actions/demo-seed.types";
@@ -1791,7 +1792,7 @@ function renderAccordionCollapsedHeader({
 
 function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number, seedCount: number) {
   return (
-    <Div className="border-t border-zinc-200 dark:border-slate-700 px-5 py-4 bg-white dark:bg-slate-900/60">
+    <Div surface="default" className="border-t border-zinc-200 dark:border-slate-700 px-5 py-4">
       <Stack gap="md">
         <Text className="text-sm text-zinc-600 dark:text-slate-300 leading-relaxed m-0">{meta.description}</Text>
 
@@ -1859,9 +1860,9 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
 
         {meta.piiFields && meta.piiFields.length > 0 && (
           <Div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/40">
-            <span className="text-xs text-red-700 dark:text-red-300 leading-relaxed">
-              🔒 PII fields: <strong>{meta.piiFields.join(", ")}</strong> — masked in DB with Firestore encryption. Never returned in full to client.
-            </span>
+            <Span className="text-xs text-red-700 dark:text-red-300 leading-relaxed">
+              🔒 PII fields: <Span weight="bold">{meta.piiFields.join(", ")}</Span> — masked in DB with Firestore encryption. Never returned in full to client.
+            </Span>
           </Div>
         )}
 
@@ -2226,7 +2227,7 @@ export function SeedPanel() {
   useEffect(() => { setPage(1); }, [searchQuery, filterGroup, filterStatus, sortBy]);
 
   return (
-    <Section className="min-h-screen bg-white dark:bg-slate-950 text-zinc-900 dark:text-white">
+    <Section surface="muted" className="min-h-screen text-zinc-900 dark:text-white">
       {renderSeedPanelToolbar({ selectedCollections, setSelectedCollections, isFiltered, filteredCollections, isRunning, fetchStatus, isLoadingStatus, searchQuery, setSearchQuery, sortBy, setSortBy, dryRun, setDryRun, run, filterGroup, setFilterGroup, filterStatus, setFilterStatus })}
 
       <Container size="2xl">
@@ -2412,7 +2413,7 @@ function renderSeedPanelDoneSummary({ errorCount, dryRun, completedCount, colErr
       {errorCount > 0 && (
         <Stack gap="xs" className="mt-2">
           {Object.entries(colErrors).map(([col, msg]) => (
-            <Text key={col} className="text-xs text-red-600 dark:text-red-400"><strong>{COLLECTION_META[col as SeedCollectionName]?.label ?? col}:</strong> {msg}</Text>
+            <Text key={col} className="text-xs text-red-600 dark:text-red-400"><Span weight="bold">{COLLECTION_META[col as SeedCollectionName]?.label ?? col}:</Span> {msg}</Text>
           ))}
         </Stack>
       )}

@@ -76,7 +76,7 @@ export function HomepageNewsletterForm() {
         </Button>
       </Div>
       {error ? (
-        <Text size="sm" className="text-red-600 dark:text-red-400" role="alert">
+        <Text size="sm" className="text-error" role="alert">
           {error}
         </Text>
       ) : null}

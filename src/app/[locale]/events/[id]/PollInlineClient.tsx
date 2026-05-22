@@ -54,9 +54,9 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
 
   if (isSubmitted) {
     return (
-      <Div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 px-6 py-8 text-center space-y-2">
-        <Text className="text-lg font-semibold text-emerald-800 dark:text-emerald-300">Vote recorded!</Text>
-        <Text className="text-sm text-emerald-700 dark:text-emerald-400">
+      <Div className="rounded-xl border border-success/20 bg-success-surface px-6 py-8 text-center space-y-2">
+        <Text className="text-lg font-semibold text-success">Vote recorded!</Text>
+        <Text className="text-sm text-success">
           Thank you for participating. Results will be shown after the poll closes.
         </Text>
       </Div>
@@ -152,7 +152,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
           className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
         />
       )}
-      {error && <Text className="text-sm text-red-500">{error}</Text>}
+      {error && <Text className="text-sm text-error">{error}</Text>}
       <Button
         type="button"
         variant="primary"

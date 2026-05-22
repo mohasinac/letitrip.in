@@ -391,6 +391,50 @@ function checkButtonAsToggle(file, content) {
   }
 }
 
+// ─── RULE 7: Raw semantic-color Tailwind classes in className ───────────────
+// Classes like text-red-600, bg-green-50, border-amber-500 should use the
+// design-system semantic tokens (text-error, bg-success-surface, etc.).
+// Structural neutrals (zinc, slate, gray, stone, neutral) are acceptable.
+// Only scans inside className="..." / className={'...'} / className={`...`}.
+const RAW_COLOR_SKIP_FILES = new Set(["theme.ts", "theme.tsx"]);
+const RAW_COLOR_SKIP_DIRS_EXTRA = new Set(["tokens"]);
+
+const SEMANTIC_COLORS = "red|green|emerald|amber|yellow|blue|sky|orange|rose|pink|violet|purple|teal|cyan|lime|fuchsia|indigo";
+const RAW_COLOR_RE = new RegExp(
+  `\\b(?:text|bg|border|ring|outline|divide|from|to|via)-(?:${SEMANTIC_COLORS})-\\d+(?:\\/\\d+)?\\b`,
+  "g"
+);
+
+function checkRawSemanticColors(file, lines) {
+  const fileName = file.replace(/\\/g, "/").split("/").pop();
+  if (RAW_COLOR_SKIP_FILES.has(fileName)) return;
+
+  const parts = file.replace(/\\/g, "/").split("/");
+  if (parts.some(p => RAW_COLOR_SKIP_DIRS_EXTRA.has(p))) return;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    if (trimmed.startsWith("//") || trimmed.startsWith("*") || trimmed.startsWith("/*")) continue;
+    if (trimmed.startsWith("import ")) continue;
+
+    if (!/className/.test(line)) continue;
+
+    RAW_COLOR_RE.lastIndex = 0;
+    let m;
+    while ((m = RAW_COLOR_RE.exec(line)) !== null) {
+      violations.push({
+        rule: "RAW_SEMANTIC_COLOR",
+        file: rel(file),
+        line: i + 1,
+        text: m[0],
+        message: `Raw color class "${m[0]}" — use a semantic token (text-error, bg-success-surface, etc.)`,
+        fix: "Replace with semantic tokens: text-error/success/warning/info, bg-error-surface/success-surface/warning-surface/info-surface, or extract to theme.ts",
+      });
+    }
+  }
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 for (const dir of SCAN_DIRS) {
   for (const file of walk(dir)) {
@@ -402,10 +446,11 @@ for (const dir of SCAN_DIRS) {
     checkRepeatedStrings(file, lines);
     checkGhostButtonMissingVariant(file, content);
     checkButtonAsToggle(file, content);
+    checkRawSemanticColors(file, lines);
   }
 }
 
-const BASELINE = 5; // 1 large-component (createCheckoutOrderAction) + 4 deep-nesting (PreOrdersIndexListing ×2, ProductsIndexListing ×2) — pre-existing
+const BASELINE = 761; // 5 pre-existing (1 large-component + 4 deep-nesting) + 756 RAW_SEMANTIC_COLOR (pre-existing raw Tailwind color classes)
 
 if (violations.length === 0) {
   console.log("audit-code-quality: clean ✓");

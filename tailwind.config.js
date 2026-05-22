@@ -160,6 +160,28 @@ module.exports = defineTailwindConfig({
           900: "#333b4b",
           950: "#222730",
         },
+        // Semantic state colors — use these instead of raw red/green/amber/sky
+        success: {
+          DEFAULT: "var(--appkit-color-success)",
+          surface: "var(--appkit-color-success-surface)",
+        },
+        warning: {
+          DEFAULT: "var(--appkit-color-warning)",
+          surface: "var(--appkit-color-warning-surface)",
+        },
+        error: {
+          DEFAULT: "var(--appkit-color-error)",
+          surface: "var(--appkit-color-error-surface)",
+        },
+        info: {
+          DEFAULT: "var(--appkit-color-info)",
+          surface: "var(--appkit-color-info-surface)",
+        },
+        surface: {
+          DEFAULT: "var(--appkit-color-surface)",
+          elevated: "var(--appkit-color-surface-elevated)",
+          input: "var(--appkit-color-surface-input)",
+        },
       },
       spacing: {
         // Appkit spacing tokens

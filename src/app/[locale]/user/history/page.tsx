@@ -44,7 +44,7 @@ const CARD =
 const TYPE_CHIP =
   "rounded-full bg-[var(--appkit-color-border-subtle)] px-2 py-0.5 capitalize text-[var(--appkit-color-text-muted)]";
 const REMOVE_BTN =
-  "shrink-0 rounded-full p-2 text-[var(--appkit-color-text-muted)] hover:bg-[var(--appkit-color-border-subtle)] hover:text-red-500";
+  "shrink-0 rounded-full p-2 text-[var(--appkit-color-text-muted)] hover:bg-error-surface hover:text-error";
 
 function relativeTime(iso: string): string {
   const t = new Date(iso).getTime();
@@ -94,7 +94,7 @@ function HistoryRow({ item, onRemove }: HistoryRowProps) {
         >
           {title}
         </Link>
-        <Row gap="sm" className="mt-1 items-center text-xs">
+        <Row gap="sm" className="mt-1 text-xs">
           <Span className={TYPE_CHIP}>{TYPE_LABEL[item.productType]}</Span>
           {item.productSnapshot?.storeName && (
             <Text variant="secondary" className="line-clamp-1 text-xs">

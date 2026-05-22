@@ -58,7 +58,7 @@ export default function Page() {
                   className="items-start justify-between p-4 rounded border border-zinc-200 dark:border-slate-700"
                 >
                   <Stack gap="xs" className="flex-1">
-                    <Row className="gap-2 items-center">
+                    <Row className="gap-2">
                       <Text className="font-medium">{n.title}</Text>
                       <Badge variant={n.severity === "error" ? "danger" : n.severity === "warning" ? "warning" : "info"}>
                         {n.severity}

@@ -29,11 +29,11 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
             </Div>
           </Div>
         ))}
-        <Div className="flex items-start gap-4 p-4 rounded-xl border bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-700">
+        <Div className="flex items-start gap-4 p-4 rounded-xl border bg-error-surface border-error/20">
           <Div className="text-2xl flex-shrink-0 mt-0.5">❌</Div>
           <Div className="flex-1">
             <Row gap="sm" className="mb-1">
-              <Span className="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300">{t("sCancelLabel")}</Span>
+              <Span className="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-error-surface text-error">{t("sCancelLabel")}</Span>
             </Row>
             <Text variant="secondary" className="text-sm leading-relaxed">{t("sCancelDesc")}</Text>
           </Div>
@@ -159,8 +159,8 @@ export async function HowOrdersWorkView() {
       icon: XCircle,
       title: t("cancelTitle"),
       text: t("cancelText"),
-      color: "bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-700",
-      iconColor: "text-red-600 dark:text-red-400",
+      color: "bg-error-surface border-error/20",
+      iconColor: "text-error",
     },
     {
       icon: FileText,

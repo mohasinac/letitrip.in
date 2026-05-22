@@ -18,7 +18,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
     return (
       <Section className="py-8">
         <Container>
-          <Row className="mb-6 items-center gap-2">
+          <Row className="mb-6 gap-2">
             <Link
               href={String(ROUTES.ADMIN.CAROUSELS)}
               className="text-sm text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text)]"
@@ -55,7 +55,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
   return (
     <Section className="py-8">
       <Container>
-        <Row className="mb-2 items-center gap-2">
+        <Row className="mb-2 gap-2">
           <Link
             href={String(ROUTES.ADMIN.CAROUSELS)}
             className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300"
@@ -64,7 +64,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
           </Link>
         </Row>
 
-        <Row className="mb-6 items-center justify-between">
+        <Row justify="between" className="mb-6">
           <Div>
             <Heading level={1} className="text-2xl font-bold">
               {carousel.name}

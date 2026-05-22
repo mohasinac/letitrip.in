@@ -178,6 +178,18 @@ const checks = [
     args: ["scripts/audit-gitignore.mjs"],
     cwd: ROOT,
   },
+  {
+    label: "audit-typography",
+    cmd: "node",
+    args: ["scripts/audit-typography.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-inline-styles",
+    cmd: "node",
+    args: ["scripts/audit-inline-styles.mjs"],
+    cwd: ROOT,
+  },
 ];
 
 // Baseline violation counts — block only on regressions (count > baseline).

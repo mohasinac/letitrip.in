@@ -194,7 +194,7 @@ export default function Page() {
             <Div className="flex items-center gap-2 mb-4">
               <Div className="text-sm font-semibold text-[var(--appkit-color-text)]">Dev Settings</Div>
               {(prefs.mockRazorpay || prefs.mockShiprocket || adminBypassEnabled) && (
-                <Div className="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium">
+                <Div className="text-xs px-2 py-0.5 rounded-full bg-warning-surface text-warning font-medium">
                   Mock active
                 </Div>
               )}

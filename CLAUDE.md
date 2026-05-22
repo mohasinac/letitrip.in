@@ -31,6 +31,9 @@
 - [Known TS Patterns to Avoid](#known-ts-patterns-to-avoid)
 - [CTA Registry Rules](#cta-registry-rules)
 - [Codebase Exports Catalog](#codebase-exports-catalog)
+- [UI Primitive Rules](#ui-primitive-rules)
+- [Animation Rules](#animation-rules)
+- [Media Upload Rules](#media-upload-rules)
 
 ---
 
@@ -651,3 +654,114 @@ The 4 layout shells (`AdminLayoutShell`, `StoreLayoutShell`, `UserLayoutShell`, 
 **Why:** This catalog prevents duplicate work (e.g., building a store products page when an admin products page already exists that differs only by storeId). It is the single reference for "what exists where" and must stay current.
 
 **When to read it:** Before creating any new component, view, hook, or utility — check if one already exists. Before any refactoring session — understand the blast radius.
+
+---
+
+## UI Primitive Rules
+
+> Enforced by `audit-typography.mjs`, `audit-html-wrappers.mjs`, `audit-inline-styles.mjs`, and `audit-code-quality.mjs`. Baselines prevent regressions; new code must use primitives.
+
+### Raw HTML Tag Rules
+
+| Instead of | Use |
+|------------|-----|
+| `<span className="text-sm text-zinc-500">` | `<Span size="sm" color="muted">` |
+| `<strong>` / `<b>` | `<Span weight="bold">` or `<Span weight="semibold">` |
+| `<p className="...">` | `<Text>` with props |
+| `<h1>` through `<h6>` | `<Heading level={1}>` through `<Heading level={6}>` |
+| `<small>` | `<Span size="xs">` or `<Text size="xs">` |
+| `<em>` | `<Span className="italic">` |
+| `<div>` with layout intent | `<Stack>`, `<Row>`, `<Section>`, `<Container>` |
+| `<table>` | `<Table>` from `@mohasinac/appkit` Semantic primitives |
+
+### Color Token Rules
+
+| Instead of | Use |
+|------------|-----|
+| `text-red-600` / `bg-red-50` (error/danger context) | `text-error` / `bg-error-surface` |
+| `text-green-600` / `bg-green-50` (success context) | `text-success` / `bg-success-surface` |
+| `text-amber-600` / `bg-amber-50` (warning context) | `text-warning` / `bg-warning-surface` |
+| `text-blue-600` / `bg-blue-50` (info context) | `text-info` / `bg-info-surface` |
+| `text-zinc-*` / `bg-zinc-*` (neutral) | Acceptable — zinc/slate are structural neutrals |
+| `#3570fc` / `#8393b2` raw hex | `var(--appkit-color-primary)` or Tailwind token |
+
+Centralized status colors live in `src/constants/theme.ts` (`THEME_CONSTANTS.badge.*`, `.accent.*`, `.colors.alert.*`). Reference those constants for status styling; don't duplicate raw classes.
+
+### Surface & Padding Props
+
+Layout primitives (`Stack`, `Row`, `Grid`, `Container`, `Section`, `Div`) accept:
+- `surface`: `"none"` | `"default"` | `"muted"` | `"subtle"` | `"inset"` | `"card"` | `"elevated"` | `"interactive"` | `"glass"` | `"form"`
+- `padding`: `"none"` | `"xs"` | `"sm"` | `"md"` | `"lg"` | `"xl"` | `"card"` | `"section"` | `"page"` | `"inline"`
+- `rounded`, `border`, `shadow` — similar token maps
+
+Prefer props over raw className for these concerns. `className` is the escape hatch.
+
+### Inline Style Rules
+
+`style={{}}` is blocked by `audit-inline-styles.mjs` (baseline 473). Acceptable exceptions:
+- CSS custom properties (`style={{ "--var": value }}`)
+- Dynamic values impossible with classes (`style={{ top: offset }}`)
+- Third-party library requirements
+- Allowlisted files: RichTextRenderer, ImageCropModal, ImageEditor, VideoTrimModal, CameraCapture, MediaSlider, HeroCarousel, SpinWheelView
+
+---
+
+## Animation Rules
+
+> `motion` (v12.x) is installed in appkit. All animation primitives are in `appkit/src/ui/components/Motion.tsx`.
+
+### Available Components
+
+| Component | Use for |
+|-----------|---------|
+| `FadeIn` | Fade-in on mount (opacity 0→1) |
+| `SlideUp` | Slide up + fade on mount |
+| `ScaleIn` | Scale in from 95% + fade |
+| `Collapse` | Accordion expand/collapse |
+| `SlideIn` | Slide from edge (side prop) |
+| `AnimatedList` | Staggered children animation |
+| `AnimatedDiv` / `AnimatedStack` / `AnimatedRow` | motion-enabled layout primitives |
+| `PressScale` / `HoverLift` | Micro-interaction wrappers |
+| `Draggable` / `Swipeable` | Gesture-enabled containers |
+
+### Rules
+
+1. **All motion components are `"use client"`** — never import in server components.
+2. **`useReducedMotion()`** is respected automatically — all components check `prefers-reduced-motion` and skip animation when enabled.
+3. **Server components cannot use motion** — if a server component needs animation, the animated section must be a separate client component.
+4. **Modal/Drawer/SideModal** already have AnimatePresence wired — don't add extra motion wrappers around them.
+5. **Card `animate` prop** — use `animate="hoverLift"`, `"pressScale"`, `"hoverScale"`, or `"both"` instead of custom motion.
+6. **DataTable card grid** uses `AnimatedList` by default — no extra wiring needed.
+7. **Toast** has AnimatePresence — individual toasts slide in/out automatically.
+
+### Spring Tokens
+
+Defined in `appkit/src/tokens/motion.ts`:
+- `SPRING_SNAPPY` — fast UI (200ms feel)
+- `SPRING_GENTLE` — smooth overlays (300ms feel)
+- `SPRING_BOUNCY` — playful interactions
+- `DURATION_*` — `FAST` (150ms), `NORMAL` (250ms), `SLOW` (400ms), `ENTER` (300ms), `EXIT` (200ms)
+
+---
+
+## Media Upload Rules
+
+> Upload flow: Client → signed URL → Firebase Storage → media slug returned. Bytes never go through Next.js (4.5 MB request cap).
+
+### Components
+
+| Component | Purpose |
+|-----------|---------|
+| `MediaUploadField` | Full upload field with preview, progress, remove. Supports `multiple` prop. |
+| `ImageUpload` | Image-specific upload with optional `enableAdvancedCrop` for crop/rotate/zoom. |
+| `ImageEditor` | Advanced crop/rotate/zoom modal (react-advanced-cropper). |
+
+### Rules
+
+1. **Never upload bytes through API routes** — use the signed-URL flow (`/api/media/sign` → PUT to Storage → `/api/media/finalize`).
+2. **All Firestore URLs use `/media/<slug>`** — never store raw `firebasestorage.googleapis.com` URLs.
+3. **`generateMediaFilename(ctx)`** generates SEO slugs — always pass the correct context type and slug.
+4. **tmp/ prefix** — uploads start in `tmp/` path; `finalize` moves to permanent path. Aborted uploads are auto-cleaned by `mediaTmpCleanup` Firebase Function.
+5. **Image editor** — enable via `enableAdvancedCrop` prop on `ImageUpload`. Supports aspect ratio presets (Free/1:1/4:3/16:9/3:2), rotate, flip.
+6. **Multi-select** — pass `multiple` to `MediaUploadField` for batch upload. Files upload sequentially with individual progress.
+7. **FormShell Zod validation** — pass `schema` prop to auto-validate on publish; `validateOnChange` for live validation.

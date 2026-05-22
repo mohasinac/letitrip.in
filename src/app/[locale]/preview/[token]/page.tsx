@@ -51,9 +51,9 @@ export default async function PreviewPage({
   if (!preview) notFound();
 
   return (
-    <Section className="min-h-screen bg-white dark:bg-slate-900">
-      <Div className="bg-amber-100 dark:bg-amber-900/40 border-b border-amber-300 dark:border-amber-700 px-4 py-2 text-center">
-        <Text className="text-sm font-medium text-amber-900 dark:text-amber-100">
+    <Section surface="default" className="min-h-screen">
+      <Div className="bg-warning-surface border-b border-warning/30 px-4 py-2 text-center">
+        <Text className="text-sm font-medium text-warning">
           {PREVIEW_COPY.banner}
         </Text>
       </Div>

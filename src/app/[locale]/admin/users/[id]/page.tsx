@@ -4,6 +4,7 @@ import {
   Container,
   Stack,
   Heading,
+  Span,
   Text,
   Section,
   Row,
@@ -65,13 +66,13 @@ export default function Page() {
           {tab === "overview" && user && (
             <Stack gap="sm" className="text-sm">
               <Text>
-                <strong>Email:</strong> {(user.email as string) ?? "—"}
+                <Span weight="bold">Email:</Span> {(user.email as string) ?? "—"}
               </Text>
               <Text>
-                <strong>Phone:</strong> {(user.phoneNumber as string) ?? "—"}
+                <Span weight="bold">Phone:</Span> {(user.phoneNumber as string) ?? "—"}
               </Text>
               <Text>
-                <strong>Created:</strong>{" "}
+                <Span weight="bold">Created:</Span>{" "}
                 {user.createdAt
                   ? new Date(user.createdAt as string).toLocaleString()
                   : "—"}

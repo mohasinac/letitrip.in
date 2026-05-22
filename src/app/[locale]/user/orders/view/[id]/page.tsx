@@ -20,17 +20,15 @@ import {
   type BundleOrderGroup,
 } from "@mohasinac/appkit";
 
-const CLS_PANEL = "rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5";
-
 const STATUS_COLORS: Record<string, string> = {
-  pending:          "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
-  confirmed:        "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  processing:       "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  pending:          "bg-warning-surface text-warning",
+  confirmed:        "bg-info-surface text-info",
+  processing:       "bg-info-surface text-info",
   shipped:          "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
-  delivered:        "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  cancelled:        "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-  refunded:         "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
-  return_requested: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  delivered:        "bg-success-surface text-success",
+  cancelled:        "bg-error-surface text-error",
+  refunded:         "bg-warning-surface text-warning",
+  return_requested: "bg-warning-surface text-warning",
   returned:         "bg-zinc-100 text-zinc-600 dark:bg-slate-800 dark:text-zinc-400",
 };
 
@@ -93,9 +91,9 @@ function renderItemRow(item: OrderItemT, key: string | number) {
           </Text>
         )}
         {isPrizeDraw && revealStatus && (
-          <Row gap="sm" className="mt-1 flex-wrap items-center">
+          <Row gap="sm" className="mt-1 flex-wrap">
             {revealStatus === "revealed" ? (
-              <span className="inline-flex items-center rounded-full bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
+              <span className="inline-flex items-center rounded-full bg-success-surface px-2 py-0.5 text-[10px] font-semibold text-success">
                 Prize revealed{item.revealedItemNumber != null ? ` (#${item.revealedItemNumber})` : ""}
               </span>
             ) : revealStatus === "open" ? (
@@ -103,7 +101,7 @@ function renderItemRow(item: OrderItemT, key: string | number) {
                 Reveal pending
               </span>
             ) : revealStatus === "pending" ? (
-              <span className="inline-flex items-center rounded-full bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300">
+              <span className="inline-flex items-center rounded-full bg-warning-surface px-2 py-0.5 text-[10px] font-semibold text-warning">
                 Awaiting reveal window
               </span>
             ) : (
@@ -178,7 +176,7 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
     : "";
   const statusColor = STATUS_COLORS[order.orderStatus] ?? "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
   return (
-    <Div className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 space-y-3">
+    <Div surface="card" padding="md" className="space-y-3">
       <Row justify="between" wrap gap="3" align="start">
         <Div>
           <Text className="text-xs text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Order</Text>
@@ -210,7 +208,7 @@ function renderOrderItems(order: NonNullable<OrderData>) {
   const canReveal = CODE_REVEAL_STATUSES.has((order.orderStatus ?? "").toLowerCase());
   return (
     <Stack gap="md">
-      <Div className={CLS_PANEL}>
+      <Div surface="card" padding="md">
         <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
           Items ({order.items.length})
         </Text>
@@ -229,7 +227,7 @@ function renderOrderAddress(order: NonNullable<OrderData>) {
   if (!order.address) return null;
   const a = order.address;
   return (
-    <Div className={CLS_PANEL}>
+    <Div surface="card" padding="md">
       <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3">Delivery Address</Text>
       <Stack gap="xs">
         <Text className="text-sm text-zinc-800 dark:text-zinc-200">{a.line1}</Text>
@@ -246,7 +244,7 @@ function renderOrderAddress(order: NonNullable<OrderData>) {
 
 function renderOrderPayment(order: NonNullable<OrderData>) {
   return (
-    <Div className={CLS_PANEL}>
+    <Div surface="card" padding="md">
       <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3">Payment Summary</Text>
       <Stack gap="xs">
         <Row justify="between">
@@ -266,7 +264,7 @@ function renderOrderPayment(order: NonNullable<OrderData>) {
             <Text variant="secondary" className="text-sm">
               Discount{order.couponCode ? ` (${order.couponCode})` : ""}
             </Text>
-            <Text className="text-sm text-green-600 dark:text-green-400">
+            <Text className="text-sm text-success">
               −{paise(order.discount, order.currency)}
             </Text>
           </Row>

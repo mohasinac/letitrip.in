@@ -2,7 +2,7 @@
 
 > **Auto-generated catalog of every export from every source file in the LetItRip monorepo.**
 > Update this file after every code change to track impact across the codebase.
-> Last updated: 2026-05-22
+> Last updated: 2026-05-22 (full from-scratch regeneration via 4 parallel scan agents)
 
 ---
 
@@ -28,1418 +28,1531 @@
 18. [Tokens & Design System](#18-tokens--design-system)
 19. [Route Map](#19-route-map)
 20. [Firebase Jobs](#20-firebase-jobs)
+21. [Audit Scripts](#21-audit-scripts)
 
 ---
 
 ## 1. UI Components
 
-### Layout Primitives (appkit/src/ui/components/Layout.tsx)
+### Layout Primitives (`appkit/src/ui/components/Layout.tsx`)
 
-| Export | Type | Props | Purpose |
-|--------|------|-------|---------|
-| `Container` | Component | `size?: ContainerSize, as?: ElementType, className?` | Page-level max-width + centering + responsive px |
-| `Stack` | Component | `gap?: GapKey, centered?, align?, as?, className?` | Vertical flex column |
-| `Row` | Component | `gap?: GapKey, centered?, align?, justify?, wrap?, as?, className?` | Horizontal flex row |
-| `Grid` | Component | `cols?: GridCols, gap?: GapKey, as?, className?` | Responsive CSS grid (30+ presets) |
-| `GapKey` | Type | — | `"none"\|"px"\|"xs"\|"sm"\|"2.5"\|"3"\|"md"\|"5"\|"lg"\|"xl"\|"2xl"` |
-| `ContainerSize` | Type | — | `"sm"\|"md"\|"lg"\|"xl"\|"2xl"\|"full"\|"wide"\|"ultra"` |
-| `GridCols` | Type | — | `1-6\|"cards"\|"productCards"\|"storeCards"\|"sidebar"\|"halves"\|"twoThird"\|"autoSm"\|"autoMd"\|"autoLg"` + 15 more |
-| `ViewPortal` | Type | — | `"admin"\|"seller"\|"user"\|"public"` |
-| `GRID_MAP` | Const | — | Grid column class map (30 presets) |
-| `GAP_MAP` | Const | — | Gap class map (11 sizes) |
-| `CONTAINER_MAP` | Const | — | Container size class map (8 sizes) |
+| Export | Type | Props/Signature | Purpose |
+|--------|------|-----------------|---------|
+| Container | Component | size, as, surface, padding, rounded, border, shadow, children | Page-level container with max-width, centering, responsive padding |
+| Stack | Component | gap, centered, align, as, surface, padding, rounded, border, shadow, children | Vertical flex column with responsive gap |
+| Row | Component | gap, centered, align, justify, wrap, as, surface, padding, rounded, border, shadow, children | Horizontal flex row with alignment control |
+| Grid | Component | cols, gap, as, surface, padding, rounded, border, shadow, children | Responsive CSS grid with multiple layout presets |
+| GAP_MAP | Constant | {none, px, xs, sm, 2.5, 3, md, 5, lg, xl, 2xl} | Gap token map for spacing |
+| GRID_MAP | Constant | {1-6, cards, productCards, sidebar, etc.} | Responsive grid column presets |
+| GapKey | Type | keyof GAP_MAP | Gap token type |
+| GridCols | Type | keyof GRID_MAP | Grid column preset type |
+| ContainerSize | Type | keyof CONTAINER_MAP | Container size type |
+| ViewPortal | Type | "admin" \| "seller" \| "user" \| "public" | Portal context type |
 
-### Semantic Elements (appkit/src/ui/components/Semantic.tsx)
+### Typography (`appkit/src/ui/components/Typography.tsx`)
 
-| Export | Type | Props | Purpose |
-|--------|------|-------|---------|
-| `Section` | Component (forwardRef) | `className?, children` | `<section>` wrapper |
-| `Article` | Component | `className?, children?` | `<article>` wrapper |
-| `Main` | Component | `className?, children` | `<main>` wrapper |
-| `Aside` | Component (forwardRef) | `className?, children` | `<aside>` wrapper |
-| `Nav` | Component | `aria-label (required), className?, children` | `<nav>` with enforced aria-label |
-| `BlockHeader` / `Header` | Component | `className?, children` | `<header>` for block-level use |
-| `BlockFooter` / `Footer` | Component | `className?, children` | `<footer>` for block-level use |
-| `Ul` | Component | `className?, children` | `<ul>` wrapper |
-| `Ol` | Component | `className?, children` | `<ol>` wrapper |
-| `Li` | Component | `className?, children` | `<li>` wrapper |
+| Export | Type | Props/Signature | Purpose |
+|--------|------|-----------------|---------|
+| Heading | Component | level, variant, color, className, children | Semantic heading (h1-h6) with color variants |
+| Text | Component | variant, color, size, weight, as, className, children | Flexible text element with size/weight/color control |
+| Label | Component | required, className, children | Form label with optional required indicator |
+| Caption | Component | variant, className, children | Small caption text (default, accent, inverse) |
+| Span | Component | variant, color, size, weight, className, children | Inline text wrapper with optional styling |
+| ColorVariant | Type | keyof TYPOGRAPHY.colorVariant | Color variant type |
+| TYPOGRAPHY | Constant | {headingLevel, textSize, textWeight, colorVariant} | Typography token map |
 
-### Typography (appkit/src/ui/components/Typography.tsx)
+### Semantic HTML (`appkit/src/ui/components/Semantic.tsx`)
 
-| Export | Type | Props | Purpose |
-|--------|------|-------|---------|
-| `Heading` | Component | `level?: 1-6, variant?: "primary"\|"secondary"\|"muted"\|"none", className?` | Semantic headings h1-h6 |
-| `Text` | Component | `variant?, size?: "xs"-"xl", weight?, as?: ElementType, className?` | Paragraph text with semantic colors |
-| `Label` | Component | `required?, className?` | Form labels with optional asterisk |
-| `Caption` | Component | `variant?: "default"\|"accent"\|"inverse", className?` | Small caption text |
-| `Span` | Component | `variant?, size?, weight?, className?` | Inline styled text fragment |
+| Export | Type | Props/Signature | Purpose |
+|--------|------|-----------------|---------|
+| Section | Component | children, surface, padding, rounded, border, shadow | Semantic `<section>` for thematically grouped content |
+| Article | Component | children, surface, padding, rounded, border, shadow | Semantic `<article>` for self-contained compositions |
+| Main | Component | children, surface, padding, rounded, border, shadow | Semantic `<main>` wrapping primary page content |
+| Aside | Component | children, surface, padding, rounded, border, shadow | Semantic `<aside>` for supplementary content |
+| Nav | Component | aria-label (required), children | Semantic `<nav>` with enforced aria-label |
+| BlockHeader / Header | Component | children, surface, padding, rounded, border, shadow | Block-level `<header>` for component headers |
+| BlockFooter / Footer | Component | children, surface, padding, rounded, border, shadow | Block-level `<footer>` for component footers |
+| Ul | Component | children | Semantic `<ul>` for unordered lists |
+| Ol | Component | children | Semantic `<ol>` for ordered lists |
+| Li | Component | children | Semantic `<li>` list item |
+| Table | Component | variant, size, stickyHeader, surface, padding, rounded, border, shadow, children | Semantic `<table>` with style variants (default, striped, bordered) |
+| Thead | Component | children | Semantic `<thead>` table head section |
+| Tbody | Component | children | Semantic `<tbody>` table body section |
+| Tr | Component | hover, children | Semantic `<tr>` with optional hover state |
+| Th | Component | align, children | Semantic `<th>` table header cell |
+| Td | Component | align, children | Semantic `<td>` table data cell |
+| Code | Component | color, className, children | Semantic `<code>` inline code (default, primary, error, success) |
+| Pre | Component | surface, padding, rounded, border, shadow, children | Semantic `<pre>` code block |
+| Blockquote | Component | color, surface, padding, rounded, border, shadow, children | Semantic `<blockquote>` (default, primary, info, warning) |
+| Figure | Component | surface, padding, rounded, border, shadow, children | Semantic `<figure>` for images/illustrations |
+| Figcaption | Component | children | Semantic `<figcaption>` for figure captions |
+| Dl | Component | variant, surface, padding, rounded, border, shadow, children | Semantic `<dl>` description list (stacked, inline) |
+| Dt | Component | children | Semantic `<dt>` description term |
+| Dd | Component | children | Semantic `<dd>` description details |
 
-### Div (appkit/src/ui/components/Div.tsx)
+### Div (`appkit/src/ui/components/Div.tsx`)
 
-| Export | Type | Props | Purpose |
-|--------|------|-------|---------|
-| `Div` | Component | `data-section (required), className?, children?` | Thin div wrapper (1140+ usages) |
+| Export | Type | Props/Signature | Purpose |
+|--------|------|-----------------|---------|
+| Div | Component | surface, padding, rounded, border, shadow, className, children | Generic div with surface token support |
+| DivProps | Type | HTMLDivAttributes & SurfaceProps | Div props interface |
 
-### Form Components
+### Surface Tokens (`appkit/src/ui/components/surface-tokens.ts`)
 
-| File | Export | Props | Purpose |
-|------|--------|-------|---------|
-| `Button.tsx` | `Button` | `variant, size, color, loading?, disabled?, action?, asChild?, href?` | Primary CTA with action-def auto-resolution |
-| `Input.tsx` | `Input` | `type, size, error?, icon?, className?` | Text input with error state |
-| `Select.tsx` | `Select` | `options[], value, onChange, placeholder?, size?` | Dropdown select |
-| `Textarea.tsx` | `Textarea` | `rows?, maxLength?, error?, className?` | Multi-line text input |
-| `Toggle.tsx` | `Toggle` | `checked, onChange, size?, disabled?` | Switch toggle (pill style) |
-| `Checkbox.tsx` | `Checkbox` | `checked, onChange, indeterminate?, label?` | Checkbox with label |
-| `RadioGroup.tsx` | `RadioGroup` | `options[], value, onChange, direction?` | Radio button group |
-| `SearchInput.tsx` | `SearchInput` | `value, onChange, placeholder?, onClear?` | Search with clear button |
-| `DatePicker.tsx` | `DatePicker` | `value, onChange, min?, max?` | Date input |
-| `FileInput.tsx` | `FileInput` | `accept?, multiple?, onChange, maxSize?` | File upload input |
-| `RichTextEditor.tsx` | `RichTextEditor` | `value, onChange, placeholder?` | TipTap-based HTML editor |
+| Export | Type | Props/Signature | Purpose |
+|--------|------|-----------------|---------|
+| SURFACE_MAP | Constant | {none, default, muted, subtle, inset, card, elevated, interactive, glass, form} | Surface/background token map |
+| PADDING_MAP | Constant | {none, xs, sm, md, lg, xl, card, section, sectionSm, page, inline, inlineSm, inlineLg} | Padding token map |
+| ROUNDED_MAP | Constant | {none, sm, md, lg, xl, 2xl, full} | Border radius token map |
+| BORDER_MAP | Constant | {none, default, subtle, strong, dashed} | Border style token map |
+| SHADOW_MAP | Constant | {none, sm, md, lg, xl} | Box shadow token map |
+| buildSurfaceClasses | Function | (props: SurfaceProps) => string | Builds tailwind classes from surface tokens |
+| SurfaceProps | Type | {surface?, padding?, rounded?, border?, shadow?} | Surface token props interface |
+| SurfaceKey | Type | keyof SURFACE_MAP | Surface token key type |
+| PaddingKey | Type | keyof PADDING_MAP | Padding token key type |
+| RoundedKey | Type | keyof ROUNDED_MAP | Rounded token key type |
+| BorderKey | Type | keyof BORDER_MAP | Border token key type |
+| ShadowKey | Type | keyof SHADOW_MAP | Shadow token key type |
 
-### Feedback & Overlay Components
+### Motion & Animation (`appkit/src/ui/components/Motion.tsx`)
 
-| File | Export | Props | Purpose |
-|------|--------|-------|---------|
-| `Modal.tsx` | `Modal` | `isOpen, onClose, title?, size?, children` | Centered modal dialog |
-| `SideDrawer.tsx` | `SideDrawer` | `isOpen, onClose, title?, side?, width?, children` | Slide-in drawer panel |
-| `SideModal.tsx` | `SideModal` | `isOpen, onClose, title?, children` | Side-anchored modal |
-| `Toast.tsx` | `showToast` | `(message, variant?)` | Toast notification helper |
-| `Badge.tsx` | `Badge` | `variant, size?, children` | Status/count badge |
-| `Alert.tsx` | `Alert` | `variant, title?, children` | Alert banner |
-| `Tooltip.tsx` | `Tooltip` | `content, children, side?` | Hover tooltip |
-| `ConfirmDialog.tsx` | `ConfirmDialog` | `isOpen, onConfirm, onCancel, title, message` | Confirmation dialog |
-| `PageLoader.tsx` | `PageLoader` | `timeout?` | Full-page loading spinner (15s timeout) |
-| `Skeleton.tsx` | `Skeleton` | `width?, height?, rounded?` | Loading placeholder |
+| Export | Type | Props/Signature | Purpose |
+|--------|------|-----------------|---------|
+| AnimatePresence | Component | (motion/react re-export) | Animate presence wrapper for exit animations |
+| FadeIn | Component | delay, duration, children | Fade in animation (0→1 opacity) |
+| SlideUp | Component | delay, distance, children | Slide up animation with fade |
+| SlideIn | Component | direction, delay, distance, children | Slide in from any direction (left/right/up/down) |
+| ScaleIn | Component | delay, children | Scale in animation (0.95→1) |
+| Collapse | Component | isOpen, children | Animate height collapse/expand |
+| PressScale | Component | scale, children | Scale on tap/click (0.97 default) |
+| HoverLift | Component | lift, children | Lift up on hover (y: -2 default) |
+| AnimatedList | Component | staggerDelay, children | Staggered list item animations |
+| AnimatedDiv | Component | delay, children | Animated div wrapper (fade) |
+| AnimatedStack | Component | delay, className, children | Animated flex column (fade) |
+| AnimatedRow | Component | delay, className, children | Animated flex row (fade) |
+| Draggable | Component | axis, constraints, dragElastic, children | Draggable container wrapper |
+| Swipeable | Component | onSwipeLeft, onSwipeRight, threshold, children | Swipeable container (x-axis) |
 
-### Data Display Components
+### Button (`appkit/src/ui/components/Button.tsx`)
 
-| File | Export | Props | Purpose |
-|------|--------|-------|---------|
-| `DataTable.tsx` | `DataTable` | `columns[], data[], selectable?, sortable?, pagination?` | Full-featured data table |
-| `Card.tsx` | `Card` | `variant?, padding?, shadow?, hover?, className?` | Generic card container |
-| `Accordion.tsx` | `Accordion` | `items[], multiple?, defaultOpen?` | Expandable content panels |
-| `Tabs.tsx` | `Tabs` | `tabs[], activeTab, onChange` | Tab navigation |
-| `EmptyState.tsx` | `EmptyState` | `icon?, title, description?, action?` | Empty content placeholder |
-| `Avatar.tsx` | `Avatar` | `src?, name?, size?` | User avatar with fallback initials |
-| `ProgressBar.tsx` | `ProgressBar` | `value, max?, variant?` | Progress indicator |
-| `Breadcrumb.tsx` | `Breadcrumb` | `items[]` | Navigation breadcrumb trail |
-| `Pagination.tsx` | `Pagination` | `currentPage, totalPages, onPageChange` | Page navigation |
-| `Tag.tsx` | `Tag` | `variant?, removable?, onRemove?` | Removable tag/chip |
+| Export | Type | Props/Signature | Purpose |
+|--------|------|-----------------|---------|
+| Button | Component | variant, size, isLoading, children, asChild, action, ...buttonProps | Versatile button with ripple, variants (primary, secondary, outline, ghost, danger, warning), action registry support |
+| ButtonProps | Type | {variant?, size?, isLoading?, asChild?, action?} | Button props interface |
 
-### DataTable Column Helpers (appkit/src/ui/helpers/columns/)
+### Input (`appkit/src/ui/components/Input.tsx`)
 
-| File | Export | Purpose |
-|------|--------|---------|
-| `text-column.ts` | `textColumn(key, label, opts?)` | Plain text cell |
-| `date-column.ts` | `dateColumn(key, label, opts?)` | Formatted date cell |
-| `currency-column.ts` | `currencyColumn(key, label, opts?)` | INR paise → formatted cell |
-| `badge-column.ts` | `badgeColumn(key, label, variantMap)` | Status badge cell |
-| `image-column.ts` | `imageColumn(key, label, opts?)` | Thumbnail image cell |
-| `boolean-column.ts` | `booleanColumn(key, label, opts?)` | Yes/No toggle cell |
-| `actions-column.ts` | `actionsColumn(actions[])` | Row action menu cell |
-| `link-column.ts` | `linkColumn(key, label, hrefFn)` | Clickable link cell |
-| `checkbox-column.ts` | `checkboxColumn()` | Selection checkbox cell |
-| `custom-column.ts` | `customColumn(key, label, renderFn)` | Custom render cell |
-| `rating-column.ts` | `ratingColumn(key, label)` | Star rating cell |
-| `user-column.ts` | `userColumn(key, label)` | Avatar + name cell |
-| `progress-column.ts` | `progressColumn(key, label)` | Progress bar cell |
+| Export | Type | Props/Signature | Purpose |
+|--------|------|-----------------|---------|
+| Input | Component | label, error, helperText, icon, rightIcon, success, bare, variant | Text input with icon, label, error state, helper text |
+| InputProps | Type | {label?, error?, helperText?, icon?, rightIcon?, success?, bare?, variant?} | Input props interface |
+
+### Select (`appkit/src/ui/components/Select.tsx`)
+
+| Export | Type | Props/Signature | Purpose |
+|--------|------|-----------------|---------|
+| Select | Component | options, value, onChange, onValueChange, placeholder, label, error, helperText, required, variant | Styled native select with label and error handling |
+| SelectOption | Type | {label, value, disabled?} | Select option object type |
+| SelectProps | Type | {options, value?, onChange?, onValueChange?, ...} | Select props interface |
+
+### Card (`appkit/src/ui/components/Card.tsx`)
+
+| Export | Type | Props/Signature | Purpose |
+|--------|------|-----------------|---------|
+| Card | Component | variant, padding, hover, animate, surface, rounded, border, shadow, className, children, onClick | Flexible card with 14 variants, animation modes, surface tokens |
+| CardHeader | Component | children, className | Card header section |
+| CardBody | Component | children, className | Card body/content section |
+| CardFooter | Component | children, className | Card footer section |
+| CardProps | Type | {variant?, padding?, hover?, animate?, ...SurfaceProps} | Card props interface |
+
+### Badge (`appkit/src/ui/components/Badge.tsx`)
+
+| Export | Type | Props/Signature | Purpose |
+|--------|------|-----------------|---------|
+| Badge | Component | children, variant, className | Compact status/role badge with ring border variants |
+| BadgeVariant | Type | "active" \| "inactive" \| "pending" \| "approved" \| "rejected" \| "success" \| "warning" \| "danger" \| "info" \| "admin" \| "moderator" \| "seller" \| "employee" \| "user" \| "default" \| "primary" \| "secondary" | Badge variant type |
+
+### Modal (`appkit/src/ui/components/Modal.tsx`)
+
+| Export | Type | Props/Signature | Purpose |
+|--------|------|-----------------|---------|
+| Modal | Component | isOpen, open, onClose, title, children, size, showCloseButton, actions, className | Portal-rendered modal dialog with keyboard/focus management |
+| ModalFooter | Component | children, className | Modal footer section |
+| ModalProps | Type | {isOpen?, open?, onClose, title?, children, size?, ...} | Modal props interface |
+
+### Toast (`appkit/src/ui/components/Toast.tsx`)
+
+| Export | Type | Props/Signature | Purpose |
+|--------|------|-----------------|---------|
+| ToastProvider | Component | children, position | Toast provider wrapper (context) |
+| useToast | Hook | () => {showToast, hideToast} | Toast context hook |
+| ToastVariant | Type | "success" \| "error" \| "warning" \| "info" | Toast notification variant |
+| ToastPosition | Type | "top-right" \| "top-left" \| "bottom-right" \| "bottom-left" \| "top-center" \| "bottom-center" | Toast position type |
+
+### Additional UI Components
+
+| File | Export | Type | Purpose |
+|------|--------|------|---------|
+| Checkbox.tsx | Checkbox | Component | Styled checkbox with label, error, indeterminate support |
+| Textarea.tsx | Textarea | Component | Multi-line text input with label, error, counter |
+| Toggle.tsx | Toggle | Component | Toggle switch (pill-style) |
+| Radio.tsx | Radio, RadioGroup | Component | Radio button and group |
+| Slider.tsx | Slider | Component | Range slider |
+| DateInput.tsx | DateInput | Component | Date input with formatting |
+| OtpInput.tsx | OtpInput | Component | One-time password input (6-digit) |
+| TagInput.tsx | TagInput | Component | Tag/chip input with add/remove |
+| DynamicSelect.tsx | DynamicSelect | Component | Async-loadable select with search |
+| PaginatedMultiSelect.tsx | PaginatedMultiSelect | Component | Multi-select with pagination |
+| InlineCreateSelect.tsx | InlineCreateSelect | Component | Select with inline create option |
+| SideDrawer.tsx | SideDrawer | Component | Side panel drawer |
+| SideModal.tsx | SideModal | Component | Side modal (wider drawer) |
+| Drawer.tsx | Drawer | Component | Bottom/side drawer |
+| StatusBadge.tsx | StatusBadge | Component | Status-specific badge |
+| RoleBadge.tsx | RoleBadge | Component | User role badge |
+| Alert.tsx | Alert | Component | Alert banner (success/error/warning/info) |
+| Tooltip.tsx | Tooltip | Component | Hover tooltip |
+| Avatar.tsx | Avatar | Component | User avatar with fallback |
+| Accordion.tsx | Accordion, AccordionItem | Component | Expandable accordion panels |
+| Tabs.tsx | Tabs | Component | Tab navigation |
+| Pagination.tsx | Pagination | Component | Page navigation controls |
+| Dropdown.tsx | Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSeparator | Component | Composite dropdown/menu system with keyboard support |
+| Skeleton.tsx | Skeleton | Component | Loading skeleton placeholder |
+| Spinner.tsx | Spinner | Component | Loading spinner |
+| Progress.tsx | Progress | Component | Progress bar |
+| Breadcrumb.tsx | Breadcrumb | Component | Breadcrumb navigation |
+| Divider.tsx | Divider | Component | Visual separator |
+| EmptyState.tsx | EmptyState | Component | Empty/no-data state with icon + CTA |
+| IconButton.tsx | IconButton | Component | Icon-only button |
+| TextLink.tsx | TextLink | Component | Styled inline link |
+| StarRating.tsx | StarRating | Component | Star rating display/input |
+| PriceDisplay.tsx | PriceDisplay | Component | Currency-formatted price |
+| CountdownDisplay.tsx | CountdownDisplay | Component | Countdown timer |
+| SiteLogo.tsx | SiteLogo | Component | SVG wordmark + admin-override pipeline |
+| PageLoader.tsx | PageLoader | Component | Full-page loading with 15s timeout |
+| ViewToggle.tsx | ViewToggle | Component | Grid/list view toggle |
+| ResponsiveView.tsx | ResponsiveView | Component | Responsive breakpoint-aware container |
+| ImageGallery.tsx | ImageGallery | Component | Image gallery with lightbox |
+| ImageLightbox.tsx | ImageLightbox | Component | Fullscreen image viewer |
+| BackgroundRenderer.tsx | BackgroundRenderer | Component | Background image/video/gradient renderer |
+| DashboardStatsCard.tsx | DashboardStatsCard | Component | Dashboard metric card |
+| StatsGrid.tsx | StatsGrid | Component | Grid of stat cards |
+| SummaryCard.tsx | SummaryCard | Component | Summary/overview card |
+| FlowDiagram.tsx | FlowDiagram | Component | Flow/step diagram |
+| BaseListingCard.tsx | BaseListingCard, BaseListingCard.Checkbox | Component | Base card for marketplace listings with selection support |
+| FormShell.tsx | FormShell | Component | Form wrapper with Zod schema, validateOnChange, splitPreview |
+| FormGroup.tsx | FormGroup | Component | Logical form field group |
+| FormField.tsx | FormField | Component | Individual form field |
+| FormActionBar.tsx | FormActionBar | Component | Form submit/cancel action bar |
+| ConfirmDeleteModal.tsx | ConfirmDeleteModal | Component | Confirm destructive action modal |
+| UnsavedChangesModal.tsx | UnsavedChangesModal | Component | Unsaved changes warning modal |
+| LoginRequiredModal.tsx | LoginRequiredModal | Component | Login prompt modal |
+| QuickCreateModal.tsx | QuickCreateModal | Component | Quick create entity modal |
+| PasswordStrengthIndicator.tsx | PasswordStrengthIndicator | Component | Password strength meter |
+| RichTextEditor.tsx | RichTextEditor | Component | Rich text/HTML editor |
+| DescriptionField.tsx | DescriptionField | Component | Description textarea with rich text |
+| ItemRow.tsx | ItemRow | Component | Horizontal item display row |
+| ActiveFilterChips.tsx | ActiveFilterChips | Component | Active filter chip display |
+| FilterChipGroup.tsx | FilterChipGroup | Component | Filter chip group |
+| FilterDrawer.tsx | FilterDrawer | Component | Filter sidebar/drawer |
+| BulkActionBar.tsx | BulkActionBar | Component | Bulk selection action bar |
+| RowActionMenu.tsx | RowActionMenu | Component | Row-level action dropdown |
+| SortDropdown.tsx | SortDropdown | Component | Sort column/direction dropdown |
+| SectionTabs.tsx | SectionTabs | Component | Section tab navigation |
+| TabStrip.tsx | TabStrip | Component | Horizontal tab strip |
+| StepperNav.tsx | StepperNav | Component | Multi-step navigation |
+| HorizontalScroller.tsx | HorizontalScroller | Component | Horizontal scroll container with arrows |
+| ListingLayout.tsx | ListingLayout | Component | Listing page layout shell |
+| ListingViewShell.tsx | ListingViewShell | Component | Listing view scaffold |
+| SlottedListingView.tsx | SlottedListingView | Component | Slot-based listing view |
+| StackedViewShell.tsx | StackedViewShell | Component | Stacked card view scaffold |
+| DetailViewShell.tsx | DetailViewShell | Component | Detail page scaffold |
+| ListingToolbar.tsx | ListingToolbar | Component | Search/filter/sort toolbar |
+| VacationBanner.tsx | VacationBanner | Component | Store vacation mode banner |
+| ClaimCouponButton.tsx | ClaimCouponButton | Component | Coupon claim CTA button |
 
 ---
 
 ## 2. Feature View Components
 
-### Products (appkit/src/features/products/components/)
+### Account (`appkit/src/features/account/components/`)
 
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `ProductDetailView` | `product, store, features?, renderActions?, renderBreadcrumb?` | Full product detail page layout | `/products/[slug]`, `/stores/[slug]/products/[id]` |
-| `ProductCard` | `product, onAddToCart?, onWishlist?, selectable?` | Product listing card | Grid views |
-| `InteractiveProductCard` | `product, selected?, onSelect?, onQuickView?` | Card with selection + quick-view | Admin/store listings |
-| `SellerProductsView` | `storeId, portal, renderToolbar?, renderBulkActions?` | Full seller product listing with tabs | `/store/products`, `/admin/products` |
-| `AdminProductsView` | `renderToolbar?, renderBulkActions?, renderRowActions?` | Admin product management view | `/admin/products` |
-| `ProductForm` | `initialData?, storeId?, onSubmit, mode: "create"\|"edit"` | Product create/edit form | `/store/products/new`, `/admin/products/new` |
-| `ProductGrid` | `products[], cols?, gap?` | Responsive product grid | Public listing pages |
-| `BaseListingCard` | `product, renderBadge?, renderActions?, Checkbox` | Base card primitive for all listing types | All marketplace cards |
-| `TypeDropdown` | `value, onChange, options[]` | Listing type filter dropdown | Seller/admin listings |
+| Export | Type | Purpose |
+|--------|------|---------|
+| UserSidebar | Component | Account navigation sidebar |
+| AddressCard, AddressBook | Component | Display and manage user addresses |
+| AddressForm | Component | Form for creating/editing addresses |
+| AddressSelectorCreate | Component | Address selector with create option |
+| NotificationBell | Component | Notification bell icon with dropdown |
+| NotificationPreferencesPanel | Component | Notification preference settings |
+| UserAccountHubView | View | Main user account hub/dashboard |
+| ProfileView | View | User profile display and edit |
+| UserSettingsView | View | User settings and preferences |
+| UserOrdersView | View | User orders listing and history |
+| OrderDetailView | View | Single order detail view |
+| UserAddressesView | View | Address book management |
+| UserNotificationsView | View | Notification center |
+| UserOffersView, UserOffersPanel | View | User offers/negotiations |
+| MessagesView | View | User messaging view |
+| ChatList, ChatWindow | Component | Chat conversations list and window |
+| BecomeSellerView | View | Seller registration form |
+| UserOrderTrackView | View | Order tracking page |
+| UserReturnsView | View | Returns and refunds management |
+| UserSupportView | View | Support/ticket interface |
 
-### Auctions (appkit/src/features/auctions/components/)
+### Admin (`appkit/src/features/admin/components/`)
 
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `AuctionDetailView` | `auction, bids[], renderActions?` | Auction detail with bid history | `/auctions/[slug]` |
-| `AuctionCard` | `auction, onBid?` | Auction listing card with countdown | Grid views |
-| `BidForm` | `auction, currentBid, onSubmit` | Place bid form | Auction detail |
-| `BidHistory` | `bids[], productId` | Bid history table | Auction detail |
-| `AuctionTimer` | `endDate, onExpire?` | Countdown timer | Auction cards/detail |
+| Export | Type | Purpose |
+|--------|------|---------|
+| DataTable | Component | Generic data table for admin listings |
+| QuickEditMenu | Component | Context menu for quick edits |
+| AdminListingScaffold | Component | Template for admin list views |
+| DashboardStatsGrid | Component | Dashboard statistics grid |
+| AdminDashboardView | View | Main admin dashboard |
+| AdminProductsView | View | Admin products listing |
+| AdminProductEditorView | View | Admin product editor |
+| AdminOrdersView | View | Admin orders management |
+| AdminOrderEditorView | View | Order editor |
+| AdminUsersView | View | Admin user management |
+| AdminUserEditorView | View | User editor |
+| AdminStoresView | View | Stores management |
+| AdminStoreEditorView | View | Store editor |
+| AdminCategoriesView | View | Categories management |
+| AdminCategoryEditorView | View | Category editor |
+| AdminBrandsView | View | Brands management |
+| AdminBrandEditorView | View | Brand editor |
+| AdminBidsView | View | Auction bids view |
+| AdminCouponsView | View | Coupons management |
+| AdminCouponEditorView | View | Coupon editor |
+| AdminBlogView | View | Blog posts management |
+| AdminBlogEditorView | View | Blog post editor |
+| AdminFaqsView | View | FAQs management |
+| AdminFaqEditorView | View | FAQ editor |
+| AdminEventsView | View | Events management |
+| AdminEventEditorView | View | Event editor |
+| AdminEventEntriesView | View | Event entries management |
+| AdminAllEventEntriesView | View | All event entries listing |
+| AdminReviewsView | View | Reviews management |
+| AdminPayoutsView | View | Payouts management |
+| AdminSectionsView | View | Homepage sections management |
+| AdminCarouselView | View | Carousel management |
+| AdminCarouselEditorView | View | Carousel editor |
+| AdminAdsView, AdminAdEditorView | View | Ads management and editor |
+| AdminMediaView | View | Media management |
+| AdminNavigationView | View | Navigation management |
+| AdminNavEditorView | View | Navigation editor |
+| AdminSiteView | View | Site configuration |
+| AdminSiteSettingsView | View | Site settings |
+| AdminAnalyticsView | View | Analytics dashboard |
+| AdminSessionsView, AdminSessionsManager | View | Sessions management |
+| AdminNotificationsView | View | Notifications management |
+| AdminCartsView | View | User carts management |
+| AdminWishlistsView | View | User wishlists management |
+| AdminHistoryView | View | User history management |
+| AdminPrizeDrawsView | View | Prize draws management |
+| AdminBundlesView, AdminBundleEditorView | View | Bundles management and editor |
+| AdminSublistingCategoriesView, AdminSublistingCategoryEditorView | View | Sublisting categories |
+| AdminFeaturesView, AdminFeatureEditorView | View | Product features management |
+| AdminFeatureFlagsView | View | Feature flags management |
+| AdminTeamView | View | Team management |
+| AdminEmployeeEditorView | View | Employee editor |
+| AdminSupportTicketsView, AdminSupportTicketDetailView | View | Support tickets |
+| AdminScammersView, AdminScammerEditorView | View | Scammers registry |
+| AdminReturnRequestsView | View | Return requests management |
+| AdminStoreAddressesView | View | Store addresses management |
+| AdminAddressEditorView | View | Address editor |
+| AdminNewsletterView | View | Newsletter management |
+| AdminContactView, AdminContactEditorView | View | Contact management |
+| AdminCopilotView | View | AI Copilot admin interface |
+| DemoSeedView | View | Demo data seeding |
+| QuickActionsPanel | Component | Quick actions panel |
+| AdminSidebar, AdminTopBar | Component | Admin sidebar and top bar |
+| AdminFilterBar, AdminPageHeader | Component | Filter bar and page header |
+| DrawerFormFooter | Component | Form footer in drawer |
+| CategoryQuickCreateForm, BrandQuickCreateForm | Form | Quick create forms |
+| AdminStatCard, AdminRevenueChart, AdminOrdersChart, AdminTopProductsTable | Component | Analytics components |
 
-### Orders (appkit/src/features/orders/components/)
+### Auctions (`appkit/src/features/auctions/components/`)
 
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `OrderDetailView` | `order, renderActions?, renderTimeline?` | Full order detail layout | `/user/orders/[id]`, `/store/orders/[id]`, `/admin/orders/[id]` |
-| `OrderTimeline` | `events[]` | Visual status timeline | Order detail |
-| `OrderSummary` | `order` | Price breakdown summary | Order detail, checkout |
-| `InvoiceView` | `order, store, buyer` | Printable invoice layout | `/user/orders/[id]/invoice` |
+| Export | Type | Purpose |
+|--------|------|---------|
+| MarketplaceAuctionCard | Card | Auction card for marketplace |
+| MarketplaceAuctionGrid | Grid | Auctions grid display |
+| AuctionsListView | View | Auctions list view |
+| AuctionDetailPageView | Page | Single auction detail page |
+| AuctionBidsTable | Table | Bids history table |
 
-### Cart & Checkout (appkit/src/features/cart/, checkout/)
+### Auth (`appkit/src/features/auth/components/`)
 
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `CartView` | `cart, onUpdate?, onRemove?, renderCoupons?` | Full cart page view | `/user/cart` |
-| `CartItem` | `item, onQuantityChange?, onRemove?` | Single cart item row | Cart view |
-| `CartSummary` | `cart, appliedCoupons?` | Cart totals sidebar | Cart view |
-| `CheckoutView` | `cart, addresses[], onPlaceOrder` | Checkout flow page | `/user/checkout` |
-| `CheckoutSummary` | `items[], totals` | Checkout price summary | Checkout view |
+| Export | Type | Purpose |
+|--------|------|---------|
+| RoleGate, ProtectedRoute | Component | Route protection and role checking |
+| SocialAuthButtons | Component | OAuth sign-in buttons |
+| AuthStatusPanel | Component | Auth status display |
+| LoginForm | Form | Login form |
+| RegisterForm | Form | Registration form |
+| ForgotPasswordView | View | Forgot password page |
+| ResetPasswordView | View | Password reset page |
+| VerifyEmailView | View | Email verification page |
+| OAuthLoadingView | View | OAuth loading state |
 
-### Reviews (appkit/src/features/reviews/components/)
+### Blog (`appkit/src/features/blog/components/`)
 
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `ReviewCard` | `review, onHelpful?, onReport?` | Single review display | Review lists |
-| `ReviewForm` | `productId, onSubmit` | Write review form | Product detail |
-| `ReviewSummary` | `ratings, totalReviews` | Star distribution chart | Product/store detail |
-| `ReviewsList` | `reviews[], pagination?` | Paginated review list | Product detail, store about |
+| Export | Type | Purpose |
+|--------|------|---------|
+| BlogCard, BlogCategoryTabs, BlogListView | View | Blog posts listing |
+| BlogIndexListing | Listing | Blog index/search listing |
+| BlogFilters | Filter | Blog filtering |
+| BlogFeaturedCard | Card | Featured blog post card |
+| BlogPostForm | Form | Blog post editor form |
+| BlogPostView | View | Single blog post view |
 
-### Stores (appkit/src/features/stores/components/)
+### Cart & Checkout (`appkit/src/features/cart/components/`)
 
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `StoreCard` | `store, onFollow?` | Store listing card | Stores grid |
-| `StoreDetailView` | `store, renderProducts?, renderReviews?` | Store landing page | `/stores/[slug]` |
-| `StoreAboutView` | `store, reviews?, renderContact?` | Store about page | `/stores/[slug]/about` |
+| Export | Type | Purpose |
+|--------|------|---------|
+| CartItemRow, CartDrawer | Component | Cart sidebar drawer |
+| CartView | View | Full cart page |
+| CartSummary | Component | Cart summary widget |
+| CheckoutView | View | Checkout page |
+| CheckoutAddressStep | Step | Checkout address step |
+| CheckoutOtpModal | Modal | OTP verification modal |
+| CheckoutSuccessView | View | Checkout success page |
+| ShippingPicker | Component | Shipping method picker |
+| CheckoutStepper | Component | Checkout progress stepper |
 
-### Categories (appkit/src/features/categories/components/)
+### Categories (`appkit/src/features/categories/components/`)
 
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `CategoryCard` | `category` | Category tile card | Category grids |
-| `CategoryTree` | `tree[], selected?, onSelect?` | Hierarchical tree navigation | Admin categories, filter drawer |
-| `CategoryBreadcrumb` | `path[]` | Category hierarchy breadcrumb | Product detail |
+| Export | Type | Purpose |
+|--------|------|---------|
+| CategoryCard, CategoryGrid | Grid | Category grid display |
+| CategoryTree | Tree | Hierarchical category tree |
+| BreadcrumbTrail | Navigation | Category breadcrumbs |
+| CategoryFilters, CategorySortSelect | Filter | Category filtering |
+| CategoryProductsView | View | Products in category |
+| CategoryProductsListing | Listing | Category products listing |
+| CategoryForm | Form | Category editor form |
+| CategorySelectorCreate | Component | Category selector with create |
+| CategoryDetailTabs | Tabs | Category detail tabs |
+| CategoriesIndexListing | Listing | Categories index/search |
+| ConcernCard, ConcernGrid | Component | Concern category display |
+| BundleBuyNowCta | Button | Bundle direct checkout CTA |
+| BundleDynamicRuleEditor | Form | Bundle dynamic rule editor |
+| BundleCollage | Display | Bundle products collage |
+| BundleItemsPicker | Picker | Multi-select bundle items picker |
+| CategoryBundlesListing | Listing | Bundles in category |
+| CategoryStoresListing | Listing | Stores in category |
 
-### Blog (appkit/src/features/blog/components/)
+### Events (`appkit/src/features/events/components/`)
 
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `BlogPostCard` | `post` | Blog listing card | Blog index |
-| `BlogPostView` | `post, relatedPosts?` | Full blog post page | `/blog/[slug]` |
-| `BlogPostForm` | `initialData?, onSubmit` | Blog post editor | `/admin/blog/new`, `/admin/blog/[id]/edit` |
+| Export | Type | Purpose |
+|--------|------|---------|
+| EventStatusBadge | Badge | Event status badge |
+| EventCard | Card | Event card |
+| EventFilters | Filter | Event filtering |
+| EventsListView | View | Events listing |
+| EventsIndexListing | Listing | Events index/search |
+| EventDetailView | View | Single event detail |
+| EventParticipateView | View | Event participation form |
+| EventLeaderboard | Component | Event leaderboard display |
+| EventFormDrawer | Drawer | Event form drawer |
+| EventBanner | Banner | Event banner |
+| EventPollWidget | Widget | Event poll widget |
+| EventRafflesSection | Section | Raffles section in event |
+| EventRaffleWinnerView | View | Raffle winner announcement |
+| SpinWheelView | View | Spin wheel game |
 
-### Events (appkit/src/features/events/components/)
+### FAQ (`appkit/src/features/faq/components/`)
 
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `EventCard` | `event` | Event listing card | Events grid |
-| `EventDetailView` | `event, renderParticipate?, renderLeaderboard?` | Event detail tabs | `/events/[id]` |
-| `SpinWheelView` | `prizes[], onSpin, spinning?` | Animated spin wheel | Event detail (spin type) |
+| Export | Type | Purpose |
+|--------|------|---------|
+| FAQAccordion, FAQCategoryTabs | Accordion | FAQ accordion |
+| FAQCategorySidebar | Sidebar | FAQ category navigation |
+| FAQSortDropdown | Select | FAQ sort selector |
+| FAQHelpfulButtons | Component | Helpful/unhelpful vote buttons |
+| RelatedFAQs | List | Related FAQs section |
+| ContactCTA | Button | Contact CTA |
+| FAQPageContent | Page | FAQ page content |
 
-### Homepage (appkit/src/features/homepage/components/)
+### Homepage (`appkit/src/features/homepage/components/`)
 
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `HeroCarousel` | `slides[], autoplay?` | Homepage hero carousel | Homepage |
-| `HomepageSection` | `section, data?` | Dynamic section renderer | Homepage |
-| `WelcomeSection` | `config` | Welcome banner | Homepage |
-| `FeaturedProductsSection` | `products[]` | Featured products grid | Homepage |
-| `TrustIndicators` | `items[]` | Trust badges bar | Homepage |
-| `CarouselEditor` | `carousel, slides[], onSave` | Admin carousel editor | `/admin/carousels/[id]` |
+| Export | Type | Purpose |
+|--------|------|---------|
+| HomepageView | View | Homepage |
+| MarketplaceHomepageView | View | Marketplace homepage |
+| HeroSection, HeroBanner, HeroCarousel | Section | Hero area components |
+| WelcomeSection | Section | Welcome/greeting section |
+| ShopByCategorySection | Section | Shop by category section |
+| FeaturedProductsSection | Section | Featured products section |
+| FeaturedAuctionsSection | Section | Featured auctions section |
+| FeaturedPreOrdersSection | Section | Featured pre-orders section |
+| FeaturedStoresSection | Section | Featured stores section |
+| FeaturedResultsSection | Section | Featured results section |
+| EventsSection | Section | Events section |
+| TrustBadges, TrustFeaturesSection, TrustIndicatorsSection | Section | Trust elements |
+| SecurityHighlightsSection | Section | Security highlights |
+| SiteFeaturesSection | Section | Site features section |
+| StatsCounterSection | Section | Statistics counter section |
+| HowItWorksSection, HowItWorksInfoView | Section | How it works instructions |
+| CustomerReviewsSection, HomepageCustomerReviewsSection | Section | Customer reviews |
+| FAQSection | Section | FAQ section |
+| NewsletterSection, NewsletterBanner | Section | Newsletter signup |
+| BlogArticlesSection | Section | Blog articles section |
+| CTABannerSection | Section | Call-to-action banner |
+| WhatsAppCommunitySection | Section | WhatsApp community CTA |
+| AdvertisementBanner, AdSlot | Component | Ad placement |
+| AnnouncementBar | Component | Announcement banner |
+| TestimonialsCarousel, SectionCarousel | Carousel | Carousel components |
+| PromoGrid | Grid | Promotional grid |
+| CharacterHotspot, CharacterHotspotForm | Component | Interactive hotspot |
+| HomepageSkeleton | Skeleton | Homepage loading skeleton |
 
-### Media (appkit/src/features/media/)
+### Products (`appkit/src/features/products/components/`)
 
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `ImageUpload` | `value?, onChange, context, storeSlug?` | Single image upload with focal crop | Product forms |
-| `MediaUploadField` | `value?, onChange, accept?, label?` | Single file upload (Upload/YouTube/External tabs) | Forms |
-| `MediaUploadList` | `value?, onChange, maxItems?, multiple` | Multi-file upload list | Product image galleries |
-| `MediaPreview` | `url, type?, onRemove?` | Media file preview | Upload fields |
+| Export | Type | Purpose |
+|--------|------|---------|
+| ProductCard, ProductGrid | Grid | Product grid display |
+| InteractiveProductCard | Card | Interactive product card with selection |
+| ProductsView | View | Products listing page |
+| ProductDetailView | View | Single product detail page |
+| AuctionDetailView | View | Auction detail view |
+| PreOrderDetailView | View | Pre-order detail view |
+| ProductForm | Form | Product editor form |
+| ProductInfo | Component | Product information display |
+| ProductTabs, ProductTabsShell | Tabs | Product detail tabs |
+| ProductGalleryClient | Gallery | Product image gallery |
+| BidHistory | Component | Auction bid history |
+| PlaceBidForm | Form | Place bid form |
+| MakeOfferForm, MakeOfferButton | Component | Make offer components |
+| RelatedProducts, RelatedProductsCarousel | Component | Related products |
+| CustomFieldsEditor, CustomSectionsEditor, CustomSectionTabContent | Editor | Custom fields/sections |
+| NonRefundableConsentModal | Modal | Non-refundable product consent |
+| PrizeDrawItemsEditor | Editor | Prize draw items editor |
+| PrizeDrawCollage | Display | Prize draw items collage |
+| PrizeRevealModal | Modal | Prize reveal animation |
+| PrizeDrawEntryActions | Actions | Prize draw entry actions |
+| PrizeDrawsSection, PrizeDrawsIndexListing | Component | Prize draws listing |
+| MarketplacePrizeDrawCard | Card | Prize draw marketplace card |
+| MarketplaceBundleCard | Card | Bundle marketplace card |
+| ProductFeaturesSelector | Selector | Product features multi-select |
+| ProductFeatureBadges, FeatureBadge, FeatureBadgeList | Badge | Feature badges display |
+| ProductFeaturesProvider, useProductFeatures | Context | Product features context |
+| CompareOverlay | Overlay | Product comparison |
+| SublistingCategorySelect | Select | Sublisting category picker |
+| SublistingCarouselSection | Section | Sublisting carousel |
+| ShowGroupSection, GroupSettingsPanel | Component | Grouped listing display |
 
-### Forms (appkit/src/features/forms/components/)
+### Seller / Store Dashboard (`appkit/src/features/seller/components/`)
 
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `FormShell` | `onSubmit, schema?, mode?, renderActions?, splitPreview?` | Form wrapper with validation + submit | All create/edit forms |
-| `FormField` | `name, label, type, required?, options?` | Dynamic form field renderer | FormShell children |
-| `FormSection` | `title?, description?, children` | Grouping section within form | Complex forms |
+| Export | Type | Purpose |
+|--------|------|---------|
+| SellerDashboardView | View | Seller dashboard |
+| SellerProductsView | View | Seller products listing |
+| SellerAuctionsView | View | Seller auctions |
+| SellerPreOrdersView | View | Seller pre-orders |
+| SellerPrizeDrawsView | View | Seller prize draws |
+| SellerOrdersView | View | Seller orders |
+| SellerBidsView | View | Seller auction bids |
+| SellerCouponsView, SellerCouponEditorView | View | Seller coupons |
+| SellerReviewsView | View | Seller reviews |
+| SellerPayoutsView | View | Seller payouts history |
+| SellerPayoutStats, SellerPayoutHistoryTable | Component | Payout statistics |
+| SellerPayoutSettingsView | View | Payout configuration |
+| SellerPayoutRequestView | View | Payout withdrawal form |
+| SellerPayoutMethodsView | View | Payout bank accounts |
+| SellerAnalyticsView | View | Seller analytics dashboard |
+| SellerAnalyticsAlertsView | View | Analytics alerts configuration |
+| SellerCreateProductView, SellerEditProductView | View | Product creation/editing |
+| SellerProductShell | Shell | Product creation/edit template |
+| SellerStoreSetupView | View | Store setup wizard |
+| SellerStoreView | View | Store/seller settings |
+| SellerStorefrontView | View | Store customization |
+| SellerShippingView | View | Shipping settings |
+| SellerShippingConfigsView | View | Shipping configuration |
+| SellerAddressesView | View | Seller address book |
+| SellerGuideView | View | Seller documentation |
+| SellerOffersView, SellerOffersPanel | View | Seller offers/negotiation |
+| SellerFeaturesView | View | Feature management |
+| SellerGroupedListingsView | View | Grouped listings management |
+| SellerStoreCategoriesView | View | Store category management |
+| SellerTemplatesView | View | Product templates |
+| SellerBundlesView | View | Seller bundles |
+| SellerClassifiedView | View | Classified ads management |
+| SellerDigitalCodesView | View | Digital codes management |
+| SellerLiveView | View | Live streaming management |
+| SellerGoogleReviewsView | View | Google reviews integration |
+| PrintCenterView | View | Label/document printing |
+| SellerSidebar, SellerStatCard | Component | Dashboard navigation/stats |
+| CategoryInlineSelect, BrandInlineSelect | Select | Inline entity pickers |
+| SellersListView | View | Public sellers directory |
 
-### Layout (appkit/src/features/layout/components/)
+### Stores (`appkit/src/features/stores/components/`)
 
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `AppLayoutShell` | `renderTitleBar?, renderNavbar?, renderBottomNav?, renderSidebar?, contentClassName?` | Root app shell | All pages |
-| `DashboardLayoutClient` | `navGroups[], renderHeader?, renderBreadcrumb?, portal` | Dashboard sidebar + content layout | Admin/store/user dashboards |
-| `StackedViewShell` | `title, renderToolbar?, renderBulkActions?, renderPagination?, renderContent?, renderFilters?` | Full listing view shell with all slots | All listing pages |
-| `RoleGuard` | `allowedRoles[], fallback?` | Role-based component gate | Dashboard pages |
-| `SidebarCollapseToggle` | `collapsed, onToggle` | Dashboard sidebar toggle | Dashboard layout |
+| Export | Type | Purpose |
+|--------|------|---------|
+| StoreHeader | Header | Store page header |
+| StoreNavTabs | Tabs | Store page navigation |
+| StoreAboutView | View | Store about/info page |
+| StoreProductsView | View | Store products page |
+| StoreAuctionsView | View | Store auctions page |
+| StoreReviewsView | View | Store reviews page |
+| InteractiveStoreCard | Card | Interactive store card |
+| StoresIndexListing | Listing | Stores index/search |
+| StoreProductsListing | Listing | Products in store listing |
+| StoreAuctionsListing | Listing | Auctions in store listing |
+| StoreReviewsListing | Listing | Reviews in store listing |
+| StorePreOrdersListing | Listing | Pre-orders in store listing |
+| StoreAddressSelectorCreate | Selector | Store address selector |
+| StoreGuideHubView | View | Store guide documentation |
+| StoreListingsGuideView, StoreOrdersGuideView, StoreFinanceGuideView, StoreCapabilitiesGuideView, StoreSettingsGuideView | View | Guide views |
 
-### Admin Views (appkit/src/features/admin/components/)
+### Other Feature Components
 
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `AdminDashboardView` | `stats, quickActions?` | Admin dashboard home | `/admin` |
-| `AdminSiteSettingsView` | `settings, onSave` | 14-tab site settings editor | `/admin/site` |
-| `AdminUsersView` | `renderToolbar?, renderRowActions?` | User management listing | `/admin/users` |
-| `AdminStoresView` | `renderToolbar?, renderRowActions?` | Store management listing | `/admin/stores` |
-| `AdminOrdersView` | `renderToolbar?, renderRowActions?` | Order management listing | `/admin/orders` |
-| `AdminReviewsView` | `renderToolbar?, renderRowActions?` | Review moderation listing | `/admin/reviews` |
-| `AdminEventsView` | `renderToolbar?, renderRowActions?` | Event management listing | `/admin/events` |
-| `AdminBlogView` | `renderToolbar?, renderRowActions?` | Blog management listing | `/admin/blog` |
-| `AdminCouponsView` | `renderToolbar?, renderRowActions?` | Coupon management listing | `/admin/coupons` |
-| `AdminPayoutsView` | `renderToolbar?, renderRowActions?` | Payout management listing | `/admin/payouts` |
-| `AdminFAQsView` | `renderToolbar?, renderRowActions?` | FAQ management listing | `/admin/faqs` |
-| `AdminCategoriesView` | `renderToolbar?, renderRowActions?` | Category management with tree | `/admin/categories` |
-| `AdminBrandsView` | `renderToolbar?, renderRowActions?` | Brand management listing | `/admin/brands` |
-
-### Seller/Store Views (appkit/src/features/seller/components/)
-
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `SellerDashboardView` | `store, stats, quickActions?` | Seller dashboard home | `/store` |
-| `SellerOrdersView` | `storeId, renderToolbar?, renderRowActions?` | Seller order listing | `/store/orders` |
-| `SellerReviewsView` | `storeId, renderToolbar?` | Store review listing | `/store/reviews` |
-| `SellerCouponsView` | `storeId, renderToolbar?` | Store coupon listing | `/store/coupons` |
-| `SellerPayoutsView` | `storeId, renderToolbar?` | Payout history | `/store/payouts` |
-| `SellerAnalyticsView` | `storeId` | Store analytics dashboard | `/store/analytics` |
-| `StorefrontSettingsView` | `store, onSave` | Storefront customization | `/store/storefront` |
-
-### User/Account Views (appkit/src/features/account/components/)
-
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `UserDashboardView` | `user, stats?` | User account dashboard | `/user` |
-| `UserOrdersView` | `userId, renderToolbar?` | User order history | `/user/orders` |
-| `UserWishlistView` | `userId, renderBulkActions?` | Wishlist management | `/user/wishlist` |
-| `UserAddressesView` | `userId` | Address management | `/user/addresses` |
-| `UserSettingsView` | `user, onSave` | Profile/password settings | `/user/settings` |
-| `NotificationPreferencesPanel` | `preferences, onSave` | Per-channel notification prefs | User settings |
-| `BecomeSellerView` | `user` | Seller application form | `/user/become-seller` |
-
-### Wishlist & History (appkit/src/features/wishlist/, history/)
-
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `WishlistView` | `items[], onRemove?, onMoveToCart?, onBulkAction?` | Full wishlist page | `/user/wishlist` |
-| `WishlistCapWatcher` | `itemCount, max` | Toast warning near cap | Wishlist views |
-| `HistoryView` | `items[]` | Browsing history page | `/user/history` |
-
-### Search (appkit/src/features/search/components/)
-
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `SearchView` | `results, query, renderFilters?` | Search results page | `/search` |
-| `SearchOverlay` | `isOpen, onClose, onSearch` | Full-screen search modal | Navbar |
-| `SearchInput` | `value, onChange, onSubmit?` | Search input with suggestions | Search overlay |
-
-### Classified / Digital Code / Live (appkit/src/_internal/client/features/)
-
-| Export | Props | Purpose | Used By |
-|--------|-------|---------|---------|
-| `ClassifiedDetailView` | `product, store` | Classified listing detail | `/classified/[slug]` |
-| `DigitalCodeDetailView` | `product, store, codes?` | Digital code listing detail | `/digital-codes/[slug]` |
-| `CodeRevealPanel` | `code, revealed?, onReveal?` | Theatrical code reveal animation | Digital code detail |
-| `LiveItemDetailView` | `product, store, streamStatus?` | Live item listing detail | `/live/[slug]` |
+| Feature | Export | Type | Purpose |
+|---------|--------|------|---------|
+| classified | ClassifiedListView, ClassifiedIndexListing, ClassifiedFilters | View/Filter | Classifieds listing and filtering |
+| digital-codes | DigitalCodesListView, DigitalCodesIndexListing, DigitalCodeFilters | View/Filter | Digital codes listing and filtering |
+| live | LiveItemsListView, LiveItemsIndexListing, LiveItemFilters | View/Filter | Live items listing and filtering |
+| orders | OrderCard, OrdersList, MarketplaceOrderCard | Component | Order display components |
+| orders | OrderFilters, OrderSiblingPayments | Component | Order filtering, sibling payments |
+| orders | RefundHistoryTable, RefundRequestView | Component | Refund components |
+| pre-orders | MarketplacePreorderCard, PreOrderFilters | Component | Pre-order card and filtering |
+| pre-orders | PreOrdersListView, PreOrdersIndexListing | View | Pre-orders listing |
+| pre-orders | PreOrderDetailPageView | Page | Pre-order detail page |
+| promotions | CouponCard, CouponsIndexListing | Component | Coupon display |
+| promotions | PromotionsView, PromotionsHero | View | Promotions/offers page |
+| reviews | ReviewCard, ReviewsList, ReviewFilters | Component | Reviews display |
+| reviews | ReviewSummary, ViewReviewModal | Component | Review summary and modal |
+| reviews | ReviewsIndexListing | Listing | Reviews index/search |
+| search | Search | Component | Search input with suggestions |
+| search | SearchFiltersRow, SearchResultsSection | Component | Search UI |
+| search | SearchView | View | Full search page |
+| wishlist | WishlistCard, WishlistPage, WishlistView | View | Wishlist page |
+| wishlist | WishlistToggleButton | Button | Add to wishlist button |
+| wishlist | WishlistCapWatcher | Watcher | Wishlist capacity monitor |
+| scams | ScamRegistryView, ScamProfileView | View | Scam registry |
+| scams | ScamAwarenessModal | Modal | Scam awareness warning |
+| contact | ContactForm, ContactInfoSidebar, ContactPageView | Component | Contact page |
+| whatsapp-bot | WhatsAppChatButton, SellerWhatsAppSettingsView | Component | WhatsApp integration |
+| loyalty | CoinsBadge, CoinsDisplay | Display | Loyalty coins display |
+| collections | CollectionCard, CollectionGrid | Component | Collection display |
+| before-after | BeforeAfterSlider, BeforeAfterGallery | Component | Before/after image comparison |
 
 ---
 
 ## 3. Internal Server Features
 
-### Data Fetchers (appkit/src/_internal/server/features/)
+### Data Fetchers (`appkit/src/_internal/server/features/`)
 
-| Feature | Function | Signature | Purpose |
-|---------|----------|-----------|---------|
-| **products** | `getProductForDetail` | `(slug) => ProductDocument \| null` | Product detail page data |
-| **auctions** | `getAuctionForDetail` | `(slug) => ProductDocument \| null` | Auction detail data |
-| **auctions** | `getProductFeaturesForAuction` | `(auctionId) => ProductFeature[]` | Auction product features |
-| **pre-orders** | `getPreOrderForDetail` | `(slug) => ProductDocument \| null` | Pre-order detail data |
-| **bundles** | `getBundleForDetail` | `(slug, opts?) => CategoryDocument \| null` | Bundle detail data |
-| **bundles** | `listBundleMembers` | `(bundleId) => ProductDocument[]` | Bundle member products |
-| **bundles** | `listFeaturedBundles` | `() => CategoryDocument[]` | Featured bundles |
-| **blog** | `getBlogPostForDetail` | `(slug) => BlogPostDocument \| null` | Blog post data |
-| **brands** | `getBrandForDetail` | `(slug) => CategoryDocument \| null` | Brand detail data |
-| **cart** | `getCartForUser` | `(userId) => CartDocument` | User cart data |
-| **categories** | `getCategoryForDetail` | `(slug) => CategoryDocument \| null` | Category detail data |
-| **categories** | `listRootCategories` | `() => CategoryDocument[]` | Root categories |
-| **categories** | `getCategoryTree` | `(rootId?) => CategoryTreeNode[]` | Full category tree |
-| **events** | `getEventForDetail` | `(id) => EventDocument \| null` | Event detail data |
-| **history** | `getHistoryForUser` | `(userId) => HistoryDocument` | User browsing history |
-| **homepage** | Homepage section fetchers | Various | Homepage data |
-| **orders** | `getOrderForDetail` | `(orderId) => OrderDocument \| null` | Order detail data |
-| **orders** | `getOrdersForBuyer` | `(userId, model) => SieveResult` | User order history |
-| **promotions** | `getCouponByCode` | `(code) => CouponDocument \| null` | Coupon lookup |
-| **reviews** | `getReviewsForProduct` | `(productId) => ReviewDocument[]` | Product reviews |
-| **reviews** | `getReviewsForStore` | `(storeId) => ReviewDocument[]` | Store reviews |
-| **scams** | Scam data fetchers | Various | Scam report data |
-| **search** | `getSearchResults` | `(query, opts) => SearchResult` | Full-text search |
-| **stores** | Store data fetchers | Various | Store detail data |
-| **wishlist** | `getWishlistForUser` | `(userId) => WishlistDocument` | User wishlist |
-| **classified** | Classified data fetchers | Various | Classified listing data |
-| **digital-code** | Digital code data fetchers | Various | Digital code data |
-| **live** | Live item data fetchers | Various | Live listing data |
+| Domain | Export | Signature | Purpose |
+|--------|--------|-----------|---------|
+| account | getAccountForDetail | cache(uid, opts?) | Fetch full account profile |
+| account | listAddressesForUser | cache(uid, opts?) | Fetch address book |
+| auctions | getAuctionForDetail | cache(slugOrId) | Fetch auction details |
+| auctions | getProductFeaturesForAuction | cache(storeId) | Load features for auction |
+| blog | getBlogPostForDetail | cache(slug) | Fetch blog post by slug |
+| blog | getBlogPostById | cache(id) | Fetch blog post by ID |
+| brands | getBrandForDetail | cache(slugOrId) | Fetch brand details |
+| brands | getBrandCategoryForDetail | cache(slugOrId) | Fetch brand category |
+| cart | getCartForUser | cache(userId) | Fetch user's cart |
+| events | getEventForDetail | cache(slugOrId) | Fetch event details |
+| history | getHistoryForUser | cache(userId) | Fetch user view history |
+| orders | getOrderForDetail | cache(orderId) | Fetch order details |
+| orders | getOrdersForBuyer | cache(buyerId) | Fetch buyer's orders |
+| orders | getRecentOrdersForBuyer | cache(buyerId) | Fetch recent orders |
+| pre-orders | getPreOrderForDetail | cache(slugOrId) | Fetch pre-order details |
+| pre-orders | getProductFeaturesForPreOrder | cache(storeId) | Load features for pre-order |
+| products | getProductForDetail | cache(slugOrId) | Fetch product details |
+| products | getReviewsForProduct | cache(productId) | Fetch product reviews |
+| products | listSitemapProducts | async() | List products for sitemap |
+| promotions | getCouponByCode | cache(code) | Fetch coupon details |
+| reviews | getReviewsForProduct | cache(productId) | Fetch product reviews |
+| reviews | getReviewsForStore | cache(storeId) | Fetch store reviews |
+| reviews | hasUserPurchasedProduct | cache(userId, productId) | Check purchase history |
+| search | getSearchResults | cache(query) | Fetch search results |
+| wishlist | getWishlistForUser | cache(userId) | Fetch user's wishlist |
+| wishlist | isProductInWishlist | cache(userId, productId) | Check if product is wishlisted |
 
-### OG Image Renderers (appkit/src/_internal/server/features/*/og.tsx)
+### Service Layer
 
-| Feature | Function | Purpose |
-|---------|----------|---------|
-| products | `renderProductOgImage(doc, opts?)` | Product OG image |
-| auctions | `renderAuctionOgImage(doc, opts?)` | Auction OG image |
-| pre-orders | `renderPreOrderOgImage(doc, opts?)` | Pre-order OG image |
-| bundles | `renderBundleOgImage(doc, opts?)` | Bundle OG image |
-| blog | `renderBlogOgImage(doc, opts?)` | Blog post OG image |
-| brands | `renderBrandOgImage(doc, opts?)` | Brand OG image |
-| events | `renderEventOgImage(doc, opts?)` | Event OG image |
-| reviews | `renderReviewOgImage(doc, opts?)` | Review OG image |
-| scams | `renderScamOgImage(doc, opts?)` | Scam report OG image |
-| stores | `renderStoreOgImage(doc, opts?)` | Store OG image |
-| profile | `renderUserProfileOgImage(doc, opts?)` | User profile OG image |
-| faqs | `renderFaqOgImage(doc, opts?)` | FAQ OG image |
-| seo | `buildDefaultOgImage(opts?)` | Default fallback OG image |
+| Domain | Export | Purpose |
+|--------|--------|---------|
+| auctions | assertAuctionActive, assertBidAmount, assertNotAuctionOwner, computeMinBid, shouldAutoExtend | Auction business logic |
+| blog | assertBlogPostExists, computeReadTime | Blog validation |
+| brands | assertBrandExists, assertBrandSlugUnique | Brand validation |
+| cart | assertCartCapacity, upsertCartItem, mergeGuestItems | Cart business logic |
+| events | assertEventActive, isEventAcceptingRegistrations | Event validation |
+| orders | assertOrderOwnership, assertOrderCancellable | Order validation |
+| payments | resolvePaymentFee | Payment fee calculation |
+| pre-orders | assertPreOrderAvailable, computeDeposit, isPreOrderOpen | Pre-order business logic |
+| promotions | validateCoupon, computeDiscount | Coupon validation/calculation |
 
-### Metadata Builders
+### Adapters
 
-| Feature | Function | Purpose |
-|---------|----------|---------|
-| bundles | `buildBundleMetadata(doc, opts?)` | Bundle page Metadata |
-| classified | Classified metadata | Classified page Metadata |
-| digital-code | Digital code metadata | Digital code page Metadata |
-| live | Live item metadata | Live item page Metadata |
-| seo | `buildRobots(opts?)` | robots.txt |
-| seo | `buildManifest(opts?)` | PWA manifest.json |
-| seo | `buildSitemap(opts?)` | XML sitemap |
+| Domain | Export | Purpose |
+|--------|--------|---------|
+| orders | orderDocumentToOrder | Convert Firestore doc to Order shape |
+| classified | adapters (barrel) | Classified data adapters |
+| digital-code | adapters (barrel) | Digital code adapters |
+| live | adapters (barrel) | Live item adapters |
 
-### Service/Validation Functions
+### OG Image Renderers
 
-| Feature | Function | Purpose |
-|---------|----------|---------|
-| auctions | `assertAuctionActive`, `assertBidAmount`, `computeMinBid`, `shouldAutoExtend` | Auction business logic |
-| blog | `assertBlogPostExists`, `computeReadTime` | Blog validation |
-| brands | `assertBrandExists`, `assertBrandSlugUnique` | Brand validation |
-| cart | `assertCartCapacity`, `upsertCartItem`, `mergeGuestItems` | Cart operations |
-| events | `assertEventActive`, `isEventAcceptingRegistrations` | Event validation |
-| orders | `assertOrderOwnership`, `assertOrderCancellable` | Order validation |
-| pre-orders | `assertPreOrderAvailable`, `computeDeposit`, `isPreOrderOpen` | Pre-order logic |
-| promotions | `validateCoupon`, `computeDiscount` | Coupon validation |
-| reviews | Review validation | Review business logic |
-| payments | `resolvePaymentFee` | Payment fee calculation |
+| Domain | Export | Purpose |
+|--------|--------|---------|
+| auctions | renderAuctionOgImage, renderAuctionOg | Auction OG image + metadata |
+| blog | renderBlogOgImage, renderBlogOg | Blog OG image + metadata |
+| brands | renderBrandOgImage, renderBrandOg | Brand OG image + metadata |
+| events | renderEventOgImage, renderEventOg | Event OG image + metadata |
+| pre-orders | renderPreOrderOgImage, renderPreOrderOg | Pre-order OG image + metadata |
+| products | renderProductOgImage, renderProductOg | Product OG image + metadata |
+| profile | renderPrivateProfileOgImage, renderUserProfileOgImage, renderProfileOg | Profile OG image + metadata |
+| reviews | renderReviewOgImage, renderReviewOg | Review OG image + metadata |
+| scams | renderScamOgImage, renderScamOg | Scam report OG image + metadata |
+| stores | renderStoreOgImage, renderStoreOg | Store OG image + metadata |
+| sublisting-categories | renderSublistingCategoryOgImage, renderSublistingCategoryOg | Sublisting OG image + metadata |
+| seo | buildDefaultOgImage, resolveOgImageUrl | Default OG image rendering |
+
+### SEO
+
+| Export | Purpose |
+|--------|---------|
+| buildRobots | Build robots.txt |
+| buildManifest | Build web manifest |
+| buildSitemap | Build XML sitemap |
 
 ---
 
 ## 4. Internal Client Features
 
-| File | Export | Type | Purpose |
-|------|--------|------|---------|
-| `layout/DashboardLayoutClient.tsx` | `DashboardLayoutClient` | Component | Dashboard layout with responsive sidebar |
-| `layout/RoleGuard.tsx` | `RoleGuard` | Component | Role-based access control wrapper |
-| `layout/SidebarCollapseToggle.tsx` | `SidebarCollapseToggle` | Component | Sidebar collapse toggle button |
-| `layout/filterNavItems.ts` | `filterNavItems<T>` | Function | Generic nav item filter utility |
-| `filters/filter-load-options.ts` | `makeCategoryLoadOptions`, `makeBrandLoadOptions`, `makeStoreLoadOptions`, `makeProductLoadOptions`, `makeUserLoadOptions`, `makeAddressLoadOptions` | Functions | Dynamic select option loaders for filters |
-| `classified/ClassifiedDetailView.tsx` | `ClassifiedDetailView` | Component | Classified listing detail view |
-| `digital-code/CodeRevealPanel.tsx` | `CodeRevealPanel` | Component | Digital code reveal panel |
-| `digital-code/DigitalCodeDetailView.tsx` | `DigitalCodeDetailView` | Component | Digital code detail view |
-| `live/LiveItemDetailView.tsx` | `LiveItemDetailView` | Component | Live item detail view |
-| `i18n/LabelsProvider.tsx` | `LabelsProvider`, `useLabels<K>` | Component + Hook | i18n label provider and accessor |
-| `scaffolds/AppShell.tsx` | `AppShell` | Component | Root app shell scaffold |
-| `scaffolds/DashboardScaffold.tsx` | `DashboardScaffold` | Component | Dashboard scaffold |
+| Export | File | Type | Purpose |
+|--------|------|------|---------|
+| DashboardLayoutClient | layout/DashboardLayoutClient.tsx | Component | Unified dashboard sidebar manager (admin/store/user) |
+| RoleGuard | layout/RoleGuard.tsx | Component | Auth guard wrapper with role checks |
+| SidebarCollapseToggle | layout/SidebarCollapseToggle.tsx | Component | Sidebar collapse/expand handle |
+| filterNavItems | layout/filterNavItems.ts | Function | Filter nav items by enabled status & permissions |
+| ClassifiedDetailView | features/classified/ | Component | Classified listing detail view |
+| DigitalCodeDetailView | features/digital-code/ | Component | Digital code listing detail |
+| CodeRevealPanel | features/digital-code/ | Component | Digital code reveal UI |
+| LiveItemDetailView | features/live/ | Component | Live item detail view |
+| makeCategoryLoadOptions | features/filters/ | Factory | Create category filter loader |
+| makeCategoryFacetLoadOptions | features/filters/ | Factory | Create category facet loader |
+| LabelsProvider | i18n/LabelsProvider.tsx | Component | i18n context provider (zero-dependency) |
+| useLabels | i18n/LabelsProvider.tsx | Hook | Access label translations |
+| AppShell | scaffolds/AppShell.tsx | Component | Main application shell scaffold |
+| DashboardScaffold | scaffolds/DashboardScaffold.tsx | Component | Dashboard layout scaffold |
 
 ---
 
 ## 5. Internal Shared
 
-### Error Classes (appkit/src/_internal/shared/errors/)
-
-| Export | Extends | Purpose |
-|--------|---------|---------|
-| `AppkitError` | `Error` | Base error class |
-| `NotFoundError` | `AppkitError` | 404 resource not found |
-| `ValidationError` | `AppkitError` | 400 input validation failed |
-| `UnauthorizedError` | `AppkitError` | 401/403 access denied |
-| `ConflictError` | `AppkitError` | 409 state conflict |
-| `CapacityError` | `AppkitError` | 429 capacity/rate limit |
-| `ExpiredError` | `AppkitError` | 410 resource expired |
-
-### Feature-Specific Errors
-
-| Feature | Error Classes |
-|---------|--------------|
-| auctions | `AuctionNotFoundError`, `AuctionEndedError`, `BidTooLowError`, `BidOnOwnAuctionError`, `AuctionReserveNotMetError` |
-| blog | `BlogPostNotFoundError`, `BlogPostNotPublishedError`, `BlogSlugConflictError` |
-| brands | `BrandNotFoundError`, `BrandSlugConflictError` |
-| cart | `CartFullError`, `CartItemNotFoundError`, `CartQuantityError` |
-| events | `EventNotFoundError`, `EventNotActiveError`, `EventEndedError`, `EventFullError`, `AlreadyRegisteredError` |
-| orders | `OrderNotFoundError`, `OrderCancelError`, `OrderOwnershipError`, `OrderReturnWindowError` |
-| pre-orders | `PreOrderNotFoundError`, `PreOrderSoldOutError`, `PreOrderNotOpenError`, `PreOrderDepositError` |
-| products | `ProductNotFoundError`, `ProductValidationError`, `ProductOwnershipError`, `ProductStatusError`, `ProductStockError` |
-| promotions | `CouponNotFoundError`, `CouponExpiredError`, `CouponUsageLimitError`, `CouponPerUserLimitError`, `CouponMinPurchaseError`, `CouponScopeError` |
-| reviews | `ReviewNotFoundError`, `DuplicateReviewError`, `ReviewOwnershipError`, `ReviewNotVerifiedError` |
-| wishlist | `WishlistCapError` |
-
-### Checkout Rules (appkit/src/_internal/shared/checkout/rules/)
+### Action Registry (`appkit/src/_internal/shared/actions/action-registry.ts`)
 
 | Export | Type | Purpose |
 |--------|------|---------|
-| `CHECKOUT_RULES` | Registry | Per-listing-type checkout rules |
-| `CATEGORY_CHECKOUT_RULES` | Registry | Per-category checkout overrides |
-| `getListingRule(type)` | Function | Look up listing rule |
-| `getCategoryRule(category)` | Function | Look up category rule |
-| `pickOrderType(items)` | Function | Determine order type from items |
-| `getSplitKey(item)` | Function | Get cart-split key |
-| `runSyncPreflight(items)` | Function | Pre-checkout validation |
-| `standardRule` | Rule | Standard product checkout |
-| `auctionRule` | Rule | Auction checkout |
-| `preOrderRule` | Rule | Pre-order checkout |
-| `prizeDrawRule` | Rule | Prize draw checkout |
-| `offerRule` | Rule | Offer/negotiation checkout |
-| `bundleRule` | Rule | Bundle checkout |
-| `classifiedRule` | Rule | Classified checkout |
-| `digitalCodeRule` | Rule | Digital code checkout |
-| `liveRule` | Rule | Live item checkout |
+| ACTIONS | ActionTree | Master action registry — 23 resource buckets (PRODUCT, AUCTION, PRE_ORDER, PRIZE_DRAW, CLASSIFIED, DIGITAL_CODE, LIVE, BUNDLE, GROUP, CATEGORY, BRAND, SUBLISTING, STORE, BLOG, EVENT, USER, SELLER, ADMIN, CART, CHECKOUT, NAV, MEDIA, SUPPORT) |
+| action() | Function | Pluck action by resource + id |
+| canPerformAction() | Function | Permission gate (admin always passes) |
+| actionsForListingType() | Function | Filter by listing type scope |
+| actionLabel() | Function | Resolve label (i18n hook placeholder) |
+| act() | Function | Shorthand for action() |
+| ActionKind | Type | "primary" \| "secondary" \| "danger" \| "ghost" \| "link" \| "chip" |
+| ActionResource | Type | Union of 23 resource buckets |
+| ActionDef | Interface | Action definition (id, label, ariaLabel, description, kind, permissions, confirmation, iconKey) |
+| ActionConfirmation | Interface | Confirmation dialog config |
 
-### Checkout Limits
-
-| Constant | Value | Purpose |
-|----------|-------|---------|
-| `CART_MAX_ITEMS` | 50 | Max items in cart |
-| `CHECKOUT_MAX_ORDERS_PER_TX` | 5 | Max orders per checkout |
-| `PRIZE_DRAW_MAX_REVEALS_PER_ORDER` | 10 | Max prize reveals |
-| `BUNDLE_MAX_QTY_PER_TX` | 3 | Max bundles per checkout |
-| `STANDARD_MAX_QTY_PER_LINE` | 10 | Max qty per line item |
-
-### Listing Type System (appkit/src/_internal/shared/listing-types/)
+### Config Schema
 
 | Export | Type | Purpose |
 |--------|------|---------|
-| `LISTING_TYPE_REGISTRY` | Registry | All listing type plugins |
-| `pluginFor(type)` | Function | Get plugin for listing type |
-| `LISTING_TYPE_CAPABILITIES` | Map | Capability matrix per type |
-| `capabilityFor(type)` | Function | Get capabilities for type |
-| `canAddToCart(type)` | Function | Check cart eligibility |
-| `canBid(type)` | Function | Check bid eligibility |
-| `supportsShipping(type)` | Function | Check shipping support |
-| `hasInstantFulfillment(type)` | Function | Check instant fulfillment |
-| `isListingTypeEnabled(type)` | Function | Feature flag check |
-| `cartRequiresShipping(items)` | Function | Check if cart needs shipping |
-| `cartIsDigitalOnly(items)` | Function | Check if cart is all-digital |
+| AppkitConfig | Interface | Consumer's contract with appkit CLI |
+| AppkitBrandConfig | Interface | Brand identity |
+| AppkitSeoConfig | Interface | SEO defaults |
+| AppkitI18nConfig | Interface | i18n routing |
+| AppkitFirebaseConfig | Interface | Firebase project config |
+| AppkitVercelConfig | Interface | Vercel project config |
+| AppkitImagePattern | Interface | next/image remotePattern |
+| AppkitAuthFixture | Interface | Auth fixture with cookie header |
+| AppkitSmokeRoute | Interface | Smoke test route |
 
-### Feature Configs (appkit/src/_internal/shared/features/*/config.ts)
+### Error Classes
 
-| Feature | Key Constants |
-|---------|--------------|
-| auctions | `AUCTIONS_PAGE_SIZE`, `AUCTION_DEFAULT_EXTENSION_MINUTES`, `AUCTION_MIN_BID_INCREMENT_PAISE`, `AUCTION_SNIPING_WINDOW_SECONDS` |
-| blog | `BLOG_PAGE_SIZE`, `BLOG_FEATURED_LIMIT`, `BLOG_RELATED_LIMIT` |
-| brands | `BRANDS_PAGE_SIZE`, `BRANDS_FEATURED_LIMIT` |
-| cart | `CART_MAX_ITEMS=50`, `CART_SESSION_TTL_DAYS`, `CART_GUEST_STORAGE_KEY` |
-| categories | `CATEGORIES_PAGE_SIZE`, `CATEGORIES_MAX_DEPTH`, `CATEGORIES_FEATURED_LIMIT` |
-| checkout | `CHECKOUT_DEFAULT_COMMISSIONS`, `CHECKOUT_PAYMENT_METHODS` |
-| events | `EVENTS_PAGE_SIZE`, `EVENT_MAX_ENTRIES_DEFAULT` |
-| history | `HISTORY_MAX=50`, `HISTORY_GUEST_STORAGE_KEY` |
-| homepage | `HOMEPAGE_MAX_SECTIONS`, `HOMEPAGE_FEATURED_REVIEWS_LIMIT` |
-| layout | `SIDE_DRAWER_WIDTH`, `DASHBOARD_SIDEBAR_WIDTH`, `DASHBOARD_ACCENT_CLASSES` |
-| orders | `ORDERS_PAGE_SIZE`, `ORDER_CANCELLABLE_STATUSES`, `ORDER_RETURN_WINDOW_DAYS` |
-| payments | `PAYMENTS_DEFAULT_PLATFORM_FEE_PERCENT`, `PAYMENTS_DEFAULT_GST_PERCENT` |
-| pre-orders | `PRE_ORDERS_PAGE_SIZE`, `PRE_ORDER_DEFAULT_DEPOSIT_PERCENT` |
-| products | `PRODUCTS_PAGE_SIZE`, `PRODUCTS_FEATURED_LIMIT`, `PRODUCTS_RELATED_LIMIT` |
-| promotions | `COUPONS_PAGE_SIZE`, `COUPON_CODE_PATTERN` |
-| reviews | `REVIEWS_PAGE_SIZE`, `REVIEW_BODY_MAX_LENGTH`, `REVIEW_MAX_RATING=5` |
-| stores | `STORES_PAGE_SIZE`, `STORES_PRODUCTS_PAGE_SIZE` |
-| wishlist | `WISHLIST_MAX=20`, `WISHLIST_GUEST_STORAGE_KEY` |
-| bundles | `BUNDLE_MIN_ITEMS`, `BUNDLE_MAX_ITEMS`, `BUNDLES_PAGE_SIZE` |
+| Export | Extends | Code | Purpose |
+|--------|---------|------|---------|
+| AppkitError | Error | — | Base domain error with code field |
+| NotFoundError | AppkitError | NOT_FOUND | 404-style errors |
+| ValidationError | AppkitError | VALIDATION_ERROR | Input validation errors |
+| UnauthorizedError | AppkitError | UNAUTHORIZED | Auth/permission errors |
+| ConflictError | AppkitError | CONFLICT | Conflict/duplicate errors |
+| CapacityError | AppkitError | CAPACITY_EXCEEDED | Limit exceeded |
+| ExpiredError | AppkitError | EXPIRED | Resource expired |
 
-### Serialization
+### Design System Tokens (`appkit/src/_internal/shared/tokens/`)
 
-| Export | Purpose |
-|--------|---------|
-| `toClient<T>(doc)` | Firestore doc → client-safe shape (strips server fields) |
-| `clientInitial<T>(doc)` | Server data → initial client state |
+| Export | Type | Purpose |
+|--------|------|---------|
+| SEMANTIC_COLORS | Object | Light-mode semantic color aliases |
+| SEMANTIC_COLORS_DARK | Object | Dark-mode overrides |
+| SEMANTIC_RADIUS | Object | Radius aliases |
+| SEMANTIC_SHADOWS | Object | Shadow aliases |
+| SEMANTIC_Z_INDEX | Object | Z-index semantic names |
+| MOTION_TOKENS | Object | Duration & easing tokens |
+| BREAKPOINTS | Object | Responsive breakpoints (xs=0, sm=480, md=768, lg=1024, xl=1280, 2xl=1536) |
+| PLATFORM_LIMITS | Object | Wishlist max 20, history max 50, cart max 50, auction increment 5% |
 
-### Media Limits
+### Feature Configs (per-domain)
 
-| Constant | Value | Purpose |
-|----------|-------|---------|
-| `MAX_IMAGE_BYTES` | 10 MB | Max image upload size |
-| `MAX_PDF_BYTES` | 20 MB | Max PDF upload size |
-| `MAX_VIDEO_BYTES` | 100 MB | Max video upload size |
-| `ALLOWED_IMAGE_MIMES` | jpg, png, webp, gif, avif | Accepted image types |
-| `ALLOWED_VIDEO_MIMES` | mp4, webm | Accepted video types |
-| `classifyMime(mime)` | — | Returns "image"/"video"/"document" |
-| `isAllowedMime(mime)` | — | Validates MIME type |
+| Domain | Key Constants | Purpose |
+|--------|--------------|---------|
+| auctions | AUCTIONS_PAGE_SIZE, AUCTIONS_ACTIVE_LIMIT, AUCTION_MIN_BID_INCREMENT_PAISE, AUCTION_SNIPING_WINDOW_SECONDS | Auction limits |
+| blog | BLOG_PAGE_SIZE, BLOG_FEATURED_LIMIT, BLOG_RELATED_LIMIT | Blog limits |
+| cart | CART_MAX_ITEMS, CART_GUEST_STORAGE_KEY | Cart limits |
+| events | Event config constants | Event limits |
+| history | HISTORY_MAX, HISTORY_GUEST_STORAGE_KEY | History limits |
+| orders | ORDERS_PAGE_SIZE, ORDER_CANCELLABLE_STATUSES, ORDER_RETURN_WINDOW_DAYS | Order limits |
+| products | PRODUCTS_PAGE_SIZE, PRODUCTS_FEATURED_LIMIT, PRODUCTS_RELATED_LIMIT | Product limits |
+| promotions | COUPONS_PAGE_SIZE, COUPON_CODE_MAX_LENGTH | Coupon limits |
+| reviews | REVIEWS_PAGE_SIZE, REVIEW_MAX_RATING, REVIEW_IMAGES_MAX | Review limits |
+| wishlist | WISHLIST_MAX, WISHLIST_GUEST_STORAGE_KEY | Wishlist limits |
 
 ---
 
 ## 6. Repositories
 
-### Repository Classes (appkit/src/repositories/)
-
-| Repository | Collection | Key Methods | Instance |
-|------------|-----------|-------------|----------|
-| **UserRepository** | `users` | `findByUid`, `findByEmail`, `findByPhone`, `findByRole`, `create`, `createWithId`, `update`, `updateRole`, `updateProfile`, `markEmailAsVerified`, `disable`, `enable`, `countByRole`, `list`, `listSellers` | `userRepository` |
-| **ProductsRepository** | `products` | `findById` (cached), `findBySlug` (cached), `findByStore`, `findByCategory`, `findFeatured`, `findAuctions`, `findPreOrders`, `list`, `create`, `update`, `delete`, `updateAvailableQuantity`, `updateBid`, `incrementViewCount`, `startGroup`, `dissolveGroup`, `linkChildToGroup`, `getPublishedIds` | `productRepository` |
-| **OrdersRepository** | `orders` | `create`, `findByUser`, `findByProduct`, `findByStatus`, `updateStatus`, `updatePaymentStatus`, `cancelOrder`, `hasUserPurchased`, `listForSeller`, `listForUser`, `listAll`, `postRefundEvent`, `createFromAuction` | `orderRepository` |
-| **StoreRepository** | `stores` | `findBySlug`, `findByOwnerId`, `create`, `update`, `updateStore`, `setStatus`, `listStores`, `listAllStores`, `incrementTotalProducts`, `incrementItemsSold`, `setStats`, `isSlugAvailable`, `changeSlug`, `listIds` | `storeRepository` |
-| **ReviewsRepository** | `reviews` | `create`, `update`, `findByProduct`, `findApprovedByProduct`, `findApprovedByStore`, `findByUser`, `approve`, `reject`, `getAverageRating`, `getRatingDistribution`, `listForProduct`, `listForStore`, `listAll` | `reviewRepository` |
-| **BidRepository** | `bids` | `create`, `findByProduct`, `findByUser`, `findHighestBid`, `findWinningBid`, `setWinningBid`, `endAuction`, `cancelProductBids`, `list` | `bidRepository` |
-| **CartRepository** | `carts` | `findByUserId`, `getOrCreate`, `addItem`, `updateItem`, `removeItem`, `clearCart`, `addCoupon`, `removeCoupon`, `setSelectedItems` | `cartRepository` |
-| **AddressesRepository** | `addresses` | `createWithId` (PII encrypted), `update`, `listByOwner`, `countByOwner`, `createForOwner`, `deleteForOwner`, `setDefault`, `deleteAllForOwner` | `addressesRepository` |
-| **CategoriesRepository** | `categories` | `list`, `createWithHierarchy`, `getCategoryBySlug`, `getRootCategories`, `getLeafCategories`, `getCategoriesByTier`, `getChildren`, `getFeaturedCategories`, `getBrandCategories`, `buildTree`, `listByType`, `findBySlugAndType`, `findActiveBrands` | `categoriesRepository` |
-| **CouponsRepository** | `coupons` | `create`, `getCouponByCode`, `getActiveCoupons`, `validateCoupon`, `applyCoupon`, `getUserCouponUsageCount`, `getStoreCoupons`, `validateCouponForCart`, `list` | `couponsRepository` |
-| **FAQsRepository** | `faqs` | `create`, `update`, `list`, `getFAQBySlug`, `getFAQsByCategory`, `getHomepageFAQs`, `getPinnedFAQs`, `searchByTag`, `getMostHelpful`, `incrementViews`, `markHelpful` | `faqsRepository` |
-| **BlogRepository** | `blogPosts` | `create`, `update`, `delete`, `findBySlug`, `incrementViews`, `findRelated`, `listPublished`, `listAll` | `blogRepository` |
-| **EventsRepository** | `events` | `list`, `listActive`, `createEvent`, `updateEvent`, `changeStatus`, `incrementTotalEntries`, `incrementApprovedEntries` | `eventRepository` |
-| **CarouselsRepository** | `carousels` | `create`, `listCarousels`, `createCarousel`, `updateCarousel`, `addSlide`, `removeSlide`, `reorderSlides`, `getCarouselWithSlides` | `carouselsRepository` |
-| **SessionRepository** | `sessions` | `list`, `listForUser`, `createSession`, `updateActivity`, `revokeSession`, `revokeAllUserSessions`, `findActiveByUser`, `cleanupExpiredSessions`, `getStats` | `sessionRepository` |
-| **GroupedListingsRepository** | `groupedListings` | `findById`, `listByStore` | `groupedListingsRepository` |
-| **TokenRepository** | `emailVerificationTokens` + `passwordResetTokens` | `findByToken`, `findByUserId`, `findByEmail`, `create`, `deleteExpired`, `markAsUsed` (password only) | `tokenRepository` |
-| **SmsCounterRepository** | `smsCounters` | SMS rate limiting | `smsCounterRepository` |
-
-### Exported Facade
-
-| Export | Purpose |
-|--------|---------|
-| `unitOfWork` | Atomic multi-collection transaction facade |
+| Repository Class | Collection | Key Methods | Purpose |
+|------------------|-----------|-------------|---------|
+| BaseRepository (FirebaseRepository) | — | findById, list, create, update, delete, exists, count | Base CRUD class |
+| UserRepository | users | findByEmail, findByPhone | User account management |
+| EmailVerificationTokenRepository | emailVerificationTokens | create, findById, delete, deleteExpired | Email verification tokens |
+| PasswordResetTokenRepository | passwordResetTokens | create, findById, delete, deleteExpired | Password reset tokens |
+| SessionRepository | sessions | findByUserId, deleteExpired | User session management |
+| SmsCounterRepository | smsCounters | increment, get, reset, findByPhone | SMS rate limiting |
+| AddressesRepository | addresses | findByOwner, setDefault | User and store addresses |
+| ProductRepository / ProductsRepository | products | listByStatus, listByStore, publish, unpublish, search | Product listings |
+| OrderRepository / OrdersRepository | orders | listByUser, listByStore, listByStatus, updateStatus | Order management |
+| ReviewRepository / ReviewsRepository | reviews | listByProduct, listByUser, listByStore | Product reviews |
+| BidRepository | auctions/bids | listByAuction | Auction bid management |
+| CartRepository | carts | getOrCreate, addItem, updateItem, removeItem, clear, findByUserId | Shopping cart |
+| StoreRepository | stores | findByUserId, search, findBySlug | Store/seller profiles |
+| SiteSettingsRepository | siteSettings | findAll | Site configuration |
+| NotificationRepository | notifications | listByUser, markAsRead, markAsUnread | Notifications |
+| ChatRepository | chats | addMessage, findByParticipants | Chat/messaging |
+| CarouselRepository / CarouselsRepository | carousels | — | Carousel management |
+| HomepageSectionsRepository | homepageSections | reorder | Homepage sections |
+| CategoriesRepository | categories | listByType, findBySlug, getTree | Category management |
+| CouponsRepository | coupons | findByCode, validate | Coupon codes |
+| ClaimedCouponsRepository | claimedCoupons | listByUser, listByStore | Coupon redemptions |
+| FAQsRepository / FirebaseFAQsRepository | faqs | search, listByCategory, findBySlug | FAQ management |
+| BlogRepository | blogs | publish, unpublish, search, listByCategory | Blog posts |
+| PayoutRepository | payouts | listByStore, listByStatus, updateStatus | Seller payouts |
+| GroupedListingsRepository | groupedListings | findByStore, findByCategory | Grouped products |
+| PayoutMethodsRepository | stores/payoutMethods | findByStore | Seller bank accounts |
+| ShippingConfigsRepository | stores/shippingConfigs | findByStore | Seller shipping rules |
+| AnalyticsCardsRepository | stores/analyticsCards | findByStore | Custom analytics |
+| AnalyticsAlertsRepository | stores/analyticsAlerts | findByStore | Analytics alerts |
+| StoreCategoriesRepository | stores/categories | findByStore | Store-specific categories |
+| ListingTemplatesRepository | stores/templates | findByStore | Product templates |
+| ModerationQueueRepository | stores/moderation | listByStatus | Content moderation |
+| ReportsRepository | stores/reports | listByStatus, findByReporter | User/content reports |
+| ItemRequestsRepository | stores/itemRequests | findByStore | Product requests |
+| StoreWhatsAppConfigRepository | stores/whatsapp | findByStore | WhatsApp integration |
+| StoreGoogleConfigRepository | stores/google | findByStore | Google integration |
+| RoleOverridesRepository | stores/roleOverrides | findByStore | Custom RBAC rules |
+| CustomRolesRepository | stores/customRoles | findByStore | Custom user roles |
+| AdminNotificationsRepository | stores/adminNotifications | listByStore | Admin alerts |
+| OfferRepository | offers | listByProduct, listByUser, listByStore | Price negotiation |
+| WishlistRepository | wishlists | getOrCreate, addItem, removeItem, findByUser, isFull | Wishlists |
+| HistoryRepository | history | addItem, removeItem, findByUser, clear | View history |
+| EventRepository / EventsRepository | events | findBySlug, listByStatus | Events |
+| EventEntryRepository / EventEntriesRepository | eventEntries | findByEvent, findByUser | Event participation |
+| NewsletterRepository | newsletter | findByEmail, subscribe, unsubscribe | Newsletter |
+| CopilotLogRepository | copilotLogs | findByUser | AI chat history |
+| ScammerRepository | scammers | findByUserId, findByPhone | Scam registry |
+| SupportRepository | supportTickets | findByStatus, addMessage | Support tickets |
+| ProductTemplateRepository | productTemplates | findByStore | Listing templates |
+| ProductFeaturesRepository | productFeatures | search, listByStore | Product features |
+| UnitOfWork | — | transaction wrapper | Atomic multi-collection operations |
 
 ---
 
 ## 7. Hooks
 
-### State & UI Hooks
+### Auth Hooks
 
-| Hook | File | Purpose |
-|------|------|---------|
-| `useUrlTable(config)` | `appkit/src/ui/hooks/useUrlTable.ts` | URL-synced table state (filters, sort, page, search) |
-| `useMediaQuery(query)` | `appkit/src/ui/hooks/useMediaQuery.ts` | CSS media query listener |
-| `useClickOutside(ref, handler)` | `appkit/src/ui/hooks/useClickOutside.ts` | Click-outside detection |
-| `useDebounce(value, delay)` | `appkit/src/ui/hooks/useDebounce.ts` | Value debouncing |
-| `useThrottle(value, delay)` | `appkit/src/ui/hooks/useThrottle.ts` | Value throttling |
-| `useLocalStorage(key, initial)` | `appkit/src/ui/hooks/useLocalStorage.ts` | Persistent local storage state |
-| `useKeyboardShortcut(key, handler)` | `appkit/src/ui/hooks/useKeyboardShortcut.ts` | Keyboard shortcut binding |
-| `useIntersectionObserver(ref, opts)` | `appkit/src/ui/hooks/useIntersectionObserver.ts` | Viewport intersection detection |
-| `useLongPress(callback, opts)` | `appkit/src/ui/hooks/useLongPress.ts` | Long-press gesture detection |
-| `useScrollDirection()` | `appkit/src/ui/hooks/useScrollDirection.ts` | Scroll up/down detection |
+| Hook | Returns | Purpose |
+|------|---------|---------|
+| useCurrentUser | User state | Current authenticated user |
+| useLogin | Mutation | Email/password login |
+| useGoogleLogin | Mutation | Google OAuth login |
+| useRegister | Mutation | User registration |
+| useVerifyEmail | Mutation | Email verification |
+| useResendVerification | Mutation | Resend verification |
+| useForgotPassword | Mutation | Forgot password |
+| useResetPassword | Mutation | Password reset |
+| useChangePassword | Mutation | Change password |
+| useChangeEmail | Mutation | Change email |
+| useLogout | Mutation | Sign out |
+| useHasRole, useIsAdmin, useIsModerator | boolean | Check user permissions |
+| useAuthEvent | AuthEventData | Listen to auth events |
 
-### Feature Hooks
+### Account Hooks
 
-| Hook | File | Purpose |
-|------|------|---------|
-| `useAuth()` | `appkit/src/features/auth/hooks/useAuth.ts` | Auth state + login/logout/signup |
-| `useCart()` | `appkit/src/features/cart/hooks/useCart.ts` | Cart state + CRUD operations |
-| `useWishlist()` | `appkit/src/features/wishlist/hooks/useWishlist.ts` | Wishlist state + add/remove |
-| `useHistory()` | `appkit/src/features/history/hooks/useHistory.ts` | Browsing history tracking |
-| `useSearch(query)` | `appkit/src/features/search/hooks/useSearch.ts` | Search with debounced results |
-| `useNotifications()` | `appkit/src/features/notifications/hooks/useNotifications.ts` | Notification state + mark-read |
-| `useMessages()` | `appkit/src/features/messages/hooks/useMessages.ts` | Chat message polling |
-| `useStore()` | `appkit/src/features/stores/hooks/useStore.ts` | Current store context |
-| `useToast()` | `appkit/src/ui/hooks/useToast.ts` | Toast notification dispatch |
-| `useConfirm()` | `appkit/src/ui/hooks/useConfirm.ts` | Confirmation dialog promise |
-| `useSideDrawer()` | `appkit/src/ui/hooks/useSideDrawer.ts` | Side drawer open/close state |
-| `useFilterDrawer()` | `appkit/src/features/products/hooks/useFilterDrawer.ts` | Filter drawer state |
-| `useBidding(auctionId)` | `appkit/src/features/auctions/hooks/useBidding.ts` | Auction bidding state |
-| `useCheckout()` | `appkit/src/features/checkout/hooks/useCheckout.ts` | Checkout flow state |
+| Hook | Returns | Purpose |
+|------|---------|---------|
+| useAccount | Account data + ops | Fetch user account info |
+| useAddresses, useAddress, useCreateAddress, useUpdateAddress, useDeleteAddress, useSetDefaultAddress | Address CRUD | Address operations |
+| useAddressForm | Form state | Address form management |
+| useAddressSelector | Selected + list | Address selection |
+| useNotifications | Notifications[] | Fetch user notifications |
+| useProfile, useCurrentProfile, usePublicProfile | Profile data | Fetch user profiles |
+| useUpdateCurrentProfile | Mutation | Update profile |
+| useProfileStats | ProfileStats | Fetch user statistics |
+
+### Product/Listing Hooks
+
+| Hook | Returns | Purpose |
+|------|---------|---------|
+| useProducts | Products[] | Fetch products |
+| useProductDetail | ProductDetail | Fetch product detail |
+| useRelatedProducts | Products[] | Fetch related products |
+| useBrands | Brands[] | Fetch brands |
+| useAuctions, useAuction, useAuctionBids, useAuctionDetail | Auction data | Fetch auctions |
+| usePlaceBid | Mutation | Place auction bid |
+| useRealtimeBids | RealtimeBidData | Real-time bid updates |
+| usePreOrders | Pre-orders[] | Fetch pre-orders |
+
+### Cart/Checkout Hooks
+
+| Hook | Returns | Purpose |
+|------|---------|---------|
+| useCart | CartData + ops | Fetch user cart |
+| useCartCount | number | Cart item count |
+| useCartQuery | Cart query state | Raw cart query |
+| useAddToCart | Mutation | Add item to cart |
+| useGuestCart | Guest cart data | Guest shopping cart |
+| useGuestCartMerge | Mutation | Merge guest to user cart |
+| useCheckout | Checkout state | Checkout form state |
+| useCheckoutApi | Mutation | Create checkout |
+| useCheckoutReadQueries | Read queries | Checkout data loading |
+| usePaymentCheckout | Mutation | Process payment |
+| usePaymentEvent | Event listener | Payment status updates |
+| usePayments | Payments[] | Fetch payment history |
+| useOrder | OrderData | Fetch order details |
+| useOrders | Orders[] | Fetch orders |
+
+### Engagement Hooks
+
+| Hook | Returns | Purpose |
+|------|---------|---------|
+| useWishlist, useWishlistWithGuest | Wishlist data | Combined wishlist |
+| useUserWishlist | Wishlist items[] | User wishlist |
+| useGuestWishlist | Guest wishlist[] | Guest wishlist |
+| useWishlistCount | number | Wishlist item count |
+| useWishlistToggle | Mutation | Add/remove wishlist |
+| useHistory | History items[] | Fetch view history |
+| useHistoryMergeOnLogin | Mutation | Merge guest history |
+| useReviews | Reviews[] | Fetch reviews |
+| useCreateReview | Mutation | Submit review |
+| useCouponValidate | Mutation | Validate coupon |
+| usePromotions | Promotions[] | Fetch promotions |
+
+### Content Hooks
+
+| Hook | Returns | Purpose |
+|------|---------|---------|
+| useBlog | Blog posts[] | Fetch blog listings |
+| useCategories | Categories[] | Fetch categories |
+| useCategorySelector | Selected + list | Category selection |
+| useCategoryTree | Hierarchical tree | Category hierarchy |
+| useEvents, useEvent, useBulkEvent | Events data | Fetch events |
+| useFAQs, useFaqList, useFaqVote | FAQ data | FAQ operations |
+| useStores | Stores[] | Fetch stores |
+| useStoreAddressSelector | Selector state | Store address selection |
+| useSearch | Results[] | Product/store search |
+| useNavSuggestions | Suggestions[] | Search suggestions |
+
+### Homepage Hooks
+
+| Hook | Returns | Purpose |
+|------|---------|---------|
+| useHomepage | Homepage data | Main homepage data |
+| useHomepageSections | Sections[] | Homepage sections config |
+| useHeroCarousel | Slides[] | Hero carousel data |
+| useFeaturedProducts | Products[] | Featured products |
+| useFeaturedAuctions | Auctions[] | Featured auctions |
+| useFeaturedPreOrders | Pre-orders[] | Featured pre-orders |
+| useFeaturedStores | Stores[] | Featured stores |
+| useTopBrands | Brands[] | Top brands |
+| useTopCategories | Categories[] | Top categories |
+| useHomepageEvents | Events[] | Homepage events |
+| useHomepageReviews | Reviews[] | Featured reviews |
+| useBlogArticles | Articles[] | Featured blog articles |
+| useActiveAd | Active ad | Fetch active ad |
+| useNewsletter | Mutation | Newsletter subscription |
+
+### Dashboard Hooks
+
+| Hook | Returns | Purpose |
+|------|---------|---------|
+| useAdmin, useDashboardStats | Dashboard data | Admin dashboard metrics |
+| useAdminListingData | Listing + pagination | Generic admin listing |
+| useAdminSectionsListing | Sections list | Homepage sections listing |
+| useChat, useChatRooms | Chat data | Admin chat management |
+| useSellerListingData | Listing data | Seller products listing |
+| useSellerPayouts | Payouts[] | Seller payout history |
+| useSellerStore | Store data | Seller store info |
+| useSellerStorefront | Storefront data | Store customization |
+| useBecomeSeller | Mutation | Register as seller |
+| useBottomActions | Actions[] | Bottom action bar items |
+
+### Other Hooks
+
+| Hook | Returns | Purpose |
+|------|---------|---------|
+| useConversation | Messages[] | Fetch conversation |
+| useConversations | Conversations[] | User conversations |
+| useLoyaltyBalance | Coins | Loyalty points |
+| useMedia | Media data | Fetch media |
+| useCollections | Collections[] | Fetch collections |
+| useCopilotChat | Chat state | AI chat interface |
+| useCopilotFeedback | Mutation | AI feedback |
+| useContactSubmit | Mutation | Contact form |
+| useBookConsultation | Mutation | Submit consultation |
+| useSubmitCorporateInquiry | Mutation | Corporate inquiry |
+| useBeforeAfter | Slider state | Before/after slider |
+| useToast | {showToast, hideToast} | Toast notifications |
 
 ---
 
 ## 8. Server Actions
 
-### Product Actions (appkit/src/_internal/server/features/)
-
-| Action | Feature | Purpose |
-|--------|---------|---------|
-| `placeBidAction` | auctions | Place auction bid |
-| `reservePreOrderAction` | pre-orders | Reserve pre-order item |
-| `addToCartAction` | cart | Add item to cart |
-| `removeFromCartAction` | cart | Remove item from cart |
-| `clearCartAction` | cart | Clear all cart items |
-| `mergeGuestCartAction` | cart | Merge guest cart on login |
-| `createCheckoutOrderAction` | checkout | Create order from checkout |
-| `attachPaymentAction` | checkout | Attach payment to order |
-| `verifyAndPlaceRazorpayOrderAction` | checkout | Verify Razorpay payment |
-| `addBundleToCartAction` | bundles | Add bundle to cart |
-
-### Content Actions
-
-| Action | Feature | Purpose |
-|--------|---------|---------|
-| `createBlogPostAction` | blog | Create blog post |
-| `updateBlogPostAction` | blog | Update blog post |
-| `deleteBlogPostAction` | blog | Delete blog post |
-| `publishBlogPostAction` | blog | Publish draft post |
-| `unpublishBlogPostAction` | blog | Unpublish post |
-| `createBrandAction` | brands | Create brand |
-| `updateBrandAction` | brands | Update brand |
-| `deleteBrandAction` | brands | Delete brand |
-| `toggleBrandActiveAction` | brands | Toggle brand active state |
-
-### User Actions
-
-| Action | Feature | Purpose |
-|--------|---------|---------|
-| `cancelOrderAction` | orders | Cancel user order |
-| `requestReturnAction` | orders | Request order return |
-| `updateOrderStatusAction` | orders | Update order status (admin/seller) |
-| `trackProductViewAction` | history | Track product page view |
-| `mergeGuestHistoryAction` | history | Merge guest history on login |
-| `applyCouponAction` | promotions | Apply coupon to cart |
-| `createCouponAction` | promotions | Create coupon (admin/seller) |
-| `updateCouponAction` | promotions | Update coupon |
-| `deactivateCouponAction` | promotions | Deactivate coupon |
-| `searchAction` | search | Execute search |
-| Wishlist actions | wishlist | Add/remove wishlist items |
-| Message actions | messages | Send/manage messages |
-| Auth actions | auth | Login, logout, signup |
-| Account actions | account | Profile updates |
-| Site settings actions | site-settings | Admin config updates |
-| Payout actions | payouts | Payout operations |
-| Refund actions | refunds | Refund processing |
-| Raffle actions | raffle | Raffle trigger/spin |
-| `triggerEventRaffleAction` | raffle | Trigger event raffle draw |
-| `assignSpinPrizeAction` | raffle | Assign spin wheel prize |
+| Feature | Action | Auth | Purpose |
+|---------|--------|------|---------|
+| Account | createAddressForUserAction | buyer+ | Create delivery address |
+| Account | updateAddressForUserAction | buyer+ | Update address |
+| Account | deleteAddressForUserAction | buyer+ | Delete address |
+| Account | setDefaultAddressForUserAction | buyer+ | Set default address |
+| Auctions | placeBidAction | buyer+ | Place auction bid |
+| Blog | createBlogPostAction | admin/mod | Create blog post |
+| Blog | updateBlogPostAction | admin/mod | Update blog post |
+| Blog | deleteBlogPostAction | admin/mod | Delete blog post |
+| Blog | publishBlogPostAction | admin/mod | Publish blog post |
+| Blog | unpublishBlogPostAction | admin/mod | Unpublish blog post |
+| Brands | createBrandAction | admin | Create brand |
+| Brands | updateBrandAction | admin | Update brand |
+| Brands | deleteBrandAction | admin | Delete brand |
+| Brands | toggleBrandActiveAction | admin | Toggle brand status |
+| Bundles | addBundleToCartAction | buyer+ | Add bundle to cart |
+| Cart | addToCartAction | buyer+ | Add item to cart |
+| Cart | removeFromCartAction | buyer+ | Remove from cart |
+| Cart | clearCartAction | buyer+ | Clear entire cart |
+| Cart | mergeGuestCartAction | buyer+ | Merge guest cart |
+| Classified | startClassifiedConversationAction | buyer+ | Initiate seller contact |
+| Digital Code | claimCodeAction | buyer+ | Reveal purchased code |
+| Events | registerEventAction | any authed | Register for event |
+| Events | cancelRegistrationAction | any authed | Cancel registration |
+| History | trackProductViewAction | buyer+ | Track product view |
+| History | mergeGuestHistoryAction | buyer+ | Merge guest history |
+| Orders | createOrderAction | buyer+ | Create order |
+| Orders | cancelOrderAction | buyer+ | Cancel pending order |
+| Orders | requestReturnAction | buyer+ | Request return |
+| Orders | updateOrderStatusAction | seller+ | Update order status |
+| Payouts | requestPayoutAction | seller | Request seller payout |
+| Pre-Orders | reservePreOrderAction | buyer+ | Reserve pre-order |
+| Products | publishProductAction | seller+ | Publish product listing |
+| Products | unpublishProductAction | seller+ | Unpublish listing |
+| Promotions | applyCouponAction | buyer+ | Apply coupon at checkout |
+| Promotions | createCouponAction | admin/seller | Create coupon code |
+| Promotions | updateCouponAction | admin/seller | Update coupon |
+| Promotions | deactivateCouponAction | admin/seller | Deactivate coupon |
+| Raffle | enterRaffleAction | buyer+ | Enter prize draw |
+| Refunds | initiateRefundAction | admin | Initiate refund |
+| Reviews | createReviewAction | buyer+ | Create product review |
+| Reviews | replyToReviewAction | seller+ | Reply to review |
+| Reviews | deleteReviewAction | buyer+ | Delete review |
+| Search | searchAction | any | Execute search |
+| Wishlist | addToWishlistAction | buyer+ | Add to wishlist |
+| Wishlist | removeFromWishlistAction | buyer+ | Remove from wishlist |
+| Wishlist | mergeGuestWishlistAction | buyer+ | Merge guest wishlist |
 
 ---
 
 ## 9. API Routes
 
-### Auth Routes (src/app/api/auth/)
+### Admin Routes (~100 endpoints)
 
 | Route | Methods | Purpose |
 |-------|---------|---------|
-| `/api/auth/login` | POST | Email/password login |
-| `/api/auth/register` | POST | User registration |
-| `/api/auth/logout` | POST | Session logout |
-| `/api/auth/forgot-password` | POST | Password reset request |
-| `/api/auth/reset-password` | POST | Password reset execution |
-| `/api/auth/verify-email` | POST | Email verification |
-| `/api/auth/google` | POST | Google OAuth callback |
-| `/api/auth/session` | GET | Session validation |
-| `/api/auth/refresh` | POST | Session refresh |
-
-### Product Routes
-
-| Route | Methods | Purpose |
-|-------|---------|---------|
-| `/api/products` | GET, POST | List/create products |
-| `/api/products/[id]` | GET, PUT, DELETE | Product CRUD |
-| `/api/products/featured` | GET | Featured products |
-| `/api/products/search` | GET | Product search |
-| `/api/auctions` | GET, POST | List/create auctions |
-| `/api/auctions/[id]` | GET, PUT, DELETE | Auction CRUD |
-| `/api/auctions/[id]/bids` | GET, POST | Auction bids |
-
-### Store Routes
-
-| Route | Methods | Purpose |
-|-------|---------|---------|
-| `/api/store/products` | GET, POST | Store product management |
-| `/api/store/products/[id]` | GET, PUT, DELETE | Store product CRUD |
-| `/api/store/orders` | GET | Store order listing |
-| `/api/store/orders/[id]` | GET, PATCH | Store order management |
-| `/api/store/coupons` | GET, POST | Store coupon management |
-| `/api/store/coupons/[id]` | GET, PUT, DELETE | Store coupon CRUD |
-| `/api/store/reviews` | GET | Store review listing |
-| `/api/store/payouts` | GET, POST | Payout management |
-| `/api/store/analytics` | GET | Store analytics |
-| `/api/store/shipping` | GET, PUT | Shipping config |
-| `/api/store/addresses` | GET, POST | Store addresses |
-| `/api/store/whatsapp/catalog` | POST | WhatsApp catalog sync |
-| `/api/store/whatsapp/import` | POST | WhatsApp catalog import |
-| `/api/store/offers` | GET | Offer management |
-| `/api/store/offers/[id]` | PUT | Accept/reject offer |
-
-### Admin Routes
-
-| Route | Methods | Purpose |
-|-------|---------|---------|
-| `/api/admin/users` | GET | User listing |
-| `/api/admin/users/[id]` | GET, PUT, DELETE | User management |
-| `/api/admin/stores` | GET | Store listing |
-| `/api/admin/stores/[id]` | PUT | Store verification/suspension |
-| `/api/admin/products` | GET | Product listing |
-| `/api/admin/products/[id]` | PUT | Product approval/rejection |
-| `/api/admin/orders` | GET | Order listing |
-| `/api/admin/orders/[id]` | PUT | Order status management |
-| `/api/admin/reviews` | GET | Review moderation |
-| `/api/admin/reviews/[id]` | PUT | Approve/reject review |
-| `/api/admin/events` | GET, POST | Event management |
-| `/api/admin/events/[id]` | GET, PUT, DELETE | Event CRUD |
-| `/api/admin/events/[id]/trigger-raffle` | POST | Trigger event raffle |
-| `/api/admin/payouts` | GET | Payout listing |
-| `/api/admin/payouts/[id]` | PUT | Grant/hold payout |
-| `/api/admin/payouts/[id]/deduction` | POST | Manual refund deduction |
-| `/api/admin/blog` | GET, POST | Blog management |
-| `/api/admin/blog/[id]` | GET, PUT, DELETE | Blog post CRUD |
-| `/api/admin/coupons` | GET, POST | Coupon management |
-| `/api/admin/coupons/[id]` | GET, PUT, DELETE | Coupon CRUD |
-| `/api/admin/categories` | GET, POST | Category management |
+| `/api/admin/products` | GET, POST | List/create products |
+| `/api/admin/products/[id]` | GET, PUT, DELETE | Product CRUD |
+| `/api/admin/users` | GET, POST | List/create users |
+| `/api/admin/users/[uid]` | GET, PUT, DELETE | User CRUD |
+| `/api/admin/stores` | GET, POST | List/create stores |
+| `/api/admin/stores/[uid]` | GET, PUT, DELETE | Store CRUD |
+| `/api/admin/orders` | GET, POST | List/create orders |
+| `/api/admin/orders/[id]` | GET, PUT, DELETE | Order CRUD |
+| `/api/admin/orders/[id]/refund` | POST | Order refund |
+| `/api/admin/categories` | GET, POST | List/create categories |
 | `/api/admin/categories/[id]` | GET, PUT, DELETE | Category CRUD |
-| `/api/admin/brands` | GET, POST | Brand management |
+| `/api/admin/brands` | GET, POST | List/create brands |
 | `/api/admin/brands/[id]` | GET, PUT, DELETE | Brand CRUD |
-| `/api/admin/faqs` | GET, POST | FAQ management |
+| `/api/admin/blog` | GET, POST | List/create blog posts |
+| `/api/admin/blog/[id]` | GET, PUT, DELETE | Blog post CRUD |
+| `/api/admin/reviews` | GET, POST | List/manage reviews |
+| `/api/admin/reviews/[id]` | GET, PUT, DELETE | Review CRUD |
+| `/api/admin/bids` | GET, POST | List/manage bids |
+| `/api/admin/bids/[id]` | GET, PUT, DELETE | Bid CRUD |
+| `/api/admin/faqs` | GET, POST | List/create FAQs |
 | `/api/admin/faqs/[id]` | GET, PUT, DELETE | FAQ CRUD |
-| `/api/admin/site-settings` | GET, PUT | Site settings |
-| `/api/admin/carousels` | GET, POST | Carousel management |
-| `/api/admin/carousels/[id]` | GET, PUT, DELETE | Carousel CRUD |
-| `/api/admin/sessions` | GET | Session listing |
-| `/api/admin/sessions/[id]` | DELETE | Session revocation |
-| `/api/admin/notifications` | GET | Notification listing |
+| `/api/admin/coupons` | GET, POST | List/create coupons |
+| `/api/admin/coupons/[id]` | GET, PUT, DELETE | Coupon CRUD |
+| `/api/admin/carousel` | GET, POST | List/create carousel slides |
+| `/api/admin/carousel/[id]` | GET, PUT, DELETE | Carousel CRUD |
+| `/api/admin/sections` | GET, POST | List/create homepage sections |
+| `/api/admin/sections/[id]` | GET, PUT, DELETE | Section CRUD |
+| `/api/admin/ads` | GET, POST | List/create ads |
+| `/api/admin/ads/[id]` | GET, PUT, DELETE | Ad CRUD |
+| `/api/admin/events` | GET, POST | List/create events |
+| `/api/admin/events/[id]` | GET, PUT, DELETE | Event CRUD |
+| `/api/admin/events/[id]/trigger-raffle` | POST | Manual raffle trigger |
+| `/api/admin/payouts` | GET, POST | List/manage payouts |
+| `/api/admin/payouts/[id]` | GET, PUT, DELETE | Payout CRUD |
+| `/api/admin/bundles` | GET, POST | List/create bundles |
+| `/api/admin/bundles/[id]` | GET, PUT, DELETE | Bundle CRUD |
+| `/api/admin/bundles/[id]/rebuild` | POST | Rebuild bundle |
+| `/api/admin/site-settings` | GET, PUT | Site configuration |
+| `/api/admin/analytics` | GET | Admin analytics |
+| `/api/admin/dashboard` | GET | Admin dashboard data |
+| `/api/admin/addresses` | GET, POST | List/manage addresses |
+| `/api/admin/addresses/[id]` | GET, PUT, DELETE | Address CRUD |
+| `/api/admin/sublisting-categories` | GET, POST | Sublisting categories |
+| `/api/admin/sublisting-categories/[id]` | GET, PUT, DELETE | Sublisting CRUD |
+| `/api/admin/newsletter` | GET, POST | Newsletter management |
+| `/api/admin/newsletter/[id]` | GET, PUT, DELETE | Newsletter CRUD |
+| `/api/admin/contact-submissions` | GET | Contact submissions |
+| `/api/admin/contact-submissions/[id]` | GET, DELETE | Submission CRUD |
+| + ~50 more | — | Moderation, RBAC, notifications, team, support tickets, etc. |
 
-### User Routes
-
-| Route | Methods | Purpose |
-|-------|---------|---------|
-| `/api/user/cart` | GET, POST, PUT, DELETE | Cart operations |
-| `/api/user/wishlist` | GET, POST, DELETE | Wishlist operations |
-| `/api/user/history` | GET | Browsing history |
-| `/api/user/history/merge` | POST | Merge guest history |
-| `/api/user/orders` | GET | Order history |
-| `/api/user/orders/[id]` | GET | Order detail |
-| `/api/user/addresses` | GET, POST | Address management |
-| `/api/user/addresses/[id]` | PUT, DELETE | Address CRUD |
-| `/api/user/profile` | GET, PUT | Profile management |
-| `/api/user/notifications` | GET | User notifications |
-| `/api/user/messages` | GET | User messages |
-| `/api/user/claimed-coupons` | GET, POST | Claimed coupons |
-| `/api/user/offers` | GET | User offers |
-| `/api/user/bids` | GET | User bid history |
-
-### Media Routes
-
-| Route | Methods | Purpose |
-|-------|---------|---------|
-| `/api/media/sign` | POST | Generate signed upload URL |
-| `/api/media/finalize` | POST | Validate + stamp uploaded file |
-| `/api/media/[...slug]` | GET | Proxy + watermark media files |
-| `/api/media/ext` | GET | External image proxy |
-
-### Public Routes
+### Store Routes (~55 endpoints)
 
 | Route | Methods | Purpose |
 |-------|---------|---------|
-| `/api/products` | GET | Public product listing |
-| `/api/categories` | GET | Public category listing |
-| `/api/brands` | GET | Public brand listing |
-| `/api/stores` | GET | Public store listing |
-| `/api/events` | GET | Public event listing |
-| `/api/events/[id]/spin` | POST | Spin wheel endpoint |
-| `/api/reviews` | GET | Public review listing |
-| `/api/search` | GET | Public search |
-| `/api/newsletter` | POST | Newsletter signup |
-| `/api/contact` | POST | Contact form |
+| `/api/store/products` | GET, POST | List/create store products |
+| `/api/store/orders` | GET | List store orders |
+| `/api/store/orders/[id]` | GET, PUT | Order management |
+| `/api/store/orders/[id]/ship` | POST | Ship order |
+| `/api/store/coupons` | GET, POST | Store coupons |
+| `/api/store/coupons/[id]` | GET, PUT, DELETE | Coupon CRUD |
+| `/api/store/storefront` | GET, PUT | Storefront settings |
+| `/api/store/shipping` | GET, PUT | Shipping settings |
+| `/api/store/shipping/verify-pickup` | POST | Pickup verification |
+| `/api/store/payout-settings` | GET, PUT | Payout config |
+| `/api/store/payouts` | GET | Payout history |
+| `/api/store/payouts/request` | POST | Request payout |
+| `/api/store/reviews` | GET | Store reviews |
+| `/api/store/reviews/[id]/reply` | POST | Reply to review |
+| `/api/store/profile` | GET, PUT | Store profile |
+| `/api/store/addresses` | GET, POST | Store addresses |
+| `/api/store/addresses/[id]` | GET, PUT, DELETE | Address CRUD |
+| `/api/store/slug/check` | GET | Slug availability |
+| `/api/store/products/[id]/codes` | GET, POST | Digital code pool |
+| `/api/store/templates` | GET, POST | Product templates |
+| `/api/store/templates/[id]` | GET, PUT, DELETE | Template CRUD |
+| `/api/store/features` | GET, POST | Store features |
+| `/api/store/features/[id]` | GET, PUT, DELETE | Feature CRUD |
+| + ~30 more | — | WhatsApp, analytics, categories, extensions, etc. |
 
-### Demo Routes
+### User Routes (~36 endpoints)
 
 | Route | Methods | Purpose |
 |-------|---------|---------|
-| `/api/demo/seed` | GET, POST | Seed data status + load/delete |
+| `/api/user/profile` | GET, PUT | User profile |
+| `/api/user/orders` | GET | User orders |
+| `/api/user/orders/[id]` | GET | Order details |
+| `/api/user/orders/[id]/cancel` | POST | Cancel order |
+| `/api/user/addresses` | GET, POST | User addresses |
+| `/api/user/addresses/[id]` | GET, PUT, DELETE | Address CRUD |
+| `/api/user/wishlist` | GET, POST | Wishlist |
+| `/api/user/wishlist/[productId]` | POST, DELETE | Add/remove wishlist |
+| `/api/user/history` | GET, POST | View history |
+| `/api/user/history/merge` | POST | Merge histories |
+| `/api/user/notifications` | GET | Notifications |
+| `/api/user/notifications/read-all` | POST | Mark all read |
+| `/api/user/change-password` | POST | Change password |
+| `/api/user/sessions` | GET | User sessions |
+| `/api/user/sessions/[id]` | DELETE | Revoke session |
+| `/api/user/conversations` | GET, POST | Conversations |
+| `/api/user/conversations/[id]` | GET, PUT | Conversation CRUD |
+| `/api/user/conversations/[id]/read` | POST | Mark as read |
+| `/api/user/conversations/[id]/messages` | GET, POST | Messages |
+| + ~16 more | — | Become seller, reviews, events, offers, etc. |
+
+### Public Routes (~110 endpoints)
+
+| Route | Methods | Purpose |
+|-------|---------|---------|
+| `/api/products` | GET | List products |
+| `/api/products/[id]` | GET | Product details |
+| `/api/categories` | GET | List categories |
+| `/api/categories/[id]` | GET | Category details |
+| `/api/stores` | GET | List stores |
+| `/api/stores/[storeSlug]` | GET | Store details |
+| `/api/stores/[storeSlug]/products` | GET | Store products |
+| `/api/stores/[storeSlug]/reviews` | GET | Store reviews |
+| `/api/blog` | GET | List blog posts |
+| `/api/blog/[slug]` | GET | Blog post details |
+| `/api/reviews` | GET | List reviews |
+| `/api/reviews/[id]` | GET | Review details |
+| `/api/reviews/[id]/vote` | POST | Vote on review |
+| `/api/faqs` | GET | List FAQs |
+| `/api/faqs/vote` | POST | Vote on FAQ |
+| `/api/events` | GET | List events |
+| `/api/events/[id]` | GET | Event details |
+| `/api/events/[id]/leaderboard` | GET | Event leaderboard |
+| `/api/events/[id]/spin` | POST | Spin wheel |
+| `/api/coupons` | GET | List coupons |
+| `/api/coupons/validate` | POST | Validate coupon |
+| `/api/auctions` | GET | List auctions |
+| `/api/auctions/[id]` | GET | Auction details |
+| `/api/bids` | GET | List bids |
+| `/api/bids/[id]` | GET, POST | Bid CRUD |
+| `/api/cart` | GET, POST | Cart operations |
+| `/api/cart/[itemId]` | PUT, DELETE | Cart item CRUD |
+| `/api/cart/selection` | POST | Selection update |
+| `/api/cart/merge` | POST | Merge carts |
+| `/api/checkout/preflight` | POST | Checkout validation |
+| `/api/checkout` | POST | Place order |
+| `/api/payment/verify` | POST | Payment verification |
+| `/api/search` | GET | Product search |
+| `/api/carousel` | GET | Carousel slides |
+| `/api/homepage-sections` | GET | Homepage sections |
+| `/api/notifications` | GET | List notifications |
+| `/api/notifications/unread-count` | GET | Unread count |
+| + ~65 more | — | Auth, media, chat, newsletter, demo seed, etc. |
 
 ---
 
 ## 10. Constants
 
-### Consumer App Constants (src/constants/)
+### Consumer Constants (`src/constants/`)
 
-| File | Export | Purpose |
-|------|--------|---------|
-| `api.ts` | `API_ROUTES` | All API endpoint strings (AUTH, PRODUCTS, ORDERS, STORE, ADMIN, etc.) |
-| `api-roles.ts` | `USER_ROLE`, `ROLES_ADMIN_ONLY`, `ROLES_ADMIN_MOD`, `ROLES_TRUST_SAFETY`, `ROLES_STORE_WRITE`, `ROLES_STORE_READ`, `ROLES_ANY_STAFF` | Role tuple presets for route handlers |
-| `brand.ts` | `BRAND` (NAME, SHORT_NAME, DESCRIPTION, SOCIAL_URLS), `getBrandCopyright(year)` | Brand identity constants |
-| `config.ts` | `BUSINESS_DAY_CONFIG`, `TOKEN_CONFIG`, `PASSWORD_CONFIG`, `VALIDATION_CONFIG`, `API_CONFIG`, `PAGINATION_CONFIG`, `FILE_UPLOAD_CONFIG`, `LOCALE_CONFIG` | Application configuration |
-| `dashboard-tabs.ts` | `STORE_LISTINGS_TABS`, `STORE_ORDERS_TABS`, `ADMIN_PRODUCTS_TABS`, `ADMIN_ORDERS_TABS`, `USER_ORDERS_TABS` + 7 more | Dashboard tab presets per role |
-| `faq.ts` | `FAQ_CATEGORIES` (7 categories) | FAQ categorization |
-| `field-names.ts` | Re-exports 30+ field-name constants from appkit | Canonical field name strings |
-| `footer.tsx` | `FOOTER_TRUST_BAR_ITEMS`, `FOOTER_SOCIAL_LINKS`, `FOOTER_BOTTOM_LINKS` | Footer layout data |
-| `homepage-data.ts` | `TRUST_INDICATORS`, `TRUST_FEATURES`, `SITE_FEATURES` | Homepage section data |
-| `languages.ts` | `SUPPORTED_LANGUAGES` (13), `LANGUAGES_PAGE_SIZE` | i18n language list |
-| `navigation.tsx` | `MAIN_NAV_ITEMS` (12), `SIDEBAR_SUPPORT_LINKS`, `FOOTER_LINK_GROUPS`, `ADMIN_NAV_GROUPS`, `STORE_NAV_GROUPS`, `USER_NAV_GROUPS`, `getUserNavGroups(role)` | All navigation structures |
-| `routes.ts` | `ROUTES` (re-export from appkit) | All page path constants |
-| `search.ts` | `SEARCH_LABELS` | Search overlay strings |
-| `seo.ts` | `SEO_CONFIG` | Default SEO metadata |
-| `seo.server.ts` | `generateMetadata()`, `generateProductMetadata()`, `generateCategoryMetadata()`, `generateBlogMetadata()` + 3 more | Server-side metadata generators |
-| `theme.ts` | `THEME_CONSTANTS` | Extended design system with brand overrides |
-| `tickets.ts` | `TICKET_CATEGORIES` (8), `TICKET_STATUSES` (5) | Support ticket config |
+| File | Key Exports | Purpose |
+|------|-------------|---------|
+| api.ts | API_ROUTES | API endpoint strings for client-side fetch |
+| api-roles.ts | ROLES_ADMIN_ONLY, ROLES_ADMIN_MOD, ROLES_STORE_WRITE, ROLES_STORE_READ, ROLES_ANY_STAFF | RBAC permission tuples |
+| brand.ts | BRAND, getBrandCopyright | Brand identity |
+| config.ts | Site configuration | Environment-specific config |
+| dashboard-tabs.ts | STORE_LISTINGS_TABS, STORE_ORDERS_TABS, USER_ORDERS_TABS, ADMIN_PRODUCTS_TABS | Dashboard navigation tabs |
+| faq.ts | FAQ_CATEGORIES | FAQ category mapping |
+| homepage-data.ts | TRUST_INDICATORS, TRUST_FEATURES, SITE_FEATURES | Homepage content blocks |
+| languages.ts | SUPPORTED_LANGUAGES, LANGUAGES_PAGE_SIZE | i18n configuration |
+| navigation.tsx | MAIN_NAV_ITEMS, ADMIN_NAV_GROUPS, STORE_NAV_GROUPS, USER_NAV_GROUPS, SIDEBAR_SUPPORT_LINKS, FOOTER_LINK_GROUPS | Navigation structures |
+| search.ts | SEARCH_LABELS | Search overlay labels |
+| seo.ts | SEO_CONFIG | SEO metadata defaults |
+| seo.server.ts | generateMetadata, generateProductMetadata, etc. | Server-side metadata generators |
+| theme.ts | THEME_CONSTANTS | Theme mode constants |
+| tickets.ts | TICKET_CATEGORIES, TICKET_STATUSES | Support ticket enums |
+| ui.ts | UI_LABELS | UI copy/labels |
+
+### Appkit Constants (`appkit/src/constants/`)
+
+| File | Key Exports | Purpose |
+|------|-------------|---------|
+| api-endpoints.ts | API_ENDPOINTS + 50 endpoint collections | Canonical API paths |
+| api-endpoint-resolver.ts | resolveEndpoint, resolveEndpointFn | Endpoint path resolution |
+| cache-invalidation.ts | COLLECTION_CACHE_PATHS | Collection-to-cache path mapping |
+| field-names.ts | Schema field constants | Firestore document field names |
+| limits.ts | WISHLIST_MAX, HISTORY_MAX, CART_MAX_ITEMS | User-facing hard caps |
+| sort.ts | SORT_DIR, sortBy | Sieve sort token builder |
+| table-keys.ts | TABLE_KEYS, VIEW_MODE | useUrlTable() parameter keys |
+
+### Feature Constants (`appkit/src/features/*/constants/`)
+
+| File | Key Exports | Purpose |
+|------|-------------|---------|
+| products/action-defs.ts | ACTION_META, ROW_ACTION_META, ADMIN_BULK_ACTIONS, SELLER_BULK_ACTIONS, ADMIN_ROW_ACTIONS, SELLER_ROW_ACTIONS | CTA registry (42 actions) |
+| products/listing-tabs.ts | LISTING_TABS, SELLER_LISTING_TABS | Product listing type tabs |
+| products/sieve.ts | Sieve query builders | Filter/sort helpers |
+| scams/scam-types.ts | SCAM_TYPES, SCAM_CATEGORIES (27 types, 6 categories) | Scam pattern data |
 
 ---
 
 ## 11. Types & Interfaces
 
-### Core Document Types (appkit/src/features/*/schemas/firestore.ts)
+Types are co-located with their feature schemas in `appkit/src/features/*/schemas/firestore.ts`. Key document types:
 
-| Type | Collection | Key Fields |
-|------|-----------|------------|
-| `UserDocument` | users | id, email, displayName, role, stats, photoURL |
-| `ProductDocument` | products | id, title, slug, storeId, price, listingType, status, images[] |
-| `OrderDocument` | orders | id, buyerId, storeId, items[], totalAmount, status, paymentStatus |
-| `StoreDocument` | stores | id, ownerId, storeName, status, isVerified, shippingConfig |
-| `ReviewDocument` | reviews | id, productId, buyerId, rating, title, body, status |
-| `BidDocument` | bids | id, productId, bidderId, amount, status |
-| `CartDocument` | carts | id, userId, items[], appliedCoupons |
-| `CategoryDocument` | categories | id, name, slug, categoryType, parentId, tier, metrics |
-| `CouponDocument` | coupons | id, code, type, scope, discount, validity, usage |
-| `FAQDocument` | faqs | id, question, answer, category, seo, stats |
-| `BlogPostDocument` | blogPosts | id, title, slug, content, category, status |
-| `EventDocument` | events | id, title, type, status, startsAt, endsAt, raffle fields |
-| `EventEntryDocument` | eventEntries | id, eventId, userId, status, spin fields |
-| `AddressDocument` | addresses | id, ownerType, ownerId, fullName, phone, city, state |
-| `SessionDocument` | sessions | id, userId, isActive, expiresAt, deviceInfo |
-| `NotificationDocument` | notifications | id, userId, type, title, body, isRead |
-| `PayoutDocument` | payouts | id, storeId, sellerId, amount, status |
-| `WishlistDocument` | wishlists | id, userId, items[] (max 20) |
-| `HistoryDocument` | history | id, userId, items[] (max 50) |
-| `CarouselDocument` | carousels | id, name, slideIds[], status |
-| `CarouselSlideDocument` | carouselSlides | id, title, background, cards[], settings |
-| `HomepageSectionDocument` | homepageSections | id, type, order, enabled, config |
-| `SiteSettingsDocument` | siteSettings | Singleton — branding, fees, integrations, shipping |
-| `ConversationDocument` | conversations | id, participants[], lastMessage, lastMessageAt |
-| `ScammerDocument` | scammerProfiles | id, displayNames[], reports[], flags |
-| `SupportTicketDocument` | supportTickets | id, subject, category, status, priority, messages[] |
-
-### Layout Types
-
-| Type | Purpose |
-|------|---------|
-| `SidebarNavItem` | Navigation item with icon, label, href |
-| `SidebarNavGroup` | Group of nav items with title |
-| `MainNavItem` | Top navbar item |
-| `BrandingConfig` | Site branding configuration |
-| `FooterConfig` | Footer layout configuration |
-| `LayoutConfig` | Full layout configuration |
-| `DashboardLayoutConfig` | Dashboard-specific layout config |
-
-### Action Types
-
-| Type | Purpose |
-|------|---------|
-| `ActionDef` | Action definition: label, kind, permissions, confirmation |
-| `ActionConfirmation` | Confirmation dialog config: title, body, confirmLabel |
-| `ActionKind` | `"primary"\|"secondary"\|"danger"\|"ghost"` |
-| `ActionResource` | Resource bucket identifier |
-| `ActionTree` | Full action registry tree type |
+| Type | Collection | Source |
+|------|-----------|--------|
+| UserDocument | users | account/schemas/firestore.ts |
+| ProductDocument | products | products/schemas/firestore.ts |
+| OrderDocument | orders | orders/schemas/firestore.ts |
+| ReviewDocument | reviews | reviews/schemas/firestore.ts |
+| StoreDocument | stores | stores/schemas/firestore.ts |
+| CategoryDocument | categories | categories/schemas/firestore.ts |
+| CouponDocument | coupons | promotions/schemas/firestore.ts |
+| EventDocument | events | events/schemas/firestore.ts |
+| BlogPostDocument | blogPosts | blog/schemas/firestore.ts |
+| FAQDocument | faqs | faq/schemas/firestore.ts |
+| CartDocument | carts | cart/schemas/firestore.ts |
+| BidDocument | bids | auctions/schemas/firestore.ts |
+| NotificationDocument | notifications | account/schemas/firestore.ts |
+| SessionDocument | sessions | auth/schemas/firestore.ts |
+| PayoutDocument | payouts | seller/schemas/firestore.ts |
+| AddressDocument | addresses | addresses/schemas/firestore.ts |
+| ConversationDocument | conversations | messages/schemas/firestore.ts |
+| CarouselSlideDocument | carouselSlides | homepage/schemas/firestore.ts |
+| HomepageSectionDocument | homepageSections | homepage/schemas/firestore.ts |
+| SiteSettingsDocument | siteSettings | admin/schemas/firestore.ts |
+| WishlistDocument | wishlists | wishlist/schemas/ |
+| HistoryDocument | history | history/schemas/ |
+| ScammerDocument | scammers | scams/schemas/firestore.ts |
+| SupportTicketDocument | supportTickets | support/schemas/firestore.ts |
 
 ---
 
 ## 12. Utils & Helpers
 
-### String Utilities (appkit/src/utils/string.formatter.ts)
+### `appkit/src/utils/`
 
-| Function | Signature | Purpose |
-|----------|-----------|---------|
-| `capitalize` | `(str) => string` | First letter uppercase |
-| `capitalizeWords` | `(str) => string` | Each word capitalized |
-| `truncate` | `(str, maxLength, suffix?) => string` | Truncate with ellipsis |
-| `stripHtml` | `(html) => string` | Remove HTML tags |
-| `escapeHtml` | `(str) => string` | XSS-safe escape |
-| `slugify` | `(str) => string` | URL-safe slug |
-| `maskString` | `(str, start?, end?, char?) => string` | Mask sensitive data |
-| `randomString` | `(length?) => string` | Random alphanumeric |
-| `proseMirrorToHtml` | `(json) => string` | TipTap JSON → HTML |
-| `normalizeRichTextHtml` | `(value) => string` | Any rich text → HTML |
-
-### Number Utilities (appkit/src/utils/number.formatter.ts)
-
-| Function | Signature | Purpose |
-|----------|-----------|---------|
-| `formatCurrency` | `(amount, currency?, locale?) => string` | Currency formatting |
-| `formatNumber` | `(num, locale?, opts?) => string` | Number formatting |
-| `formatPercentage` | `(num, decimals?) => string` | Percentage formatting |
-| `formatFileSize` | `(bytes) => string` | File size formatting |
-| `formatCompactNumber` | `(num) => string` | Compact: 1.5K, 2.3M |
-| `formatOrdinal` | `(num) => string` | Ordinal: 1st, 2nd |
-
-### Date Utilities (appkit/src/utils/date.formatter.ts)
-
-| Function | Signature | Purpose |
-|----------|-----------|---------|
-| `resolveDate` | `(value) => Date \| null` | Coerce any → Date |
-| `formatDate` | `(date, format, locale?) => string` | Date formatting |
-| `formatDateTime` | `(date, format, locale?) => string` | Date+time formatting |
-| `formatRelativeTime` | `(date) => string` | "X minutes ago" |
-| `isToday` / `isPast` / `isFuture` | `(date) => boolean` | Date comparison |
-| `nowISO` | `() => string` | Current ISO string |
-
-### Array Utilities (appkit/src/utils/array.helper.ts)
-
-| Function | Signature | Purpose |
-|----------|-----------|---------|
-| `groupBy` | `(array, key) => Record<string, T[]>` | Group by field |
-| `unique` | `(array) => T[]` | Deduplicate |
-| `uniqueBy` | `(array, key) => T[]` | Deduplicate by field |
-| `sortBy` | `(array, key, order) => T[]` | Sort by field |
-| `chunk` | `(array, size) => T[][]` | Split into chunks |
-| `paginate` | `(array, page, perPage) => PaginationResult` | In-memory pagination |
-
-### Object Utilities (appkit/src/utils/object.helper.ts)
-
-| Function | Signature | Purpose |
-|----------|-----------|---------|
-| `deepMerge` | `(target, source) => T` | Deep recursive merge |
-| `pick` | `(obj, keys) => Pick<T, K>` | Select keys |
-| `omit` | `(obj, keys) => Omit<T, K>` | Exclude keys |
-| `deepClone` | `(obj) => T` | Deep clone |
-| `isEqual` | `(a, b) => boolean` | Deep equality |
-| `cleanObject` | `(obj, opts?) => Partial<T>` | Remove null/undefined |
-
-### ID Generators (appkit/src/utils/id-generators.ts)
-
-| Function | Format | Purpose |
-|----------|--------|---------|
-| `generateProductId` | `product-{name}-{category}-{condition}-{seller}-{n}` | Product slug |
-| `generateAuctionId` | `auction-{name}-{category}-{condition}-{seller}-{n}` | Auction slug |
-| `generatePreOrderId` | `preorder-{name}-...` | Pre-order slug |
-| `generateOrderId` | `order-{count}-{YYYYMMDD}-{rand6}` | Order ID |
-| `generateBidId` | `bid-{product}-{user}-{YYYYMMDD}-{rand}` | Bid ID |
-| `generateReviewId` | `review-{product}-{user}-{YYYYMMDD}` | Review ID |
-| `generateCategoryId` | `category-{name}` | Category slug |
-| `generateUserId` | `user-{first}-{last}-{email}` | User slug |
-| `generateCouponId` | `coupon-{CODE}` | Coupon ID |
-| `generateBlogPostId` | `blog-{title}-{category}` | Blog post slug |
-| `generateMediaFilename` | `{context}-{name}-{n}-{YYYYMMDD}.{ext}` | SEO media filename |
-| `generateBarcodeFromId` | 12-digit numeric | Barcode from ID |
-| `generateQRCodeData` | URL string | QR code URL |
-
-### Sieve Builder (appkit/src/utils/sieve-builder.ts)
-
-| Function | Purpose |
-|----------|---------|
-| `SIEVE_OP` | Operator constants: EQ, NEQ, GT, LT, GTE, LTE, CONTAINS, etc. |
-| `sieveFilter(field, op, value)` | Build single filter clause |
-| `sieveMultiEq(field, values)` | Multiple equality (OR) |
-| `sieveAnd(...clauses)` | Join with AND |
-| `expandSieveParam(field, value, op?)` | URL param → Sieve clause |
-
-### Event Management (appkit/src/utils/event-manager.ts)
-
-| Function | Purpose |
-|----------|---------|
-| `throttle(fn, delay)` | Throttle function calls |
-| `debounce(fn, delay)` | Debounce function calls |
-| `addGlobalScrollHandler(cb, opts?)` | Register scroll listener |
-| `addGlobalResizeHandler(cb, opts?)` | Register resize listener |
-| `addGlobalClickHandler(sel, cb)` | Register delegated click |
-| `addGlobalKeyHandler(key, cb)` | Register keyboard shortcut |
-| `isMobileDevice()` | UA-based mobile check |
-| `hasTouchSupport()` | Touch capability check |
-| `getViewportDimensions()` | Window inner size |
-| `isInViewport(el, offset?)` | Visibility check |
-| `smoothScrollTo(el, opts?)` | Smooth scroll |
-| `preventBodyScroll(prevent)` | Lock/unlock body scroll |
-
-### Other Utilities
-
-| File | Function | Purpose |
-|------|----------|---------|
-| `color.helper.ts` | `hexToRgb`, `rgbToHex`, `getContrastColor` | Color conversion |
-| `cookie.converter.ts` | `parseCookies`, `getCookie`, `hasCookie`, `deleteCookie` | Cookie management |
-| `business-day.ts` | `getBusinessDayStart`, `getBusinessDaysElapsed`, `getBusinessDaysRemaining` | IST business day math |
-| `auth-error.ts` | `isAuthError(err, status?)` | Auth error detection |
-| `filter.helper.ts` | `buildSieveFilters(...entries)` | Sieve filter string builder |
-| `listing-params.ts` | `parseListingParams(url)`, `serializeListingParams(params)` | URL listing param parsing |
-| `media-url.ts` | `resolveMediaUrl(url)` | Media URL → watermark proxy |
-| `schema-ui.ts` | `deriveFormFields(schema, opts?)` | Zod schema → form field config |
-| `search-tokens.ts` | `buildSearchTokens(...sources)`, `tokenizeQuery(query)` | Search tokenization |
-| `action-response.ts` | `handleActionError(err)` | Error → ActionResult mapping |
-| `animation.helper.ts` | `easings` (10 easing functions) | Pure easing math |
-| `pagination.helper.ts` | `calculatePagination(opts)` | Pagination metadata |
-| `type.converter.ts` | `stringToBoolean`, `arrayToObject`, `firestoreTimestampToDate` + 5 more | Type conversion |
+| File | Key Exports | Purpose |
+|------|-------------|---------|
+| array.helper.ts | chunk, uniq, flatten, groupBy, findDups | Array utilities |
+| auth-error.ts | Error handling utilities | Auth error classification |
+| business-day.ts | addBusinessDays, isBusinessDay | India business day math |
+| color.helper.ts | hexToRgb, rgbToHex, adjustBrightness | Color conversion |
+| cookie.converter.ts | parseCookie, stringifyCookie | Cookie serialization |
+| date.formatter.ts | formatDate, formatTime, parseDate | Date/time formatting |
+| filter.helper.ts | buildFilter, matchFilter | Filter matching |
+| id-generators.ts | generateId, generateSlug, generateTrackingId, generateMediaFilename | ID/slug generation |
+| listing-params.ts | parseListingParams, buildListingUrl | Product listing URL builders |
+| media-field.ts | MediaField, compressImage | Media field validation |
+| number.formatter.ts | formatCurrency, formatNumber, parseNumber | Number formatting (₹ support) |
+| object.helper.ts | deepMerge, pick, omit, mapValues | Object utilities |
+| pagination.helper.ts | calculatePages, getPageRange, paginate | Pagination math |
+| schema-ui.ts | getFieldLabel, getErrorMessage | Schema metadata extraction |
+| search-tokens.ts | tokenizeSearch, matchToken | Search tokenization |
+| sorting.helper.ts | compareFn, naturalSort | Sorting utilities |
+| string.formatter.ts | slugify, capitalize, truncate, sanitize | String utilities |
+| type.converter.ts | toRecord, toArray, isRecord | Type coercion helpers |
+| action-response.ts | ActionResponse, success, error | Server action response wrapper |
+| animation.helper.ts | Animation constants & helpers | Animation token utilities |
 
 ---
 
 ## 13. Registries
 
-### Action Registry (appkit/src/_internal/shared/actions/action-registry.ts)
-
-23 resource buckets with 250+ action definitions:
-
-| Bucket | Action Count | Key Actions |
-|--------|-------------|-------------|
-| `PRODUCT` | 7 | add-to-cart, buy-now, add-to-wishlist, share, compare, make-offer, remove-from-wishlist |
-| `AUCTION` | 4 | place-bid, buy-it-now, watch, unwatch |
-| `PRE_ORDER` | 3 | add-to-cart, reserve-now, cancel-reservation |
-| `PRIZE_DRAW` | 3 | buy-now, enter-draw, reveal-code |
-| `CLASSIFIED` | 1 | contact-seller |
-| `DIGITAL_CODE` | 1 | claim-code |
-| `LIVE` | 1 | inquire |
-| `BUNDLE` | 1 | buy-now |
-| `STORE` | 36 | edit/delete/publish listing, mark-shipped, whatsapp-connect, whatsapp-catalog-sync, save-changes, print-labels, create/update/delete-template, and more |
-| `USER` | 18 | cancel-order, request-return, save-settings, wishlist-bulk-remove, track-order, reorder, download-invoice, write-review, claim-coupon, and more |
-| `ADMIN` | 50+ | approve/reject-product, ban/unban-user, verify/suspend-store, approve/reject-review, grant/hold-payout, export-csv, toggle-featured/promoted, and more |
-| `CART` | 4 | clear-cart, remove-item, checkout, continue-shopping |
-| `CHECKOUT` | 11 | place-order, pay-online, pay-cod, apply/remove-coupon, send/verify/resend-otp, admin-bypass |
-| `NAV` | 3 | sign-in, sign-up, sign-out |
-| `MEDIA` | 3 | copy-url, clear-previews, discard-staged |
-| `SUPPORT` | 3 | create-ticket, reply-ticket, close-ticket |
-| `BLOG` | 3 | create-post, edit-post, delete-post |
-| `EVENT` | 2 | register, cancel-registration |
-| `SELLER` | 1 | cancel-bid |
-
-### Action Defs (appkit/src/features/products/constants/action-defs.ts)
-
-| Preset | Type | Purpose |
-|--------|------|---------|
-| `ACTION_META` | Record | 40+ Tier 1 public CTA definitions |
-| `ROW_ACTION_META` | Record | 30+ Tier 2 row/table action definitions |
-| `FORM_ACTION_META` | Record | 7 Tier 3 form footer actions |
-| `DASHBOARD_QUICK_ACTION_META` | Record | 17 Tier 4 dashboard shortcuts |
-| `ADMIN_ROW_ACTIONS` | Record | Per-entity admin row action presets (28 entity types) |
-| `SELLER_ROW_ACTIONS` | Record | Per-entity seller row action presets (19 entity types) |
-| `USER_ROW_ACTIONS` | Record | Per-entity user row action presets (7 entity types) |
-| `ADMIN_BULK_ACTIONS` | Record | Admin bulk action presets |
-| `SELLER_BULK_ACTIONS` | Record | Seller bulk action presets |
-| `DETAIL_ACTIONS` | Record | Detail page action groups (product, auction, preorder) |
-| `MOBILE_PRIMARY_ACTIONS` | Record | Mobile CTA presets per listing type |
-| `FORM_FOOTER_PRESET` | Record | Form footer presets (drawer, editor, modal, settings) |
-| `DASHBOARD_QUICK_ACTIONS` | Record | Dashboard quick action presets (admin, seller, user) |
+| Registry | File | Entries | Purpose |
+|----------|------|---------|---------|
+| ACTIONS | _internal/shared/actions/action-registry.ts | 23 resource buckets | Master CTA registry — labels, permissions, confirmation, icons |
+| ACTION_META | features/products/constants/action-defs.ts | Tier 1 public CTAs | Primary action metadata |
+| ROW_ACTION_META | features/products/constants/action-defs.ts | Tier 2 row/table actions | Row action metadata |
+| FORM_ACTION_META | features/products/constants/action-defs.ts | Tier 3 form footers | Form footer actions |
+| DASHBOARD_QUICK_ACTION_META | features/products/constants/action-defs.ts | Tier 4 dashboard shortcuts | Quick action metadata |
+| ADMIN_BULK_ACTIONS | features/products/constants/action-defs.ts | Preset array | Admin bulk action set |
+| SELLER_BULK_ACTIONS | features/products/constants/action-defs.ts | Preset array | Seller bulk action set |
+| LISTING_BULK_ACTIONS | features/products/constants/action-defs.ts | Preset array | Listing bulk action set |
+| ADMIN_ROW_ACTIONS | features/products/constants/action-defs.ts | Preset array | Admin row action set |
+| SELLER_ROW_ACTIONS | features/products/constants/action-defs.ts | Preset array | Seller row action set |
+| USER_ROW_ACTIONS | features/products/constants/action-defs.ts | Preset array | User row action set |
+| SCAM_TYPES | features/scams/constants/scam-types.ts | 27 scam types | Scam pattern registry |
 
 ---
 
 ## 14. Schemas (Zod)
 
-### Auth Schemas
-
-| Schema | Validates | Fields |
-|--------|-----------|--------|
-| `loginSchema` | Login form | email, password (min 6) |
-| `registerSchema` | Registration | email, password, displayName? |
-| `forgotPasswordSchema` | Password reset request | email |
-| `resetPasswordSchema` | Password reset | token, password |
-| `userRoleSchema` | Role validation | "user"\|"seller"\|"moderator"\|"employee"\|"admin" |
-
-### Product Schemas
-
-| Schema | Validates | Key Fields |
-|--------|-----------|------------|
-| `productInputSchema` | Product create | title, description, price, categorySlug, images[], customFields[] |
-| `productUpdateSchema` | Product update | All product fields (partial) |
-| `auctionInputSchema` | Auction create | + startingBid, reservePrice, endDate |
-| `preOrderInputSchema` | Pre-order create | + deliveryDate, depositPercent, maxQuantity |
-| `productListParamsSchema` | Product query | q, category, status, minPrice, maxPrice, listingType, sort |
-| `setFeaturedSchema` | Featured toggle | productId, featured (boolean) |
-| `setStatusSchema` | Status change | productId, status |
-
-### Order/Cart/Checkout Schemas
-
-| Schema | Validates | Key Fields |
-|--------|-----------|------------|
-| `createOrderSchema` | Order creation | items[], addressId, paymentMethod |
-| `updateOrderStatusSchema` | Status update | orderId, status, tracking? |
-| `cancelOrderSchema` | Cancellation | orderId, reason |
-| `addToCartSchema` | Cart add | productId, quantity, attributes? |
-| `applyCouponSchema` | Coupon application | code, cartItems? |
-| `placeBidSchema` | Bid placement | productId, amount |
-
-### Content Schemas
-
-| Schema | Validates | Key Fields |
-|--------|-----------|------------|
-| `blogPostInputSchema` | Blog create | title, slug, content, category, coverImage |
-| `eventInputSchema` | Event create | title, type, status, startDate, endDate |
-| `createReviewSchema` | Review create | productId, rating (1-5), title, body, images[] |
-| `createCouponSchema` | Coupon create | code, type, discount, validity, restrictions |
-| `bundleCreateSchema` | Bundle create | name, items[], pricing, stockMode |
+| Feature | Files | Primary Schemas |
+|---------|-------|-----------------|
+| account | firestore.ts, index.ts | User account document schemas |
+| addresses | firestore.ts, index.ts | Address validation & persistence |
+| admin | firestore.ts, index.ts | Admin-specific document schemas |
+| auctions | firestore.ts, index.ts | Auction document schemas |
+| auth | firestore.ts, index.ts | Authentication request/response schemas |
+| blog | firestore.ts, index.ts | Blog post document schemas |
+| cart | firestore.ts, index.ts | Shopping cart document schemas |
+| categories | firestore.ts, index.ts | Product category document schemas |
+| checkout | firestore.ts, index.ts | Checkout flow request schemas |
+| events | firestore.ts, index.ts | Event document schemas |
+| faq | firestore.ts, index.ts | FAQ document schemas |
+| messages | firestore.ts, index.ts | Chat message document schemas |
+| orders | firestore.ts, index.ts | Order document & status transition schemas |
+| payments | firestore.ts, index.ts | Payment request/response schemas |
+| products | firestore.ts, index.ts, catalog-product.ts, product-features.ts, product-templates.ts | Product document, features, templates, validators |
+| promotions | firestore.ts, index.ts | Coupon/promotion document schemas |
+| reviews | firestore.ts, index.ts | Review document schemas |
+| scams | firestore.ts, index.ts | Scam report document schemas |
+| seller | firestore.ts, index.ts | Seller (store) document schemas |
+| store-extensions | firestore.ts, index.ts, rbac.ts | Store feature schemas & RBAC rules |
+| stores | firestore.ts, index.ts | Store document schemas |
+| support | firestore.ts, index.ts | Support ticket document schemas |
+| wishlist | index.ts | Wishlist document schemas |
 
 ---
 
 ## 15. Seed Data
 
-| File | Collection | Records | Key Data |
-|------|-----------|---------|----------|
-| `users-seed-data.ts` | users | 18 | 1 admin + 7 sellers + 10 buyers |
-| `stores-seed-data.ts` | stores | 8 | LetItRip Official + 7 themed stores |
-| `products-standard-seed-data.ts` | products | 62 | Standard marketplace products |
-| `products-auctions-seed-data.ts` | products | 20 | Auction listings |
-| `products-preorders-seed-data.ts` | products | 12 | Pre-order listings |
-| `products-prize-draws-seed-data.ts` | products | 8 | Prize draw listings |
-| `products-classifieds-seed-data.ts` | products | 6 | Classified listings |
-| `products-digital-codes-seed-data.ts` | products | 5 | Digital code listings |
-| `products-live-items-seed-data.ts` | products | 4 | Live item listings |
-| `orders-seed-data.ts` | orders | 50 | Orders across buyer/store combos |
-| `reviews-seed-data.ts` | reviews | 65 | Reviews (16 with seller responses) |
-| `bids-seed-data.ts` | bids | 15+ | Auction bids |
-| `coupons-seed-data.ts` | coupons | 12 | Admin + seller coupons |
-| `claimed-coupons-seed-data.ts` | claimedCoupons | 8 | Coupon claims |
-| `coupon-usage-seed-data.ts` | couponUsage | 5 | Usage tracking |
-| `categories-seed-data.ts` | categories | 55 | 6 roots + sub-hierarchy + 25 brands |
-| `carousels-seed-data.ts` | carousels | 5 | Homepage carousels |
-| `carousel-slides-seed-data.ts` | carouselSlides | 30+ | Carousel slide assets |
-| `homepage-sections-seed-data.ts` | homepageSections | 12 | Homepage layout sections |
-| `faq-seed-data.ts` | faqs | 85 | FAQs across categories |
-| `blog-posts-seed-data.ts` | blogPosts | 25+ | Blog posts with images |
-| `events-seed-data.ts` | events | 8 | Events (sale/poll/raffle) |
-| `sessions-seed-data.ts` | sessions | 18 | User sessions |
-| `addresses-seed-data.ts` | addresses | 12 | User shipping addresses |
-| `store-addresses-seed-data.ts` | addresses | 8 | Store pickup addresses |
-| `carts-seed-data.ts` | carts | 8 | Shopping carts |
-| `wishlists-seed-data.ts` | wishlists | 8 | Wish lists |
-| `history-seed-data.ts` | history | 10 | Browsing history |
-| `conversations-seed-data.ts` | conversations | 15 | Buyer-seller messages |
-| `notifications-seed-data.ts` | notifications | 40 | In-app notifications |
-| `payouts-seed-data.ts` | payouts | 12 | Seller payouts |
-| `offers-seed-data.ts` | offers | 10 | Price offers |
-| `grouped-listings-seed-data.ts` | groupedListings | 6 | Grouped displays |
-| `support-tickets-seed-data.ts` | supportTickets | 20 | Support tickets |
-| `scammers-seed-data.ts` | scammerProfiles | 5 | Scammer profiles |
-| `site-settings-seed-data.ts` | siteSettings | 1 | Platform config singleton |
-| `product-features-seed-data.ts` | productFeatures | 15 | Product feature attributes |
-| `store-extensions-seed-data.ts` | store-extensions | 50+ | Store tools + RBAC + moderation |
-
-**Total: 39 seed files, 550+ records across 30+ collections**
+| File | Collection | Purpose |
+|------|-----------|---------|
+| categories-seed-data.ts | categories | Product categories + brands (merged SB-UNI-C) |
+| users-seed-data.ts | users | Demo user profiles |
+| stores-seed-data.ts | stores | Demo seller stores |
+| products-standard-seed-data.ts | products | Standard product listings |
+| products-auctions-seed-data.ts | products | Auction-type products |
+| products-preorders-seed-data.ts | products | Pre-order products |
+| products-prize-draws-seed-data.ts | products | Prize draw products |
+| products-classifieds-seed-data.ts | products | Classified listings |
+| products-digital-codes-seed-data.ts | products | Digital code pool products |
+| products-live-items-seed-data.ts | products | Live-streamed item products |
+| orders-seed-data.ts | orders | Demo orders |
+| reviews-seed-data.ts | reviews | Product reviews |
+| bids-seed-data.ts | bids | Auction bids |
+| coupons-seed-data.ts | coupons | Promotion coupons |
+| coupon-usage-seed-data.ts | couponUsage | Coupon claim tracking |
+| carousels-seed-data.ts | carousels | Carousel collections |
+| carousel-slides-seed-data.ts | carouselSlides | Individual carousel slides |
+| homepage-sections-seed-data.ts | homepageSections | Homepage layout sections |
+| faq-seed-data.ts | faqs | FAQ entries |
+| blog-posts-seed-data.ts | blogPosts | Blog articles |
+| events-seed-data.ts | events | Raffle/spin events |
+| site-settings-seed-data.ts | siteSettings | Global site config |
+| notifications-seed-data.ts | notifications | System notifications |
+| sessions-seed-data.ts | sessions | User sessions |
+| addresses-seed-data.ts | addresses | User addresses |
+| store-addresses-seed-data.ts | storeAddresses | Store addresses |
+| cart-seed-data.ts | cart | Demo shopping carts |
+| wishlist-seed-data.ts | wishlists | User wishlists |
+| history-seed-data.ts | history | Search history |
+| conversations-seed-data.ts | conversations | User messages |
+| grouped-listings-seed-data.ts | groupedListings | Product grouping |
+| payouts-seed-data.ts | payouts | Seller payouts |
+| scammers-seed-data.ts | scammers | Reported scammer profiles |
+| support-tickets-seed-data.ts | supportTickets | Support ticket examples |
+| product-features-seed-data.ts | productFeatures | Dynamic feature flags |
+| offers-seed-data.ts | offers | Promotion offers |
+| store-extensions-seed-data.ts | storeExtensions + 11 sub-collections | Store feature extensions |
+| manifest.ts | — | Seed manifest index (metadata only) |
+| runner.ts | — | Seed execution orchestrator |
 
 ---
 
 ## 16. Page Shims
 
-### Public Pages (src/app/[locale]/)
+All pages are thin shims delegating to appkit `_internal/server/features/*/` helpers.
 
-| Path | Delegates To | Purpose |
-|------|-------------|---------|
-| `/` | Homepage sections | Landing page |
-| `/products` | `SellerProductsView` (public portal) | Product listing |
-| `/products/[slug]` | `ProductDetailView` | Product detail |
-| `/auctions` | Auction listing view | Auction listing |
-| `/auctions/[slug]` | `AuctionDetailView` | Auction detail |
-| `/pre-orders` | Pre-order listing view | Pre-order listing |
-| `/pre-orders/[slug]` | Pre-order detail view | Pre-order detail |
-| `/bundles` | Bundle listing view | Bundle listing |
-| `/bundles/[slug]` | Bundle detail view | Bundle detail |
-| `/prize-draws` | Prize draw listing view | Prize draw listing |
-| `/prize-draws/[slug]` | Prize draw detail view | Prize draw detail |
-| `/stores` | Store listing view | Store listing |
-| `/stores/[slug]` | `StoreDetailView` | Store landing |
-| `/stores/[slug]/products` | Store products view | Store products |
-| `/stores/[slug]/about` | `StoreAboutView` | Store about page |
-| `/stores/[slug]/reviews` | Store reviews view | Store reviews |
-| `/categories` | Category listing view | Category listing |
-| `/categories/[slug]` | Category detail view | Category products |
-| `/brands/[slug]` | Brand detail view | Brand products |
-| `/events` | Event listing view | Event listing |
-| `/events/[id]` | `EventDetailView` (tab layout) | Event detail |
-| `/blog` | Blog listing view | Blog index |
-| `/blog/[slug]` | `BlogPostView` | Blog post |
-| `/search` | `SearchView` | Search results |
-| `/reviews` | Review listing view | All reviews |
-| `/faqs` | FAQ listing view | FAQ index |
-| `/classified` | Classified listing view | Classified listing |
-| `/classified/[slug]` | `ClassifiedDetailView` | Classified detail |
-| `/digital-codes` | Digital code listing view | Digital code listing |
-| `/digital-codes/[slug]` | `DigitalCodeDetailView` | Digital code detail |
-| `/live` | Live item listing view | Live listing |
-| `/live/[slug]` | `LiveItemDetailView` | Live item detail |
-| `/about`, `/contact`, `/help`, `/terms`, `/privacy` | Static content | Legal/info pages |
-
-### Auth Pages (src/app/[locale]/auth/)
-
-| Path | Purpose |
-|------|---------|
-| `/auth/login` | Login form |
-| `/auth/register` | Registration form |
-| `/auth/forgot-password` | Password reset request |
-| `/auth/reset-password` | Password reset form |
-| `/auth/verify-email` | Email verification |
-
-### User Dashboard (src/app/[locale]/user/)
-
-| Path | View Component | Purpose |
-|------|---------------|---------|
-| `/user` | `UserDashboardView` | Account dashboard |
-| `/user/orders` | `UserOrdersView` | Order history |
-| `/user/orders/[id]` | `OrderDetailView` | Order detail |
-| `/user/orders/[id]/invoice` | `InvoiceView` | Printable invoice |
-| `/user/wishlist` | `UserWishlistView` | Wishlist |
-| `/user/history` | `HistoryView` | Browsing history |
-| `/user/addresses` | `UserAddressesView` | Address management |
-| `/user/settings` | `UserSettingsView` | Profile settings |
-| `/user/notifications` | Notifications view | User notifications |
-| `/user/messages` | Messages view | Chat messages |
-| `/user/cart` | `CartView` | Shopping cart |
-| `/user/checkout` | `CheckoutView` | Checkout flow |
-| `/user/become-seller` | `BecomeSellerView` | Seller application |
-
-### Store Dashboard (src/app/[locale]/store/)
-
-| Path | View Component | Purpose |
-|------|---------------|---------|
-| `/store` | `SellerDashboardView` | Store dashboard |
-| `/store/products` | `SellerProductsView` | Product management |
-| `/store/products/new` | `ProductForm` (create) | New product |
-| `/store/products/[id]/edit` | `ProductForm` (edit) | Edit product |
-| `/store/orders` | `SellerOrdersView` | Order management |
-| `/store/orders/[id]` | `OrderDetailView` | Order detail |
-| `/store/coupons` | `SellerCouponsView` | Coupon management |
-| `/store/reviews` | `SellerReviewsView` | Review management |
-| `/store/payouts` | `SellerPayoutsView` | Payout history |
-| `/store/analytics` | `SellerAnalyticsView` | Store analytics |
-| `/store/storefront` | `StorefrontSettingsView` | Store customization |
-| `/store/shipping` | Shipping config view | Shipping settings |
-| `/store/addresses` | Store addresses view | Pickup addresses |
-| `/store/whatsapp` | WhatsApp integration view | Catalog sync |
-
-### Admin Dashboard (src/app/[locale]/admin/)
-
-| Path | View Component | Purpose |
-|------|---------------|---------|
-| `/admin` | `AdminDashboardView` | Admin dashboard |
-| `/admin/products` | `AdminProductsView` | Product management |
-| `/admin/users` | `AdminUsersView` | User management |
-| `/admin/stores` | `AdminStoresView` | Store management |
-| `/admin/orders` | `AdminOrdersView` | Order management |
-| `/admin/reviews` | `AdminReviewsView` | Review moderation |
-| `/admin/events` | `AdminEventsView` | Event management |
-| `/admin/blog` | `AdminBlogView` | Blog management |
-| `/admin/coupons` | `AdminCouponsView` | Coupon management |
-| `/admin/payouts` | `AdminPayoutsView` | Payout management |
-| `/admin/faqs` | `AdminFAQsView` | FAQ management |
-| `/admin/categories` | `AdminCategoriesView` | Category management |
-| `/admin/brands` | `AdminBrandsView` | Brand management |
-| `/admin/carousels` | Carousel management view | Homepage carousels |
-| `/admin/carousels/[id]` | `CarouselEditor` | Carousel editor |
-| `/admin/site` | `AdminSiteSettingsView` | Site settings (14 tabs) |
-| `/admin/sessions` | Sessions management view | Active sessions |
+| Domain | Count | Examples |
+|--------|-------|---------|
+| Admin | ~94 | /admin/products, /admin/orders, /admin/users, /admin/categories, /admin/blog, /admin/reviews, /admin/coupons, /admin/carousel, /admin/sections, /admin/events, /admin/payouts, /admin/team, /admin/support, /admin/scammers |
+| Store | ~73 | /store/products, /store/orders, /store/coupons, /store/analytics, /store/payouts, /store/reviews, /store/templates, /store/features, /store/shipping |
+| User | ~29 | /user/orders, /user/profile, /user/wishlist, /user/addresses, /user/history, /user/conversations, /user/notifications |
+| Public | ~105 | /products/[id], /categories, /blog, /events, /auctions, /stores, /about, /contact, /faqs, /seller, /cart, /checkout |
+| **Total** | **~301** | |
 
 ---
 
 ## 17. Config
 
-| File | Purpose |
-|------|---------|
-| `appkit/src/configs/next.ts` | `defineNextConfig()` — webpack aliases, Firebase externals, output file tracing, image domains |
-| `appkit/src/configs/tailwind.ts` | Tailwind config extension with appkit content paths |
-| `appkit/appkit.config.js` | Brand/theme/i18n/Firebase configuration for host app override |
-| `next.config.js` | Next.js config consuming `defineNextConfig` |
-| `tailwind.config.js` | Tailwind config consuming appkit extension |
-| `postcss.config.js` | PostCSS with tailwindcss + autoprefixer |
-| `tsconfig.json` (root) | TypeScript config with path aliases |
-| `appkit/tsconfig.json` | Appkit TypeScript config |
-| `firebase.json` | Firebase hosting + functions config |
-| `firestore.indexes.json` | Composite Firestore indexes (auto-generated from appkit) |
-| `firestore.rules` | Firestore security rules |
-| `storage.rules` | Firebase Storage rules (`allow write: if false`) |
-| `.env.local` | Environment variables (Firebase keys, API secrets) |
-| `vercel.json` | Vercel deployment config (auto-deploy disabled) |
+| File | Type | Purpose |
+|------|------|---------|
+| next.config.js | Next.js | Build config with i18n plugin, Turbopack alias, image domains, version stamping |
+| tailwind.config.js | Tailwind CSS | Theme colors, spacing, z-index, animations, safelist |
+| appkit.config.js | Custom | AppKit consumer configuration |
+| firebase.json | Firebase | Hosting rules, redirects, rewrites |
+| appkit/tailwind.config.js | Tailwind CSS | Shared theme tokens (pre-compiled utilities) |
+| .env.example | Environment | Template for required env vars |
 
 ---
 
 ## 18. Tokens & Design System
 
-### Token Map (appkit/src/tokens/index.ts)
+### `appkit/src/tokens/index.ts`
 
-| Token Group | Key | Purpose |
-|-------------|-----|---------|
-| `COLORS` | Brand colors with full 50-950 scales | Primary, secondary, cobalt, accent, semantic |
-| `RADIUS` | Border radius tokens | sm, md, lg, xl, 2xl, card, btn, full |
-| `SHADOWS` | Shadow values | sm, md, lg, xl, soft, glow, glowPink |
-| `Z_INDEX` | Layering tokens | dropdown, navbar, bottomNav, overlay, sidebar, modal, toast |
-| `LAYOUT` | Dimension tokens | navbarHeight, sidebarWidth, maxContentWidth, responsive gaps |
-| `TYPOGRAPHY` | Text scale | h1-h6, pageTitle, body, small, display (responsive sizing) |
-| `SPACING` | Spacing patterns | section, formGroup, stack, inline, pageY, padding map, gap map |
-| `GRID` | Grid presets | cols1-6, cards, productCards, sidebar, auto-fill |
-| `INPUT` | Form input styles | base, error, success, disabled, withIcon |
-| `CARD` | Card styles | standard, elevated, interactive, glass, image, body, footer |
-| `FLEX` | Flex compositions | row, col, center, between, rowCenter, colCenter (16 presets) |
-| `PATTERNS` | Common patterns | pageContainer, formContainer, listItem, iconButton, modalOverlay, emptyState |
-| `MOTION` | Motion tokens | fadeIn, slideUp, scaleIn, skeleton, transition (respects prefers-reduced-motion) |
-| `TEXT` | Text tokens | h1-h4, body, price, muted, error, success |
-| `TOUCH` | Touch targets | WCAG 2.5.5 compliant sizes |
-| `SKELETON` | Loading placeholders | pulse, shimmer variants |
-| `TRANSITIONS` | Transition classes | default, fast, slow, colors, transform |
-| `ICON` | Icon tokens | Color variants (muted, primary, success, danger), sizes (sm-xl) |
-| `THEME_CONSTANTS` | Complete system | All above + form, tooltip, breakpoints, base, homepage, carousel |
+| Export | Type | Purpose |
+|--------|------|---------|
+| COLORS | Constant | Brand color palette with shades (primary, secondary, cobalt, accent, semantic) |
+| RADIUS | Constant | Border radius values (sm, md, lg, xl, 2xl, 3xl, card, btn, full) |
+| SHADOWS | Constant | Box shadow definitions (sm, md, lg, xl, soft, glow, glowPink) |
+| Z_INDEX | Constant | Z-index stacking (dropdown, searchBackdrop, navbar, bottomNav, overlay, sidebar, titleBar, modal, toast) |
+| TOKENS | Constant | Token convenience group |
+| token | Function | CSS custom property reference builder |
+| LOCALE_CONFIG | Constant | Locale and currency configuration (INR, en-IN) |
+| THEME_CONSTANTS | Constant | Complete responsive design system map (themed, layout, typography, spacing, grid, page, input, card, etc.) |
+| LAYOUT | Constant | Layout dimension constants (heights, widths, padding) |
+| FLUID_GRID_MIN_WIDTHS | Constant | Minimum item widths for fluid grids (card: 220, admin: 260, wide: 300, thumb: 160) |
 
-### CSS Variables (appkit/src/tokens/tokens.css)
+### `appkit/src/tokens/motion.ts`
 
-| Variable | Purpose |
-|----------|---------|
-| `--appkit-color-primary` / `--appkit-color-secondary` | Theme colors |
-| `--appkit-color-success` / `--appkit-color-warning` / `--appkit-color-error` / `--appkit-color-info` | Semantic status colors |
-| `--appkit-color-surface` / `--appkit-color-surface-elevated` | Surface backgrounds |
-| `--appkit-color-text` / `--appkit-color-text-secondary` / `--appkit-color-text-muted` | Text colors |
-| `--appkit-color-border` / `--appkit-color-border-subtle` | Border colors |
-| `--appkit-z-modal` / `--appkit-z-dropdown` / `--appkit-z-overlay` | Z-index tokens |
-| `--header-height` | Runtime header height (set by AppLayoutShell) |
-| `--glow-color` / `--glow-ring` / `--glow-strong` | Themed glow effects |
+| Export | Type | Purpose |
+|--------|------|---------|
+| SPRING_SNAPPY | Constant | Snappy spring transition (stiffness: 400, damping: 30) |
+| SPRING_GENTLE | Constant | Gentle spring transition (stiffness: 200, damping: 25) |
+| EASE_OUT | Constant | Ease-out tween transition |
+| MOTION_PRESETS | Constant | Named animation presets (fadeIn, fadeInUp, slideUp, slideDown, scaleIn, pressScale, hoverLift, stagger, etc.) |
+| MotionPreset | Type | Motion preset key type |
 
 ---
 
 ## 19. Route Map
 
-### ROUTES Object (appkit/src/next/routing/route-map.ts)
+Route constants defined in `appkit/src/next/routing/route-map.ts` via the `ROUTES` object. Key segments:
 
-| Section | Route Count | Examples |
-|---------|------------|---------|
-| `PUBLIC` | 80+ | PRODUCTS, PRODUCT_DETAIL, AUCTIONS, STORES, STORE_DETAIL, CATEGORIES, BRANDS, BLOG, EVENTS, SEARCH, FAQS, CLASSIFIED, DIGITAL_CODES, LIVE |
-| `AUTH` | 7 | LOGIN, REGISTER, FORGOT_PASSWORD, RESET_PASSWORD, VERIFY_EMAIL, OAUTH_LOADING, CLOSE |
-| `USER` | 30+ | ORDERS, WISHLIST, HISTORY, ADDRESSES, CART, CHECKOUT, NOTIFICATIONS, MESSAGES, BECOME_SELLER, OFFERS, BIDS |
-| `STORE` | 60+ | PRODUCTS, ORDERS, COUPONS, ANALYTICS, PAYOUTS, SHIPPING, WHATSAPP, BUNDLES, PRIZE_DRAWS, CLASSIFIED, DIGITAL_CODES, LIVE_ITEMS, PRINT_CENTER |
-| `ADMIN` | 70+ | USERS, SITE, CAROUSELS, CATEGORIES, BRANDS, PRODUCTS, ORDERS, BLOG, EVENTS, PAYOUTS, SUPPORT_TICKETS, SCAMMERS, MODERATION, ROLES, PERMISSIONS |
-| `DEMO` | 1 | SEED |
-| `BLOG` | 2 | LIST, ARTICLE |
-
-### Helper Functions
-
-| Function | Purpose |
-|----------|---------|
-| `createRouteMap(overrides)` | Merge custom routes with defaults |
-| `PUBLIC_ROUTES` | Array of public routes (no auth) |
-| `PROTECTED_ROUTES` | Array of protected routes (auth required) |
-| `AUTH_ROUTES` | Array of auth routes |
+| Namespace | Examples | Purpose |
+|-----------|---------|---------|
+| ROUTES.PUBLIC | PRODUCTS, PRODUCT(id), AUCTIONS, STORES, STORE(slug), BLOG, EVENTS, FAQS, CART, CHECKOUT, SEARCH | Public page routes |
+| ROUTES.ADMIN | DASHBOARD, PRODUCTS, ORDERS, USERS, STORES, CATEGORIES, BRANDS, BLOG, EVENTS, PAYOUTS, SETTINGS | Admin dashboard routes |
+| ROUTES.STORE | DASHBOARD, PRODUCTS, ORDERS, COUPONS, ANALYTICS, PAYOUTS, REVIEWS, SHIPPING, TEMPLATES | Store dashboard routes |
+| ROUTES.USER | ORDERS, ORDER_DETAIL(id), PROFILE, WISHLIST, ADDRESSES, HISTORY, NOTIFICATIONS, CONVERSATIONS | User dashboard routes |
+| ROUTES.AUTH | LOGIN, REGISTER, FORGOT_PASSWORD, RESET_PASSWORD, VERIFY_EMAIL | Auth routes |
 
 ---
 
 ## 20. Firebase Jobs
 
-### Scheduled Jobs (appkit/src/_internal/server/jobs/)
+Firebase Functions defined in `functions/src/`. Key functions:
 
-| Job | Schedule | Purpose |
-|-----|----------|---------|
-| `adminAnalytics` | Daily | Admin dashboard stats aggregation |
-| `storeAnalytics` | Daily | Per-store analytics aggregation |
-| `auctionSettlement` | Every 5 min | Settle ended auctions (winner determination) |
-| `bundleStockSync` | Daily | Reconcile bundle stock with member products |
-| `cartPrune` | Daily | Delete stale guest carts |
-| `couponExpiry` | Hourly | Deactivate expired coupons |
-| `dailyDataCleanup` | Daily | Purge expired tokens + sessions |
-| `draftPrune` | Weekly | Delete old draft products |
-| `mediaTmpCleanup` | Daily | Clean tmp/ upload files |
-| `notificationPrune` | Daily | Purge old read notifications |
-| `offerExpiry` | Hourly | Expire stale offers |
-| `pendingOrderTimeout` | Every 15 min | Cancel timed-out pending orders |
-| `payoutBatch` | Daily | Batch eligible payouts |
-| `weeklyPayoutEligibility` | Weekly | Mark orders eligible for payout |
-| `autoPayoutEligibility` | Daily | Auto-approve eligible payouts |
-| `positionsReconcile` | Daily | Reconcile homepage section positions |
-| `countersReconcile` | Daily | Reconcile collection counters |
-| `productStatsSync` | Daily | Sync product view/order stats |
-| `promotions` | Hourly | Activate/deactivate scheduled promotions |
-| `cleanupRtdbEvents` | Daily | Clean stale RTDB event entries |
+| Function | Trigger | Purpose |
+|----------|---------|---------|
+| onProductWriteHandler | Firestore onWrite(products) | Bundle stock sync on product changes |
+| scheduledBundleStockSync | Scheduled (daily) | Batch stock synchronization |
+| mediaTmpCleanup | Scheduled | Clean up tmp/ uploads |
+| onUserCreate | Auth onCreate | Initialize user profile |
+| onOrderStatusChange | Firestore onUpdate(orders) | Trigger notifications on status change |
 
-### Event-Triggered Jobs
+---
 
-| Job | Trigger | Purpose |
-|-----|---------|---------|
-| `onProductWrite` | Firestore write | Update category metrics, search index |
-| `onProductStockChange` | Firestore write | Bundle stock sync trigger |
-| `onCategoryWrite` | Firestore write | Rebuild category tree cache |
-| `onOrderCreate` | Firestore create | Send notifications, update stats |
-| `onOrderStatusChange` | Firestore update | Track delivery, trigger refunds |
-| `onReviewWrite` | Firestore write | Update store rating aggregates |
-| `onBidPlaced` | Firestore create | Outbid notifications, auto-extend |
-| `onStoreWrite` | Firestore write | Update store search index |
-| `onUserBanChange` | Firestore update | Cascade ban effects |
-| `onScamReport*` | Firestore create | Auto-flag, notify admins |
-| `onSupportTicket*` | Firestore create/update | Notification routing |
+## 21. Audit Scripts
 
-### Callable/HTTPS Jobs
+### Appkit Scripts (`appkit/scripts/`)
 
-| Job | Type | Purpose |
-|-----|------|---------|
-| `triggerEventRaffle` | HTTPS | Execute raffle draw (crypto.randomInt) |
-| `assignSpinPrize` | HTTPS | Assign spin wheel prize |
-| `prizeReveal*` | Callable | Prize draw code reveal + pool management |
-| `listingProcessor` | HTTPS | Advanced product listing queries |
+| Script | What It Checks |
+|--------|----------------|
+| audit-double-navigation.mjs | Double `router.replace()` anti-pattern |
+| audit-repository-fields.mjs | Repository method signatures |
+| audit-use-client.mjs | Client directive placement |
+| audit-violations.mjs | `_internal/` boundary violations |
+| audit-query-provider.mjs | React Query setup |
+| audit-export-paths.mjs | Import alias usage |
+| verify-entries.mjs | Client entry firebase-admin free |
+| verify-css-build.mjs | Compiled CSS class completeness |
 
-### Job Runtime Types
+### Consumer Scripts (`scripts/`)
 
-| Type | Purpose |
-|------|---------|
-| `JobContext` | Logger + admin SDK access |
-| `JobLogger` | Structured logging interface |
-| `ScheduleHandler` | Scheduled job function signature |
-| `FirestoreTriggerHandler` | Firestore trigger function signature |
-| `CallableHandler` | Callable function signature |
-| `BindHttpsOptions` | HTTPS handler config (secrets, CORS) |
-| `bindSchedule()` | Firebase scheduled function adapter |
-| `bindDocumentWritten()` | Firestore write trigger adapter |
-| `bindDocumentCreated()` | Firestore create trigger adapter |
-| `bindCallable()` | Firebase callable adapter |
-| `bindHttps()` | Firebase HTTPS adapter |
+| Script | What It Checks |
+|--------|----------------|
+| audit-ssr-in-appkit.mjs | Route files are thin shims (baseline: 8) |
+| audit-code-quality.mjs | Code style violations (baseline: 685) |
+| audit-typography.mjs | Font/typography class usage (baseline: 1071) |
+| audit-inline-styles.mjs | Inline CSS (baseline: 756) |
+| audit-html-wrappers.mjs | HTML tag misuse |
+| audit-suspense-boundaries.mjs | Suspense component nesting |
+| audit-hex-tokens.mjs | Hardcoded color values |
+| audit-auth-gates.mjs | Auth protection patterns |
+| audit-bom.mjs | BOM (Byte Order Mark) detection |
+| audit-inline-actions.mjs | Non-modularized server actions |
+| audit-sieve-constants.mjs | Sieve filter definitions |
+| audit-config-factories.mjs | Config factory patterns |
+| audit-product-form-shell.mjs | Product form patterns |
+| audit-dashboard-padding.mjs | Layout spacing |
+| audit-env-alignment.mjs | Environment variable sync |
+| audit-root-cause.mjs | Root cause analysis |
+| audit-user-pages-overhaul.mjs | User page migration |
+| audit-gitignore.mjs | Git ignore rules |
+| audit-dark-mode.mjs | Dark mode class usage |
+| audit-toast-coverage.mjs | Toast notification usage (baseline: 12) |

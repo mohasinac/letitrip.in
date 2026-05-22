@@ -47,7 +47,7 @@ const STATUS_OPTIONS = [
 
 function StarDisplay({ rating }: { rating: number }) {
   return (
-    <Row gap="xs" className="items-center">
+    <Row gap="xs">
       {Array.from({ length: 5 }).map((_, i) => (
         <Text
           as="span"
@@ -65,9 +65,9 @@ function StarDisplay({ rating }: { rating: number }) {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  approved: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  pending:  "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
-  rejected: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+  approved: "bg-success-surface text-success",
+  pending:  "bg-warning-surface text-warning",
+  rejected: "bg-error-surface text-error",
 };
 
 export default function UserReviewsPage() {
@@ -177,7 +177,9 @@ export default function UserReviewsPage() {
             return (
               <Div
                 key={review.id}
-                className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 space-y-3"
+                surface="card"
+                padding="md"
+                className="space-y-3"
               >
                 <Row justify="between" wrap align="start" gap="3">
                   <Div className="space-y-1 min-w-0">
@@ -190,7 +192,7 @@ export default function UserReviewsPage() {
                       </Text>
                     )}
                   </Div>
-                  <Row gap="sm" className="shrink-0 items-center">
+                  <Row gap="sm" className="shrink-0">
                     {review.verified && (
                       <Text as="span" className="rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-0.5 text-xs font-medium">
                         Verified

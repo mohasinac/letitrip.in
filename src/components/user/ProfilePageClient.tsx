@@ -42,7 +42,7 @@ function renderProfileViewMode({
   handleEdit: () => void;
 }) {
   return (
-    <Div className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 space-y-5">
+    <Div surface="card" padding="lg" className="space-y-5">
       <Div className="flex items-center gap-4">
         {profile.photoURL ? (
           <Div className="h-20 w-20 rounded-full overflow-hidden relative ring-2 ring-zinc-100 dark:ring-slate-700">
@@ -71,7 +71,7 @@ function renderProfileViewMode({
       )}
       <Text className="text-xs text-zinc-400 dark:text-zinc-400">
         Profile visibility:{" "}
-        <Text as="span" className={profileIsPublic ? "text-green-600 dark:text-green-400 font-medium" : "text-zinc-500 font-medium"}>
+        <Text as="span" className={profileIsPublic ? "text-success font-medium" : "text-zinc-500 dark:text-zinc-400 font-medium"}>
           {profileIsPublic ? "Public" : "Private"}
         </Text>
       </Text>
@@ -119,9 +119,10 @@ function renderProfileEditForm({
   user: { displayName?: string | null; email?: string | null } | null | undefined;
 }) {
   return (
+    <Div surface="card" padding="lg">
     <form
       onSubmit={handleSave}
-      className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 space-y-5"
+      className="space-y-5"
     >
       <Heading level={2} className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Edit Profile</Heading>
       <Div className="space-y-1">
@@ -217,6 +218,7 @@ function renderProfileEditForm({
         </Button>
       </Div>
     </form>
+    </Div>
   );
 }
 

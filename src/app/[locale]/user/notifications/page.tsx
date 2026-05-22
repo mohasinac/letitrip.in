@@ -126,7 +126,7 @@ function NotifCard({
           type="button"
           variant="ghost"
           onClick={() => onDelete(notif.id)}
-          className="text-xs text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors ml-auto"
+          className="text-xs text-error hover:opacity-80 transition-colors ml-auto"
         >
           Delete
         </Button>

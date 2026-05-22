@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { generateMetadata as _gm } from "@/constants";
-import { SellerGuideView, Heading, Text, Stack, Section, Ol, Ul, Li } from "@mohasinac/appkit";
+import { SellerGuideView, Heading, Span, Text, Stack, Section, Ol, Ul, Li } from "@mohasinac/appkit";
 
 export const metadata: Metadata = _gm({
   title: "Bundles Seller Guide — LetItRip",
@@ -30,7 +30,7 @@ export default function Page() {
           <Section>
             <Heading level={2} className={H2}>Creating a Bundle</Heading>
             <Ol className="list-decimal space-y-2 pl-5 text-sm text-zinc-600 dark:text-zinc-400">
-              <Li>Go to <strong>Store Dashboard → Listings → Bundles → New Bundle</strong>.</Li>
+              <Li>Go to <Span weight="bold">Store Dashboard → Listings → Bundles → New Bundle</Span>.</Li>
               <Li>Set a title, description, and cover image for the bundle.</Li>
               <Li>Search for and add the individual products you want to include.</Li>
               <Li>Set the bundle price — this overrides individual product prices for buyers who purchase the bundle.</Li>

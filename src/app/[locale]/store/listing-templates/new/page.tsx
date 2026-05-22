@@ -81,7 +81,7 @@ export default function Page() {
             <Textarea label="Defaults (JSON)" value={form.defaultsJson} onChange={(e) => setForm({ ...form, defaultsJson: e.target.value })} rows={6} placeholder='{"condition":"mint","currency":"INR"}' />
             <Toggle checked={form.isShared} onChange={(v) => setForm({ ...form, isShared: v })} label="Share with team" />
           </Stack>
-          <Row className="gap-2 justify-end">
+          <Row justify="end" className="gap-2">
             <Button variant="ghost" onClick={() => router.back()}>Cancel</Button>
             <Button variant="primary" onClick={onSave} disabled={saving} isLoading={saving}>{ACTIONS.STORE["save-changes"].label}</Button>
           </Row>

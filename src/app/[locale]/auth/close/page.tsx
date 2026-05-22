@@ -38,7 +38,7 @@ export default function Page() {
     return (
       <Div className="flex min-h-screen items-center justify-center p-6 text-center">
         <Div className="space-y-3">
-          <Text className="text-lg font-semibold text-rose-600 dark:text-rose-400">Sign-in failed</Text>
+          <Text className="text-lg font-semibold text-error">Sign-in failed</Text>
           <Text className="text-sm text-zinc-500 dark:text-zinc-400">{decodeURIComponent(error)}</Text>
           <Button
             type="button"

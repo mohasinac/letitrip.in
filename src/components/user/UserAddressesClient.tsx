@@ -97,7 +97,7 @@ export function UserAddressesClient() {
         </Link>
       </Div>
 
-      <Row gap="md" className="flex-wrap items-end">
+      <Row gap="md" align="end" className="flex-wrap">
         <Div className="flex-1 min-w-[200px]">
           <Input
             id="address-search"
@@ -127,8 +127,8 @@ export function UserAddressesClient() {
       </Row>
 
       {confirmDeleteId && (
-        <Div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950 p-4 space-y-3">
-          <Text className="text-sm font-medium text-red-800 dark:text-red-200">
+        <Div className="rounded-xl border border-error/20 bg-error-surface p-4 space-y-3">
+          <Text className="text-sm font-medium text-error">
             Delete this address? This cannot be undone.
           </Text>
           <Div className="flex gap-3">

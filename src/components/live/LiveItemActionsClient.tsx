@@ -33,7 +33,7 @@ export function LiveItemActionsClient({ product }: LiveItemActionsClientProps) {
   return (
     <Stack gap="sm">
       {product.liveItem && !product.liveItem.vendorVerified && (
-        <Text className="text-sm text-amber-700 dark:text-amber-400">
+        <Text className="text-sm text-warning">
           Seller verification pending — purchase available once verified.
         </Text>
       )}

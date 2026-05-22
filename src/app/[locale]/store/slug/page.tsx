@@ -116,9 +116,9 @@ export default function Page() {
   const canSave = !isUnchanged && checkState === "available" && !saving;
   const checkColor =
     checkState === "available"
-      ? "text-emerald-600 dark:text-emerald-400"
+      ? "text-success"
       : checkState === "taken" || checkState === "invalid"
-      ? "text-red-600 dark:text-red-400"
+      ? "text-error"
       : "text-zinc-400 dark:text-zinc-400";
 
   return (
@@ -131,17 +131,17 @@ export default function Page() {
       </Text>
 
       {loadError && (
-        <Div className="mb-4 rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/30 px-4 py-3 text-sm text-red-700 dark:text-red-400">
+        <Div className="mb-4 rounded-lg border border-error/20 bg-error-surface px-4 py-3 text-sm text-error">
           Could not load your current store slug. Please refresh the page.
         </Div>
       )}
 
-      <Stack gap="md" className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-5">
+      <Stack gap="md" surface="card" padding="md">
         {renderCurrentUrl(currentSlug)}
         {renderSlugInput({ newSlug, checkState, checkMessage, checkColor, handleSlugChange })}
         {renderFeedbackBanners({ saveError, saveSuccess, currentSlug })}
 
-        <Div className="rounded-lg border border-amber-200 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-950/30 px-3 py-2 text-xs text-amber-700 dark:text-amber-400">
+        <Div className="rounded-lg border border-warning/20 bg-warning-surface px-3 py-2 text-xs text-warning">
           Changing your slug will update your store URL immediately. Any saved links or bookmarks to the old URL will stop working.
         </Div>
 
@@ -196,7 +196,7 @@ function renderSlugInput({ newSlug, checkState, checkMessage, checkColor, handle
         <Text className="mt-1 text-xs text-zinc-400 dark:text-zinc-400">Checking availability…</Text>
       )}
       {checkState === "available" && !checkMessage && (
-        <Text className="mt-1 text-xs text-emerald-600 dark:text-emerald-400">This slug is available.</Text>
+        <Text className="mt-1 text-xs text-success">This slug is available.</Text>
       )}
     </Div>
   );
@@ -210,12 +210,12 @@ function renderFeedbackBanners({ saveError, saveSuccess, currentSlug }: {
   return (
     <>
       {saveError && (
-        <Div className="rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/30 px-3 py-2 text-sm text-red-700 dark:text-red-400">
+        <Div className="rounded-lg border border-error/20 bg-error-surface px-3 py-2 text-sm text-error">
           {saveError}
         </Div>
       )}
       {saveSuccess && (
-        <Div className="rounded-lg border border-emerald-200 dark:border-emerald-900/40 bg-emerald-50 dark:bg-emerald-950/30 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-400">
+        <Div className="rounded-lg border border-success/20 bg-success-surface px-3 py-2 text-sm text-success">
           Store slug updated successfully. Your new store URL is{" "}
           <span className="font-mono font-semibold">{SITE_BASE}{currentSlug}</span>.
         </Div>

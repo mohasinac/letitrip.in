@@ -50,7 +50,7 @@ export default function Page() {
     <Section>
       <Container size="2xl">
         <Stack gap="lg" className="py-6">
-          <Row className="items-center justify-between">
+          <Row justify="between">
             <Heading level={1}>Analytics Cards</Heading>
             <Button variant="primary">New custom card</Button>
           </Row>

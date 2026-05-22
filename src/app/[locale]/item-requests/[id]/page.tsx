@@ -98,7 +98,7 @@ export default function Page() {
                 rows={3}
                 placeholder="Sellers: keep contact details private; LetItRip filters PII automatically."
               />
-              <Row className="justify-end">
+              <Row justify="end">
                 <Button variant="primary" onClick={postReply} disabled={posting} isLoading={posting}>
                   Post reply
                 </Button>

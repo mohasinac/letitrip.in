@@ -127,7 +127,6 @@ const LISTING_TYPE_SEARCH_KEYWORDS: Record<string, string[]> = {
 };
 
 const EMPTY_STATE_CLASS = "py-6 text-center text-sm text-zinc-500 dark:text-zinc-400";
-const STORE_CARD_CLASS = "rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4";
 const ERROR_TEXT_CLASS = "text-[var(--appkit-color-error)]";
 
 // ---------------------------------------------------------------------------
@@ -916,7 +915,7 @@ export function CartRouteClient() {
         </Div>
       )}
       renderEmpty={() => (
-        <Div className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6">
+        <Div surface="card" padding="lg">
           <Heading
             level={2}
             className="mb-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100"
@@ -963,11 +962,11 @@ function AuctionsTabItems({ auctionBucket, filteredAuctions, sellerGroupsAuction
   }
   return (
     <Div className="space-y-4">
-      <Text className="text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2">
+      <Text className="text-xs text-warning bg-warning-surface border border-warning/20 rounded-lg px-3 py-2">
         Won auction items must be paid before you can bid on new auctions or purchase new items.
       </Text>
       {sellerGroupsAuctions.map((group) => (
-        <Div key={group.sellerId} className={STORE_CARD_CLASS}>
+        <Div key={group.sellerId} surface="card" padding="sm">
           <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={false} locked lockedBadge="Won auction — payment required" />
         </Div>
       ))}
@@ -995,7 +994,7 @@ function CartTabItems({ cartBucket, oosItems, filteredCartItems, filteredOos, se
   return (
     <>
       {sellerGroupsCart.map((group) => (
-        <Div key={group.sellerId} className={STORE_CARD_CLASS}>
+        <Div key={group.sellerId} surface="card" padding="sm">
           <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={effectiveSelected} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={false} />
         </Div>
       ))}
@@ -1010,7 +1009,7 @@ function CartTabItems({ cartBucket, oosItems, filteredCartItems, filteredOos, se
           </Div>
           <Div className="space-y-3">
             {sellerGroupsOos.map((group) => (
-              <Div key={group.sellerId} className={`${STORE_CARD_CLASS} opacity-60`}>
+              <Div key={group.sellerId} surface="card" padding="sm" className="opacity-60">
                 <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={true} />
               </Div>
             ))}
@@ -1044,11 +1043,11 @@ function OffersTabItems({ offerBucket, filteredOffers, sellerGroupsOffers, norma
   const noop = () => {};
   return (
     <Div className="space-y-4">
-      <Text className="text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2">
+      <Text className="text-xs text-warning bg-warning-surface border border-warning/20 rounded-lg px-3 py-2">
         Accepted offers must be paid. These items cannot be removed from your cart.
       </Text>
       {sellerGroupsOffers.map((group) => (
-        <Div key={group.sellerId} className={STORE_CARD_CLASS}>
+        <Div key={group.sellerId} surface="card" padding="sm">
           <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} onToggleItem={noop} onQtyChange={noop} onRemove={noop} onMoveToWishlist={noop} isOutOfStock={false} locked lockedBadge="Offer accepted — payment required" />
         </Div>
       ))}
@@ -1144,7 +1143,7 @@ function SellerGroupSection({
                   onRemove={locked ? undefined : onRemove}
                 />
                 {locked && lockedBadge && (
-                  <Text className="mt-1 text-xs font-medium text-amber-700 dark:text-amber-300">
+                  <Text className="mt-1 text-xs font-medium text-warning">
                     🔒 {lockedBadge}
                   </Text>
                 )}
