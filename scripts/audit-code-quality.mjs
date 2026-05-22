@@ -244,7 +244,7 @@ function checkRepeatedStrings(file, lines) {
       // Skip JSX inter-attribute captures (text between a closing " and opening " of next attr)
       if (/^\s+\w[\w-]*\s*[={]/.test(str)) continue;
       // Skip strings containing JSX/JS expression characters or code operators
-      if (/[{}]|\?\?|\|\||===|!==|=>|\) \{/.test(str)) continue;
+      if (/[{}]|\?\?|\|\||===|!==|=>|\) \{| \? | : /.test(str)) continue;
       // Skip strings starting with punctuation (object/array entry fragments)
       if (/^[,\])]/.test(str)) continue;
 

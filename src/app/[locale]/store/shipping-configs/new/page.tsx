@@ -11,6 +11,7 @@ import {
   Select,
   ROUTES,
   useToast,
+  ACTIONS,
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
@@ -118,7 +119,7 @@ export default function Page() {
               Cancel
             </Button>
             <Button variant="primary" onClick={onSave} disabled={saving} isLoading={saving}>
-              Save
+              {ACTIONS.STORE["save-changes"].label}
             </Button>
           </Row>
         </Stack>

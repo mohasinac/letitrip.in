@@ -13,6 +13,7 @@ import {
   ROUTES,
   useToast,
   ConfirmDeleteModal,
+  ACTIONS,
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
@@ -86,10 +87,10 @@ export default function Page() {
             </Row>
           </Stack>
           <Row className="gap-2 justify-between">
-            <Button variant="danger" onClick={() => setConfirmDelete(true)}>Delete</Button>
+            <Button variant="danger" onClick={() => setConfirmDelete(true)}>{ACTIONS.STORE["delete-listing"].label}</Button>
             <Row className="gap-2">
               <Button variant="ghost" onClick={() => router.back()}>Cancel</Button>
-              <Button variant="primary" onClick={onSave} disabled={saving} isLoading={saving}>Save</Button>
+              <Button variant="primary" onClick={onSave} disabled={saving} isLoading={saving}>{ACTIONS.STORE["save-changes"].label}</Button>
             </Row>
           </Row>
         </Stack>

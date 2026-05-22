@@ -22,7 +22,6 @@ import {
   Stack,
   Text,
 } from "@mohasinac/appkit/client";
-import { Link } from "@/i18n/navigation";
 import { useToast } from "@mohasinac/appkit/client";
 import type { ClaimedCouponDocument } from "@mohasinac/appkit";
 

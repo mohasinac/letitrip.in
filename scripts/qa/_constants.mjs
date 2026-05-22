@@ -161,6 +161,10 @@ export const USER_ROLES = Object.freeze({
 // Functions smoke suite to look up env-var URLs and produce readable test
 // labels.
 export const FIREBASE_FUNCTIONS = Object.freeze({
+  GATEWAY: {
+    name: "gateway",
+    envVar: "FIREBASE_FUNCTION_GATEWAY_URL",
+  },
   LISTING_PROCESSOR: {
     name: "listingProcessor",
     envVar: "FIREBASE_FUNCTION_LISTING_URL",

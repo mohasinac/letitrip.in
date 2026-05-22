@@ -243,6 +243,36 @@ export const listingProcessor = bindToFirebase.https(
   { region: REGION, timeoutSeconds: 30, memory: "256MiB", maxInstances: 20, minInstances: 0, cors: false, secretEnvVar: "LETITRIP_INTERNAL_SECRET" },
 );
 
+// ── Gateway — single URL that dispatches to any HTTPS handler ─────────────
+// POST { "action": "listingProcessor", ...params }
+// Callers only need one env var (FIREBASE_FUNCTION_GATEWAY_URL) instead of 6.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const GATEWAY_HANDLERS: Record<string, (input: any, ctx: any) => Promise<any>> = {
+  listingProcessor: listingProcessorHandler,
+  adminAnalytics: adminAnalyticsHandler,
+  storeAnalytics: storeAnalyticsHandler,
+  promotionsApi: promotionsHandler,
+  triggerEventRaffle: triggerEventRaffleHandler,
+  assignSpinPrize: assignSpinPrizeHandler,
+};
+
+export const gateway = bindToFirebase.https(
+  "gateway",
+  async (input: { action?: string; [k: string]: unknown }, ctx) => {
+    const { action, ...params } = input;
+    if (!action || typeof action !== "string") {
+      throw Object.assign(new Error("Missing required field: action"), { httpStatus: 400 });
+    }
+    const handler = GATEWAY_HANDLERS[action];
+    if (!handler) {
+      const supported = Object.keys(GATEWAY_HANDLERS).join(", ");
+      throw Object.assign(new Error(`Unknown action: ${action}. Supported: ${supported}`), { httpStatus: 400 });
+    }
+    return handler(params, ctx);
+  },
+  { region: REGION, timeoutSeconds: 120, memory: "512MiB", maxInstances: 20, cors: false, secretEnvVar: "LETITRIP_INTERNAL_SECRET" },
+);
+
 // ── S7 PrizeDraws cohort (SB1-L) ─────────────────────────────────────────
 // Scheduled jobs:
 //   prizeRevealOpen     every 5 min  — flip pending→open + notify (SB8-D)

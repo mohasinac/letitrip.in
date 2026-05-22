@@ -2,7 +2,6 @@ import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
   successResponse,
-  ApiErrors,
   moderationQueueRepository,
 } from "@mohasinac/appkit";
 

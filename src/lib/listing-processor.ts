@@ -1,13 +1,13 @@
 /**
  * Shared helper for calling the listingProcessor Firebase Function.
  *
- * When FIREBASE_FUNCTION_LISTING_URL + LETITRIP_INTERNAL_SECRET are set,
- * the function is used for listing queries (better read performance, cursor
- * pagination). When either env var is absent the caller falls through to the
- * local repository (dev workflow and staging without the Function deployed).
+ * Uses the gateway when FIREBASE_FUNCTION_GATEWAY_URL is set, otherwise
+ * falls back to the direct FIREBASE_FUNCTION_LISTING_URL. Returns `null`
+ * when neither is configured so the caller can fall through to the local
+ * repository.
  */
 
-import { logError } from "@/lib/logger";
+import { callFirebaseFunction } from "@/lib/firebase-gateway";
 
 export interface ListingProcessorResponse {
   items: unknown[];
@@ -28,15 +28,6 @@ export interface ListingProcessorArgs {
   baseOpts?: { status?: string; storeId?: string; categoriesIn?: string[] };
 }
 
-/**
- * Call the listingProcessor Firebase Function.
- *
- * Returns `null` when the function is not configured (no env vars) so the
- * caller can fall through to the local repository query.
- *
- * Throws on HTTP errors so callers can decide whether to surface them or
- * swallow and fall back — wrap in try/catch accordingly.
- */
 export type ListingProcessorCollection =
   | "products"
   | "blog"
@@ -48,33 +39,13 @@ export async function callListingProcessor(
   collection: ListingProcessorCollection,
   args: ListingProcessorArgs,
 ): Promise<ListingProcessorResponse | null> {
-  const url = process.env.FIREBASE_FUNCTION_LISTING_URL;
-  const secret = process.env.LETITRIP_INTERNAL_SECRET;
-  if (!url || !secret) return null;
-
-  const upstream = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-internal-secret": secret,
-    },
-    body: JSON.stringify({
-      collection,
-      f: args.filters,
-      s: args.sorts,
-      p: args.page,
-      ps: args.pageSize,
-      cursor: args.cursor ?? undefined,
-      baseOpts: args.baseOpts,
-    }),
+  return callFirebaseFunction<ListingProcessorResponse>("listingProcessor", {
+    collection,
+    f: args.filters,
+    s: args.sorts,
+    p: args.page,
+    ps: args.pageSize,
+    cursor: args.cursor ?? undefined,
+    baseOpts: args.baseOpts,
   });
-
-  if (!upstream.ok) {
-    const body = await upstream.text().catch(() => "");
-    const err = new Error(`listingProcessor returned ${upstream.status}: ${body}`);
-    logError("callListingProcessor", err.message, err);
-    throw err;
-  }
-
-  return (await upstream.json()) as ListingProcessorResponse;
 }

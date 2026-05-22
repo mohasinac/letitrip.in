@@ -10,6 +10,7 @@ import {
   Row,
   Section,
   ROUTES,
+  ACTIONS,
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
@@ -68,7 +69,7 @@ export default function Page() {
                       router.push(String(ROUTES.STORE.LISTING_TEMPLATES_EDIT(t.id)))
                     }
                   >
-                    Edit
+                    {ACTIONS.STORE["edit-listing"].label}
                   </Button>
                 </Row>
               ))}

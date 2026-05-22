@@ -15,6 +15,7 @@ import { withProviders } from "@/providers.config";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
+import { callFirebaseFunction } from "@/lib/firebase-gateway";
 
 export const GET = withProviders(
   createRouteHandler({
@@ -22,48 +23,20 @@ export const GET = withProviders(
     roles: ["admin", "moderator"],
     permission: "admin:analytics:view",
     handler: async ({ request }) => {
-      const functionUrl = process.env.FIREBASE_FUNCTION_ADMIN_ANALYTICS_URL;
-      const secret = process.env.LETITRIP_INTERNAL_SECRET;
-
-      if (!functionUrl || !secret) {
-        serverLogger.error(
-          "adminAnalytics: FIREBASE_FUNCTION_ADMIN_ANALYTICS_URL or LETITRIP_INTERNAL_SECRET not set",
-        );
-        return Response.json({ error: "Analytics service not configured" }, { status: 503 });
-      }
-
       const url = new URL(request.url);
       const startDate = url.searchParams.get("startDate") ?? undefined;
       const endDate = url.searchParams.get("endDate") ?? undefined;
 
-      serverLogger.info("adminAnalytics: delegating to Firebase Function", { startDate, endDate });
-
-      const upstream = await fetch(functionUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-internal-secret": secret,
-        },
-        body: JSON.stringify({ startDate, endDate }),
-      });
-
-      if (!upstream.ok) {
-        const text = await upstream.text().catch(() => "");
-        serverLogger.error("adminAnalytics: Firebase Function error", {
-          status: upstream.status,
-          body: text,
-        });
-        return Response.json(
-          { error: "Analytics service error" },
-          { status: upstream.status >= 500 ? 502 : upstream.status },
-        );
-      }
-
-      const data = (await upstream.json()) as {
+      const data = await callFirebaseFunction<{
         summary: unknown;
         ordersByMonth: unknown;
         topProducts: unknown;
-      };
+      }>("adminAnalytics", { startDate, endDate });
+
+      if (!data) {
+        serverLogger.error("adminAnalytics: Firebase Function not configured");
+        return Response.json({ error: "Analytics service not configured" }, { status: 503 });
+      }
 
       return successResponse(data);
     },

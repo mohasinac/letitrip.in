@@ -9,6 +9,7 @@ import {
   EmptyState,
   Row,
   Section,
+  ACTIONS,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { useEffect, useState } from "react";
@@ -76,7 +77,7 @@ export default function Page() {
                       size="sm"
                       onClick={() => review(m.id, "approved")}
                     >
-                      Approve
+                      {ACTIONS.ADMIN["approve-product"].label}
                     </Button>
                     <Button
                       variant="danger"
@@ -85,7 +86,7 @@ export default function Page() {
                         review(m.id, "rejected", prompt("Reason?") ?? "")
                       }
                     >
-                      Reject
+                      {ACTIONS.ADMIN["reject-product"].label}
                     </Button>
                   </Row>
                 </Row>

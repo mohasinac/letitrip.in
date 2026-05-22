@@ -17,6 +17,7 @@ import { successResponse } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { orderRepository, storeRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
+import { callFirebaseFunction } from "@/lib/firebase-gateway";
 
 // S-STORE-1-E — Direct Firestore fallback when the analytics Firebase
 // Function isn't configured (dev / preview deploys without the env vars).
@@ -47,47 +48,19 @@ export const GET = withProviders(
     auth: true,
     roles: [...ROLES_STORE_WRITE],
     handler: async ({ user }) => {
-      const functionUrl = process.env.FIREBASE_FUNCTION_STORE_ANALYTICS_URL;
-      const secret = process.env.LETITRIP_INTERNAL_SECRET;
-
-      if (!functionUrl || !secret) {
-        serverLogger.warn(
-          "storeAnalytics: Firebase Function env vars absent — falling back to direct Firestore (S-STORE-1-E)",
-        );
-        const fallback = await firestoreFallback(user!.uid);
-        return successResponse(fallback);
-      }
-
       const uid = user!.uid;
-      serverLogger.info("storeAnalytics: delegating to Firebase Function", { uid });
 
-      const upstream = await fetch(functionUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-internal-secret": secret,
-        },
-        body: JSON.stringify({ uid }),
-      });
-
-      if (!upstream.ok) {
-        const text = await upstream.text().catch(() => "");
-        serverLogger.error("storeAnalytics: Firebase Function error", {
-          status: upstream.status,
-          body: text,
-          uid,
-        });
-        return Response.json(
-          { error: "Analytics service error" },
-          { status: upstream.status >= 500 ? 502 : upstream.status },
-        );
-      }
-
-      const data = (await upstream.json()) as {
+      const data = await callFirebaseFunction<{
         summary: unknown;
         revenueByMonth: unknown;
         topProducts: unknown;
-      };
+      }>("storeAnalytics", { uid }).catch(() => null);
+
+      if (!data) {
+        serverLogger.warn("storeAnalytics: Firebase Function unavailable — falling back to Firestore");
+        const fallback = await firestoreFallback(uid);
+        return successResponse(fallback);
+      }
 
       return successResponse(data);
     },

@@ -29,6 +29,7 @@
 - [Duplication Decision Framework](#duplication-decision-framework)
 - [Recurrent Root Cause Patterns](#recurrent-root-cause-patterns)
 - [Known TS Patterns to Avoid](#known-ts-patterns-to-avoid)
+- [CTA Registry Rules](#cta-registry-rules)
 
 ---
 
@@ -554,6 +555,7 @@ The 4 layout shells (`AdminLayoutShell`, `StoreLayoutShell`, `UserLayoutShell`, 
 | 13 | **Double router.replace race condition** | Never call `table.set(key, v)` followed immediately by `table.setPage(1)` in the same handler. `table.set()` for any key not in `NON_RESETTING_KEYS` (`page`, `pageSize`, `view`) already resets page automatically via a single `router.replace()`. A subsequent `setPage(1)` reads **stale** `useSearchParams()` output and issues a second `router.replace()` that overwrites the first URL update — the toolbar sort/filter appears to do nothing. Use only `table.set(key, v)`. The stop hook runs `appkit/scripts/audit-double-navigation.mjs` after every turn and blocks on any regression. The audit catches both same-line (`table.set(...); table.setPage(`)`) and **multi-line** (set on line N, setPage on line N+1) patterns — a full sweep of 17 instances across 12 files was completed 2026-05-15. |
 | 14 | **Firebase dual-module instance** | `appkit/node_modules/firebase` and root `node_modules/firebase` are separate package copies. If webpack resolves `firebase/app` to two different instances, the Firebase app registry is split: `initializeApp()` registers the app in one instance, but `getAuth()` / `getFirestore()` look it up in the other and find nothing → `"No Firebase App '[DEFAULT]' has been created"`. Fix is in `defineNextConfig`'s webpack config: `config.resolve.alias["firebase"] = path.resolve(cwd, "node_modules/firebase")` forces all `firebase/*` imports to the root copy. Never remove this alias. |
 | 15 | **Never use appkit `<Button>` as a toggle switch — use `<Toggle>`** | Using `<Button role="switch">` to build a toggle pill causes the Button's internal padding and display styles to override custom sizing classes (`w-10 h-6 rounded-full`), so the toggle renders as a plain grey circle instead of a pill with a sliding thumb. Use the appkit `<Toggle checked onChange size>` primitive instead — it renders a native `<button role="switch">` internally with correct pill styling. The `BUTTON_AS_TOGGLE` rule in `audit-code-quality.mjs` blocks on any regression. |
+| 16 | **Inline action definitions bypass the CTA registry** | Every CTA, bulk action, and row action MUST use the ACTIONS registry (`action-registry.ts`) or ACTION_META / ROW_ACTION_META / ADMIN_BULK_ACTIONS / SELLER_BULK_ACTIONS constants (`action-defs.ts`). Inline `{ id: "delete", label: "Delete", variant: "danger" }` objects in BulkActionBar or RowActionMenu bypass centralized label management, permission gating, confirmation dialogs, and i18n overrides. Destructive actions (delete, cancel, ban, suspend) without `confirmation` config on their ActionDef are especially dangerous — they execute immediately with no user confirmation. See § "CTA Registry Rules" below. |
 
 ---
 
@@ -574,3 +576,29 @@ The 4 layout shells (`AdminLayoutShell`, `StoreLayoutShell`, `UserLayoutShell`, 
 | Removing `"sideEffects": false` from `appkit/package.json` | This flag is required; without it Turbopack bundles the full firebase-admin chain into client bundles |
 | `"@mohasinac/appkit": "^X.Y.Z"` (npm) in letitrip `package.json` during local dev | Use `file:./appkit` for local dev; only switch to npm version when deploying or when user asks to publish |
 | Building and publishing appkit with uncommitted source changes | Always commit first — the build compiles from the working tree, so the published dist may not match git history |
+| Inline `{ id: "delete", label: "Delete", variant: "danger" }` in BulkActionBar | Use `ADMIN_BULK_ACTIONS.products` / `SELLER_BULK_ACTIONS.products` preset arrays from `action-defs.ts`, referencing `ROW_ACTION_META[ROW_ACTION_ID.DELETE]` for label + destructive flag |
+| Inline `{ label: "Approve", onClick: ... }` in RowActionMenu | Use `ROW_ACTION_META[ROW_ACTION_ID.APPROVE].label` or `ACTIONS.ADMIN["approve-product"].label` from the registries |
+| Hardcoded confirmation `window.confirm("Delete?")` | Use `ACTIONS.ADMIN["..."].confirmation` or add a `confirmation` field to the ActionDef in `action-registry.ts` — `<Button action={...}>` opens the confirm dialog automatically |
+| Destructive bulk/row action with no confirmation dialog | Every `kind: "danger"` action MUST have a `confirmation` config in `action-registry.ts` — missing confirmation on delete/cancel/ban = immediate execution with no user confirmation |
+
+---
+
+## CTA Registry Rules
+
+> Every CTA, button, bulk action, and row action in the platform is registered in two complementary files. **Never hardcode labels, variants, or confirmation copy inline in view components.**
+
+### Registry files (source of truth)
+
+| File | What it holds | When to use |
+|------|--------------|-------------|
+| `appkit/src/_internal/shared/actions/action-registry.ts` | `ACTIONS` tree — 23 resource buckets, each mapping action-id → `ActionDef` (label, ariaLabel, kind, permissions, confirmation, listingTypeScope, iconKey) | Use `ACTIONS.{RESOURCE}["action-id"]` for label, confirmation, and permission checks. Wire to `<Button action={...}>` for auto-confirmation + auto-variant. |
+| `appkit/src/features/products/constants/action-defs.ts` | `ACTION_META` (Tier 1 public CTAs), `ROW_ACTION_META` (Tier 2 row/table actions), `FORM_ACTION_META` (Tier 3 form footers), `DASHBOARD_QUICK_ACTION_META` (Tier 4 dashboard shortcuts). Presets: `ADMIN_BULK_ACTIONS`, `SELLER_BULK_ACTIONS`, `ADMIN_ROW_ACTIONS`, `SELLER_ROW_ACTIONS`, `USER_ROW_ACTIONS`, `FORM_FOOTER_PRESET`, `DETAIL_ACTIONS`, `MOBILE_PRIMARY_ACTIONS`, `LISTING_BULK_ACTIONS`. | Use preset arrays to populate BulkActionBar and RowActionMenu. Use `ROW_ACTION_META[ROW_ACTION_ID.DELETE]` for label + icon + destructive flag. |
+
+### Rules for every view component
+
+1. **BulkActionBar** — actions array MUST reference `ADMIN_BULK_ACTIONS`, `SELLER_BULK_ACTIONS`, or `LISTING_BULK_ACTIONS` preset. Map preset IDs to `{ ...ROW_ACTION_META[id], onClick: handler }`. Never hardcode `{ id: "delete", label: "Delete", variant: "danger" }` inline.
+2. **RowActionMenu** — actions array MUST reference `ADMIN_ROW_ACTIONS`, `SELLER_ROW_ACTIONS`, or `USER_ROW_ACTIONS` preset for the entity type. Use `ROW_ACTION_META[id].label` for labels and `ROW_ACTION_META[id].destructive` for visual hints. Never hardcode `{ label: "Approve", onClick: ... }` inline.
+3. **Destructive actions** — every action with `kind: "danger"` or `destructive: true` MUST have a `confirmation` config in `action-registry.ts`. Missing confirmation = immediate irreversible execution with no user warning.
+4. **`<Button action={...}>`** — the appkit Button component auto-resolves label, ariaLabel, variant, and confirmation dialog from an ActionDef. Use it instead of manual `<Button variant="danger" onClick={...}>Delete</Button>`.
+5. **New actions** — add to BOTH registries: `ACTIONS.{RESOURCE}["new-action"]` in `action-registry.ts` AND the relevant preset array in `action-defs.ts`. Never create an action that only exists as an inline object in one view component.
+6. **Confirmation copy** — all confirmation dialog strings (title, body, confirmLabel) live in the `ActionDef.confirmation` field. Never write `window.confirm()` or inline modal copy in view components.

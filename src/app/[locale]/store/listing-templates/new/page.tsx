@@ -13,6 +13,7 @@ import {
   Toggle,
   ROUTES,
   useToast,
+  ACTIONS,
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
@@ -82,7 +83,7 @@ export default function Page() {
           </Stack>
           <Row className="gap-2 justify-end">
             <Button variant="ghost" onClick={() => router.back()}>Cancel</Button>
-            <Button variant="primary" onClick={onSave} disabled={saving} isLoading={saving}>Save</Button>
+            <Button variant="primary" onClick={onSave} disabled={saving} isLoading={saving}>{ACTIONS.STORE["save-changes"].label}</Button>
           </Row>
         </Stack>
       </Container>

@@ -116,6 +116,7 @@ export const API_ROUTES = {
     ANALYTICS: "/api/store/analytics",
     WHATSAPP_SETTINGS: "/api/store/whatsapp-settings",
     WHATSAPP_CATALOG_SYNC: "/api/store/whatsapp-settings/catalog-sync",
+    WHATSAPP_CATALOG_IMPORT: "/api/store/whatsapp-settings/catalog-import",
     REVIEWS: "/api/store/reviews",
     REVIEW_REPLY: (id: string) => `/api/store/reviews/${id}/reply`,
     PAYOUTS: "/api/store/payouts",

@@ -289,6 +289,34 @@
   }
 }
 
+/* ── Auto-contrast: white text on dark filled backgrounds ──────────────
+   Shades 500+ are dark enough to require white text for WCAG AA contrast.
+   Un-layered rules beat @layer-utilities Tailwind text-* classes, so
+   bg-primary-600 always gets white text even when a stale text-zinc-900
+   sits on the same element. Explicit text-white / text-primary-50 in
+   Tailwind still works because it's also un-layered at (0,1,0) and
+   appears later in the output.
+   ──────────────────────────────────────────────────────────────────── */
+.bg-primary,
+.bg-primary-500,
+.bg-primary-600,
+.bg-primary-700,
+.bg-primary-800,
+.bg-primary-900,
+.bg-primary-950 {
+  color: var(--appkit-color-text-on-primary, #fff);
+}
+
+.bg-secondary,
+.bg-secondary-500,
+.bg-secondary-600,
+.bg-secondary-700,
+.bg-secondary-800,
+.bg-secondary-900,
+.bg-secondary-950 {
+  color: var(--appkit-color-text-on-primary, #fff);
+}
+
 /* Animation Keyframes */
 @keyframes slideDown {
   from {

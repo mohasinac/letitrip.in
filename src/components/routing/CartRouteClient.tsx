@@ -1003,7 +1003,7 @@ export function CartRouteClient() {
             </Button>
           ) : !isAuthenticated ? (
             <Button
-              onClick={() => requireAuth(ACTION_ID.CHECKOUT, () => {})}
+              onClick={() => requireAuth(ACTION_ID.CHECKOUT, () => router.push(String(ROUTES.USER.CHECKOUT)))}
               className={CLS_CHECKOUT_BTN}
             >
               {ACTIONS.CART["checkout"].label}
@@ -1088,7 +1088,7 @@ export function CartRouteClient() {
             {ACTIONS.CART["checkout"].label}
           </Button>
         ) : !isAuthenticated ? (
-          <Button onClick={() => requireAuth(ACTION_ID.CHECKOUT, () => {})} className={CLS_CHECKOUT_BTN}>
+          <Button onClick={() => requireAuth(ACTION_ID.CHECKOUT, () => router.push(String(ROUTES.USER.CHECKOUT)))} className={CLS_CHECKOUT_BTN}>
             {ACTIONS.CART["checkout"].label}
           </Button>
         ) : (

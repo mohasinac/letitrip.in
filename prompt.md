@@ -180,7 +180,20 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-page-form-audit-sweep (2026-05-21): 7-wave admin/store/user page & form audit sweep
+### ✅ LAST COMPLETED — S-WA-quick-catalog (2026-05-22): Quick product creation + WhatsApp catalog sync + button fixes
+
+**Done this session:**
+- **Phase 1 (Bug fixes)**: Fixed checkout requireAuth empty callback (`CartRouteClient.tsx` lines 1006+1091 → `router.push(ROUTES.USER.CHECKOUT)`). Fixed SellerBundlesView view toggle (restored `setView` + wired `onViewChange`).
+- **Phase 2 (Quick form)**: New `QuickProductForm.tsx` — 6-field minimal create mode (title, category, price, mainImage, description, stockQuantity). Wired into `SellerProductShell` as default for `mode="create" + listingType="standard"`. "Show all fields" switches to full StepForm preserving state.
+- **Phase 3A (Catalog sync fix)**: Fixed `catalog-sync/route.ts` field mapping — WA item `description` = product slug, `name` = title, `image_url` = mainImage.
+- **Phase 3B (Import)**: New `catalog-import/route.ts` — imports WA catalog items as draft standard products. Matches by slug in description/retailer_id fields.
+- **Phase 3C (UI)**: SellerWhatsAppSettingsView — Push/Import buttons, Badge status display, all raw HTML → appkit primitives, CSS variable theming.
+- `WHATSAPP_CATALOG_IMPORT` added to both `api-endpoints.ts` (appkit) and `api.ts` (consumer).
+- `npm run check` exits 0. appkit 2.7.55.
+
+---
+
+### ✅ PREVIOUS LAST — S-page-form-audit-sweep (2026-05-21): 7-wave admin/store/user page & form audit sweep
 
 **Done this session:**
 - W4: 5 new SellerView components (StoreCategoriesView, TemplatesView, PayoutMethodsView, ShippingConfigsView, GoogleReviewsView) + Google Reviews removed from SellerStorefrontView
@@ -205,7 +218,7 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 ---
 
-### 🔄 CURRENT — S-polish-pass Phase 3 (2026-05-21): PL tier + listingProcessor extension
+### ✅ PREVIOUS LAST — S-polish-pass Phase 3 (2026-05-21): PL tier + listingProcessor extension
 
 **Done this session:**
 - **PL3** Orphaned view audit: deleted AuctionsView, PreOrdersView, CategoriesListView, ReviewsListView, StoresListView ✅

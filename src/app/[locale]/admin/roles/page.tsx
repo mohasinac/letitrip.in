@@ -10,6 +10,7 @@ import {
   Row,
   Section,
   ROUTES,
+  ACTIONS,
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
@@ -70,7 +71,7 @@ export default function Page() {
                     variant="outline"
                     onClick={() => router.push(String(ROUTES.ADMIN.ROLES_EDIT(r.id)))}
                   >
-                    Edit
+                    {ACTIONS.STORE["edit-listing"].label}
                   </Button>
                 </Row>
               ))}

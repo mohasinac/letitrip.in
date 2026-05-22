@@ -64,19 +64,21 @@ export const POST = withProviders(
         (p) => p.status === "published" && isStandardListing(p),
       );
 
+      // WA field mapping: description = LetItRip slug (for bidirectional sync matching),
+      // name = product title, imageUrl = mainImage (canonical), retailer_id = slug.
       const products: CatalogSyncProduct[] = publishedStandard.map((p) => ({
-        id: p.id,
+        id: p.slug ?? p.id,
         title: p.title ?? p.id,
-        description: p.description ?? "",
+        description: p.slug ?? p.id,
         price: p.price ?? 0,
         currency: "INR",
-        imageUrl: (p.images?.[0] ?? p.mainImage ?? "") as string,
+        imageUrl: (p.mainImage ?? p.images?.[0] ?? "") as string,
         availability: (p.stockQuantity ?? 0) > 0 ? "in stock" : "out of stock",
         condition:
           p.condition === "used" || p.condition === "refurbished"
             ? (p.condition as "used" | "refurbished")
             : "new",
-        link: `/products/${p.id}`,
+        link: `/products/${p.slug ?? p.id}`,
       }));
 
       if (products.length === 0) {
