@@ -8,7 +8,6 @@ export default defineConfig({
   outDir: "lib",
   clean: true,
   sourcemap: true,
-  // firebase-admin and firebase-functions are provided by the Cloud Run runtime;
-  // do not bundle them so the runtime version is used.
   external: ["firebase-admin", "firebase-functions"],
+  noExternal: ["@mohasinac/appkit"],
 });
