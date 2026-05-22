@@ -43,7 +43,7 @@ import {
   ACTION_ID,
   ACTIONS,
   LoginRequiredModal,
-  StickyBottomBar,
+  useBottomActions,
 } from "@mohasinac/appkit/client";
 import type { CartItem } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
@@ -66,27 +66,25 @@ interface ServerCartItem {
   storeName?: string;
   /** Canonical listing-kind snapshot from CartItemDocument (SB1-G Phase 4). */
   listingType?: "standard" | "auction" | "pre-order" | "prize-draw";
+  /** When true the item cannot be removed or have its quantity changed (won auction / accepted offer). */
+  locked?: boolean;
+  /** True when item was added from an accepted Make-an-Offer. */
+  isOffer?: boolean;
+  offerId?: string;
+  /** Locked offer price — overrides normal product price at checkout. */
+  lockedPrice?: number;
 }
 
 /** Local helper — derives the per-item `listingType` snapshot used by cart UI rendering. */
 type CartItemWithListingType = CartItem & {
   itemId?: string;
   listingType?: "standard" | "auction" | "pre-order" | "prize-draw";
+  locked?: boolean;
+  isOffer?: boolean;
+  offerId?: string;
+  lockedPrice?: number;
 };
 
-interface AppliedCoupon {
-  code: string;
-  discountAmount: number;
-  couponId?: string;
-  scope?: "admin" | "seller";
-  sellerId?: string;
-  applicableItemIds?: string[];
-}
-
-function mergeCoupon(base: AppliedCoupon[], incoming: AppliedCoupon, removeCode: string | null): AppliedCoupon[] {
-  const filtered = base.filter((c) => c.code !== removeCode && c.code !== incoming.code);
-  return [...filtered, incoming];
-}
 
 interface SellerGroup {
   sellerId: string;
@@ -98,7 +96,7 @@ interface SellerGroup {
 interface ServerCartResponse {
   cart: {
     items: ServerCartItem[];
-    appliedCoupons?: AppliedCoupon[];
+    appliedCoupons?: unknown[];
     selectedItemIds?: string[] | null;
   };
   subtotal: number;
@@ -116,6 +114,7 @@ interface ValidateResponse {
 const CART_TABS = [
   { key: "cart"     as const, label: "Cart" },
   { key: "auctions" as const, label: "Won Auctions" },
+  { key: "offers"   as const, label: "Accepted Offers" },
 ];
 
 type CartTab = typeof CART_TABS[number]["key"];
@@ -180,11 +179,15 @@ function serverItemsToCartItems(
     productId: item.productId,
     quantity: item.quantity,
     listingType: item.listingType,
+    locked: item.locked,
+    isOffer: item.isOffer,
+    offerId: item.offerId,
+    lockedPrice: item.lockedPrice,
     meta: {
       productId: item.productId,
       title: item.productTitle,
       image: item.productImage,
-      price: item.price,
+      price: item.lockedPrice ?? item.price,
       currency: item.currency ?? "INR",
       storeId: item.storeId,
       attributes: {
@@ -369,111 +372,13 @@ export function CartRouteClient() {
   const hasOnlyOos = inStockItems.length === 0 && oosItems.length > 0;
   const isLoading = loading || (isAuthenticated && serverLoading);
 
-  // ---------------------------------------------------------------------------
-  // Applied coupons
-  // ---------------------------------------------------------------------------
-  const serverAppliedCoupons: AppliedCoupon[] = serverCart?.cart?.appliedCoupons ?? [];
-  const [localCoupons, setLocalCoupons] = useState<AppliedCoupon[] | null>(null);
-  const effectiveCoupons = localCoupons ?? serverAppliedCoupons;
-
-  const [couponCode, setCouponCode] = useState("");
-  const [couponError, setCouponError] = useState("");
-  const [isCouponLoading, setIsCouponLoading] = useState(false);
-  const [removingCode, setRemovingCode] = useState<string | null>(null);
-
-  const handleApplyCoupon = useCallback(async () => {
-    const code = couponCode.trim().toUpperCase();
-    if (!code || !isAuthenticated) return;
-    if (effectiveCoupons.some((c) => c.code === code)) {
-      setCouponError("This coupon is already applied.");
-      return;
-    }
-    setIsCouponLoading(true);
-    setCouponError("");
-    try {
-      const res = await fetch("/api/cart/coupon", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code }),
-        credentials: FETCH_CREDENTIALS,
-      });
-      const data = await res.json() as { data?: AppliedCoupon; error?: string };
-      if (!res.ok) {
-        const errMsg = data.error ?? "Invalid coupon code";
-        setCouponError(errMsg);
-        showToast(errMsg, "error");
-      } else {
-        const applied = data.data!;
-        const current = effectiveCoupons;
-        const sameScope = applied.scope
-          ? current.find((c) => c.scope === applied.scope && (applied.scope !== "seller" || c.sellerId === applied.sellerId))
-          : null;
-
-        if (sameScope && applied.discountAmount <= sameScope.discountAmount) {
-          // New coupon is inferior — reject and inform user
-          const errMsg = `"${sameScope.code}" already saves more (₹${sameScope.discountAmount.toFixed(2)} vs ₹${applied.discountAmount.toFixed(2)})`;
-          setCouponError(errMsg);
-          showToast(errMsg, "info");
-        } else {
-          // Auto-replace same-scope inferior coupon or add new coupon
-          const replaceCode = sameScope?.code ?? null;
-          setLocalCoupons((prev) => mergeCoupon(prev ?? current, applied, replaceCode));
-          setCouponCode("");
-          const msg = sameScope
-            ? `Switched to "${applied.code}" — saves ₹${(applied.discountAmount - sameScope.discountAmount).toFixed(2)} more!`
-            : `Coupon "${applied.code}" applied! You saved ₹${applied.discountAmount.toFixed(2)}.`;
-          showToast(msg, "success");
-          refetch?.();
-        }
-      }
-    } catch {
-      const errMsg = "Failed to apply coupon. Please try again.";
-      setCouponError(errMsg);
-      showToast(errMsg, "error");
-    } finally {
-      setIsCouponLoading(false);
-    }
-  }, [couponCode, isAuthenticated, effectiveCoupons, showToast, refetch]);
-
-  const handleRemoveCoupon = useCallback(
-    async (code: string) => {
-      setRemovingCode(code);
-      setLocalCoupons((prev) => (prev ?? effectiveCoupons).filter((c) => c.code !== code));
-      if (isAuthenticated) {
-        await fetch("/api/cart/coupon", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code }),
-          credentials: FETCH_CREDENTIALS,
-        }).catch(() => {});
-        refetch?.();
-      }
-      showToast("Coupon removed.", "info");
-      setRemovingCode(null);
-    },
-    [isAuthenticated, effectiveCoupons, showToast, refetch],
-  );
-
-  // ?coupon=CODE deep-link — wallet "Apply at checkout" CTA + SpinWheel
-  // ClaimCouponButton both land here. Auto-fill the input and auto-apply
-  // once on mount when the user is authenticated. Guarded by a ref so a
-  // re-render doesn't re-apply.
+  // Coupons are applied at checkout — ?coupon= deep-links redirect there
   const searchParams = useSearchParams();
-  const deepLinkAppliedRef = useRef(false);
   useEffect(() => {
-    if (deepLinkAppliedRef.current) return;
-    if (!isAuthenticated) return;
     const incoming = searchParams.get("coupon");
     if (!incoming) return;
-    deepLinkAppliedRef.current = true;
-    const code = incoming.trim().toUpperCase();
-    if (effectiveCoupons.some((c) => c.code === code)) return;
-    setCouponCode(code);
-    // Schedule apply so handleApplyCoupon reads the freshly set state.
-    setTimeout(() => {
-      void handleApplyCoupon();
-    }, 0);
-  }, [isAuthenticated, searchParams, effectiveCoupons, handleApplyCoupon]);
+    router.replace(`${String(ROUTES.USER.CHECKOUT)}?coupon=${encodeURIComponent(incoming)}`);
+  }, [searchParams, router]);
 
   // ---------------------------------------------------------------------------
   // Item selection for partial checkout
@@ -533,8 +438,7 @@ export function CartRouteClient() {
       .reduce((s, i) => s + i.meta.price * i.quantity, 0);
   }, [inStockItems, effectiveSelected, subtotal]);
 
-  const totalDiscount = effectiveCoupons.reduce((s, c) => s + c.discountAmount, 0);
-  const finalTotal = Math.max(0, selectedSubtotal - totalDiscount);
+  const finalTotal = selectedSubtotal;
 
   // ---------------------------------------------------------------------------
   // Bulk remove actions
@@ -585,7 +489,6 @@ export function CartRouteClient() {
         toRemove.forEach((item) => guest.remove(item.productId));
       }
       setSelectedIds(null);
-      setLocalCoupons(null);
       showToast(`Cart cleared (${count} item${count !== 1 ? "s" : ""}).`, "info");
     } catch {
       showToast("Could not clear cart. Please try again.", "error");
@@ -744,19 +647,21 @@ export function CartRouteClient() {
   );
 
   // ---------------------------------------------------------------------------
-  // Tab split — cart (standard + pre-order) · auctions
+  // Tab split — cart (standard + pre-order) · auctions · accepted offers
   // Raffles/bundles are immediate buy-nows; they skip the cart entirely.
   // ---------------------------------------------------------------------------
   const [activeTab, setActiveTab] = useState<CartTab>("cart");
 
-  const [cartBucket, auctionBucket] = useMemo(() => {
+  const [cartBucket, auctionBucket, offerBucket] = useMemo(() => {
     const cart: CartItemWithListingType[] = [];
     const auctions: CartItemWithListingType[] = [];
+    const offers: CartItemWithListingType[] = [];
     for (const item of inStockItems) {
-      if ((item.listingType ?? "standard") === "auction") auctions.push(item);
+      if (item.isOffer && item.locked) offers.push(item);
+      else if ((item.listingType ?? "standard") === "auction" && item.locked) auctions.push(item);
       else cart.push(item);
     }
-    return [cart, auctions];
+    return [cart, auctions, offers];
   }, [inStockItems]);
 
   const filteredCartItems = useMemo(
@@ -766,6 +671,10 @@ export function CartRouteClient() {
   const filteredAuctions = useMemo(
     () => (normalizedQuery ? auctionBucket.filter(matchesSearch) : auctionBucket),
     [auctionBucket, normalizedQuery, matchesSearch],
+  );
+  const filteredOffers = useMemo(
+    () => (normalizedQuery ? offerBucket.filter(matchesSearch) : offerBucket),
+    [offerBucket, normalizedQuery, matchesSearch],
   );
   const filteredOos = useMemo(
     () => (normalizedQuery ? oosItems.filter(matchesSearch) : oosItems),
@@ -778,6 +687,36 @@ export function CartRouteClient() {
   const sellerGroupsCart = useMemo(() => groupBySeller(filteredCartItems), [filteredCartItems]);
   const sellerGroupsOos = useMemo(() => groupBySeller(filteredOos), [filteredOos]);
   const sellerGroupsAuctions = useMemo(() => groupBySeller(filteredAuctions), [filteredAuctions]);
+  const sellerGroupsOffers = useMemo(() => groupBySeller(filteredOffers), [filteredOffers]);
+
+  // ---------------------------------------------------------------------------
+  // Mobile bottom actions — checkout CTA registered via layout BottomActions
+  // ---------------------------------------------------------------------------
+  const checkoutDisabled = isEmpty || selectedCount === 0 || hasOnlyOos || isLoading;
+  const checkoutLabel = !isAllSelected && selectedCount > 0
+    ? `${ACTIONS.CART["checkout"].label} ${selectedCount} item${selectedCount !== 1 ? "s" : ""}`
+    : ACTIONS.CART["checkout"].label;
+
+  useBottomActions(
+    checkoutDisabled
+      ? {}
+      : {
+          actions: [
+            {
+              id: ACTION_ID.CHECKOUT,
+              label: checkoutLabel,
+              variant: "primary",
+              onClick: () => {
+                if (!isAuthenticated) {
+                  requireAuth(ACTION_ID.CHECKOUT, () => router.push(String(ROUTES.USER.CHECKOUT)));
+                } else {
+                  router.push(String(ROUTES.USER.CHECKOUT));
+                }
+              },
+            },
+          ],
+        },
+  );
 
   // ---------------------------------------------------------------------------
   // Render
@@ -795,6 +734,7 @@ export function CartRouteClient() {
         const tabCounts: Record<CartTab, number> = {
           cart: cartBucket.length + oosItems.length,
           auctions: auctionBucket.length,
+          offers: offerBucket.length,
         };
         return (
           <Div className="space-y-4">
@@ -862,6 +802,15 @@ export function CartRouteClient() {
                 onRemove={handleRemove}
                 onMoveToWishlist={handleMoveToWishlist}
               />
+            ) : activeTab === "offers" ? (
+              <OffersTabItems
+                offerBucket={offerBucket}
+                filteredOffers={filteredOffers}
+                sellerGroupsOffers={sellerGroupsOffers}
+                normalizedQuery={normalizedQuery}
+                searchQuery={searchQuery}
+                isAuthenticated={isAuthenticated}
+              />
             ) : (
               <CartTabItems
                 cartBucket={cartBucket}
@@ -874,7 +823,7 @@ export function CartRouteClient() {
                 searchQuery={searchQuery}
                 isAuthenticated={isAuthenticated}
                 effectiveSelected={effectiveSelected}
-                effectiveCoupons={effectiveCoupons}
+
                 onToggleItem={toggleItem}
                 onQtyChange={handleQtyChange}
                 onRemove={handleRemove}
@@ -904,84 +853,13 @@ export function CartRouteClient() {
                 <Text className="text-sm text-zinc-500 dark:text-zinc-400">At checkout</Text>
               </Div>
 
-              {/* Per-coupon discount rows */}
-              {effectiveCoupons.map((c) => (
-                <Div key={c.code} className="flex items-center justify-between">
-                  <Text className="text-sm text-[var(--appkit-color-success)]">
-                    {c.code}{c.scope === "seller" ? " (seller)" : ""}
-                  </Text>
-                  <Text className="text-sm text-[var(--appkit-color-success)]">
-                    &minus;₹{c.discountAmount.toFixed(2)}
-                  </Text>
-                </Div>
-              ))}
-
-              {/* Coupon management (auth only) */}
-              {isAuthenticated && !isEmpty && (
-                <Div className="mt-3 space-y-2">
-                  {effectiveCoupons.map((c) => (
-                    <Div
-                      key={c.code}
-                      className="flex items-center justify-between rounded-lg bg-emerald-50 dark:bg-emerald-900/20 px-3 py-2"
-                    >
-                      <Text className="text-xs font-medium text-[var(--appkit-color-success)]">
-                        {c.code}{c.scope === "seller" ? " — this seller" : ""}
-                      </Text>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        onClick={() => handleRemoveCoupon(c.code)}
-                        disabled={removingCode === c.code}
-                        className="text-xs text-zinc-500 dark:text-zinc-400 underline hover:text-zinc-700 dark:hover:text-zinc-200 disabled:opacity-50"
-                      >
-                        {removingCode === c.code ? "…" : "Remove"}
-                      </Button>
-                    </Div>
-                  ))}
-
-                  {/* Add coupon input */}
-                  <Div className="space-y-1">
-                    <Div className="flex gap-2">
-                      <Input
-                        type="text"
-                        placeholder={effectiveCoupons.length ? "Add another coupon" : "Coupon code"}
-                        value={couponCode}
-                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                        onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
-                        className="flex-1 text-sm"
-                        maxLength={50}
-                      />
-                      <Button
-                        type="button"
-                        variant="primary"
-                        size="sm"
-                        onClick={handleApplyCoupon}
-                        disabled={isCouponLoading || !couponCode.trim()}
-                        className="shrink-0"
-                      >
-                        {isCouponLoading ? "…" : "Apply"}
-                      </Button>
-                    </Div>
-                    {couponError && (
-                      <Text className={`text-xs ${ERROR_TEXT_CLASS}`}>{couponError}</Text>
-                    )}
-                  </Div>
-                </Div>
-              )}
+              <Text className="text-xs text-zinc-500 dark:text-zinc-400 mt-2">
+                Apply coupons at checkout
+              </Text>
             </Div>
           )}
           renderTotal={() => (
-            <Div className="border-t border-zinc-100 dark:border-slate-700 pt-3 space-y-1">
-              {totalDiscount > 0 && (
-                <Div className="flex items-center justify-between">
-                  <Text className="text-sm text-zinc-500 dark:text-zinc-400">
-                    Total discount ({effectiveCoupons.length} coupon{effectiveCoupons.length !== 1 ? "s" : ""})
-                  </Text>
-                  <Text className="text-sm text-[var(--appkit-color-success)]">
-                    &minus;₹{totalDiscount.toFixed(2)}
-                  </Text>
-                </Div>
-              )}
+            <Div className="border-t border-zinc-100 dark:border-slate-700 pt-3">
               <Div className="flex items-center justify-between">
                 <Text className="font-semibold text-zinc-900 dark:text-zinc-100">Total</Text>
                 <Text className="font-semibold text-zinc-900 dark:text-zinc-100">
@@ -1052,64 +930,6 @@ export function CartRouteClient() {
       )}
     />
     <LoginRequiredModal isOpen={modalOpen} onClose={closeModal} message={modalMessage} />
-
-    {/* ── Mobile sticky bottom bar (hidden on lg+) ──────────────────────
-        Positioned via `var(--bottom-nav-height)` so it floats above the
-        BottomNavLayout instead of being clipped behind it. */}
-    {!isEmpty && !isLoading && (
-      <StickyBottomBar className="px-4 pb-4 pt-3 space-y-2">
-        {/* Row 1: coupon input (auth only) */}
-        {isAuthenticated && (
-          <Div className="flex gap-2">
-            <Input
-              type="text"
-              placeholder="Coupon code"
-              value={couponCode}
-              onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-              onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
-              className="flex-1 text-sm"
-              maxLength={50}
-            />
-            <Button
-              type="button"
-              onClick={handleApplyCoupon}
-              disabled={isCouponLoading || !couponCode.trim()}
-              variant="primary"
-              size="sm"
-              className="shrink-0"
-            >
-              {isCouponLoading ? "…" : "Apply"}
-            </Button>
-          </Div>
-        )}
-        {/* Row 2: checkout CTA */}
-        {isEmpty || selectedCount === 0 || hasOnlyOos ? (
-          <Button disabled className={CLS_CHECKOUT_BTN}>
-            {ACTIONS.CART["checkout"].label}
-          </Button>
-        ) : !isAuthenticated ? (
-          <Button onClick={() => requireAuth(ACTION_ID.CHECKOUT, () => router.push(String(ROUTES.USER.CHECKOUT)))} className={CLS_CHECKOUT_BTN}>
-            {ACTIONS.CART["checkout"].label}
-          </Button>
-        ) : (
-          <Button asChild className={CLS_CHECKOUT_BTN}>
-            <Link href={String(ROUTES.USER.CHECKOUT)}>
-              {!isAllSelected && selectedCount > 0
-                ? `${ACTIONS.CART["checkout"].label} ${selectedCount} item${selectedCount !== 1 ? "s" : ""}`
-                : ACTIONS.CART["checkout"].label}
-            </Link>
-          </Button>
-        )}
-      </StickyBottomBar>
-    )}
-    {/* Spacer so sticky bar doesn't overlap content — bar height (~7rem) + bottom-nav height (4rem) */}
-    {!isEmpty && !isLoading && (
-      <Div
-        className="lg:hidden"
-        // eslint-disable-next-line lir/no-inline-static-style
-        style={{ height: "calc(7rem + var(--bottom-nav-height, 0px))" }}
-      />
-    )}
     </>
   );
 }
@@ -1143,9 +963,12 @@ function AuctionsTabItems({ auctionBucket, filteredAuctions, sellerGroupsAuction
   }
   return (
     <Div className="space-y-4">
+      <Text className="text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2">
+        Won auction items must be paid before you can bid on new auctions or purchase new items.
+      </Text>
       {sellerGroupsAuctions.map((group) => (
         <Div key={group.sellerId} className={STORE_CARD_CLASS}>
-          <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} effectiveCoupons={[]} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={false} />
+          <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={false} locked lockedBadge="Won auction — payment required" />
         </Div>
       ))}
     </Div>
@@ -1163,10 +986,9 @@ interface CartTabItemsProps extends ItemCallbacks {
   searchQuery: string;
   isAuthenticated: boolean;
   effectiveSelected: Set<string> | null;
-  effectiveCoupons: AppliedCoupon[];
 }
 
-function CartTabItems({ cartBucket, oosItems, filteredCartItems, filteredOos, sellerGroupsCart, sellerGroupsOos, normalizedQuery, searchQuery, isAuthenticated, effectiveSelected, effectiveCoupons, onToggleItem, onQtyChange, onRemove, onMoveToWishlist }: CartTabItemsProps) {
+function CartTabItems({ cartBucket, oosItems, filteredCartItems, filteredOos, sellerGroupsCart, sellerGroupsOos, normalizedQuery, searchQuery, isAuthenticated, effectiveSelected, onToggleItem, onQtyChange, onRemove, onMoveToWishlist }: CartTabItemsProps) {
   if (normalizedQuery && filteredCartItems.length === 0 && filteredOos.length === 0) {
     return <Text className={EMPTY_STATE_CLASS}>No items match &ldquo;{searchQuery.trim()}&rdquo;</Text>;
   }
@@ -1174,7 +996,7 @@ function CartTabItems({ cartBucket, oosItems, filteredCartItems, filteredOos, se
     <>
       {sellerGroupsCart.map((group) => (
         <Div key={group.sellerId} className={STORE_CARD_CLASS}>
-          <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={effectiveSelected} effectiveCoupons={effectiveCoupons} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={false} />
+          <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={effectiveSelected} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={false} />
         </Div>
       ))}
       {cartBucket.length === 0 && oosItems.length === 0 && (
@@ -1189,13 +1011,48 @@ function CartTabItems({ cartBucket, oosItems, filteredCartItems, filteredOos, se
           <Div className="space-y-3">
             {sellerGroupsOos.map((group) => (
               <Div key={group.sellerId} className={`${STORE_CARD_CLASS} opacity-60`}>
-                <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} effectiveCoupons={[]} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={true} />
+                <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={true} />
               </Div>
             ))}
           </Div>
         </Div>
       )}
     </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// OffersTabItems — accepted offers (locked, must be paid)
+// ---------------------------------------------------------------------------
+
+interface OffersTabItemsProps {
+  offerBucket: CartItemWithListingType[];
+  filteredOffers: CartItemWithListingType[];
+  sellerGroupsOffers: SellerGroup[];
+  normalizedQuery: string;
+  searchQuery: string;
+  isAuthenticated: boolean;
+}
+
+function OffersTabItems({ offerBucket, filteredOffers, sellerGroupsOffers, normalizedQuery, searchQuery, isAuthenticated }: OffersTabItemsProps) {
+  if (offerBucket.length === 0) {
+    return <Text className={EMPTY_STATE_CLASS}>No accepted offers in your cart.</Text>;
+  }
+  if (normalizedQuery && filteredOffers.length === 0) {
+    return <Text className={EMPTY_STATE_CLASS}>No offers match &ldquo;{searchQuery.trim()}&rdquo;</Text>;
+  }
+  const noop = () => {};
+  return (
+    <Div className="space-y-4">
+      <Text className="text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2">
+        Accepted offers must be paid. These items cannot be removed from your cart.
+      </Text>
+      {sellerGroupsOffers.map((group) => (
+        <Div key={group.sellerId} className={STORE_CARD_CLASS}>
+          <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} onToggleItem={noop} onQtyChange={noop} onRemove={noop} onMoveToWishlist={noop} isOutOfStock={false} locked lockedBadge="Offer accepted — payment required" />
+        </Div>
+      ))}
+    </Div>
   );
 }
 
@@ -1207,24 +1064,28 @@ interface SellerGroupSectionProps {
   group: SellerGroup;
   isAuthenticated: boolean;
   effectiveSelected: Set<string> | null;
-  effectiveCoupons: AppliedCoupon[];
   onToggleItem: (itemId: string) => void;
   onQtyChange: (id: string, qty: number) => void;
   onRemove: (id: string) => void;
   onMoveToWishlist: (cartItemId: string, productId: string) => void;
   isOutOfStock: boolean;
+  /** When true, items cannot be removed or have qty changed (won auction / accepted offer). */
+  locked?: boolean;
+  /** Badge text shown next to each locked item. */
+  lockedBadge?: string;
 }
 
 function SellerGroupSection({
   group,
   isAuthenticated,
   effectiveSelected,
-  effectiveCoupons,
   onToggleItem,
   onQtyChange,
   onRemove,
   onMoveToWishlist,
   isOutOfStock,
+  locked,
+  lockedBadge,
 }: SellerGroupSectionProps) {
   return (
     <Div>
@@ -1246,17 +1107,7 @@ function SellerGroupSection({
               {group.sellerName}
             </Text>
           )}
-          {/* Seller-scoped coupon badges */}
-          {effectiveCoupons
-            .filter((c) => c.scope === "seller" && c.sellerId === group.sellerId)
-            .map((c) => (
-              <span
-                key={c.code}
-                className="rounded bg-emerald-100 dark:bg-emerald-900/30 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-300"
-              >
-                {c.code}
-              </span>
-            ))}
+
         </Div>
         {/* Per-group subtotal */}
         {!isOutOfStock && group.items.length > 0 && (
@@ -1275,7 +1126,7 @@ function SellerGroupSection({
 
           return (
             <Div key={item.id} className="flex items-start gap-3">
-              {isAuthenticated && !isOutOfStock && (
+              {isAuthenticated && !isOutOfStock && !locked && (
                 <input
                   type="checkbox"
                   aria-label={`Select ${item.meta.title}`}
@@ -1289,10 +1140,15 @@ function SellerGroupSection({
                   item={item}
                   href={productHref}
                   isOutOfStock={isOutOfStock}
-                  onQtyChange={isOutOfStock ? undefined : onQtyChange}
-                  onRemove={onRemove}
+                  onQtyChange={isOutOfStock || locked ? undefined : onQtyChange}
+                  onRemove={locked ? undefined : onRemove}
                 />
-                {isOutOfStock && (
+                {locked && lockedBadge && (
+                  <Text className="mt-1 text-xs font-medium text-amber-700 dark:text-amber-300">
+                    🔒 {lockedBadge}
+                  </Text>
+                )}
+                {isOutOfStock && !locked && (
                   <Button
                     type="button"
                     variant="ghost"

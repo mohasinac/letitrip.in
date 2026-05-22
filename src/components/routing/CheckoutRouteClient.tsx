@@ -1,7 +1,7 @@
 "use client";
 // audit-auth-gates-ok — checkout page is protected by server-side layout auth redirect
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect, useMemo } from "react";
 import {
   AddressForm,
   Button,
@@ -10,18 +10,22 @@ import {
   Div,
   Heading,
   Input,
+  Row,
   SideDrawer,
   Stack,
   Text,
   useAddresses,
   useAuth,
+  useBottomActions,
   useCartQuery,
   useCreateAddress,
   useToast,
   ROUTES,
+  ACTION_ID,
 } from "@mohasinac/appkit/client";
 import type { Address, AddressFormData } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   sendConsentOtpAction,
   verifyConsentOtpAction,
@@ -81,8 +85,17 @@ function openRazorpayModal(opts: {
 
 // --- Types -------------------------------------------------------------------
 
+interface AppliedCoupon {
+  code: string;
+  discountAmount: number;
+  couponId?: string;
+  scope?: "admin" | "seller";
+  sellerId?: string;
+  applicableItemIds?: string[];
+}
+
 interface ServerCartResponse {
-  cart: { items: unknown[] };
+  cart: { items: unknown[]; appliedCoupons?: AppliedCoupon[] };
   subtotal: number;
   itemCount: number;
 }
@@ -410,16 +423,92 @@ function renderPaymentStep({
   );
 }
 
+function renderCouponSection({
+  couponCode,
+  setCouponCode,
+  couponError,
+  isCouponLoading,
+  effectiveCoupons,
+  handleApplyCoupon,
+  handleRemoveCoupon,
+}: {
+  couponCode: string;
+  setCouponCode: (v: string) => void;
+  couponError: string;
+  isCouponLoading: boolean;
+  effectiveCoupons: AppliedCoupon[];
+  handleApplyCoupon: () => void;
+  handleRemoveCoupon: (code: string) => void;
+}) {
+  return (
+    <Div className={STEP_CARD_CLS}>
+      <Heading level={3} className="mb-3 text-base font-semibold text-zinc-900 dark:text-zinc-100">
+        Coupon
+      </Heading>
+      {effectiveCoupons.length > 0 && (
+        <Stack gap="xs" className="mb-3">
+          {effectiveCoupons.map((c) => (
+            <Row key={c.code} className="items-center justify-between rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 px-3 py-2">
+              <Div>
+                <Text className="text-sm font-medium text-green-800 dark:text-green-300">{c.code}</Text>
+                <Text className="text-xs text-green-600 dark:text-green-400">
+                  −₹{(c.discountAmount / 100).toFixed(2)} off
+                </Text>
+              </Div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => handleRemoveCoupon(c.code)}
+                className="text-red-500 hover:text-red-700 dark:text-red-400"
+              >
+                Remove
+              </Button>
+            </Row>
+          ))}
+        </Stack>
+      )}
+      <Row gap="sm">
+        <Input
+          type="text"
+          placeholder={effectiveCoupons.length ? "Add another coupon" : "Coupon code"}
+          value={couponCode}
+          onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+          onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+          className="h-9 text-sm flex-1"
+        />
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handleApplyCoupon}
+          disabled={isCouponLoading || !couponCode.trim()}
+          className="h-9"
+        >
+          {isCouponLoading ? "…" : "Apply"}
+        </Button>
+      </Row>
+      {couponError && (
+        <Text className="mt-1.5 text-xs text-red-600 dark:text-red-400">{couponError}</Text>
+      )}
+    </Div>
+  );
+}
+
 function renderOrderSummary({
   selectedAddress,
+  formattedSubtotal,
   formattedTotal,
+  totalDiscount,
   step,
   addressesLoading,
   actionError,
   handleAdvanceToVerification,
 }: {
   selectedAddress: Address | null;
+  formattedSubtotal: string;
   formattedTotal: string;
+  totalDiscount: number;
   step: CheckoutStep;
   addressesLoading: boolean;
   actionError: string;
@@ -441,6 +530,16 @@ function renderOrderSummary({
           <Text className="text-sm text-zinc-600 dark:text-zinc-400">
             {selectedAddress.addressLine1}, {selectedAddress.city}
           </Text>
+        </Div>
+      )}
+      <Div className="flex justify-between items-center text-sm text-zinc-600 dark:text-zinc-400 mb-1">
+        <Text>Subtotal</Text>
+        <Text>{formattedSubtotal}</Text>
+      </Div>
+      {totalDiscount > 0 && (
+        <Div className="flex justify-between items-center text-sm text-green-600 dark:text-green-400 mb-1">
+          <Text>Coupon discount</Text>
+          <Text>−₹{(totalDiscount / 100).toFixed(2)}</Text>
         </Div>
       )}
       <Div className="flex justify-between items-center border-t border-zinc-200 dark:border-slate-700 pt-3">
@@ -512,7 +611,18 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
+  // --- Coupon state ---
+  const searchParams = useSearchParams();
+  const serverAppliedCoupons: AppliedCoupon[] = cartData?.cart?.appliedCoupons ?? [];
+  const [localCoupons, setLocalCoupons] = useState<AppliedCoupon[] | null>(null);
+  const effectiveCoupons = localCoupons ?? serverAppliedCoupons;
+  const [couponCode, setCouponCode] = useState("");
+  const [couponError, setCouponError] = useState("");
+  const [isCouponLoading, setIsCouponLoading] = useState(false);
+
+  const totalDiscount = effectiveCoupons.reduce((s, c) => s + c.discountAmount, 0);
   const subtotal = cartData?.subtotal ?? 0;
+  const effectiveTotal = Math.max(0, subtotal - totalDiscount);
   const cartIsEmpty = (cartData?.cart?.items?.length ?? 0) === 0;
 
   const handleSelectAddress = useCallback(
@@ -527,6 +637,68 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
     setActionError("");
     setStep("otp-consent");
   }, [selectedAddress]);
+
+  const handleApplyCoupon = useCallback(async () => {
+    const code = couponCode.trim().toUpperCase();
+    if (!code) return;
+    if (effectiveCoupons.some((c) => c.code === code)) {
+      setCouponError("This coupon is already applied.");
+      return;
+    }
+    setIsCouponLoading(true);
+    setCouponError("");
+    try {
+      const res = await fetch("/api/cart/coupon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+        credentials: "include",
+      });
+      const data = await res.json() as { data?: AppliedCoupon; error?: string };
+      if (!res.ok) {
+        setCouponError(data.error ?? "Invalid coupon code");
+        return;
+      }
+      if (data.data) {
+        setLocalCoupons((prev) => [...(prev ?? effectiveCoupons).filter((c) => c.code !== data.data!.code), data.data!]);
+        setCouponCode("");
+        showToast(`Coupon "${data.data.code}" applied! You saved ₹${(data.data.discountAmount / 100).toFixed(2)}.`, "success");
+      }
+    } catch {
+      setCouponError("Failed to apply coupon. Please try again.");
+    } finally {
+      setIsCouponLoading(false);
+    }
+  }, [couponCode, effectiveCoupons, showToast]);
+
+  const handleRemoveCoupon = useCallback(
+    async (code: string) => {
+      setLocalCoupons((prev) => (prev ?? effectiveCoupons).filter((c) => c.code !== code));
+      try {
+        await fetch("/api/cart/coupon", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code }),
+          credentials: "include",
+        });
+      } catch { /* best-effort */ }
+      showToast("Coupon removed.", "info");
+    },
+    [effectiveCoupons, showToast],
+  );
+
+  // ?coupon=CODE deep-link auto-apply
+  useEffect(() => {
+    if (!user?.uid) return;
+    const incoming = searchParams.get("coupon");
+    if (!incoming) return;
+    const code = incoming.trim().toUpperCase();
+    if (!code) return;
+    if (effectiveCoupons.some((c) => c.code === code)) return;
+    setCouponCode(code);
+    const t = setTimeout(() => { void handleApplyCoupon(); }, 0);
+    return () => clearTimeout(t);
+  }, [user?.uid, searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSendOtp = useCallback(async () => {
     if (!selectedAddress) return;
@@ -724,43 +896,58 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
         ? 1
         : 2;
 
-  const formattedTotal = subtotal.toLocaleString("en-IN", {
-    style: "currency",
-    currency: "INR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  const fmtOpts: Intl.NumberFormatOptions = { style: "currency", currency: "INR", minimumFractionDigits: 2, maximumFractionDigits: 2 };
+  const formattedSubtotal = subtotal.toLocaleString("en-IN", fmtOpts);
+  const formattedTotal = effectiveTotal.toLocaleString("en-IN", fmtOpts);
 
-  // Mobile sticky bottom CTA — mirrors the primary action for the current step
-  const mobileStickyBtn = (() => {
-    const cls = "w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900";
+  // Mobile bottom bar — step-dependent primary CTA
+  const bottomActions = useMemo(() => {
     if (step === "address") {
-      return (
-        <Button type="button" onClick={handleAdvanceToVerification} disabled={!selectedAddress || addressesLoading} className={cls}>
-          {CK.ADDRESS_CONTINUE_BTN}
-        </Button>
-      );
+      return [{
+        id: ACTION_ID.CONTINUE_TO_VERIFY,
+        label: CK.ADDRESS_CONTINUE_BTN,
+        variant: "primary" as const,
+        disabled: !selectedAddress || addressesLoading,
+        onClick: handleAdvanceToVerification,
+        grow: true,
+      }];
     }
     if (step === "otp-consent") {
-      return (
-        <Button type="button" onClick={handleSendOtp} disabled={isSendingOtp || isProcessingPayment} className={cls}>
-          {isSendingOtp ? CK.OTP_SENDING_BTN : CK.OTP_SEND_BTN}
-        </Button>
-      );
+      return [{
+        id: ACTION_ID.SEND_OTP,
+        label: isSendingOtp ? CK.OTP_SENDING_BTN : CK.OTP_SEND_BTN,
+        variant: "primary" as const,
+        disabled: isSendingOtp || isProcessingPayment,
+        onClick: handleSendOtp,
+        grow: true,
+      }];
     }
     if (step === "otp") {
-      return (
-        <Button type="button" onClick={handleVerifyOtp} disabled={isVerifyingOtp || otpCode.length < 6} className={cls}>
-          {isVerifyingOtp ? CK.OTP_VERIFYING_BTN : CK.OTP_VERIFY_BTN}
-        </Button>
-      );
+      return [{
+        id: ACTION_ID.VERIFY_OTP,
+        label: isVerifyingOtp ? CK.OTP_VERIFYING_BTN : CK.OTP_VERIFY_BTN,
+        variant: "primary" as const,
+        disabled: isVerifyingOtp || otpCode.length < 6,
+        onClick: handleVerifyOtp,
+        grow: true,
+      }];
     }
-    return (
-      <Button type="button" onClick={handlePayOnline} disabled={isProcessingPayment || cartIsEmpty} className={cls}>
-        {CK.PAYMENT_ONLINE_BTN}
-      </Button>
-    );
-  })();
+    if (step === "processing") return [];
+    return [{
+      id: ACTION_ID.PAY_ONLINE,
+      label: CK.PAYMENT_ONLINE_BTN,
+      variant: "primary" as const,
+      disabled: isProcessingPayment || cartIsEmpty,
+      onClick: handlePayOnline,
+      grow: true,
+    }];
+  }, [step, selectedAddress, addressesLoading, handleAdvanceToVerification, isSendingOtp, isProcessingPayment, handleSendOtp, isVerifyingOtp, otpCode.length, handleVerifyOtp, cartIsEmpty, handlePayOnline]);
+
+  useBottomActions(
+    bottomActions.length > 0
+      ? { actions: bottomActions, infoLabel: formattedTotal }
+      : {},
+  );
 
   return (
     <Div className="mx-auto w-full max-w-7xl">
@@ -780,16 +967,15 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
           if (step === "otp") {
             return renderOtpStep({ maskedEmail, otpCode, setOtpCode, otpError, isVerifyingOtp, isSendingOtp, handleVerifyOtp, handleSendOtp });
           }
-          return renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, handlePayOnline, handlePlaceCodOrder, handleAdminBypass });
+          return (
+            <Stack gap="lg">
+              {renderCouponSection({ couponCode, setCouponCode, couponError, isCouponLoading, effectiveCoupons, handleApplyCoupon, handleRemoveCoupon })}
+              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, handlePayOnline, handlePlaceCodOrder, handleAdminBypass })}
+            </Stack>
+          );
         }}
-        renderOrderSummary={() => renderOrderSummary({ selectedAddress, formattedTotal, step, addressesLoading, actionError, handleAdvanceToVerification })}
+        renderOrderSummary={() => renderOrderSummary({ selectedAddress, formattedSubtotal, formattedTotal, totalDiscount, step, addressesLoading, actionError, handleAdvanceToVerification })}
       />
-
-      {/* Mobile sticky bottom bar — hidden on lg+ */}
-      <Div className="lg:hidden fixed bottom-0 left-0 right-0 z-20 border-t border-zinc-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm px-4 pb-4 pt-3 pb-[env(safe-area-inset-bottom,0px)]">
-        {mobileStickyBtn}
-      </Div>
-      <Div className="lg:hidden h-20" />
     </Div>
   );
 }

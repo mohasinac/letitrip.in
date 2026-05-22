@@ -20,7 +20,7 @@ import {
   useAuthGate,
   ACTION_ID,
   LoginRequiredModal,
-  StickyBottomBar,
+  useBottomActions,
 } from "@mohasinac/appkit/client";
 import type { EnrichedWishlistItem } from "@mohasinac/appkit/client";
 import { Span } from "@mohasinac/appkit/ui";
@@ -227,6 +227,26 @@ export default function WishlistPage() {
     setApplied(EMPTY_FILTERS);
   };
 
+  useBottomActions(
+    selectedIds.size > 0
+      ? {
+          bulk: {
+            selectedCount: selectedIds.size,
+            onClearSelection: clearSelection,
+            actions: [
+              {
+                id: ACTION_ID.REMOVE_FROM_WISHLIST,
+                label: isBulkRemoving ? "Removing…" : `Remove ${selectedIds.size}`,
+                variant: "danger",
+                disabled: isBulkRemoving,
+                onClick: handleRemoveSelected,
+              },
+            ],
+          },
+        }
+      : {},
+  );
+
   return (
     <>
     <ListingLayout
@@ -240,28 +260,7 @@ export default function WishlistPage() {
     >
       {renderWishlistItems({ isLoading, filteredItems, wl, search, activeFilterCount, user, selectedIds, handleToggleWishlist, toggleSelect, handleClear, setSearch })}
     </ListingLayout>
-    {/* Mobile sticky bulk-action toolbar — appears once anything is selected
-        and floats above the BottomNavLayout via StickyBottomBar's CSS-var
-        positioning. Desktop keeps the header-row controls. */}
-    {selectedIds.size > 0 && (
-      <StickyBottomBar className="px-4 pt-3 pb-4 flex items-center gap-2">
-        <Text className="text-sm text-zinc-700 dark:text-zinc-200 mr-auto">
-          {selectedIds.size} selected
-        </Text>
-        <Button variant="ghost" size="sm" onClick={clearSelection} disabled={isBulkRemoving}>
-          Deselect
-        </Button>
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={handleRemoveSelected}
-          disabled={isBulkRemoving}
-          className="bg-red-600 hover:bg-red-700 text-white"
-        >
-          {isBulkRemoving ? "Removing…" : `Remove ${selectedIds.size}`}
-        </Button>
-      </StickyBottomBar>
-    )}
+    {/* Mobile bulk actions registered via useBottomActions() bulk mode above */}
     <LoginRequiredModal isOpen={modalOpen} onClose={closeModal} message={modalMessage} />
     </>
   );

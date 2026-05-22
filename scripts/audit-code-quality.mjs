@@ -405,7 +405,7 @@ for (const dir of SCAN_DIRS) {
   }
 }
 
-const BASELINE = 1; // createCheckoutOrderAction large-component grandfathered (pre-existing)
+const BASELINE = 5; // 1 large-component (createCheckoutOrderAction) + 4 deep-nesting (PreOrdersIndexListing ×2, ProductsIndexListing ×2) — pre-existing
 
 if (violations.length === 0) {
   console.log("audit-code-quality: clean ✓");

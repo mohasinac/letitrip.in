@@ -1,5 +1,5 @@
 "use client";
-import { AdminDashboardView, ROUTES, Text, Div, Toggle } from "@mohasinac/appkit/client";
+import { AdminDashboardView, ROUTES, Text, Div, Toggle, useToast } from "@mohasinac/appkit/client";
 import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -88,6 +88,7 @@ function StatCard({ label, value, href }: { label: string; value: number | null;
 }
 
 export default function Page() {
+  const { showToast } = useToast();
   const [prefs, setPrefs] = useState<DevPrefs>(DEFAULT_PREFS);
   const [adminBypassEnabled, setAdminBypassEnabled] = useState(false);
   const [bypassLoading, setBypassLoading] = useState(false);
@@ -145,11 +146,13 @@ export default function Page() {
         body: JSON.stringify({ flags: { adminCheckoutBypass: next } }),
       });
       setAdminBypassEnabled(next);
-    } catch {
+      showToast(next ? "Checkout bypass enabled." : "Checkout bypass disabled.", "success");
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Failed to toggle bypass.", "error");
     } finally {
       setBypassLoading(false);
     }
-  }, []);
+  }, [showToast]);
 
   const update = useCallback((patch: Partial<DevPrefs>) => {
     const next = { ...prefs, ...patch };

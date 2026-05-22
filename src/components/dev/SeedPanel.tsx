@@ -121,7 +121,6 @@ interface CollectionMeta {
   label: string;
   icon: string;
   group: GroupKey;
-  target: number;
   description: string;
   slugPattern: string;
   mediaFields?: string[];
@@ -139,19 +138,17 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Users",
     icon: "👤",
     group: "core",
-    target: 3,
-    description: "All platform accounts: 1 admin, 1 seller+buyer (Kaiba), 1 buyer (Yugi). Auth records + Firestore profile docs.",
+    description: "Platform accounts (Auth + Firestore). Roles: admin (super-admin, full platform control), seller (owns stores, lists products, manages orders/payouts), employee (admin-lite, assigned by super-admin), moderator (reviews content/reports), user (buyer — browse, buy, bid, wishlist, review). 18 seeded: 1 admin, 7 sellers, 10 buyers. Auth record always upserted on re-seed.",
     slugPattern: "user-{name}  (e.g. user-yugi-muto)",
     mediaFields: ["photoURL"],
     mediaSlugPatterns: [
       { type: "user-avatar", pattern: "user-{name}-avatar.{ext}", example: "user-yugi-muto-avatar.webp" },
     ],
     seededItems: [
-      "3 users total: 1 admin (user-admin-letitrip), 1 seller+buyer (user-seto-kaiba), 1 buyer (user-yugi-muto)",
-      "Admin — admin@letitrip.in — owns store-letitrip-official",
-      "Kaiba — seto.kaiba@kaibacorp.com — owns store-kaiba-corp-cards, also buys",
-      "Yugi — yugi.muto@domino-city.jp — buyer only",
-      "YGOPRODECK card art used as avatars (Dark Magician, Blue-Eyes, Exodia)",
+      "1 super-admin (user-admin-letitrip) — full platform control, manages all stores/users/settings",
+      "7 sellers — each owns a store, can list products, manage orders, view payouts, run promotions",
+      "10 buyers — browse, buy, bid on auctions, make offers, wishlist, review, message sellers",
+      "Future employees will use role:employee (admin-lite, scoped permissions via RBAC overrides)",
     ],
     pendingItems: [],
     uiPath: "/admin/users",
@@ -183,8 +180,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Addresses (User + Store)",
     icon: "📍",
     group: "core",
-    target: 8,
-    description: "Unified addresses collection (SB-UNI-A). Discriminated by ownerType:\"user\"|\"store\" + ownerId. 5 user addresses (Domino City / Tokyo) + 3 store addresses (HQ / warehouse / fulfillment).",
+    description: "Unified addresses (SB-UNI-A). Buyers add delivery addresses for checkout; stores add pickup locations. Discriminated by ownerType:user|store + ownerId. Actions: CRUD by owner, set default, auto-fill at checkout. PII encrypted.",
     slugPattern: "auto-ID (top-level addresses/{addressId})",
     seededItems: [
       "5 user addresses: Yugi (2 Domino City), Kaiba (2 Tokyo), Admin (1 Mumbai)",
@@ -217,8 +213,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Stores",
     icon: "🏪",
     group: "core",
-    target: 2,
-    description: "Seller storefronts. 2 stores: LetItRip Official (admin) and Kaiba Corp Card Vault (Kaiba).",
+    description: "Seller storefronts. Any user with role:seller owns a store. Store owners can: list products (all 7 listing types), manage orders, configure shipping, set payout methods, run coupons, view analytics, connect WhatsApp/Google. Admin can approve/suspend/ban stores. 8 seeded across YGO + collectibles categories.",
     slugPattern: "store-{name}  (e.g. store-kaiba-corp-cards)",
     mediaFields: ["storeLogoURL", "storeBannerURL"],
     mediaSlugPatterns: [
@@ -226,8 +221,10 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { type: "store-banner", pattern: "store-{name}-banner.{ext}", example: "store-kaiba-corp-cards-banner.webp" },
     ],
     seededItems: [
-      "store-letitrip-official — Platform's own store, owned by admin",
+      "store-letitrip-official — Platform's own store, owned by super-admin",
       "store-kaiba-corp-cards — Kaiba's premium card shop, YGO singles + sealed",
+      "6 more stores: pokemon-palace, cardgame-hub, diecast-depot, beyblade-arena, tokyo-toys-india, gundam-galaxy",
+      "Each store has: shipping configs, payout methods, analytics cards, WhatsApp config",
     ],
     pendingItems: [],
     uiPath: "/stores",
@@ -259,9 +256,8 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Categories",
     icon: "🗂️",
     group: "core",
-    target: 30,
     description:
-      "Unified categories collection (SB-UNI). 25 categories (YGO-themed hierarchy) + 5 brands (Konami, Bandai, etc.).",
+      "Unified categories (SB-UNI). 4 discriminators: category (hierarchy), sublisting (card variants), brand, bundle. Admin creates/edits categories + brands; sellers create store bundles. Public pages show hierarchy nav, product counts, and stores-per-category. ~80 entries: YGO hierarchy (singles, sealed, graded, eras) + broad collectibles (TCG, figures, diecast, tops, model kits, vintage) + brands + digital-codes + live-aquatics roots.",
     slugPattern:
       "category-{name} | brand-{name}",
     mediaFields: ["display.coverImage", "display.icon", "brandBannerImage"],
@@ -270,8 +266,11 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { type: "brand-banner", pattern: "brand-banner-{name}.{ext}", example: "brand-banner-konami.webp" },
     ],
     seededItems: [
-      "25 hierarchy categories: YGO TCG, Booster Packs, Structure Decks, Spell Cards, Trap Cards, Monster Cards, etc.",
-      "5 brands (categoryType:\"brand\"): Konami, Bandai, Upper Deck, Shueisha, Kazuki Takahashi",
+      "YGO-specific: Singles (monsters/spells/traps), Sealed Products, Graded Cards, Duel Monsters Era, GX Era",
+      "Broad collectibles: Trading Cards (multi-TCG), Action Figures, Diecast, Spinning Tops, Model Kits, Vintage",
+      "Special roots: Digital Codes, Live Aquatics",
+      "Brands (categoryType:brand): Konami, Bandai, and more",
+      "Sublistings, bundles via categoryType discriminator",
     ],
     pendingItems: [],
     uiPath: "/categories",
@@ -311,8 +310,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Products (Standard + Auctions + Pre-orders + Prize Draws)",
     icon: "📦",
     group: "listings",
-    target: 92,
-    description: "All product types in one collection. 59 standard + 8 bundles + 20 auctions + 5 pre-orders. YGO cards, sealed product, accessories.",
+    description: "All 7 listing types in one collection (107 seeded). Sellers create via store dashboard; admin can edit/approve/reject any. Standard: buy-now. Auction: time-limited bidding + optional BIN. Pre-order: future release with deposit. Prize-draw: entry-based reveal with RNG. Classified: local meetup, no cart (chat CTA). Digital-code: instant delivery, auto-claim or manual-email. Live: regulated species with jurisdiction + CITES checks.",
     slugPattern: "product-{name}  /  auction-{name}  /  preorder-{name}",
     mediaFields: ["images[]", "youtubeId", "prizeDrawItems[].images[]"],
     mediaSlugPatterns: [
@@ -324,11 +322,13 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { type: "rich-text-image",  pattern: "rich-text-{entity}-{name}-image-{n}.{ext}",           example: "rich-text-product-charizard-psa10-image-1.webp" },
     ],
     seededItems: [
-      "59 standard products: 10 admin merch (playmats, sleeves, deck boxes) + 49 Kaiba singles/sealed/extras",
-      "8 bundles: starter deck combos, booster pack bundles",
-      "20 auctions (16 Kaiba + 4 Admin): PSA/BGS/CGC graded cards, BIN auctions, ended auctions",
-      "5 pre-orders: 25th Anniversary LOB, GX Tournament Pack, Blue-Eyes Tin, Dark Magician Structure Deck, Master Duel Bundle",
-      "Two-Axis Status Model: status (published/draft/in_review/archived) orthogonal to isSold + availableQuantity",
+      "62 standard: admin merch + Kaiba singles/sealed/extras across 8 stores",
+      "24 auctions: PSA/BGS/CGC graded cards, BIN auctions, ended auctions",
+      "5 pre-orders: 25th Anniversary LOB, GX Tournament Pack, Blue-Eyes Tin, etc.",
+      "2 prize draws: mystery box + lucky dip with RNG reveal",
+      "5 classifieds: local meetup lots (Mumbai, Bangalore, Delhi, Hyderabad, Chennai)",
+      "5 digital codes: Master Duel gems, structure decks, Duel Links, Neuron, Battle Pass",
+      "4 live items: koi, betta, crab, axolotl (YGO-named aquatics)",
       "YGOPRODECK card art images throughout",
     ],
     pendingItems: [],
@@ -402,11 +402,10 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Auction Bids",
     icon: "⚡",
     group: "listings",
-    target: 80,
-    description: "Bid history for all 20 auction listings. 2–8 bids per auction with realistic price escalation.",
+    description: "Auction bid history. Buyers place bids on auction-type listings; system validates min increment + outbid logic. Sellers see bids in store dashboard. Admin can view all bids. Auto-proxy bidding via autoMaxBid. Winner determined when auction ends.",
     slugPattern: "bid-{productName}-{userFirstName}-{YYYYMMDD}-{random6}",
     seededItems: [
-      "80 bids across 20 auctions (Yugi and Kaiba bidding against each other)",
+      "13 bids across auction listings (Yugi and Kaiba bidding against each other)",
       "Realistic bid amounts — each bid > previous by ₹50–₹2000",
       "Active/outbid/won status distribution",
       "productId matches auction slug (id === slug enforced)",
@@ -431,16 +430,15 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Orders",
     icon: "🛒",
     group: "transactional",
-    target: 50,
-    description: "Purchase orders across all statuses. 50 orders (Yugi→Kaiba, Yugi→Admin, Admin→Kaiba, Kaiba→Admin).",
+    description: "Purchase orders. Created at checkout (Razorpay payment). Buyer tracks status; seller processes (confirm→ship→deliver). Admin manages disputes/refunds. Statuses: PENDING→PROCESSING→SHIPPED→DELIVERED | CANCELLED | RETURN_REQUESTED→REFUNDED. Supports standard/auction/pre-order/prize-draw/bundle/offer order types.",
     slugPattern: "order-{itemCount}-{YYYYMMDD}-{random6}",
     mediaSlugPatterns: [
       { type: "invoice", pattern: "invoice-{orderId}-{YYYYMMDD}.pdf", example: "invoice-order-3-20260507-ab12cd-20260507.pdf" },
     ],
     seededItems: [
-      "50 orders: 25 Yugi→Kaiba, 5 Yugi→Admin, 12 Admin→Kaiba, 8 Kaiba→Admin",
-      "All statuses seeded: PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED, RETURN_REQUESTED, REFUNDED",
-      "Mix of standard, auction, pre-order order types",
+      "7 orders across buyers and stores with mixed statuses",
+      "Statuses: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED, RETURN_REQUESTED, REFUNDED",
+      "Mix of standard and auction order types",
     ],
     pendingItems: [],
     uiPath: "/admin/orders",
@@ -486,8 +484,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Shopping Carts",
     icon: "🛍️",
     group: "transactional",
-    target: 4,
-    description: "Active carts — 3 authenticated (Yugi, Kaiba, Admin) + 1 guest.",
+    description: "Shopping carts. Buyers add products (standard/auction-BIN/pre-order/bundle); guest carts use sessionId. Integrity validation checks stale prices + moved-to-wishlist + out-of-stock. Shipping provider selection per item. 50-item cap. Merged on login.",
     slugPattern: "auto-ID",
     seededItems: [
       "4 carts — 3 authenticated (Yugi, Kaiba, Admin), 1 guest (sessionId)",
@@ -518,8 +515,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Wishlists",
     icon: "💖",
     group: "transactional",
-    target: 3,
-    description: "One document per user. 3 wishlists: Yugi (8 items), Kaiba (5 items), Admin (4 items).",
+    description: "One doc per user (20-item hard cap, server returns 409 WISHLIST_FULL). Buyers save products for later; bulk-remove + move-to-cart actions. Idempotent re-add. Price-at-add snapshot for price-drop alerts.",
     slugPattern: "wishlist-{userSlug}  (e.g. wishlist-user-yugi-muto)",
     seededItems: [
       "3 docs: wishlist-user-yugi-muto (8), wishlist-user-seto-kaiba (5), wishlist-user-admin-letitrip (4)",
@@ -538,8 +534,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "History (recently viewed)",
     icon: "🕓",
     group: "transactional",
-    target: 3,
-    description: "One document per user. 3 history docs: Yugi (15 items), Kaiba (8 items), Admin (10 items).",
+    description: "One doc per user (50-item FIFO silent evict). Tracks recently viewed products. Guest users mirror to localStorage; merged on login via /api/user/history/merge. Newest-first ordering, no duplicates.",
     slugPattern: "history-{userSlug}  (e.g. history-user-yugi-muto)",
     seededItems: [
       "3 docs: history-user-yugi-muto (15), history-user-seto-kaiba (8), history-user-admin-letitrip (10)",
@@ -557,8 +552,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Coupons",
     icon: "🎟️",
     group: "transactional",
-    target: 10,
-    description: "5 admin coupons + 5 seller coupons. YGO-themed discount codes.",
+    description: "Discount codes. Admin creates platform-wide coupons; sellers create store-scoped coupons. Types: percentage, fixed, free_shipping, buy_x_get_y. Per-user limits enforced via couponUsage subcollection. Applied at checkout; validated against min-purchase, date range, first-time-user restrictions.",
     slugPattern: "coupon-*  (e.g. coupon-heart-of-the-cards)",
     seededItems: [
       "5 admin coupons: HEART-OF-CARDS, MILLENNIUM-DEAL, SHADOW-REALM-SALE, DUEL-DISK-DISCOUNT, EXODIA-VIP",
@@ -585,8 +579,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Product Reviews",
     icon: "⭐",
     group: "transactional",
-    target: 35,
-    description: "Product reviews with star ratings, text. Linked to product + buyer. YGO collector voice.",
+    description: "Product reviews (1-5 stars + text + optional images/video). Buyers submit after purchase (verified-purchase flag). Sellers can respond once. Admin can moderate (approve/reject/flag). Helpful-count voting. Feeds into product avgRating + store reputation.",
     slugPattern: "review-{productName}-{userName}-{YYYYMMDD}",
     mediaFields: ["images[]  (optional)"],
     mediaSlugPatterns: [
@@ -594,7 +587,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { type: "review-video", pattern: "review-{productId}-video-1.{ext}",   example: "review-product-charizard-psa10-video-1.mp4" },
     ],
     seededItems: [
-      "35 reviews across 2 stores (Yugi + Kaiba + Admin reviewing each other's products)",
+      "65 reviews across 8 stores (distributed across buyers and products)",
       "YGO collector voice — Duel Monsters references",
       "Verified purchase flag on all reviews",
     ],
@@ -620,14 +613,13 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Payouts",
     icon: "💳",
     group: "transactional",
-    target: 5,
-    description: "Seller payout records for Kaiba Corp and LetItRip Official stores.",
+    description: "Seller payouts. Admin triggers batch payouts for completed orders. Workflow: PENDING (accumulating) → PROCESSING (admin approved) → PAID (funds sent via UPI/bank). Supports refund deductions (clawback from pending payouts). Sellers view payout history in store dashboard.",
     slugPattern: "payout-{storeName}-{YYYYMMDD}-{random6}",
     mediaSlugPatterns: [
       { type: "payout-doc", pattern: "payout-doc-{storeName}-{YYYYMMDD}.pdf", example: "payout-doc-pokemon-palace-20260507.pdf" },
     ],
     seededItems: [
-      "5 payouts across 2 stores (Kaiba Corp + LetItRip Official)",
+      "10 payouts across stores (mixed statuses: PAID, PENDING, PROCESSING)",
       "Statuses: PAID, PENDING, PROCESSING mix",
     ],
     pendingItems: [],
@@ -653,8 +645,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Blog Posts",
     icon: "📝",
     group: "content",
-    target: 6,
-    description: "6 blog posts (5 published + 1 draft). YGO-themed content with YGOPRODECK cover art.",
+    description: "Blog posts. Admin creates/publishes articles (rich HTML content + cover image + YouTube embed). Categories, tags, featured flag. Public pages show reading time, views, related posts. Admin can draft/publish/archive. SEO metadata auto-generated.",
     slugPattern: "blog-{title}",
     mediaFields: ["coverImage", "youtubeId"],
     mediaSlugPatterns: [
@@ -664,7 +655,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { type: "rich-text-image",       pattern: "rich-text-{entity}-{name}-image-{n}.{ext}", example: "rich-text-blog-how-to-grade-cards-image-1.webp" },
     ],
     seededItems: [
-      "6 posts: Card Grading Guide, Blue-Eyes History, Dark Magician Legacy, Tournament Prep, Collecting on a Budget, Sealed Product Investment (draft)",
+      "20 posts: Card Grading Guide, Blue-Eyes History, Dark Magician Legacy, Tournament Prep, and more",
       "YGOPRODECK cover art on all published posts",
     ],
     pendingItems: [],
@@ -690,8 +681,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Events",
     icon: "🎪",
     group: "content",
-    target: 8,
-    description: "YGO-themed events: tournaments, sales, polls, surveys, raffles, spin-wheel. 8 events + 5 entries.",
+    description: "Platform events. Admin creates events (sale/offer/poll/survey/feedback/raffle/spin_wheel). Users register via entries. Raffle types: open_raffle, top_n_scorers, top_n_participants, spin_wheel. Admin triggers raffle draws; winners get auto-issued coupon prizes. Spin wheel has per-user limits + time windows.",
     slugPattern: "event-{title}  (e.g. event-battle-city-tournament)",
     mediaFields: ["bannerImage"],
     mediaSlugPatterns: [
@@ -701,8 +691,8 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { type: "event-additional-image", pattern: "event-{title}-image-{n}.{ext}", example: "event-pokemon-regional-tournament-mumbai-image-4.webp" },
     ],
     seededItems: [
-      "8 events: Battle City Tournament (poll), Duelist Kingdom Survey, Shadow Realm Flash Sale, Kaiba Corp Grand Prix (feedback), Millennium Puzzle Raffle (open_raffle), Heart of the Cards Spin Wheel (spin_wheel), Duel Academy Entrance Exam (top_n_scorers, ended), Duelist League Sale",
-      "5 event entries across events (Yugi + Kaiba + Admin registrations)",
+      "13 events: tournaments, sales, polls, surveys, raffles (open/top_n/spin_wheel), flash sales",
+      "Mix of upcoming, active, and ended events with raffle winners drawn",
     ],
     pendingItems: [],
     uiPath: "/events",
@@ -741,8 +731,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Event Registrations",
     icon: "🎫",
     group: "content",
-    target: 5,
-    description: "Event registrations. 5 entries across events for Yugi, Kaiba, and Admin.",
+    description: "Event registrations. Users register for events (CONFIRMED/WAITLISTED/CANCELLED). For spin_wheel events, tracks spinUsed/spinPrizeId/spinPrizeCouponCode. For raffles, raffleEligible flag gates draw participation.",
     slugPattern: "auto-ID",
     seededItems: [
       "5 event entries across events (Yugi + Kaiba + Admin registrations)",
@@ -768,7 +757,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Named Carousels",
     icon: "🗂️",
     group: "content",
-    target: 5,
     description: "Named carousel containers (EX2). Each carousel holds up to 5 slide IDs. carouselId on CarouselSectionConfig selects which carousel to render; null = default hero.",
     slugPattern: "carousel-{name}  (e.g. carousel-hero-default)",
     seededItems: [
@@ -791,7 +779,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Hero Carousel Slides",
     icon: "🎠",
     group: "content",
-    target: 6,
     description: "Homepage hero carousel slides. 6 slides (5 active + 1 inactive). YGOPRODECK card art backgrounds.",
     slugPattern: "slide-{title}",
     mediaFields: ["background.url", "background.mobileUrl"],
@@ -818,7 +805,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Homepage Sections",
     icon: "🏠",
     group: "content",
-    target: 24,
     description: "All homepage layout sections. 24 sections with YGO-themed copy. autoScroll on all horizontal sections.",
     slugPattern: "section-*  (e.g. section-featured-products)",
     mediaFields: ["config.imageUrl  (ad-banner / custom-cards types)"],
@@ -841,11 +827,10 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "FAQs",
     icon: "❓",
     group: "content",
-    target: 25,
-    description: "25 FAQs: 20 YGO-specific + 5 general collectibles marketplace. Mixed per user request.",
+    description: "FAQ knowledge base. Admin creates/edits/pins FAQs. Public pages show by category + search. showOnHomepage flag drives homepage FAQ section. Keyword search via pre-tokenized searchTokens[]. Stats track views + helpful votes for relevance ranking.",
     slugPattern: "faq-*  (e.g. faq-how-does-bidding-work)",
     seededItems: [
-      "25 FAQs across categories: general, orders_payment, shipping_delivery, returns_refunds, product_information, account_security",
+      "55 FAQs across categories: general, orders_payment, shipping_delivery, returns_refunds, product_information, account_security",
       "YGO-specific FAQs (card grading, booster odds, tournament rules, etc.)",
       "General marketplace FAQs (shipping, returns, payments)",
     ],
@@ -873,8 +858,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Notifications",
     icon: "🔔",
     group: "system",
-    target: 23,
-    description: "23 notifications: 10 Yugi, 8 Kaiba, 5 Admin. All notification types covered.",
+    description: "User notifications. Multi-channel: in-app (always-on) + email (Resend) + WhatsApp. 10 types: order updates, bids, offers, reviews, messages, promotions, system, etc. Priority levels (low→urgent). Deep-link via entityId/entityType. User prefs control per-channel + per-type delivery.",
     slugPattern: "notif-*",
     seededItems: [
       "23 notifications across all types — Yugi (10), Kaiba (8), Admin (5)",
@@ -905,8 +889,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Sessions",
     icon: "🔐",
     group: "system",
-    target: 5,
-    description: "5 sessions: 3 active (Yugi, Kaiba, Admin), 1 expired, 1 revoked.",
+    description: "Active login sessions. Tracks device info (browser/OS/IP-masked), location, expiry. Admin can view/revoke sessions for any user. Users see their own active sessions in account security settings. IP always masked — never exposed to client.",
     slugPattern: "auto-ID",
     seededItems: [
       "5 session records — 3 active, 1 expired, 1 revoked",
@@ -931,7 +914,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Site Settings",
     icon: "⚙️",
     group: "system",
-    target: 1,
     description: "Single global settings document with 13 setting groups controlling the entire platform.",
     slugPattern: "site_settings/global  (singleton)",
     mediaFields: ["branding.logo", "branding.favicon", "seoDefaults.ogImage"],
@@ -964,8 +946,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Conversations",
     icon: "💬",
     group: "transactional",
-    target: 5,
-    description: "Buyer–seller message threads between Yugi, Kaiba, and Admin. YGO-themed conversations.",
+    description: "Buyer-seller messaging (RTDB ping + Firestore canonical). Buyers initiate chats about products; sellers respond from store dashboard. Tracks unread counts per side. Admin can view/moderate conversations. RTDB ping channel drives real-time updates without polling.",
     slugPattern: "conv-{product-slug}-{buyer}-{seller}-NNN",
     seededItems: [
       "5 conversation threads — Yugi↔Kaiba, Admin↔Kaiba, etc.",
@@ -991,8 +972,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Grouped Listings",
     icon: "📦",
     group: "listings",
-    target: 3,
-    description: "3 grouped listings: LOB box + pack/promo, Kaiba deck + singles, POTD box + pack/promo.",
+    description: "Parent-child product groups. Sellers link related products (e.g. booster box + individual packs). isGroupParent + groupChildSlugs wired. Public pages show 'Also in this group' cross-links.",
     slugPattern: "group-*",
     seededItems: ["3 groups with isGroupParent + groupChildSlugs wired"],
     pendingItems: [],
@@ -1008,8 +988,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Scammer Profiles",
     icon: "🚨",
     group: "moderation",
-    target: 3,
-    description: "Scam registry with YGO-themed entries. 3 profiles: verified, pending review, rejected.",
+    description: "Community scam registry. Users report scammers (27 scam types). Admin verifies/rejects reports. Public lookup by phone/UPI/email. Evidence attachments via media proxy. Contest mechanism for false positives. Incident count + view tracking for severity ranking.",
     slugPattern: "scammer-{identifier}",
     seededItems: [
       "3 scammer profiles: rare-card-scam (verified), fake-blue-eyes (pending_review), mistaken-seller (rejected)",
@@ -1045,8 +1024,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Support Tickets",
     icon: "🎫",
     group: "moderation",
-    target: 4,
-    description: "Support tickets from Yugi, Kaiba, and Admin. Mix of categories and statuses.",
+    description: "Support tickets. Buyers submit (order_issue/refund/auction_dispute/general). Admin assigns to staff, adds internal notes, resolves. Priority-based SLA. Message thread per ticket. Rate-limited per user. Linked to orders when applicable.",
     slugPattern: "ticket-{userId}-{category}-{seq}",
     seededItems: [
       "4 support tickets: order issue (Yugi), refund request (Kaiba), auction dispute (Yugi), general (Admin)",
@@ -1077,8 +1055,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Offers (Make-an-Offer)",
     icon: "🤝",
     group: "transactional",
-    target: 10,
-    description: "Make-an-Offer negotiations between buyers and sellers. Buyers submit offers on listed products; sellers can accept, decline, or counter. Accepted offers lock the price and the buyer is redirected to checkout. A paid offer creates a linked order with offerId set.",
+    description: "Make-an-Offer negotiations. Buyers submit price offers on allowOffers:true products. Sellers accept/decline/counter from store dashboard. Accepted offers lock price → buyer redirected to checkout. Paid offers create linked orders with offerId. Auto-expiry after 48h. 7 statuses: pending→accepted→paid | declined | countered | expired | withdrawn.",
     slugPattern: "offer-{buyerName}-{productName}-{status}  (semantic seed IDs only; production uses Firestore auto-IDs)",
     seededItems: [
       "10 offers across all 7 statuses: pending ×2, accepted ×1, declined ×1, countered ×2, expired ×1, withdrawn ×1, paid ×2",
@@ -1115,7 +1092,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Product Features",
     icon: "🏅",
     group: "listings",
-    target: 10,
 
     description: "Reusable feature badges products opt into via product.features[]. Two scopes: platform (admin-curated, available to every store) and store (seller-owned custom, capped at 20/store). Products may reference up to 10 features.",
     slugPattern: "feature-*",
@@ -1154,7 +1130,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Payout Methods",
     icon: "💳",
     group: "store",
-    target: 4,
     description: "Seller payout destinations — UPI VPA, bank account, card, or other. One default per store. Seeded for 2 stores.",
     slugPattern: "payout-method-{store}-{type}-{purpose}",
     seededItems: [
@@ -1187,7 +1162,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Shipping Configs",
     icon: "📦",
     group: "store",
-    target: 6,
     description: "Per-store shipping rules. Stores may run multiple configs — flat / free-above / weight / express / pickup / custom — with one default. Selected per-listing or at checkout based on cart contents.",
     slugPattern: "ship-config-{store}-{method}",
     seededItems: [
@@ -1217,7 +1191,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Analytics Cards",
     icon: "📊",
     group: "store",
-    target: 12,
     description: "Dashboard cards for seller + admin analytics. Built-in cards ship by default; sellers can add custom cards via the dashboard. Each card has a metric key, type (metric/line/bar/pie/table), and visibility toggle.",
     slugPattern: "ac-{scope}-{metric}",
     seededItems: [
@@ -1245,7 +1218,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Analytics Alerts",
     icon: "🚨",
     group: "store",
-    target: 6,
     description: "Threshold-based alerts for seller + admin metrics. Triggers fire when the metric crosses the threshold in a given window. Notifications fan out via configured channels (in-app, email, WhatsApp).",
     slugPattern: "alert-{metric}-{owner}",
     seededItems: [
@@ -1276,7 +1248,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Storefront Categories",
     icon: "🗂️",
     group: "store",
-    target: 8,
     description: "Per-store catalogue groupings (not platform categories). Used to organise a store's own page — \"Ultra Rares\", \"Spell Cards\", etc. Each holds a manually-curated list of productIds.",
     slugPattern: "scat-{store}-{label}",
     seededItems: [
@@ -1303,7 +1274,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Listing Templates",
     icon: "📝",
     group: "store",
-    target: 6,
     description: "Seller-defined templates that pre-fill the product create form. One per listingType (standard / auction / pre-order / prize-draw / bundle / classified / digital-code / live). Shared templates can be reused by team members on the same store.",
     slugPattern: "tmpl-{listingType}-{name}",
     seededItems: [
@@ -1333,7 +1303,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Moderation Queue",
     icon: "🛡️",
     group: "store",
-    target: 6,
     description: "Pending media (video / image / rich-text) awaiting trust-and-safety review. Items flow in from product, review, event, blog, and storefront contexts. Admins approve / reject; rejected items are blocked from publishing.",
     slugPattern: "mod-{mediaType}-{entity}",
     seededItems: [
@@ -1366,7 +1335,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Reports",
     icon: "🚩",
     group: "store",
-    target: 6,
     description: "Buyer-submitted reports against listings / stores / reviews / users / blog / comments. Workflow: pending → under-review (assigned) → actioned / dismissed. Rate-limited per reporter at the API layer.",
     slugPattern: "report-{reason}-{entity}",
     seededItems: [
@@ -1398,7 +1366,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Item Request Board",
     icon: "🔎",
     group: "store",
-    target: 6,
     description: "Community bulletin board for buyer item requests. OP posts a request → admin approves (PII filter) → request goes live → sellers reply → OP can start a private chat with a respondent. Replies are PII-filtered server-side.",
     slugPattern: "irq-{title-slug}",
     seededItems: [
@@ -1432,7 +1399,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "WhatsApp Config",
     icon: "💬",
     group: "store",
-    target: 2,
     description: "Per-store WhatsApp Business connection. Paid add-on (Rs 499/month). Holds business profile name, catalog URL, auto-reply, welcome message, and onboarding status with Meta Cloud API.",
     slugPattern: "whatsapp-{store}",
     seededItems: [
@@ -1461,7 +1427,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Role Overrides",
     icon: "🔑",
     group: "store",
-    target: 5,
     description: "Per-user permission patches — grant/revoke specific permission keys on top of the user's base role. Optional storeId scope (null = global).",
     slugPattern: "role-override-{user}-{scope}",
     seededItems: [],
@@ -1484,7 +1449,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Custom Roles",
     icon: "🛡️",
     group: "store",
-    target: 5,
     description: "Admin-defined role bundles. Layer on top of the 5 built-in roles (user/seller/moderator/employee/admin). Hold a curated permission list.",
     slugPattern: "role-{name}",
     seededItems: [],
@@ -1507,7 +1471,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Admin Notifications",
     icon: "🔔",
     group: "store",
-    target: 10,
     description: "Admin inbox — system / security / moderation / payouts / fraud / growth alerts. Bypasses per-user notification prefs. Targeted via audienceUserIds (empty = all admins).",
     slugPattern: "adm-notif-{category}-{ts}",
     seededItems: [],
@@ -1530,7 +1493,6 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     label: "Google Reviews Config",
     icon: "🌐",
     group: "store",
-    target: 2,
     description: "Per-store Google Business profile sync. Holds Place ID + business name + cached avg-rating + total-reviews + last-sync timestamp. The actual review fetch is offloaded to a Firebase Function (60s ceiling).",
     slugPattern: "google-{store}",
     seededItems: [
@@ -1827,7 +1789,7 @@ function renderAccordionCollapsedHeader({
   );
 }
 
-function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number, seedCount: number, target: number) {
+function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number, seedCount: number) {
   return (
     <Div className="border-t border-zinc-200 dark:border-slate-700 px-5 py-4 bg-white dark:bg-slate-900/60">
       <Stack gap="md">
@@ -1868,10 +1830,9 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
 
         <Div>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-zinc-700 dark:text-slate-200">Target: {target} docs</span>
-            <span className="text-xs font-mono text-zinc-500 dark:text-slate-400">DB: {existingCount} · Seed file: {seedCount}</span>
+            <span className="text-xs font-mono text-zinc-500 dark:text-slate-400">DB: {existingCount} / {seedCount} seed docs</span>
           </div>
-          <SeedProgressBar seeded={existingCount} target={target} />
+          <SeedProgressBar seeded={existingCount} target={seedCount} />
         </Div>
 
         <Div>
@@ -1940,8 +1901,7 @@ function ResourceAccordionCard({
 
   const seedCount = dbStatus?.seedCount ?? 0;
   const existingCount = dbStatus?.existingCount ?? 0;
-  const target = meta.target;
-  const pct = target > 0 ? Math.min(100, Math.round((existingCount / target) * 100)) : 0;
+  const pct = seedCount > 0 ? Math.min(100, Math.round((existingCount / seedCount) * 100)) : 0;
 
   const isComplete = existingCount >= seedCount && seedCount > 0;
   const isEmpty = existingCount === 0;
@@ -1978,7 +1938,7 @@ function ResourceAccordionCard({
         </div>
       )}
 
-      {expanded && renderAccordionExpandedBody(meta, existingCount, seedCount, target)}
+      {expanded && renderAccordionExpandedBody(meta, existingCount, seedCount)}
     </Div>
   );
 }
@@ -2096,7 +2056,7 @@ export function SeedPanel() {
   const [totalQueued, setTotalQueued] = useState(0);
 
   // ─── Search / filter / sort / pagination ────────────────────────────────────
-  type SortKey = "default" | "name-asc" | "name-desc" | "target-asc" | "target-desc" | "db-asc" | "db-desc";
+  type SortKey = "default" | "name-asc" | "name-desc" | "seed-asc" | "seed-desc" | "db-asc" | "db-desc";
   type StatusFilter = "all" | "seeded" | "partial" | "empty";
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -2188,9 +2148,6 @@ export function SeedPanel() {
   }
 
   const errorCount = Object.keys(colErrors).length;
-  const totalTargetDocs = ALL_COLLECTIONS.reduce(
-    (sum, col) => sum + (COLLECTION_META[col]?.target ?? 0), 0
-  );
   const totalExistingDocs = status.reduce((sum, s) => sum + s.existingCount, 0);
   const totalSeedDocs = status.reduce((sum, s) => sum + s.seedCount, 0);
 
@@ -2250,8 +2207,8 @@ export function SeedPanel() {
         switch (sortBy) {
           case "name-asc":    return ma.label.localeCompare(mb.label);
           case "name-desc":   return mb.label.localeCompare(ma.label);
-          case "target-asc":  return ma.target - mb.target;
-          case "target-desc": return mb.target - ma.target;
+          case "seed-asc":  return (sa?.seedCount ?? 0) - (sb?.seedCount ?? 0);
+          case "seed-desc": return (sb?.seedCount ?? 0) - (sa?.seedCount ?? 0);
           case "db-asc":      return (sa?.existingCount ?? 0) - (sb?.existingCount ?? 0);
           case "db-desc":     return (sb?.existingCount ?? 0) - (sa?.existingCount ?? 0);
           default:            return 0;
@@ -2275,7 +2232,7 @@ export function SeedPanel() {
       <Container size="2xl">
         <Stack gap="lg" className="py-8">
           {renderSeedPanelHero()}
-          {renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDocs, totalTargetDocs })}
+          {renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDocs, collectionCount: ALL_COLLECTIONS.length })}
 
           {isRunning && (
             <Div className="rounded-xl p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-300 dark:border-amber-700">
@@ -2299,7 +2256,7 @@ export function SeedPanel() {
 
 // ─── SeedPanel sub-renderers ──────────────────────────────────────────────────
 
-type SortKey = "default" | "name-asc" | "name-desc" | "target-asc" | "target-desc" | "db-asc" | "db-desc";
+type SortKey = "default" | "name-asc" | "name-desc" | "seed-asc" | "seed-desc" | "db-asc" | "db-desc";
 type StatusFilter = "all" | "seeded" | "partial" | "empty";
 
 function renderSeedPanelToolbar({
@@ -2362,8 +2319,8 @@ function renderSeedPanelToolbar({
                   { value: "default", label: "Sort: Default" },
                   { value: "name-asc", label: "Name A → Z" },
                   { value: "name-desc", label: "Name Z → A" },
-                  { value: "target-desc", label: "Target ↑ highest" },
-                  { value: "target-asc", label: "Target ↓ lowest" },
+                  { value: "seed-desc", label: "Seed ↑ highest" },
+                  { value: "seed-asc", label: "Seed ↓ lowest" },
                   { value: "db-desc", label: "DB count ↑ most" },
                   { value: "db-asc", label: "DB count ↓ fewest" },
                 ]}
@@ -2427,7 +2384,7 @@ function renderSeedPanelHero() {
   );
 }
 
-function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDocs, totalTargetDocs }: { isLoadingStatus: boolean; totalExistingDocs: number; totalSeedDocs: number; totalTargetDocs: number }) {
+function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDocs, collectionCount }: { isLoadingStatus: boolean; totalExistingDocs: number; totalSeedDocs: number; collectionCount: number }) {
   return (
     <Div className="grid grid-cols-3 gap-3 sm:gap-4">
       <Div className="rounded-xl p-4 bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-center flex flex-col gap-1">
@@ -2439,8 +2396,8 @@ function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDoc
         <span className="text-xs text-zinc-500 dark:text-slate-400">docs in seed files</span>
       </Div>
       <Div className="rounded-xl p-4 bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-center flex flex-col gap-1">
-        <span className="text-2xl font-extrabold text-zinc-500 dark:text-slate-300 font-mono leading-none">{totalTargetDocs.toLocaleString()}</span>
-        <span className="text-xs text-zinc-500 dark:text-slate-400">total target docs</span>
+        <span className="text-2xl font-extrabold text-zinc-500 dark:text-slate-300 font-mono leading-none">{collectionCount}</span>
+        <span className="text-xs text-zinc-500 dark:text-slate-400">collections</span>
       </Div>
     </Div>
   );

@@ -32,6 +32,9 @@ import {
   productsAuctionsSeedData,
   productsPreordersSeedData,
   productsPrizeDrawsSeedData,
+  productsClassifiedsSeedData,
+  productsDigitalCodesSeedData,
+  productsLiveItemsSeedData,
   ordersSeedData,
   reviewsSeedData,
   cartsSeedData,
@@ -226,6 +229,9 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
     ...productsAuctionsSeedData,
     ...productsPreordersSeedData,
     ...productsPrizeDrawsSeedData,
+    ...productsClassifiedsSeedData,
+    ...productsDigitalCodesSeedData,
+    ...productsLiveItemsSeedData,
   ],
   orders: ordersSeedData,
   reviews: reviewsSeedData,
@@ -718,6 +724,9 @@ export async function POST(request: NextRequest) {
                     ...authUserData,
                     password: "TempPass123!", // Default password for demo
                   });
+                } else {
+                  // Always sync auth properties so re-seeds keep the record current
+                  await auth.updateUser(uid, authUserData);
                 }
 
                 // Always sync role as custom claim so auth/me returns correct role
