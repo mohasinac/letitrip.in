@@ -4,6 +4,7 @@ import {
   ApiErrors,
   orderRepository,
 } from "@mohasinac/appkit";
+import { ROLES_AUTHENTICATED } from "@/constants";
 
 /**
  * QR code PDF/PNG — returns a QR linking to the order's public tracking page.
@@ -13,7 +14,7 @@ import {
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["user", "seller", "moderator", "admin"],
+    roles: [...ROLES_AUTHENTICATED],
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const order = await orderRepository.findById(id);

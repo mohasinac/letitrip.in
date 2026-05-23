@@ -131,6 +131,7 @@ export {
   ROLES_STORE_WRITE,
   ROLES_STORE_READ,
   ROLES_ANY_STAFF,
+  ROLES_AUTHENTICATED,
 } from "./api-roles";
 
 // UI labels

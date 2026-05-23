@@ -67,3 +67,16 @@ export const ROLES_ANY_STAFF: readonly UserRole[] = [
   USER_ROLE.MODERATOR,
   USER_ROLE.SELLER,
 ];
+
+/**
+ * Any authenticated user — buyers, sellers, moderators, admin. Use when the
+ * route just needs `auth: true` semantics AND the underlying handler enforces
+ * its own ownership/scope check (e.g. order invoice/label/QR routes verify
+ * `order.buyerId === user.uid` independently of role).
+ */
+export const ROLES_AUTHENTICATED: readonly UserRole[] = [
+  USER_ROLE.USER,
+  USER_ROLE.SELLER,
+  USER_ROLE.MODERATOR,
+  USER_ROLE.ADMIN,
+];

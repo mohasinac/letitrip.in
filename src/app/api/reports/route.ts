@@ -5,11 +5,12 @@ import {
   errorResponse,
   reportsRepository,
 } from "@mohasinac/appkit";
+import { ROLES_AUTHENTICATED } from "@/constants";
 
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["user", "seller", "moderator", "admin"],
+    roles: [...ROLES_AUTHENTICATED],
     handler: async ({ request, user }) => {
       const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
       try {

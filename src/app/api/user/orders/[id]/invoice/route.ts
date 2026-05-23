@@ -4,6 +4,7 @@ import {
   ApiErrors,
   orderRepository,
 } from "@mohasinac/appkit";
+import { ROLES_AUTHENTICATED } from "@/constants";
 
 /**
  * Invoice PDF endpoint — returns a server-rendered PDF for the order.
@@ -15,7 +16,7 @@ import {
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["user", "seller", "moderator", "admin"],
+    roles: [...ROLES_AUTHENTICATED],
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const order = await orderRepository.findById(id);

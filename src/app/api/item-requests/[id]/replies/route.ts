@@ -6,6 +6,7 @@ import {
   ApiErrors,
   itemRequestsRepository,
 } from "@mohasinac/appkit";
+import { ROLES_AUTHENTICATED } from "@/constants";
 
 // Cheap PII filter for replies — strips phone-like sequences and email addresses.
 function stripPii(input: string): string {
@@ -18,7 +19,7 @@ function stripPii(input: string): string {
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["user", "seller", "moderator", "admin"],
+    roles: [...ROLES_AUTHENTICATED],
     handler: async ({ request, params, user }) => {
       const id = (params as { id: string }).id;
       const doc = await itemRequestsRepository.findById(id);
