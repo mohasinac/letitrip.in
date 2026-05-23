@@ -24,6 +24,7 @@ import {
   ACTION_ID,
 } from "@mohasinac/appkit/client";
 import type { Address, AddressFormData } from "@mohasinac/appkit/client";
+import { ACTIONS } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import {
@@ -459,11 +460,10 @@ function renderCouponSection({
                 type="button"
                 variant="ghost"
                 size="sm"
+                action={ACTIONS.CHECKOUT["remove-coupon"]}
                 onClick={() => handleRemoveCoupon(c.code)}
                 className="text-error"
-              >
-                Remove
-              </Button>
+              />
             </Row>
           ))}
         </Stack>
@@ -880,13 +880,6 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
     }
   }, [selectedAddress, router, showToast, step]);
 
-  // --- Redirect unauthenticated users ----------------------------------------
-
-  if (!authLoading && !user) {
-    router.push(`${String(ROUTES.AUTH.LOGIN)}?returnTo=${String(ROUTES.USER.CHECKOUT)}`);
-    return null;
-  }
-
   // --- Render -----------------------------------------------------------------
 
   const stepIndex =
@@ -948,6 +941,16 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
       ? { actions: bottomActions, infoLabel: formattedTotal }
       : {},
   );
+
+  // --- Redirect unauthenticated users ----------------------------------------
+  // Placed AFTER all hooks so React's hook ordering stays consistent across
+  // renders (rules-of-hooks); guarding earlier would skip useMemo +
+  // useBottomActions during the redirect frame.
+
+  if (!authLoading && !user) {
+    router.push(`${String(ROUTES.AUTH.LOGIN)}?returnTo=${String(ROUTES.USER.CHECKOUT)}`);
+    return null;
+  }
 
   return (
     <Div className="mx-auto w-full max-w-7xl">
