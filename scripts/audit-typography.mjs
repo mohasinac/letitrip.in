@@ -48,13 +48,15 @@ const RULES = [
     // Matches <div>, <span>, <button>, <td>, <li>, <label>, <section>, <a>, etc.
     // Excludes PascalCase components (appkit primitives like <Span>, <Text>, <Button>)
     regex: new RegExp(`<[a-z][a-z0-9]*\\s[^>]*className[^>]*(?:${TYPOGRAPHY_CLASSES})`),
-    baseline: 685,
+    // Tightened 2026-05-23: 543 actual vs prior 685.
+    baseline: 543,
   },
   {
     id: "APPKIT_SPAN_RAW_CLASSES",
     label: "Appkit <Span> using raw Tailwind text classes instead of props (use size/weight/color props)",
     regex: new RegExp(`<Span\\s[^>]*className\\s*=\\s*["{][^">]*(?:${TYPOGRAPHY_CLASSES})`),
-    baseline: 254,
+    // Tightened 2026-05-23: 252 actual vs prior 254.
+    baseline: 252,
   },
   // ── Raw semantic elements that have a direct appkit replacement ────────────
   {
@@ -97,7 +99,10 @@ const RULES = [
     id: "RAW_BUTTON",
     label: "Raw <button> (use appkit <Button>)",
     regex: /<button[\s>]/,
-    baseline: 127,
+    // Tightened 2026-05-23: 16 actual vs prior 127 — RAW_BUTTON has been
+    // aggressively swept across the codebase. New raw buttons should be
+    // appkit <Button> or otherwise justified.
+    baseline: 16,
   },
 ];
 

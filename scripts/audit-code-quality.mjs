@@ -450,7 +450,11 @@ for (const dir of SCAN_DIRS) {
   }
 }
 
-const BASELINE = 761; // 5 pre-existing (1 large-component + 4 deep-nesting) + 756 RAW_SEMANTIC_COLOR (pre-existing raw Tailwind color classes)
+// Tightened 2026-05-23: 533 actual vs prior 761 — 228 violations improved
+// over recent sessions but baseline never re-pegged. Drop to current count so
+// new regressions block at the precise true ceiling instead of leaving a
+// 228-violation slack window where regressions silently land.
+const BASELINE = 533;
 
 if (violations.length === 0) {
   console.log("audit-code-quality: clean ✓");
