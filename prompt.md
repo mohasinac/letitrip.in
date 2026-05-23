@@ -180,7 +180,19 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-WA-quick-catalog (2026-05-22): Quick product creation + WhatsApp catalog sync + button fixes
+### ✅ LAST COMPLETED — S-W6-12-seller-migrate-1 (2026-05-23): First seller views migrated to DataListingView (portal:seller)
+
+**Done this session (W1-6C scope via W6-12 unified path — user chose to skip the throwaway W1-6C):**
+- `DataListingView` extended: `columns` made optional (falls through to DataTable's primary/status/updatedAt defaults); default `onRowClick` no longer fires when `renderEditor` is omitted (avoids ghost panel toggles on read-only seller listings).
+- `SellerOffersView`: 181 LOC → 105 LOC. Now declares `ListingViewConfig<SellerOffersResponse, OfferRow>` with `portal: "seller"`, custom `renderRowActions` for accept/counter/reject, `renderFilterPanel` using `FilterChipGroup` + `SELLER_OFFER_STATUS_TABS`. Reuses `useAdminListingData` formatters (toRecordArray/toRelativeDate/toRupees/toStringValue).
+- `SellerPayoutsView`: 179 LOC → 102 LOC. Same shape — `renderRowActions` for view/export, `ADMIN_PAYOUT_STATUS_TABS` filter.
+- Consumer page shims unchanged — both views called with no props in `src/app/[locale]/store/{offers,payouts}/page.tsx`.
+- `npm run check` exits 0 (0 errors, pre-existing warnings only).
+- Skipped this session: `SellerCouponsView` (cards-only — needs `hideTableView` extension on DataListingView), `SellerBidsView` (grouped-by-auction collapsible custom view), `SellerOrdersView` (615 LOC — complex).
+
+---
+
+### ✅ PREVIOUS LAST — S-WA-quick-catalog (2026-05-22): Quick product creation + WhatsApp catalog sync + button fixes
 
 **Done this session:**
 - **Phase 1 (Bug fixes)**: Fixed checkout requireAuth empty callback (`CartRouteClient.tsx` lines 1006+1091 → `router.push(ROUTES.USER.CHECKOUT)`). Fixed SellerBundlesView view toggle (restored `setView` + wired `onViewChange`).
