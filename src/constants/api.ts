@@ -1,20 +1,121 @@
 /**
- * API Route Constants
+ * API Route Constants — backward-compat layer over `@mohasinac/appkit` `API_ENDPOINTS`.
  *
- * Centralized API endpoint strings for all client-side fetch calls.
- * Prevents scattering of raw "/api/..." strings across components.
+ * Consolidated 2026-05-23 (W1-10): every duplicated endpoint definition from the
+ * previous standalone copy now derives from `API_ENDPOINTS.*`. Only letitrip-specific
+ * routes that are not yet (or never will be) exposed through appkit remain inlined
+ * below. The exported `API_ROUTES` shape is preserved verbatim so existing consumers
+ * — `API_ROUTES.STORE.*`, `API_ROUTES.USER.*`, `API_ROUTES.ADMIN.*` — keep working
+ * without churn while the canonical source-of-truth moves to appkit.
+ *
+ * New code should import `API_ENDPOINTS` directly from `@mohasinac/appkit` instead
+ * of going through this shim.
  */
+
+import { API_ENDPOINTS } from "@mohasinac/appkit";
+
+// letitrip-only admin features missing from appkit's ADMIN_ENDPOINTS.
+const ADMIN_LETITRIP = {
+  ...API_ENDPOINTS.ADMIN,
+  SITE_SETTINGS: "/api/admin/site-settings",
+  MODERATION_QUEUE: "/api/admin/moderation",
+  MODERATION_BY_ID: (id: string) => `/api/admin/moderation/${id}`,
+  REPORTS: "/api/admin/reports",
+  REPORT_BY_ID: (id: string) => `/api/admin/reports/${id}`,
+  ITEM_REQUESTS: "/api/admin/item-requests",
+  ITEM_REQUEST_BY_ID: (id: string) => `/api/admin/item-requests/${id}`,
+  ADMIN_ANALYTICS_CARDS: "/api/admin/analytics/cards",
+  ADMIN_ANALYTICS_CARD_BY_ID: (id: string) => `/api/admin/analytics/cards/${id}`,
+  ADMIN_ANALYTICS_ALERTS: "/api/admin/analytics/alerts",
+  ADMIN_ANALYTICS_ALERT_BY_ID: (id: string) => `/api/admin/analytics/alerts/${id}`,
+  ROLES: "/api/admin/roles",
+  ROLE_BY_ID: (id: string) => `/api/admin/roles/${id}`,
+  // Note: distinct from appkit's ADMIN.ADMIN_NOTIFICATIONS ("/api/admin/notifications")
+  // — these are two different admin notification surfaces.
+  ADMIN_NOTIFICATIONS: "/api/admin/admin-notifications",
+} as const;
+
+// Legacy STORE namespace. Maps to appkit SELLER_ENDPOINTS where keys overlap, plus
+// the letitrip-only seller-scoped routes that aren't in appkit yet.
+const STORE_LETITRIP = {
+  PRODUCTS: API_ENDPOINTS.SELLER.PRODUCTS,
+  ORDERS: API_ENDPOINTS.SELLER.ORDERS,
+  ORDER_BY_ID: API_ENDPOINTS.SELLER.ORDERS_BY_ID,
+  COUPONS: API_ENDPOINTS.SELLER.COUPONS,
+  COUPON_BY_ID: API_ENDPOINTS.SELLER.COUPON_BY_ID,
+  STOREFRONT: API_ENDPOINTS.SELLER.STORE,
+  SHIPPING: "/api/store/shipping",
+  PAYOUT_SETTINGS: API_ENDPOINTS.SELLER.PAYOUT_SETTINGS,
+  ANALYTICS: "/api/store/analytics",
+  WHATSAPP_SETTINGS: API_ENDPOINTS.WHATSAPP_SELLER.SETTINGS,
+  WHATSAPP_CATALOG_SYNC: API_ENDPOINTS.WHATSAPP_SELLER.CATALOG_SYNC,
+  WHATSAPP_CATALOG_IMPORT: API_ENDPOINTS.WHATSAPP_SELLER.CATALOG_IMPORT,
+  REVIEWS: "/api/store/reviews",
+  REVIEW_REPLY: (id: string) => `/api/store/reviews/${id}/reply`,
+  PAYOUTS: API_ENDPOINTS.SELLER.PAYOUTS,
+  PAYOUTS_REQUEST: "/api/store/payouts/request",
+  ADDRESSES: API_ENDPOINTS.SELLER.STORE_ADDRESSES,
+  ADDRESS_BY_ID: API_ENDPOINTS.SELLER.STORE_ADDRESS_BY_ID,
+  BIDS: API_ENDPOINTS.SELLER.BIDS,
+  SUBLISTING_CATEGORIES: "/api/store/sublisting-categories",
+  SUBLISTING_CATEGORY_BY_ID: (id: string) => `/api/store/sublisting-categories/${id}`,
+  PRODUCT_GROUP: (id: string) => `/api/store/products/${id}/group`,
+  PRODUCT_GROUP_CHILDREN: (id: string) => `/api/store/products/${id}/group/children`,
+  PRODUCT_GROUP_CHILD: (id: string, childId: string) =>
+    `/api/store/products/${id}/group/children/${childId}`,
+  // SB-UNI-N digital-code pool management
+  PRODUCT_CODES: (id: string) => `/api/store/products/${id}/codes`,
+  PRODUCTS_BULK_LOCATION: API_ENDPOINTS.SELLER.PRODUCTS_BULK_LOCATION,
+  ORDERS_BULK_LOCATION: API_ENDPOINTS.SELLER.ORDERS_BULK_LOCATION,
+  TEMPLATES: API_ENDPOINTS.SELLER.TEMPLATES,
+  TEMPLATE_BY_ID: API_ENDPOINTS.SELLER.TEMPLATE_BY_ID,
+  PROFILE: "/api/store/profile",
+  SLUG_CHECK: (slug: string) => `/api/store/slug/check?slug=${encodeURIComponent(slug)}`,
+  // S-STORE Tier extensions
+  PAYOUT_METHODS: API_ENDPOINTS.SELLER.PAYOUT_METHODS,
+  PAYOUT_METHOD_BY_ID: API_ENDPOINTS.SELLER.PAYOUT_METHOD_BY_ID,
+  SHIPPING_CONFIGS: API_ENDPOINTS.SELLER.SHIPPING_CONFIGS,
+  SHIPPING_CONFIG_BY_ID: API_ENDPOINTS.SELLER.SHIPPING_CONFIG_BY_ID,
+  ANALYTICS_CARDS: "/api/store/analytics/cards",
+  ANALYTICS_CARD_BY_ID: (id: string) => `/api/store/analytics/cards/${id}`,
+  ANALYTICS_ALERTS: API_ENDPOINTS.SELLER.ANALYTICS_ALERTS,
+  ANALYTICS_ALERT_BY_ID: API_ENDPOINTS.SELLER.ANALYTICS_ALERT_BY_ID,
+  STORE_CATEGORIES: API_ENDPOINTS.SELLER.STORE_CATEGORIES,
+  STORE_CATEGORY_BY_ID: API_ENDPOINTS.SELLER.STORE_CATEGORY_BY_ID,
+  LISTING_TEMPLATES: "/api/store/listing-templates",
+  LISTING_TEMPLATE_BY_ID: (id: string) => `/api/store/listing-templates/${id}`,
+  GROUPED_LISTINGS: API_ENDPOINTS.SELLER.GROUPED_LISTINGS,
+  GROUPED_LISTING_BY_ID: API_ENDPOINTS.SELLER.GROUPED_LISTING_BY_ID,
+  GOOGLE_REVIEWS: API_ENDPOINTS.SELLER.GOOGLE_REVIEWS,
+  GOOGLE_REVIEWS_SYNC: API_ENDPOINTS.SELLER.GOOGLE_REVIEWS_SYNC,
+} as const;
+
+// Legacy USER namespace. Maps to appkit ACCOUNT_ENDPOINTS where keys overlap.
+const USER_LETITRIP = {
+  PROFILE: API_ENDPOINTS.ACCOUNT.PROFILE,
+  ADDRESSES: API_ENDPOINTS.ACCOUNT.ADDRESSES,
+  ADDRESS_BY_ID: API_ENDPOINTS.ACCOUNT.ADDRESS_BY_ID,
+  ORDERS: API_ENDPOINTS.ACCOUNT.ORDERS,
+  ORDER_BY_ID: API_ENDPOINTS.ACCOUNT.ORDER_BY_ID,
+  WISHLIST: API_ENDPOINTS.ACCOUNT.WISHLIST,
+  WISHLIST_ITEM: (productId: string) => `/api/user/wishlist/${productId}`,
+  NOTIFICATIONS: "/api/user/notifications",
+  NOTIFICATION_BY_ID: (id: string) => `/api/user/notifications/${id}`,
+  NOTIFICATIONS_READ_ALL: "/api/user/notifications/read-all",
+  NOTIFICATION_PREFERENCES: "/api/user/notification-preferences",
+  CHANGE_PASSWORD: API_ENDPOINTS.ACCOUNT.CHANGE_PASSWORD,
+  OFFERS: "/api/user/offers",
+  EVENTS: "/api/user/events",
+} as const;
 
 export const API_ROUTES = {
   AUTH: {
-    LOGOUT: "/api/auth/logout",
+    LOGOUT: API_ENDPOINTS.AUTH.LOGOUT,
   },
   NEWSLETTER: {
-    SUBSCRIBE: "/api/newsletter/subscribe",
+    SUBSCRIBE: API_ENDPOINTS.HOMEPAGE.NEWSLETTER_SUBSCRIBE,
   },
-  DEMO: {
-    SEED: "/api/demo/seed",
-  },
+  DEMO: API_ENDPOINTS.DEMO,
   ADS: {
     BY_SLOT: (slotId: string) => `/api/ads?slot=${encodeURIComponent(slotId)}`,
   },
@@ -25,143 +126,20 @@ export const API_ROUTES = {
     LIST: "/api/brands",
     BY_ID: (id: string) => `/api/brands/${id}`,
   },
-  EVENTS: {
-    LIST: "/api/events",
-    BY_ID: (id: string) => `/api/events/${id}`,
-    ENTRIES: (id: string) => `/api/events/${id}/entries`,
-    LEADERBOARD: (id: string, limit?: number) =>
-      `/api/events/${id}/leaderboard${limit !== undefined ? `?limit=${limit}` : ""}`,
-    // SB9-E spin assignment (user-authenticated)
-    SPIN: (id: string) => `/api/events/${id}/spin`,
-  },
-  ADMIN: {
-    USERS: "/api/admin/users",
-    USER_BY_ID: (uid: string) => `/api/admin/users/${uid}`,
-    STORES: "/api/admin/stores",
-    STORE_BY_ID: (uid: string) => `/api/admin/stores/${uid}`,
-    BRANDS: "/api/admin/brands",
-    BRAND_BY_ID: (id: string) => `/api/admin/brands/${id}`,
-    ORDERS: "/api/admin/orders",
-    ORDER_BY_ID: (id: string) => `/api/admin/orders/${id}`,
-    ORDER_REFUND: (id: string) => `/api/admin/orders/${id}/refund`,
-    PRODUCTS: "/api/admin/products",
-    // SB-UNI-4 2026-05-13 — admin CRUD for categoryType:"bundle" rows.
-    BUNDLES: "/api/admin/bundles",
-    BUNDLE_BY_ID: (id: string) => `/api/admin/bundles/${id}`,
-    BUNDLE_REBUILD: (id: string) => `/api/admin/bundles/${id}/rebuild`,
-    PRODUCT_BY_ID: (id: string) => `/api/admin/products/${id}`,
-    CATEGORIES: "/api/admin/categories",
-    CATEGORY_BY_ID: (id: string) => `/api/admin/categories/${id}`,
-    BLOG: "/api/admin/blog",
-    BLOG_BY_ID: (id: string) => `/api/admin/blog/${id}`,
-    FAQS: "/api/admin/faqs",
-    FAQ_BY_ID: (id: string) => `/api/admin/faqs/${id}`,
-    REVIEWS: "/api/admin/reviews",
-    REVIEW_BY_ID: (id: string) => `/api/admin/reviews/${id}`,
-    BIDS: "/api/admin/bids",
-    BID_BY_ID: (id: string) => `/api/admin/bids/${id}`,
-    COUPONS: "/api/admin/coupons",
-    COUPON_BY_ID: (id: string) => `/api/admin/coupons/${id}`,
-    CAROUSEL: "/api/admin/carousel",
-    CAROUSEL_BY_ID: (id: string) => `/api/admin/carousel/${id}`,
-    SECTIONS: "/api/admin/sections",
-    SECTION_BY_ID: (id: string) => `/api/admin/sections/${id}`,
-    ADS: "/api/admin/ads",
-    AD_BY_ID: (id: string) => `/api/admin/ads/${id}`,
-    EVENTS: "/api/admin/events",
-    EVENT_BY_ID: (id: string) => `/api/admin/events/${id}`,
-    // SB9-D — admin manual raffle trigger
-    EVENT_TRIGGER_RAFFLE: (id: string) => `/api/admin/events/${id}/trigger-raffle`,
-    NEWSLETTER: "/api/admin/newsletter",
-    NEWSLETTER_BY_ID: (id: string) => `/api/admin/newsletter/${id}`,
-    CONTACT_SUBMISSIONS: "/api/admin/contact-submissions",
-    CONTACT_SUBMISSION_BY_ID: (id: string) => `/api/admin/contact-submissions/${id}`,
-    PAYOUTS: "/api/admin/payouts",
-    PAYOUT_BY_ID: (id: string) => `/api/admin/payouts/${id}`,
-    ANALYTICS: "/api/admin/analytics",
-    DASHBOARD: "/api/admin/dashboard",
-    SITE_SETTINGS: "/api/admin/site-settings",
-    SUBLISTING_CATEGORIES: "/api/admin/sublisting-categories",
-    SUBLISTING_CATEGORY_BY_ID: (id: string) => `/api/admin/sublisting-categories/${id}`,
-    ADDRESSES: "/api/admin/addresses",
-    ADDRESS_BY_ID: (id: string) => `/api/admin/addresses/${id}`,
-    // S-STORE Tier — admin moderation + reports + item requests + RBAC
-    MODERATION_QUEUE: "/api/admin/moderation",
-    MODERATION_BY_ID: (id: string) => `/api/admin/moderation/${id}`,
-    REPORTS: "/api/admin/reports",
-    REPORT_BY_ID: (id: string) => `/api/admin/reports/${id}`,
-    ITEM_REQUESTS: "/api/admin/item-requests",
-    ITEM_REQUEST_BY_ID: (id: string) => `/api/admin/item-requests/${id}`,
-    ADMIN_ANALYTICS_CARDS: "/api/admin/analytics/cards",
-    ADMIN_ANALYTICS_CARD_BY_ID: (id: string) => `/api/admin/analytics/cards/${id}`,
-    ADMIN_ANALYTICS_ALERTS: "/api/admin/analytics/alerts",
-    ADMIN_ANALYTICS_ALERT_BY_ID: (id: string) => `/api/admin/analytics/alerts/${id}`,
-    ROLES: "/api/admin/roles",
-    ROLE_BY_ID: (id: string) => `/api/admin/roles/${id}`,
-    ADMIN_NOTIFICATIONS: "/api/admin/admin-notifications",
-  },
+  EVENTS: API_ENDPOINTS.EVENTS,
+  ADMIN: ADMIN_LETITRIP,
   SUBLISTING_CATEGORIES: {
     BY_SLUG: (slug: string) => `/api/sublisting-categories/${slug}`,
     LISTINGS: (slug: string) => `/api/sublisting-categories/${slug}/listings`,
   },
-  STORE: {
-    PRODUCTS: "/api/store/products",
-    ORDERS: "/api/store/orders",
-    ORDER_BY_ID: (id: string) => `/api/store/orders/${id}`,
-    COUPONS: "/api/store/coupons",
-    COUPON_BY_ID: (id: string) => `/api/store/coupons/${id}`,
-    STOREFRONT: "/api/store/storefront",
-    SHIPPING: "/api/store/shipping",
-    PAYOUT_SETTINGS: "/api/store/payout-settings",
-    ANALYTICS: "/api/store/analytics",
-    WHATSAPP_SETTINGS: "/api/store/whatsapp-settings",
-    WHATSAPP_CATALOG_SYNC: "/api/store/whatsapp-settings/catalog-sync",
-    WHATSAPP_CATALOG_IMPORT: "/api/store/whatsapp-settings/catalog-import",
-    REVIEWS: "/api/store/reviews",
-    REVIEW_REPLY: (id: string) => `/api/store/reviews/${id}/reply`,
-    PAYOUTS: "/api/store/payouts",
-    PAYOUTS_REQUEST: "/api/store/payouts/request",
-    ADDRESSES: "/api/store/addresses",
-    ADDRESS_BY_ID: (id: string) => `/api/store/addresses/${id}`,
-    BIDS: "/api/store/bids",
-    SUBLISTING_CATEGORIES: "/api/store/sublisting-categories",
-    SUBLISTING_CATEGORY_BY_ID: (id: string) => `/api/store/sublisting-categories/${id}`,
-    PRODUCT_GROUP: (id: string) => `/api/store/products/${id}/group`,
-    PRODUCT_GROUP_CHILDREN: (id: string) => `/api/store/products/${id}/group/children`,
-    PRODUCT_GROUP_CHILD: (id: string, childId: string) => `/api/store/products/${id}/group/children/${childId}`,
-    // SB-UNI-N — digital-code pool management (Z1)
-    PRODUCT_CODES: (id: string) => `/api/store/products/${id}/codes`,
-    PRODUCTS_BULK_LOCATION: "/api/store/products/bulk-location",
-    ORDERS_BULK_LOCATION: "/api/store/orders/bulk-location",
-    TEMPLATES: "/api/store/templates",
-    TEMPLATE_BY_ID: (id: string) => `/api/store/templates/${id}`,
-    PROFILE: "/api/store/profile",
-    SLUG_CHECK: (slug: string) => `/api/store/slug/check?slug=${encodeURIComponent(slug)}`,
-    // S-STORE Tier — extension endpoints
-    PAYOUT_METHODS: "/api/store/payout-methods",
-    PAYOUT_METHOD_BY_ID: (id: string) => `/api/store/payout-methods/${id}`,
-    SHIPPING_CONFIGS: "/api/store/shipping-configs",
-    SHIPPING_CONFIG_BY_ID: (id: string) => `/api/store/shipping-configs/${id}`,
-    ANALYTICS_CARDS: "/api/store/analytics/cards",
-    ANALYTICS_CARD_BY_ID: (id: string) => `/api/store/analytics/cards/${id}`,
-    ANALYTICS_ALERTS: "/api/store/analytics/alerts",
-    ANALYTICS_ALERT_BY_ID: (id: string) => `/api/store/analytics/alerts/${id}`,
-    STORE_CATEGORIES: "/api/store/categories",
-    STORE_CATEGORY_BY_ID: (id: string) => `/api/store/categories/${id}`,
-    LISTING_TEMPLATES: "/api/store/listing-templates",
-    LISTING_TEMPLATE_BY_ID: (id: string) => `/api/store/listing-templates/${id}`,
-    GROUPED_LISTINGS: "/api/store/grouped-listings",
-    GROUPED_LISTING_BY_ID: (id: string) => `/api/store/grouped-listings/${id}`,
-    GOOGLE_REVIEWS: "/api/store/google-reviews",
-    GOOGLE_REVIEWS_SYNC: "/api/store/google-reviews/sync",
-  },
+  STORE: STORE_LETITRIP,
   PRODUCTS: {
     GROUP: (groupId: string) => `/api/products/group/${groupId}`,
   },
   SCAMS: {
     REPORTS: "/api/scams/reports",
   },
-  // SB1-K — bundles + prize draws (additive; route handlers land in later SB sessions)
+  // SB1-K — bundles + prize draws
   BUNDLES: {
     LIST: "/api/bundles",
     BY_ID: (id: string) => `/api/bundles/${id}`,
@@ -175,20 +153,5 @@ export const API_ROUTES = {
     // SB-UNI-N — reveal a digital code for a confirmed order
     CODE: (id: string) => `/api/orders/${id}/code`,
   },
-  USER: {
-    PROFILE: "/api/user/profile",
-    ADDRESSES: "/api/user/addresses",
-    ADDRESS_BY_ID: (id: string) => `/api/user/addresses/${id}`,
-    ORDERS: "/api/user/orders",
-    ORDER_BY_ID: (id: string) => `/api/user/orders/${id}`,
-    WISHLIST: "/api/user/wishlist",
-    WISHLIST_ITEM: (productId: string) => `/api/user/wishlist/${productId}`,
-    NOTIFICATIONS: "/api/user/notifications",
-    NOTIFICATION_BY_ID: (id: string) => `/api/user/notifications/${id}`,
-    NOTIFICATIONS_READ_ALL: "/api/user/notifications/read-all",
-    NOTIFICATION_PREFERENCES: "/api/user/notification-preferences",
-    CHANGE_PASSWORD: "/api/user/change-password",
-    OFFERS: "/api/user/offers",
-    EVENTS: "/api/user/events",
-  },
+  USER: USER_LETITRIP,
 } as const;

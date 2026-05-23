@@ -13,6 +13,7 @@ import {
 } from "@mohasinac/appkit";
 import { sendNotification } from "@mohasinac/appkit/server";
 import { getAdminAuth } from "@mohasinac/appkit/server";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const schema = z.object({
   reason: z.string().min(1, "Reason is required"),
@@ -21,7 +22,7 @@ const schema = z.object({
 export const POST = withProviders(
   createRouteHandler<(typeof schema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:user-bans:write",
     schema,
     handler: async ({ params, body, user }) => {

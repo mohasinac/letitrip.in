@@ -17,6 +17,7 @@ import {
 import { ValidationError } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
+import { supportRepository } from "@mohasinac/appkit";
 
 // --- Validation schema --------------------------------------------------------
 
@@ -77,6 +78,25 @@ export async function sendContactAction(
   }
   if (!result.success)
     throw new ValidationError(ERROR_MESSAGES.CONTACT.SEND_FAILED);
+
+  // ST-1 (2026-05-23) — also record as a support ticket so submissions surface
+  // in the admin support inbox. Failure here is non-fatal — the email already
+  // went through, the ticket is a redundancy for admin visibility.
+  try {
+    await supportRepository.createTicket({
+      userId: null as unknown as string, // guest ticket
+      userEmail: email,
+      userDisplayName: name,
+      category: "general",
+      subject,
+      description: message,
+    });
+  } catch (err) {
+    serverLogger.warn(
+      "Contact form ticket creation failed (non-fatal — email already sent)",
+      { error: (err as Error).message },
+    );
+  }
 
   return { sent: true };
 }
