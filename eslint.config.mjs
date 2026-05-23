@@ -33,6 +33,13 @@ export default tseslint.config(
   // src/ and packages/ referencing these rules don't produce "rule not found" errors.
   {
     plugins: { react: reactPlugin, "jsx-a11y": jsxA11yPlugin },
+    settings: {
+      // Silence the "React version not specified" warning eslint-plugin-react
+      // emits on every run. We're on React 19; auto-detect also works but
+      // pinning is explicit and avoids the warning when react isn't in
+      // node_modules root (monorepo with hoisting).
+      react: { version: "19.0" },
+    },
     rules: {
       "react/no-unknown-property": "warn",
       "jsx-a11y/media-has-caption": "warn",
