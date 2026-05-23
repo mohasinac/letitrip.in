@@ -180,7 +180,20 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-admin-lint-zero (2026-05-23): Drive consumer lint to 0 warnings — extract useAdminProductFlagMutation hook
+### ✅ LAST COMPLETED — S-audit-tighten + eslint-react-pin (2026-05-23): close audit slack + silence React-version warning
+
+**Done this session (mini):**
+- **eslint react settings**: pinned `settings.react.version = "19.0"` in eslint.config.mjs — silences the "React version not specified" warning that fired at the top of every `npm run lint` ("detect" mode throws under hoisted node_modules). Commit `f78fe9aa0`.
+- **audit-code-quality baseline**: 761 → 533 (228-violation slack window closed).
+- **audit-typography baselines** (total 1071 → 816, 255 closed):
+  - HTML_TYPOGRAPHY_CLASSES: 685 → 543
+  - APPKIT_SPAN_RAW_CLASSES:  254 → 252
+  - RAW_BUTTON:               127 →  16  (sweep was complete; baseline still allowed 111 new raw buttons to slip in)
+- Future regressions in these categories now block at the precise true floor. Commit `7044921bf`.
+
+---
+
+### ✅ PREVIOUS LAST — S-admin-lint-zero (2026-05-23): Drive consumer lint to 0 warnings — extract useAdminProductFlagMutation hook
 
 **Done this session (mini):**
 - New `src/hooks/useAdminProductFlagMutation.ts` — useMutation wrapper PATCHing `{ [field]: false }` and invalidating the listing query. Generic over field name ("isPromoted" | "featured") + listing query key. Satisfies `lir/no-apiclient-outside-services` (rule exempts files matching `/hooks/[^/]+\.[tj]sx?$/`).
@@ -188,16 +201,6 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 - /admin/deals + /admin/featured pages now call the hook; dropped inline `apiClient.patch` loops.
 - **0 errors, 0 warnings** (was 2 warnings). `npm run check` exits clean.
 - Consumer commit `cd930dcd8`.
-
----
-
-### ✅ PREVIOUS LAST — S-admin-prompt-fixes (2026-05-23): Replace window.prompt() in admin/moderation + admin/reports
-
-**Done this session (mini):**
-- **/admin/moderation reject flow**: native `prompt("Reason?")` → Modal + Textarea ("Why is this asset being rejected? The seller will see this note."). Cancel/Confirm semantics with isLoading state.
-- **/admin/reports action flow**: native `prompt("Resolution note?")` → Modal + Textarea ("What did you do about this report? The reporter may see a summary."). Same Cancel/Confirm semantics.
-- Better a11y, dark-mode-aware, mobile-friendly, survives focus loss.
-- Lint warnings 4 → 2 (remaining 2 then fixed in S-admin-lint-zero). Consumer commit `96659ce8c`.
 
 **Done this session:**
 - **W0-5 ✅**: Deleted `DemoSeedView` + `DemoSeedViewProps` re-export lines from `appkit/src/features/admin/components/index.ts`. All three barrels clean.
