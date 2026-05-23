@@ -180,24 +180,24 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-admin-prompt-fixes (2026-05-23): Replace window.prompt() in admin/moderation + admin/reports
+### ✅ LAST COMPLETED — S-admin-lint-zero (2026-05-23): Drive consumer lint to 0 warnings — extract useAdminProductFlagMutation hook
+
+**Done this session (mini):**
+- New `src/hooks/useAdminProductFlagMutation.ts` — useMutation wrapper PATCHing `{ [field]: false }` and invalidating the listing query. Generic over field name ("isPromoted" | "featured") + listing query key. Satisfies `lir/no-apiclient-outside-services` (rule exempts files matching `/hooks/[^/]+\.[tj]sx?$/`).
+- New `src/hooks/index.ts` barrel — re-exports useAdminProductFlagMutation + the existing useUrlTable + its options type. Fixes `lir/no-deep-barrel-import` after the hooks/ folder grew beyond 1 file.
+- /admin/deals + /admin/featured pages now call the hook; dropped inline `apiClient.patch` loops.
+- **0 errors, 0 warnings** (was 2 warnings). `npm run check` exits clean.
+- Consumer commit `cd930dcd8`.
+
+---
+
+### ✅ PREVIOUS LAST — S-admin-prompt-fixes (2026-05-23): Replace window.prompt() in admin/moderation + admin/reports
 
 **Done this session (mini):**
 - **/admin/moderation reject flow**: native `prompt("Reason?")` → Modal + Textarea ("Why is this asset being rejected? The seller will see this note."). Cancel/Confirm semantics with isLoading state.
 - **/admin/reports action flow**: native `prompt("Resolution note?")` → Modal + Textarea ("What did you do about this report? The reporter may see a summary."). Same Cancel/Confirm semantics.
 - Better a11y, dark-mode-aware, mobile-friendly, survives focus loss.
-- Lint warnings 4 → 2 (remaining 2 are pre-existing apiClient-in-onClick pattern in admin/deals + admin/featured, matching AdminAdsView pattern across appkit).
-- Consumer commit `96659ce8c`.
-
----
-
-### ✅ PREVIOUS LAST — S-checkout-hooks-fix (2026-05-23): CheckoutRouteClient rules-of-hooks bug + ACTIONS.CHECKOUT["remove-coupon"] wired
-
-**Done this session (mini):**
-- **rules-of-hooks bug**: `useMemo(bottomActions)` + `useBottomActions(…)` were called AFTER an early `return null` for unauthenticated users in `CheckoutRouteClient.tsx`. React requires consistent hook ordering across renders — moved the auth-redirect guard to AFTER both hooks. Long-standing latent bug.
-- **prefer-action-registry**: Inline "Remove" coupon button → `action={ACTIONS.CHECKOUT["remove-coupon"]}` (line 458). Removes the hardcoded "Remove" label that matched the registry.
-- Lint warnings 7 → 4 (remaining 4 are pre-existing in admin/deals + admin/featured + admin/moderation + admin/reports). `npm run check` exits 0.
-- Single consumer commit `6edfb9041`.
+- Lint warnings 4 → 2 (remaining 2 then fixed in S-admin-lint-zero). Consumer commit `96659ce8c`.
 
 **Done this session:**
 - **W0-5 ✅**: Deleted `DemoSeedView` + `DemoSeedViewProps` re-export lines from `appkit/src/features/admin/components/index.ts`. All three barrels clean.
