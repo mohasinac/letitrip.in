@@ -69,7 +69,8 @@ const RULES = [
     id: "RAW_P_TAG",
     label: "Raw <p> tag (use <Text>)",
     regex: /<p\s+className/,
-    baseline: 3,
+    // Tightened 2026-05-23: 0 actual vs prior 3.
+    baseline: 0,
   },
   {
     id: "RAW_HEADING",
@@ -93,7 +94,8 @@ const RULES = [
     id: "RAW_EM",
     label: "Raw <em> (use <Span className=\"italic\">)",
     regex: /<em[\s>]/,
-    baseline: 2,
+    // Tightened 2026-05-23: 0 actual vs prior 2.
+    baseline: 0,
   },
   {
     id: "RAW_BUTTON",
