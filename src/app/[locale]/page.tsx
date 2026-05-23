@@ -8,6 +8,7 @@ import {
   AfterFAQAdSlot,
 } from "@/components";
 import { generateMetadata as _gm } from "@/constants";
+import { dismissBannerAction } from "@/actions/profile.actions";
 
 export const metadata: Metadata = _gm({
   title: "LetItRip — India's Collectibles Marketplace",
@@ -22,6 +23,7 @@ export const revalidate = 120;
 export default async function Page() {
   return (
     <MarketplaceHomepageView
+      onBannerDismiss={dismissBannerAction}
       newsletterFormSlot={<HomepageNewsletterForm />}
       adSlots={{
         afterHero: <AfterHeroAdSlot />,

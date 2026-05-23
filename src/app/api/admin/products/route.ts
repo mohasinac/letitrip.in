@@ -13,6 +13,11 @@ import { serverLogger } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import {
+  finalizeStagedMediaUrl,
+  finalizeStagedMediaField,
+  finalizeStagedMediaArray,
+} from "@mohasinac/appkit";
+import {
   validateRequestBody,
   formatZodErrors,
   productCreateSchema,
@@ -74,8 +79,27 @@ export const POST = withProviders(createApiHandler({
       );
     }
 
+    const data = validation.data as Record<string, unknown> & {
+      mainImage?: string;
+      images?: string[];
+      video?: { url?: string; thumbnailUrl?: string };
+    };
+    if (typeof data.mainImage === "string" && data.mainImage) {
+      data.mainImage = await finalizeStagedMediaUrl(data.mainImage);
+    }
+    if (Array.isArray(data.images) && data.images.length > 0) {
+      data.images = await finalizeStagedMediaArray(data.images);
+    }
+    if (data.video?.url) {
+      data.video = {
+        ...data.video,
+        url: await finalizeStagedMediaUrl(data.video.url),
+        thumbnailUrl: await finalizeStagedMediaField(data.video.thumbnailUrl),
+      };
+    }
+
     const product = await productRepository.create({
-      ...validation.data,
+      ...data,
       storeId: body.storeId,
       storeName: body.storeName || "Admin",
     } as any);

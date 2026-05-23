@@ -124,6 +124,7 @@ export const getServerSessionUser = cache(
               loginCount: profile.metadata.loginCount,
             }
           : undefined,
+        dismissedBannerHash: profile.dismissedBannerHash,
       };
     } catch (error) {
       serverLogger.debug("getServerSessionUser: could not resolve session", { error });

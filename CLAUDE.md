@@ -14,6 +14,8 @@
 - [🛑 Rule #4 — Never Fix Without Verifying It Is Actually Broken](#-rule-4--never-fix-without-verifying-it-is-actually-broken)
 - [🛑 Rule #5 — Definition of Done: All Quality Gates Pass](#-rule-5--definition-of-done-all-quality-gates-pass)
 - [🛑 Rule #6 — Code Within Vercel Hobby Tier Limits](#-rule-6--code-within-vercel-hobby-tier-limits)
+- [🛑 Rule #7 — All CTAs Must Use the Action Registry](#-rule-7--all-ctas-must-use-the-action-registry)
+- [🛑 Rule #8 — Never Defer Work](#-rule-8--never-defer-work)
 - [Project Summary](#project-summary)
 - [Key Files to Read Before Any Session](#key-files-to-read-before-any-session)
 - [Seed Data Reference](#seed-data-reference)
@@ -143,6 +145,47 @@ This project deploys to Vercel **Hobby** with **Fluid Compute enabled** (1 vCPU 
 6. **Logging**: don't `console.log` per-row inside loops — Hobby's log buffer drops at ~4 KB/s. Aggregate before logging.
 
 **Verification**: run `npm run dev` and watch the `[dev-next] Vercel Hobby parity ON — memory=2048 MB …` banner — that confirms the caps are wired. To debug a specific route under the prod cap, hit it locally; the same 10 s / 2048 MB ceiling is in effect.
+
+---
+
+## 🛑 RULE #7 — ALL CTAs MUST USE THE ACTION REGISTRY
+
+**Every CTA, bulk action, and row action MUST be defined in the action registry.** No exceptions, no "we'll wire it later."
+
+### Source-of-truth files
+
+| File | What it holds |
+|------|--------------|
+| `appkit/src/_internal/shared/actions/action-registry.ts` | `ACTIONS` tree — resource buckets mapping action-id → `ActionDef` (label, ariaLabel, kind, permissions, confirmation, listingTypeScope, iconKey) |
+| `appkit/src/features/products/constants/action-defs.ts` | `ACTION_META`, `ROW_ACTION_META`, `FORM_ACTION_META`, `DASHBOARD_QUICK_ACTION_META` + preset arrays (`ADMIN_BULK_ACTIONS`, `SELLER_BULK_ACTIONS`, `ADMIN_ROW_ACTIONS`, `SELLER_ROW_ACTIONS`, etc.) |
+
+### Hard rules
+
+1. **No inline action objects.** Never write `{ id: "delete", label: "Delete", variant: "danger" }` or `{ label: "Approve", onClick: ... }` directly in a view component. Always reference `ACTIONS.{RESOURCE}["action-id"]`, `ROW_ACTION_META[ROW_ACTION_ID.X]`, or a preset array.
+2. **BulkActionBar** — actions array MUST come from `ADMIN_BULK_ACTIONS`, `SELLER_BULK_ACTIONS`, or `LISTING_BULK_ACTIONS` preset. Map preset IDs to `{ ...ROW_ACTION_META[id], onClick: handler }`.
+3. **RowActionMenu** — actions array MUST come from `ADMIN_ROW_ACTIONS`, `SELLER_ROW_ACTIONS`, or `USER_ROW_ACTIONS` preset.
+4. **Destructive actions** — every action with `kind: "danger"` or `destructive: true` MUST have a `confirmation` config in `action-registry.ts`. Missing confirmation = immediate irreversible execution.
+5. **`<Button action={...}>`** — use the appkit Button's `action` prop to auto-resolve label, ariaLabel, variant, and confirmation dialog from an ActionDef.
+6. **New actions** — add to BOTH registries: `ACTIONS.{RESOURCE}["new-action"]` in `action-registry.ts` AND the relevant preset array in `action-defs.ts`. Never create an action that only exists inline.
+7. **No `window.confirm()`** — all confirmation dialog strings live in the `ActionDef.confirmation` field.
+
+**Why:** Inline action definitions bypass centralized label management, permission gating, confirmation dialogs, and i18n overrides. Destructive actions without `confirmation` config execute immediately with no user warning. This has caused data loss in prior sessions.
+
+---
+
+## 🛑 RULE #8 — NEVER DEFER WORK
+
+**Complete every task in the current session. Do not defer work to future sessions.**
+
+When implementing a feature, fix, or refactoring:
+
+1. **Finish what you start.** If a task has sub-parts, implement all of them now. Do not write "deferred to S7" or "will be done in a follow-up session."
+2. **No partial implementations.** Do not ship a feature with placeholder stubs, TODO comments pointing to future sessions, or half-wired UI that "just needs the backend."
+3. **No "deferred to next session" tracker entries.** If a task is in scope, complete it. If it cannot be completed because of a blocking dependency (e.g., a third-party API key that doesn't exist yet), say so explicitly and explain the blocker — don't just mark it deferred.
+4. **Fix what you break.** If your changes break an adjacent feature, fix it in the same session. Do not log it as a known issue for later.
+5. **Seed data, types, tests, audits** — if your change requires updates to seed data, TypeScript types, audit baselines, or related components, do them now. Not later.
+
+**Why:** Deferred work accumulates across sessions and creates compounding regressions. Every "we'll do it next session" becomes a stale TODO that the next session may not even be aware of. The cost of finishing now is always lower than the cost of context-switching back to it later.
 
 ---
 
@@ -599,6 +642,7 @@ The 4 layout shells (`AdminLayoutShell`, `StoreLayoutShell`, `UserLayoutShell`, 
 | 15 | **Never use appkit `<Button>` as a toggle switch — use `<Toggle>`** | Using `<Button role="switch">` to build a toggle pill causes the Button's internal padding and display styles to override custom sizing classes (`w-10 h-6 rounded-full`), so the toggle renders as a plain grey circle instead of a pill with a sliding thumb. Use the appkit `<Toggle checked onChange size>` primitive instead — it renders a native `<button role="switch">` internally with correct pill styling. The `BUTTON_AS_TOGGLE` rule in `audit-code-quality.mjs` blocks on any regression. |
 | 16 | **Inline action definitions bypass the CTA registry** | Every CTA, bulk action, and row action MUST use the ACTIONS registry (`action-registry.ts`) or ACTION_META / ROW_ACTION_META / ADMIN_BULK_ACTIONS / SELLER_BULK_ACTIONS constants (`action-defs.ts`). Inline `{ id: "delete", label: "Delete", variant: "danger" }` objects in BulkActionBar or RowActionMenu bypass centralized label management, permission gating, confirmation dialogs, and i18n overrides. Destructive actions (delete, cancel, ban, suspend) without `confirmation` config on their ActionDef are especially dangerous — they execute immediately with no user confirmation. See § "CTA Registry Rules" below. |
 | 17 | **`useSearchParams()` requires `<Suspense>` in Next.js 16 production** | Every appkit listing view calls `useUrlTable()` → `useSearchParams()`. In `next start` (production mode), calling `useSearchParams()` without a `<Suspense>` boundary triggers the error boundary → "Something went wrong". Fix: the admin/store/user dashboard layouts AND the root `[locale]/layout.tsx` wrap `{children}` in `<Suspense>`. Never remove these boundaries. New dashboard sub-layouts should also include `<Suspense>` around `{children}`. |
+| 18 | **No re-exports — import from the defining module** | Never create barrel re-exports (`export { X } from "./internal/thing"`) for convenience. Every import must point to the file that **defines** the symbol. Barrel re-exports in `index.ts` / `client.ts` / `server.ts` are only for appkit's **public API contract** — UI components, hooks, types, and constants that external consumers actually need. Internal utilities, shared hooks used only inside appkit views, and implementation details stay internal. This prevents import chain bloat, circular dependencies, and the Turbopack client-bundle trap (Root Cause #6). During Phase 11 (W5-1/W5-2), all existing convenience re-exports will be pruned and consumer imports rewritten to point directly at defining modules. |
 
 ---
 
@@ -623,6 +667,8 @@ The 4 layout shells (`AdminLayoutShell`, `StoreLayoutShell`, `UserLayoutShell`, 
 | Inline `{ label: "Approve", onClick: ... }` in RowActionMenu | Use `ROW_ACTION_META[ROW_ACTION_ID.APPROVE].label` or `ACTIONS.ADMIN["approve-product"].label` from the registries |
 | Hardcoded confirmation `window.confirm("Delete?")` | Use `ACTIONS.ADMIN["..."].confirmation` or add a `confirmation` field to the ActionDef in `action-registry.ts` — `<Button action={...}>` opens the confirm dialog automatically |
 | Destructive bulk/row action with no confirmation dialog | Every `kind: "danger"` action MUST have a `confirmation` config in `action-registry.ts` — missing confirmation on delete/cancel/ban = immediate execution with no user confirmation |
+| Re-exporting a symbol just to create a barrel alias | Import directly from the defining module. No `export { X } from "./internals"` in index/client/server barrels unless X is part of the package's public API. Consumer code must import from the file that defines the symbol, not from a barrel re-export. |
+| Adding a new re-export to `appkit/src/index.ts` or `client.ts` | Only export symbols that are part of appkit's **public API contract** (UI components, hooks, types, constants consumers actually need). Internal utilities, shared hooks used only inside appkit views, and implementation details stay internal — import them directly within appkit, never re-export for convenience. |
 
 ---
 
@@ -685,6 +731,28 @@ The 4 layout shells (`AdminLayoutShell`, `StoreLayoutShell`, `UserLayoutShell`, 
 | `<em>` | `<Span className="italic">` |
 | `<div>` with layout intent | `<Stack>`, `<Row>`, `<Section>`, `<Container>` |
 | `<table>` | `<Table>` from `@mohasinac/appkit` Semantic primitives |
+
+### Select / Dropdown Rules
+
+**Any selection input — filter, form field, bulk-assign, taxonomy picker, role picker, etc. — with MORE THAN 5 options MUST use `<PaginatedSelect>` from `@mohasinac/appkit`.** No exceptions.
+
+| Option count | Component | Mode |
+|---|---|---|
+| ≤ 5 | `<Select>` / `<FieldSelect>` (native) or inline `<Checkbox>` group | — |
+| > 5 single-select | `<PaginatedSelect value onChange loadOptions>` | default (multiple omitted) |
+| > 5 multi-select | `<PaginatedSelect multiple value onChange loadOptions>` | `multiple` |
+| Any of the above + "+ Create new" | add `createLabel` + `renderCreateForm` OR `createFields`+`onCreateSubmit` | works in both modes |
+
+`<PaginatedSelect>` lives at `appkit/src/ui/components/PaginatedSelect.tsx` and replaces the previous trio (`DynamicSelect` / `InlineCreateSelect` / `PaginatedMultiSelect` — all removed). The create flow opens a `SideDrawer` (custom form via `renderCreateForm`) or a `QuickFormDrawer` (auto-generated from `createFields`), and the newly created option is auto-selected.
+
+Rules:
+1. **>5 options = search is mandatory.** Never render a long native `<select>`, `<option>` list, or stacked checkbox list — users cannot scan it.
+2. **One primitive, two modes.** Use `multiple` when the user picks N values (renders chips + checkboxes); omit it for single-select (renders a label + auto-closes on pick).
+3. **Async pagination.** Pass `loadOptions(query, page) => Promise<AsyncPage<PaginatedSelectOption>>` for server-side search; the component handles debounce, "Load more", and merging across pages.
+4. **Static options too.** If a constant list has >5 entries, pass it via the `options` prop; the component filters in-memory against `query`.
+5. **Inline create.** Any place a user might legitimately need a new value (categories, brands, tags, addresses, payout accounts, etc.), pass `createLabel` + `renderCreateForm` (custom form) or `createFields`+`onCreateSubmit` (auto-generated `QuickFormDrawer`).
+6. **No bespoke search-dropdowns.** Don't roll your own `<input>` + filtered `<ul>` — `PaginatedSelect` already handles keyboard nav, ARIA, selected-chip semantics, and the create-drawer wiring.
+7. **Type imports.** Use `PaginatedSelectOption<V>` and `AsyncPage<T>` from `@mohasinac/appkit/ui` for `loadOptions` factory signatures.
 
 ### Color Token Rules
 

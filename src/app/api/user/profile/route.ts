@@ -36,6 +36,7 @@ export const GET = withProviders(createApiHandler({
       createdAt: user!.createdAt,
       updatedAt: user!.updatedAt,
       scamAwarenessAcknowledgedAt: user!.scamAwarenessAcknowledgedAt ?? null,
+      dismissedBannerHash: user!.dismissedBannerHash ?? null,
     });
   },
 }));

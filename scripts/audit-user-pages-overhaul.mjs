@@ -145,9 +145,9 @@ check(
 );
 
 check(
-  "Cohort 2 · Appearance tab uses DynamicSelect for languages",
+  "Cohort 2 · Appearance tab uses PaginatedSelect for languages",
   join(ROOT, "src/app/[locale]/user/settings/page.tsx"),
-  "DynamicSelect",
+  "PaginatedSelect",
   "SUPPORTED_LANGUAGES",
 );
 

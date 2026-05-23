@@ -201,9 +201,7 @@
 | DateInput.tsx | DateInput | Component | Date input with formatting |
 | OtpInput.tsx | OtpInput | Component | One-time password input (6-digit) |
 | TagInput.tsx | TagInput | Component | Tag/chip input with add/remove |
-| DynamicSelect.tsx | DynamicSelect | Component | Async-loadable select with search |
-| PaginatedMultiSelect.tsx | PaginatedMultiSelect | Component | Multi-select with pagination |
-| InlineCreateSelect.tsx | InlineCreateSelect | Component | Select with inline create option |
+| PaginatedSelect.tsx | PaginatedSelect | Component | Unified searchable, async-paginated select — single (default) or multi (`multiple` prop), with optional inline "+ Create new" drawer. Replaced DynamicSelect / InlineCreateSelect / PaginatedMultiSelect 2026-05-23. |
 | SideDrawer.tsx | SideDrawer | Component | Side panel drawer |
 | SideModal.tsx | SideModal | Component | Side modal (wider drawer) |
 | Drawer.tsx | Drawer | Component | Bottom/side drawer |

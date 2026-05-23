@@ -25,28 +25,29 @@ export async function POST(request: NextRequest) {
     const sessionCookie = getOptionalSessionCookie(request);
     const sessionId = request.cookies.get("__session_id")?.value;
 
-    // Revoke session in Firestore
-    if (sessionId) {
-      try {
-        await sessionRepository.revokeSession(sessionId, "user");
-      } catch (error) {
-        serverLogger.error(ERROR_MESSAGES.API.LOGOUT_REVOCATION_ERROR, {
-          error,
-        });
-      }
-    }
-
-    // Optionally revoke refresh tokens for extra security
+    // Verify session cookie first — needed for both revocation and token revocation
+    let decodedUid: string | null = null;
     if (sessionCookie) {
       try {
         const decodedClaims = await verifySessionCookie(sessionCookie);
         if (decodedClaims) {
+          decodedUid = decodedClaims.uid;
           const auth = getAuth(getAdminApp());
           await auth.revokeRefreshTokens(decodedClaims.uid);
         }
       } catch (error) {
-        // Ignore errors during token revocation
         serverLogger.error(ERROR_MESSAGES.API.LOGOUT_TOKEN_ERROR, { error });
+      }
+    }
+
+    // Revoke session in Firestore using the actual user UID
+    if (sessionId && decodedUid) {
+      try {
+        await sessionRepository.revokeSession(sessionId, decodedUid);
+      } catch (error) {
+        serverLogger.error(ERROR_MESSAGES.API.LOGOUT_REVOCATION_ERROR, {
+          error,
+        });
       }
     }
 

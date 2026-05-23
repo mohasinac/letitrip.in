@@ -21,6 +21,7 @@ import {
   getPublicUserProfile,
   getSellerReviews,
   getProfileStoreProducts,
+  userRepository,
 } from "@mohasinac/appkit";
 import type { UserDocument } from "@mohasinac/appkit";
 
@@ -99,5 +100,16 @@ export async function getSellerReviewsAction(sellerId: string) {
 
 export async function getProfileStoreProductsAction(sellerId: string) {
   return getProfileStoreProducts(sellerId);
+}
+
+// --- Banner dismissal --------------------------------------------------------
+
+const bannerHashSchema = z.string().min(1).max(20);
+
+export async function dismissBannerAction(hash: string): Promise<void> {
+  const user = await requireAuthUser();
+  const parsed = bannerHashSchema.safeParse(hash);
+  if (!parsed.success) throw new ValidationError("Invalid banner hash");
+  await userRepository.update(user.uid, { dismissedBannerHash: parsed.data });
 }
 

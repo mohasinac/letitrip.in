@@ -16,8 +16,8 @@ import {
   Button,
   NotificationPreferencesPanel,
 } from "@mohasinac/appkit/client";
-import { TabStrip, Accordion, DynamicSelect } from "@mohasinac/appkit/ui";
-import type { AsyncPage, DynamicSelectOption } from "@mohasinac/appkit/ui";
+import { TabStrip, Accordion, PaginatedSelect } from "@mohasinac/appkit/ui";
+import type { AsyncPage, PaginatedSelectOption } from "@mohasinac/appkit/ui";
 import { SUPPORTED_LANGUAGES, LANGUAGES_PAGE_SIZE } from "@/constants";
 import { FontToggleClient } from "@/components";
 import { API_ROUTES } from "@/constants";
@@ -198,7 +198,7 @@ function renderAppearanceTab({
   const loadLanguages = async (
     query: string,
     page: number,
-  ): Promise<AsyncPage<DynamicSelectOption<string>>> => {
+  ): Promise<AsyncPage<PaginatedSelectOption<string>>> => {
     const filtered = SUPPORTED_LANGUAGES.filter((l) =>
       l.label.toLowerCase().includes(query.toLowerCase()),
     );
@@ -226,7 +226,7 @@ function renderAppearanceTab({
         <SectionTitle>Language</SectionTitle>
         <Stack gap="xs">
           <Text variant="secondary" className="text-xs">Choose your display language. More are on the way.</Text>
-          <DynamicSelect<string>
+          <PaginatedSelect<string>
             value={language}
             onChange={(v, opt) => {
               if (!v || !opt) return;
