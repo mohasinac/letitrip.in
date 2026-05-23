@@ -38,7 +38,7 @@ export const POST = withProviders(createApiHandler<(typeof verifyOTPSchema)["_ou
     }
     if (!config.shiprocketToken) {
       throw new ValidationError(
-        ERROR_MESSAGES.SHIPPING.SHIPROCKET_CREDS_REQUIRED,
+        ERROR_MESSAGES.SHIPPING.PROVIDER_CREDS_REQUIRED,
       );
     }
 

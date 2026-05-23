@@ -132,7 +132,7 @@ export const PATCH = withProviders(createApiHandler<(typeof updateShippingSchema
         ) {
           if (!data.shiprocketCredentials) {
             throw new ValidationError(
-              ERROR_MESSAGES.SHIPPING.SHIPROCKET_CREDS_REQUIRED,
+              ERROR_MESSAGES.SHIPPING.PROVIDER_CREDS_REQUIRED,
             );
           }
 
@@ -146,7 +146,7 @@ export const PATCH = withProviders(createApiHandler<(typeof updateShippingSchema
             password: data.shiprocketCredentials.password,
           }).catch((err: Error) => {
             throw new ValidationError(
-              `${ERROR_MESSAGES.SHIPPING.SHIPROCKET_AUTH_FAILED}: ${err.message}`,
+              `${ERROR_MESSAGES.SHIPPING.PROVIDER_AUTH_FAILED}: ${err.message}`,
             );
           });
 
