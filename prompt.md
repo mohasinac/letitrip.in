@@ -180,27 +180,24 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-audit-tighten + eslint-react-pin (2026-05-23): close audit slack + silence React-version warning
+### ✅ LAST COMPLETED — S-W6-3-role-sweep (2026-05-23): 249 inline role tuples → ROLES_* constants across 148 API route files
 
-**Done this session (mini):**
-- **eslint react settings**: pinned `settings.react.version = "19.0"` in eslint.config.mjs — silences the "React version not specified" warning that fired at the top of every `npm run lint` ("detect" mode throws under hoisted node_modules). Commit `f78fe9aa0`.
-- **audit-code-quality baseline**: 761 → 533 (228-violation slack window closed).
-- **audit-typography baselines** (total 1071 → 816, 255 closed):
-  - HTML_TYPOGRAPHY_CLASSES: 685 → 543
-  - APPKIT_SPAN_RAW_CLASSES:  254 → 252
-  - RAW_BUTTON:               127 →  16  (sweep was complete; baseline still allowed 111 new raw buttons to slip in)
-- Future regressions in these categories now block at the precise true floor. Commit `7044921bf`.
+**Done this session:**
+- Long-standing tracker row **W6-3** ✅. `api-roles.ts` ships 6 named tuples but most route handlers carried inline `["admin"]`, `["admin","moderator"]`, etc. The api-roles.ts header docstring warned this had caused buyer-leak regressions ("silently allowing buyers through to a 200 with empty data instead of 403"). Sweep replaces every inline tuple in `src/app/api/` with `roles: [...ROLES_X]`.
+- Breakdown: ROLES_ADMIN_ONLY 81 · ROLES_ADMIN_MOD 81 · ROLES_STORE_WRITE 66 · ROLES_STORE_READ 13 · ROLES_TRUST_SAFETY 6 · ROLES_ANY_STAFF 2 — **249 sites across 148 files**.
+- Sweep driven by run-once `scripts/sweep-role-tuples.mjs` (deleted post-sweep). Required a careful import-merger that parses each top-level import as a single statement (multi-line aware) and merges into existing `@/constants` import if present, else appends fresh after the last import.
+- Also tightened `audit-inline-styles` RAW_OVERFLOW baseline 98→92. `npm run check` exits clean — 0 errors, 0 warnings.
+- Commits: `af8e58d95` (RAW_OVERFLOW tighten), `8e5b2ffcf` (sweep).
 
 ---
 
-### ✅ PREVIOUS LAST — S-admin-lint-zero (2026-05-23): Drive consumer lint to 0 warnings — extract useAdminProductFlagMutation hook
+### ✅ PREVIOUS LAST — S-audit-tighten + eslint-react-pin (2026-05-23): close audit slack + silence React-version warning
 
 **Done this session (mini):**
-- New `src/hooks/useAdminProductFlagMutation.ts` — useMutation wrapper PATCHing `{ [field]: false }` and invalidating the listing query. Generic over field name ("isPromoted" | "featured") + listing query key. Satisfies `lir/no-apiclient-outside-services` (rule exempts files matching `/hooks/[^/]+\.[tj]sx?$/`).
-- New `src/hooks/index.ts` barrel — re-exports useAdminProductFlagMutation + the existing useUrlTable + its options type. Fixes `lir/no-deep-barrel-import` after the hooks/ folder grew beyond 1 file.
-- /admin/deals + /admin/featured pages now call the hook; dropped inline `apiClient.patch` loops.
-- **0 errors, 0 warnings** (was 2 warnings). `npm run check` exits clean.
-- Consumer commit `cd930dcd8`.
+- **eslint react settings**: pinned `settings.react.version = "19.0"` — silences the "React version not specified" warning at the top of every `npm run lint`. Commit `f78fe9aa0`.
+- **audit-code-quality baseline**: 761 → 533 (228 closed).
+- **audit-typography baselines** (1071 → 816): HTML_TYPOGRAPHY_CLASSES 685→543, APPKIT_SPAN_RAW_CLASSES 254→252, RAW_BUTTON 127→16.
+- Future regressions in these categories now block at the precise true floor. Commit `7044921bf`.
 
 **Done this session:**
 - **W0-5 ✅**: Deleted `DemoSeedView` + `DemoSeedViewProps` re-export lines from `appkit/src/features/admin/components/index.ts`. All three barrels clean.
