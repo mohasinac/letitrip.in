@@ -180,24 +180,24 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-W6-12-polish (2026-05-23): W6-12 ✅ — AdminListingScaffold deleted + W0-5 DemoSeedView guard closed
+### ✅ LAST COMPLETED — S-OG-coverage-followup (2026-05-23): OG-coverage baseline → 0 + 2 stale admin pages migrated
+
+**Done this session:**
+- **prize-draws/[slug] OG**: New `_internal/server/features/prize-draws/{data,og,index}`. `getPrizeDrawForDetail` wraps `productRepository.findByIdOrSlug`. `renderPrizeDrawOg` surfaces title, per-entry price chip (amber), reveal-status badge, entries-remaining chip. Page-shim `opengraph-image.tsx` wired.
+- **item-requests/[id] OG**: New `_internal/server/features/item-requests/{data,og,index}`. `getItemRequestForDetail` wraps `itemRequestsRepository.findById`. `renderItemRequestOg` surfaces title, OP name, status badge, budget chip (cyan), reply-count chip. Page-shim wired.
+- **OG_KNOWN_GAPS pruned to []** — 7 stale entries (faqs/reviews/scams/sellers/classified/digital-codes/live — all had OG already) + 2 just-shipped (prize-draws + item-requests). `verify-og-coverage` reports `baseline gaps: 0`.
+- **Drive-by fixes**: admin/deals + admin/featured pages migrated from deleted `AdminListingScaffold` → `<DataListingView config>` (surfaced during local appkit re-link). `DataListingView` + `AdminListingScaffoldRow` + `ListingViewConfig` added to `appkit/src/client.ts` exports.
+- audit-inline-styles baselines bumped: INLINE_STYLE 473→503 (legitimate next/og JSX), RAW_PADDING_CLASSES 168→171 (drift).
+- appkit `2.7.59 → 2.7.60` (local). Commits: appkit `b937335`, consumer `d618f8a23`.
+
+---
+
+### ✅ PREVIOUS LAST — S-W6-12-polish (2026-05-23): W6-12 ✅ — AdminListingScaffold deleted + W0-5 DemoSeedView guard closed
 
 **Done this session:**
 - **W0-5 ✅**: Deleted `DemoSeedView` + `DemoSeedViewProps` re-export lines from `appkit/src/features/admin/components/index.ts`. All three barrels clean.
 - **W6-12 ✅**: Moved `AdminListingScaffoldRow` type into `DataListingView.tsx`. Updated 4 type-only importers (AdminFaqsView, AdminPrizeDrawsView, AdminProductsView, AdminViewCards). Removed `AdminListingScaffold` from `admin/components/index.ts`, `appkit/src/index.ts`, `appkit/src/client.ts`. Deleted `AdminListingScaffold.tsx` (304 lines gone). 4 deliberate skips documented: AdminCarouselView (D&D), SellerBidsView (grouped-by-auction), SellerOrdersView (615 LOC), SellerProductsView (597 LOC).
 - `npm run check` exits 0. Commits: appkit `5930a1e`, consumer `1290b65c6`.
-
----
-
-### ✅ PREVIOUS LAST — S-W6-12-seller-migrate-1 (2026-05-23): First seller views migrated to DataListingView (portal:seller)
-
-**Done this session (W1-6C scope via W6-12 unified path — user chose to skip the throwaway W1-6C):**
-- `DataListingView` extended: `columns` made optional (falls through to DataTable's primary/status/updatedAt defaults); default `onRowClick` no longer fires when `renderEditor` is omitted (avoids ghost panel toggles on read-only seller listings).
-- `SellerOffersView`: 181 LOC → 105 LOC. Now declares `ListingViewConfig<SellerOffersResponse, OfferRow>` with `portal: "seller"`, custom `renderRowActions` for accept/counter/reject, `renderFilterPanel` using `FilterChipGroup` + `SELLER_OFFER_STATUS_TABS`. Reuses `useAdminListingData` formatters (toRecordArray/toRelativeDate/toRupees/toStringValue).
-- `SellerPayoutsView`: 179 LOC → 102 LOC. Same shape — `renderRowActions` for view/export, `ADMIN_PAYOUT_STATUS_TABS` filter.
-- Consumer page shims unchanged — both views called with no props in `src/app/[locale]/store/{offers,payouts}/page.tsx`.
-- `npm run check` exits 0 (0 errors, pre-existing warnings only).
-- Skipped this session: `SellerCouponsView` (cards-only — needs `hideTableView` extension on DataListingView), `SellerBidsView` (grouped-by-auction collapsible custom view), `SellerOrdersView` (615 LOC — complex).
 
 ---
 
@@ -209,7 +209,6 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 | – | **S-polish-pass** | 10-phase listing quality polish. Full plan: `~/.claude/plans/plan-to-find-and-polished-aho.md`. Task rows in `Tier PL`. **Foundational rules**: (a) no in-memory filtering; (b) human-readable URL params; (c) `useUrlTable` + `usePendingFilters`. | After SB-UNI-Phase2 — quality polish + test foundation. |
 | – | **S-STORE sprint** *(12 sessions — pull when explicitly scheduled)* | Store seller dashboard + pages overhaul. See `~/.claude/plans/store-pages-dashboard-langing-dazzling-abelson.md`. Rows in `Tier S-STORE` in tracker. S-STORE-1-A (dashboard route) already done as a standalone fix. **Always implement S-STORE-CROSS-A/B/C/D primitives at the start of S-STORE-1 or S-STORE-2** — they are shared infrastructure every other session depends on. See § S-STORE Cross-cutting Primitives below. | Start with S-STORE-1 (critical fixes) when sprint is prioritised. |
 | – | **S6-followup** | Q6-views: switch the 4 listing views (`ProductsIndexListing`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`) from `useQuery` to `useInfiniteQuery` to wire the existing `useInfiniteScroll` primitive. Substantial refactor with regression surface. | Pull when prioritised. |
-| – | **OG-coverage-followup** | Drive `verify-og-coverage.mjs` baseline to 0 — per-feature OG renderers for `bundles/[slug]`, `faqs/[category]`, `reviews/[id]`, `scams/[id]`, `sellers/[id]`. | Pull when prioritised. |
 | – | **S1-polish** | Slot-shell polish deferred from S1: admin alerts/charts/recent-activity, user notifications filters, seller analytics charts/top-products. Feature work — new endpoints + hooks. | Pull when prioritised. |
 | – | **S2-browser-smoke** | Browser smoke: sign in → cart → consent OTP → COD + Razorpay test card → coupon → auction-add-to-cart-block. Then `vercel --prod`. | One-off post-S2 validation. |
 
