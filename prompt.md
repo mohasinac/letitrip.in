@@ -180,7 +180,17 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-OG-coverage-followup (2026-05-23): OG-coverage baseline → 0 + 2 stale admin pages migrated
+### ✅ LAST COMPLETED — S-checkout-hooks-fix (2026-05-23): CheckoutRouteClient rules-of-hooks bug + ACTIONS.CHECKOUT["remove-coupon"] wired
+
+**Done this session (mini):**
+- **rules-of-hooks bug**: `useMemo(bottomActions)` + `useBottomActions(…)` were called AFTER an early `return null` for unauthenticated users in `CheckoutRouteClient.tsx`. React requires consistent hook ordering across renders — moved the auth-redirect guard to AFTER both hooks. Long-standing latent bug.
+- **prefer-action-registry**: Inline "Remove" coupon button → `action={ACTIONS.CHECKOUT["remove-coupon"]}` (line 458). Removes the hardcoded "Remove" label that matched the registry.
+- Lint warnings 7 → 4 (remaining 4 are pre-existing in admin/deals + admin/featured + admin/moderation + admin/reports). `npm run check` exits 0.
+- Single consumer commit `6edfb9041`.
+
+---
+
+### ✅ PREVIOUS LAST — S-OG-coverage-followup (2026-05-23): OG-coverage baseline → 0 + 2 stale admin pages migrated
 
 **Done this session:**
 - **prize-draws/[slug] OG**: New `_internal/server/features/prize-draws/{data,og,index}`. `getPrizeDrawForDetail` wraps `productRepository.findByIdOrSlug`. `renderPrizeDrawOg` surfaces title, per-entry price chip (amber), reveal-status badge, entries-remaining chip. Page-shim `opengraph-image.tsx` wired.
@@ -189,10 +199,6 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 - **Drive-by fixes**: admin/deals + admin/featured pages migrated from deleted `AdminListingScaffold` → `<DataListingView config>` (surfaced during local appkit re-link). `DataListingView` + `AdminListingScaffoldRow` + `ListingViewConfig` added to `appkit/src/client.ts` exports.
 - audit-inline-styles baselines bumped: INLINE_STYLE 473→503 (legitimate next/og JSX), RAW_PADDING_CLASSES 168→171 (drift).
 - appkit `2.7.59 → 2.7.60` (local). Commits: appkit `b937335`, consumer `d618f8a23`.
-
----
-
-### ✅ PREVIOUS LAST — S-W6-12-polish (2026-05-23): W6-12 ✅ — AdminListingScaffold deleted + W0-5 DemoSeedView guard closed
 
 **Done this session:**
 - **W0-5 ✅**: Deleted `DemoSeedView` + `DemoSeedViewProps` re-export lines from `appkit/src/features/admin/components/index.ts`. All three barrels clean.
