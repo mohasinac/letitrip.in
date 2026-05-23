@@ -5,6 +5,11 @@ import {
   successResponse,
 } from "@mohasinac/appkit";
 
+/**
+ * GET /api/admin/notifications — list all notifications.
+ * W1-42: switched from notificationRepository.findAll(limit) (which ignored the
+ * filter UI) to .list() with Sieve filters/sorts/page/pageSize from URL params.
+ */
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -12,9 +17,19 @@ export const GET = withProviders(
     permission: "admin:notifications:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
-      const limit = Math.min(Number(url.searchParams.get("limit") ?? "200"), 500);
-      const items = await notificationRepository.findAll(limit);
-      return successResponse({ items, total: items.length });
+      const result = await notificationRepository.list({
+        filters: url.searchParams.get("filters") ?? undefined,
+        sorts: url.searchParams.get("sorts") ?? "-createdAt",
+        page: url.searchParams.get("page") ?? 1,
+        pageSize: url.searchParams.get("pageSize") ?? 25,
+      });
+      return successResponse({
+        items: result.items,
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+      });
     },
   }),
 );
