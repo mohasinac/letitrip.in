@@ -9,6 +9,8 @@ import {
   EmptyState,
   Row,
   Section,
+  Modal,
+  Textarea,
   ACTIONS,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
@@ -18,6 +20,9 @@ import type { ModerationQueueDocument } from "@mohasinac/appkit";
 export default function Page() {
   const [items, setItems] = useState<ModerationQueueDocument[]>([]);
   const [loading, setLoading] = useState(true);
+  const [rejectTargetId, setRejectTargetId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -36,6 +41,22 @@ export default function Page() {
       body: JSON.stringify({ status, reason }),
     });
     load();
+  };
+
+  const closeRejectModal = () => {
+    setRejectTargetId(null);
+    setRejectReason("");
+  };
+
+  const submitReject = async () => {
+    if (!rejectTargetId) return;
+    setSubmitting(true);
+    try {
+      await review(rejectTargetId, "rejected", rejectReason);
+      closeRejectModal();
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -82,9 +103,7 @@ export default function Page() {
                     <Button
                       variant="danger"
                       size="sm"
-                      onClick={() =>
-                        review(m.id, "rejected", prompt("Reason?") ?? "")
-                      }
+                      onClick={() => setRejectTargetId(m.id)}
                     >
                       {ACTIONS.ADMIN["reject-product"].label}
                     </Button>
@@ -95,6 +114,38 @@ export default function Page() {
           )}
         </Stack>
       </Container>
+
+      <Modal
+        isOpen={rejectTargetId !== null}
+        onClose={closeRejectModal}
+        title="Reject media"
+        size="sm"
+        actions={
+          <Row justify="end" className="gap-2">
+            <Button variant="ghost" onClick={closeRejectModal} disabled={submitting}>
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              onClick={submitReject}
+              disabled={submitting}
+              isLoading={submitting}
+            >
+              {ACTIONS.ADMIN["reject-product"].label}
+            </Button>
+          </Row>
+        }
+      >
+        <Stack gap="sm">
+          <Textarea
+            label="Reason"
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
+            rows={4}
+            placeholder="Why is this asset being rejected? The seller will see this note."
+          />
+        </Stack>
+      </Modal>
     </Section>
   );
 }

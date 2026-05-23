@@ -9,6 +9,8 @@ import {
   EmptyState,
   Row,
   Section,
+  Modal,
+  Textarea,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { useEffect, useState } from "react";
@@ -17,6 +19,9 @@ import type { ReportDocument } from "@mohasinac/appkit";
 export default function Page() {
   const [items, setItems] = useState<ReportDocument[]>([]);
   const [loading, setLoading] = useState(true);
+  const [actionTargetId, setActionTargetId] = useState<string | null>(null);
+  const [resolutionNote, setResolutionNote] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -35,6 +40,22 @@ export default function Page() {
       body: JSON.stringify({ status, resolution, resolvedAt: status === "actioned" || status === "dismissed" ? new Date() : undefined }),
     });
     load();
+  };
+
+  const closeActionModal = () => {
+    setActionTargetId(null);
+    setResolutionNote("");
+  };
+
+  const submitAction = async () => {
+    if (!actionTargetId) return;
+    setSubmitting(true);
+    try {
+      await action(actionTargetId, "actioned", resolutionNote);
+      closeActionModal();
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -78,9 +99,7 @@ export default function Page() {
                     <Button
                       variant="primary"
                       size="sm"
-                      onClick={() =>
-                        action(r.id, "actioned", prompt("Resolution note?") ?? "")
-                      }
+                      onClick={() => setActionTargetId(r.id)}
                     >
                       Action
                     </Button>
@@ -98,6 +117,38 @@ export default function Page() {
           )}
         </Stack>
       </Container>
+
+      <Modal
+        isOpen={actionTargetId !== null}
+        onClose={closeActionModal}
+        title="Action report"
+        size="sm"
+        actions={
+          <Row justify="end" className="gap-2">
+            <Button variant="ghost" onClick={closeActionModal} disabled={submitting}>
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={submitAction}
+              disabled={submitting}
+              isLoading={submitting}
+            >
+              Confirm action
+            </Button>
+          </Row>
+        }
+      >
+        <Stack gap="sm">
+          <Textarea
+            label="Resolution note"
+            value={resolutionNote}
+            onChange={(e) => setResolutionNote(e.target.value)}
+            rows={4}
+            placeholder="What did you do about this report? The reporter may see a summary."
+          />
+        </Stack>
+      </Modal>
     </Section>
   );
 }
