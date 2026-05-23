@@ -180,14 +180,21 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-W6-3-role-sweep (2026-05-23): 249 inline role tuples → ROLES_* constants across 148 API route files
+### ✅ LAST COMPLETED — S-W6-3-extras (2026-05-23): ROLES_AUTHENTICATED + RAW_P_TAG/RAW_EM baseline tightens
 
 **Done this session:**
-- Long-standing tracker row **W6-3** ✅. `api-roles.ts` ships 6 named tuples but most route handlers carried inline `["admin"]`, `["admin","moderator"]`, etc. The api-roles.ts header docstring warned this had caused buyer-leak regressions ("silently allowing buyers through to a 200 with empty data instead of 403"). Sweep replaces every inline tuple in `src/app/api/` with `roles: [...ROLES_X]`.
-- Breakdown: ROLES_ADMIN_ONLY 81 · ROLES_ADMIN_MOD 81 · ROLES_STORE_WRITE 66 · ROLES_STORE_READ 13 · ROLES_TRUST_SAFETY 6 · ROLES_ANY_STAFF 2 — **249 sites across 148 files**.
-- Sweep driven by run-once `scripts/sweep-role-tuples.mjs` (deleted post-sweep). Required a careful import-merger that parses each top-level import as a single statement (multi-line aware) and merges into existing `@/constants` import if present, else appends fresh after the last import.
-- Also tightened `audit-inline-styles` RAW_OVERFLOW baseline 98→92. `npm run check` exits clean — 0 errors, 0 warnings.
-- Commits: `af8e58d95` (RAW_OVERFLOW tighten), `8e5b2ffcf` (sweep).
+- **New `ROLES_AUTHENTICATED` constant** in api-roles.ts (4-role tuple: `user + seller + moderator + admin`) — caught the 6 outlier routes that W6-3's 1-3-role sweep missed (`/api/item-requests` POST, `/api/item-requests/[id]/replies` POST, `/api/reports` POST, `/api/user/orders/[id]/{invoice,label,qr}` GET). Sweep driven by a small run-once script (deleted post-sweep). Commit `ebab85b71`.
+- **audit-typography baselines** RAW_P_TAG (3→0) and RAW_EM (2→0) — both at 0 actual count; tightened to match so a stray `<p className=...>` or `<em>` regressions block immediately. Commit `3bdc136aa`.
+
+---
+
+### ✅ PREVIOUS LAST — S-W6-3-role-sweep (2026-05-23): 249 inline role tuples → ROLES_* constants across 148 API route files
+
+**Done:**
+- Long-standing tracker row **W6-3** ✅. Sweep replaces every inline `roles: [...]` tuple in `src/app/api/` with `roles: [...ROLES_X]`.
+- Breakdown: ROLES_ADMIN_ONLY 81 · ROLES_ADMIN_MOD 81 · ROLES_STORE_WRITE 66 · ROLES_STORE_READ 13 · ROLES_TRUST_SAFETY 6 · ROLES_ANY_STAFF 2 — 249 sites across 148 files.
+- Also tightened `audit-inline-styles` RAW_OVERFLOW baseline 98→92.
+- Commits: `af8e58d95` (RAW_OVERFLOW), `8e5b2ffcf` (sweep), `825017478` (prompt+plan).
 
 ---
 
