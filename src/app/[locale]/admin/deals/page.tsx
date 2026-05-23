@@ -15,7 +15,7 @@ import type {
   ListingViewConfig,
   BulkActionItem,
 } from "@mohasinac/appkit/client";
-import { apiClient } from "@mohasinac/appkit/client";
+import { useAdminProductFlagMutation } from "@/hooks";
 
 interface ProductsResponse {
   items?: unknown[];
@@ -31,8 +31,11 @@ const SORT_OPTIONS = [
   { label: "Price high→low", value: "-price" },
 ];
 
+const QUERY_KEY = ["admin", "deals", "listing"] as const;
+
 export default function Page() {
   const router = useRouter();
+  const removeFromDealsMutation = useAdminProductFlagMutation("isPromoted", QUERY_KEY);
 
   const config: ListingViewConfig<ProductsResponse, AdminListingScaffoldRow> = {
     portal: "admin",
@@ -41,7 +44,7 @@ export default function Page() {
     emptyLabel: "No deals found",
     filterKeys: [],
     defaultSort: "-createdAt",
-    queryKey: ["admin", "deals", "listing"],
+    queryKey: [...QUERY_KEY],
     endpoint: ADMIN_ENDPOINTS.PRODUCTS,
     sortOptions: SORT_OPTIONS,
     mapRows: (response) =>
@@ -72,9 +75,7 @@ export default function Page() {
         variant: "danger",
         onClick: async () => {
           await Promise.all(
-            selection.selectedIds.map((id) =>
-              apiClient.patch(ADMIN_ENDPOINTS.PRODUCT_BY_ID(id), { isPromoted: false }),
-            ),
+            selection.selectedIds.map((id) => removeFromDealsMutation.mutateAsync(id)),
           );
           selection.clearSelection();
         },
