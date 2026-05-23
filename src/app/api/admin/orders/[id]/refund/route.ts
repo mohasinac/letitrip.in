@@ -5,6 +5,7 @@ import {
   createRouteHandler,
   successResponse,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 const refundSchema = z.object({
   amount: z.number().min(0),
@@ -14,7 +15,7 @@ const refundSchema = z.object({
 export const POST = withProviders(
   createRouteHandler<(typeof refundSchema)["_output"]>({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:orders:write",
     schema: refundSchema,
     handler: async ({ body, params }) => {

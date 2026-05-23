@@ -23,6 +23,7 @@ import {
   SHIPROCKET_TOKEN_TTL_MS,
 } from "@mohasinac/appkit";
 import type { SellerShippingConfig } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 // --- Schemas ----------------------------------------------------------------
 
@@ -89,7 +90,7 @@ function sanitiseConfig(config: SellerShippingConfig | undefined): Omit<
 
 export const GET = withProviders(createApiHandler({
   auth: true,
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   handler: async ({ user }) => {
     return successResponse({
       shippingConfig: sanitiseConfig(user!.shippingConfig as SellerShippingConfig | undefined),
@@ -102,7 +103,7 @@ export const GET = withProviders(createApiHandler({
 export const PATCH = withProviders(createApiHandler<(typeof updateShippingSchema)["_output"]>(
   {
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     schema: updateShippingSchema,
     handler: async ({ user, body }) => {
       const data = body!;

@@ -8,12 +8,13 @@ import { withProviders } from "@/providers.config";
 import { createApiHandler, successResponse, storeRepository, reviewRepository } from "@mohasinac/appkit";
 import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit";
 import { sortBy, REVIEW_FIELDS } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(REVIEW_FIELDS.CREATED_AT);
 
 export const GET = withProviders(createApiHandler({
   auth: true,
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   handler: async ({ request, user }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store) {

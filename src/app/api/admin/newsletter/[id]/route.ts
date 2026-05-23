@@ -5,11 +5,12 @@ import {
   errorResponse,
   newsletterRepository,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:newsletter:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
@@ -23,7 +24,7 @@ export const GET = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:newsletter:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;

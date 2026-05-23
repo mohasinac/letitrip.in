@@ -1,5 +1,8 @@
 import { withProviders } from "@/providers.config";
-import { PAYOUT_FIELDS } from "@/constants";
+import {
+  PAYOUT_FIELDS,
+  ROLES_ADMIN_MOD,
+} from "@/constants";
 import { z } from "zod";
 import {
   adminUpdatePayout,
@@ -20,7 +23,7 @@ const updatePayoutSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:payouts:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
@@ -35,7 +38,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler<(typeof updatePayoutSchema)["_output"]>({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:payouts:write",
     schema: updatePayoutSchema,
     handler: async ({ body, params, user }) => {

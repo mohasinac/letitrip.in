@@ -5,11 +5,12 @@ import {
   errorResponse,
   triggerEventRaffleAction,
 } from "@mohasinac/appkit/server";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:events:write",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;

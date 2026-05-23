@@ -8,6 +8,7 @@ import {
   successResponse,
   errorResponse,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const updateProductSchema = z.object({
   title: z.string().min(1).optional(),
@@ -27,7 +28,7 @@ const updateProductSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:products:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
@@ -41,7 +42,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateProductSchema)["_output"]>({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:products:write",
     schema: updateProductSchema,
     handler: async ({ body, params, user }) => {
@@ -55,7 +56,7 @@ export const PATCH = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:products:delete",
     handler: async ({ params, user }) => {
       const id = (params as { id: string }).id;

@@ -9,6 +9,7 @@ import {
   finalizeStagedMediaObjectArray,
   BlogPostStatusValues,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 const mediaFieldSchema = z.object({
   url: z.string().url(),
@@ -38,7 +39,7 @@ const updateBlogPostSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:blog:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
@@ -52,7 +53,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateBlogPostSchema)["_output"]>({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:blog:write",
     schema: updateBlogPostSchema,
     handler: async ({ body, params }) => {
@@ -87,7 +88,7 @@ export const PATCH = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:blog:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;

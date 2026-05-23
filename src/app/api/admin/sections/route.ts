@@ -15,6 +15,7 @@ import {
 } from "@mohasinac/appkit";
 import { homepageSectionsRepository } from "@mohasinac/appkit";
 import { sortBy, HOMEPAGE_SECTION_FIELDS } from "@mohasinac/appkit";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(HOMEPAGE_SECTION_FIELDS.ORDER, "ASC");
 const DESC_SORTS = sortBy(HOMEPAGE_SECTION_FIELDS.ORDER);
@@ -38,7 +39,7 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@mohasinac/appkit";
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:sections:read",
     handler: async ({ request }) => {
       const searchParams = getSearchParams(request);
@@ -114,7 +115,7 @@ const sectionCreateSchema = z.object({
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:sections:write",
     handler: async ({ request, user }) => {
       const body = await request.json();

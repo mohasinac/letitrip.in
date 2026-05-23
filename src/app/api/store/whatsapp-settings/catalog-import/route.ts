@@ -17,6 +17,7 @@ import {
   errorResponse,
 } from "@mohasinac/appkit";
 import type { ProductCreateInput } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 const META_GRAPH_BASE = "https://graph.facebook.com/v20.0";
 const SLUG_PREFIX = "product-";
@@ -40,7 +41,7 @@ interface MetaCatalogResponse {
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     handler: async ({ user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return errorResponse("Store not found", 404);

@@ -5,6 +5,7 @@ import {
   successResponse,
 } from "@mohasinac/appkit";
 import { z } from "zod";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 const feedbackSchema = z.object({
   feedback: z.enum(["positive", "negative"]),
@@ -13,7 +14,7 @@ const feedbackSchema = z.object({
 export const PATCH = withProviders(
   createRouteHandler<(typeof feedbackSchema)["_output"]>({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     schema: feedbackSchema,
     handler: async ({ body, params }) => {
       const logId = (params as { logId: string }).logId;

@@ -1,10 +1,11 @@
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, successResponse, ApiErrors, sortBy, sieveFilter, sieveAnd, SIEVE_OP, BID_FIELDS, PRODUCT_FIELDS, COMMON_FIELDS } from "@mohasinac/appkit";
 import { bidRepository, productRepository, storeRepository } from "@mohasinac/appkit";
+import { ROLES_STORE_READ } from "@/constants";
 
 export const GET = withProviders(createRouteHandler({
   auth: true,
-  roles: ["seller", "admin", "moderator"],
+  roles: [...ROLES_STORE_READ],
   handler: async ({ request, user }) => {
     const url = new URL(request.url);
     const productId = url.searchParams.get("productId") ?? undefined;

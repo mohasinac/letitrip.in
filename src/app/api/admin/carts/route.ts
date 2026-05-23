@@ -4,6 +4,7 @@ import {
   createRouteHandler,
   successResponse,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 /**
  * GET /api/admin/carts — list all carts.
@@ -14,7 +15,7 @@ import {
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:carts:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);

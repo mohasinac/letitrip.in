@@ -35,6 +35,7 @@ import {
   ShippingMethodValues,
 } from "@mohasinac/appkit";
 import { shipOrderAction } from "@/actions/seller.actions";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 const ORDER_NOT_FOUND = "Order not found";
 
@@ -126,7 +127,7 @@ async function tryAutoShip(
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const order = await orderRepository.findById(id);
@@ -146,7 +147,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateOrderSchema)["_output"]>({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     schema: updateOrderSchema,
     handler: async ({ user, body, params }) => {
       const id = (params as { id: string }).id;

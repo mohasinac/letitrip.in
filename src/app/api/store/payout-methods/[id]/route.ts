@@ -7,6 +7,7 @@ import {
   payoutMethodsRepository,
   storeRepository,
 } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 async function loadAndAssertOwner(uid: string, id: string) {
   const store = await storeRepository.findByOwnerId(uid);
@@ -20,7 +21,7 @@ async function loadAndAssertOwner(uid: string, id: string) {
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     handler: async ({ user, params }) => {
       const { error, doc } = await loadAndAssertOwner(user!.uid, (params as { id: string }).id);
       if (error) return error;
@@ -32,7 +33,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     handler: async ({ request, user, params }) => {
       const { error } = await loadAndAssertOwner(user!.uid, (params as { id: string }).id);
       if (error) return error;
@@ -53,7 +54,7 @@ export const PATCH = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     handler: async ({ user, params }) => {
       const { error } = await loadAndAssertOwner(user!.uid, (params as { id: string }).id);
       if (error) return error;

@@ -1,7 +1,10 @@
 import { withProviders } from "@/providers.config";
 
 import { z } from "zod";
-import { AD_FIELDS } from "@/constants";
+import {
+  AD_FIELDS,
+  ROLES_ADMIN_ONLY,
+} from "@/constants";
 import {
   createApiHandler as createRouteHandler,
   errorResponse,
@@ -62,7 +65,7 @@ function normalizeAdSettings(settings: Record<string, unknown>) {
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:ads:read",
     handler: async ({ params }) => {
       const id = (params as { id?: string } | undefined)?.id;
@@ -86,7 +89,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler<(typeof adPatchSchema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:ads:write",
     schema: adPatchSchema,
     handler: async ({ params, body, user }) => {
@@ -177,7 +180,7 @@ export const PATCH = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:ads:delete",
     handler: async ({ params }) => {
       const id = (params as { id?: string } | undefined)?.id;

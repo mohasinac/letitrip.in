@@ -7,6 +7,7 @@ import {
   categoriesRepository,
   storeRepository,
 } from "@mohasinac/appkit";
+import { ROLES_STORE_READ, ROLES_STORE_WRITE } from "@/constants";
 
 const MSG_SUBLISTING_CAT_NOT_FOUND = "Sublisting category not found.";
 
@@ -19,7 +20,7 @@ const updateSchema = z.object({
 
 export const GET = withProviders(createRouteHandler({
   auth: true,
-  roles: ["seller", "admin", "moderator"],
+  roles: [...ROLES_STORE_READ],
   handler: async ({ params }) => {
     const id = (params as Record<string, string>)?.id;
     if (!id) return ApiErrors.badRequest("Missing id");
@@ -33,7 +34,7 @@ export const GET = withProviders(createRouteHandler({
 
 export const PUT = withProviders(createRouteHandler<(typeof updateSchema)["_output"]>({
   auth: true,
-  roles: ["seller", "admin", "moderator"],
+  roles: [...ROLES_STORE_READ],
   schema: updateSchema,
   handler: async ({ params, body, user }) => {
     const id = (params as Record<string, string>)?.id;
@@ -66,7 +67,7 @@ export const PUT = withProviders(createRouteHandler<(typeof updateSchema)["_outp
 
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   handler: async ({ params, user }) => {
     const id = (params as Record<string, string>)?.id;
     if (!id) return ApiErrors.badRequest("Missing id");

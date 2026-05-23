@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
 import { couponsRepository, storeRepository } from "@mohasinac/appkit";
 import { sortBy, COUPON_FIELDS } from "@mohasinac/appkit";
+import { ROLES_STORE_READ, ROLES_STORE_WRITE } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(COUPON_FIELDS.CREATED_AT);
 
@@ -21,7 +22,7 @@ const createCouponSchema = z.object({
 
 export const GET = withProviders(createRouteHandler({
   auth: true,
-  roles: ["seller", "admin", "moderator"],
+  roles: [...ROLES_STORE_READ],
   handler: async ({ request, user }) => {
     const url = new URL(request.url);
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
@@ -42,7 +43,7 @@ export const GET = withProviders(createRouteHandler({
 
 export const POST = withProviders(createRouteHandler<(typeof createCouponSchema)["_output"]>({
   auth: true,
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   schema: createCouponSchema,
   handler: async ({ body, user }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);

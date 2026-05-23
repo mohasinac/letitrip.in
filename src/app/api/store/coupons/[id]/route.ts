@@ -7,6 +7,7 @@ import {
   couponsRepository,
   storeRepository,
 } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 const MSG_COUPON_NOT_FOUND = "Coupon not found.";
 
@@ -45,7 +46,7 @@ const updateCouponSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const coupon = await couponsRepository.findById(id);
@@ -64,7 +65,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateCouponSchema)["_output"]>({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     schema: updateCouponSchema,
     handler: async ({ user, body, params }) => {
       const id = (params as { id: string }).id;
@@ -104,7 +105,7 @@ export const PATCH = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const existing = await couponsRepository.findById(id);

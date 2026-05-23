@@ -16,11 +16,12 @@ import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { callFirebaseFunction } from "@/lib/firebase-gateway";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:analytics:view",
     handler: async ({ request }) => {
       const url = new URL(request.url);

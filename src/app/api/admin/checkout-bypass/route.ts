@@ -9,6 +9,7 @@ import {
   PaymentMethodValues,
 } from "@mohasinac/appkit";
 import { grantAdminCheckoutBypass } from "@mohasinac/appkit/server";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 /**
  * Admin Checkout Bypass
@@ -18,7 +19,7 @@ import { grantAdminCheckoutBypass } from "@mohasinac/appkit/server";
  *
  * POST /api/admin/checkout-bypass — places an order bypassing OTP and payment.
  *      Server-side guards:
- *        1. Caller must be admin (createRouteHandler roles: ["admin"]).
+ *        1. Caller must be admin (createRouteHandler roles: [...ROLES_ADMIN_ONLY]).
  *        2. siteSettings.featureFlags.adminCheckoutBypass must be true.
  *      The resulting order has paymentMethod "admin_bypass", paymentStatus "paid",
  *      status "processing", and carries adminBypassBy = admin UID for audit trail.
@@ -27,7 +28,7 @@ import { grantAdminCheckoutBypass } from "@mohasinac/appkit/server";
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     handler: async () => {
       const settings = await siteSettingsRepository.getSingleton();
       const enabled = settings?.featureFlags?.adminCheckoutBypass === true;
@@ -45,7 +46,7 @@ const bypassSchema = z.object({
 export const POST = withProviders(
   createRouteHandler<(typeof bypassSchema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     schema: bypassSchema,
     handler: async ({ user, body }) => {
       // Guard: feature flag must be explicitly enabled server-side.

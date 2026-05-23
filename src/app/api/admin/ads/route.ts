@@ -1,7 +1,10 @@
 import { withProviders } from "@/providers.config";
 
 import { z } from "zod";
-import { AD_FIELDS } from "@/constants";
+import {
+  AD_FIELDS,
+  ROLES_ADMIN_ONLY,
+} from "@/constants";
 import {
   createApiHandler as createRouteHandler,
   errorResponse,
@@ -93,7 +96,7 @@ function maskSecret(value: string | undefined): string {
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:ads:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
@@ -180,7 +183,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler<(typeof adsConfigPatchSchema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:ads:write",
     schema: adsConfigPatchSchema,
     handler: async ({ body }) => {
@@ -211,7 +214,7 @@ export const PATCH = withProviders(
 export const POST = withProviders(
   createRouteHandler<(typeof adInventoryItemSchema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:ads:write",
     schema: adInventoryItemSchema,
     handler: async ({ body, user }) => {

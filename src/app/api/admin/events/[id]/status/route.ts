@@ -1,5 +1,8 @@
 import { withProviders } from "@/providers.config";
-import { EVENT_FIELDS } from "@/constants";
+import {
+  EVENT_FIELDS,
+  ROLES_ADMIN_MOD,
+} from "@/constants";
 import { z } from "zod";
 import {
   eventRepository,
@@ -14,7 +17,7 @@ const updateStatusSchema = z.object({
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateStatusSchema)["_output"]>({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:events:write",
     schema: updateStatusSchema,
     handler: async ({ body, params }) => {

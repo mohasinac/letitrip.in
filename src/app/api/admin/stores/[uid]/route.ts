@@ -1,5 +1,8 @@
 import { withProviders } from "@/providers.config";
-import { STORE_FIELDS } from "@/constants";
+import {
+  ROLES_ADMIN_MOD,
+  STORE_FIELDS,
+} from "@/constants";
 import { z } from "zod";
 import {
   storeRepository,
@@ -20,7 +23,7 @@ const updateStoreSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:stores:read",
     handler: async ({ params }) => {
       const storeId = (params as { uid: string }).uid;
@@ -34,7 +37,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateStoreSchema)["_output"]>({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:stores:write",
     schema: updateStoreSchema,
     handler: async ({ body, params }) => {

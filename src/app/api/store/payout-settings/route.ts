@@ -8,6 +8,7 @@ import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { userRepository, createApiHandler, successResponse } from "@mohasinac/appkit";
 import type { SellerPayoutDetails } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 // --- Helper -------------------------------------------------------------------
 
@@ -45,7 +46,7 @@ const updatePayoutSchema = z.discriminatedUnion("method", [upiSchema, bankSchema
 
 export const GET = withProviders(createApiHandler({
   auth: true,
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   handler: async ({ user }) => {
     return successResponse({
       payoutDetails: sanitisePayoutDetails(
@@ -59,7 +60,7 @@ export const GET = withProviders(createApiHandler({
 
 export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)["_output"]>({
   auth: true,
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   schema: updatePayoutSchema,
   handler: async ({ user, body }) => {
     const data = body!;

@@ -6,6 +6,7 @@ import {
   errorResponse,
   contactSubmissionsRepository,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const MSG_SUBMISSION_NOT_FOUND = "Submission not found.";
 
@@ -16,7 +17,7 @@ const updateSubmissionSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:contact:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
@@ -30,7 +31,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateSubmissionSchema)["_output"]>({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:contact:write",
     schema: updateSubmissionSchema,
     handler: async ({ body, params }) => {
@@ -57,7 +58,7 @@ export const PATCH = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:contact:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;

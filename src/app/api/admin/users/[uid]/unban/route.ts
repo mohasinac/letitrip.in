@@ -7,11 +7,12 @@ import {
 } from "@mohasinac/appkit";
 import { sendNotification } from "@mohasinac/appkit/server";
 import { getAdminAuth } from "@mohasinac/appkit/server";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:user-bans:write",
     handler: async ({ params, user: _user }) => {
       const uid = (params as { uid: string }).uid;

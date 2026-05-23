@@ -1,6 +1,7 @@
 import { withProviders } from "@/providers.config";
 import { createApiHandler, ApiErrors, successResponse } from "@mohasinac/appkit";
 import { productRepository, storeRepository, isAuctionListing } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 /**
  * POST /api/store/products/[id]/group/children
@@ -8,7 +9,7 @@ import { productRepository, storeRepository, isAuctionListing } from "@mohasinac
  * mode "link"   — links an existing product into the group.
  */
 export const POST = withProviders(createApiHandler({
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   handler: async ({ request, user, params }) => {
     const parentDocId = (params as { id: string }).id;
 

@@ -1,10 +1,11 @@
 import { withProviders } from "@/providers.config";
 import { createApiHandler, ApiErrors, successResponse } from "@mohasinac/appkit";
 import { productRepository, isAuctionListing } from "@mohasinac/appkit";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 /** POST /api/admin/products/[id]/group/children — add child (admin, no ownership check) */
 export const POST = withProviders(createApiHandler({
-  roles: ["admin"],
+  roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:products:write",
   handler: async ({ request, params }) => {
     const parentDocId = (params as { id: string }).id;

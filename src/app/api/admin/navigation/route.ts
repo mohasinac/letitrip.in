@@ -5,6 +5,7 @@ import {
   successResponse,
   siteSettingsRepository,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 export interface NavItem {
   id: string;
@@ -40,7 +41,7 @@ async function saveNavItems(items: NavItem[]): Promise<void> {
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:navigation:read",
     handler: async () => {
       const items = await getNavItems();
@@ -52,7 +53,7 @@ export const GET = withProviders(
 export const POST = withProviders(
   createRouteHandler<(typeof navItemSchema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:navigation:write",
     schema: navItemSchema,
     handler: async ({ body }) => {

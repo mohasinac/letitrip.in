@@ -8,6 +8,7 @@ import {
 } from "@mohasinac/appkit";
 import { sendNotification } from "@mohasinac/appkit/server";
 import type { BannedAction } from "@mohasinac/appkit/server";
+import { ROLES_TRUST_SAFETY } from "@/constants";
 
 const BANNED_ACTIONS = [
   "write_reviews",
@@ -29,7 +30,7 @@ const schema = z.object({
 export const POST = withProviders(
   createRouteHandler<(typeof schema)["_output"]>({
     auth: true,
-    roles: ["admin", "employee"],
+    roles: [...ROLES_TRUST_SAFETY],
     permission: "admin:user-bans:write",
     schema,
     handler: async ({ params, body, user }) => {

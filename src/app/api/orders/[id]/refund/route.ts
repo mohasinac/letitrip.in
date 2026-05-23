@@ -19,6 +19,7 @@ import {
   storeRepository,
 } from "@mohasinac/appkit";
 import { processRefundAction } from "@mohasinac/appkit/server";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 const bodySchema = z.object({
   type: z.enum(["full", "partial"]),
@@ -36,7 +37,7 @@ const bodySchema = z.object({
 export const POST = withProviders(
   createRouteHandler<(typeof bodySchema)["_output"]>({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     schema: bodySchema,
     handler: async ({ user, body, params }) => {
       const id = (params as { id: string }).id;

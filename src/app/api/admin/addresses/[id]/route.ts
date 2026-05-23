@@ -1,5 +1,6 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
+import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const NOT_FOUND = "Address not found";
 import {
@@ -26,7 +27,7 @@ const updateAddressSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:addresses:read",
     handler: async ({ params }) => {
       const id = (params as Record<string, string>).id;
@@ -40,7 +41,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateAddressSchema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:addresses:write",
     schema: updateAddressSchema,
     handler: async ({ params, body }) => {
@@ -61,7 +62,7 @@ export const PATCH = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:addresses:write",
     handler: async ({ params }) => {
       const id = (params as Record<string, string>).id;

@@ -7,6 +7,7 @@ import {
   productRepository,
   storeRepository,
 } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 // S-STORE-2-C — Duplicate listing. Copies the source product into a new
 // document with status "draft", appends "(copy)" to the title, and clears
@@ -14,7 +15,7 @@ import {
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const source = await productRepository.findById(id);

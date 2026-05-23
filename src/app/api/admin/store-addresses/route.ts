@@ -4,11 +4,12 @@ import {
   createRouteHandler,
   successResponse,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:store-addresses:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);

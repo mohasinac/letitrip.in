@@ -8,6 +8,7 @@ import {
   updateBrandAction,
   deleteBrandAction,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const updateBrandSchema = z.object({
   name: z.string().min(1).optional(),
@@ -24,7 +25,7 @@ const updateBrandSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:brands:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
@@ -38,7 +39,7 @@ export const GET = withProviders(
 export const PUT = withProviders(
   createRouteHandler<(typeof updateBrandSchema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:brands:write",
     schema: updateBrandSchema,
     handler: async ({ body, params }) => {
@@ -52,7 +53,7 @@ export const PUT = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:brands:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;

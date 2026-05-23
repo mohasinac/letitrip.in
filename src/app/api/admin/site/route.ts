@@ -5,13 +5,14 @@ import {
   successResponse,
   siteSettingsRepository,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const siteGroupSchema = z.record(z.string(), z.unknown());
 
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:site:read",
     handler: async () => {
       const settings = await siteSettingsRepository.getSingleton();
@@ -24,7 +25,7 @@ export const GET = withProviders(
 export const PUT = withProviders(
   createRouteHandler<(typeof siteGroupSchema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:site:write",
     schema: siteGroupSchema,
     handler: async ({ body }) => {

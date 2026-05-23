@@ -22,12 +22,13 @@ import {
   formatZodErrors,
   productCreateSchema,
 } from "@/validation/request-schemas";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 /**
  * GET /api/admin/products
  */
 export const GET = withProviders(createApiHandler({
-  roles: ["admin", "moderator"],
+  roles: [...ROLES_ADMIN_MOD],
   permission: "admin:products:read",
   handler: async ({ request }) => {
     const url = new URL(request.url);
@@ -65,7 +66,7 @@ export const GET = withProviders(createApiHandler({
  */
 export const POST = withProviders(createApiHandler({
   auth: true,
-  roles: ["admin", "moderator"],
+  roles: [...ROLES_ADMIN_MOD],
   permission: "admin:products:write",
     handler: async ({ request, user: _user }) => {
     const body = await request.json();

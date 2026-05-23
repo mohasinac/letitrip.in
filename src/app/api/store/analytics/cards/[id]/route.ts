@@ -6,11 +6,12 @@ import {
   ApiErrors,
   analyticsCardsRepository,
 } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     handler: async ({ request, user, params }) => {
       const id = (params as { id: string }).id;
       const doc = await analyticsCardsRepository.findById(id);
@@ -32,7 +33,7 @@ export const PATCH = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const doc = await analyticsCardsRepository.findById(id);

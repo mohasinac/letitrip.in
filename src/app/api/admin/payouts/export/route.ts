@@ -1,5 +1,6 @@
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, payoutRepository, sortBy, COMMON_FIELDS } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 function escape(value: unknown): string {
   const s = String(value ?? "");
@@ -15,7 +16,7 @@ function csvRow(cols: unknown[]): string {
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:payouts:read",
     handler: async () => {
       const result = await payoutRepository.list({

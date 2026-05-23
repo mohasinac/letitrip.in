@@ -12,6 +12,7 @@ import { notificationRepository } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const createNotificationSchema = z.object({
   userId: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
@@ -69,7 +70,7 @@ export const GET = withProviders(createRouteHandler({
  */
 export const POST = withProviders(createRouteHandler({
   auth: true,
-  roles: ["admin"],
+  roles: [...ROLES_ADMIN_ONLY],
   schema: createNotificationSchema,
   handler: async ({ body }) => {
     serverLogger.info("Creating notification", {

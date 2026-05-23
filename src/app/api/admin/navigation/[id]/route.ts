@@ -7,6 +7,7 @@ import {
   siteSettingsRepository,
 } from "@mohasinac/appkit";
 import type { NavItem } from "../route";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const MSG_NAV_ITEM_NOT_FOUND = "Navigation item not found.";
 
@@ -34,7 +35,7 @@ async function saveNavItems(items: NavItem[]): Promise<void> {
 export const PUT = withProviders(
   createRouteHandler<(typeof updateNavItemSchema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:navigation:write",
     schema: updateNavItemSchema,
     handler: async ({ body, params }) => {
@@ -53,7 +54,7 @@ export const PUT = withProviders(
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateNavItemSchema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:navigation:write",
     schema: updateNavItemSchema,
     handler: async ({ body, params }) => {
@@ -72,7 +73,7 @@ export const PATCH = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:navigation:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;

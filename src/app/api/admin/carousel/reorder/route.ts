@@ -5,6 +5,7 @@ import {
   createRouteHandler,
   successResponse,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const reorderSchema = z.object({
   slideIds: z.array(z.string()).min(1).max(10),
@@ -13,7 +14,7 @@ const reorderSchema = z.object({
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:carousel:write",
     schema: reorderSchema,
     handler: async ({ body }) => {

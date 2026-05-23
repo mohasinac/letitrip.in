@@ -15,6 +15,7 @@ import {
   USER_FIELDS,
 } from "@mohasinac/appkit";
 import type { UserAdminUpdateInput } from "@mohasinac/appkit";
+import { ROLES_ADMIN_ONLY, ROLES_TRUST_SAFETY } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(USER_FIELDS.CREATED_AT);
 
@@ -27,7 +28,7 @@ const inviteSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "employee"],
+    roles: [...ROLES_TRUST_SAFETY],
     permission: "admin:team:read",
     handler: async ({ request }) => {
       const searchParams = getSearchParams(request);
@@ -97,7 +98,7 @@ export const GET = withProviders(
 export const POST = withProviders(
   createRouteHandler<z.infer<typeof inviteSchema>>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:team:write",
     schema: inviteSchema,
     handler: async ({ body, user: adminUser }) => {

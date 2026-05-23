@@ -6,6 +6,7 @@ import {
   successResponse,
   errorResponse,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const MSG_SLIDE_NOT_FOUND = "Carousel slide not found.";
 
@@ -36,7 +37,7 @@ const updateSlideSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:carousel:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
@@ -50,7 +51,7 @@ export const GET = withProviders(
 export const PUT = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:carousel:write",
     schema: updateSlideSchema,
     handler: async ({ body, params }) => {
@@ -66,7 +67,7 @@ export const PUT = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:carousel:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;

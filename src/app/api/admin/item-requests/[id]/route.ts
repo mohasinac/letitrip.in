@@ -6,11 +6,12 @@ import {
   ApiErrors,
   itemRequestsRepository,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     handler: async ({ request, params, user }) => {
       const id = (params as { id: string }).id;
       const doc = await itemRequestsRepository.findById(id);

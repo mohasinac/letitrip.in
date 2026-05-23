@@ -19,9 +19,10 @@ import {
 import { sessionRepository } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const GET = withProviders(createRouteHandler({
-  roles: ["admin", "moderator"],
+  roles: [...ROLES_ADMIN_MOD],
   permission: "admin:sessions:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);

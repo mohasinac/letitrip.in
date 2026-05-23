@@ -6,6 +6,7 @@ import {
   errorResponse,
   bidRepository,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 
 const updateBidSchema = z.object({
@@ -16,7 +17,7 @@ const updateBidSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:bids:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
@@ -30,7 +31,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateBidSchema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:bids:write",
     schema: updateBidSchema,
     handler: async ({ body, params }) => {
@@ -49,7 +50,7 @@ export const PATCH = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:bids:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;

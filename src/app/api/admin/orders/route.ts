@@ -14,6 +14,7 @@ import {
 import { orderRepository } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { sortBy, ORDER_FIELDS } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(ORDER_FIELDS.CREATED_AT);
 
@@ -28,7 +29,7 @@ const DEFAULT_SORTS = sortBy(ORDER_FIELDS.CREATED_AT);
  */
 export const GET = withProviders(createRouteHandler({
   auth: true,
-  roles: ["admin", "moderator"],
+  roles: [...ROLES_ADMIN_MOD],
   permission: "admin:orders:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);

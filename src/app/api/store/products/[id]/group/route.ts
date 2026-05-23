@@ -1,6 +1,7 @@
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, ApiErrors, successResponse } from "@mohasinac/appkit";
 import { productRepository, storeRepository, isAuctionListing } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 const MSG_NO_STORE = "Store not found for this seller.";
 const MSG_PRODUCT_NOT_FOUND = "Product not found.";
@@ -9,7 +10,7 @@ const MSG_NOT_YOUR_PRODUCT = "This product does not belong to your store.";
 /** POST — start a group (this product becomes parent) */
 export const POST = withProviders(createRouteHandler({
   auth: true,
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   handler: async ({ user, params }) => {
     const productId = (params as Record<string, string>).id;
     const store = await storeRepository.findByOwnerId(user!.uid);
@@ -30,7 +31,7 @@ export const POST = withProviders(createRouteHandler({
 /** PATCH — update groupTitle */
 export const PATCH = withProviders(createRouteHandler({
   auth: true,
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   handler: async ({ request, user, params }) => {
     const productId = (params as Record<string, string>).id;
     const store = await storeRepository.findByOwnerId(user!.uid);
@@ -50,7 +51,7 @@ export const PATCH = withProviders(createRouteHandler({
 /** DELETE — dissolve the group */
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   handler: async ({ user, params }) => {
     const productId = (params as Record<string, string>).id;
     const store = await storeRepository.findByOwnerId(user!.uid);

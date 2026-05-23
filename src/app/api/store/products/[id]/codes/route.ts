@@ -25,6 +25,7 @@ import {
 } from "@mohasinac/appkit";
 import type { ProductCodeDocument } from "@mohasinac/appkit";
 import { z } from "zod";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 const IngestCodesSchema = z.object({
   codes: z.array(z.string().min(1).max(256)).min(1).max(200),
@@ -33,7 +34,7 @@ const IngestCodesSchema = z.object({
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     handler: async ({ request, user, params }) => {
       const productId = (params as Record<string, string>).id;
 

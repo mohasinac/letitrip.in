@@ -25,7 +25,10 @@ import { siteSettingsUpdateSchema } from "@/validation/request-schemas";
 
 import { serverLogger } from "@mohasinac/appkit";
 import { sendSiteSettingsChangedEmail } from "@mohasinac/appkit";
-import { SCHEMA_DEFAULTS } from "@/constants";
+import {
+  ROLES_ADMIN_ONLY,
+  SCHEMA_DEFAULTS,
+} from "@/constants";
 import { createApiHandler } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { invalidateIntegrationKeysCache } from "@mohasinac/appkit";
@@ -124,7 +127,7 @@ export const PATCH = withProviders(createRouteHandler<
   (typeof siteSettingsUpdateSchema)["_output"]
 >({
   auth: true,
-  roles: ["admin"],
+  roles: [...ROLES_ADMIN_ONLY],
   schema: siteSettingsUpdateSchema,
   handler: async ({ user, body }) => {
     // Update settings in repository (singleton pattern)

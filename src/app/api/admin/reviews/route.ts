@@ -7,11 +7,14 @@ import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { buildSieveFilters } from "@mohasinac/appkit";
 import { piiBlindIndex } from "@mohasinac/appkit";
-import { REVIEW_FIELDS } from "@/constants";
+import {
+  REVIEW_FIELDS,
+  ROLES_ADMIN_MOD,
+} from "@/constants";
 import { reviewRepository } from "@mohasinac/appkit";
 
 export const GET = withProviders(createApiHandler({
-  roles: ["admin", "moderator"],
+  roles: [...ROLES_ADMIN_MOD],
   permission: "admin:reviews:read",
   handler: async ({ request }) => {
     const url = new URL(request.url);

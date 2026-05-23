@@ -1,5 +1,8 @@
 import { withProviders } from "@/providers.config";
-import { AD_FIELDS } from "@/constants";
+import {
+  AD_FIELDS,
+  ROLES_ADMIN_ONLY,
+} from "@/constants";
 
 import {
   createApiHandler as createRouteHandler,
@@ -40,7 +43,7 @@ function isScheduleActive(item: Record<string, unknown>): boolean {
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:ads:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);

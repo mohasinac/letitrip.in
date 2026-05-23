@@ -12,10 +12,11 @@ import {
   orderRepository,
   reviewRepository,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const GET = withProviders(createRouteHandler({
   auth: true,
-  roles: ["admin", "moderator"],
+  roles: [...ROLES_ADMIN_MOD],
   permission: "admin:dashboard:view",
   handler: async () => {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);

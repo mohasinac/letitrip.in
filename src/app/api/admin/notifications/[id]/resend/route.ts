@@ -5,11 +5,12 @@ import {
   successResponse,
   errorResponse,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:notifications:write",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;

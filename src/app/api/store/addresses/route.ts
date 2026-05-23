@@ -2,6 +2,7 @@ import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
 import { addressesRepository, storeRepository } from "@mohasinac/appkit";
+import { ROLES_STORE_READ, ROLES_STORE_WRITE } from "@/constants";
 
 const createAddressSchema = z.object({
   label: z.string().min(1).max(60),
@@ -19,7 +20,7 @@ const createAddressSchema = z.object({
 
 export const GET = withProviders(createRouteHandler({
   auth: true,
-  roles: ["seller", "admin", "moderator"],
+  roles: [...ROLES_STORE_READ],
   handler: async ({ user }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store) return ApiErrors.forbidden("No store found for this account");
@@ -31,7 +32,7 @@ export const GET = withProviders(createRouteHandler({
 
 export const POST = withProviders(createRouteHandler<(typeof createAddressSchema)["_output"]>({
   auth: true,
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   schema: createAddressSchema,
   handler: async ({ body, user }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);

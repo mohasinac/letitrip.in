@@ -1,10 +1,11 @@
 import { withProviders } from "@/providers.config";
 import { createApiHandler, ApiErrors, successResponse } from "@mohasinac/appkit";
 import { productRepository } from "@mohasinac/appkit";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 /** DELETE /api/admin/products/[id]/group/children/[childId] — unlink a child (admin) */
 export const DELETE = withProviders(createApiHandler({
-  roles: ["admin"],
+  roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:products:delete",
   handler: async ({ params }) => {
     const { id: parentDocId, childId } = params as { id: string; childId: string };

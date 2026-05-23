@@ -1,5 +1,8 @@
 import { withProviders } from "@/providers.config";
-import { EVENT_FIELDS } from "@/constants";
+import {
+  EVENT_FIELDS,
+  ROLES_ADMIN_MOD,
+} from "@/constants";
 import {
   eventRepository,
   eventEntryRepository,
@@ -13,7 +16,7 @@ import {
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:events:read",
     handler: async ({ params }) => {
       const eventId = (params as { id: string }).id;

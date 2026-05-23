@@ -5,11 +5,12 @@ import {
   ApiErrors,
   adminNotificationsRepository,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     handler: async ({ request, params }) => {
       const id = (params as { id: string }).id;
       const doc = await adminNotificationsRepository.findById(id);

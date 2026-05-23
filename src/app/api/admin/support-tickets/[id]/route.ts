@@ -6,6 +6,7 @@ import {
   errorResponse,
   supportRepository,
 } from "@mohasinac/appkit";
+import { ROLES_TRUST_SAFETY } from "@/constants";
 
 const patchSchema = z.object({
   status: z.enum(["open", "in_progress", "waiting_on_user", "resolved", "closed"]).optional(),
@@ -18,7 +19,7 @@ const patchSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "employee"],
+    roles: [...ROLES_TRUST_SAFETY],
     permission: "admin:support-tickets:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
@@ -32,7 +33,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler<(typeof patchSchema)["_output"]>({
     auth: true,
-    roles: ["admin", "employee"],
+    roles: [...ROLES_TRUST_SAFETY],
     permission: "admin:support-tickets:write",
     schema: patchSchema,
     handler: async ({ params, body }) => {

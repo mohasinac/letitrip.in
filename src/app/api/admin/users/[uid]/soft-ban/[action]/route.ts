@@ -6,11 +6,12 @@ import {
   userRepository,
   notificationRepository,
 } from "@mohasinac/appkit";
+import { ROLES_TRUST_SAFETY } from "@/constants";
 
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "employee"],
+    roles: [...ROLES_TRUST_SAFETY],
     permission: "admin:user-bans:write",
     handler: async ({ params, user }) => {
       const { uid, action } = params as { uid: string; action: string };

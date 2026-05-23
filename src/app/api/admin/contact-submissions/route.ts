@@ -10,12 +10,13 @@ import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appk
 import { contactSubmissionsRepository } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { sortBy, COMMON_FIELDS } from "@mohasinac/appkit";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(COMMON_FIELDS.CREATED_AT);
 
 export const GET = withProviders(createRouteHandler({
   auth: true,
-  roles: ["admin"],
+  roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:contact:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);

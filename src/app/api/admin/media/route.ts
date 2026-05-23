@@ -6,6 +6,7 @@ import {
   getAdminStorage,
   serverLogger,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 interface MediaFile {
   name: string;
@@ -31,7 +32,7 @@ const ERRORS = {
  */
 export const GET = withProviders(
   createApiHandler({
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:media:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);

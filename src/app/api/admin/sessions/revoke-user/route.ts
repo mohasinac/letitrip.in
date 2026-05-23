@@ -14,6 +14,7 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { z } from "zod";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 const revokeUserSchema = z.object({
   userId: z.string().min(1, "userId is required"),
@@ -28,7 +29,7 @@ const revokeUserSchema = z.object({
  */
 export const POST = withProviders(createRouteHandler<(typeof revokeUserSchema)["_output"]>({
   auth: true,
-  roles: ["admin", "moderator"],
+  roles: [...ROLES_ADMIN_MOD],
   permission: "admin:sessions:write",
   schema: revokeUserSchema,
   handler: async ({ user, body }) => {

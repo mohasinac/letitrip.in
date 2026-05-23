@@ -6,6 +6,7 @@ import {
   adminUpdateUser,
 } from "@mohasinac/appkit";
 import type { UserAdminUpdateInput } from "@mohasinac/appkit";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const updateSchema = z.object({
   permissionGroup: z.string().optional(),
@@ -15,7 +16,7 @@ const updateSchema = z.object({
 export const PUT = withProviders(
   createRouteHandler<z.infer<typeof updateSchema>>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:team:write",
     schema: updateSchema,
     handler: async ({ body, user: adminUser, params }) => {
@@ -36,7 +37,7 @@ export const PUT = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:team:write",
     handler: async ({ user: adminUser, params }) => {
       const { id } = params as { id: string };

@@ -13,10 +13,11 @@ import { successResponse } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { AppError } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const GET = withProviders(createRouteHandler({
   auth: true,
-  roles: ["admin", "moderator"],
+  roles: [...ROLES_ADMIN_MOD],
   handler: async ({ request }) => {
     const url = new URL(request.url);
     const conversationId = url.searchParams.get("conversationId");

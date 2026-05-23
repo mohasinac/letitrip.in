@@ -5,6 +5,7 @@ import {
   successResponse,
   siteSettingsRepository,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const featureFlagsSchema = z.object({
   flags: z.record(z.string(), z.boolean()).optional(),
@@ -14,7 +15,7 @@ const featureFlagsSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:feature-flags:read",
     handler: async () => {
       const settings = await siteSettingsRepository.getSingleton();
@@ -29,7 +30,7 @@ export const GET = withProviders(
 export const PUT = withProviders(
   createRouteHandler<(typeof featureFlagsSchema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:feature-flags:write",
     schema: featureFlagsSchema,
     handler: async ({ body }) => {

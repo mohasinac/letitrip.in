@@ -6,6 +6,7 @@ import {
   errorResponse,
   categoriesRepository,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const MSG_CATEGORY_NOT_FOUND = "Category not found.";
 
@@ -26,7 +27,7 @@ const updateCategorySchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:categories:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
@@ -40,7 +41,7 @@ export const GET = withProviders(
 export const PUT = withProviders(
   createRouteHandler<(typeof updateCategorySchema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:categories:write",
     schema: updateCategorySchema,
     handler: async ({ body, params }) => {
@@ -60,7 +61,7 @@ export const PUT = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:categories:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;

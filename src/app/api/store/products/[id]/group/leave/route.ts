@@ -1,10 +1,11 @@
 import { withProviders } from "@/providers.config";
 import { createApiHandler, ApiErrors, successResponse } from "@mohasinac/appkit";
 import { productRepository, storeRepository } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 /** DELETE /api/store/products/[id]/group/leave — child leaves its group */
 export const DELETE = withProviders(createApiHandler({
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   handler: async ({ user, params }) => {
     const productId = (params as { id: string }).id;
 

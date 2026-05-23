@@ -13,10 +13,11 @@ import { successResponse } from "@mohasinac/appkit";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 import { NotFoundError } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 export const GET = withProviders(createRouteHandler({
   auth: true,
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   handler: async ({ user }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store?.storeSlug)

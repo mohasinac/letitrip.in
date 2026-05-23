@@ -19,6 +19,7 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { shiprocketVerifyPickupOTP } from "@mohasinac/appkit";
 import type { SellerShippingConfig } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 const verifyOTPSchema = z.object({
   otp: z.number().int().min(100000).max(999999),
@@ -27,7 +28,7 @@ const verifyOTPSchema = z.object({
 
 export const POST = withProviders(createApiHandler<(typeof verifyOTPSchema)["_output"]>({
   auth: true,
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   schema: verifyOTPSchema,
   handler: async ({ user, body }) => {
     const { otp, pickupLocationId } = body || {};

@@ -1,12 +1,13 @@
 import { withProviders } from "@/providers.config";
 import { createApiHandler, ApiErrors, successResponse } from "@mohasinac/appkit";
 import { productRepository, isAuctionListing } from "@mohasinac/appkit";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const MSG_PRODUCT_NOT_FOUND = "Product not found.";
 
 /** POST — start a group (admin, no ownership check) */
 export const POST = withProviders(createApiHandler({
-  roles: ["admin"],
+  roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:products:write",
   handler: async ({ params }) => {
     const productId = (params as { id: string }).id;
@@ -23,7 +24,7 @@ export const POST = withProviders(createApiHandler({
 
 /** PATCH — update groupTitle (admin) */
 export const PATCH = withProviders(createApiHandler({
-  roles: ["admin"],
+  roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:products:write",
   handler: async ({ request, params }) => {
     const productId = (params as { id: string }).id;
@@ -39,7 +40,7 @@ export const PATCH = withProviders(createApiHandler({
 
 /** DELETE — dissolve the group (admin) */
 export const DELETE = withProviders(createApiHandler({
-  roles: ["admin"],
+  roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:products:delete",
   handler: async ({ params }) => {
     const productId = (params as { id: string }).id;

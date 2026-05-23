@@ -1,5 +1,9 @@
 import { withProviders } from "@/providers.config";
-import { EVENT_FIELDS } from "@/constants";
+import {
+  EVENT_FIELDS,
+  ROLES_ADMIN_MOD,
+  ROLES_ADMIN_ONLY,
+} from "@/constants";
 import { sortBy } from "@mohasinac/appkit";
 
 const DEFAULT_SORTS = sortBy(EVENT_FIELDS.CREATED_AT);
@@ -143,7 +147,7 @@ const createEventSchema = z.object({
 // ---------------------------------------------------------------------------
 export const GET = withProviders(createRouteHandler({
   auth: true,
-  roles: ["admin", "moderator"],
+  roles: [...ROLES_ADMIN_MOD],
   permission: "admin:events:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
@@ -191,7 +195,7 @@ export const GET = withProviders(createRouteHandler({
 // ---------------------------------------------------------------------------
 export const POST = withProviders(createRouteHandler({
   auth: true,
-  roles: ["admin"],
+  roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:events:write",
   schema: createEventSchema,
   handler: async (data) => {

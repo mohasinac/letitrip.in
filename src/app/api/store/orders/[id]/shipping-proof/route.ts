@@ -15,6 +15,7 @@ import {
   orderRepository,
   storeRepository,
 } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 const bodySchema = z.object({
   /** Media slug URL returned by the signed-URL upload flow. */
@@ -25,7 +26,7 @@ const bodySchema = z.object({
 export const POST = withProviders(
   createRouteHandler<(typeof bodySchema)["_output"]>({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     schema: bodySchema,
     handler: async ({ user, body, params }) => {
       const id = (params as { id: string }).id;

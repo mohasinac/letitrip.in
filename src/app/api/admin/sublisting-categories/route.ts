@@ -8,6 +8,7 @@ import {
   sortBy,
   CATEGORY_FIELDS,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_ONLY, ROLES_ANY_STAFF } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(CATEGORY_FIELDS.NAME, "ASC");
 
@@ -22,7 +23,7 @@ const createSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator", "seller"],
+    roles: [...ROLES_ANY_STAFF],
     permission: "admin:categories:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
@@ -57,7 +58,7 @@ export const GET = withProviders(
 export const POST = withProviders(
   createRouteHandler<(typeof createSchema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:categories:write",
     schema: createSchema,
     handler: async ({ body, user }) => {

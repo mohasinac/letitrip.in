@@ -2,6 +2,7 @@ import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
 import { productTemplateRepository, storeRepository } from "@mohasinac/appkit";
+import { ROLES_STORE_READ, ROLES_STORE_WRITE } from "@/constants";
 
 const MSG_TEMPLATE_NOT_FOUND = "Template not found.";
 
@@ -21,7 +22,7 @@ const updateSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin", "moderator"],
+    roles: [...ROLES_STORE_READ],
     handler: async ({ params }) => {
       const id = (params as Record<string, string>)?.id;
       if (!id) return ApiErrors.badRequest("Missing id");
@@ -35,7 +36,7 @@ export const GET = withProviders(
 export const PUT = withProviders(
   createRouteHandler<(typeof updateSchema)["_output"]>({
     auth: true,
-    roles: ["seller", "admin", "moderator"],
+    roles: [...ROLES_STORE_READ],
     schema: updateSchema,
     handler: async ({ params, body, user }) => {
       const id = (params as Record<string, string>)?.id;
@@ -60,7 +61,7 @@ export const PUT = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     handler: async ({ params, user }) => {
       const id = (params as Record<string, string>)?.id;
       if (!id) return ApiErrors.badRequest("Missing id");

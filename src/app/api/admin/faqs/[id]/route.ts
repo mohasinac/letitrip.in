@@ -6,6 +6,7 @@ import {
   errorResponse,
   faqsRepository,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const updateFaqSchema = z.object({
   question: z.string().min(1).optional(),
@@ -18,7 +19,7 @@ const updateFaqSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:faqs:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
@@ -31,7 +32,7 @@ export const GET = withProviders(
 
 const updateHandler = createRouteHandler<(typeof updateFaqSchema)["_output"]>({
   auth: true,
-  roles: ["admin", "moderator"],
+  roles: [...ROLES_ADMIN_MOD],
   permission: "admin:faqs:read",
   schema: updateFaqSchema,
   handler: async ({ body, params }) => {
@@ -52,7 +53,7 @@ export const PATCH = withProviders(updateHandler);
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:faqs:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;

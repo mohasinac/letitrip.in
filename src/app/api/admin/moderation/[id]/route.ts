@@ -6,11 +6,12 @@ import {
   ApiErrors,
   moderationQueueRepository,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const doc = await moderationQueueRepository.findById(id);
@@ -23,7 +24,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     handler: async ({ request, params, user }) => {
       const id = (params as { id: string }).id;
       const doc = await moderationQueueRepository.findById(id);

@@ -22,6 +22,7 @@ import {
   finalizeStagedMediaObjectArray,
 } from "@mohasinac/appkit";
 import { BlogPostStatusValues, sortBy, sieveFilter, SIEVE_OP, BLOG_FIELDS, COMMON_FIELDS } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(COMMON_FIELDS.CREATED_AT);
 
@@ -67,7 +68,7 @@ const createBlogPostSchema = z.object({
  */
 export const GET = withProviders(createRouteHandler({
   auth: true,
-  roles: ["admin", "moderator"],
+  roles: [...ROLES_ADMIN_MOD],
   permission: "admin:blog:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
@@ -148,7 +149,7 @@ export const GET = withProviders(createRouteHandler({
  */
 export const POST = withProviders(createRouteHandler({
   auth: true,
-  roles: ["admin", "moderator"],
+  roles: [...ROLES_ADMIN_MOD],
   permission: "admin:blog:write",
   schema: createBlogPostSchema,
   handler: async ({ body, user }) => {

@@ -10,6 +10,7 @@ import {
   COMMON_FIELDS,
   BRAND_FIELDS,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const DEFAULT_SORTS = [sortBy(COMMON_FIELDS.ORDER, "ASC"), sortBy(BRAND_FIELDS.NAME, "ASC")].join(",");
 
@@ -37,7 +38,7 @@ const createBrandSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:brands:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
@@ -70,7 +71,7 @@ export const GET = withProviders(
 export const POST = withProviders(
   createRouteHandler<(typeof createBrandSchema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:brands:write",
     schema: createBrandSchema,
     handler: async ({ body }) => {

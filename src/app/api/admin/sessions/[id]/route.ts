@@ -4,11 +4,12 @@ import {
   createRouteHandler,
   successResponse,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:sessions:delete",
     handler: async ({ user, params }) => {
       const sessionId = (params as { id: string }).id;

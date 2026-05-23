@@ -18,11 +18,12 @@ import {
 } from "@mohasinac/appkit";
 import { syncProductsToCatalog } from "@mohasinac/appkit/server";
 import type { CatalogSyncProduct } from "@mohasinac/appkit/server";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     handler: async ({ user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return errorResponse("Store not found", 404);

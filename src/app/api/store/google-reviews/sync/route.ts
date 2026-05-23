@@ -6,6 +6,7 @@ import {
   storeGoogleConfigRepository,
   storeRepository,
 } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 // Sync trigger — the actual Google Places API fetch is offloaded to a Firebase
 // Function (60s ceiling). This handler just queues the sync request by stamping
@@ -13,7 +14,7 @@ import {
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     handler: async ({ user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return ApiErrors.forbidden("No store");

@@ -1,13 +1,14 @@
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
 import { storeRepository } from "@mohasinac/appkit";
+import { ROLES_STORE_READ } from "@/constants";
 
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$/;
 
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin", "moderator"],
+    roles: [...ROLES_STORE_READ],
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const slug = url.searchParams.get("slug")?.toLowerCase().trim() ?? "";

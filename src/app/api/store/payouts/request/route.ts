@@ -11,6 +11,7 @@ import {
   successResponse,
   requestPayout,
 } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 const requestPayoutSchema = z.object({
   paymentMethod: z.enum(["bank_transfer", "upi"]),
@@ -19,7 +20,7 @@ const requestPayoutSchema = z.object({
 
 export const POST = withProviders(createRouteHandler<{ paymentMethod: "bank_transfer" | "upi"; notes?: string }>({
   auth: true,
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   schema: requestPayoutSchema,
   handler: async ({ user, body }) => {
     const displayName = (user as { uid: string; displayName?: string | null }).displayName ?? "";

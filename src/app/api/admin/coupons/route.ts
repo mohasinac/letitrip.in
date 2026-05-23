@@ -13,6 +13,7 @@ import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import type { CouponCreateInput } from "@mohasinac/appkit";
 import { z } from "zod";
+import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const couponCreateSchema = z.object({
   code: z.string().min(2).max(50),
@@ -66,7 +67,7 @@ const couponCreateSchema = z.object({
  * GET /api/admin/coupons
  */
 export const GET = withProviders(createRouteHandler({
-  roles: ["admin", "moderator"],
+  roles: [...ROLES_ADMIN_MOD],
   permission: "admin:coupons:read",
   handler: async ({ request }) => {
     const url = new URL(request.url);
@@ -102,7 +103,7 @@ export const GET = withProviders(createRouteHandler({
  */
 export const POST = withProviders(createRouteHandler({
   auth: true,
-  roles: ["admin"],
+  roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:coupons:write",
   handler: async ({ request, user }) => {
     const body = await request.json();

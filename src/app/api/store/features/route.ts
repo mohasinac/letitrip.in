@@ -11,11 +11,12 @@ import {
   type ProductFeatureStoreCreatePayload,
   ERROR_MESSAGES,
 } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     handler: async ({ user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store)
@@ -37,7 +38,7 @@ export const GET = withProviders(
 export const POST = withProviders(
   createRouteHandler<ProductFeatureStoreCreatePayload>({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     schema: productFeatureStoreCreateSchema,
     handler: async ({ body, user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);

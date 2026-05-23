@@ -6,11 +6,12 @@ import {
   ApiErrors,
   customRolesRepository,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const doc = await customRolesRepository.findById(id);
@@ -23,7 +24,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     handler: async ({ request, params }) => {
       const id = (params as { id: string }).id;
       const doc = await customRolesRepository.findById(id);
@@ -42,7 +43,7 @@ export const PATCH = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       await customRolesRepository.delete(id);

@@ -9,9 +9,10 @@ import { withProviders } from "@/providers.config";
 import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse, ApiErrors } from "@mohasinac/appkit";
 import { productRepository, storeRepository } from "@mohasinac/appkit";
+import { ROLES_STORE_READ } from "@/constants";
 
 export const GET = withProviders(createApiHandler({
-  roles: ["seller", "admin", "moderator"],
+  roles: [...ROLES_STORE_READ],
   handler: async ({ request, user }) => {
     // Resolve the store owned by this user — storeId is the public-facing key on products
     const store = await storeRepository.findByOwnerId(user!.uid);

@@ -5,6 +5,7 @@ import {
   successResponse,
   WISHLIST_MAX,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 /**
  * GET /api/admin/wishlists — one row per user with item count + last update.
@@ -13,7 +14,7 @@ import {
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:wishlists:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);

@@ -7,6 +7,7 @@ import {
   successResponse,
   errorResponse,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 const updateOrderSchema = z.object({
   status: z.string().optional(),
@@ -20,7 +21,7 @@ const updateOrderSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:orders:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
@@ -34,7 +35,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateOrderSchema)["_output"]>({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:orders:write",
     schema: updateOrderSchema,
     handler: async ({ body, params, user }) => {

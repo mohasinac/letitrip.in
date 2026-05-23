@@ -7,6 +7,7 @@ import {
   getAdminDb,
   serverLogger,
 } from "@mohasinac/appkit";
+import { ROLES_ANY_STAFF } from "@/constants";
 
 const PREVIEW_TTL_MS = 30 * 60 * 1000; // 30 minutes
 const PREVIEW_COLLECTION = "previewDrafts";
@@ -46,7 +47,7 @@ function generateToken(): string {
  */
 export const POST = withProviders(
   createApiHandler({
-    roles: ["admin", "moderator", "seller"],
+    roles: [...ROLES_ANY_STAFF],
     handler: async ({ request, user }) => {
       const json = await request.json().catch(() => null);
       const parsed = previewSchema.safeParse(json);

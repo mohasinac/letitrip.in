@@ -6,9 +6,10 @@ import { withProviders } from "@/providers.config";
 import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { offerRepository, storeRepository } from "@mohasinac/appkit";
+import { ROLES_STORE_READ } from "@/constants";
 
 export const GET = withProviders(createApiHandler({
-  roles: ["seller", "admin", "moderator"],
+  roles: [...ROLES_STORE_READ],
   handler: async ({ request, user }) => {
     const url = new URL(request.url);
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);

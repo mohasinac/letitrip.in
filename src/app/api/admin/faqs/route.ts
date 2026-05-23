@@ -9,6 +9,7 @@ import {
 } from "@mohasinac/appkit";
 import { faqsRepository } from "@mohasinac/appkit";
 import { sortBy, FAQ_FIELDS } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const DEFAULT_SORTS = [sortBy(FAQ_FIELDS.PRIORITY), sortBy(FAQ_FIELDS.ORDER, "ASC")].join(",");
 import { z } from "zod";
@@ -29,7 +30,7 @@ const createFaqSchema = z.object({
 
 export const GET = withProviders(createRouteHandler({
   auth: true,
-  roles: ["admin", "moderator"],
+  roles: [...ROLES_ADMIN_MOD],
   permission: "admin:faqs:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
@@ -70,7 +71,7 @@ export const GET = withProviders(createRouteHandler({
 export const POST = withProviders(
   createRouteHandler<(typeof createFaqSchema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:faqs:write",
     schema: createFaqSchema,
     handler: async ({ body }) => {

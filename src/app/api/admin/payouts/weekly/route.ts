@@ -1,5 +1,8 @@
 import { withProviders } from "@/providers.config";
-import { PAYOUT_FIELDS } from "@/constants";
+import {
+  PAYOUT_FIELDS,
+  ROLES_ADMIN_ONLY,
+} from "@/constants";
 /**
  * POST /api/admin/payouts/weekly
  *
@@ -46,7 +49,7 @@ const PLATFORM_COMMISSION_RATE = 0.05; // 5 %
 
 export const POST = withProviders(createRouteHandler({
   auth: true,
-  roles: ["admin"],
+  roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:payouts:write",
   handler: async () => {
     const eligibleOrders = await orderRepository.listAll({

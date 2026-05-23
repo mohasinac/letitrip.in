@@ -5,6 +5,7 @@ import {
   createRouteHandler,
   successResponse,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 const reviewEntrySchema = z.object({
   status: z.enum(["approved", "rejected", "flagged"]),
@@ -15,7 +16,7 @@ const reviewEntrySchema = z.object({
 export const PATCH = withProviders(
   createRouteHandler<(typeof reviewEntrySchema)["_output"]>({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:events:write",
     schema: reviewEntrySchema,
     handler: async ({ body, params, user }) => {

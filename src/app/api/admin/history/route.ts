@@ -5,6 +5,7 @@ import {
   successResponse,
   HISTORY_MAX,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 /**
  * GET /api/admin/history — one row per user with item count + last visit.
@@ -13,7 +14,7 @@ import {
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:sessions:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);

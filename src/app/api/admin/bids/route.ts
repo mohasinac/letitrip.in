@@ -6,9 +6,10 @@ import { withProviders } from "@/providers.config";
 import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { bidRepository } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const GET = withProviders(createApiHandler({
-  roles: ["admin", "moderator"],
+  roles: [...ROLES_ADMIN_MOD],
   permission: "admin:bids:read",
   handler: async ({ request }) => {
     const url = new URL(request.url);

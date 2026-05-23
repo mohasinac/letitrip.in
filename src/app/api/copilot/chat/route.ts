@@ -17,6 +17,7 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { AppError } from "@mohasinac/appkit";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 // ---------------------------------------------------------------------------
 // Zod schema
@@ -71,7 +72,7 @@ Rules:
 
 export const POST = withProviders(createApiHandler<(typeof chatSchema)["_output"]>({
   auth: true,
-  roles: ["admin", "moderator"],
+  roles: [...ROLES_ADMIN_MOD],
   schema: chatSchema,
   handler: async ({ user, body }) => {
     const { prompt, conversationId } = body!;

@@ -18,6 +18,7 @@ import {
   errorResponse,
 } from "@mohasinac/appkit";
 import type { StoreDocument } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 type WhatsAppConfig = NonNullable<StoreDocument["whatsappConfig"]>;
 
@@ -35,7 +36,7 @@ function maskConfig(
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     handler: async ({ user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return errorResponse("Store not found", 404);
@@ -55,7 +56,7 @@ const putSchema = z.object({
 export const PUT = withProviders(
   createRouteHandler<(typeof putSchema)["_output"]>({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     schema: putSchema,
     handler: async ({ user, body }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);

@@ -13,6 +13,7 @@ import type { HomepageSectionUpdateInput } from "@mohasinac/appkit";
 import { validateRequestBody, formatZodErrors } from "@/validation/request-schemas";
 import { z } from "zod";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const sectionUpdateSchema = z.object({
   order: z.number().optional(),
@@ -28,7 +29,7 @@ const sectionUpdateSchema = z.object({
 export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:sections:write",
     handler: async ({ request, params, user }) => {
       const id = params?.id as string | undefined;
@@ -94,7 +95,7 @@ export const PATCH = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:sections:delete",
     handler: async ({ params, user }) => {
       const id = params?.id as string | undefined;

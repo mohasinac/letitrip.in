@@ -10,13 +10,14 @@ import {
   SUPPORT_TICKET_FIELDS,
 } from "@mohasinac/appkit";
 import type { SieveModel } from "@mohasinac/appkit";
+import { ROLES_TRUST_SAFETY } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(SUPPORT_TICKET_FIELDS.CREATED_AT);
 
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "employee"],
+    roles: [...ROLES_TRUST_SAFETY],
     permission: "admin:support-tickets:read",
     handler: async ({ request }) => {
       const searchParams = getSearchParams(request);

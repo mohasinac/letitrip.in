@@ -17,12 +17,13 @@ import { storeRepository } from "@mohasinac/appkit";
 import type { StoreDocument } from "@mohasinac/appkit";
 import type { SieveModel } from "@mohasinac/appkit";
 import { sortBy, STORE_FIELDS } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(STORE_FIELDS.CREATED_AT);
 
 export const GET = withProviders(createRouteHandler({
   auth: true,
-  roles: ["admin", "moderator"],
+  roles: [...ROLES_ADMIN_MOD],
   permission: "admin:stores:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);

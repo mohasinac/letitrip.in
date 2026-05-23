@@ -1,5 +1,9 @@
 import { withProviders } from "@/providers.config";
-import { EVENT_FIELDS } from "@/constants";
+import {
+  EVENT_FIELDS,
+  ROLES_ADMIN_MOD,
+  ROLES_ADMIN_ONLY,
+} from "@/constants";
 import { z } from "zod";
 import {
   eventRepository,
@@ -21,7 +25,7 @@ const updateEventSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:events:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
@@ -36,7 +40,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateEventSchema)["_output"]>({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:events:write",
     schema: updateEventSchema,
     handler: async ({ body, params }) => {
@@ -56,7 +60,7 @@ export const PATCH = withProviders(
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:events:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;

@@ -5,6 +5,7 @@ import {
   successResponse,
   addressesRepository,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const createAddressSchema = z.object({
   ownerType: z.enum(["user", "store"]),
@@ -25,7 +26,7 @@ const createAddressSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:addresses:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
@@ -45,7 +46,7 @@ export const GET = withProviders(
 export const POST = withProviders(
   createRouteHandler<(typeof createAddressSchema)["_output"]>({
     auth: true,
-    roles: ["admin"],
+    roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:addresses:write",
     schema: createAddressSchema,
     handler: async ({ body }) => {

@@ -4,6 +4,7 @@ import {
   createRouteHandler,
   successResponse,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 /**
  * GET /api/admin/event-entries — list all event entries (admin).
@@ -14,7 +15,7 @@ import {
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:event-entries:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);

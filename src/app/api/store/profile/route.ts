@@ -2,6 +2,7 @@ import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { createRouteHandler, successResponse, ApiErrors, errorResponse } from "@mohasinac/appkit";
 import { storeRepository } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$/;
 
@@ -18,7 +19,7 @@ const updateSchema = z.object({
 export const PUT = withProviders(
   createRouteHandler<(typeof updateSchema)["_output"]>({
     auth: true,
-    roles: ["seller", "admin"],
+    roles: [...ROLES_STORE_WRITE],
     schema: updateSchema,
     handler: async ({ body, user }) => {
       const newSlug = body!.storeSlug;

@@ -6,6 +6,7 @@ import {
   successResponse,
   errorResponse,
 } from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 const updateEntrySchema = z.object({
   status: z.enum(["CONFIRMED", "WAITLISTED", "CANCELLED"]).optional(),
@@ -14,7 +15,7 @@ const updateEntrySchema = z.object({
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateEntrySchema)["_output"]>({
     auth: true,
-    roles: ["admin", "moderator"],
+    roles: [...ROLES_ADMIN_MOD],
     permission: "admin:event-entries:write",
     schema: updateEntrySchema,
     handler: async ({ body, params }) => {

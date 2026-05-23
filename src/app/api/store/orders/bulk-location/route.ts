@@ -1,10 +1,11 @@
 import { withProviders } from "@/providers.config";
 import { createApiHandler, successResponse, ApiErrors, orderRepository, storeRepository } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 const BULK_MAX = 50;
 
 export const PATCH = withProviders(createApiHandler({
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   handler: async ({ request, user }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store) return ApiErrors.forbidden("No store found for this account");

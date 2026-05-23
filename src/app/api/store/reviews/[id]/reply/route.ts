@@ -12,6 +12,7 @@ import {
   reviewRepository,
   AuthorizationError,
 } from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
 const replySchema = z.object({
   reply: z.string().min(1).max(1000),
@@ -19,7 +20,7 @@ const replySchema = z.object({
 
 export const POST = withProviders(createApiHandler<{ reply: string }>({
   auth: true,
-  roles: ["seller", "admin"],
+  roles: [...ROLES_STORE_WRITE],
   schema: replySchema,
   handler: async ({ params, body, user }) => {
     const reviewId = (params as Record<string, string>).id;
