@@ -14,6 +14,7 @@ import {
   Div,
   Search,
   isAdminUser,
+  useListingTypeFlags,
   useSession,
   useToast,
   ScamAwarenessModal,
@@ -150,6 +151,7 @@ export default function LayoutShellClient({
   const [scamModalDismissed, setScamModalDismissed] = useState(false);
 
   const searchLabels = SEARCH_LABELS;
+  const listingTypeFlags = useListingTypeFlags();
 
   const handleLogout = useCallback(async () => {
     try {
@@ -169,8 +171,17 @@ export default function LayoutShellClient({
   }, [signOut, queryClient, router, showToast]);
 
   const navItems = useMemo<MainNavbarItem[]>(
-    () => MAIN_NAV_ITEMS.map((item) => ({ ...item, label: tNav(item.key as Parameters<typeof tNav>[0]) })),
-    [tNav],
+    () =>
+      MAIN_NAV_ITEMS
+        // W1-43: hide listing-type-specific nav items when the type is disabled in siteSettings.
+        .filter((item) => {
+          if (item.key === "auctions") return listingTypeFlags.auction;
+          if (item.key === "preOrders") return listingTypeFlags["pre-order"];
+          if (item.key === "prizeDraws") return listingTypeFlags["prize-draw"];
+          return true;
+        })
+        .map((item) => ({ ...item, label: tNav(item.key as Parameters<typeof tNav>[0]) })),
+    [tNav, listingTypeFlags],
   );
 
   // Sidebar sections: BROWSE (nav items) + SUPPORT
