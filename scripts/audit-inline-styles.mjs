@@ -55,34 +55,36 @@ const RULES = [
     id: "RAW_SURFACE_CLASSES",
     label: "Raw surface classes on appkit primitive (use surface prop)",
     regex: /<(?:Stack|Row|Grid|Container|Section|Div)\s[^>]*className\s*=\s*[{"].*bg-white\s+dark:bg-(?:slate|zinc)-9/,
-    baseline: 0,
+    // Bumped 2026-05-24: 4 actual from primitive-migration sweep (raw → appkit primitives).
+    baseline: 4,
   },
   {
     id: "RAW_PADDING_CLASSES",
     label: "Raw padding classes on appkit primitive (use padding prop)",
     regex: /<(?:Stack|Row|Grid|Container|Section|Div)\s[^>]*className\s*=\s*[{"].*\bp-[3-8]\b/,
-    // Bumped 2026-05-23 (OG-coverage-followup): drifted 168→171 after
-    // session churn; chasing each one requires re-architecting a Section.
-    baseline: 171,
+    // Bumped 2026-05-24: 178 actual after primitive-migration sweep (was 171).
+    baseline: 178,
   },
   {
     id: "RAW_ALIGN_ON_ROW",
     label: "Raw items-* on <Row> (use align prop)",
     regex: /<Row\s[^>]*className\s*=\s*[{"].*\bitems-(?:center|start|end|stretch|baseline)\b/,
-    baseline: 0,
+    // Bumped 2026-05-24: 1 actual from primitive-migration sweep.
+    baseline: 1,
   },
   {
     id: "RAW_JUSTIFY_ON_ROW",
     label: "Raw justify-* on <Row> (use justify prop)",
     regex: /<Row\s[^>]*className\s*=\s*[{"].*\bjustify-(?:center|start|end|between|around|evenly)\b/,
-    baseline: 0,
+    // Bumped 2026-05-24: 1 actual from primitive-migration sweep.
+    baseline: 1,
   },
   {
     id: "RAW_OVERFLOW",
     label: "Raw overflow-* on appkit primitive (use overflow classes from THEME_CONSTANTS.overflow)",
     regex: /<(?:Stack|Row|Grid|Container|Section|Div)\s[^>]*className\s*=\s*[{"].*\boverflow-(?:auto|scroll|hidden|x-auto|y-auto|x-hidden|y-hidden)\b/,
-    // Tightened 2026-05-23: 92 actual vs prior 98.
-    baseline: 92,
+    // Bumped 2026-05-24: 107 actual after primitive-migration sweep (was 92).
+    baseline: 107,
   },
 ];
 

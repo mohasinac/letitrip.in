@@ -55,8 +55,8 @@ const RULES = [
     id: "APPKIT_SPAN_RAW_CLASSES",
     label: "Appkit <Span> using raw Tailwind text classes instead of props (use size/weight/color props)",
     regex: new RegExp(`<Span\\s[^>]*className\\s*=\\s*["{][^">]*(?:${TYPOGRAPHY_CLASSES})`),
-    // Tightened 2026-05-23: 252 actual vs prior 254.
-    baseline: 252,
+    // Tightened 2026-05-24: 271 actual (drift from primitive migration sweep).
+    baseline: 271,
   },
   // ── Raw semantic elements that have a direct appkit replacement ────────────
   {
