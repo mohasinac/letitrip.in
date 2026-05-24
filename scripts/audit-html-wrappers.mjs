@@ -7,9 +7,12 @@
  *   RAW_PARAGRAPH — <p> in component files; use <Text> from appkit.
  *   RAW_SECTION   — <section> in component files; use <Section> from appkit.
  *   BARE_DIV      — <div> on its own line with no attributes; likely a redundant wrapper.
+ *   RAW_DIV       — <div ...> with attributes in feature views; use <Div>/<Stack>/<Row>/<Container>
+ *                   from appkit (baseline-drift: only regressions above current count block).
  *
  * Scans .tsx files in src/ and appkit/src/ (JSX component files only).
- * Skips: node_modules, .next, seed/, repositories/, scripts/, __tests__, configs/, *.d.ts.
+ * Skips: node_modules, .next, seed/, repositories/, scripts/, __tests__, configs/, *.d.ts,
+ * ui/components (primitive implementations), _internal/server feature og.tsx (Satori OG images).
  * Exits 0 on clean, 1 on violations.
  */
 
@@ -36,8 +39,11 @@ const SKIP_DIRS = new Set([
   "validators",
 ]);
 const SKIP_FILE_RE = /\.(d\.ts|test\.tsx?|spec\.tsx?)$/;
-// Skip the UI primitive implementations — they define the wrappers themselves
-const SKIP_PATH_RE = /[/\\]ui[/\\]components[/\\]/;
+// Skip the UI primitive implementations — they define the wrappers themselves.
+// Also skip Satori-rendered OG images (server/features/**/og.tsx, og-layout.tsx),
+// ErrorBoundary files (must render before React tree is ready), and the
+// shared Layout.tsx (defines Stack/Row/Container/Section/Grid themselves).
+const SKIP_PATH_RE = /[/\\]ui[/\\](?:components|forms|rich-text)[/\\]|[/\\]_internal[/\\]server[/\\]features[/\\][^/\\]+[/\\]og(?:-layout)?\.tsx$|ErrorBoundary\.tsx$/;
 
 const RULES = [
   {
@@ -67,6 +73,14 @@ const RULES = [
     re: /^\s*<div>\s*$/,
     message: "Bare <div> with no props — likely a redundant wrapper; use <> or <Div>/<Container>",
     fix: "Replace with React.Fragment <> or remove; use <Div>/<Container>/<Stack> from appkit for layout",
+  },
+  {
+    id: "RAW_DIV",
+    // <div with at least one attribute. Excludes <div> (caught by BARE_DIV) and </div>.
+    re: /<div\s/,
+    message: "Use <Div>/<Stack>/<Row>/<Container>/<Section> from appkit instead of raw <div ...>",
+    fix: "Replace with appkit primitive: surface/padding/border props for chrome, Stack/Row for flex layouts, Grid for grids",
+    baselineDrift: true,
   },
 ];
 
@@ -111,16 +125,53 @@ for (const dir of SCAN_DIRS) {
           text: trimmed.slice(0, 100),
           message: rule.message,
           fix: rule.fix,
+          baselineDrift: !!rule.baselineDrift,
         });
+        // First-match wins per line: BARE_DIV and RAW_DIV are mutually exclusive
+        // (different regexes), but if a future rule overlaps we don't want
+        // double-counting.
+        break;
       }
     }
   }
 }
 
-const BASELINE = 0;
+// Per-rule baselines. Rules without an entry default to 0 (hard-block on any).
+// RAW_DIV is on a baseline-drift policy: today's count is the cap; lower is fine,
+// higher fails. Drive this down to 0 as feature views adopt <Div>/<Stack>/<Row>.
+const BASELINES = {
+  RAW_HEADING: 0,
+  RAW_PARAGRAPH: 0,
+  RAW_SECTION: 0,
+  BARE_DIV: 0,
+  // RAW_DIV baseline = current count of raw <div ...> in feature views (2026-05-24).
+  // Drive this down by replacing raw <div className="..."> with appkit primitives:
+  //   - flex/grid layouts → <Stack>/<Row>/<Grid>
+  //   - bordered/padded chrome → <Div surface=... padding=... border=...>
+  //   - page-level wrappers → <Container>/<Section>
+  RAW_DIV: 1236,
+};
 
-if (violations.length === 0) {
-  console.log("audit-html-wrappers: clean ✓");
+const hardBlocking = violations.filter((v) => !v.baselineDrift);
+const drift = violations.filter((v) => v.baselineDrift);
+
+const driftByRule = new Map();
+for (const v of drift) {
+  driftByRule.set(v.rule, (driftByRule.get(v.rule) || 0) + 1);
+}
+
+const regressions = [];
+for (const [rule, count] of driftByRule) {
+  const baseline = BASELINES[rule] ?? 0;
+  if (count > baseline) regressions.push({ rule, count, baseline, over: count - baseline });
+}
+
+if (hardBlocking.length === 0 && regressions.length === 0) {
+  // Report drift status (informational, not blocking)
+  const driftStatus = [...driftByRule.entries()]
+    .map(([r, c]) => `${r}=${c}/${BASELINES[r] ?? 0}`)
+    .join(", ");
+  console.log(`audit-html-wrappers: clean ✓${driftStatus ? ` (drift: ${driftStatus})` : ""}`);
   process.exit(0);
 }
 
@@ -129,24 +180,35 @@ const byRule = Map.groupBy
   ? Map.groupBy(violations, (v) => v.rule)
   : violations.reduce((m, v) => { m.set(v.rule, [...(m.get(v.rule) || []), v]); return m; }, new Map());
 
-const out = [`audit-html-wrappers: ${violations.length} violation(s) found.\n`];
+const out = [];
 for (const [rule, vs] of byRule) {
-  out.push(`[${rule}] ${vs[0].message} (${vs.length} instance${vs.length === 1 ? "" : "s"})`);
+  const baseline = BASELINES[rule] ?? 0;
+  const status = vs[0].baselineDrift
+    ? (vs.length > baseline ? ` — REGRESSION (baseline ${baseline}, +${vs.length - baseline})` : ` — within baseline ${baseline}`)
+    : "";
+  out.push(`[${rule}] ${vs[0].message} (${vs.length} instance${vs.length === 1 ? "" : "s"})${status}`);
   out.push(`  Fix: ${vs[0].fix}`);
-  for (const v of vs.slice(0, 8)) {
-    out.push(`  ${v.file}:${v.line}  ${v.text}`);
+  // Only print sample lines when this rule is actually blocking
+  const blocking = !vs[0].baselineDrift || vs.length > baseline;
+  if (blocking) {
+    for (const v of vs.slice(0, 8)) {
+      out.push(`  ${v.file}:${v.line}  ${v.text}`);
+    }
+    if (vs.length > 8) out.push(`  … and ${vs.length - 8} more`);
   }
-  if (vs.length > 8) out.push(`  … and ${vs.length - 8} more`);
   out.push("");
 }
 
-if (violations.length <= BASELINE) {
-  const improved = BASELINE - violations.length;
-  process.stdout.write(`audit-html-wrappers: ${violations.length} violation(s) (baseline ${BASELINE}${improved > 0 ? ` — ${improved} improved` : ""}). No regression.\n`);
+if (hardBlocking.length === 0 && regressions.length === 0) {
+  process.stdout.write(out.join("\n"));
   process.exit(0);
 }
 
-const regression = violations.length - BASELINE;
 process.stderr.write(out.join("\n") + "\n");
-process.stderr.write(`audit-html-wrappers: regression of ${regression} new violation(s) above baseline ${BASELINE}.\n`);
+if (hardBlocking.length > 0) {
+  process.stderr.write(`audit-html-wrappers: ${hardBlocking.length} hard-blocking violation(s).\n`);
+}
+for (const r of regressions) {
+  process.stderr.write(`audit-html-wrappers: ${r.rule} regressed +${r.over} above baseline ${r.baseline} (now ${r.count}).\n`);
+}
 process.exit(1);

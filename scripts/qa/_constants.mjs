@@ -66,46 +66,90 @@ export const SLUG_PREFIXES = Object.freeze({
 });
 
 // ── Seeded tier-0 categories ────────────────────────────────────────────────
-// Mirrors appkit/src/seed/categories-seed-data.ts (root tier). Smoke suites
-// use this to verify tier=0 results match the seeded set exactly.
+// Mirrors appkit/src/seed/categories-seed-data.ts (root tier, parentIds: []).
+// Smoke suites use this to verify tier=0 results match the seeded set exactly.
+// Refreshed 2026-05-24 — 13 roots (was 5).
 export const SEEDED_TIER0_CATEGORIES = Object.freeze([
   "category-singles",
   "category-sealed-products",
   "category-graded-cards",
   "category-duel-monsters-era",
   "category-gx-era",
+  "category-trading-cards",
+  "category-action-figures",
+  "category-diecast-vehicles",
+  "category-spinning-tops",
+  "category-model-kits",
+  "category-vintage-rare",
+  "category-digital-codes",
+  "category-live-aquatics",
 ]);
 
 // ── Seeded stores with products ──────────────────────────────────────────────
-// Mirrors appkit/src/seed/stores-seed-data.ts — 2 YGO stores (admin + Kaiba).
+// Mirrors appkit/src/seed/stores-seed-data.ts — 8 stores.
+// Refreshed 2026-05-24 — 8 stores (was 2).
 export const SEEDED_STORES_WITH_PRODUCTS = Object.freeze([
   "store-letitrip-official",
   "store-kaiba-corp-cards",
+  "store-pokemon-palace",
+  "store-cardgame-hub",
+  "store-diecast-depot",
+  "store-beyblade-arena",
+  "store-tokyo-toys-india",
+  "store-gundam-galaxy",
 ]);
 
 // ── Seeded brands ────────────────────────────────────────────────────────────
 // Mirrors categories-seed-data.ts brand rows (categoryType: "brand").
+// Refreshed 2026-05-24 — 25 brands (was 5).
 export const SEEDED_BRANDS = Object.freeze([
   "brand-konami",
   "brand-upper-deck",
   "brand-bandai",
   "brand-toei-animation",
   "brand-score-entertainment",
+  "brand-hasbro",
+  "brand-takara-tomy",
+  "brand-mattel",
+  "brand-pokemon-company",
+  "brand-funko",
+  "brand-neca",
+  "brand-mcfarlane",
+  "brand-good-smile",
+  "brand-hot-wheels",
+  "brand-tomica",
+  "brand-beyblade",
+  "brand-bushiroad",
+  "brand-bandai-spirits",
+  "brand-kotobukiya",
+  "brand-megahouse",
+  "brand-tamashii-nations",
+  "brand-kaiyodo",
+  "brand-medicom",
+  "brand-spin-master",
+  "brand-maisto",
 ]);
 
 // ── Expected seed counts ─────────────────────────────────────────────────────
 // Mirrors actual seed array lengths. Used by seed-health suites to verify
 // GET /api/demo/seed returns correct totals.
+// Refreshed 2026-05-24 against current seed files.
 export const EXPECTED_SEED_COUNTS = Object.freeze({
-  products_standard: 59,
-  auctions: 20,
+  products_standard: 62,
+  auctions: 24,
   preorders: 5,
+  prize_draws: 2,
+  classifieds: 5,
+  digital_codes: 5,
+  live_items: 4,
+  grouped_listings: 3,
   bundles: 8,
-  categories: 25,
-  brands: 5,
-  stores: 2,
-  users: 3,
-  orders: 50,
+  categories: 55, // total non-brand rows in categories collection (80 total - 25 brands)
+  category_roots: 13, // parentIds: [] entries
+  brands: 25,
+  stores: 8,
+  users: 18,
+  orders: 8,
 });
 
 // ── Currency ────────────────────────────────────────────────────────────────
