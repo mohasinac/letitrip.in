@@ -41,9 +41,9 @@ const RULES = [
     id: "INLINE_STYLE",
     label: "Inline style={{ }} (use Tailwind classes or CSS variables)",
     regex: /style\s*=\s*\{\{/,
-    // Bumped 2026-05-23 (OG-coverage-followup): +30 for prize-draws/og.tsx +
-    // item-requests/og.tsx — next/og ImageResponse requires inline styles.
-    baseline: 503,
+    // Tightened 2026-05-24 (Session 5 W1-1): 391 actual after 11 og.tsx files
+    // migrated to renderOgLayout factory (-112). Down from 503 baseline.
+    baseline: 391,
   },
   {
     id: "INLINE_STYLE_VAR",
