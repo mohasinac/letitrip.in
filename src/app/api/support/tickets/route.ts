@@ -23,6 +23,12 @@ const createSchema = z.object({
     "refund_request",
     "auction_dispute",
     "general",
+    // ST-4 — sellers request admin-only store field changes
+    "store_change_request",
+    // ST-3 — buyers/sellers request order line-item mutation
+    "order_modification_request",
+    // ST-5 — appeal a ban (bypasses soft-ban guard + active-ticket limit)
+    "unban_request",
   ]),
   subject: z.string().min(3).max(200),
   description: z.string().min(10).max(5000),
@@ -48,20 +54,27 @@ export const POST = withProviders(
     auth: true,
     schema: createSchema,
     handler: async ({ user, body }) => {
-      // Soft ban check
-      const userDoc = await userRepository.findById(user!.uid);
-      if (userDoc && isSoftBanned(userDoc, "create_support_tickets")) {
-        const ban = userDoc.softBans?.find((b) => b.action === "create_support_tickets");
-        return errorResponse(
-          `Your account is restricted from creating support tickets. Reason: ${ban?.reason ?? "Policy violation"}. Contact support if you believe this is an error.`,
-          403,
-        );
+      const { category, subject, description, orderId } = body!;
+      // ST-5 — `unban_request` is the formal appeal channel. It bypasses the
+      // create_support_tickets soft-ban guard AND the active-ticket limit so
+      // a soft-banned user (or one already at the ticket cap) can still file
+      // an appeal.
+      const isUnbanRequest = category === "unban_request";
+
+      // Soft ban check (skipped for unban_request appeals)
+      if (!isUnbanRequest) {
+        const userDoc = await userRepository.findById(user!.uid);
+        if (userDoc && isSoftBanned(userDoc, "create_support_tickets")) {
+          const ban = userDoc.softBans?.find((b) => b.action === "create_support_tickets");
+          return errorResponse(
+            `Your account is restricted from creating support tickets. Reason: ${ban?.reason ?? "Policy violation"}. Open an "Appeal a ban" ticket if you believe this is an error.`,
+            403,
+          );
+        }
       }
 
-      const { category, subject, description, orderId } = body!;
-
-      // General ticket limit
-      if (category !== "order_issue") {
+      // General ticket limit (skipped for unban_request appeals)
+      if (category !== "order_issue" && !isUnbanRequest) {
         const activeCount = await supportRepository.countActiveTickets(user!.uid);
         if (activeCount >= MAX_OPEN_TICKETS) {
           return errorResponse(
