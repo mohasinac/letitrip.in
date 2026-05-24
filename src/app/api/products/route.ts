@@ -10,7 +10,10 @@ import {
   sieveFilter,
   sieveAnd,
   sortBy,
+  isListingTypeEnabled,
+  enabledListingTypes,
 } from "@mohasinac/appkit";
+import { getSiteSettingsGlobal } from "@mohasinac/appkit/server";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
 import {
@@ -226,6 +229,41 @@ async function _GET(request: Request): Promise<NextResponse> {
   const pageSize = std.pageSize ?? DEFAULT_PAGE_SIZE;
   const sorts = std.sorts ?? DEFAULT_SORTS;
   const cursor = std.cursor;
+
+  // W1-43 — listing-type feature flag gating. If the caller requested a
+  // disabled type (?listingType=auction with auctions off), return empty
+  // results immediately. For no-filter calls, post-filter excludes disabled
+  // types from the response so the public listing pages stay clean.
+  const requestedListingType = param(url, PRODUCT_FIELDS.LISTING_TYPE);
+  let siteSettings: Awaited<ReturnType<typeof getSiteSettingsGlobal>> | null = null;
+  try {
+    siteSettings = await getSiteSettingsGlobal();
+  } catch {
+    siteSettings = null;
+  }
+  if (
+    requestedListingType &&
+    siteSettings &&
+    !isListingTypeEnabled(requestedListingType as never, siteSettings)
+  ) {
+    const response = NextResponse.json({
+      success: true,
+      data: {
+        items: [],
+        total: 0,
+        page,
+        pageSize,
+        totalPages: 0,
+        hasMore: false,
+        listingTypeDisabled: true,
+      },
+    });
+    response.headers.set("Cache-Control", PUBLIC_LISTING_CACHE_CONTROL);
+    return response;
+  }
+  const enabledTypeSet = new Set<string>(
+    siteSettings ? enabledListingTypes(siteSettings) : [],
+  );
   // 'q' and 'inStock' are extracted here and handled separately from other Sieve filters.
   // Firestore can't combine a title prefix-range or stockQuantity inequality with arbitrary
   // orderBy fields without per-combination composite indexes. So we pass both to the upstream
@@ -377,6 +415,19 @@ async function _GET(request: Request): Promise<NextResponse> {
       resultPage = result.page;
       totalPages = result.totalPages;
       hasMore = result.hasMore;
+    }
+
+    // W1-43 — when no specific listingType was requested, strip any documents
+    // whose listingType is currently disabled in site settings. Cheap O(n)
+    // pass; only triggers when at least one type is off.
+    if (!requestedListingType && enabledTypeSet.size > 0 && enabledTypeSet.size < 7) {
+      const before = items.length;
+      items = (items as Array<Record<string, unknown>>).filter((it) => {
+        const lt = typeof it.listingType === "string" ? it.listingType : "standard";
+        return enabledTypeSet.has(lt);
+      });
+      const removed = before - items.length;
+      if (removed > 0) total = Math.max(0, total - removed);
     }
 
     const response = NextResponse.json({

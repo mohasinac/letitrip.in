@@ -14,6 +14,16 @@ const patchSchema = z.object({
   assignedTo: z.string().optional(),
   assignedToName: z.string().optional(),
   internalNotes: z.string().optional(),
+  // ST-6 — admin/support assignable subject pointers
+  relatedParties: z
+    .object({
+      userId: z.string().optional(),
+      storeId: z.string().optional(),
+      orderId: z.string().optional(),
+      productId: z.string().optional(),
+      bidId: z.string().optional(),
+    })
+    .optional(),
 });
 
 export const GET = withProviders(
