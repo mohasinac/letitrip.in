@@ -46,7 +46,7 @@ const LISTINGS_COLLECTIONS: SeedCollectionName[] = [
 ];
 
 const TRANSACTIONAL_COLLECTIONS: SeedCollectionName[] = [
-  "orders", "carts", "wishlists", "history", "coupons", "reviews", "payouts", "conversations",
+  "orders", "carts", "wishlists", "history", "coupons", "claimedCoupons", "couponUsage", "reviews", "payouts", "conversations",
 ];
 
 const CONTENT_COLLECTIONS: SeedCollectionName[] = [
@@ -574,6 +574,49 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "usage.totalLimit", type: "number",    sortable: true },
       { name: "restrictions.firstTimeUserOnly", type: "boolean", filterable: true },
       { name: "createdAt",        type: "timestamp", sortable: true },
+    ],
+  },
+  claimedCoupons: {
+    label: "Claimed Coupons",
+    icon: "🎁",
+    group: "transactional",
+    description: "Per-user coupon wallet. Records each coupon a user has claimed (from spin wheel, raffle, manual issue, etc.). Status lifecycle: active → used | expired. Drives the user-facing 'My Coupons' tabs (Active / Expired / Used).",
+    slugPattern: "claimed-{userId}-{couponCode}",
+    seededItems: [
+      "3 records for user-yugi-muto: active (spin), expired (manual), used (manual)",
+    ],
+    pendingItems: [],
+    uiPath: "/user/coupons",
+    fields: [
+      { name: "userId",         type: "ref",       filterable: true, indexed: true },
+      { name: "couponId",       type: "ref",       filterable: true, indexed: true },
+      { name: "couponCode",     type: "string",    searchable: true },
+      { name: "source",         type: "enum",      filterable: true, note: "spin|raffle|manual|signup" },
+      { name: "couponSnapshot", type: "map",       note: "frozen copy of coupon doc at claim time" },
+      { name: "status",         type: "enum",      filterable: true, indexed: true, note: "active|used|expired" },
+      { name: "expiresAt",      type: "timestamp", sortable: true, indexed: true },
+      { name: "usedAt",         type: "timestamp", sortable: true },
+      { name: "createdAt",      type: "timestamp", sortable: true, indexed: true },
+    ],
+  },
+  couponUsage: {
+    label: "Coupon Usage",
+    icon: "📊",
+    group: "transactional",
+    description: "Per-user coupon redemption counter — subcollection at users/{uid}/couponUsage/{couponId}. Written fire-and-forget by couponsRepository.applyCoupon() at checkout. Read during validation to enforce perUserLimit.",
+    slugPattern: "users/{userId}/couponUsage/{couponId}",
+    seededItems: [
+      "4 records: Yugi used YUGI10 + FREESHIP499, Kaiba used KAIBA25, Admin used EXODIA50",
+    ],
+    pendingItems: [],
+    uiPath: "/admin/coupons (per-coupon usage tab)",
+    fields: [
+      { name: "userId",      type: "ref",       indexed: true, note: "parent doc id (path scope)" },
+      { name: "couponId",    type: "ref",       indexed: true, note: "doc id within subcollection" },
+      { name: "couponCode",  type: "string",    searchable: true },
+      { name: "usageCount",  type: "number",    sortable: true },
+      { name: "lastUsedAt",  type: "timestamp", sortable: true },
+      { name: "orders",      type: "array",     note: "order IDs that consumed this coupon" },
     ],
   },
   reviews: {
