@@ -18,6 +18,7 @@ SessionProvider,
 import { siteSettingsRepository } from "@mohasinac/appkit";
 import { getDisabledRoutes } from "@mohasinac/appkit/server";
 import LayoutShellClient from "./LayoutShellClient";
+import QueryProvider from "./QueryProvider";
 import { LOCALE_CONFIG } from "@/constants";
 import { resolveLocale } from "@/i18n/resolve-locale";
 import ClientProviderInitializer from "@/app/ClientProviderInitializer";
@@ -80,9 +81,11 @@ export default async function Layout({ children, params }: Props) {
             <WishlistCapWatcher />
             <BottomActionsProvider>
               <DashboardNavProvider>
-                <LayoutClient>
-                  <LayoutShellClient seedPanelEnabled={seedPanelEnabled} siteLogoUrl={siteLogoUrl} siteTheme={siteTheme}><Suspense>{children}</Suspense></LayoutShellClient>
-                </LayoutClient>
+                <QueryProvider>
+                  <LayoutClient>
+                    <LayoutShellClient seedPanelEnabled={seedPanelEnabled} siteLogoUrl={siteLogoUrl} siteTheme={siteTheme}><Suspense>{children}</Suspense></LayoutShellClient>
+                  </LayoutClient>
+                </QueryProvider>
               </DashboardNavProvider>
             </BottomActionsProvider>
           </ToastProvider>
