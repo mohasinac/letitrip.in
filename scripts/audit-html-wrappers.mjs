@@ -145,12 +145,12 @@ const BASELINES = {
   RAW_SECTION: 0,
   BARE_DIV: 0,
   // RAW_DIV baseline = current count of raw <div ...> in feature views.
-  // Tightened 2026-05-30 (Phase D5): 540 actual after categories/ sweep (-42).
+  // Tightened 2026-05-30 (Phase D6): 524 actual after auctions/+pre-orders/ sweep (-16).
   // Drive this down by replacing raw <div className="..."> with appkit primitives:
   //   - flex/grid layouts → <Stack>/<Row>/<Grid>
   //   - bordered/padded chrome → <Div surface=... padding=... border=...>
   //   - page-level wrappers → <Container>/<Section>
-  RAW_DIV: 540,
+  RAW_DIV: 524,
 };
 
 const hardBlocking = violations.filter((v) => !v.baselineDrift);
