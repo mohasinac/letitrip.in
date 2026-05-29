@@ -34,6 +34,9 @@ const ALLOWLIST = [
   "MediaSlider.tsx",
   "HeroCarousel.tsx",
   "SpinWheelView.tsx",
+  // Dev-only toolbar — never renders in prod (IS_DEV gated to false).
+  // Cosmetic inline styles for a developer debug surface; not worth converting.
+  "DevToolbar.tsx",
 ];
 
 const RULES = [
@@ -41,9 +44,8 @@ const RULES = [
     id: "INLINE_STYLE",
     label: "Inline style={{ }} (use Tailwind classes or CSS variables)",
     regex: /style\s*=\s*\{\{/,
-    // Tightened 2026-05-24 (Session 5 W1-1): 391 actual after 11 og.tsx files
-    // migrated to renderOgLayout factory (-112). Down from 503 baseline.
-    baseline: 391,
+    // Tightened 2026-05-30 (Phase A2): 373 actual after DevToolbar.tsx allowlisted (-18).
+    baseline: 373,
   },
   {
     id: "INLINE_STYLE_VAR",

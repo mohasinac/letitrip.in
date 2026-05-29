@@ -19,6 +19,7 @@ import {
   Button,
   Checkbox,
   Container,
+  Grid,
   Heading,
   Input,
   Row,
@@ -1675,11 +1676,11 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
+      <Row justify="between" gap="sm" wrap className="mb-2">
         <Text className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider m-0">
           📐 Schema Fields <span className="text-zinc-400 dark:text-slate-500 font-normal normal-case tracking-normal">({fields.length} fields)</span>
         </Text>
-        <div className="flex items-center gap-2">
+        <Row gap="sm">
           <Input
             bare
             type="text"
@@ -1699,8 +1700,8 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
           >
             🔒 PII only
           </Button>
-        </div>
-      </div>
+        </Row>
+      </Row>
 
       <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-slate-700">
         <table className="w-full text-xs border-collapse">
@@ -1773,7 +1774,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-3 mt-2 flex-wrap">
+      <Row gap="3" wrap className="mt-2">
         {[
           { label: "🔍 Searchable", color: "text-sky-600 dark:text-sky-400" },
           { label: "⚙️ Filterable", color: "text-violet-600 dark:text-violet-400" },
@@ -1783,7 +1784,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
         ].map(({ label, color }) => (
           <span key={label} className={`text-[10px] font-medium ${color}`}>{label}</span>
         ))}
-      </div>
+      </Row>
     </>
   );
 }
@@ -1812,20 +1813,20 @@ function renderAccordionCollapsedHeader({
 }) {
   return (
     <>
-      <span className="text-lg leading-none shrink-0">{meta.icon}</span>
-      <span className="text-sm font-semibold text-zinc-900 dark:text-white flex-1">{meta.label}</span>
+      <Span size="lg" className="leading-none shrink-0">{meta.icon}</Span>
+      <Span size="sm" weight="semibold" className="flex-1">{meta.label}</Span>
       <StatusDot state={runState} />
-      <Div className="flex items-center gap-2 shrink-0">
+      <Row gap="sm" className="shrink-0">
         {isLoadingStatus ? (
-          <span className="text-xs text-zinc-400 dark:text-slate-500">…</span>
+          <Span size="xs" variant="muted">…</Span>
         ) : dbStatus ? (
-          <span className={`text-xs font-mono px-2 py-0.5 rounded-full font-semibold ${isComplete ? "text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/40" : isEmpty ? "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30" : "text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/40"}`}>
+          <span className={`text-xs font-mono font-semibold px-2 py-0.5 rounded-full ${isComplete ? "text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/40" : isEmpty ? "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30" : "text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/40"}`}>
             {existingCount}/{seedCount}
           </span>
         ) : null}
         <Badge variant={statusVariant as "success" | "warning" | "danger" | "default"}>{statusLabel}</Badge>
-        <span className="text-zinc-400 dark:text-slate-500 text-xs w-4 text-center select-none">{expanded ? "▲" : "▼"}</span>
-      </Div>
+        <Span size="xs" variant="muted" className="w-4 text-center select-none">{expanded ? "▲" : "▼"}</Span>
+      </Row>
       <Div className="shrink-0 ml-1" onClick={(e) => { e.stopPropagation(); onToggle(); }}>
         <Checkbox id={`col-${col}`} checked={selected} onChange={onToggle} disabled={isRunning} label="" />
       </Div>
@@ -1839,12 +1840,12 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
       <Stack gap="md">
         <Text className="text-sm text-zinc-600 dark:text-slate-300 leading-relaxed m-0">{meta.description}</Text>
 
-        <div className="flex flex-wrap gap-2">
+        <Row wrap gap="sm">
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800/40 text-xs text-indigo-700 dark:text-indigo-300 font-mono">🔑 {meta.slugPattern}</span>
           {meta.mediaFields?.map((f) => (
             <span key={f} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/40 text-xs text-violet-700 dark:text-violet-300 font-mono">🖼️ {f}</span>
           ))}
-        </div>
+        </Row>
 
         {meta.mediaSlugPatterns && meta.mediaSlugPatterns.length > 0 && (
           <Div>
@@ -1873,29 +1874,29 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         )}
 
         <Div>
-          <div className="flex items-center justify-between mb-2">
+          <Row justify="between" className="mb-2">
             <span className="text-xs font-mono text-zinc-500 dark:text-slate-400">DB: {existingCount} / {seedCount} seed docs</span>
-          </div>
+          </Row>
           <SeedProgressBar seeded={existingCount} target={seedCount} />
         </Div>
 
         <Div>
           <Text className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider mb-2 m-0">✓ What&apos;s Seeded</Text>
-          <div className="flex flex-col gap-1.5">
+          <Stack gap="none" className="gap-1.5">
             {meta.seededItems.map((item, i) => (
               <Text key={i} className="text-sm text-zinc-700 dark:text-slate-300 leading-snug pl-3 border-l-2 border-emerald-400 dark:border-emerald-700 m-0">{item}</Text>
             ))}
-          </div>
+          </Stack>
         </Div>
 
         {meta.pendingItems.length > 0 && (
           <Div>
             <Text className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-2 m-0">⏳ Pending / Needed</Text>
-            <div className="flex flex-col gap-1.5">
+            <Stack gap="none" className="gap-1.5">
               {meta.pendingItems.map((item, i) => (
                 <Text key={i} className="text-sm text-zinc-600 dark:text-slate-400 leading-snug pl-3 border-l-2 border-amber-400 dark:border-amber-700 m-0">{item}</Text>
               ))}
-            </div>
+            </Stack>
           </Div>
         )}
 
@@ -1968,18 +1969,25 @@ function ResourceAccordionCard({
 
   return (
     <Div className={`rounded-xl border transition-colors ${borderColor} ${bgColor} overflow-hidden`}>
-      <Button type="button" variant="ghost" onClick={toggleExpanded} className="w-full flex items-center gap-2 px-4 py-3 text-left">
+      <Row
+        as="button"
+        type="button"
+        onClick={toggleExpanded}
+        gap="sm"
+        align="center"
+        className="w-full px-4 py-3 text-left bg-transparent border-0 cursor-pointer hover:bg-zinc-50 dark:hover:bg-slate-800/40 transition-colors"
+      >
         {renderAccordionCollapsedHeader({ meta, runState, isLoadingStatus, dbStatus, existingCount, seedCount, isComplete, isEmpty, statusVariant, statusLabel, expanded, col, selected, onToggle, isRunning })}
-      </Button>
+      </Row>
 
       {dbStatus && seedCount > 0 && (
-        <div className="px-4 pb-2"><SeedProgressBar seeded={existingCount} target={seedCount} size="sm" /></div>
+        <Div className="px-4 pb-2"><SeedProgressBar seeded={existingCount} target={seedCount} size="sm" /></Div>
       )}
 
       {runError && (
-        <div className="px-4 pb-2">
+        <Div className="px-4 pb-2">
           <span className="text-xs text-red-600 dark:text-red-400" title={runError}>✗ {runError}</span>
-        </div>
+        </Div>
       )}
 
       {expanded && renderAccordionExpandedBody(meta, existingCount, seedCount)}
@@ -2002,12 +2010,12 @@ function GroupDivider({
 }) {
   const { label, icon } = GROUP_CONFIG[groupKey];
   return (
-    <div className="flex items-center gap-2 pt-4 pb-1">
-      <span className="text-sm leading-none">{icon}</span>
-      <span className="text-xs font-bold text-zinc-500 dark:text-slate-400 uppercase tracking-widest whitespace-nowrap">
+    <Row gap="sm" className="pt-4 pb-1">
+      <Span size="sm" className="leading-none">{icon}</Span>
+      <Span size="xs" weight="bold" variant="muted" className="uppercase tracking-widest whitespace-nowrap">
         {label}
-      </span>
-      <div className="flex-1 h-px bg-zinc-200 dark:bg-slate-700" />
+      </Span>
+      <Div className="flex-1 h-px bg-zinc-200 dark:bg-slate-700" />
       <Button
         type="button"
         variant="ghost"
@@ -2017,7 +2025,7 @@ function GroupDivider({
       >
         {allSelected ? "deselect group" : "select group"}
       </Button>
-    </div>
+    </Row>
   );
 }
 
@@ -2329,31 +2337,31 @@ function renderSeedPanelToolbar({
   return (
     <div className="sticky z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-zinc-200 dark:border-slate-800 shadow-sm" style={{ top: "var(--header-height, 0px)" }}>
       <Container size="2xl">
-        <div className="py-2.5 flex flex-col gap-2">
+        <Stack gap="sm" className="py-2.5">
           <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-            <div className="flex-1 min-w-0">
+            <Div className="flex-1 min-w-0">
               <Heading level={2} className="text-sm font-bold text-zinc-900 dark:text-white m-0 leading-none">
                 📋 Resource Collections
-                <span className="ml-2 text-xs font-normal text-zinc-500 dark:text-slate-400">
+                <Span size="xs" weight="normal" variant="muted" className="ml-2">
                   {selectedCollections.size} / {ALL_COLLECTIONS.length} selected
                   {isFiltered && <span className="ml-1 text-amber-600 dark:text-amber-400">· {filteredCollections.length} match</span>}
-                </span>
+                </Span>
               </Heading>
-            </div>
-            <div className="flex items-center gap-1.5 flex-wrap">
+            </Div>
+            <Row gap="px" wrap className="gap-1.5">
               <Button size="sm" variant="outline" onClick={() => setSelectedCollections(new Set(ALL_COLLECTIONS))} disabled={isRunning}>Select All</Button>
               <Button size="sm" variant="outline" onClick={() => setSelectedCollections(new Set(DEFAULT_SELECTED))} disabled={isRunning}>Default</Button>
               <Button size="sm" variant="outline" onClick={() => setSelectedCollections(new Set())} disabled={isRunning}>Clear</Button>
               <Button size="sm" variant="outline" onClick={fetchStatus} disabled={isRunning || isLoadingStatus}>{isLoadingStatus ? "…" : "↻ Refresh"}</Button>
-            </div>
+            </Row>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-            <div className="relative flex-1">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-slate-500 text-sm pointer-events-none">🔍</span>
+            <Div className="relative flex-1">
+              <Span size="sm" variant="muted" className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">🔍</Span>
               <Input bare type="text" placeholder="Search collections…" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-9 pr-8 py-1.5 text-sm rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400" />
               {searchQuery && <Button type="button" variant="ghost" onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-white text-xs p-0 h-auto">✕</Button>}
-            </div>
-            <div className="shrink-0">
+            </Div>
+            <Div className="shrink-0">
               <Select
                 variant="ghost"
                 value={sortBy}
@@ -2369,9 +2377,9 @@ function renderSeedPanelToolbar({
                   { value: "db-asc", label: "DB count ↓ fewest" },
                 ]}
               />
-            </div>
-            <div className="hidden sm:block w-px h-6 bg-zinc-200 dark:bg-slate-700 shrink-0" />
-            <div className="flex items-center gap-2 flex-wrap shrink-0">
+            </Div>
+            <Div className="hidden sm:block w-px h-6 bg-zinc-200 dark:bg-slate-700 shrink-0" />
+            <Row gap="sm" wrap className="shrink-0">
               <Checkbox
                 label={<span className="text-xs text-zinc-600 dark:text-slate-300 whitespace-nowrap">Dry run</span>}
                 checked={dryRun}
@@ -2380,11 +2388,11 @@ function renderSeedPanelToolbar({
               />
               <Button size="sm" variant="primary" isLoading={isRunning} onClick={() => run("load")} disabled={isRunning || selectedCollections.size === 0}>{dryRun ? "⚡ Dry Add" : "⚡ Add Seed"}</Button>
               <Button size="sm" variant="danger" onClick={() => run("delete")} disabled={isRunning || selectedCollections.size === 0}>{dryRun ? "🗑️ Dry Remove" : ACTIONS.ADMIN["reset-seed-data"].label}</Button>
-            </div>
+            </Row>
           </div>
           <div className="flex flex-col sm:flex-row gap-1.5 sm:items-center sm:gap-3">
-            <div className="flex items-center gap-1 flex-wrap">
-              <span className="text-xs text-zinc-500 dark:text-slate-400 font-medium shrink-0">Group:</span>
+            <Row gap="xs" wrap>
+              <Span size="xs" variant="muted" weight="medium" className="shrink-0">Group:</Span>
               {(["all", "core", "listings", "transactional", "content", "system", "moderation"] as const).map((g) => {
                 const active = filterGroup === g;
                 const cfg = g === "all" ? { label: "All", icon: "☰" } : { label: GROUP_CONFIG[g].label, icon: GROUP_CONFIG[g].icon };
@@ -2395,10 +2403,10 @@ function renderSeedPanelToolbar({
                   </Button>
                 );
               })}
-            </div>
-            <div className="hidden sm:block w-px h-4 bg-zinc-200 dark:bg-slate-700 shrink-0" />
-            <div className="flex items-center gap-1 flex-wrap">
-              <span className="text-xs text-zinc-500 dark:text-slate-400 font-medium shrink-0">Status:</span>
+            </Row>
+            <Div className="hidden sm:block w-px h-4 bg-zinc-200 dark:bg-slate-700 shrink-0" />
+            <Row gap="xs" wrap>
+              <Span size="xs" variant="muted" weight="medium" className="shrink-0">Status:</Span>
               {([
                 { key: "all", label: "All", activeClass: "bg-amber-500 text-white" },
                 { key: "seeded", label: "✓ Seeded", activeClass: "bg-emerald-500 text-white" },
@@ -2410,9 +2418,9 @@ function renderSeedPanelToolbar({
               {isFiltered && (
                 <Button type="button" variant="ghost" onClick={() => { setSearchQuery(""); setFilterGroup("all"); setFilterStatus("all"); setSortBy("default"); }} className="text-[11px] text-amber-600 dark:text-amber-400 hover:underline ml-1 shrink-0 p-0 h-auto">✕ Clear</Button>
               )}
-            </div>
+            </Row>
           </div>
-        </div>
+        </Stack>
       </Container>
     </div>
   );
@@ -2501,35 +2509,35 @@ function renderSeedPanelCollectionList(p: {
     return <div className="py-10 text-center text-sm text-zinc-500 dark:text-slate-400">No collections match your filters.</div>;
   }
   if (p.isFiltered) {
-    return <div className="flex flex-col gap-1.5">{p.paginatedCollections.map((col) => renderAccordionCard(col, p))}</div>;
+    return <Stack gap="none" className="gap-1.5">{p.paginatedCollections.map((col) => renderAccordionCard(col, p))}</Stack>;
   }
   return (
-    <div className="flex flex-col gap-1">
+    <Stack gap="px">
       {p.groups.map(({ key, cols }) => {
         const allGroupSelected = cols.every((c) => p.selectedCollections.has(c));
         return (
-          <div key={key}>
+          <Div key={key}>
             <GroupDivider groupKey={key} allSelected={allGroupSelected} onSelectAll={(select) => p.toggleGroup(cols, select)} isRunning={p.isRunning} />
-            <div className="flex flex-col gap-1.5 mt-2">{cols.map((col) => renderAccordionCard(col, p))}</div>
-          </div>
+            <Stack gap="none" className="gap-1.5 mt-2">{cols.map((col) => renderAccordionCard(col, p))}</Stack>
+          </Div>
         );
       })}
-    </div>
+    </Stack>
   );
 }
 
 function renderSeedPanelPagination({ page, setPage, totalPages, PAGE_SIZE, filteredCollections }: { page: number; setPage: React.Dispatch<React.SetStateAction<number>>; totalPages: number; PAGE_SIZE: number; filteredCollections: SeedCollectionName[] }) {
   return (
-    <div className="flex items-center justify-between pt-2 border-t border-zinc-200 dark:border-slate-700">
-      <span className="text-xs text-zinc-500 dark:text-slate-400">Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filteredCollections.length)} of {filteredCollections.length}</span>
-      <div className="flex items-center gap-1">
+    <Row justify="between" className="pt-2 border-t border-zinc-200 dark:border-slate-700">
+      <Span size="xs" variant="muted">Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filteredCollections.length)} of {filteredCollections.length}</Span>
+      <Row gap="xs">
         <Button type="button" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-2.5 py-1 rounded-lg text-sm font-medium border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-slate-700 transition-colors">‹ Prev</Button>
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
           <Button type="button" key={n} onClick={() => setPage(n)} className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${n === page ? "bg-amber-500 text-white font-bold" : "border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 hover:bg-zinc-50 dark:hover:bg-slate-700"}`}>{n}</Button>
         ))}
         <Button type="button" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-2.5 py-1 rounded-lg text-sm font-medium border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-slate-700 transition-colors">Next ›</Button>
-      </div>
-    </div>
+      </Row>
+    </Row>
   );
 }
 
@@ -2537,7 +2545,7 @@ function renderSeedScaleSummary() {
   return (
     <Div className="rounded-2xl p-5 bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200 dark:border-white/10">
       <Heading level={3} className="text-base font-bold text-amber-600 dark:text-amber-400 m-0 mb-4">📊 Target Seed Scale</Heading>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-0">
+      <Grid cols="halves" gap="none" className="gap-x-10">
         {[
           ["Standard Products", "100+"], ["Auction Listings", "20"], ["Pre-orders", "10"],
           ["Categories (3-tier)", "55+"], ["Users (all roles)", "15+"], ["Stores", "8"],
@@ -2545,12 +2553,12 @@ function renderSeedScaleSummary() {
           ["Bids (auction history)", "120+"], ["FAQs (all categories)", "55+"], ["Blog Posts", "20+"],
           ["Events", "15+"], ["Coupons (global + store)", "20+"], ["Notifications (all types)", "47+"], ["Wishlists", "40+"],
         ].map(([label, count]) => (
-          <div key={label} className="flex items-center justify-between py-2 border-b border-zinc-100 dark:border-white/5 last:border-0">
-            <span className="text-sm text-zinc-700 dark:text-slate-300">{label}</span>
+          <Row key={label} justify="between" className="py-2 border-b border-zinc-100 dark:border-white/5 last:border-0">
+            <Span size="sm">{label}</Span>
             <span className="text-sm font-mono font-bold text-amber-600 dark:text-amber-400 tabular-nums">{count}</span>
-          </div>
+          </Row>
         ))}
-      </div>
+      </Grid>
     </Div>
   );
 }

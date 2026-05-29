@@ -13,7 +13,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Button } from "@mohasinac/appkit/client";
+import { Button, Div, Row, Span } from "@mohasinac/appkit/client";
 
 const BORDER_SLATE = "1px solid var(--appkit-color-slate-700)";
 
@@ -74,7 +74,7 @@ interface ToggleProps {
 
 function Toggle({ label, description, enabled, onChange, color = "var(--appkit-color-cobalt)" }: ToggleProps) {
   return (
-    <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 10 }}>
+    <Div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 10 }}>
       <Button
         type="button"
         onClick={() => onChange(!enabled)}
@@ -108,10 +108,10 @@ function Toggle({ label, description, enabled, onChange, color = "var(--appkit-c
         />
       </Button>
       <>
-        <div style={{ fontSize: 12, fontWeight: 600, color: "var(--appkit-color-slate-50)", lineHeight: 1.3 }}>{label}</div>
-        <div style={{ fontSize: 11, color: "var(--appkit-color-slate-400)", lineHeight: 1.4 }}>{description}</div>
+        <Div style={{ fontSize: 12, fontWeight: 600, color: "var(--appkit-color-slate-50)", lineHeight: 1.3 }}>{label}</Div>
+        <Div style={{ fontSize: 11, color: "var(--appkit-color-slate-400)", lineHeight: 1.4 }}>{description}</Div>
       </>
-    </div>
+    </Div>
   );
 }
 
@@ -119,35 +119,35 @@ function Toggle({ label, description, enabled, onChange, color = "var(--appkit-c
 
 function renderToolbarHeader(collapsed: boolean, onToggle: () => void) {
   return (
-    <div
+    <Div
       style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", borderBottom: BORDER_SLATE, background: "var(--appkit-color-slate-950)", cursor: "pointer" }}
       onClick={onToggle}
     >
-      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--appkit-color-purple-400)" }}>⚙ DEV TOOLBAR</span>
-      <span style={{ display: "flex", gap: 6, alignItems: "center" }}>
-        <span style={{ fontSize: 10, padding: "1px 6px", borderRadius: 4, background: "var(--appkit-color-cobalt-800)", color: "var(--appkit-color-cobalt-200)" }}>localhost</span>
-        <span style={{ fontSize: 12, color: "var(--appkit-color-slate-500)" }}>{collapsed ? "▸" : "▾"}</span>
-      </span>
-    </div>
+      <Span style={{ fontSize: 12, fontWeight: 700, color: "var(--appkit-color-purple-400)" }}>⚙ DEV TOOLBAR</Span>
+      <Span style={{ display: "flex", gap: 6, alignItems: "center" }}>
+        <Span style={{ fontSize: 10, padding: "1px 6px", borderRadius: 4, background: "var(--appkit-color-cobalt-800)", color: "var(--appkit-color-cobalt-200)" }}>localhost</Span>
+        <Span style={{ fontSize: 12, color: "var(--appkit-color-slate-500)" }}>{collapsed ? "▸" : "▾"}</Span>
+      </Span>
+    </Div>
   );
 }
 
 function renderMockIndicator(prefs: DevPrefs) {
   if (!prefs.mockRazorpay && !prefs.mockShiprocket) return null;
   return (
-    <div style={{ marginBottom: 10, padding: "4px 8px", background: "var(--appkit-color-amber-800)", borderRadius: 6, fontSize: 11, color: "var(--appkit-color-amber-100)" }}>
+    <Div style={{ marginBottom: 10, padding: "4px 8px", background: "var(--appkit-color-amber-800)", borderRadius: 6, fontSize: 11, color: "var(--appkit-color-amber-100)" }}>
       ⚠ Mock services active — payment/shipping calls go to local routes
-    </div>
+    </Div>
   );
 }
 
 function renderToolbarFooter(onHide: () => void) {
   return (
-    <div style={{ borderTop: BORDER_SLATE, paddingTop: 8, display: "flex", gap: 8 }}>
+    <Div style={{ borderTop: BORDER_SLATE, paddingTop: 8, display: "flex", gap: 8 }}>
       <Button type="button" variant="ghost" onClick={() => window.open("/api/dev/mock-razorpay", "_blank")} style={{ fontSize: 10, color: "var(--appkit-color-cobalt-300)", padding: 0, background: "none", border: "none" }}>Razorpay Docs ↗</Button>
       <Button type="button" variant="ghost" onClick={() => window.open("/api/dev/mock-shiprocket?action=status", "_blank")} style={{ fontSize: 10, color: "var(--appkit-color-cobalt-300)", padding: 0, background: "none", border: "none" }}>Shiprocket Status ↗</Button>
       <Button type="button" variant="ghost" onClick={onHide} style={{ marginLeft: "auto", fontSize: 10, color: "var(--appkit-color-slate-500)", background: "none", border: "none", cursor: "pointer", padding: 0 }}>Hide</Button>
-    </div>
+    </Div>
   );
 }
 
@@ -186,10 +186,10 @@ export function DevToolbar() {
   }
 
   return (
-    <div style={{ position: "fixed", bottom: 16, right: 16, zIndex: 9999, background: "var(--appkit-color-slate-900)", border: BORDER_SLATE, borderRadius: 10, boxShadow: "0 8px 32px rgba(0,0,0,0.5)", color: "var(--appkit-color-slate-50)", fontFamily: "monospace", minWidth: 240, overflow: "hidden" }}>
+    <Div style={{ position: "fixed", bottom: 16, right: 16, zIndex: 9999, background: "var(--appkit-color-slate-900)", border: BORDER_SLATE, borderRadius: 10, boxShadow: "0 8px 32px rgba(0,0,0,0.5)", color: "var(--appkit-color-slate-50)", fontFamily: "monospace", minWidth: 240, overflow: "hidden" }}>
       {renderToolbarHeader(collapsed, () => setCollapsed((c) => !c))}
       {!collapsed && (
-        <div style={{ padding: 12 }}>
+        <Div style={{ padding: 12 }}>
           {renderMockIndicator(prefs)}
           <Toggle
             label="Mock Razorpay"
@@ -206,8 +206,8 @@ export function DevToolbar() {
             color="var(--appkit-color-emerald-500)"
           />
           {renderToolbarFooter(() => update({ showToolbar: false }))}
-        </div>
+        </Div>
       )}
-    </div>
+    </Div>
   );
 }
