@@ -5,6 +5,7 @@ import {
   SellerTopProducts,
   useStoreDashboard,
   ROUTES,
+  Div,
 } from "@mohasinac/appkit/client";
 import { TrendingUp, ShoppingBag, Clock, Package, Plus, BarChart2, Wallet, Store, Star } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -42,19 +43,19 @@ function StatCard({
   return (
     <div className="relative rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: gradient }} aria-hidden="true" />
-      <div className="px-5 pb-5 pt-6 flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <div className="text-[11px] font-semibold uppercase tracking-widest text-[var(--appkit-color-text-muted)]">{label}</div>
+      <Div className="px-5 pb-5 pt-6 flex items-start justify-between gap-3">
+        <Div className="min-w-0 flex-1">
+          <Div className="text-[11px] font-semibold uppercase tracking-widest text-[var(--appkit-color-text-muted)]">{label}</Div>
           {isLoading ? (
-            <div className="mt-2 h-7 w-20 animate-pulse rounded bg-[var(--appkit-color-border)]" />
+            <Div className="mt-2 h-7 w-20 animate-pulse rounded bg-[var(--appkit-color-border)]" />
           ) : (
-            <div className="mt-2 text-2xl font-bold text-[var(--appkit-color-text)] tabular-nums leading-none">{value}</div>
+            <Div className="mt-2 text-2xl font-bold text-[var(--appkit-color-text)] tabular-nums leading-none">{value}</Div>
           )}
-        </div>
+        </Div>
         <div className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: gradient }}>
           <Icon className="w-5 h-5 text-white" />
         </div>
-      </div>
+      </Div>
     </div>
   );
 }
@@ -87,7 +88,7 @@ export default function Page() {
       labels={{ title: "Store Dashboard" }}
       isLoading={isLoading}
       renderStats={(busy) => (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <Div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           <StatCard
             label="Total Revenue"
             value={stats ? `${stats.currency} ${stats.totalRevenue.toLocaleString()}` : "—"}
@@ -130,10 +131,10 @@ export default function Page() {
             gradient={GREEN_GRAD}
             Icon={Star}
           />
-        </div>
+        </Div>
       )}
       renderQuickActions={() => (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <Div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {QUICK_ACTIONS.map(({ label, href, Icon }) => (
             <Link
               key={label}
@@ -146,7 +147,7 @@ export default function Page() {
               {label}
             </Link>
           ))}
-        </div>
+        </Div>
       )}
       renderTopProducts={() =>
         topProducts.length > 0 ? (

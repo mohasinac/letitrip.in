@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import {
   Container,
+  Div,
   Section,
   Stack,
   Row,
@@ -131,11 +132,11 @@ export default function Page() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
       <Main>
         {/* Breadcrumb strip */}
-        <div className="border-b appkit-breadcrumb-strip">
+        <Div className="border-b appkit-breadcrumb-strip">
           <Container size="xl" className="py-3">
             <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Scam Registry", href: registryHref }, { label: "Scam Types" }]} />
           </Container>
-        </div>
+        </Div>
 
         {/* Page header */}
         <Section className="border-b py-10">

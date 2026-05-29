@@ -10,6 +10,7 @@ import {
   useToast,
   OrdersList,
   ROUTES,
+  Div,
 } from "@mohasinac/appkit/client";
 import { useNotifications } from "@mohasinac/appkit";
 import {
@@ -60,8 +61,8 @@ function StatCard({ label, value, href }: { label: string; value: string | numbe
       href={href}
       className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3 shadow-sm hover:border-[var(--appkit-color-primary)] hover:shadow-md transition-colors"
     >
-      <div className="text-2xl font-bold text-[var(--appkit-color-text)] leading-tight">{value}</div>
-      <div className="text-xs text-[var(--appkit-color-text-muted)] mt-0.5">{label}</div>
+      <Div className="text-2xl font-bold text-[var(--appkit-color-text)] leading-tight">{value}</Div>
+      <Div className="text-xs text-[var(--appkit-color-text-muted)] mt-0.5">{label}</Div>
     </Link>
   );
 }
@@ -116,7 +117,7 @@ export default function Page() {
       labels={{ title: "My Account" }}
       renderProfile={() =>
         userLoading ? null : user ? (
-          <div className="space-y-4">
+          <Div className="space-y-4">
             <div className="relative flex items-center gap-4 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden p-5 shadow-sm">
               <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: BRAND_GRAD }} aria-hidden="true" />
               {/* eslint-disable-next-line lir/no-raw-html-elements -- avatar tile needs custom hover overlay; not a form button */}
@@ -142,13 +143,13 @@ export default function Page() {
                     {(user.displayName ?? user.email ?? "U")[0].toUpperCase()}
                   </div>
                 )}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <Div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                   <Camera className="w-5 h-5 text-white" />
-                </div>
+                </Div>
                 {uploading && (
-                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white text-[10px] font-semibold">
+                  <Div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white text-[10px] font-semibold">
                     Saving…
-                  </div>
+                  </Div>
                 )}
               </button>
               {/* eslint-disable-next-line lir/no-raw-html-elements -- hidden native file picker, no FormField equivalent */}
@@ -159,12 +160,12 @@ export default function Page() {
                 hidden
                 onChange={(e) => onPickFile(e.target.files?.[0] ?? null)}
               />
-              <div className="min-w-0 flex-1">
-                <div className="font-semibold text-[var(--appkit-color-text)] truncate">
+              <Div className="min-w-0 flex-1">
+                <Div className="font-semibold text-[var(--appkit-color-text)] truncate">
                   {user.displayName ?? "My Account"}
-                </div>
+                </Div>
                 {user.email && (
-                  <div className="text-sm text-[var(--appkit-color-text-muted)] truncate">{user.email}</div>
+                  <Div className="text-sm text-[var(--appkit-color-text-muted)] truncate">{user.email}</Div>
                 )}
                 <Link
                   href={String(ROUTES.USER.PROFILE)}
@@ -172,21 +173,21 @@ export default function Page() {
                 >
                   View / edit profile →
                 </Link>
-              </div>
+              </Div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            <Div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
               <StatCard label="Orders"        value={totalOrders}                   href={String(ROUTES.USER.ORDERS)} />
               <StatCard label="Total spent"   value={formatINR(totalSpentPaise)}    href={String(ROUTES.USER.ORDERS)} />
               <StatCard label="Wishlist"      value={wishlistCount ?? 0}            href={String(ROUTES.USER.WISHLIST)} />
               <StatCard label="Unread alerts" value={unreadCount ?? 0}              href={String(ROUTES.USER.NOTIFICATIONS)} />
               <StatCard label="Support"       value={"Open"}                         href={String(ROUTES.USER.SUPPORT)} />
-            </div>
-          </div>
+            </Div>
+          </Div>
         ) : null
       }
       renderNav={() => (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        <Div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {NAV_LINKS.map(({ label, href, Icon }) => (
             <Link
               key={label}
@@ -199,12 +200,12 @@ export default function Page() {
               {label}
             </Link>
           ))}
-        </div>
+        </Div>
       )}
       renderRecentOrders={() =>
         orders.length > 0 || ordersLoading ? (
           <>
-            <div className="mb-3 flex items-center justify-between">
+            <Div className="mb-3 flex items-center justify-between">
               <span className="text-sm font-semibold text-[var(--appkit-color-text)]">
                 Recent Orders
               </span>
@@ -214,7 +215,7 @@ export default function Page() {
               >
                 View all →
               </Link>
-            </div>
+            </Div>
             <OrdersList orders={orders} isLoading={ordersLoading} emptyLabel="No orders yet" />
           </>
         ) : null

@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { ShieldAlert } from "lucide-react";
 import {
   Container,
+  Div,
   Section,
   Stack,
   Row,
@@ -54,7 +55,7 @@ export default async function Page() {
 
       <Main>
         {/* Breadcrumb strip */}
-        <div className="border-b appkit-breadcrumb-strip">
+        <Div className="border-b appkit-breadcrumb-strip">
           <Container size="xl" className="py-3">
             <Breadcrumb
               items={[
@@ -64,7 +65,7 @@ export default async function Page() {
               ]}
             />
           </Container>
-        </div>
+        </Div>
 
         {/* Page header */}
         <Section className="border-b py-10">

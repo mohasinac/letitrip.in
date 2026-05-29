@@ -324,7 +324,7 @@ function renderDynamicField(
   } else if (field.type === "multiselect" || field.type === "checkbox") {
     const selected = Array.isArray(value) ? (value as string[]) : [];
     control = (
-      <div className="space-y-1">
+      <Div className="space-y-1">
         {(field.options ?? []).map((opt) => (
           <Label key={opt} className="flex items-center gap-2 cursor-pointer">
             <input
@@ -342,11 +342,11 @@ function renderDynamicField(
             <Text className="text-sm text-zinc-700 dark:text-zinc-300">{opt}</Text>
           </Label>
         ))}
-      </div>
+      </Div>
     );
   } else if (field.type === "radio") {
     control = (
-      <div className="space-y-1">
+      <Div className="space-y-1">
         {(field.options ?? []).map((opt) => (
           <Label key={opt} className="flex items-center gap-2 cursor-pointer">
             <input
@@ -359,12 +359,12 @@ function renderDynamicField(
             <Text className="text-sm text-zinc-700 dark:text-zinc-300">{opt}</Text>
           </Label>
         ))}
-      </div>
+      </Div>
     );
   } else if (field.type === "rating") {
     const rating = Number(value ?? 0);
     control = (
-      <div className="flex gap-1">
+      <Div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((star) => (
           <Button
             key={star}
@@ -378,7 +378,7 @@ function renderDynamicField(
             ★
           </Button>
         ))}
-      </div>
+      </Div>
     );
   } else {
     const inputType =
@@ -562,7 +562,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
 
   const dynamicForm =
     (isSurvey || isFeedback) && formFields.length > 0 ? (
-      <div className="space-y-4">
+      <Div className="space-y-4">
         {formFields
           .slice()
           .sort((a, b) => a.order - b.order)
@@ -574,13 +574,13 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
               formErrors[field.id] ?? null,
             ),
           )}
-      </div>
+      </Div>
     ) : null;
 
   // After a successful submission allow re-submit if maxEntries > 1
   if (isSubmitted && !atEntryLimit) {
     return (
-      <div className="space-y-4">
+      <Div className="space-y-4">
         <Div className="rounded-2xl border border-success/20 bg-success-surface px-5 py-5 space-y-2">
           <Div className="flex items-center gap-2">
             <Span className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
@@ -610,7 +610,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
             </Link>
           </Div>
         )}
-      </div>
+      </Div>
     );
   }
 
@@ -628,11 +628,11 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
       }
       renderAction={() =>
         atEntryLimit && !isSubmitted ? (
-          <div className="text-center py-4">
+          <Div className="text-center py-4">
             <Text className="text-sm text-zinc-500 dark:text-zinc-400">
               You have reached the maximum of {maxEntries} {maxEntries === 1 ? "entry" : "entries"} for this event.
             </Text>
-          </div>
+          </Div>
         ) : (
           renderSubmitAction({ error, pollConfig, isMultiSelect, selectedVotes, canSubmit, isLoading, handleSubmit })
         )

@@ -2335,10 +2335,10 @@ function renderSeedPanelToolbar({
   setFilterStatus: React.Dispatch<React.SetStateAction<StatusFilter>>;
 }) {
   return (
-    <div className="sticky z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-zinc-200 dark:border-slate-800 shadow-sm" style={{ top: "var(--header-height, 0px)" }}>
+    <Div className="sticky z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-zinc-200 dark:border-slate-800 shadow-sm" style={{ top: "var(--header-height, 0px)" }}>
       <Container size="2xl">
         <Stack gap="sm" className="py-2.5">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+          <Div className="flex flex-col sm:flex-row sm:items-center gap-2">
             <Div className="flex-1 min-w-0">
               <Heading level={2} className="text-sm font-bold text-zinc-900 dark:text-white m-0 leading-none">
                 📋 Resource Collections
@@ -2354,8 +2354,8 @@ function renderSeedPanelToolbar({
               <Button size="sm" variant="outline" onClick={() => setSelectedCollections(new Set())} disabled={isRunning}>Clear</Button>
               <Button size="sm" variant="outline" onClick={fetchStatus} disabled={isRunning || isLoadingStatus}>{isLoadingStatus ? "…" : "↻ Refresh"}</Button>
             </Row>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+          </Div>
+          <Div className="flex flex-col sm:flex-row gap-2 sm:items-center">
             <Div className="relative flex-1">
               <Span size="sm" variant="muted" className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">🔍</Span>
               <Input bare type="text" placeholder="Search collections…" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-9 pr-8 py-1.5 text-sm rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400" />
@@ -2389,8 +2389,8 @@ function renderSeedPanelToolbar({
               <Button size="sm" variant="primary" isLoading={isRunning} onClick={() => run("load")} disabled={isRunning || selectedCollections.size === 0}>{dryRun ? "⚡ Dry Add" : "⚡ Add Seed"}</Button>
               <Button size="sm" variant="danger" onClick={() => run("delete")} disabled={isRunning || selectedCollections.size === 0}>{dryRun ? "🗑️ Dry Remove" : ACTIONS.ADMIN["reset-seed-data"].label}</Button>
             </Row>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-1.5 sm:items-center sm:gap-3">
+          </Div>
+          <Div className="flex flex-col sm:flex-row gap-1.5 sm:items-center sm:gap-3">
             <Row gap="xs" wrap>
               <Span size="xs" variant="muted" weight="medium" className="shrink-0">Group:</Span>
               {(["all", "core", "listings", "transactional", "content", "system", "moderation"] as const).map((g) => {
@@ -2419,20 +2419,20 @@ function renderSeedPanelToolbar({
                 <Button type="button" variant="ghost" onClick={() => { setSearchQuery(""); setFilterGroup("all"); setFilterStatus("all"); setSortBy("default"); }} className="text-[11px] text-amber-600 dark:text-amber-400 hover:underline ml-1 shrink-0 p-0 h-auto">✕ Clear</Button>
               )}
             </Row>
-          </div>
+          </Div>
         </Stack>
       </Container>
-    </div>
+    </Div>
   );
 }
 
 function renderSeedPanelHero() {
   return (
-    <div className="flex flex-col items-center text-center gap-3 pt-2">
+    <Div className="flex flex-col items-center text-center gap-3 pt-2">
       <span className="text-5xl leading-none">🎮</span>
       <Heading level={1} className="text-3xl font-extrabold text-amber-600 dark:text-amber-400 m-0">LetItRip Demo Seed</Heading>
       <Text className="text-base text-zinc-600 dark:text-slate-300 max-w-xl m-0">Admin seed tool — expand each resource card to see what&apos;s seeded, pending counts, live DB state, and the UI path to verify.</Text>
-    </div>
+    </Div>
   );
 }
 
@@ -2506,7 +2506,7 @@ function renderSeedPanelCollectionList(p: {
   toggleGroup: (cols: SeedCollectionName[], select: boolean) => void;
 }) {
   if (p.filteredCollections.length === 0) {
-    return <div className="py-10 text-center text-sm text-zinc-500 dark:text-slate-400">No collections match your filters.</div>;
+    return <Div className="py-10 text-center text-sm text-zinc-500 dark:text-slate-400">No collections match your filters.</Div>;
   }
   if (p.isFiltered) {
     return <Stack gap="none" className="gap-1.5">{p.paginatedCollections.map((col) => renderAccordionCard(col, p))}</Stack>;
