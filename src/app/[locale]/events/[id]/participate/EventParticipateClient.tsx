@@ -222,7 +222,7 @@ function renderSuccessState({
     <Div className="space-y-4 py-6">
       <Div className="rounded-2xl border border-success/20 bg-success-surface px-5 py-5 space-y-2">
         <Div className="flex items-center gap-2">
-          <Span className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
+          <Span weight="semibold" className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] uppercase tracking-wide">
             Confirmed
           </Span>
           <Heading level={2} className="text-lg font-bold text-success">
@@ -583,7 +583,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
       <Div className="space-y-4">
         <Div className="rounded-2xl border border-success/20 bg-success-surface px-5 py-5 space-y-2">
           <Div className="flex items-center gap-2">
-            <Span className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
+            <Span weight="semibold" className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] uppercase tracking-wide">
               Confirmed
             </Span>
             <Heading level={2} className="text-lg font-bold text-success">

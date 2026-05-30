@@ -23,7 +23,7 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
             <Div className="text-2xl flex-shrink-0 mt-0.5">{icon}</Div>
             <Div className="flex-1">
               <Row gap="sm" className="mb-1">
-                <Span className={`inline-block text-xs font-semibold px-2 py-0.5 rounded-full ${badge}`}>{label}</Span>
+                <Span size="xs" weight="semibold" className={`inline-block px-2 py-0.5 rounded-full ${badge}`}>{label}</Span>
               </Row>
               <Text variant="secondary" className="text-sm leading-relaxed">{desc}</Text>
             </Div>
@@ -33,7 +33,7 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
           <Div className="text-2xl flex-shrink-0 mt-0.5">❌</Div>
           <Div className="flex-1">
             <Row gap="sm" className="mb-1">
-              <Span className="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-error-surface text-error">{t("sCancelLabel")}</Span>
+              <Span size="xs" weight="semibold" className="inline-block px-2 py-0.5 rounded-full bg-error-surface text-error">{t("sCancelLabel")}</Span>
             </Row>
             <Text variant="secondary" className="text-sm leading-relaxed">{t("sCancelDesc")}</Text>
           </Div>

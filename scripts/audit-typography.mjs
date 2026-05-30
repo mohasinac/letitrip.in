@@ -53,10 +53,12 @@ const RULES = [
   },
   {
     id: "APPKIT_SPAN_RAW_CLASSES",
-    label: "Appkit <Span> using raw Tailwind text classes instead of props (use size/weight/color props)",
-    regex: new RegExp(`<Span\\s[^>]*className\\s*=\\s*["{][^">]*(?:${TYPOGRAPHY_CLASSES})`),
-    // Tightened 2026-05-24: 271 actual (drift from primitive migration sweep).
-    baseline: 271,
+    label: "Appkit <Span> using raw Tailwind size/weight classes in className instead of size/weight props",
+    // Only flag text-xs/sm/base/lg/xl and font-medium/semibold/bold in className.
+    // Color classes (text-zinc-*, etc.) can legitimately remain in className when no exact token match exists.
+    regex: /(<Span\s[^>]*className\s*=\s*["'{][^"'>]*(text-(?:xs|sm|base|lg|xl)\b|font-(?:normal|medium|semibold|bold)))/,
+    // Tightened 2026-05-30 (Phase H): 0 actual — all Span size/weight classes converted to props.
+    baseline: 0,
   },
   // ── Raw semantic elements that have a direct appkit replacement ────────────
   {

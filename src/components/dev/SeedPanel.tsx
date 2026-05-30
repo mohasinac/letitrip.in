@@ -1904,7 +1904,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
 
         {meta.piiFields && meta.piiFields.length > 0 && (
           <Div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/40">
-            <Span className="text-xs text-red-700 dark:text-red-300 leading-relaxed">
+            <Span size="xs" className="text-red-700 dark:text-red-300 leading-relaxed">
               🔒 PII fields: <Span weight="bold">{meta.piiFields.join(", ")}</Span> — masked in DB with Firestore encryption. Never returned in full to client.
             </Span>
           </Div>

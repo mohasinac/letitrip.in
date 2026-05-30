@@ -32,7 +32,7 @@ export function ShareButtons({ title }: ShareButtonsProps) {
 
   return (
     <Div className="flex items-center gap-3 pt-6 mt-6 border-t border-zinc-200 dark:border-zinc-700">
-      <Span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Share:</Span>
+      <Span size="sm" weight="medium" className="text-zinc-500 dark:text-zinc-400">Share:</Span>
       <Button
         type="button"
         onClick={handleCopy}
