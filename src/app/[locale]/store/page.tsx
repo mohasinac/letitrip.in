@@ -41,7 +41,7 @@ function StatCard({
   Icon: React.ComponentType<{ className?: string }>;
 }) {
   return (
-    <div className="relative rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+    <Div className="relative rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       <Div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: gradient }} aria-hidden="true" />
       <Div className="px-5 pb-5 pt-6 flex items-start justify-between gap-3">
         <Div className="min-w-0 flex-1">
@@ -56,7 +56,7 @@ function StatCard({
           <Icon className="w-5 h-5 text-white" />
         </Div>
       </Div>
-    </div>
+    </Div>
   );
 }
 

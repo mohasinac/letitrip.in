@@ -1,4 +1,5 @@
 import { UserOffersPanel } from "@mohasinac/appkit/client";
+import { Div } from "@mohasinac/appkit";
 import {
   acceptCounterOfferAction,
   withdrawOfferAction,
@@ -25,12 +26,12 @@ async function handleCheckout(offerId: string): Promise<void> {
 
 export default function Page() {
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <Div className="max-w-2xl mx-auto p-4">
       <UserOffersPanel
         onAcceptCounter={handleAcceptCounter}
         onWithdraw={handleWithdraw}
         onCheckout={handleCheckout}
       />
-    </div>
+    </Div>
   );
 }

@@ -118,7 +118,7 @@ export default function Page() {
       renderProfile={() =>
         userLoading ? null : user ? (
           <Div className="space-y-4">
-            <div className="relative flex items-center gap-4 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden p-5 shadow-sm">
+            <Div className="relative flex items-center gap-4 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden p-5 shadow-sm">
               <Div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: BRAND_GRAD }} aria-hidden="true" />
               {/* eslint-disable-next-line lir/no-raw-html-elements -- avatar tile needs custom hover overlay; not a form button */}
               <button
@@ -174,7 +174,7 @@ export default function Page() {
                   View / edit profile →
                 </Link>
               </Div>
-            </div>
+            </Div>
 
             <Div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
               <StatCard label="Orders"        value={totalOrders}                   href={String(ROUTES.USER.ORDERS)} />

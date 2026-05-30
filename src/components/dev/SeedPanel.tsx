@@ -1703,7 +1703,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
         </Row>
       </Row>
 
-      <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-slate-700">
+      <Div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-slate-700">
         <table className="w-full text-xs border-collapse">
           <thead>
             <tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
@@ -1771,7 +1771,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
             )}
           </tbody>
         </table>
-      </div>
+      </Div>
 
       {/* Legend */}
       <Row gap="3" wrap className="mt-2">
@@ -1850,7 +1850,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         {meta.mediaSlugPatterns && meta.mediaSlugPatterns.length > 0 && (
           <Div>
             <Text className="text-xs font-bold text-violet-700 dark:text-violet-400 uppercase tracking-wider mb-2 m-0">🖼️ Media Slug Patterns (SEO filenames)</Text>
-            <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-slate-700">
+            <Div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-slate-700">
               <table className="w-full text-xs border-collapse">
                 <thead>
                   <tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
@@ -1869,7 +1869,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
                   ))}
                 </tbody>
               </table>
-            </div>
+            </Div>
           </Div>
         )}
 

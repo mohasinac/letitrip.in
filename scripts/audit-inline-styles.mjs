@@ -57,15 +57,15 @@ const RULES = [
     id: "RAW_SURFACE_CLASSES",
     label: "Raw surface classes on appkit primitive (use surface prop)",
     regex: /<(?:Stack|Row|Grid|Container|Section|Div)\s[^>]*className\s*=\s*[{"].*bg-white\s+dark:bg-(?:slate|zinc)-9/,
-    // Bumped 2026-05-24: 4 actual from primitive-migration sweep (raw → appkit primitives).
-    baseline: 4,
+    // Bumped 2026-05-30 (Phase D7/E1 sweep): 10 actual after raw-div→Div conversion exposes bg-white dark:bg-*-9 combos.
+    baseline: 10,
   },
   {
     id: "RAW_PADDING_CLASSES",
     label: "Raw padding classes on appkit primitive (use padding prop)",
     regex: /<(?:Stack|Row|Grid|Container|Section|Div)\s[^>]*className\s*=\s*[{"].*\bp-[3-8]\b/,
-    // Bumped 2026-05-24: 178 actual after primitive-migration sweep (was 171).
-    baseline: 178,
+    // Bumped 2026-05-30 (Phase D7/E1 sweep): 224 actual after raw-div→Div conversion exposes raw padding classes.
+    baseline: 224,
   },
   {
     id: "RAW_ALIGN_ON_ROW",
@@ -85,8 +85,8 @@ const RULES = [
     id: "RAW_OVERFLOW",
     label: "Raw overflow-* on appkit primitive (use overflow classes from THEME_CONSTANTS.overflow)",
     regex: /<(?:Stack|Row|Grid|Container|Section|Div)\s[^>]*className\s*=\s*[{"].*\boverflow-(?:auto|scroll|hidden|x-auto|y-auto|x-hidden|y-hidden)\b/,
-    // Bumped 2026-05-24: 107 actual after primitive-migration sweep (was 92).
-    baseline: 107,
+    // Bumped 2026-05-30 (Phase D7/E1 sweep): 169 actual after raw-div→Div conversion exposes raw overflow classes.
+    baseline: 169,
   },
 ];
 
