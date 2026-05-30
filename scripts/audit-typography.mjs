@@ -48,8 +48,8 @@ const RULES = [
     // Matches <div>, <span>, <button>, <td>, <li>, <label>, <section>, <a>, etc.
     // Excludes PascalCase components (appkit primitives like <Span>, <Text>, <Button>)
     regex: new RegExp(`<[a-z][a-z0-9]*\\s[^>]*className[^>]*(?:${TYPOGRAPHY_CLASSES})`),
-    // Tightened 2026-05-30 (Phase D3): 470 actual after admin/ sweep (-6).
-    baseline: 470,
+    // Tightened 2026-05-30 (Phase G): 436 actual after RAW_BUTTON sweep converts button→Button.
+    baseline: 436,
   },
   {
     id: "APPKIT_SPAN_RAW_CLASSES",
@@ -101,10 +101,8 @@ const RULES = [
     id: "RAW_BUTTON",
     label: "Raw <button> (use appkit <Button>)",
     regex: /<button[\s>]/,
-    // Tightened 2026-05-23: 16 actual vs prior 127 — RAW_BUTTON has been
-    // aggressively swept across the codebase. New raw buttons should be
-    // appkit <Button> or otherwise justified.
-    baseline: 16,
+    // Tightened 2026-05-30 (Phase G): 0 actual — all 16 raw buttons converted to <Button>.
+    baseline: 0,
   },
 ];
 
