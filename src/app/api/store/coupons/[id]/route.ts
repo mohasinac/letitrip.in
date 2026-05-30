@@ -40,6 +40,14 @@ const updateCouponSchema = z.object({
       isActive: z.boolean().optional(),
     })
     .optional(),
+  restrictions: z
+    .object({
+      applicableProducts: z.array(z.string()).optional(),
+      applicableCategories: z.array(z.string()).optional(),
+      firstTimeUserOnly: z.boolean().optional(),
+      combineWithSellerCoupons: z.boolean().optional(),
+    })
+    .optional(),
   action: z.enum(["activate", "deactivate"]).optional(),
 });
 
@@ -77,7 +85,7 @@ export const PATCH = withProviders(
           return errorResponse(MSG_COUPON_NOT_FOUND, 404);
         }
       }
-      const { action, validity, ...updateData } = body!;
+      const { action, validity, restrictions, ...updateData } = body!;
 
       // Guard: percentage coupons cannot have discount.value > 100
       if (updateData.discount?.value !== undefined && existing.type === "percentage" && updateData.discount.value > 100) {
@@ -92,9 +100,13 @@ export const PATCH = withProviders(
         await couponsRepository.reactivateCoupon(id);
         return successResponse(null, "Coupon activated");
       }
+      const mergedRestrictions = restrictions
+        ? { ...existing.restrictions, ...restrictions }
+        : undefined;
       const updated = await couponsRepository.update(id, {
         ...updateData,
         ...(validity ? { validity } : {}),
+        ...(mergedRestrictions ? { restrictions: mergedRestrictions } : {}),
         updatedAt: new Date(),
       } as any);
       return successResponse(updated, "Coupon updated");

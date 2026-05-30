@@ -23,6 +23,8 @@ export default function Page() {
         startDate: draft.startDate,
         endDate: draft.endDate,
         isActive: draft.isActive,
+        ...(draft.applicableProducts && draft.applicableProducts.length > 0 && { applicableProducts: draft.applicableProducts }),
+        ...(draft.applicableCategories && draft.applicableCategories.length > 0 && { applicableCategories: draft.applicableCategories }),
       }),
     });
     if (!res.ok) {

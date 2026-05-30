@@ -14,7 +14,7 @@ interface CouponData {
   discount?: { value?: number; minPurchase?: number; maxDiscount?: number };
   usage?: { totalLimit?: number; perUserLimit?: number };
   validity?: { startDate?: string | { _seconds?: number }; endDate?: string | { _seconds?: number }; isActive?: boolean };
-  restrictions?: { applicableProducts?: string[]; applicableCategories?: string[]; firstTimeUserOnly?: boolean; combineWithSellerCoupons?: boolean };
+  restrictions?: { applicableProducts?: string[]; applicableCategories?: string[] };
 }
 
 function toDateString(val: string | { _seconds?: number } | undefined): string {
@@ -31,7 +31,6 @@ function toDraftFromCoupon(coupon: CouponData): Partial<CouponEditorDraft> {
   const value = typeof discount.value === "number"
     ? coupon.type === "fixed" ? String(discount.value / 100) : String(discount.value)
     : "";
-  const restrictions = coupon.restrictions ?? {};
   return {
     code: coupon.code,
     type: coupon.type ?? "percentage",
@@ -43,8 +42,8 @@ function toDraftFromCoupon(coupon: CouponData): Partial<CouponEditorDraft> {
     startDate: toDateString(validity.startDate as string | { _seconds?: number }),
     endDate: toDateString(validity.endDate as string | { _seconds?: number }),
     isActive: validity.isActive ?? true,
-    applicableProducts: restrictions.applicableProducts ?? [],
-    applicableCategories: restrictions.applicableCategories ?? [],
+    applicableProducts: coupon.restrictions?.applicableProducts ?? [],
+    applicableCategories: coupon.restrictions?.applicableCategories ?? [],
   };
 }
 
@@ -85,10 +84,6 @@ export default function Page() {
           value: draft.type !== "free_shipping" ? Number(draft.value) || 0 : 0,
           ...(draft.minPurchase ? { minPurchase: Math.round(Number(draft.minPurchase) * 100) } : {}),
           ...(draft.maxDiscount ? { maxDiscount: Math.round(Number(draft.maxDiscount) * 100) } : {}),
-        },
-        restrictions: {
-          applicableProducts: draft.applicableProducts ?? [],
-          applicableCategories: draft.applicableCategories ?? [],
         },
       }),
     });

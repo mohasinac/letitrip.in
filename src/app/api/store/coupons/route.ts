@@ -18,6 +18,8 @@ const createCouponSchema = z.object({
   startDate: z.string().min(1),
   endDate: z.string().min(1),
   isActive: z.boolean().default(true),
+  applicableProducts: z.array(z.string()).optional(),
+  applicableCategories: z.array(z.string()).optional(),
 });
 
 export const GET = withProviders(createRouteHandler({
@@ -49,7 +51,7 @@ export const POST = withProviders(createRouteHandler<(typeof createCouponSchema)
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store) return ApiErrors.forbidden("No store found for this account");
 
-    const { code, type, value, minPurchase, maxDiscount, totalLimit, perUserLimit, startDate, endDate, isActive } = body!;
+    const { code, type, value, minPurchase, maxDiscount, totalLimit, perUserLimit, startDate, endDate, isActive, applicableProducts, applicableCategories } = body!;
 
     if (type === "percentage" && value > 100) {
       return ApiErrors.badRequest("Percentage discount cannot exceed 100%");
@@ -73,7 +75,12 @@ export const POST = withProviders(createRouteHandler<(typeof createCouponSchema)
       discount: { value: discountValue, ...(minPurchasePaise !== undefined && { minPurchase: minPurchasePaise }), ...(maxDiscountPaise !== undefined && { maxDiscount: maxDiscountPaise }) },
       usage: { totalLimit, perUserLimit, currentUsage: 0 },
       validity: { startDate: new Date(startDate), endDate: new Date(endDate), isActive },
-      restrictions: { firstTimeUserOnly: false, combineWithSellerCoupons: false },
+      restrictions: {
+        firstTimeUserOnly: false,
+        combineWithSellerCoupons: false,
+        ...(applicableProducts && applicableProducts.length > 0 && { applicableProducts }),
+        ...(applicableCategories && applicableCategories.length > 0 && { applicableCategories }),
+      },
     } as Parameters<typeof couponsRepository.create>[0]);
 
     return successResponse(coupon, "Coupon created");
