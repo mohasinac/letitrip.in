@@ -57,8 +57,8 @@ const RULES = [
     id: "RAW_SURFACE_CLASSES",
     label: "Raw surface classes on appkit primitive (use surface prop)",
     regex: /<(?:Stack|Row|Grid|Container|Section|Div)\s[^>]*className\s*=\s*[{"].*bg-white\s+dark:bg-(?:slate|zinc)-9/,
-    // Bumped 2026-05-30 (Phase D7/E1 sweep): 10 actual after raw-div→Div conversion exposes bg-white dark:bg-*-9 combos.
-    baseline: 10,
+    // Tightened 2026-05-30 (Phase G): 0 actual after converting all 10 instances to surface prop.
+    baseline: 0,
   },
   {
     id: "RAW_PADDING_CLASSES",
@@ -71,15 +71,15 @@ const RULES = [
     id: "RAW_ALIGN_ON_ROW",
     label: "Raw items-* on <Row> (use align prop)",
     regex: /<Row\s[^>]*className\s*=\s*[{"].*\bitems-(?:center|start|end|stretch|baseline)\b/,
-    // Bumped 2026-05-24: 1 actual from primitive-migration sweep.
-    baseline: 1,
+    // Tightened 2026-05-30 (Phase G): 0 actual after converting PublicProfileView.tsx Row→Div.
+    baseline: 0,
   },
   {
     id: "RAW_JUSTIFY_ON_ROW",
     label: "Raw justify-* on <Row> (use justify prop)",
     regex: /<Row\s[^>]*className\s*=\s*[{"].*\bjustify-(?:center|start|end|between|around|evenly)\b/,
-    // Bumped 2026-05-24: 1 actual from primitive-migration sweep.
-    baseline: 1,
+    // Tightened 2026-05-30 (Phase G): 0 actual after converting PublicProfileView.tsx Row→Div.
+    baseline: 0,
   },
   {
     id: "RAW_OVERFLOW",
