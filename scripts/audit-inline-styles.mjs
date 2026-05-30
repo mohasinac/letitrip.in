@@ -64,8 +64,8 @@ const RULES = [
     id: "RAW_PADDING_CLASSES",
     label: "Raw padding classes on appkit primitive (use padding prop)",
     regex: /<(?:Stack|Row|Grid|Container|Section|Div)\s[^>]*className\s*=\s*[{"].*\bp-[3-8]\b/,
-    // Bumped 2026-05-30 (Phase D7/E1 sweep): 224 actual after raw-div→Div conversion exposes raw padding classes.
-    baseline: 224,
+    // Bumped 2026-05-30 (Phase F — admin editor sweep): 233 actual after raw-div→Div conversion exposes raw padding classes.
+    baseline: 233,
   },
   {
     id: "RAW_ALIGN_ON_ROW",
@@ -85,8 +85,8 @@ const RULES = [
     id: "RAW_OVERFLOW",
     label: "Raw overflow-* on appkit primitive (use overflow classes from THEME_CONSTANTS.overflow)",
     regex: /<(?:Stack|Row|Grid|Container|Section|Div)\s[^>]*className\s*=\s*[{"].*\boverflow-(?:auto|scroll|hidden|x-auto|y-auto|x-hidden|y-hidden)\b/,
-    // Bumped 2026-05-30 (Phase D7/E1 sweep): 169 actual after raw-div→Div conversion exposes raw overflow classes.
-    baseline: 169,
+    // Bumped 2026-05-30 (Phase F — admin editor sweep): 176 actual after raw-div→Div conversion exposes raw overflow classes.
+    baseline: 176,
   },
 ];
 
