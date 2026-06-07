@@ -3,7 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { carouselsRepository } from "@mohasinac/appkit";
 import { ROUTES } from "@mohasinac/appkit/client";
-import { Heading, Section, Container, Row, Div, Text, Badge, EmptyState } from "@mohasinac/appkit/client";
+import { Heading, Section, Container, Row, Div, Text, Badge, EmptyState, Table, Thead, Tbody, Tr, Th, Td } from "@mohasinac/appkit/client";
 import { MAX_SLIDES_PER_CAROUSEL } from "@mohasinac/appkit";
 
 
@@ -103,37 +103,37 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
           </Div>
         ) : (
           <Div className={`${__O.hidden} rounded-xl border border-zinc-200 dark:border-slate-700`}>
-            <table className="w-full text-sm">
-              <thead className="bg-zinc-50 dark:bg-slate-800">
-                <tr>
-                  <th className="px-4 py-3 text-left font-medium text-zinc-600 dark:text-zinc-300">Order</th>
-                  <th className="px-4 py-3 text-left font-medium text-zinc-600 dark:text-zinc-300">Title</th>
-                  <th className="px-4 py-3 text-left font-medium text-zinc-600 dark:text-zinc-300">Active</th>
-                  <th className="px-4 py-3 text-right font-medium text-zinc-600 dark:text-zinc-300">Edit</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-100 dark:divide-slate-700">
+            <Table className="w-full text-sm">
+              <Thead className="bg-zinc-50 dark:bg-slate-800">
+                <Tr>
+                  <Th className="px-4 py-3 text-left font-medium text-zinc-600 dark:text-zinc-300">Order</Th>
+                  <Th className="px-4 py-3 text-left font-medium text-zinc-600 dark:text-zinc-300">Title</Th>
+                  <Th className="px-4 py-3 text-left font-medium text-zinc-600 dark:text-zinc-300">Active</Th>
+                  <Th className="px-4 py-3 text-right font-medium text-zinc-600 dark:text-zinc-300">Edit</Th>
+                </Tr>
+              </Thead>
+              <Tbody className="divide-y divide-zinc-100 dark:divide-slate-700">
                 {slides.map((slide, idx) => (
-                  <tr key={slide.id} className="bg-white hover:bg-zinc-50 dark:bg-slate-900 dark:hover:bg-slate-800">
-                    <td className="px-4 py-3 text-zinc-500 dark:text-zinc-400">{idx + 1}</td>
-                    <td className="px-4 py-3 font-medium text-zinc-800 dark:text-zinc-200">{slide.title}</td>
-                    <td className="px-4 py-3">
+                  <Tr key={slide.id} className="bg-white hover:bg-zinc-50 dark:bg-slate-900 dark:hover:bg-slate-800">
+                    <Td className="px-4 py-3 text-zinc-500 dark:text-zinc-400">{idx + 1}</Td>
+                    <Td className="px-4 py-3 font-medium text-zinc-800 dark:text-zinc-200">{slide.title}</Td>
+                    <Td className="px-4 py-3">
                       <Badge variant={slide.active ? "success" : "secondary"} >
                         {slide.active ? "Active" : "Inactive"}
                       </Badge>
-                    </td>
-                    <td className="px-4 py-3 text-right">
+                    </Td>
+                    <Td className="px-4 py-3 text-right">
                       <Link
                         href={String(ROUTES.ADMIN.CAROUSEL_EDIT(slide.id))}
                         className="text-[var(--appkit-color-primary)] hover:underline"
                       >
                         Edit slide
                       </Link>
-                    </td>
-                  </tr>
+                    </Td>
+                  </Tr>
                 ))}
-              </tbody>
-            </table>
+              </Tbody>
+            </Table>
           </Div>
         )}
       </Container>
