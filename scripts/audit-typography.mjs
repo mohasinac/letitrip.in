@@ -58,8 +58,9 @@ const RULES = [
     // Excludes PascalCase components (appkit primitives like <Span>, <Text>, <Button>)
     // Excludes <svg> (uses text-* for currentColor, not typography), <img>, <iframe>, <input>, <select>, <option>, <textarea>, <video>, <audio>, <source>, <track>, <details>, <summary>, <hr>, <code>, <pre>
     regex: new RegExp(`<(?!svg|img|iframe|input|select|option|textarea|video|audio|source|track|details|summary|hr|code|pre)[a-z][a-z0-9]*\\s[^>]*className[^>]*(?:${TYPOGRAPHY_CLASSES})`),
-    // Tightened P4 (2026-06-08): 15 actual after Admin* editor batch.
-    baseline: 15,
+    // LOCKED P4 (2026-06-08): all 436 → 0. Full sweep across appkit + consumer surface.
+    // Excludes svg/img/input/etc (these use text-* for currentColor not typography).
+    baseline: 0,
   },
   {
     id: "APPKIT_SPAN_RAW_CLASSES",
