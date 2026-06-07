@@ -459,10 +459,11 @@ for (const dir of SCAN_DIRS) {
   }
 }
 
-// Tightened during P4 remediation sweep (2026-06-07): 44 actual after z-index
-// sweep + parallel REPEATED_STRING extracts. Drop to current count so new
-// regressions block at the precise true ceiling.
-const BASELINE = 44;
+// Driven to 0 (2026-06-07) via full RAW_SEMANTIC_COLOR sweep — colors extracted
+// to named constants across all consumer/appkit files. Dev-only SeedPanel.tsx
+// and DevToolbar.tsx allowlisted (categorical color coding; no semantic-token
+// equivalent). Any new violation is a regression.
+const BASELINE = 0;
 
 if (violations.length === 0) {
   console.log("audit-code-quality: clean ✓");

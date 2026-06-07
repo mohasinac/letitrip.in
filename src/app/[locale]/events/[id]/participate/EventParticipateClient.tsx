@@ -8,6 +8,8 @@ import { EventParticipateView, useSession, useToast, ROUTES } from "@mohasinac/a
 import { SpinWheelView } from "@mohasinac/appkit";
 import { API_ROUTES } from "@/constants";
 
+const CLS_STAR_ON = "text-yellow-400 border-yellow-400";
+
 type SpinPrize = { id: string; label: string; weight: number; isActive: boolean; couponId?: string };
 
 // Shared className for the two info-row tiles rendered in the post-submit
@@ -372,7 +374,7 @@ function renderDynamicField(
             variant="outline"
             size="sm"
             onClick={() => onChange(star)}
-            className={star <= rating ? "text-yellow-400 border-yellow-400" : ""}
+            className={star <= rating ? CLS_STAR_ON : ""}
             aria-label={`${star} star`}
           >
             ★

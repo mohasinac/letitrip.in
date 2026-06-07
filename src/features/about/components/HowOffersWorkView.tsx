@@ -5,6 +5,8 @@ import { getTranslations } from "next-intl/server";
 
 const { themed, flex, page } = THEME_CONSTANTS;
 
+const CLS_STEP_NUMBER = "bg-violet-100 dark:bg-violet-900/40";
+
 export async function HowOffersWorkView() {
   const t = await getTranslations("howOffersWork");
 
@@ -89,7 +91,7 @@ export async function HowOffersWorkView() {
                 key={number}
                 className={`${flex.center} gap-4 p-5 rounded-xl border ${themed.border} ${themed.bgPrimary}`}
               >
-                <Div className={`flex-shrink-0 w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/40 ${flex.center} text-xl`}>
+                <Div className={`flex-shrink-0 w-10 h-10 rounded-full ${CLS_STEP_NUMBER} ${flex.center} text-xl`}>
                   {icon}
                 </Div>
                 <Div>

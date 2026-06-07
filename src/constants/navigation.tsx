@@ -60,6 +60,7 @@ export interface NavItem {
 
 const { navIcons } = THEME_CONSTANTS.colors;
 const iconSm = THEME_CONSTANTS.icon.size.sm;
+const CLS_SCAM_ICON = "text-red-500";
 
 export const MAIN_NAV_ITEMS: NavItem[] = [
   { key: "home",       href: String(ROUTES.HOME),                 icon: <Home         className={`${iconSm} ${navIcons.home}`}       /> },
@@ -73,7 +74,7 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   { key: "events",     href: String(ROUTES.PUBLIC.EVENTS),        icon: <CalendarDays className={`${iconSm} ${navIcons.events}`}     /> },
   { key: "blog",       href: String(ROUTES.PUBLIC.BLOG),          icon: <BookOpen     className={`${iconSm} ${navIcons.blog}`}       /> },
   { key: "reviews",    href: String(ROUTES.PUBLIC.REVIEWS),       icon: <Star         className={`${iconSm} ${navIcons.reviews}`}    /> },
-  { key: "scams",      href: String(ROUTES.PUBLIC.SCAMS),         icon: <ShieldAlert  className={`${iconSm} text-red-500`}            /> },
+  { key: "scams",      href: String(ROUTES.PUBLIC.SCAMS),         icon: <ShieldAlert  className={`${iconSm} ${CLS_SCAM_ICON}`}        /> },
 ];
 
 // ---------------------------------------------------------------------------
