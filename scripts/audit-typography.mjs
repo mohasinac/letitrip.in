@@ -32,6 +32,15 @@ const ALLOWLIST = [
   "RichText.tsx",
   "RichTextEditor.tsx",
   "index.style.css",
+  // Dev-only admin tooling — rich diagnostic UI; raw HTML acceptable.
+  "SeedPanel.tsx",
+  "DevToolbar.tsx",
+];
+
+// File-name patterns where raw HTML is acceptable (internal documentation)
+const ALLOWLIST_PATTERNS = [
+  /GuideView\.tsx$/,         // Admin/seller/buyer guide documentation pages
+  /GuideHubView\.tsx$/,      // Guide hub landing pages
 ];
 
 // ── Patterns ─────────────────────────────────────────────────────────────────
@@ -48,8 +57,9 @@ const RULES = [
     // Matches <div>, <span>, <button>, <td>, <li>, <label>, <section>, <a>, etc.
     // Excludes PascalCase components (appkit primitives like <Span>, <Text>, <Button>)
     regex: new RegExp(`<[a-z][a-z0-9]*\\s[^>]*className[^>]*(?:${TYPOGRAPHY_CLASSES})`),
-    // Tightened P4 (2026-06-07): 411 actual after raw <table>→<Table> conversions in 3 guide views.
-    baseline: 411,
+    // Tightened P4 (2026-06-08): 245 actual after SeedPanel/GuideView allowlists +
+    // <span>→<Span>/<nav>→<Nav> conversions in Category/Brand detail page views.
+    baseline: 245,
   },
   {
     id: "APPKIT_SPAN_RAW_CLASSES",
@@ -122,9 +132,9 @@ function walkFiles(dir) {
     if (stat.isDirectory()) {
       results.push(...walkFiles(full));
     } else if (EXTENSIONS.some(ext => entry.endsWith(ext))) {
-      if (!ALLOWLIST.includes(entry)) {
-        results.push(full);
-      }
+      if (ALLOWLIST.includes(entry)) continue;
+      if (ALLOWLIST_PATTERNS.some(rx => rx.test(entry))) continue;
+      results.push(full);
     }
   }
   return results;
