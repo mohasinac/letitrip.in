@@ -27,6 +27,7 @@ import {
   ROUTES,
   SCAM_CATEGORIES,
   SCAM_TYPES,
+  Span,
   getScamTypesByCategory,
   faqJsonLd,
 } from "@mohasinac/appkit";
@@ -87,7 +88,7 @@ function renderScamTypeCard(
             <Stack gap="xs" as="ul">
               {scamType.howToAvoid.map((tip, i) => (
                 <Row key={i} gap="sm" align="start" as="li">
-                  <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[color:var(--appkit-color-success,theme(colors.green.600))]/10 text-[10px] font-bold text-[color:var(--appkit-color-success,theme(colors.green.700))]">{i + 1}</span>
+                  <Span weight="bold" className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[color:var(--appkit-color-success,theme(colors.green.600))]/10 text-[10px] text-[color:var(--appkit-color-success,theme(colors.green.700))]">{i + 1}</Span>
                   <Text variant="secondary" className="text-sm leading-relaxed">{tip}</Text>
                 </Row>
               ))}

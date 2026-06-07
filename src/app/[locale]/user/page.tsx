@@ -12,6 +12,7 @@ import {
   ROUTES,
   Button,
   Div,
+  Span,
 } from "@mohasinac/appkit/client";
 import { useNotifications } from "@mohasinac/appkit";
 import {
@@ -215,9 +216,9 @@ export default function Page() {
         orders.length > 0 || ordersLoading ? (
           <>
             <Div className="mb-3 flex items-center justify-between">
-              <span className="text-sm font-semibold text-[var(--appkit-color-text)]">
+              <Span size="sm" weight="semibold" className="text-[var(--appkit-color-text)]">
                 Recent Orders
-              </span>
+              </Span>
               <Link
                 href={String(ROUTES.USER.ORDERS)}
                 className="text-xs text-[var(--appkit-color-primary)] hover:underline"
