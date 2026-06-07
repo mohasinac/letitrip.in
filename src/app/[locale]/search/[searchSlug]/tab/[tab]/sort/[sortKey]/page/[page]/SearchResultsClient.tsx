@@ -10,6 +10,10 @@ import {
   Text,
 } from "@mohasinac/appkit/client";
 
+const __P = {
+  p6: "p-6",
+} as const;
+
 type Product = { id: string; slug?: string; [key: string]: unknown };
 
 type Props = {
@@ -49,7 +53,7 @@ export function SearchResultsClient({ locale, query, total, products }: Props) {
             <AdSlot id="listing-between-rows" />
           </Div>
         ) : (
-          <Div className="rounded-xl border border-zinc-200 bg-white p-6 text-center dark:border-slate-700 dark:bg-slate-900">
+          <Div className={`rounded-xl border border-zinc-200 bg-white ${__P.p6} text-center dark:border-slate-700 dark:bg-slate-900`}>
             <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
               No results for &ldquo;{query}&rdquo;
             </Text>

@@ -4,6 +4,12 @@ import type { FlowStep } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 import { PackageSearch, MapPinned, FileText, XCircle } from "lucide-react";
 
+const __P = {
+  p4: "p-4",
+  p5: "p-5",
+  p8: "p-8",
+} as const;
+
 const { themed, flex, page } = THEME_CONSTANTS;
 
 // ─── Sub-renderers ────────────────────────────────────────────────────────────
@@ -19,7 +25,7 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
       <Text variant="secondary" className="text-center mb-8 max-w-xl mx-auto">{t("lifecycleSubtitle")}</Text>
       <Div className="space-y-3">
         {statusSteps.map(({ label, desc, color, badge, icon }) => (
-          <Div key={label} className={`flex items-start gap-4 p-4 rounded-xl border ${color}`}>
+          <Div key={label} className={`flex items-start gap-4 ${__P.p4} rounded-xl border ${color}`}>
             <Div className="text-2xl flex-shrink-0 mt-0.5">{icon}</Div>
             <Div className="flex-1">
               <Row gap="sm" className="mb-1">
@@ -29,7 +35,7 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
             </Div>
           </Div>
         ))}
-        <Div className="flex items-start gap-4 p-4 rounded-xl border bg-error-surface border-error/20">
+        <Div className={`flex items-start gap-4 ${__P.p4} rounded-xl border bg-error-surface border-error/20`}>
           <Div className="text-2xl flex-shrink-0 mt-0.5">❌</Div>
           <Div className="flex-1">
             <Row gap="sm" className="mb-1">
@@ -62,7 +68,7 @@ function renderOrdersInfoCards(infoCards: InfoCard[], t: T) {
       <Heading level={2} className="mb-8 text-center">{t("infoTitle")}</Heading>
       <Grid className={`${THEME_CONSTANTS.spacing.gap.md} sm:grid-cols-2`}>
         {infoCards.map(({ icon: Icon, title, text, color, iconColor }) => (
-          <Div key={title} className={`rounded-xl border p-5 ${color}`}>
+          <Div key={title} className={`rounded-xl border ${__P.p5} ${color}`}>
             <Div className={`w-10 h-10 rounded-lg bg-white/60 dark:bg-white/10 ${flex.center} mb-3`}>
               <Icon className={`w-5 h-5 ${iconColor}`} />
             </Div>
@@ -77,7 +83,7 @@ function renderOrdersInfoCards(infoCards: InfoCard[], t: T) {
 
 function renderOrdersCta(t: T) {
   return (
-    <Section className={`rounded-2xl p-8 text-center ${themed.bgSecondary} border ${themed.border}`}>
+    <Section className={`rounded-2xl ${__P.p8} text-center ${themed.bgSecondary} border ${themed.border}`}>
       <Heading level={2} className="mb-3">{t("ctaTitle")}</Heading>
       <Text variant="secondary" className="mb-6 max-w-lg mx-auto">{t("ctaText")}</Text>
       <Div className={`${flex.center} gap-4 flex-wrap`}>

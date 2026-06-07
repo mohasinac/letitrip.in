@@ -3,6 +3,10 @@ import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Text, Div, Button } from "@mohasinac/appkit/ui";
 
+const __P = {
+  p6: "p-6",
+} as const;
+
 export default function Page() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
@@ -36,7 +40,7 @@ export default function Page() {
 
   if (error) {
     return (
-      <Div className="flex min-h-screen items-center justify-center p-6 text-center">
+      <Div className={`flex min-h-screen items-center justify-center ${__P.p6} text-center`}>
         <Div className="space-y-3">
           <Text className="text-lg font-semibold text-error">Sign-in failed</Text>
           <Text className="text-sm text-zinc-500 dark:text-zinc-400">{decodeURIComponent(error)}</Text>

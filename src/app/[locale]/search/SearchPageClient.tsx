@@ -1,6 +1,10 @@
 "use client";
 import { Button, Div, Input, SearchView, Text } from "@mohasinac/appkit/client";
 
+const __P = {
+  p6: "p-6",
+} as const;
+
 type Props = { locale: string; query: string };
 
 export function SearchPageClient({ locale, query }: Props) {
@@ -17,7 +21,7 @@ export function SearchPageClient({ locale, query }: Props) {
       )}
       renderResults={() =>
         !query ? (
-          <Div className="rounded-xl border border-zinc-200 bg-white p-6 text-center dark:border-slate-700 dark:bg-slate-900">
+          <Div className={`rounded-xl border border-zinc-200 bg-white ${__P.p6} text-center dark:border-slate-700 dark:bg-slate-900`}>
             <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
               Search the marketplace
             </Text>

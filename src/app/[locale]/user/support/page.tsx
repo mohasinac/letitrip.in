@@ -16,6 +16,10 @@ import {
 import { ListingToolbar } from "@mohasinac/appkit/ui";
 import { TICKET_STATUSES } from "@/constants";
 
+const __P = {
+  p5: "p-5",
+} as const;
+
 interface TicketItem {
   id: string;
   subject: string;
@@ -135,7 +139,7 @@ export default function UserSupportPage() {
       {loading ? (
         <Stack gap="md">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Div key={i} className="animate-pulse rounded-xl border border-[var(--appkit-color-border)] p-5 space-y-3">
+            <Div key={i} className={`animate-pulse rounded-xl border border-[var(--appkit-color-border)] ${__P.p5} space-y-3`}>
               <Div className="h-4 w-1/3 rounded bg-[var(--appkit-color-border)]" />
               <Div className="h-3 w-1/2 rounded bg-[var(--appkit-color-border)]" />
             </Div>

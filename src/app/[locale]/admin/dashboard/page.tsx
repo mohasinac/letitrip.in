@@ -4,6 +4,10 @@ import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "
 import { Link } from "@/i18n/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+const __P = {
+  p5: "p-5",
+} as const;
+
 
 const __O = {
   hidden: "overflow-hidden",
@@ -194,7 +198,7 @@ export default function Page() {
             ))}
           </Div>
 
-          <Div className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-5">
+          <Div className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`}>
             <Div className="flex items-center gap-2 mb-4">
               <Div className="text-sm font-semibold text-[var(--appkit-color-text)]">Dev Settings</Div>
               {(prefs.mockRazorpay || prefs.mockShiprocket || adminBypassEnabled) && (

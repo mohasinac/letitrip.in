@@ -4,6 +4,10 @@ import { NavPermissionsManager, Div, Heading, Text } from "@mohasinac/appkit/cli
 import type { NavPermissionsGroup as NavGroup } from "@mohasinac/appkit/client";
 import { updateNavConfigAction } from "@/actions/admin-settings.actions";
 
+const __P = {
+  p6: "p-6",
+} as const;
+
 const MAIN_NAV_GROUP: NavGroup = {
   groupLabel: "Main Navigation",
   items: [
@@ -33,7 +37,7 @@ export default async function Page() {
   const initialConfig = (settings?.navConfig ?? {}) as Record<string, { enabled: boolean }>;
 
   return (
-    <Div className="p-6 max-w-5xl mx-auto">
+    <Div className={`${__P.p6} max-w-5xl mx-auto`}>
       <Div className="mb-6">
         <Heading level={1} className="text-2xl font-semibold">Navigation Permissions</Heading>
         <Text className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">

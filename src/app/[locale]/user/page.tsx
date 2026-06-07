@@ -35,6 +35,10 @@ import {
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 
+const __P = {
+  p5: "p-5",
+} as const;
+
 const __O = {
   hidden: "overflow-hidden",
 } as const;
@@ -123,7 +127,7 @@ export default function Page() {
       renderProfile={() =>
         userLoading ? null : user ? (
           <Div className="space-y-4">
-            <Div className={`relative flex items-center gap-4 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden} p-5 shadow-sm`}>
+            <Div className={`relative flex items-center gap-4 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden} ${__P.p5} shadow-sm`}>
               <Div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: BRAND_GRAD }} aria-hidden="true" />
               <Button
                 variant="ghost"

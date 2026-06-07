@@ -17,6 +17,10 @@ import {
   Button,
 } from "@mohasinac/appkit/client";
 
+const __P = {
+  p4: "p-4",
+} as const;
+
 export function UserAddressesClient() {
   const router = useRouter();
   const { showToast } = useToast();
@@ -75,7 +79,7 @@ export function UserAddressesClient() {
     return (
       <Div className="grid sm:grid-cols-2 gap-4">
         {Array.from({ length: 3 }).map((_, i) => (
-          <Div key={i} className="rounded-xl border border-zinc-200 dark:border-slate-700 animate-pulse p-4 space-y-2">
+          <Div key={i} className={`rounded-xl border border-zinc-200 dark:border-slate-700 animate-pulse ${__P.p4} space-y-2`}>
             <Div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-1/3" />
             <Div className="h-3 bg-zinc-200 dark:bg-slate-700 rounded w-3/4" />
             <Div className="h-3 bg-zinc-200 dark:bg-slate-700 rounded w-1/2" />
@@ -127,7 +131,7 @@ export function UserAddressesClient() {
       </Row>
 
       {confirmDeleteId && (
-        <Div className="rounded-xl border border-error/20 bg-error-surface p-4 space-y-3">
+        <Div className={`rounded-xl border border-error/20 bg-error-surface ${__P.p4} space-y-3`}>
           <Text className="text-sm font-medium text-error">
             Delete this address? This cannot be undone.
           </Text>

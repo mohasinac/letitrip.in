@@ -33,6 +33,11 @@ import {
 } from "@/actions/checkout.actions";
 import { UI_LABELS } from "@/constants";
 
+const __P = {
+  p3: "p-3",
+  p6: "p-6",
+} as const;
+
 const CK = UI_LABELS.CHECKOUT;
 
 // --- Razorpay helpers --------------------------------------------------------
@@ -192,7 +197,7 @@ function renderAddressStep({
         </Div>
       )}
       renderEmptyState={() => (
-        <Div className="rounded-xl border border-dashed border-zinc-300 dark:border-slate-600 p-6 text-center">
+        <Div className={`rounded-xl border border-dashed border-zinc-300 dark:border-slate-600 ${__P.p6} text-center`}>
           <Text className="mb-3 text-sm text-zinc-600 dark:text-zinc-400">
             No saved addresses yet.
           </Text>
@@ -260,7 +265,7 @@ function renderOtpConsentStep({
           {isSendingOtp ? CK.OTP_SENDING_BTN : CK.OTP_SEND_BTN}
         </Button>
         {adminBypassEnabled && (
-          <Div className="rounded-lg border border-warning/30 bg-warning-surface p-3">
+          <Div className={`rounded-lg border border-warning/30 bg-warning-surface ${__P.p3}`}>
             <Text className="mb-1 text-xs font-semibold text-warning uppercase tracking-wide">
               {CK.ADMIN_BYPASS_PANEL_LABEL}
             </Text>
@@ -402,7 +407,7 @@ function renderPaymentStep({
             {CK.PAYMENT_COD_BTN}
           </Button>
           {adminBypassEnabled && (
-            <Div className="mt-1 rounded-lg border border-warning/30 bg-warning-surface p-3">
+            <Div className={`mt-1 rounded-lg border border-warning/30 bg-warning-surface ${__P.p3}`}>
               <Text className="mb-2 text-xs font-semibold text-warning uppercase tracking-wide">
                 {CK.ADMIN_BYPASS_PANEL_LABEL}
               </Text>
@@ -521,7 +526,7 @@ function renderOrderSummary({
         {CK.ORDER_SUMMARY_HEADING}
       </Heading>
       {selectedAddress && (
-        <Div className="mb-3 rounded-lg bg-zinc-50 dark:bg-slate-800 p-3">
+        <Div className={`mb-3 rounded-lg bg-zinc-50 dark:bg-slate-800 ${__P.p3}`}>
           <Text className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase mb-1">
             {CK.SHIPPING_TO}
           </Text>

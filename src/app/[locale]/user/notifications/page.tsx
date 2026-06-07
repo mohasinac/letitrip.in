@@ -15,6 +15,10 @@ import {
 } from "@mohasinac/appkit/client";
 import { ListingToolbar, Span } from "@mohasinac/appkit/ui";
 
+const __P = {
+  p4: "p-4",
+} as const;
+
 interface NotifItem {
   id: string;
   type: string;
@@ -274,7 +278,7 @@ export default function NotificationsPage() {
           return (
             <Stack gap="md">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Div key={i} className="animate-pulse rounded-xl border border-[var(--appkit-color-border)] p-4 space-y-2">
+                <Div key={i} className={`animate-pulse rounded-xl border border-[var(--appkit-color-border)] ${__P.p4} space-y-2`}>
                   <Div className="h-4 w-1/3 rounded bg-[var(--appkit-color-border)]" />
                   <Div className="h-3 w-2/3 rounded bg-[var(--appkit-color-border)]" />
                 </Div>

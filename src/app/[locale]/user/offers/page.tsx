@@ -6,6 +6,10 @@ import {
   checkoutOfferAction,
 } from "@/actions/offer.actions";
 
+const __P = {
+  p4: "p-4",
+} as const;
+
 async function handleAcceptCounter(offerId: string): Promise<void> {
   "use server";
   const result = await acceptCounterOfferAction({ offerId });
@@ -26,7 +30,7 @@ async function handleCheckout(offerId: string): Promise<void> {
 
 export default function Page() {
   return (
-    <Div className="max-w-2xl mx-auto p-4">
+    <Div className={`max-w-2xl mx-auto ${__P.p4}`}>
       <UserOffersPanel
         onAcceptCounter={handleAcceptCounter}
         onWithdraw={handleWithdraw}

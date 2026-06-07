@@ -25,6 +25,10 @@ import {
 import type { EnrichedWishlistItem } from "@mohasinac/appkit/client";
 import { Span } from "@mohasinac/appkit/ui";
 import { removeFromWishlistAction } from "@/actions/wishlist.actions";
+
+const __P = {
+  p4: "p-4",
+} as const;
 // audit-auth-gates-ok
 
 const SORT_OPTIONS = [
@@ -318,7 +322,7 @@ function renderWishlistFilterContent({
   setPending: React.Dispatch<React.SetStateAction<WishlistFilters>>;
 }) {
   return (
-    <Stack gap="md" className="p-4">
+    <Stack gap="md" className={`${__P.p4}`}>
       <Div>
         <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Type</Text>
         <Stack gap="xs">

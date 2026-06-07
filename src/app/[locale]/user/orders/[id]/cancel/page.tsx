@@ -7,6 +7,10 @@ import { useToast, useOrder, ROUTES, Div, Button, Label, Textarea } from "@mohas
 import { cancelOrderAction } from "@/actions/order.actions";
 import { Heading, Span, Text } from "@mohasinac/appkit";
 
+const __P = {
+  p5: "p-5",
+} as const;
+
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
@@ -60,7 +64,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       </>
 
       {!cancellable ? (
-        <Div className="rounded-xl border border-warning/20 bg-warning-surface p-5 space-y-3">
+        <Div className={`rounded-xl border border-warning/20 bg-warning-surface ${__P.p5} space-y-3`}>
           <Text className="text-sm font-medium text-warning">
             This order cannot be cancelled because it is already <Span weight="bold">{order.orderStatus.toLowerCase()}</Span>.
           </Text>

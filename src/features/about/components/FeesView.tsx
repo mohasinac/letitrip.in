@@ -2,6 +2,10 @@ import { THEME_CONSTANTS } from "@/constants";
 import { Heading, Text, Section, Caption, Div, Table, Thead, Tbody, Tr, Th, Td } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 
+const __P = {
+  p5: "p-5",
+} as const;
+
 
 const __O = {
   xAuto: "overflow-x-auto",
@@ -52,7 +56,7 @@ function renderPayoutExample(payoutRows: PayoutRow[], t: T) {
     <Section>
       <Heading level={2} className="mb-3">{t("payoutExampleTitle")}</Heading>
       <Text variant="secondary" className="mb-6">{t("payoutExampleSubtitle")}</Text>
-      <Div className={`rounded-xl border ${themed.border} ${themed.bgPrimary} p-5 max-w-sm`}>
+      <Div className={`rounded-xl border ${themed.border} ${themed.bgPrimary} ${__P.p5} max-w-sm`}>
         <Heading level={3} className="text-base mb-4">{t("payoutExampleProduct")}</Heading>
         <Div className="space-y-2">
           {payoutRows.map((row, i) => (
@@ -69,7 +73,7 @@ function renderPayoutExample(payoutRows: PayoutRow[], t: T) {
 
 function renderFeesDisclaimer(t: T) {
   return (
-    <Section className={`rounded-xl border ${themed.border} p-5 ${themed.bgSecondary}`}>
+    <Section className={`rounded-xl border ${themed.border} ${__P.p5} ${themed.bgSecondary}`}>
       <Heading level={3} className="text-base mb-2">{t("disclaimerTitle")}</Heading>
       <Caption className="leading-relaxed">{t("disclaimerText")}</Caption>
     </Section>

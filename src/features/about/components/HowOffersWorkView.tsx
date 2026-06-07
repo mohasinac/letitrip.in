@@ -3,6 +3,10 @@ import { Heading, Text, Section, Stack, FlowDiagram, Div, TextLink } from "@moha
 import type { FlowStep } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 
+const __P = {
+  p6: "p-6",
+} as const;
+
 const { themed, flex, page } = THEME_CONSTANTS;
 
 const CLS_STEP_NUMBER = "bg-violet-100 dark:bg-violet-900/40";
@@ -121,7 +125,7 @@ export async function HowOffersWorkView() {
           <Heading level={2} className="mb-6 text-center">
             {t("rulesTitle")}
           </Heading>
-          <Div className={`rounded-xl border p-6 ${themed.bgSecondary} ${themed.border} space-y-3`}>
+          <Div className={`rounded-xl border ${__P.p6} ${themed.bgSecondary} ${themed.border} space-y-3`}>
             {RULES.map((rule, i) => (
               <Div key={i} className={`${flex.center} gap-3`}>
                 <Div className={`flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 dark:bg-primary/15 ${flex.center} text-sm font-semibold text-primary`}>

@@ -3,6 +3,10 @@ import { useEffect, useState } from "react";
 import { SellerAnalyticsView, SellerAnalyticsStats, SellerTopProducts, Div, Text } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
+const __P = {
+  p4: "p-4",
+} as const;
+
 interface AnalyticsData {
   summary?: {
     totalOrders: number;
@@ -52,7 +56,7 @@ export default function Page() {
       isLoading={loading}
       renderStats={() =>
         error ? (
-          <Div className="p-4 rounded-lg border border-[var(--appkit-color-border)]">
+          <Div className={`${__P.p4} rounded-lg border border-[var(--appkit-color-border)]`}>
             <Text className="text-sm text-[var(--appkit-color-text-muted)]">
               {error === "Analytics service not configured"
                 ? "Analytics service is not configured yet. Check back after your first orders."

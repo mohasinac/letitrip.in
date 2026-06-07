@@ -16,6 +16,10 @@ import {
   Badge,
 } from "@mohasinac/appkit/client";
 
+const __P = {
+  p5: "p-5",
+} as const;
+
 interface TicketMessage {
   id: string;
   authorId: string;
@@ -99,7 +103,7 @@ export default function TicketDetailPage({ params }: PageProps) {
   if (isLoading) {
     return (
       <Div className="w-full max-w-3xl space-y-4">
-        <Div className="animate-pulse rounded-xl border border-[var(--appkit-color-border)] p-5 space-y-3">
+        <Div className={`animate-pulse rounded-xl border border-[var(--appkit-color-border)] ${__P.p5} space-y-3`}>
           <Div className="h-4 w-1/3 rounded bg-[var(--appkit-color-border)]" />
           <Div className="h-3 w-2/3 rounded bg-[var(--appkit-color-border)]" />
         </Div>
@@ -159,7 +163,7 @@ export default function TicketDetailPage({ params }: PageProps) {
         </Row>
       </Div>
 
-      <Div className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-5">
+      <Div className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`}>
         <Text className="text-xs font-semibold text-[var(--appkit-color-text-muted)] uppercase tracking-wider mb-2">
           Your original message
         </Text>
@@ -200,13 +204,13 @@ export default function TicketDetailPage({ params }: PageProps) {
       </Stack>
 
       {closed ? (
-        <Div className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-5 text-center">
+        <Div className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5} text-center`}>
           <Text variant="secondary" className="text-sm">
             This ticket is {ticket.status}. Open a new ticket if you need further help.
           </Text>
         </Div>
       ) : (
-        <Stack gap="sm" className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-5">
+        <Stack gap="sm" className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`}>
           <Text className="text-sm font-semibold text-[var(--appkit-color-text)]">Add a reply</Text>
           <Textarea
             value={reply}

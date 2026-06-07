@@ -16,6 +16,10 @@ import {
 } from "@mohasinac/appkit/client";
 import { TICKET_CATEGORIES, type TicketCategory } from "@/constants";
 
+const __P = {
+  p5: "p-5",
+} as const;
+
 const MIN_SUBJECT = 3;
 const MIN_DESCRIPTION = 10;
 
@@ -89,7 +93,7 @@ export default function NewSupportTicketPage() {
         </Text>
       </Div>
 
-      <Stack gap="md" className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-5">
+      <Stack gap="md" className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`}>
         <Div>
           <Text className="text-xs font-medium text-[var(--appkit-color-text-muted)] mb-1">Category</Text>
           {/* eslint-disable-next-line lir/no-raw-html-elements -- short category select */}

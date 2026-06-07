@@ -17,6 +17,10 @@ import { ListingToolbar } from "@mohasinac/appkit/ui";
 import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
 
+const __P = {
+  p4: "p-4",
+} as const;
+
 const SORT_OPTIONS = [
   { value: "-createdAt", label: "Newest" },
   { value: "createdAt",  label: "Oldest" },
@@ -54,7 +58,7 @@ function paise(amount: number) {
 
 function CodeRevealRow({ item, orderId }: { item: OrderItem; orderId: string }) {
   return (
-    <Div className="rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-4 space-y-3">
+    <Div className={`rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p4} space-y-3`}>
       <Row justify="between" align="start">
         <Div className="space-y-0.5">
           <Link

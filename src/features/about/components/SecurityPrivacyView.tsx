@@ -15,6 +15,11 @@ import {
   Scale,
 } from "lucide-react";
 
+const __P = {
+  p5: "p-5",
+  p8: "p-8",
+} as const;
+
 const { themed, flex, page } = THEME_CONSTANTS;
 
 // ─── Sub-renderers ────────────────────────────────────────────────────────────
@@ -36,7 +41,7 @@ function renderSecurityCards(sections: SecurityCard[]) {
     <Section>
       <Grid className={`${THEME_CONSTANTS.spacing.gap.md} md:grid-cols-2`}>
         {sections.map(({ icon: Icon, title, text, color, iconColor }) => (
-          <Div key={title} className={`rounded-xl border p-5 ${color}`}>
+          <Div key={title} className={`rounded-xl border ${__P.p5} ${color}`}>
             <Div className={`w-10 h-10 rounded-lg bg-white/60 dark:bg-white/10 ${flex.center} mb-3`}>
               <Icon className={`w-5 h-5 ${iconColor}`} />
             </Div>
@@ -65,7 +70,7 @@ function renderSecurityDiagram(diagramSteps: FlowStep[], t: T) {
 
 function renderSecurityCta(t: T) {
   return (
-    <Section className={`rounded-2xl p-8 text-center ${themed.bgSecondary} border ${themed.border}`}>
+    <Section className={`rounded-2xl ${__P.p8} text-center ${themed.bgSecondary} border ${themed.border}`}>
       <Heading level={2} className="mb-3">{t("ctaTitle")}</Heading>
       <Text variant="secondary" className="mb-6 max-w-lg mx-auto">{t("ctaText")}</Text>
       <Div className={`${flex.center} gap-4 flex-wrap`}>

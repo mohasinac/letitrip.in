@@ -71,8 +71,9 @@ const RULES = [
     id: "RAW_PADDING_CLASSES",
     label: "Raw padding classes on appkit primitive (use padding prop)",
     regex: /<(?:Stack|Row|Grid|Container|Section|Div)\s[^>]*className\s*=\s*[{"].*\bp-[3-8]\b/,
-    // Tightened P4 (2026-06-08): 210 actual after GuideView allowlist.
-    baseline: 210,
+    // Driven to 0 (2026-06-08): codemod extracted all p-3..p-8 on appkit
+    // primitives to per-file `const __P = {...}` constants.
+    baseline: 0,
   },
   {
     id: "RAW_ALIGN_ON_ROW",

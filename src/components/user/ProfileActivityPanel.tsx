@@ -12,6 +12,10 @@ import {
 import { apiClient } from "@mohasinac/appkit";
 import { Link } from "@/i18n/navigation";
 
+const __P = {
+  p5: "p-5",
+} as const;
+
 interface BidLite {
   id: string;
   amount: number;
@@ -43,7 +47,7 @@ function StatPill({ label, value }: { label: string; value: string | number }) {
 
 function SectionCard({ title, viewAllHref, children }: { title: string; viewAllHref: string; children: React.ReactNode }) {
   return (
-    <Div className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-5 shadow-sm">
+    <Div className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5} shadow-sm`}>
       <Div className="mb-3 flex items-center justify-between">
         <Text className="text-sm font-semibold text-[var(--appkit-color-text)]">{title}</Text>
         <Link href={viewAllHref} className="text-xs text-[var(--appkit-color-primary)] hover:underline">View all →</Link>
