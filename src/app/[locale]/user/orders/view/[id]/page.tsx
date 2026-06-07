@@ -9,6 +9,7 @@ import {
   ROUTES,
   ACTIONS,
   Div,
+  Span,
   Text,
   Row,
   Stack,
@@ -95,21 +96,21 @@ function renderItemRow(item: OrderItemT, key: string | number) {
         {isPrizeDraw && revealStatus && (
           <Row gap="sm" className="mt-1 flex-wrap">
             {revealStatus === "revealed" ? (
-              <span className="inline-flex items-center rounded-full bg-success-surface px-2 py-0.5 text-[10px] font-semibold text-success">
+              <Span weight="semibold" className="inline-flex items-center rounded-full bg-success-surface px-2 py-0.5 text-[10px] text-success">
                 Prize revealed{item.revealedItemNumber != null ? ` (#${item.revealedItemNumber})` : ""}
-              </span>
+              </Span>
             ) : revealStatus === "open" ? (
-              <span className={CLS_BUNDLE_BADGE}>
+              <Span className={CLS_BUNDLE_BADGE}>
                 Reveal pending
-              </span>
+              </Span>
             ) : revealStatus === "pending" ? (
-              <span className="inline-flex items-center rounded-full bg-warning-surface px-2 py-0.5 text-[10px] font-semibold text-warning">
+              <Span weight="semibold" className="inline-flex items-center rounded-full bg-warning-surface px-2 py-0.5 text-[10px] text-warning">
                 Awaiting reveal window
-              </span>
+              </Span>
             ) : (
-              <span className="inline-flex items-center rounded-full bg-zinc-200 dark:bg-slate-700 px-2 py-0.5 text-[10px] font-semibold text-zinc-700 dark:text-zinc-200">
+              <Span weight="semibold" className="inline-flex items-center rounded-full bg-zinc-200 dark:bg-slate-700 px-2 py-0.5 text-[10px] text-zinc-700 dark:text-zinc-200">
                 Reveal closed
-              </span>
+              </Span>
             )}
             {revealDeadline && revealStatus !== "revealed" && (
               <Text variant="secondary" className="text-[10px]">
@@ -187,15 +188,15 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
           </Text>
           {date && <Text variant="secondary" className="text-xs mt-0.5">{date}</Text>}
         </Div>
-        <span className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${statusColor}`}>
+        <Span size="xs" weight="semibold" className={`rounded-full px-3 py-1 capitalize ${statusColor}`}>
           {order.orderStatus.replace(/_/g, " ")}
-        </span>
+        </Span>
       </Row>
       {order.trackingNumber && (
         <Div className="text-xs text-zinc-500 dark:text-zinc-400">
-          Tracking: <span className="font-medium text-zinc-700 dark:text-zinc-300">{order.trackingNumber}</span>
+          Tracking: <Span weight="medium" className="text-zinc-700 dark:text-zinc-300">{order.trackingNumber}</Span>
           {order.shippingCarrier && (
-            <span className="ml-1.5">via {order.shippingCarrier}</span>
+            <Span className="ml-1.5">via {order.shippingCarrier}</Span>
           )}
         </Div>
       )}

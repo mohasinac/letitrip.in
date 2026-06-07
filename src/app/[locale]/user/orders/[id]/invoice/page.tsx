@@ -1,7 +1,7 @@
 "use client";
 import { use } from "react";
 import { Link } from "@/i18n/navigation";
-import { useOrder, ROUTES, Div, Row, Stack, Text, Heading, Button } from "@mohasinac/appkit/client";
+import { useOrder, ROUTES, Div, Row, Span, Stack, Table, Thead, Tbody, Tr, Th, Td, Text, Heading, Button } from "@mohasinac/appkit/client";
 
 function paise(n: number, currency = "INR") {
   return new Intl.NumberFormat("en-IN", {
@@ -80,11 +80,11 @@ function renderInvoiceAddress(a: NonNullable<OrderData["address"]>) {
 
 function renderInvoiceItemsTable(order: OrderData) {
   return (
-    <table className="w-full text-sm mb-6 border-collapse">
-      <thead>
-        <tr className="border-b border-zinc-200 dark:border-slate-700 print:border-gray-300">
+    <Table className="w-full text-sm mb-6 border-collapse">
+      <Thead>
+        <Tr className="border-b border-zinc-200 dark:border-slate-700 print:border-gray-300">
           {(["Item", "Qty", "Price"] as const).map((h, i) => (
-            <th
+            <Th
               key={h}
               className={[
                 "py-2 text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 print:text-gray-500",
@@ -92,33 +92,33 @@ function renderInvoiceItemsTable(order: OrderData) {
               ].join(" ")}
             >
               {h}
-            </th>
+            </Th>
           ))}
-        </tr>
-      </thead>
-      <tbody>
+        </Tr>
+      </Thead>
+      <Tbody>
         {order.items?.map(
           (item: NonNullable<typeof order>["items"][number], i: number) => (
-            <tr key={i} className="border-b border-zinc-100 dark:border-slate-800 print:border-gray-200">
-              <td className="py-2.5 text-zinc-800 dark:text-zinc-200 print:text-black">
+            <Tr key={i} className="border-b border-zinc-100 dark:border-slate-800 print:border-gray-200">
+              <Td className="py-2.5 text-zinc-800 dark:text-zinc-200 print:text-black">
                 {item.title}
                 {item.attributes && Object.keys(item.attributes).length > 0 && (
-                  <span className="ml-1.5 text-zinc-400 dark:text-zinc-400 print:text-gray-500 text-xs">
+                  <Span size="xs" className="ml-1.5 text-zinc-400 dark:text-zinc-400 print:text-gray-500">
                     ({Object.entries(item.attributes).map(([k, v]) => `${k}: ${v}`).join(", ")})
-                  </span>
+                  </Span>
                 )}
-              </td>
-              <td className="py-2.5 text-center text-zinc-600 dark:text-zinc-300 print:text-black">
+              </Td>
+              <Td className="py-2.5 text-center text-zinc-600 dark:text-zinc-300 print:text-black">
                 {item.quantity}
-              </td>
-              <td className="py-2.5 text-right text-zinc-800 dark:text-zinc-200 print:text-black">
+              </Td>
+              <Td className="py-2.5 text-right text-zinc-800 dark:text-zinc-200 print:text-black">
                 {paise(item.price * item.quantity, item.currency)}
-              </td>
-            </tr>
+              </Td>
+            </Tr>
           ),
         )}
-      </tbody>
-    </table>
+      </Tbody>
+    </Table>
   );
 }
 
