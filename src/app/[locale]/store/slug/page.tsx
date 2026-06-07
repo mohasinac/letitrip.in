@@ -7,6 +7,7 @@ import {
   Heading,
   Input,
   Row,
+  Span,
   Stack,
   Text,
   ACTIONS,
@@ -162,7 +163,7 @@ function renderCurrentUrl(currentSlug: string | null) {
     <Div>
       <Text className="text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">Current URL</Text>
       <Text className="text-sm font-mono text-zinc-700 dark:text-zinc-300">
-        {SITE_BASE}<span className="font-semibold text-zinc-900 dark:text-zinc-100">{currentSlug ?? "—"}</span>
+        {SITE_BASE}<Span weight="semibold" className="text-zinc-900 dark:text-zinc-100">{currentSlug ?? "—"}</Span>
       </Text>
     </Div>
   );
@@ -217,7 +218,7 @@ function renderFeedbackBanners({ saveError, saveSuccess, currentSlug }: {
       {saveSuccess && (
         <Div className="rounded-lg border border-success/20 bg-success-surface px-3 py-2 text-sm text-success">
           Store slug updated successfully. Your new store URL is{" "}
-          <span className="font-mono font-semibold">{SITE_BASE}{currentSlug}</span>.
+          <Span weight="semibold" className="font-mono">{SITE_BASE}{currentSlug}</Span>.
         </Div>
       )}
     </>

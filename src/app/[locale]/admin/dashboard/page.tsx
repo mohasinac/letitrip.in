@@ -1,5 +1,5 @@
 "use client";
-import { AdminDashboardView, ROUTES, Text, Div, Toggle, useToast } from "@mohasinac/appkit/client";
+import { AdminDashboardView, ROUTES, Span, Text, Div, Toggle, useToast } from "@mohasinac/appkit/client";
 import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -87,10 +87,10 @@ function StatCard({ label, value, href }: { label: string; value: number | null;
       href={href}
       className="flex flex-col gap-1 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3.5 shadow-sm hover:border-[var(--appkit-color-primary)] transition-colors"
     >
-      <span className="text-xs text-[var(--appkit-color-text-muted)]">{label}</span>
-      <span className="text-2xl font-bold text-[var(--appkit-color-text)]">
+      <Span size="xs" className="text-[var(--appkit-color-text-muted)]">{label}</Span>
+      <Span weight="bold" className="text-2xl text-[var(--appkit-color-text)]">
         {value === null ? "—" : value}
-      </span>
+      </Span>
     </Link>
   );
 }
