@@ -459,10 +459,10 @@ for (const dir of SCAN_DIRS) {
   }
 }
 
-// Tightened during P3 remediation sweep (2026-06-07): 117 actual after
+// Tightened during P4 remediation sweep (2026-06-07): 69 actual after further
 // REPEATED_STRING extracts. Drop to current count so new regressions block at
 // the precise true ceiling.
-const BASELINE = 117;
+const BASELINE = 69;
 
 if (violations.length === 0) {
   console.log("audit-code-quality: clean ✓");
