@@ -3,10 +3,6 @@ import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 import { redirect } from "@/i18n/navigation";
 import {
-
-const __O = {
-  xAuto: "overflow-x-auto",
-} as const;
   AdSlot,
   CouponsIndexListing,
   Div,
@@ -18,6 +14,10 @@ const __O = {
 } from "@mohasinac/appkit";
 import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
 import { PromotionsProductsClient } from "./PromotionsProductsClient";
+
+const __O = {
+  xAuto: "overflow-x-auto",
+} as const;
 
 export const revalidate = 120;
 

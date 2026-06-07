@@ -2,16 +2,15 @@ import { Div, Heading, Text } from "@mohasinac/appkit/ui";
 import { MediaImage } from "@mohasinac/appkit/client";
 import { EVENT_LABELS } from "./_constants";
 import {
-
-const __O = {
-  hidden: "overflow-hidden",
-} as const;
   formatEventDate,
   statusBadgeClass,
   typeBadgeClass,
 } from "./_helpers";
 import { ShareEventButton } from "./ShareEventButton";
 
+const __O = {
+  hidden: "overflow-hidden",
+} as const;
 const CLS_LABEL = "font-medium text-zinc-700 dark:text-zinc-300";
 
 interface Props {

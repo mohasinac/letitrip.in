@@ -3,10 +3,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import {
-
-const __O = {
-  hidden: "overflow-hidden",
-} as const;
   Badge,
   Button,
   Div,
@@ -17,6 +13,10 @@ const __O = {
   Text,
   ACTIONS,
 } from "@mohasinac/appkit/client";
+
+const __O = {
+  hidden: "overflow-hidden",
+} as const;
 import { ROUTES } from "@mohasinac/appkit/client";
 import { useUrlTable } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";

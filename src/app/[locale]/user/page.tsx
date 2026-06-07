@@ -10,6 +10,7 @@ import {
   useToast,
   OrdersList,
   ROUTES,
+  Button,
   Div,
 } from "@mohasinac/appkit/client";
 import { useNotifications } from "@mohasinac/appkit";
@@ -120,13 +121,13 @@ export default function Page() {
           <Div className="space-y-4">
             <Div className="relative flex items-center gap-4 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden p-5 shadow-sm">
               <Div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: BRAND_GRAD }} aria-hidden="true" />
-              {/* eslint-disable-next-line lir/no-raw-html-elements -- avatar tile needs custom hover overlay; not a form button */}
-              <button
+              <Button
+                variant="ghost"
                 type="button"
                 onClick={() => fileRef.current?.click()}
                 disabled={uploading}
                 aria-label="Change profile photo"
-                className="group relative h-16 w-16 flex-shrink-0 rounded-full overflow-hidden ring-2 ring-[var(--appkit-color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
+                className="group relative h-16 w-16 flex-shrink-0 rounded-full overflow-hidden ring-2 ring-[var(--appkit-color-border)] p-0 min-h-0 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
               >
                 {user.photoURL ? (
                   // eslint-disable-next-line lir/no-raw-media-elements, @next/next/no-img-element
@@ -136,12 +137,12 @@ export default function Page() {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div
+                  <Div
                     className="flex h-full w-full items-center justify-center text-white text-xl font-bold"
                     style={{ background: BRAND_GRAD }}
                   >
                     {(user.displayName ?? user.email ?? "U")[0].toUpperCase()}
-                  </div>
+                  </Div>
                 )}
                 <Div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                   <Camera className="w-5 h-5 text-white" />
@@ -151,7 +152,7 @@ export default function Page() {
                     Saving…
                   </Div>
                 )}
-              </button>
+              </Button>
               {/* eslint-disable-next-line lir/no-raw-html-elements -- hidden native file picker, no FormField equivalent */}
               <input
                 ref={fileRef}

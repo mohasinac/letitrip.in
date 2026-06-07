@@ -1,16 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
 import {
-
-const __O = {
-  hidden: "overflow-hidden",
-} as const;
   StoreDashboardView,
   SellerTopProducts,
   useStoreDashboard,
   ROUTES,
   Div,
 } from "@mohasinac/appkit/client";
+
+const __O = {
+  hidden: "overflow-hidden",
+} as const;
 import { TrendingUp, ShoppingBag, Clock, Package, Plus, BarChart2, Wallet, Store, Star } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
