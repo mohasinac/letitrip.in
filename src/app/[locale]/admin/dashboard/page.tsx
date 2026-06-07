@@ -229,7 +229,7 @@ export default function Page() {
                 <Text className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Load or reset Firestore seed collections</Text>
               </>
               <Link
-                href="/demo/seed"
+                href={ROUTES.DEMO.SEED}
                 className="flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-lg bg-[var(--appkit-color-border-subtle)] text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-primary)] hover:text-white transition-colors"
               >
                 Open Seed Panel →

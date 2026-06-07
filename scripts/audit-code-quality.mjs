@@ -459,10 +459,10 @@ for (const dir of SCAN_DIRS) {
   }
 }
 
-// Tightened during P1 remediation sweep (2026-06-07): 184 actual after JSX
-// closing-tag fixes during Phase 1 of the baseline-to-0 plan. Drop to current
-// count so new regressions block at the precise true ceiling.
-const BASELINE = 184;
+// Tightened during P3 remediation sweep (2026-06-07): 117 actual after
+// REPEATED_STRING extracts. Drop to current count so new regressions block at
+// the precise true ceiling.
+const BASELINE = 117;
 
 if (violations.length === 0) {
   console.log("audit-code-quality: clean ✓");

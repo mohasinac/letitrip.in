@@ -20,6 +20,8 @@ import {
   type BundleOrderGroup,
 } from "@mohasinac/appkit";
 
+const CLS_BUNDLE_BADGE = "inline-flex items-center rounded-full bg-fuchsia-100 dark:bg-fuchsia-900/30 px-2 py-0.5 text-[10px] font-semibold text-fuchsia-700 dark:text-fuchsia-300";
+
 const STATUS_COLORS: Record<string, string> = {
   pending:          "bg-warning-surface text-warning",
   confirmed:        "bg-info-surface text-info",
@@ -97,7 +99,7 @@ function renderItemRow(item: OrderItemT, key: string | number) {
                 Prize revealed{item.revealedItemNumber != null ? ` (#${item.revealedItemNumber})` : ""}
               </span>
             ) : revealStatus === "open" ? (
-              <span className="inline-flex items-center rounded-full bg-fuchsia-100 dark:bg-fuchsia-900/30 px-2 py-0.5 text-[10px] font-semibold text-fuchsia-700 dark:text-fuchsia-300">
+              <span className={CLS_BUNDLE_BADGE}>
                 Reveal pending
               </span>
             ) : revealStatus === "pending" ? (

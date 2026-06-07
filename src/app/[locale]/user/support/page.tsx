@@ -98,7 +98,7 @@ export default function UserSupportPage() {
           )}
         </Div>
         <Link
-          href="/user/support/new"
+          href={ROUTES.USER.SUPPORT_NEW}
           className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600"
         >
           + New ticket
@@ -146,7 +146,7 @@ export default function UserSupportPage() {
           <Text variant="secondary">
             {status ? `No ${status.replace("_", " ")} tickets.` : "You haven't opened any support tickets yet."}
           </Text>
-          <Link href="/user/support/new" className="mt-3 inline-block text-sm text-[var(--appkit-color-primary)] hover:underline">
+          <Link href={ROUTES.USER.SUPPORT_NEW} className="mt-3 inline-block text-sm text-[var(--appkit-color-primary)] hover:underline">
             Open your first ticket →
           </Link>
         </Div>

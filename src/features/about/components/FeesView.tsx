@@ -3,6 +3,8 @@ import { Heading, Text, Section, Caption, Div } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 
 const { themed, page } = THEME_CONSTANTS;
+const CLS_RATE_CELL = "py-3 px-4 font-semibold text-violet-700 dark:text-violet-400";
+const CLS_HIGHLIGHT = "font-bold text-emerald-700 dark:text-emerald-400";
 
 // ─── Sub-renderers ────────────────────────────────────────────────────────────
 
@@ -28,7 +30,7 @@ function renderFeeTable(feeRows: FeeRow[], t: T) {
             {feeRows.map((row) => (
               <tr key={row.category} className={`${themed.bgPrimary} hover:bg-neutral-50 dark:hover:bg-neutral-800/50`}>
                 <td className="py-3 px-4 font-medium">{row.category}</td>
-                <td className="py-3 px-4 font-semibold text-violet-700 dark:text-violet-400">{row.rate}</td>
+                <td className={CLS_RATE_CELL}>{row.rate}</td>
                 <td className="py-3 px-4"><Caption>{row.who}</Caption></td>
                 <td className="py-3 px-4 text-neutral-500 dark:text-neutral-400 hidden md:table-cell text-xs">{row.note}</td>
               </tr>
@@ -52,7 +54,7 @@ function renderPayoutExample(payoutRows: PayoutRow[], t: T) {
           {payoutRows.map((row, i) => (
             <Div key={i} className={`flex justify-between text-sm ${row.highlight ? "border-t border-neutral-200 dark:border-neutral-700 pt-2 mt-2 font-bold" : ""}`}>
               <Text className={row.highlight ? "font-bold" : "text-neutral-600 dark:text-neutral-400"}>{row.label}</Text>
-              <Text className={row.highlight ? "font-bold text-emerald-700 dark:text-emerald-400" : ""}>{row.example}</Text>
+              <Text className={row.highlight ? CLS_HIGHLIGHT : ""}>{row.example}</Text>
             </Div>
           ))}
         </Div>

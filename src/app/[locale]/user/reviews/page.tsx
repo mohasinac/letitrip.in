@@ -30,6 +30,9 @@ interface ReviewItem {
 }
 
 const STAR_LABELS: Record<number, string> = { 1: "Terrible", 2: "Poor", 3: "Average", 4: "Good", 5: "Excellent" };
+const CLS_STAR_ON = "text-yellow-400";
+const CLS_STAR_OFF = "text-zinc-300 dark:text-zinc-600";
+const CLS_REPLY_BADGE = "rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-0.5 text-xs font-medium";
 
 const SORT_OPTIONS = [
   { value: "-createdAt", label: "Newest" },
@@ -52,7 +55,7 @@ function StarDisplay({ rating }: { rating: number }) {
         <Text
           as="span"
           key={i}
-          className={`text-base ${i < rating ? "text-yellow-400" : "text-zinc-300 dark:text-zinc-600"}`}
+          className={`text-base ${i < rating ? CLS_STAR_ON : CLS_STAR_OFF}`}
         >
           ★
         </Text>
@@ -194,7 +197,7 @@ export default function UserReviewsPage() {
                   </Div>
                   <Row gap="sm" className="shrink-0">
                     {review.verified && (
-                      <Text as="span" className="rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-0.5 text-xs font-medium">
+                      <Text as="span" className={CLS_REPLY_BADGE}>
                         Verified
                       </Text>
                     )}
