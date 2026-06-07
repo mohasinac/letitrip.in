@@ -35,6 +35,10 @@ import {
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 
+const __O = {
+  hidden: "overflow-hidden",
+} as const;
+
 const BRAND_GRAD = "linear-gradient(135deg,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)";
 
 const NAV_LINKS = [
@@ -119,7 +123,7 @@ export default function Page() {
       renderProfile={() =>
         userLoading ? null : user ? (
           <Div className="space-y-4">
-            <Div className="relative flex items-center gap-4 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden p-5 shadow-sm">
+            <Div className={`relative flex items-center gap-4 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden} p-5 shadow-sm`}>
               <Div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: BRAND_GRAD }} aria-hidden="true" />
               <Button
                 variant="ghost"

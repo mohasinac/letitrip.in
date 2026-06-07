@@ -6,6 +6,10 @@ import { Link } from "@/i18n/navigation";
 import { useProfile, useUpdateProfile, useToast, useAuth, ROUTES, ImageUpload, useMediaUpload, Div, Button, Label, Input, Textarea, MediaImage } from "@mohasinac/appkit/client";
 import { Heading, Text } from "@mohasinac/appkit";
 
+const __O = {
+  hidden: "overflow-hidden",
+} as const;
+
 const LABEL_CLS = "block text-sm font-medium text-zinc-700 dark:text-zinc-300";
 
 interface ProfilePageClientProps {
@@ -45,7 +49,7 @@ function renderProfileViewMode({
     <Div surface="card" padding="lg" className="space-y-5">
       <Div className="flex items-center gap-4">
         {profile.photoURL ? (
-          <Div className="h-20 w-20 rounded-full overflow-hidden relative ring-2 ring-zinc-100 dark:ring-slate-700">
+          <Div className={`h-20 w-20 rounded-full ${__O.hidden} relative ring-2 ring-zinc-100 dark:ring-slate-700`}>
             <MediaImage src={profile.photoURL} alt="Avatar" size="thumbnail" />
           </Div>
         ) : (

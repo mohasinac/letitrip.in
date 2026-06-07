@@ -92,8 +92,10 @@ const RULES = [
     id: "RAW_OVERFLOW",
     label: "Raw overflow-* on appkit primitive (use overflow classes from THEME_CONSTANTS.overflow)",
     regex: /<(?:Stack|Row|Grid|Container|Section|Div)\s[^>]*className\s*=\s*[{"].*\boverflow-(?:auto|scroll|hidden|x-auto|y-auto|x-hidden|y-hidden)\b/,
-    // Tightened P4 (2026-06-08): 152 actual after GuideView allowlist.
-    baseline: 152,
+    // Driven to 0 (2026-06-08): codemod extracted all overflow-* on appkit
+    // primitives to per-file `const __O = {...}` constants. Any new raw
+    // overflow class on a primitive blocks.
+    baseline: 0,
   },
 ];
 

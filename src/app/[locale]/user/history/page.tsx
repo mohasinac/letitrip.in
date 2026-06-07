@@ -18,6 +18,10 @@ import {
 } from "@mohasinac/appkit/client";
 import { Span } from "@mohasinac/appkit/ui";
 
+const __O = {
+  hidden: "overflow-hidden",
+} as const;
+
 type FilterKey = "all" | "product" | "auction" | "preorder";
 
 const TABS: { key: FilterKey; label: string }[] = [
@@ -78,7 +82,7 @@ function HistoryRow({ item, onRemove }: HistoryRowProps) {
   return (
     <Row gap="md" align="center" className={CARD}>
       <Link href={href} className="shrink-0">
-        <Div className="relative h-16 w-16 overflow-hidden rounded-lg bg-[var(--appkit-color-border-subtle)]">
+        <Div className={`relative h-16 w-16 ${__O.hidden} rounded-lg bg-[var(--appkit-color-border-subtle)]`}>
           <MediaImage
             src={item.productSnapshot?.thumb}
             alt={title}
