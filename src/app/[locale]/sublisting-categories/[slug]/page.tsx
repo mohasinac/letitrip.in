@@ -15,6 +15,9 @@ function fmt(paise: number, currency = "INR"): string {
 
 export const revalidate = 300;
 
+const CLS_AUCTION_PILL = "rounded-full bg-amber-100 dark:bg-amber-900/30 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300";
+const CLS_PREORDER_PILL = "rounded-full bg-indigo-100 dark:bg-indigo-900/30 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-700 dark:text-indigo-300";
+
 interface Props {
   params: Promise<{ slug: string; locale: string }>;
 }
@@ -152,12 +155,12 @@ export default async function SublistingCategoryPage({ params }: Props) {
                     {(isAuction || isPreOrder || condition) && (
                       <Div className="flex flex-wrap gap-1">
                         {isAuction && (
-                          <Text as="span" className="rounded-full bg-amber-100 dark:bg-amber-900/30 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300">
+                          <Text as="span" className={CLS_AUCTION_PILL}>
                             Auction
                           </Text>
                         )}
                         {isPreOrder && (
-                          <Text as="span" className="rounded-full bg-indigo-100 dark:bg-indigo-900/30 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-700 dark:text-indigo-300">
+                          <Text as="span" className={CLS_PREORDER_PILL}>
                             Pre-Order
                           </Text>
                         )}

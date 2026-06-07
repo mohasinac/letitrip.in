@@ -5,6 +5,8 @@ import { getTranslations } from "next-intl/server";
 
 const { themed, page } = THEME_CONSTANTS;
 
+const CLS_FOOTER_LINK = "text-sky-600 dark:text-sky-400 hover:underline";
+
 export async function ShippingPolicyView() {
   const t = await getTranslations("shippingPolicy");
 
@@ -123,25 +125,25 @@ export async function ShippingPolicyView() {
         <Div className={`mt-12 pt-8 border-t ${themed.border} flex gap-6 text-sm`}>
           <TextLink
             href={ROUTES.PUBLIC.TRACK_ORDER}
-            className="text-sky-600 dark:text-sky-400 hover:underline"
+            className={CLS_FOOTER_LINK}
           >
             {t("trackOrder")}
           </TextLink>
           <TextLink
             href={ROUTES.PUBLIC.HELP}
-            className="text-sky-600 dark:text-sky-400 hover:underline"
+            className={CLS_FOOTER_LINK}
           >
             {t("helpCenter")}
           </TextLink>
           <TextLink
             href={ROUTES.PUBLIC.CONTACT}
-            className="text-sky-600 dark:text-sky-400 hover:underline"
+            className={CLS_FOOTER_LINK}
           >
             {t("contactUs")}
           </TextLink>
           <TextLink
             href={ROUTES.PUBLIC.REFUND_POLICY}
-            className="text-sky-600 dark:text-sky-400 hover:underline"
+            className={CLS_FOOTER_LINK}
           >
             Refund Policy
           </TextLink>

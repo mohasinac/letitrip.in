@@ -53,12 +53,7 @@ async function _GET(request: Request): Promise<NextResponse> {
   const page = std.page ?? DEFAULT_PAGE;
   const pageSize = std.pageSize ?? DEFAULT_PAGE_SIZE;
 
-  const rawSort = std.sorts ?? DEFAULT_SORT;
-  const sorts = rawSort
-    .replace(/^-itemsSold$/, "-stats.itemsSold")
-    .replace(/^itemsSold$/, "stats.itemsSold")
-    .replace(/^-averageRating$/, "-stats.averageRating")
-    .replace(/^averageRating$/, "stats.averageRating");
+  const sorts = std.sorts ?? DEFAULT_SORT;
 
   const userParts: string[] = [];
   if (std.q) userParts.push(`storeName@=*${std.q}`);

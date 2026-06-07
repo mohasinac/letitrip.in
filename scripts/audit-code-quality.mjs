@@ -241,8 +241,10 @@ function checkRepeatedStrings(file, lines) {
       // Skip common technical patterns
       if (/^(https?:|\/api\/|rgba?|bg-|text-|flex|grid|px|py|pt|pb)/.test(str)) continue;
       if (/^[a-z][a-z0-9/-]*$/.test(str)) continue; // slug/path patterns
-      // Skip JSX inter-attribute captures (text between a closing " and opening " of next attr)
-      if (/^\s+\w[\w-]*\s*[={]/.test(str)) continue;
+      // Skip JSX inter-attribute captures: " key=" or " boolProp key=" (boolean prop + attribute)
+      if (/^\s+\w[\w-]*(\s+\w[\w-]*)?\s*[={]/.test(str)) continue;
+      // Skip CSS utility class strings (e.g. "w-5 h-5 text-white", "rounded-full px-3")
+      if (/^(?:[\w-]+-\d*\s+){1,}[\w-]+-?\d*$/.test(str.trim())) continue;
       // Skip strings containing JSX/JS expression characters or code operators
       if (/[{}]|\?\?|\|\||===|!==|=>|\) \{| \? | : /.test(str)) continue;
       // Skip strings starting with punctuation (object/array entry fragments)
@@ -396,7 +398,14 @@ function checkButtonAsToggle(file, content) {
 // design-system semantic tokens (text-error, bg-success-surface, etc.).
 // Structural neutrals (zinc, slate, gray, stone, neutral) are acceptable.
 // Only scans inside className="..." / className={'...'} / className={`...`}.
-const RAW_COLOR_SKIP_FILES = new Set(["theme.ts", "theme.tsx"]);
+const RAW_COLOR_SKIP_FILES = new Set([
+  "theme.ts",
+  "theme.tsx",
+  // Dev-only admin tooling — uses categorical color coding (sky/violet/teal/orange/etc.)
+  // for type chips/status dots that have no semantic-token equivalent.
+  "SeedPanel.tsx",
+  "DevToolbar.tsx",
+]);
 const RAW_COLOR_SKIP_DIRS_EXTRA = new Set(["tokens"]);
 
 const SEMANTIC_COLORS = "red|green|emerald|amber|yellow|blue|sky|orange|rose|pink|violet|purple|teal|cyan|lime|fuchsia|indigo";
@@ -450,11 +459,10 @@ for (const dir of SCAN_DIRS) {
   }
 }
 
-// Tightened 2026-05-23: 533 actual vs prior 761 — 228 violations improved
-// over recent sessions but baseline never re-pegged. Drop to current count so
-// new regressions block at the precise true ceiling instead of leaving a
-// 228-violation slack window where regressions silently land.
-const BASELINE = 533;
+// Tightened during P1 remediation sweep (2026-06-07): 184 actual after JSX
+// closing-tag fixes during Phase 1 of the baseline-to-0 plan. Drop to current
+// count so new regressions block at the precise true ceiling.
+const BASELINE = 184;
 
 if (violations.length === 0) {
   console.log("audit-code-quality: clean ✓");

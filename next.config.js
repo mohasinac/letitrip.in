@@ -2,7 +2,6 @@ const path = require("path");
 const createNextIntlPlugin = require("next-intl/plugin");
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.js");
 const { defineNextConfig } = require("@mohasinac/appkit/configs");
-const appkitConfig = require("./appkit.config.js");
 const consumerPkg = require("./package.json");
 const appkitPkg = require("./appkit/package.json");
 
@@ -14,8 +13,8 @@ const APPKIT_VERSION = appkitPkg.version || "0.0.0";
 const COMMIT_SHA = (process.env.VERCEL_GIT_COMMIT_SHA || "").slice(0, 7);
 const BUILD_TIME = new Date().toISOString();
 
-// Firebase/GCP tracing and base remotePatterns are managed by appkit defaults.
-// Unsplash + picsum are used by seed/demo data only; prod listings use Firebase Storage.
+// Images: appkit defaults to `unoptimized: true` so any host works without
+// remotePatterns maintenance. Prod images move to Firebase Storage / /api/media.
 module.exports = withNextIntl(
   defineNextConfig({
     env: {
@@ -25,9 +24,6 @@ module.exports = withNextIntl(
       NEXT_PUBLIC_BUILD_TIME: BUILD_TIME,
     },
     cacheMaxMemorySize: 0,
-    images: {
-      remotePatterns: appkitConfig.externalImagePatterns ?? [],
-    },
     // Turbopack (used by `next build`) does not respect webpack's config.resolve.alias.
     // Without this, appkit/node_modules/firebase and root node_modules/firebase are two
     // separate module instances — initializeApp() registers the app in one, but getAuth()

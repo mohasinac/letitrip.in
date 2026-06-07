@@ -40,14 +40,6 @@ const config = {
     enableLocaleCookie: false,
   },
 
-  // ─── External image hosts (demo / seed data only) ────────────────────────
-  // prod listings use Firebase Storage via the /api/media proxy — not these hosts.
-  externalImagePatterns: [
-    { protocol: "https", hostname: "images.unsplash.com" },
-    { protocol: "https", hostname: "picsum.photos" },
-    { protocol: "https", hostname: "images.ygoprodeck.com" },
-  ],
-
   // ─── Smoke tests & theme probes ──────────────────────────────────────────
   routes: {
     smoke: [
