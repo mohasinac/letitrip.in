@@ -57,8 +57,8 @@ const RULES = [
     // Matches <div>, <span>, <button>, <td>, <li>, <label>, <section>, <a>, etc.
     // Excludes PascalCase components (appkit primitives like <Span>, <Text>, <Button>)
     regex: new RegExp(`<[a-z][a-z0-9]*\\s[^>]*className[^>]*(?:${TYPOGRAPHY_CLASSES})`),
-    // Tightened P4 (2026-06-08): 205 actual after UserSupportView span/label/ul → Span/Label/Ul.
-    baseline: 205,
+    // Tightened P4 (2026-06-08): 199 actual after AdminSupportTicketDetailView span/label → Span/Label.
+    baseline: 199,
   },
   {
     id: "APPKIT_SPAN_RAW_CLASSES",
