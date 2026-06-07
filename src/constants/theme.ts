@@ -211,12 +211,12 @@ export const THEME_CONSTANTS = {
     titleBar: "z-50",
     navbar: "z-40",
     sidebar: "z-50",
-    overlay: "z-[45]",
+    overlay: "z-[var(--appkit-z-overlay)]",
     bottomNav: "z-40",
     /** BottomActions sits directly above BottomNavbar (bottom-14) at the same level. */
     bottomActions: "z-40",
     search: "z-40",
-    searchBackdrop: "z-[35]",
+    searchBackdrop: "z-[var(--appkit-z-search-backdrop)]",
   },
 
   /**
