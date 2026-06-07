@@ -12,6 +12,7 @@ import {
   Input,
   Row,
   SideDrawer,
+  Span,
   Stack,
   Text,
   useAddresses,
@@ -149,9 +150,9 @@ function renderStepIndicator(activeStep: number, totalSteps: number) {
   return (
     <Text className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
       Step {activeStep + 1} of {totalSteps}:{" "}
-      <span className="font-medium text-zinc-700 dark:text-zinc-300">
+      <Span weight="medium" className="text-zinc-700 dark:text-zinc-300">
         {CK.STEP_LABELS[activeStep] ?? ""}
-      </span>
+      </Span>
     </Text>
   );
 }
@@ -253,7 +254,7 @@ function renderOtpConsentStep({
       </Text>
       <Text className="mb-5 text-sm text-zinc-600 dark:text-zinc-400">
         {CK.OTP_CONSENT_BODY_PREFIX}{" "}
-        <span className="font-medium text-zinc-800 dark:text-zinc-200">{maskedDisplay}</span>.
+        <Span weight="medium" className="text-zinc-800 dark:text-zinc-200">{maskedDisplay}</Span>.
       </Text>
       <Stack gap="md">
         <Button
@@ -316,7 +317,7 @@ function renderOtpStep({
       </Text>
       <Text className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
         {CK.OTP_ENTRY_BODY_PREFIX}{" "}
-        <span className="font-medium text-zinc-800 dark:text-zinc-200">{maskedEmail}</span>.{" "}
+        <Span weight="medium" className="text-zinc-800 dark:text-zinc-200">{maskedEmail}</Span>.{" "}
         {CK.OTP_ENTRY_BODY_SUFFIX}
       </Text>
       <Stack gap="md">

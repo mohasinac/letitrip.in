@@ -8,6 +8,7 @@ import {
   ROUTES,
   Div,
   Heading,
+  Span,
   Text,
   Stack,
   Row,
@@ -194,9 +195,9 @@ export default function UserEventsPage() {
                     )}
                     <Row gap="xs" className="flex-wrap">
                       {eventType && (
-                        <span className="text-xs rounded-full bg-[var(--appkit-color-border-subtle)] px-2 py-0.5 text-[var(--appkit-color-text-muted)]">
+                        <Span size="xs" className="rounded-full bg-[var(--appkit-color-border-subtle)] px-2 py-0.5 text-[var(--appkit-color-text-muted)]">
                           {eventType}
-                        </span>
+                        </Span>
                       )}
                       <Text variant="secondary" className="text-xs">{date}</Text>
                     </Row>
@@ -209,17 +210,17 @@ export default function UserEventsPage() {
                   <Row gap="md" className="mt-3 pt-3 border-t border-[var(--appkit-color-border-subtle)] flex-wrap">
                     {entry.points !== undefined && (
                       <Text variant="secondary" className="text-xs">
-                        Points: <span className="font-medium text-[var(--appkit-color-text)]">{entry.points}</span>
+                        Points: <Span weight="medium" className="text-[var(--appkit-color-text)]">{entry.points}</Span>
                       </Text>
                     )}
                     {entry.spinUsed && (
                       <Text variant="secondary" className="text-xs">
                         Spin:{" "}
-                        <span className="font-medium text-[var(--appkit-color-text)]">
+                        <Span weight="medium" className="text-[var(--appkit-color-text)]">
                           {entry.spinPrizeCouponCode
                             ? `Won — ${entry.spinPrizeCouponCode}`
                             : "No prize"}
-                        </span>
+                        </Span>
                       </Text>
                     )}
                   </Row>
