@@ -57,9 +57,9 @@ const RULES = [
     // Matches <div>, <span>, <button>, <td>, <li>, <label>, <section>, <a>, etc.
     // Excludes PascalCase components (appkit primitives like <Span>, <Text>, <Button>)
     regex: new RegExp(`<[a-z][a-z0-9]*\\s[^>]*className[^>]*(?:${TYPOGRAPHY_CLASSES})`),
-    // Tightened P4 (2026-06-08): 245 actual after SeedPanel/GuideView allowlists +
-    // <span>→<Span>/<nav>→<Nav> conversions in Category/Brand detail page views.
-    baseline: 245,
+    // Tightened P4 (2026-06-08): 233 actual after AdminEmployeeEditorView sweep
+    // (span/label → Span/Label) + ShowGroupSection (table primitives).
+    baseline: 233,
   },
   {
     id: "APPKIT_SPAN_RAW_CLASSES",
