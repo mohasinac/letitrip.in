@@ -3,6 +3,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import {
+
+const __O = {
+  hidden: "overflow-hidden",
+} as const;
   Badge,
   Button,
   Div,
@@ -199,7 +203,7 @@ function renderPage({
           )}
         </Div>
       ) : (
-        <Div className="divide-y divide-[var(--appkit-color-border)] rounded-xl border border-[var(--appkit-color-border)] overflow-hidden">
+        <Div className={`divide-y divide-[var(--appkit-color-border)] rounded-xl border border-[var(--appkit-color-border)] ${__O.hidden}`}>
           {filtered.map((cat) => renderCategoryRow(cat, deletingId, handleDelete))}
         </Div>
       )}

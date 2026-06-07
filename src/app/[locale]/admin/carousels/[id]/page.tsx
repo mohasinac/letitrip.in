@@ -6,6 +6,10 @@ import { ROUTES } from "@mohasinac/appkit/client";
 import { Heading, Section, Container, Row, Div, Text, Badge, EmptyState } from "@mohasinac/appkit/client";
 import { MAX_SLIDES_PER_CAROUSEL } from "@mohasinac/appkit";
 
+
+const __O = {
+  hidden: "overflow-hidden",
+} as const;
 export const dynamic = "force-dynamic";
 
 interface Props {
@@ -98,7 +102,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
             <Text variant="muted">No slides in this carousel yet.</Text>
           </Div>
         ) : (
-          <Div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-slate-700">
+          <Div className={`${__O.hidden} rounded-xl border border-zinc-200 dark:border-slate-700`}>
             <table className="w-full text-sm">
               <thead className="bg-zinc-50 dark:bg-slate-800">
                 <tr>

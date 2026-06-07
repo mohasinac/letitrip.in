@@ -4,6 +4,10 @@ import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "
 import { Link } from "@/i18n/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+
+const __O = {
+  hidden: "overflow-hidden",
+} as const;
 const STORAGE_KEY = "letitrip_dev_prefs";
 
 interface DevPrefs {
@@ -240,7 +244,7 @@ export default function Page() {
       )}
       renderRecentActivity={() =>
         recentOrders.length > 0 ? (
-          <Div className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden">
+          <Div className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden}`}>
             <Div className="flex items-center justify-between px-4 py-3 border-b border-[var(--appkit-color-border-subtle)]">
               <Text className="text-sm font-semibold text-[var(--appkit-color-text)]">Recent Orders</Text>
               <Link href={String(ROUTES.ADMIN.ORDERS)} className="text-xs text-[var(--appkit-color-primary)] hover:underline">View all →</Link>

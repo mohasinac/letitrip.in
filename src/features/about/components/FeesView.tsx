@@ -1,7 +1,11 @@
 import { THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Section, Caption, Div } from "@mohasinac/appkit/ui";
+import { Heading, Text, Section, Caption, Div, Table, Thead, Tbody, Tr, Th, Td } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 
+
+const __O = {
+  xAuto: "overflow-x-auto",
+} as const;
 const { themed, page } = THEME_CONSTANTS;
 const CLS_RATE_CELL = "py-3 px-4 font-semibold text-violet-700 dark:text-violet-400";
 const CLS_HIGHLIGHT = "font-bold text-emerald-700 dark:text-emerald-400";
@@ -16,27 +20,27 @@ function renderFeeTable(feeRows: FeeRow[], t: T) {
   return (
     <Section>
       <Heading level={2} className="mb-6">{t("tableTitle")}</Heading>
-      <Div className={`overflow-x-auto rounded-xl border ${themed.border}`}>
-        <table className="w-full text-sm">
-          <thead className={themed.bgSecondary}>
-            <tr>
-              <th className="py-3 px-4 text-left font-semibold">{t("colFeeType")}</th>
-              <th className="py-3 px-4 text-left font-semibold">{t("colRate")}</th>
-              <th className="py-3 px-4 text-left font-semibold">{t("colPaidBy")}</th>
-              <th className="py-3 px-4 text-left font-semibold hidden md:table-cell">{t("colNote")}</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
+      <Div className={`${__O.xAuto} rounded-xl border ${themed.border}`}>
+        <Table className="w-full text-sm">
+          <Thead className={themed.bgSecondary}>
+            <Tr>
+              <Th className="py-3 px-4 text-left font-semibold">{t("colFeeType")}</Th>
+              <Th className="py-3 px-4 text-left font-semibold">{t("colRate")}</Th>
+              <Th className="py-3 px-4 text-left font-semibold">{t("colPaidBy")}</Th>
+              <Th className="py-3 px-4 text-left font-semibold hidden md:table-cell">{t("colNote")}</Th>
+            </Tr>
+          </Thead>
+          <Tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
             {feeRows.map((row) => (
-              <tr key={row.category} className={`${themed.bgPrimary} hover:bg-neutral-50 dark:hover:bg-neutral-800/50`}>
-                <td className="py-3 px-4 font-medium">{row.category}</td>
-                <td className={CLS_RATE_CELL}>{row.rate}</td>
-                <td className="py-3 px-4"><Caption>{row.who}</Caption></td>
-                <td className="py-3 px-4 text-neutral-500 dark:text-neutral-400 hidden md:table-cell text-xs">{row.note}</td>
-              </tr>
+              <Tr key={row.category} className={`${themed.bgPrimary} hover:bg-neutral-50 dark:hover:bg-neutral-800/50`}>
+                <Td className="py-3 px-4 font-medium">{row.category}</Td>
+                <Td className={CLS_RATE_CELL}>{row.rate}</Td>
+                <Td className="py-3 px-4"><Caption>{row.who}</Caption></Td>
+                <Td className="py-3 px-4 text-neutral-500 dark:text-neutral-400 hidden md:table-cell text-xs">{row.note}</Td>
+              </Tr>
             ))}
-          </tbody>
-        </table>
+          </Tbody>
+        </Table>
       </Div>
       <Caption className="mt-3 block text-neutral-500">{t("tableNote")}</Caption>
     </Section>

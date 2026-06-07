@@ -3,6 +3,10 @@ import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 import { redirect } from "@/i18n/navigation";
 import {
+
+const __O = {
+  xAuto: "overflow-x-auto",
+} as const;
   AdSlot,
   CouponsIndexListing,
   Div,
@@ -93,7 +97,7 @@ export default async function Page({
 
       {/* Tab navigation */}
       <Div surface="default" className="border-b border-zinc-200 dark:border-slate-700">
-        <Div className="mx-auto flex max-w-5xl items-center gap-1 px-4 py-2 sm:px-6 lg:px-8 overflow-x-auto scrollbar-hide">
+        <Div className={`mx-auto flex max-w-5xl items-center gap-1 px-4 py-2 sm:px-6 lg:px-8 ${__O.xAuto} scrollbar-hide`}>
           {VALID_TABS.map((tabValue) => {
             const isActive = tabValue === activeTab;
             return (

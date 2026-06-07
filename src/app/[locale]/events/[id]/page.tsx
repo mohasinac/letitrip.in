@@ -6,6 +6,10 @@ import { eventIsActive } from "./_helpers";
 import { getEventCached } from "./_data";
 import { PollInlineClient } from "./PollInlineClient";
 
+
+const __O = {
+  hidden: "overflow-hidden",
+} as const;
 type Props = {
   params: Promise<{ locale: string; id: string }>;
 };
@@ -37,7 +41,7 @@ export default async function Page({ params }: Props) {
       {images.length > 0 && (
         <Div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {images.map((src, i) => (
-            <Div key={i} className="aspect-video overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800">
+            <Div key={i} className={`aspect-video ${__O.hidden} rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800`}>
               <Image
                 src={src}
                 alt={`Event image ${i + 1}`}

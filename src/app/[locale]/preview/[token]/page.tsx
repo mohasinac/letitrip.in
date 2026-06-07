@@ -3,6 +3,10 @@ import type { Metadata } from "next";
 import { Container, Div, Section, Text } from "@mohasinac/appkit";
 import { getAdminDb } from "@mohasinac/appkit/server";
 
+
+const __O = {
+  auto: "overflow-auto",
+} as const;
 const PREVIEW_COLLECTION = "previewDrafts";
 
 const PREVIEW_COPY = {
@@ -62,7 +66,7 @@ export default async function PreviewPage({
           {preview.kind}
           {PREVIEW_COPY.kindSuffix}
         </Text>
-        <Div className="overflow-auto rounded-lg bg-zinc-50 dark:bg-slate-800 p-4 font-mono text-xs whitespace-pre">
+        <Div className={`${__O.auto} rounded-lg bg-zinc-50 dark:bg-slate-800 p-4 font-mono text-xs whitespace-pre`}>
           {JSON.stringify(preview.draft, null, 2)}
         </Div>
         <Text className="mt-4 text-xs text-zinc-500 dark:text-zinc-400">

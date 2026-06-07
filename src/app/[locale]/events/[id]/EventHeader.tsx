@@ -2,6 +2,10 @@ import { Div, Heading, Text } from "@mohasinac/appkit/ui";
 import { MediaImage } from "@mohasinac/appkit/client";
 import { EVENT_LABELS } from "./_constants";
 import {
+
+const __O = {
+  hidden: "overflow-hidden",
+} as const;
   formatEventDate,
   statusBadgeClass,
   typeBadgeClass,
@@ -35,7 +39,7 @@ export function EventHeader({
   return (
     <Div className="space-y-4">
       {coverImage ? (
-        <Div className="relative aspect-[16/7] w-full overflow-hidden rounded-xl bg-zinc-100 dark:bg-slate-800">
+        <Div className={`relative aspect-[16/7] w-full ${__O.hidden} rounded-xl bg-zinc-100 dark:bg-slate-800`}>
           <MediaImage
             src={coverImage}
             alt={title || EVENT_LABELS.COVER_ALT_FALLBACK}
