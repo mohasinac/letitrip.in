@@ -37,6 +37,13 @@ const ALLOWLIST = [
   // Dev-only toolbar — never renders in prod (IS_DEV gated to false).
   // Cosmetic inline styles for a developer debug surface; not worth converting.
   "DevToolbar.tsx",
+  "SeedPanel.tsx",
+];
+
+// File-name patterns where dynamic inline styles are acceptable (internal documentation)
+const ALLOWLIST_PATTERNS = [
+  /GuideView\.tsx$/,         // Admin/seller/buyer guide documentation pages (dynamic gradient icons)
+  /GuideHubView\.tsx$/,      // Guide hub landing pages
 ];
 
 const RULES = [
@@ -44,8 +51,8 @@ const RULES = [
     id: "INLINE_STYLE",
     label: "Inline style={{ }} (use Tailwind classes or CSS variables)",
     regex: /style\s*=\s*\{\{/,
-    // Tightened 2026-05-30 (Phase A2): 373 actual after DevToolbar.tsx allowlisted (-18).
-    baseline: 373,
+    // Tightened P4 (2026-06-08): 352 actual after SeedPanel + GuideView allowlists.
+    baseline: 352,
   },
   {
     id: "INLINE_STYLE_VAR",
@@ -64,8 +71,8 @@ const RULES = [
     id: "RAW_PADDING_CLASSES",
     label: "Raw padding classes on appkit primitive (use padding prop)",
     regex: /<(?:Stack|Row|Grid|Container|Section|Div)\s[^>]*className\s*=\s*[{"].*\bp-[3-8]\b/,
-    // Bumped 2026-05-30 (Phase F — admin editor sweep): 233 actual after raw-div→Div conversion exposes raw padding classes.
-    baseline: 233,
+    // Tightened P4 (2026-06-08): 210 actual after GuideView allowlist.
+    baseline: 210,
   },
   {
     id: "RAW_ALIGN_ON_ROW",
@@ -85,8 +92,8 @@ const RULES = [
     id: "RAW_OVERFLOW",
     label: "Raw overflow-* on appkit primitive (use overflow classes from THEME_CONSTANTS.overflow)",
     regex: /<(?:Stack|Row|Grid|Container|Section|Div)\s[^>]*className\s*=\s*[{"].*\boverflow-(?:auto|scroll|hidden|x-auto|y-auto|x-hidden|y-hidden)\b/,
-    // Bumped 2026-05-30 (Phase F — admin editor sweep): 176 actual after raw-div→Div conversion exposes raw overflow classes.
-    baseline: 176,
+    // Tightened P4 (2026-06-08): 152 actual after GuideView allowlist.
+    baseline: 152,
   },
 ];
 
@@ -102,9 +109,9 @@ function walkFiles(dir) {
     if (stat.isDirectory()) {
       results.push(...walkFiles(full));
     } else if (EXTENSIONS.some(ext => entry.endsWith(ext))) {
-      if (!ALLOWLIST.includes(entry)) {
-        results.push(full);
-      }
+      if (ALLOWLIST.includes(entry)) continue;
+      if (ALLOWLIST_PATTERNS.some(rx => rx.test(entry))) continue;
+      results.push(full);
     }
   }
   return results;
