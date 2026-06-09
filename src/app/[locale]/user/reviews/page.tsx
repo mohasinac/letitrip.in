@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@/i18n/navigation";
 import {
+  sortBy,
   useSession,
   useUrlTable,
   ROUTES,
@@ -39,10 +40,10 @@ const CLS_STAR_OFF = "text-zinc-300 dark:text-zinc-600";
 const CLS_REPLY_BADGE = "rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-0.5 text-xs font-medium";
 
 const SORT_OPTIONS = [
-  { value: "-createdAt", label: "Newest" },
-  { value: "createdAt",  label: "Oldest" },
-  { value: "-rating",    label: "Highest rated" },
-  { value: "rating",     label: "Lowest rated" },
+  { value: sortBy("createdAt", "DESC"), label: "Newest" },
+  { value: sortBy("createdAt", "ASC"),  label: "Oldest" },
+  { value: sortBy("rating", "DESC"),    label: "Highest rated" },
+  { value: sortBy("rating", "ASC"),     label: "Lowest rated" },
 ];
 
 const STATUS_OPTIONS = [

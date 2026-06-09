@@ -1,6 +1,7 @@
 "use client";
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import {
+  sortBy,
   useWishlistWithGuest,
   useSession,
   InteractiveProductCard,
@@ -32,10 +33,10 @@ const __P = {
 // audit-auth-gates-ok
 
 const SORT_OPTIONS = [
-  { value: "-addedAt", label: "Newest first" },
+  { value: sortBy("addedAt", "DESC"), label: "Newest first" },
   { value: "addedAt",  label: "Oldest first" },
-  { value: "-price",   label: "Price: High → Low" },
-  { value: "price",    label: "Price: Low → High" },
+  { value: sortBy("price", "DESC"),   label: "Price: High → Low" },
+  { value: sortBy("price", "ASC"),    label: "Price: Low → High" },
 ];
 
 const TYPE_OPTIONS = [

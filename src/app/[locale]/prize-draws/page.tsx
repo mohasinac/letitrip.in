@@ -6,7 +6,7 @@ import { generateMetadata as _gm } from "@/constants";
 /**
  * Public Prize Draws listing page (SB4-E + SB4-F).
  *
- * Server-fetched sieve list of published `listingType === "prize-draw"`
+ * Server-fetched sieve list of published sieveFilter("listingType", SIEVE_OP.EQ, "= "prize-draw"")
  * products. The view component lives in appkit so brand/icon overrides
  * stay in `appkit.config.js` / token CSS.
  */

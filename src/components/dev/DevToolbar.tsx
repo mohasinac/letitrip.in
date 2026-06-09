@@ -13,7 +13,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Button, Div, Row, Span } from "@mohasinac/appkit/client";
+import { Button, Div, Span } from "@mohasinac/appkit/client";
 
 const BORDER_SLATE = "1px solid var(--appkit-color-slate-700)";
 

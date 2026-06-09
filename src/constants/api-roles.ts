@@ -72,7 +72,7 @@ export const ROLES_ANY_STAFF: readonly UserRole[] = [
  * Any authenticated user — buyers, sellers, moderators, admin. Use when the
  * route just needs `auth: true` semantics AND the underlying handler enforces
  * its own ownership/scope check (e.g. order invoice/label/QR routes verify
- * `order.buyerId === user.uid` independently of role).
+ * sieveFilter("order.buyerId", SIEVE_OP.EQ, "= user.uid") independently of role).
  */
 export const ROLES_AUTHENTICATED: readonly UserRole[] = [
   USER_ROLE.USER,

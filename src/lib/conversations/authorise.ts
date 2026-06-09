@@ -9,9 +9,9 @@
  *
  * Auth model (matches the read route in `[id]/route.ts`):
  *
- *   - `conv.buyerId === user.uid`                         → "buyer"
- *   - `store.ownerId === user.uid` (own store)            → "seller"
- *   - `user.role === "admin"`                             → "seller" (replies as the store)
+ *   - sieveFilter("conv.buyerId", SIEVE_OP.EQ, "= user.uid")                         → "buyer"
+ *   - sieveFilter("store.ownerId", SIEVE_OP.EQ, "= user.uid") (own store)            → "seller"
+ *   - sieveFilter("user.role", SIEVE_OP.EQ, "= "admin"")                             → "seller" (replies as the store)
  *   - else                                                → null (404)
  */
 import { storeRepository } from "@mohasinac/appkit";

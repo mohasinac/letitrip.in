@@ -1,5 +1,6 @@
 "use client";
 import {
+  sortBy,
   UserOrdersView,
   useOrders,
   useUrlTable,
@@ -12,9 +13,9 @@ import { ListingToolbar } from "@mohasinac/appkit/ui";
 import { useRouter } from "@/i18n/navigation";
 
 const SORT_OPTIONS = [
-  { value: "-createdAt",   label: "Newest first" },
-  { value: "createdAt",    label: "Oldest first" },
-  { value: "-totalAmount", label: "Highest total" },
+  { value: sortBy("createdAt", "DESC"),   label: "Newest first" },
+  { value: sortBy("createdAt", "ASC"),    label: "Oldest first" },
+  { value: sortBy("totalAmount", "DESC"), label: "Highest total" },
   { value: "totalAmount",  label: "Lowest total" },
 ];
 

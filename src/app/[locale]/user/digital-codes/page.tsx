@@ -2,6 +2,7 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
+  sortBy,
   useSession,
   useUrlTable,
   CodeRevealPanel,
@@ -22,8 +23,8 @@ const __P = {
 } as const;
 
 const SORT_OPTIONS = [
-  { value: "-createdAt", label: "Newest" },
-  { value: "createdAt",  label: "Oldest" },
+  { value: sortBy("createdAt", "DESC"), label: "Newest" },
+  { value: sortBy("createdAt", "ASC"),  label: "Oldest" },
 ];
 
 async function fetchOrderCode(orderId: string): Promise<RevealedCode> {

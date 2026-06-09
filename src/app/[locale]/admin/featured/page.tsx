@@ -9,6 +9,7 @@ import {
   toRelativeDate,
   DataListingView,
   ADMIN_ENDPOINTS,
+  sortBy,
 } from "@mohasinac/appkit/client";
 import type {
   AdminListingScaffoldRow,
@@ -23,12 +24,12 @@ interface ProductsResponse {
 }
 
 const SORT_OPTIONS = [
-  { label: "Newest first", value: "-createdAt" },
-  { label: "Oldest first", value: "createdAt" },
-  { label: "Name A→Z", value: "title" },
-  { label: "Name Z→A", value: "-title" },
-  { label: "Price low→high", value: "price" },
-  { label: "Price high→low", value: "-price" },
+  { label: "Newest first", value: sortBy("createdAt", "DESC") },
+  { label: "Oldest first", value: sortBy("createdAt", "ASC") },
+  { label: "Name A→Z", value: sortBy("title", "ASC") },
+  { label: "Name Z→A", value: sortBy("title", "DESC") },
+  { label: "Price low→high", value: sortBy("price", "ASC") },
+  { label: "Price high→low", value: sortBy("price", "DESC") },
 ];
 
 const QUERY_KEY = ["admin", "featured", "listing"] as const;
@@ -43,7 +44,7 @@ export default function Page() {
     searchPlaceholder: "Search featured products by name or seller…",
     emptyLabel: "No featured products found",
     filterKeys: [],
-    defaultSort: "-createdAt",
+    defaultSort: sortBy("createdAt", "DESC"),
     queryKey: [...QUERY_KEY],
     endpoint: ADMIN_ENDPOINTS.PRODUCTS,
     sortOptions: SORT_OPTIONS,

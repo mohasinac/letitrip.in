@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@/i18n/navigation";
 import {
+  sortBy,
   useSession,
   useUrlTable,
   UserNotificationsView,
@@ -38,9 +39,9 @@ interface NotifResponse {
 }
 
 const SORT_OPTIONS = [
-  { value: "-createdAt", label: "Newest" },
-  { value: "createdAt",  label: "Oldest" },
-  { value: "-priority",  label: "Highest priority" },
+  { value: sortBy("createdAt", "DESC"), label: "Newest" },
+  { value: sortBy("createdAt", "ASC"),  label: "Oldest" },
+  { value: sortBy("priority", "DESC"),  label: "Highest priority" },
 ];
 
 const TYPE_OPTIONS = [

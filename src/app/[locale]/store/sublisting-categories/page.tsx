@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import {
+  sortBy,
   Badge,
   Button,
   Div,
@@ -32,10 +33,10 @@ interface CategoryRow {
 const PAGE_SIZE = 25;
 
 const SORT_OPTIONS = [
-  { value: "name", label: "Name A–Z" },
-  { value: "-name", label: "Name Z–A" },
-  { value: "-createdAt", label: "Newest" },
-  { value: "createdAt", label: "Oldest" },
+  { value: sortBy("name", "ASC"), label: "Name A–Z" },
+  { value: sortBy("name", "DESC"), label: "Name Z–A" },
+  { value: sortBy("createdAt", "DESC"), label: "Newest" },
+  { value: sortBy("createdAt", "ASC"), label: "Oldest" },
 ];
 
 export default function Page() {

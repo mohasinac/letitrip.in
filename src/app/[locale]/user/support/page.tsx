@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@/i18n/navigation";
 import {
+  sortBy,
   useSession,
   useUrlTable,
   ROUTES,
@@ -32,9 +33,9 @@ interface TicketItem {
 }
 
 const SORT_OPTIONS = [
-  { value: "-updatedAt", label: "Recently updated" },
-  { value: "-createdAt", label: "Newest" },
-  { value: "createdAt",  label: "Oldest" },
+  { value: sortBy("updatedAt", "DESC"), label: "Recently updated" },
+  { value: sortBy("createdAt", "DESC"), label: "Newest" },
+  { value: sortBy("createdAt", "ASC"),  label: "Oldest" },
 ];
 
 const STATUS_VARIANT: Record<string, "active" | "pending" | "danger" | "info" | "admin"> = {

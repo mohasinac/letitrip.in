@@ -1,5 +1,6 @@
 "use client";
 import {
+  sortBy,
   UserReturnsView,
   useOrders,
   useUrlTable,
@@ -11,9 +12,9 @@ import { ListingToolbar } from "@mohasinac/appkit/ui";
 import { useRouter } from "@/i18n/navigation";
 
 const SORT_OPTIONS = [
-  { value: "-updatedAt", label: "Recently updated" },
-  { value: "-createdAt", label: "Newest" },
-  { value: "createdAt",  label: "Oldest" },
+  { value: sortBy("updatedAt", "DESC"), label: "Recently updated" },
+  { value: sortBy("createdAt", "DESC"), label: "Newest" },
+  { value: sortBy("createdAt", "ASC"),  label: "Oldest" },
 ];
 
 export default function Page() {

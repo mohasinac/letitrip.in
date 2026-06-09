@@ -2,6 +2,7 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
+  sortBy,
   useSession,
   useUrlTable,
   ROUTES,
@@ -16,9 +17,9 @@ import type { BidDocument } from "@mohasinac/appkit";
 import { Link } from "@/i18n/navigation";
 
 const SORT_OPTIONS = [
-  { value: "-bidTime", label: "Newest first" },
+  { value: sortBy("bidTime", "DESC"), label: "Newest first" },
   { value: "bidTime",  label: "Oldest first" },
-  { value: "-amount",  label: "Highest bid" },
+  { value: sortBy("amount", "DESC"),  label: "Highest bid" },
   { value: "amount",   label: "Lowest bid" },
 ];
 

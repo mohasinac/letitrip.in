@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@/i18n/navigation";
 import {
+  sortBy,
   useSession,
   useUrlTable,
   ROUTES,
@@ -18,7 +19,7 @@ import { ListingToolbar } from "@mohasinac/appkit/ui";
 import { API_ROUTES } from "@/constants";
 
 const SORT_OPTIONS = [
-  { value: "-submittedAt", label: "Newest" },
+  { value: sortBy("submittedAt", "DESC"), label: "Newest" },
   { value: "submittedAt",  label: "Oldest" },
 ];
 
