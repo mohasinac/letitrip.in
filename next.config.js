@@ -25,14 +25,39 @@ module.exports = withNextIntl(
     },
     cacheMaxMemorySize: 0,
     // Turbopack (used by `next build`) does not respect webpack's config.resolve.alias.
-    // Without this, appkit/node_modules/firebase and root node_modules/firebase are two
-    // separate module instances — initializeApp() registers the app in one, but getAuth()
-    // looks in the other and throws "No Firebase App '[DEFAULT]'".
+    // Without these, packages installed at multiple paths in the monorepo get bundled
+    // as separate module instances, producing two separate React context registries:
+    //   - firebase: two app registries → "No Firebase App '[DEFAULT]'"
+    //   - @tanstack/react-query: two QueryClientContext instances → "No QueryClient set"
+    // Pinning every import to a single root path keeps the context singletons shared.
     // Mirrors the webpack alias in defineNextConfig's mergedWebpack (Pattern #14).
     turbopack: {
       resolveAlias: {
         firebase: path.resolve(__dirname, "node_modules/firebase"),
+        "@tanstack/react-query": path.resolve(
+          __dirname,
+          "node_modules/@tanstack/react-query",
+        ),
+        "@tanstack/query-core": path.resolve(
+          __dirname,
+          "node_modules/@tanstack/query-core",
+        ),
       },
+    },
+    webpack: (config) => {
+      config.resolve = config.resolve || {};
+      config.resolve.alias = {
+        ...(config.resolve.alias || {}),
+        "@tanstack/react-query": path.resolve(
+          __dirname,
+          "node_modules/@tanstack/react-query",
+        ),
+        "@tanstack/query-core": path.resolve(
+          __dirname,
+          "node_modules/@tanstack/query-core",
+        ),
+      };
+      return config;
     },
   })
 );
