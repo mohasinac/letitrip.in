@@ -226,7 +226,17 @@ async function _GET(request: Request): Promise<NextResponse> {
 
   const std = parseListingParams(url);
   const page = std.page ?? DEFAULT_PAGE;
-  const pageSize = std.pageSize ?? DEFAULT_PAGE_SIZE;
+  // Vercel Hobby Fluid Compute cap: never return more than 50 docs/page
+  // (CLAUDE.md Rule #6). Reject larger values explicitly so callers see a
+  // 400 and migrate to pagination instead of silently getting clamped.
+  const requestedPageSize = std.pageSize ?? DEFAULT_PAGE_SIZE;
+  if (requestedPageSize > 50) {
+    return NextResponse.json(
+      { success: false, error: "pageSize cannot exceed 50 — paginate instead." },
+      { status: 400 },
+    );
+  }
+  const pageSize = requestedPageSize;
   const sorts = std.sorts ?? DEFAULT_SORTS;
   const cursor = std.cursor;
 
@@ -347,65 +357,14 @@ async function _GET(request: Request): Promise<NextResponse> {
       totalPages = upstream.totalPages;
       hasMore = upstream.hasMore;
       nextCursor = upstream.cursor;
-    } else if (q || inStock || dateFromClause || dateToClause || featureIds.length > 0) {
-      // Fallback repo + in-memory filtering: Firestore can't combine inequality
-      // filters (stockQuantity>0, auctionEndDate>=now, etc.) with arbitrary
-      // orderBy fields without per-combination composite indexes (and even then
-      // the inequality field must be the first orderBy). Fetch up to
-      // SEARCH_FETCH_LIMIT docs using only the base filters, then apply all
-      // inequality and text filters in memory.
-      const SEARCH_FETCH_LIMIT = 500;
-      const allResult = await productRepository.list({
-        filters: filtersBase,
-        sorts,
-        page: 1,
-        pageSize: SEARCH_FETCH_LIMIT,
-      });
-      const qLower = q ? q.toLowerCase() : null;
-      const dateFromMs = dateFrom ? new Date(dateFrom).getTime() : null;
-      const dateToMs = dateTo ? new Date(dateTo).getTime() : null;
-      const dateField =
-        listingTypeForDate === "auction"
-          ? "auctionEndDate"
-          : listingTypeForDate === "pre-order"
-            ? "preOrderDeliveryDate"
-            : null;
-      const filtered = (allResult.items as unknown as Record<string, unknown>[]).filter(
-        (item) => {
-          if (qLower !== null) {
-            const title = String(item.title ?? item.name ?? "").toLowerCase();
-            const tags = Array.isArray(item.tags)
-              ? (item.tags as string[]).join(" ").toLowerCase()
-              : "";
-            if (!title.includes(qLower) && !tags.includes(qLower)) return false;
-          }
-          if (inStock) {
-            const stock = Number(item.stockQuantity ?? item.availableQuantity ?? 0);
-            if (stock <= 0) return false;
-          }
-          if ((dateFromMs !== null || dateToMs !== null) && dateField) {
-            const raw = item[dateField];
-            const ts = raw instanceof Date ? raw.getTime() : typeof raw === "string" ? new Date(raw).getTime() : Number(raw);
-            const tsValid = !isNaN(ts);
-            if (tsValid && dateFromMs !== null && ts < dateFromMs) return false;
-            if (tsValid && dateToMs !== null && ts > dateToMs) return false;
-          }
-          if (featureIds.length > 0) {
-            const docFeatures = Array.isArray(item.features) ? (item.features as string[]) : [];
-            if (!featureIds.some((fid) => docFeatures.includes(fid))) return false;
-          }
-          return true;
-        },
-      );
-      total = filtered.length;
-      const start = (page - 1) * pageSize;
-      items = filtered.slice(start, start + pageSize);
-      resultPage = page;
-      totalPages = total === 0 ? 0 : Math.max(1, Math.ceil(total / pageSize));
-      hasMore = start + pageSize < total;
     } else {
+      // Pass the FULL sieve (q + inStock + dateRange + features) to the repo
+      // so the Sieve adapter pushes every clause it can into Firestore
+      // .where() and the rest are handled inside the same path the Function
+      // uses. No in-memory filtering, no dropped predicates (prompt.md
+      // Rule #7).
       const result = await productRepository.list({
-        filters: filtersBase,
+        filters,
         sorts,
         page,
         pageSize,
