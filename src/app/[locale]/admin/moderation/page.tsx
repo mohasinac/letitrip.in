@@ -11,6 +11,7 @@ import {
   Section,
   Modal,
   Textarea,
+  Skeleton,
   ACTIONS,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
@@ -68,7 +69,11 @@ export default function Page() {
             Pending media awaiting review. Approving releases the asset; rejecting blocks it.
           </Text>
           {loading ? (
-            <Text>Loading…</Text>
+            <Stack gap="sm">
+              <Skeleton variant="rectangular" height="64px" />
+              <Skeleton variant="rectangular" height="64px" />
+              <Skeleton variant="rectangular" height="64px" />
+            </Stack>
           ) : items.length === 0 ? (
             <EmptyState title="Inbox zero" description="No pending moderation." />
           ) : (

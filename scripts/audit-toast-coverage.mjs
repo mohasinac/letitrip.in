@@ -21,12 +21,17 @@ function scan(dir) {
         const content = readFileSync(full, "utf-8");
         if (!content.startsWith('"use client"') && !content.startsWith("'use client'")) continue;
 
-        // Find useCallback(async ... => { BODY }) blocks
-        // Simple heuristic: find "useCallback(async" then track braces
+        // Find useCallback(async ... => { BODY }) blocks AND
+        // inline onClick={async ...} / onClick={ async ( ... )} CTA handlers.
+        // Simple heuristic: find the opener then track braces.
         const lines = content.split("\n");
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
-          if (!line.includes("useCallback(async")) continue;
+          const isUseCb = line.includes("useCallback(async");
+          const isInlineClick =
+            /onClick\s*=\s*\{\s*async\b/.test(line) ||
+            /onClick\s*=\s*\{\s*async\s*\(/.test(line);
+          if (!isUseCb && !isInlineClick) continue;
 
           // Collect the full body of this callback
           let braceDepth = 0;
@@ -47,11 +52,19 @@ function scan(dir) {
           const hasDispatch = body.includes("dispatch(");
           const hasShowToast = body.includes("showToast(") || body.includes("showToast (");
           const hasCatch = body.includes(".catch(");
+          // Suppression markers (require explanatory comment at the site):
+          //   // toast-handled-by-hook         — toast shown by inner hook (useEntityDelete etc.)
+          //   // toast-intentionally-silent    — data loader / refetch / background op with no user-visible toast
+          const hasSuppression =
+            body.includes("// toast-handled-by-hook") ||
+            body.includes("// toast-intentionally-silent");
+
+          if (hasSuppression) continue;
 
           // Flag: has await but no error handling at all
           if (hasAwait && !hasTryCatch && !hasDispatch && !hasShowToast && !hasCatch) {
             const funcMatch = line.match(/const (\w+)/);
-            const funcName = funcMatch ? funcMatch[1] : "anonymous";
+            const funcName = funcMatch ? funcMatch[1] : (isInlineClick ? "inline-onClick" : "anonymous");
             results.push({
               file: full.replace(/\\/g, "/"),
               line: i + 1,
@@ -62,7 +75,7 @@ function scan(dir) {
           // Flag: has try/catch but missing success toast (less critical)
           else if (hasAwait && hasTryCatch && !hasShowToast && !hasDispatch) {
             const funcMatch = line.match(/const (\w+)/);
-            const funcName = funcMatch ? funcMatch[1] : "anonymous";
+            const funcName = funcMatch ? funcMatch[1] : (isInlineClick ? "inline-onClick" : "anonymous");
             results.push({
               file: full.replace(/\\/g, "/"),
               line: i + 1,
@@ -77,22 +90,12 @@ function scan(dir) {
   return results;
 }
 
-// Baseline: data loaders, background ops, and complex UI flows with custom error states.
-// These are intentionally silent or have non-toast error handling.
-const KNOWN_WARNINGS = new Set([
-  "loadItems", "loadOffers", "fetchReviews", "refetch", "load", "fetchStatus",
-  "mutate", "connectAndSubscribe", "markRead", "handleMarkAllRead",
-  "handleSpin", "handleRevealClick", "toggle",
-]);
-
 const appkitResults = scan("appkit/src/features");
 const srcResults = scan("src");
 const all = [...appkitResults, ...srcResults];
 
 const errors = all.filter((r) => r.severity === "error");
 const warnings = all.filter((r) => r.severity === "warn");
-const newWarnings = warnings.filter((r) => !KNOWN_WARNINGS.has(r.func));
-const baselineWarnings = warnings.filter((r) => KNOWN_WARNINGS.has(r.func));
 
 console.log(`\n=== PHASE 10 TOAST AUDIT ===\n`);
 
@@ -103,23 +106,16 @@ if (errors.length > 0) {
   }
 }
 
-if (newWarnings.length > 0) {
-  console.log(`\n⚠️  ${newWarnings.length} NEW async handler(s) with try/catch but no toast:\n`);
-  for (const r of newWarnings) {
+if (warnings.length > 0) {
+  console.log(`\n⚠️  ${warnings.length} async handler(s) with try/catch but no toast:\n`);
+  for (const r of warnings) {
     console.log(`  ${r.file}:${r.line} — ${r.func}()`);
   }
 }
 
-if (baselineWarnings.length > 0) {
-  console.log(`\nℹ️  ${baselineWarnings.length} known baseline warning(s) (data loaders / background ops):`);
-  for (const r of baselineWarnings) {
-    console.log(`  ${r.file}:${r.line} — ${r.func}()`);
-  }
+if (errors.length === 0 && warnings.length === 0) {
+  console.log("✅ All user-facing handlers have toast feedback (or an explicit suppression marker).");
 }
 
-if (errors.length === 0 && newWarnings.length === 0) {
-  console.log("✅ No regressions — all user-facing handlers have toast feedback.");
-}
-
-console.log(`\nTotal: ${errors.length} errors, ${newWarnings.length} new warnings, ${baselineWarnings.length} baseline`);
-process.exit(errors.length > 0 || newWarnings.length > 0 ? 1 : 0);
+console.log(`\nTotal: ${errors.length} errors, ${warnings.length} warnings`);
+process.exit(errors.length > 0 || warnings.length > 0 ? 1 : 0);

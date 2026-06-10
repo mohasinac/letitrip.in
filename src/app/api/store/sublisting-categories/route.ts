@@ -28,7 +28,7 @@ export const GET = withProviders(createRouteHandler({
   handler: async ({ request }) => {
     const url = new URL(request.url);
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
-    const pageSize = Math.min(200, Math.max(1, Number(url.searchParams.get("pageSize")) || 50));
+    const pageSize = Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize")) || 50));
     const sorts = url.searchParams.get("sorts") ?? DEFAULT_SORTS;
 
     const result = await categoriesRepository.list({

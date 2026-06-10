@@ -47,7 +47,7 @@ export const GET = withProviders(
       const page = getNumberParam(searchParams, "page", 1, { min: 1 });
       const pageSize = getNumberParam(searchParams, "pageSize", 50, {
         min: 1,
-        max: 200,
+        max: 50,
       });
       const filters = getStringParam(searchParams, "filters");
       const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;

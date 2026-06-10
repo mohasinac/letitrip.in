@@ -10,6 +10,7 @@ import {
   Row,
   Section,
   ROUTES,
+  Skeleton,
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { useEffect, useState } from "react";
@@ -44,7 +45,11 @@ export default function Page() {
             Looking for something specific? Post a request and sellers will reach out.
           </Text>
           {loading ? (
-            <Text>Loading…</Text>
+            <Stack gap="sm">
+              <Skeleton variant="rectangular" height="64px" />
+              <Skeleton variant="rectangular" height="64px" />
+              <Skeleton variant="rectangular" height="64px" />
+            </Stack>
           ) : items.length === 0 ? (
             <EmptyState
               title="No open requests yet"

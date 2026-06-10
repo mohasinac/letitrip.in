@@ -61,7 +61,7 @@ export const GET = withProviders(async (request: Request) => {
     const url = new URL(request.url);
     const std = parseListingParams(url);
     const page = Math.max(1, std.page ?? DEFAULT_PAGE);
-    const pageSize = Math.max(1, std.pageSize ?? DEFAULT_PAGE_SIZE);
+    const pageSize = Math.min(50, Math.max(1, std.pageSize ?? DEFAULT_PAGE_SIZE));
     const sorts = std.sorts ?? DEFAULT_SORTS;
     const filters = mergeListingTypeFilter(std.filters);
 

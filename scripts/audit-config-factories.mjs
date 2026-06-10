@@ -98,15 +98,7 @@ const CHECKS = [
 // ---------------------------------------------------------------------------
 
 const argv = process.argv.slice(2);
-const STRICT  = argv.includes("--strict");
 const VERBOSE = argv.includes("--verbose");
-const baselineArg = argv.find((a) => a.startsWith("--baseline="));
-
-// Default baseline = number of configs NOT yet adopted.
-// Lower this number as each config migrates to its factory.
-// Set to 0 (or --strict) once all three are adopted.
-const DEFAULT_BASELINE = STRICT ? 0 : 0; // all three factories adopted in S11
-const BASELINE = Number(baselineArg ? baselineArg.split("=")[1] : (process.env.AUDIT_CONFIG_FACTORY_BASELINE ?? DEFAULT_BASELINE));
 
 // ---------------------------------------------------------------------------
 // Run checks
@@ -145,7 +137,7 @@ for (const check of CHECKS) {
 
 const pendingCount = pending.length + missing.length;
 
-if (VERBOSE || STRICT || pendingCount > BASELINE) {
+if (VERBOSE || pendingCount > 0) {
   console.log("audit-config-factories:\n");
   for (const c of adopted) {
     console.log(`  ✓ ${c.file.padEnd(24)} uses ${c.factory}`);
@@ -167,16 +159,7 @@ if (pendingCount === 0) {
   process.exit(0);
 }
 
-if (pendingCount <= BASELINE && !STRICT) {
-  console.log(
-    `audit-config-factories: ${pendingCount} config(s) pending factory adoption` +
-    ` (baseline ${BASELINE}) — pass.`,
-  );
-  if (!VERBOSE) console.log("Run with --verbose to see details and migration guides.");
-  process.exit(0);
-}
-
-// Regression or strict mode: print migration guides and exit 1
+// Failure: print migration guides and exit 1
 process.stderr.write(
   `audit-config-factories: ${pendingCount} config(s) not using appkit factory helpers` +
   (pendingCount > BASELINE ? ` (regression: ${pendingCount} > baseline ${BASELINE})` : "") +

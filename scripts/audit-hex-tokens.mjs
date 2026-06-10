@@ -75,14 +75,8 @@ const KNOWN_TOKENS = loadKnownTokens();
 // CLI flags
 // ---------------------------------------------------------------------------
 const argv = process.argv.slice(2);
-const FIX_MODE   = argv.includes("--fix");
-const STRICT     = argv.includes("--strict");
-const WARN_ONLY  = argv.includes("--warn-only");
-const baselineArg = argv.find((a) => a.startsWith("--baseline="));
-// Default baseline = current violation count as of S11.
-// All hex token violations cleared in S11 (TS9). Baseline locked at 0.
-const DEFAULT_BASELINE = STRICT ? 0 : 0;
-const BASELINE = Number(baselineArg ? baselineArg.split("=")[1] : (process.env.AUDIT_HEX_BASELINE ?? DEFAULT_BASELINE));
+const FIX_MODE  = argv.includes("--fix");
+const WARN_ONLY = argv.includes("--warn-only");
 
 // ---------------------------------------------------------------------------
 // Patterns
@@ -269,15 +263,7 @@ if (FIX_MODE && fixableCount > 0) {
 }
 
 if (violations.length === 0) {
-  console.log("audit-hex-tokens: 0 hex token violations ✓");
-  process.exit(0);
-}
-
-if (!FIX_MODE && violations.length <= BASELINE && !STRICT) {
-  console.log(
-    `audit-hex-tokens: ${violations.length} violation(s) at or under baseline ${BASELINE} — pass.`,
-  );
-  console.log("Run with --strict to see them, or --fix to auto-fix Category A.");
+  console.log("audit-hex-tokens: clean ✓");
   process.exit(0);
 }
 
@@ -323,19 +309,6 @@ for (const [cat, label] of Object.entries(categories)) {
   if (seen.has(cat)) process.stderr.write(`  [${cat}] ${label}\n`);
 }
 process.stderr.write("\n");
-
-if (!STRICT && totalRemaining <= BASELINE) {
-  process.stderr.write(
-    `audit-hex-tokens: ${totalRemaining} violation(s) at or under baseline ${BASELINE} — pass.\n`,
-  );
-  process.exit(0);
-}
-
-if (totalRemaining > BASELINE && !STRICT) {
-  process.stderr.write(
-    `Regression: ${totalRemaining} > baseline ${BASELINE} (delta +${totalRemaining - BASELINE}).\n`,
-  );
-}
 
 if (WARN_ONLY) {
   process.exit(0);

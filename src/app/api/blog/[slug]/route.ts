@@ -24,7 +24,7 @@ export const GET = withProviders(
       if (!post || post.status !== BlogPostStatusValues.PUBLISHED) {
         return errorResponse("Blog post not found", 404);
       }
-      blogRepository.incrementViews(post.id).catch(() => {});
+      blogRepository.incrementViews(post.id).catch(() => {}); // audit-silent-catch-ok: view-count bump is best-effort analytics
       const related = await blogRepository
         .findRelated(post.category, post.id, 3)
         .catch(() => []);

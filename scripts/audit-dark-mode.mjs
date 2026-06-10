@@ -47,12 +47,8 @@ import { dirname } from "node:path";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 
-const BASELINE = 0;
-
 const args = process.argv.slice(2);
-const strict = args.includes("--strict");
 const verbose = args.includes("--verbose");
-const threshold = strict ? 0 : BASELINE;
 
 const SCAN_DIRS = [
   join(ROOT, "appkit", "src", "features"),
@@ -291,11 +287,10 @@ if (verbose || violations.length > threshold) {
   console.log();
 }
 
-if (violations.length <= threshold) {
-  console.log(`audit-dark-mode: ${violations.length} violation(s) at or under baseline ${threshold} — pass.`);
-  if (!verbose) console.log("  Run with --verbose to see them.");
+if (violations.length === 0) {
+  console.log("audit-dark-mode: clean ✓");
   process.exit(0);
-} else {
-  console.log(`audit-dark-mode: ${violations.length} violation(s) exceeds baseline ${threshold} — FAIL (${violations.length - threshold} regressions).`);
-  process.exit(1);
 }
+console.log(`audit-dark-mode: ${violations.length} violation(s).`);
+if (!verbose) console.log("  Run with --verbose to see them.");
+process.exit(1);

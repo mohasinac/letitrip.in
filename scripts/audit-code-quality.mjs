@@ -459,12 +459,6 @@ for (const dir of SCAN_DIRS) {
   }
 }
 
-// Driven to 0 (2026-06-07) via full RAW_SEMANTIC_COLOR sweep — colors extracted
-// to named constants across all consumer/appkit files. Dev-only SeedPanel.tsx
-// and DevToolbar.tsx allowlisted (categorical color coding; no semantic-token
-// equivalent). Any new violation is a regression.
-const BASELINE = 0;
-
 if (violations.length === 0) {
   console.log("audit-code-quality: clean ✓");
   process.exit(0);
@@ -488,13 +482,5 @@ for (const [rule, vs] of byRule) {
   out.push("");
 }
 
-if (violations.length <= BASELINE) {
-  const improved = BASELINE - violations.length;
-  process.stdout.write(`audit-code-quality: ${violations.length} violation(s) (baseline ${BASELINE}${improved > 0 ? ` — ${improved} improved` : ""}). No regression.\n`);
-  process.exit(0);
-}
-
-const regression = violations.length - BASELINE;
 process.stderr.write(out.join("\n") + "\n");
-process.stderr.write(`audit-code-quality: regression of ${regression} new violation(s) above baseline ${BASELINE}.\n`);
 process.exit(1);

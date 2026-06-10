@@ -10,7 +10,7 @@ export const GET = withProviders(createRouteHandler({
     const url = new URL(request.url);
     const productId = url.searchParams.get("productId") ?? undefined;
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
-    const pageSize = Math.min(100, Math.max(1, Number(url.searchParams.get("pageSize")) || 50));
+    const pageSize = Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize")) || 50));
 
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store) return ApiErrors.forbidden("No store found for this account");

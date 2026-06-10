@@ -28,7 +28,7 @@ async function _GET(request: Request): Promise<NextResponse> {
   const url = new URL(request.url);
   const std = parseListingParams(url);
   const page = std.page ?? DEFAULT_PAGE;
-  const pageSize = std.pageSize ?? DEFAULT_PAGE_SIZE;
+  const pageSize = Math.min(50, Math.max(1, std.pageSize ?? DEFAULT_PAGE_SIZE));
   const sorts = std.sorts ?? param(url, "sort") ?? DEFAULT_SORT;
 
   const rawFilters = param(url, "filters");

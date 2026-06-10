@@ -17,7 +17,7 @@ interface MediaFile {
 }
 
 const DEFAULT_PAGE_SIZE = 24;
-const MAX_PAGE_SIZE = 100;
+const MAX_PAGE_SIZE = 50;
 const MEDIA_PROXY_PREFIX = "/api/media/";
 
 const ERRORS = {

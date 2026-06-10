@@ -10,6 +10,7 @@ import {
   Row,
   Section,
   Badge,
+  Skeleton,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { useEffect, useState } from "react";
@@ -47,7 +48,11 @@ export default function Page() {
             System, security, moderation, payouts, fraud, and growth alerts surfaced for the admin team.
           </Text>
           {loading ? (
-            <Text>Loading…</Text>
+            <Stack gap="sm">
+              <Skeleton variant="rectangular" height="64px" />
+              <Skeleton variant="rectangular" height="64px" />
+              <Skeleton variant="rectangular" height="64px" />
+            </Stack>
           ) : items.length === 0 ? (
             <EmptyState title="Inbox zero" description="No unread admin notifications." />
           ) : (

@@ -31,7 +31,7 @@ export const GET = withProviders(createRouteHandler({
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });
     const pageSize = getNumberParam(searchParams, "pageSize", 25, {
       min: 1,
-      max: 100,
+      max: 50,
     });
     const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
 

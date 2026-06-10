@@ -40,7 +40,7 @@ async function _GET(
   const std = parseListingParams(url);
   const sorts = std.sorts ?? DEFAULT_SORT;
   const page = std.page ?? DEFAULT_PAGE;
-  const pageSize = std.pageSize ?? DEFAULT_PAGE_SIZE;
+  const pageSize = Math.min(50, Math.max(1, std.pageSize ?? DEFAULT_PAGE_SIZE));
   const cursor = std.cursor;
 
   const filterParts = [

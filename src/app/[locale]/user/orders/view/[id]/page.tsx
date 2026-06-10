@@ -81,6 +81,7 @@ function renderItemRow(item: OrderItemT, key: string | number) {
           role="img"
           aria-label={item.title}
           className="h-16 w-16 rounded-lg shrink-0 bg-cover bg-center bg-zinc-100 dark:bg-slate-800"
+          // audit-inline-style-ok: dynamic image URL
           style={{ backgroundImage: `url(${item.image})` }}
         />
       )}

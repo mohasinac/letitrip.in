@@ -116,7 +116,7 @@ export const POST = withProviders(createRouteHandler({
 
     const declaredKind = classifyMime(declaredMime);
     if (!declaredKind) {
-      await fileRef.delete().catch(() => {});
+      await fileRef.delete().catch(() => {}); // audit-silent-catch-ok: cleanup of rejected upload; absent file is fine
       const hint = getConversionHint(declaredMime);
       return errorResponse(hint ?? ERROR_MESSAGES.UPLOAD.INVALID_TYPE, 400, {
         allowed: ALLOWED_TYPES_LABEL,
@@ -126,13 +126,13 @@ export const POST = withProviders(createRouteHandler({
     }
 
     if (!Number.isFinite(size) || size <= 0) {
-      await fileRef.delete().catch(() => {});
+      await fileRef.delete().catch(() => {}); // audit-silent-catch-ok: cleanup of rejected upload; absent file is fine
       return errorResponse("Uploaded object has no size", 400);
     }
 
     const maxSize = MAX_BYTES[declaredKind];
     if (size > maxSize) {
-      await fileRef.delete().catch(() => {});
+      await fileRef.delete().catch(() => {}); // audit-silent-catch-ok: cleanup of rejected upload; absent file is fine
       return errorResponse(ERROR_MESSAGES.UPLOAD.FILE_TOO_LARGE, 400, {
         maxSize: MAX_LABEL[declaredKind],
         fileSize: formatFileSize(size),
@@ -146,14 +146,14 @@ export const POST = withProviders(createRouteHandler({
     const detected = await fileTypeFromBuffer(head);
     const detectedKind = detected ? classifyMime(detected.mime) : null;
     if (!detected || !detectedKind) {
-      await fileRef.delete().catch(() => {});
+      await fileRef.delete().catch(() => {}); // audit-silent-catch-ok: cleanup of rejected upload; absent file is fine
       return errorResponse(ERROR_MESSAGES.UPLOAD.INVALID_TYPE, 400, {
         allowed: ALLOWED_TYPES_LABEL,
         detected: detected?.mime ?? "unknown",
       });
     }
     if (detectedKind !== declaredKind) {
-      await fileRef.delete().catch(() => {});
+      await fileRef.delete().catch(() => {}); // audit-silent-catch-ok: cleanup of rejected upload; absent file is fine
       return errorResponse(
         "Uploaded file bytes do not match the declared content type",
         400,
@@ -165,7 +165,7 @@ export const POST = withProviders(createRouteHandler({
         head.length >= PDF_MAGIC.length &&
         head.subarray(0, PDF_MAGIC.length).toString("ascii") === PDF_MAGIC;
       if (!looksLikePdf) {
-        await fileRef.delete().catch(() => {});
+        await fileRef.delete().catch(() => {}); // audit-silent-catch-ok: cleanup of rejected upload; absent file is fine
         return errorResponse(ERROR_MESSAGES.UPLOAD.INVALID_TYPE, 400, {
           allowed: `PDF (must start with ${PDF_MAGIC} header)`,
           detected: "non-pdf bytes claiming application/pdf",

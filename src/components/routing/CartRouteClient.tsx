@@ -409,7 +409,7 @@ export function CartRouteClient() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ itemIds: next ? Array.from(next) : null }),
           credentials: FETCH_CREDENTIALS,
-        }).catch(() => {});
+        }).catch(() => {}); // audit-silent-catch-ok: cart selection sync is best-effort; UI state already updated
       }
     },
     [effectiveSelected, allItemIds, isAuthenticated],
@@ -423,7 +423,7 @@ export function CartRouteClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ itemIds: null }),
         credentials: FETCH_CREDENTIALS,
-      }).catch(() => {});
+      }).catch(() => {}); // audit-silent-catch-ok: cart selection sync is best-effort; UI state already updated
     }
   }, [isAuthenticated]);
 
@@ -906,7 +906,11 @@ export function CartRouteClient() {
             <Button
               type="button"
               variant="ghost"
-              onClick={async () => { await selectAll(); router.push(String(ROUTES.USER.CHECKOUT)); }}
+              onClick={async () => {
+                // toast-intentionally-silent — selectAll mutates local cart-selection state only
+                await selectAll();
+                router.push(String(ROUTES.USER.CHECKOUT));
+              }}
               className="w-full text-xs text-zinc-500 dark:text-zinc-400 underline underline-offset-2 hover:text-zinc-700 dark:hover:text-zinc-200"
             >
               Or checkout all {allItemIds.length} items

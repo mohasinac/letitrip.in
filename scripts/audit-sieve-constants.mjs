@@ -29,10 +29,6 @@ import { dirname } from "node:path";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 
-// ── Baseline ─────────────────────────────────────────────────────────────────
-// All violations resolved in S-SBUNI-RULES (2026-05-15). Baseline is now 0 — any regression blocks.
-const BASELINE = 0;
-
 // ── Walk ──────────────────────────────────────────────────────────────────────
 const SKIP_DIRS = new Set(["node_modules", ".next", "dist", ".git", "__tests__", "__mocks__"]);
 
@@ -125,17 +121,7 @@ if (count === 0) {
   process.exit(0);
 }
 
-if (count <= BASELINE) {
-  console.log(
-    `audit-sieve-constants: ${count} violation(s) found (baseline ${BASELINE} — ${BASELINE - count} improved). No regression.`
-  );
-  process.exit(0);
-}
-
-const regression = count - BASELINE;
-console.error(
-  `audit-sieve-constants: ${count} violation(s) found (baseline ${BASELINE} — regression of ${regression}).\n`
-);
+console.error(`audit-sieve-constants: ${count} violation(s) found.\n`);
 console.error("Replace raw sort/filter strings with appkit constants:");
 console.error("  sorts → sortBy(FIELD.X)  from '@mohasinac/appkit'");
 console.error("  filters → sieveFilter() / sieveAnd() / sieveMultiEq()\n");

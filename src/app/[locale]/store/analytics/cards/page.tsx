@@ -11,6 +11,7 @@ import {
   Section,
   Toggle,
   useToast,
+  Skeleton,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { useEffect, useState } from "react";
@@ -58,7 +59,11 @@ export default function Page() {
             Built-in cards ship by default. Toggle visibility or add custom cards.
           </Text>
           {loading ? (
-            <Text>Loading…</Text>
+            <Stack gap="sm">
+              <Skeleton variant="rectangular" height="64px" />
+              <Skeleton variant="rectangular" height="64px" />
+              <Skeleton variant="rectangular" height="64px" />
+            </Stack>
           ) : items.length === 0 ? (
             <EmptyState title="No cards" description="Add a custom analytics card to your dashboard." />
           ) : (

@@ -34,7 +34,7 @@ export const GET = withProviders(
           // Sync custom claims so next check is fast
           const adminAuth = await import("@mohasinac/appkit").then((m) => m.getAdminAuth?.());
           if (adminAuth) {
-            adminAuth.setCustomUserClaims(user!.uid, { role }).catch(() => {});
+            adminAuth.setCustomUserClaims(user!.uid, { role }).catch(() => {}); // audit-silent-catch-ok: claim sync is best-effort; next /me retry will fix
           }
         }
       }

@@ -240,6 +240,58 @@ export default tseslint.config(
     },
   },
   {
+    // appkit/src — local library bundled into the consumer build.
+    // Same architectural exceptions as packages/*: appkit IS the primitive layer,
+    // the Firebase repository layer, the server/data layer. Many lir/ rules don't
+    // apply (no app routing, no @/ aliases). Quality rules softened to warn or off
+    // to match the gradual-adoption posture used for the src/ tree.
+    files: ["appkit/src/**/*.{ts,tsx}"],
+    plugins: { lir: lirPlugin },
+    rules: {
+      // Architectural rules — appkit IS the wrapping layer; these would be false positives.
+      "lir/no-deep-barrel-import": "off",
+      "lir/no-cross-feature-import": "off",
+      "lir/no-tier1-feature-import": "off",
+      "lir/no-fat-page": "off",
+      "lir/use-i18n-navigation": "off",
+      "lir/no-firebase-client-in-ui": "off",
+      "lir/no-firebase-admin-outside-backend": "off",
+      "lir/no-direct-firestore-query": "off",
+      "lir/no-fetch-in-ui": "off",
+      "lir/no-apiclient-outside-services": "off",
+      "lir/no-hardcoded-api-path": "off",
+      "lir/no-hardcoded-route": "off",
+      "lir/no-hardcoded-collection": "off",
+      "lir/no-firebase-trigger-in-api": "off",
+      "lir/no-module-scope-translations": "off",
+      "lir/no-deprecated-annotations": "off",
+      "lir/no-raw-date": "off",
+      "lir/no-raw-html-elements": "off",
+      "lir/no-raw-media-elements": "off",
+      "lir/no-inline-static-style": "off",
+      "lir/no-fixed-media-height": "off",
+      "lir/require-xl-breakpoints": "off",
+      // Quality — same defaults as src/ and packages/*/src
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          varsIgnorePattern: "^_",
+          argsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-empty-object-type": "off",
+      "@typescript-eslint/no-unused-expressions": "warn",
+      "@typescript-eslint/no-non-null-asserted-optional-chain": "warn",
+      "@typescript-eslint/no-unsafe-function-type": "off",
+      "prefer-const": "off",
+      "no-console": "off",
+      "react/no-unknown-property": "warn",
+    },
+  },
+  {
     // Scope general quality rules to src/ only so they don't override package
     // exceptions declared above (e.g. no-console off in @mohasinac/core Logger).
     files: ["src/**"],

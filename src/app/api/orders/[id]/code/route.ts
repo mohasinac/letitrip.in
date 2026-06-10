@@ -20,6 +20,7 @@ import {
   successResponse,
   ApiErrors,
   orderRepository,
+  ORDER_FIELDS,
 } from "@mohasinac/appkit";
 import { getAdminDb } from "@mohasinac/appkit/server";
 import {
@@ -57,7 +58,7 @@ export const GET = withProviders(
         .doc(productId)
         .collection(PRODUCT_CODES_SUBCOLLECTION)
         .where("orderId", "==", orderId)
-        .where("status", "==", "claimed")
+        .where(ORDER_FIELDS.STATUS, "==", "claimed")
         .limit(1)
         .get();
 

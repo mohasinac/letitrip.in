@@ -20,7 +20,7 @@ export const GET = withProviders(createApiHandler({
     const url = new URL(request.url);
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
     const pageSize = Math.min(
-      200,
+      50,
       Math.max(1, Number(url.searchParams.get("pageSize")) || 50),
     );
     const filters = url.searchParams.get("filters") ?? undefined;

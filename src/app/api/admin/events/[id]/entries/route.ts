@@ -25,7 +25,7 @@ export const GET = withProviders(async function GET(
   const { id: eventId } = await context.params;
   const searchParams = getSearchParams(request);
   const page = getNumberParam(searchParams, "page", 1, { min: 1 });
-  const pageSize = getNumberParam(searchParams, "pageSize", 50, { min: 1, max: 200 });
+  const pageSize = getNumberParam(searchParams, "pageSize", 50, { min: 1, max: 50 });
   const reviewStatus = getStringParam(searchParams, "reviewStatus");
   const q = (getStringParam(searchParams, "q") || "").trim().toLowerCase();
 

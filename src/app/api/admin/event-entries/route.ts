@@ -3,6 +3,7 @@ import {
   eventEntryRepository,
   createRouteHandler,
   successResponse,
+  sortBy,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
@@ -21,9 +22,9 @@ export const GET = withProviders(
       const url = new URL(request.url);
       const result = await eventEntryRepository.list({
         filters: url.searchParams.get("filters") ?? undefined,
-        sorts: url.searchParams.get("sorts") ?? "-submittedAt",
+        sorts: url.searchParams.get("sorts") ?? sortBy("submittedAt"),
         page: url.searchParams.get("page") ?? 1,
-        pageSize: url.searchParams.get("pageSize") ?? 25,
+        pageSize: String(Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize")) || 25))),
       });
       return successResponse({
         items: result.items,

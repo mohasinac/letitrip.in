@@ -105,7 +105,7 @@ export const GET = withProviders(
       const provider = (url.searchParams.get("provider") || "all").trim();
       const placement = (url.searchParams.get("placement") || "all").trim();
       const page = Math.max(1, Number(url.searchParams.get("page") || "1"));
-      const pageSize = Math.min(100, Math.max(1, Number(url.searchParams.get("pageSize") || "20")));
+      const pageSize = Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize") || "20")));
 
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, unknown>;
       const normalized = normalizeAdSettings(settings);

@@ -54,68 +54,47 @@ const RULES = [
   {
     id: "HTML_TYPOGRAPHY_CLASSES",
     label: "Raw HTML element with typography/color classes (use appkit <Text>, <Span>, <Heading>, <Button>)",
-    // Matches <div>, <span>, <button>, <td>, <li>, <label>, <section>, <a>, etc.
-    // Excludes PascalCase components (appkit primitives like <Span>, <Text>, <Button>)
-    // Excludes <svg> (uses text-* for currentColor, not typography), <img>, <iframe>, <input>, <select>, <option>, <textarea>, <video>, <audio>, <source>, <track>, <details>, <summary>, <hr>, <code>, <pre>
     regex: new RegExp(`<(?!svg|img|iframe|input|select|option|textarea|video|audio|source|track|details|summary|hr|code|pre)[a-z][a-z0-9]*\\s[^>]*className[^>]*(?:${TYPOGRAPHY_CLASSES})`),
-    // LOCKED P4 (2026-06-08): all 436 → 0. Full sweep across appkit + consumer surface.
-    // Excludes svg/img/input/etc (these use text-* for currentColor not typography).
-    baseline: 0,
   },
   {
     id: "APPKIT_SPAN_RAW_CLASSES",
     label: "Appkit <Span> using raw Tailwind size/weight classes in className instead of size/weight props",
-    // Only flag text-xs/sm/base/lg/xl and font-medium/semibold/bold in className.
-    // Color classes (text-zinc-*, etc.) can legitimately remain in className when no exact token match exists.
     regex: /(<Span\s[^>]*className\s*=\s*["'{][^"'>]*(text-(?:xs|sm|base|lg|xl)\b|font-(?:normal|medium|semibold|bold)))/,
-    // Tightened 2026-05-30 (Phase H): 0 actual — all Span size/weight classes converted to props.
-    baseline: 0,
   },
-  // ── Raw semantic elements that have a direct appkit replacement ────────────
   {
     id: "RAW_STRONG",
     label: "Raw <strong> (use <Span weight=\"bold\"> or <Span weight=\"semibold\">)",
     regex: /<strong[\s>]/,
-    baseline: 0,
   },
   {
     id: "RAW_P_TAG",
     label: "Raw <p> tag (use <Text>)",
     regex: /<p\s+className/,
-    // Tightened 2026-05-23: 0 actual vs prior 3.
-    baseline: 0,
   },
   {
     id: "RAW_HEADING",
     label: "Raw <h1>-<h6> (use <Heading level={N}>)",
     regex: /<h[1-6][\s>]/,
-    baseline: 0,
   },
   {
     id: "RAW_SMALL",
     label: "Raw <small> (use <Caption> or <Text size=\"xs\">)",
     regex: /<small[\s>]/,
-    baseline: 0,
   },
   {
     id: "RAW_B_TAG",
     label: "Raw <b> (use <Span weight=\"bold\">)",
     regex: /<b[\s>]/,
-    baseline: 0,
   },
   {
     id: "RAW_EM",
     label: "Raw <em> (use <Span className=\"italic\">)",
     regex: /<em[\s>]/,
-    // Tightened 2026-05-23: 0 actual vs prior 2.
-    baseline: 0,
   },
   {
     id: "RAW_BUTTON",
     label: "Raw <button> (use appkit <Button>)",
     regex: /<button[\s>]/,
-    // Tightened 2026-05-30 (Phase G): 0 actual — all 16 raw buttons converted to <Button>.
-    baseline: 0,
   },
 ];
 
@@ -198,45 +177,27 @@ for (const dir of DIRS) {
 
 // ── Report ───────────────────────────────────────────────────────────────────
 
-const verbose = process.argv.includes("--verbose");
-const strict = process.argv.includes("--strict");
 let totalViolations = 0;
-let totalBaseline = 0;
-let hasRegression = false;
 
 for (const rule of RULES) {
   const hits = violations[rule.id];
   totalViolations += hits.length;
-  totalBaseline += rule.baseline;
 
-  if (hits.length > rule.baseline) {
-    hasRegression = true;
-    console.error(`\n[${rule.id}] ${hits.length} violation(s) — REGRESSION (baseline ${rule.baseline}):`);
+  if (hits.length > 0) {
+    console.error(`\n[${rule.id}] ${hits.length} violation(s) — ${rule.label}`);
     for (const v of hits.slice(0, 10)) {
       console.error(`  ${v.file}:${v.line} — ${v.text}`);
     }
     if (hits.length > 10) console.error(`  ... and ${hits.length - 10} more`);
-  } else if (verbose || strict) {
-    if (hits.length > 0) {
-      console.log(`\n[${rule.id}] ${hits.length} violation(s) — within baseline ${rule.baseline}:`);
-      if (verbose) {
-        for (const v of hits.slice(0, 5)) {
-          console.log(`  ${v.file}:${v.line} — ${v.text}`);
-        }
-        if (hits.length > 5) console.log(`  ... and ${hits.length - 5} more`);
-      }
-    }
   }
 }
 
 console.log("");
 
-if (hasRegression) {
-  console.error(`audit-typography: ${totalViolations} violation(s) — REGRESSION above baseline. Fix new raw HTML text elements.`);
-  process.exit(1);
-} else {
-  console.log(`audit-typography: ${totalViolations} violation(s) (baseline ${totalBaseline}). No regression.`);
-  if (totalViolations > 0 && !verbose) {
-    console.log(`  Run with --verbose to see details.`);
-  }
+if (totalViolations === 0) {
+  console.log("audit-typography: clean ✓");
+  process.exit(0);
 }
+
+console.error(`audit-typography: ${totalViolations} violation(s).`);
+process.exit(1);

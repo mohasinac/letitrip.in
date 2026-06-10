@@ -809,7 +809,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
       const verifyData = await verifyRes.json().catch(() => ({}));
       const firstOrderId = (verifyData?.data?.orderIds as string[] | undefined)?.[0];
       showToast("Payment successful! Your order has been placed.", "success");
-      router.push(firstOrderId ? `/checkout/success?orderId=${firstOrderId}` : "/checkout/success");
+      router.push(firstOrderId ? `${String(ROUTES.USER.CHECKOUT_SUCCESS)}?orderId=${firstOrderId}` : String(ROUTES.USER.CHECKOUT_SUCCESS));
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Payment failed. Please retry.";
       setActionError(msg);
@@ -844,7 +844,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
       const codData = await res.json().catch(() => ({}));
       const firstCodOrderId = (codData?.data?.orderIds as string[] | undefined)?.[0];
       showToast("Order placed successfully! Cash on delivery confirmed.", "success");
-      router.push(firstCodOrderId ? `/checkout/success?orderId=${firstCodOrderId}` : "/checkout/success");
+      router.push(firstCodOrderId ? `${String(ROUTES.USER.CHECKOUT_SUCCESS)}?orderId=${firstCodOrderId}` : String(ROUTES.USER.CHECKOUT_SUCCESS));
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Order failed. Please retry.";
       setActionError(msg);
@@ -876,7 +876,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
       const data = await res.json().catch(() => ({}));
       const firstOrderId = (data?.data?.orderIds as string[] | undefined)?.[0];
       showToast(CK.ADMIN_BYPASS_TOAST, "success");
-      router.push(firstOrderId ? `/checkout/success?orderId=${firstOrderId}` : "/checkout/success");
+      router.push(firstOrderId ? `${String(ROUTES.USER.CHECKOUT_SUCCESS)}?orderId=${firstOrderId}` : String(ROUTES.USER.CHECKOUT_SUCCESS));
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Admin bypass failed. Please retry.";
       setActionError(msg);

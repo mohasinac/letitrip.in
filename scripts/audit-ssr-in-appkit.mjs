@@ -139,28 +139,8 @@ for (const file of appkitFiles) {
   }
 }
 
-// Baseline-drift policy: pass when violation count <= --baseline=N (or
-// AUDIT_SSR_BASELINE env). W2-2 2026-05-23 — lifted to 0; the prior S2-deferred
-// root files (sitemap/manifest/robots/root opengraph) no longer leak brand
-// strings into `_internal/`. Any new violation should fail the audit outright.
-const argv = process.argv.slice(2);
-const strict = argv.includes("--strict");
-const baselineArg = argv.find((a) => a.startsWith("--baseline="));
-const baselineEnv = process.env.AUDIT_SSR_BASELINE;
-const baseline = strict
-  ? 0
-  : Number(baselineArg ? baselineArg.split("=")[1] : (baselineEnv ?? 0));
-
 if (violations.length === 0) {
-  console.log("audit-ssr-in-appkit: 0 violations ✓");
-  process.exit(0);
-}
-
-if (violations.length <= baseline && !strict) {
-  console.log(
-    `audit-ssr-in-appkit: ${violations.length} violation(s) at or under baseline ${baseline} — pass.`,
-  );
-  console.log("Run with --strict to see them.");
+  console.log("audit-ssr-in-appkit: clean ✓");
   process.exit(0);
 }
 
@@ -169,8 +149,5 @@ for (const v of violations) {
   console.error(`[VIOLATION] ${v.rule}`);
   console.error(`  file: ${v.file}`);
   console.error(`  hint: ${v.hint}\n`);
-}
-if (!strict && violations.length > baseline) {
-  console.error(`Regression: ${violations.length} > baseline ${baseline} (delta +${violations.length - baseline}).`);
 }
 process.exit(1);

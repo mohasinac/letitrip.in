@@ -2132,6 +2132,7 @@ export function SeedPanel() {
   };
 
   const fetchStatus = useCallback(async () => {
+    // toast-intentionally-silent — dev-only panel, non-fatal background refresh
     setIsLoadingStatus(true);
     try {
       const res = await fetch(API_ROUTES.DEMO.SEED, { method: "GET" });

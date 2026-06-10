@@ -66,9 +66,9 @@ export const GET = withProviders(createRouteHandler({
     const sieveFilters = getStringParam(searchParams, "filters");
     const sieveSorts = getStringParam(searchParams, "sorts");
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });
-    const pageSize = getNumberParam(searchParams, "pageSize", 100, {
+    const pageSize = getNumberParam(searchParams, "pageSize", 50, {
       min: 1,
-      max: 200,
+      max: 50,
     });
 
     // Parse legacy filters

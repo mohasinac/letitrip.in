@@ -33,16 +33,6 @@ import { dirname } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
-const STRICT = process.env.AUDIT_ROOT_CAUSE_STRICT === "1";
-
-// ─── Known baselines (violations present at script creation 2026-05-18) ──────
-// Increase ONLY when a new instance is explicitly accepted by the user.
-// Decrease + fix when the root cause is properly resolved.
-const BASELINE = {
-  IN_MEMORY_FILTER: 1, // src/app/api/products/route.ts — search fallback (SEARCH_FETCH_LIMIT=500)
-  FALLBACK_COMMENT: 1, // src/app/api/products/route.ts — "// Fallback repo + in-memory filtering"
-  DEFER_TODO: 0,
-};
 
 // ─── Directories to scan ─────────────────────────────────────────────────────
 // FALLBACK_COMMENT is scoped to API routes only (appkit may have migration notes).
@@ -172,35 +162,22 @@ for (const file of allFiles) {
 }
 
 // ─── Report ───────────────────────────────────────────────────────────────────
-let totalNew = 0;
-let hasViolations = false;
+const total = Object.values(violations).flat().length;
 
-for (const [rule, found] of Object.entries(violations)) {
-  const baseline = STRICT ? 0 : (BASELINE[rule] ?? 0);
-  const newCount = Math.max(0, found.length - baseline);
-  totalNew += newCount;
-  if (found.length > 0) {
-    hasViolations = true;
-    const label = found.length > baseline ? "🔴 REGRESSION" : "⚠️  known (baseline)";
-    console.log(`\n[${rule}] ${found.length} violation(s) — ${label} (baseline ${baseline}):`);
-    for (const v of found) {
-      console.log(`  ${v}`);
-    }
-  }
-}
-
-if (totalNew === 0 && !STRICT) {
-  if (hasViolations) {
-    console.log(`\naudit-root-cause: ${Object.values(violations).flat().length} known violation(s) at baseline — no regressions.\n`);
-    console.log("  ↳ Fix the known violations to drive baseline to 0. See prompt.md Rule #7.\n");
-  } else {
-    console.log("audit-root-cause: clean.\n");
-  }
+if (total === 0) {
+  console.log("audit-root-cause: clean.\n");
   process.exit(0);
 }
 
-const total = Object.values(violations).flat().length;
-console.error(`\naudit-root-cause: ${totalNew} new violation(s) above baseline (${total} total).\n`);
+for (const [rule, found] of Object.entries(violations)) {
+  if (found.length === 0) continue;
+  console.error(`\n[${rule}] ${found.length} violation(s):`);
+  for (const v of found) {
+    console.error(`  ${v}`);
+  }
+}
+
+console.error(`\naudit-root-cause: ${total} violation(s).\n`);
 console.error("Fix: add a Firestore index, use listingProcessor, or track deferrals in crud-tracker.md.\n");
 console.error("See prompt.md Rule #7 for the full guidance.\n");
 process.exit(1);

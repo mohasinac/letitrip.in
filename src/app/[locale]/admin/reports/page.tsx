@@ -11,6 +11,7 @@ import {
   Section,
   Modal,
   Textarea,
+  Skeleton,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { useEffect, useState } from "react";
@@ -67,7 +68,11 @@ export default function Page() {
             Buyer-submitted reports against listings, stores, and users.
           </Text>
           {loading ? (
-            <Text>Loading…</Text>
+            <Stack gap="sm">
+              <Skeleton variant="rectangular" height="64px" />
+              <Skeleton variant="rectangular" height="64px" />
+              <Skeleton variant="rectangular" height="64px" />
+            </Stack>
           ) : items.length === 0 ? (
             <EmptyState title="No open reports" description="All caught up." />
           ) : (

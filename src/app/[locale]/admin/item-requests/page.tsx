@@ -9,6 +9,7 @@ import {
   EmptyState,
   Row,
   Section,
+  Skeleton,
   ACTIONS,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
@@ -47,7 +48,11 @@ export default function Page() {
             Buyer requests awaiting approval before going live on the community board.
           </Text>
           {loading ? (
-            <Text>Loading…</Text>
+            <Stack gap="sm">
+              <Skeleton variant="rectangular" height="64px" />
+              <Skeleton variant="rectangular" height="64px" />
+              <Skeleton variant="rectangular" height="64px" />
+            </Stack>
           ) : items.length === 0 ? (
             <EmptyState
               title="Queue empty"

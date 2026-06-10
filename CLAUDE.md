@@ -109,10 +109,10 @@ For lint-fixable issues use `npm run check:fix` (runs `lint:fix` first, then ful
 
 **Subset commands** for fast iteration:
 - `npm run check:types` — both repos' tsc only
-- `npm run check:audits` — all 4 audit scripts (~2s total)
-- `npm run check:lint` — eslint only
+- `npm run check:audits` — all audit scripts (~5–10s total)
+- `npm run check:lint` — eslint on both `src` and `appkit/src`
 
-**Stop hook automation**: `.claude/settings.json` runs the 4 fast audits (`check:audits`) automatically at end of every Claude turn via `scripts/claude-hooks/check-on-stop.mjs`. Failures block the turn and surface to the assistant for fixing. The `audit-ssr-in-appkit` script uses a baseline-drift policy (currently 8 known violations from S2-deferred root files) — only regressions block. tsc + lint are excluded from the Stop hook because they are too slow per-turn; run `npm run check` manually before commits.
+**Stop hook automation**: `.claude/settings.json` runs the fast audits (`check:audits`) automatically at end of every Claude turn via `scripts/claude-hooks/check-on-stop.mjs`. Failures block the turn and surface to the assistant for fixing. **Every audit is now strict zero-tolerance** — there is no baseline-drift mode; any violation `> 0` fails the audit. Legitimate dynamic patterns are handled by explicit per-line suppression markers (`// audit-inline-style-ok`, `// toast-handled-by-hook`, `// toast-intentionally-silent`, `// reexport-from-internal-ok`, `// audit-sieve-views-ok`) at the site of the decision, each with a brief reason. tsc + lint are excluded from the Stop hook because they are too slow per-turn; run `npm run check` manually before commits.
 
 **Pre-commit**: the `pre-commit` npm script is wired to `npm run check`. If you have a git hook runner installed, use it.
 

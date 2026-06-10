@@ -28,7 +28,7 @@ export const GET = withProviders(createRouteHandler({
   handler: async ({ request, user }) => {
     const url = new URL(request.url);
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
-    const pageSize = Math.min(200, Math.max(1, Number(url.searchParams.get("pageSize")) || 100));
+    const pageSize = Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize")) || 100));
     const sorts = url.searchParams.get("sorts") ?? url.searchParams.get("sort") ?? DEFAULT_SORTS;
     const filters = url.searchParams.get("filters") ?? undefined;
 

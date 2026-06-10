@@ -26,7 +26,7 @@ export const GET = withProviders(createApiHandler({
 
     const sp = getSearchParams(request);
     const page = getNumberParam(sp, "page", 1, { min: 1 });
-    const pageSize = getNumberParam(sp, "pageSize", 20, { min: 1, max: 100 });
+    const pageSize = getNumberParam(sp, "pageSize", 20, { min: 1, max: 50 });
     const rating = getStringParam(sp, "rating");
     const replied = getStringParam(sp, "replied");
     const sorts = getStringParam(sp, "sorts") || DEFAULT_SORTS;

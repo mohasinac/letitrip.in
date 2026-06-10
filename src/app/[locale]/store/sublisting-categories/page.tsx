@@ -74,7 +74,7 @@ export default function Page() {
           })),
         );
       })
-      .catch(() => {})
+      .catch(() => {}) // audit-silent-catch-ok: empty state is the safe fallback when fetch fails
       .finally(() => setLoading(false));
   }, [page, sort]);
 

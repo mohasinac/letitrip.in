@@ -18,7 +18,7 @@ export const GET = withProviders(
       const url = new URL(request.url);
       const activeOnly = url.searchParams.get("active") !== "false";
       const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
-      const pageSize = Math.min(100, Math.max(1, Number(url.searchParams.get("pageSize")) || 50));
+      const pageSize = Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize")) || 50));
       const sorts = url.searchParams.get("sorts") || DEFAULT_SORTS;
 
       if (activeOnly) {

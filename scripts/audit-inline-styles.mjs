@@ -74,58 +74,38 @@ const ALLOWLIST_PATH_PATTERNS = [
 const RULES = [
   {
     id: "INLINE_STYLE",
-    label: "Inline style={{ }} (use Tailwind classes or CSS variables)",
+    label: "Inline style={{ }} (use Tailwind classes or CSS variables; add `// audit-inline-style-ok: <reason>` for legitimate dynamic patterns)",
     regex: /style\s*=\s*\{\{/,
-    // Tightened P4 (2026-06-08): 102 actual after og.tsx + dynamic-component allowlists.
-    // Remaining represent legitimate dynamic patterns: CSS calc(), safe-area-inset,
-    // computed widths/positions, dynamic backgroundImage URLs, gradient stops, modal
-    // z-index expressions. These cannot be expressed as Tailwind classes.
-    baseline: 103,
   },
   {
     id: "INLINE_STYLE_VAR",
-    label: "Inline style={variable} (use className or CSS variables)",
+    label: "Inline style={variable} (use className or CSS variables; add `// audit-inline-style-ok: <reason>` for pass-through props)",
     regex: /style\s*=\s*\{(?!\{)[a-zA-Z]/,
-    // Tightened P4 (2026-06-08): 16 after homepage allowlists.
-    baseline: 16,
   },
   {
     id: "RAW_SURFACE_CLASSES",
     label: "Raw surface classes on appkit primitive (use surface prop)",
     regex: /<(?:Stack|Row|Grid|Container|Section|Div)\s[^>]*className\s*=\s*[{"].*bg-white\s+dark:bg-(?:slate|zinc)-9/,
-    // Tightened 2026-05-30 (Phase G): 0 actual after converting all 10 instances to surface prop.
-    baseline: 0,
   },
   {
     id: "RAW_PADDING_CLASSES",
     label: "Raw padding classes on appkit primitive (use padding prop)",
     regex: /<(?:Stack|Row|Grid|Container|Section|Div)\s[^>]*className\s*=\s*[{"].*\bp-[3-8]\b/,
-    // Driven to 0 (2026-06-08): codemod extracted all p-3..p-8 on appkit
-    // primitives to per-file `const __P = {...}` constants.
-    baseline: 0,
   },
   {
     id: "RAW_ALIGN_ON_ROW",
     label: "Raw items-* on <Row> (use align prop)",
     regex: /<Row\s[^>]*className\s*=\s*[{"].*\bitems-(?:center|start|end|stretch|baseline)\b/,
-    // Tightened 2026-05-30 (Phase G): 0 actual after converting PublicProfileView.tsx Row→Div.
-    baseline: 0,
   },
   {
     id: "RAW_JUSTIFY_ON_ROW",
     label: "Raw justify-* on <Row> (use justify prop)",
     regex: /<Row\s[^>]*className\s*=\s*[{"].*\bjustify-(?:center|start|end|between|around|evenly)\b/,
-    // Tightened 2026-05-30 (Phase G): 0 actual after converting PublicProfileView.tsx Row→Div.
-    baseline: 0,
   },
   {
     id: "RAW_OVERFLOW",
     label: "Raw overflow-* on appkit primitive (use overflow classes from THEME_CONSTANTS.overflow)",
     regex: /<(?:Stack|Row|Grid|Container|Section|Div)\s[^>]*className\s*=\s*[{"].*\boverflow-(?:auto|scroll|hidden|x-auto|y-auto|x-hidden|y-hidden)\b/,
-    // Driven to 0 (2026-06-08): codemod extracted all overflow-* on appkit
-    // primitives to per-file `const __O = {...}` constants. Any new raw
-    // overflow class on a primitive blocks.
-    baseline: 0,
   },
 ];
 
@@ -155,6 +135,11 @@ function isInsideComment(line) {
   return trimmed.startsWith("//") || trimmed.startsWith("*") || trimmed.startsWith("/*");
 }
 
+// Suppression marker for documented-legitimate dynamic inline styles
+// (backgroundImage URLs, computed widths/positions, CSS variable expressions, etc).
+// Use sparingly with a reason — most inline styles should be converted to classes.
+const SUPPRESS_RE = /\/\/\s*audit-inline-style-ok/;
+
 const violations = {};
 for (const rule of RULES) violations[rule.id] = [];
 
@@ -166,6 +151,8 @@ for (const dir of DIRS) {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       if (isInsideComment(line)) continue;
+      const prevLine = i > 0 ? lines[i - 1] : "";
+      if (SUPPRESS_RE.test(line) || SUPPRESS_RE.test(prevLine)) continue;
 
       for (const rule of RULES) {
         if (rule.regex.test(line)) {
@@ -181,42 +168,27 @@ for (const dir of DIRS) {
   }
 }
 
-const verbose = process.argv.includes("--verbose");
 let totalViolations = 0;
-let totalBaseline = 0;
-let hasRegression = false;
 
 for (const rule of RULES) {
   const hits = violations[rule.id];
   totalViolations += hits.length;
-  totalBaseline += rule.baseline;
 
-  if (hits.length > rule.baseline) {
-    hasRegression = true;
-    console.error(`\n[${rule.id}] ${hits.length} violation(s) — REGRESSION (baseline ${rule.baseline}):`);
+  if (hits.length > 0) {
+    console.error(`\n[${rule.id}] ${hits.length} violation(s) — ${rule.label}`);
     for (const v of hits.slice(0, 10)) {
       console.error(`  ${v.file}:${v.line} — ${v.text}`);
     }
     if (hits.length > 10) console.error(`  ... and ${hits.length - 10} more`);
-  } else if (verbose) {
-    if (hits.length > 0) {
-      console.log(`\n[${rule.id}] ${hits.length} violation(s) — within baseline ${rule.baseline}:`);
-      for (const v of hits.slice(0, 5)) {
-        console.log(`  ${v.file}:${v.line} — ${v.text}`);
-      }
-      if (hits.length > 5) console.log(`  ... and ${hits.length - 5} more`);
-    }
   }
 }
 
 console.log("");
 
-if (hasRegression) {
-  console.error(`audit-inline-styles: ${totalViolations} violation(s) — REGRESSION above baseline. Remove inline styles.`);
-  process.exit(1);
-} else {
-  console.log(`audit-inline-styles: ${totalViolations} violation(s) (baseline ${totalBaseline}). No regression.`);
-  if (totalViolations > 0 && !verbose) {
-    console.log(`  Run with --verbose to see details.`);
-  }
+if (totalViolations === 0) {
+  console.log("audit-inline-styles: clean ✓");
+  process.exit(0);
 }
+
+console.error(`audit-inline-styles: ${totalViolations} violation(s).`);
+process.exit(1);

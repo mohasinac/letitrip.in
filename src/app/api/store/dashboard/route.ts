@@ -15,6 +15,8 @@ import {
   orderRepository,
   reviewRepository,
   payoutRepository,
+  sieveFilter,
+  SIEVE_OP,
 } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
@@ -55,7 +57,11 @@ export const GET = withProviders(
       const productIds = allProducts.map((p) => p.id);
       const activeListings = allProducts.filter((p) => (p as any).status === "published").length;
 
-      // Fetch orders in a second wave (needs productIds)
+      const pendingProcessingFilter = [
+        sieveFilter("status", SIEVE_OP.EQ, "pending"),
+        sieveFilter("status", SIEVE_OP.EQ, "processing"),
+      ].join("|");
+
       const [ordersResult, pendingOrdersResult] = await Promise.all([
         productIds.length > 0
           ? orderRepository.listForSeller(productIds, { page: 1, pageSize: 50 }).catch(() => ({
@@ -66,7 +72,7 @@ export const GET = withProviders(
         productIds.length > 0
           ? orderRepository
               .listForSeller(productIds, {
-                filters: "status==pending|status==processing",
+                filters: pendingProcessingFilter,
                 page: 1,
                 pageSize: 50,
               })

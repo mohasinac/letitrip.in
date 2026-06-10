@@ -5,6 +5,7 @@ import {
   successResponse,
 } from "@mohasinac/appkit";
 
+// audit-pagesize-ok: pageSize clamped via PAGE_SIZE constant (25 <= Vercel Hobby cap of 50)
 const PAGE_SIZE = 25;
 
 export const GET = withProviders(

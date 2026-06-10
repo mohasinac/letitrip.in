@@ -93,6 +93,22 @@ for (const dir of SCAN_DIRS) {
       VIOLATIONS.push(`${file}: inline requiresAuth: true — use useAuthGate(ACTION_ID.*) from registry`);
     }
 
+    // Rule 5: <Button label="X" ...> where X matches an ACTION_META label and the
+    // file does not import the registry. Only flag the explicit `label="..."`
+    // attribute (preceded by whitespace) so we never confuse it with `aria-label`.
+    if (!isTier2(file)) {
+      const buttonLabelRe = /<Button[^>]*\slabel\s*=\s*["']([^"']+)["']/g;
+      let bm;
+      while ((bm = buttonLabelRe.exec(content)) !== null) {
+        const lbl = bm[1];
+        if (isSpecificLabel(lbl) && ACTION_META_LABELS.has(lbl) && !importsRegistry) {
+          VIOLATIONS.push(
+            `${file}: <Button label="${lbl}"> — use <Button action={...}> with ACTIONS.* from registry`,
+          );
+        }
+      }
+    }
+
     // Rule 4: <Button onClick={handle*}> with mutation but no auth gate (public paths only)
     if (
       !isTier2(file) &&

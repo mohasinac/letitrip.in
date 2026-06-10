@@ -94,7 +94,7 @@ export const GET = withProviders(
     handler: async ({ request }) => {
       const searchParams = getSearchParams(request);
       const page = getNumberParam(searchParams, "page", 1, { min: 1 });
-      const pageSize = getNumberParam(searchParams, "pageSize", 25, { min: 1, max: 100 });
+      const pageSize = getNumberParam(searchParams, "pageSize", 25, { min: 1, max: 50 });
       const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
       const rawFilters = getStringParam(searchParams, "filters");
 

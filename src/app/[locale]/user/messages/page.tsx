@@ -26,6 +26,7 @@ import {
   useConversation,
   useConversations,
   useSession,
+  Skeleton,
 } from "@mohasinac/appkit/client";
 import { Span } from "@mohasinac/appkit/ui";
 
@@ -116,6 +117,7 @@ interface MessageBubbleProps {
 
 function MessageBubble({ message, isMine }: MessageBubbleProps) {
   return (
+    // audit-inline-style-ok: dynamic CSS
     <Div className="flex flex-col" style={{ alignItems: isMine ? "flex-end" : "flex-start" }}>
       <Div className={isMine ? BUBBLE_MINE : BUBBLE_THEIRS}>{message.body}</Div>
       <Text variant="secondary" className="text-[10px] mt-0.5 px-1">
@@ -258,9 +260,11 @@ export default function UserMessagesPage({ initialActiveId }: UserMessagesPagePr
             isLoading={isLoading}
             hasItems={conversations.length > 0}
             renderLoading={() => (
-              <Text variant="secondary" className="text-sm py-6 text-center">
-                Loading…
-              </Text>
+              <Stack gap="sm" className="py-2">
+                <Skeleton variant="rectangular" height="56px" />
+                <Skeleton variant="rectangular" height="56px" />
+                <Skeleton variant="rectangular" height="56px" />
+              </Stack>
             )}
             renderEmptyState={() => (
               <Text variant="secondary" className="text-sm py-6 text-center">

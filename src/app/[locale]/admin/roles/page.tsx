@@ -10,6 +10,7 @@ import {
   Row,
   Section,
   ROUTES,
+  Skeleton,
   ACTIONS,
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
@@ -47,7 +48,11 @@ export default function Page() {
             roles. Users gain permissions via custom-role membership or per-user overrides.
           </Text>
           {loading ? (
-            <Text>Loading…</Text>
+            <Stack gap="sm">
+              <Skeleton variant="rectangular" height="64px" />
+              <Skeleton variant="rectangular" height="64px" />
+              <Skeleton variant="rectangular" height="64px" />
+            </Stack>
           ) : items.length === 0 ? (
             <EmptyState
               title="No custom roles yet"

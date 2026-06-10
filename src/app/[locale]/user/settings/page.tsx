@@ -39,6 +39,7 @@ function SectionCard({ children }: { children: React.ReactNode }) {
     >
       <Div
         className="absolute top-0 left-0 right-0 h-[3px]"
+        // audit-inline-style-ok: runtime theme gradient
         style={{ background: "linear-gradient(to right,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)" }} // eslint-disable-line lir/no-inline-static-style
         aria-hidden="true"
       />

@@ -20,7 +20,7 @@ export const GET = withProviders(
     permission: "admin:content:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
-      const pageSize = Math.min(Number(url.searchParams.get("pageSize") ?? "50"), 100);
+      const pageSize = Math.min(Number(url.searchParams.get("pageSize") ?? "50"), 50);
       const items = await groupedListingsRepository.findAll(pageSize);
       return successResponse({ items, total: items.length });
     },

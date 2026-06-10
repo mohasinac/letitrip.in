@@ -11,6 +11,7 @@ import {
   Section,
   ROUTES,
   ACTIONS,
+  Skeleton,
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
@@ -43,7 +44,11 @@ export default function Page() {
             </Button>
           </Row>
           {loading ? (
-            <Text>Loading…</Text>
+            <Stack gap="sm">
+              <Skeleton variant="rectangular" height="64px" />
+              <Skeleton variant="rectangular" height="64px" />
+              <Skeleton variant="rectangular" height="64px" />
+            </Stack>
           ) : items.length === 0 ? (
             <EmptyState
               title="No templates yet"

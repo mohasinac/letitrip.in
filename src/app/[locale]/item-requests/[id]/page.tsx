@@ -11,6 +11,7 @@ import {
   Textarea,
   Divider,
   EmptyState,
+  Skeleton,
 } from "@mohasinac/appkit/client";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -46,7 +47,17 @@ export default function Page() {
     load();
   };
 
-  if (loading) return <Section><Container size="md"><Stack gap="md" className="py-6">Loading…</Stack></Container></Section>;
+  if (loading) return (
+    <Section>
+      <Container size="md">
+        <Stack gap="md" className="py-6">
+          <Skeleton variant="rectangular" height="32px" />
+          <Skeleton variant="rectangular" height="120px" />
+          <Skeleton variant="rectangular" height="80px" />
+        </Stack>
+      </Container>
+    </Section>
+  );
   if (!doc) return <Section><Container size="md"><EmptyState title="Not found" description="This request may have been removed." /></Container></Section>;
 
   return (

@@ -6,6 +6,7 @@ import {
   categoriesRepository,
   serverLogger,
   bundleCreateSchema,
+  sortBy,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
@@ -23,7 +24,7 @@ import { ROLES_ADMIN_MOD } from "@/constants";
 
 const MAX_LIST_LIMIT = 200;
 const DEFAULT_PAGE_SIZE = 25;
-const MAX_PAGE_SIZE = 100;
+const MAX_PAGE_SIZE = 50;
 
 function slugify(input: string): string {
   return input
@@ -46,7 +47,7 @@ export const GET = withProviders(
         Math.max(1, parseInt(url.searchParams.get("pageSize") ?? String(DEFAULT_PAGE_SIZE), 10)),
       );
       const q = url.searchParams.get("q")?.trim().toLowerCase() ?? "";
-      const sorts = url.searchParams.get("sorts") ?? "name";
+      const sorts = url.searchParams.get("sorts") ?? sortBy("name", "ASC");
       const filters = url.searchParams.get("filters") ?? "";
 
       // Bundles are low cardinality — load all and process in memory
