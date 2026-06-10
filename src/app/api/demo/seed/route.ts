@@ -651,7 +651,7 @@ export async function POST(request: NextRequest) {
     const total = collectionsToProcess.length;
     const rtdb = runId ? getAdminRealtimeDb() : null;
     const runRef = runId && rtdb
-      ? rtdb.ref(`seed_events/${runId}`)
+      ? rtdb.ref(`${RTDB_PATHS.SEED_EVENTS}/${runId}`)
       : null;
 
     const writeMeta = async (

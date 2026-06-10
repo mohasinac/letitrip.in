@@ -2217,7 +2217,7 @@ export function SeedPanel() {
       }
 
       // 1. Mint a per-run RTDB token.
-      const initRes = await fetch("/api/demo/seed/event/init", { method: "POST" });
+      const initRes = await fetch(API_ROUTES.DEMO.SEED_EVENT_INIT, { method: "POST" });
       const initData = await initRes.json().catch(() => ({ success: false }));
       if (!initRes.ok || !initData?.success) {
         const msg = initData?.message ?? "Failed to initialise seed channel";

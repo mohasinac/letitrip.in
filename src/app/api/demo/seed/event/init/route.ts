@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
   const runId = randomUUID();
   const db = getAdminRealtimeDb();
   try {
-    await db.ref(`seed_events/${runId}`).set({
+    await db.ref(`${RTDB_PATHS.SEED_EVENTS}/${runId}`).set({
       meta: {
         status: RTDBPayloadStatus.PENDING,
         done: 0,
