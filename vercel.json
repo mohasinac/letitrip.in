@@ -1,4 +1,7 @@
 {
   "installCommand": "npm ci --legacy-peer-deps",
-  "regions": ["bom1"]
+  "regions": ["bom1"],
+  "git": {
+    "deploymentEnabled": false
+  }
 }

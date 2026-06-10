@@ -19,7 +19,7 @@
     "lint:fix": "eslint src --ext .ts --fix"
   },
   "dependencies": {
-    "@mohasinac/appkit": "^2.7.58",
+    "@mohasinac/appkit": "^2.8.8",
     "firebase-admin": "^13.6.1",
     "firebase-functions": "^6.3.2"
   },
