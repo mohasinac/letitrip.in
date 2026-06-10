@@ -24,6 +24,12 @@ module.exports = withNextIntl(
       NEXT_PUBLIC_BUILD_TIME: BUILD_TIME,
     },
     cacheMaxMemorySize: 0,
+    // Force Turbopack to transpile appkit so react-query (and any other shared
+    // React-context library) is bundled from the consumer's single instance
+    // instead of being inlined into separate appkit chunks. Without this,
+    // Turbopack splits QueryClientContext across multiple SSR chunks and
+    // `useQuery` fails with "No QueryClient set" on every server-rendered route.
+    transpilePackages: ["@mohasinac/appkit"],
     // Turbopack (used by `next build`) does not respect webpack's config.resolve.alias.
     // Without this, appkit/node_modules/firebase and root node_modules/firebase are two
     // separate module instances — initializeApp() registers the app in one, but getAuth()
