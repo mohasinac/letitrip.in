@@ -31,8 +31,17 @@ export default async function Page({ params }: Props) {
   const isActive = eventIsActive(event);
 
   // Polls are participated via the inline vote on the Overview tab.
-  // Ended events have nothing to submit. Send users back to Overview.
-  if (eventType === EVENT_TYPE.POLL || !isActive) {
+  // Sale / Offer events have nothing form-shaped to submit on participate
+  // (the offer is the event itself, surfaced on Overview). Ended events
+  // have nothing to submit. Send all of these back to Overview to avoid
+  // rendering an empty participate panel that the user perceives as a
+  // stuck spinner.
+  if (
+    eventType === EVENT_TYPE.POLL ||
+    eventType === EVENT_TYPE.SALE ||
+    eventType === EVENT_TYPE.OFFER ||
+    !isActive
+  ) {
     redirect(String(ROUTES.PUBLIC.EVENT_DETAIL(id)));
   }
 

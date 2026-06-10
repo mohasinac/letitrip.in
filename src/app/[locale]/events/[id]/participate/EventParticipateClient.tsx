@@ -471,10 +471,14 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
   const maxEntries = event.surveyConfig?.maxEntriesPerUser ?? 1;
   const atEntryLimit = submissionCount >= maxEntries;
 
+  // Only gate on login when the event type itself requires identity.
+  // Leaderboards do NOT imply a login wall — viewing the participate form
+  // for a sale/offer/raffle should never trigger a login redirect, since
+  // anonymous users can read+share and only need to authenticate at submit
+  // (server enforces). See plan: the-events-are-having-snappy-otter.
   const requireLogin =
     (isSurvey && event.surveyConfig?.requireLogin !== false) ||
-    (isFeedback && false) ||
-    hasLeaderboard;
+    (event.type === "poll" && event.pollConfig?.requireLogin === true);
 
   if (requireLogin && !user) return renderLoginRequired();
 
@@ -512,6 +516,8 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
 
     setIsLoading(true);
     setError(null);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15_000);
     try {
       const body: Record<string, unknown> = {};
       if (event.type === "poll" && selectedVotes.length > 0) {
@@ -525,6 +531,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
+        signal: controller.signal,
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -536,10 +543,16 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
       setFormErrors({});
       showToast("Your entry has been submitted!", "success");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Something went wrong";
+      const isAbort = err instanceof Error && err.name === "AbortError";
+      const msg = isAbort
+        ? "Submission timed out — please try again."
+        : err instanceof Error
+          ? err.message
+          : "Something went wrong";
       setError(msg);
       showToast(msg, "error");
     } finally {
+      clearTimeout(timeoutId);
       setIsLoading(false);
     }
   };
