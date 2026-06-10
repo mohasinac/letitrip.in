@@ -16,11 +16,13 @@ import {
   blogRepository,
   eventRepository,
   ROUTES,
+  sortBy,
 } from "@mohasinac/appkit";
 
 const PER_TYPE_LIMIT = 5;
+const PAGE_SUGGESTION_LIMIT = 3;
 
-type SuggestionType = "product" | "category" | "blog" | "event";
+type SuggestionType = "page" | "product" | "category" | "blog" | "event";
 
 interface SuggestionRecord {
   objectID: string;
@@ -29,6 +31,28 @@ interface SuggestionRecord {
   subtitle?: string;
   url: string;
 }
+
+/**
+ * Top-level navigation destinations the user can search for by name/keyword.
+ * Matched against `q.toLowerCase()` over `title` + `keywords` so typing
+ * "auc" surfaces "Auctions" before any product hit. Clicking a page
+ * suggestion carries the typed query into `?q=` (see Search.handleSuggestionClick).
+ */
+const PAGE_SUGGESTIONS: Array<{
+  title: string;
+  subtitle: string;
+  url: string;
+  keywords: string[];
+}> = [
+  { title: "Auctions", subtitle: "Browse live auctions", url: String(ROUTES.PUBLIC.AUCTIONS), keywords: ["auction", "bid", "live"] },
+  { title: "Products", subtitle: "Browse all listings", url: String(ROUTES.PUBLIC.PRODUCTS), keywords: ["product", "listing", "shop", "buy"] },
+  { title: "Pre-orders", subtitle: "Upcoming releases", url: String(ROUTES.PUBLIC.PRE_ORDERS ?? "/pre-orders"), keywords: ["preorder", "pre-order", "upcoming", "release"] },
+  { title: "Stores", subtitle: "Browse all sellers", url: String(ROUTES.PUBLIC.STORES ?? "/stores"), keywords: ["store", "seller", "shop", "vendor"] },
+  { title: "Categories", subtitle: "Shop by category", url: String(ROUTES.PUBLIC.CATEGORIES ?? "/categories"), keywords: ["category", "collection", "browse"] },
+  { title: "Blog", subtitle: "Latest articles", url: String(ROUTES.PUBLIC.BLOG ?? "/blog"), keywords: ["blog", "article", "news", "guide"] },
+  { title: "Events", subtitle: "Sales, polls, raffles", url: String(ROUTES.PUBLIC.EVENTS ?? "/events"), keywords: ["event", "raffle", "poll", "sale", "spin"] },
+  { title: "FAQs", subtitle: "Help & answers", url: String(ROUTES.PUBLIC.FAQS ?? "/faqs"), keywords: ["faq", "help", "question", "support"] },
+];
 
 export const GET = withProviders(
   createRouteHandler({
@@ -53,7 +77,7 @@ export const GET = withProviders(
           ? productRepository
               .list({
                 filters: filters(q),
-                sorts: "-createdAt",
+                sorts: sortBy("createdAt"),
                 pageSize: PER_TYPE_LIMIT,
               })
               .catch(() => ({ items: [] as Record<string, unknown>[] }))
@@ -62,14 +86,14 @@ export const GET = withProviders(
           ? categoriesRepository
               .list({
                 filters: filters(q),
-                sorts: "name",
+                sorts: sortBy("name", "ASC"),
                 pageSize: PER_TYPE_LIMIT,
               })
               .catch(() => ({ items: [] as Record<string, unknown>[] }))
           : Promise.resolve({ items: [] as Record<string, unknown>[] }),
         wantBlog
           ? blogRepository
-              .listPublished({}, { filters: filters(q), sorts: "-publishedAt", pageSize: PER_TYPE_LIMIT })
+              .listPublished({}, { filters: filters(q), sorts: sortBy("publishedAt"), pageSize: PER_TYPE_LIMIT })
               .then((r) => ({ items: r.items as unknown as Record<string, unknown>[] }))
               .catch(() => ({ items: [] as Record<string, unknown>[] }))
           : Promise.resolve({ items: [] as Record<string, unknown>[] }),
@@ -77,14 +101,32 @@ export const GET = withProviders(
           ? eventRepository
               .list({
                 filters: filters(q),
-                sorts: "-startsAt",
+                sorts: sortBy("startsAt"),
                 pageSize: PER_TYPE_LIMIT,
               })
               .catch(() => ({ items: [] as Record<string, unknown>[] }))
           : Promise.resolve({ items: [] as Record<string, unknown>[] }),
       ]);
 
+      const wantPage = wantAll || typeFilter === "page";
+      const qLower = q.toLowerCase();
+      const pageHits: SuggestionRecord[] = wantPage
+        ? PAGE_SUGGESTIONS.filter((p) =>
+            p.title.toLowerCase().includes(qLower) ||
+            p.keywords.some((k) => k.includes(qLower)),
+          )
+            .slice(0, PAGE_SUGGESTION_LIMIT)
+            .map((p) => ({
+              objectID: `page:${p.url}`,
+              type: "page" as const,
+              title: p.title,
+              subtitle: p.subtitle,
+              url: p.url,
+            }))
+        : [];
+
       const suggestions: SuggestionRecord[] = [
+        ...pageHits,
         ...((products.items ?? []) as Array<{ id: string; slug?: string; title?: string; name?: string; price?: number }>).map((p) => ({
           objectID: p.id,
           type: "product" as const,
