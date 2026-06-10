@@ -103,6 +103,7 @@ export default function Page() {
   const bypassFetched = useRef(false);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     setPrefs(loadPrefs());
@@ -112,37 +113,56 @@ export default function Page() {
     if (bypassFetched.current) return;
     bypassFetched.current = true;
     fetch("/api/admin/checkout-bypass", { credentials: "include" })
-      .then((r) => r.ok ? r.json() : null)
+      .then((r) => {
+        if (!r.ok) throw new Error(`checkout-bypass HTTP ${r.status}`);
+        return r.json();
+      })
       .then((data) => {
         if (data?.data?.enabled !== undefined) {
           setAdminBypassEnabled(data.data.enabled as boolean);
         }
       })
-      .catch(() => {});
+      .catch((err) => {
+        setLoadError((prev) => prev ?? (err instanceof Error ? err.message : "Couldn't load checkout-bypass flag."));
+      });
   }, []);
 
   useEffect(() => {
-    Promise.all([
-      fetch("/api/admin/orders?status=PENDING&pageSize=1", { credentials: "include" }).then(r => r.ok ? r.json() : null),
-      fetch("/api/admin/payouts?status=PENDING&pageSize=1", { credentials: "include" }).then(r => r.ok ? r.json() : null),
-      fetch("/api/admin/reviews?status=pending&pageSize=1", { credentials: "include" }).then(r => r.ok ? r.json() : null),
-      fetch("/api/admin/coupons?validity.isActive=true&pageSize=1", { credentials: "include" }).then(r => r.ok ? r.json() : null),
-    ]).then(([orders, payouts, reviews, coupons]) => {
-      setStats({
-        pendingOrders: orders?.data?.total ?? orders?.data?.items?.length ?? 0,
-        pendingPayouts: payouts?.data?.total ?? payouts?.data?.items?.length ?? 0,
-        pendingReviews: reviews?.data?.total ?? reviews?.data?.items?.length ?? 0,
-        activeCoupons: coupons?.data?.total ?? coupons?.data?.items?.length ?? 0,
-      });
-    }).catch(() => {});
+    const fetchJson = async (url: string, label: string) => {
+      const r = await fetch(url, { credentials: "include" });
+      if (!r.ok) throw new Error(`${label} returned HTTP ${r.status}`);
+      return r.json();
+    };
 
-    fetch("/api/admin/orders?sort=-createdAt&pageSize=5", { credentials: "include" })
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
+    Promise.all([
+      fetchJson("/api/admin/orders?status=PENDING&pageSize=1", "orders"),
+      fetchJson("/api/admin/payouts?status=PENDING&pageSize=1", "payouts"),
+      fetchJson("/api/admin/reviews?status=pending&pageSize=1", "reviews"),
+      fetchJson("/api/admin/coupons?validity.isActive=true&pageSize=1", "coupons"),
+    ])
+      .then(([orders, payouts, reviews, coupons]) => {
+        setStats({
+          pendingOrders: orders?.data?.total ?? orders?.data?.items?.length ?? 0,
+          pendingPayouts: payouts?.data?.total ?? payouts?.data?.items?.length ?? 0,
+          pendingReviews: reviews?.data?.total ?? reviews?.data?.items?.length ?? 0,
+          activeCoupons: coupons?.data?.total ?? coupons?.data?.items?.length ?? 0,
+        });
+      })
+      .catch((err) => {
+        const msg = err instanceof Error ? err.message : "Couldn't load dashboard stats.";
+        setLoadError((prev) => prev ?? msg);
+        showToast(msg, "error");
+      });
+
+    fetchJson("/api/admin/orders?sort=-createdAt&pageSize=5", "recent orders")
+      .then((data) => {
         if (data?.data?.items) setRecentOrders(data.data.items as RecentOrder[]);
       })
-      .catch(() => {});
-  }, []);
+      .catch((err) => {
+        const msg = err instanceof Error ? err.message : "Couldn't load recent orders.";
+        setLoadError((prev) => prev ?? msg);
+      });
+  }, [showToast]);
 
   const toggleAdminBypass = useCallback(async (next: boolean) => {
     setBypassLoading(true);
@@ -174,11 +194,19 @@ export default function Page() {
     <AdminDashboardView
       labels={{ title: "Admin Dashboard" }}
       renderAlerts={() => (
-        <Div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatCard label="Pending Orders" value={stats?.pendingOrders ?? null} href={String(ROUTES.ADMIN.ORDERS)} />
-          <StatCard label="Pending Payouts" value={stats?.pendingPayouts ?? null} href={String(ROUTES.ADMIN.PAYOUTS)} />
-          <StatCard label="Pending Reviews" value={stats?.pendingReviews ?? null} href={String(ROUTES.ADMIN.REVIEWS)} />
-          <StatCard label="Active Coupons" value={stats?.activeCoupons ?? null} href={String(ROUTES.ADMIN.COUPONS)} />
+        <Div className="space-y-3">
+          {loadError && (
+            <Div className="rounded-xl border border-error/30 bg-error-surface px-4 py-3 text-sm text-error">
+              <Span weight="semibold">Couldn&apos;t load dashboard data — </Span>
+              <Span>{loadError}. Refresh to retry; if it persists, your admin session may have expired.</Span>
+            </Div>
+          )}
+          <Div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <StatCard label="Pending Orders" value={stats?.pendingOrders ?? null} href={String(ROUTES.ADMIN.ORDERS)} />
+            <StatCard label="Pending Payouts" value={stats?.pendingPayouts ?? null} href={String(ROUTES.ADMIN.PAYOUTS)} />
+            <StatCard label="Pending Reviews" value={stats?.pendingReviews ?? null} href={String(ROUTES.ADMIN.REVIEWS)} />
+            <StatCard label="Active Coupons" value={stats?.activeCoupons ?? null} href={String(ROUTES.ADMIN.COUPONS)} />
+          </Div>
         </Div>
       )}
       renderQuickActions={() => (
@@ -190,6 +218,7 @@ export default function Page() {
                 href={String(href)}
                 className="group flex items-center gap-3 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3.5 text-sm font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
               >
+                // audit-inline-style-ok: runtime brand gradient
                 <Div className="flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center" style={{ background: BRAND_GRAD }}>
                   <Icon className="w-3.5 h-3.5 text-white" />
                 </Div>
