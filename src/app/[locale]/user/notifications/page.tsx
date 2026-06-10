@@ -1,5 +1,5 @@
 "use client";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@/i18n/navigation";
 import {
@@ -160,10 +160,19 @@ export default function NotificationsPage() {
     staleTime: 30_000,
   });
 
+  const invalidateNotifications = () => {
+    queryClient.invalidateQueries({ queryKey: ["user-notifications"] });
+    queryClient.invalidateQueries({ queryKey: ["notifications"] });
+  };
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["notifications"] });
+  }, [queryClient]);
+
   const { mutate: markRead } = useMutation({
     mutationFn: (id: string) =>
       fetch(`/api/user/notifications/${id}`, { method: "PATCH" }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["user-notifications"] }),
+    onSuccess: invalidateNotifications,
     onError: () => showToast("Could not mark notification as read.", "error"),
   });
 
@@ -171,7 +180,7 @@ export default function NotificationsPage() {
     mutationFn: () =>
       fetch("/api/user/notifications/read-all", { method: "POST" }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user-notifications"] });
+      invalidateNotifications();
       showToast("All notifications marked as read.", "success");
     },
     onError: () => showToast("Could not mark notifications as read.", "error"),
@@ -181,7 +190,7 @@ export default function NotificationsPage() {
     mutationFn: (id: string) =>
       fetch(`/api/user/notifications/${id}`, { method: "DELETE" }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user-notifications"] });
+      invalidateNotifications();
       showToast("Notification deleted.", "info");
     },
     onError: () => showToast("Could not delete notification.", "error"),

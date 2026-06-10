@@ -146,6 +146,12 @@
         ".read": "auth != null && auth.token.bulkJobId == $jobId",
         ".write": false
       }
+    },
+    "seed_events": {
+      "$runId": {
+        ".read": "auth != null && auth.token.seedRunId == $runId",
+        ".write": false
+      }
     }
   }
 }

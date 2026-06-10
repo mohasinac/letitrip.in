@@ -46,8 +46,12 @@ function StatCard({
 }) {
   return (
     <Div className={`relative rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden} shadow-sm hover:shadow-md transition-shadow`}>
-      // audit-inline-style-ok: runtime theme gradient
-      <Div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: gradient }} aria-hidden="true" />
+      <Div
+        className="absolute top-0 left-0 right-0 h-[3px]"
+        // audit-inline-style-ok: runtime theme gradient
+        style={{ background: gradient }}
+        aria-hidden="true"
+      />
       <Div className="px-5 pb-5 pt-6 flex items-start justify-between gap-3">
         <Div className="min-w-0 flex-1">
           <Div className="text-[11px] font-semibold uppercase tracking-widest text-[var(--appkit-color-text-muted)]">{label}</Div>
@@ -57,8 +61,11 @@ function StatCard({
             <Div className="mt-2 text-2xl font-bold text-[var(--appkit-color-text)] tabular-nums leading-none">{value}</Div>
           )}
         </Div>
-        // audit-inline-style-ok: runtime theme gradient
-        <Div className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: gradient }}>
+        <Div
+          className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
+          // audit-inline-style-ok: runtime theme gradient
+          style={{ background: gradient }}
+        >
           <Icon className="w-5 h-5 text-white" />
         </Div>
       </Div>
@@ -147,8 +154,11 @@ export default function Page() {
               href={String(href)}
               className="group flex items-center gap-3 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3.5 text-sm font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
             >
-              // audit-inline-style-ok: runtime brand gradient
-              <span className="flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center" style={{ background: BRAND_GRAD }}>
+              <span
+                className="flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center"
+                // audit-inline-style-ok: runtime brand gradient
+                style={{ background: BRAND_GRAD }}
+              >
                 <Icon className="w-3.5 h-3.5 text-white" />
               </span>
               {label}

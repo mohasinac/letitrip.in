@@ -1,8 +1,8 @@
 import "@/providers.config";
 import { NextRequest, NextResponse } from "next/server";
 import { getUserFromRequest } from "@/lib/firebase/auth-server";
-import { getAdminDb, getAdminAuth } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
+import { getAdminDb, getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit";
+import { serverLogger, RTDB_PATHS } from "@mohasinac/appkit";
 import {
   encryptPiiFields,
   addPiiIndices,
@@ -156,6 +156,9 @@ interface SeedRequest {
   action: "load" | "delete";
   collections?: CollectionName[];
   dryRun?: boolean;
+  /** Optional RTDB run id from POST /api/demo/seed/event/init. When present,
+   *  per-collection progress is written to /seed_events/{runId} for live UI updates. */
+  runId?: string;
 }
 
 const COLLECTION_MAP: Record<CollectionName, string> = {
@@ -425,9 +428,14 @@ async function countExistingForCollection(
       .length;
   }
 
+  // Mirror the writer: docId = slug ?? id (route.ts POST handler).
+  // Many seed entries (blog posts, events, FAQs, products, etc.) carry both
+  // a prefixed `id` and a bare `slug` that differ — the docs are written under
+  // the slug, so the existence check must look there too.
   const refs = (seedData as any[])
-    .filter((d) => d.id)
-    .map((d) => db.collection(COLLECTION_MAP[colName]).doc(d.id));
+    .map((d) => d.slug ?? d.id)
+    .filter((docId): docId is string => typeof docId === "string" && docId.length > 0)
+    .map((docId) => db.collection(COLLECTION_MAP[colName]).doc(docId));
   if (refs.length === 0) return 0;
   const snaps = await db.getAll(...refs);
   return snaps.filter((s) => s.exists).length;
@@ -544,7 +552,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body: SeedRequest = await request.json();
-    const { action, collections, dryRun = false } = body;
+    const { action, collections, dryRun = false, runId } = body;
 
     if (!action || !["load", "delete"].includes(action)) {
       return NextResponse.json(
@@ -636,23 +644,80 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Real execution — stream NDJSON progress events so the client can update
-    // per-collection UI without multiple round-trips.
-    const encoder = new TextEncoder();
+    // Real execution — per-collection progress streams via Firebase RTDB at
+    // /seed_events/{runId}.  The client must call POST /api/demo/seed/event/init
+    // first to obtain the runId + custom token and subscribe.  Without a runId
+    // the route still runs the seed; progress is just not broadcast.
     const total = collectionsToProcess.length;
+    const rtdb = runId ? getAdminRealtimeDb() : null;
+    const runRef = runId && rtdb
+      ? rtdb.ref(`${RTDB_PATHS.SEED_EVENTS}/${runId}`)
+      : null;
 
-    const stream = new ReadableStream({
-      async start(controller) {
-        const emit = (data: object) => {
-          try { controller.enqueue(encoder.encode(JSON.stringify(data) + "\n")); } catch { /* closed */ }
-        };
+    const writeMeta = async (
+      status: "running" | "done" | "error",
+      done: number,
+      extra: Record<string, unknown> = {},
+    ) => {
+      if (!runRef) return;
+      try {
+        await runRef.child("meta").update({ status, done, total, updatedAt: Date.now(), ...extra });
+      } catch (err) {
+        serverLogger.warn("Seed RTDB meta write failed", { runId, err });
+      }
+    };
 
-        let totalCreated = 0;
-        let totalDeleted = 0;
-        let totalSkipped = 0;
-        let totalErrors = 0;
-        const processedCollections: string[] = [];
-        let progressDone = 0;
+    const writeCol = async (
+      name: string,
+      status: "running" | "done" | "error",
+      error?: string,
+    ) => {
+      if (!runRef) return;
+      try {
+        await runRef.child(`cols/${name}`).set({
+          status,
+          ...(error ? { error } : {}),
+          updatedAt: Date.now(),
+        });
+      } catch (err) {
+        serverLogger.warn("Seed RTDB col write failed", { runId, name, err });
+      }
+    };
+
+    await writeMeta("running", 0, { action, startedAt: Date.now() });
+
+    // Inline progress object — preserves the body of the original streaming
+    // block so the existing `emit({...})` call sites continue to compile.
+    // `emit` now does double duty: writes to RTDB for live UI and accumulates
+    // a summary that's returned in the JSON response.
+    let totalCreated = 0;
+    let totalDeleted = 0;
+    let totalSkipped = 0;
+    let totalErrors = 0;
+    const processedCollections: string[] = [];
+    let progressDone = 0;
+    const emittedEvents: Array<{ type: string; [k: string]: unknown }> = [];
+
+    // Fire-and-forget RTDB writes so per-collection work isn't blocked on
+    // realtime network round-trips.  Failures are logged but never thrown.
+    const emit = (data: Record<string, unknown> & { type: string }) => {
+      emittedEvents.push(data);
+      if (data.type === "progress" && typeof data.collection === "string" && typeof data.status === "string") {
+        void writeCol(
+          data.collection,
+          data.status as "running" | "done" | "error",
+          typeof data.error === "string" ? data.error : undefined,
+        );
+        if (data.status === "done" || data.status === "error") {
+          void writeMeta("running", typeof data.done === "number" ? data.done : progressDone);
+        }
+      }
+    };
+
+    // The block below was previously inside `new ReadableStream({ async start(controller) {` —
+    // we keep the same indentation and structure so the diff is minimal.
+    {
+      {
 
     if (action === "load") {
       // Load seed data
@@ -664,6 +729,7 @@ export async function POST(request: NextRequest) {
 
           if (!seedData || seedData.length === 0) {
             serverLogger.info(`⚠️ No seed data for ${collectionName}`);
+            emit({ type: "progress", collection: collectionName, status: "done", done: ++progressDone, total });
             continue;
           }
 
@@ -1061,18 +1127,32 @@ export async function POST(request: NextRequest) {
     } else {
       emit({ type: "done", success: false, message: "Invalid action" });
     }
+      }
+    }
 
-        controller.close();
-      },
-    });
+    const finalStatus: "done" | "error" = totalErrors > 0 ? "error" : "done";
+    await writeMeta(finalStatus, progressDone, { completedAt: Date.now() });
 
-    return new Response(stream, {
-      headers: {
-        "Content-Type": "application/x-ndjson",
-        "Cache-Control": "no-cache, no-store",
-        "X-Accel-Buffering": "no",
+    const summary = {
+      success: true,
+      data: {
+        runId: runId ?? null,
+        action,
+        message:
+          action === "load"
+            ? `Loaded seed data. Created ${totalCreated}, errors ${totalErrors}.`
+            : `Deleted seed data. Removed ${totalDeleted} docs, errors ${totalErrors}.`,
+        totals: {
+          created: totalCreated,
+          deleted: totalDeleted,
+          skipped: totalSkipped,
+          errors: totalErrors,
+        },
+        processedCollections,
+        events: emittedEvents,
       },
-    });
+    };
+    return NextResponse.json(summary);
   } catch (error) {
     serverLogger.error("Seed API error:", error);
     return NextResponse.json(

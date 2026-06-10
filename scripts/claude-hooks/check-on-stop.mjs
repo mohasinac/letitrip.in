@@ -190,6 +190,18 @@ const checks = [
     args: ["scripts/audit-inline-styles.mjs"],
     cwd: ROOT,
   },
+  {
+    label: "audit-jsx-text-comments",
+    cmd: "node",
+    args: ["scripts/audit-jsx-text-comments.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-seed-external-urls",
+    cmd: "node",
+    args: ["scripts/audit-seed-external-urls.mjs"],
+    cwd: ROOT,
+  },
 ];
 
 // Baseline violation counts — block only on regressions (count > baseline).

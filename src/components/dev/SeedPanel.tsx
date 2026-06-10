@@ -12,7 +12,7 @@
  * media slug patterns, and SEO filename conventions.
  */
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
   ACTIONS,
   Badge,
@@ -29,6 +29,8 @@ import {
   Text,
   Div,
   Span,
+  getClientRealtimeProvider,
+  type Unsubscribe,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import type { SeedCollectionName } from "@/actions/demo-seed.types";
@@ -1605,7 +1607,15 @@ function ProgressBar({ value, total }: { value: number; total: number }) {
   );
 }
 
-function StatusDot({ state }: { state: ColRunState }) {
+function StatusDot({
+  state,
+  seedCount,
+  existingCount,
+}: {
+  state: ColRunState;
+  seedCount?: number;
+  existingCount?: number;
+}) {
   if (state === "running")
     return (
       <span
@@ -1615,8 +1625,16 @@ function StatusDot({ state }: { state: ColRunState }) {
     );
   if (state === "queued")
     return <span className="inline-block w-3.5 h-3.5 rounded-full border-2 border-zinc-300 dark:border-slate-600 shrink-0" aria-label="Queued" />;
-  if (state === "done")
+  if (state === "done") {
+    // A "done" runner event with 0 docs in DB is not a success.
+    if (typeof seedCount === "number" && seedCount > 0 && (existingCount ?? 0) === 0) {
+      return <span className="text-red-500 shrink-0" aria-label="Failed">✗</span>;
+    }
+    if (typeof seedCount === "number" && seedCount === 0) {
+      return <span className="text-zinc-400 dark:text-slate-500 shrink-0" aria-label="No data">–</span>;
+    }
     return <span className="text-emerald-500 shrink-0" aria-label="Done">✓</span>;
+  }
   if (state === "error")
     return <span className="text-red-500 shrink-0" aria-label="Error">✗</span>;
   return null;
@@ -1815,7 +1833,7 @@ function renderAccordionCollapsedHeader({
     <>
       <Span size="lg" className="leading-none shrink-0">{meta.icon}</Span>
       <Span size="sm" weight="semibold" className="flex-1">{meta.label}</Span>
-      <StatusDot state={runState} />
+      <StatusDot state={runState} seedCount={seedCount} existingCount={existingCount} />
       <Row gap="sm" className="shrink-0">
         {isLoadingStatus ? (
           <Span size="xs" variant="muted">…</Span>
@@ -1952,20 +1970,40 @@ function ResourceAccordionCard({
   const isEmpty = existingCount === 0;
   const isPartial = !isComplete && !isEmpty;
 
-  const statusVariant = runState === "done" ? "success" : runState === "error" ? "danger" : isComplete ? "success" : isPartial ? "warning" : "default";
-  const statusLabel = runState === "running" ? "seeding…" : runState === "done" ? "done" : runState === "error" ? "error" : isComplete ? "seeded" : isPartial ? `${pct}%` : "empty";
+  // After a run completes, mirror the actual DB state — a "done" runner
+  // event with 0 docs in DB is not success.
+  const statusVariant =
+    runState === "error" ? "danger" :
+    runState === "running" ? "default" :
+    seedCount === 0 ? "default" :
+    isComplete ? "success" :
+    isPartial ? "warning" :
+    runState === "done" ? "danger" :
+    "default";
+  const statusLabel =
+    runState === "running" ? "seeding…" :
+    runState === "error" ? "error" :
+    seedCount === 0 ? "no data" :
+    isComplete ? "seeded" :
+    isPartial ? `${pct}%` :
+    runState === "done" ? "failed" :
+    "empty";
+
+  // Treat a "done" run that didn't end with a complete DB as not-success.
+  const doneAndSeeded = runState === "done" && isComplete && seedCount > 0;
+  const doneButFailed = runState === "done" && seedCount > 0 && existingCount === 0;
 
   const borderColor =
     runState === "running" ? "border-amber-400 dark:border-amber-500" :
-    runState === "done" ? "border-emerald-400 dark:border-emerald-600" :
-    runState === "error" ? "border-red-400 dark:border-red-600" :
+    doneAndSeeded ? "border-emerald-400 dark:border-emerald-600" :
+    runState === "error" || doneButFailed ? "border-red-400 dark:border-red-600" :
     runState === "queued" ? "border-zinc-300 dark:border-slate-600" :
     expanded ? "border-zinc-300 dark:border-slate-600" : "border-zinc-200 dark:border-slate-800";
 
   const bgColor =
     runState === "running" ? "bg-amber-50 dark:bg-amber-900/10" :
-    runState === "done" ? "bg-emerald-50 dark:bg-emerald-900/10" :
-    runState === "error" ? "bg-red-50 dark:bg-red-900/10" : "";
+    doneAndSeeded ? "bg-emerald-50 dark:bg-emerald-900/10" :
+    runState === "error" || doneButFailed ? "bg-red-50 dark:bg-red-900/10" : "";
 
   return (
     <Div className={`rounded-xl border transition-colors ${borderColor} ${bgColor} overflow-hidden`}>
@@ -2029,14 +2067,15 @@ function GroupDivider({
   );
 }
 
-// ─── NDJSON stream helpers ────────────────────────────────────────────────────
+// ─── RTDB progress subscription ───────────────────────────────────────────────
 
-interface NdjsonProgressEvent {
-  type: string;
-  collection?: string;
-  status?: string;
-  error?: string;
-  done?: number;
+interface SeedRunSnapshot {
+  meta?: {
+    status?: "pending" | "running" | "done" | "error";
+    done?: number;
+    total?: number;
+  };
+  cols?: Record<string, { status?: "running" | "done" | "error"; error?: string }>;
 }
 
 type ColRunStateSetter = React.Dispatch<React.SetStateAction<Record<string, ColRunState>>>;
@@ -2044,52 +2083,42 @@ type ColErrorsSetter = React.Dispatch<React.SetStateAction<Record<string, string
 type CompletedCountSetter = React.Dispatch<React.SetStateAction<number>>;
 
 /**
- * Parse a single NDJSON line from the seed stream and dispatch the
- * appropriate state update. Extracted to reduce nesting inside the
- * stream reader loop.
+ * Subscribe to the RTDB node at /seed_events/{runId}.
+ * Returns an unsubscribe function.  The server-side route handler at
+ * /api/demo/seed writes per-collection progress to /cols/{name} and
+ * overall progress to /meta as it processes each collection.
  */
-async function streamNdjsonResponse(
-  body: ReadableStream<Uint8Array>,
+function subscribeToSeedRun(
+  runId: string,
   setColRunStates: ColRunStateSetter,
   setColErrors: ColErrorsSetter,
   setCompletedCount: CompletedCountSetter,
-): Promise<void> {
-  const reader = body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split("\n");
-    buffer = lines.pop() ?? "";
-    lines.forEach((line) => parseNdjsonLine(line, setColRunStates, setColErrors, setCompletedCount));
-  }
-}
-
-function parseNdjsonLine(
-  line: string,
-  setColRunStates: ColRunStateSetter,
-  setColErrors: ColErrorsSetter,
-  setCompletedCount: CompletedCountSetter,
-): void {
-  if (!line.trim()) return;
-  try {
-    const event = JSON.parse(line) as NdjsonProgressEvent;
-    if (event.type === "progress" && event.collection) {
-      if (event.status === "running") {
-        setColRunStates((prev) => ({ ...prev, [event.collection!]: "running" }));
-      } else if (event.status === "done") {
-        setColRunStates((prev) => ({ ...prev, [event.collection!]: "done" }));
-        setCompletedCount(event.done ?? 0);
-      } else if (event.status === "error") {
-        setColRunStates((prev) => ({ ...prev, [event.collection!]: "error" }));
-        setColErrors((prev) => ({ ...prev, [event.collection!]: event.error ?? "Unknown error" }));
-        setCompletedCount(event.done ?? 0);
+): Unsubscribe {
+  const provider = getClientRealtimeProvider();
+  return provider.subscribe(`seed_events/${runId}`, (snapshot) => {
+    if (!snapshot.exists()) return;
+    const raw = snapshot.val() as SeedRunSnapshot | null;
+    if (!raw) return;
+    if (raw.cols) {
+      setColRunStates((prev) => {
+        const next = { ...prev };
+        for (const [name, v] of Object.entries(raw.cols ?? {})) {
+          if (v?.status) next[name] = v.status as ColRunState;
+        }
+        return next;
+      });
+      const errs: Record<string, string> = {};
+      for (const [name, v] of Object.entries(raw.cols)) {
+        if (v?.status === "error" && v.error) errs[name] = v.error;
+      }
+      if (Object.keys(errs).length > 0) {
+        setColErrors((prev) => ({ ...prev, ...errs }));
       }
     }
-  } catch { /* malformed line — skip */ }
+    if (typeof raw.meta?.done === "number") {
+      setCompletedCount(raw.meta.done);
+    }
+  });
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
@@ -2150,6 +2179,14 @@ export function SeedPanel() {
 
   const getColStatus = (col: SeedCollectionName) => status.find((s) => s.name === col);
 
+  const unsubscribeRef = useRef<Unsubscribe | null>(null);
+
+  // Always tear down the RTDB subscription on unmount.
+  useEffect(() => () => {
+    unsubscribeRef.current?.();
+    unsubscribeRef.current = null;
+  }, []);
+
   async function run(action: "load" | "delete") {
     const queue = ALL_COLLECTIONS.filter((c) => selectedCollections.has(c));
     if (queue.length === 0) return;
@@ -2161,10 +2198,55 @@ export function SeedPanel() {
     setColRunStates(Object.fromEntries(queue.map((c) => [c, "queued" as ColRunState])));
 
     try {
+      // Dry-run skips the RTDB channel — server returns a plain JSON plan.
+      if (dryRun) {
+        const res = await fetch(API_ROUTES.DEMO.SEED, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action, collections: queue, dryRun }),
+        });
+        const data = await res.json().catch(() => ({ success: false, message: res.statusText }));
+        if (!res.ok || !data.success) {
+          setColRunStates(Object.fromEntries(queue.map((c) => [c, "error" as ColRunState])));
+          setColErrors(Object.fromEntries(queue.map((c) => [c, data.message ?? "Failed"])));
+          return;
+        }
+        setColRunStates(Object.fromEntries(queue.map((c) => [c, "done" as ColRunState])));
+        setCompletedCount(queue.length);
+        return;
+      }
+
+      // 1. Mint a per-run RTDB token.
+      const initRes = await fetch(API_ROUTES.DEMO.SEED_EVENT_INIT, { method: "POST" });
+      const initData = await initRes.json().catch(() => ({ success: false }));
+      if (!initRes.ok || !initData?.success) {
+        const msg = initData?.message ?? "Failed to initialise seed channel";
+        setColRunStates(Object.fromEntries(queue.map((c) => [c, "error" as ColRunState])));
+        setColErrors(Object.fromEntries(queue.map((c) => [c, msg])));
+        return;
+      }
+      const { runId, customToken } = initData.data as { runId: string; customToken: string };
+
+      // 2. Authenticate the realtime provider with the per-run custom token
+      //    and subscribe to /seed_events/{runId}.
+      const provider = getClientRealtimeProvider();
+      try {
+        await provider.signInWithToken(customToken);
+      } catch (signInErr) {
+        const msg = signInErr instanceof Error ? signInErr.message : "Realtime sign-in failed";
+        setColRunStates(Object.fromEntries(queue.map((c) => [c, "error" as ColRunState])));
+        setColErrors(Object.fromEntries(queue.map((c) => [c, msg])));
+        return;
+      }
+      unsubscribeRef.current?.();
+      unsubscribeRef.current = subscribeToSeedRun(runId, setColRunStates, setColErrors, setCompletedCount);
+
+      // 3. Kick off the seed.  Server writes per-collection progress to RTDB
+      //    as it works and returns a summary when finished.
       const res = await fetch(API_ROUTES.DEMO.SEED, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, collections: queue, dryRun }),
+        body: JSON.stringify({ action, collections: queue, dryRun: false, runId }),
       });
 
       if (!res.ok) {
@@ -2173,31 +2255,19 @@ export function SeedPanel() {
         setColErrors(Object.fromEntries(queue.map((c) => [c, err.message ?? "Request failed"])));
         return;
       }
-
-      const contentType = res.headers.get("content-type") ?? "";
-
-      if (contentType.includes("x-ndjson") && res.body) {
-        // Stream NDJSON — server emits one line per collection as it completes
-        await streamNdjsonResponse(res.body, setColRunStates, setColErrors, setCompletedCount);
-      } else {
-        // Dry-run returns plain JSON — mark all done at once
-        const data = await res.json();
-        if (data.success) {
-          setColRunStates(Object.fromEntries(queue.map((c) => [c, "done" as ColRunState])));
-          setCompletedCount(queue.length);
-        } else {
-          setColRunStates(Object.fromEntries(queue.map((c) => [c, "error" as ColRunState])));
-          setColErrors(Object.fromEntries(queue.map((c) => [c, data.message ?? "Failed"])));
-        }
-      }
+      // Final summary is also captured live via RTDB; we ignore the body here
+      // except to surface a transport-level failure above.
+      await res.json().catch(() => null);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Network error";
       setColRunStates(Object.fromEntries(queue.map((c) => [c, "error" as ColRunState])));
       setColErrors(Object.fromEntries(queue.map((c) => [c, msg])));
+    } finally {
+      unsubscribeRef.current?.();
+      unsubscribeRef.current = null;
+      await fetchStatus();
+      setIsRunning(false);
     }
-
-    await fetchStatus();
-    setIsRunning(false);
   }
 
   const errorCount = Object.keys(colErrors).length;
