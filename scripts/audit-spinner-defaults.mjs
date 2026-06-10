@@ -74,6 +74,7 @@ for (const dir of SEARCH_DIRS) {
     const src = readFileSync(file, "utf8");
     LOADING_TEXT_RE.lastIndex = 0;
     let m;
+    const lines = src.split("\n");
     while ((m = LOADING_TEXT_RE.exec(src)) !== null) {
       const idx = m.index;
       const window = src.slice(Math.max(0, idx - 400), Math.min(src.length, idx + 200));
@@ -83,6 +84,10 @@ for (const dir of SEARCH_DIRS) {
       // Allowlist: i18n strings — these are translation keys, not JSX.
       if (window.includes("t(") || window.includes("useTranslations")) continue;
       const line = src.slice(0, idx).split("\n").length;
+      // Per-line suppression marker. Accepts `// audit-spinner-defaults-ok`
+      // (TS comment) or `{/* audit-spinner-defaults-ok */}` (JSX comment).
+      const lineText = lines[line - 1] || "";
+      if (lineText.includes("audit-spinner-defaults-ok")) continue;
       violations.push({ file: relative(ROOT, file), line });
     }
   }

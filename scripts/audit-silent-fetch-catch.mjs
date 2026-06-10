@@ -93,6 +93,6 @@ console.error(`\n✗ audit-silent-fetch-catch — ${violations.length} violation
 for (const v of violations) {
   console.error(`  ${v.file}:${v.line}`);
 }
-console.error(`\nReplace `.catch(() => {})` with a real handler that calls setError/showToast,`);
-console.error(`or annotate the line with \`// audit-silent-catch-ok: <reason>\` if the swallow is intentional.\n`);
+console.error("\nReplace `.catch(() => {})` with a real handler that calls setError/showToast,");
+console.error("or annotate the line with `// audit-silent-catch-ok: <reason>` if the swallow is intentional.\n");
 process.exit(1);

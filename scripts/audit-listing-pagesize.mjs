@@ -52,7 +52,11 @@ for (const file of listRouteFiles(API_DIR)) {
   if (src.includes("audit-pagesize-ok")) continue;
 
   const hasRejectClamp = />\s*50\b[\s\S]{0,400}status:\s*400/.test(src);
-  const hasMathMinClamp = /Math\.min\([^,]+,\s*50\b/.test(src);
+  // Match Math.min(50, X) or Math.min(X, 50) (single- or multi-line).
+  const hasMathMinClamp =
+    /Math\.min\(\s*50\s*,/.test(src) ||
+    /Math\.min\([^,]+,\s*50\b/.test(src) ||
+    /Math\.min\(\s*\n\s*50\s*,/.test(src);
   const hasMaxParamClamp = /getNumberParam\([^)]+max:\s*50\b/.test(src);
   const hasMaxConst = /MAX_PAGE_SIZE\s*=\s*50\b/.test(src);
   if (hasRejectClamp || hasMathMinClamp || hasMaxParamClamp || hasMaxConst) continue;
