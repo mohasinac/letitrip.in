@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { Link } from "@/i18n/navigation";
-import { useProfile, useUpdateProfile, useToast, useAuth, ROUTES, ImageUpload, useMediaUpload, Div, Button, Label, Input, Textarea, MediaImage } from "@mohasinac/appkit/client";
+import { useProfile, useUpdateProfile, useToast, useAuth, ROUTES, ImageUpload, useMediaUpload, Div, Button, Label, Input, Textarea, MediaImage, Toggle } from "@mohasinac/appkit/client";
 import { Heading, Text } from "@mohasinac/appkit";
 
 const __O = {
@@ -55,6 +55,7 @@ function renderProfileViewMode({
         ) : (
           <Div
             className="h-20 w-20 rounded-full flex items-center justify-center text-3xl font-bold ring-2 ring-zinc-100 dark:ring-slate-700"
+            // audit-inline-style-ok: dynamic CSS
             style={{ background: "var(--appkit-color-primary-50)", color: "var(--appkit-color-primary)" }} /* eslint-disable-line lir/no-inline-static-style */
           >
             {avatarLetter}
@@ -185,22 +186,12 @@ function renderProfileEditForm({
             When on, your profile is visible to other LetItRip users
           </Text>
         </>
-        <Button
-          type="button"
-          role="switch"
-          aria-checked={isPublic}
-          onClick={() => setIsPublic((v) => !v)}
-          className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-primary ${
-            isPublic ? "bg-primary" : "bg-zinc-200 dark:bg-slate-600"
-          }`}
-        >
-          <span
-            aria-hidden="true"
-            className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
-              isPublic ? "translate-x-5" : "translate-x-0"
-            }`}
-          />
-        </Button>
+        <Toggle
+          checked={isPublic}
+          onChange={(v) => setIsPublic(v)}
+          size="md"
+          aria-label="Public profile"
+        />
       </Div>
       <Div className="flex gap-3 pt-1">
         <Button
