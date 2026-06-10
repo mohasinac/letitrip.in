@@ -66,31 +66,31 @@ export default async function Layout({ children, params }: Props) {
   const siteTheme = siteSettings?.theme;
 
   return (
-    <NextIntlClientProvider
-      locale={locale}
-      messages={messages}
-      timeZone={LOCALE_CONFIG.TIMEZONE}
-      now={new Date()}
-    >
-      <ClientProviderInitializer />
-      <ScrollToTop />
-      <ZodSetup />
-      <ThemeProvider>
-        <SessionProvider initialUser={null}>
-          <ToastProvider position="top-right">
-            <WishlistCapWatcher />
-            <BottomActionsProvider>
-              <DashboardNavProvider>
-                <QueryProvider>
+    <QueryProvider>
+      <NextIntlClientProvider
+        locale={locale}
+        messages={messages}
+        timeZone={LOCALE_CONFIG.TIMEZONE}
+        now={new Date()}
+      >
+        <ClientProviderInitializer />
+        <ScrollToTop />
+        <ZodSetup />
+        <ThemeProvider>
+          <SessionProvider initialUser={null}>
+            <ToastProvider position="top-right">
+              <WishlistCapWatcher />
+              <BottomActionsProvider>
+                <DashboardNavProvider>
                   <LayoutClient>
                     <LayoutShellClient seedPanelEnabled={seedPanelEnabled} siteLogoUrl={siteLogoUrl} siteTheme={siteTheme}><Suspense>{children}</Suspense></LayoutShellClient>
                   </LayoutClient>
-                </QueryProvider>
-              </DashboardNavProvider>
-            </BottomActionsProvider>
-          </ToastProvider>
-        </SessionProvider>
-      </ThemeProvider>
-    </NextIntlClientProvider>
+                </DashboardNavProvider>
+              </BottomActionsProvider>
+            </ToastProvider>
+          </SessionProvider>
+        </ThemeProvider>
+      </NextIntlClientProvider>
+    </QueryProvider>
   );
 }
