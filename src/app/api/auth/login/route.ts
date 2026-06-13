@@ -37,6 +37,7 @@ const loginSchema = z.object({
   password: z.string().min(1, ERROR_MESSAGES.PASSWORD.REQUIRED),
 });
 
+// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting — protect against brute force

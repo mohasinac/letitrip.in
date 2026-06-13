@@ -14,12 +14,16 @@ import { sendVerificationSchema } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { sendVerificationEmailWithLink } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 
+// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export const POST = withProviders(createRouteHandler<
   (typeof sendVerificationSchema)["_output"]
 >({
   schema: sendVerificationSchema,
-  handler: async ({ body }) => {
+  handler: async ({ body, request }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { email } = body!;
 
     const auth = getAdminAuth();

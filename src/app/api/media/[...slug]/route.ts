@@ -45,6 +45,7 @@ function slugToStoragePath(slug: string[]): string | null {
   return joined;
 }
 
+// rbac-scope-enforced-in-handler: media route — handler verifies signed-URL ownership + applyRateLimit
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ slug: string[] }> },
@@ -65,6 +66,19 @@ export async function GET(
 
     const [meta] = await file.getMetadata();
     const contentType = String(meta.contentType ?? "application/octet-stream");
+    // Track E1 — hard cap on proxied object size. The signer enforces this
+    // at upload time but a corrupted store object or a hand-crafted path
+    // could exceed it; reject loudly rather than spend Vercel function memory.
+    const MAX_PROXY_BYTES = 50 * 1024 * 1024;
+    const declaredSize =
+      typeof meta.size === "string" ? parseInt(meta.size, 10) : Number(meta.size ?? 0);
+    if (Number.isFinite(declaredSize) && declaredSize > MAX_PROXY_BYTES) {
+      serverLogger.warn("media-proxy: object exceeds 50MB cap", {
+        storagePath,
+        size: declaredSize,
+      });
+      return new NextResponse(ERROR_MESSAGES.MEDIA.PROXY_FAILED, { status: 413 });
+    }
     const [originalBuffer] = await file.download();
 
     // SVGs and non-images pass through untouched (PDFs, video, etc.).

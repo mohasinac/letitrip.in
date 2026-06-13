@@ -15,6 +15,7 @@ import { NotFoundError } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],

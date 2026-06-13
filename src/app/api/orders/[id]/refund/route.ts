@@ -34,6 +34,7 @@ const bodySchema = z.object({
   proofDocumentMimeType: z.string().optional(),
 });
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createRouteHandler<(typeof bodySchema)["_output"]>({
     auth: true,

@@ -43,14 +43,22 @@ for (const root of SCAN) {
   for (const file of walk(root)) {
     if (ALLOW.includes(file)) continue;
     const src = readFileSync(file, "utf8");
-    const matches = src.match(/<\s*QuickFormDrawer\b[^>]*>/g);
-    if (!matches) continue;
-    for (const tag of matches) {
-      if (!/\bschema\s*=\s*\{/.test(tag)) {
+    // Match opening JSX tag across multiple lines. Lazy [\s\S]*? + ensure we
+    // stop at the first `>` that closes the tag (not one inside an attribute
+    // value — JSX attribute values use `{}` or `""` so a literal `>` outside
+    // of a brace pair is the tag terminator).
+    const tagPattern = /<\s*QuickFormDrawer\b((?:[^<>{}]|\{[^{}]*\}|"[^"]*"|'[^']*')*?)\/?\s*>/g;
+    let m;
+    let flagged = false;
+    while ((m = tagPattern.exec(src)) !== null) {
+      const attrs = m[1];
+      if (!/\bschema\s*=\s*\{/.test(attrs)) {
         violations.push(`${relative(ROOT, file)} :: <QuickFormDrawer ...> without schema={...} prop`);
+        flagged = true;
         break;
       }
     }
+    if (flagged) continue;
   }
 }
 

@@ -14,7 +14,7 @@
  *   - sieveFilter("user.role", SIEVE_OP.EQ, "= "admin"")                             → "seller" (replies as the store)
  *   - else                                                → null (404)
  */
-import { storeRepository } from "@mohasinac/appkit";
+import { storeRepository, isAdminUser } from "@mohasinac/appkit";
 
 export interface ConversationRoleResolution {
   role: "buyer" | "seller";
@@ -48,7 +48,7 @@ export async function resolveConversationRole(
     return { role: "seller", sellerOwnerId: user.uid };
   }
 
-  if (user.role === "admin") {
+  if (isAdminUser(user)) {
     const ownerStore = await storeRepository.findById(conv.storeId);
     return {
       role: "seller",

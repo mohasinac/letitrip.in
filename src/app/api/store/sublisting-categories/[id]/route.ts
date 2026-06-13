@@ -18,6 +18,7 @@ const updateSchema = z.object({
   coverImage: z.string().url().optional().or(z.literal("")),
 });
 
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_READ],
@@ -32,6 +33,7 @@ export const GET = withProviders(createRouteHandler({
   },
 }));
 
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const PUT = withProviders(createRouteHandler<(typeof updateSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_STORE_READ],
@@ -65,6 +67,7 @@ export const PUT = withProviders(createRouteHandler<(typeof updateSchema)["_outp
   },
 }));
 
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],

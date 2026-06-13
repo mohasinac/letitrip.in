@@ -55,6 +55,7 @@ async function signalPaymentEvent(
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
+// rbac-public: external webhook receiver — signature verified inside handler
 export async function POST(request: NextRequest) {
   try {
     const rawBody = await request.text();

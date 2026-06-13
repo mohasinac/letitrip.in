@@ -18,28 +18,13 @@
 import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
+import { decodeEdgeSessionRole, readEdgeSessionCookie } from "@/lib/edge/session-role";
 
 /** The next-intl locale proxy — created once, reused per request. */
 const intlMiddleware = createMiddleware(routing);
 
 // Routes that never need RBAC gating even under /admin or /store
 const RBAC_BYPASS = new Set(["/unauthorized", "/error.html", "/auth/login"]);
-
-/** Decode JWT payload without signature verification — Edge-safe. */
-function decodeSessionRole(cookie: string | undefined): string | null {
-  if (!cookie) return null;
-  try {
-    const parts = cookie.split(".");
-    if (parts.length < 2) return null;
-    // base64url → base64
-    const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
-    const json = atob(b64);
-    const payload = JSON.parse(json) as { role?: string };
-    return payload.role ?? null;
-  } catch {
-    return null;
-  }
-}
 
 export default function middleware(request: NextRequest): NextResponse {
   try {
@@ -50,8 +35,7 @@ export default function middleware(request: NextRequest): NextResponse {
       pathname.startsWith("/admin") &&
       !RBAC_BYPASS.has(pathname)
     ) {
-      const sessionCookie = request.cookies.get("__session")?.value;
-      const role = decodeSessionRole(sessionCookie);
+      const role = decodeEdgeSessionRole(readEdgeSessionCookie(request));
 
       if (role !== "admin" && role !== "employee") {
         const target = role

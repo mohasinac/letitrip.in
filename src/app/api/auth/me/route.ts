@@ -1,10 +1,15 @@
 import { withProviders } from "@/providers.config";
-import { createRouteHandler, userRepository } from "@mohasinac/appkit";
+import { createRouteHandler, userRepository, applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 
+// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    handler: async ({ user }) => {
+    handler: async ({ user, request }) => {
+      const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
+      if (!rl.success) {
+        return new Response(JSON.stringify({ success: false, error: "Too many requests" }), { status: 429, headers: { "Content-Type": "application/json" } });
+      }
       const { auth } = await import("@mohasinac/appkit").then((m) => ({
         auth: m.getProviders().auth,
       }));

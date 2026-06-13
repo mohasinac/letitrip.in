@@ -20,6 +20,7 @@ const updateStoreSchema = z.object({
   capabilities: z.array(z.string()).optional(),
 });
 
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -34,6 +35,7 @@ export const GET = withProviders(
   }),
 );
 
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateStoreSchema)["_output"]>({
     auth: true,

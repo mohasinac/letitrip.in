@@ -27,6 +27,7 @@ import { ROLES_ADMIN_MOD } from "@/constants";
 /**
  * GET /api/admin/products
  */
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_ADMIN_MOD],
   permission: "admin:products:read",
@@ -64,6 +65,7 @@ export const GET = withProviders(createApiHandler({
  *
  * Create a new product as admin (can set any status, sellerId etc.)
  */
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const POST = withProviders(createApiHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],

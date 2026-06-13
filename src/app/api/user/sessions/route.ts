@@ -14,6 +14,7 @@ import { createRouteHandler } from "@mohasinac/appkit";
 /**
  * Get current user's sessions
  */
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {

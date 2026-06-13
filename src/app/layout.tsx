@@ -124,9 +124,8 @@ export default async function RootLayout({
       className={`min-h-full bg-zinc-50 dark:bg-slate-950 ${poppins.variable} ${inter.variable} ${cormorant.variable} ${playfair.variable}`}
     >
       <head>
-        {/* Preconnect to external origins used by media, fonts and analytics.
-            preconnect covers DNS + TCP + TLS — dns-prefetch is redundant for the same origin. */}
-        <link rel="preconnect" href="https://firebasestorage.googleapis.com" />
+        {/* Preconnect to external origins used by fonts + analytics.
+            Media is served same-origin via /media/<slug> (no GCS preconnect needed). */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <script

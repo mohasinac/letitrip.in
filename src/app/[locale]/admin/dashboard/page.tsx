@@ -1,5 +1,6 @@
 "use client";
 import { AdminDashboardView, ROUTES, Span, Text, Div, Toggle, useToast } from "@mohasinac/appkit/client";
+import { ADMIN_CHECKOUT_BYPASS_FLAG_KEY } from "@mohasinac/appkit";
 import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -171,7 +172,7 @@ export default function Page() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ flags: { adminCheckoutBypass: next } }),
+        body: JSON.stringify({ flags: { [ADMIN_CHECKOUT_BYPASS_FLAG_KEY]: next } }),
       });
       setAdminBypassEnabled(next);
       showToast(next ? "Checkout bypass enabled." : "Checkout bypass disabled.", "success");

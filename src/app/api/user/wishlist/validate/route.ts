@@ -7,6 +7,7 @@ import {
 } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

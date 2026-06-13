@@ -13,6 +13,7 @@ function csvRow(cols: unknown[]): string {
   return cols.map(escape).join(",");
 }
 
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

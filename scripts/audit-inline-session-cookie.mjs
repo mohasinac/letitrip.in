@@ -21,6 +21,10 @@ const ROOT = join(__dirname, "..");
 const SCAN = [join(ROOT, "src"), join(ROOT, "appkit", "src")];
 const ALLOWED = [
   join(ROOT, "src", "lib", "firebase", "auth-server.ts"),
+  // Edge runtime cannot import firebase-admin; the proxy first-gate uses a
+  // signature-less JWT decode in this dedicated helper instead. RSC layouts
+  // re-verify with the real server helper.
+  join(ROOT, "src", "lib", "edge", "session-role.ts"),
 ];
 const SKIP = new Set(["node_modules", "dist", ".next", ".git"]);
 const EXTS = new Set([".ts", ".tsx", ".js", ".mjs"]);

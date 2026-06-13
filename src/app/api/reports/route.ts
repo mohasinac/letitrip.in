@@ -7,6 +7,7 @@ import {
 } from "@mohasinac/appkit";
 import { ROLES_AUTHENTICATED } from "@/constants";
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

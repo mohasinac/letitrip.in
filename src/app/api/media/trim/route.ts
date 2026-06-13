@@ -22,6 +22,7 @@ import { trimDataSchema } from "@mohasinac/appkit";
  * ⚠️ DISABLED on free tier
  * Requires Firebase Cloud Functions with FFmpeg or paid tier upgrade
  */
+// rbac-scope-enforced-in-handler: media route — handler verifies signed-URL ownership + applyRateLimit
 export const POST = withProviders(createRouteHandler<(typeof trimDataSchema)["_output"]>({
   auth: true,
   schema: trimDataSchema,

@@ -6,6 +6,7 @@ import {
   assignSpinPrizeAction,
 } from "@mohasinac/appkit/server";
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

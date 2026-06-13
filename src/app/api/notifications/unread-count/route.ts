@@ -11,6 +11,7 @@ import { notificationRepository } from "@mohasinac/appkit";
 /**
  * GET /api/notifications/unread-count
  */
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {

@@ -11,6 +11,7 @@ import { ROLES_ADMIN_MOD } from "@/constants";
  * GET /api/admin/wishlists — one row per user with item count + last update.
  * Backed by `wishlistRepository.findAllSummaries()` (top-level `wishlists/` docs).
  */
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

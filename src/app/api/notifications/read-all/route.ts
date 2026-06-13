@@ -13,6 +13,7 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 /**
  * PATCH /api/notifications/read-all
  */
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const PATCH = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {

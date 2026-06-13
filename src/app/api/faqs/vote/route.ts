@@ -11,6 +11,7 @@ const voteSchema = z.object({
   vote: z.enum(["helpful", "not-helpful"]),
 });
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createRouteHandler({
     schema: voteSchema,

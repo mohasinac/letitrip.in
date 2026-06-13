@@ -33,6 +33,7 @@ import { AuthenticationError, ValidationError } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { COLLECTION_CACHE_PATHS } from "@mohasinac/appkit";
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export async function POST(request: NextRequest) {
   try {
     // --- Authentication ---

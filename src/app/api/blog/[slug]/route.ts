@@ -16,6 +16,7 @@ function toSerializable(doc: any) {
   };
 }
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(
   createRouteHandler({
     handler: async ({ params }) => {

@@ -12,6 +12,7 @@ import {
   sortBy,
 } from "@mohasinac/appkit";
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(
   createRouteHandler({
     handler: async ({ request, params }) => {

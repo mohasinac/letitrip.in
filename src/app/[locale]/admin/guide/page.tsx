@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { generateMetadata as _gm } from "@/constants";
-import { AdminGuideHubView } from "@mohasinac/appkit";
+import { AdminGuideHubView, isAdminUser } from "@mohasinac/appkit";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 
 export const metadata: Metadata = _gm({
@@ -13,7 +13,7 @@ export const revalidate = 3600;
 
 export default async function Page() {
   const user = await getServerSessionUser().catch(() => null);
-  const isFullAdmin = user?.role === "admin";
+  const isFullAdmin = isAdminUser(user);
   const permissions: string[] = (user as { permissions?: string[] } | null)?.permissions ?? [];
   return <AdminGuideHubView permissions={permissions} isFullAdmin={isFullAdmin} />;
 }

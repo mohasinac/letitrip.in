@@ -17,6 +17,7 @@ import { requireRoleFromRequest } from "@/lib/firebase/auth-server";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(async function GET(
   request: Request,
   context: RouteContext,

@@ -27,6 +27,7 @@ const forgotPasswordSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),
 });
 
+// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export const POST = withProviders(createRouteHandler<
   (typeof forgotPasswordSchema)["_output"]
 >({

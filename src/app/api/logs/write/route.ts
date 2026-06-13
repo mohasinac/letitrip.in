@@ -22,6 +22,7 @@ const logSchema = z.object({
  * POST /api/logs/write
  * Write log entry from client to server log files
  */
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = createApiHandler<(typeof logSchema)["_output"]>({
   schema: logSchema,
   handler: async ({ body }) => {

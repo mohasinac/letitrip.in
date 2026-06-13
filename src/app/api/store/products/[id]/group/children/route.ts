@@ -8,6 +8,7 @@ import { ROLES_STORE_WRITE } from "@/constants";
  * mode "create" — creates a minimal child inheriting parent fields.
  * mode "link"   — links an existing product into the group.
  */
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const POST = withProviders(createApiHandler({
   roles: [...ROLES_STORE_WRITE],
   handler: async ({ request, user, params }) => {

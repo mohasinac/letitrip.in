@@ -15,10 +15,15 @@ import { successResponse } from "@mohasinac/appkit";
 import { resetPasswordSchema } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
+import { errorResponse } from "@mohasinac/appkit";
 
+// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export const PUT = withProviders(createRouteHandler<(typeof resetPasswordSchema)["_output"]>({
   schema: resetPasswordSchema,
-  handler: async ({ body }) => {
+  handler: async ({ body, request }) => {
+    const rl = await applyRateLimit(request, RateLimitPresets.PASSWORD_RESET);
+    if (!rl.success) return errorResponse("Too many requests", 429);
     const { newPassword } = body!;
 
     // Firebase Admin SDK: token is verified client-side via confirmPasswordReset().

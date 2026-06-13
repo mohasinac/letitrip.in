@@ -12,6 +12,7 @@ import { ROLES_ADMIN_MOD } from "@/constants";
  * W1-42: switched from notificationRepository.findAll(limit) (which ignored the
  * filter UI) to .list() with Sieve filters/sorts/page/pageSize from URL params.
  */
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

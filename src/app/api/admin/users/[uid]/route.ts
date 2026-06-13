@@ -38,6 +38,7 @@ const updateUserSchema = z.object({
   publicProfile: publicProfileSchema,
 });
 
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -52,6 +53,7 @@ export const GET = withProviders(
   }),
 );
 
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateUserSchema)["_output"]>({
     auth: true,
@@ -66,6 +68,7 @@ export const PATCH = withProviders(
   }),
 );
 
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

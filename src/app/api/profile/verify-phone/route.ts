@@ -16,6 +16,7 @@ import { ValidationError } from "@mohasinac/appkit";
 import { userRepository } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(createRouteHandler<(typeof verifyPhoneSchema)["_output"]>({
   auth: true,
   schema: verifyPhoneSchema,

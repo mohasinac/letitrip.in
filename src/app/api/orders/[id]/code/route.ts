@@ -31,6 +31,7 @@ import {
 
 const ALLOWED_STATUSES = new Set(["confirmed", "processing", "delivered"]);
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

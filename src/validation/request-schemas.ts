@@ -25,9 +25,11 @@ export const urlSchema = z.string().url().max(2048);
 
 export const dateStringSchema = z.string().datetime({ offset: true });
 
+import { FIREBASE_STORAGE_HOST, GCS_HOST } from "@mohasinac/appkit";
+
 const APPROVED_MEDIA_DOMAINS = [
-  "firebasestorage.googleapis.com",
-  "storage.googleapis.com",
+  FIREBASE_STORAGE_HOST,
+  GCS_HOST,
   "res.cloudinary.com",
   "images.unsplash.com",
 ];

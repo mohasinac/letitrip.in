@@ -12,6 +12,7 @@ const EMPTY_ORDER_RESULT: FirebaseSieveResult<OrderDocument> = {
   hasMore: false,
 };
 
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

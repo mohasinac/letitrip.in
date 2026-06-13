@@ -9,6 +9,7 @@ function isMissingFirestoreIndexError(error: unknown): boolean {
 	);
 }
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export async function GET(
 	...args: Parameters<typeof blogGET>
 ) {

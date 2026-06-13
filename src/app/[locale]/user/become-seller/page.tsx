@@ -15,6 +15,7 @@ import {
   Li,
 } from "@mohasinac/appkit";
 import type { BecomeSellerResult } from "@mohasinac/appkit";
+import { isAdminUser, isSellerUser } from "@mohasinac/appkit";
 
 type ViewState = "guide" | "success" | "already-seller";
 
@@ -30,7 +31,7 @@ export default function Page() {
 
   useEffect(() => {
     if (authLoading) return;
-    if (user && (user.role === "seller" || user.role === "admin")) {
+    if (user && (isSellerUser(user) || isAdminUser(user))) {
       setState("already-seller");
     }
   }, [user, authLoading]);

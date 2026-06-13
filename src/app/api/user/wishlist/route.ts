@@ -28,6 +28,7 @@ const addSchema = z.object({
  *
  * Returns wishlist items with product details for the authenticated user.
  */
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
@@ -64,6 +65,7 @@ export const GET = withProviders(createRouteHandler({
  * Returns 409 WISHLIST_FULL when the user has WISHLIST_MAX (20) items and the product
  * is not already in their wishlist.
  */
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const POST = withProviders(createRouteHandler<(typeof addSchema)["_output"]>({
   auth: true,
   schema: addSchema,

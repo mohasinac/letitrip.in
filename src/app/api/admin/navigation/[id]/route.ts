@@ -32,6 +32,7 @@ async function saveNavItems(items: NavItem[]): Promise<void> {
   } as any);
 }
 
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const PUT = withProviders(
   createRouteHandler<(typeof updateNavItemSchema)["_output"]>({
     auth: true,
@@ -51,6 +52,7 @@ export const PUT = withProviders(
   }),
 );
 
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateNavItemSchema)["_output"]>({
     auth: true,
@@ -70,6 +72,7 @@ export const PATCH = withProviders(
   }),
 );
 
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

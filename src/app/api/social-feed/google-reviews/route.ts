@@ -20,6 +20,7 @@ export const dynamic = "force-dynamic";
  *   { reviews: GoogleReview[], aggregateRating: number, totalRatings: number }
  *   { error: "not-configured" } when API key is absent
  */
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(
   createApiHandler({
     handler: async ({ request }) => {

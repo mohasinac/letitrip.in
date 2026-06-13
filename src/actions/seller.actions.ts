@@ -16,6 +16,7 @@ import {
   RateLimitPresets,
 } from "@mohasinac/appkit";
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
+import { isAdminUser } from "@mohasinac/appkit";
 import {
   becomeSeller,
   createStore,
@@ -214,7 +215,7 @@ export async function createSellerProductAction(input: unknown): Promise<void> {
   if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
 
   // Capability gate — admin bypasses
-  if (user.role !== "admin") {
+  if (!isAdminUser(user)) {
     const store = await getSellerStore(user.uid);
     if (store) {
       const caps = await getStoreCapabilities(store.id);
@@ -289,7 +290,7 @@ export async function getSellerProductAction(id: string): Promise<ProductDocumen
   const product = await productRepository.findById(id);
   if (!product) return null;
   const profile = await userRepository.findById(user.uid);
-  if (profile?.role !== "admin" && (product as any).storeId !== user.uid) return null;
+  if (!isAdminUser(profile) && (product as any).storeId !== user.uid) return null;
   return product as unknown as ProductDocument;
 }
 
@@ -358,7 +359,7 @@ export async function shipOrderAction(
 
   const order = await orderRepository.findById(orderId);
   if (!order) throw new NotFoundError("Order not found");
-  if (user.role !== "admin" && (order as any).sellerId !== user.uid)
+  if (!isAdminUser(user) && (order as any).sellerId !== user.uid)
     throw new AuthorizationError("You do not own this order");
   if (order.status === OrderStatusValues.SHIPPED || order.status === OrderStatusValues.DELIVERED)
     throw new ValidationError("Order is already shipped");

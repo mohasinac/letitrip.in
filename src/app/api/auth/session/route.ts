@@ -20,13 +20,19 @@ import { SCHEMA_DEFAULTS } from "@/constants";
 import { serverLogger } from "@mohasinac/appkit";
 import { getAuth } from "firebase-admin/auth";
 import { getAdminApp } from "@mohasinac/appkit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 
 /**
  * Create session cookie with session tracking
  * Also ensures user profile exists in Firestore (for OAuth users)
  */
+// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export async function POST(request: NextRequest) {
   try {
+    const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
+    if (!rl.success) {
+      return NextResponse.json({ success: false, error: "Too many requests" }, { status: 429 });
+    }
     const { idToken } = await request.json();
 
     if (!idToken) {
@@ -130,8 +136,13 @@ export async function POST(request: NextRequest) {
 /**
  * Clear session cookie and revoke session (logout)
  */
+// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export async function DELETE(request: NextRequest) {
   try {
+    const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
+    if (!rl.success) {
+      return NextResponse.json({ success: false, error: "Too many requests" }, { status: 429 });
+    }
     // Get session ID from cookie
     const sessionId = request.cookies.get("__session_id")?.value;
     const sessionCookie = getOptionalSessionCookie(request);

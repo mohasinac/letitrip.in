@@ -12,6 +12,7 @@ const messageSchema = z.object({
 
 // GET messages are read directly from Firebase RTDB on the client via real-time subscription.
 // This POST handler is the server-side entry point for sending a new message.
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

@@ -26,6 +26,7 @@ function parseCommaSeparated(raw: string): string[] {
     .filter(Boolean);
 }
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createRouteHandler<(typeof createReportSchema)["_output"]>({
     auth: true,

@@ -18,6 +18,7 @@ const replySchema = z.object({
   reply: z.string().min(1).max(1000),
 });
 
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const POST = withProviders(createApiHandler<{ reply: string }>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],

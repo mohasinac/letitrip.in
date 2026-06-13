@@ -9,6 +9,7 @@ import {
 
 const DEFAULT_SORTS = sortBy(NOTIFICATION_FIELDS.CREATED_AT);
 
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

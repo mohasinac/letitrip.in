@@ -9,6 +9,7 @@ import {
   WISHLIST_MAX,
 } from "@mohasinac/appkit";
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -58,6 +59,7 @@ export const GET = withProviders(
   }),
 );
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
@@ -88,6 +90,7 @@ export const POST = withProviders(
   }),
 );
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

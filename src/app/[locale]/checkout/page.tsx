@@ -1,7 +1,7 @@
 import { redirect } from "@/i18n/navigation";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 import { CheckoutRouteClient } from "@/components";
-import { ROUTES, siteSettingsRepository } from "@mohasinac/appkit";
+import { ROUTES, siteSettingsRepository, ADMIN_CHECKOUT_BYPASS_FLAG_KEY, isAdminUser } from "@mohasinac/appkit";
 
 export default async function Page() {
   const user = await getServerSessionUser();
@@ -13,9 +13,10 @@ export default async function Page() {
   // is explicitly enabled in siteSettings. Computed server-side so the client
   // never needs a role check or an extra API call.
   let adminBypassEnabled = false;
-  if (user.role === "admin") {
+  if (isAdminUser(user)) {
     const settings = await siteSettingsRepository.getSingleton();
-    adminBypassEnabled = settings?.featureFlags?.adminCheckoutBypass === true;
+    const flags = settings?.featureFlags as Record<string, unknown> | undefined;
+    adminBypassEnabled = flags?.[ADMIN_CHECKOUT_BYPASS_FLAG_KEY] === true;
   }
 
   return <CheckoutRouteClient adminBypassEnabled={adminBypassEnabled} />;

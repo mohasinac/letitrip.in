@@ -19,6 +19,7 @@ function tryEnqueue(controller: ReadableStreamDefaultController, type: string, d
   }
 }
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },

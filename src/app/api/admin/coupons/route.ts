@@ -66,6 +66,7 @@ const couponCreateSchema = z.object({
 /**
  * GET /api/admin/coupons
  */
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(createRouteHandler({
   roles: [...ROLES_ADMIN_MOD],
   permission: "admin:coupons:read",
@@ -101,6 +102,7 @@ export const GET = withProviders(createRouteHandler({
 /**
  * POST /api/admin/coupons
  */
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const POST = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_ONLY],

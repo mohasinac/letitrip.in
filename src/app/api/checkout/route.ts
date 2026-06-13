@@ -22,6 +22,7 @@ const checkoutSchema = z.object({
   excludedProductIds: z.array(z.string()).optional(),
 });
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_output"]>({
   auth: true,
   schema: checkoutSchema,

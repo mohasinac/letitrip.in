@@ -11,6 +11,7 @@ const reorderSchema = z.object({
   slideIds: z.array(z.string()).min(1).max(10),
 });
 
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

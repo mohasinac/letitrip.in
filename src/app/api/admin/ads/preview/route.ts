@@ -40,6 +40,7 @@ function isScheduleActive(item: Record<string, unknown>): boolean {
  * Returns the highest-priority eligible ad for a given placement under the given
  * consent state. Used by the admin UI to preview ad slot fill before publish.
  */
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

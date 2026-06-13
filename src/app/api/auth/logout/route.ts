@@ -19,9 +19,15 @@ import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { getOptionalSessionCookie } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 
+// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export async function POST(request: NextRequest) {
   try {
+    const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
+    if (!rl.success) {
+      return NextResponse.json({ success: false, error: "Too many requests" }, { status: 429 });
+    }
     const sessionCookie = getOptionalSessionCookie(request);
     const sessionId = request.cookies.get("__session_id")?.value;
 

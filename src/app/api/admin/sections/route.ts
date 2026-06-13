@@ -36,6 +36,7 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@mohasinac/appkit";
  *  - page     (number) — page number (default 1)
  *  - pageSize (number) — results per page (default 50, max 200)
  */
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -112,6 +113,7 @@ const sectionCreateSchema = z.object({
   config: z.object({}).passthrough(), // Allow any config based on type
 });
 
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

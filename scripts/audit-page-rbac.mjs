@@ -41,7 +41,18 @@ function hasGuard(layoutPath) {
   const src = readFileSync(layoutPath, "utf8")
     .replace(/\/\*[\s\S]*?\*\//g, " ")
     .replace(/(^|\s)\/\/[^\n]*/g, "$1 ");
-  return /\bmakeAdminSectionLayout\s*\(/.test(src) || /<\s*RoleGuard\b/.test(src);
+  // Accepted guard patterns:
+  //   - makeAdminSectionLayout(permission)
+  //   - <RoleGuard role={...}>
+  //   - role predicate + redirect (isAdminUser / isSellerUser / isModeratorUser
+  //     / isEmployeeUser etc. paired with a redirect call) — this is the
+  //     canonical RSC pattern in admin/layout.tsx and store/layout.tsx.
+  if (/\bmakeAdminSectionLayout\s*\(/.test(src)) return true;
+  if (/<\s*RoleGuard\b/.test(src)) return true;
+  const hasPredicate = /\bis(?:Admin|Seller|Moderator|Employee|Buyer)User\s*\(/.test(src);
+  const hasRedirect = /\bredirect\s*\(/.test(src);
+  if (hasPredicate && hasRedirect) return true;
+  return false;
 }
 
 const violations = [];

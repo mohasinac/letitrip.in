@@ -13,6 +13,7 @@ const reviewEntrySchema = z.object({
   points: z.number().optional(),
 });
 
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const PATCH = withProviders(
   createRouteHandler<(typeof reviewEntrySchema)["_output"]>({
     auth: true,

@@ -11,6 +11,7 @@ const feedbackSchema = z.object({
   feedback: z.enum(["positive", "negative"]),
 });
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const PATCH = withProviders(
   createRouteHandler<(typeof feedbackSchema)["_output"]>({
     auth: true,

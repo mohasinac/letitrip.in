@@ -8,6 +8,7 @@ import {
 
 const MSG_NOTIFICATION_NOT_FOUND = "Notification not found.";
 
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -22,6 +23,7 @@ export const GET = withProviders(
   }),
 );
 
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
@@ -37,6 +39,7 @@ export const PATCH = withProviders(
   }),
 );
 
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

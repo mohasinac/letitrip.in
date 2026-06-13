@@ -16,7 +16,6 @@ import { generateCroppedImageFilename } from "@mohasinac/appkit";
  */
 
 import sharp from "sharp";
-import axios from "axios";
 
 /**
  * POST /api/media/crop
@@ -34,6 +33,7 @@ import axios from "axios";
  * - outputFormat?: 'jpeg' | 'png' | 'webp' - Output format (default: original)
  * - quality?: number (1-100) - Output quality (default: 90)
  */
+// rbac-scope-enforced-in-handler: media route — handler verifies signed-URL ownership + applyRateLimit
 export const POST = withProviders(createRouteHandler<(typeof cropDataSchema)["_output"]>({
   auth: true,
   schema: cropDataSchema,
@@ -52,10 +52,14 @@ export const POST = withProviders(createRouteHandler<(typeof cropDataSchema)["_o
     } = body!;
 
     // Download source image
-    const response = await axios.get(sourceUrl, {
-      responseType: "arraybuffer",
-    });
-    const sourceBuffer = Buffer.from(response.data);
+    const response = await fetch(sourceUrl);
+    if (!response.ok) {
+      return errorResponse(
+        `Failed to fetch source image: ${response.status} ${response.statusText}`,
+        502,
+      );
+    }
+    const sourceBuffer = Buffer.from(await response.arrayBuffer());
 
     // Detect original format if not specified
     const metadata = await sharp(sourceBuffer).metadata();

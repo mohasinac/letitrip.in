@@ -16,6 +16,7 @@ const updateSchema = z.object({
     }),
 });
 
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const PUT = withProviders(
   createRouteHandler<(typeof updateSchema)["_output"]>({
     auth: true,

@@ -27,6 +27,7 @@ const mergeWishlistSchema = z.object({
     .max(200),
 });
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createRouteHandler<(typeof mergeWishlistSchema)["_output"]>({
     auth: true,

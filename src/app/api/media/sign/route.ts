@@ -26,7 +26,6 @@
  */
 
 import { withProviders } from "@/providers.config";
-import { randomBytes } from "crypto";
 import {
   ALLOWED_TYPES_LABEL,
   MAX_BYTES,
@@ -60,6 +59,7 @@ interface SignRequestBody {
   context?: unknown;
 }
 
+// rbac-scope-enforced-in-handler: media route — handler verifies signed-URL ownership + applyRateLimit
 export const POST = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {
@@ -105,17 +105,24 @@ export const POST = withProviders(createRouteHandler({
     }
     const isPdf = kind === "pdf";
 
-    let filename: string;
-    if (contextInput && typeof contextInput === "object" && "type" in (contextInput as object)) {
-      const ctx = contextInput as MediaFilenameContext;
-      const guard = applyMediaContextGuards({ detectedMime: contentType, context: ctx });
-      if (!guard.ok) return errorResponse(guard.error, guard.status, guard.details);
-      filename = guard.filename;
-    } else {
-      const random = randomBytes(6).toString("hex");
-      const ext = contentType.split("/")[1] ?? "bin";
-      filename = `${Date.now()}-${random}.${ext}`;
+    // Track E2 — context is REQUIRED. The random-filename fallback path is
+    // deleted. Every caller passes a typed MediaFilenameContext so generated
+    // filenames stay SEO-friendly and the slug audits keep working.
+    if (
+      !contextInput ||
+      typeof contextInput !== "object" ||
+      !("type" in (contextInput as object))
+    ) {
+      return errorResponse(
+        "context is required — pass a MediaFilenameContext { type, ... }.",
+        400,
+        { code: "MEDIA_CONTEXT_REQUIRED" },
+      );
     }
+    const ctx = contextInput as MediaFilenameContext;
+    const guard = applyMediaContextGuards({ detectedMime: contentType, context: ctx });
+    if (!guard.ok) return errorResponse(guard.error, guard.status, guard.details);
+    const filename = guard.filename;
 
     const defaultFolder = isPdf ? PDF_FOLDER : DEFAULT_MEDIA_FOLDER;
     const folderInput = (folder || defaultFolder).replace(/^\/+|\/+$/g, "");

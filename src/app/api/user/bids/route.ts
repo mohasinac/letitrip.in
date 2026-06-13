@@ -8,6 +8,7 @@ import {
 // audit-pagesize-ok: pageSize clamped via PAGE_SIZE constant (25 <= Vercel Hobby cap of 50)
 const PAGE_SIZE = 25;
 
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

@@ -26,6 +26,7 @@ import { ROLES_ADMIN_ONLY } from "@/constants";
  *      status "processing", and carries adminBypassBy = admin UID for audit trail.
  */
 
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -45,6 +46,7 @@ const bypassSchema = z.object({
   excludedProductIds: z.array(z.string()).optional(),
 });
 
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const POST = withProviders(
   createRouteHandler<(typeof bypassSchema)["_output"]>({
     auth: true,

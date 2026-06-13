@@ -93,6 +93,35 @@ export function initProviders(): Promise<void> {
     });
     const { siteSettingsRepository } = await import("@mohasinac/appkit/repositories/site-settings");
 
+    // Track H — provider resolution. Read the mock flags once at boot. The
+    // resolver throws on production+mock to make the misconfiguration loud.
+    const bootSettings = await siteSettingsRepository.getSingleton().catch(() => null);
+    const useMockPayment = bootSettings?.featureFlags?.useMockPayment === true;
+    const useMockShipping = bootSettings?.featureFlags?.useMockShipping === true;
+    if (useMockPayment && process.env.NODE_ENV === "production") {
+      throw new Error(
+        "[providers] siteSettings.featureFlags.useMockPayment is TRUE in production. " +
+          "The mock payment provider must never run in production.",
+      );
+    }
+    if (useMockShipping && process.env.NODE_ENV === "production") {
+      throw new Error(
+        "[providers] siteSettings.featureFlags.useMockShipping is TRUE in production. " +
+          "The mock shipping provider must never run in production.",
+      );
+    }
+
+    const paymentProvider = useMockPayment
+      ? await import("@mohasinac/appkit/server").then(
+          (m) => new m.MockRazorpayProvider(),
+        )
+      : undefined; // real Razorpay path resolves credentials per-call (legacy createRazorpayOrder)
+    const shippingProvider = useMockShipping
+      ? await import("@mohasinac/appkit/server").then(
+          (m) => new m.MockShiprocketProvider(),
+        )
+      : undefined;
+
     registerProviders({
       db: firebaseDbProvider,
       auth: firebaseAuthProvider,
@@ -117,10 +146,13 @@ export function initProviders(): Promise<void> {
           return resolved.isAdmin;
         },
       },
-      // Uncomment when @mohasinac/payment-razorpay is available (Phase 10):
-      // payment: createRazorpayProvider({ keyId: process.env.RAZORPAY_KEY_ID! }),
-      // Uncomment when @mohasinac/shipping-shiprocket is available (Phase 10):
-      // shipping: createShiprocketProvider({ ...config }),
+      // Track H — mock providers are registered when the corresponding
+      // featureFlag is on (and NODE_ENV !== "production"). When the flag is
+      // off, the slot stays empty and the existing real-provider path (via
+      // appkit's resolveKeys + createRazorpayOrder / shiprocketAuthenticate)
+      // remains in effect — full provider-registry migration is deferred.
+      ...(paymentProvider ? { payment: paymentProvider } : {}),
+      ...(shippingProvider ? { shipping: shippingProvider } : {}),
     });
   })();
   return initPromise;

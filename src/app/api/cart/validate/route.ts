@@ -11,6 +11,7 @@ const validateSchema = z.object({
   productIds: z.array(z.string().min(1)).min(1).max(50),
 });
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createRouteHandler<(typeof validateSchema)["_output"]>({
     auth: false,

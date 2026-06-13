@@ -16,6 +16,7 @@ import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(createRouteHandler<(typeof addPhoneSchema)["_output"]>({
   auth: true,
   schema: addPhoneSchema,

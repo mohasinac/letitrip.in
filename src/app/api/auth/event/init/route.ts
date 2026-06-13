@@ -34,6 +34,7 @@ import { RTDBPayloadStatus } from "@mohasinac/appkit";
 /** RTDB node TTL communicated to the client (2 min hard timeout on the useAuthEvent hook). */
 const EVENT_TTL_MS = 2 * 60 * 1000;
 
+// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export const POST = withProviders(createRouteHandler({
   handler: async ({ request }) => {
     const rl = await applyRateLimit(request, RateLimitPresets.AUTH);

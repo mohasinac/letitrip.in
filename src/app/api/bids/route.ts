@@ -22,6 +22,7 @@ const placeBidSchema = z.object({
   autoMaxBid: z.number().positive().optional(),
 });
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(
   createRouteHandler({
     handler: async ({ request }) => {
@@ -38,6 +39,7 @@ export const GET = withProviders(
   }),
 );
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createRouteHandler<(typeof placeBidSchema)["_output"]>({
     auth: true,

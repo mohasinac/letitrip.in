@@ -3,13 +3,14 @@ import { redirect } from "@/i18n/navigation";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 import { getServerPermissions } from "@mohasinac/appkit/server";
 import { DashboardLayoutClient } from "@mohasinac/appkit/client";
+import { isAdminUser, isEmployeeUser } from "@mohasinac/appkit";
 import { ADMIN_NAV_GROUPS } from "@/constants";
 import { ROUTES } from "@/constants";
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const user = await getServerSessionUser();
   if (!user) redirect(String(ROUTES.AUTH.LOGIN));
-  if (user.role !== "admin" && user.role !== "employee") redirect("/unauthorized");
+  if (!isAdminUser(user) && !isEmployeeUser(user)) redirect("/unauthorized");
 
   const resolved = await getServerPermissions(user.uid);
 

@@ -41,6 +41,7 @@ import { ERROR_MESSAGES } from "@mohasinac/appkit";
 
 import type { UserRole } from "@mohasinac/appkit";
 import { RTDBPayloadStatus } from "@mohasinac/appkit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -285,10 +286,15 @@ function buildSessionResponse(
   return response;
 }
 
+// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export async function GET(request: NextRequest) {
   const origin = request.nextUrl.origin;
 
   try {
+    const rl = await applyRateLimit(request, RateLimitPresets.OAUTH);
+    if (!rl.success) {
+      return NextResponse.redirect(new URL(`/auth/close?error=rate_limited`, origin));
+    }
     const { searchParams } = request.nextUrl;
     const state = searchParams.get("state") ?? "";
     const code = searchParams.get("code");

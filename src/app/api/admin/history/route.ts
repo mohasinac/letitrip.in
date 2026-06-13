@@ -11,6 +11,7 @@ import { ROLES_ADMIN_MOD } from "@/constants";
  * GET /api/admin/history — one row per user with item count + last visit.
  * Backed by `historyRepository.findAllSummaries()` (top-level `history/` docs).
  */
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

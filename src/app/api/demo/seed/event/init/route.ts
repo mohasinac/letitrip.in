@@ -22,14 +22,16 @@ import {
   serverLogger,
   RTDB_PATHS,
   RTDBPayloadStatus,
+  isAdminUser,
 } from "@mohasinac/appkit";
 
 /** Hard timeout communicated to the client. */
 const EVENT_TTL_MS = 30 * 60 * 1000;
 
+// rbac-scope-enforced-in-handler: demo seed — handler asserts isAdminUser before any write
 export async function POST(request: NextRequest) {
   const user = await getUserFromRequest(request);
-  if (!user || user.role !== "admin") {
+  if (!user || !isAdminUser(user)) {
     return NextResponse.json(
       { success: false, message: "Unauthorized." },
       { status: 401 },

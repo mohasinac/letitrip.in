@@ -4,6 +4,7 @@ import { productRepository } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 /** DELETE /api/admin/products/[id]/group/children/[childId] — unlink a child (admin) */
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const DELETE = withProviders(createApiHandler({
   roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:products:delete",

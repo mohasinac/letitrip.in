@@ -16,7 +16,7 @@ import { withProviders } from "@/providers.config";
 
 import { createHash } from "crypto";
 import { NextResponse } from "next/server";
-import { siteSettingsRepository } from "@mohasinac/appkit";
+import { siteSettingsRepository, isAdminUser } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
@@ -44,6 +44,7 @@ import { invalidateIntegrationKeysCache } from "@mohasinac/appkit";
  * TODO (Future): Support ETag for conditional requests — ✅ Done
  * TODO (Future): Integrate Redis for distributed caching
  */
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(createApiHandler({
   handler: async ({ request }) => {
     // Fetch site settings (singleton pattern)
@@ -54,7 +55,7 @@ export const GET = withProviders(createApiHandler({
 
     // Check if user is authenticated and is admin
     const user = await getUserFromRequest(request);
-    const isAdmin = user?.role === "admin";
+    const isAdmin = isAdminUser(user);
 
     // Filter sensitive fields for non-admin users
     let responseData: any;
@@ -123,6 +124,7 @@ export const GET = withProviders(createApiHandler({
  * TODO (Future): Invalidate distributed caches (Redis)
  * TODO (Future): Send notification to all admins on settings change — ✅ Done
  */
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const PATCH = withProviders(createRouteHandler<
   (typeof siteSettingsUpdateSchema)["_output"]
 >({

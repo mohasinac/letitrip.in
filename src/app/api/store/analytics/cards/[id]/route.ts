@@ -8,6 +8,7 @@ import {
 } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
@@ -30,6 +31,7 @@ export const PATCH = withProviders(
   }),
 );
 
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

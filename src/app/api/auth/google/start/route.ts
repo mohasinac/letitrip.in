@@ -25,12 +25,20 @@ import { serverLogger } from "@mohasinac/appkit";
 import { AppError } from "@mohasinac/appkit";
 import { handleApiError } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export async function GET(request: NextRequest) {
   try {
+    const rl = await applyRateLimit(request, RateLimitPresets.OAUTH);
+    if (!rl.success) {
+      return NextResponse.redirect(
+        new URL(`/auth/close?error=rate_limited`, request.nextUrl.origin),
+      );
+    }
     const eventId = request.nextUrl.searchParams.get("eventId") ?? "";
 
     // Strict UUID format validation — prevents any kind of path injection

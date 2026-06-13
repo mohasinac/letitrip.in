@@ -12,6 +12,7 @@ import { ROLES_STORE_WRITE } from "@/constants";
 // S-STORE-2-C — Duplicate listing. Copies the source product into a new
 // document with status "draft", appends "(copy)" to the title, and clears
 // statistics fields.
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

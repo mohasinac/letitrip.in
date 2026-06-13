@@ -31,6 +31,7 @@ const IngestCodesSchema = z.object({
   codes: z.array(z.string().min(1).max(256)).min(1).max(200),
 });
 
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

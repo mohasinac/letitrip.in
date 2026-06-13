@@ -30,6 +30,9 @@ const ALLOW_PREFIXES = [
 ];
 const ALLOW_FILES = [
   join("appkit", "src", "seed", "_helpers", "media.ts"),
+  // Sole declarations of the FIREBASE_STORAGE_HOST / GCS_HOST constants.
+  // Every other module imports from here.
+  join("appkit", "src", "utils", "media-url.ts"),
 ];
 const SKIP = new Set(["node_modules", "dist", ".next", ".git"]);
 const EXTS = new Set([".ts", ".tsx", ".js", ".mjs"]);

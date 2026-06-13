@@ -72,6 +72,7 @@ async function readHeadBytes(fileRef: StorageFile): Promise<Buffer> {
   return Buffer.concat(chunks);
 }
 
+// rbac-scope-enforced-in-handler: media route — handler verifies signed-URL ownership + applyRateLimit
 export const POST = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {
@@ -154,10 +155,17 @@ export const POST = withProviders(createRouteHandler({
     }
     if (detectedKind !== declaredKind) {
       await fileRef.delete().catch(() => {}); // audit-silent-catch-ok: cleanup of rejected upload; absent file is fine
+      // Structured 422 MIME_MISMATCH — Track E3 contract. Clients distinguish
+      // "wrong content-type header" from generic upload errors and can re-prompt
+      // the user accurately.
       return errorResponse(
         "Uploaded file bytes do not match the declared content type",
-        400,
-        { declared: declaredMime, detected: detected.mime },
+        422,
+        {
+          code: "MIME_MISMATCH",
+          declared: declaredMime,
+          detected: detected.mime,
+        },
       );
     }
     if (declaredKind === "pdf") {

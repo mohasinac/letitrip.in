@@ -35,6 +35,7 @@ const createSchema = z.object({
   orderId: z.string().optional(),
 });
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -49,6 +50,7 @@ export const GET = withProviders(
   }),
 );
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createRouteHandler<(typeof createSchema)["_output"]>({
     auth: true,

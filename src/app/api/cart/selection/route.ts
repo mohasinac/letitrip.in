@@ -8,6 +8,7 @@ const selectionSchema = z.object({
 });
 
 // PUT /api/cart/selection — set which items are selected for checkout
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const PUT = withProviders(
   createRouteHandler<(typeof selectionSchema)["_output"]>({
     auth: true,

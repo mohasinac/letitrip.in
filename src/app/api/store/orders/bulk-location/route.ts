@@ -4,6 +4,7 @@ import { ROLES_STORE_WRITE } from "@/constants";
 
 const BULK_MAX = 50;
 
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const PATCH = withProviders(createApiHandler({
   roles: [...ROLES_STORE_WRITE],
   handler: async ({ request, user }) => {

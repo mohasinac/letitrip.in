@@ -33,6 +33,7 @@ const mergeSchema = z.object({
     .max(HISTORY_MAX * 4),
 });
 
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const POST = withProviders(
   createRouteHandler<(typeof mergeSchema)["_output"]>({
     auth: true,

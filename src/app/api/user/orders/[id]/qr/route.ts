@@ -11,6 +11,7 @@ import { ROLES_AUTHENTICATED } from "@/constants";
  * Generated via the QR Firebase Function; falls back to a redirect to a public
  * QR provider URL in dev.
  */
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

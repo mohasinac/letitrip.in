@@ -22,6 +22,9 @@ const ROOT = join(__dirname, "..");
 const SCAN = [join(ROOT, "src"), join(ROOT, "appkit", "src")];
 const ALLOW = [
   join(ROOT, "appkit", "src", "ui", "forms", "FormShell.tsx"),
+  // ui/components/Form.tsx is a thin re-export layer that mentions FormShell
+  // by name in its public types; it doesn't host any concrete form callsite.
+  join(ROOT, "appkit", "src", "ui", "components", "Form.tsx"),
 ];
 const SKIP = new Set(["node_modules", "dist", ".next", ".git"]);
 const EXTS = new Set([".ts", ".tsx", ".js", ".mjs"]);
@@ -53,7 +56,14 @@ for (const root of SCAN) {
     const usesFormShellState = /\buseFormShellState\s*\(/.test(src);
     if (!usesFormShellJsx && !usesFormShellState) continue;
 
-    const hasSchemaProp = /\bschema\s*=\s*\{/.test(src) || /\bschema\s*:\s*[A-Za-z_$]/.test(src);
+    // Acceptable schema references:
+    //   - <FormShell schema={...}>
+    //   - { schema: <ident> }  (any object literal field)
+    //   - useFormShellState(<ident>)  (hook invoked with a schema argument)
+    const hasSchemaProp =
+      /\bschema\s*=\s*\{/.test(src) ||
+      /\bschema\s*:\s*[A-Za-z_$]/.test(src) ||
+      /\buseFormShellState\s*(?:<[^>]+>\s*)?\(\s*[A-Za-z_$]/.test(src);
     const importsZod = /from\s+["']zod["']/.test(src);
 
     if (!hasSchemaProp || !importsZod) {

@@ -28,6 +28,7 @@ const trackSchema = z.object({
     .optional(),
 });
 
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -41,6 +42,7 @@ export const GET = withProviders(
   }),
 );
 
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const POST = withProviders(
   createRouteHandler<(typeof trackSchema)["_output"]>({
     auth: true,
@@ -57,6 +59,7 @@ export const POST = withProviders(
   }),
 );
 
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

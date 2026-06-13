@@ -51,6 +51,7 @@ async function computeSellerEarnings(storeId: string) {
 
 // --- GET — List payouts + earnings summary ---------------------------------
 
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],

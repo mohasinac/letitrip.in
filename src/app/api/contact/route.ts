@@ -24,6 +24,7 @@ const contactSchema = z.object({
     .max(5000),
 });
 
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(createRouteHandler<(typeof contactSchema)["_output"]>({
   schema: contactSchema,
   handler: async ({ request, body }) => {

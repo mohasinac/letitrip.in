@@ -11,6 +11,7 @@ import { ROLES_STORE_WRITE } from "@/constants";
 // Sync trigger — the actual Google Places API fetch is offloaded to a Firebase
 // Function (60s ceiling). This handler just queues the sync request by stamping
 // `lastSyncedAt` and bumping a counter; the function reads the doc and refreshes.
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
