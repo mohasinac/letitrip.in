@@ -14,6 +14,7 @@ import {
   Text,
   Input,
   Button,
+  Form,
   NotificationPreferencesPanel,
 } from "@mohasinac/appkit/client";
 import { TabStrip, Accordion, PaginatedSelect } from "@mohasinac/appkit/ui";
@@ -119,7 +120,7 @@ function renderAccountTab({
             <Text variant="secondary" className="text-xs">
               A verification link will be sent to your new address. Your email updates after you click the link.
             </Text>
-            <form onSubmit={handleEmailSubmit} className="grid gap-4 md:grid-cols-[1fr_240px] md:items-start">
+            <Form onSubmit={handleEmailSubmit} className="grid gap-4 md:grid-cols-[1fr_240px] md:items-start">
               <Stack gap="sm">
                 <Input id="new-email" type="email" label="New Email Address" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required autoComplete="email" placeholder="new@example.com" />
                 <Input id="email-password" type="password" label="Current Password" value={emailPassword} onChange={(e) => setEmailPassword(e.target.value)} required autoComplete="current-password" />
@@ -130,7 +131,7 @@ function renderAccountTab({
               <Text variant="secondary" className="text-xs md:mt-1">
                 We will email a confirmation link to your new address. Until you click it, your sign-in email stays the same. The link expires after 24 hours.
               </Text>
-            </form>
+            </Form>
           </Stack>
         </Accordion>
       </SectionCard>
@@ -138,7 +139,7 @@ function renderAccountTab({
       <SectionCard>
         <Accordion title="Change Password">
           <Stack gap="md" className="pt-3">
-            <form onSubmit={handlePasswordSubmit} className="grid gap-4 md:grid-cols-[1fr_240px] md:items-start">
+            <Form onSubmit={handlePasswordSubmit} className="grid gap-4 md:grid-cols-[1fr_240px] md:items-start">
               <Stack gap="sm">
                 <Input id="current-password" type="password" label="Current Password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required autoComplete="current-password" />
                 <Input id="new-password" type="password" label="New Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={8} autoComplete="new-password" />
@@ -150,7 +151,7 @@ function renderAccountTab({
               <Text variant="secondary" className="text-xs md:mt-1">
                 Pick at least 8 characters. We recommend a mix of upper-case, numbers, and a symbol. After changing, you stay signed in on this device; other sessions are not signed out.
               </Text>
-            </form>
+            </Form>
           </Stack>
         </Accordion>
       </SectionCard>

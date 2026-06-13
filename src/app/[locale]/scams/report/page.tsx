@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
-import { useSession, ROUTES, SCAM_TYPES, SCAM_PLATFORM_LABELS, Div, Button, Label, Input, Textarea, Select } from "@mohasinac/appkit/client";
+import { useSession, ROUTES, SCAM_TYPES, SCAM_PLATFORM_LABELS, Div, Button, Form, Label, Input, Textarea, Select } from "@mohasinac/appkit/client";
 import { Alert, Stack, Heading, Text, Row, Card, CardBody, Main, Ul, Li } from "@mohasinac/appkit";
 import { ChevronLeft, Loader2, Plus, X } from "lucide-react";
 import { API_ROUTES } from "@/constants";
@@ -206,6 +206,7 @@ function PrivacyAgreementSection({
         <Stack gap="md">
           <Heading level={2} className="text-base font-semibold">Section 3 — Privacy & Agreement</Heading>
           <Label className="flex cursor-pointer items-start gap-3">
+            {/* audit-raw-form-input-ok: custom rich-Label checkbox with multi-line description block */}
             <input type="checkbox" checked={form.reportedByAnon} onChange={(e) => field("reportedByAnon")(e.target.checked)} className="mt-0.5 h-4 w-4 rounded" />
             <Stack gap="none">
               <Text className="text-sm font-medium">Keep my identity private</Text>
@@ -213,6 +214,7 @@ function PrivacyAgreementSection({
             </Stack>
           </Label>
           <Label className="flex cursor-pointer items-start gap-3">
+            {/* audit-raw-form-input-ok: custom rich-Label checkbox with multi-line description block */}
             <input type="checkbox" required checked={form.agreed} onChange={(e) => field("agreed")(e.target.checked)} className="mt-0.5 h-4 w-4 rounded" />
             <Stack gap="none">
               <Text className="text-sm font-medium">
@@ -312,7 +314,7 @@ function ScamReportForm({ userId }: { userId: string }) {
         <ChevronLeft className="h-4 w-4" /> Back to Scam Registry
       </Link>
 
-      <form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit}>
         <Stack gap="lg">
           <Stack gap="xs">
             <Heading level={1} className="text-2xl font-bold">
@@ -360,7 +362,7 @@ function ScamReportForm({ userId }: { userId: string }) {
             </Button>
           </Row>
         </Stack>
-      </form>
+      </Form>
     </Div>
   );
 }

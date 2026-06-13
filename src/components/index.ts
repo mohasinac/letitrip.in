@@ -6,7 +6,9 @@ export { LoginPageClient } from "./auth/LoginPageClient";
 export { RegisterPageClient } from "./auth/RegisterPageClient";
 export { ResetPasswordPageClient } from "./auth/ResetPasswordPageClient";
 export { VerifyEmailPageClient } from "./auth/VerifyEmailPageClient";
-export { DevToolbar, getDevPrefs, isMockRazorpayEnabled, isMockShiprocketEnabled } from "./dev/DevToolbar";
+// DevToolbar + isMockRazorpayEnabled + isMockShiprocketEnabled deleted in
+// Track H. Mock provider selection now lives server-side via
+// siteSettings.featureFlags.useMockPayment / useMockShipping.
 export { SeedPanel } from "./dev/SeedPanel";
 export { AfterHeroAdSlot, AfterFeaturedProductsAdSlot, AfterReviewsAdSlot, AfterFAQAdSlot } from "./homepage/AdSlots";
 export { HomepageNewsletterForm } from "./homepage/HomepageNewsletterForm";

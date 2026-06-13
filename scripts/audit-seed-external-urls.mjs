@@ -85,7 +85,7 @@ function isMediaUrl(url) {
   return false;
 }
 
-function isAlreadyProxied(url, line) {
+function isAlreadyProxied(url, line, prevLine) {
   // The URL itself — never; it's an absolute https URL by construction.
   // But it may appear as the *value* of ?url=... in an /api/media/ext call.
   // In that case the literal occurrence of the raw URL is intentional
@@ -94,6 +94,10 @@ function isAlreadyProxied(url, line) {
     return true;
   }
   if (line.includes("seedExtMedia(") || line.includes("resolveMediaUrl(")) {
+    return true;
+  }
+  // Multi-line wrappers — the previous line opens the call, this line carries the URL.
+  if (prevLine && /seedExtMedia\(\s*$|resolveMediaUrl\(\s*$/.test(prevLine)) {
     return true;
   }
   return false;
@@ -111,7 +115,7 @@ for (const file of walk(SEED_DIR)) {
     if (SUPPRESS_RE.test(line)) continue;
     const matches = line.match(URL_RE);
     if (!matches) continue;
-    if (isAlreadyProxied(undefined, line)) continue;
+    if (isAlreadyProxied(undefined, line, i > 0 ? lines[i - 1] : undefined)) continue;
     for (const url of matches) {
       if (!isMediaUrl(url)) continue;
       violations.push({

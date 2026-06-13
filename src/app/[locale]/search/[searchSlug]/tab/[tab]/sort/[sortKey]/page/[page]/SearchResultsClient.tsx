@@ -31,6 +31,7 @@ export function SearchResultsClient({ locale, query, total, products }: Props) {
       isLoading={false}
       renderSearchInput={() => (
         <Div className="space-y-4">
+          {/* audit-raw-form-input-ok: plain GET-form URL search bar */}
           <form method="get" action={`/${locale}/search`} className="flex items-center gap-2">
             <Input name="q" defaultValue={query} placeholder="Search products, categories, stores" />
             <Button type="submit">Search</Button>

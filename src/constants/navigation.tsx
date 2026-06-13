@@ -60,7 +60,7 @@ export interface NavItem {
 
 const { navIcons } = THEME_CONSTANTS.colors;
 const iconSm = THEME_CONSTANTS.icon.size.sm;
-const CLS_SCAM_ICON = "text-red-500";
+const CLS_SCAM_ICON = "text-error";
 
 export const MAIN_NAV_ITEMS: NavItem[] = [
   { key: "home",       href: String(ROUTES.HOME),                 icon: <Home         className={`${iconSm} ${navIcons.home}`}       /> },

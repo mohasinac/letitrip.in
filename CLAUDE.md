@@ -16,6 +16,7 @@
 - [🛑 Rule #6 — Code Within Vercel Hobby Tier Limits](#-rule-6--code-within-vercel-hobby-tier-limits)
 - [🛑 Rule #7 — All CTAs Must Use the Action Registry](#-rule-7--all-ctas-must-use-the-action-registry)
 - [🛑 Rule #8 — Never Defer Work](#-rule-8--never-defer-work)
+- [🛑 Rule #9 — Forms & Inputs Must Use Appkit Primitives](#-rule-9--forms--inputs-must-use-appkit-primitives)
 - [Project Summary](#project-summary)
 - [Key Files to Read Before Any Session](#key-files-to-read-before-any-session)
 - [Seed Data Reference](#seed-data-reference)
@@ -186,6 +187,65 @@ When implementing a feature, fix, or refactoring:
 5. **Seed data, types, tests, audits** — if your change requires updates to seed data, TypeScript types, audit baselines, or related components, do them now. Not later.
 
 **Why:** Deferred work accumulates across sessions and creates compounding regressions. Every "we'll do it next session" becomes a stale TODO that the next session may not even be aware of. The cost of finishing now is always lower than the cost of context-switching back to it later.
+
+---
+
+## 🛑 RULE #9 — FORMS & INPUTS MUST USE APPKIT PRIMITIVES
+
+**Raw `<form>` / `<input>` / `<select>` / `<textarea>` are banned in product code.** Every form goes through the appkit form primitives:
+
+| Need | Use |
+|---|---|
+| Compact single-step form (login, address, contact) | [`<Form>`](appkit/src/ui/components/Form.tsx) — wraps `<form>` + mounts `FormShellContext.Provider` automatically |
+| Wizard / multi-step with auto-save + publish | [`<FormShell steps={…}>`](appkit/src/ui/forms/FormShell.tsx) |
+| Text input | [`<FieldInput name="…" label="…">`](appkit/src/ui/forms/FieldInput.tsx) |
+| Single-select | [`<FieldSelect>`](appkit/src/ui/forms/FieldSelect.tsx) for ≤5 options; [`<PaginatedSelect>`](appkit/src/ui/components/PaginatedSelect.tsx) for >5 |
+| Multi-line text | [`<FieldTextarea>`](appkit/src/ui/forms/FieldTextarea.tsx) |
+| Checkbox | [`<FieldCheckbox>`](appkit/src/ui/forms/FieldCheckbox.tsx) |
+| Submit button | [`<Button action={ACTIONS.<RESOURCE>["…"]}>`](appkit/src/ui/components/Button.tsx) — auto-resolves label, ariaLabel, variant, confirmation |
+
+### Rules
+
+1. **No raw `<form>`, `<input>`, `<select>`, `<textarea>` in `.tsx` outside the primitives themselves.** Enforced by [`scripts/audit-raw-form-input.mjs`](scripts/audit-raw-form-input.mjs).
+2. **Schema-driven validation.** Define a Zod schema in `appkit/src/features/<feature>/schemas/`. Parse in the submit handler; for each issue, call `setFieldError(issue.path[0], issue.message)` from the `<Form>` render-prop helpers.
+3. **The render-prop form of `<Form>` exposes helpers**: `{ setFieldError, clearErrors, hasErrors }`. Use it whenever the submit handler needs to surface inline errors (the common case).
+4. **Manual `useState<string | null>(null)` for error display is forbidden.** Use `FormShellContext` — `FieldInput` already wires `aria-invalid` + the error `<Text role="alert">` block.
+5. **Submit buttons use `<Button action={…}>`** — never inline `{ id, label, variant }`. Destructive submits MUST have a `confirmation` config on the ActionDef (Rule #7).
+6. **Server-side error → inline field error.** When the API returns `{ ok: false, code, error }`, look up `ERROR_DISPLAY_MAP[code] ?? error` and pipe it into `setFieldError("<targetFieldName>", message)`. The error renders on the field, not a banner.
+7. **Per-line escape hatch**: `// audit-raw-form-input-ok: <reason>` on the same line OR the line above. Reserve for genuinely irreducible cases (native `<input type="color">` picker, dev tools).
+
+### Canonical example
+
+```tsx
+import { Form, FieldInput, Button } from "@mohasinac/appkit/ui";
+import { loginSchema } from "../schemas";
+
+<Form onSubmit={(e) => e.preventDefault()} className="space-y-4">
+  {({ setFieldError, clearErrors }) => (
+    <>
+      <FieldInput name="email" type="email" label="Email" required value={email} onChange={setEmail} />
+      <FieldInput name="password" type="password" label="Password" required value={password} onChange={setPassword} />
+      <Button
+        type="submit"
+        isLoading={isPending}
+        onClick={async () => {
+          clearErrors();
+          const parsed = loginSchema.safeParse({ email, password });
+          if (!parsed.success) {
+            for (const issue of parsed.error.issues) setFieldError(String(issue.path[0]), issue.message);
+            return;
+          }
+          await onSubmit(parsed.data);
+        }}
+      >
+        Sign in
+      </Button>
+    </>
+  )}
+</Form>
+```
+
+**Why:** Raw `<form>`/`<input>` bypasses Zod validation, FormShell context-driven errors, dirty tracking, `aria-invalid` / `aria-describedby` wiring, i18n labels, and the ACTIONS-registry submit-button pattern. The canonical primitives give all of that for free in one consistent shape across every surface.
 
 ---
 
@@ -644,6 +704,7 @@ The 4 layout shells (`AdminLayoutShell`, `StoreLayoutShell`, `UserLayoutShell`, 
 | 17 | **`useSearchParams()` requires `<Suspense>` in Next.js 16 production** | Every appkit listing view calls `useUrlTable()` → `useSearchParams()`. In `next start` (production mode), calling `useSearchParams()` without a `<Suspense>` boundary triggers the error boundary → "Something went wrong". Fix: the admin/store/user dashboard layouts AND the root `[locale]/layout.tsx` wrap `{children}` in `<Suspense>`. Never remove these boundaries. New dashboard sub-layouts should also include `<Suspense>` around `{children}`. |
 | 18 | **No re-exports — import from the defining module** | Never create barrel re-exports (`export { X } from "./internal/thing"`) for convenience. Every import must point to the file that **defines** the symbol. Barrel re-exports in `index.ts` / `client.ts` / `server.ts` are only for appkit's **public API contract** — UI components, hooks, types, and constants that external consumers actually need. Internal utilities, shared hooks used only inside appkit views, and implementation details stay internal. This prevents import chain bloat, circular dependencies, and the Turbopack client-bundle trap (Root Cause #6). During Phase 11 (W5-1/W5-2), all existing convenience re-exports will be pruned and consumer imports rewritten to point directly at defining modules. |
 | 19 | **Peer-dep duplicates in `appkit/node_modules/` cause Turbopack dual-instance crashes** | Running `cd appkit && npm install` populates `appkit/node_modules/` with every peer-dependency *and* their transitive runtime deps. Turbopack 16 resolves appkit-internal imports to those local copies while the consumer's imports resolve to the consumer-root copy. Singleton modules (React contexts, registries) end up as two separate instances in the same SSR bundle, and `useContext` reads the wrong one. This caused the 2026-06-10/11 "No QueryClient set" prod outage (duplicate `@tanstack/query-core` carrying its own `QueryClientContext`). The fix is enforced by `appkit/scripts/dedupe-peer-deps.mjs` (wired as both `postinstall` and the first step of `build`). **Rules**: (a) never remove that script or its `package.json` wiring; (b) if a new peer-dep is added that ships a React context via a transitive package, append the transitive's name to `TRANSITIVE_RUNTIME_DUPS` inside the script; (c) when diagnosing similar errors, decode the failing chunk's source map (`.next/server/chunks/ssr/<chunk>.map`) — if the original-position source path goes through `appkit/node_modules/<pkg>/...`, this pattern is in play. |
+| 20 | **Public appkit prop / hook signature changes must update consumer call sites in the same commit** | Renaming, removing, or retyping a publicly-exported prop (e.g. `open` → `isOpen`), changing a hook return-shape (`showToast(obj)` → `showToast(msg, variant)`), or dropping an exported symbol from `index.ts` / `client.ts` / `server.ts` MUST be paired with the consumer-side update in the same commit. Consumer code is silently typechecked against the bundled `dist/*.d.ts` from `file:./appkit`, so a half-finished change typechecks locally (where the source still has the old export from working memory) but breaks the moment the dist is rebuilt or the consumer reads a stale type. Always run `npm --prefix appkit run build` and `npx tsc --noEmit` in the consumer after touching any exported appkit surface. |
 
 ---
 
@@ -670,6 +731,12 @@ The 4 layout shells (`AdminLayoutShell`, `StoreLayoutShell`, `UserLayoutShell`, 
 | Destructive bulk/row action with no confirmation dialog | Every `kind: "danger"` action MUST have a `confirmation` config in `action-registry.ts` — missing confirmation on delete/cancel/ban = immediate execution with no user confirmation |
 | Re-exporting a symbol just to create a barrel alias | Import directly from the defining module. No `export { X } from "./internals"` in index/client/server barrels unless X is part of the package's public API. Consumer code must import from the file that defines the symbol, not from a barrel re-export. |
 | Adding a new re-export to `appkit/src/index.ts` or `client.ts` | Only export symbols that are part of appkit's **public API contract** (UI components, hooks, types, constants consumers actually need). Internal utilities, shared hooks used only inside appkit views, and implementation details stay internal — import them directly within appkit, never re-export for convenience. |
+| Raw `<form onSubmit>` in product code | `<Form onSubmit={…}>{({ setFieldError, clearErrors }) => …}</Form>` — auto-mounts FormShellContext.Provider. See Rule #9. |
+| Raw `<input>` / `<select>` / `<textarea>` for form fields | `<FieldInput>` / `<FieldSelect>` (or `<PaginatedSelect>` for >5 options) / `<FieldTextarea>`. See Rule #9. |
+| Manual `useState<string \| null>(null)` for inline form error | Call `setFieldError("<fieldName>", message)` from the `<Form>` render-prop helpers. FieldInput / FieldSelect / FieldTextarea / FieldCheckbox all wire `aria-invalid` + role="alert" error block automatically. |
+| Hand-rolled `if (!email || !/.+@.+/.test(email))` validation in submit handler | Define a Zod schema in `appkit/src/features/<feature>/schemas/<name>.ts`, call `schema.safeParse(values)`, iterate `parsed.error.issues` → `setFieldError(issue.path[0], issue.message)`. |
+| Hardcoded `top-16` / `top-20` / `top-[64px]` on a sticky element | `top-[var(--header-height,0px)]` — enforced by `audit-sticky-offsets.mjs`. The header height changes with breakpoint, mobile keyboard, and announcement banner state. |
+| Removing the Firebase webpack/Turbopack `firebase` alias from `next.config.js` or `defineNextConfig` | Never — `audit-firebase-alias.mjs` enforces both. Removing either alias causes the dual-module-instance prod outage (Root Cause #14). |
 
 ---
 
@@ -784,6 +851,104 @@ Prefer props over raw className for these concerns. `className` is the escape ha
 - Dynamic values impossible with classes (`style={{ top: offset }}`)
 - Third-party library requirements
 - Allowlisted files: RichTextRenderer, ImageCropModal, ImageEditor, VideoTrimModal, CameraCapture, MediaSlider, HeroCarousel, SpinWheelView
+
+---
+
+## Firebase Functions Registry
+
+> Track A — every Firebase function is declared once as a typed `FunctionDefinition` record. There is no manual `bindToFirebase.{schedule,documentCreated,https}` call in consumer code.
+
+**Pattern**:
+
+```ts
+// appkit/src/_internal/server/functions/{scheduled,firestore,https}/<name>.ts
+import { defineFunction } from "../define";
+import { handlerFn } from "../../jobs/handlers";
+
+export const myJob = defineFunction({
+  name: "myJob",
+  description: "What it does (one line).",
+  trigger: { kind: "schedule", cron: "every 15 minutes" },
+  handler: handlerFn,
+  options: { region: "asia-south1", timeoutSeconds: 300, memory: "256MiB" },
+});
+```
+
+**HTTPS definitions** must declare `options.secretEnvVar` and (optionally) `options.secrets` — the type forces this at compile time and `audit-functions-registry-completeness` re-asserts at runtime.
+
+**Consumer extension** (`functions/src/consumer-functions.ts`):
+
+```ts
+export const CONSUMER_FUNCTIONS: readonly FunctionDefinition[] = [
+  defineFunction({ name: "myCustomJob", /* ... */ }),
+];
+```
+
+The merge order in `functions/src/index.ts` is `mergeFunctionRegistries(APPKIT_FUNCTIONS, CONSUMER_FUNCTIONS)` — consumer-side overrides require `options.overrides: "<shadowed-name>"` and throw otherwise. `Object.assign(exports, bindAllFromRegistry(REGISTRY))` is the canonical wiring; no other binding call is permitted (enforced by audit).
+
+---
+
+## Provider Resolution (Payment + Shipping)
+
+> Track H — Razorpay and Shiprocket mocks live as in-process `IPaymentProvider` / `IShippingProvider` implementations, not as orphaned HTTP routes. Selection is server-side, audited, and throws in production if a mock flag is on.
+
+**Resolution**: `siteSettings.featureFlags.useMockPayment` / `useMockShipping`. When `true` and `NODE_ENV !== "production"`, the resolver returns the mock provider. When `true` and `NODE_ENV === "production"`, the resolver throws — production must never run with mocks.
+
+**Routes** call `getProviders().payment.X()` / `getProviders().shipping.X()`. No source outside `appkit/src/providers/payment-razorpay/**` may import the `razorpay` npm package; no source outside `appkit/src/providers/shipping-shiprocket/**` may call the Shiprocket REST host. Both rules enforced by `audit-payment-provider-import` / `audit-shipping-provider-import`.
+
+**Webhook simulation** in dev runs through admin-only endpoints (`POST /api/admin/dev/emit-payment-webhook`, `POST /api/admin/dev/emit-shipping-event`) that invoke the mock provider's `emitWebhook` / `emitTrackingEvent` method. The orphaned `/api/dev/mock-*` routes are deleted; new routes under `src/app/api/dev/**` are blocked by `audit-orphan-dev-routes`.
+
+**Admin checkout bypass** (`siteSettings.featureFlags.adminCheckoutBypass`) is the **single** legitimate way to skip OTP + payment for testing. It is read only by `src/app/api/admin/checkout-bypass/route.ts`, must be wrapped by `createRouteHandler({ roles: ROLES_ADMIN_ONLY, permission: "settings:write" })`, and every invocation logs `actorUid` + `reason`. Enforced by `audit-checkout-bypass`.
+
+---
+
+## Form Authoring Pattern
+
+> Track D — every form ships with a Zod schema. There is no manual validation mode.
+
+**Components**:
+- `<FormShell schema={zodSchema} ...>` for multi-step / split-preview forms.
+- `useFormShellState(zodSchema)` for caller-owned layouts.
+- `<QuickFormDrawer schema={zodSchema} fields={...}>` for compact 1–3 field inline edits.
+
+**Inputs**: `<FieldInput>`, `<FieldSelect>`, `<FieldTextarea>`, `<PaginatedSelect>` (any selection > 5 options). Raw `<form onSubmit>`, `<input>`, `<select>`, `<textarea>` are blocked by `audit-raw-form-input`. `react-hook-form` is installed for transitive consumers but is not the appkit authoring path.
+
+**Audits**: every `<FormShell>` and `useFormShellState(...)` callsite must reference a Zod schema (`audit-form-schema`). Every `<QuickFormDrawer>` must pass a `schema` prop (`audit-quick-form-drawer-schema`).
+
+---
+
+## RBAC + Mocks Gating
+
+> Tracks B + C — every privileged surface is guarded; every mock surface is dev-only; role string compares are forbidden.
+
+**API routes** under `src/app/api/**/route.ts`: every exported verb wraps `createRouteHandler({ auth, roles, permission })` or carries `// rbac-public: <reason>` above the export. `roles` + `permission` are both required unless the export carries `// rbac-scope-enforced-in-handler: <reason>`. Enforced by `audit-route-rbac`.
+
+**Dashboard pages** under `src/app/[locale]/{admin,store,user}/`: every `page.tsx` must have an ancestor layout that calls `makeAdminSectionLayout(permission)` or renders `<RoleGuard role={...}>`. Enforced by `audit-page-rbac`.
+
+**Role checks**: never compare `user.role === "x"` inline. Always use the predicate (`isAdminUser(user)`, `isSellerUser(user)`, etc.) from [appkit/src/features/auth/role-predicates.ts](appkit/src/features/auth/role-predicates.ts). Enforced by `audit-inline-role-check`.
+
+**Session cookie reads**: the only file allowed to call `cookies().get("__session")` is [src/lib/firebase/auth-server.ts](src/lib/firebase/auth-server.ts). Every other site uses `getServerSessionUser()` / `requireAuthFromRequest()`. Enforced by `audit-inline-session-cookie`.
+
+**Auth routes**: every handler under `src/app/api/auth/**/route.ts` must call `applyRateLimit(request, RateLimitPresets.<AUTH|PASSWORD_RESET|OAUTH>)`. Enforced by `audit-auth-rate-limit`.
+
+**Mocks**: `src/__mocks__/*` files are Jest-only and carry `// audit-mock-gating-ok: jest-only` at the head. Seed data lives in `appkit/src/seed/` and may only be imported by `src/app/api/demo/seed/route.ts`. Enforced by `audit-mock-gating`.
+
+---
+
+## Media Architecture
+
+> Track E — bytes never traverse the application server.
+
+**Upload flow**: client → `POST /api/media/sign` (header-only) → browser PUT to GCS signed URL → `POST /api/media/finalize` (header-only, magic-byte verification + structured `422 MIME_MISMATCH` on disagreement).
+
+**Read flow**: `/media/<slug>` proxy streams the GCS object through Sharp watermarking for images, raw pipe for non-images. Input cap 50 MB. Response `Cache-Control: public, max-age=2592000, immutable, stale-while-revalidate=86400`.
+
+**Rules**:
+- No `request.formData()`, `request.body` (binary), `request.arrayBuffer()`, `request.blob()` in any API route except `/api/media/sign` and `/api/media/finalize` (header-only). Enforced by `audit-media-direct-upload`.
+- No raw `firebasestorage.googleapis.com` / `storage.googleapis.com/v0/` URL anywhere in source. Only `src/app/api/media/**`, `appkit/src/_internal/server/storage/**`, and the `seedExtMedia` helper definition may reference these hosts. Enforced by `audit-firestore-storage-urls`.
+- No JSX `src="https://..."` pointing at Firebase Storage, GCS, or googleusercontent (except `lh3.googleusercontent.com` for unfinalized Google OAuth photos). Enforced by `audit-raw-img-src`.
+- Storage rules at [appkit/firebase/base/storage.rules](appkit/firebase/base/storage.rules) stay `allow read: if true` / `allow write: if false`. Enforced by `audit-storage-rules-shape`.
+- `/api/media/finalize` always runs `fileTypeFromBuffer()` magic-byte detection and emits structured `422 MIME_MISMATCH` on disagreement. Enforced by `audit-finalize-magic-bytes`.
 
 ---
 

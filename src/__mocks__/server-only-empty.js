@@ -1,3 +1,4 @@
+// audit-mock-gating-ok: jest-only — Jest mock module never executed in production paths.
 /**
  * Empty stub for server-only modules (e.g. firebase-admin/*).
  *

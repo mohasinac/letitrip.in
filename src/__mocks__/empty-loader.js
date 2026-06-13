@@ -1,3 +1,4 @@
+// audit-mock-gating-ok: jest-only — Jest mock module never executed in production paths.
 /**
  * Empty webpack loader — stubs a module with an empty CommonJS export.
  *

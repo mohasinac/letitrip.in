@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { Button, Div, Heading, Input, Row, Stack, Text, ACTIONS } from "@mohasinac/appkit/client";
+import { Button, Div, Form, Heading, Input, Row, Stack, Text, ACTIONS } from "@mohasinac/appkit/client";
 import { useState } from "react";
 import { ROUTES } from "@mohasinac/appkit/client";
 
@@ -19,7 +19,7 @@ export default function Page() {
   return (
     <Div className="mx-auto max-w-2xl">
       <Heading level={1} className="mb-6 text-2xl font-semibold">New Feature Badge</Heading>
-      <form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit}>
         <Stack gap="md">
           {error && <Text color="danger">{error}</Text>}
           <Input
@@ -35,7 +35,7 @@ export default function Page() {
             <Button type="submit" action={ACTIONS.STORE["create-feature"]} />
           </Row>
         </Stack>
-      </form>
+      </Form>
     </Div>
   );
 }

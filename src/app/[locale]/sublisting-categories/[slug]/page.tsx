@@ -19,6 +19,7 @@ function fmt(paise: number, currency = "INR"): string {
 
 export const revalidate = 300;
 
+// audit-semantic-color-ok: amber palette is the brand auction-pill colour, not semantic warning
 const CLS_AUCTION_PILL = "rounded-full bg-amber-100 dark:bg-amber-900/30 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300";
 const CLS_PREORDER_PILL = "rounded-full bg-indigo-100 dark:bg-indigo-900/30 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-700 dark:text-indigo-300";
 

@@ -202,15 +202,71 @@ const checks = [
     args: ["scripts/audit-seed-external-urls.mjs"],
     cwd: ROOT,
   },
+  {
+    label: "audit-raw-form-input",
+    cmd: "node",
+    args: ["scripts/audit-raw-form-input.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-hex-tokens",
+    cmd: "node",
+    args: ["scripts/audit-hex-tokens.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-semantic-colors",
+    cmd: "node",
+    args: ["scripts/audit-semantic-colors.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-listing-pagesize",
+    cmd: "node",
+    args: ["scripts/audit-listing-pagesize.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-sticky-offsets",
+    cmd: "node",
+    args: ["scripts/audit-sticky-offsets.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-firebase-alias",
+    cmd: "node",
+    args: ["scripts/audit-firebase-alias.mjs"],
+    cwd: ROOT,
+  },
+  // ── Strict-zero audits added in the Functions Registry + Provider Abstraction
+  // + Auth/RBAC + Forms + Media + Mocks sprint ──────────────────────────────
+  { label: "audit-functions-registry-completeness", cmd: "node", args: ["scripts/audit-functions-registry-completeness.mjs"], cwd: ROOT },
+  { label: "audit-payment-provider-import", cmd: "node", args: ["scripts/audit-payment-provider-import.mjs"], cwd: ROOT },
+  { label: "audit-shipping-provider-import", cmd: "node", args: ["scripts/audit-shipping-provider-import.mjs"], cwd: ROOT },
+  { label: "audit-mock-flag-production", cmd: "node", args: ["scripts/audit-mock-flag-production.mjs"], cwd: ROOT },
+  { label: "audit-orphan-dev-routes", cmd: "node", args: ["scripts/audit-orphan-dev-routes.mjs"], cwd: ROOT },
+  { label: "audit-checkout-bypass", cmd: "node", args: ["scripts/audit-checkout-bypass.mjs"], cwd: ROOT },
+  { label: "audit-auth-rate-limit", cmd: "node", args: ["scripts/audit-auth-rate-limit.mjs"], cwd: ROOT },
+  { label: "audit-inline-session-cookie", cmd: "node", args: ["scripts/audit-inline-session-cookie.mjs"], cwd: ROOT },
+  { label: "audit-inline-role-check", cmd: "node", args: ["scripts/audit-inline-role-check.mjs"], cwd: ROOT },
+  { label: "audit-route-rbac", cmd: "node", args: ["scripts/audit-route-rbac.mjs"], cwd: ROOT },
+  { label: "audit-page-rbac", cmd: "node", args: ["scripts/audit-page-rbac.mjs"], cwd: ROOT },
+  { label: "audit-mock-gating", cmd: "node", args: ["scripts/audit-mock-gating.mjs"], cwd: ROOT },
+  { label: "audit-form-schema", cmd: "node", args: ["scripts/audit-form-schema.mjs"], cwd: ROOT },
+  { label: "audit-quick-form-drawer-schema", cmd: "node", args: ["scripts/audit-quick-form-drawer-schema.mjs"], cwd: ROOT },
+  { label: "audit-media-direct-upload", cmd: "node", args: ["scripts/audit-media-direct-upload.mjs"], cwd: ROOT },
+  { label: "audit-firestore-storage-urls", cmd: "node", args: ["scripts/audit-firestore-storage-urls.mjs"], cwd: ROOT },
+  { label: "audit-raw-img-src", cmd: "node", args: ["scripts/audit-raw-img-src.mjs"], cwd: ROOT },
+  { label: "audit-finalize-magic-bytes", cmd: "node", args: ["scripts/audit-finalize-magic-bytes.mjs"], cwd: ROOT },
+  { label: "audit-storage-rules-shape", cmd: "node", args: ["scripts/audit-storage-rules-shape.mjs"], cwd: ROOT },
 ];
 
-// Baseline violation counts — block only on regressions (count > baseline).
-// audit-ssr-in-appkit: 8 known violations (S2-deferred root files).
-// audit-html-wrappers: 302 existing + 3 from agent refactoring (admin views extracted helpers using raw HTML).
-// audit-code-quality:  450 existing quality smells (repeated strings, large fns, deep nesting).
-const SSR_BASELINE = 8;
-const HTML_WRAPPERS_BASELINE = 305;
-const CODE_QUALITY_BASELINE = 450;
+// Baseline violation counts — strict-zero. All three audits verified clean ✓
+// on 2026-06-13; prior stale baselines (8 / 305 / 450) would have absorbed
+// regressions silently. Any new violation now fails the gate.
+const SSR_BASELINE = 0;
+const HTML_WRAPPERS_BASELINE = 0;
+const CODE_QUALITY_BASELINE = 0;
 
 const failures = [];
 

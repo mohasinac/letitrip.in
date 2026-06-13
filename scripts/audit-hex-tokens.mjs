@@ -48,7 +48,11 @@ import { dirname } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
-const SRC_DIR = join(ROOT, "src");
+// Walked source roots — both the consumer `src/` and the appkit library's `src/`.
+// appkit/src was originally out of scope; extended 2026-06-13 because the
+// canonical brand surfaces (AppLayoutShell, BrandDetailPageView, admin views)
+// live there and were silently drifting.
+const SRC_DIRS = [join(ROOT, "src"), join(ROOT, "appkit", "src")];
 
 // ---------------------------------------------------------------------------
 // Known token set — parsed from appkit/src/tokens/tokens.css
@@ -82,8 +86,9 @@ const WARN_ONLY = argv.includes("--warn-only");
 // Patterns
 // ---------------------------------------------------------------------------
 
-/** Matches any 3- or 6-digit hex colour that is NOT inside a comment. */
-const HEX_RE = /#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/g;
+/** Matches any 3- or 6-digit hex colour that is NOT inside a comment.
+ *  Negative lookbehind for `&` excludes HTML entities like `&#123;` (which is `{`). */
+const HEX_RE = /(?<!&)#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/g;
 
 /** Category A: hex used as a fallback inside a CSS var(). */
 const VAR_FALLBACK_RE = /var\((--appkit-[a-z0-9-]+)\s*,\s*#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\)/g;
@@ -99,7 +104,40 @@ const TAILWIND_ARBITRARY_HEX_RE = /(?:bg|text|border|ring|fill|stroke|from|to|vi
 const EXEMPT_FILENAMES = new Set([
   "opengraph-image.tsx", // ImageResponse Canvas API uses raw hex
   "twitter-image.tsx",
+  "og.tsx",              // appkit OG renderers — ImageResponse Canvas API
+  "og-layout.tsx",       // appkit OG layout helper
+  "manifest.ts",         // Web App Manifest theme/background colors
+  "tokens.css",          // tokens definition file itself
+  "color.helper.ts",     // hex parser / blender — needs raw hex in tests
+  "email.ts",            // HTML emails — email clients ignore CSS vars
+  "consent-otp.ts",      // OTP email template
+  "GlobalError.tsx",     // renders without CSS framework on CSS-load failure
+  "ErrorBoundary.tsx",   // renders without CSS framework on CSS-load failure
 ]);
+
+/** Per-line escape hatch: `// audit-hex-tokens-ok: <reason>` */
+const SUPPRESS_RE = /(?:\/\/|\/\*)\s*audit-hex-tokens-ok\b/;
+
+/** Path-pattern exemptions (relative to ROOT, forward-slash). */
+const EXEMPT_PATH_PATTERNS = [
+  /[\\/]tokens[\\/]/,                    // appkit tokens module
+  /[\\/]seed[\\/]/,                       // seed data — hex is part of seeded site-settings
+  /[\\/]_internal[\\/]server[\\/]features[\\/][^\\/]+[\\/]og\.tsx?$/, // belt-and-suspenders
+  /[\\/]features[\\/]contact[\\/]/,      // email templates
+  /[\\/]features[\\/]auth[\\/]consent/,  // OTP email templates
+  /[\\/]admin[\\/]components[\\/]analytics[\\/]/, // chart palettes — decorative
+  /AdminAnalyticsCharts\.tsx?$/,
+  /DashboardStats\.tsx?$/,
+  /CharacterHotspot\.tsx?$/,             // dynamic positioning from Firestore data
+  /HeroBanner\.tsx?$/,                   // dynamic theme tokens from CMS
+  /HeroCarousel\.tsx?$/,                 // dynamic gradients from CMS
+  /PromoGrid\.tsx?$/,                    // dynamic theme tokens from CMS
+  /GoogleReviewsSection\.tsx?$/,         // official Google brand colors
+  /WhatsAppCommunitySection\.tsx?$/,     // official WhatsApp brand colors
+  /SellerWhatsAppSettingsView\.tsx?$/,   // WhatsApp brand chrome
+  /CharacterHotspotForm\.tsx?$/,         // letitrip brand red palette in form editor preview
+  /NewsletterBanner\.tsx?$/,             // CMS-driven gradient seed values
+];
 
 /**
  * Returns true for lines where the hex is required/expected and should not
@@ -127,7 +165,7 @@ function isExemptLine(line) {
 
 function walk(dir, files = []) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    if (entry.name === "node_modules" || entry.name === ".next") continue;
+    if (entry.name === "node_modules" || entry.name === ".next" || entry.name === "dist" || entry.name === "__tests__") continue;
     if (entry.isDirectory()) {
       walk(join(dir, entry.name), files);
     } else {
@@ -140,15 +178,22 @@ function walk(dir, files = []) {
   return files;
 }
 
+function isExemptPath(file) {
+  const rel = relative(ROOT, file).replace(/\\/g, "/");
+  return EXEMPT_PATH_PATTERNS.some((rx) => rx.test(rel));
+}
+
 // ---------------------------------------------------------------------------
 // Violation collector
 // ---------------------------------------------------------------------------
 
 const violations = []; // { file, line, col, category, text, fixable }
 
-for (const file of walk(SRC_DIR)) {
+const allFiles = SRC_DIRS.flatMap((d) => walk(d));
+for (const file of allFiles) {
   const name = basename(file);
   if (EXEMPT_FILENAMES.has(name)) continue;
+  if (isExemptPath(file)) continue;
 
   const content = readFileSync(file, "utf8");
   const lines = content.split("\n");
@@ -157,6 +202,8 @@ for (const file of walk(SRC_DIR)) {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     if (isExemptLine(line)) continue;
+    if (SUPPRESS_RE.test(line)) continue;
+    if (i > 0 && SUPPRESS_RE.test(lines[i - 1])) continue;
 
     const rel = relative(ROOT, file);
 

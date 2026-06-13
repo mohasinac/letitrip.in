@@ -770,6 +770,7 @@ export function CartRouteClient() {
               <Div className="flex flex-wrap items-center gap-3">
                 {isAuthenticated && allItemIds.length > 1 && (
                   <Div className="flex items-center gap-2">
+                    {/* audit-raw-form-input-ok: select-all checkbox — custom dual-mode click handler */}
                     <input type="checkbox" id="cart-select-all" checked={isAllSelected} onChange={isAllSelected ? undefined : selectAll} onClick={!isAllSelected ? undefined : (e) => { e.preventDefault(); selectAll(); }} className="h-4 w-4 rounded border-zinc-300 dark:border-slate-600 accent-zinc-900 dark:accent-zinc-100" />
                     <Label htmlFor="cart-select-all" className="cursor-pointer text-sm text-zinc-600 dark:text-zinc-300">
                       Select all ({allItemIds.length} item{allItemIds.length !== 1 ? "s" : ""})
@@ -1130,6 +1131,7 @@ function SellerGroupSection({
           return (
             <Div key={item.id} className="flex items-start gap-3">
               {isAuthenticated && !isOutOfStock && !locked && (
+                // audit-raw-form-input-ok: per-row select checkbox aligned with row layout
                 <input
                   type="checkbox"
                   aria-label={`Select ${item.meta.title}`}

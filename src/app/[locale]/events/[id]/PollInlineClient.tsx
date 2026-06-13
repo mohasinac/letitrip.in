@@ -121,6 +121,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
             className="flex items-center gap-3 cursor-pointer rounded-xl border border-zinc-200 dark:border-zinc-700 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 transition-colors"
           >
             {isMultiSelect ? (
+              // audit-raw-form-input-ok: native checkbox inside a Label wrapper — standard radio/checkbox group pattern
               <input
                 type="checkbox"
                 name="poll-inline"
@@ -130,6 +131,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
                 className="accent-primary h-4 w-4"
               />
             ) : (
+              // audit-raw-form-input-ok: native radio inside a Label wrapper — standard radio group pattern
               <input
                 type="radio"
                 name="poll-inline"

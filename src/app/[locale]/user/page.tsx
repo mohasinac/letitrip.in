@@ -168,7 +168,8 @@ export default function Page() {
                   </Div>
                 )}
               </Button>
-              {/* eslint-disable-next-line lir/no-raw-html-elements -- hidden native file picker, no FormField equivalent */}
+              {/* eslint-disable-next-line lir/no-raw-html-elements -- hidden native file picker, no appkit equivalent */}
+              {/* audit-raw-form-input-ok: hidden native file picker */}
               <input
                 ref={fileRef}
                 type="file"

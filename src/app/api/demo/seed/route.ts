@@ -1,6 +1,7 @@
 import "@/providers.config";
 import { NextRequest, NextResponse } from "next/server";
 import { getUserFromRequest } from "@/lib/firebase/auth-server";
+import { isAdminUser } from "@mohasinac/appkit";
 import { getAdminDb, getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit";
 import { serverLogger, RTDB_PATHS } from "@mohasinac/appkit";
 import {
@@ -488,7 +489,7 @@ async function resolveAuthConflicts(
 
 export async function GET(request: NextRequest) {
   const user = await getUserFromRequest(request);
-  if (!user || user.role !== "admin") {
+  if (!user || !isAdminUser(user)) {
     return NextResponse.json({ success: false, message: "Unauthorized." }, { status: 401 });
   }
 
@@ -534,7 +535,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const user = await getUserFromRequest(request);
-  if (!user || user.role !== "admin") {
+  if (!user || !isAdminUser(user)) {
     return NextResponse.json({ success: false, message: "Unauthorized." }, { status: 401 });
   }
 

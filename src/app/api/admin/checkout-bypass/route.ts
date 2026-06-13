@@ -7,6 +7,7 @@ import {
   createCheckoutOrderAction,
   ApiErrors,
   PaymentMethodValues,
+  serverLogger,
 } from "@mohasinac/appkit";
 import { grantAdminCheckoutBypass } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_ONLY } from "@/constants";
@@ -29,6 +30,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
+    permission: "settings:write",
     handler: async () => {
       const settings = await siteSettingsRepository.getSingleton();
       const enabled = settings?.featureFlags?.adminCheckoutBypass === true;
@@ -47,6 +49,7 @@ export const POST = withProviders(
   createRouteHandler<(typeof bypassSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
+    permission: "settings:write",
     schema: bypassSchema,
     handler: async ({ user, body }) => {
       // Guard: feature flag must be explicitly enabled server-side.
@@ -57,6 +60,13 @@ export const POST = withProviders(
 
       const { addressId, notes, excludedProductIds } = body!;
       const adminUid = user!.uid;
+      const reason = notes?.trim() || "no reason supplied";
+
+      serverLogger.info("admin checkout bypass invoked", {
+        actorUid: adminUid,
+        reason,
+        addressId,
+      });
 
       // Pre-verify consent so createCheckoutOrderAction's transaction passes.
       await grantAdminCheckoutBypass(adminUid, addressId, adminUid);

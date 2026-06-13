@@ -113,7 +113,7 @@ type CheckoutStep = "address" | "otp-consent" | "otp" | "payment" | "processing"
 
 const STEP_CARD_CLS = "rounded-xl border border-zinc-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900";
 const STEP_SUBLABEL_CLS = "text-sm text-zinc-500 dark:text-zinc-400";
-const CLS_APPLIED_COUPON_ROW = "rounded-lg bg-success-surface border border-green-200 dark:border-green-800 px-3 py-2";
+const CLS_APPLIED_COUPON_ROW = "rounded-lg bg-success-surface border border-success px-3 py-2";
 const PRIMARY_BTN_CLS = "w-full rounded-lg bg-[var(--appkit-color-primary)] px-4 py-3 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50";
 
 // --- Sub-renderers -----------------------------------------------------------

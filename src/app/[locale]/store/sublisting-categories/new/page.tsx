@@ -4,7 +4,7 @@ import React, { useState } from "react";
 
 import { useRouter } from "@/i18n/navigation";
 import { Heading, ROUTES, Text } from "@mohasinac/appkit";
-import { Div, Button, Label, Input, Textarea } from "@mohasinac/appkit/client";
+import { Div, Button, Form, Label, Input, Textarea } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
 const LBL_CLS = "block text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-1";
@@ -57,7 +57,7 @@ export default function Page() {
         </Text>
       </Div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <Form onSubmit={handleSubmit} className="space-y-4">
         <>
           <Label className={LBL_CLS}>
             Category name <Text as="span" className="text-error">*</Text>
@@ -128,7 +128,7 @@ export default function Page() {
             Cancel
           </Button>
         </Div>
-      </form>
+      </Form>
     </Div>
   );
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { Link } from "@/i18n/navigation";
-import { useProfile, useUpdateProfile, useToast, useAuth, ROUTES, ImageUpload, useMediaUpload, Div, Button, Label, Input, Textarea, MediaImage, Toggle } from "@mohasinac/appkit/client";
+import { useProfile, useUpdateProfile, useToast, useAuth, ROUTES, ImageUpload, useMediaUpload, Div, Button, Form, Label, Input, Textarea, MediaImage, Toggle } from "@mohasinac/appkit/client";
 import { Heading, Text } from "@mohasinac/appkit";
 
 const __O = {
@@ -125,7 +125,7 @@ function renderProfileEditForm({
 }) {
   return (
     <Div surface="card" padding="lg">
-    <form
+    <Form
       onSubmit={handleSave}
       className="space-y-5"
     >
@@ -212,7 +212,7 @@ function renderProfileEditForm({
           {isPending ? "Saving…" : "Save Changes"}
         </Button>
       </Div>
-    </form>
+    </Form>
     </Div>
   );
 }

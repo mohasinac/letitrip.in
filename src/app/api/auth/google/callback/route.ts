@@ -56,6 +56,18 @@ export type AuthEventOutcome =
   | AuthEventSuccessPayload
   | { status: "error"; error?: string };
 
+/** Auth event cleanup is best-effort. `auth/user-not-found` is the normal
+ * case (the synthetic auth user was never claimed); any other failure is
+ * worth a warning so the cleanupRtdbEvents job can be cross-checked. */
+function logAuthCleanupRejection(eventId: string, reason: unknown): void {
+  const code = (reason as { code?: string } | null)?.code;
+  if (code === "auth/user-not-found") return;
+  serverLogger.warn("Synthetic auth user cleanup failed (non-fatal)", {
+    eventId,
+    err: reason,
+  });
+}
+
 /** Write event outcome to RTDB and redirect popup to close page. */
 async function writeOutcomeAndClose(
   eventId: string,
@@ -65,22 +77,25 @@ async function writeOutcomeAndClose(
   try {
     const db = getAdminRealtimeDb();
     await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).update(outcome);
-    // Best-effort self-delete after a short grace period so the client can read the outcome.
-    // Cleanup function handles nodes that survive longer.
-    setTimeout(async () => {
-      try {
-        await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).remove();
-      } catch {
-        // Non-fatal — cleanup function will handle it
-      }
-      // Delete the synthetic Auth user created when the client signed in with the
-      // per-event custom token.  Failures are non-fatal; the user has no email/
-      // password and poses no security risk, but leaving them pollutes Auth.
-      try {
-        await getAdminAuth().deleteUser(`auth_event_${eventId}`);
-      } catch {
-        // Non-fatal — user may not exist if signInWithCustomToken was never called
-      }
+    // Self-delete after a short grace period so the client can read the outcome.
+    // The scheduled cleanupRtdbEvents function handles nodes that survive longer.
+    // Failures are logged but never thrown — both deletions are idempotent
+    // (delete on a missing node is a no-op).
+    setTimeout(() => {
+      void Promise.allSettled([
+        db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).remove(),
+        getAdminAuth().deleteUser(`auth_event_${eventId}`),
+      ]).then(([rtdbResult, authResult]) => {
+        if (rtdbResult.status === "rejected") {
+          serverLogger.warn(
+            "Auth-event RTDB cleanup failed (non-fatal — cleanupRtdbEvents will retry)",
+            { eventId, err: rtdbResult.reason },
+          );
+        }
+        if (authResult.status === "rejected") {
+          logAuthCleanupRejection(eventId, authResult.reason);
+        }
+      });
     }, 10_000);
   } catch (writeErr) {
     serverLogger.error("Failed to write auth event outcome to RTDB", {

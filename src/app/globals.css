@@ -41,9 +41,7 @@
     letter-spacing: -0.011em;
   }
 
-  /* Heading refinements */
-  h1, h2, h3, h4, h5, h6 { letter-spacing: -0.02em; line-height: 1.1; }
-  p { line-height: 1.7; }
+  h1, h2, h3, h4, h5, h6 { letter-spacing: -0.02em; }
 
   /* Cursive font mode */
   html.font-cursive body {

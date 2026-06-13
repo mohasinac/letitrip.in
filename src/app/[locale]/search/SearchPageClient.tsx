@@ -14,6 +14,7 @@ export function SearchPageClient({ locale, query }: Props) {
       total={0}
       isLoading={false}
       renderSearchInput={() => (
+        // audit-raw-form-input-ok: plain GET-form URL search bar — Zod/FormShell overkill
         <form method="get" action={`/${locale}/search`} className="flex items-center gap-2">
           <Input name="q" defaultValue={query} placeholder="Search products, categories, stores" />
           <Button type="submit">Search</Button>

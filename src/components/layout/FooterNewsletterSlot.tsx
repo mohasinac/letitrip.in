@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Div, Text, Label, Input, Button } from "@mohasinac/appkit/ui";
+import { Div, Text, Button, Form, FieldInput } from "@mohasinac/appkit/ui";
 import { useToast } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
@@ -41,33 +41,31 @@ export function FooterNewsletterSlot() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-2 w-full">
+    <Form onSubmit={handleSubmit} className="flex flex-col gap-2 w-full">
       <Text size="xs" className="font-medium text-zinc-700 dark:text-zinc-300">
         Get deals &amp; drops in your inbox
       </Text>
       <Div className="flex gap-2 w-full">
-        <Label htmlFor="footer-newsletter-email" className="sr-only">
-          Email address
-        </Label>
-        <Input
-          id="footer-newsletter-email"
+        <FieldInput
+          name="email"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={setEmail}
           placeholder="you@example.com"
           autoComplete="email"
           required
           disabled={pending}
-          className="flex-1 min-w-0 rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-[color:var(--appkit-color-primary)] disabled:opacity-60"
+          className="flex-1 min-w-0"
         />
         <Button
           type="submit"
+          variant="primary"
           disabled={pending}
-          className="flex-shrink-0 rounded-lg bg-[color:var(--appkit-color-primary)] hover:opacity-90 px-4 py-2 text-sm font-medium text-white transition-opacity focus:outline-none focus:ring-2 focus:ring-[color:var(--appkit-color-primary)] focus:ring-offset-2 disabled:opacity-60"
+          className="flex-shrink-0"
         >
           {pending ? "…" : "Subscribe"}
         </Button>
       </Div>
-    </form>
+    </Form>
   );
 }
