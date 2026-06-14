@@ -97,6 +97,10 @@ const AUDITS = [
   // W6 — error contract / silent-failure gates (workstreams 1, 3, 5)
   { name: "silent-body-parse",               script: "scripts/audit-silent-body-parse.mjs" },
   { name: "server-action-envelope",          script: "scripts/audit-server-action-envelope.mjs" },
+  // unknown-elimination W3/W4 (REPORT MODE — exits 0; flip via
+  // MIGRATE=strict env var once the backlog is drained).
+  { name: "catch-normalize",                 script: "appkit/scripts/audit-catch-normalize.mjs" },
+  { name: "route-schema-registry",           script: "appkit/scripts/audit-route-schema-registry.mjs" },
   { name: "usemutation-onerror",             script: "scripts/audit-usemutation-onerror.mjs" },
 ];
 
