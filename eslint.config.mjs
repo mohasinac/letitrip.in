@@ -482,6 +482,30 @@ export default tseslint.config(
     },
   },
   {
+    // W6: no-floating-promises strict on server boundaries.
+    // Server-side throw paths must propagate awaited; fire-and-forget without
+    // explicit `void` is banned. The rule requires the type-checker; we use
+    // the type-aware tseslint parser for these files.
+    files: [
+      "src/app/api/**/*.ts",
+      "src/actions/**/*.ts",
+      "appkit/src/_internal/server/**/*.ts",
+      "appkit/src/_internal/server/jobs/**/*.ts",
+      "appkit/src/features/**/repository/**/*.ts",
+    ],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+      },
+    },
+    rules: {
+      "@typescript-eslint/no-floating-promises": [
+        "error",
+        { ignoreVoid: true, ignoreIIFE: true },
+      ],
+    },
+  },
+  {
     // Ignore generated / non-source files
     ignores: [
       ".next/**",

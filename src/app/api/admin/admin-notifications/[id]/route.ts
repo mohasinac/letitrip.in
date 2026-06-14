@@ -1,9 +1,10 @@
 import { withProviders } from "@/providers.config";
 import {
-  createRouteHandler,
-  successResponse,
   ApiErrors,
   adminNotificationsRepository,
+  createRouteHandler,
+  parseJsonBody,
+  successResponse,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
@@ -16,7 +17,7 @@ export const PATCH = withProviders(
       const id = (params as { id: string }).id;
       const doc = await adminNotificationsRepository.findById(id);
       if (!doc) return ApiErrors.notFound("Not found");
-      const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+      const body = await parseJsonBody<Record<string, unknown>>(request);
       const updated = await adminNotificationsRepository.update(id, body);
       return successResponse(updated);
     },

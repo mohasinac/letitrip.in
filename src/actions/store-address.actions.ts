@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Store Address Server Actions — thin entrypoint
  *
@@ -43,60 +44,64 @@ export type StoreAddressInput = z.infer<typeof storeAddressBodySchema>;
 
 // --- Server Actions --------------------------------------------------------
 
-export async function listStoreAddressesAction(): Promise<
-  StoreAddressDocument[]
-> {
-  const user = await requireRoleUser(["seller", "admin"]);
-  const rl = await rateLimitByIdentifier(
-    `store-address:list:${user.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-  return listStoreAddressesForSeller(user.uid) as Promise<StoreAddressDocument[]>;
+export async function listStoreAddressesAction(): Promise<ActionResult<StoreAddressDocument[]>> {
+  return wrapAction(async () => {
+    const user = await requireRoleUser(["seller", "admin"]);
+      const rl = await rateLimitByIdentifier(
+        `store-address:list:${user.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+      return listStoreAddressesForSeller(user.uid) as Promise<StoreAddressDocument[]>;
+  });
 }
 
 export async function createStoreAddressAction(
   input: StoreAddressInput,
-): Promise<StoreAddressDocument> {
-  const user = await requireRoleUser(["seller", "admin"]);
-  const rl = await rateLimitByIdentifier(
-    `store-address:create:${user.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  const parsed = storeAddressBodySchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid address data",
-    );
-
-  return createStoreAddressForSeller(user.uid, parsed.data) as Promise<StoreAddressDocument>;
+): Promise<ActionResult<StoreAddressDocument>> {
+  return wrapAction(async () => {
+    const user = await requireRoleUser(["seller", "admin"]);
+      const rl = await rateLimitByIdentifier(
+        `store-address:create:${user.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      const parsed = storeAddressBodySchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid address data",
+        );
+    
+      return createStoreAddressForSeller(user.uid, parsed.data) as Promise<StoreAddressDocument>;
+  });
 }
 
 export async function updateStoreAddressAction(
   addressId: string,
   input: Partial<StoreAddressInput>,
-): Promise<StoreAddressDocument> {
-  const user = await requireRoleUser(["seller", "admin"]);
-  const rl = await rateLimitByIdentifier(
-    `store-address:update:${user.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  if (!addressId?.trim()) throw new ValidationError(ERR_ADDRESS_ID_REQUIRED);
-
-  const parsed = storeAddressBodySchema.partial().safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid address data",
-    );
-
-  return updateStoreAddressForSeller(user.uid, addressId, parsed.data) as Promise<StoreAddressDocument>;
+): Promise<ActionResult<StoreAddressDocument>> {
+  return wrapAction(async () => {
+    const user = await requireRoleUser(["seller", "admin"]);
+      const rl = await rateLimitByIdentifier(
+        `store-address:update:${user.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      if (!addressId?.trim()) throw new ValidationError(ERR_ADDRESS_ID_REQUIRED);
+    
+      const parsed = storeAddressBodySchema.partial().safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid address data",
+        );
+    
+      return updateStoreAddressForSeller(user.uid, addressId, parsed.data) as Promise<StoreAddressDocument>;
+  });
 }
 
 export async function deleteStoreAddressAction(

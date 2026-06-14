@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Notification Server Actions â€” thin wrapper
  *
@@ -47,17 +48,19 @@ export async function markNotificationReadAction(id: string): Promise<void> {
 /**
  * Mark all notifications as read for the authenticated user.
  */
-export async function markAllNotificationsReadAction(): Promise<number> {
-  const user = await requireAuthUser();
-
-  const rl = await rateLimitByIdentifier(
-    `notifications:markAllRead:${user.uid}`,
-    RateLimitPresets.STRICT,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  return markAllNotificationsRead(user.uid);
+export async function markAllNotificationsReadAction(): Promise<ActionResult<number>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+    
+      const rl = await rateLimitByIdentifier(
+        `notifications:markAllRead:${user.uid}`,
+        RateLimitPresets.STRICT,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      return markAllNotificationsRead(user.uid);
+  });
 }
 
 /**
@@ -84,13 +87,17 @@ export async function deleteNotificationAction(id: string): Promise<void> {
 
 export async function listNotificationsAction(
   limit = 20,
-): Promise<{ notifications: NotificationDocument[]; unreadCount: number }> {
-  const user = await requireAuthUser();
-  return listNotifications(user.uid, limit);
+): Promise<ActionResult<{ notifications: NotificationDocument[]; unreadCount: number }>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return listNotifications(user.uid, limit);
+  });
 }
 
-export async function getUnreadNotificationCountAction(): Promise<number> {
-  const user = await requireAuthUser();
-  return getUnreadNotificationCount(user.uid);
+export async function getUnreadNotificationCountAction(): Promise<ActionResult<number>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return getUnreadNotificationCount(user.uid);
+  });
 }
 

@@ -1,5 +1,5 @@
 "use server";
-import { requireRoleUser } from "@mohasinac/appkit/server";
+import { ActionResult, requireRoleUser, wrapAction } from "@mohasinac/appkit/server";
 import { updateActionConfigDomain, updateNavConfigDomain } from "@mohasinac/appkit/server";
 
 export async function updateActionConfigAction(actionId: string, enabled: boolean): Promise<void> {

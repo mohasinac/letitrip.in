@@ -1,10 +1,11 @@
 import { withProviders } from "@/providers.config";
 import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
   ApiErrors,
   analyticsCardsRepository,
+  createRouteHandler,
+  errorResponse,
+  parseJsonBody,
+  successResponse,
 } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 
@@ -20,7 +21,7 @@ export const PATCH = withProviders(
       if (doc.ownerId !== user!.uid && doc.scope !== "seller") {
         return ApiErrors.forbidden("Not yours");
       }
-      const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+      const body = await parseJsonBody<Record<string, unknown>>(request);
       try {
         const updated = await analyticsCardsRepository.update(id, body);
         return successResponse(updated);

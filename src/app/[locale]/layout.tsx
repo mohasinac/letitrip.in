@@ -15,6 +15,7 @@ SessionProvider,
   WishlistCapWatcher,
   ZodSetup,
 } from "@mohasinac/appkit/client";
+import { ClientErrorReporterMount } from "@/components/ClientErrorReporterMount";
 import { siteSettingsRepository } from "@mohasinac/appkit";
 import { getDisabledRoutes } from "@mohasinac/appkit/server";
 import LayoutShellClient from "./LayoutShellClient";
@@ -79,6 +80,7 @@ export default async function Layout({ children, params }: Props) {
         <ThemeProvider>
           <SessionProvider initialUser={null}>
             <ToastProvider position="top-right">
+              <ClientErrorReporterMount />
               <WishlistCapWatcher />
               <BottomActionsProvider>
                 <DashboardNavProvider>

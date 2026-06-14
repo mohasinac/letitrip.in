@@ -69,6 +69,13 @@ const ALLOWLIST_PATTERNS = [
 const ALLOWLIST_PATH_PATTERNS = [
   /[\\/]_internal[\\/]server[\\/]features[\\/][^\\/]+[\\/]og\.tsx?$/,  // @vercel/og image renderers — no Tailwind support
   /[\\/]_internal[\\/]server[\\/]features[\\/]seo[\\/]og-layout\.tsx?$/, // OG layout helper
+  // Maintenance dashboards are admin-only diagnostic UI rendered behind
+  // permission gates. They use inline styles for density + zero-CSS-load
+  // robustness so they remain useful when the global CSS bundle is broken
+  // (which is exactly when an admin needs them). Same justification as
+  // GlobalError.tsx + ErrorBoundary.tsx in the file-name allowlist above.
+  /[\\/]_internal[\\/]client[\\/]features[\\/]maintenance[\\/]views[\\/][^\\/]+\.tsx?$/,
+  /[\\/]admin[\\/]maintenance[\\/][^\\/]*[\\/]page\.tsx?$/,
 ];
 
 const RULES = [

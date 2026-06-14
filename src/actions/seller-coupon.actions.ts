@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Seller Coupon Server Actions ï¿½ thin entrypoint
  */
@@ -42,75 +43,79 @@ const updateSchema = z.object({
 
 export async function sellerCreateCouponAction(
   input: SellerCreateCouponInput,
-): Promise<CouponDocument> {
-  const user = await requireAuthUser();
-  const rl = await rateLimitByIdentifier(
-    `coupon:create:${user.uid}`,
-    RateLimitPresets.STRICT,
-  );
-  if (!rl.success) throw new AuthorizationError("Too many requests.");
-  const parsed = createSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid coupon data");
-
-  const createInput: SellerCreateCouponInput = {
-    sellerCode: parsed.data.code ?? "SAVE",
-    name: parsed.data.code ?? "Seller Coupon",
-    description: parsed.data.description ?? "Seller coupon",
-    type: parsed.data.discountType === "flat" ? "fixed" : "percentage",
-    applicableToAuctions: false,
-    discount: {
-      value: parsed.data.discountValue,
-      minPurchase: parsed.data.minOrderAmount,
-    },
-    usage: {
-      totalLimit: parsed.data.maxUsageCount,
-      currentUsage: 0,
-    },
-    validity: {
-      startDate: new Date().toISOString(),
-      endDate: parsed.data.expiresAt,
-      isActive: true,
-    },
-    restrictions: {
-      firstTimeUserOnly: false,
-      combineWithSellerCoupons: false,
-    },
-  };
-
-  return sellerCreateCoupon(user.uid, createInput);
+): Promise<ActionResult<CouponDocument>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      const rl = await rateLimitByIdentifier(
+        `coupon:create:${user.uid}`,
+        RateLimitPresets.STRICT,
+      );
+      if (!rl.success) throw new AuthorizationError("Too many requests.");
+      const parsed = createSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid coupon data");
+    
+      const createInput: SellerCreateCouponInput = {
+        sellerCode: parsed.data.code ?? "SAVE",
+        name: parsed.data.code ?? "Seller Coupon",
+        description: parsed.data.description ?? "Seller coupon",
+        type: parsed.data.discountType === "flat" ? "fixed" : "percentage",
+        applicableToAuctions: false,
+        discount: {
+          value: parsed.data.discountValue,
+          minPurchase: parsed.data.minOrderAmount,
+        },
+        usage: {
+          totalLimit: parsed.data.maxUsageCount,
+          currentUsage: 0,
+        },
+        validity: {
+          startDate: new Date().toISOString(),
+          endDate: parsed.data.expiresAt,
+          isActive: true,
+        },
+        restrictions: {
+          firstTimeUserOnly: false,
+          combineWithSellerCoupons: false,
+        },
+      };
+    
+      return sellerCreateCoupon(user.uid, createInput);
+  });
 }
 
 export async function sellerUpdateCouponAction(
   couponId: string,
   input: SellerUpdateCouponInput,
-): Promise<CouponDocument> {
-  const user = await requireAuthUser();
-  const parsed = updateSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
-  const profile = await userRepository.findById(user.uid);
-  const role = profile?.role ?? "user";
-
-  const updateInput: SellerUpdateCouponInput = {
-    description: parsed.data.description,
-    discount: parsed.data.discountValue
-      ? { value: parsed.data.discountValue, minPurchase: parsed.data.minOrderAmount }
-      : undefined,
-    usage: parsed.data.maxUsageCount
-      ? { totalLimit: parsed.data.maxUsageCount, currentUsage: 0 }
-      : undefined,
-    validity:
-      parsed.data.expiresAt || typeof parsed.data.isActive === "boolean"
-        ? {
-            startDate: new Date().toISOString(),
-            endDate: parsed.data.expiresAt,
-            isActive: parsed.data.isActive ?? true,
-          }
-        : undefined,
-  };
-
-  return sellerUpdateCoupon(user.uid, role, couponId, updateInput);
+): Promise<ActionResult<CouponDocument>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      const parsed = updateSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+      const profile = await userRepository.findById(user.uid);
+      const role = profile?.role ?? "user";
+    
+      const updateInput: SellerUpdateCouponInput = {
+        description: parsed.data.description,
+        discount: parsed.data.discountValue
+          ? { value: parsed.data.discountValue, minPurchase: parsed.data.minOrderAmount }
+          : undefined,
+        usage: parsed.data.maxUsageCount
+          ? { totalLimit: parsed.data.maxUsageCount, currentUsage: 0 }
+          : undefined,
+        validity:
+          parsed.data.expiresAt || typeof parsed.data.isActive === "boolean"
+            ? {
+                startDate: new Date().toISOString(),
+                endDate: parsed.data.expiresAt,
+                isActive: parsed.data.isActive ?? true,
+              }
+            : undefined,
+      };
+    
+      return sellerUpdateCoupon(user.uid, role, couponId, updateInput);
+  });
 }
 
 export async function sellerDeleteCouponAction(couponId: string): Promise<void> {

@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Site Settings Server Actions � thin entrypoint
  */
@@ -9,8 +10,10 @@ import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit";
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
 import { getSiteSettings, updateSiteSettings } from "@mohasinac/appkit";
 
-export async function getSiteSettingsAction(): Promise<unknown> {
-  return getSiteSettings();
+export async function getSiteSettingsAction(): Promise<ActionResult<unknown>> {
+  return wrapAction(async () => {
+    return getSiteSettings();
+  });
 }
 
 export async function updateSiteSettingsAction(data: Record<string, unknown>): Promise<void> {

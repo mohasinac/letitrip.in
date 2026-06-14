@@ -1,4 +1,5 @@
 "use server";
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 import { z } from "zod";
 import { EVENT_FIELDS } from "@/constants";
 import { requireRoleUser, requireAuthUser } from "@mohasinac/appkit";
@@ -110,29 +111,33 @@ const enterEventSchema = z.object({
 
 export async function createEventAction(
   input: CreateEventInput,
-): Promise<EventDocument> {
-  const admin = await requireRoleUser(["admin", "moderator"]);
-  const rl = await rateLimitByIdentifier(`event:create:${admin.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  const parsed = createEventSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid event data");
-  return createEvent(admin.uid, parsed.data as CreateEventInput);
+): Promise<ActionResult<EventDocument>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin", "moderator"]);
+      const rl = await rateLimitByIdentifier(`event:create:${admin.uid}`, RateLimitPresets.API);
+      if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+      const parsed = createEventSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid event data");
+      return createEvent(admin.uid, parsed.data as CreateEventInput);
+  });
 }
 
 export async function updateEventAction(
   id: string,
   input: UpdateEventInput,
-): Promise<EventDocument> {
-  const admin = await requireRoleUser(["admin", "moderator"]);
-  const rl = await rateLimitByIdentifier(`event:update:${admin.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  const idParsed = eventIdSchema.safeParse({ id });
-  if (!idParsed.success) throw new ValidationError("Invalid id");
-  const parsed = updateEventSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE);
-  return updateEvent(admin.uid, id, parsed.data as UpdateEventInput);
+): Promise<ActionResult<EventDocument>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin", "moderator"]);
+      const rl = await rateLimitByIdentifier(`event:update:${admin.uid}`, RateLimitPresets.API);
+      if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+      const idParsed = eventIdSchema.safeParse({ id });
+      if (!idParsed.success) throw new ValidationError("Invalid id");
+      const parsed = updateEventSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE);
+      return updateEvent(admin.uid, id, parsed.data as UpdateEventInput);
+  });
 }
 
 export async function deleteEventAction(id: string): Promise<void> {
@@ -146,14 +151,16 @@ export async function deleteEventAction(id: string): Promise<void> {
 
 export async function changeEventStatusAction(
   input: z.infer<typeof changeStatusSchema>,
-): Promise<EventDocument> {
-  const admin = await requireRoleUser(["admin", "moderator"]);
-  const rl = await rateLimitByIdentifier(`event:status:${admin.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  const parsed = changeStatusSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
-  return changeEventStatus(admin.uid, parsed.data.id, parsed.data.status as any);
+): Promise<ActionResult<EventDocument>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin", "moderator"]);
+      const rl = await rateLimitByIdentifier(`event:status:${admin.uid}`, RateLimitPresets.API);
+      if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+      const parsed = changeStatusSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+      return changeEventStatus(admin.uid, parsed.data.id, parsed.data.status as any);
+  });
 }
 
 export async function adminUpdateEventEntryAction(
@@ -178,20 +185,26 @@ export async function adminUpdateEventEntryAction(
 
 export async function listPublicEventsAction(
   params?: string | { filters?: string; sorts?: string; page?: number; pageSize?: number },
-): Promise<FirebaseSieveResult<EventDocument>> {
-  return listPublicEvents(params);
+): Promise<ActionResult<FirebaseSieveResult<EventDocument>>> {
+  return wrapAction(async () => {
+    return listPublicEvents(params);
+  });
 }
 
 export async function getPublicEventByIdAction(
   id: string,
-): Promise<EventDocument | null> {
-  return getPublicEventById(id);
+): Promise<ActionResult<EventDocument | null>> {
+  return wrapAction(async () => {
+    return getPublicEventById(id);
+  });
 }
 
 export async function getEventLeaderboardAction(
   eventId: string,
-): Promise<LeaderboardEntry[]> {
-  return getEventLeaderboard(eventId);
+): Promise<ActionResult<LeaderboardEntry[]>> {
+  return wrapAction(async () => {
+    return getEventLeaderboard(eventId);
+  });
 }
 
 export async function adminListEventsAction(params?: {
@@ -199,25 +212,33 @@ export async function adminListEventsAction(params?: {
   sorts?: string;
   page?: number;
   pageSize?: number;
-}): Promise<FirebaseSieveResult<EventDocument>> {
-  return adminListEvents(params);
+}): Promise<ActionResult<FirebaseSieveResult<EventDocument>>> {
+  return wrapAction(async () => {
+    return adminListEvents(params);
+  });
 }
 
 export async function adminGetEventByIdAction(
   id: string,
-): Promise<EventDocument | null> {
-  return adminGetEventById(id);
+): Promise<ActionResult<EventDocument | null>> {
+  return wrapAction(async () => {
+    return adminGetEventById(id);
+  });
 }
 
 export async function adminGetEventEntriesAction(
   eventId: string,
   params?: { page?: number; pageSize?: number },
-): Promise<EventEntryDocument[]> {
-  return adminGetEventEntries(eventId, params);
+): Promise<ActionResult<EventEntryDocument[]>> {
+  return wrapAction(async () => {
+    return adminGetEventEntries(eventId, params);
+  });
 }
 
-export async function adminGetEventStatsAction(eventId: string) {
-  return adminGetEventStats(eventId);
+export async function adminGetEventStatsAction(eventId: string): Promise<ActionResult<unknown>> {
+  return wrapAction(async () => {
+    return adminGetEventStats(eventId);
+  });
 }
 
 // --- Public Entry Action ---------------------------------------------------
@@ -225,20 +246,22 @@ export async function adminGetEventStatsAction(eventId: string) {
 export async function enterEventAction(
   eventId: string,
   input: EnterEventInput,
-): Promise<{ entryId: string }> {
-  let user: { uid: string; displayName?: string; email?: string } | undefined;
-  try {
-    const auth = await requireAuthUser();
-    user = { uid: auth.uid, displayName: auth.name ?? undefined, email: auth.email ?? undefined };
-  } catch {
-    // unauthenticated allowed for some event types
-  }
-
-  const parsed = enterEventSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
-
-  return enterEvent(eventId, parsed.data as EnterEventInput, user);
+): Promise<ActionResult<{ entryId: string }>> {
+  return wrapAction(async () => {
+    let user: { uid: string; displayName?: string; email?: string } | undefined;
+      try {
+        const auth = await requireAuthUser();
+        user = { uid: auth.uid, displayName: auth.name ?? undefined, email: auth.email ?? undefined };
+      } catch {
+        // unauthenticated allowed for some event types
+      }
+    
+      const parsed = enterEventSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+    
+      return enterEvent(eventId, parsed.data as EnterEventInput, user);
+  });
 }
 
 // Types must be imported directly from @mohasinac/appkit at call sites

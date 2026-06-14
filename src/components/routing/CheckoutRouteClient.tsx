@@ -713,7 +713,13 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
     setActionError("");
     try {
       const result = await sendConsentOtpAction(selectedAddress.id);
-      setMaskedEmail(result.maskedEmail);
+      if (!result.ok) {
+        const msg = result.error;
+        setActionError(msg);
+        showToast(msg, "error");
+        return;
+      }
+      setMaskedEmail(result.data.maskedEmail);
       setStep("otp");
       showToast(CK.OTP_SENT_TOAST, "success");
     } catch (err) {

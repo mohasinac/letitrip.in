@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Wishlist Server Actions â€” thin entrypoint
  *
@@ -26,36 +27,36 @@ export type EnrichedWishlistItem = UserWishlistItem;
 
 export async function addToWishlistAction(
   productId: string,
-): Promise<
-  | { ok: true; count: number; limit: number; isFull: boolean }
-  | { ok: false; code: "WISHLIST_FULL"; limit: number; current: number }
-> {
-  const user = await requireAuthUser();
-  const rl = await rateLimitByIdentifier(
-    `wishlist:add:${user.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
-  try {
-    const { count } = await addToWishlist(user.uid, productId);
-    return {
-      ok: true,
-      count,
-      limit: WISHLIST_MAX,
-      isFull: count >= WISHLIST_MAX,
-    };
-  } catch (e) {
-    if (e instanceof WishlistFullError) {
-      return {
-        ok: false,
-        code: "WISHLIST_FULL",
-        limit: e.limit,
-        current: e.current,
-      };
-    }
-    throw e;
-  }
+): Promise<ActionResult<| { ok: true; count: number; limit: number; isFull: boolean }
+  | { ok: false; code: "WISHLIST_FULL"; limit: number; current: number }>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      const rl = await rateLimitByIdentifier(
+        `wishlist:add:${user.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError("Too many requests. Please slow down.");
+      try {
+        const { count } = await addToWishlist(user.uid, productId);
+        return {
+          ok: true,
+          count,
+          limit: WISHLIST_MAX,
+          isFull: count >= WISHLIST_MAX,
+        };
+      } catch (e) {
+        if (e instanceof WishlistFullError) {
+          return {
+            ok: false,
+            code: "WISHLIST_FULL",
+            limit: e.limit,
+            current: e.current,
+          };
+        }
+        throw e;
+      }
+  });
 }
 
 export async function removeFromWishlistAction(
@@ -71,11 +72,13 @@ export async function removeFromWishlistAction(
   return removeFromWishlist(user.uid, productId);
 }
 
-export async function getWishlistAction(): Promise<{
+export async function getWishlistAction(): Promise<ActionResult<{
   items: UserWishlistItem[];
   meta: { total: number };
-}> {
-  const user = await requireAuthUser();
-  return getWishlistForUser(user.uid);
+}>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return getWishlistForUser(user.uid);
+  });
 }
 

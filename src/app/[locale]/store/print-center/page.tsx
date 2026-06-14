@@ -1,12 +1,24 @@
 import { getSellerStoreAction, listSellerMyProductsAction, listSellerOrdersAction } from "@/actions/seller.actions";
 import { PrintCenterView } from "@mohasinac/appkit/client";
 
+function unwrap<T>(result: unknown, fallback: T): T {
+  if (!result || typeof result !== "object") return fallback;
+  if ("ok" in result) {
+    const r = result as { ok: boolean; data?: T };
+    return r.ok ? (r.data ?? fallback) : fallback;
+  }
+  return result as T;
+}
+
 export default async function Page() {
-  const [store, productsResult, ordersResult] = await Promise.all([
+  const [storeRes, productsRes, ordersRes] = await Promise.all([
     getSellerStoreAction().catch(() => null),
-    listSellerMyProductsAction({ pageSize: 50 }).catch(() => ({ items: [] })),
-    listSellerOrdersAction({ pageSize: 50 }).catch(() => ({ items: [] })),
+    listSellerMyProductsAction({ pageSize: 50 }).catch(() => null),
+    listSellerOrdersAction({ pageSize: 50 }).catch(() => null),
   ]);
+  const store = unwrap(storeRes, null) as any;
+  const productsResult = unwrap(productsRes, { items: [] as any[] });
+  const ordersResult = unwrap(ordersRes, { items: [] as any[] });
 
   const storeForCard = store
     ? {

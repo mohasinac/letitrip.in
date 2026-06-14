@@ -1,5 +1,5 @@
 import { withProviders } from "@/providers.config";
-import { createRouteHandler, successResponse, errorResponse } from "@mohasinac/appkit";
+import { createRouteHandler, errorResponse, parseJsonBody, successResponse } from "@mohasinac/appkit";
 import { shipOrderAction } from "@/actions/seller.actions";
 import { ROLES_STORE_WRITE } from "@/constants";
 
@@ -10,7 +10,7 @@ export const POST = withProviders(
     roles: [...ROLES_STORE_WRITE],
     handler: async ({ request, params }) => {
       const orderId = (params as { id: string }).id;
-      const body = await request.json().catch(() => ({}));
+      const body = await parseJsonBody<Parameters<typeof shipOrderAction>[1]>(request);
 
       try {
         const result = await shipOrderAction(orderId, body);

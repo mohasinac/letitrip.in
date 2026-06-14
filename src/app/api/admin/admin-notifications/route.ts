@@ -1,8 +1,9 @@
 import { withProviders } from "@/providers.config";
 import {
-  createRouteHandler,
-  successResponse,
   adminNotificationsRepository,
+  createRouteHandler,
+  parseJsonBody,
+  successResponse,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
@@ -24,7 +25,7 @@ export const POST = withProviders(
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
     handler: async ({ request }) => {
-      const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+      const body = await parseJsonBody<Record<string, unknown>>(request);
       const doc = await adminNotificationsRepository.create({
         ...body,
         isRead: false,

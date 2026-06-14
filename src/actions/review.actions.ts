@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Review Server Actions
  *
@@ -71,24 +72,26 @@ const updateReviewSchema = z.object({
  */
 export async function createReviewAction(
   input: z.infer<typeof createReviewSchema>,
-): Promise<ReviewDocument> {
-  const user = await requireAuthUser();
-
-  const rl = await rateLimitByIdentifier(
-    `reviews:create:${user.uid}`,
-    RateLimitPresets.STRICT,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  const parsed = createReviewSchema.safeParse(input);
-  if (!parsed.success) {
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid input",
-    );
-  }
-
-  return createReviewDomain(user.uid, parsed.data) as Promise<ReviewDocument>;
+): Promise<ActionResult<ReviewDocument>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+    
+      const rl = await rateLimitByIdentifier(
+        `reviews:create:${user.uid}`,
+        RateLimitPresets.STRICT,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      const parsed = createReviewSchema.safeParse(input);
+      if (!parsed.success) {
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid input",
+        );
+      }
+    
+      return createReviewDomain(user.uid, parsed.data) as Promise<ReviewDocument>;
+  });
 }
 
 /**
@@ -97,28 +100,30 @@ export async function createReviewAction(
 export async function updateReviewAction(
   reviewId: string,
   input: z.infer<typeof updateReviewSchema>,
-): Promise<ReviewDocument | null> {
-  const user = await requireAuthUser();
-
-  const rl = await rateLimitByIdentifier(
-    `reviews:update:${user.uid}`,
-    RateLimitPresets.STRICT,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  if (!reviewId || typeof reviewId !== "string") {
-    throw new ValidationError(ERR_REVIEW_ID_REQUIRED);
-  }
-
-  const parsed = updateReviewSchema.safeParse(input);
-  if (!parsed.success) {
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid input",
-    );
-  }
-
-  return updateReviewDomain(user.uid, reviewId, parsed.data) as Promise<ReviewDocument | null>;
+): Promise<ActionResult<ReviewDocument | null>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+    
+      const rl = await rateLimitByIdentifier(
+        `reviews:update:${user.uid}`,
+        RateLimitPresets.STRICT,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      if (!reviewId || typeof reviewId !== "string") {
+        throw new ValidationError(ERR_REVIEW_ID_REQUIRED);
+      }
+    
+      const parsed = updateReviewSchema.safeParse(input);
+      if (!parsed.success) {
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid input",
+        );
+      }
+    
+      return updateReviewDomain(user.uid, reviewId, parsed.data) as Promise<ReviewDocument | null>;
+  });
 }
 
 /**
@@ -151,28 +156,30 @@ const adminUpdateReviewSchema = z.object({
 export async function adminUpdateReviewAction(
   reviewId: string,
   input: z.infer<typeof adminUpdateReviewSchema>,
-): Promise<ReviewDocument | null> {
-  const admin = await requireRoleUser(["admin", "moderator"]);
-
-  const rl = await rateLimitByIdentifier(
-    `admin:reviews:update:${admin.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  if (!reviewId || typeof reviewId !== "string") {
-    throw new ValidationError(ERR_REVIEW_ID_REQUIRED);
-  }
-
-  const parsed = adminUpdateReviewSchema.safeParse(input);
-  if (!parsed.success) {
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid input",
-    );
-  }
-
-  return adminUpdateReviewDomain(admin.uid, reviewId, parsed.data as UpdateReviewActionInput) as Promise<ReviewDocument | null>;
+): Promise<ActionResult<ReviewDocument | null>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin", "moderator"]);
+    
+      const rl = await rateLimitByIdentifier(
+        `admin:reviews:update:${admin.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      if (!reviewId || typeof reviewId !== "string") {
+        throw new ValidationError(ERR_REVIEW_ID_REQUIRED);
+      }
+    
+      const parsed = adminUpdateReviewSchema.safeParse(input);
+      if (!parsed.success) {
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid input",
+        );
+      }
+    
+      return adminUpdateReviewDomain(admin.uid, reviewId, parsed.data as UpdateReviewActionInput) as Promise<ReviewDocument | null>;
+  });
 }
 
 /**
@@ -217,8 +224,10 @@ export async function listReviewsByProductAction(
   productId: string,
   page = 1,
   pageSize = 10,
-): Promise<FirebaseSieveResult<ReviewDocument>> {
-  return listReviewsByProductDomain(productId, page, pageSize) as Promise<FirebaseSieveResult<ReviewDocument>>;
+): Promise<ActionResult<FirebaseSieveResult<ReviewDocument>>> {
+  return wrapAction(async () => {
+    return listReviewsByProductDomain(productId, page, pageSize) as Promise<FirebaseSieveResult<ReviewDocument>>;
+  });
 }
 
 export async function listAdminReviewsAction(params?: {
@@ -226,30 +235,38 @@ export async function listAdminReviewsAction(params?: {
   sorts?: string;
   page?: number;
   pageSize?: number;
-}): Promise<FirebaseSieveResult<ReviewDocument>> {
-  await requireRoleUser(["admin", "moderator"]);
-  const sieve = {
-    filters: params?.filters,
-    sorts: params?.sorts ?? "-createdAt",
-    page: Number(params?.page ?? 1),
-    pageSize: Number(params?.pageSize ?? 50),
-  };
-  return listAdminReviewsDomain(sieve) as Promise<FirebaseSieveResult<ReviewDocument>>;
+}): Promise<ActionResult<FirebaseSieveResult<ReviewDocument>>> {
+  return wrapAction(async () => {
+    await requireRoleUser(["admin", "moderator"]);
+      const sieve = {
+        filters: params?.filters,
+        sorts: params?.sorts ?? "-createdAt",
+        page: Number(params?.page ?? 1),
+        pageSize: Number(params?.pageSize ?? 50),
+      };
+      return listAdminReviewsDomain(sieve) as Promise<FirebaseSieveResult<ReviewDocument>>;
+  });
 }
 
 export async function listReviewsBySellerAction(
   sellerId: string,
-): Promise<ReviewDocument[]> {
-  return listReviewsBySellerDomain(sellerId) as Promise<ReviewDocument[]>;
+): Promise<ActionResult<ReviewDocument[]>> {
+  return wrapAction(async () => {
+    return listReviewsBySellerDomain(sellerId) as Promise<ReviewDocument[]>;
+  });
 }
 
-export async function getHomepageReviewsAction(): Promise<ReviewDocument[]> {
-  return getHomepageReviewsDomain() as Promise<ReviewDocument[]>;
+export async function getHomepageReviewsAction(): Promise<ActionResult<ReviewDocument[]>> {
+  return wrapAction(async () => {
+    return getHomepageReviewsDomain() as Promise<ReviewDocument[]>;
+  });
 }
 
 export async function getReviewByIdAction(
   id: string,
-): Promise<ReviewDocument | null> {
-  return getReviewByIdDomain(id) as Promise<ReviewDocument | null>;
+): Promise<ActionResult<ReviewDocument | null>> {
+  return wrapAction(async () => {
+    return getReviewByIdDomain(id) as Promise<ReviewDocument | null>;
+  });
 }
 

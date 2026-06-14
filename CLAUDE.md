@@ -110,8 +110,19 @@ For lint-fixable issues use `npm run check:fix` (runs `lint:fix` first, then ful
 
 **Subset commands** for fast iteration:
 - `npm run check:types` — both repos' tsc only
-- `npm run check:audits` — all audit scripts (~5–10s total)
+- `npm run check:audits` — all audit scripts (~5–10s total); thin alias of `npm run audit:all`
 - `npm run check:lint` — eslint on both `src` and `appkit/src`
+
+**Audit dispatcher** (replaces the 49 legacy `audit:*` script aliases):
+- `npm run audit:all` — run every audit in registry order (fail-fast)
+- `npm run audit <name>` — run one audit by name (`npm run audit ssr-in-appkit`)
+- `npm run audit:fix` — run all audits forwarding `--fix` where supported (hex-tokens today)
+- `npm run audit:list` — print the registry
+- Registry lives at [scripts/run-audits.mjs](scripts/run-audits.mjs); to add an audit, add a new entry to the `AUDITS` array there. **Don't** add a per-audit script alias to `package.json`.
+
+**Other dispatchers**:
+- `npm run firebase <generate|deploy|reset>` — replaces `firebase:generate`/`firebase:deploy[:rules|:indexes]`/`firebase:reset[:all]`. `--only indexes` and `--only rules` are convenience shortcuts.
+- `npm run test:qa <smoke|pw|audit>` — replaces `test:smoke[:only]`/`test:pw[:only]`/`test:audit[:existing]`. Forwards `--only`, `--use-existing`, etc.
 
 **Stop hook automation**: `.claude/settings.json` runs the fast audits (`check:audits`) automatically at end of every Claude turn via `scripts/claude-hooks/check-on-stop.mjs`. Failures block the turn and surface to the assistant for fixing. **Every audit is now strict zero-tolerance** — there is no baseline-drift mode; any violation `> 0` fails the audit. Legitimate dynamic patterns are handled by explicit per-line suppression markers (`// audit-inline-style-ok`, `// toast-handled-by-hook`, `// toast-intentionally-silent`, `// reexport-from-internal-ok`, `// audit-sieve-views-ok`) at the site of the decision, each with a brief reason. tsc + lint are excluded from the Stop hook because they are too slow per-turn; run `npm run check` manually before commits.
 

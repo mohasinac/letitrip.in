@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Admin Server Actions — Mutations
  *
@@ -62,25 +63,27 @@ const revokeUserSessionsSchema = z.object({
  */
 export async function revokeSessionAction(
   input: z.infer<typeof revokeSessionSchema>,
-): Promise<{ success: true; message: string }> {
-  const admin = await requireRoleUser(["admin", "moderator"]);
-
-  const rl = await rateLimitByIdentifier(
-    `revoke-session:${admin.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  const parsed = revokeSessionSchema.safeParse(input);
-  if (!parsed.success) {
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid input",
-    );
-  }
-
-  const { sessionId } = parsed.data;
-  return revokeSessionDomain(admin.uid, sessionId);
+): Promise<ActionResult<{ success: true; message: string }>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin", "moderator"]);
+    
+      const rl = await rateLimitByIdentifier(
+        `revoke-session:${admin.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      const parsed = revokeSessionSchema.safeParse(input);
+      if (!parsed.success) {
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid input",
+        );
+      }
+    
+      const { sessionId } = parsed.data;
+      return revokeSessionDomain(admin.uid, sessionId);
+  });
 }
 
 /**
@@ -88,25 +91,27 @@ export async function revokeSessionAction(
  */
 export async function revokeUserSessionsAction(
   input: z.infer<typeof revokeUserSessionsSchema>,
-): Promise<{ success: true; message: string; revokedCount: number }> {
-  const admin = await requireRoleUser(["admin", "moderator"]);
-
-  const rl = await rateLimitByIdentifier(
-    `revoke-user-sessions:${admin.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  const parsed = revokeUserSessionsSchema.safeParse(input);
-  if (!parsed.success) {
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid input",
-    );
-  }
-
-  const { userId } = parsed.data;
-  return revokeUserSessionsDomain(admin.uid, userId);
+): Promise<ActionResult<{ success: true; message: string; revokedCount: number }>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin", "moderator"]);
+    
+      const rl = await rateLimitByIdentifier(
+        `revoke-user-sessions:${admin.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      const parsed = revokeUserSessionsSchema.safeParse(input);
+      if (!parsed.success) {
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid input",
+        );
+      }
+    
+      const { userId } = parsed.data;
+      return revokeUserSessionsDomain(admin.uid, userId);
+  });
 }
 
 // --- Order mutations -------------------------------------------------------
@@ -121,29 +126,31 @@ const orderUpdateSchema = z.object({
 export async function adminUpdateOrderAction(
   id: string,
   input: z.infer<typeof orderUpdateSchema>,
-): Promise<OrderDocument> {
-  const admin = await requireRoleUser(["admin", "moderator"]);
-
-  const rl = await rateLimitByIdentifier(
-    `order:update:${admin.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  if (!id?.trim()) throw new ValidationError("id is required");
-
-  const parsed = orderUpdateSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
-    );
-
-  return adminUpdateOrderDomain(
-    admin.uid,
-    id,
-    parsed.data as OrderAdminUpdateInput,
-  );
+): Promise<ActionResult<OrderDocument>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin", "moderator"]);
+    
+      const rl = await rateLimitByIdentifier(
+        `order:update:${admin.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      if (!id?.trim()) throw new ValidationError("id is required");
+    
+      const parsed = orderUpdateSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
+        );
+    
+      return adminUpdateOrderDomain(
+        admin.uid,
+        id,
+        parsed.data as OrderAdminUpdateInput,
+      );
+  });
 }
 
 // --- Payout mutations ------------------------------------------------------
@@ -157,29 +164,31 @@ const payoutUpdateSchema = z.object({
 export async function adminUpdatePayoutAction(
   id: string,
   input: z.infer<typeof payoutUpdateSchema>,
-): Promise<PayoutDocument> {
-  const admin = await requireRoleUser(["admin"]);
-
-  const rl = await rateLimitByIdentifier(
-    `payout:update:${admin.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  if (!id?.trim()) throw new ValidationError("id is required");
-
-  const parsed = payoutUpdateSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
-    );
-
-  return adminUpdatePayoutDomain(
-    admin.uid,
-    id,
-    parsed.data as PayoutUpdateInput,
-  );
+): Promise<ActionResult<PayoutDocument>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin"]);
+    
+      const rl = await rateLimitByIdentifier(
+        `payout:update:${admin.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      if (!id?.trim()) throw new ValidationError("id is required");
+    
+      const parsed = payoutUpdateSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
+        );
+    
+      return adminUpdatePayoutDomain(
+        admin.uid,
+        id,
+        parsed.data as PayoutUpdateInput,
+      );
+  });
 }
 
 // --- User mutations -------------------------------------------------------
@@ -193,25 +202,27 @@ const userUpdateSchema = z.object({
 export async function adminUpdateUserAction(
   uid: string,
   input: z.infer<typeof userUpdateSchema>,
-): Promise<UserDocument> {
-  const admin = await requireRoleUser(["admin"]);
-
-  const rl = await rateLimitByIdentifier(
-    `user:update:${admin.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  if (!uid?.trim()) throw new ValidationError("uid is required");
-
-  const parsed = userUpdateSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
-    );
-
-  return adminUpdateUserDomain(admin.uid, uid, parsed.data as UserAdminUpdateInput);
+): Promise<ActionResult<UserDocument>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin"]);
+    
+      const rl = await rateLimitByIdentifier(
+        `user:update:${admin.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      if (!uid?.trim()) throw new ValidationError("uid is required");
+    
+      const parsed = userUpdateSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
+        );
+    
+      return adminUpdateUserDomain(admin.uid, uid, parsed.data as UserAdminUpdateInput);
+  });
 }
 
 export async function adminDeleteUserAction(uid: string): Promise<void> {
@@ -275,56 +286,60 @@ const productAdminUpdateSchema = z.object({
 export async function adminUpdateProductAction(
   id: string,
   input: z.infer<typeof productAdminUpdateSchema>,
-): Promise<ProductDocument> {
-  const admin = await requireRoleUser(["admin", "moderator"]);
-
-  const rl = await rateLimitByIdentifier(
-    `product:update:${admin.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  if (!id?.trim()) throw new ValidationError("id is required");
-
-  const parsed = productAdminUpdateSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
-    );
-
-  return adminUpdateProductDomain(
-    admin.uid,
-    id,
-    parsed.data as ProductAdminUpdateInput,
-  );
+): Promise<ActionResult<ProductDocument>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin", "moderator"]);
+    
+      const rl = await rateLimitByIdentifier(
+        `product:update:${admin.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      if (!id?.trim()) throw new ValidationError("id is required");
+    
+      const parsed = productAdminUpdateSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
+        );
+    
+      return adminUpdateProductDomain(
+        admin.uid,
+        id,
+        parsed.data as ProductAdminUpdateInput,
+      );
+  });
 }
 
 export async function adminCreateProductAction(
   input: unknown,
-): Promise<ProductDocument> {
-  const admin = await requireRoleUser(["admin"]);
-
-  const rl = await rateLimitByIdentifier(
-    `product:create:${admin.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  // Delegate product creation to repository with validation
-  const validation = validateRequestBody(productCreateSchema, input);
-  if (!validation.success) {
-    throw new ValidationError("Invalid product data");
-  }
-
-  return adminCreateProductDomain(admin, {
-    ...validation.data,
-    sellerId: (input as any).sellerId || admin.uid,
-    sellerName:
-      (input as any).sellerName || admin.name || admin.email || "Admin",
-    sellerEmail: (input as any).sellerEmail || admin.email || "",
-  } as any);
+): Promise<ActionResult<ProductDocument>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin"]);
+    
+      const rl = await rateLimitByIdentifier(
+        `product:create:${admin.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      // Delegate product creation to repository with validation
+      const validation = validateRequestBody(productCreateSchema, input);
+      if (!validation.success) {
+        throw new ValidationError("Invalid product data");
+      }
+    
+      return adminCreateProductDomain(admin, {
+        ...validation.data,
+        sellerId: (input as any).sellerId || admin.uid,
+        sellerName:
+          (input as any).sellerName || admin.name || admin.email || "Admin",
+        sellerEmail: (input as any).sellerEmail || admin.email || "",
+      } as any);
+  });
 }
 
 export async function adminDeleteProductAction(id: string): Promise<void> {

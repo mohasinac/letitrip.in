@@ -1,9 +1,10 @@
 import { withProviders } from "@/providers.config";
 import {
-  enterEvent,
   createRouteHandler,
-  successResponse,
+  enterEvent,
   errorResponse,
+  parseJsonBody,
+  successResponse,
   userRepository,
 } from "@mohasinac/appkit";
 import { isSoftBanned } from "@mohasinac/appkit/server";
@@ -24,7 +25,7 @@ export const POST = withProviders(
         }
       }
       const eventId = (params as { id: string }).id;
-      const body = await request.json().catch(() => ({}));
+      const body = await parseJsonBody(request);
       const safeUser = user
         ? { uid: user.uid, displayName: user.displayName, email: user.email ?? undefined }
         : undefined;

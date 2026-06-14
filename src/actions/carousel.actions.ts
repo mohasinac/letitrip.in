@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Carousel Server Actions ï¿½ thin entrypoint (admin only)
  */
@@ -37,23 +38,27 @@ const createSlideSchema = z.object({
 
 const updateSlideSchema = createSlideSchema.partial();
 
-export async function createCarouselSlideAction(input: CarouselSlideInput): Promise<CarouselSlideDocument> {
-  const admin = await requireRoleUser(["admin"]);
-  const rl = await rateLimitByIdentifier(`carousel:create:${admin.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  const parsed = createSlideSchema.safeParse(input);
-  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid slide data");
-  return createCarouselSlide(admin.uid, parsed.data as CarouselSlideInput) as any;
+export async function createCarouselSlideAction(input: CarouselSlideInput): Promise<ActionResult<CarouselSlideDocument>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin"]);
+      const rl = await rateLimitByIdentifier(`carousel:create:${admin.uid}`, RateLimitPresets.API);
+      if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+      const parsed = createSlideSchema.safeParse(input);
+      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid slide data");
+      return createCarouselSlide(admin.uid, parsed.data as CarouselSlideInput) as any;
+  });
 }
 
-export async function updateCarouselSlideAction(id: string, input: CarouselSlideUpdateInput): Promise<CarouselSlideDocument> {
-  const admin = await requireRoleUser(["admin"]);
-  const rl = await rateLimitByIdentifier(`carousel:update:${admin.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  if (!id?.trim()) throw new ValidationError("Invalid id");
-  const parsed = updateSlideSchema.safeParse(input);
-  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE);
-  return updateCarouselSlide(admin.uid, id, parsed.data as CarouselSlideUpdateInput) as any;
+export async function updateCarouselSlideAction(id: string, input: CarouselSlideUpdateInput): Promise<ActionResult<CarouselSlideDocument>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin"]);
+      const rl = await rateLimitByIdentifier(`carousel:update:${admin.uid}`, RateLimitPresets.API);
+      if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+      if (!id?.trim()) throw new ValidationError("Invalid id");
+      const parsed = updateSlideSchema.safeParse(input);
+      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE);
+      return updateCarouselSlide(admin.uid, id, parsed.data as CarouselSlideUpdateInput) as any;
+  });
 }
 
 export async function deleteCarouselSlideAction(id: string): Promise<void> {
@@ -64,23 +69,31 @@ export async function deleteCarouselSlideAction(id: string): Promise<void> {
   return deleteCarouselSlide(admin.uid, id);
 }
 
-export async function reorderCarouselSlidesAction(slideIds: string[]): Promise<CarouselSlideDocument[]> {
-  const admin = await requireRoleUser(["admin"]);
-  const rl = await rateLimitByIdentifier(`carousel:reorder:${admin.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  if (!Array.isArray(slideIds) || slideIds.length === 0) throw new ValidationError("Invalid order");
-  return reorderCarouselSlides(admin.uid, slideIds) as any;
+export async function reorderCarouselSlidesAction(slideIds: string[]): Promise<ActionResult<CarouselSlideDocument[]>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin"]);
+      const rl = await rateLimitByIdentifier(`carousel:reorder:${admin.uid}`, RateLimitPresets.API);
+      if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+      if (!Array.isArray(slideIds) || slideIds.length === 0) throw new ValidationError("Invalid order");
+      return reorderCarouselSlides(admin.uid, slideIds) as any;
+  });
 }
 
-export async function listActiveCarouselSlidesAction(): Promise<CarouselSlideDocument[]> {
-  return listActiveCarouselSlides() as any;
+export async function listActiveCarouselSlidesAction(): Promise<ActionResult<CarouselSlideDocument[]>> {
+  return wrapAction(async () => {
+    return listActiveCarouselSlides() as any;
+  });
 }
 
-export async function listAllCarouselSlidesAction(): Promise<CarouselSlideDocument[]> {
-  return listAllCarouselSlides() as any;
+export async function listAllCarouselSlidesAction(): Promise<ActionResult<CarouselSlideDocument[]>> {
+  return wrapAction(async () => {
+    return listAllCarouselSlides() as any;
+  });
 }
 
-export async function getCarouselSlideByIdAction(id: string): Promise<CarouselSlideDocument | null> {
-  return getCarouselSlideById(id) as any;
+export async function getCarouselSlideByIdAction(id: string): Promise<ActionResult<CarouselSlideDocument | null>> {
+  return wrapAction(async () => {
+    return getCarouselSlideById(id) as any;
+  });
 }
 

@@ -10,7 +10,7 @@
 
 import { redirect } from "@/i18n/navigation";
 import { requireAuthUser, rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit";
-import { addBundleToCartAction } from "@mohasinac/appkit/server";
+import { ActionResult, addBundleToCartAction, wrapAction } from "@mohasinac/appkit/server";
 import { ROUTES } from "@mohasinac/appkit";
 
 export async function buyBundleAction(input: { bundleSlug: string }): Promise<void> {

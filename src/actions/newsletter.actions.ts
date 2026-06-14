@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Newsletter Server Action — thin wrapper
  *
@@ -46,44 +47,46 @@ export type SubscribeNewsletterInput = z.infer<typeof subscribeSchema>;
  */
 export async function subscribeNewsletterAction(
   input: SubscribeNewsletterInput,
-): Promise<{ subscribed: boolean }> {
-  const headersList = await headers();
-  const ip =
-    headersList.get("x-forwarded-for")?.split(",")[0].trim() ??
-    headersList.get("x-real-ip") ??
-    "anonymous";
-
-  const rl = await rateLimitByIdentifier(
-    `newsletter:${ip}`,
-    RateLimitPresets.STRICT,
-  );
-  if (!rl.success)
-    throw new ValidationError(
-      "Too many requests. Please wait before trying again.",
-    );
-
-  const parsed = subscribeSchema.safeParse(input);
-  if (!parsed.success) {
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? ERROR_MESSAGES.VALIDATION.FAILED,
-    );
-  }
-
-  const { email, source } = parsed.data;
-  const ipAddress = ip !== "anonymous" ? ip : undefined;
-  const normalizedSource: SupportedNewsletterSource | undefined =
-    source === NEWSLETTER_SUBSCRIBER_FIELDS.SOURCE_VALUES.FOOTER
-      ? "footer"
-      : source === NEWSLETTER_SUBSCRIBER_FIELDS.SOURCE_VALUES.HOMEPAGE
-        ? "homepage"
-        : source === NEWSLETTER_SUBSCRIBER_FIELDS.SOURCE_VALUES.CHECKOUT
-          ? "checkout"
-          : source === NEWSLETTER_SUBSCRIBER_FIELDS.SOURCE_VALUES.POPUP ||
-              source === "admin" ||
-              source === "import"
-            ? "popup"
-            : undefined;
-
-  return subscribeNewsletter({ email, source: normalizedSource, ipAddress });
+): Promise<ActionResult<{ subscribed: boolean }>> {
+  return wrapAction(async () => {
+    const headersList = await headers();
+      const ip =
+        headersList.get("x-forwarded-for")?.split(",")[0].trim() ??
+        headersList.get("x-real-ip") ??
+        "anonymous";
+    
+      const rl = await rateLimitByIdentifier(
+        `newsletter:${ip}`,
+        RateLimitPresets.STRICT,
+      );
+      if (!rl.success)
+        throw new ValidationError(
+          "Too many requests. Please wait before trying again.",
+        );
+    
+      const parsed = subscribeSchema.safeParse(input);
+      if (!parsed.success) {
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? ERROR_MESSAGES.VALIDATION.FAILED,
+        );
+      }
+    
+      const { email, source } = parsed.data;
+      const ipAddress = ip !== "anonymous" ? ip : undefined;
+      const normalizedSource: SupportedNewsletterSource | undefined =
+        source === NEWSLETTER_SUBSCRIBER_FIELDS.SOURCE_VALUES.FOOTER
+          ? "footer"
+          : source === NEWSLETTER_SUBSCRIBER_FIELDS.SOURCE_VALUES.HOMEPAGE
+            ? "homepage"
+            : source === NEWSLETTER_SUBSCRIBER_FIELDS.SOURCE_VALUES.CHECKOUT
+              ? "checkout"
+              : source === NEWSLETTER_SUBSCRIBER_FIELDS.SOURCE_VALUES.POPUP ||
+                  source === "admin" ||
+                  source === "import"
+                ? "popup"
+                : undefined;
+    
+      return subscribeNewsletter({ email, source: normalizedSource, ipAddress });
+  });
 }
 

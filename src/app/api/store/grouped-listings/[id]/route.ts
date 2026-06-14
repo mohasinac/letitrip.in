@@ -4,6 +4,7 @@ import {
   createRouteHandler,
   errorResponse,
   groupedListingsRepository,
+  parseJsonBody,
   storeRepository,
   successResponse,
 } from "@mohasinac/appkit";
@@ -40,7 +41,7 @@ export const PATCH = withProviders(
       const doc = await groupedListingsRepository.findById(id);
       if (!doc) return ApiErrors.notFound(GROUP_NOT_FOUND);
       if (doc.storeId !== store.id) return ApiErrors.forbidden("Not your group");
-      const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+      const body = await parseJsonBody<Record<string, unknown>>(request);
       try {
         await groupedListingsRepository.update(id, body);
         return successResponse({ id }, "Group updated");

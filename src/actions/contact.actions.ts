@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Contact Server Action
  *
@@ -42,62 +43,64 @@ export type SendContactInput = z.infer<typeof contactSchema>;
  */
 export async function sendContactAction(
   input: SendContactInput,
-): Promise<{ sent: boolean }> {
-  const headersList = await headers();
-  const ip =
-    headersList.get("x-forwarded-for")?.split(",")[0].trim() ??
-    headersList.get("x-real-ip") ??
-    "anonymous";
-
-  const rl = await rateLimitByIdentifier(
-    `contact:${ip}`,
-    RateLimitPresets.STRICT,
-  );
-  if (!rl.success)
-    throw new ValidationError(
-      "Too many requests. Please wait before trying again.",
-    );
-
-  const parsed = contactSchema.safeParse(input);
-  if (!parsed.success) {
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? ERROR_MESSAGES.VALIDATION.FAILED,
-    );
-  }
-
-  const { name, email, subject, message } = parsed.data;
-  serverLogger.info("Contact form submission received", { subject });
-
-  const result = await sendContactEmail({ name, email, subject, message });
-  if (!result.success && process.env.NODE_ENV !== "production") {
-    serverLogger.warn(
-      "Contact email provider failed in non-production; returning mocked success",
-      { subject },
-    );
-    return { sent: true };
-  }
-  if (!result.success)
-    throw new ValidationError(ERROR_MESSAGES.CONTACT.SEND_FAILED);
-
-  // ST-1 (2026-05-23) — also record as a support ticket so submissions surface
-  // in the admin support inbox. Failure here is non-fatal — the email already
-  // went through, the ticket is a redundancy for admin visibility.
-  try {
-    await supportRepository.createTicket({
-      userId: null as unknown as string, // guest ticket
-      userEmail: email,
-      userDisplayName: name,
-      category: "general",
-      subject,
-      description: message,
-    });
-  } catch (err) {
-    serverLogger.warn(
-      "Contact form ticket creation failed (non-fatal — email already sent)",
-      { error: (err as Error).message },
-    );
-  }
-
-  return { sent: true };
+): Promise<ActionResult<{ sent: boolean }>> {
+  return wrapAction(async () => {
+    const headersList = await headers();
+      const ip =
+        headersList.get("x-forwarded-for")?.split(",")[0].trim() ??
+        headersList.get("x-real-ip") ??
+        "anonymous";
+    
+      const rl = await rateLimitByIdentifier(
+        `contact:${ip}`,
+        RateLimitPresets.STRICT,
+      );
+      if (!rl.success)
+        throw new ValidationError(
+          "Too many requests. Please wait before trying again.",
+        );
+    
+      const parsed = contactSchema.safeParse(input);
+      if (!parsed.success) {
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? ERROR_MESSAGES.VALIDATION.FAILED,
+        );
+      }
+    
+      const { name, email, subject, message } = parsed.data;
+      serverLogger.info("Contact form submission received", { subject });
+    
+      const result = await sendContactEmail({ name, email, subject, message });
+      if (!result.success && process.env.NODE_ENV !== "production") {
+        serverLogger.warn(
+          "Contact email provider failed in non-production; returning mocked success",
+          { subject },
+        );
+        return { sent: true };
+      }
+      if (!result.success)
+        throw new ValidationError(ERROR_MESSAGES.CONTACT.SEND_FAILED);
+    
+      // ST-1 (2026-05-23) — also record as a support ticket so submissions surface
+      // in the admin support inbox. Failure here is non-fatal — the email already
+      // went through, the ticket is a redundancy for admin visibility.
+      try {
+        await supportRepository.createTicket({
+          userId: null as unknown as string, // guest ticket
+          userEmail: email,
+          userDisplayName: name,
+          category: "general",
+          subject,
+          description: message,
+        });
+      } catch (err) {
+        serverLogger.warn(
+          "Contact form ticket creation failed (non-fatal — email already sent)",
+          { error: (err as Error).message },
+        );
+      }
+    
+      return { sent: true };
+  });
 }
 

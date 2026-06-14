@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Refund Server Actions â€” thin entrypoint
  *
@@ -34,34 +35,38 @@ export type PartialRefundInput = z.infer<typeof partialRefundSchema>;
 
 export async function adminPartialRefundAction(
   input: PartialRefundInput,
-): Promise<PartialRefundResult> {
-  const user = await requireRoleUser("admin");
-  const rl = await rateLimitByIdentifier(
-    `refund:admin:${user.uid}`,
-    RateLimitPresets.STRICT,
-  );
-  if (!rl.success) throw new AuthorizationError("Too many requests.");
-
-  const parsed = partialRefundSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid input",
-    );
-
-  return issuePartialRefund(
-    user.uid,
-    parsed.data.orderId,
-    parsed.data.deductFees,
-    parsed.data.refundNote,
-  );
+): Promise<ActionResult<PartialRefundResult>> {
+  return wrapAction(async () => {
+    const user = await requireRoleUser("admin");
+      const rl = await rateLimitByIdentifier(
+        `refund:admin:${user.uid}`,
+        RateLimitPresets.STRICT,
+      );
+      if (!rl.success) throw new AuthorizationError("Too many requests.");
+    
+      const parsed = partialRefundSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid input",
+        );
+    
+      return issuePartialRefund(
+        user.uid,
+        parsed.data.orderId,
+        parsed.data.deductFees,
+        parsed.data.refundNote,
+      );
+  });
 }
 
 // --- User: Preview refund amount before confirming cancellation ------------
 
 export async function previewCancellationRefundAction(
   orderId: string,
-): Promise<PartialRefundResult | null> {
-  const user = await requireAuthUser();
-  return previewCancellationRefund(user.uid, orderId);
+): Promise<ActionResult<PartialRefundResult | null>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return previewCancellationRefund(user.uid, orderId);
+  });
 }
 

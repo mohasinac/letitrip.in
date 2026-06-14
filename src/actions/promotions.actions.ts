@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Promotions Server Action â€” thin wrapper
  *
@@ -10,7 +11,9 @@
 import { getPromotions, type PromotionsResult } from "@mohasinac/appkit";
 
 
-export async function getPromotionsAction(): Promise<PromotionsResult> {
-  return getPromotions();
+export async function getPromotionsAction(): Promise<ActionResult<PromotionsResult>> {
+  return wrapAction(async () => {
+    return getPromotions();
+  });
 }
 

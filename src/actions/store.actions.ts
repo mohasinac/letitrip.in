@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Store Server Actions â€” thin entrypoint
  *
@@ -24,33 +25,43 @@ import type { FirebaseSieveResult } from "@mohasinac/appkit";
 
 export async function listStoresAction(
   params: StoreQueryListParams = {},
-): Promise<FirebaseSieveResult<StoreDocument>> {
-  return listStores(params) as Promise<FirebaseSieveResult<StoreDocument>>;
+): Promise<ActionResult<FirebaseSieveResult<StoreDocument>>> {
+  return wrapAction(async () => {
+    return listStores(params) as Promise<FirebaseSieveResult<StoreDocument>>;
+  });
 }
 
 export async function getStoreBySlugAction(
   storeSlug: string,
-): Promise<StoreDocument | null> {
-  return getStoreBySlug(storeSlug) as Promise<StoreDocument | null>;
+): Promise<ActionResult<StoreDocument | null>> {
+  return wrapAction(async () => {
+    return getStoreBySlug(storeSlug) as Promise<StoreDocument | null>;
+  });
 }
 
 export async function getStoreProductsAction(
   storeSlug: string,
   params: StoreContentParams = {},
-): Promise<FirebaseSieveResult<ProductDocument>> {
-  return getStoreProducts(storeSlug, params) as Promise<FirebaseSieveResult<ProductDocument>>;
+): Promise<ActionResult<FirebaseSieveResult<ProductDocument>>> {
+  return wrapAction(async () => {
+    return getStoreProducts(storeSlug, params) as Promise<FirebaseSieveResult<ProductDocument>>;
+  });
 }
 
 export async function getStoreAuctionsAction(
   storeSlug: string,
   params: StoreContentParams = {},
-): Promise<FirebaseSieveResult<ProductDocument>> {
-  return getStoreAuctions(storeSlug, params) as Promise<FirebaseSieveResult<ProductDocument>>;
+): Promise<ActionResult<FirebaseSieveResult<ProductDocument>>> {
+  return wrapAction(async () => {
+    return getStoreAuctions(storeSlug, params) as Promise<FirebaseSieveResult<ProductDocument>>;
+  });
 }
 
 export async function getStoreReviewsAction(
   storeSlug: string,
-): Promise<StoreReviewsResult> {
-  return getStoreReviews(storeSlug) as Promise<StoreReviewsResult>;
+): Promise<ActionResult<StoreReviewsResult>> {
+  return wrapAction(async () => {
+    return getStoreReviews(storeSlug) as Promise<StoreReviewsResult>;
+  });
 }
 

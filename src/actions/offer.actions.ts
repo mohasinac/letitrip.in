@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction } from "@mohasinac/appkit/server";
 /**
  * Offer Server Actions — thin entrypoint
  *
@@ -158,14 +159,18 @@ export async function withdrawOfferAction(
   }
 }
 
-export async function listBuyerOffersAction(): Promise<OfferDocument[]> {
-  const user = await requireAuthUser();
-  return listBuyerOffers(user.uid);
+export async function listBuyerOffersAction(): Promise<ActionResult<OfferDocument[]>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return listBuyerOffers(user.uid);
+  });
 }
 
-export async function listSellerOffersAction(): Promise<OfferDocument[]> {
-  const user = await requireAuthUser();
-  return listSellerOffers(user.uid);
+export async function listSellerOffersAction(): Promise<ActionResult<OfferDocument[]>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return listSellerOffers(user.uid);
+  });
 }
 
 export async function checkoutOfferAction(

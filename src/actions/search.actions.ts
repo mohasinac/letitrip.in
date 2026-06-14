@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Search Server Action â€” thin wrapper
  *
@@ -17,7 +18,9 @@ export type SearchResult = SearchProductsResult;
 
 export async function searchProductsAction(
   params: SearchQuery = {},
-): Promise<SearchProductsResult> {
-  return searchProducts(params);
+): Promise<ActionResult<SearchProductsResult>> {
+  return wrapAction(async () => {
+    return searchProducts(params);
+  });
 }
 

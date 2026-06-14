@@ -7,7 +7,10 @@ export const metadata = {
 };
 
 export default async function Page() {
-  const store = await getSellerStoreAction().catch(() => null);
+  const result = await getSellerStoreAction().catch(() => null);
+  const store = result && typeof result === "object" && "ok" in result
+    ? (result.ok ? (result as { ok: true; data: unknown }).data : null)
+    : (result as unknown);
 
-  return <StoreGuideHubView store={store} />;
+  return <StoreGuideHubView store={store as any} />;
 }

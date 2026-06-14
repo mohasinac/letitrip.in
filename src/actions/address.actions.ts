@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Address Server Actions — thin entrypoint
  *
@@ -50,45 +51,49 @@ export type AddressInput = z.infer<typeof addressBodySchema>;
 
 export async function createAddressAction(
   input: AddressInput,
-): Promise<AddressDocument> {
-  const user = await requireAuthUser();
-  const rl = await rateLimitByIdentifier(
-    `address:create:${user.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  const parsed = addressBodySchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid address data",
-    );
-
-  return createAddressForUser(user.uid, parsed.data) as Promise<AddressDocument>;
+): Promise<ActionResult<AddressDocument>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      const rl = await rateLimitByIdentifier(
+        `address:create:${user.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      const parsed = addressBodySchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid address data",
+        );
+    
+      return createAddressForUser(user.uid, parsed.data) as Promise<AddressDocument>;
+  });
 }
 
 export async function updateAddressAction(
   addressId: string,
   input: Partial<AddressInput>,
-): Promise<AddressDocument> {
-  const user = await requireAuthUser();
-  const rl = await rateLimitByIdentifier(
-    `address:update:${user.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  if (!addressId?.trim()) throw new ValidationError(ERR_ADDRESS_ID_REQUIRED);
-
-  const parsed = addressBodySchema.partial().safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid address data",
-    );
-
-  return updateAddressForUser(user.uid, addressId, parsed.data) as Promise<AddressDocument>;
+): Promise<ActionResult<AddressDocument>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      const rl = await rateLimitByIdentifier(
+        `address:update:${user.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      if (!addressId?.trim()) throw new ValidationError(ERR_ADDRESS_ID_REQUIRED);
+    
+      const parsed = addressBodySchema.partial().safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid address data",
+        );
+    
+      return updateAddressForUser(user.uid, addressId, parsed.data) as Promise<AddressDocument>;
+  });
 }
 
 export async function deleteAddressAction(addressId: string): Promise<void> {
@@ -107,31 +112,37 @@ export async function deleteAddressAction(addressId: string): Promise<void> {
 
 export async function setDefaultAddressAction(
   addressId: string,
-): Promise<AddressDocument> {
-  const user = await requireAuthUser();
-  const rl = await rateLimitByIdentifier(
-    `address:setDefault:${user.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  if (!addressId?.trim()) throw new ValidationError(ERR_ADDRESS_ID_REQUIRED);
-
-  return setDefaultAddressForUser(user.uid, addressId) as Promise<AddressDocument>;
+): Promise<ActionResult<AddressDocument>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      const rl = await rateLimitByIdentifier(
+        `address:setDefault:${user.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      if (!addressId?.trim()) throw new ValidationError(ERR_ADDRESS_ID_REQUIRED);
+    
+      return setDefaultAddressForUser(user.uid, addressId) as Promise<AddressDocument>;
+  });
 }
 
 // --- Read Actions -------------------------------------------------------------
 
-export async function listAddressesAction(): Promise<AddressDocument[]> {
-  const user = await requireAuthUser();
-  return listAddressesForUser(user.uid) as Promise<AddressDocument[]>;
+export async function listAddressesAction(): Promise<ActionResult<AddressDocument[]>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return listAddressesForUser(user.uid) as Promise<AddressDocument[]>;
+  });
 }
 
 export async function getAddressByIdAction(
   id: string,
-): Promise<AddressDocument | null> {
-  const user = await requireAuthUser();
-  return getAddressByIdForUser(user.uid, id) as Promise<AddressDocument | null>;
+): Promise<ActionResult<AddressDocument | null>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return getAddressByIdForUser(user.uid, id) as Promise<AddressDocument | null>;
+  });
 }
 

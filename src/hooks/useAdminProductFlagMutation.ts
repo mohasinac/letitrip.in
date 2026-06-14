@@ -1,7 +1,7 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiClient, ADMIN_ENDPOINTS } from "@mohasinac/appkit/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { ADMIN_ENDPOINTS, apiClient, useApiMutation } from "@mohasinac/appkit/client";
 
 /**
  * Shared mutation hook for admin "remove from {deals|featured}" bulk actions
@@ -14,7 +14,7 @@ export function useAdminProductFlagMutation(
   queryKey: readonly unknown[],
 ) {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useApiMutation({
     mutationFn: async (id: string) => {
       await apiClient.patch(ADMIN_ENDPOINTS.PRODUCT_BY_ID(id), { [field]: false });
     },

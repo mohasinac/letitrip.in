@@ -71,16 +71,18 @@ import type { OrderDocument } from "@mohasinac/appkit";
 import type { CouponDocument } from "@mohasinac/appkit";
 import type { ProductDocument } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
-import { getStoreCapabilities } from "@mohasinac/appkit/server";
+import { ActionResult, getStoreCapabilities, wrapAction } from "@mohasinac/appkit/server";
 import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 // --- Become Seller ------------------------------------------------------------
 
-export async function becomeSellerAction(): Promise<BecomeSellerResult> {
-  const user = await requireAuthUser();
-  const rl = await rateLimitByIdentifier(`become-seller:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  return becomeSeller(user.uid);
+export async function becomeSellerAction(): Promise<ActionResult<BecomeSellerResult>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      const rl = await rateLimitByIdentifier(`become-seller:${user.uid}`, RateLimitPresets.STRICT);
+      if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+      return becomeSeller(user.uid);
+  });
 }
 
 // --- Create Store ------------------------------------------------------------
@@ -93,13 +95,15 @@ const createStoreSchema = z.object({
 
 export async function createStoreAction(
   input: z.infer<typeof createStoreSchema>,
-): Promise<{ store: StoreDocument }> {
-  const user = await requireRoleUser(["seller", "admin"]);
-  const rl = await rateLimitByIdentifier(`create-store:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  const parsed = createStoreSchema.safeParse(input);
-  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
-  return createStore(user.uid, user.name ?? "seller", parsed.data as CreateStoreInput) as any;
+): Promise<ActionResult<{ store: StoreDocument }>> {
+  return wrapAction(async () => {
+    const user = await requireRoleUser(["seller", "admin"]);
+      const rl = await rateLimitByIdentifier(`create-store:${user.uid}`, RateLimitPresets.STRICT);
+      if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+      const parsed = createStoreSchema.safeParse(input);
+      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+      return createStore(user.uid, user.name ?? "seller", parsed.data as CreateStoreInput) as any;
+  });
 }
 
 // --- Update Store ------------------------------------------------------------
@@ -128,13 +132,15 @@ const updateStoreSchema = z.object({
 
 export async function updateStoreAction(
   input: z.infer<typeof updateStoreSchema>,
-): Promise<{ store: StoreDocument }> {
-  const user = await requireRoleUser(["seller", "admin"]);
-  const rl = await rateLimitByIdentifier(`update-store:${user.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  const parsed = updateStoreSchema.safeParse(input);
-  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
-  return updateStore(user.uid, parsed.data as UpdateStoreInput) as any;
+): Promise<ActionResult<{ store: StoreDocument }>> {
+  return wrapAction(async () => {
+    const user = await requireRoleUser(["seller", "admin"]);
+      const rl = await rateLimitByIdentifier(`update-store:${user.uid}`, RateLimitPresets.API);
+      if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+      const parsed = updateStoreSchema.safeParse(input);
+      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+      return updateStore(user.uid, parsed.data as UpdateStoreInput) as any;
+  });
 }
 
 // --- Update Payout Settings ---------------------------------------------------
@@ -154,13 +160,15 @@ const updatePayoutSettingsSchema = z.discriminatedUnion("method", [
 
 export async function updatePayoutSettingsAction(
   input: z.infer<typeof updatePayoutSettingsSchema>,
-): Promise<unknown> {
-  const user = await requireRoleUser(["seller", "admin"]);
-  const rl = await rateLimitByIdentifier(`update-payout-settings:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  const parsed = updatePayoutSettingsSchema.safeParse(input);
-  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
-  return updatePayoutSettings(user.uid, parsed.data as UpdatePayoutSettingsInput);
+): Promise<ActionResult<unknown>> {
+  return wrapAction(async () => {
+    const user = await requireRoleUser(["seller", "admin"]);
+      const rl = await rateLimitByIdentifier(`update-payout-settings:${user.uid}`, RateLimitPresets.STRICT);
+      if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+      const parsed = updatePayoutSettingsSchema.safeParse(input);
+      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+      return updatePayoutSettings(user.uid, parsed.data as UpdatePayoutSettingsInput);
+  });
 }
 
 // --- Request Payout -----------------------------------------------------------
@@ -182,27 +190,31 @@ const payoutRequestSchema = z.object({
 
 export async function requestPayoutAction(
   input: z.infer<typeof payoutRequestSchema>,
-): Promise<unknown> {
-  const user = await requireRoleUser(["seller", "admin"]);
-  const rl = await rateLimitByIdentifier(`request-payout:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  const parsed = payoutRequestSchema.safeParse(input);
-  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
-  return requestPayout(user.uid, user.name ?? user.email ?? user.uid, user.email ?? "", parsed.data as RequestPayoutInput);
+): Promise<ActionResult<unknown>> {
+  return wrapAction(async () => {
+    const user = await requireRoleUser(["seller", "admin"]);
+      const rl = await rateLimitByIdentifier(`request-payout:${user.uid}`, RateLimitPresets.STRICT);
+      if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+      const parsed = payoutRequestSchema.safeParse(input);
+      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+      return requestPayout(user.uid, user.name ?? user.email ?? user.uid, user.email ?? "", parsed.data as RequestPayoutInput);
+  });
 }
 
 // --- Bulk Seller Order --------------------------------------------------------
 
 export async function bulkSellerOrderAction(
   orderIds: string[],
-): Promise<BulkSellerOrderResult> {
-  const user = await requireRoleUser(["seller", "admin"]);
-  const rl = await rateLimitByIdentifier(`bulk-order-action:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  if (!Array.isArray(orderIds) || orderIds.length === 0)
-    throw new ValidationError("At least one order ID is required");
-  const profile = await userRepository.findById(user.uid);
-  return bulkSellerOrder(user.uid, user.role ?? "seller", profile?.displayName ?? user.name ?? user.uid, user.email ?? "", orderIds);
+): Promise<ActionResult<BulkSellerOrderResult>> {
+  return wrapAction(async () => {
+    const user = await requireRoleUser(["seller", "admin"]);
+      const rl = await rateLimitByIdentifier(`bulk-order-action:${user.uid}`, RateLimitPresets.STRICT);
+      if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+      if (!Array.isArray(orderIds) || orderIds.length === 0)
+        throw new ValidationError("At least one order ID is required");
+      const profile = await userRepository.findById(user.uid);
+      return bulkSellerOrder(user.uid, user.role ?? "seller", profile?.displayName ?? user.name ?? user.uid, user.email ?? "", orderIds);
+  });
 }
 
 // --- Create Seller Product ----------------------------------------------------
@@ -234,19 +246,25 @@ export async function createSellerProductAction(input: unknown): Promise<void> {
 
 // --- Read Actions -------------------------------------------------------------
 
-export async function getSellerStoreAction(): Promise<StoreDocument | null> {
-  const user = await requireAuthUser();
-  return getSellerStore(user.uid) as any;
+export async function getSellerStoreAction(): Promise<ActionResult<StoreDocument | null>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return getSellerStore(user.uid) as any;
+  });
 }
 
-export async function getSellerShippingAction() {
-  const user = await requireAuthUser();
-  return getSellerShipping(user.uid);
+export async function getSellerShippingAction(): Promise<ActionResult<unknown>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return getSellerShipping(user.uid);
+  });
 }
 
-export async function getSellerPayoutSettingsAction() {
-  const user = await requireAuthUser();
-  return getSellerPayoutSettings(user.uid);
+export async function getSellerPayoutSettingsAction(): Promise<ActionResult<unknown>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return getSellerPayoutSettings(user.uid);
+  });
 }
 
 export async function listSellerOrdersAction(params?: {
@@ -254,24 +272,32 @@ export async function listSellerOrdersAction(params?: {
   sorts?: string;
   page?: number;
   pageSize?: number;
-}): Promise<FirebaseSieveResult<OrderDocument>> {
-  const user = await requireAuthUser();
-  return listSellerOrders(user.uid, params) as any;
+}): Promise<ActionResult<FirebaseSieveResult<OrderDocument>>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return listSellerOrders(user.uid, params) as any;
+  });
 }
 
-export async function getSellerAnalyticsAction() {
-  const user = await requireAuthUser();
-  return getSellerAnalytics(user.uid);
+export async function getSellerAnalyticsAction(): Promise<ActionResult<unknown>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return getSellerAnalytics(user.uid);
+  });
 }
 
-export async function listSellerPayoutsAction(params?: { page?: number; pageSize?: number }) {
-  const user = await requireAuthUser();
-  return listSellerPayouts(user.uid, params);
+export async function listSellerPayoutsAction(params?: { page?: number; pageSize?: number }): Promise<ActionResult<unknown>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return listSellerPayouts(user.uid, params);
+  });
 }
 
-export async function listSellerCouponsAction(): Promise<CouponDocument[]> {
-  const user = await requireAuthUser();
-  return listSellerCoupons(user.uid) as any;
+export async function listSellerCouponsAction(): Promise<ActionResult<CouponDocument[]>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return listSellerCoupons(user.uid) as any;
+  });
 }
 
 export async function listSellerMyProductsAction(params?: {
@@ -279,31 +305,37 @@ export async function listSellerMyProductsAction(params?: {
   sorts?: string;
   page?: number;
   pageSize?: number;
-}) {
-  const user = await requireAuthUser();
-  return listSellerMyProducts(user.uid, params);
+}): Promise<ActionResult<unknown>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return listSellerMyProducts(user.uid, params);
+  });
 }
 
-export async function getSellerProductAction(id: string): Promise<ProductDocument | null> {
-  const user = await requireAuthUser();
-  if (!id?.trim()) throw new ValidationError("id is required");
-  const product = await productRepository.findById(id);
-  if (!product) return null;
-  const profile = await userRepository.findById(user.uid);
-  if (!isAdminUser(profile) && (product as any).storeId !== user.uid) return null;
-  return product as unknown as ProductDocument;
+export async function getSellerProductAction(id: string): Promise<ActionResult<ProductDocument | null>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      if (!id?.trim()) throw new ValidationError("id is required");
+      const product = await productRepository.findById(id);
+      if (!product) return null;
+      const profile = await userRepository.findById(user.uid);
+      if (!isAdminUser(profile) && (product as any).storeId !== user.uid) return null;
+      return product as unknown as ProductDocument;
+  });
 }
 
 export async function sellerUpdateProductAction(
   id: string,
   input: unknown,
-): Promise<ProductDocument> {
-  const user = await requireAuthUser();
-  if (!id?.trim()) throw new ValidationError("id is required");
-  const parsed = productUpdateSchema.partial().safeParse(input);
-  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE);
-  const profile = await userRepository.findById(user.uid);
-  return sellerUpdateProduct(user.uid, profile?.role ?? "user", id, parsed.data as Record<string, unknown>) as any;
+): Promise<ActionResult<ProductDocument>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      if (!id?.trim()) throw new ValidationError("id is required");
+      const parsed = productUpdateSchema.partial().safeParse(input);
+      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE);
+      const profile = await userRepository.findById(user.uid);
+      return sellerUpdateProduct(user.uid, profile?.role ?? "user", id, parsed.data as Record<string, unknown>) as any;
+  });
 }
 
 export async function sellerDeleteProductAction(id: string): Promise<void> {
@@ -336,110 +368,112 @@ const shipOrderSchema = z.discriminatedUnion("method", [customShipSchema, shipro
 export async function shipOrderAction(
   orderId: string,
   input: z.infer<typeof shipOrderSchema>,
-): Promise<{ orderId: string; method: string; awb?: string; trackingUrl?: string; pickupScheduledDate?: string }> {
-  const user = await requireRoleUser(["seller", "admin"]);
-  const rl = await rateLimitByIdentifier(`ship-order:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  const parsed = shipOrderSchema.safeParse(input);
-  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
-
-  const data = parsed.data;
-
-  if (data.method === "custom") {
-    return customShipOrder(user.uid, user.role ?? "seller", orderId, {
-      shippingCarrier: data.shippingCarrier,
-      trackingNumber: data.trackingNumber,
-      trackingUrl: data.trackingUrl,
-    });
-  }
-
-  // -- Shiprocket branch --
-  const userDoc = await userRepository.findById(user.uid);
-  if (!userDoc) throw new AuthorizationError("User not found");
-
-  const order = await orderRepository.findById(orderId);
-  if (!order) throw new NotFoundError("Order not found");
-  if (!isAdminUser(user) && (order as any).sellerId !== user.uid)
-    throw new AuthorizationError("You do not own this order");
-  if (order.status === OrderStatusValues.SHIPPED || order.status === OrderStatusValues.DELIVERED)
-    throw new ValidationError("Order is already shipped");
-  if (order.status !== OrderStatusValues.CONFIRMED)
-    throw new ValidationError("Order must be confirmed before shipping");
-
-  const shippingConfig = (userDoc as any).shippingConfig;
-  if (!shippingConfig?.isConfigured) throw new ValidationError("Shipping is not configured");
-  if (shippingConfig.method !== "shiprocket") throw new ValidationError("Shipping method mismatch");
-  if (!shippingConfig.pickupAddress?.isVerified) throw new ValidationError("Pickup address not verified");
-  const token = shippingConfig.shiprocketToken;
-  if (!token || isShiprocketTokenExpired(shippingConfig.shiprocketTokenExpiry))
-    throw new ValidationError("Shiprocket token is missing or expired. Please reconnect.");
-
-  const rawAddr = (order as any).shippingAddress ?? "";
-  let parsedAddr: Record<string, string> = {};
-  try { parsedAddr = JSON.parse(rawAddr); } catch { parsedAddr = { address: rawAddr }; }
-
-  const orderDate = (resolveDate((order as any).createdAt) ?? new Date()).toISOString().slice(0, 19);
-  const srOrderResponse = await shiprocketCreateOrder(token, {
-    order_id: orderId,
-    order_date: orderDate,
-    pickup_location: shippingConfig.pickupAddress.locationName,
-    billing_customer_name: parsedAddr["name"] ?? (order as any).userName ?? "",
-    billing_last_name: "",
-    billing_address: parsedAddr["address"] ?? parsedAddr["line1"] ?? rawAddr,
-    billing_city: parsedAddr["city"] ?? "",
-    billing_pincode: parsedAddr["pincode"] ?? parsedAddr["zip"] ?? "",
-    billing_state: parsedAddr["state"] ?? "",
-    billing_country: "India",
-    billing_email: parsedAddr["email"] ?? (order as any).userEmail ?? "",
-    billing_phone: parsedAddr["phone"] ?? "",
-    shipping_is_billing: true,
-    shipping_customer_name: parsedAddr["name"] ?? (order as any).userName ?? "",
-    shipping_last_name: "",
-    shipping_address: parsedAddr["address"] ?? parsedAddr["line1"] ?? rawAddr,
-    shipping_city: parsedAddr["city"] ?? "",
-    shipping_pincode: parsedAddr["pincode"] ?? parsedAddr["zip"] ?? "",
-    shipping_country: "India",
-    shipping_state: parsedAddr["state"] ?? "",
-    shipping_phone: parsedAddr["phone"] ?? "",
-    order_items: [{ name: (order as any).productTitle, sku: (order as any).productId, units: (order as any).quantity, selling_price: (order as any).unitPrice }],
-    payment_method: ((order as any).paymentMethod === "cod" ? "COD" : "Prepaid") as "COD" | "Prepaid",
-    sub_total: (order as any).totalPrice,
-    length: data.packageLength,
-    breadth: data.packageBreadth,
-    height: data.packageHeight,
-    weight: data.packageWeight,
+): Promise<ActionResult<{ orderId: string; method: string; awb?: string; trackingUrl?: string; pickupScheduledDate?: string }>> {
+  return wrapAction(async () => {
+    const user = await requireRoleUser(["seller", "admin"]);
+      const rl = await rateLimitByIdentifier(`ship-order:${user.uid}`, RateLimitPresets.STRICT);
+      if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+      const parsed = shipOrderSchema.safeParse(input);
+      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+    
+      const data = parsed.data;
+    
+      if (data.method === "custom") {
+        return customShipOrder(user.uid, user.role ?? "seller", orderId, {
+          shippingCarrier: data.shippingCarrier,
+          trackingNumber: data.trackingNumber,
+          trackingUrl: data.trackingUrl,
+        });
+      }
+    
+      // -- Shiprocket branch --
+      const userDoc = await userRepository.findById(user.uid);
+      if (!userDoc) throw new AuthorizationError("User not found");
+    
+      const order = await orderRepository.findById(orderId);
+      if (!order) throw new NotFoundError("Order not found");
+      if (!isAdminUser(user) && (order as any).sellerId !== user.uid)
+        throw new AuthorizationError("You do not own this order");
+      if (order.status === OrderStatusValues.SHIPPED || order.status === OrderStatusValues.DELIVERED)
+        throw new ValidationError("Order is already shipped");
+      if (order.status !== OrderStatusValues.CONFIRMED)
+        throw new ValidationError("Order must be confirmed before shipping");
+    
+      const shippingConfig = (userDoc as any).shippingConfig;
+      if (!shippingConfig?.isConfigured) throw new ValidationError("Shipping is not configured");
+      if (shippingConfig.method !== "shiprocket") throw new ValidationError("Shipping method mismatch");
+      if (!shippingConfig.pickupAddress?.isVerified) throw new ValidationError("Pickup address not verified");
+      const token = shippingConfig.shiprocketToken;
+      if (!token || isShiprocketTokenExpired(shippingConfig.shiprocketTokenExpiry))
+        throw new ValidationError("Shiprocket token is missing or expired. Please reconnect.");
+    
+      const rawAddr = (order as any).shippingAddress ?? "";
+      let parsedAddr: Record<string, string> = {};
+      try { parsedAddr = JSON.parse(rawAddr); } catch { parsedAddr = { address: rawAddr }; }
+    
+      const orderDate = (resolveDate((order as any).createdAt) ?? new Date()).toISOString().slice(0, 19);
+      const srOrderResponse = await shiprocketCreateOrder(token, {
+        order_id: orderId,
+        order_date: orderDate,
+        pickup_location: shippingConfig.pickupAddress.locationName,
+        billing_customer_name: parsedAddr["name"] ?? (order as any).userName ?? "",
+        billing_last_name: "",
+        billing_address: parsedAddr["address"] ?? parsedAddr["line1"] ?? rawAddr,
+        billing_city: parsedAddr["city"] ?? "",
+        billing_pincode: parsedAddr["pincode"] ?? parsedAddr["zip"] ?? "",
+        billing_state: parsedAddr["state"] ?? "",
+        billing_country: "India",
+        billing_email: parsedAddr["email"] ?? (order as any).userEmail ?? "",
+        billing_phone: parsedAddr["phone"] ?? "",
+        shipping_is_billing: true,
+        shipping_customer_name: parsedAddr["name"] ?? (order as any).userName ?? "",
+        shipping_last_name: "",
+        shipping_address: parsedAddr["address"] ?? parsedAddr["line1"] ?? rawAddr,
+        shipping_city: parsedAddr["city"] ?? "",
+        shipping_pincode: parsedAddr["pincode"] ?? parsedAddr["zip"] ?? "",
+        shipping_country: "India",
+        shipping_state: parsedAddr["state"] ?? "",
+        shipping_phone: parsedAddr["phone"] ?? "",
+        order_items: [{ name: (order as any).productTitle, sku: (order as any).productId, units: (order as any).quantity, selling_price: (order as any).unitPrice }],
+        payment_method: ((order as any).paymentMethod === "cod" ? "COD" : "Prepaid") as "COD" | "Prepaid",
+        sub_total: (order as any).totalPrice,
+        length: data.packageLength,
+        breadth: data.packageBreadth,
+        height: data.packageHeight,
+        weight: data.packageWeight,
+      });
+    
+      if (!srOrderResponse.order_id || !srOrderResponse.shipment_id)
+        throw new ValidationError("Failed to create Shiprocket order");
+    
+      const awbResponse = await shiprocketGenerateAWB(token, {
+        shipment_id: srOrderResponse.shipment_id,
+        courier_id: data.courierId,
+      });
+      const awb = awbResponse.awb_code;
+      if (!awb) throw new ValidationError("Failed to assign AWB");
+    
+      const pickupResponse = await shiprocketGeneratePickup(token, {
+        shipment_id: [srOrderResponse.shipment_id],
+      });
+    
+      const trackingUrl = buildShiprocketTrackingUrl(awb);
+      await orderRepository.update(orderId, {
+        status: OrderStatusValues.SHIPPED,
+        shippingMethod: ShippingMethodValues.SHIPROCKET,
+        trackingUrl,
+        shiprocketOrderId: srOrderResponse.order_id,
+        shiprocketShipmentId: srOrderResponse.shipment_id,
+        shiprocketAWB: awb,
+        shiprocketStatus: SHIPROCKET_STATUS_PICKUP_SCHEDULED,
+        shiprocketUpdatedAt: new Date(),
+        shippingDate: new Date(),
+        payoutStatus: "eligible",
+      } as any);
+    
+      serverLogger.info("shipOrderAction (shiprocket)", { orderId, uid: user.uid, awb });
+      return { orderId, method: "shiprocket", awb, trackingUrl, pickupScheduledDate: pickupResponse.pickup_scheduled_date };
   });
-
-  if (!srOrderResponse.order_id || !srOrderResponse.shipment_id)
-    throw new ValidationError("Failed to create Shiprocket order");
-
-  const awbResponse = await shiprocketGenerateAWB(token, {
-    shipment_id: srOrderResponse.shipment_id,
-    courier_id: data.courierId,
-  });
-  const awb = awbResponse.awb_code;
-  if (!awb) throw new ValidationError("Failed to assign AWB");
-
-  const pickupResponse = await shiprocketGeneratePickup(token, {
-    shipment_id: [srOrderResponse.shipment_id],
-  });
-
-  const trackingUrl = buildShiprocketTrackingUrl(awb);
-  await orderRepository.update(orderId, {
-    status: OrderStatusValues.SHIPPED,
-    shippingMethod: ShippingMethodValues.SHIPROCKET,
-    trackingUrl,
-    shiprocketOrderId: srOrderResponse.order_id,
-    shiprocketShipmentId: srOrderResponse.shipment_id,
-    shiprocketAWB: awb,
-    shiprocketStatus: SHIPROCKET_STATUS_PICKUP_SCHEDULED,
-    shiprocketUpdatedAt: new Date(),
-    shippingDate: new Date(),
-    payoutStatus: "eligible",
-  } as any);
-
-  serverLogger.info("shipOrderAction (shiprocket)", { orderId, uid: user.uid, awb });
-  return { orderId, method: "shiprocket", awb, trackingUrl, pickupScheduledDate: pickupResponse.pickup_scheduled_date };
 }
 
 // --- Update Seller Shipping (shiprocket ï¿½ stays in letitrip) ------------------
@@ -472,102 +506,106 @@ const updateShippingSchema = z.discriminatedUnion("method", [
 
 export async function updateSellerShippingAction(
   input: z.infer<typeof updateShippingSchema>,
-): Promise<unknown> {
-  const user = await requireRoleUser(["seller", "admin"]);
-  const rl = await rateLimitByIdentifier(`update-shipping:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  const parsed = updateShippingSchema.safeParse(input);
-  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
-
-  const userDoc = await userRepository.findById(user.uid);
-  if (!userDoc) throw new AuthorizationError("User not found");
-
-  const data = parsed.data;
-  let config: any;
-  let otpPending = false;
-  let newPickupLocationId: number | undefined;
-
-  if (data.method === "custom") {
-    config = { method: "custom", customShippingPrice: data.customShippingPrice, customCarrierName: data.customCarrierName, isConfigured: true };
-  } else {
-    const existing = (userDoc as any).shippingConfig;
-    let token = existing?.shiprocketToken;
-    let tokenExpiry = existing?.shiprocketTokenExpiry;
-    const existingEmail = existing?.shiprocketEmail;
-
-    if (data.shiprocketCredentials || !token || (tokenExpiry && new Date() >= new Date(tokenExpiry))) {
-      if (!data.shiprocketCredentials) throw new ValidationError("Shiprocket credentials are required to reconnect");
-      const authResult = await shiprocketAuthenticate({ email: data.shiprocketCredentials.email, password: data.shiprocketCredentials.password })
-        .catch((err: Error) => { throw new ValidationError(`Shiprocket auth failed: ${err.message}`); });
-      token = authResult.token;
-      tokenExpiry = new Date(Date.now() + SHIPROCKET_TOKEN_TTL_MS);
-    }
-
-    const shiprocketEmail = data.shiprocketCredentials?.email ?? existingEmail ?? "";
-    config = { method: "shiprocket", shiprocketEmail, shiprocketToken: token, shiprocketTokenExpiry: tokenExpiry, pickupAddress: existing?.pickupAddress, isConfigured: Boolean(existing?.pickupAddress?.isVerified) };
-
-    if (data.pickupAddress && token) {
-      const pickupResult = await shiprocketAddPickupLocation(token, {
-        pickup_location: data.pickupAddress.locationName,
-        name: data.pickupAddress.name,
-        email: data.pickupAddress.email,
-        phone: data.pickupAddress.phone,
-        address: data.pickupAddress.address,
-        address_2: data.pickupAddress.address2 ?? "",
-        city: data.pickupAddress.city,
-        state: data.pickupAddress.state,
-        country: data.pickupAddress.country || "India",
-        pin_code: data.pickupAddress.pincode,
-      }).catch((err: Error) => { throw new ValidationError(`Failed to add pickup address: ${err.message}`); });
-
-      newPickupLocationId = pickupResult.address?.pickup_location_id;
-      otpPending = true;
-      config.pickupAddress = { ...data.pickupAddress, isVerified: false, shiprocketAddressId: newPickupLocationId };
-      config.isConfigured = false;
-    }
-  }
-
-  await userRepository.update(user.uid, { shippingConfig: config } as any);
-  serverLogger.info("updateSellerShippingAction", { uid: user.uid, method: config.method, otpPending });
-
-  const { shiprocketToken: _t, shiprocketTokenExpiry: _e, ...safeConfig } = config;
-  return { shippingConfig: { ...safeConfig, isTokenValid: Boolean(config.shiprocketToken && !isShiprocketTokenExpired(config.shiprocketTokenExpiry)) }, otpPending, pickupLocationId: newPickupLocationId };
+): Promise<ActionResult<unknown>> {
+  return wrapAction(async () => {
+    const user = await requireRoleUser(["seller", "admin"]);
+      const rl = await rateLimitByIdentifier(`update-shipping:${user.uid}`, RateLimitPresets.STRICT);
+      if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+      const parsed = updateShippingSchema.safeParse(input);
+      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+    
+      const userDoc = await userRepository.findById(user.uid);
+      if (!userDoc) throw new AuthorizationError("User not found");
+    
+      const data = parsed.data;
+      let config: any;
+      let otpPending = false;
+      let newPickupLocationId: number | undefined;
+    
+      if (data.method === "custom") {
+        config = { method: "custom", customShippingPrice: data.customShippingPrice, customCarrierName: data.customCarrierName, isConfigured: true };
+      } else {
+        const existing = (userDoc as any).shippingConfig;
+        let token = existing?.shiprocketToken;
+        let tokenExpiry = existing?.shiprocketTokenExpiry;
+        const existingEmail = existing?.shiprocketEmail;
+    
+        if (data.shiprocketCredentials || !token || (tokenExpiry && new Date() >= new Date(tokenExpiry))) {
+          if (!data.shiprocketCredentials) throw new ValidationError("Shiprocket credentials are required to reconnect");
+          const authResult = await shiprocketAuthenticate({ email: data.shiprocketCredentials.email, password: data.shiprocketCredentials.password })
+            .catch((err: Error) => { throw new ValidationError(`Shiprocket auth failed: ${err.message}`); });
+          token = authResult.token;
+          tokenExpiry = new Date(Date.now() + SHIPROCKET_TOKEN_TTL_MS);
+        }
+    
+        const shiprocketEmail = data.shiprocketCredentials?.email ?? existingEmail ?? "";
+        config = { method: "shiprocket", shiprocketEmail, shiprocketToken: token, shiprocketTokenExpiry: tokenExpiry, pickupAddress: existing?.pickupAddress, isConfigured: Boolean(existing?.pickupAddress?.isVerified) };
+    
+        if (data.pickupAddress && token) {
+          const pickupResult = await shiprocketAddPickupLocation(token, {
+            pickup_location: data.pickupAddress.locationName,
+            name: data.pickupAddress.name,
+            email: data.pickupAddress.email,
+            phone: data.pickupAddress.phone,
+            address: data.pickupAddress.address,
+            address_2: data.pickupAddress.address2 ?? "",
+            city: data.pickupAddress.city,
+            state: data.pickupAddress.state,
+            country: data.pickupAddress.country || "India",
+            pin_code: data.pickupAddress.pincode,
+          }).catch((err: Error) => { throw new ValidationError(`Failed to add pickup address: ${err.message}`); });
+    
+          newPickupLocationId = pickupResult.address?.pickup_location_id;
+          otpPending = true;
+          config.pickupAddress = { ...data.pickupAddress, isVerified: false, shiprocketAddressId: newPickupLocationId };
+          config.isConfigured = false;
+        }
+      }
+    
+      await userRepository.update(user.uid, { shippingConfig: config } as any);
+      serverLogger.info("updateSellerShippingAction", { uid: user.uid, method: config.method, otpPending });
+    
+      const { shiprocketToken: _t, shiprocketTokenExpiry: _e, ...safeConfig } = config;
+      return { shippingConfig: { ...safeConfig, isTokenValid: Boolean(config.shiprocketToken && !isShiprocketTokenExpired(config.shiprocketTokenExpiry)) }, otpPending, pickupLocationId: newPickupLocationId };
+  });
 }
 
 // --- Verify Shiprocket Pickup OTP (stays in letitrip) -------------------------
 
 export async function verifyShiprocketPickupOtpAction(
   input: { otp: number; pickupLocationId: number },
-): Promise<{ message: string }> {
-  const user = await requireRoleUser(["seller", "admin"]);
-  const rl = await rateLimitByIdentifier(`verify-pickup-otp:${user.uid}`, RateLimitPresets.STRICT);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  const parsed = z.object({ otp: z.number().int().min(100000).max(999999), pickupLocationId: z.number().int().positive() }).safeParse(input);
-  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
-
-  const userDoc = await userRepository.findById(user.uid);
-  if (!userDoc) throw new AuthorizationError("User not found");
-
-  const config = (userDoc as any).shippingConfig;
-  if (!config || config.method !== "shiprocket") throw new ValidationError("Shiprocket shipping is not configured");
-  if (!config.shiprocketToken) throw new ValidationError("Shiprocket token is missing. Please reconnect.");
-
-  const result = await shiprocketVerifyPickupOTP(config.shiprocketToken, {
-    otp: parsed.data.otp,
-    pickup_location_id: parsed.data.pickupLocationId,
-  }).catch((err: Error) => { throw new ValidationError(`Pickup verification failed: ${err.message}`); });
-
-  if (!result.success) throw new ValidationError(result.message || "Pickup OTP verification failed");
-
-  const updatedConfig = {
-    ...config,
-    pickupAddress: config.pickupAddress ? { ...config.pickupAddress, isVerified: true, shiprocketAddressId: parsed.data.pickupLocationId } : undefined,
-    isConfigured: true,
-  };
-
-  await userRepository.update(user.uid, { shippingConfig: updatedConfig } as any);
-  serverLogger.info("verifyShiprocketPickupOtpAction", { uid: user.uid });
-  return { message: result.message || "Pickup address verified successfully" };
+): Promise<ActionResult<{ message: string }>> {
+  return wrapAction(async () => {
+    const user = await requireRoleUser(["seller", "admin"]);
+      const rl = await rateLimitByIdentifier(`verify-pickup-otp:${user.uid}`, RateLimitPresets.STRICT);
+      if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      const parsed = z.object({ otp: z.number().int().min(100000).max(999999), pickupLocationId: z.number().int().positive() }).safeParse(input);
+      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+    
+      const userDoc = await userRepository.findById(user.uid);
+      if (!userDoc) throw new AuthorizationError("User not found");
+    
+      const config = (userDoc as any).shippingConfig;
+      if (!config || config.method !== "shiprocket") throw new ValidationError("Shiprocket shipping is not configured");
+      if (!config.shiprocketToken) throw new ValidationError("Shiprocket token is missing. Please reconnect.");
+    
+      const result = await shiprocketVerifyPickupOTP(config.shiprocketToken, {
+        otp: parsed.data.otp,
+        pickup_location_id: parsed.data.pickupLocationId,
+      }).catch((err: Error) => { throw new ValidationError(`Pickup verification failed: ${err.message}`); });
+    
+      if (!result.success) throw new ValidationError(result.message || "Pickup OTP verification failed");
+    
+      const updatedConfig = {
+        ...config,
+        pickupAddress: config.pickupAddress ? { ...config.pickupAddress, isVerified: true, shiprocketAddressId: parsed.data.pickupLocationId } : undefined,
+        isConfigured: true,
+      };
+    
+      await userRepository.update(user.uid, { shippingConfig: updatedConfig } as any);
+      serverLogger.info("verifyShiprocketPickupOtpAction", { uid: user.uid });
+      return { message: result.message || "Pickup address verified successfully" };
+  });
 }
 

@@ -124,3 +124,4 @@ GEMINI.md
 functions/.npmrc
 functions/.npmrc
 functions/.env.letitrip-in-app
+test-results/*

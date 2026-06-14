@@ -3,9 +3,10 @@ import { z } from "zod";
 import {
   createApiHandler,
   errorResponse,
-  successResponse,
   getAdminDb,
+  parseJsonBody,
   serverLogger,
+  successResponse,
 } from "@mohasinac/appkit";
 import { ROLES_ANY_STAFF } from "@/constants";
 
@@ -50,7 +51,7 @@ export const POST = withProviders(
   createApiHandler({
     roles: [...ROLES_ANY_STAFF],
     handler: async ({ request, user }) => {
-      const json = await request.json().catch(() => null);
+      const json = await parseJsonBody(request, { allowEmpty: true });
       const parsed = previewSchema.safeParse(json);
       if (!parsed.success) {
         return errorResponse(ERRORS.INVALID_PAYLOAD, 400);

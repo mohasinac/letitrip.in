@@ -1,9 +1,10 @@
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
-  successResponse,
   errorResponse,
+  parseJsonBody,
   reportsRepository,
+  successResponse,
 } from "@mohasinac/appkit";
 import { ROLES_AUTHENTICATED } from "@/constants";
 
@@ -13,7 +14,7 @@ export const POST = withProviders(
     auth: true,
     roles: [...ROLES_AUTHENTICATED],
     handler: async ({ request, user }) => {
-      const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+      const body = await parseJsonBody<Record<string, unknown>>(request);
       try {
         const doc = await reportsRepository.create({
           ...body,

@@ -1,10 +1,11 @@
 import { withProviders } from "@/providers.config";
 import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
   ApiErrors,
+  createRouteHandler,
+  errorResponse,
   itemRequestsRepository,
+  parseJsonBody,
+  successResponse,
 } from "@mohasinac/appkit";
 import { ROLES_AUTHENTICATED } from "@/constants";
 
@@ -26,7 +27,7 @@ export const POST = withProviders(
       const doc = await itemRequestsRepository.findById(id);
       if (!doc) return ApiErrors.notFound("Not found");
       if (doc.status !== "open") return errorResponse("Request not accepting replies", 409);
-      const reply = (await request.json().catch(() => ({}))) as { body?: string };
+      const reply = (await parseJsonBody(request)) as { body?: string };
       if (!reply.body?.trim()) return errorResponse("Reply body required", 400);
       const cleaned = stripPii(reply.body);
       const replyEntry = {

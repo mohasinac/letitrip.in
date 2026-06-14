@@ -27,7 +27,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { invalidateCache } from "@mohasinac/appkit";
+import { invalidateCache, parseJsonBody } from "@mohasinac/appkit";
 import { handleApiError } from "@mohasinac/appkit";
 import { AuthenticationError, ValidationError } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     let collections: string[] | undefined;
     const contentType = request.headers.get("content-type") ?? "";
     if (contentType.includes("application/json")) {
-      const body = await request.json().catch(() => ({}));
+      const body = await parseJsonBody(request);
       if (body.collections !== undefined) {
         if (!Array.isArray(body.collections)) {
           throw new ValidationError("collections must be an array of strings");

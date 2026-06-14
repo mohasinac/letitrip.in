@@ -84,6 +84,10 @@ const AUDITS = [
   { name: "raw-img-src",                     script: "scripts/audit-raw-img-src.mjs" },
   { name: "finalize-magic-bytes",            script: "scripts/audit-finalize-magic-bytes.mjs" },
   { name: "storage-rules-shape",             script: "scripts/audit-storage-rules-shape.mjs" },
+  // W6 — error contract / silent-failure gates (workstreams 1, 3, 5)
+  { name: "silent-body-parse",               script: "scripts/audit-silent-body-parse.mjs" },
+  { name: "server-action-envelope",          script: "scripts/audit-server-action-envelope.mjs" },
+  { name: "usemutation-onerror",             script: "scripts/audit-usemutation-onerror.mjs" },
 ];
 
 function parseArgs(argv) {

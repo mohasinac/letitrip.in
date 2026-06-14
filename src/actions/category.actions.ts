@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Category Server Actions — thin entrypoints.
  * Business logic lives in @mohasinac/appkit/features/categories/actions.
@@ -62,80 +63,84 @@ export type CreateCategoryInput = {
 
 export async function createCategoryAction(
   input: CreateCategoryInput,
-): Promise<CategoryDocument> {
-  const admin = await requireRoleUser(["admin"]);
-
-  const rl = await rateLimitByIdentifier(
-    `category:create:${admin.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  const parsed = categoryCreateSchema.safeParse(input);
-  if (!parsed.success) {
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid category data",
-    );
-  }
-
-  const body = parsed.data;
-  return createCategory(
-    {
-      ...body,
-      isActive: true,
-      isSearchable: true,
-      order: 0,
-      isFeatured: false,
-      featuredPriority: 0,
-      rootId: "",
-      parentIds: body.parentId ? [body.parentId] : [],
-      childrenIds: [] as string[],
-      tier: 0,
-      path: "",
-      slug: "",
-      seo: {
-        title: body.seo?.title || body.name,
-        description:
-          body.seo?.description ||
-          body.description ||
-          `Browse ${body.name} category`,
-        keywords: body.seo?.keywords || [],
-      },
-      display: body.display
-        ? { ...body.display, showInFooter: body.display.showInFooter ?? false }
-        : { showInMenu: true, showInFooter: false as boolean },
-    } as import("@mohasinac/appkit").CategoryCreateInput,
-    admin.uid,
-  );
+): Promise<ActionResult<CategoryDocument>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin"]);
+    
+      const rl = await rateLimitByIdentifier(
+        `category:create:${admin.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      const parsed = categoryCreateSchema.safeParse(input);
+      if (!parsed.success) {
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid category data",
+        );
+      }
+    
+      const body = parsed.data;
+      return createCategory(
+        {
+          ...body,
+          isActive: true,
+          isSearchable: true,
+          order: 0,
+          isFeatured: false,
+          featuredPriority: 0,
+          rootId: "",
+          parentIds: body.parentId ? [body.parentId] : [],
+          childrenIds: [] as string[],
+          tier: 0,
+          path: "",
+          slug: "",
+          seo: {
+            title: body.seo?.title || body.name,
+            description:
+              body.seo?.description ||
+              body.description ||
+              `Browse ${body.name} category`,
+            keywords: body.seo?.keywords || [],
+          },
+          display: body.display
+            ? { ...body.display, showInFooter: body.display.showInFooter ?? false }
+            : { showInMenu: true, showInFooter: false as boolean },
+        } as import("@mohasinac/appkit").CategoryCreateInput,
+        admin.uid,
+      );
+  });
 }
 
 export async function updateCategoryAction(
   id: string,
   input: Partial<CategoryUpdateInput>,
-): Promise<CategoryDocument> {
-  const admin = await requireRoleUser(["admin"]);
-
-  const rl = await rateLimitByIdentifier(
-    `category:update:${admin.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  const idParsed = categoryIdSchema.safeParse({ id });
-  if (!idParsed.success) throw new ValidationError("Invalid id");
-
-  const parsed = categoryUpdateSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
-    );
-
-  const existing = await getCategoryById(id);
-  if (!existing) throw new NotFoundError("Category not found");
-
-  return updateCategory(id, parsed.data as CategoryUpdateInput);
+): Promise<ActionResult<CategoryDocument>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin"]);
+    
+      const rl = await rateLimitByIdentifier(
+        `category:update:${admin.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      const idParsed = categoryIdSchema.safeParse({ id });
+      if (!idParsed.success) throw new ValidationError("Invalid id");
+    
+      const parsed = categoryUpdateSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
+        );
+    
+      const existing = await getCategoryById(id);
+      if (!existing) throw new NotFoundError("Category not found");
+    
+      return updateCategory(id, parsed.data as CategoryUpdateInput);
+  });
 }
 
 export async function deleteCategoryAction(id: string): Promise<void> {
@@ -164,43 +169,57 @@ export async function listCategoriesAction(params?: {
   sorts?: string;
   page?: number;
   pageSize?: number;
-}): Promise<FirebaseSieveResult<CategoryDocument>> {
-  return listCategories(params);
+}): Promise<ActionResult<FirebaseSieveResult<CategoryDocument>>> {
+  return wrapAction(async () => {
+    return listCategories(params);
+  });
 }
 
 export async function listTopLevelCategoriesAction(
   limit = 12,
-): Promise<CategoryDocument[]> {
-  return listTopLevelCategories(limit);
+): Promise<ActionResult<CategoryDocument[]>> {
+  return wrapAction(async () => {
+    return listTopLevelCategories(limit);
+  });
 }
 
 export async function listBrandCategoriesAction(
   limit = 12,
-): Promise<CategoryDocument[]> {
-  return listBrandCategories(limit);
+): Promise<ActionResult<CategoryDocument[]>> {
+  return wrapAction(async () => {
+    return listBrandCategories(limit);
+  });
 }
 
 export async function getCategoryByIdAction(
   id: string,
-): Promise<CategoryDocument | null> {
-  return getCategoryById(id);
+): Promise<ActionResult<CategoryDocument | null>> {
+  return wrapAction(async () => {
+    return getCategoryById(id);
+  });
 }
 
 export async function getCategoryBySlugAction(
   slug: string,
-): Promise<CategoryDocument | null> {
-  return getCategoryBySlug(slug);
+): Promise<ActionResult<CategoryDocument | null>> {
+  return wrapAction(async () => {
+    return getCategoryBySlug(slug);
+  });
 }
 
 export async function getCategoryChildrenAction(
   parentId: string,
-): Promise<CategoryDocument[]> {
-  return getCategoryChildren(parentId);
+): Promise<ActionResult<CategoryDocument[]>> {
+  return wrapAction(async () => {
+    return getCategoryChildren(parentId);
+  });
 }
 
 export async function buildCategoryTreeAction(
   rootId?: string,
-): Promise<CategoryTreeNode[]> {
-  return fetchCategoryTree(rootId);
+): Promise<ActionResult<CategoryTreeNode[]>> {
+  return wrapAction(async () => {
+    return fetchCategoryTree(rootId);
+  });
 }
 

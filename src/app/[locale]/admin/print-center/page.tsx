@@ -2,7 +2,8 @@ import { getSellerStoreAction } from "@/actions/seller.actions";
 import { PrintCenterView } from "@mohasinac/appkit/client";
 
 export default async function Page() {
-  const store = await getSellerStoreAction().catch(() => null);
+  const result = await getSellerStoreAction().catch(() => null);
+  const store = result && "ok" in result && result.ok ? result.data : null;
 
   const storeForCard = store
     ? {

@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Checkout Server Actions — thin entrypoint
  *
@@ -39,19 +40,21 @@ const verifySchema = z.object({
 
 export async function sendConsentOtpAction(
   addressId: string,
-): Promise<{ maskedEmail: string }> {
-  const user = await requireAuthUser();
-
-  const parsed = sendSchema.safeParse({ addressId });
-  if (!parsed.success) throw new ValidationError("Invalid input");
-
-  const email = user.email;
-  if (!email)
-    throw new ValidationError(
-      "Account email is required to send a consent OTP.",
-    );
-
-  return sendCheckoutConsentOtp(user.uid, email, parsed.data.addressId);
+): Promise<ActionResult<{ maskedEmail: string }>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+    
+      const parsed = sendSchema.safeParse({ addressId });
+      if (!parsed.success) throw new ValidationError("Invalid input");
+    
+      const email = user.email;
+      if (!email)
+        throw new ValidationError(
+          "Account email is required to send a consent OTP.",
+        );
+    
+      return sendCheckoutConsentOtp(user.uid, email, parsed.data.addressId);
+  });
 }
 
 export async function verifyConsentOtpAction(

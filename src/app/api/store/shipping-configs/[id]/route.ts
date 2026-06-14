@@ -1,11 +1,12 @@
 import { withProviders } from "@/providers.config";
 import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
   ApiErrors,
+  createRouteHandler,
+  errorResponse,
+  parseJsonBody,
   shippingConfigsRepository,
   storeRepository,
+  successResponse,
 } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 
@@ -39,7 +40,7 @@ export const PATCH = withProviders(
     handler: async ({ request, user, params }) => {
       const { error } = await loadAndAssertOwner(user!.uid, (params as { id: string }).id);
       if (error) return error;
-      const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+      const body = await parseJsonBody<Record<string, unknown>>(request);
       try {
         const updated = await shippingConfigsRepository.update(
           (params as { id: string }).id,

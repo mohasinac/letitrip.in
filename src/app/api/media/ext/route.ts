@@ -104,7 +104,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     if (done) break;
     totalBytes += value.byteLength;
     if (totalBytes > MAX_BODY_BYTES) {
-      reader.cancel();
+      void reader.cancel();
       return new NextResponse("Image too large (max 10 MB).", { status: 413 });
     }
     chunks.push(value);

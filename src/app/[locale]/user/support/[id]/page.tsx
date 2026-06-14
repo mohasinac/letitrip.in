@@ -1,19 +1,20 @@
 "use client";
 import { use, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@/i18n/navigation";
 import {
-  useSession,
-  useToast,
-  ROUTES,
+  Badge,
+  Button,
   Div,
   Heading,
-  Text,
-  Stack,
+  ROUTES,
   Row,
+  Stack,
+  Text,
   Textarea,
-  Button,
-  Badge,
+  useApiMutation,
+  useSession,
+  useToast,
 } from "@mohasinac/appkit/client";
 
 const __P = {
@@ -81,7 +82,7 @@ export default function TicketDetailPage({ params }: PageProps) {
     staleTime: 15_000,
   });
 
-  const sendReply = useMutation({
+  const sendReply = useApiMutation({
     mutationFn: (body: string) =>
       fetch(`/api/support/tickets/${id}/messages`, {
         method: "POST",

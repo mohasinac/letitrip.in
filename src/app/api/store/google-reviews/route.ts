@@ -1,11 +1,12 @@
 import { withProviders } from "@/providers.config";
 import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
   ApiErrors,
+  createRouteHandler,
+  errorResponse,
+  parseJsonBody,
   storeGoogleConfigRepository,
   storeRepository,
+  successResponse,
 } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 
@@ -32,7 +33,7 @@ export const PUT = withProviders(
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return ApiErrors.forbidden("No store");
       const existing = await storeGoogleConfigRepository.getByStore(store.id);
-      const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+      const body = await parseJsonBody<Record<string, unknown>>(request);
       try {
         const doc = existing
           ? await storeGoogleConfigRepository.update(existing.id, {

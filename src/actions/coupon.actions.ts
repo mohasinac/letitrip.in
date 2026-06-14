@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Coupon Server Actions â€” thin entrypoint
  *
@@ -62,41 +63,45 @@ export type ValidateCouponForCartInput = z.infer<
 
 export async function validateCouponAction(
   input: ValidateCouponInput,
-): Promise<CouponValidationResult> {
-  const user = await requireAuthUser();
-  const rl = await rateLimitByIdentifier(
-    `coupon:validate:${user.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
-
-  const parsed = validateCouponSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid coupon input",
-    );
-
-  return validateCoupon(user.uid, parsed.data.code, parsed.data.orderTotal);
+): Promise<ActionResult<CouponValidationResult>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      const rl = await rateLimitByIdentifier(
+        `coupon:validate:${user.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError("Too many requests. Please slow down.");
+    
+      const parsed = validateCouponSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid coupon input",
+        );
+    
+      return validateCoupon(user.uid, parsed.data.code, parsed.data.orderTotal);
+  });
 }
 
 export async function validateCouponForCartAction(
   input: ValidateCouponForCartInput,
-): Promise<CouponCartValidationResult> {
-  const user = await requireAuthUser();
-  const rl = await rateLimitByIdentifier(
-    `coupon:validate:${user.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
-
-  const parsed = validateCouponForCartSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid coupon input",
-    );
-
-  return validateCouponForCart(user.uid, parsed.data.code, parsed.data.cartItems);
+): Promise<ActionResult<CouponCartValidationResult>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      const rl = await rateLimitByIdentifier(
+        `coupon:validate:${user.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError("Too many requests. Please slow down.");
+    
+      const parsed = validateCouponForCartSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid coupon input",
+        );
+    
+      return validateCouponForCart(user.uid, parsed.data.code, parsed.data.cartItems);
+  });
 }
 

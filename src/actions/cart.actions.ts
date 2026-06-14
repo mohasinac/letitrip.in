@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Cart Server Actions — thin entrypoint
  *
@@ -78,69 +79,77 @@ const mergeGuestCartSchema = z.object({
 
 export async function addToCartAction(
   input: z.infer<typeof addToCartSchema>,
-): Promise<CartDocument> {
-  const user = await requireAuthUser();
-  const rl = await rateLimitByIdentifier(
-    `cart:add:${user.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  const parsed = addToCartSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid input",
-    );
-
-  return addItemToCart(user.uid, parsed.data) as Promise<CartDocument>;
+): Promise<ActionResult<CartDocument>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      const rl = await rateLimitByIdentifier(
+        `cart:add:${user.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      const parsed = addToCartSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid input",
+        );
+    
+      return addItemToCart(user.uid, parsed.data) as Promise<CartDocument>;
+  });
 }
 
 
 export async function updateCartItemAction(
   itemId: string,
   input: z.infer<typeof updateCartItemSchema>,
-): Promise<CartDocument> {
-  const user = await requireAuthUser();
-  const rl = await rateLimitByIdentifier(
-    `cart:update:${user.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  if (!itemId || typeof itemId !== "string")
-    throw new ValidationError("itemId is required");
-
-  const parsed = updateCartItemSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid input",
-    );
-
-  return updateCartItem(user.uid, itemId, parsed.data) as Promise<CartDocument>;
+): Promise<ActionResult<CartDocument>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      const rl = await rateLimitByIdentifier(
+        `cart:update:${user.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      if (!itemId || typeof itemId !== "string")
+        throw new ValidationError("itemId is required");
+    
+      const parsed = updateCartItemSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid input",
+        );
+    
+      return updateCartItem(user.uid, itemId, parsed.data) as Promise<CartDocument>;
+  });
 }
 
 export async function removeFromCartAction(
   itemId: string,
-): Promise<CartDocument> {
-  const user = await requireAuthUser();
-  const rl = await rateLimitByIdentifier(
-    `cart:remove:${user.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  if (!itemId || typeof itemId !== "string")
-    throw new ValidationError("itemId is required");
-
-  return removeCartItem(user.uid, itemId) as Promise<CartDocument>;
+): Promise<ActionResult<CartDocument>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      const rl = await rateLimitByIdentifier(
+        `cart:remove:${user.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      if (!itemId || typeof itemId !== "string")
+        throw new ValidationError("itemId is required");
+    
+      return removeCartItem(user.uid, itemId) as Promise<CartDocument>;
+  });
 }
 
-export async function clearCartAction(): Promise<CartDocument> {
-  const user = await requireAuthUser();
-  return clearCart(user.uid) as Promise<CartDocument>;
+export async function clearCartAction(): Promise<ActionResult<CartDocument>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return clearCart(user.uid) as Promise<CartDocument>;
+  });
 }
 
 export async function mergeGuestCartAction(
@@ -160,17 +169,21 @@ export async function updateCartItemShippingAction(
   itemId: string,
   providerId: string,
   feeInPaise: number,
-): Promise<CartDocument> {
-  const user = await requireAuthUser();
-  const rl = await rateLimitByIdentifier(`cart:shipping:${user.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  return updateCartItemShipping(user.uid, itemId, providerId, feeInPaise) as Promise<CartDocument>;
+): Promise<ActionResult<CartDocument>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      const rl = await rateLimitByIdentifier(`cart:shipping:${user.uid}`, RateLimitPresets.API);
+      if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+      return updateCartItemShipping(user.uid, itemId, providerId, feeInPaise) as Promise<CartDocument>;
+  });
 }
 
 // --- Read Actions -------------------------------------------------------------
 
-export async function getCartAction(): Promise<CartDocument | null> {
-  const user = await requireAuthUser();
-  return getCart(user.uid) as Promise<CartDocument | null>;
+export async function getCartAction(): Promise<ActionResult<CartDocument | null>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return getCart(user.uid) as Promise<CartDocument | null>;
+  });
 }
 

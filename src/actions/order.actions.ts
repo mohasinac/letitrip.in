@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Order Server Actions — thin entrypoint
  *
@@ -46,15 +47,19 @@ export async function cancelOrderAction(
 
 // --- Read Actions -------------------------------------------------------------
 
-export async function listOrdersAction(): Promise<OrderDocument[]> {
-  const user = await requireAuthUser();
-  return listOrdersForUser(user.uid) as Promise<OrderDocument[]>;
+export async function listOrdersAction(): Promise<ActionResult<OrderDocument[]>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return listOrdersForUser(user.uid) as Promise<OrderDocument[]>;
+  });
 }
 
 export async function getOrderByIdAction(
   id: string,
-): Promise<OrderDocument | null> {
-  const user = await requireAuthUser();
-  return getOrderByIdForUser(user.uid, id) as Promise<OrderDocument>;
+): Promise<ActionResult<OrderDocument | null>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return getOrderByIdForUser(user.uid, id) as Promise<OrderDocument>;
+  });
 }
 

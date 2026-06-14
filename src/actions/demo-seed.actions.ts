@@ -6,7 +6,7 @@
  * Admin-controlled seed action — delegates to appkit demoSeed which calls the API route.
  */
 
-import { demoSeed } from "@mohasinac/appkit/server";
+import { ActionResult, demoSeed, wrapAction } from "@mohasinac/appkit/server";
 import type {
   SeedCollectionName,
   SeedOperationResult,
@@ -19,8 +19,10 @@ export async function demoSeedAction(vars: {
   action: "load" | "delete";
   collections?: SeedCollectionName[];
   dryRun?: boolean;
-}): Promise<SeedOperationResult> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-  return demoSeed(vars, baseUrl);
+}): Promise<ActionResult<SeedOperationResult>> {
+  return wrapAction(async () => {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+      return demoSeed(vars, baseUrl);
+  });
 }
 

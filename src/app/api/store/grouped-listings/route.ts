@@ -4,6 +4,7 @@ import {
   createRouteHandler,
   errorResponse,
   groupedListingsRepository,
+  parseJsonBody,
   storeRepository,
   successResponse,
 } from "@mohasinac/appkit";
@@ -31,7 +32,7 @@ export const POST = withProviders(
     handler: async ({ request, user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return ApiErrors.forbidden("No store");
-      const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+      const body = await parseJsonBody<Record<string, unknown>>(request);
       try {
         const doc = await groupedListingsRepository.create({
           ...body,

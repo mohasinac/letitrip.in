@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Blog Server Actions -- thin entrypoints.
  * Business logic lives in @mohasinac/appkit/features/blog/actions.
@@ -41,56 +42,60 @@ const blogIdSchema = z.object({ id: z.string().min(1, "id is required") });
 
 export async function createBlogPostAction(
   input: CreateBlogPostInput,
-): Promise<BlogPostDocument> {
-  const admin = await requireRoleUser(["admin", "moderator"]);
-
-  const rl = await rateLimitByIdentifier(
-    `blog:create:${admin.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  const parsed = createBlogPostSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Invalid blog post data",
-    );
-
-  return createBlogPost(parsed.data, {
-    uid: admin.uid,
-    name: admin.name ?? undefined,
-    email: admin.email ?? undefined,
-    picture: admin.picture ?? undefined,
+): Promise<ActionResult<BlogPostDocument>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin", "moderator"]);
+    
+      const rl = await rateLimitByIdentifier(
+        `blog:create:${admin.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      const parsed = createBlogPostSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid blog post data",
+        );
+    
+      return createBlogPost(parsed.data, {
+        uid: admin.uid,
+        name: admin.name ?? undefined,
+        email: admin.email ?? undefined,
+        picture: admin.picture ?? undefined,
+      });
   });
 }
 
 export async function updateBlogPostAction(
   id: string,
   input: UpdateBlogPostInput,
-): Promise<BlogPostDocument> {
-  const admin = await requireRoleUser(["admin", "moderator"]);
-
-  const rl = await rateLimitByIdentifier(
-    `blog:update:${admin.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(ERR_RATE_LIMIT);
-
-  const idParsed = blogIdSchema.safeParse({ id });
-  if (!idParsed.success) throw new ValidationError("Invalid id");
-
-  const parsed = updateBlogPostSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
-    );
-
-  const existing = await getBlogPostById(id);
-  if (!existing) throw new NotFoundError("Blog post not found");
-
-  return updateBlogPost(id, parsed.data);
+): Promise<ActionResult<BlogPostDocument>> {
+  return wrapAction(async () => {
+    const admin = await requireRoleUser(["admin", "moderator"]);
+    
+      const rl = await rateLimitByIdentifier(
+        `blog:update:${admin.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(ERR_RATE_LIMIT);
+    
+      const idParsed = blogIdSchema.safeParse({ id });
+      if (!idParsed.success) throw new ValidationError("Invalid id");
+    
+      const parsed = updateBlogPostSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE,
+        );
+    
+      const existing = await getBlogPostById(id);
+      if (!existing) throw new NotFoundError("Blog post not found");
+    
+      return updateBlogPost(id, parsed.data);
+  });
 }
 
 export async function deleteBlogPostAction(id: string): Promise<void> {
@@ -118,24 +123,32 @@ export async function listBlogPostsAction(params?: {
   page?: number;
   pageSize?: number;
   category?: string;
-}): Promise<FirebaseSieveResult<BlogPostDocument>> {
-  return listBlogPosts(params);
+}): Promise<ActionResult<FirebaseSieveResult<BlogPostDocument>>> {
+  return wrapAction(async () => {
+    return listBlogPosts(params);
+  });
 }
 
 export async function getFeaturedBlogPostsAction(
   count = 3,
-): Promise<BlogPostDocument[]> {
-  return getFeaturedBlogPosts(count);
+): Promise<ActionResult<BlogPostDocument[]>> {
+  return wrapAction(async () => {
+    return getFeaturedBlogPosts(count);
+  });
 }
 
 export async function getLatestBlogPostsAction(
   count = 5,
-): Promise<BlogPostDocument[]> {
-  return getLatestBlogPosts(count);
+): Promise<ActionResult<BlogPostDocument[]>> {
+  return wrapAction(async () => {
+    return getLatestBlogPosts(count);
+  });
 }
 
 export async function getBlogPostBySlugAction(
   slug: string,
-): Promise<BlogPostDocument | null> {
-  return getBlogPostBySlug(slug);
+): Promise<ActionResult<BlogPostDocument | null>> {
+  return wrapAction(async () => {
+    return getBlogPostBySlug(slug);
+  });
 }

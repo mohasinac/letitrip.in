@@ -3,7 +3,10 @@ import type { StorefrontDraft } from "@mohasinac/appkit";
 import { getSellerStoreAction, updateStoreAction } from "@/actions/seller.actions";
 
 export default async function Page() {
-  const store = await getSellerStoreAction().catch(() => null);
+  const storeRes = await getSellerStoreAction().catch(() => null);
+  const store: any = storeRes && typeof storeRes === "object" && "ok" in storeRes
+    ? (storeRes.ok ? (storeRes as { ok: true; data: any }).data : null)
+    : storeRes;
 
   const initialValues: StorefrontDraft = {
     storeName: store?.storeName,

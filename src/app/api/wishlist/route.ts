@@ -1,13 +1,5 @@
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  productRepository,
-  wishlistRepository,
-  WishlistFullError,
-  WISHLIST_MAX,
-} from "@mohasinac/appkit";
+import { WISHLIST_MAX, WishlistFullError, createRouteHandler, errorResponse, parseJsonBody, productRepository, successResponse, wishlistRepository } from "@mohasinac/appkit";
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(
@@ -64,7 +56,7 @@ export const POST = withProviders(
   createRouteHandler({
     auth: true,
     handler: async ({ user, request }) => {
-      const body = await request.json().catch(() => ({}));
+      const body = await parseJsonBody(request);
       const { productId } = body as { productId?: string };
       if (!productId) return errorResponse("productId required", 400);
       try {

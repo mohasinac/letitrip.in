@@ -1,10 +1,11 @@
 import { withProviders } from "@/providers.config";
 import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
   ApiErrors,
+  createRouteHandler,
+  errorResponse,
   itemRequestsRepository,
+  parseJsonBody,
+  successResponse,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
@@ -17,7 +18,7 @@ export const PATCH = withProviders(
       const id = (params as { id: string }).id;
       const doc = await itemRequestsRepository.findById(id);
       if (!doc) return ApiErrors.notFound("Not found");
-      const patch = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+      const patch = await parseJsonBody<Record<string, unknown>>(request);
       if (patch.status === "open" && !doc.approvedAt) {
         patch.approvedAt = new Date();
         patch.approvedBy = user!.uid;

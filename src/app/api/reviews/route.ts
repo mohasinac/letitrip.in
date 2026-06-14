@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { reviewRepository, createReview, successResponse, errorResponse, sieveFilter, SIEVE_OP, REVIEW_FIELDS, sortBy } from "@mohasinac/appkit";
+import { REVIEW_FIELDS, SIEVE_OP, createReview, errorResponse, parseJsonBody, reviewRepository, sieveFilter, sortBy, successResponse } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, userRepository } from "@mohasinac/appkit";
 import { isSoftBanned } from "@mohasinac/appkit/server";
@@ -180,7 +180,7 @@ export const POST = withProviders(
           403,
         );
       }
-      const body = await request.json().catch(() => ({}));
+      const body = await parseJsonBody(request);
       const result = await createReview(user!.uid, body as any);
       return successResponse(result, "Review submitted", 201);
     },

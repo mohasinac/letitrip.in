@@ -1,5 +1,6 @@
 "use server";
 
+import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Profile Server Actions — thin entrypoint
  *
@@ -50,56 +51,68 @@ export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 
 export async function updateProfileAction(
   input: UpdateProfileInput,
-): Promise<UserDocument> {
-  const user = await requireAuthUser();
-  const rl = await rateLimitByIdentifier(
-    `profile:update:${user.uid}`,
-    RateLimitPresets.API,
-  );
-  if (!rl.success)
-    throw new AuthorizationError(
-      "Too many requests. Please wait before trying again.",
-    );
-
-  const parsed = updateProfileSchema.safeParse(input);
-  if (!parsed.success)
-    throw new ValidationError(
-      parsed.error.issues[0]?.message ?? "Validation failed",
-    );
-
-  return updateUserProfile(user.uid, parsed.data) as Promise<UserDocument>;
+): Promise<ActionResult<UserDocument>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      const rl = await rateLimitByIdentifier(
+        `profile:update:${user.uid}`,
+        RateLimitPresets.API,
+      );
+      if (!rl.success)
+        throw new AuthorizationError(
+          "Too many requests. Please wait before trying again.",
+        );
+    
+      const parsed = updateProfileSchema.safeParse(input);
+      if (!parsed.success)
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Validation failed",
+        );
+    
+      return updateUserProfile(user.uid, parsed.data) as Promise<UserDocument>;
+  });
 }
 
 // --- Read Actions -------------------------------------------------------------
 
-export async function getMyProfileAction(): Promise<UserDocument | null> {
-  const user = await requireAuthUser();
-  return getUserProfile(user.uid) as Promise<UserDocument | null>;
+export async function getMyProfileAction(): Promise<ActionResult<UserDocument | null>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return getUserProfile(user.uid) as Promise<UserDocument | null>;
+  });
 }
 
-export async function listMySessionsAction() {
-  const user = await requireAuthUser();
-  return getUserSessions(user.uid);
+export async function listMySessionsAction(): Promise<ActionResult<unknown>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+      return getUserSessions(user.uid);
+  });
 }
 
 export async function getPublicProfileAction(
   userId: string,
-): Promise<Pick<
+): Promise<ActionResult<Pick<
   UserDocument,
   "id" | "displayName" | "photoURL" | "role" | "createdAt"
-> | null> {
-  return getPublicUserProfile(userId) as Promise<Pick<
-    UserDocument,
-    "id" | "displayName" | "photoURL" | "role" | "createdAt"
-  > | null>;
+> | null>> {
+  return wrapAction(async () => {
+    return getPublicUserProfile(userId) as Promise<Pick<
+        UserDocument,
+        "id" | "displayName" | "photoURL" | "role" | "createdAt"
+      > | null>;
+  });
 }
 
-export async function getSellerReviewsAction(sellerId: string) {
-  return getSellerReviews(sellerId);
+export async function getSellerReviewsAction(sellerId: string): Promise<ActionResult<unknown>> {
+  return wrapAction(async () => {
+    return getSellerReviews(sellerId);
+  });
 }
 
-export async function getProfileStoreProductsAction(sellerId: string) {
-  return getProfileStoreProducts(sellerId);
+export async function getProfileStoreProductsAction(sellerId: string): Promise<ActionResult<unknown>> {
+  return wrapAction(async () => {
+    return getProfileStoreProducts(sellerId);
+  });
 }
 
 // --- Banner dismissal --------------------------------------------------------

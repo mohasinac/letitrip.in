@@ -262,6 +262,18 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     ],
   },
   {
+    title: "Maintenance",
+    items: [
+      adminItem("/admin/maintenance",                  "Overview",          "admin:maintenance:view-server-errors"),
+      adminItem("/admin/maintenance/server-errors",    "Server Errors",     "admin:maintenance:view-server-errors"),
+      adminItem("/admin/maintenance/client-errors",    "Client Errors",     "admin:maintenance:view-client-errors"),
+      adminItem("/admin/maintenance/function-errors",  "Function Errors",   "admin:maintenance:view-function-errors"),
+      adminItem("/admin/maintenance/payment-rollbacks","Payment Rollbacks", "admin:maintenance:view-payment-rollbacks"),
+      adminItem("/admin/maintenance/cloud-logs",       "Cloud Logs",        "admin:maintenance:view-cloud-logs"),
+      adminItem("/admin/maintenance/analysis",         "Run Analysis",      "admin:maintenance:run-analysis"),
+    ],
+  },
+  {
     title: "Help",
     items: [
       adminItem(String(ROUTES.ADMIN.GUIDE), "Admin Guide", "admin:dashboard:view"),

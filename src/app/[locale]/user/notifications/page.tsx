@@ -1,18 +1,19 @@
 "use client";
 import { useEffect, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@/i18n/navigation";
 import {
-  sortBy,
-  useSession,
-  useUrlTable,
-  UserNotificationsView,
+  Button,
   Div,
-  Text,
   Row,
   Stack,
-  Button,
+  Text,
+  UserNotificationsView,
+  sortBy,
+  useApiMutation,
+  useSession,
   useToast,
+  useUrlTable,
 } from "@mohasinac/appkit/client";
 import { ListingToolbar, Span } from "@mohasinac/appkit/ui";
 
@@ -169,14 +170,14 @@ export default function NotificationsPage() {
     queryClient.invalidateQueries({ queryKey: ["notifications"] });
   }, [queryClient]);
 
-  const { mutate: markRead } = useMutation({
+  const { mutate: markRead } = useApiMutation({
     mutationFn: (id: string) =>
       fetch(`/api/user/notifications/${id}`, { method: "PATCH" }),
     onSuccess: invalidateNotifications,
     onError: () => showToast("Could not mark notification as read.", "error"),
   });
 
-  const { mutate: markAllRead, isPending: markingAll } = useMutation({
+  const { mutate: markAllRead, isPending: markingAll } = useApiMutation({
     mutationFn: () =>
       fetch("/api/user/notifications/read-all", { method: "POST" }),
     onSuccess: () => {
@@ -186,7 +187,7 @@ export default function NotificationsPage() {
     onError: () => showToast("Could not mark notifications as read.", "error"),
   });
 
-  const { mutate: deleteNotif } = useMutation({
+  const { mutate: deleteNotif } = useApiMutation({
     mutationFn: (id: string) =>
       fetch(`/api/user/notifications/${id}`, { method: "DELETE" }),
     onSuccess: () => {

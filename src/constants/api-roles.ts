@@ -9,8 +9,7 @@
  * keeping ~30 inline tuples in sync.
  *
  * The string values mirror the user-role tokens accepted by
- * `createRouteHandler({ roles })` (see appkit `auth` middleware). Keep in sync
- * with `scripts/qa/_constants.mjs > USER_ROLES`.
+ * `createRouteHandler({ roles })` (see appkit `auth` middleware).
  */
 
 import type { UserRole } from "@mohasinac/appkit";
