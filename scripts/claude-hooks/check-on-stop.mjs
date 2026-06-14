@@ -230,6 +230,15 @@ const checks = [
     cwd: ROOT,
   },
   {
+    // Catches consumer-side `className=` on appkit primitives that maps to
+    // a variant prop. Baseline-drift; regressions block until the sweep
+    // drives the count down.
+    label: "audit-variant-prop-coverage",
+    cmd: "node",
+    args: ["scripts/audit-variant-prop-coverage.mjs"],
+    cwd: ROOT,
+  },
+  {
     label: "audit-listing-pagesize",
     cmd: "node",
     args: ["scripts/audit-listing-pagesize.mjs"],

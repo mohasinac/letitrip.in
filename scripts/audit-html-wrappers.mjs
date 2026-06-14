@@ -96,6 +96,96 @@ const RULES = [
     baselineDrift: true,
   },
   // RAW_MEDIA_URL is covered by `audit-firestore-storage-urls.mjs` (strict-zero).
+  // RAW_BUTTON is owned by `audit-typography.mjs` (RAW_BUTTON rule there).
+  // RAW_INPUT/SELECT/TEXTAREA/FORM are owned by `audit-raw-form-input.mjs`.
+  // RAW_IMG is owned by `audit-raw-img-src.mjs`.
+  // The rules below cover the remaining raw HTML tags that bypass the
+  // catalogue's primitive surface. All baseline-drift so current state
+  // locks today; regressions block. Drive each baseline to 0 in the sweep.
+  {
+    id: "RAW_SPAN",
+    re: /<span\s/,
+    message: "Use <Span> from appkit instead of raw <span ...>; pick `color`/`size`/`weight`/`gradient` variants",
+    fix: "Replace with <Span color=… size=… weight=…> from @mohasinac/appkit",
+    baselineDrift: true,
+  },
+  {
+    id: "RAW_LIST",
+    re: /<(?:ul|ol|li)\s/,
+    message: "Use <Ul>/<Ol>/<Li> from appkit instead of raw list tags",
+    fix: "Replace with <Ul>/<Ol>/<Li> from @mohasinac/appkit",
+    baselineDrift: true,
+  },
+  {
+    id: "RAW_TABLE",
+    re: /<(?:table|thead|tbody|tfoot|tr|th|td)\s/,
+    message: "Use <Table>/<Thead>/<Tbody>/<Tfoot>/<Tr>/<Th>/<Td> from appkit instead of raw table tags",
+    fix: "Replace with the appkit table primitives",
+    baselineDrift: true,
+  },
+  {
+    id: "RAW_NAV_HEADER_FOOTER",
+    re: /<(?:nav|header|footer|aside|main|article)\s/,
+    message: "Use the appkit semantic primitive (<Nav>/<BlockHeader>/<BlockFooter>/<Aside>/<Main>/<Article>) instead of raw tags",
+    fix: "Replace with the matching appkit semantic primitive",
+    baselineDrift: true,
+  },
+  {
+    id: "RAW_HR",
+    re: /<hr[\s/>]/,
+    message: "Use <HorizontalRule> from appkit instead of raw <hr>",
+    fix: "Replace with <HorizontalRule tone=… spacing=…> from @mohasinac/appkit",
+    baselineDrift: true,
+  },
+  {
+    id: "RAW_INLINE_TEXT",
+    re: /<(?:code|pre|blockquote|kbd|q)\s/,
+    message: "Use the appkit primitive (<Code>/<Pre>/<Blockquote>/<Kbd>/<Quote>) instead of raw inline-text tags",
+    fix: "Replace with the matching appkit primitive",
+    baselineDrift: true,
+  },
+  {
+    id: "RAW_DISCLOSURE",
+    re: /<(?:details|summary|dialog)\s/,
+    message: "Use <Details>/<Summary>/<Dialog> from appkit instead of raw disclosure tags",
+    fix: "Replace with the matching appkit primitive",
+    baselineDrift: true,
+  },
+  {
+    id: "RAW_FIGURE",
+    re: /<(?:figure|figcaption)\s/,
+    message: "Use <Figure>/<Figcaption> from appkit instead of raw figure tags",
+    fix: "Replace with the matching appkit semantic primitive",
+    baselineDrift: true,
+  },
+  {
+    id: "RAW_FIELDSET",
+    re: /<(?:fieldset|legend)\s/,
+    message: "Use <Fieldset>/<Legend> from appkit instead of raw fieldset tags",
+    fix: "Replace with <Fieldset tone=…><Legend>… from @mohasinac/appkit",
+    baselineDrift: true,
+  },
+  {
+    id: "RAW_LABEL",
+    re: /<label\s/,
+    message: "Use <Label> from appkit instead of raw <label> (form fields use <FieldInput>/etc. which include labels)",
+    fix: "Replace with <Label required={…}>… from @mohasinac/appkit",
+    baselineDrift: true,
+  },
+  {
+    id: "RAW_ANCHOR",
+    re: /<a\s/,
+    message: "Use <TextLink> (internal Next.js routes) or <Anchor> (external / mailto / tel) instead of raw <a>",
+    fix: "Replace with <TextLink> for internal navigation or <Anchor> for external URLs",
+    baselineDrift: true,
+  },
+  {
+    id: "RAW_MEDIA_EMBED",
+    re: /<(?:audio|video|iframe|picture)\s/,
+    message: "Use the appkit media primitive (<MediaAudio>/<MediaVideo>/<Iframe>/<MediaImage sources=…>) instead of raw media embed tags",
+    fix: "Replace with the matching appkit primitive — bytes flow through the /api/media proxy",
+    baselineDrift: true,
+  },
 ];
 
 function walk(dir, files = []) {
@@ -170,6 +260,21 @@ const BASELINES = {
   // as feature views switch to `<Section gradient=…>`, `<Card variant=…>`,
   // `<Text gradient=…>` and the catalogue gradient slots.
   RAW_GRADIENT_UTILITY: 62,
+  // Variant-catalogue raw-tag baselines — locked 2026-06-14. Drive each
+  // to 0 in the consumer sweep (the audit will let you tighten the number
+  // every time the count drops).
+  RAW_SPAN: 79,
+  RAW_LIST: 124,
+  RAW_TABLE: 97,
+  RAW_NAV_HEADER_FOOTER: 11,
+  RAW_HR: 2,
+  RAW_INLINE_TEXT: 86,
+  RAW_DISCLOSURE: 5,
+  RAW_FIGURE: 0,
+  RAW_FIELDSET: 0,
+  RAW_LABEL: 13,
+  RAW_ANCHOR: 20,
+  RAW_MEDIA_EMBED: 0,
 };
 
 const hardBlocking = violations.filter((v) => !v.baselineDrift);

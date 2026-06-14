@@ -70,6 +70,11 @@ const AUDITS = [
   // flicker because the runtime ThemeProvider writes the TS preset over the
   // CSS block on hydration.
   { name: "theme-drift",                     script: "scripts/audit-theme-drift.mjs" },
+  // Catches consumer-side `className=` on appkit primitives that contains
+  // a token covered by one of the primitive's own variant props. Baseline-
+  // drift while the consumer sweep is in flight — current count locks
+  // today; regressions block. Drive to 0 in the sweep.
+  { name: "variant-prop-coverage",           script: "scripts/audit-variant-prop-coverage.mjs" },
   { name: "functions-registry-completeness", script: "scripts/audit-functions-registry-completeness.mjs" },
   { name: "payment-provider-import",         script: "scripts/audit-payment-provider-import.mjs" },
   { name: "shipping-provider-import",        script: "scripts/audit-shipping-provider-import.mjs" },
