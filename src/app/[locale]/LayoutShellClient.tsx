@@ -13,6 +13,8 @@ import {
   ROUTES,
   Div,
   Search,
+  ThemeProvider,
+  buildThemeRegistry,
   isAdminUser,
   useListingTypeFlags,
   useSession,
@@ -22,6 +24,7 @@ import {
   type MainNavbarItem,
   type SearchResourceType,
   type SearchResourceTypeOption,
+  type SiteSettingsThemeInput,
 } from "@mohasinac/appkit/client";
 import { AdRuntimeInitializer } from "@/components";
 import { FooterNewsletterSlot } from "@/components";
@@ -31,35 +34,6 @@ import { FOOTER_TRUST_BAR_ITEMS, FOOTER_SOCIAL_LINKS, FOOTER_BOTTOM_LINKS } from
 import { SEARCH_LABELS } from "@/constants";
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
-
-/** Build CSS custom property blocks from admin-controlled theme colors. */
-function buildThemeStyle(
-  siteTheme: {
-    primary?: string; secondary?: string; accent?: string;
-    primaryDark?: string; secondaryDark?: string; accentDark?: string;
-  } | undefined,
-): string | null {
-  if (!siteTheme) return null;
-  const lightEntries: string[] = [];
-  const darkEntries: string[] = [];
-  const DARK_SUFFIX = "Dark";
-  for (const [k, v] of Object.entries(siteTheme)) {
-    if (!v) continue;
-    if (k.endsWith(DARK_SUFFIX)) {
-      const baseKey = k.slice(0, -DARK_SUFFIX.length);
-      darkEntries.push(`--appkit-color-${baseKey}: ${v}`);
-    } else {
-      lightEntries.push(`--appkit-color-${k}: ${v}`);
-      if (!(siteTheme as Record<string, string | undefined>)[k + DARK_SUFFIX]) {
-        darkEntries.push(`--appkit-color-${k}: ${v}`);
-      }
-    }
-  }
-  const parts: string[] = [];
-  if (lightEntries.length) parts.push(`:root { ${lightEntries.join("; ")} }`);
-  if (darkEntries.length) parts.push(`.dark { ${darkEntries.join("; ")} }`);
-  return parts.length ? parts.join("\n") : null;
-}
 
 /** Map session user to the shape expected by AppLayoutShell. */
 function buildShellUser(user: ReturnType<typeof import("@mohasinac/appkit/client").useSession>["user"]): AppLayoutShellProps["user"] {
@@ -126,20 +100,22 @@ export default function LayoutShellClient({
   children,
   seedPanelEnabled = true,
   siteLogoUrl,
-  siteTheme,
+  siteSettingsTheme,
 }: {
   children: ReactNode;
   seedPanelEnabled?: boolean;
   siteLogoUrl?: string;
-  siteTheme?: {
-    primary?: string;
-    secondary?: string;
-    accent?: string;
-    primaryDark?: string;
-    secondaryDark?: string;
-    accentDark?: string;
-  };
+  /**
+   * Live `siteSettings.theme` document. Drives the registry-aware
+   * `<ThemeProvider>` — admin-authored themes are merged with the two
+   * built-ins and the active default is picked by user mode.
+   */
+  siteSettingsTheme?: SiteSettingsThemeInput;
 }) {
+  const themeRegistry = useMemo(
+    () => buildThemeRegistry(siteSettingsTheme),
+    [siteSettingsTheme],
+  );
   const tNav = useTranslations("nav");
   const router = useRouter();
   const pathname = usePathname();
@@ -256,8 +232,6 @@ export default function LayoutShellClient({
     };
   }, []);
 
-  const themeStyle = buildThemeStyle(siteTheme);
-
   const showScamModal =
     !scamModalDismissed &&
     !!user &&
@@ -266,8 +240,7 @@ export default function LayoutShellClient({
     Date.now() - new Date(user.createdAt).getTime() < THIRTY_DAYS_MS;
 
   return (
-    <>
-      {themeStyle && <style>{themeStyle}</style>}
+    <ThemeProvider registry={themeRegistry}>
       <AdRuntimeInitializer />
       <AppLayoutShell
       navItems={navItems}
@@ -347,6 +320,6 @@ export default function LayoutShellClient({
       {children}
       </AppLayoutShell>
       <NavigationLoader />
-    </>
+    </ThemeProvider>
   );
 }

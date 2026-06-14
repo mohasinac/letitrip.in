@@ -65,6 +65,11 @@ const AUDITS = [
   { name: "sticky-offsets",                  script: "scripts/audit-sticky-offsets.mjs" },
   { name: "firebase-alias",                  script: "scripts/audit-firebase-alias.mjs" },
   { name: "semantic-colors",                 script: "scripts/audit-semantic-colors.mjs" },
+  // Verifies the built-in TS theme presets stay aligned with the matching
+  // CSS blocks in `appkit/src/tokens/tokens.css`. Drift causes hydration
+  // flicker because the runtime ThemeProvider writes the TS preset over the
+  // CSS block on hydration.
+  { name: "theme-drift",                     script: "scripts/audit-theme-drift.mjs" },
   { name: "functions-registry-completeness", script: "scripts/audit-functions-registry-completeness.mjs" },
   { name: "payment-provider-import",         script: "scripts/audit-payment-provider-import.mjs" },
   { name: "shipping-provider-import",        script: "scripts/audit-shipping-provider-import.mjs" },

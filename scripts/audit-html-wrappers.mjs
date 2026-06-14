@@ -82,6 +82,20 @@ const RULES = [
     fix: "Replace with appkit primitive: surface/padding/border props for chrome, Stack/Row for flex layouts, Grid for grids",
     baselineDrift: true,
   },
+  {
+    // Theme-aware gradient classes flow through `--appkit-gradient-*` tokens
+    // and primitive variants (e.g. `<Section gradient="brand">`, `<Text
+    // gradient="brand">`). Tailwind `bg-gradient-to-*` / `from-*` / `to-*`
+    // bake the gradient colour into the className string, bypassing the
+    // theme registry. Baseline-drift while the consumer sweep is in flight —
+    // current count locks today; only regressions block.
+    id: "RAW_GRADIENT_UTILITY",
+    re: /\b(?:bg-gradient-to-(?:r|l|t|b|tr|tl|br|bl)|from-[a-z]+-\d+|to-[a-z]+-\d+|via-[a-z]+-\d+)\b/,
+    message: "Raw Tailwind gradient utility bypasses theme tokens. Use a primitive variant (<Section gradient=…>, <Card variant=…>, <Text gradient=…>) backed by --appkit-gradient-*",
+    fix: "Pick a catalogue gradient slot (brand, brand-tri, accent, page-header, section-warm, section-cool, section-mesh, accent-banner, promotion, spotlight, glass, card-*) and surface it through the primitive's variant prop",
+    baselineDrift: true,
+  },
+  // RAW_MEDIA_URL is covered by `audit-firestore-storage-urls.mjs` (strict-zero).
 ];
 
 function walk(dir, files = []) {
@@ -151,6 +165,11 @@ const BASELINES = {
   //   - bordered/padded chrome → <Div surface=... padding=... border=...>
   //   - page-level wrappers → <Container>/<Section>
   RAW_DIV: 0,
+  // RAW_GRADIENT_UTILITY baseline = current count of raw Tailwind gradient
+  // utilities. Locked 2026-06-14 with the theme-system rollout; drive to 0
+  // as feature views switch to `<Section gradient=…>`, `<Card variant=…>`,
+  // `<Text gradient=…>` and the catalogue gradient slots.
+  RAW_GRADIENT_UTILITY: 62,
 };
 
 const hardBlocking = violations.filter((v) => !v.baselineDrift);

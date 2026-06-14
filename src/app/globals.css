@@ -517,16 +517,15 @@
 .stagger-4 { animation: fadeInUp 0.6s ease forwards; animation-delay: 350ms; }
 .stagger-5 { animation: fadeInUp 0.6s ease forwards; animation-delay: 550ms; }
 
-/* -- Sprint 0: Accent Divider ------------------------------------------ */
+/* -- Accent Divider — themed via --appkit-gradient-accent-divider ------- */
 .accent-divider {
   border: none;
   height: 1px;
-  background: linear-gradient(to right, transparent, #3570fc, transparent); /* primary cobalt */
+  background: var(--appkit-gradient-accent-divider);
   opacity: 0.35;
 }
 
 .dark .accent-divider {
-  background: linear-gradient(to right, transparent, #e91e8c, transparent); /* primary hot pink */
   opacity: 0.25;
 }
 
@@ -557,24 +556,17 @@
   box-shadow: 0 2px 12px -2px var(--glow-color);
 }
 
-/* -- Sprint 0: Gradient Text Utilities --------------------------------- */
-/* Light: cobalt blue → lime green (image 1 colours) */
+/* -- Gradient Text Utilities — themed via --appkit-gradient-* ---------- */
+/* Primary brand gradient — adapts to the active theme automatically.    */
 .text-gradient-primary {
-  background: linear-gradient(to right, #3570fc, #65c408);
+  background: var(--appkit-gradient-brand);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-/* Dark: hot pink → cobalt blue */
-.dark .text-gradient-primary {
-  background: linear-gradient(to right, #e91e8c, #5992ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-/* Brand gradient: cobalt → lime green → hot pink (all three brand colours) */
+/* Tri-colour brand gradient (primary + secondary + accent).             */
 .text-gradient-brand {
-  background: linear-gradient(to right, #3570fc, #65c408, #e91e8c);
+  background: var(--appkit-gradient-brand-tri);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

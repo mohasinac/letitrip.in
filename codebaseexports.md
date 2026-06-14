@@ -1485,6 +1485,51 @@ All pages are thin shims delegating to appkit `_internal/server/features/*/` hel
 | MOTION_PRESETS | Constant | Named animation presets (fadeIn, fadeInUp, slideUp, slideDown, scaleIn, pressScale, hoverLift, stagger, etc.) |
 | MotionPreset | Type | Motion preset key type |
 
+### `appkit/src/tokens/themes/` (added 2026-06-14)
+
+| Export | Type | Purpose |
+|--------|------|---------|
+| DEFAULT_LIGHT_THEME | Constant | Built-in light theme record (cobalt + lime). Mirrors `:root` block in `tokens.css`. |
+| DEFAULT_DARK_THEME | Constant | Built-in dark theme record (hot-pink). Mirrors `[data-theme="dark"]` block in `tokens.css`. |
+| BUILT_IN_THEMES | Constant | `readonly ThemeRecord[]` — built-ins that cannot be deleted by admin. |
+| getDefaultBuiltInTheme | Function | `(mode) => ThemeRecord` fallback resolver. |
+| REQUIRED_THEME_TOKENS | Constant | Catalogue of every CSS variable a theme record must declare. |
+| REQUIRED_GRADIENT_KEYS | Constant | Catalogue of every gradient slot a theme record must declare. |
+| ThemeRecord / ThemeMode / GradientKey / RequiredThemeToken | Type | Theme registry types. |
+
+### `appkit/src/_internal/client/theme/` (re-exported via `appkit/src/theme/index.ts`)
+
+| Export | Type | Purpose |
+|--------|------|---------|
+| ThemeProvider | Component | Registry-aware provider. Reads `siteSettings.theme` → applies `<html data-theme>` + inline CSS-variable writes. Tracks `prefers-color-scheme` for `"auto"` preference. |
+| useTheme | Hook | `{ activeTheme, effectiveMode, theme, preference, setPreference, setTheme, toggleTheme }`. |
+| buildThemeRegistry | Function | `(siteSettings.theme | undefined) => ThemeRegistry`. Combines built-ins with admin records, resolves default ids. |
+| ThemeRegistry / ThemeContextValue / ThemeProviderProps / ModePreference / SiteSettingsThemeInput | Type | Theme provider types. |
+
+### Variant catalogue primitives (added 2026-06-14)
+
+Exported from `@mohasinac/appkit` unless otherwise noted.
+
+| Primitive | File | Purpose |
+|---|---|---|
+| Anchor | `appkit/src/ui/components/Anchor.tsx` | External / `mailto:` / `tel:` link wrapper. `tone` + `underline` enums. |
+| MediaAudio | `appkit/src/features/media/MediaAudio.tsx` | `<audio>` proxied through `/api/media/…`. |
+| Iframe | `appkit/src/ui/components/Iframe.tsx` | Embedded third-party content with `aspect` / `rounded` / `sandbox` enums. |
+| HorizontalRule | `appkit/src/ui/components/HorizontalRule.tsx` | `<hr>` with `tone="accent"` consuming themed gradient divider. |
+| Fieldset / Legend | `appkit/src/ui/components/Fieldset.tsx` | Grouped form-control wrapper. |
+| Details / Summary | `appkit/src/ui/components/Details.tsx` | Native `<details>` disclosure widget. |
+| Dialog | `appkit/src/ui/components/Dialog.tsx` | Native `<dialog>` with top-layer rendering + focus trap. |
+| StickyToolbar | `appkit/src/ui/components/StickyToolbar.tsx` | Translucent sticky bar under `AppLayoutShell`; offset from `--header-height`. |
+| IconBox | `appkit/src/ui/components/IconBox.tsx` | Square icon container (`size` × `rounded` × `tone`). |
+| Kbd | `appkit/src/ui/components/Kbd.tsx` | `<kbd>` with `size` + `tone`. |
+| Quote | `appkit/src/ui/components/Quote.tsx` | Inline `<q>` + multi-line `<blockquote>` via `block`. |
+| Show / Hide | `appkit/src/ui/components/Responsive.tsx` | Breakpoint-conditional render — hydration-safe, no consumer-side `sm:`/`md:`/`lg:` prefixes. |
+| FallbackShell | `appkit/src/ui/components/FallbackShell.tsx` | ErrorBoundary / `global-error.tsx` primitive with inlined critical CSS. |
+| HotspotMarker | `appkit/src/ui/components/HotspotMarker.tsx` | `xPct` / `yPct` overlay marker; primitive for dynamic positioning. |
+| SiteLogo | `appkit/src/ui/components/SiteLogo.tsx` | `size` + `tone` enums; binds gradient stops to theme variables. |
+| ThemeManagerView | `appkit/src/features/site-settings/components/ThemeManagerView.tsx` | Admin UI for Site Settings → Themes tab. |
+| Email* (10 primitives) | `appkit/src/features/email/primitives.tsx` | EmailDoc, EmailContainer, EmailHeader, EmailRow, EmailColumn, EmailButton, EmailLink, EmailImage, EmailDivider, EmailFooter — exported from `@mohasinac/appkit/server`. |
+
 ---
 
 ## 19. Route Map

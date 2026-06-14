@@ -124,7 +124,7 @@ For lint-fixable issues use `npm run check:fix` (runs `lint:fix` first, then ful
 - `npm run firebase <generate|deploy|reset>` — replaces `firebase:generate`/`firebase:deploy[:rules|:indexes]`/`firebase:reset[:all]`. `--only indexes` and `--only rules` are convenience shortcuts.
 - `npm run test:qa <smoke|pw|audit>` — replaces `test:smoke[:only]`/`test:pw[:only]`/`test:audit[:existing]`. Forwards `--only`, `--use-existing`, etc.
 
-**Stop hook automation**: `.claude/settings.json` runs the fast audits (`check:audits`) automatically at end of every Claude turn via `scripts/claude-hooks/check-on-stop.mjs`. Failures block the turn and surface to the assistant for fixing. **Every audit is now strict zero-tolerance** — there is no baseline-drift mode; any violation `> 0` fails the audit. Legitimate dynamic patterns are handled by explicit per-line suppression markers (`// audit-inline-style-ok`, `// toast-handled-by-hook`, `// toast-intentionally-silent`, `// reexport-from-internal-ok`, `// audit-sieve-views-ok`) at the site of the decision, each with a brief reason. tsc + lint are excluded from the Stop hook because they are too slow per-turn; run `npm run check` manually before commits.
+**Stop hook automation**: `.claude/settings.json` runs the fast audits (`check:audits`) automatically at end of every Claude turn via `scripts/claude-hooks/check-on-stop.mjs`. Failures block the turn and surface to the assistant for fixing. **Every audit is now strict zero-tolerance** — there is no baseline-drift mode; any violation `> 0` fails the audit. Legitimate dynamic patterns are handled by explicit per-line suppression markers (`// audit-inline-style-ok`, `// toast-handled-by-hook`, `// toast-intentionally-silent`, `// reexport-from-internal-ok`, `// audit-sieve-views-ok`, `// audit-variant-ok` — primitives whose internal CSS the audit must allow) at the site of the decision, each with a brief reason. tsc + lint are excluded from the Stop hook because they are too slow per-turn; run `npm run check` manually before commits.
 
 **Pre-commit**: the `pre-commit` npm script is wired to `npm run check`. If you have a git hook runner installed, use it.
 
@@ -716,6 +716,7 @@ The 4 layout shells (`AdminLayoutShell`, `StoreLayoutShell`, `UserLayoutShell`, 
 | 18 | **No re-exports — import from the defining module** | Never create barrel re-exports (`export { X } from "./internal/thing"`) for convenience. Every import must point to the file that **defines** the symbol. Barrel re-exports in `index.ts` / `client.ts` / `server.ts` are only for appkit's **public API contract** — UI components, hooks, types, and constants that external consumers actually need. Internal utilities, shared hooks used only inside appkit views, and implementation details stay internal. This prevents import chain bloat, circular dependencies, and the Turbopack client-bundle trap (Root Cause #6). During Phase 11 (W5-1/W5-2), all existing convenience re-exports will be pruned and consumer imports rewritten to point directly at defining modules. |
 | 19 | **Peer-dep duplicates in `appkit/node_modules/` cause Turbopack dual-instance crashes** | Running `cd appkit && npm install` populates `appkit/node_modules/` with every peer-dependency *and* their transitive runtime deps. Turbopack 16 resolves appkit-internal imports to those local copies while the consumer's imports resolve to the consumer-root copy. Singleton modules (React contexts, registries) end up as two separate instances in the same SSR bundle, and `useContext` reads the wrong one. This caused the 2026-06-10/11 "No QueryClient set" prod outage (duplicate `@tanstack/query-core` carrying its own `QueryClientContext`). The fix is enforced by `appkit/scripts/dedupe-peer-deps.mjs` (wired as both `postinstall` and the first step of `build`). **Rules**: (a) never remove that script or its `package.json` wiring; (b) if a new peer-dep is added that ships a React context via a transitive package, append the transitive's name to `TRANSITIVE_RUNTIME_DUPS` inside the script; (c) when diagnosing similar errors, decode the failing chunk's source map (`.next/server/chunks/ssr/<chunk>.map`) — if the original-position source path goes through `appkit/node_modules/<pkg>/...`, this pattern is in play. |
 | 20 | **Public appkit prop / hook signature changes must update consumer call sites in the same commit** | Renaming, removing, or retyping a publicly-exported prop (e.g. `open` → `isOpen`), changing a hook return-shape (`showToast(obj)` → `showToast(msg, variant)`), or dropping an exported symbol from `index.ts` / `client.ts` / `server.ts` MUST be paired with the consumer-side update in the same commit. Consumer code is silently typechecked against the bundled `dist/*.d.ts` from `file:./appkit`, so a half-finished change typechecks locally (where the source still has the old export from working memory) but breaks the moment the dist is rebuilt or the consumer reads a stale type. Always run `npm --prefix appkit run build` and `npx tsc --noEmit` in the consumer after touching any exported appkit surface. |
+| 21 | **Three-layer style system — Theme (colours + fonts) → Tokens (fixed scales) → Variants (the only styling API). Raw HTML wrappers, raw className utilities on primitives, and `THEME_CONSTANTS` interpolation bypass the variant system.** | The single source of truth for every styling intent: (a) **colours + fonts** flow through `--appkit-color-*` / `--appkit-font-*` written by `<ThemeProvider>` on `<html>`; (b) **everything else** (spacing, radii, shadows, breakpoints, motion, gradients) lives in fixed token maps in `appkit/src/tokens/`; (c) every primitive (`<Text>`, `<Card>`, `<Section>`, `<StickyToolbar>`, `<MediaImage>`, …) exposes typed variant enums — never raw className. Admin custom themes go through Site Settings → Themes (`<ThemeManagerView>`); the registry-aware `<ThemeProvider registry={buildThemeRegistry(siteSettings.theme)}>` mounts in `LayoutShellClient` and writes the active record's tokens to `<html>` at runtime. Two built-in themes (`default-light` = cobalt+lime, `default-dark` = hot-pink) cannot be deleted; the `audit-theme-drift` script verifies they stay aligned with the matching `tokens.css` blocks. Gradients flow through `--appkit-gradient-*` so `<Text gradient="brand">`, `<Section tone="page-header">`, `<Card variant="gradient-…">` re-style automatically per theme. Raw `bg-gradient-to-*` utilities are flagged by `audit-html-wrappers/RAW_GRADIENT_UTILITY`. Inline `style={{ color: … }}` / `backgroundColor` / `borderColor` is flagged by `audit-inline-styles/INLINE_COLOR_OVERRIDE`. New primitives shipped 2026-06-14: `Anchor`, `MediaAudio`, `Iframe`, `HorizontalRule`, `Fieldset`/`Legend`, `Details`/`Summary`, `Dialog`, `StickyToolbar`, `IconBox`, `Kbd`, `Quote`, `Show`/`Hide`, `FallbackShell`, `HotspotMarker`, plus 10 `Email*` primitives. SiteLogo no longer accepts `className`; pick `size: "sm"|"md"|"lg"|"xl"|"hero"` + `tone: "brand"|"mono"|"inverse"|"on-primary"` — gradient stops still consume `--appkit-color-primary-*` so any theme restyles the logo. |
 
 ---
 
@@ -728,6 +729,26 @@ The 4 layout shells (`AdminLayoutShell`, `StoreLayoutShell`, `UserLayoutShell`, 
 | `router.push("/admin/products")` hardcoded string | `router.push(String(ROUTES.ADMIN.PRODUCTS))` |
 | Inline nav groups in layout files | Import from `@/constants/navigation` — `ADMIN_NAV_GROUPS` / `STORE_NAV_GROUPS` / `USER_NAV_GROUPS` |
 | Raw hex in CSS or `style={}` | `var(--appkit-color-*)` or Tailwind semantic token |
+| `<SiteLogo className="h-7 md:h-9 lg:h-10" />` | `<SiteLogo size="md" />` — the catalogued `size` enum (`sm`/`md`/`lg`/`xl`/`hero`) carries the responsive height; `tone` selects gradient vs mono. |
+| `<a href="https://…">…</a>` for external links | `<Anchor href="https://…">…</Anchor>` — typed `tone`/`underline`; auto-applies `target` / `rel`. Internal Next.js routes use `<TextLink>`. |
+| `<img src="…">` | `<MediaImage src="…" alt="…" size="card">` — always proxied through `/api/media/…` so the watermark applies. |
+| `<iframe src="…" />` | `<Iframe src="…" title="…" aspect="video" rounded="lg" />` — sandbox + aspect baked into typed enums. |
+| `<hr />` | `<HorizontalRule tone="accent" spacing="comfortable" />` — `tone="accent"` consumes the themed `--appkit-gradient-accent-divider`. |
+| `<fieldset>…</fieldset>` / `<legend>…</legend>` | `<Fieldset tone="default" padding="md">` + `<Legend>` primitives. |
+| `<details><summary>…</summary>…</details>` | `<Details tone="card" defaultOpen={false}>` + `<Summary>` primitives. |
+| `<dialog>` for native top-layer dialogs | `<Dialog open={isOpen} onClose={…} padding="md">…</Dialog>` (`<Modal>` is the portal variant). |
+| `<kbd>Ctrl</kbd>` | `<Kbd size="sm" tone="brand">Ctrl</Kbd>`. |
+| `<q>…</q>` / inline `<blockquote>` | `<Quote tone="muted">…</Quote>` (set `block` for `<blockquote>`). |
+| `<div className="sticky top-[calc(var(--header-height,0px)+44px)] z-10 bg-white/95 backdrop-blur-sm border-b">` | `<StickyToolbar offset="header+nav" tone="translucent" border>`. |
+| `<div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center bg-primary-50">` | `<IconBox size="md" tone="brand" rounded="xl">`. |
+| `<div className="absolute" style={{ left: `${xPct}%`, top: `${yPct}%` }}>` | `<HotspotMarker xPct={x} yPct={y} size="md" tone="brand" shape="dot">`. |
+| `<audio src="…" controls>` | `<MediaAudio src="…" controls="full" />` — flows through the media proxy. |
+| `hidden sm:block` className on a consumer wrapper | `<Show above="sm">` / `<Hide below="md">` primitives — hydration-safe; consumer code never authors raw breakpoint prefixes. |
+| `bg-gradient-to-r from-primary-50 to-secondary-50` className | Pick a primitive variant backed by `--appkit-gradient-*` — `<Section tone="page-header">`, `<Card variant="gradient-…">`, `<Text gradient="brand">`. `audit-html-wrappers/RAW_GRADIENT_UTILITY` blocks new gradient utilities. |
+| `style={{ color: "#3570fc" }}` / `backgroundColor` / `borderColor` inline | Use a primitive `color` / `surface` / `tone` variant. `audit-inline-styles/INLINE_COLOR_OVERRIDE` blocks new inline colour writes. Add `// audit-inline-style-ok: <reason>` only for legitimate dynamic colour pickers. |
+| Raw `<table><tr><td>…</td></tr></table>` in an email template | Compose `<EmailDoc><EmailContainer><EmailRow><EmailColumn>` from `@mohasinac/appkit/server`. These render email-client-compatible HTML via `renderToStaticMarkup`. |
+| `<div>` fallback UI in `ErrorBoundary` / `global-error.tsx` with hand-rolled inline styles | `<FallbackShell tone="danger" title="…" description="…" actions={…}>` — primitive ships its own critical CSS so it renders without Tailwind. |
+| Importing `THEME_CONSTANTS` from `@/constants/theme` or `@mohasinac/appkit/tokens` for new code | Use a primitive variant (`<Card variant="…">`, `<Section tone="…">`, `<Badge variant="…">`). The two remaining importers are scheduled for removal as part of the consumer sweep. |
 | `z-[50]` arbitrary Tailwind | `var(--appkit-z-modal)` CSS variable |
 | `as unknown as SomeThing` | Fix the underlying type mismatch — ask if unsure |
 | Skipping `npx tsc --noEmit` | Always run in BOTH `letitrip.in/` and `appkit/` before committing |
@@ -770,6 +791,57 @@ The 4 layout shells (`AdminLayoutShell`, `StoreLayoutShell`, `UserLayoutShell`, 
 4. **`<Button action={...}>`** — the appkit Button component auto-resolves label, ariaLabel, variant, and confirmation dialog from an ActionDef. Use it instead of manual `<Button variant="danger" onClick={...}>Delete</Button>`.
 5. **New actions** — add to BOTH registries: `ACTIONS.{RESOURCE}["new-action"]` in `action-registry.ts` AND the relevant preset array in `action-defs.ts`. Never create an action that only exists as an inline object in one view component.
 6. **Confirmation copy** — all confirmation dialog strings (title, body, confirmLabel) live in the `ActionDef.confirmation` field. Never write `window.confirm()` or inline modal copy in view components.
+
+---
+
+## Theme / Tokens / Variants Architecture
+
+> Shipped 2026-06-14. The single source of truth for every styling intent. Replaces ad-hoc className strings, `THEME_CONSTANTS` interpolation, raw `<div className=…>` wrappers, and `style={{ color }}` overrides.
+
+### Three layers
+
+1. **Theme layer (substitutable)** — colours + fonts only.
+   - `--appkit-color-*` (primary / secondary / cobalt / accent / bg / surface / surface-elevated / surface-input / border / border-subtle / text / text-muted / text-faint / text-on-primary / success / warning / error / info / focus-ring + 50/100/.../950 ramps) and `--appkit-font-*` (display / sans / editorial / mono).
+   - Themed shadows + gradients: `--appkit-shadow-glow`, `--appkit-shadow-glow-pink`, `--appkit-gradient-{brand,brand-tri,accent,accent-divider,page-header,section-warm,section-cool,section-mesh,accent-banner,promotion,spotlight,whatsapp-card,glass,card-indigo,card-teal,card-amber,card-rose,logo}`.
+   - First-paint defaults baked into `[appkit/src/tokens/tokens.css](appkit/src/tokens/tokens.css)` (`:root` + `[data-theme="dark"]`, plus seed presets `cobalt-night` and `sunset`).
+   - Runtime application by [`appkit/src/_internal/client/theme/ThemeProvider.tsx`](appkit/src/_internal/client/theme/ThemeProvider.tsx) (re-exported via `appkit/src/theme/index.ts` so the `audit-appkit-reexports` rule stays green). Tracks `localStorage["appkit:theme-mode"]` (`light`/`dark`/`auto`) and `prefers-color-scheme`; writes the chosen record's tokens + gradients to `<html>` as inline CSS custom properties.
+   - Mounted by [`src/app/[locale]/LayoutShellClient.tsx`](src/app/[locale]/LayoutShellClient.tsx) as `<ThemeProvider registry={buildThemeRegistry(siteSettings.theme)}>`. Consumer code never authors its own `<style>` blocks.
+
+2. **Tokens layer (fixed scales)** — not user-configurable.
+   - Spacing (`appkit-space-*`), radii (`appkit-radius-*`), shadows (`appkit-shadow-*`), z-index (`appkit-z-*`), motion (`appkit-duration-*` + `appkit-ease-*`), typography sizes (`appkit-text-*xs`–`5xl`), letter-spacing (`appkit-tracking-*`), line-heights (`appkit-leading-*`).
+   - `appkit/src/ui/components/surface-tokens.ts` exposes `SURFACE_MAP` (incl. status-tinted surfaces — `success-surface`, `danger-surface`, `warning-surface`, `info-surface`), `PADDING_MAP` / `PADDING_PRESETS` (incl. `toolbar`, `card-tight`, `hero`), `GAP_PRESETS` (`dense` / `comfortable` / `loose` / `section` / `hero`), `ROUNDED_MAP`, `BORDER_MAP`, `SHADOW_MAP`.
+   - `appkit/src/tokens/motion.ts` exposes `SPRING_SNAPPY`, `SPRING_GENTLE`, `MOTION_PRESETS` (14 keys).
+   - `Layout.style.css` mirrors the gap presets as `.appkit-gap--{dense,comfortable,loose,section,hero}` classes consumed by `<Stack gap>`/`<Row gap>`.
+
+3. **Variants layer (the only styling API)** — typed enums on every primitive.
+   - `<Card variant>`, `<Badge variant>`, `<Button variant>`, `<Section tone>`, `<Stack gap surface padding>`, `<Text color size weight transform truncate numeric italic family align gradient>`, `<Heading color level …>`, `<SiteLogo size tone>`, `<StickyToolbar offset tone padding>`, `<IconBox size tone rounded>`, `<MediaImage src alt size>`, `<MediaVideo>`, `<MediaAudio controls>`, `<HotspotMarker xPct yPct size tone>`, `<HorizontalRule tone spacing>`, `<Anchor href tone underline>`, `<Iframe src title aspect sandbox>`, `<Show above>` / `<Hide below>`, etc.
+   - Variants own the responsive behaviour internally — consumer code does not author `sm:` / `md:` / `lg:` prefixes.
+   - Email rendering uses the parallel `<EmailDoc>` / `<EmailContainer>` / `<EmailRow>` / `<EmailColumn>` / `<EmailButton>` / `<EmailLink>` / `<EmailImage>` / `<EmailDivider>` / `<EmailFooter>` primitives at `appkit/src/features/email/` — table-based inline-styled markup that email clients render correctly.
+
+### Admin custom themes
+
+`siteSettings.theme` (schema: [`appkit/src/features/admin/schemas/firestore.ts`](appkit/src/features/admin/schemas/firestore.ts) → `SiteSettingsTheme`) stores:
+- `themes: ThemeRecord[]` — admin-authored records.
+- `defaultLightThemeId: string` — applied when the user's effective mode resolves to `"light"`.
+- `defaultDarkThemeId: string` — applied when the user's effective mode resolves to `"dark"`.
+
+Two built-in records (`default-light` = cobalt + lime, `default-dark` = hot-pink) cannot be deleted; the admin can clone either as a starting point. `<ThemeManagerView>` (Site Settings → Themes tab) is the editor — create/duplicate/edit/delete + gradient editor + set-default per mode + live preview iframe.
+
+### Drift protection
+
+- [`scripts/audit-theme-drift.mjs`](scripts/audit-theme-drift.mjs) — verifies the TS theme presets (`appkit/src/tokens/themes/default-light.ts`, `default-dark.ts`) stay aligned with the `:root` and `[data-theme="dark"]` blocks in `tokens.css`. Strict-zero. Registered in [`scripts/run-audits.mjs`](scripts/run-audits.mjs) and [`scripts/claude-hooks/check-on-stop.mjs`](scripts/claude-hooks/check-on-stop.mjs).
+- [`scripts/audit-html-wrappers.mjs`](scripts/audit-html-wrappers.mjs) `RAW_GRADIENT_UTILITY` — flags `bg-gradient-to-*` / `from-*` / `to-*` / `via-*` outside primitive sources. Baseline-drift at 62 today; drive to 0 as the consumer sweep migrates each callsite to a primitive variant.
+- [`scripts/audit-inline-styles.mjs`](scripts/audit-inline-styles.mjs) `INLINE_COLOR_OVERRIDE` — flags `style={{ color }}` / `backgroundColor` / `borderColor`. Strict-zero. Suppression marker `// audit-inline-style-ok: <reason>` for legitimate dynamic colour pickers.
+- Primitive source directories (`appkit/src/ui/components/**`, `appkit/src/ui/forms/**`, `appkit/src/ui/rich-text/**`, `appkit/src/features/email/**`, `appkit/src/features/media/**`, `appkit/src/_internal/client/**`) own the underlying CSS — that's the only place raw utility classes / inline styles are allowed. Suppression marker `// audit-variant-ok: <reason>` for primitive-internal `className` that the audit must allow.
+
+### Rules
+
+1. **Never author raw className for colour, surface, padding, gap, radius, border, shadow, sizing, gradient, sticky offset, or responsive breakpoint.** Pick a primitive variant.
+2. **Never write `style={{ color }}` / `backgroundColor` / `borderColor`.** Use a primitive `color` / `surface` / `tone` variant.
+3. **Never use `bg-gradient-to-*` utilities outside a primitive source file.** Pick `<Section tone="…">`, `<Card variant="gradient-…">`, or `<Text gradient="…">`.
+4. **Never import `THEME_CONSTANTS` in new code.** Consumer-side `THEME_CONSTANTS` is being removed; everything new uses primitive variants.
+5. **`<SiteLogo>` does not accept `className`.** Use `size` (`sm`/`md`/`lg`/`xl`/`hero`) and `tone` (`brand`/`mono`/`inverse`/`on-primary`).
+6. **Add new admin colours through Site Settings → Themes**, not `globals.css`. Drift between TS presets and `tokens.css` blocks is hard-blocked.
 
 ---
 

@@ -221,6 +221,15 @@ const checks = [
     cwd: ROOT,
   },
   {
+    // Verifies the TS theme presets (`default-light.ts`, `default-dark.ts`)
+    // stay aligned with the matching CSS blocks in `tokens.css`. Drift causes
+    // hydration flicker.
+    label: "audit-theme-drift",
+    cmd: "node",
+    args: ["scripts/audit-theme-drift.mjs"],
+    cwd: ROOT,
+  },
+  {
     label: "audit-listing-pagesize",
     cmd: "node",
     args: ["scripts/audit-listing-pagesize.mjs"],

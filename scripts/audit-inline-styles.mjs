@@ -69,6 +69,10 @@ const ALLOWLIST_PATTERNS = [
 const ALLOWLIST_PATH_PATTERNS = [
   /[\\/]_internal[\\/]server[\\/]features[\\/][^\\/]+[\\/]og\.tsx?$/,  // @vercel/og image renderers — no Tailwind support
   /[\\/]_internal[\\/]server[\\/]features[\\/]seo[\\/]og-layout\.tsx?$/, // OG layout helper
+  // Email primitives must use inline styles + hardcoded hex — email clients
+  // (Gmail, Outlook) drop CSS variables and most stylesheet rules. These
+  // components are the source-of-truth for email rendering.
+  /[\\/]features[\\/]email[\\/]/,
   // Maintenance dashboards are admin-only diagnostic UI rendered behind
   // permission gates. They use inline styles for density + zero-CSS-load
   // robustness so they remain useful when the global CSS bundle is broken
@@ -113,6 +117,16 @@ const RULES = [
     id: "RAW_OVERFLOW",
     label: "Raw overflow-* on appkit primitive (use overflow classes from THEME_CONSTANTS.overflow)",
     regex: /<(?:Stack|Row|Grid|Container|Section|Div)\s[^>]*className\s*=\s*[{"].*\boverflow-(?:auto|scroll|hidden|x-auto|y-auto|x-hidden|y-hidden)\b/,
+  },
+  {
+    // New rule (variant catalogue): inline colour / background / border-colour
+    // overrides bypass the theme tokens. Every theme-aware tint comes from a
+    // primitive variant (`color`, `surface`, `tone`); inline colour writes
+    // never inherit the active theme.
+    id: "INLINE_COLOR_OVERRIDE",
+    label:
+      "Inline color / backgroundColor / borderColor in style={{ … }} (use a primitive `color` / `surface` / `tone` variant; add `// audit-inline-style-ok: <reason>` for legitimate dynamic colour pickers)",
+    regex: /style\s*=\s*\{\{[^}]*\b(?:color|backgroundColor|borderColor)\s*:/,
   },
 ];
 

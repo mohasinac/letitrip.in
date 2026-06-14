@@ -124,6 +124,7 @@ const EXEMPT_PATH_PATTERNS = [
   /[\\/]seed[\\/]/,                       // seed data — hex is part of seeded site-settings
   /[\\/]_internal[\\/]server[\\/]features[\\/][^\\/]+[\\/]og\.tsx?$/, // belt-and-suspenders
   /[\\/]features[\\/]contact[\\/]/,      // email templates
+  /[\\/]features[\\/]email[\\/]/,         // email primitives (Email* components)
   /[\\/]features[\\/]auth[\\/]consent/,  // OTP email templates
   /[\\/]admin[\\/]components[\\/]analytics[\\/]/, // chart palettes — decorative
   /AdminAnalyticsCharts\.tsx?$/,

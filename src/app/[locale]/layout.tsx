@@ -9,8 +9,7 @@ import {
   BottomActionsProvider,
   DashboardNavProvider,
   LayoutClient,
-SessionProvider,
-  ThemeProvider,
+  SessionProvider,
   ToastProvider,
   WishlistCapWatcher,
   ZodSetup,
@@ -64,7 +63,9 @@ export default async function Layout({ children, params }: Props) {
   }
   const seedPanelEnabled = siteSettings?.featureFlags?.seedPanel ?? true;
   const siteLogoUrl = siteSettings?.logo?.url || "/logo.svg";
-  const siteTheme = siteSettings?.theme;
+  // siteSettings.theme drives the registry-aware <ThemeProvider> mounted
+  // inside LayoutShellClient (built-ins + admin records + default ids).
+  const siteSettingsTheme = siteSettings?.theme;
 
   return (
     <QueryProvider>
@@ -77,21 +78,19 @@ export default async function Layout({ children, params }: Props) {
         <ClientProviderInitializer />
         <ScrollToTop />
         <ZodSetup />
-        <ThemeProvider>
-          <SessionProvider initialUser={null}>
-            <ToastProvider position="top-right">
-              <ClientErrorReporterMount />
-              <WishlistCapWatcher />
-              <BottomActionsProvider>
-                <DashboardNavProvider>
-                  <LayoutClient>
-                    <LayoutShellClient seedPanelEnabled={seedPanelEnabled} siteLogoUrl={siteLogoUrl} siteTheme={siteTheme}><Suspense>{children}</Suspense></LayoutShellClient>
-                  </LayoutClient>
-                </DashboardNavProvider>
-              </BottomActionsProvider>
-            </ToastProvider>
-          </SessionProvider>
-        </ThemeProvider>
+        <SessionProvider initialUser={null}>
+          <ToastProvider position="top-right">
+            <ClientErrorReporterMount />
+            <WishlistCapWatcher />
+            <BottomActionsProvider>
+              <DashboardNavProvider>
+                <LayoutClient>
+                  <LayoutShellClient seedPanelEnabled={seedPanelEnabled} siteLogoUrl={siteLogoUrl} siteSettingsTheme={siteSettingsTheme}><Suspense>{children}</Suspense></LayoutShellClient>
+                </LayoutClient>
+              </DashboardNavProvider>
+            </BottomActionsProvider>
+          </ToastProvider>
+        </SessionProvider>
       </NextIntlClientProvider>
     </QueryProvider>
   );
