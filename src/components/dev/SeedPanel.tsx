@@ -2409,7 +2409,7 @@ function renderSeedPanelToolbar({
   setFilterStatus: React.Dispatch<React.SetStateAction<StatusFilter>>;
 }) {
   return (
-    <Div className="sticky z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-zinc-200 dark:border-slate-800" shadow="sm" style={{ top: "var(--header-height, 0px)" }}>
+    <Div className="sticky z-30 backdrop-blur-md border-b border-zinc-200" surface="default" shadow="sm" style={{ top: "var(--header-height, 0px)" }}>
       <Container size="2xl">
         <Stack gap="sm" className="py-2.5">
           <Stack className="sm:flex-row sm:items-center" gap="sm">
