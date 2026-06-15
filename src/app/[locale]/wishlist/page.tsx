@@ -287,13 +287,13 @@ function renderWishlistHeader({
   return (
     <Div>
       <Row gap="sm" wrap>
-        <Heading level={1} className="text-zinc-900 dark:text-zinc-100" size="2xl" weight="semibold">
+        <Heading level={1} size="2xl" weight="semibold" color="primary">
           My Wishlist
         </Heading>
         <Row gap="sm" className="ml-auto" wrap>
           {selectedIds.size > 0 && (
             <>
-              <Text className="text-zinc-600 dark:text-zinc-300" size="sm">{selectedIds.size} selected</Text>
+              <Text size="sm" color="muted">{selectedIds.size} selected</Text>
               <Button variant="ghost" size="sm" onClick={handleRemoveSelected} disabled={isBulkRemoving} className="text-error hover:opacity-80 hover:bg-error-surface">
                 {isBulkRemoving ? "Removing…" : "Remove selected"}
               </Button>
@@ -325,7 +325,7 @@ function renderWishlistFilterContent({
   return (
     <Stack gap="md" className={`${__P.p4}`}>
       <Div>
-        <Text className="mb-2 tracking-wide text-zinc-500 dark:text-zinc-400" size="xs" weight="semibold" transform="uppercase">Type</Text>
+        <Text className="mb-2 tracking-wide" color="muted" size="xs" weight="semibold" transform="uppercase">Type</Text>
         <Stack gap="xs">
           {TYPE_OPTIONS.map((opt) => (
             <Button
@@ -341,7 +341,7 @@ function renderWishlistFilterContent({
         </Stack>
       </Div>
       <Div className="border-t border-zinc-200 dark:border-zinc-700 pt-4">
-        <Text className="mb-2 tracking-wide text-zinc-500 dark:text-zinc-400" size="xs" weight="semibold" transform="uppercase">Price range (₹)</Text>
+        <Text className="mb-2 tracking-wide" color="muted" size="xs" weight="semibold" transform="uppercase">Price range (₹)</Text>
         <Row gap="sm">
           <Input type="number" placeholder="Min" min={0} value={pending.minPrice} onChange={(e) => setPending((p) => ({ ...p, minPrice: e.target.value }))} className="h-8 text-sm" />
           <Span className="flex items-center" color="faint">–</Span>

@@ -56,9 +56,7 @@ export default async function Page({ params }: Props) {
       {pollConfig?.options?.length ? (
         <Div className="space-y-3">
           <Heading
-            level={2}
-            className="text-zinc-900 dark:text-zinc-100" size="lg" weight="semibold"
-          >
+            level={2} size="lg" weight="semibold" color="primary">
             {EVENT_LABELS.OVERVIEW_POLL_HEADING}
           </Heading>
           <PollInlineClient

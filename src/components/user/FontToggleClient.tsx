@@ -26,10 +26,10 @@ export function FontToggleClient() {
   return (
     <Row className="dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3" align="center" justify="between" gap="md" rounded="xl" border="default">
       <Stack gap="xs" className="min-w-0">
-        <Text className="text-zinc-800 dark:text-zinc-100" size="sm" weight="medium">
+        <Text size="sm" weight="medium" color="primary">
           Cursive font
         </Text>
-        <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
+        <Text size="xs" color="muted">
           Switch between Playfair Display and the default sans-serif
         </Text>
       </Stack>

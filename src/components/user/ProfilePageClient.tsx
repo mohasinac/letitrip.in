@@ -61,17 +61,17 @@ function renderProfileViewMode({
           </Row>
         )}
         <Div className="space-y-0.5 min-w-0">
-          <Text className="text-zinc-900 dark:text-zinc-100 truncate" size="lg" weight="semibold">
+          <Text className="truncate" color="primary" size="lg" weight="semibold">
             {resolvedName || <Text as="span" className="text-zinc-400 dark:text-zinc-400 italic">{namePlaceholder}</Text>}
           </Text>
-          <Text className="text-zinc-500 dark:text-zinc-400 truncate" size="sm">{profile.email}</Text>
+          <Text className="truncate" color="muted" size="sm">{profile.email}</Text>
           {profile.phoneNumber && (
-            <Text className="text-zinc-500 dark:text-zinc-400" size="sm">{profile.phoneNumber}</Text>
+            <Text size="sm" color="muted">{profile.phoneNumber}</Text>
           )}
         </Div>
       </Row>
       {profileBio && (
-        <Text className="text-zinc-700 dark:text-zinc-300 leading-relaxed" size="sm">{profileBio}</Text>
+        <Text className="leading-relaxed" color="muted" size="sm">{profileBio}</Text>
       )}
       <Text className="text-zinc-400 dark:text-zinc-400" size="xs">
         Profile visibility:{" "}
@@ -128,7 +128,7 @@ function renderProfileEditForm({
       onSubmit={handleSave}
       className="space-y-5"
     >
-      <Heading level={2} className="text-zinc-900 dark:text-zinc-100" size="base" weight="semibold">Edit Profile</Heading>
+      <Heading level={2} size="base" weight="semibold" color="primary">Edit Profile</Heading>
       <Div className="space-y-1">
         <Label className={LABEL_CLS}>Display Name</Label>
         <Input
@@ -180,8 +180,8 @@ function renderProfileEditForm({
       </Div>
       <Row className="dark:border-slate-700 px-4 py-3" align="center" justify="between" rounded="lg" border="default">
         <>
-          <Text className="text-zinc-800 dark:text-zinc-200" size="sm" weight="medium">Public profile</Text>
-          <Text className="text-zinc-500 dark:text-zinc-400 mt-0.5" size="xs">
+          <Text size="sm" weight="medium" color="primary">Public profile</Text>
+          <Text className="mt-0.5" color="muted" size="xs">
             When on, your profile is visible to other LetItRip users
           </Text>
         </>
@@ -264,7 +264,7 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
 
   if (!profile) {
     return (
-      <Text className="text-zinc-500 dark:text-zinc-400" size="sm">Please log in to view your profile.</Text>
+      <Text size="sm" color="muted">Please log in to view your profile.</Text>
     );
   }
 
@@ -278,7 +278,7 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
   return (
     <Div className="w-full space-y-6">
       {standalone && (
-        <Heading level={1} className="text-zinc-900 dark:text-zinc-100" size="2xl" weight="bold">My Profile</Heading>
+        <Heading level={1} size="2xl" weight="bold" color="primary">My Profile</Heading>
       )}
       {!editing
         ? renderProfileViewMode({ profile, resolvedName, namePlaceholder, avatarLetter, profileBio, profileIsPublic, handleEdit })

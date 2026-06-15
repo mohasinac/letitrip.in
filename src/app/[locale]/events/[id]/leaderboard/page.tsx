@@ -30,7 +30,7 @@ export default async function Page({ params }: Props) {
   if (leaderboard.length === 0) {
     return (
       <Div className="dark:border-zinc-700 px-6 py-10 text-center" rounded="xl" border="default">
-        <Text className="text-zinc-500 dark:text-zinc-400">
+        <Text color="muted">
           {EVENT_LABELS.LEADERBOARD_EMPTY}
         </Text>
       </Div>
@@ -40,9 +40,7 @@ export default async function Page({ params }: Props) {
   return (
     <Div className="space-y-2">
       <Heading
-        level={2}
-        className="text-zinc-900 dark:text-zinc-100" size="lg" weight="semibold"
-      >
+        level={2} size="lg" weight="semibold" color="primary">
         {EVENT_LABELS.LEADERBOARD_HEADING}
       </Heading>
       {leaderboard.slice(0, EVENT_META.LEADERBOARD_VISIBLE_LIMIT).map((entry, idx) => (
@@ -50,10 +48,10 @@ export default async function Page({ params }: Props) {
           key={entry.id}
           className="px-4 py-2 dark:border-zinc-700" align="center" justify="between" rounded="lg" border="default"
         >
-          <Text className="text-zinc-700 dark:text-zinc-300" weight="medium">
+          <Text weight="medium" color="muted">
             #{idx + 1} {entry.userDisplayName ?? EVENT_LABELS.PARTICIPANT_FALLBACK}
           </Text>
-          <Text className="text-zinc-500 dark:text-zinc-400" size="sm">
+          <Text size="sm" color="muted">
             {entry.points ?? 0} {EVENT_LABELS.POINTS_SUFFIX}
           </Text>
         </Row>

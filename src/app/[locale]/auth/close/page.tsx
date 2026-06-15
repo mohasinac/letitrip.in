@@ -42,7 +42,7 @@ export default function Page() {
       <Div className={`flex min-h-screen items-center justify-center ${__P.p6} text-center`}>
         <Div className="space-y-3">
           <Text className="text-error" size="lg" weight="semibold">Sign-in failed</Text>
-          <Text className="text-zinc-500 dark:text-zinc-400" size="sm">{decodeURIComponent(error)}</Text>
+          <Text size="sm" color="muted">{decodeURIComponent(error)}</Text>
           <Button
             type="button"
             variant="outline"

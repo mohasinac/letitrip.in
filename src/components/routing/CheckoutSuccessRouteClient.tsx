@@ -16,7 +16,7 @@ export function CheckoutSuccessRouteClient() {
       )}
       renderOrderCard={() => (
         <Div surface="card" padding="md">
-          <Text className="text-zinc-600 dark:text-zinc-400" size="sm">Order details will appear here.</Text>
+          <Text size="sm" color="muted">Order details will appear here.</Text>
         </Div>
       )}
       renderActions={() => (

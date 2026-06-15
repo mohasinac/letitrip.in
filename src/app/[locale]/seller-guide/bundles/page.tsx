@@ -21,7 +21,7 @@ export default function Page() {
         <Stack gap="none" className="max-w-3xl space-y-8">
           <Section>
             <Heading level={2} className={H2}>What are Bundles?</Heading>
-            <Text className="text-zinc-600 dark:text-zinc-400">
+            <Text color="muted">
               Bundles let you group multiple products into a single listing. Buyers get a curated set at a
               combined price — great for starter kits, themed collections, or clearance lots.
             </Text>
@@ -40,7 +40,7 @@ export default function Page() {
 
           <Section>
             <Heading level={2} className={H2}>Stock Sync</Heading>
-            <Text className="text-zinc-600 dark:text-zinc-400">
+            <Text color="muted">
               Bundle availability is tied to its component products. If any included product sells out, the bundle
               is automatically marked unavailable. Stock is restored if the product is restocked.
             </Text>

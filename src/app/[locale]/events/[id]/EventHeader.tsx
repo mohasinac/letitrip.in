@@ -66,9 +66,7 @@ export function EventHeader({
         </Row>
 
         <Heading
-          level={1}
-          className="text-zinc-900 dark:text-zinc-100" size="2xl" weight="bold"
-        >
+          level={1} size="2xl" weight="bold" color="primary">
           {title}
         </Heading>
 
@@ -100,7 +98,7 @@ export function EventHeader({
         </Div>
 
         <Row className="pt-1" align="center" gap="sm">
-          <Text className="text-zinc-500 dark:text-zinc-400" size="sm">
+          <Text size="sm" color="muted">
             {EVENT_LABELS.HEADER_SHARE}
           </Text>
           <ShareEventButton />

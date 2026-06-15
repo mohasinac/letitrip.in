@@ -51,7 +51,7 @@ export default function Page() {
             <Heading level={1}>
               {(user?.displayName as string) ?? id}
             </Heading>
-            <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
+            <Text size="xs" color="muted">
               {(user?.email as string) ?? "—"} · role {(user?.role as string) ?? "user"} · uid{" "}
               <code className="font-mono">{id}</code>
             </Text>

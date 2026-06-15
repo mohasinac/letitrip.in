@@ -124,7 +124,7 @@ export default function Page() {
 
   return (
     <Div className="mx-auto max-w-2xl">
-      <Heading level={1} className="text-zinc-900 dark:text-zinc-50 mb-1" size="2xl" weight="bold">
+      <Heading level={1} className="mb-1" color="primary" size="2xl" weight="bold">
         Store URL / Slug
       </Heading>
       <Text variant="secondary" className="mb-6" size="sm">
@@ -161,9 +161,9 @@ export default function Page() {
 function renderCurrentUrl(currentSlug: string | null) {
   return (
     <Div>
-      <Text className="tracking-wider text-zinc-500 dark:text-zinc-400 mb-1" size="xs" weight="medium" transform="uppercase">Current URL</Text>
-      <Text className="font-mono text-zinc-700 dark:text-zinc-300" size="sm">
-        {SITE_BASE}<Span weight="semibold" className="text-zinc-900 dark:text-zinc-100">{currentSlug ?? "—"}</Span>
+      <Text className="tracking-wider mb-1" color="muted" size="xs" weight="medium" transform="uppercase">Current URL</Text>
+      <Text className="font-mono" color="muted" size="sm">
+        {SITE_BASE}<Span weight="semibold" color="primary">{currentSlug ?? "—"}</Span>
       </Text>
     </Div>
   );

@@ -69,7 +69,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
             Home
           </Link>
           <Text as="span" aria-hidden>/</Text>
-          <Text as="span" className="text-zinc-700 dark:text-zinc-300 truncate max-w-[260px]" weight="medium">
+          <Text as="span" className="truncate max-w-[260px]" color="muted" weight="medium">
             {displayName}
           </Text>
         </Nav>
@@ -84,11 +84,11 @@ export default async function SublistingCategoryPage({ params }: Props) {
 
           <Stack className="sm:flex-row sm:items-start sm:justify-between" gap="xs">
             <>
-              <Heading level={1} className="text-zinc-900 dark:text-zinc-50 sm:text-3xl" size="2xl" weight="bold">
+              <Heading level={1} className="sm:text-3xl" color="primary" size="2xl" weight="bold">
                 {displayName}
               </Heading>
               {category.description && (
-                <Text className="mt-1.5 max-w-2xl text-zinc-500 dark:text-zinc-400 leading-relaxed" size="sm">
+                <Text className="mt-1.5 max-w-2xl leading-relaxed" color="muted" size="sm">
                   {category.description}
                 </Text>
               )}
@@ -103,7 +103,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
         {listings.length === 0 ? (
           <Stack className="justify-center border-dashed dark:border-zinc-700 py-20 text-center" align="center" rounded="2xl" border="default">
             <Text as="span" className="mb-3" size="4xl">📦</Text>
-            <Text className="text-zinc-700 dark:text-zinc-300" size="base" weight="semibold">No listings yet</Text>
+            <Text size="base" weight="semibold" color="muted">No listings yet</Text>
             <Text className="mt-1 text-zinc-400 dark:text-zinc-400" size="sm">
               Check back soon — sellers are still adding items.
             </Text>
@@ -170,16 +170,16 @@ export default async function SublistingCategoryPage({ params }: Props) {
                           </Text>
                         )}
                         {condition && (
-                          <Text as="span" className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 text-[10px] text-zinc-600 dark:text-zinc-400" transform="capitalize">
+                          <Text as="span" className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 text-[10px]" color="muted" transform="capitalize">
                             {condition}
                           </Text>
                         )}
                       </Div>
                     )}
-                    <Text className="line-clamp-2 text-zinc-800 dark:text-zinc-200 leading-snug" size="xs" weight="medium">
+                    <Text className="line-clamp-2 leading-snug" color="primary" size="xs" weight="medium">
                       {title}
                     </Text>
-                    <Text className="text-zinc-900 dark:text-zinc-50" size="sm" weight="bold">
+                    <Text size="sm" weight="bold" color="primary">
                       {fmt(price, currency)}
                     </Text>
                   </Stack>

@@ -67,10 +67,10 @@ export default function Page() {
                 >
                   <Stack gap="xs" className="flex-1">
                     <Text weight="medium">{r.title}</Text>
-                    <Text className="text-zinc-500 dark:text-zinc-400 line-clamp-2" size="xs">
+                    <Text className="line-clamp-2" color="muted" size="xs">
                       {r.description}
                     </Text>
-                    <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
+                    <Text size="xs" color="muted">
                       by {r.opDisplayName} · {r.replyCount} replies
                       {r.category ? ` · ${r.category}` : ""}
                     </Text>

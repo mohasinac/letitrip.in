@@ -70,22 +70,22 @@ function CouponWalletCard({
   return (
     <Stack surface="card" padding="md" gap="sm">
       <Row align="center" gap="sm" wrap>
-        <Text className="font-mono px-2 py-0.5 rounded bg-zinc-100 dark:bg-slate-800 text-zinc-700 dark:text-zinc-200" size="xs">
+        <Text className="font-mono px-2 py-0.5 rounded bg-zinc-100 dark:bg-slate-800" color="primary" size="xs">
           {claim.couponCode}
         </Text>
-        <Text className="text-zinc-900 dark:text-zinc-100" size="sm" weight="bold">
+        <Text size="sm" weight="bold" color="primary">
           {formatDiscount(claim)}
         </Text>
       </Row>
-      <Heading level={3} className="text-zinc-900 dark:text-zinc-100" size="sm" weight="semibold">
+      <Heading level={3} size="sm" weight="semibold" color="primary">
         {claim.couponSnapshot.name}
       </Heading>
       {claim.couponSnapshot.description && (
-        <Text className="text-zinc-500 dark:text-zinc-400 line-clamp-2" size="xs">
+        <Text className="line-clamp-2" color="muted" size="xs">
           {claim.couponSnapshot.description}
         </Text>
       )}
-      <Text className="text-[11px] text-zinc-500 dark:text-zinc-400">
+      <Text className="text-[11px]" color="muted">
         Claimed {formatDate(claim.claimedAt)}
         {claim.expiresAt ? ` · Expires ${formatDate(claim.expiresAt)}` : ""}
         {claim.usedOrderId ? ` · Order ${claim.usedOrderId}` : ""}
@@ -161,7 +161,7 @@ export default function ClaimedCouponsPage() {
   return (
     <Stack gap="md">
       <Div>
-        <Heading level={1} className="text-zinc-900 dark:text-zinc-100" size="2xl" weight="semibold">
+        <Heading level={1} size="2xl" weight="semibold" color="primary">
           My Coupons
         </Heading>
         <Text variant="secondary" className="mt-0.5" size="sm">

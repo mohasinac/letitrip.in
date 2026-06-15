@@ -67,7 +67,7 @@ export default function Page() {
                 >
                   <Stack gap="xs">
                     <Text weight="medium">{r.name}</Text>
-                    <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
+                    <Text size="xs" color="muted">
                       {r.scope} · {r.permissions.length} permissions ·{" "}
                       {r.isActive ? "Active" : "Inactive"}
                     </Text>

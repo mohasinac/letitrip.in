@@ -149,9 +149,9 @@ function renderAddressDrawer({
 
 function renderStepIndicator(activeStep: number, totalSteps: number) {
   return (
-    <Text className="mb-4 text-zinc-500 dark:text-zinc-400" size="sm">
+    <Text className="mb-4" color="muted" size="sm">
       Step {activeStep + 1} of {totalSteps}:{" "}
-      <Span weight="medium" className="text-zinc-700 dark:text-zinc-300">
+      <Span weight="medium" color="muted">
         {CK.STEP_LABELS[activeStep] ?? ""}
       </Span>
     </Text>
@@ -186,21 +186,21 @@ function renderAddressStep({
               : "border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900"
           }`}
         >
-          <Text className="text-zinc-900 dark:text-zinc-100" weight="medium">
+          <Text weight="medium" color="primary">
             {address.label ?? address.fullName}
           </Text>
-          <Text className="text-zinc-600 dark:text-zinc-400" size="sm">
+          <Text size="sm" color="muted">
             {address.addressLine1}
             {address.addressLine2 ? `, ${address.addressLine2}` : ""}
           </Text>
-          <Text className="text-zinc-600 dark:text-zinc-400" size="sm">
+          <Text size="sm" color="muted">
             {address.city}, {address.state} {address.postalCode}
           </Text>
         </Div>
       )}
       renderEmptyState={() => (
         <Div className={`rounded-xl border border-dashed border-zinc-300 dark:border-slate-600 ${__P.p6} text-center`}>
-          <Text className="mb-3 text-zinc-600 dark:text-zinc-400" size="sm">
+          <Text className="mb-3" color="muted" size="sm">
             No saved addresses yet.
           </Text>
           <Button
@@ -247,15 +247,15 @@ function renderOtpConsentStep({
     : "your registered email";
   return (
     <Div className={STEP_CARD_CLS}>
-      <Heading level={2} className="mb-1 text-zinc-900 dark:text-zinc-100" size="lg" weight="semibold">
+      <Heading level={2} className="mb-1" color="primary" size="lg" weight="semibold">
         {CK.OTP_CONSENT_HEADING}
       </Heading>
       <Text className={STEP_SUBLABEL_CLS}>
         {CK.OTP_CONSENT_SUBLABEL}
       </Text>
-      <Text className="mb-5 text-zinc-600 dark:text-zinc-400" size="sm">
+      <Text className="mb-5" color="muted" size="sm">
         {CK.OTP_CONSENT_BODY_PREFIX}{" "}
-        <Span weight="medium" className="text-zinc-800 dark:text-zinc-200">{maskedDisplay}</Span>.
+        <Span weight="medium" color="primary">{maskedDisplay}</Span>.
       </Text>
       <Stack gap="md">
         <Button
@@ -310,15 +310,15 @@ function renderOtpStep({
 }) {
   return (
     <Div className={STEP_CARD_CLS}>
-      <Heading level={2} className="mb-1 text-zinc-900 dark:text-zinc-100" size="lg" weight="semibold">
+      <Heading level={2} className="mb-1" color="primary" size="lg" weight="semibold">
         {CK.OTP_ENTRY_HEADING}
       </Heading>
       <Text className={STEP_SUBLABEL_CLS}>
         {CK.OTP_ENTRY_SUBLABEL}
       </Text>
-      <Text className="mb-4 text-zinc-600 dark:text-zinc-400" size="sm">
+      <Text className="mb-4" color="muted" size="sm">
         {CK.OTP_ENTRY_BODY_PREFIX}{" "}
-        <Span weight="medium" className="text-zinc-800 dark:text-zinc-200">{maskedEmail}</Span>.{" "}
+        <Span weight="medium" color="primary">{maskedEmail}</Span>.{" "}
         {CK.OTP_ENTRY_BODY_SUFFIX}
       </Text>
       <Stack gap="md">
@@ -382,7 +382,7 @@ function renderPaymentStep({
           {CK.PAYMENT_SUBLABEL}
         </Text>
       )}
-      <Heading level={2} className="mb-4 text-zinc-900 dark:text-zinc-100" size="lg" weight="semibold">
+      <Heading level={2} className="mb-4" color="primary" size="lg" weight="semibold">
         {step === "processing" ? CK.PAYMENT_PROCESSING_HEADING : CK.PAYMENT_HEADING}
       </Heading>
       {step === "processing" ? (
@@ -451,7 +451,7 @@ function renderCouponSection({
 }) {
   return (
     <Div className={STEP_CARD_CLS}>
-      <Heading level={3} className="mb-3 text-zinc-900 dark:text-zinc-100" size="base" weight="semibold">
+      <Heading level={3} className="mb-3" color="primary" size="base" weight="semibold">
         Coupon
       </Heading>
       {effectiveCoupons.length > 0 && (
@@ -524,18 +524,18 @@ function renderOrderSummary({
 }) {
   return (
     <Div surface="card" padding="sm">
-      <Heading level={3} className="mb-3 text-zinc-900 dark:text-zinc-100" size="base" weight="semibold">
+      <Heading level={3} className="mb-3" color="primary" size="base" weight="semibold">
         {CK.ORDER_SUMMARY_HEADING}
       </Heading>
       {selectedAddress && (
         <Div className={`mb-3 rounded-lg bg-zinc-50 dark:bg-slate-800 ${__P.p3}`}>
-          <Text className="text-zinc-500 dark:text-zinc-400 mb-1" size="xs" weight="medium" transform="uppercase">
+          <Text className="mb-1" color="muted" size="xs" weight="medium" transform="uppercase">
             {CK.SHIPPING_TO}
           </Text>
-          <Text className="text-zinc-900 dark:text-zinc-100" size="sm">
+          <Text size="sm" color="primary">
             {selectedAddress.fullName}
           </Text>
-          <Text className="text-zinc-600 dark:text-zinc-400" size="sm">
+          <Text size="sm" color="muted">
             {selectedAddress.addressLine1}, {selectedAddress.city}
           </Text>
         </Div>
@@ -551,8 +551,8 @@ function renderOrderSummary({
         </Row>
       )}
       <Row className="border-t border-zinc-200 dark:border-slate-700 pt-3" align="center" justify="between">
-        <Text className="text-zinc-900 dark:text-zinc-100" weight="semibold">{CK.ORDER_SUMMARY_TOTAL}</Text>
-        <Text className="text-zinc-900 dark:text-zinc-100" weight="semibold">{formattedTotal}</Text>
+        <Text weight="semibold" color="primary">{CK.ORDER_SUMMARY_TOTAL}</Text>
+        <Text weight="semibold" color="primary">{formattedTotal}</Text>
       </Row>
       {step === "address" && (
         <Button

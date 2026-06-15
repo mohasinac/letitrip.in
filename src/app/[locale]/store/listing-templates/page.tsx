@@ -63,7 +63,7 @@ export default function Page() {
                 >
                   <Stack gap="xs">
                     <Text weight="medium">{t.name}</Text>
-                    <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
+                    <Text size="xs" color="muted">
                       {t.listingType} · used {t.usageCount}× ·{" "}
                       {t.isShared ? "Shared" : "Private"}
                     </Text>

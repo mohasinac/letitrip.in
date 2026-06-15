@@ -49,12 +49,10 @@ export default function Page() {
         >
           <Stack gap="sm">
             <Heading
-              level={2}
-              className="text-zinc-900 dark:text-zinc-100" size="lg" weight="semibold"
-            >
+              level={2} size="lg" weight="semibold" color="primary">
               Sell collectibles to a verified community
             </Heading>
-            <Text className="text-zinc-600 dark:text-zinc-300" size="sm">
+            <Text size="sm" color="muted">
               Open a store for Pokémon TCG, Hot Wheels, Beyblades, anime
               figures, and more. We handle discovery, secure checkout, and
               shipping integrations — you focus on listings.
@@ -83,7 +81,7 @@ export default function Page() {
           </Button>
 
           {!user && !authLoading ? (
-            <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
+            <Text size="xs" color="muted">
               Please <Link href={String(ROUTES.AUTH.LOGIN)} className="text-primary hover:underline">sign in</Link> first to apply.
             </Text>
           ) : null}
@@ -124,12 +122,10 @@ export default function Page() {
           padding="lg"
         >
           <Heading
-            level={2}
-            className="text-zinc-900 dark:text-zinc-100" size="lg" weight="semibold"
-          >
+            level={2} size="lg" weight="semibold" color="primary">
             You&apos;re already a seller
           </Heading>
-          <Text className="text-zinc-600 dark:text-zinc-300" size="sm">
+          <Text size="sm" color="muted">
             Head over to your Store Dashboard to manage listings, orders, and
             payouts.
           </Text>

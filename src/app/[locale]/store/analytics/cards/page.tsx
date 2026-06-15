@@ -75,7 +75,7 @@ export default function Page() {
                 >
                   <Stack gap="xs">
                     <Text weight="medium">{c.title}</Text>
-                    <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
+                    <Text size="xs" color="muted">
                       {c.type} · metric {c.metric}
                       {c.isBuiltIn ? " · built-in" : ""}
                     </Text>

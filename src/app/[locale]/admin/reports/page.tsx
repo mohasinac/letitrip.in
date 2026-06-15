@@ -86,10 +86,10 @@ export default function Page() {
                     <Text weight="medium">
                       {r.reason} · {r.entityType} · {r.entityId}
                     </Text>
-                    <Text className="text-zinc-500 dark:text-zinc-400 line-clamp-2" size="xs">
+                    <Text className="line-clamp-2" color="muted" size="xs">
                       {r.detail}
                     </Text>
-                    <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
+                    <Text size="xs" color="muted">
                       by {r.reporterId} · {new Date(r.createdAt).toLocaleString()}
                     </Text>
                   </Stack>

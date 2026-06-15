@@ -39,8 +39,8 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
   if (requiresLogin && !user) {
     return (
       <Div className="dark:border-zinc-700 px-6 py-8 text-center space-y-3" rounded="xl" border="default">
-        <Text className="text-zinc-900 dark:text-zinc-100" weight="semibold">Login required to vote</Text>
-        <Text className="text-zinc-500 dark:text-zinc-400" size="sm">
+        <Text weight="semibold" color="primary">Login required to vote</Text>
+        <Text size="sm" color="muted">
           Please log in to cast your vote in this poll.
         </Text>
         <Link
@@ -67,7 +67,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
   if (!isActive) {
     return (
       <Div className="dark:border-zinc-700 px-6 py-6 text-center" rounded="xl" border="default">
-        <Text className="text-zinc-500 dark:text-zinc-400" size="sm">This poll has ended.</Text>
+        <Text size="sm" color="muted">This poll has ended.</Text>
       </Div>
     );
   }
@@ -113,7 +113,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
 
   return (
     <Div className="space-y-4">
-      <Text className="text-zinc-700 dark:text-zinc-300" size="sm" weight="medium">
+      <Text size="sm" weight="medium" color="muted">
         {isMultiSelect ? "Select all that apply:" : "Choose one:"}
       </Text>
       <Div className="space-y-2">
@@ -143,7 +143,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
                 className="accent-primary h-4 w-4"
               />
             )}
-            <Text as="span" className="text-zinc-800 dark:text-zinc-200" size="sm">{opt.label}</Text>
+            <Text as="span" size="sm" color="primary">{opt.label}</Text>
           </Label>
         ))}
       </Div>

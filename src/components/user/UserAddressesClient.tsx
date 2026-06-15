@@ -92,7 +92,7 @@ export function UserAddressesClient() {
   return (
     <Div className="space-y-6">
       <Row align="center" justify="between">
-        <Heading level={1} className="text-zinc-900 dark:text-zinc-100" size="xl" weight="bold">My Addresses</Heading>
+        <Heading level={1} size="xl" weight="bold" color="primary">My Addresses</Heading>
         <Link
           href={String(ROUTES.USER.ADDRESSES_ADD)}
           className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600"

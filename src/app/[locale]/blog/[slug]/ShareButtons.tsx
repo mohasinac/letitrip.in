@@ -31,7 +31,7 @@ export function ShareButtons({ title }: ShareButtonsProps) {
 
   return (
     <Row className="pt-6 mt-6 border-t border-zinc-200 dark:border-zinc-700" align="center" gap="3">
-      <Span size="sm" weight="medium" className="text-zinc-500 dark:text-zinc-400">Share:</Span>
+      <Span size="sm" weight="medium" color="muted">Share:</Span>
       <Button
         type="button"
         onClick={handleCopy}

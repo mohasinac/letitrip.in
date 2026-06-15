@@ -86,7 +86,7 @@ function ConversationListItem({ conversation, active, onSelect, mobileHref }: Co
     >
       <Row justify="between" align="start" gap="sm">
         <Div className="min-w-0 flex-1">
-          <Text className="text-zinc-900 dark:text-zinc-100 line-clamp-1" size="sm" weight="semibold">
+          <Text className="line-clamp-1" color="primary" size="sm" weight="semibold">
             {conversation.storeName || conversation.sellerDisplayName}
           </Text>
           {conversation.productTitle && (

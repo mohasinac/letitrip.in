@@ -840,21 +840,21 @@ export function CartRouteClient() {
           renderBreakdown={() => (
             <Div className="space-y-1.5">
               <Row align="center" justify="between">
-                <Text className="text-zinc-500 dark:text-zinc-400" size="sm">
+                <Text size="sm" color="muted">
                   {selectedCount === allItemIds.length
                     ? `${allItemIds.length} item${allItemIds.length !== 1 ? "s" : ""}`
                     : `${selectedCount} of ${allItemIds.length} items selected`}
                 </Text>
-                <Text className="text-zinc-700 dark:text-zinc-300" size="sm">
+                <Text size="sm" color="muted">
                   ₹{selectedSubtotal.toFixed(2)}
                 </Text>
               </Row>
               <Row align="center" justify="between">
-                <Text className="text-zinc-500 dark:text-zinc-400" size="sm">Shipping</Text>
-                <Text className="text-zinc-500 dark:text-zinc-400" size="sm">At checkout</Text>
+                <Text size="sm" color="muted">Shipping</Text>
+                <Text size="sm" color="muted">At checkout</Text>
               </Row>
 
-              <Text className="text-zinc-500 dark:text-zinc-400 mt-2" size="xs">
+              <Text className="mt-2" color="muted" size="xs">
                 Apply coupons at checkout
               </Text>
             </Div>
@@ -862,8 +862,8 @@ export function CartRouteClient() {
           renderTotal={() => (
             <Div className="border-t border-zinc-100 dark:border-slate-700 pt-3">
               <Row align="center" justify="between">
-                <Text className="text-zinc-900 dark:text-zinc-100" weight="semibold">Total</Text>
-                <Text className="text-zinc-900 dark:text-zinc-100" weight="semibold">
+                <Text weight="semibold" color="primary">Total</Text>
+                <Text weight="semibold" color="primary">
                   ₹{finalTotal.toFixed(2)}
                 </Text>
               </Row>
@@ -924,11 +924,11 @@ export function CartRouteClient() {
         <Div surface="card" padding="lg">
           <Heading
             level={2}
-            className="mb-2 text-zinc-900 dark:text-zinc-100" size="lg" weight="semibold"
+            className="mb-2" color="primary" size="lg" weight="semibold"
           >
             Your cart is empty
           </Heading>
-          <Text className="text-zinc-600 dark:text-zinc-300">
+          <Text color="muted">
             Add products from the marketplace to continue.
           </Text>
         </Div>
@@ -1097,7 +1097,7 @@ function SellerGroupSection({
       {/* Seller header */}
       <Row className="mb-2 gap-1.5" align="center" justify="between" wrap>
         <Row className="gap-1.5" align="center" wrap>
-          <Text className="tracking-wide text-zinc-500 dark:text-zinc-400" size="xs" weight="semibold" transform="uppercase">
+          <Text className="tracking-wide" color="muted" size="xs" weight="semibold" transform="uppercase">
             Sold by
           </Text>
           {group.sellerSlug ? (
@@ -1108,7 +1108,7 @@ function SellerGroupSection({
               {group.sellerName}
             </Link>
           ) : (
-            <Text className="tracking-wide text-zinc-800 dark:text-zinc-200" size="xs" weight="semibold" transform="uppercase">
+            <Text className="tracking-wide" color="primary" size="xs" weight="semibold" transform="uppercase">
               {group.sellerName}
             </Text>
           )}
@@ -1116,7 +1116,7 @@ function SellerGroupSection({
         </Row>
         {/* Per-group subtotal */}
         {!isOutOfStock && group.items.length > 0 && (
-          <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
+          <Text size="xs" color="muted">
             ₹{group.items.reduce((s, i) => s + i.meta.price * i.quantity, 0).toFixed(2)}
           </Text>
         )}

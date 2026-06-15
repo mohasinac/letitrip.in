@@ -23,10 +23,10 @@ export function SearchPageClient({ locale, query }: Props) {
       renderResults={() =>
         !query ? (
           <Div className={`rounded-xl border border-zinc-200 bg-white ${__P.p6} text-center dark:border-slate-700 dark:bg-slate-900`}>
-            <Text className="text-zinc-900 dark:text-zinc-100" size="base" weight="semibold">
+            <Text size="base" weight="semibold" color="primary">
               Search the marketplace
             </Text>
-            <Text className="mt-1 text-zinc-500 dark:text-zinc-400" size="sm">
+            <Text className="mt-1" color="muted" size="sm">
               Enter a keyword above to search products and stores.
             </Text>
           </Div>

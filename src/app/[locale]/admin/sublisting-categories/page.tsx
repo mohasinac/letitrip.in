@@ -8,7 +8,7 @@ export default function Page() {
   return (
     <>
       <Row className="px-4 pt-4 pb-2" align="center" justify="between">
-        <Heading level={1} className="text-zinc-900 dark:text-zinc-50" size="lg" weight="semibold">
+        <Heading level={1} size="lg" weight="semibold" color="primary">
           Sub-listing Categories
         </Heading>
         <Link

@@ -2414,7 +2414,7 @@ function renderSeedPanelToolbar({
         <Stack gap="sm" className="py-2.5">
           <Stack className="sm:flex-row sm:items-center" gap="sm">
             <Div className="flex-1 min-w-0">
-              <Heading level={2} className="text-zinc-900 dark:text-white m-0 leading-none" size="sm" weight="bold">
+              <Heading level={2} className="m-0 leading-none" color="primary" size="sm" weight="bold">
                 📋 Resource Collections
                 <Span size="xs" weight="normal" variant="muted" className="ml-2">
                   {selectedCollections.size} / {ALL_COLLECTIONS.length} selected

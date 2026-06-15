@@ -42,7 +42,7 @@ export function FooterNewsletterSlot() {
 
   return (
     <Form onSubmit={handleSubmit} className="flex flex-col gap-2 w-full">
-      <Text size="xs" className="text-zinc-700 dark:text-zinc-300" weight="medium">
+      <Text size="xs" weight="medium" color="muted">
         Get deals &amp; drops in your inbox
       </Text>
       <Div className="flex gap-2 w-full">

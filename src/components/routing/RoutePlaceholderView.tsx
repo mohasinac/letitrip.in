@@ -14,10 +14,10 @@ export function RoutePlaceholderView({
       <Section className="py-12">
         <Container size="xl">
           <Stack gap="md">
-            <Heading level={1} className="text-zinc-900 dark:text-zinc-50" size="3xl" weight="semibold">
+            <Heading level={1} size="3xl" weight="semibold" color="primary">
               {title}
             </Heading>
-            <Text className="text-zinc-600 dark:text-zinc-400">{description}</Text>
+            <Text color="muted">{description}</Text>
           </Stack>
         </Container>
       </Section>

@@ -86,7 +86,7 @@ function renderItemRow(item: OrderItemT, key: string | number) {
         />
       )}
       <Div className="flex-1 min-w-0">
-        <Text className="text-zinc-900 dark:text-zinc-100 line-clamp-2" size="sm" weight="medium">
+        <Text className="line-clamp-2" color="primary" size="sm" weight="medium">
           {item.title}
         </Text>
         {item.attributes && Object.keys(item.attributes).length > 0 && (
@@ -109,7 +109,7 @@ function renderItemRow(item: OrderItemT, key: string | number) {
                 Awaiting reveal window
               </Span>
             ) : (
-              <Span weight="semibold" className="inline-flex items-center rounded-full bg-zinc-200 dark:bg-slate-700 px-2 py-0.5 text-[10px] text-zinc-700 dark:text-zinc-200">
+              <Span weight="semibold" className="inline-flex items-center rounded-full bg-zinc-200 dark:bg-slate-700 px-2 py-0.5 text-[10px]" color="primary">
                 Reveal closed
               </Span>
             )}
@@ -122,7 +122,7 @@ function renderItemRow(item: OrderItemT, key: string | number) {
         )}
         <Row justify="between" className="mt-1">
           <Text variant="secondary" size="xs">×{item.quantity}</Text>
-          <Text className="text-zinc-900 dark:text-zinc-100" size="sm" weight="medium">
+          <Text size="sm" weight="medium" color="primary">
             {paise(item.price * item.quantity, item.currency)}
           </Text>
         </Row>
@@ -143,7 +143,7 @@ function renderOrderGroup(g: OrderGroup, gi: number) {
       className="dark:border-slate-700" rounded="lg" padding="sm" border="default"
     >
       <Row gap="sm" align="center" justify="between" className="mb-2" wrap>
-        <Text className="text-zinc-900 dark:text-zinc-100" size="sm" weight="semibold">
+        <Text size="sm" weight="semibold" color="primary">
           {BUNDLE_COPY.orderDetail.bundleHeader(headerLine.title)}
         </Text>
         <Text variant="secondary" size="xs">
@@ -183,8 +183,8 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
     <Div surface="card" padding="md" className="space-y-3">
       <Row justify="between" wrap gap="3" align="start">
         <Div>
-          <Text className="text-zinc-500 dark:text-zinc-400 tracking-wider" size="xs" transform="uppercase">Order</Text>
-          <Text className="text-zinc-900 dark:text-zinc-100 mt-0.5" size="base" weight="semibold">
+          <Text className="tracking-wider" color="muted" size="xs" transform="uppercase">Order</Text>
+          <Text className="mt-0.5" color="primary" size="base" weight="semibold">
             #{order.id.slice(-8).toUpperCase()}
           </Text>
           {date && <Text variant="secondary" className="mt-0.5" size="xs">{date}</Text>}
@@ -195,7 +195,7 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
       </Row>
       {order.trackingNumber && (
         <Div className="text-xs text-zinc-500 dark:text-zinc-400">
-          Tracking: <Span weight="medium" className="text-zinc-700 dark:text-zinc-300">{order.trackingNumber}</Span>
+          Tracking: <Span weight="medium" color="muted">{order.trackingNumber}</Span>
           {order.shippingCarrier && (
             <Span className="ml-1.5">via {order.shippingCarrier}</Span>
           )}
@@ -213,7 +213,7 @@ function renderOrderItems(order: NonNullable<OrderData>) {
   return (
     <Stack gap="md">
       <Div surface="card" padding="md">
-        <Text className="text-zinc-900 dark:text-zinc-100 mb-4" size="sm" weight="semibold">
+        <Text className="mb-4" color="primary" size="sm" weight="semibold">
           Items ({order.items.length})
         </Text>
         <Stack gap="md">
@@ -232,11 +232,11 @@ function renderOrderAddress(order: NonNullable<OrderData>) {
   const a = order.address;
   return (
     <Div surface="card" padding="md">
-      <Text className="text-zinc-900 dark:text-zinc-100 mb-3" size="sm" weight="semibold">Delivery Address</Text>
+      <Text className="mb-3" color="primary" size="sm" weight="semibold">Delivery Address</Text>
       <Stack gap="xs">
-        <Text className="text-zinc-800 dark:text-zinc-200" size="sm">{a.line1}</Text>
-        {a.line2 && <Text className="text-zinc-800 dark:text-zinc-200" size="sm">{a.line2}</Text>}
-        <Text className="text-zinc-800 dark:text-zinc-200" size="sm">
+        <Text size="sm" color="primary">{a.line1}</Text>
+        {a.line2 && <Text size="sm" color="primary">{a.line2}</Text>}
+        <Text size="sm" color="primary">
           {[a.city, a.state, a.postalCode].filter(Boolean).join(", ")}
         </Text>
         {a.country && <Text variant="secondary" size="sm">{a.country}</Text>}
@@ -249,7 +249,7 @@ function renderOrderAddress(order: NonNullable<OrderData>) {
 function renderOrderPayment(order: NonNullable<OrderData>) {
   return (
     <Div surface="card" padding="md">
-      <Text className="text-zinc-900 dark:text-zinc-100 mb-3" size="sm" weight="semibold">Payment Summary</Text>
+      <Text className="mb-3" color="primary" size="sm" weight="semibold">Payment Summary</Text>
       <Stack gap="xs">
         <Row justify="between">
           <Text variant="secondary" size="sm">Subtotal</Text>
@@ -281,8 +281,8 @@ function renderOrderPayment(order: NonNullable<OrderData>) {
         )}
         <Div className="border-t border-zinc-100 dark:border-slate-800 pt-2 mt-1">
           <Row justify="between">
-            <Text className="text-zinc-900 dark:text-zinc-100" size="sm" weight="semibold">Total</Text>
-            <Text className="text-zinc-900 dark:text-zinc-100" size="sm" weight="semibold">
+            <Text size="sm" weight="semibold" color="primary">Total</Text>
+            <Text size="sm" weight="semibold" color="primary">
               {paise(order.total, order.currency)}
             </Text>
           </Row>

@@ -268,8 +268,8 @@ export default function Page() {
             />
             <Row className="py-3" align="center" justify="between" gap="md">
               <>
-                <Text className="text-zinc-800 dark:text-zinc-200" size="sm" weight="medium">Seed Data</Text>
-                <Text className="text-zinc-500 dark:text-zinc-400 mt-0.5" size="xs">Load or reset Firestore seed collections</Text>
+                <Text size="sm" weight="medium" color="primary">Seed Data</Text>
+                <Text className="mt-0.5" color="muted" size="xs">Load or reset Firestore seed collections</Text>
               </>
               <Link
                 href={ROUTES.DEMO.SEED}

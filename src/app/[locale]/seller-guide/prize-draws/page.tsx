@@ -21,7 +21,7 @@ export default function Page() {
         <Stack gap="none" className="max-w-3xl space-y-8">
           <Section>
             <Heading level={2} className={H2}>What are Prize Draws?</Heading>
-            <Text className="text-zinc-600 dark:text-zinc-400">
+            <Text color="muted">
               Prize draws let buyers purchase entries for a chance to win a high-value item or digital code
               at a fraction of the retail price. You upload the prize codes in advance; winners receive
               their code instantly when revealed.
@@ -41,12 +41,12 @@ export default function Page() {
 
           <Section>
             <Heading level={2} className={H2}>The Reveal Flow</Heading>
-            <Text className="text-zinc-600 dark:text-zinc-400 mb-3">
+            <Text className="mb-3" color="muted">
               Once a buyer purchases an entry they can hit <Span weight="bold">Reveal</Span> during the reveal window.
               A randomly assigned code is shown once. Codes are assigned using a cryptographically secure
               random draw — each entry has an equal chance.
             </Text>
-            <Text className="text-zinc-600 dark:text-zinc-400">
+            <Text color="muted">
               If your pool is exhausted (all codes revealed), any remaining unrevealed purchases are
               automatically refunded.
             </Text>

@@ -44,7 +44,7 @@ function renderInvoiceHeader(order: OrderData, orderDate: string) {
         <Text variant="secondary" className="mt-0.5 print:text-gray-500" size="xs">letitrip.in</Text>
       </Div>
       <Div className="text-right">
-        <Text className="text-zinc-900 dark:text-zinc-100 print:text-black" size="lg" weight="semibold">
+        <Text className="print:text-black" color="primary" size="lg" weight="semibold">
           Invoice
         </Text>
         <Text variant="secondary" className="mt-0.5 print:text-gray-500" size="xs">
@@ -64,11 +64,11 @@ function renderInvoiceAddress(a: NonNullable<OrderData["address"]>) {
       <Text className="tracking-wider text-zinc-400 dark:text-zinc-400 print:text-gray-500" size="xs" weight="semibold" transform="uppercase">
         Delivered to
       </Text>
-      <Text className="text-zinc-800 dark:text-zinc-200 print:text-black" size="sm">{a.line1}</Text>
+      <Text className="print:text-black" color="primary" size="sm">{a.line1}</Text>
       {a.line2 && (
-        <Text className="text-zinc-800 dark:text-zinc-200 print:text-black" size="sm">{a.line2}</Text>
+        <Text className="print:text-black" color="primary" size="sm">{a.line2}</Text>
       )}
-      <Text className="text-zinc-800 dark:text-zinc-200 print:text-black" size="sm">
+      <Text className="print:text-black" color="primary" size="sm">
         {[a.city, a.state, a.postalCode].filter(Boolean).join(", ")}
       </Text>
       {a.country && (
@@ -155,8 +155,8 @@ function renderInvoiceTotals(order: OrderData) {
         justify="between"
         className="text-sm font-semibold border-t border-zinc-200 dark:border-slate-700 print:border-gray-300 pt-2 mt-1"
       >
-        <Text className="text-zinc-900 dark:text-zinc-100 print:text-black" weight="semibold">Total</Text>
-        <Text className="text-zinc-900 dark:text-zinc-100 print:text-black" weight="semibold">
+        <Text className="print:text-black" color="primary" weight="semibold">Total</Text>
+        <Text className="print:text-black" color="primary" weight="semibold">
           {paise(order.total, order.currency)}
         </Text>
       </Row>

@@ -14,7 +14,7 @@ export default async function Page() {
     <Div className={`${__P.p6} max-w-5xl mx-auto`}>
       <Div className="mb-6">
         <Heading level={1} weight="semibold" size="2xl">Action Permissions</Heading>
-        <Text className="mt-1 text-zinc-500 dark:text-zinc-400" size="sm">
+        <Text className="mt-1" color="muted" size="sm">
           Enable or disable individual platform actions. Changes take effect immediately for all users.
         </Text>
       </Div>

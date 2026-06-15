@@ -66,14 +66,14 @@ export default async function PreviewPage({
         </Text>
       </Div>
       <Container className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-        <Text className="mb-4 tracking-wide text-zinc-500 dark:text-zinc-400" size="xs" transform="uppercase">
+        <Text className="mb-4 tracking-wide" color="muted" size="xs" transform="uppercase">
           {preview.kind}
           {PREVIEW_COPY.kindSuffix}
         </Text>
         <Div className={`${__O.auto} rounded-lg bg-zinc-50 dark:bg-slate-800 ${__P.p4} font-mono text-xs whitespace-pre`}>
           {JSON.stringify(preview.draft, null, 2)}
         </Div>
-        <Text className="mt-4 text-zinc-500 dark:text-zinc-400" size="xs">
+        <Text className="mt-4" color="muted" size="xs">
           {PREVIEW_COPY.rendererNote}
         </Text>
       </Container>
