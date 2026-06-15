@@ -1,6 +1,5 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit";
-
+import { Row, normalizeError } from "@mohasinac/appkit";
 import { useState, useCallback } from "react";
 import { Link } from "@/i18n/navigation";
 import { Button, Div, Heading, Input, RichText, Select, Span, Text, Textarea } from "@mohasinac/appkit/ui";
@@ -224,14 +223,14 @@ function renderSuccessState({
   return (
     <Div className="space-y-4 py-6">
       <Div className="border border-success/20 bg-success-surface px-5 py-5 space-y-2" rounded="2xl">
-        <Div className="flex items-center gap-2">
+        <Row align="center" gap="sm">
           <Span weight="semibold" className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] tracking-wide" transform="uppercase">
             Confirmed
           </Span>
           <Heading level={2} className="text-success" size="lg" weight="bold">
             You&apos;re in!
           </Heading>
-        </Div>
+        </Row>
         <Text className="text-success" size="sm">
           Your entry for <Span weight="bold">{eventTitle}</Span> has been recorded. We&apos;ll notify you of any updates here and over email.
         </Text>
@@ -599,14 +598,14 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
     return (
       <Div className="space-y-4">
         <Div className="border border-success/20 bg-success-surface px-5 py-5 space-y-2" rounded="2xl">
-          <Div className="flex items-center gap-2">
+          <Row align="center" gap="sm">
             <Span weight="semibold" className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] tracking-wide" transform="uppercase">
               Confirmed
             </Span>
             <Heading level={2} className="text-success" size="lg" weight="bold">
               Entry submitted
             </Heading>
-          </Div>
+          </Row>
           <Text className="text-success" size="sm">
             {submissionCount} of {maxEntries} {maxEntries === 1 ? "entry" : "entries"} recorded for <Span weight="bold">{event.title}</Span>.
           </Text>

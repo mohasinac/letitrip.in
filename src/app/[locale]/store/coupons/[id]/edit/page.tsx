@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "@/i18n/navigation"
 import { useParams } from "next/navigation";
-import { SellerCouponEditorView, Text, Div, ROUTES } from "@mohasinac/appkit";
+import { Div, ROUTES, Row, SellerCouponEditorView, Text } from "@mohasinac/appkit";
 import type { CouponEditorDraft } from "@mohasinac/appkit";
 import { API_ROUTES } from "@/constants";
 
@@ -102,17 +102,17 @@ export default function Page() {
 
   if (loadError) {
     return (
-      <Div className="flex min-h-screen items-center justify-center">
+      <Row className="min-h-screen" align="center" justify="center">
         <Text className="text-error" size="sm">{loadError}</Text>
-      </Div>
+      </Row>
     );
   }
 
   if (!initial) {
     return (
-      <Div className="flex min-h-screen items-center justify-center">
+      <Row className="min-h-screen" align="center" justify="center">
         <Div className="h-6 w-6 animate-spin border-2 border-[var(--appkit-color-primary)] border-t-transparent" rounded="full" />
-      </Div>
+      </Row>
     );
   }
 

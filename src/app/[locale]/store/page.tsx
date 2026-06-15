@@ -15,6 +15,7 @@ import { TrendingUp, ShoppingBag, Clock, Package, Plus, BarChart2, Wallet, Store
 import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
 
+import { Row } from "@mohasinac/appkit";
 // Brand gradient mirrors the SiteLogo wordmark — using CSS var tokens
 const BRAND_GRAD = "linear-gradient(135deg,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)";
 const BLUE_GRAD  = "linear-gradient(135deg,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 100%)";
@@ -52,7 +53,7 @@ function StatCard({
         style={{ background: gradient }}
         aria-hidden="true"
       />
-      <Div className="px-5 pb-5 pt-6 flex items-start justify-between gap-3">
+      <Row className="px-5 pb-5 pt-6" align="start" justify="between" gap="3">
         <Div className="min-w-0 flex-1">
           <Div className="text-[11px] font-semibold uppercase tracking-widest text-[var(--appkit-color-text-muted)]">{label}</Div>
           {isLoading ? (
@@ -61,14 +62,14 @@ function StatCard({
             <Div className="mt-2 text-2xl font-bold text-[var(--appkit-color-text)] tabular-nums leading-none">{value}</Div>
           )}
         </Div>
-        <Div
-          className="flex-shrink-0 w-10 h-10 flex items-center justify-center" rounded="lg"
+        <Row
+          className="flex-shrink-0 w-10 h-10" align="center" justify="center" rounded="lg"
           // audit-inline-style-ok: runtime theme gradient
           style={{ background: gradient }}
         >
           <Icon className="w-5 h-5 text-white" />
-        </Div>
-      </Div>
+        </Row>
+      </Row>
     </Div>
   );
 }

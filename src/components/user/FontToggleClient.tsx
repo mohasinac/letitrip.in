@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Text, Div, Stack, Toggle } from "@mohasinac/appkit/ui";
-
+import { Div, Row, Stack, Text, Toggle } from "@mohasinac/appkit/ui";
 const FONT_KEY = "font-style";
 
 export function FontToggleClient() {
@@ -25,7 +24,7 @@ export function FontToggleClient() {
   }
 
   return (
-    <Div className="flex items-center justify-between gap-4 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3" rounded="xl" border="default">
+    <Row className="dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3" align="center" justify="between" gap="md" rounded="xl" border="default">
       <Stack gap="xs" className="min-w-0">
         <Text className="text-zinc-800 dark:text-zinc-100" size="sm" weight="medium">
           Cursive font
@@ -35,6 +34,6 @@ export function FontToggleClient() {
         </Text>
       </Stack>
       <Toggle checked={cursive} onChange={toggle} />
-    </Div>
+    </Row>
   );
 }

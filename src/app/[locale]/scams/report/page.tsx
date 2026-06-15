@@ -381,9 +381,9 @@ export default function Page() {
 
   if (loading) {
     return (
-      <Div className="flex min-h-[50vh] items-center justify-center">
+      <Row className="min-h-[50vh]" align="center" justify="center">
         <Loader2 className="h-6 w-6 animate-spin text-[color:var(--appkit-color-text-muted,theme(colors.zinc.400))]" />
-      </Div>
+      </Row>
     );
   }
 

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { AdminAnalyticsView, Div, Label, Input } from "@mohasinac/appkit/client";
 
+import { Row } from "@mohasinac/appkit";
 function today() {
   // eslint-disable-next-line lir/no-raw-date
   return new Date().toISOString().slice(0, 10);
@@ -23,7 +24,7 @@ export function AdminAnalyticsClient() {
     <AdminAnalyticsView
       endpoint={endpoint}
       renderDateRange={() => (
-        <Div className="flex flex-wrap items-center gap-3 bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900" rounded="xl" border="default">
+        <Row className="bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900" align="center" gap="3" wrap rounded="xl" border="default">
           <Label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
             From
             <Input
@@ -45,7 +46,7 @@ export function AdminAnalyticsClient() {
               className="rounded-lg border border-zinc-300 bg-white px-2.5 py-1.5 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
             />
           </Label>
-        </Div>
+        </Row>
       )}
     />
   );

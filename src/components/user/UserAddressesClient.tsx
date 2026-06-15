@@ -91,7 +91,7 @@ export function UserAddressesClient() {
 
   return (
     <Div className="space-y-6">
-      <Div className="flex items-center justify-between">
+      <Row align="center" justify="between">
         <Heading level={1} className="text-zinc-900 dark:text-zinc-100" size="xl" weight="bold">My Addresses</Heading>
         <Link
           href={String(ROUTES.USER.ADDRESSES_ADD)}
@@ -99,7 +99,7 @@ export function UserAddressesClient() {
         >
           + Add Address
         </Link>
-      </Div>
+      </Row>
 
       <Row gap="md" align="end" wrap>
         <Div className="flex-1 min-w-[200px]">

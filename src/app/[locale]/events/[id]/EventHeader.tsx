@@ -1,4 +1,4 @@
-import { Div, Heading, Text } from "@mohasinac/appkit/ui";
+import { Div, Heading, Row, Text } from "@mohasinac/appkit/ui";
 import { MediaImage } from "@mohasinac/appkit/client";
 import { EVENT_LABELS } from "./_constants";
 import {
@@ -48,7 +48,7 @@ export function EventHeader({
       ) : null}
 
       <Div className="space-y-3">
-        <Div className="flex flex-wrap items-center gap-2">
+        <Row align="center" gap="sm" wrap>
           {eventType ? (
             <span
               className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${typeBadgeClass(eventType)}`}
@@ -63,7 +63,7 @@ export function EventHeader({
               {eventStatus}
             </span>
           ) : null}
-        </Div>
+        </Row>
 
         <Heading
           level={1}
@@ -99,12 +99,12 @@ export function EventHeader({
           ) : null}
         </Div>
 
-        <Div className="flex items-center gap-2 pt-1">
+        <Row className="pt-1" align="center" gap="sm">
           <Text className="text-zinc-500 dark:text-zinc-400" size="sm">
             {EVENT_LABELS.HEADER_SHARE}
           </Text>
           <ShareEventButton />
-        </Div>
+        </Row>
       </Div>
     </Div>
   );

@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useToast, Button } from "@mohasinac/appkit/client";
-import { Div, Span } from "@mohasinac/appkit/ui";
-
+import { Div, Row, Span } from "@mohasinac/appkit/ui";
 interface ShareButtonsProps {
   title: string;
 }
@@ -31,7 +30,7 @@ export function ShareButtons({ title }: ShareButtonsProps) {
   };
 
   return (
-    <Div className="flex items-center gap-3 pt-6 mt-6 border-t border-zinc-200 dark:border-zinc-700">
+    <Row className="pt-6 mt-6 border-t border-zinc-200 dark:border-zinc-700" align="center" gap="3">
       <Span size="sm" weight="medium" className="text-zinc-500 dark:text-zinc-400">Share:</Span>
       <Button
         type="button"
@@ -47,6 +46,6 @@ export function ShareButtons({ title }: ShareButtonsProps) {
       >
         🐦 Share on X
       </Button>
-    </Div>
+    </Row>
   );
 }

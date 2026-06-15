@@ -33,6 +33,7 @@ import { BRAND, getBrandCopyright } from "@/constants";
 import { FOOTER_TRUST_BAR_ITEMS, FOOTER_SOCIAL_LINKS, FOOTER_BOTTOM_LINKS } from "@/constants";
 import { SEARCH_LABELS } from "@/constants";
 
+import { Row } from "@mohasinac/appkit";
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 /** Map session user to the shape expected by AppLayoutShell. */
@@ -292,7 +293,7 @@ export default function LayoutShellClient({
       contentClassName={isDashboard ? "w-full" : undefined}
       searchSlotRenderer={(onClose) => (
         <Div className="border-b border-zinc-200 bg-white/95 dark:border-slate-800 dark:bg-slate-950/95">
-          <Div className="mx-auto flex w-full max-w-screen-xl items-center gap-2 px-4 py-2 sm:px-6 lg:px-8">
+          <Row className="mx-auto w-full max-w-screen-xl px-4 py-2 sm:px-6 lg:px-8" align="center" gap="sm">
             <Search
               value={searchQuery}
               onChange={setSearchQuery}
@@ -312,7 +313,7 @@ export default function LayoutShellClient({
               storageKey="letitrip_search_type"
               className="flex-1"
             />
-          </Div>
+          </Row>
         </Div>
       )}
     >

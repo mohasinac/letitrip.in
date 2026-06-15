@@ -1,12 +1,13 @@
 import { Link } from "@/i18n/navigation";
 import { AdminSublistingCategoriesView, ROUTES, Heading, Div } from "@mohasinac/appkit/client";
 
+import { Row } from "@mohasinac/appkit";
 export const metadata = { title: "Sub-listing Categories — Admin" };
 
 export default function Page() {
   return (
     <>
-      <Div className="flex items-center justify-between px-4 pt-4 pb-2">
+      <Row className="px-4 pt-4 pb-2" align="center" justify="between">
         <Heading level={1} className="text-zinc-900 dark:text-zinc-50" size="lg" weight="semibold">
           Sub-listing Categories
         </Heading>
@@ -16,7 +17,7 @@ export default function Page() {
         >
           + New Category
         </Link>
-      </Div>
+      </Row>
       <AdminSublistingCategoriesView />
     </>
   );

@@ -540,20 +540,20 @@ function renderOrderSummary({
           </Text>
         </Div>
       )}
-      <Div className="flex justify-between items-center text-sm text-zinc-600 dark:text-zinc-400 mb-1">
+      <Row className="text-sm text-zinc-600 dark:text-zinc-400 mb-1" align="center" justify="between">
         <Text>Subtotal</Text>
         <Text>{formattedSubtotal}</Text>
-      </Div>
+      </Row>
       {totalDiscount > 0 && (
-        <Div className="flex justify-between items-center text-sm text-success mb-1">
+        <Row className="text-sm text-success mb-1" align="center" justify="between">
           <Text>Coupon discount</Text>
           <Text>−₹{(totalDiscount / 100).toFixed(2)}</Text>
-        </Div>
+        </Row>
       )}
-      <Div className="flex justify-between items-center border-t border-zinc-200 dark:border-slate-700 pt-3">
+      <Row className="border-t border-zinc-200 dark:border-slate-700 pt-3" align="center" justify="between">
         <Text className="text-zinc-900 dark:text-zinc-100" weight="semibold">{CK.ORDER_SUMMARY_TOTAL}</Text>
         <Text className="text-zinc-900 dark:text-zinc-100" weight="semibold">{formattedTotal}</Text>
-      </Div>
+      </Row>
       {step === "address" && (
         <Button
           type="button"

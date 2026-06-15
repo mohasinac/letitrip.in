@@ -4,8 +4,7 @@ import { useState } from "react";
 
 import { Link } from "@/i18n/navigation";
 import { useProfile, useUpdateProfile, useToast, useAuth, ROUTES, ImageUpload, useMediaUpload, Div, Button, Form, Label, Input, Textarea, MediaImage, Toggle } from "@mohasinac/appkit/client";
-import { Heading, Text } from "@mohasinac/appkit";
-
+import { Heading, Row, Text } from "@mohasinac/appkit";
 const __O = {
   hidden: "overflow-hidden",
 } as const;
@@ -47,19 +46,19 @@ function renderProfileViewMode({
 }) {
   return (
     <Div surface="card" padding="lg" className="space-y-5">
-      <Div className="flex items-center gap-4">
+      <Row align="center" gap="md">
         {profile.photoURL ? (
           <Div className={`h-20 w-20 rounded-full ${__O.hidden} relative ring-2 ring-zinc-100 dark:ring-slate-700`}>
             <MediaImage src={profile.photoURL} alt="Avatar" size="thumbnail" />
           </Div>
         ) : (
-          <Div
-            className="h-20 w-20 flex items-center justify-center text-3xl font-bold ring-2 ring-zinc-100 dark:ring-slate-700" rounded="full"
+          <Row
+            className="h-20 w-20 text-3xl font-bold ring-2 ring-zinc-100 dark:ring-slate-700" align="center" justify="center" rounded="full"
             // audit-inline-style-ok: dynamic CSS
             style={{ background: "var(--appkit-color-primary-50)", color: "var(--appkit-color-primary)" }} /* eslint-disable-line lir/no-inline-static-style */
           >
             {avatarLetter}
-          </Div>
+          </Row>
         )}
         <Div className="space-y-0.5 min-w-0">
           <Text className="text-zinc-900 dark:text-zinc-100 truncate" size="lg" weight="semibold">
@@ -70,7 +69,7 @@ function renderProfileViewMode({
             <Text className="text-zinc-500 dark:text-zinc-400" size="sm">{profile.phoneNumber}</Text>
           )}
         </Div>
-      </Div>
+      </Row>
       {profileBio && (
         <Text className="text-zinc-700 dark:text-zinc-300 leading-relaxed" size="sm">{profileBio}</Text>
       )}
@@ -179,7 +178,7 @@ function renderProfileEditForm({
         />
         <Text className="text-zinc-400 dark:text-zinc-400" size="xs" align="end">{bio.length}/500</Text>
       </Div>
-      <Div className="flex items-center justify-between dark:border-slate-700 px-4 py-3" rounded="lg" border="default">
+      <Row className="dark:border-slate-700 px-4 py-3" align="center" justify="between" rounded="lg" border="default">
         <>
           <Text className="text-zinc-800 dark:text-zinc-200" size="sm" weight="medium">Public profile</Text>
           <Text className="text-zinc-500 dark:text-zinc-400 mt-0.5" size="xs">
@@ -192,7 +191,7 @@ function renderProfileEditForm({
           size="md"
           aria-label="Public profile"
         />
-      </Div>
+      </Row>
       <Div className="flex gap-3 pt-1">
         <Button
           type="button"

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
-import { Heading, ROUTES, Text, Main, Nav, MediaImage, categoriesRepository, isAuctionListing, isPreOrderListing } from "@mohasinac/appkit";
+import { Heading, Main, MediaImage, Nav, ROUTES, Stack, Text, categoriesRepository, isAuctionListing, isPreOrderListing } from "@mohasinac/appkit";
 import { Div } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants";
 
@@ -82,7 +82,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
             </Div>
           )}
 
-          <Div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+          <Stack className="sm:flex-row sm:items-start sm:justify-between" gap="xs">
             <>
               <Heading level={1} className="text-zinc-900 dark:text-zinc-50 sm:text-3xl" size="2xl" weight="bold">
                 {displayName}
@@ -96,12 +96,12 @@ export default async function SublistingCategoryPage({ params }: Props) {
             <Text as="span" className="mt-2 inline-flex h-fit shrink-0 items-center rounded-full bg-[var(--appkit-color-primary)]/10 px-3 py-1 text-[var(--appkit-color-primary)] sm:mt-0" size="sm" weight="semibold">
               {listings.length} listing{listings.length !== 1 ? "s" : ""}
             </Text>
-          </Div>
+          </Stack>
         </Div>
 
         {/* Listings grid */}
         {listings.length === 0 ? (
-          <Div className="flex flex-col items-center justify-center border-dashed dark:border-zinc-700 py-20 text-center" rounded="2xl" border="default">
+          <Stack className="justify-center border-dashed dark:border-zinc-700 py-20 text-center" align="center" rounded="2xl" border="default">
             <Text as="span" className="mb-3" size="4xl">📦</Text>
             <Text className="text-zinc-700 dark:text-zinc-300" size="base" weight="semibold">No listings yet</Text>
             <Text className="mt-1 text-zinc-400 dark:text-zinc-400" size="sm">
@@ -113,7 +113,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
             >
               Browse all products
             </Link>
-          </Div>
+          </Stack>
         ) : (
           <Div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {listings.map((listing) => {
@@ -156,7 +156,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
                       fallback="📦"
                     />
                   </Div>
-                  <Div className="flex flex-col gap-1 p-2.5">
+                  <Stack className="p-2.5" gap="xs">
                     {(isAuction || isPreOrder || condition) && (
                       <Div className="flex flex-wrap gap-1">
                         {isAuction && (
@@ -182,7 +182,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
                     <Text className="text-zinc-900 dark:text-zinc-50" size="sm" weight="bold">
                       {fmt(price, currency)}
                     </Text>
-                  </Div>
+                  </Stack>
                 </Link>
               );
             })}

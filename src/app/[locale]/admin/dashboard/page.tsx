@@ -1,5 +1,5 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit";
+import { Row, normalizeError } from "@mohasinac/appkit";
 import { AdminDashboardView, ROUTES, Span, Text, Div, Toggle, useToast } from "@mohasinac/appkit/client";
 import { ADMIN_CHECKOUT_BYPASS_FLAG_KEY } from "@mohasinac/appkit";
 import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "lucide-react";
@@ -45,13 +45,13 @@ function ToggleRow({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <Div className="flex items-center justify-between gap-4 py-3 border-b border-[var(--appkit-color-border-subtle)] last:border-0">
+    <Row className="py-3 border-b border-[var(--appkit-color-border-subtle)] last:border-0" align="center" justify="between" gap="md">
       <Div className="flex-1 min-w-0">
         <Div className="text-sm font-medium text-[var(--appkit-color-text)]">{label}</Div>
         <Div className="text-xs text-[var(--appkit-color-text-muted)] mt-0.5">{description}</Div>
       </Div>
       <Toggle checked={enabled} onChange={onChange} size="md" />
-    </Div>
+    </Row>
   );
 }
 
@@ -221,27 +221,27 @@ export default function Page() {
                 href={String(href)}
                 className="group flex items-center gap-3 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3.5 text-sm font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
               >
-                <Div
-                  className="flex-shrink-0 w-7 h-7 flex items-center justify-center" rounded="md"
+                <Row
+                  className="flex-shrink-0 w-7 h-7" align="center" justify="center" rounded="md"
                   // audit-inline-style-ok: runtime brand gradient
                   style={{ background: BRAND_GRAD }}
                 >
                   <Icon className="w-3.5 h-3.5 text-white" />
-                </Div>
+                </Row>
                 {label}
               </Link>
             ))}
           </Div>
 
           <Div className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`}>
-            <Div className="flex items-center gap-2 mb-4">
+            <Row className="mb-4" align="center" gap="sm">
               <Div className="text-sm font-semibold text-[var(--appkit-color-text)]">Dev Settings</Div>
               {(prefs.mockRazorpay || prefs.mockShiprocket || adminBypassEnabled) && (
                 <Div className="text-xs px-2 py-0.5 bg-warning-surface text-warning font-medium" rounded="full">
                   Mock active
                 </Div>
               )}
-            </Div>
+            </Row>
             <ToggleRow
               label="Mock Razorpay"
               description={prefs.mockRazorpay ? "Routing to /api/dev/mock-razorpay" : "Use mock instead of live Razorpay keys"}
@@ -266,7 +266,7 @@ export default function Page() {
               enabled={adminBypassEnabled}
               onChange={toggleAdminBypass}
             />
-            <Div className="flex items-center justify-between gap-4 py-3">
+            <Row className="py-3" align="center" justify="between" gap="md">
               <>
                 <Text className="text-zinc-800 dark:text-zinc-200" size="sm" weight="medium">Seed Data</Text>
                 <Text className="text-zinc-500 dark:text-zinc-400 mt-0.5" size="xs">Load or reset Firestore seed collections</Text>
@@ -277,27 +277,27 @@ export default function Page() {
               >
                 Open Seed Panel →
               </Link>
-            </Div>
+            </Row>
           </Div>
         </Div>
       )}
       renderRecentActivity={() =>
         recentOrders.length > 0 ? (
           <Div className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden}`}>
-            <Div className="flex items-center justify-between px-4 py-3 border-b border-[var(--appkit-color-border-subtle)]">
+            <Row className="px-4 py-3 border-b border-[var(--appkit-color-border-subtle)]" align="center" justify="between">
               <Text className="text-[var(--appkit-color-text)]" size="sm" weight="semibold">Recent Orders</Text>
               <Link href={String(ROUTES.ADMIN.ORDERS)} className="text-xs text-[var(--appkit-color-primary)] hover:underline">View all →</Link>
-            </Div>
+            </Row>
             <Div className="divide-y divide-[var(--appkit-color-border-subtle)]">
               {recentOrders.map((order) => (
                 <Link key={order.id} href={`${String(ROUTES.ADMIN.ORDERS)}/${order.id}`} className="flex items-center justify-between px-4 py-2.5 hover:bg-[var(--appkit-color-surface-hover)] transition-colors">
                   <Text className="font-mono text-[var(--appkit-color-text-muted)]" size="xs">{order.id}</Text>
-                  <Div className="flex items-center gap-3">
+                  <Row align="center" gap="3">
                     <Text className="text-[var(--appkit-color-text-muted)]" size="xs">{order.status}</Text>
                     <Text className="text-[var(--appkit-color-text)]" size="xs" weight="semibold">
                       ₹{((order.totalAmount ?? 0) / 100).toLocaleString("en-IN")}
                     </Text>
-                  </Div>
+                  </Row>
                 </Link>
               ))}
             </Div>

@@ -119,12 +119,12 @@ interface MessageBubbleProps {
 function MessageBubble({ message, isMine }: MessageBubbleProps) {
   return (
     // audit-inline-style-ok: dynamic CSS
-    <Div className="flex flex-col" style={{ alignItems: isMine ? "flex-end" : "flex-start" }}>
+    <Stack style={{ alignItems: isMine ? "flex-end" : "flex-start" }}>
       <Div className={isMine ? BUBBLE_MINE : BUBBLE_THEIRS}>{message.body}</Div>
       <Text variant="secondary" className="text-[10px] mt-0.5 px-1">
         {relativeTime(message.sentAt)}
       </Text>
-    </Div>
+    </Stack>
   );
 }
 

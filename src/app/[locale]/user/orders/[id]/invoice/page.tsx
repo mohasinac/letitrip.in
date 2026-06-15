@@ -172,20 +172,20 @@ export default function InvoicePage({ params }: { params: Promise<{ id: string }
 
   if (isLoading) {
     return (
-      <Div className="flex items-center justify-center py-24">
+      <Row className="py-24" align="center" justify="center">
         <Text variant="secondary" size="sm">Loading invoice…</Text>
-      </Div>
+      </Row>
     );
   }
 
   if (!order) {
     return (
-      <Div className="flex items-center justify-center py-24">
+      <Row className="py-24" align="center" justify="center">
         <Text variant="secondary" size="sm">
           Order not found.{" "}
           <Link href={String(ROUTES.USER.ORDERS)} className="underline">Back to orders</Link>
         </Text>
-      </Div>
+      </Row>
     );
   }
 

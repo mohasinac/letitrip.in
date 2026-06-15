@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Div, Heading, Text } from "@mohasinac/appkit/ui";
+import { Div, Heading, Row, Text } from "@mohasinac/appkit/ui";
 import { EVENT_LABELS, EVENT_META } from "../_constants";
 import { getEventCached, getLeaderboardCached } from "../_data";
 
@@ -46,9 +46,9 @@ export default async function Page({ params }: Props) {
         {EVENT_LABELS.LEADERBOARD_HEADING}
       </Heading>
       {leaderboard.slice(0, EVENT_META.LEADERBOARD_VISIBLE_LIMIT).map((entry, idx) => (
-        <Div
+        <Row
           key={entry.id}
-          className="flex items-center justify-between px-4 py-2 dark:border-zinc-700" rounded="lg" border="default"
+          className="px-4 py-2 dark:border-zinc-700" align="center" justify="between" rounded="lg" border="default"
         >
           <Text className="text-zinc-700 dark:text-zinc-300" weight="medium">
             #{idx + 1} {entry.userDisplayName ?? EVENT_LABELS.PARTICIPANT_FALLBACK}
@@ -56,7 +56,7 @@ export default async function Page({ params }: Props) {
           <Text className="text-zinc-500 dark:text-zinc-400" size="sm">
             {entry.points ?? 0} {EVENT_LABELS.POINTS_SUFFIX}
           </Text>
-        </Div>
+        </Row>
       ))}
     </Div>
   );

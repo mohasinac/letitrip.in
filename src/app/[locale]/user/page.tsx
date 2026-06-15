@@ -1,5 +1,5 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit";
+import { Row, normalizeError } from "@mohasinac/appkit";
 import { useRef, useState } from "react";
 import {
   UserAccountHubView,
@@ -153,21 +153,21 @@ export default function Page() {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <Div
-                    className="flex h-full w-full items-center justify-center text-white text-xl font-bold"
+                  <Row
+                    className="h-full w-full text-white text-xl font-bold" align="center" justify="center"
                     // audit-inline-style-ok: runtime brand gradient
                     style={{ background: BRAND_GRAD }}
                   >
                     {(user.displayName ?? user.email ?? "U")[0].toUpperCase()}
-                  </Div>
+                  </Row>
                 )}
-                <Div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <Row className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors opacity-0 group-hover:opacity-100" align="center" justify="center">
                   <Camera className="w-5 h-5 text-white" />
-                </Div>
+                </Row>
                 {uploading && (
-                  <Div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white text-[10px] font-semibold">
+                  <Row className="absolute inset-0 bg-black/60 text-white text-[10px] font-semibold" align="center" justify="center">
                     Saving…
-                  </Div>
+                  </Row>
                 )}
               </Button>
               {/* audit-raw-form-input-ok: hidden native file picker, no appkit equivalent */}
@@ -228,7 +228,7 @@ export default function Page() {
       renderRecentOrders={() =>
         orders.length > 0 || ordersLoading ? (
           <>
-            <Div className="mb-3 flex items-center justify-between">
+            <Row className="mb-3" align="center" justify="between">
               <Span size="sm" weight="semibold" className="text-[var(--appkit-color-text)]">
                 Recent Orders
               </Span>
@@ -238,7 +238,7 @@ export default function Page() {
               >
                 View all →
               </Link>
-            </Div>
+            </Row>
             <OrdersList orders={orders} isLoading={ordersLoading} emptyLabel="No orders yet" />
           </>
         ) : null

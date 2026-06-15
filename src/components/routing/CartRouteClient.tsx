@@ -48,6 +48,7 @@ import {
 import type { CartItem } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 
+import { Row } from "@mohasinac/appkit";
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -767,15 +768,15 @@ export function CartRouteClient() {
 
             {/* ── Bulk actions (cart tab only) ── */}
             {activeTab === "cart" && !isEmpty && (
-              <Div className="flex flex-wrap items-center gap-3">
+              <Row align="center" gap="3" wrap>
                 {isAuthenticated && allItemIds.length > 1 && (
-                  <Div className="flex items-center gap-2">
+                  <Row align="center" gap="sm">
                     {/* audit-raw-form-input-ok: select-all checkbox — custom dual-mode click handler */}
                     <input type="checkbox" id="cart-select-all" checked={isAllSelected} onChange={isAllSelected ? undefined : selectAll} onClick={!isAllSelected ? undefined : (e) => { e.preventDefault(); selectAll(); }} className="h-4 w-4 rounded border-zinc-300 dark:border-slate-600 accent-zinc-900 dark:accent-zinc-100" />
                     <Label htmlFor="cart-select-all" className="cursor-pointer text-sm text-zinc-600 dark:text-zinc-300">
                       Select all ({allItemIds.length} item{allItemIds.length !== 1 ? "s" : ""})
                     </Label>
-                  </Div>
+                  </Row>
                 )}
                 {effectiveSelected && effectiveSelected.size > 0 && (
                   <Button type="button" variant="ghost" onClick={() => { void handleRemoveSelectedItems(); }} disabled={isRemoving} className={`text-sm ${ERROR_TEXT_CLASS} hover:underline underline-offset-2 disabled:opacity-50`}>
@@ -785,7 +786,7 @@ export function CartRouteClient() {
                 <Button type="button" variant="ghost" onClick={() => { void handleRemoveAll(); }} disabled={isRemoving} className={`ml-auto text-sm ${ERROR_TEXT_CLASS} hover:underline underline-offset-2 disabled:opacity-50`}>
                   {isRemoving ? "Clearing…" : "Remove all"}
                 </Button>
-              </Div>
+              </Row>
             )}
 
             {/* ── Tab content — delegated to extracted components ── */}
@@ -838,7 +839,7 @@ export function CartRouteClient() {
           labels={{ title: "Summary" }}
           renderBreakdown={() => (
             <Div className="space-y-1.5">
-              <Div className="flex items-center justify-between">
+              <Row align="center" justify="between">
                 <Text className="text-zinc-500 dark:text-zinc-400" size="sm">
                   {selectedCount === allItemIds.length
                     ? `${allItemIds.length} item${allItemIds.length !== 1 ? "s" : ""}`
@@ -847,11 +848,11 @@ export function CartRouteClient() {
                 <Text className="text-zinc-700 dark:text-zinc-300" size="sm">
                   ₹{selectedSubtotal.toFixed(2)}
                 </Text>
-              </Div>
-              <Div className="flex items-center justify-between">
+              </Row>
+              <Row align="center" justify="between">
                 <Text className="text-zinc-500 dark:text-zinc-400" size="sm">Shipping</Text>
                 <Text className="text-zinc-500 dark:text-zinc-400" size="sm">At checkout</Text>
-              </Div>
+              </Row>
 
               <Text className="text-zinc-500 dark:text-zinc-400 mt-2" size="xs">
                 Apply coupons at checkout
@@ -860,12 +861,12 @@ export function CartRouteClient() {
           )}
           renderTotal={() => (
             <Div className="border-t border-zinc-100 dark:border-slate-700 pt-3">
-              <Div className="flex items-center justify-between">
+              <Row align="center" justify="between">
                 <Text className="text-zinc-900 dark:text-zinc-100" weight="semibold">Total</Text>
                 <Text className="text-zinc-900 dark:text-zinc-100" weight="semibold">
                   ₹{finalTotal.toFixed(2)}
                 </Text>
-              </Div>
+              </Row>
             </Div>
           )}
         />
@@ -1008,10 +1009,10 @@ function CartTabItems({ cartBucket, oosItems, filteredCartItems, filteredOos, se
       )}
       {oosItems.length > 0 && (
         <Div>
-          <Div className="mb-3 flex items-center justify-between">
+          <Row className="mb-3" align="center" justify="between">
             <Text className="tracking-wide text-[var(--appkit-color-error)]" size="xs" weight="semibold" transform="uppercase">Unavailable ({oosItems.length})</Text>
             <Link href={String(ROUTES.USER.WISHLIST)} className="text-xs text-primary-600 dark:text-primary-400 hover:underline underline-offset-2">View wishlist →</Link>
-          </Div>
+          </Row>
           <Div className="space-y-3">
             {sellerGroupsOos.map((group) => (
               <Div key={group.sellerId} surface="card" padding="sm" className="opacity-60">
@@ -1094,8 +1095,8 @@ function SellerGroupSection({
   return (
     <Div>
       {/* Seller header */}
-      <Div className="mb-2 flex flex-wrap items-center justify-between gap-1.5">
-        <Div className="flex flex-wrap items-center gap-1.5">
+      <Row className="mb-2 gap-1.5" align="center" justify="between" wrap>
+        <Row className="gap-1.5" align="center" wrap>
           <Text className="tracking-wide text-zinc-500 dark:text-zinc-400" size="xs" weight="semibold" transform="uppercase">
             Sold by
           </Text>
@@ -1112,14 +1113,14 @@ function SellerGroupSection({
             </Text>
           )}
 
-        </Div>
+        </Row>
         {/* Per-group subtotal */}
         {!isOutOfStock && group.items.length > 0 && (
           <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
             ₹{group.items.reduce((s, i) => s + i.meta.price * i.quantity, 0).toFixed(2)}
           </Text>
         )}
-      </Div>
+      </Row>
 
       {/* Items */}
       <Div className="space-y-3">
@@ -1129,7 +1130,7 @@ function SellerGroupSection({
           const productHref = getProductHref(item.productId, item.listingType);
 
           return (
-            <Div key={item.id} className="flex items-start gap-3">
+            <Row key={item.id} align="start" gap="3">
               {isAuthenticated && !isOutOfStock && !locked && (
                 // audit-raw-form-input-ok: per-row select checkbox aligned with row layout
                 <input
@@ -1164,7 +1165,7 @@ function SellerGroupSection({
                   </Button>
                 )}
               </Div>
-            </Div>
+            </Row>
           );
         })}
       </Div>

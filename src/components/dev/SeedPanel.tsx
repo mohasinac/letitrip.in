@@ -1922,11 +1922,11 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         <SchemaFieldsTable fields={meta.fields} />
 
         {meta.piiFields && meta.piiFields.length > 0 && (
-          <Div className="flex items-start gap-2 px-3 py-2 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/40" rounded="lg">
+          <Row className="px-3 py-2 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/40" align="start" gap="sm" rounded="lg">
             <Span size="xs" className="text-red-700 dark:text-red-300 leading-relaxed">
               🔒 PII fields: <Span weight="bold">{meta.piiFields.join(", ")}</Span> — masked in DB with Firestore encryption. Never returned in full to client.
             </Span>
-          </Div>
+          </Row>
         )}
 
         <>
@@ -2412,7 +2412,7 @@ function renderSeedPanelToolbar({
     <Div className="sticky z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-zinc-200 dark:border-slate-800" shadow="sm" style={{ top: "var(--header-height, 0px)" }}>
       <Container size="2xl">
         <Stack gap="sm" className="py-2.5">
-          <Div className="flex flex-col sm:flex-row sm:items-center gap-2">
+          <Stack className="sm:flex-row sm:items-center" gap="sm">
             <Div className="flex-1 min-w-0">
               <Heading level={2} className="text-zinc-900 dark:text-white m-0 leading-none" size="sm" weight="bold">
                 📋 Resource Collections
@@ -2428,8 +2428,8 @@ function renderSeedPanelToolbar({
               <Button size="sm" variant="outline" onClick={() => setSelectedCollections(new Set())} disabled={isRunning}>Clear</Button>
               <Button size="sm" variant="outline" onClick={fetchStatus} disabled={isRunning || isLoadingStatus}>{isLoadingStatus ? "…" : "↻ Refresh"}</Button>
             </Row>
-          </Div>
-          <Div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+          </Stack>
+          <Stack className="sm:flex-row sm:items-center" gap="sm">
             <Div className="relative flex-1">
               <Span size="sm" variant="muted" className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">🔍</Span>
               <Input bare type="text" placeholder="Search collections…" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-9 pr-8 py-1.5 text-sm rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400" />
@@ -2463,8 +2463,8 @@ function renderSeedPanelToolbar({
               <Button size="sm" variant="primary" isLoading={isRunning} onClick={() => run("load")} disabled={isRunning || selectedCollections.size === 0}>{dryRun ? "⚡ Dry Add" : "⚡ Add Seed"}</Button>
               <Button size="sm" variant="danger" onClick={() => run("delete")} disabled={isRunning || selectedCollections.size === 0}>{dryRun ? "🗑️ Dry Remove" : ACTIONS.ADMIN["reset-seed-data"].label}</Button>
             </Row>
-          </Div>
-          <Div className="flex flex-col sm:flex-row gap-1.5 sm:items-center sm:gap-3">
+          </Stack>
+          <Stack className="sm:flex-row gap-1.5 sm:items-center sm:gap-3">
             <Row gap="xs" wrap>
               <Span size="xs" variant="muted" weight="medium" className="shrink-0">Group:</Span>
               {(["all", "core", "listings", "transactional", "content", "system", "moderation"] as const).map((g) => {
@@ -2493,7 +2493,7 @@ function renderSeedPanelToolbar({
                 <Button type="button" variant="ghost" onClick={() => { setSearchQuery(""); setFilterGroup("all"); setFilterStatus("all"); setSortBy("default"); }} className="text-[11px] text-amber-600 dark:text-amber-400 hover:underline ml-1 shrink-0 p-0 h-auto">✕ Clear</Button>
               )}
             </Row>
-          </Div>
+          </Stack>
         </Stack>
       </Container>
     </Div>
@@ -2502,29 +2502,29 @@ function renderSeedPanelToolbar({
 
 function renderSeedPanelHero() {
   return (
-    <Div className="flex flex-col items-center text-center gap-3 pt-2">
+    <Stack className="text-center pt-2" align="center" gap="3">
       <span className="text-5xl leading-none">🎮</span>
       <Heading level={1} className="font-extrabold text-amber-600 dark:text-amber-400 m-0" size="3xl">LetItRip Demo Seed</Heading>
       <Text className="text-zinc-600 dark:text-slate-300 max-w-xl m-0" size="base">Admin seed tool — expand each resource card to see what&apos;s seeded, pending counts, live DB state, and the UI path to verify.</Text>
-    </Div>
+    </Stack>
   );
 }
 
 function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDocs, collectionCount }: { isLoadingStatus: boolean; totalExistingDocs: number; totalSeedDocs: number; collectionCount: number }) {
   return (
     <Div className="grid grid-cols-3 gap-3 sm:gap-4">
-      <Div className="bg-zinc-50 dark:bg-white/5 dark:border-white/10 text-center flex flex-col gap-1" rounded="xl" padding="md" border="default">
+      <Stack className="bg-zinc-50 dark:bg-white/5 dark:border-white/10 text-center" gap="xs" rounded="xl" padding="md" border="default">
         <span className="text-2xl font-extrabold text-zinc-900 dark:text-white font-mono leading-none">{isLoadingStatus ? <span className="text-zinc-300 dark:text-slate-600">—</span> : totalExistingDocs.toLocaleString()}</span>
         <span className="text-xs text-zinc-500 dark:text-slate-400">docs in DB</span>
-      </Div>
-      <Div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 text-center flex flex-col gap-1" rounded="xl" padding="md">
+      </Stack>
+      <Stack className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 text-center" gap="xs" rounded="xl" padding="md">
         <span className="text-2xl font-extrabold text-amber-600 dark:text-amber-400 font-mono leading-none">{isLoadingStatus ? <span className="text-amber-200 dark:text-amber-900">—</span> : totalSeedDocs.toLocaleString()}</span>
         <span className="text-xs text-zinc-500 dark:text-slate-400">docs in seed files</span>
-      </Div>
-      <Div className="bg-zinc-50 dark:bg-white/5 dark:border-white/10 text-center flex flex-col gap-1" rounded="xl" padding="md" border="default">
+      </Stack>
+      <Stack className="bg-zinc-50 dark:bg-white/5 dark:border-white/10 text-center" gap="xs" rounded="xl" padding="md" border="default">
         <span className="text-2xl font-extrabold text-zinc-500 dark:text-slate-300 font-mono leading-none">{collectionCount}</span>
         <span className="text-xs text-zinc-500 dark:text-slate-400">collections</span>
-      </Div>
+      </Stack>
     </Div>
   );
 }

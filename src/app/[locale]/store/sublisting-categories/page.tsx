@@ -22,6 +22,7 @@ import { ROUTES } from "@mohasinac/appkit/client";
 import { useUrlTable } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
+import { Stack } from "@mohasinac/appkit";
 interface CategoryRow {
   id: string;
   name: string;
@@ -181,13 +182,13 @@ function renderPage({
       </Row>
 
       {loading ? (
-        <Div className="flex items-center justify-center py-16">
+        <Row className="py-16" align="center" justify="center">
           <Text variant="secondary" size="sm">
             Loading…
           </Text>
-        </Div>
+        </Row>
       ) : filtered.length === 0 ? (
-        <Div className="flex flex-col items-center justify-center border border-dashed border-[var(--appkit-color-border)] py-16 text-center" rounded="2xl">
+        <Stack className="justify-center border border-dashed border-[var(--appkit-color-border)] py-16 text-center" align="center" rounded="2xl">
           <Text className="mb-2" size="3xl">🏷️</Text>
           <Text size="sm" weight="semibold">
             {search ? "No categories match your search" : "No sub-listing categories yet"}
@@ -202,7 +203,7 @@ function renderPage({
               <Link href={String(ROUTES.STORE.SUBLISTING_CATEGORIES_NEW)}>Create Category</Link>
             </Button>
           )}
-        </Div>
+        </Stack>
       ) : (
         <Div className={`divide-y divide-[var(--appkit-color-border)] rounded-xl border border-[var(--appkit-color-border)] ${__O.hidden}`}>
           {filtered.map((cat) => renderCategoryRow(cat, deletingId, handleDelete))}

@@ -1,8 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Text, Div, Button } from "@mohasinac/appkit/ui";
-
+import { Button, Div, Row, Text } from "@mohasinac/appkit/ui";
 const __P = {
   p6: "p-6",
 } as const;
@@ -58,8 +57,8 @@ export default function Page() {
   }
 
   return (
-    <Div className="flex min-h-screen items-center justify-center">
+    <Row className="min-h-screen" align="center" justify="center">
       <Text size="sm" color="faint">Signing in… closing window</Text>
-    </Div>
+    </Row>
   );
 }
