@@ -97,10 +97,16 @@ const AUDITS = [
   // W6 — error contract / silent-failure gates (workstreams 1, 3, 5)
   { name: "silent-body-parse",               script: "scripts/audit-silent-body-parse.mjs" },
   { name: "server-action-envelope",          script: "scripts/audit-server-action-envelope.mjs" },
-  // unknown-elimination W3/W4 (REPORT MODE — exits 0; flip via
-  // MIGRATE=strict env var once the backlog is drained).
+  // unknown-elimination W3/W4 — strict-zero in current state (codemod
+  // sweep complete). `MIGRATE=report` opts back into permissive mode for
+  // local migration work.
   { name: "catch-normalize",                 script: "appkit/scripts/audit-catch-normalize.mjs" },
   { name: "route-schema-registry",           script: "appkit/scripts/audit-route-schema-registry.mjs" },
+  // unknown-elimination W5 — surfaces residual `: unknown`,
+  // `Record<string, unknown>`, `as unknown` outside the allowlist.
+  // REPORT MODE — currently 1344 sites tracked; exits 0 so `npm run check`
+  // succeeds while the migration backlog drains. Flip via `MIGRATE=strict`.
+  { name: "unknown-leakage",                 script: "appkit/scripts/audit-unknown-leakage.mjs" },
   { name: "usemutation-onerror",             script: "scripts/audit-usemutation-onerror.mjs" },
 ];
 
