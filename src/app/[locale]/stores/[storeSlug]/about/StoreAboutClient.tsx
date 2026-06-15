@@ -35,22 +35,22 @@ export function StoreAboutClient({ store }: { store: StoreDetail }) {
         links && Object.values(links).some(Boolean) ? (
           <Div className="flex gap-3 flex-wrap">
             {links.twitter && (
-              <TextLink href={links.twitter} external className="text-sm text-primary hover:underline">
+              <TextLink href={links.twitter} external className="text-primary hover:underline" size="sm">
                 <Text as="span">Twitter</Text>
               </TextLink>
             )}
             {links.instagram && (
-              <TextLink href={links.instagram} external className="text-sm text-primary hover:underline">
+              <TextLink href={links.instagram} external className="text-primary hover:underline" size="sm">
                 <Text as="span">Instagram</Text>
               </TextLink>
             )}
             {links.facebook && (
-              <TextLink href={links.facebook} external className="text-sm text-primary hover:underline">
+              <TextLink href={links.facebook} external className="text-primary hover:underline" size="sm">
                 <Text as="span">Facebook</Text>
               </TextLink>
             )}
             {links.linkedin && (
-              <TextLink href={links.linkedin} external className="text-sm text-primary hover:underline">
+              <TextLink href={links.linkedin} external className="text-primary hover:underline" size="sm">
                 <Text as="span">LinkedIn</Text>
               </TextLink>
             )}

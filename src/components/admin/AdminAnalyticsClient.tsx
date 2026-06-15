@@ -25,7 +25,7 @@ export function AdminAnalyticsClient() {
       endpoint={endpoint}
       renderDateRange={() => (
         <Row className="px-4" surface="muted" padding="y-sm" align="center" gap="3" wrap rounded="xl" border="default">
-          <Label className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400" size="sm">
+          <Label className="flex items-center gap-2" color="muted" size="sm">
             From
             <Input
               type="date"
@@ -35,7 +35,7 @@ export function AdminAnalyticsClient() {
               className="rounded-lg border border-zinc-300 bg-white px-2.5 py-1.5 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
             />
           </Label>
-          <Label className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400" size="sm">
+          <Label className="flex items-center gap-2" color="muted" size="sm">
             To
             <Input
               type="date"

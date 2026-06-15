@@ -773,7 +773,7 @@ export function CartRouteClient() {
                   <Row align="center" gap="sm">
                     {/* audit-raw-form-input-ok: select-all checkbox — custom dual-mode click handler */}
                     <input type="checkbox" id="cart-select-all" checked={isAllSelected} onChange={isAllSelected ? undefined : selectAll} onClick={!isAllSelected ? undefined : (e) => { e.preventDefault(); selectAll(); }} className="h-4 w-4 rounded border-zinc-300 dark:border-slate-600 accent-zinc-900 dark:accent-zinc-100" />
-                    <Label htmlFor="cart-select-all" className="cursor-pointer text-zinc-600 dark:text-zinc-300" size="sm">
+                    <Label htmlFor="cart-select-all" className="cursor-pointer" color="muted" size="sm">
                       Select all ({allItemIds.length} item{allItemIds.length !== 1 ? "s" : ""})
                     </Label>
                   </Row>

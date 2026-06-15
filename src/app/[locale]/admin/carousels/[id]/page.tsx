@@ -106,17 +106,17 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
             <Table className="w-full text-sm">
               <Thead className="bg-zinc-50 dark:bg-slate-800">
                 <Tr>
-                  <Th className="px-4 py-3 text-left font-medium text-zinc-600 dark:text-zinc-300">Order</Th>
-                  <Th className="px-4 py-3 text-left font-medium text-zinc-600 dark:text-zinc-300">Title</Th>
-                  <Th className="px-4 py-3 text-left font-medium text-zinc-600 dark:text-zinc-300">Active</Th>
-                  <Th className="px-4 py-3 text-right font-medium text-zinc-600 dark:text-zinc-300">Edit</Th>
+                  <Th className="px-4 py-3 text-left text-zinc-600 dark:text-zinc-300" weight="medium">Order</Th>
+                  <Th className="px-4 py-3 text-left text-zinc-600 dark:text-zinc-300" weight="medium">Title</Th>
+                  <Th className="px-4 py-3 text-left text-zinc-600 dark:text-zinc-300" weight="medium">Active</Th>
+                  <Th className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-300" weight="medium">Edit</Th>
                 </Tr>
               </Thead>
               <Tbody className="divide-y divide-zinc-100 dark:divide-slate-700">
                 {slides.map((slide, idx) => (
                   <Tr key={slide.id} className="bg-white hover:bg-zinc-50 dark:bg-slate-900 dark:hover:bg-slate-800">
                     <Td className="px-4 py-3 text-zinc-500 dark:text-zinc-400">{idx + 1}</Td>
-                    <Td className="px-4 py-3 font-medium text-zinc-800 dark:text-zinc-200">{slide.title}</Td>
+                    <Td className="px-4 py-3 text-zinc-800 dark:text-zinc-200" weight="medium">{slide.title}</Td>
                     <Td className="px-4 py-3">
                       <Badge variant={slide.active ? "success" : "secondary"} >
                         {slide.active ? "Active" : "Inactive"}

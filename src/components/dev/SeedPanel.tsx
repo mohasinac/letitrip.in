@@ -1900,7 +1900,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         </Div>
 
         <Div>
-          <Text className="text-emerald-700 dark:text-emerald-400 tracking-wider mb-2 m-0" size="xs" weight="bold" transform="uppercase">✓ What&apos;s Seeded</Text>
+          <Text className="dark:text-emerald-400 tracking-wider mb-2 m-0" color="success" size="xs" weight="bold" transform="uppercase">✓ What&apos;s Seeded</Text>
           <Stack gap="none" className="gap-1.5">
             {meta.seededItems.map((item, i) => (
               <Text key={i} className="leading-snug pl-3 border-l-2 border-emerald-400 dark:border-emerald-700 m-0" color="muted" size="sm">{item}</Text>
@@ -1910,7 +1910,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
 
         {meta.pendingItems.length > 0 && (
           <Div>
-            <Text className="text-amber-700 dark:text-amber-400 tracking-wider mb-2 m-0" size="xs" weight="bold" transform="uppercase">⏳ Pending / Needed</Text>
+            <Text className="dark:text-amber-400 tracking-wider mb-2 m-0" color="warning" size="xs" weight="bold" transform="uppercase">⏳ Pending / Needed</Text>
             <Stack gap="none" className="gap-1.5">
               {meta.pendingItems.map((item, i) => (
                 <Text key={i} className="leading-snug pl-3 border-l-2 border-amber-400 dark:border-amber-700 m-0" color="muted" size="sm">{item}</Text>
@@ -1923,7 +1923,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
 
         {meta.piiFields && meta.piiFields.length > 0 && (
           <Row className="px-3 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/40" padding="y-xs" align="start" gap="sm" rounded="lg">
-            <Span size="xs" className="text-red-700 dark:text-red-300 leading-relaxed">
+            <Span size="xs" className="dark:text-red-300 leading-relaxed" color="error">
               🔒 PII fields: <Span weight="bold">{meta.piiFields.join(", ")}</Span> — masked in DB with Firestore encryption. Never returned in full to client.
             </Span>
           </Row>
@@ -2504,7 +2504,7 @@ function renderSeedPanelHero() {
   return (
     <Stack className="text-center" padding="t-xs" align="center" gap="3">
       <span className="text-5xl leading-none">🎮</span>
-      <Heading level={1} className="font-extrabold text-amber-600 dark:text-amber-400 m-0" size="3xl">LetItRip Demo Seed</Heading>
+      <Heading level={1} className="font-extrabold dark:text-amber-400 m-0" color="warning" size="3xl">LetItRip Demo Seed</Heading>
       <Text className="max-w-xl m-0" color="muted" size="base">Admin seed tool — expand each resource card to see what&apos;s seeded, pending counts, live DB state, and the UI path to verify.</Text>
     </Stack>
   );
@@ -2538,7 +2538,7 @@ function renderSeedPanelDoneSummary({ errorCount, dryRun, completedCount, colErr
       {errorCount > 0 && (
         <Stack gap="xs" className="mt-2">
           {Object.entries(colErrors).map(([col, msg]) => (
-            <Text key={col} className="text-red-600 dark:text-red-400" size="xs"><Span weight="bold">{COLLECTION_META[col as SeedCollectionName]?.label ?? col}:</Span> {msg}</Text>
+            <Text key={col} className="dark:text-red-400" color="error" size="xs"><Span weight="bold">{COLLECTION_META[col as SeedCollectionName]?.label ?? col}:</Span> {msg}</Text>
           ))}
         </Stack>
       )}
@@ -2618,7 +2618,7 @@ function renderSeedPanelPagination({ page, setPage, totalPages, PAGE_SIZE, filte
 function renderSeedScaleSummary() {
   return (
     <Div className="p-5 dark:bg-white/[0.03] dark:border-white/10" surface="muted" rounded="2xl" border="default">
-      <Heading level={3} className="text-amber-600 dark:text-amber-400 m-0 mb-4" size="base" weight="bold">📊 Target Seed Scale</Heading>
+      <Heading level={3} className="dark:text-amber-400 m-0 mb-4" color="warning" size="base" weight="bold">📊 Target Seed Scale</Heading>
       <Grid cols="halves" gap="none" className="gap-x-10">
         {[
           ["Standard Products", "100+"], ["Auction Listings", "20"], ["Pre-orders", "10"],

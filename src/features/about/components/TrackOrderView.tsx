@@ -73,13 +73,13 @@ export async function TrackOrderView() {
           <Row gap="md" justify="center" className="mt-6">
             <TextLink
               href={ROUTES.AUTH.LOGIN}
-              className={`inline-${flex.center} gap-2 bg-primary hover:bg-primary/90 text-white font-medium px-6 py-3 rounded-lg transition-colors`}
+              className={`inline-${flex.center} gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg transition-colors`} weight="medium"
             >
               {t("signIn")}
             </TextLink>
             <TextLink
               href={ROUTES.USER.ORDERS}
-              className={`inline-${flex.center} gap-2 ${themed.bgPrimary} border ${themed.border} ${themed.textPrimary} font-medium px-6 py-3 rounded-lg hover:opacity-80 transition-opacity`}
+              className={`inline-${flex.center} gap-2 ${themed.bgPrimary} border ${themed.border} ${themed.textPrimary} px-6 py-3 rounded-lg hover:opacity-80 transition-opacity`} weight="medium"
             >
               {t("viewOrders")}
             </TextLink>
@@ -131,13 +131,13 @@ export async function TrackOrderView() {
           <Row gap="md" className="flex-shrink-0">
             <TextLink
               href={ROUTES.PUBLIC.HELP}
-              className={`text-sm ${themed.textSecondary} hover:text-primary underline underline-offset-4 transition-colors`}
+              className={`${themed.textSecondary} hover:text-primary underline underline-offset-4 transition-colors`} size="sm"
             >
               {t("helpCenter")}
             </TextLink>
             <TextLink
               href={ROUTES.PUBLIC.CONTACT}
-              className="text-sm bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-colors"
+              className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-colors" size="sm"
             >
               {t("contactSupport")}
             </TextLink>
