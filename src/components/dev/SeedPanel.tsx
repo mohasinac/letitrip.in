@@ -1598,7 +1598,7 @@ function ProgressBar({ value, total }: { value: number; total: number }) {
         </Text>
         <Text className="font-mono" color="muted" size="xs">{pct}%</Text>
       </Row>
-      <Div className="w-full h-2 dark:bg-slate-700 overflow-hidden" surface="subtle" rounded="full">
+      <Div className="w-full h-2 overflow-hidden" surface="subtle" rounded="full">
         <Div
           className="h-full bg-amber-500 dark:bg-amber-400 transition-all duration-300" rounded="full"
           style={{ width: `${pct}%` }}
@@ -2054,7 +2054,7 @@ function GroupDivider({
       <Span size="xs" weight="bold" variant="muted" className="tracking-widest whitespace-nowrap" transform="uppercase">
         {label}
       </Span>
-      <Div className="flex-1 h-px dark:bg-slate-700" surface="subtle" />
+      <Div className="flex-1 h-px" surface="subtle" />
       <Button
         type="button"
         variant="ghost"
@@ -2452,7 +2452,7 @@ function renderSeedPanelToolbar({
                 ]}
               />
             </Div>
-            <Div className="hidden sm:block w-px h-6 dark:bg-slate-700 shrink-0" surface="subtle" />
+            <Div className="hidden sm:block w-px h-6 shrink-0" surface="subtle" />
             <Row gap="sm" wrap className="shrink-0">
               <Checkbox
                 label={<span className="text-xs text-zinc-600 dark:text-slate-300 whitespace-nowrap">Dry run</span>}
@@ -2478,7 +2478,7 @@ function renderSeedPanelToolbar({
                 );
               })}
             </Row>
-            <Div className="hidden sm:block w-px h-4 dark:bg-slate-700 shrink-0" surface="subtle" />
+            <Div className="hidden sm:block w-px h-4 shrink-0" surface="subtle" />
             <Row gap="xs" wrap>
               <Span size="xs" variant="muted" weight="medium" className="shrink-0">Status:</Span>
               {([

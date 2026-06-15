@@ -27,7 +27,7 @@ export function EditAddressClient({ addressId }: Props) {
     return (
       <Stack className="max-w-lg animate-pulse" gap="md">
         {Array.from({ length: 6 }).map((_, i) => (
-          <Div key={i} className="h-10 dark:bg-slate-700" surface="subtle" rounded="lg" />
+          <Div key={i} className="h-10" surface="subtle" rounded="lg" />
         ))}
       </Stack>
     );

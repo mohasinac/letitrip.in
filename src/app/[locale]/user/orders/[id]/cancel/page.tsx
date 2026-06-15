@@ -42,9 +42,9 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   if (isLoading) {
     return (
       <Stack className="w-full max-w-lg animate-pulse" gap="md">
-        <Div className="h-6 dark:bg-slate-700 w-1/2" surface="subtle" rounded="default" />
-        <Div className="h-4 dark:bg-slate-700 w-3/4" surface="subtle" rounded="default" />
-        <Div className="h-24 dark:bg-slate-700" surface="subtle" rounded="default" />
+        <Div className="h-6 w-1/2" surface="subtle" rounded="default" />
+        <Div className="h-4 w-3/4" surface="subtle" rounded="default" />
+        <Div className="h-24" surface="subtle" rounded="default" />
       </Stack>
     );
   }
