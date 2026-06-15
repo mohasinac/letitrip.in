@@ -21,8 +21,8 @@ function renderProfileLoadingSkeleton() {
   return (
     <Div className="w-full max-w-2xl space-y-4 animate-pulse">
       <Div className="h-20 w-20 bg-zinc-200 dark:bg-slate-700" rounded="full" />
-      <Div className="h-6 bg-zinc-200 dark:bg-slate-700 rounded w-1/2" />
-      <Div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-2/3" />
+      <Div className="h-6 bg-zinc-200 dark:bg-slate-700 w-1/2" rounded="default" />
+      <Div className="h-4 bg-zinc-200 dark:bg-slate-700 w-2/3" rounded="default" />
     </Div>
   );
 }

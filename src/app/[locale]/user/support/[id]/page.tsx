@@ -105,8 +105,8 @@ export default function TicketDetailPage({ params }: PageProps) {
     return (
       <Div className="w-full max-w-3xl space-y-4">
         <Div className={`animate-pulse rounded-xl border border-[var(--appkit-color-border)] ${__P.p5} space-y-3`}>
-          <Div className="h-4 w-1/3 rounded bg-[var(--appkit-color-border)]" />
-          <Div className="h-3 w-2/3 rounded bg-[var(--appkit-color-border)]" />
+          <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
+          <Div className="h-3 w-2/3 bg-[var(--appkit-color-border)]" rounded="default" />
         </Div>
       </Div>
     );

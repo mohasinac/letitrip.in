@@ -81,7 +81,7 @@ export default function Page() {
               {items.map((m) => (
                 <Row
                   key={m.id}
-                  className="items-start justify-between rounded dark:border-slate-700" padding="md" border="default"
+                  className="items-start justify-between dark:border-slate-700" rounded="default" padding="md" border="default"
                 >
                   <Stack gap="xs" className="flex-1 min-w-0">
                     <Text weight="medium">

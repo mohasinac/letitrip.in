@@ -290,8 +290,8 @@ export default function NotificationsPage() {
             <Stack gap="md">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Div key={i} className={`animate-pulse rounded-xl border border-[var(--appkit-color-border)] ${__P.p4} space-y-2`}>
-                  <Div className="h-4 w-1/3 rounded bg-[var(--appkit-color-border)]" />
-                  <Div className="h-3 w-2/3 rounded bg-[var(--appkit-color-border)]" />
+                  <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
+                  <Div className="h-3 w-2/3 bg-[var(--appkit-color-border)]" rounded="default" />
                 </Div>
               ))}
             </Stack>

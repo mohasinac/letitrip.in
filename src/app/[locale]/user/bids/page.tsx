@@ -115,8 +115,8 @@ export default function UserBidsPage() {
               key={i}
               className="animate-pulse border border-[var(--appkit-color-border)] p-5 space-y-3" rounded="xl"
             >
-              <Div className="h-4 w-1/3 rounded bg-[var(--appkit-color-border)]" />
-              <Div className="h-3 w-1/2 rounded bg-[var(--appkit-color-border)]" />
+              <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
+              <Div className="h-3 w-1/2 bg-[var(--appkit-color-border)]" rounded="default" />
             </Div>
           ))}
         </Stack>

@@ -57,7 +57,7 @@ function StatCard({
         <Div className="min-w-0 flex-1">
           <Div className="text-[11px] font-semibold uppercase tracking-widest text-[var(--appkit-color-text-muted)]">{label}</Div>
           {isLoading ? (
-            <Div className="mt-2 h-7 w-20 animate-pulse rounded bg-[var(--appkit-color-border)]" />
+            <Div className="mt-2 h-7 w-20 animate-pulse bg-[var(--appkit-color-border)]" rounded="default" />
           ) : (
             <Div className="mt-2 text-2xl font-bold text-[var(--appkit-color-text)] tabular-nums leading-none">{value}</Div>
           )}

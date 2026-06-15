@@ -141,8 +141,8 @@ export default function UserSupportPage() {
         <Stack gap="md">
           {Array.from({ length: 3 }).map((_, i) => (
             <Div key={i} className={`animate-pulse rounded-xl border border-[var(--appkit-color-border)] ${__P.p5} space-y-3`}>
-              <Div className="h-4 w-1/3 rounded bg-[var(--appkit-color-border)]" />
-              <Div className="h-3 w-1/2 rounded bg-[var(--appkit-color-border)]" />
+              <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
+              <Div className="h-3 w-1/2 bg-[var(--appkit-color-border)]" rounded="default" />
             </Div>
           ))}
         </Stack>
