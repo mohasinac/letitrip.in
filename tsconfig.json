@@ -6,13 +6,36 @@
     "jsx": "react-jsx",
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@mohasinac/appkit": ["./appkit/src/index.ts"],
+      "@mohasinac/appkit/client": ["./appkit/src/client.ts"],
+      "@mohasinac/appkit/server": ["./appkit/src/server.ts"],
+      "@mohasinac/appkit/ui": ["./appkit/src/ui/index.ts"],
+      "@mohasinac/appkit/next": ["./appkit/src/next/index.ts"],
+      "@mohasinac/appkit/jobs": ["./appkit/src/jobs.ts"],
+      "@mohasinac/appkit/providers": ["./appkit/src/providers.ts"],
+      "@mohasinac/appkit/providers/auth-firebase": ["./appkit/src/providers/auth-firebase/index.ts"],
+      "@mohasinac/appkit/providers/db-firebase": ["./appkit/src/providers/db-firebase/index.ts"],
+      "@mohasinac/appkit/providers/email-resend": ["./appkit/src/providers/email-resend/index.ts"],
+      "@mohasinac/appkit/providers/storage-firebase": ["./appkit/src/providers/storage-firebase/index.ts"],
+      "@mohasinac/appkit/instrumentation": ["./appkit/src/instrumentation/index.ts"],
+      "@mohasinac/appkit/contracts/registry": ["./appkit/src/contracts/registry.ts"],
+      "@mohasinac/appkit/core/baseline-resolver": ["./appkit/src/core/baseline-resolver.ts"],
+      "@mohasinac/appkit/style/tailwind": ["./appkit/src/style/tailwind/index.ts"],
+      "@mohasinac/appkit/repositories/site-settings": ["./appkit/src/features/admin/repository/site-settings.repository.ts"],
+      "@mohasinac/appkit/features/events": ["./appkit/src/features/events/index.ts"],
+      "@mohasinac/appkit/features/whatsapp-bot/server": ["./appkit/src/features/whatsapp-bot/server.ts"],
+      "@mohasinac/appkit/tokens": ["./appkit/src/tokens/index.ts"],
+      "@mohasinac/appkit/tokens/*": ["./appkit/src/tokens/*"],
+      "@mohasinac/appkit/messages/*": ["./appkit/src/features/*/messages/en.json"]
     }
   },
   "include": [
     "next-env.d.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
+    "appkit/src/**/*.ts",
+    "appkit/src/**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
