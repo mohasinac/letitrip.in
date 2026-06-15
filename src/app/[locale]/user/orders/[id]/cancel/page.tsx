@@ -84,7 +84,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
           <Stack gap="xs">
             <Label
               htmlFor="reason"
-              className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              className="block text-zinc-700 dark:text-zinc-300" size="sm" weight="medium"
             >
               Reason for cancellation <Text as="span" className="text-error">*</Text>
             </Label>

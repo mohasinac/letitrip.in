@@ -410,7 +410,7 @@ function renderDynamicField(
 
   return (
     <Stack key={field.id} gap="xs">
-      <Label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+      <Label className="block text-zinc-700 dark:text-zinc-300" size="sm" weight="medium">
         {field.label}
         {field.required && <Text as="span" className="text-error ml-1">*</Text>}
       </Label>

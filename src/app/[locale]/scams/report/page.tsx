@@ -131,7 +131,7 @@ function ScammerIdentitySection({
         <Stack gap="md">
           <Heading level={2} size="base" weight="semibold">Section 1 — Scammer Identity</Heading>
           <Stack gap="xs">
-            <Label className="text-sm font-medium" htmlFor="displayName">
+            <Label htmlFor="displayName" size="sm" weight="medium">
               Name / Display Name <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
             </Label>
             <Input id="displayName" type="text" required value={form.displayName} onChange={(e) => field("displayName")(e.target.value)} placeholder="The name they used to scam you" className={CLS_INPUT} />
@@ -159,30 +159,30 @@ function WhatHappenedSection({
         <Stack gap="md">
           <Heading level={2} size="base" weight="semibold">Section 2 — What Happened</Heading>
           <Stack gap="xs">
-            <Label className="text-sm font-medium" htmlFor="scamType">
+            <Label htmlFor="scamType" size="sm" weight="medium">
               Scam Type <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
             </Label>
             <Select id="scamType" value={form.scamType} onValueChange={(v) => field("scamType")(v)} options={SCAM_TYPE_OPTIONS} className={CLS_INPUT} />
             {selectedScamType && (<Alert variant="info" compact><Text className="leading-relaxed" size="xs">{selectedScamType.howItHappens.slice(0, 180)}…</Text></Alert>)}
           </Stack>
           <Stack gap="xs">
-            <Label className="text-sm font-medium" htmlFor="scamPlatform">
+            <Label htmlFor="scamPlatform" size="sm" weight="medium">
               Platform where scam occurred <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
             </Label>
             <Select id="scamPlatform" value={form.scamPlatform} onValueChange={(v) => field("scamPlatform")(v)} options={SCAM_PLATFORM_OPTIONS} className={CLS_INPUT} />
           </Stack>
           <Row gap="md" wrap>
             <Stack gap="xs" className="flex-1 min-w-[140px]">
-              <Label className="text-sm font-medium" htmlFor="amountLost">Amount Lost (₹) — optional</Label>
+              <Label htmlFor="amountLost" size="sm" weight="medium">Amount Lost (₹) — optional</Label>
               <Input id="amountLost" type="number" min="0" step="1" value={form.amountLost} onChange={(e) => field("amountLost")(e.target.value)} placeholder="e.g. 2500" className={CLS_INPUT} />
             </Stack>
             <Stack gap="xs" className="flex-1 min-w-[140px]">
-              <Label className="text-sm font-medium" htmlFor="itemInvolved">Item Involved — optional</Label>
+              <Label htmlFor="itemInvolved" size="sm" weight="medium">Item Involved — optional</Label>
               <Input id="itemInvolved" type="text" value={form.itemInvolved} onChange={(e) => field("itemInvolved")(e.target.value)} placeholder="e.g. Charizard PSA 9" className={CLS_INPUT} />
             </Stack>
           </Row>
           <Stack gap="xs">
-            <Label className="text-sm font-medium" htmlFor="description">
+            <Label htmlFor="description" size="sm" weight="medium">
               What exactly happened? <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
             </Label>
             <Textarea id="description" required minLength={100} rows={6} value={form.description} onChange={(e) => field("description")(e.target.value)} placeholder="Describe exactly what happened — dates, amounts promised, what you received, any communication details…" className="w-full resize-y rounded-lg border border-[color:var(--appkit-color-border,theme(colors.zinc.200))] bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[color:var(--appkit-color-primary,theme(colors.blue.500))]/40" />
