@@ -62,7 +62,7 @@ function StarDisplay({ rating }: { rating: number }) {
         <Text
           as="span"
           key={i}
-          className={`text-base ${i < rating ? CLS_STAR_ON : CLS_STAR_OFF}`}
+          className={`${i < rating ? CLS_STAR_ON : CLS_STAR_OFF}`} size="base"
         >
           ★
         </Text>
@@ -206,7 +206,7 @@ export default function UserReviewsPage() {
                         Verified
                       </Text>
                     )}
-                    <Text as="span" className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${statusColor}`}>
+                    <Text as="span" className={`rounded-full px-2.5 py-0.5 capitalize ${statusColor}`} size="xs" weight="medium">
                       {review.status}
                     </Text>
                   </Row>

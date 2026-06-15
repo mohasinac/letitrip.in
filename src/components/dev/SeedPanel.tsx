@@ -2532,7 +2532,7 @@ function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDoc
 function renderSeedPanelDoneSummary({ errorCount, dryRun, completedCount, colErrors }: { errorCount: number; dryRun: boolean; completedCount: number; colErrors: Record<string, string> }) {
   return (
     <Div className={`border ${errorCount > 0 ? "bg-red-50 dark:bg-red-900/10 border-red-300 dark:border-red-700" : "bg-emerald-50 dark:bg-emerald-900/10 border-emerald-300 dark:border-emerald-700"}`} rounded="xl" padding="md">
-      <Text className={`text-sm font-semibold ${errorCount > 0 ? "text-red-700 dark:text-red-300" : "text-emerald-700 dark:text-emerald-300"}`}>
+      <Text className={`${errorCount > 0 ? "text-red-700 dark:text-red-300" : "text-emerald-700 dark:text-emerald-300"}`} size="sm" weight="semibold">
         {errorCount > 0 ? `✗ Completed with ${errorCount} error${errorCount > 1 ? "s" : ""} — ${completedCount - errorCount} succeeded` : `✓ ${dryRun ? "Dry run" : "Seed"} complete — all ${completedCount} collections processed`}
       </Text>
       {errorCount > 0 && (

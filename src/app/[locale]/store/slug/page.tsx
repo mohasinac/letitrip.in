@@ -189,7 +189,7 @@ function renderSlugInput({ newSlug, checkState, checkMessage, checkColor, handle
         helperText={`${SITE_BASE}${newSlug || "your-store-slug"}`}
       />
       {checkMessage && (
-        <Text className={`mt-1 text-xs ${checkColor}`}>
+        <Text className={`mt-1 ${checkColor}`} size="xs">
           {checkState === "checking" ? "Checking availability…" : checkMessage}
         </Text>
       )}
