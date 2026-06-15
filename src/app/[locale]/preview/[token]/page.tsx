@@ -61,19 +61,19 @@ export default async function PreviewPage({
   return (
     <Section surface="default" className="min-h-screen">
       <Div className="bg-warning-surface border-b border-warning/30 px-4 py-2 text-center">
-        <Text className="text-sm font-medium text-warning">
+        <Text className="text-warning" size="sm" weight="medium">
           {PREVIEW_COPY.banner}
         </Text>
       </Div>
       <Container className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-        <Text className="mb-4 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+        <Text className="mb-4 tracking-wide text-zinc-500 dark:text-zinc-400" size="xs" transform="uppercase">
           {preview.kind}
           {PREVIEW_COPY.kindSuffix}
         </Text>
         <Div className={`${__O.auto} rounded-lg bg-zinc-50 dark:bg-slate-800 ${__P.p4} font-mono text-xs whitespace-pre`}>
           {JSON.stringify(preview.draft, null, 2)}
         </Div>
-        <Text className="mt-4 text-xs text-zinc-500 dark:text-zinc-400">
+        <Text className="mt-4 text-zinc-500 dark:text-zinc-400" size="xs">
           {PREVIEW_COPY.rendererNote}
         </Text>
       </Container>

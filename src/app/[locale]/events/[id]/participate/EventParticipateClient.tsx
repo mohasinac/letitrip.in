@@ -71,7 +71,7 @@ interface Props {
 function renderLoginRequired() {
   return (
     <Div className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-6 py-10 text-center space-y-3">
-      <Heading level={2} className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+      <Heading level={2} className="text-zinc-900 dark:text-zinc-100" size="xl" weight="bold">
         Login Required
       </Heading>
       <Text className="text-zinc-500 dark:text-zinc-400">
@@ -90,7 +90,7 @@ function renderLoginRequired() {
 function renderEventInfoBlock(event: ParticipateEventInput) {
   return (
     <Div className="space-y-1">
-      <Heading level={2} className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+      <Heading level={2} className="text-zinc-900 dark:text-zinc-100" size="xl" weight="bold">
         Participate in {event.title}
       </Heading>
       {event.description ? (
@@ -99,7 +99,7 @@ function renderEventInfoBlock(event: ParticipateEventInput) {
         </Div>
       ) : null}
       {event.endsAt ? (
-        <Text className="text-sm text-zinc-500 dark:text-zinc-400">
+        <Text className="text-zinc-500 dark:text-zinc-400" size="sm">
           Ends:{" "}
           {new Date(event.endsAt).toLocaleDateString("en-IN", {
             dateStyle: "medium",
@@ -127,7 +127,7 @@ function renderPollForm({
 }) {
   return (
     <Div className="space-y-3">
-      <Text className="font-medium text-zinc-800 dark:text-zinc-200">
+      <Text className="text-zinc-800 dark:text-zinc-200" weight="medium">
         {isMultiSelect ? "Select all that apply:" : "Choose one:"}
       </Text>
       <Div className="space-y-2">
@@ -191,10 +191,10 @@ function renderSubmitAction({
   return (
     <Div className="space-y-2">
       {error ? (
-        <Text className="text-error text-sm">{error}</Text>
+        <Text className="text-error" size="sm">{error}</Text>
       ) : null}
       {pollConfig?.options?.length && !isMultiSelect && selectedVotes.length === 0 ? (
-        <Text className="text-sm text-zinc-500 dark:text-zinc-400">
+        <Text className="text-zinc-500 dark:text-zinc-400" size="sm">
           Please select an option above.
         </Text>
       ) : null}
@@ -224,24 +224,24 @@ function renderSuccessState({
     <Div className="space-y-4 py-6">
       <Div className="rounded-2xl border border-success/20 bg-success-surface px-5 py-5 space-y-2">
         <Div className="flex items-center gap-2">
-          <Span weight="semibold" className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] uppercase tracking-wide">
+          <Span weight="semibold" className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] tracking-wide" transform="uppercase">
             Confirmed
           </Span>
-          <Heading level={2} className="text-lg font-bold text-success">
+          <Heading level={2} className="text-success" size="lg" weight="bold">
             You&apos;re in!
           </Heading>
         </Div>
-        <Text className="text-sm text-success">
+        <Text className="text-success" size="sm">
           Your entry for <Span weight="bold">{eventTitle}</Span> has been recorded. We&apos;ll notify you of any updates here and over email.
         </Text>
       </Div>
       {hasLeaderboard && (
         <Div className={CLS_PARTICIPATE_INFO_ROW}>
           <Div>
-            <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+            <Text className="text-zinc-900 dark:text-zinc-100" size="sm" weight="semibold">
               Track your standing
             </Text>
-            <Text className="text-xs text-zinc-500 dark:text-zinc-400">
+            <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
               See where you rank against other participants.
             </Text>
           </Div>
@@ -254,7 +254,7 @@ function renderSuccessState({
         </Div>
       )}
       <Div className={CLS_PARTICIPATE_INFO_ROW}>
-        <Text className="text-sm text-zinc-700 dark:text-zinc-300">
+        <Text className="text-zinc-700 dark:text-zinc-300" size="sm">
           Want to revisit event details, prize info or chat with other entrants?
         </Text>
         <Link
@@ -341,7 +341,7 @@ function renderDynamicField(
               }
               className="accent-primary"
             />
-            <Text className="text-sm text-zinc-700 dark:text-zinc-300">{opt}</Text>
+            <Text className="text-zinc-700 dark:text-zinc-300" size="sm">{opt}</Text>
           </Label>
         ))}
       </Div>
@@ -358,7 +358,7 @@ function renderDynamicField(
               onChange={() => onChange(opt)}
               className="accent-primary"
             />
-            <Text className="text-sm text-zinc-700 dark:text-zinc-300">{opt}</Text>
+            <Text className="text-zinc-700 dark:text-zinc-300" size="sm">{opt}</Text>
           </Label>
         ))}
       </Div>
@@ -415,7 +415,7 @@ function renderDynamicField(
         {field.required && <Text as="span" className="text-error ml-1">*</Text>}
       </Label>
       {control}
-      {error && <Text className="text-xs text-error">{error}</Text>}
+      {error && <Text className="text-error" size="xs">{error}</Text>}
     </Div>
   );
 }
@@ -598,14 +598,14 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
       <Div className="space-y-4">
         <Div className="rounded-2xl border border-success/20 bg-success-surface px-5 py-5 space-y-2">
           <Div className="flex items-center gap-2">
-            <Span weight="semibold" className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] uppercase tracking-wide">
+            <Span weight="semibold" className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] tracking-wide" transform="uppercase">
               Confirmed
             </Span>
-            <Heading level={2} className="text-lg font-bold text-success">
+            <Heading level={2} className="text-success" size="lg" weight="bold">
               Entry submitted
             </Heading>
           </Div>
-          <Text className="text-sm text-success">
+          <Text className="text-success" size="sm">
             {submissionCount} of {maxEntries} {maxEntries === 1 ? "entry" : "entries"} recorded for <Span weight="bold">{event.title}</Span>.
           </Text>
         </Div>
@@ -614,7 +614,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
         </Button>
         {hasLeaderboard && (
           <Div className={CLS_PARTICIPATE_INFO_ROW}>
-            <Text className="text-sm text-zinc-700 dark:text-zinc-300">
+            <Text className="text-zinc-700 dark:text-zinc-300" size="sm">
               See where you rank against other participants.
             </Text>
             <Link
@@ -644,7 +644,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
       renderAction={() =>
         atEntryLimit && !isSubmitted ? (
           <Div className="text-center py-4">
-            <Text className="text-sm text-zinc-500 dark:text-zinc-400">
+            <Text className="text-zinc-500 dark:text-zinc-400" size="sm">
               You have reached the maximum of {maxEntries} {maxEntries === 1 ? "entry" : "entries"} for this event.
             </Text>
           </Div>

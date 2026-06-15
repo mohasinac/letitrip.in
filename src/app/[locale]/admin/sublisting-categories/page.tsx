@@ -7,7 +7,7 @@ export default function Page() {
   return (
     <>
       <Div className="flex items-center justify-between px-4 pt-4 pb-2">
-        <Heading level={1} className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+        <Heading level={1} className="text-zinc-900 dark:text-zinc-50" size="lg" weight="semibold">
           Sub-listing Categories
         </Heading>
         <Link

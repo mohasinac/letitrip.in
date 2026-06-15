@@ -124,10 +124,10 @@ export default function Page() {
 
   return (
     <Div className="mx-auto max-w-2xl">
-      <Heading level={1} className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-1">
+      <Heading level={1} className="text-2xl text-zinc-900 dark:text-zinc-50 mb-1" weight="bold">
         Store URL / Slug
       </Heading>
-      <Text variant="secondary" className="text-sm mb-6">
+      <Text variant="secondary" className="mb-6" size="sm">
         Your store's public URL. Changing it will break any existing links to your store.
       </Text>
 
@@ -161,8 +161,8 @@ export default function Page() {
 function renderCurrentUrl(currentSlug: string | null) {
   return (
     <Div>
-      <Text className="text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">Current URL</Text>
-      <Text className="text-sm font-mono text-zinc-700 dark:text-zinc-300">
+      <Text className="tracking-wider text-zinc-500 dark:text-zinc-400 mb-1" size="xs" weight="medium" transform="uppercase">Current URL</Text>
+      <Text className="font-mono text-zinc-700 dark:text-zinc-300" size="sm">
         {SITE_BASE}<Span weight="semibold" className="text-zinc-900 dark:text-zinc-100">{currentSlug ?? "—"}</Span>
       </Text>
     </Div>
@@ -194,10 +194,10 @@ function renderSlugInput({ newSlug, checkState, checkMessage, checkColor, handle
         </Text>
       )}
       {checkState === "checking" && !checkMessage && (
-        <Text className="mt-1 text-xs text-zinc-400 dark:text-zinc-400">Checking availability…</Text>
+        <Text className="mt-1 text-zinc-400 dark:text-zinc-400" size="xs">Checking availability…</Text>
       )}
       {checkState === "available" && !checkMessage && (
-        <Text className="mt-1 text-xs text-success">This slug is available.</Text>
+        <Text className="mt-1 text-success" size="xs">This slug is available.</Text>
       )}
     </Div>
   );

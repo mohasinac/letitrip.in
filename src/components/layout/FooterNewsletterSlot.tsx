@@ -34,7 +34,7 @@ export function FooterNewsletterSlot() {
 
   if (done) {
     return (
-      <Text size="sm" className="text-[color:var(--appkit-color-primary)] font-medium">
+      <Text size="sm" className="text-[color:var(--appkit-color-primary)]" weight="medium">
         Thanks for subscribing!
       </Text>
     );
@@ -42,7 +42,7 @@ export function FooterNewsletterSlot() {
 
   return (
     <Form onSubmit={handleSubmit} className="flex flex-col gap-2 w-full">
-      <Text size="xs" className="font-medium text-zinc-700 dark:text-zinc-300">
+      <Text size="xs" className="text-zinc-700 dark:text-zinc-300" weight="medium">
         Get deals &amp; drops in your inbox
       </Text>
       <Div className="flex gap-2 w-full">

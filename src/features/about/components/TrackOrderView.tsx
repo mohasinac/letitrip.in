@@ -88,7 +88,7 @@ export async function TrackOrderView() {
 
         {/* How it works */}
         <Section>
-          <Heading level={2} className="text-center mb-10">
+          <Heading level={2} className="mb-10" align="center">
             {t("howItWorksTitle")}
           </Heading>
           {/* eslint-disable-next-line lir/no-hardcoded-grid-cols -- responsive 1→2→4 breakpoint; FLUID_GRID tokens not yet available */}

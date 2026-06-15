@@ -100,7 +100,7 @@ export function EventHeader({
         </Div>
 
         <Div className="flex items-center gap-2 pt-1">
-          <Text className="text-sm text-zinc-500 dark:text-zinc-400">
+          <Text className="text-zinc-500 dark:text-zinc-400" size="sm">
             {EVENT_LABELS.HEADER_SHARE}
           </Text>
           <ShareEventButton />

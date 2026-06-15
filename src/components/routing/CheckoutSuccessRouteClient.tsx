@@ -8,7 +8,7 @@ export function CheckoutSuccessRouteClient() {
       labels={{ title: "Order Confirmed" }}
       renderHero={() => (
         <Div className="rounded-xl border border-success/20 bg-success-surface" padding="md">
-          <Heading level={2} className="mb-2 text-lg font-semibold text-success">
+          <Heading level={2} className="mb-2 text-success" size="lg" weight="semibold">
             Thank you for your order
           </Heading>
           <Text className="text-success">Your order has been placed successfully.</Text>
@@ -16,7 +16,7 @@ export function CheckoutSuccessRouteClient() {
       )}
       renderOrderCard={() => (
         <Div surface="card" padding="md">
-          <Text className="text-sm text-zinc-600 dark:text-zinc-400">Order details will appear here.</Text>
+          <Text className="text-zinc-600 dark:text-zinc-400" size="sm">Order details will appear here.</Text>
         </Div>
       )}
       renderActions={() => (

@@ -99,11 +99,11 @@ export default function UserPreOrdersPage() {
   return (
     <Div className="w-full space-y-6">
       <Div>
-        <Heading level={1} className="text-2xl font-semibold text-[var(--appkit-color-text)]">
+        <Heading level={1} className="text-2xl text-[var(--appkit-color-text)]" weight="semibold">
           My Pre-Orders
         </Heading>
         {!loading && (
-          <Text variant="secondary" className="text-sm mt-0.5">
+          <Text variant="secondary" className="mt-0.5" size="sm">
             {orders.length} pre-order{orders.length !== 1 ? "s" : ""}
           </Text>
         )}
@@ -170,7 +170,7 @@ export default function UserPreOrdersPage() {
                     >
                       Order #{order.id}
                     </Link>
-                    <Text variant="secondary" className="text-xs">{date}</Text>
+                    <Text variant="secondary" size="xs">{date}</Text>
                   </Div>
                   <Badge variant={statusVariant} className="shrink-0 capitalize">
                     {order.status.toLowerCase()}
@@ -179,11 +179,11 @@ export default function UserPreOrdersPage() {
                 <Stack gap="xs" className="mt-3 pt-3 border-t border-[var(--appkit-color-border-subtle)]">
                   {preOrderItems.map((item, idx) => (
                     <Row key={idx} justify="between">
-                      <Text className="text-sm text-[var(--appkit-color-text)]">
+                      <Text className="text-[var(--appkit-color-text)]" size="sm">
                         {item.productTitle}
                         {item.quantity > 1 ? ` ×${item.quantity}` : ""}
                       </Text>
-                      <Text className="text-sm font-medium text-[var(--appkit-color-text)]">
+                      <Text className="text-[var(--appkit-color-text)]" size="sm" weight="medium">
                         {paise(item.price * item.quantity)}
                       </Text>
                     </Row>

@@ -86,11 +86,11 @@ function renderItemRow(item: OrderItemT, key: string | number) {
         />
       )}
       <Div className="flex-1 min-w-0">
-        <Text className="text-sm font-medium text-zinc-900 dark:text-zinc-100 line-clamp-2">
+        <Text className="text-zinc-900 dark:text-zinc-100 line-clamp-2" size="sm" weight="medium">
           {item.title}
         </Text>
         {item.attributes && Object.keys(item.attributes).length > 0 && (
-          <Text variant="secondary" className="text-xs mt-0.5">
+          <Text variant="secondary" className="mt-0.5" size="xs">
             {Object.entries(item.attributes).map(([k, v]) => `${k}: ${v}`).join(" · ")}
           </Text>
         )}
@@ -121,8 +121,8 @@ function renderItemRow(item: OrderItemT, key: string | number) {
           </Row>
         )}
         <Row justify="between" className="mt-1">
-          <Text variant="secondary" className="text-xs">×{item.quantity}</Text>
-          <Text className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+          <Text variant="secondary" size="xs">×{item.quantity}</Text>
+          <Text className="text-zinc-900 dark:text-zinc-100" size="sm" weight="medium">
             {paise(item.price * item.quantity, item.currency)}
           </Text>
         </Row>
@@ -143,10 +143,10 @@ function renderOrderGroup(g: OrderGroup, gi: number) {
       className="rounded-lg border border-zinc-200 dark:border-slate-700 p-3"
     >
       <Row gap="sm" align="center" justify="between" className="mb-2 flex-wrap">
-        <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+        <Text className="text-zinc-900 dark:text-zinc-100" size="sm" weight="semibold">
           {BUNDLE_COPY.orderDetail.bundleHeader(headerLine.title)}
         </Text>
-        <Text variant="secondary" className="text-xs">
+        <Text variant="secondary" size="xs">
           {BUNDLE_COPY.orderDetail.bundleItemCount(g.memberCount)}
         </Text>
       </Row>
@@ -183,11 +183,11 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
     <Div surface="card" padding="md" className="space-y-3">
       <Row justify="between" wrap gap="3" align="start">
         <Div>
-          <Text className="text-xs text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Order</Text>
-          <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-100 mt-0.5">
+          <Text className="text-zinc-500 dark:text-zinc-400 tracking-wider" size="xs" transform="uppercase">Order</Text>
+          <Text className="text-zinc-900 dark:text-zinc-100 mt-0.5" size="base" weight="semibold">
             #{order.id.slice(-8).toUpperCase()}
           </Text>
-          {date && <Text variant="secondary" className="text-xs mt-0.5">{date}</Text>}
+          {date && <Text variant="secondary" className="mt-0.5" size="xs">{date}</Text>}
         </Div>
         <Span size="xs" weight="semibold" className={`rounded-full px-3 py-1 capitalize ${statusColor}`}>
           {order.orderStatus.replace(/_/g, " ")}
@@ -213,7 +213,7 @@ function renderOrderItems(order: NonNullable<OrderData>) {
   return (
     <Stack gap="md">
       <Div surface="card" padding="md">
-        <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
+        <Text className="text-zinc-900 dark:text-zinc-100 mb-4" size="sm" weight="semibold">
           Items ({order.items.length})
         </Text>
         <Stack gap="md">
@@ -232,15 +232,15 @@ function renderOrderAddress(order: NonNullable<OrderData>) {
   const a = order.address;
   return (
     <Div surface="card" padding="md">
-      <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3">Delivery Address</Text>
+      <Text className="text-zinc-900 dark:text-zinc-100 mb-3" size="sm" weight="semibold">Delivery Address</Text>
       <Stack gap="xs">
-        <Text className="text-sm text-zinc-800 dark:text-zinc-200">{a.line1}</Text>
-        {a.line2 && <Text className="text-sm text-zinc-800 dark:text-zinc-200">{a.line2}</Text>}
-        <Text className="text-sm text-zinc-800 dark:text-zinc-200">
+        <Text className="text-zinc-800 dark:text-zinc-200" size="sm">{a.line1}</Text>
+        {a.line2 && <Text className="text-zinc-800 dark:text-zinc-200" size="sm">{a.line2}</Text>}
+        <Text className="text-zinc-800 dark:text-zinc-200" size="sm">
           {[a.city, a.state, a.postalCode].filter(Boolean).join(", ")}
         </Text>
-        {a.country && <Text variant="secondary" className="text-sm">{a.country}</Text>}
-        {a.phone && <Text variant="secondary" className="text-sm">{a.phone}</Text>}
+        {a.country && <Text variant="secondary" size="sm">{a.country}</Text>}
+        {a.phone && <Text variant="secondary" size="sm">{a.phone}</Text>}
       </Stack>
     </Div>
   );
@@ -249,40 +249,40 @@ function renderOrderAddress(order: NonNullable<OrderData>) {
 function renderOrderPayment(order: NonNullable<OrderData>) {
   return (
     <Div surface="card" padding="md">
-      <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3">Payment Summary</Text>
+      <Text className="text-zinc-900 dark:text-zinc-100 mb-3" size="sm" weight="semibold">Payment Summary</Text>
       <Stack gap="xs">
         <Row justify="between">
-          <Text variant="secondary" className="text-sm">Subtotal</Text>
-          <Text className="text-sm">{paise(order.subtotal, order.currency)}</Text>
+          <Text variant="secondary" size="sm">Subtotal</Text>
+          <Text size="sm">{paise(order.subtotal, order.currency)}</Text>
         </Row>
         {order.shippingCost !== undefined && (
           <Row justify="between">
-            <Text variant="secondary" className="text-sm">Shipping</Text>
-            <Text className="text-sm">
+            <Text variant="secondary" size="sm">Shipping</Text>
+            <Text size="sm">
               {order.shippingCost === 0 ? "Free" : paise(order.shippingCost, order.currency)}
             </Text>
           </Row>
         )}
         {order.discount !== undefined && order.discount > 0 && (
           <Row justify="between">
-            <Text variant="secondary" className="text-sm">
+            <Text variant="secondary" size="sm">
               Discount{order.couponCode ? ` (${order.couponCode})` : ""}
             </Text>
-            <Text className="text-sm text-success">
+            <Text className="text-success" size="sm">
               −{paise(order.discount, order.currency)}
             </Text>
           </Row>
         )}
         {order.tax !== undefined && order.tax > 0 && (
           <Row justify="between">
-            <Text variant="secondary" className="text-sm">Tax</Text>
-            <Text className="text-sm">{paise(order.tax, order.currency)}</Text>
+            <Text variant="secondary" size="sm">Tax</Text>
+            <Text size="sm">{paise(order.tax, order.currency)}</Text>
           </Row>
         )}
         <Div className="border-t border-zinc-100 dark:border-slate-800 pt-2 mt-1">
           <Row justify="between">
-            <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Total</Text>
-            <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+            <Text className="text-zinc-900 dark:text-zinc-100" size="sm" weight="semibold">Total</Text>
+            <Text className="text-zinc-900 dark:text-zinc-100" size="sm" weight="semibold">
               {paise(order.total, order.currency)}
             </Text>
           </Row>

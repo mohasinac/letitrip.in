@@ -57,7 +57,7 @@ export default function Page() {
       renderStats={() =>
         error ? (
           <Div className={`${__P.p4} rounded-lg border border-[var(--appkit-color-border)]`}>
-            <Text className="text-sm text-[var(--appkit-color-text-muted)]">
+            <Text className="text-[var(--appkit-color-text-muted)]" size="sm">
               {error === "Analytics service not configured"
                 ? "Analytics service is not configured yet. Check back after your first orders."
                 : `Could not load analytics: ${error}`}

@@ -287,13 +287,13 @@ function renderWishlistHeader({
   return (
     <Div>
       <Row gap="sm" className="flex-wrap">
-        <Heading level={1} className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+        <Heading level={1} className="text-2xl text-zinc-900 dark:text-zinc-100" weight="semibold">
           My Wishlist
         </Heading>
         <Row gap="sm" className="ml-auto flex-wrap">
           {selectedIds.size > 0 && (
             <>
-              <Text className="text-sm text-zinc-600 dark:text-zinc-300">{selectedIds.size} selected</Text>
+              <Text className="text-zinc-600 dark:text-zinc-300" size="sm">{selectedIds.size} selected</Text>
               <Button variant="ghost" size="sm" onClick={handleRemoveSelected} disabled={isBulkRemoving} className="text-error hover:opacity-80 hover:bg-error-surface">
                 {isBulkRemoving ? "Removing…" : "Remove selected"}
               </Button>
@@ -308,7 +308,7 @@ function renderWishlistHeader({
         </Row>
       </Row>
       {!isLoading && wl.total > 0 && selectedIds.size === 0 && (
-        <Text variant="secondary" className="text-sm mt-0.5">
+        <Text variant="secondary" className="mt-0.5" size="sm">
           {wl.total} saved item{wl.total !== 1 ? "s" : ""}
         </Text>
       )}
@@ -325,7 +325,7 @@ function renderWishlistFilterContent({
   return (
     <Stack gap="md" className={`${__P.p4}`}>
       <Div>
-        <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Type</Text>
+        <Text className="mb-2 tracking-wide text-zinc-500 dark:text-zinc-400" size="xs" weight="semibold" transform="uppercase">Type</Text>
         <Stack gap="xs">
           {TYPE_OPTIONS.map((opt) => (
             <Button
@@ -341,10 +341,10 @@ function renderWishlistFilterContent({
         </Stack>
       </Div>
       <Div className="border-t border-zinc-200 dark:border-zinc-700 pt-4">
-        <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Price range (₹)</Text>
+        <Text className="mb-2 tracking-wide text-zinc-500 dark:text-zinc-400" size="xs" weight="semibold" transform="uppercase">Price range (₹)</Text>
         <Row gap="sm">
           <Input type="number" placeholder="Min" min={0} value={pending.minPrice} onChange={(e) => setPending((p) => ({ ...p, minPrice: e.target.value }))} className="h-8 text-sm" />
-          <Span className="flex items-center text-zinc-400">–</Span>
+          <Span className="flex items-center" color="faint">–</Span>
           <Input type="number" placeholder="Max" min={0} value={pending.maxPrice} onChange={(e) => setPending((p) => ({ ...p, maxPrice: e.target.value }))} className="h-8 text-sm" />
         </Row>
       </Div>

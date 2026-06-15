@@ -749,7 +749,7 @@ export function CartRouteClient() {
                   onClick={() => { setActiveTab(key); setSearchQuery(""); }}
                   className={["flex-1 rounded-lg px-3 py-1.5 font-medium transition-colors", activeTab === key ? "bg-white dark:bg-slate-700 text-zinc-900 dark:text-zinc-100 shadow-sm" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"].join(" ")}
                 >
-                  {label}{count > 0 && <Text as="span" className="ml-1.5 text-xs opacity-60">({count})</Text>}
+                  {label}{count > 0 && <Text as="span" className="ml-1.5 opacity-60" size="xs">({count})</Text>}
                 </Button>
                 );
               })}
@@ -839,21 +839,21 @@ export function CartRouteClient() {
           renderBreakdown={() => (
             <Div className="space-y-1.5">
               <Div className="flex items-center justify-between">
-                <Text className="text-sm text-zinc-500 dark:text-zinc-400">
+                <Text className="text-zinc-500 dark:text-zinc-400" size="sm">
                   {selectedCount === allItemIds.length
                     ? `${allItemIds.length} item${allItemIds.length !== 1 ? "s" : ""}`
                     : `${selectedCount} of ${allItemIds.length} items selected`}
                 </Text>
-                <Text className="text-sm text-zinc-700 dark:text-zinc-300">
+                <Text className="text-zinc-700 dark:text-zinc-300" size="sm">
                   ₹{selectedSubtotal.toFixed(2)}
                 </Text>
               </Div>
               <Div className="flex items-center justify-between">
-                <Text className="text-sm text-zinc-500 dark:text-zinc-400">Shipping</Text>
-                <Text className="text-sm text-zinc-500 dark:text-zinc-400">At checkout</Text>
+                <Text className="text-zinc-500 dark:text-zinc-400" size="sm">Shipping</Text>
+                <Text className="text-zinc-500 dark:text-zinc-400" size="sm">At checkout</Text>
               </Div>
 
-              <Text className="text-xs text-zinc-500 dark:text-zinc-400 mt-2">
+              <Text className="text-zinc-500 dark:text-zinc-400 mt-2" size="xs">
                 Apply coupons at checkout
               </Text>
             </Div>
@@ -861,8 +861,8 @@ export function CartRouteClient() {
           renderTotal={() => (
             <Div className="border-t border-zinc-100 dark:border-slate-700 pt-3">
               <Div className="flex items-center justify-between">
-                <Text className="font-semibold text-zinc-900 dark:text-zinc-100">Total</Text>
-                <Text className="font-semibold text-zinc-900 dark:text-zinc-100">
+                <Text className="text-zinc-900 dark:text-zinc-100" weight="semibold">Total</Text>
+                <Text className="text-zinc-900 dark:text-zinc-100" weight="semibold">
                   ₹{finalTotal.toFixed(2)}
                 </Text>
               </Div>
@@ -899,7 +899,7 @@ export function CartRouteClient() {
             </Button>
           )}
           {hasOnlyOos && (
-            <Text className="text-center text-xs text-[var(--appkit-color-error)]">
+            <Text className="text-[var(--appkit-color-error)]" size="xs" align="center">
               All items are out of stock. Remove them to continue.
             </Text>
           )}
@@ -967,7 +967,7 @@ function AuctionsTabItems({ auctionBucket, filteredAuctions, sellerGroupsAuction
   }
   return (
     <Div className="space-y-4">
-      <Text className="text-xs text-warning bg-warning-surface border border-warning/20 rounded-lg px-3 py-2">
+      <Text className="text-warning bg-warning-surface border border-warning/20 rounded-lg px-3 py-2" size="xs">
         Won auction items must be paid before you can bid on new auctions or purchase new items.
       </Text>
       {sellerGroupsAuctions.map((group) => (
@@ -1009,7 +1009,7 @@ function CartTabItems({ cartBucket, oosItems, filteredCartItems, filteredOos, se
       {oosItems.length > 0 && (
         <Div>
           <Div className="mb-3 flex items-center justify-between">
-            <Text className="text-xs font-semibold uppercase tracking-wide text-[var(--appkit-color-error)]">Unavailable ({oosItems.length})</Text>
+            <Text className="tracking-wide text-[var(--appkit-color-error)]" size="xs" weight="semibold" transform="uppercase">Unavailable ({oosItems.length})</Text>
             <Link href={String(ROUTES.USER.WISHLIST)} className="text-xs text-primary-600 dark:text-primary-400 hover:underline underline-offset-2">View wishlist →</Link>
           </Div>
           <Div className="space-y-3">
@@ -1048,7 +1048,7 @@ function OffersTabItems({ offerBucket, filteredOffers, sellerGroupsOffers, norma
   const noop = () => {};
   return (
     <Div className="space-y-4">
-      <Text className="text-xs text-warning bg-warning-surface border border-warning/20 rounded-lg px-3 py-2">
+      <Text className="text-warning bg-warning-surface border border-warning/20 rounded-lg px-3 py-2" size="xs">
         Accepted offers must be paid. These items cannot be removed from your cart.
       </Text>
       {sellerGroupsOffers.map((group) => (
@@ -1096,7 +1096,7 @@ function SellerGroupSection({
       {/* Seller header */}
       <Div className="mb-2 flex flex-wrap items-center justify-between gap-1.5">
         <Div className="flex flex-wrap items-center gap-1.5">
-          <Text className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+          <Text className="tracking-wide text-zinc-500 dark:text-zinc-400" size="xs" weight="semibold" transform="uppercase">
             Sold by
           </Text>
           {group.sellerSlug ? (
@@ -1107,7 +1107,7 @@ function SellerGroupSection({
               {group.sellerName}
             </Link>
           ) : (
-            <Text className="text-xs font-semibold uppercase tracking-wide text-zinc-800 dark:text-zinc-200">
+            <Text className="tracking-wide text-zinc-800 dark:text-zinc-200" size="xs" weight="semibold" transform="uppercase">
               {group.sellerName}
             </Text>
           )}
@@ -1115,7 +1115,7 @@ function SellerGroupSection({
         </Div>
         {/* Per-group subtotal */}
         {!isOutOfStock && group.items.length > 0 && (
-          <Text className="text-xs text-zinc-500 dark:text-zinc-400">
+          <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
             ₹{group.items.reduce((s, i) => s + i.meta.price * i.quantity, 0).toFixed(2)}
           </Text>
         )}
@@ -1149,7 +1149,7 @@ function SellerGroupSection({
                   onRemove={locked ? undefined : onRemove}
                 />
                 {locked && lockedBadge && (
-                  <Text className="mt-1 text-xs font-medium text-warning">
+                  <Text className="mt-1 text-warning" size="xs" weight="medium">
                     🔒 {lockedBadge}
                   </Text>
                 )}

@@ -67,7 +67,7 @@ export default function Page() {
   if (loadError) {
     return (
       <Div className="mx-auto max-w-2xl">
-        <Text className="text-sm text-error">{loadError}</Text>
+        <Text className="text-error" size="sm">{loadError}</Text>
       </Div>
     );
   }
@@ -75,10 +75,10 @@ export default function Page() {
   return (
     <Div className="mx-auto max-w-2xl">
       <Div className="mb-6">
-        <Heading level={1} className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+        <Heading level={1} className="text-2xl text-zinc-900 dark:text-zinc-50" weight="bold">
           Edit Sub-listing Category
         </Heading>
-        <Text className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <Text className="mt-1 text-zinc-500 dark:text-zinc-400" size="sm">
           Changes here affect all listings linked to this category.
         </Text>
       </Div>

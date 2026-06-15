@@ -66,7 +66,7 @@ export default function Page() {
         <Stack gap="lg" className="py-6">
           <Stack gap="xs">
             <Heading level={1}>{doc.title}</Heading>
-            <Text className="text-xs text-zinc-500 dark:text-zinc-400">
+            <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
               by {doc.opDisplayName} · {doc.replyCount} replies · status {doc.status}
             </Text>
           </Stack>
@@ -90,7 +90,7 @@ export default function Page() {
                   gap="xs"
                   className="p-3 rounded border border-zinc-200 dark:border-slate-700"
                 >
-                  <Text className="text-xs text-zinc-500 dark:text-zinc-400">
+                  <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
                     {r.authorName ?? r.authorId} ·{" "}
                     {new Date(r.createdAt).toLocaleString()}
                     {r.isOpInitiatedThread ? " · OP-initiated chat" : ""}

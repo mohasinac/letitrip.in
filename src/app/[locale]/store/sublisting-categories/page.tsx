@@ -123,13 +123,13 @@ function renderCategoryRow(
     >
       <Div className="flex-1 min-w-0">
         <Row gap="xs" align="center" className="flex-wrap">
-          <Text className="text-sm font-medium truncate">{cat.name}</Text>
+          <Text className="truncate" size="sm" weight="medium">{cat.name}</Text>
           {cat.itemCode && <Badge variant="secondary" className="text-[10px]">{cat.itemCode}</Badge>}
           {typeof cat.productCount === "number" && (
             <Badge variant="primary" className="text-[10px]">{cat.productCount} listing{cat.productCount !== 1 ? "s" : ""}</Badge>
           )}
         </Row>
-        {cat.description && <Text variant="secondary" className="mt-0.5 text-xs truncate">{cat.description}</Text>}
+        {cat.description && <Text variant="secondary" className="mt-0.5 truncate" size="xs">{cat.description}</Text>}
       </Div>
       <Row gap="xs" align="center" className="shrink-0">
         <Button variant="outline" size="sm" asChild>
@@ -163,8 +163,8 @@ function renderPage({
     <Div className="mx-auto max-w-4xl">
       <Row justify="between" align="start" className="mb-6" gap="md">
         <Div>
-          <Heading level={1} className="text-2xl font-bold">Sub-listing Categories</Heading>
-          <Text variant="secondary" className="mt-1 text-sm">
+          <Heading level={1} className="text-2xl" weight="bold">Sub-listing Categories</Heading>
+          <Text variant="secondary" className="mt-1" size="sm">
             Group your listings of the same collectible across conditions, grades, or prices. Buyers browsing one listing will see all others in the group.
           </Text>
         </Div>
@@ -182,17 +182,17 @@ function renderPage({
 
       {loading ? (
         <Div className="flex items-center justify-center py-16">
-          <Text variant="secondary" className="text-sm">
+          <Text variant="secondary" size="sm">
             Loading…
           </Text>
         </Div>
       ) : filtered.length === 0 ? (
         <Div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--appkit-color-border)] py-16 text-center">
           <Text className="text-3xl mb-2">🏷️</Text>
-          <Text className="text-sm font-semibold">
+          <Text size="sm" weight="semibold">
             {search ? "No categories match your search" : "No sub-listing categories yet"}
           </Text>
-          <Text variant="secondary" className="mt-1 text-xs">
+          <Text variant="secondary" className="mt-1" size="xs">
             {search
               ? "Try a different keyword"
               : "Create your first category to group listings of the same item."}
@@ -210,7 +210,7 @@ function renderPage({
       )}
 
       <Row justify="between" align="center" className="mt-3">
-        <Text variant="secondary" className="text-xs">
+        <Text variant="secondary" size="xs">
           {total} categor{total !== 1 ? "ies" : "y"} total
           {search && ` · ${filtered.length} matching "${search}"`}
           {" · "}You can edit or delete categories you created.
@@ -226,7 +226,7 @@ function renderPage({
             >
               Previous
             </Button>
-            <Text variant="secondary" className="text-xs px-1">
+            <Text variant="secondary" className="px-1" size="xs">
               {page} / {totalPages}
             </Text>
             <Button

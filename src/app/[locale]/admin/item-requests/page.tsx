@@ -66,11 +66,11 @@ export default function Page() {
                   className="items-start justify-between p-4 rounded border border-zinc-200 dark:border-slate-700"
                 >
                   <Stack gap="xs" className="flex-1">
-                    <Text className="font-medium">{r.title}</Text>
-                    <Text className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2">
+                    <Text weight="medium">{r.title}</Text>
+                    <Text className="text-zinc-500 dark:text-zinc-400 line-clamp-2" size="xs">
                       {r.description}
                     </Text>
-                    <Text className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
                       by {r.opDisplayName} · status: {r.status}
                     </Text>
                   </Stack>

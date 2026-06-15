@@ -50,7 +50,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 
   if (!order) {
     return (
-      <Text className="text-sm text-zinc-500 dark:text-zinc-400">Order not found.</Text>
+      <Text className="text-zinc-500 dark:text-zinc-400" size="sm">Order not found.</Text>
     );
   }
 
@@ -59,13 +59,13 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   return (
     <Div className="w-full max-w-lg space-y-6">
       <>
-        <Heading level={1} className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Cancel Order</Heading>
-        <Text className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Order #{id}</Text>
+        <Heading level={1} className="text-2xl text-zinc-900 dark:text-zinc-100" weight="bold">Cancel Order</Heading>
+        <Text className="mt-1 text-zinc-500 dark:text-zinc-400" size="sm">Order #{id}</Text>
       </>
 
       {!cancellable ? (
         <Div className={`rounded-xl border border-warning/20 bg-warning-surface ${__P.p5} space-y-3`}>
-          <Text className="text-sm font-medium text-warning">
+          <Text className="text-warning" size="sm" weight="medium">
             This order cannot be cancelled because it is already <Span weight="bold">{order.orderStatus.toLowerCase()}</Span>.
           </Text>
           <Link
@@ -96,7 +96,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
               placeholder="Tell us why you are cancelling this order…"
               className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
             />
-            <Text className="text-right text-xs text-zinc-400">{reason.length}/500</Text>
+            <Text size="xs" color="faint" align="end">{reason.length}/500</Text>
           </Div>
 
           <Div className="flex gap-3">

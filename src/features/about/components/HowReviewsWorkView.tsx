@@ -20,14 +20,14 @@ type T = Awaited<ReturnType<typeof getTranslations<"howReviewsWork">>>;
 function renderReviewsSteps(steps: ReviewStep[], t: T) {
   return (
     <Section>
-      <Heading level={2} className="mb-8 text-center">{t("stepsTitle")}</Heading>
+      <Heading level={2} className="mb-8" align="center">{t("stepsTitle")}</Heading>
       <Stack gap="md">
         {steps.map(({ number, icon, title, text }) => (
           <Div key={number} className={`flex items-start ${THEME_CONSTANTS.spacing.gap.md} ${__P.p5} rounded-xl border ${themed.border} ${themed.bgPrimary}`}>
             <Div className={`flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 dark:bg-primary/15 ${flex.center} text-xl`}>{icon}</Div>
             <Div>
-              <Text className="font-semibold mb-0.5">{number}. {title}</Text>
-              <Text variant="secondary" className="text-sm leading-relaxed">{text}</Text>
+              <Text className="mb-0.5" weight="semibold">{number}. {title}</Text>
+              <Text variant="secondary" className="leading-relaxed" size="sm">{text}</Text>
             </Div>
           </Div>
         ))}
@@ -53,15 +53,15 @@ function renderReviewsDiagram(diagramSteps: FlowStep[], t: T) {
 function renderReviewsInfoCards(infoCards: ReviewInfoCard[], t: T) {
   return (
     <Section>
-      <Heading level={2} className="mb-8 text-center">{t("infoTitle")}</Heading>
+      <Heading level={2} className="mb-8" align="center">{t("infoTitle")}</Heading>
       <Grid className={`${THEME_CONSTANTS.spacing.gap.md} sm:grid-cols-2`}>
         {infoCards.map(({ icon: Icon, title, text, color, iconColor }) => (
           <Div key={title} className={`rounded-xl border ${__P.p5} ${color}`}>
             <Div className={`w-10 h-10 rounded-lg bg-white/60 dark:bg-white/10 ${flex.center} mb-3`}>
               <Icon className={`w-5 h-5 ${iconColor}`} />
             </Div>
-            <Text className="font-semibold mb-1">{title}</Text>
-            <Text variant="secondary" className="text-sm leading-relaxed">{text}</Text>
+            <Text className="mb-1" weight="semibold">{title}</Text>
+            <Text variant="secondary" className="leading-relaxed" size="sm">{text}</Text>
           </Div>
         ))}
       </Grid>

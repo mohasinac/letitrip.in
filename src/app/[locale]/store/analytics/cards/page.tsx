@@ -74,8 +74,8 @@ export default function Page() {
                   className="items-center justify-between p-4 rounded border border-zinc-200 dark:border-slate-700"
                 >
                   <Stack gap="xs">
-                    <Text className="font-medium">{c.title}</Text>
-                    <Text className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <Text weight="medium">{c.title}</Text>
+                    <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
                       {c.type} · metric {c.metric}
                       {c.isBuiltIn ? " · built-in" : ""}
                     </Text>

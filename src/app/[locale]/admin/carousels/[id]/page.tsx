@@ -30,7 +30,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
               ← Carousels
             </Link>
           </Row>
-          <Heading level={1} className="mb-6 text-2xl font-bold">New Named Carousel</Heading>
+          <Heading level={1} className="mb-6 text-2xl" weight="bold">New Named Carousel</Heading>
           <EmptyState
             title="Named carousel creation via API"
             description={
@@ -70,14 +70,14 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
 
         <Row justify="between" className="mb-6">
           <Div>
-            <Heading level={1} className="text-2xl font-bold">
+            <Heading level={1} className="text-2xl" weight="bold">
               {carousel.name}
             </Heading>
             <Row className="mt-1 gap-2">
               <Badge variant={carousel.status === "active" ? "success" : "secondary"} >
                 {carousel.status}
               </Badge>
-              <Text variant="muted" className="text-sm">
+              <Text variant="muted" size="sm">
                 {carousel.slideIds.length}/{MAX_SLIDES_PER_CAROUSEL} slides
               </Text>
             </Row>

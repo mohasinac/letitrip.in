@@ -64,14 +64,14 @@ export default function Page() {
                 >
                   <Stack gap="xs" className="flex-1">
                     <Row className="gap-2">
-                      <Text className="font-medium">{n.title}</Text>
+                      <Text weight="medium">{n.title}</Text>
                       <Badge variant={n.severity === "error" ? "danger" : n.severity === "warning" ? "warning" : "info"}>
                         {n.severity}
                       </Badge>
                       <Badge variant="default">{n.category}</Badge>
                     </Row>
-                    <Text className="text-sm text-zinc-500 dark:text-zinc-400">{n.body}</Text>
-                    <Text className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <Text className="text-zinc-500 dark:text-zinc-400" size="sm">{n.body}</Text>
+                    <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
                       {new Date(n.createdAt).toLocaleString()}
                     </Text>
                   </Stack>

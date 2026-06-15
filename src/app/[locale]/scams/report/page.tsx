@@ -53,7 +53,7 @@ function TagInput({
 
   return (
     <Stack gap="xs">
-      <Text className="text-sm font-medium">{label}</Text>
+      <Text size="sm" weight="medium">{label}</Text>
       <Row gap="xs" wrap>
         {values.map((v) => (
           <Div
@@ -95,7 +95,7 @@ function TagInput({
         </Button>
       </Row>
       {helpText && (
-        <Text variant="secondary" className="text-xs">{helpText}</Text>
+        <Text variant="secondary" size="xs">{helpText}</Text>
       )}
     </Stack>
   );
@@ -128,7 +128,7 @@ function ScammerIdentitySection({
     <Card variant="outlined" padding="lg">
       <CardBody>
         <Stack gap="md">
-          <Heading level={2} className="text-base font-semibold">Section 1 — Scammer Identity</Heading>
+          <Heading level={2} size="base" weight="semibold">Section 1 — Scammer Identity</Heading>
           <Stack gap="xs">
             <Label className="text-sm font-medium" htmlFor="displayName">
               Name / Display Name <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
@@ -156,13 +156,13 @@ function WhatHappenedSection({
     <Card variant="outlined" padding="lg">
       <CardBody>
         <Stack gap="md">
-          <Heading level={2} className="text-base font-semibold">Section 2 — What Happened</Heading>
+          <Heading level={2} size="base" weight="semibold">Section 2 — What Happened</Heading>
           <Stack gap="xs">
             <Label className="text-sm font-medium" htmlFor="scamType">
               Scam Type <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
             </Label>
             <Select id="scamType" value={form.scamType} onValueChange={(v) => field("scamType")(v)} options={SCAM_TYPE_OPTIONS} className={CLS_INPUT} />
-            {selectedScamType && (<Alert variant="info" compact><Text className="text-xs leading-relaxed">{selectedScamType.howItHappens.slice(0, 180)}…</Text></Alert>)}
+            {selectedScamType && (<Alert variant="info" compact><Text className="leading-relaxed" size="xs">{selectedScamType.howItHappens.slice(0, 180)}…</Text></Alert>)}
           </Stack>
           <Stack gap="xs">
             <Label className="text-sm font-medium" htmlFor="scamPlatform">
@@ -185,7 +185,7 @@ function WhatHappenedSection({
               What exactly happened? <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
             </Label>
             <Textarea id="description" required minLength={100} rows={6} value={form.description} onChange={(e) => field("description")(e.target.value)} placeholder="Describe exactly what happened — dates, amounts promised, what you received, any communication details…" className="w-full resize-y rounded-lg border border-[color:var(--appkit-color-border,theme(colors.zinc.200))] bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[color:var(--appkit-color-primary,theme(colors.blue.500))]/40" />
-            <Text variant="secondary" className="text-right text-xs">{form.description.length} / 5000 chars (min 100)</Text>
+            <Text variant="secondary" size="xs" align="end">{form.description.length} / 5000 chars (min 100)</Text>
           </Stack>
         </Stack>
       </CardBody>
@@ -204,23 +204,23 @@ function PrivacyAgreementSection({
     <Card variant="outlined" padding="lg">
       <CardBody>
         <Stack gap="md">
-          <Heading level={2} className="text-base font-semibold">Section 3 — Privacy & Agreement</Heading>
+          <Heading level={2} size="base" weight="semibold">Section 3 — Privacy & Agreement</Heading>
           <Label className="flex cursor-pointer items-start gap-3">
             {/* audit-raw-form-input-ok: custom rich-Label checkbox with multi-line description block */}
             <input type="checkbox" checked={form.reportedByAnon} onChange={(e) => field("reportedByAnon")(e.target.checked)} className="mt-0.5 h-4 w-4 rounded" />
             <Stack gap="none">
-              <Text className="text-sm font-medium">Keep my identity private</Text>
-              <Text variant="secondary" className="text-xs">Your name will not appear on the public profile page — shown as "Anonymous reporter".</Text>
+              <Text size="sm" weight="medium">Keep my identity private</Text>
+              <Text variant="secondary" size="xs">Your name will not appear on the public profile page — shown as "Anonymous reporter".</Text>
             </Stack>
           </Label>
           <Label className="flex cursor-pointer items-start gap-3">
             {/* audit-raw-form-input-ok: custom rich-Label checkbox with multi-line description block */}
             <input type="checkbox" required checked={form.agreed} onChange={(e) => field("agreed")(e.target.checked)} className="mt-0.5 h-4 w-4 rounded" />
             <Stack gap="none">
-              <Text className="text-sm font-medium">
+              <Text size="sm" weight="medium">
                 I confirm this report is truthful to the best of my knowledge. <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
               </Text>
-              <Text variant="secondary" className="text-xs">False reports may result in account action. All submissions are reviewed before publication.</Text>
+              <Text variant="secondary" size="xs">False reports may result in account action. All submissions are reviewed before publication.</Text>
             </Stack>
           </Label>
         </Stack>
@@ -317,10 +317,10 @@ function ScamReportForm({ userId }: { userId: string }) {
       <Form onSubmit={handleSubmit}>
         <Stack gap="lg">
           <Stack gap="xs">
-            <Heading level={1} className="text-2xl font-bold">
+            <Heading level={1} className="text-2xl" weight="bold">
               Report a Scammer
             </Heading>
-            <Text variant="secondary" className="text-sm">
+            <Text variant="secondary" size="sm">
               Your report will be reviewed by our moderation team before appearing publicly. All
               submissions are confidential — your identity is never shared without consent.
             </Text>

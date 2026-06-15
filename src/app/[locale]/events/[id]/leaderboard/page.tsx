@@ -50,10 +50,10 @@ export default async function Page({ params }: Props) {
           key={entry.id}
           className="flex items-center justify-between rounded-lg border border-zinc-200 px-4 py-2 dark:border-zinc-700"
         >
-          <Text className="font-medium text-zinc-700 dark:text-zinc-300">
+          <Text className="text-zinc-700 dark:text-zinc-300" weight="medium">
             #{idx + 1} {entry.userDisplayName ?? EVENT_LABELS.PARTICIPANT_FALLBACK}
           </Text>
-          <Text className="text-sm text-zinc-500 dark:text-zinc-400">
+          <Text className="text-zinc-500 dark:text-zinc-400" size="sm">
             {entry.points ?? 0} {EVENT_LABELS.POINTS_SUFFIX}
           </Text>
         </Div>

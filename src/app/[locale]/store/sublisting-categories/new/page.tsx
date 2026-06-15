@@ -48,10 +48,10 @@ export default function Page() {
   return (
     <Div className="mx-auto max-w-2xl">
       <Div className="mb-6">
-        <Heading level={1} className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+        <Heading level={1} className="text-2xl text-zinc-900 dark:text-zinc-50" weight="bold">
           New Sub-listing Category
         </Heading>
-        <Text className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <Text className="mt-1 text-zinc-500 dark:text-zinc-400" size="sm">
           Group listings of the same real-world collectible across grades, conditions, or prices.
           Example: &ldquo;Base Set Charizard 108/120&rdquo; groups PSA 10, PSA 9, raw copies, etc.
         </Text>
@@ -85,7 +85,7 @@ export default function Page() {
             placeholder="e.g. PSA 10, 108/120, WOTC, STH"
             className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
           />
-          <Text className="mt-1 text-xs text-zinc-400 dark:text-zinc-400">
+          <Text className="mt-1 text-zinc-400 dark:text-zinc-400" size="xs">
             Grade, card number, set code, or series. Optional but helps buyers find matches.
           </Text>
         </>

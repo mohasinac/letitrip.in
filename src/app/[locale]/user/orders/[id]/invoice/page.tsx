@@ -40,18 +40,18 @@ function renderInvoiceHeader(order: OrderData, orderDate: string) {
   return (
     <Row justify="between" align="start" className="mb-8 print:mb-6">
       <Div>
-        <Heading level={2} className="text-2xl font-bold print:text-black">LetItRip</Heading>
-        <Text variant="secondary" className="text-xs mt-0.5 print:text-gray-500">letitrip.in</Text>
+        <Heading level={2} className="text-2xl print:text-black" weight="bold">LetItRip</Heading>
+        <Text variant="secondary" className="mt-0.5 print:text-gray-500" size="xs">letitrip.in</Text>
       </Div>
       <Div className="text-right">
-        <Text className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 print:text-black">
+        <Text className="text-zinc-900 dark:text-zinc-100 print:text-black" size="lg" weight="semibold">
           Invoice
         </Text>
-        <Text variant="secondary" className="text-xs mt-0.5 print:text-gray-500">
+        <Text variant="secondary" className="mt-0.5 print:text-gray-500" size="xs">
           #{order.id.slice(-8).toUpperCase()}
         </Text>
         {orderDate && (
-          <Text variant="secondary" className="text-xs print:text-gray-500">{orderDate}</Text>
+          <Text variant="secondary" className="print:text-gray-500" size="xs">{orderDate}</Text>
         )}
       </Div>
     </Row>
@@ -61,18 +61,18 @@ function renderInvoiceHeader(order: OrderData, orderDate: string) {
 function renderInvoiceAddress(a: NonNullable<OrderData["address"]>) {
   return (
     <Stack gap="xs" className="mb-6">
-      <Text className="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 print:text-gray-500">
+      <Text className="tracking-wider text-zinc-400 dark:text-zinc-400 print:text-gray-500" size="xs" weight="semibold" transform="uppercase">
         Delivered to
       </Text>
-      <Text className="text-sm text-zinc-800 dark:text-zinc-200 print:text-black">{a.line1}</Text>
+      <Text className="text-zinc-800 dark:text-zinc-200 print:text-black" size="sm">{a.line1}</Text>
       {a.line2 && (
-        <Text className="text-sm text-zinc-800 dark:text-zinc-200 print:text-black">{a.line2}</Text>
+        <Text className="text-zinc-800 dark:text-zinc-200 print:text-black" size="sm">{a.line2}</Text>
       )}
-      <Text className="text-sm text-zinc-800 dark:text-zinc-200 print:text-black">
+      <Text className="text-zinc-800 dark:text-zinc-200 print:text-black" size="sm">
         {[a.city, a.state, a.postalCode].filter(Boolean).join(", ")}
       </Text>
       {a.country && (
-        <Text variant="secondary" className="text-sm print:text-gray-500">{a.country}</Text>
+        <Text variant="secondary" className="print:text-gray-500" size="sm">{a.country}</Text>
       )}
     </Stack>
   );
@@ -155,8 +155,8 @@ function renderInvoiceTotals(order: OrderData) {
         justify="between"
         className="text-sm font-semibold border-t border-zinc-200 dark:border-slate-700 print:border-gray-300 pt-2 mt-1"
       >
-        <Text className="font-semibold text-zinc-900 dark:text-zinc-100 print:text-black">Total</Text>
-        <Text className="font-semibold text-zinc-900 dark:text-zinc-100 print:text-black">
+        <Text className="text-zinc-900 dark:text-zinc-100 print:text-black" weight="semibold">Total</Text>
+        <Text className="text-zinc-900 dark:text-zinc-100 print:text-black" weight="semibold">
           {paise(order.total, order.currency)}
         </Text>
       </Row>
@@ -173,7 +173,7 @@ export default function InvoicePage({ params }: { params: Promise<{ id: string }
   if (isLoading) {
     return (
       <Div className="flex items-center justify-center py-24">
-        <Text variant="secondary" className="text-sm">Loading invoice…</Text>
+        <Text variant="secondary" size="sm">Loading invoice…</Text>
       </Div>
     );
   }
@@ -181,7 +181,7 @@ export default function InvoicePage({ params }: { params: Promise<{ id: string }
   if (!order) {
     return (
       <Div className="flex items-center justify-center py-24">
-        <Text variant="secondary" className="text-sm">
+        <Text variant="secondary" size="sm">
           Order not found.{" "}
           <Link href={String(ROUTES.USER.ORDERS)} className="underline">Back to orders</Link>
         </Text>

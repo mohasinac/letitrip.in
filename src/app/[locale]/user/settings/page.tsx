@@ -51,7 +51,7 @@ function SectionCard({ children }: { children: React.ReactNode }) {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <Text className="text-xs font-semibold uppercase tracking-widest text-[var(--appkit-color-text-muted)]">
+    <Text className="tracking-widest text-[var(--appkit-color-text-muted)]" size="xs" weight="semibold" transform="uppercase">
       {children}
     </Text>
   );
@@ -98,11 +98,11 @@ function renderAccountTab({
         <SectionTitle>Account Info</SectionTitle>
         <Row justify="between" align="center" gap="md">
           <Div className="min-w-0">
-            <Text className="text-sm font-medium text-[var(--appkit-color-text)] truncate">
+            <Text className="text-[var(--appkit-color-text)] truncate" size="sm" weight="medium">
               {user?.displayName || user?.email?.split("@")[0] || "My Account"}
             </Text>
             {user?.email && (
-              <Text variant="secondary" className="text-xs truncate">{user.email}</Text>
+              <Text variant="secondary" className="truncate" size="xs">{user.email}</Text>
             )}
           </Div>
           <Link
@@ -117,7 +117,7 @@ function renderAccountTab({
       <SectionCard>
         <Accordion title="Change Email">
           <Stack gap="md" className="pt-3">
-            <Text variant="secondary" className="text-xs">
+            <Text variant="secondary" size="xs">
               A verification link will be sent to your new address. Your email updates after you click the link.
             </Text>
             <Form onSubmit={handleEmailSubmit} className="grid gap-4 md:grid-cols-[1fr_240px] md:items-start">
@@ -128,7 +128,7 @@ function renderAccountTab({
                   <Button type="submit" isLoading={changeEmail.isPending} size="sm">{ACTIONS.USER["send-verification-email"].label}</Button>
                 </Div>
               </Stack>
-              <Text variant="secondary" className="text-xs md:mt-1">
+              <Text variant="secondary" className="md:mt-1" size="xs">
                 We will email a confirmation link to your new address. Until you click it, your sign-in email stays the same. The link expires after 24 hours.
               </Text>
             </Form>
@@ -148,7 +148,7 @@ function renderAccountTab({
                   <Button type="submit" isLoading={changePassword.isPending} size="sm">{ACTIONS.USER["update-password"].label}</Button>
                 </Div>
               </Stack>
-              <Text variant="secondary" className="text-xs md:mt-1">
+              <Text variant="secondary" className="md:mt-1" size="xs">
                 Pick at least 8 characters. We recommend a mix of upper-case, numbers, and a symbol. After changing, you stay signed in on this device; other sessions are not signed out.
               </Text>
             </Form>
@@ -164,7 +164,7 @@ function renderPrivacyTab() {
     <Stack gap="lg">
       <SectionCard>
         <SectionTitle>Your Data</SectionTitle>
-        <Text variant="secondary" className="text-xs">
+        <Text variant="secondary" size="xs">
           Download a copy of your account data including your profile, addresses, and order history.
         </Text>
         <Div>
@@ -176,7 +176,7 @@ function renderPrivacyTab() {
 
       <SectionCard>
         <SectionTitle>Delete Account</SectionTitle>
-        <Text variant="secondary" className="text-xs">
+        <Text variant="secondary" size="xs">
           To permanently delete your account and all associated data, please contact our support team.
           Account deletion is irreversible.
         </Text>
@@ -227,7 +227,7 @@ function renderAppearanceTab({
       <SectionCard>
         <SectionTitle>Language</SectionTitle>
         <Stack gap="xs">
-          <Text variant="secondary" className="text-xs">Choose your display language. More are on the way.</Text>
+          <Text variant="secondary" size="xs">Choose your display language. More are on the way.</Text>
           <PaginatedSelect<string>
             value={language}
             onChange={(v, opt) => {
@@ -309,7 +309,7 @@ export default function Page() {
 
   return (
     <Div className="w-full max-w-5xl">
-      <Text className="text-xl font-bold text-[var(--appkit-color-text)] mb-6">Settings</Text>
+      <Text className="text-[var(--appkit-color-text)] mb-6" size="xl" weight="bold">Settings</Text>
 
       <Div className="mb-6">
         <TabStrip

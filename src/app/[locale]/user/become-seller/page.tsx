@@ -54,7 +54,7 @@ export default function Page() {
             >
               Sell collectibles to a verified community
             </Heading>
-            <Text className="text-sm text-zinc-600 dark:text-zinc-300">
+            <Text className="text-zinc-600 dark:text-zinc-300" size="sm">
               Open a store for Pokémon TCG, Hot Wheels, Beyblades, anime
               figures, and more. We handle discovery, secure checkout, and
               shipping integrations — you focus on listings.
@@ -62,7 +62,7 @@ export default function Page() {
           </Stack>
 
           <Stack gap="xs">
-            <Text className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-400">
+            <Text className="tracking-widest text-zinc-400 dark:text-zinc-400" size="xs" weight="semibold" transform="uppercase">
               What you get
             </Text>
             <Ul className="list-disc pl-5 text-sm text-zinc-700 dark:text-zinc-300 space-y-1">
@@ -83,13 +83,13 @@ export default function Page() {
           </Button>
 
           {!user && !authLoading ? (
-            <Text className="text-xs text-zinc-500 dark:text-zinc-400">
+            <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
               Please <Link href={String(ROUTES.AUTH.LOGIN)} className="text-primary hover:underline">sign in</Link> first to apply.
             </Text>
           ) : null}
 
           {mutation.isError ? (
-            <Text className="text-sm text-error">
+            <Text className="text-error" size="sm">
               {mutation.error?.message ?? "Could not submit application. Please try again."}
             </Text>
           ) : null}
@@ -107,7 +107,7 @@ export default function Page() {
           >
             Application received
           </Heading>
-          <Text className="text-sm text-success">
+          <Text className="text-success" size="sm">
             Thanks for applying. We&apos;ll review your account and notify you
             once your seller status is approved. In the meantime, you can set
             up your store profile.
@@ -129,7 +129,7 @@ export default function Page() {
           >
             You&apos;re already a seller
           </Heading>
-          <Text className="text-sm text-zinc-600 dark:text-zinc-300">
+          <Text className="text-zinc-600 dark:text-zinc-300" size="sm">
             Head over to your Store Dashboard to manage listings, orders, and
             payouts.
           </Text>

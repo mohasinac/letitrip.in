@@ -103,11 +103,11 @@ export default function UserEventsPage() {
   return (
     <Div className="w-full space-y-6">
       <Div>
-        <Heading level={1} className="text-2xl font-semibold text-[var(--appkit-color-text)]">
+        <Heading level={1} className="text-2xl text-[var(--appkit-color-text)]" weight="semibold">
           My Events
         </Heading>
         {!loading && (
-          <Text variant="secondary" className="text-sm mt-0.5">
+          <Text variant="secondary" className="mt-0.5" size="sm">
             {entries.length} event{entries.length !== 1 ? "s" : ""} entered
           </Text>
         )}
@@ -190,7 +190,7 @@ export default function UserEventsPage() {
                         {event.title}
                       </Link>
                     ) : (
-                      <Text className="text-sm font-semibold text-[var(--appkit-color-text)]">
+                      <Text className="text-[var(--appkit-color-text)]" size="sm" weight="semibold">
                         Event #{entry.eventId}
                       </Text>
                     )}
@@ -200,7 +200,7 @@ export default function UserEventsPage() {
                           {eventType}
                         </Span>
                       )}
-                      <Text variant="secondary" className="text-xs">{date}</Text>
+                      <Text variant="secondary" size="xs">{date}</Text>
                     </Row>
                   </Div>
                   <Badge variant={statusVariant} className="shrink-0 capitalize">
@@ -210,12 +210,12 @@ export default function UserEventsPage() {
                 {(entry.points !== undefined || entry.spinUsed) && (
                   <Row gap="md" className="mt-3 pt-3 border-t border-[var(--appkit-color-border-subtle)] flex-wrap">
                     {entry.points !== undefined && (
-                      <Text variant="secondary" className="text-xs">
+                      <Text variant="secondary" size="xs">
                         Points: <Span weight="medium" className="text-[var(--appkit-color-text)]">{entry.points}</Span>
                       </Text>
                     )}
                     {entry.spinUsed && (
-                      <Text variant="secondary" className="text-xs">
+                      <Text variant="secondary" size="xs">
                         Spin:{" "}
                         <Span weight="medium" className="text-[var(--appkit-color-text)]">
                           {entry.spinPrizeCouponCode

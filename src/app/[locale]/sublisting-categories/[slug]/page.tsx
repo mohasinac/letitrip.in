@@ -69,7 +69,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
             Home
           </Link>
           <Text as="span" aria-hidden>/</Text>
-          <Text as="span" className="text-zinc-700 dark:text-zinc-300 font-medium truncate max-w-[260px]">
+          <Text as="span" className="text-zinc-700 dark:text-zinc-300 truncate max-w-[260px]" weight="medium">
             {displayName}
           </Text>
         </Nav>
@@ -84,16 +84,16 @@ export default async function SublistingCategoryPage({ params }: Props) {
 
           <Div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
             <>
-              <Heading level={1} className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 sm:text-3xl">
+              <Heading level={1} className="text-2xl text-zinc-900 dark:text-zinc-50 sm:text-3xl" weight="bold">
                 {displayName}
               </Heading>
               {category.description && (
-                <Text className="mt-1.5 max-w-2xl text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                <Text className="mt-1.5 max-w-2xl text-zinc-500 dark:text-zinc-400 leading-relaxed" size="sm">
                   {category.description}
                 </Text>
               )}
             </>
-            <Text as="span" className="mt-2 inline-flex h-fit shrink-0 items-center rounded-full bg-[var(--appkit-color-primary)]/10 px-3 py-1 text-sm font-semibold text-[var(--appkit-color-primary)] sm:mt-0">
+            <Text as="span" className="mt-2 inline-flex h-fit shrink-0 items-center rounded-full bg-[var(--appkit-color-primary)]/10 px-3 py-1 text-[var(--appkit-color-primary)] sm:mt-0" size="sm" weight="semibold">
               {listings.length} listing{listings.length !== 1 ? "s" : ""}
             </Text>
           </Div>
@@ -103,8 +103,8 @@ export default async function SublistingCategoryPage({ params }: Props) {
         {listings.length === 0 ? (
           <Div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-700 py-20 text-center">
             <Text as="span" className="text-4xl mb-3">📦</Text>
-            <Text className="text-base font-semibold text-zinc-700 dark:text-zinc-300">No listings yet</Text>
-            <Text className="mt-1 text-sm text-zinc-400 dark:text-zinc-400">
+            <Text className="text-zinc-700 dark:text-zinc-300" size="base" weight="semibold">No listings yet</Text>
+            <Text className="mt-1 text-zinc-400 dark:text-zinc-400" size="sm">
               Check back soon — sellers are still adding items.
             </Text>
             <Link
@@ -170,16 +170,16 @@ export default async function SublistingCategoryPage({ params }: Props) {
                           </Text>
                         )}
                         {condition && (
-                          <Text as="span" className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 text-[10px] capitalize text-zinc-600 dark:text-zinc-400">
+                          <Text as="span" className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 text-[10px] text-zinc-600 dark:text-zinc-400" transform="capitalize">
                             {condition}
                           </Text>
                         )}
                       </Div>
                     )}
-                    <Text className="line-clamp-2 text-xs font-medium text-zinc-800 dark:text-zinc-200 leading-snug">
+                    <Text className="line-clamp-2 text-zinc-800 dark:text-zinc-200 leading-snug" size="xs" weight="medium">
                       {title}
                     </Text>
-                    <Text className="text-sm font-bold text-zinc-900 dark:text-zinc-50">
+                    <Text className="text-zinc-900 dark:text-zinc-50" size="sm" weight="bold">
                       {fmt(price, currency)}
                     </Text>
                   </Div>

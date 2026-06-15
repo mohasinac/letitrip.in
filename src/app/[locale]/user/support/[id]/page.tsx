@@ -137,15 +137,15 @@ export default function TicketDetailPage({ params }: PageProps) {
         </Link>
         <Row justify="between" align="start" wrap gap="3" className="mt-1">
           <Div className="min-w-0">
-            <Heading level={1} className="text-2xl font-semibold text-[var(--appkit-color-text)]">
+            <Heading level={1} className="text-2xl text-[var(--appkit-color-text)]" weight="semibold">
               {ticket.subject}
             </Heading>
             <Row gap="sm" className="mt-1 flex-wrap">
-              <Text variant="secondary" className="text-xs capitalize">
+              <Text variant="secondary" size="xs" transform="capitalize">
                 {(ticket.category ?? "general").replaceAll("_", " ")}
               </Text>
               {ticket.orderId && (
-                <Text variant="secondary" className="text-xs">
+                <Text variant="secondary" size="xs">
                   · Order{" "}
                   <Link
                     href={String(ROUTES.USER.ORDER_DETAIL(ticket.orderId))}
@@ -155,7 +155,7 @@ export default function TicketDetailPage({ params }: PageProps) {
                   </Link>
                 </Text>
               )}
-              <Text variant="secondary" className="text-xs">· Opened {formatDateTime(ticket.createdAt)}</Text>
+              <Text variant="secondary" size="xs">· Opened {formatDateTime(ticket.createdAt)}</Text>
             </Row>
           </Div>
           <Badge variant={STATUS_VARIANT[ticket.status] ?? "pending"} className="shrink-0 capitalize">
@@ -165,18 +165,18 @@ export default function TicketDetailPage({ params }: PageProps) {
       </Div>
 
       <Div className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`}>
-        <Text className="text-xs font-semibold text-[var(--appkit-color-text-muted)] uppercase tracking-wider mb-2">
+        <Text className="text-[var(--appkit-color-text-muted)] tracking-wider mb-2" size="xs" weight="semibold" transform="uppercase">
           Your original message
         </Text>
-        <Text className="text-sm text-[var(--appkit-color-text)] whitespace-pre-wrap">{ticket.description}</Text>
+        <Text className="text-[var(--appkit-color-text)] whitespace-pre-wrap" size="sm">{ticket.description}</Text>
       </Div>
 
       <Stack gap="md">
-        <Text className="text-sm font-semibold text-[var(--appkit-color-text)]">
+        <Text className="text-[var(--appkit-color-text)]" size="sm" weight="semibold">
           Conversation
         </Text>
         {messages.length === 0 ? (
-          <Text variant="secondary" className="text-xs">
+          <Text variant="secondary" size="xs">
             No replies yet. Our support team will respond here.
           </Text>
         ) : (
@@ -192,12 +192,12 @@ export default function TicketDetailPage({ params }: PageProps) {
                 }`}
               >
                 <Row justify="between" className="mb-2">
-                  <Text className="text-xs font-semibold text-[var(--appkit-color-text)] uppercase tracking-wider">
+                  <Text className="text-[var(--appkit-color-text)] tracking-wider" size="xs" weight="semibold" transform="uppercase">
                     {mine ? "You" : m.authorRole === "admin" ? "Admin" : "Support"}
                   </Text>
-                  <Text variant="secondary" className="text-xs">{formatDateTime(m.createdAt)}</Text>
+                  <Text variant="secondary" size="xs">{formatDateTime(m.createdAt)}</Text>
                 </Row>
-                <Text className="text-sm text-[var(--appkit-color-text)] whitespace-pre-wrap">{m.body}</Text>
+                <Text className="text-[var(--appkit-color-text)] whitespace-pre-wrap" size="sm">{m.body}</Text>
               </Div>
             );
           })
@@ -206,13 +206,13 @@ export default function TicketDetailPage({ params }: PageProps) {
 
       {closed ? (
         <Div className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5} text-center`}>
-          <Text variant="secondary" className="text-sm">
+          <Text variant="secondary" size="sm">
             This ticket is {ticket.status}. Open a new ticket if you need further help.
           </Text>
         </Div>
       ) : (
         <Stack gap="sm" className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`}>
-          <Text className="text-sm font-semibold text-[var(--appkit-color-text)]">Add a reply</Text>
+          <Text className="text-[var(--appkit-color-text)]" size="sm" weight="semibold">Add a reply</Text>
           <Textarea
             value={reply}
             onChange={(e) => setReply(e.target.value)}

@@ -1592,10 +1592,10 @@ function ProgressBar({ value, total }: { value: number; total: number }) {
   return (
     <Div className="w-full">
       <Row justify="between" className="mb-1">
-        <Text className="text-xs text-zinc-600 dark:text-slate-400">
+        <Text className="text-zinc-600 dark:text-slate-400" size="xs">
           {value} / {total} collections
         </Text>
-        <Text className="text-xs font-mono text-zinc-600 dark:text-slate-400">{pct}%</Text>
+        <Text className="font-mono text-zinc-600 dark:text-slate-400" size="xs">{pct}%</Text>
       </Row>
       <Div className="w-full h-2 rounded-full bg-zinc-200 dark:bg-slate-700 overflow-hidden">
         <Div
@@ -1695,7 +1695,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
   return (
     <>
       <Row justify="between" gap="sm" wrap className="mb-2">
-        <Text className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider m-0">
+        <Text className="text-indigo-600 dark:text-indigo-400 tracking-wider m-0" size="xs" weight="bold" transform="uppercase">
           📐 Schema Fields <span className="text-zinc-400 dark:text-slate-500 font-normal normal-case tracking-normal">({fields.length} fields)</span>
         </Text>
         <Row gap="sm">
@@ -1843,7 +1843,7 @@ function renderAccordionCollapsedHeader({
           </span>
         ) : null}
         <Badge variant={statusVariant as "success" | "warning" | "danger" | "default"}>{statusLabel}</Badge>
-        <Span size="xs" variant="muted" className="w-4 text-center select-none">{expanded ? "▲" : "▼"}</Span>
+        <Span size="xs" variant="muted" className="w-4 select-none" align="center">{expanded ? "▲" : "▼"}</Span>
       </Row>
       <Div className="shrink-0 ml-1" onClick={(e) => { e.stopPropagation(); onToggle(); }}>
         <Checkbox id={`col-${col}`} checked={selected} onChange={onToggle} disabled={isRunning} label="" />
@@ -1856,7 +1856,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
   return (
     <Div surface="default" className="border-t border-zinc-200 dark:border-slate-700 px-5 py-4">
       <Stack gap="md">
-        <Text className="text-sm text-zinc-600 dark:text-slate-300 leading-relaxed m-0">{meta.description}</Text>
+        <Text className="text-zinc-600 dark:text-slate-300 leading-relaxed m-0" size="sm">{meta.description}</Text>
 
         <Row wrap gap="sm">
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800/40 text-xs text-indigo-700 dark:text-indigo-300 font-mono">🔑 {meta.slugPattern}</span>
@@ -1867,7 +1867,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
 
         {meta.mediaSlugPatterns && meta.mediaSlugPatterns.length > 0 && (
           <Div>
-            <Text className="text-xs font-bold text-violet-700 dark:text-violet-400 uppercase tracking-wider mb-2 m-0">🖼️ Media Slug Patterns (SEO filenames)</Text>
+            <Text className="text-violet-700 dark:text-violet-400 tracking-wider mb-2 m-0" size="xs" weight="bold" transform="uppercase">🖼️ Media Slug Patterns (SEO filenames)</Text>
             <Div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-slate-700">
               <table className="w-full text-xs border-collapse">
                 <thead>
@@ -1899,20 +1899,20 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         </Div>
 
         <Div>
-          <Text className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider mb-2 m-0">✓ What&apos;s Seeded</Text>
+          <Text className="text-emerald-700 dark:text-emerald-400 tracking-wider mb-2 m-0" size="xs" weight="bold" transform="uppercase">✓ What&apos;s Seeded</Text>
           <Stack gap="none" className="gap-1.5">
             {meta.seededItems.map((item, i) => (
-              <Text key={i} className="text-sm text-zinc-700 dark:text-slate-300 leading-snug pl-3 border-l-2 border-emerald-400 dark:border-emerald-700 m-0">{item}</Text>
+              <Text key={i} className="text-zinc-700 dark:text-slate-300 leading-snug pl-3 border-l-2 border-emerald-400 dark:border-emerald-700 m-0" size="sm">{item}</Text>
             ))}
           </Stack>
         </Div>
 
         {meta.pendingItems.length > 0 && (
           <Div>
-            <Text className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-2 m-0">⏳ Pending / Needed</Text>
+            <Text className="text-amber-700 dark:text-amber-400 tracking-wider mb-2 m-0" size="xs" weight="bold" transform="uppercase">⏳ Pending / Needed</Text>
             <Stack gap="none" className="gap-1.5">
               {meta.pendingItems.map((item, i) => (
-                <Text key={i} className="text-sm text-zinc-600 dark:text-slate-400 leading-snug pl-3 border-l-2 border-amber-400 dark:border-amber-700 m-0">{item}</Text>
+                <Text key={i} className="text-zinc-600 dark:text-slate-400 leading-snug pl-3 border-l-2 border-amber-400 dark:border-amber-700 m-0" size="sm">{item}</Text>
               ))}
             </Stack>
           </Div>
@@ -2050,7 +2050,7 @@ function GroupDivider({
   return (
     <Row gap="sm" className="pt-4 pb-1">
       <Span size="sm" className="leading-none">{icon}</Span>
-      <Span size="xs" weight="bold" variant="muted" className="uppercase tracking-widest whitespace-nowrap">
+      <Span size="xs" weight="bold" variant="muted" className="tracking-widest whitespace-nowrap" transform="uppercase">
         {label}
       </Span>
       <Div className="flex-1 h-px bg-zinc-200 dark:bg-slate-700" />
@@ -2359,7 +2359,7 @@ export function SeedPanel() {
 
           {isRunning && (
             <Div className="rounded-xl p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-300 dark:border-amber-700">
-              <Text className="text-sm font-semibold text-amber-800 dark:text-amber-300 mb-2">{dryRun ? "Dry-running" : "Seeding"} collections…</Text>
+              <Text className="text-amber-800 dark:text-amber-300 mb-2" size="sm" weight="semibold">{dryRun ? "Dry-running" : "Seeding"} collections…</Text>
               <ProgressBar value={completedCount} total={totalQueued} />
             </Div>
           )}
@@ -2411,7 +2411,7 @@ function renderSeedPanelToolbar({
         <Stack gap="sm" className="py-2.5">
           <Div className="flex flex-col sm:flex-row sm:items-center gap-2">
             <Div className="flex-1 min-w-0">
-              <Heading level={2} className="text-sm font-bold text-zinc-900 dark:text-white m-0 leading-none">
+              <Heading level={2} className="text-zinc-900 dark:text-white m-0 leading-none" size="sm" weight="bold">
                 📋 Resource Collections
                 <Span size="xs" weight="normal" variant="muted" className="ml-2">
                   {selectedCollections.size} / {ALL_COLLECTIONS.length} selected
@@ -2502,7 +2502,7 @@ function renderSeedPanelHero() {
     <Div className="flex flex-col items-center text-center gap-3 pt-2">
       <span className="text-5xl leading-none">🎮</span>
       <Heading level={1} className="text-3xl font-extrabold text-amber-600 dark:text-amber-400 m-0">LetItRip Demo Seed</Heading>
-      <Text className="text-base text-zinc-600 dark:text-slate-300 max-w-xl m-0">Admin seed tool — expand each resource card to see what&apos;s seeded, pending counts, live DB state, and the UI path to verify.</Text>
+      <Text className="text-zinc-600 dark:text-slate-300 max-w-xl m-0" size="base">Admin seed tool — expand each resource card to see what&apos;s seeded, pending counts, live DB state, and the UI path to verify.</Text>
     </Div>
   );
 }
@@ -2535,7 +2535,7 @@ function renderSeedPanelDoneSummary({ errorCount, dryRun, completedCount, colErr
       {errorCount > 0 && (
         <Stack gap="xs" className="mt-2">
           {Object.entries(colErrors).map(([col, msg]) => (
-            <Text key={col} className="text-xs text-red-600 dark:text-red-400"><Span weight="bold">{COLLECTION_META[col as SeedCollectionName]?.label ?? col}:</Span> {msg}</Text>
+            <Text key={col} className="text-red-600 dark:text-red-400" size="xs"><Span weight="bold">{COLLECTION_META[col as SeedCollectionName]?.label ?? col}:</Span> {msg}</Text>
           ))}
         </Stack>
       )}
@@ -2615,7 +2615,7 @@ function renderSeedPanelPagination({ page, setPage, totalPages, PAGE_SIZE, filte
 function renderSeedScaleSummary() {
   return (
     <Div className="rounded-2xl p-5 bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200 dark:border-white/10">
-      <Heading level={3} className="text-base font-bold text-amber-600 dark:text-amber-400 m-0 mb-4">📊 Target Seed Scale</Heading>
+      <Heading level={3} className="text-amber-600 dark:text-amber-400 m-0 mb-4" size="base" weight="bold">📊 Target Seed Scale</Heading>
       <Grid cols="halves" gap="none" className="gap-x-10">
         {[
           ["Standard Products", "100+"], ["Auction Listings", "20"], ["Pre-orders", "10"],

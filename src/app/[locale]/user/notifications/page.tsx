@@ -97,13 +97,13 @@ function NotifCard({
             {!notif.isRead && (
               <Span className="inline-block h-2 w-2 rounded-full bg-primary shrink-0" />
             )}
-            <Text className="text-sm font-semibold text-[var(--appkit-color-text)] line-clamp-1">
+            <Text className="text-[var(--appkit-color-text)] line-clamp-1" size="sm" weight="semibold">
               {notif.title}
             </Text>
           </Row>
-          <Text variant="secondary" className="text-sm line-clamp-2">{notif.message}</Text>
+          <Text variant="secondary" className="line-clamp-2" size="sm">{notif.message}</Text>
         </Div>
-        <Text variant="secondary" className="text-xs shrink-0 mt-0.5">
+        <Text variant="secondary" className="shrink-0 mt-0.5" size="xs">
           {timeAgo(notif.createdAt)}
         </Text>
       </Row>

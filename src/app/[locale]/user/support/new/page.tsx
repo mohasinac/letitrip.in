@@ -85,17 +85,17 @@ export default function NewSupportTicketPage() {
         >
           ← All tickets
         </Link>
-        <Heading level={1} className="text-2xl font-semibold text-[var(--appkit-color-text)] mt-1">
+        <Heading level={1} className="text-2xl text-[var(--appkit-color-text)] mt-1" weight="semibold">
           New support ticket
         </Heading>
-        <Text variant="secondary" className="text-sm mt-0.5">
+        <Text variant="secondary" className="mt-0.5" size="sm">
           Tell us what happened. Include as much detail as you can — order ids, product names, what you expected and what you got. We typically respond within 24 hours.
         </Text>
       </Div>
 
       <Stack gap="md" className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`}>
         <Div>
-          <Text className="text-xs font-medium text-[var(--appkit-color-text-muted)] mb-1">Category</Text>
+          <Text className="text-[var(--appkit-color-text-muted)] mb-1" size="xs" weight="medium">Category</Text>
           {/* eslint-disable-next-line lir/no-raw-html-elements -- short category select */}
           <select
             value={category}
@@ -134,7 +134,7 @@ export default function NewSupportTicketPage() {
         />
 
         <Div className="space-y-1">
-          <Text className="text-xs font-medium text-[var(--appkit-color-text-muted)]">Describe the issue</Text>
+          <Text className="text-[var(--appkit-color-text-muted)]" size="xs" weight="medium">Describe the issue</Text>
           <Textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -143,7 +143,7 @@ export default function NewSupportTicketPage() {
             maxLength={5000}
             className="w-full rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm"
           />
-          <Text variant="secondary" className="text-right text-xs">
+          <Text variant="secondary" size="xs" align="end">
             {description.trim().length}/5000 — at least {MIN_DESCRIPTION} characters
           </Text>
         </Div>

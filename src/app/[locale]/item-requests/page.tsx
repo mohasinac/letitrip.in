@@ -66,11 +66,11 @@ export default function Page() {
                   }
                 >
                   <Stack gap="xs" className="flex-1">
-                    <Text className="font-medium">{r.title}</Text>
-                    <Text className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2">
+                    <Text weight="medium">{r.title}</Text>
+                    <Text className="text-zinc-500 dark:text-zinc-400 line-clamp-2" size="xs">
                       {r.description}
                     </Text>
-                    <Text className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
                       by {r.opDisplayName} · {r.replyCount} replies
                       {r.category ? ` · ${r.category}` : ""}
                     </Text>

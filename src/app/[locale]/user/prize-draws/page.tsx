@@ -92,11 +92,11 @@ export default function UserPrizeDrawsPage() {
   return (
     <Div className="w-full space-y-6">
       <Div>
-        <Heading level={1} className="text-2xl font-semibold text-[var(--appkit-color-text)]">
+        <Heading level={1} className="text-2xl text-[var(--appkit-color-text)]" weight="semibold">
           My Prize Draws
         </Heading>
         {!loading && (
-          <Text variant="secondary" className="text-sm mt-0.5">
+          <Text variant="secondary" className="mt-0.5" size="sm">
             {orders.length} prize draw{orders.length !== 1 ? "s" : ""}
           </Text>
         )}
@@ -163,7 +163,7 @@ export default function UserPrizeDrawsPage() {
                     >
                       Order #{order.id}
                     </Link>
-                    <Text variant="secondary" className="text-xs">{date}</Text>
+                    <Text variant="secondary" size="xs">{date}</Text>
                   </Div>
                   <Badge variant={statusVariant} className="shrink-0 capitalize">
                     {order.status.toLowerCase()}
@@ -179,7 +179,7 @@ export default function UserPrizeDrawsPage() {
                         {item.productTitle}
                         {item.quantity > 1 ? ` — ${item.quantity} entries` : " — 1 entry"}
                       </Link>
-                      <Text className="text-sm font-medium text-[var(--appkit-color-text)] shrink-0 ml-2">
+                      <Text className="text-[var(--appkit-color-text)] shrink-0 ml-2" size="sm" weight="medium">
                         {paise(item.price * item.quantity)}
                       </Text>
                     </Row>

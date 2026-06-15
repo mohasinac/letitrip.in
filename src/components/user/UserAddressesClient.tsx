@@ -92,7 +92,7 @@ export function UserAddressesClient() {
   return (
     <Div className="space-y-6">
       <Div className="flex items-center justify-between">
-        <Heading level={1} className="text-xl font-bold text-zinc-900 dark:text-zinc-100">My Addresses</Heading>
+        <Heading level={1} className="text-zinc-900 dark:text-zinc-100" size="xl" weight="bold">My Addresses</Heading>
         <Link
           href={String(ROUTES.USER.ADDRESSES_ADD)}
           className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600"
@@ -113,7 +113,7 @@ export function UserAddressesClient() {
         </Div>
         {labels.length > 0 && (
           <Div className="min-w-[160px]">
-            <Text className="text-xs font-medium text-[var(--appkit-color-text-muted)] mb-1">Label</Text>
+            <Text className="text-[var(--appkit-color-text-muted)] mb-1" size="xs" weight="medium">Label</Text>
             {/* eslint-disable-next-line lir/no-raw-html-elements -- inline filter; small surface */}
             <select
               value={labelFilter}
@@ -132,7 +132,7 @@ export function UserAddressesClient() {
 
       {confirmDeleteId && (
         <Div className={`rounded-xl border border-error/20 bg-error-surface ${__P.p4} space-y-3`}>
-          <Text className="text-sm font-medium text-error">
+          <Text className="text-error" size="sm" weight="medium">
             Delete this address? This cannot be undone.
           </Text>
           <Div className="flex gap-3">

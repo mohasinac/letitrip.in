@@ -68,7 +68,7 @@ function CodeRevealRow({ item, orderId }: { item: OrderItem; orderId: string }) 
           >
             {item.productTitle}
           </Link>
-          <Text variant="secondary" className="text-xs">{paise(item.price)}</Text>
+          <Text variant="secondary" size="xs">{paise(item.price)}</Text>
         </Div>
         <Link
           href={String(ROUTES.USER.ORDER_DETAIL(orderId))}
@@ -115,11 +115,11 @@ export default function UserDigitalCodesPage() {
   return (
     <Div className="w-full space-y-6">
       <Div>
-        <Heading level={1} className="text-2xl font-semibold text-[var(--appkit-color-text)]">
+        <Heading level={1} className="text-2xl text-[var(--appkit-color-text)]" weight="semibold">
           My Digital Codes
         </Heading>
         {!loading && (
-          <Text variant="secondary" className="text-sm mt-0.5">
+          <Text variant="secondary" className="mt-0.5" size="sm">
             {codeItems.length} code{codeItems.length !== 1 ? "s" : ""}
           </Text>
         )}

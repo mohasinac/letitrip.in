@@ -45,8 +45,8 @@ function renderSecurityCards(sections: SecurityCard[]) {
             <Div className={`w-10 h-10 rounded-lg bg-white/60 dark:bg-white/10 ${flex.center} mb-3`}>
               <Icon className={`w-5 h-5 ${iconColor}`} />
             </Div>
-            <Text className="font-semibold mb-1">{title}</Text>
-            <Text variant="secondary" className="text-sm leading-relaxed">{text}</Text>
+            <Text className="mb-1" weight="semibold">{title}</Text>
+            <Text variant="secondary" className="leading-relaxed" size="sm">{text}</Text>
           </Div>
         ))}
       </Grid>
@@ -233,7 +233,7 @@ export async function SecurityPrivacyView() {
         {renderSecurityOverview(t)}
         {renderSecurityCards(SECTIONS)}
         {renderSecurityDiagram(DIAGRAM_STEPS, t)}
-        <Text variant="secondary" className="text-center text-sm">{t("lastUpdated")}</Text>
+        <Text variant="secondary" size="sm" align="center">{t("lastUpdated")}</Text>
         {renderSecurityCta(t)}
       </Div>
     </Div>

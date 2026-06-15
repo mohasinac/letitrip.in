@@ -52,7 +52,7 @@ export default function Page() {
             <Heading level={1}>
               {(user?.displayName as string) ?? id}
             </Heading>
-            <Text className="text-xs text-zinc-500 dark:text-zinc-400">
+            <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
               {(user?.email as string) ?? "—"} · role {(user?.role as string) ?? "user"} · uid{" "}
               <code className="font-mono">{id}</code>
             </Text>

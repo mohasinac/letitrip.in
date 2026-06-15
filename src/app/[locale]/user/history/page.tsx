@@ -101,11 +101,11 @@ function HistoryRow({ item, onRemove }: HistoryRowProps) {
         <Row gap="sm" className="mt-1 text-xs">
           <Span className={TYPE_CHIP}>{TYPE_LABEL[item.productType]}</Span>
           {item.productSnapshot?.storeName && (
-            <Text variant="secondary" className="line-clamp-1 text-xs">
+            <Text variant="secondary" className="line-clamp-1" size="xs">
               {item.productSnapshot.storeName}
             </Text>
           )}
-          <Text variant="secondary" className="text-xs">
+          <Text variant="secondary" size="xs">
             Visited {relativeTime(item.viewedAt)}
           </Text>
         </Row>
@@ -143,10 +143,10 @@ export default function UserHistoryPage() {
     <Div className="w-full max-w-3xl space-y-6">
       <Row justify="between" align="end" wrap gap="3">
         <Div>
-          <Heading level={1} className="text-2xl font-semibold text-[var(--appkit-color-text)]">
+          <Heading level={1} className="text-2xl text-[var(--appkit-color-text)]" weight="semibold">
             Recently Viewed
           </Heading>
-          <Text variant="secondary" className="mt-0.5 text-sm">
+          <Text variant="secondary" className="mt-0.5" size="sm">
             {items.length} of {HISTORY_MAX}
             {isGuest ? " · Sign in to keep your history across devices" : ""}
           </Text>

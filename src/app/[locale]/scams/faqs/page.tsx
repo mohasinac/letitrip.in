@@ -75,26 +75,26 @@ export default async function Page() {
                 <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[color:var(--appkit-color-warning,theme(colors.amber.500))]/10 text-[color:var(--appkit-color-warning,theme(colors.amber.600))]">
                   <ShieldAlert className="h-5 w-5" />
                 </span>
-                <Heading level={1} className="text-3xl font-bold">
+                <Heading level={1} className="text-3xl" weight="bold">
                   Scam Awareness FAQs
                 </Heading>
               </Row>
-              <Text variant="secondary" className="max-w-2xl text-base">
+              <Text variant="secondary" className="max-w-2xl" size="base">
                 Common questions about spotting, avoiding, and reporting collectibles scams in India.
                 Learn how LetItRip protects you and what to do if something goes wrong.
               </Text>
               <Row gap="sm" className="flex-wrap pt-1">
-                <Text variant="secondary" className="text-sm">
+                <Text variant="secondary" size="sm">
                   {faqs.length} answers
                 </Text>
-                <Text variant="secondary" className="text-sm">·</Text>
+                <Text variant="secondary" size="sm">·</Text>
                 <Link
                   href={String(ROUTES.PUBLIC.SCAM_TYPES)}
                   className="text-sm text-[color:var(--appkit-color-primary,theme(colors.blue.600))] hover:underline"
                 >
                   View all scam types →
                 </Link>
-                <Text variant="secondary" className="text-sm">·</Text>
+                <Text variant="secondary" size="sm">·</Text>
                 <Link
                   href={scamsHref}
                   className="text-sm text-[color:var(--appkit-color-primary,theme(colors.blue.600))] hover:underline"
@@ -119,7 +119,7 @@ export default async function Page() {
                   return (
                     <Stack key={faq.id} gap="sm" as="div">
                       <dt>
-                        <Heading level={2} className="text-lg font-semibold">
+                        <Heading level={2} size="lg" weight="semibold">
                           {faq.question}
                         </Heading>
                       </dt>
@@ -140,10 +140,10 @@ export default async function Page() {
           <Container size="xl">
             <Row justify="between" align="center" className="flex-wrap gap-4">
               <Stack gap="xs">
-                <Heading level={3} className="text-base font-semibold">
+                <Heading level={3} size="base" weight="semibold">
                   Encountered a scammer?
                 </Heading>
-                <Text variant="secondary" className="text-sm">
+                <Text variant="secondary" size="sm">
                   Report them to protect other collectors in India.
                 </Text>
               </Stack>

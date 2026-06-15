@@ -86,20 +86,20 @@ function ConversationListItem({ conversation, active, onSelect, mobileHref }: Co
     >
       <Row justify="between" align="start" gap="sm">
         <Div className="min-w-0 flex-1">
-          <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 line-clamp-1">
+          <Text className="text-zinc-900 dark:text-zinc-100 line-clamp-1" size="sm" weight="semibold">
             {conversation.storeName || conversation.sellerDisplayName}
           </Text>
           {conversation.productTitle && (
-            <Text variant="secondary" className="text-xs line-clamp-1">
+            <Text variant="secondary" className="line-clamp-1" size="xs">
               {conversation.productTitle}
             </Text>
           )}
-          <Text variant="secondary" className="text-xs line-clamp-1 mt-1">
+          <Text variant="secondary" className="line-clamp-1 mt-1" size="xs">
             {conversation.lastMessage}
           </Text>
         </Div>
         <Stack gap="xs" className="items-end shrink-0">
-          <Text variant="secondary" className="text-xs">
+          <Text variant="secondary" size="xs">
             {relativeTime(conversation.lastMessageAt)}
           </Text>
           {conversation.unreadBuyer > 0 && (
@@ -232,7 +232,7 @@ export default function UserMessagesPage({ initialActiveId }: UserMessagesPagePr
   if (!userId) {
     return (
       <Div className={PAGE_CONTAINER}>
-        <Text variant="secondary" className="py-12 text-center">
+        <Text variant="secondary" className="py-12" align="center">
           Sign in to view your conversations.
         </Text>
       </Div>
@@ -243,10 +243,10 @@ export default function UserMessagesPage({ initialActiveId }: UserMessagesPagePr
     <Div className={PAGE_CONTAINER}>
       <Row justify="between" align="end" wrap gap="3" className="mb-4">
         <Div>
-          <Heading level={1} className="text-2xl font-semibold">
+          <Heading level={1} className="text-2xl" weight="semibold">
             Messages
           </Heading>
-          <Text variant="secondary" className="text-sm mt-0.5">
+          <Text variant="secondary" className="mt-0.5" size="sm">
             {conversations.length} {conversations.length === 1 ? "conversation" : "conversations"}
             {totalUnread > 0 ? ` · ${totalUnread} unread` : ""}
           </Text>
@@ -268,7 +268,7 @@ export default function UserMessagesPage({ initialActiveId }: UserMessagesPagePr
               </Stack>
             )}
             renderEmptyState={() => (
-              <Text variant="secondary" className="text-sm py-6 text-center">
+              <Text variant="secondary" className="py-6" size="sm" align="center">
                 You haven't started any conversations yet.
               </Text>
             )}
@@ -311,7 +311,7 @@ export default function UserMessagesPage({ initialActiveId }: UserMessagesPagePr
               renderMessages={() => (
                 <Div ref={messageListRef} className={MESSAGE_LIST_CLASS}>
                   {conversation.messages.length === 0 ? (
-                    <Text variant="secondary" className="text-sm py-6 text-center">
+                    <Text variant="secondary" className="py-6" size="sm" align="center">
                       No messages yet — say hello!
                     </Text>
                   ) : (
@@ -335,7 +335,7 @@ export default function UserMessagesPage({ initialActiveId }: UserMessagesPagePr
               )}
             />
           ) : (
-            <Text variant="secondary" className="text-sm py-6 text-center">
+            <Text variant="secondary" className="py-6" size="sm" align="center">
               Loading conversation…
             </Text>
           )

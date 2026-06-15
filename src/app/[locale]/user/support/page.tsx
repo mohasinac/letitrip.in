@@ -93,11 +93,11 @@ export default function UserSupportPage() {
     <Div className="w-full space-y-6">
       <Row justify="between" wrap align="center">
         <Div>
-          <Heading level={1} className="text-2xl font-semibold text-[var(--appkit-color-text)]">
+          <Heading level={1} className="text-2xl text-[var(--appkit-color-text)]" weight="semibold">
             Support Tickets
           </Heading>
           {!loading && data && (
-            <Text variant="secondary" className="text-sm mt-0.5">
+            <Text variant="secondary" className="mt-0.5" size="sm">
               {data.total} ticket{data.total !== 1 ? "s" : ""}
             </Text>
           )}
@@ -165,17 +165,17 @@ export default function UserSupportPage() {
             >
               <Row justify="between" align="start" gap="3">
                 <Div className="min-w-0">
-                  <Text className="text-sm font-semibold text-[var(--appkit-color-text)] truncate">
+                  <Text className="text-[var(--appkit-color-text)] truncate" size="sm" weight="semibold">
                     {t.subject}
                   </Text>
                   <Row gap="sm" className="mt-1 flex-wrap">
-                    <Text variant="secondary" className="text-xs capitalize">
+                    <Text variant="secondary" size="xs" transform="capitalize">
                       {(t.category ?? "general").replaceAll("_", " ")}
                     </Text>
                     {t.orderId && (
-                      <Text variant="secondary" className="text-xs">· Order {t.orderId}</Text>
+                      <Text variant="secondary" size="xs">· Order {t.orderId}</Text>
                     )}
-                    <Text variant="secondary" className="text-xs">· Updated {formatDate(t.updatedAt)}</Text>
+                    <Text variant="secondary" size="xs">· Updated {formatDate(t.updatedAt)}</Text>
                   </Row>
                 </Div>
                 <Badge variant={STATUS_VARIANT[t.status] ?? "pending"} className="shrink-0 capitalize">

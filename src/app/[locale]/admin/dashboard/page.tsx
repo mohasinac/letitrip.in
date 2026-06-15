@@ -266,8 +266,8 @@ export default function Page() {
             />
             <Div className="flex items-center justify-between gap-4 py-3">
               <>
-                <Text className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Seed Data</Text>
-                <Text className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Load or reset Firestore seed collections</Text>
+                <Text className="text-zinc-800 dark:text-zinc-200" size="sm" weight="medium">Seed Data</Text>
+                <Text className="text-zinc-500 dark:text-zinc-400 mt-0.5" size="xs">Load or reset Firestore seed collections</Text>
               </>
               <Link
                 href={ROUTES.DEMO.SEED}
@@ -283,16 +283,16 @@ export default function Page() {
         recentOrders.length > 0 ? (
           <Div className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden}`}>
             <Div className="flex items-center justify-between px-4 py-3 border-b border-[var(--appkit-color-border-subtle)]">
-              <Text className="text-sm font-semibold text-[var(--appkit-color-text)]">Recent Orders</Text>
+              <Text className="text-[var(--appkit-color-text)]" size="sm" weight="semibold">Recent Orders</Text>
               <Link href={String(ROUTES.ADMIN.ORDERS)} className="text-xs text-[var(--appkit-color-primary)] hover:underline">View all →</Link>
             </Div>
             <Div className="divide-y divide-[var(--appkit-color-border-subtle)]">
               {recentOrders.map((order) => (
                 <Link key={order.id} href={`${String(ROUTES.ADMIN.ORDERS)}/${order.id}`} className="flex items-center justify-between px-4 py-2.5 hover:bg-[var(--appkit-color-surface-hover)] transition-colors">
-                  <Text className="text-xs font-mono text-[var(--appkit-color-text-muted)]">{order.id}</Text>
+                  <Text className="font-mono text-[var(--appkit-color-text-muted)]" size="xs">{order.id}</Text>
                   <Div className="flex items-center gap-3">
-                    <Text className="text-xs text-[var(--appkit-color-text-muted)]">{order.status}</Text>
-                    <Text className="text-xs font-semibold text-[var(--appkit-color-text)]">
+                    <Text className="text-[var(--appkit-color-text-muted)]" size="xs">{order.status}</Text>
+                    <Text className="text-[var(--appkit-color-text)]" size="xs" weight="semibold">
                       ₹{((order.totalAmount ?? 0) / 100).toLocaleString("en-IN")}
                     </Text>
                   </Div>

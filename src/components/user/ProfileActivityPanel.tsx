@@ -39,8 +39,8 @@ function formatINR(paise: number): string {
 function StatPill({ label, value }: { label: string; value: string | number }) {
   return (
     <Div className="rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3">
-      <Text className="text-xl font-bold text-[var(--appkit-color-text)] leading-tight">{value}</Text>
-      <Text className="text-xs text-[var(--appkit-color-text-muted)] mt-0.5">{label}</Text>
+      <Text className="text-[var(--appkit-color-text)] leading-tight" size="xl" weight="bold">{value}</Text>
+      <Text className="text-[var(--appkit-color-text-muted)] mt-0.5" size="xs">{label}</Text>
     </Div>
   );
 }
@@ -49,7 +49,7 @@ function SectionCard({ title, viewAllHref, children }: { title: string; viewAllH
   return (
     <Div className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5} shadow-sm`}>
       <Div className="mb-3 flex items-center justify-between">
-        <Text className="text-sm font-semibold text-[var(--appkit-color-text)]">{title}</Text>
+        <Text className="text-[var(--appkit-color-text)]" size="sm" weight="semibold">{title}</Text>
         <Link href={viewAllHref} className="text-xs text-[var(--appkit-color-primary)] hover:underline">View all →</Link>
       </Div>
       {children}
@@ -89,7 +89,7 @@ export function ProfileActivityPanel() {
 
   return (
     <Stack gap="lg">
-      <Heading level={2} className="text-lg font-semibold text-[var(--appkit-color-text)]">Your activity</Heading>
+      <Heading level={2} className="text-[var(--appkit-color-text)]" size="lg" weight="semibold">Your activity</Heading>
 
       {/* eslint-disable-next-line lir/no-hardcoded-grid-cols -- fixed 4-stat strip; FLUID_GRID token oversizes */}
       <Div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -103,7 +103,7 @@ export function ProfileActivityPanel() {
       <Div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <SectionCard title="Recent orders" viewAllHref={String(ROUTES.USER.ORDERS)}>
           {recentOrders.length === 0 ? (
-            <Text variant="secondary" className="text-xs">No orders yet.</Text>
+            <Text variant="secondary" size="xs">No orders yet.</Text>
           ) : (
             <Stack gap="sm">
               {recentOrders.slice(0, 5).map((o: any) => (
@@ -112,7 +112,7 @@ export function ProfileActivityPanel() {
                   href={String(ROUTES.USER.ORDER_DETAIL(o.id))}
                   className="block rounded-md border border-[var(--appkit-color-border)] px-3 py-2 hover:border-[var(--appkit-color-primary)] transition-colors"
                 >
-                  <Text className="text-xs font-medium text-[var(--appkit-color-text)] truncate">{o.id}</Text>
+                  <Text className="text-[var(--appkit-color-text)] truncate" size="xs" weight="medium">{o.id}</Text>
                   <Text className="text-[11px] text-[var(--appkit-color-text-muted)]">
                     {formatINR(o.totalAmount ?? 0)} · {o.status ?? ""}
                   </Text>
@@ -124,12 +124,12 @@ export function ProfileActivityPanel() {
 
         <SectionCard title="Recent bids" viewAllHref={String(ROUTES.USER.BIDS)}>
           {!bidsData || bidsData.bids.length === 0 ? (
-            <Text variant="secondary" className="text-xs">No bids yet.</Text>
+            <Text variant="secondary" size="xs">No bids yet.</Text>
           ) : (
             <Stack gap="sm">
               {bidsData.bids.slice(0, 5).map((b) => (
                 <Div key={b.id} className="rounded-md border border-[var(--appkit-color-border)] px-3 py-2">
-                  <Text className="text-xs font-medium text-[var(--appkit-color-text)] truncate">{b.productId ?? "Auction"}</Text>
+                  <Text className="text-[var(--appkit-color-text)] truncate" size="xs" weight="medium">{b.productId ?? "Auction"}</Text>
                   <Text className="text-[11px] text-[var(--appkit-color-text-muted)]">
                     {formatINR(b.amount)} · {b.status ?? "active"}
                   </Text>
@@ -141,12 +141,12 @@ export function ProfileActivityPanel() {
 
         <SectionCard title="Recent reviews" viewAllHref={String(ROUTES.USER.REVIEWS)}>
           {!reviewsData || reviewsData.reviews.length === 0 ? (
-            <Text variant="secondary" className="text-xs">No reviews yet.</Text>
+            <Text variant="secondary" size="xs">No reviews yet.</Text>
           ) : (
             <Stack gap="sm">
               {reviewsData.reviews.slice(0, 5).map((r) => (
                 <Div key={r.id} className="rounded-md border border-[var(--appkit-color-border)] px-3 py-2">
-                  <Text className="text-xs font-medium text-[var(--appkit-color-text)] truncate">{r.title ?? r.productId}</Text>
+                  <Text className="text-[var(--appkit-color-text)] truncate" size="xs" weight="medium">{r.title ?? r.productId}</Text>
                   <Text className="text-[11px] text-[var(--appkit-color-text-muted)]">{"★".repeat(r.rating ?? 0)}</Text>
                 </Div>
               ))}

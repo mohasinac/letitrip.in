@@ -55,10 +55,10 @@ export function SearchResultsClient({ locale, query, total, products }: Props) {
           </Div>
         ) : (
           <Div className={`rounded-xl border border-zinc-200 bg-white ${__P.p6} text-center dark:border-slate-700 dark:bg-slate-900`}>
-            <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+            <Text className="text-zinc-900 dark:text-zinc-100" size="base" weight="semibold">
               No results for &ldquo;{query}&rdquo;
             </Text>
-            <Text className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+            <Text className="mt-1 text-zinc-500 dark:text-zinc-400" size="sm">
               Try a different keyword or browse categories.
             </Text>
           </Div>

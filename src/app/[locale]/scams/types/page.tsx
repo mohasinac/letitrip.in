@@ -72,24 +72,24 @@ function renderScamTypeCard(
     <Card key={scamType.id} variant="outlined" padding="md">
       <CardHeader>
         <Row justify="between" align="start" gap="sm">
-          <Heading level={3} className="text-base font-semibold">{scamType.label}</Heading>
+          <Heading level={3} size="base" weight="semibold">{scamType.label}</Heading>
           <Badge variant="warning" className="shrink-0">{categoryLabel}</Badge>
         </Row>
-        <Text variant="secondary" className="mt-1 text-sm">{scamType.shortDescription}</Text>
+        <Text variant="secondary" className="mt-1" size="sm">{scamType.shortDescription}</Text>
       </CardHeader>
       <CardBody>
         <Stack gap="sm">
           <Stack gap="xs">
-            <Text className="text-xs font-semibold uppercase tracking-wide text-[color:var(--appkit-color-text-muted,theme(colors.zinc.500))]">How it happens</Text>
-            <Text variant="secondary" className="text-sm leading-relaxed">{howItHappensSummary}</Text>
+            <Text className="tracking-wide text-[color:var(--appkit-color-text-muted,theme(colors.zinc.500))]" size="xs" weight="semibold" transform="uppercase">How it happens</Text>
+            <Text variant="secondary" className="leading-relaxed" size="sm">{howItHappensSummary}</Text>
           </Stack>
           <Stack gap="xs">
-            <Text className="text-xs font-semibold uppercase tracking-wide text-[color:var(--appkit-color-text-muted,theme(colors.zinc.500))]">How to avoid</Text>
+            <Text className="tracking-wide text-[color:var(--appkit-color-text-muted,theme(colors.zinc.500))]" size="xs" weight="semibold" transform="uppercase">How to avoid</Text>
             <Stack gap="xs" as="ul">
               {scamType.howToAvoid.map((tip, i) => (
                 <Row key={i} gap="sm" align="start" as="li">
                   <Span weight="bold" className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[color:var(--appkit-color-success,theme(colors.green.600))]/10 text-[10px] text-[color:var(--appkit-color-success,theme(colors.green.700))]">{i + 1}</Span>
-                  <Text variant="secondary" className="text-sm leading-relaxed">{tip}</Text>
+                  <Text variant="secondary" className="leading-relaxed" size="sm">{tip}</Text>
                 </Row>
               ))}
             </Stack>
@@ -108,9 +108,9 @@ function renderCategorySection(category: (typeof SCAM_CATEGORIES)[number]) {
         <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[color:var(--appkit-color-primary,theme(colors.blue.600))]/10 text-[color:var(--appkit-color-primary,theme(colors.blue.600))]">
           {CATEGORY_ICON_MAP[category.id]}
         </span>
-        <Heading level={2} className="text-xl font-bold">{category.label}</Heading>
+        <Heading level={2} size="xl" weight="bold">{category.label}</Heading>
       </Row>
-      <Text variant="secondary" className="max-w-2xl text-sm">{category.description}</Text>
+      <Text variant="secondary" className="max-w-2xl" size="sm">{category.description}</Text>
       <Grid cols={2} gap="md">
         {types.map((scamType) => renderScamTypeCard(scamType, category.label))}
       </Grid>
@@ -143,15 +143,15 @@ export default function Page() {
         <Section className="border-b py-10">
           <Container size="xl">
             <Stack gap="sm">
-              <Heading level={1} className="text-3xl font-bold">Scam Types — LetItRip Scam Registry</Heading>
-              <Text variant="secondary" className="max-w-2xl text-base">
+              <Heading level={1} className="text-3xl" weight="bold">Scam Types — LetItRip Scam Registry</Heading>
+              <Text variant="secondary" className="max-w-2xl" size="base">
                 27 documented scam patterns across 7 categories, specific to India&apos;s collectibles aftermarket. Learn how each scam works and how to protect yourself.
               </Text>
               <Row gap="sm" className="flex-wrap pt-1">
-                <Text variant="secondary" className="text-sm">{SCAM_TYPES.length} documented scam types</Text>
-                <Text variant="secondary" className="text-sm">·</Text>
-                <Text variant="secondary" className="text-sm">{SCAM_CATEGORIES.length} categories</Text>
-                <Text variant="secondary" className="text-sm">·</Text>
+                <Text variant="secondary" size="sm">{SCAM_TYPES.length} documented scam types</Text>
+                <Text variant="secondary" size="sm">·</Text>
+                <Text variant="secondary" size="sm">{SCAM_CATEGORIES.length} categories</Text>
+                <Text variant="secondary" size="sm">·</Text>
                 <Link href={registryHref} className="text-sm text-[color:var(--appkit-color-primary,theme(colors.blue.600))] hover:underline">View verified scammer profiles →</Link>
               </Row>
             </Stack>
@@ -172,8 +172,8 @@ export default function Page() {
           <Container size="xl">
             <Row justify="between" align="center" className="flex-wrap gap-4">
               <Stack gap="xs">
-                <Heading level={3} className="text-base font-semibold">Encountered a scammer?</Heading>
-                <Text variant="secondary" className="text-sm">Report them to protect other collectors in India.</Text>
+                <Heading level={3} size="base" weight="semibold">Encountered a scammer?</Heading>
+                <Text variant="secondary" size="sm">Report them to protect other collectors in India.</Text>
               </Stack>
               <Row gap="sm">
                 <Link href={String(ROUTES.PUBLIC.SCAM_REPORT)} className="appkit-button appkit-button--primary appkit-button--md">Report a Scammer</Link>

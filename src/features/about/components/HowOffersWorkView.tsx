@@ -86,7 +86,7 @@ export async function HowOffersWorkView() {
       <Div className={`${page.container.md} py-10 md:py-12 lg:py-16 space-y-14`}>
         {/* Steps */}
         <Section>
-          <Heading level={2} className="mb-8 text-center">
+          <Heading level={2} className="mb-8" align="center">
             {t("stepsTitle")}
           </Heading>
           <Stack gap="lg">
@@ -99,10 +99,10 @@ export async function HowOffersWorkView() {
                   {icon}
                 </Div>
                 <Div>
-                  <Text className="font-semibold mb-0.5">
+                  <Text className="mb-0.5" weight="semibold">
                     {number}. {title}
                   </Text>
-                  <Text variant="secondary" className="text-sm leading-relaxed">
+                  <Text variant="secondary" className="leading-relaxed" size="sm">
                     {text}
                   </Text>
                 </Div>
@@ -122,7 +122,7 @@ export async function HowOffersWorkView() {
 
         {/* Negotiation rules */}
         <Section>
-          <Heading level={2} className="mb-6 text-center">
+          <Heading level={2} className="mb-6" align="center">
             {t("rulesTitle")}
           </Heading>
           <Div className={`rounded-xl border ${__P.p6} ${themed.bgSecondary} ${themed.border} space-y-3`}>
@@ -131,7 +131,7 @@ export async function HowOffersWorkView() {
                 <Div className={`flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 dark:bg-primary/15 ${flex.center} text-sm font-semibold text-primary`}>
                   {i + 1}
                 </Div>
-                <Text variant="secondary" className="text-sm leading-relaxed">
+                <Text variant="secondary" className="leading-relaxed" size="sm">
                   {rule}
                 </Text>
               </Div>

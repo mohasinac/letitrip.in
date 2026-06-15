@@ -21,8 +21,8 @@ type T = Awaited<ReturnType<typeof getTranslations<"howOrdersWork">>>;
 function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
   return (
     <Section>
-      <Heading level={2} className="mb-3 text-center">{t("lifecycleTitle")}</Heading>
-      <Text variant="secondary" className="text-center mb-8 max-w-xl mx-auto">{t("lifecycleSubtitle")}</Text>
+      <Heading level={2} className="mb-3" align="center">{t("lifecycleTitle")}</Heading>
+      <Text variant="secondary" className="mb-8 max-w-xl mx-auto" align="center">{t("lifecycleSubtitle")}</Text>
       <Div className="space-y-3">
         {statusSteps.map(({ label, desc, color, badge, icon }) => (
           <Div key={label} className={`flex items-start gap-4 ${__P.p4} rounded-xl border ${color}`}>
@@ -31,7 +31,7 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
               <Row gap="sm" className="mb-1">
                 <Span size="xs" weight="semibold" className={`inline-block px-2 py-0.5 rounded-full ${badge}`}>{label}</Span>
               </Row>
-              <Text variant="secondary" className="text-sm leading-relaxed">{desc}</Text>
+              <Text variant="secondary" className="leading-relaxed" size="sm">{desc}</Text>
             </Div>
           </Div>
         ))}
@@ -41,7 +41,7 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
             <Row gap="sm" className="mb-1">
               <Span size="xs" weight="semibold" className="inline-block px-2 py-0.5 rounded-full bg-error-surface text-error">{t("sCancelLabel")}</Span>
             </Row>
-            <Text variant="secondary" className="text-sm leading-relaxed">{t("sCancelDesc")}</Text>
+            <Text variant="secondary" className="leading-relaxed" size="sm">{t("sCancelDesc")}</Text>
           </Div>
         </Div>
       </Div>
@@ -65,15 +65,15 @@ function renderOrdersDiagram(diagramSteps: FlowStep[], t: T) {
 function renderOrdersInfoCards(infoCards: InfoCard[], t: T) {
   return (
     <Section>
-      <Heading level={2} className="mb-8 text-center">{t("infoTitle")}</Heading>
+      <Heading level={2} className="mb-8" align="center">{t("infoTitle")}</Heading>
       <Grid className={`${THEME_CONSTANTS.spacing.gap.md} sm:grid-cols-2`}>
         {infoCards.map(({ icon: Icon, title, text, color, iconColor }) => (
           <Div key={title} className={`rounded-xl border ${__P.p5} ${color}`}>
             <Div className={`w-10 h-10 rounded-lg bg-white/60 dark:bg-white/10 ${flex.center} mb-3`}>
               <Icon className={`w-5 h-5 ${iconColor}`} />
             </Div>
-            <Text className="font-semibold mb-1">{title}</Text>
-            <Text variant="secondary" className="text-sm leading-relaxed">{text}</Text>
+            <Text className="mb-1" weight="semibold">{title}</Text>
+            <Text variant="secondary" className="leading-relaxed" size="sm">{text}</Text>
           </Div>
         ))}
       </Grid>

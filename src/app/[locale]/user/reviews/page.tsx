@@ -67,7 +67,7 @@ function StarDisplay({ rating }: { rating: number }) {
           ★
         </Text>
       ))}
-      <Text as="span" className="ml-1 text-xs text-zinc-500 dark:text-zinc-400">
+      <Text as="span" className="ml-1 text-zinc-500 dark:text-zinc-400" size="xs">
         {STAR_LABELS[rating] ?? ""}
       </Text>
     </Row>
@@ -123,11 +123,11 @@ export default function UserReviewsPage() {
   return (
     <Div className="w-full space-y-6">
       <Div>
-        <Heading level={1} className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+        <Heading level={1} className="text-2xl text-zinc-900 dark:text-zinc-100" weight="semibold">
           My Reviews
         </Heading>
         {!loading && data && (
-          <Text variant="secondary" className="text-sm mt-0.5">
+          <Text variant="secondary" className="mt-0.5" size="sm">
             {data.total} review{data.total !== 1 ? "s" : ""}
           </Text>
         )}
@@ -197,7 +197,7 @@ export default function UserReviewsPage() {
                       {review.productTitle}
                     </Link>
                     {review.storeName && (
-                      <Text variant="secondary" className="text-xs">
+                      <Text variant="secondary" size="xs">
                         {review.storeName}
                       </Text>
                     )}
@@ -215,13 +215,13 @@ export default function UserReviewsPage() {
                 </Row>
                 <StarDisplay rating={review.rating} />
                 <Div>
-                  <Text className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{review.title}</Text>
-                  <Text variant="secondary" className="text-sm mt-1 line-clamp-3">{review.comment}</Text>
+                  <Text className="text-zinc-800 dark:text-zinc-200" size="sm" weight="medium">{review.title}</Text>
+                  <Text variant="secondary" className="mt-1 line-clamp-3" size="sm">{review.comment}</Text>
                 </Div>
                 <Row justify="between" className="pt-1">
-                  <Text variant="secondary" className="text-xs">{date}</Text>
+                  <Text variant="secondary" size="xs">{date}</Text>
                   {review.helpfulCount > 0 && (
-                    <Text variant="secondary" className="text-xs">
+                    <Text variant="secondary" size="xs">
                       {review.helpfulCount} found helpful
                     </Text>
                   )}

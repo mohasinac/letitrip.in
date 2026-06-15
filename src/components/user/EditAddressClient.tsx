@@ -36,13 +36,13 @@ export function EditAddressClient({ addressId }: Props) {
 
   if (!address) {
     return (
-      <Text className="text-sm text-zinc-500 dark:text-zinc-400">Address not found.</Text>
+      <Text className="text-zinc-500 dark:text-zinc-400" size="sm">Address not found.</Text>
     );
   }
 
   return (
     <Div className="max-w-lg space-y-4">
-      <Heading level={1} className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Edit Address</Heading>
+      <Heading level={1} className="text-zinc-900 dark:text-zinc-100" size="xl" weight="bold">Edit Address</Heading>
       <AddressForm
         initialData={address}
         onSubmit={async (data) => { await update.mutateAsync(data); }}

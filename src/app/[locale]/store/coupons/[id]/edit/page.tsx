@@ -103,7 +103,7 @@ export default function Page() {
   if (loadError) {
     return (
       <Div className="flex min-h-screen items-center justify-center">
-        <Text className="text-sm text-error">{loadError}</Text>
+        <Text className="text-error" size="sm">{loadError}</Text>
       </Div>
     );
   }

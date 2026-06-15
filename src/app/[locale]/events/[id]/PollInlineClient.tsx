@@ -38,8 +38,8 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
   if (requiresLogin && !user) {
     return (
       <Div className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-6 py-8 text-center space-y-3">
-        <Text className="font-semibold text-zinc-900 dark:text-zinc-100">Login required to vote</Text>
-        <Text className="text-sm text-zinc-500 dark:text-zinc-400">
+        <Text className="text-zinc-900 dark:text-zinc-100" weight="semibold">Login required to vote</Text>
+        <Text className="text-zinc-500 dark:text-zinc-400" size="sm">
           Please log in to cast your vote in this poll.
         </Text>
         <Link
@@ -55,8 +55,8 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
   if (isSubmitted) {
     return (
       <Div className="rounded-xl border border-success/20 bg-success-surface px-6 py-8 text-center space-y-2">
-        <Text className="text-lg font-semibold text-success">Vote recorded!</Text>
-        <Text className="text-sm text-success">
+        <Text className="text-success" size="lg" weight="semibold">Vote recorded!</Text>
+        <Text className="text-success" size="sm">
           Thank you for participating. Results will be shown after the poll closes.
         </Text>
       </Div>
@@ -66,7 +66,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
   if (!isActive) {
     return (
       <Div className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-6 py-6 text-center">
-        <Text className="text-sm text-zinc-500 dark:text-zinc-400">This poll has ended.</Text>
+        <Text className="text-zinc-500 dark:text-zinc-400" size="sm">This poll has ended.</Text>
       </Div>
     );
   }
@@ -111,7 +111,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
 
   return (
     <Div className="space-y-4">
-      <Text className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+      <Text className="text-zinc-700 dark:text-zinc-300" size="sm" weight="medium">
         {isMultiSelect ? "Select all that apply:" : "Choose one:"}
       </Text>
       <Div className="space-y-2">
@@ -141,7 +141,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
                 className="accent-primary h-4 w-4"
               />
             )}
-            <Text as="span" className="text-sm text-zinc-800 dark:text-zinc-200">{opt.label}</Text>
+            <Text as="span" className="text-zinc-800 dark:text-zinc-200" size="sm">{opt.label}</Text>
           </Label>
         ))}
       </Div>
@@ -154,7 +154,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
           className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
         />
       )}
-      {error && <Text className="text-sm text-error">{error}</Text>}
+      {error && <Text className="text-error" size="sm">{error}</Text>}
       <Button
         type="button"
         variant="primary"

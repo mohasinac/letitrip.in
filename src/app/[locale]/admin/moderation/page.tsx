@@ -84,15 +84,15 @@ export default function Page() {
                   className="items-start justify-between p-4 rounded border border-zinc-200 dark:border-slate-700"
                 >
                   <Stack gap="xs" className="flex-1 min-w-0">
-                    <Text className="font-medium">
+                    <Text weight="medium">
                       {m.mediaType} · {m.entityType} · {m.entityId}
                     </Text>
-                    <Text className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
                       Submitted by {m.ownerId} ·{" "}
                       {new Date(m.submittedAt).toLocaleString()}
                     </Text>
                     {m.mediaUrl ? (
-                      <Text className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
+                      <Text className="text-zinc-500 dark:text-zinc-400 truncate" size="xs">
                         {m.mediaUrl}
                       </Text>
                     ) : null}

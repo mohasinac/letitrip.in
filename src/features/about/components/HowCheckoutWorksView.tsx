@@ -20,14 +20,14 @@ type T = Awaited<ReturnType<typeof getTranslations<"howCheckoutWorks">>>;
 function renderCheckoutSteps(steps: CheckoutStep[], t: T) {
   return (
     <Section>
-      <Heading level={2} className="mb-8 text-center">{t("stepsTitle")}</Heading>
+      <Heading level={2} className="mb-8" align="center">{t("stepsTitle")}</Heading>
       <Stack gap="md">
         {steps.map(({ number, icon, title, text }) => (
           <Div key={number} className={`flex items-start ${THEME_CONSTANTS.spacing.gap.md} ${__P.p5} rounded-xl border ${themed.border} ${themed.bgPrimary}`}>
             <Div className={`flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 dark:bg-primary/15 ${flex.center} text-xl`}>{icon}</Div>
             <Div>
-              <Text className="font-semibold mb-0.5">{number}. {title}</Text>
-              <Text variant="secondary" className="text-sm leading-relaxed">{text}</Text>
+              <Text className="mb-0.5" weight="semibold">{number}. {title}</Text>
+              <Text variant="secondary" className="leading-relaxed" size="sm">{text}</Text>
             </Div>
           </Div>
         ))}
@@ -53,16 +53,16 @@ function renderCheckoutDiagram(diagramSteps: FlowStep[], t: T) {
 function renderCheckoutPaymentMethods(methods: PaymentMethod[], t: T) {
   return (
     <Section>
-      <Heading level={2} className="mb-3 text-center">{t("paymentMethodsTitle")}</Heading>
-      <Text variant="secondary" className="text-center mb-8 max-w-xl mx-auto">{t("paymentMethodsSubtitle")}</Text>
+      <Heading level={2} className="mb-3" align="center">{t("paymentMethodsTitle")}</Heading>
+      <Text variant="secondary" className="mb-8 max-w-xl mx-auto" align="center">{t("paymentMethodsSubtitle")}</Text>
       <Grid className={`${THEME_CONSTANTS.spacing.gap.md} md:grid-cols-3`}>
         {methods.map(({ icon: Icon, title, text, color, iconColor }) => (
           <Div key={title} className={`rounded-xl border ${__P.p5} ${color}`}>
             <Div className={`w-10 h-10 rounded-lg bg-white/60 dark:bg-white/10 ${flex.center} mb-3`}>
               <Icon className={`w-5 h-5 ${iconColor}`} />
             </Div>
-            <Text className="font-semibold mb-1">{title}</Text>
-            <Text variant="secondary" className="text-sm leading-relaxed">{text}</Text>
+            <Text className="mb-1" weight="semibold">{title}</Text>
+            <Text variant="secondary" className="leading-relaxed" size="sm">{text}</Text>
           </Div>
         ))}
       </Grid>
