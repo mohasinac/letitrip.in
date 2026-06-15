@@ -1598,7 +1598,7 @@ function ProgressBar({ value, total }: { value: number; total: number }) {
         </Text>
         <Text className="font-mono" color="muted" size="xs">{pct}%</Text>
       </Row>
-      <Div className="w-full h-2 bg-zinc-200 dark:bg-slate-700 overflow-hidden" rounded="full">
+      <Div className="w-full h-2 dark:bg-slate-700 overflow-hidden" surface="subtle" rounded="full">
         <Div
           className="h-full bg-amber-500 dark:bg-amber-400 transition-all duration-300" rounded="full"
           style={{ width: `${pct}%` }}
@@ -2054,7 +2054,7 @@ function GroupDivider({
       <Span size="xs" weight="bold" variant="muted" className="tracking-widest whitespace-nowrap" transform="uppercase">
         {label}
       </Span>
-      <Div className="flex-1 h-px bg-zinc-200 dark:bg-slate-700" />
+      <Div className="flex-1 h-px dark:bg-slate-700" surface="subtle" />
       <Button
         type="button"
         variant="ghost"
@@ -2452,7 +2452,7 @@ function renderSeedPanelToolbar({
                 ]}
               />
             </Div>
-            <Div className="hidden sm:block w-px h-6 bg-zinc-200 dark:bg-slate-700 shrink-0" />
+            <Div className="hidden sm:block w-px h-6 dark:bg-slate-700 shrink-0" surface="subtle" />
             <Row gap="sm" wrap className="shrink-0">
               <Checkbox
                 label={<span className="text-xs text-zinc-600 dark:text-slate-300 whitespace-nowrap">Dry run</span>}
@@ -2478,7 +2478,7 @@ function renderSeedPanelToolbar({
                 );
               })}
             </Row>
-            <Div className="hidden sm:block w-px h-4 bg-zinc-200 dark:bg-slate-700 shrink-0" />
+            <Div className="hidden sm:block w-px h-4 dark:bg-slate-700 shrink-0" surface="subtle" />
             <Row gap="xs" wrap>
               <Span size="xs" variant="muted" weight="medium" className="shrink-0">Status:</Span>
               {([
@@ -2513,7 +2513,7 @@ function renderSeedPanelHero() {
 function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDocs, collectionCount }: { isLoadingStatus: boolean; totalExistingDocs: number; totalSeedDocs: number; collectionCount: number }) {
   return (
     <Div className="grid grid-cols-3 gap-3 sm:gap-4">
-      <Stack className="bg-zinc-50 dark:bg-white/5 dark:border-white/10 text-center" gap="xs" rounded="xl" padding="md" border="default">
+      <Stack className="dark:bg-white/5 dark:border-white/10 text-center" surface="muted" gap="xs" rounded="xl" padding="md" border="default">
         <span className="text-2xl font-extrabold text-zinc-900 dark:text-white font-mono leading-none">{isLoadingStatus ? <span className="text-zinc-300 dark:text-slate-600">—</span> : totalExistingDocs.toLocaleString()}</span>
         <span className="text-xs text-zinc-500 dark:text-slate-400">docs in DB</span>
       </Stack>
@@ -2521,7 +2521,7 @@ function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDoc
         <span className="text-2xl font-extrabold text-amber-600 dark:text-amber-400 font-mono leading-none">{isLoadingStatus ? <span className="text-amber-200 dark:text-amber-900">—</span> : totalSeedDocs.toLocaleString()}</span>
         <span className="text-xs text-zinc-500 dark:text-slate-400">docs in seed files</span>
       </Stack>
-      <Stack className="bg-zinc-50 dark:bg-white/5 dark:border-white/10 text-center" gap="xs" rounded="xl" padding="md" border="default">
+      <Stack className="dark:bg-white/5 dark:border-white/10 text-center" surface="muted" gap="xs" rounded="xl" padding="md" border="default">
         <span className="text-2xl font-extrabold text-zinc-500 dark:text-slate-300 font-mono leading-none">{collectionCount}</span>
         <span className="text-xs text-zinc-500 dark:text-slate-400">collections</span>
       </Stack>
@@ -2617,7 +2617,7 @@ function renderSeedPanelPagination({ page, setPage, totalPages, PAGE_SIZE, filte
 
 function renderSeedScaleSummary() {
   return (
-    <Div className="p-5 bg-zinc-50 dark:bg-white/[0.03] dark:border-white/10" rounded="2xl" border="default">
+    <Div className="p-5 dark:bg-white/[0.03] dark:border-white/10" surface="muted" rounded="2xl" border="default">
       <Heading level={3} className="text-amber-600 dark:text-amber-400 m-0 mb-4" size="base" weight="bold">📊 Target Seed Scale</Heading>
       <Grid cols="halves" gap="none" className="gap-x-10">
         {[

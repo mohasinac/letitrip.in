@@ -80,9 +80,9 @@ export function UserAddressesClient() {
       <Div className="grid sm:grid-cols-2 gap-4">
         {Array.from({ length: 3 }).map((_, i) => (
           <Div key={i} className={`rounded-xl border border-zinc-200 dark:border-slate-700 animate-pulse ${__P.p4} space-y-2`}>
-            <Div className="h-4 bg-zinc-200 dark:bg-slate-700 w-1/3" rounded="default" />
-            <Div className="h-3 bg-zinc-200 dark:bg-slate-700 w-3/4" rounded="default" />
-            <Div className="h-3 bg-zinc-200 dark:bg-slate-700 w-1/2" rounded="default" />
+            <Div className="h-4 dark:bg-slate-700 w-1/3" surface="subtle" rounded="default" />
+            <Div className="h-3 dark:bg-slate-700 w-3/4" surface="subtle" rounded="default" />
+            <Div className="h-3 dark:bg-slate-700 w-1/2" surface="subtle" rounded="default" />
           </Div>
         ))}
       </Div>

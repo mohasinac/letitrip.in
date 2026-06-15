@@ -43,9 +43,9 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   if (isLoading) {
     return (
       <Div className="w-full max-w-lg space-y-4 animate-pulse">
-        <Div className="h-6 bg-zinc-200 dark:bg-slate-700 w-1/2" rounded="default" />
-        <Div className="h-4 bg-zinc-200 dark:bg-slate-700 w-3/4" rounded="default" />
-        <Div className="h-24 bg-zinc-200 dark:bg-slate-700" rounded="default" />
+        <Div className="h-6 dark:bg-slate-700 w-1/2" surface="subtle" rounded="default" />
+        <Div className="h-4 dark:bg-slate-700 w-3/4" surface="subtle" rounded="default" />
+        <Div className="h-24 dark:bg-slate-700" surface="subtle" rounded="default" />
       </Div>
     );
   }

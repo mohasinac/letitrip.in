@@ -386,7 +386,7 @@ function renderPaymentStep({
         {step === "processing" ? CK.PAYMENT_PROCESSING_HEADING : CK.PAYMENT_HEADING}
       </Heading>
       {step === "processing" ? (
-        <Div className="h-20 animate-pulse bg-zinc-100 dark:bg-slate-800" rounded="lg" />
+        <Div className="h-20 animate-pulse" surface="subtle" rounded="lg" />
       ) : (
         <Stack gap="md">
           {actionError && (

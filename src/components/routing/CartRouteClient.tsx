@@ -729,7 +729,7 @@ export function CartRouteClient() {
       isLoading={isLoading}
       renderItems={(itemsLoading) => {
         if (itemsLoading) {
-          return <Div className="h-32 animate-pulse bg-zinc-100 dark:bg-slate-800" rounded="lg" />;
+          return <Div className="h-32 animate-pulse" surface="subtle" rounded="lg" />;
         }
         const tabCounts: Record<CartTab, number> = {
           cart: cartBucket.length + oosItems.length,
@@ -739,7 +739,7 @@ export function CartRouteClient() {
         return (
           <Div className="space-y-4">
             {/* ── Tab bar ── */}
-            <Div className="flex gap-1 bg-zinc-100 dark:bg-slate-800 p-1 text-sm" rounded="xl">
+            <Div className="flex gap-1 p-1 text-sm" surface="subtle" rounded="xl">
               {CART_TABS.map(({ key, label }) => {
                 const count = tabCounts[key];
                 return (

@@ -371,7 +371,7 @@ function renderWishlistItems({
     return (
       <Div className="fluid-grid-card gap-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <Div key={i} className="animate-pulse aspect-[3/4] bg-zinc-100 dark:bg-slate-800" rounded="xl" border="default" />
+          <Div key={i} className="animate-pulse aspect-[3/4]" surface="subtle" rounded="xl" border="default" />
         ))}
       </Div>
     );

@@ -80,7 +80,7 @@ function renderItemRow(item: OrderItemT, key: string | number) {
         <Div
           role="img"
           aria-label={item.title}
-          className="h-16 w-16 shrink-0 bg-cover bg-center bg-zinc-100 dark:bg-slate-800" rounded="lg"
+          className="h-16 w-16 shrink-0 bg-cover bg-center" surface="subtle" rounded="lg"
           // audit-inline-style-ok: dynamic image URL
           style={{ backgroundImage: `url(${item.image})` }}
         />

@@ -21,7 +21,7 @@ function renderInvoiceActionBar(id: string) {
       justify="between"
       align="center"
       gap="md"
-      className="print:hidden sticky top-[var(--header-height,0px)] z-[var(--appkit-z-dropdown)] px-6 bg-white dark:bg-slate-900 border-b border-zinc-200 dark:border-slate-700" padding="y-sm"
+      className="print:hidden sticky top-[var(--header-height,0px)] z-[var(--appkit-z-dropdown)] px-6 border-b border-zinc-200 dark:border-slate-700" surface="default" padding="y-sm"
     >
       <Link
         href={String(ROUTES.USER.ORDER_DETAIL(id))}

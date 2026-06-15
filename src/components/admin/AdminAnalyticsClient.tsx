@@ -24,7 +24,7 @@ export function AdminAnalyticsClient() {
     <AdminAnalyticsView
       endpoint={endpoint}
       renderDateRange={() => (
-        <Row className="bg-zinc-50 px-4 dark:border-zinc-800 dark:bg-zinc-900" padding="y-sm" align="center" gap="3" wrap rounded="xl" border="default">
+        <Row className="px-4 dark:border-zinc-800" surface="muted" padding="y-sm" align="center" gap="3" wrap rounded="xl" border="default">
           <Label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
             From
             <Input
