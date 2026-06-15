@@ -18,10 +18,14 @@ export const POST = withProviders(
         eventId: id,
         userId: user.uid,
       });
-      if (result.reason && !result.spinPrizeId) {
-        return errorResponse(result.reason, 409);
+      if (!result.ok) {
+        return errorResponse(result.error, 500);
       }
-      return successResponse(result, "Spin recorded");
+      const data = result.data;
+      if (data.reason && !data.spinPrizeId) {
+        return errorResponse(data.reason, 409);
+      }
+      return successResponse(data, "Spin recorded");
     },
   }),
 );

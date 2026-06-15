@@ -17,10 +17,14 @@ export const POST = withProviders(
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const result = await triggerEventRaffleAction({ eventId: id });
-      if (result.reason && !result.raffleWinnerUserId) {
-        return errorResponse(result.reason, 409);
+      if (!result.ok) {
+        return errorResponse(result.error, 500);
       }
-      return successResponse(result, "Raffle triggered");
+      const data = result.data;
+      if (data.reason && !data.raffleWinnerUserId) {
+        return errorResponse(data.reason, 409);
+      }
+      return successResponse(data, "Raffle triggered");
     },
   }),
 );
