@@ -195,7 +195,7 @@ function renderAddressStep({
         </Div>
       )}
       renderEmptyState={() => (
-        <Div className={`border border-dashed border-zinc-300 dark:border-slate-600 ${__P.p6} text-center`} rounded="xl">
+        <Div className={`border-dashed dark:border-slate-600 ${__P.p6} text-center`} border="strong" rounded="xl">
           <Text className="mb-3" color="muted" size="sm">
             No saved addresses yet.
           </Text>
