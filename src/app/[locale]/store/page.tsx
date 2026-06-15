@@ -62,7 +62,7 @@ function StatCard({
           )}
         </Div>
         <Div
-          className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
+          className="flex-shrink-0 w-10 h-10 flex items-center justify-center" rounded="lg"
           // audit-inline-style-ok: runtime theme gradient
           style={{ background: gradient }}
         >

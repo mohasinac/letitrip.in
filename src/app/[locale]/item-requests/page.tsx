@@ -60,7 +60,7 @@ export default function Page() {
               {items.map((r) => (
                 <Row
                   key={r.id}
-                  className="items-start justify-between p-4 rounded border border-zinc-200 dark:border-slate-700 cursor-pointer hover:bg-zinc-50 dark:hover:bg-slate-800"
+                  className="items-start justify-between rounded dark:border-slate-700 cursor-pointer hover:bg-zinc-50 dark:hover:bg-slate-800" padding="md" border="default"
                   onClick={() =>
                     router.push(String(ROUTES.PUBLIC.ITEM_REQUEST_DETAIL(r.id)))
                   }

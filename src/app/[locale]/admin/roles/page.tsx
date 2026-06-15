@@ -63,7 +63,7 @@ export default function Page() {
               {items.map((r) => (
                 <Row
                   key={r.id}
-                  className="items-center justify-between p-4 rounded border border-zinc-200 dark:border-slate-700"
+                  className="items-center justify-between rounded dark:border-slate-700" padding="md" border="default"
                 >
                   <Stack gap="xs">
                     <Text weight="medium">{r.name}</Text>

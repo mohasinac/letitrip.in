@@ -48,7 +48,7 @@ export default async function Page({ params }: Props) {
       {leaderboard.slice(0, EVENT_META.LEADERBOARD_VISIBLE_LIMIT).map((entry, idx) => (
         <Div
           key={entry.id}
-          className="flex items-center justify-between rounded-lg border border-zinc-200 px-4 py-2 dark:border-zinc-700"
+          className="flex items-center justify-between px-4 py-2 dark:border-zinc-700" rounded="lg" border="default"
         >
           <Text className="text-zinc-700 dark:text-zinc-300" weight="medium">
             #{idx + 1} {entry.userDisplayName ?? EVENT_LABELS.PARTICIPANT_FALLBACK}

@@ -54,7 +54,7 @@ function renderProfileViewMode({
           </Div>
         ) : (
           <Div
-            className="h-20 w-20 rounded-full flex items-center justify-center text-3xl font-bold ring-2 ring-zinc-100 dark:ring-slate-700"
+            className="h-20 w-20 flex items-center justify-center text-3xl font-bold ring-2 ring-zinc-100 dark:ring-slate-700" rounded="full"
             // audit-inline-style-ok: dynamic CSS
             style={{ background: "var(--appkit-color-primary-50)", color: "var(--appkit-color-primary)" }} /* eslint-disable-line lir/no-inline-static-style */
           >

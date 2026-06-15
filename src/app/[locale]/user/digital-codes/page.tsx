@@ -142,7 +142,7 @@ export default function UserDigitalCodesPage() {
           {Array.from({ length: 3 }).map((_, i) => (
             <Div
               key={i}
-              className="animate-pulse rounded-xl border border-[var(--appkit-color-border)] p-5 space-y-3"
+              className="animate-pulse border border-[var(--appkit-color-border)] p-5 space-y-3" rounded="xl"
             >
               <Div className="h-4 w-1/3 rounded bg-[var(--appkit-color-border)]" />
               <Div className="h-8 w-full rounded bg-[var(--appkit-color-border)]" />

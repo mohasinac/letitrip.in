@@ -36,7 +36,7 @@ function SectionCard({ children }: { children: React.ReactNode }) {
   return (
     <Stack
       gap="md"
-      className="relative rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden p-5 shadow-sm"
+      className="relative border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden p-5" rounded="xl" shadow="sm"
     >
       <Div
         className="absolute top-0 left-0 right-0 h-[3px]"

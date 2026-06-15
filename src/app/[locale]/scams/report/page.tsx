@@ -59,7 +59,7 @@ function TagInput({
         {values.map((v) => (
           <Div
             key={v}
-            className="inline-flex items-center gap-1 rounded-full bg-[color:var(--appkit-color-surface-elevated,theme(colors.zinc.100))] px-2.5 py-1 text-xs font-medium"
+            className="inline-flex items-center gap-1 bg-[color:var(--appkit-color-surface-elevated,theme(colors.zinc.100))] px-2.5 py-1 text-xs font-medium" rounded="full"
           >
             {v}
             <Button

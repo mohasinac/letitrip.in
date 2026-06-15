@@ -80,7 +80,7 @@ function renderItemRow(item: OrderItemT, key: string | number) {
         <Div
           role="img"
           aria-label={item.title}
-          className="h-16 w-16 rounded-lg shrink-0 bg-cover bg-center bg-zinc-100 dark:bg-slate-800"
+          className="h-16 w-16 shrink-0 bg-cover bg-center bg-zinc-100 dark:bg-slate-800" rounded="lg"
           // audit-inline-style-ok: dynamic image URL
           style={{ backgroundImage: `url(${item.image})` }}
         />
@@ -140,7 +140,7 @@ function renderOrderGroup(g: OrderGroup, gi: number) {
   return (
     <Div
       key={`bundle-${gi}`}
-      className="rounded-lg border border-zinc-200 dark:border-slate-700 p-3"
+      className="dark:border-slate-700" rounded="lg" padding="sm" border="default"
     >
       <Row gap="sm" align="center" justify="between" className="mb-2" wrap>
         <Text className="text-zinc-900 dark:text-zinc-100" size="sm" weight="semibold">

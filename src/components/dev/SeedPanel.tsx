@@ -1600,7 +1600,7 @@ function ProgressBar({ value, total }: { value: number; total: number }) {
       </Row>
       <Div className="w-full h-2 bg-zinc-200 dark:bg-slate-700 overflow-hidden" rounded="full">
         <Div
-          className="h-full rounded-full bg-amber-500 dark:bg-amber-400 transition-all duration-300"
+          className="h-full bg-amber-500 dark:bg-amber-400 transition-all duration-300" rounded="full"
           style={{ width: `${pct}%` }}
         />
       </Div>

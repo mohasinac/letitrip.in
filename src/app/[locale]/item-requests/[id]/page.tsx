@@ -88,7 +88,7 @@ export default function Page() {
                 <Stack
                   key={r.id}
                   gap="xs"
-                  className="p-3 rounded border border-zinc-200 dark:border-slate-700"
+                  className="rounded dark:border-slate-700" padding="sm" border="default"
                 >
                   <Text className="text-zinc-500 dark:text-zinc-400" size="xs">
                     {r.authorName ?? r.authorId} ·{" "}

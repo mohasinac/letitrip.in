@@ -145,7 +145,7 @@ export default function UserEventsPage() {
           {Array.from({ length: 3 }).map((_, i) => (
             <Div
               key={i}
-              className="animate-pulse rounded-xl border border-[var(--appkit-color-border)] p-5 space-y-3"
+              className="animate-pulse border border-[var(--appkit-color-border)] p-5 space-y-3" rounded="xl"
             >
               <Div className="h-4 w-1/3 rounded bg-[var(--appkit-color-border)]" />
               <Div className="h-3 w-2/3 rounded bg-[var(--appkit-color-border)]" />
@@ -178,7 +178,7 @@ export default function UserEventsPage() {
             return (
               <Div
                 key={entry.id}
-                className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-5 shadow-sm"
+                className="border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-5" rounded="xl" shadow="sm"
               >
                 <Row justify="between" align="start" gap="3">
                   <Div className="space-y-1 min-w-0">
