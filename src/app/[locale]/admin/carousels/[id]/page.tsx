@@ -106,23 +106,23 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
             <Table className="w-full text-sm">
               <Thead surface="muted">
                 <Tr>
-                  <Th className="px-4 py-3 text-left text-zinc-600 dark:text-zinc-300" weight="medium">Order</Th>
-                  <Th className="px-4 py-3 text-left text-zinc-600 dark:text-zinc-300" weight="medium">Title</Th>
-                  <Th className="px-4 py-3 text-left text-zinc-600 dark:text-zinc-300" weight="medium">Active</Th>
-                  <Th className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-300" weight="medium">Edit</Th>
+                  <Th className="text-left" padding="md" color="muted" weight="medium">Order</Th>
+                  <Th className="text-left" padding="md" color="muted" weight="medium">Title</Th>
+                  <Th className="text-left" padding="md" color="muted" weight="medium">Active</Th>
+                  <Th className="text-right" padding="md" color="muted" weight="medium">Edit</Th>
                 </Tr>
               </Thead>
               <Tbody className="divide-y divide-zinc-100 dark:divide-slate-700">
                 {slides.map((slide, idx) => (
                   <Tr key={slide.id} className="bg-white hover:bg-zinc-50 dark:bg-slate-900 dark:hover:bg-slate-800">
-                    <Td className="px-4 py-3 text-zinc-500 dark:text-zinc-400">{idx + 1}</Td>
-                    <Td className="px-4 py-3 text-zinc-800 dark:text-zinc-200" weight="medium">{slide.title}</Td>
-                    <Td className="px-4 py-3">
+                    <Td className="text-zinc-500 dark:text-zinc-400" padding="md">{idx + 1}</Td>
+                    <Td weight="medium" padding="md" color="primary">{slide.title}</Td>
+                    <Td padding="md">
                       <Badge variant={slide.active ? "success" : "secondary"} >
                         {slide.active ? "Active" : "Inactive"}
                       </Badge>
                     </Td>
-                    <Td className="px-4 py-3 text-right">
+                    <Td className="text-right" padding="md">
                       <Link
                         href={String(ROUTES.ADMIN.CAROUSEL_EDIT(slide.id))}
                         className="text-[var(--appkit-color-primary)] hover:underline"

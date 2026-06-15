@@ -28,19 +28,19 @@ function renderFeeTable(feeRows: FeeRow[], t: T) {
         <Table className="w-full text-sm">
           <Thead className={themed.bgSecondary}>
             <Tr>
-              <Th className="py-3 px-4 text-left" weight="semibold">{t("colFeeType")}</Th>
-              <Th className="py-3 px-4 text-left" weight="semibold">{t("colRate")}</Th>
-              <Th className="py-3 px-4 text-left" weight="semibold">{t("colPaidBy")}</Th>
-              <Th className="py-3 px-4 text-left hidden md:table-cell" weight="semibold">{t("colNote")}</Th>
+              <Th className="text-left" padding="md" weight="semibold">{t("colFeeType")}</Th>
+              <Th className="text-left" padding="md" weight="semibold">{t("colRate")}</Th>
+              <Th className="text-left" padding="md" weight="semibold">{t("colPaidBy")}</Th>
+              <Th className="text-left hidden md:table-cell" padding="md" weight="semibold">{t("colNote")}</Th>
             </Tr>
           </Thead>
           <Tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
             {feeRows.map((row) => (
               <Tr key={row.category} className={`${themed.bgPrimary} hover:bg-neutral-50 dark:hover:bg-neutral-800/50`}>
-                <Td className="py-3 px-4" weight="medium">{row.category}</Td>
+                <Td weight="medium" padding="md">{row.category}</Td>
                 <Td className={CLS_RATE_CELL}>{row.rate}</Td>
-                <Td className="py-3 px-4"><Caption>{row.who}</Caption></Td>
-                <Td className="py-3 px-4 text-neutral-500 dark:text-neutral-400 hidden md:table-cell" size="xs">{row.note}</Td>
+                <Td padding="md"><Caption>{row.who}</Caption></Td>
+                <Td className="text-neutral-500 dark:text-neutral-400 hidden md:table-cell" padding="md" size="xs">{row.note}</Td>
               </Tr>
             ))}
           </Tbody>
