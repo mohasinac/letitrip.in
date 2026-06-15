@@ -29,7 +29,7 @@ export default async function Page({ params }: Props) {
 
   if (leaderboard.length === 0) {
     return (
-      <Div className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-6 py-10 text-center">
+      <Div className="dark:border-zinc-700 px-6 py-10 text-center" rounded="xl" border="default">
         <Text className="text-zinc-500 dark:text-zinc-400">
           {EVENT_LABELS.LEADERBOARD_EMPTY}
         </Text>

@@ -1,9 +1,11 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, errorResponse, parseJsonBody, successResponse } from "@mohasinac/appkit";
 import { shipOrderAction } from "@/actions/seller.actions";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
@@ -16,6 +18,7 @@ export const POST = withProviders(
         const result = await shipOrderAction(orderId, body);
         return successResponse(result, "Order marked as shipped");
       } catch (err: unknown) {
+        void normalizeError(err);
         const msg = err instanceof Error ? err.message : "Failed to ship order";
         return errorResponse(msg, 400);
       }

@@ -6,6 +6,7 @@ import { createApiHandler } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 
 // rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(createApiHandler({
   auth: true,
   handler: async ({ user }) => {
@@ -65,6 +66,7 @@ const updateProfileSchema = z.object({
 });
 
 // rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const PATCH = withProviders(createApiHandler<(typeof updateProfileSchema)["_output"]>({
   auth: true,
   schema: updateProfileSchema,

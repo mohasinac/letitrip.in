@@ -104,8 +104,9 @@ const AUDITS = [
   { name: "route-schema-registry",           script: "appkit/scripts/audit-route-schema-registry.mjs" },
   // unknown-elimination W5 — surfaces residual `: unknown`,
   // `Record<string, unknown>`, `as unknown` outside the allowlist.
-  // REPORT MODE — currently 1344 sites tracked; exits 0 so `npm run check`
-  // succeeds while the migration backlog drains. Flip via `MIGRATE=strict`.
+  // REPORT MODE: bulk-suppression markers were rejected; the only path
+  // to strict-zero is real per-site migration to concrete types. Flip
+  // via `MIGRATE=strict` once the W5 sweep completes.
   { name: "unknown-leakage",                 script: "appkit/scripts/audit-unknown-leakage.mjs" },
   { name: "usemutation-onerror",             script: "scripts/audit-usemutation-onerror.mjs" },
 ];

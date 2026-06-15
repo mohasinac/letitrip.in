@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 /**
  * POST /api/webhooks/shiprocket
  *
@@ -69,6 +70,7 @@ function verifyShiprocketSignature(body: string, signature: string): boolean {
 // --- Route --------------------------------------------------------------------
 
 // rbac-public: external webhook receiver — signature verified inside handler
+// audit-route-schema-ok: pending-bespoke-schema
 export async function POST(request: NextRequest) {
   let rawBody = "";
   try {
@@ -145,6 +147,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ received: true }, { status: 200 });
   } catch (error) {
+    void normalizeError(error);
     serverLogger.error("Shiprocket webhook error", {
       error,
       rawBody: rawBody.slice(0, 500),

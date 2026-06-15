@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
@@ -299,6 +300,7 @@ function ScamReportForm({ userId }: { userId: string }) {
 
       router.push(String(ROUTES.PUBLIC.SCAMS) as Parameters<typeof router.push>[0]);
     } catch (err) {
+      void normalizeError(err);
       setError(err instanceof Error ? err.message : "An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);

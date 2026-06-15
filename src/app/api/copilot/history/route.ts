@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 /**
  * GET /api/copilot/history
@@ -16,6 +17,7 @@ import { serverLogger } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
@@ -38,6 +40,7 @@ export const GET = withProviders(createRouteHandler({
       );
       return successResponse({ messages: logs });
     } catch (error) {
+      void normalizeError(error);
       serverLogger.error("copilot.history", {
         error: error instanceof Error ? error.message : String(error),
         conversationId,

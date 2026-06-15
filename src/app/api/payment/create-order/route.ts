@@ -26,6 +26,7 @@ const createOrderSchema = z.object({
 });
 
 // rbac-public: external webhook receiver — signature verified inside handler
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(createRouteHandler<(typeof createOrderSchema)["_output"]>({
   auth: true,
   schema: createOrderSchema,

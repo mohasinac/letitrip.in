@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -11,6 +12,7 @@ import {
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -27,6 +29,7 @@ export const GET = withProviders(
 );
 
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const PUT = withProviders(
   createRouteHandler<ProductFeatureUpdatePayload>({
     auth: true,
@@ -45,6 +48,7 @@ export const PUT = withProviders(
 );
 
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
@@ -59,6 +63,7 @@ export const DELETE = withProviders(
         await productFeaturesRepository.delete(id);
         return successResponse(null, "Feature deleted");
       } catch (err) {
+        void normalizeError(err);
         return errorResponse(
           err instanceof Error
             ? err.message

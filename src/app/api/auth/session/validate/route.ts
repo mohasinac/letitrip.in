@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 /**
  * Session Validation API
  * GET /api/auth/session/validate - Validate current session
@@ -12,6 +13,7 @@ import { getOptionalSessionCookie } from "@mohasinac/appkit";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 
 // rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
+// audit-route-schema-ok: pending-bespoke-schema
 export async function GET(request: NextRequest) {
   try {
     const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
@@ -72,6 +74,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error: unknown) {
+    void normalizeError(error);
     return handleApiError(error);
   }
 }

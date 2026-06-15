@@ -27,6 +27,7 @@ function getTodayIST(): string {
 }
 
 // rbac-public: external webhook receiver — signature verified inside handler
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {

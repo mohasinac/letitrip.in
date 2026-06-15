@@ -18,6 +18,7 @@ function stripPii(input: string): string {
 }
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

@@ -187,7 +187,7 @@ function renderPage({
           </Text>
         </Div>
       ) : filtered.length === 0 ? (
-        <Div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--appkit-color-border)] py-16 text-center">
+        <Div className="flex flex-col items-center justify-center border border-dashed border-[var(--appkit-color-border)] py-16 text-center" rounded="2xl">
           <Text className="text-3xl mb-2">🏷️</Text>
           <Text size="sm" weight="semibold">
             {search ? "No categories match your search" : "No sub-listing categories yet"}

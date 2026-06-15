@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 /**
  * POST /api/realtime/token
@@ -12,6 +13,7 @@ import { chatRepository } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
@@ -20,6 +22,7 @@ export const POST = withProviders(createRouteHandler({
       const userChatIds = await chatRepository.getChatIdsForUser(user!.uid);
       chatIds = Object.fromEntries(userChatIds.map((id) => [id, true]));
     } catch (err) {
+      void normalizeError(err);
       serverLogger.warn("Could not resolve chatIds for realtime token", {
         uid: user!.uid,
         err,

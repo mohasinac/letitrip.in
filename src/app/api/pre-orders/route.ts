@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { NextResponse } from "next/server";
 import {
   productRepository,
@@ -57,6 +58,7 @@ function mergeListingTypeFilter(filters: string | null | undefined): string {
 }
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(async (request: Request) => {
   try {
     const url = new URL(request.url);
@@ -91,6 +93,7 @@ export const GET = withProviders(async (request: Request) => {
       { headers: { "Cache-Control": PUBLIC_LISTING_CACHE_CONTROL } },
     );
   } catch (error) {
+    void normalizeError(error);
     logError("pre-orders", "GET /api/pre-orders failed", error);
     return NextResponse.json(
       {

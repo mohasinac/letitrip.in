@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 import { AdminDashboardView, ROUTES, Span, Text, Div, Toggle, useToast } from "@mohasinac/appkit/client";
 import { ADMIN_CHECKOUT_BYPASS_FLAG_KEY } from "@mohasinac/appkit";
 import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "lucide-react";
@@ -177,6 +178,7 @@ export default function Page() {
       setAdminBypassEnabled(next);
       showToast(next ? "Checkout bypass enabled." : "Checkout bypass disabled.", "success");
     } catch (err) {
+      void normalizeError(err);
       showToast(err instanceof Error ? err.message : "Failed to toggle bypass.", "error");
     } finally {
       setBypassLoading(false);
@@ -197,7 +199,7 @@ export default function Page() {
       renderAlerts={() => (
         <Div className="space-y-3">
           {loadError && (
-            <Div className="rounded-xl border border-error/30 bg-error-surface px-4 py-3 text-sm text-error">
+            <Div className="border border-error/30 bg-error-surface px-4 py-3 text-sm text-error" rounded="xl">
               <Span weight="semibold">Couldn&apos;t load dashboard data — </Span>
               <Span>{loadError}. Refresh to retry; if it persists, your admin session may have expired.</Span>
             </Div>
@@ -235,7 +237,7 @@ export default function Page() {
             <Div className="flex items-center gap-2 mb-4">
               <Div className="text-sm font-semibold text-[var(--appkit-color-text)]">Dev Settings</Div>
               {(prefs.mockRazorpay || prefs.mockShiprocket || adminBypassEnabled) && (
-                <Div className="text-xs px-2 py-0.5 rounded-full bg-warning-surface text-warning font-medium">
+                <Div className="text-xs px-2 py-0.5 bg-warning-surface text-warning font-medium" rounded="full">
                   Mock active
                 </Div>
               )}

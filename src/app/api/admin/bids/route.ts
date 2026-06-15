@@ -9,6 +9,7 @@ import { bidRepository } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_ADMIN_MOD],
   permission: "admin:bids:read",

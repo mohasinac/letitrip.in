@@ -37,6 +37,7 @@ const updateBlogPostSchema = z.object({
 });
 
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -52,6 +53,7 @@ export const GET = withProviders(
 );
 
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateBlogPostSchema)["_output"]>({
     auth: true,
@@ -88,6 +90,7 @@ export const PATCH = withProviders(
 );
 
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

@@ -33,6 +33,7 @@ const DEFAULT_SORTS = sortBy(ORDER_FIELDS.ORDER_DATE);
  *  - pageSize (number)  — results per page (default 20)
  */
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],

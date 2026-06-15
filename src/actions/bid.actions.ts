@@ -1,4 +1,5 @@
 "use server";
+import { normalizeError } from "@mohasinac/appkit";
 
 import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
@@ -67,6 +68,7 @@ export async function placeBidAction(
         const data = await placeBid(user.uid, user.email ?? "", parsed.data);
         return { ok: true, data };
       } catch (err: unknown) {
+        void normalizeError(err);
         if (err instanceof AuthorizationError)
           return { ok: false, error: "Please sign in to place a bid." };
         if (err instanceof ValidationError) {
@@ -127,6 +129,7 @@ export async function buyNowAction(
         );
         return { ok: true, data };
       } catch (err: unknown) {
+        void normalizeError(err);
         if (err instanceof AuthorizationError)
           return { ok: false, error: "Please sign in to purchase." };
         if (err instanceof ValidationError) {

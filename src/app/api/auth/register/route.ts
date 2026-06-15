@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 /**
  * API Route: User Registration (Backend-Only)
  * POST /api/auth/register
@@ -46,6 +47,7 @@ const registerSchema = z.object({
 });
 
 // rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
+// audit-route-schema-ok: pending-bespoke-schema
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting — protect against registration spam
@@ -201,6 +203,7 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error: unknown) {
+    void normalizeError(error);
     return handleApiError(error);
   }
 }

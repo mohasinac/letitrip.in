@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 import { ForgotPasswordView, useForgotPassword, useToast } from "@mohasinac/appkit/client";
 
 export function ForgotPasswordPageClient() {
@@ -12,6 +13,7 @@ export function ForgotPasswordPageClient() {
           await forgot.mutateAsync({ email });
           showToast("Password reset email sent. Check your inbox.", "success");
         } catch (err) {
+          void normalizeError(err);
           showToast(err instanceof Error ? err.message : "Failed to send reset email.", "error");
         }
       }}

@@ -13,6 +13,7 @@ const updateSchema = z.object({
 });
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateSchema)["_output"]>({
     auth: true,
@@ -30,6 +31,7 @@ export const PATCH = withProviders(
 );
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

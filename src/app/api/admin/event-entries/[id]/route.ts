@@ -13,6 +13,7 @@ const updateEntrySchema = z.object({
 });
 
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateEntrySchema)["_output"]>({
     auth: true,

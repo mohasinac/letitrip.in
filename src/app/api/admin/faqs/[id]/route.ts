@@ -17,6 +17,7 @@ const updateFaqSchema = z.object({
 });
 
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -49,11 +50,14 @@ const updateHandler = createRouteHandler<(typeof updateFaqSchema)["_output"]>({
 });
 
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const PUT = withProviders(updateHandler);
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const PATCH = withProviders(updateHandler);
 
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

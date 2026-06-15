@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 /**
  * POST /api/auth/event/init
@@ -35,6 +36,7 @@ import { RTDBPayloadStatus } from "@mohasinac/appkit";
 const EVENT_TTL_MS = 2 * 60 * 1000;
 
 // rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(createRouteHandler({
   handler: async ({ request }) => {
     const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
@@ -48,6 +50,7 @@ export const POST = withProviders(createRouteHandler({
         createdAt: Date.now(),
       });
     } catch (rtdbErr) {
+      void normalizeError(rtdbErr);
       serverLogger.error("RTDB unavailable — auth event node not created; postMessage fallback will handle client signal", {
         eventId,
         rtdbErr,

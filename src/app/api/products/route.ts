@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { NextResponse } from "next/server";
 import {
   productRepository,
@@ -216,6 +217,7 @@ async function _GET(request: Request): Promise<NextResponse> {
       response.headers.set("Cache-Control", PUBLIC_LISTING_CACHE_CONTROL);
       return response;
     } catch (error) {
+      void normalizeError(error);
       logError("products", "GET /api/products?ids batch failed", error);
       return NextResponse.json(
         { success: false, error: "Failed to fetch products" },
@@ -342,6 +344,7 @@ async function _GET(request: Request): Promise<NextResponse> {
         cursor,
       });
     } catch (upstreamErr) {
+      void normalizeError(upstreamErr);
       logError(
         "products",
         "listingProcessor upstream failed — falling back to local repo",
@@ -415,6 +418,7 @@ async function _GET(request: Request): Promise<NextResponse> {
     );
     return response;
   } catch (error) {
+    void normalizeError(error);
     const message = error instanceof Error ? error.message : String(error);
     const isIndexError =
       message.includes("FAILED_PRECONDITION") ||
@@ -453,5 +457,6 @@ async function _GET(request: Request): Promise<NextResponse> {
 }
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(_GET);
 

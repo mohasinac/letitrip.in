@@ -28,7 +28,7 @@ export function EditAddressClient({ addressId }: Props) {
     return (
       <Div className="max-w-lg space-y-4 animate-pulse">
         {Array.from({ length: 6 }).map((_, i) => (
-          <Div key={i} className="h-10 bg-zinc-200 dark:bg-slate-700 rounded-lg" />
+          <Div key={i} className="h-10 bg-zinc-200 dark:bg-slate-700" rounded="lg" />
         ))}
       </Div>
     );

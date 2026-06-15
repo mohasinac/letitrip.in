@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { NextResponse } from "next/server";
 import { siteSettingsRepository } from "@mohasinac/appkit";
@@ -21,6 +22,7 @@ export const dynamic = "force-dynamic";
  *   { error: "not-configured" } when API key is absent
  */
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(
   createApiHandler({
     handler: async ({ request }) => {
@@ -47,6 +49,7 @@ export const GET = withProviders(
         const result = await fetchGoogleReviews(placeId, apiKey, maxReviews, minRating);
         return NextResponse.json(result);
       } catch (err) {
+        void normalizeError(err);
         const message = err instanceof Error ? err.message : "Unknown error";
         console.error("[google-reviews] fetch failed:", message);
         return NextResponse.json({ reviews: [], aggregateRating: 0, totalRatings: 0 });

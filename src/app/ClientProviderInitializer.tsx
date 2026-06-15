@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 
 import { useEffect } from "react";
 import { initializeClientProviders } from "@/lib/client-providers-init";
@@ -13,6 +14,7 @@ export default function ClientProviderInitializer() {
       try {
         initializeClientProviders();
       } catch (err) {
+        void normalizeError(err);
         clientError("providers", "Failed to initialize client providers", err);
       }
     }

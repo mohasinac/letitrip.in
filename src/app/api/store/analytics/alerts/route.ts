@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import {
   ApiErrors,
@@ -11,6 +12,7 @@ import {
 import { ROLES_STORE_WRITE } from "@/constants";
 
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -25,6 +27,7 @@ export const GET = withProviders(
 );
 
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
@@ -43,6 +46,7 @@ export const POST = withProviders(
         });
         return successResponse(doc, "Alert created", 201);
       } catch (err) {
+        void normalizeError(err);
         return errorResponse(err instanceof Error ? err.message : "Create failed", 400);
       }
     },

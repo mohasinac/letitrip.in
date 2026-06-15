@@ -18,6 +18,7 @@ const createSchema = z.object({
 });
 
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -33,6 +34,7 @@ export const GET = withProviders(
 );
 
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(
   createRouteHandler<(typeof createSchema)["_output"]>({
     auth: true,

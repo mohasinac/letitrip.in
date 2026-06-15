@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 /**
  * letitrip auth-server adapter
  *
@@ -127,6 +128,7 @@ export const getServerSessionUser = cache(
         dismissedBannerHash: profile.dismissedBannerHash,
       };
     } catch (error) {
+      void normalizeError(error);
       serverLogger.debug("getServerSessionUser: could not resolve session", { error });
       return null;
     }

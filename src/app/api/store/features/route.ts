@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -14,6 +15,7 @@ import {
 import { ROLES_STORE_WRITE } from "@/constants";
 
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -37,6 +39,7 @@ export const GET = withProviders(
 );
 
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(
   createRouteHandler<ProductFeatureStoreCreatePayload>({
     auth: true,
@@ -54,6 +57,7 @@ export const POST = withProviders(
         });
         return successResponse(doc, "Feature created", 201);
       } catch (err) {
+        void normalizeError(err);
         const message =
           err instanceof Error
             ? err.message

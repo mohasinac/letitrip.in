@@ -9,7 +9,6 @@ import {
 } from "@mohasinac/appkit/client";
 
 type Product = { id: string; slug?: string; [key: string]: unknown };
-
 type Props = {
   title: string;
   subtitle: string;

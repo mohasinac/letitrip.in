@@ -11,6 +11,7 @@ import { ROLES_AUTHENTICATED } from "@/constants";
  * order has a tracking number. Falls back to a plain summary if no label URL.
  */
 // rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 
 import {
   Container,
@@ -49,6 +50,7 @@ export default function Page() {
       showToast("Saved", "success");
       router.push(String(ROUTES.STORE.PAYOUT_METHODS));
     } catch (err) {
+      void normalizeError(err);
       showToast(err instanceof Error ? err.message : "Save failed", "error");
     } finally {
       setSaving(false);

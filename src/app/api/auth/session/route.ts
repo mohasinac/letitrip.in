@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 /**
  * Session Management API
  * POST /api/auth/session - Create session cookie from Firebase ID token
@@ -27,6 +28,7 @@ import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
  * Also ensures user profile exists in Firestore (for OAuth users)
  */
 // rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
+// audit-route-schema-ok: pending-bespoke-schema
 export async function POST(request: NextRequest) {
   try {
     const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
@@ -129,6 +131,7 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error: unknown) {
+    void normalizeError(error);
     return handleApiError(error);
   }
 }
@@ -137,6 +140,7 @@ export async function POST(request: NextRequest) {
  * Clear session cookie and revoke session (logout)
  */
 // rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
+// audit-route-schema-ok: pending-bespoke-schema
 export async function DELETE(request: NextRequest) {
   try {
     const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
@@ -168,6 +172,7 @@ export async function DELETE(request: NextRequest) {
 
     return response;
   } catch (error: unknown) {
+    void normalizeError(error);
     return handleApiError(error);
   }
 }

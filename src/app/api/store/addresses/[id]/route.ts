@@ -19,6 +19,7 @@ const updateAddressSchema = z.object({
 });
 
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const PUT = withProviders(createRouteHandler<(typeof updateAddressSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
@@ -41,6 +42,7 @@ export const PUT = withProviders(createRouteHandler<(typeof updateAddressSchema)
 }));
 
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],

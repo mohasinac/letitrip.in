@@ -28,6 +28,7 @@ const DEFAULT_SORTS = sortBy(ORDER_FIELDS.CREATED_AT);
  *  - pageSize (number)  — results per page (default 50)
  */
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],

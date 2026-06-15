@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -13,6 +14,7 @@ import { ROLES_STORE_WRITE } from "@/constants";
 // document with status "draft", appends "(copy)" to the title, and clears
 // statistics fields.
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
@@ -45,6 +47,7 @@ export const POST = withProviders(
         const created = await productRepository.create(copy as never);
         return successResponse(created, "Listing duplicated", 201);
       } catch (err) {
+        void normalizeError(err);
         return errorResponse(err instanceof Error ? err.message : "Duplicate failed", 400);
       }
     },

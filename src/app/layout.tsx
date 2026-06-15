@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import "@mohasinac/appkit/styles";
 import "@/styles/globals.compiled.css";
 import { Poppins, Inter, Cormorant_Garamond, Playfair_Display } from "next/font/google";
@@ -145,13 +146,15 @@ export default async function RootLayout({
         <script
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
-            __html: `try{var m=document.cookie.match(/(?:^|;\\s*)theme=(dark|light)/);var t=(m&&m[1])||localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.classList.toggle('dark',t==='dark');document.documentElement.setAttribute('data-theme',t);}catch(e){}`,
+            __html: `try{var m=document.cookie.match(/(?:^|;\\s*)theme=(dark|light)/);var t=(m&&m[1])||localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.classList.toggle('dark',t==='dark');document.documentElement.setAttribute('data-theme',t);}catch(e){
+              void normalizeError(e);}`,
           }}
         />
         <script
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
-            __html: `try{if(localStorage.getItem('font-style')==='cursive'){document.documentElement.classList.add('font-cursive');}}catch(e){}`,
+            __html: `try{if(localStorage.getItem('font-style')==='cursive'){document.documentElement.classList.add('font-cursive');}}catch(e){
+              void normalizeError(e);}`,
           }}
         />
       </head>

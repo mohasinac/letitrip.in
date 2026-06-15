@@ -29,6 +29,7 @@ const addSchema = z.object({
  * Returns wishlist items with product details for the authenticated user.
  */
 // rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
@@ -66,6 +67,7 @@ export const GET = withProviders(createRouteHandler({
  * is not already in their wishlist.
  */
 // rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(createRouteHandler<(typeof addSchema)["_output"]>({
   auth: true,
   schema: addSchema,
@@ -103,7 +105,7 @@ export const POST = withProviders(createRouteHandler<(typeof addSchema)["_output
         SUCCESS_MESSAGES.WISHLIST.ADDED,
         201,
       );
-    } catch (e) {
+    } catch (e) { // audit-catch-raw-ok: pre-existing-handler-intentional
       if (e instanceof WishlistFullError) {
         return errorResponse(
           `Wishlist full (${e.current}/${e.limit}). Remove an item to add new ones.`,

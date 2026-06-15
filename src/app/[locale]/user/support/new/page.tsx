@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 import { useState } from "react";
 import { useRouter, Link } from "@/i18n/navigation";
 import {
@@ -70,6 +71,7 @@ export default function NewSupportTicketPage() {
       const newId = json?.data?.id ?? json?.data?.ticket?.id;
       router.push(String(newId ? ROUTES.USER.SUPPORT_TICKET(newId) : ROUTES.USER.SUPPORT));
     } catch (e: any) {
+      void normalizeError(e);
       showToast(e?.message ?? "Network error.", "error");
     } finally {
       setSubmitting(false);

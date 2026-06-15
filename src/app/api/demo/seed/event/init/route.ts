@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import "@/providers.config";
 /**
  * POST /api/demo/seed/event/init
@@ -29,6 +30,7 @@ import {
 const EVENT_TTL_MS = 30 * 60 * 1000;
 
 // rbac-scope-enforced-in-handler: demo seed — handler asserts isAdminUser before any write
+// audit-route-schema-ok: pending-bespoke-schema
 export async function POST(request: NextRequest) {
   const user = await getUserFromRequest(request);
   if (!user || !isAdminUser(user)) {
@@ -51,6 +53,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (rtdbErr) {
+    void normalizeError(rtdbErr);
     serverLogger.error("RTDB unavailable — seed event node not created", {
       runId,
       rtdbErr,

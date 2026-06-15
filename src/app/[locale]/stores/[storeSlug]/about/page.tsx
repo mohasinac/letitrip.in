@@ -13,7 +13,6 @@ export default async function Page({ params }: Props) {
   if (!store) return null;
 
   const gr = (store as unknown as { googleReviews?: { placeId: string; enabled: boolean; maxReviews?: number; minRating?: number; layout?: "grid" | "carousel" } }).googleReviews;
-
   return (
     <>
       <StoreAboutClient store={store as unknown as StoreDetail} />

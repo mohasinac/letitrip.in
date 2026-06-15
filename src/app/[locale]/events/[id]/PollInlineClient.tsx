@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
@@ -37,7 +38,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
 
   if (requiresLogin && !user) {
     return (
-      <Div className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-6 py-8 text-center space-y-3">
+      <Div className="dark:border-zinc-700 px-6 py-8 text-center space-y-3" rounded="xl" border="default">
         <Text className="text-zinc-900 dark:text-zinc-100" weight="semibold">Login required to vote</Text>
         <Text className="text-zinc-500 dark:text-zinc-400" size="sm">
           Please log in to cast your vote in this poll.
@@ -54,7 +55,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
 
   if (isSubmitted) {
     return (
-      <Div className="rounded-xl border border-success/20 bg-success-surface px-6 py-8 text-center space-y-2">
+      <Div className="border border-success/20 bg-success-surface px-6 py-8 text-center space-y-2" rounded="xl">
         <Text className="text-success" size="lg" weight="semibold">Vote recorded!</Text>
         <Text className="text-success" size="sm">
           Thank you for participating. Results will be shown after the poll closes.
@@ -65,7 +66,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
 
   if (!isActive) {
     return (
-      <Div className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-6 py-6 text-center">
+      <Div className="dark:border-zinc-700 px-6 py-6 text-center" rounded="xl" border="default">
         <Text className="text-zinc-500 dark:text-zinc-400" size="sm">This poll has ended.</Text>
       </Div>
     );
@@ -101,6 +102,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
       setIsSubmitted(true);
       showToast("Your vote has been recorded!", "success");
     } catch (err) {
+      void normalizeError(err);
       const msg = err instanceof Error ? err.message : "Something went wrong";
       setError(msg);
       showToast(msg, "error");

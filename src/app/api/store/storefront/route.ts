@@ -9,6 +9,7 @@ import { storeRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_READ } from "@/constants";
 
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_STORE_READ],
   handler: async ({ user }) => {

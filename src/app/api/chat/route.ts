@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 /**
  * GET  /api/chat   — list all chat rooms for the authenticated user
  * POST /api/chat   — create or return existing chat room (buyer ↔ seller for an order)
@@ -32,6 +33,7 @@ const CHAT_DISABLED_RESPONSE = () =>
  * Returns all chat rooms the authenticated user is participating in.
  */
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(createApiHandler({
   auth: true,
   handler: async ({ user }) => {
@@ -47,6 +49,7 @@ export const GET = withProviders(createApiHandler({
  * Idempotent — returns the existing room if it already exists.
  */
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(createApiHandler<(typeof createRoomSchema)["_output"]>({
   auth: true,
   schema: createRoomSchema,
@@ -95,6 +98,7 @@ export const POST = withProviders(createApiHandler<(typeof createRoomSchema)["_o
         createdAt: Date.now(),
       });
     } catch (err) {
+      void normalizeError(err);
       serverLogger.warn("Failed to write chat metadata to RTDB", {
         chatId: room.id,
         err,

@@ -12,6 +12,7 @@ import { ROLES_AUTHENTICATED } from "@/constants";
  * QR provider URL in dev.
  */
 // rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

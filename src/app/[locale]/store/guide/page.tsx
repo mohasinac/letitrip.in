@@ -11,6 +11,5 @@ export default async function Page() {
   const store = result && typeof result === "object" && "ok" in result
     ? (result.ok ? (result as { ok: true; data: unknown }).data : null)
     : (result as unknown);
-
   return <StoreGuideHubView store={store as any} />;
 }

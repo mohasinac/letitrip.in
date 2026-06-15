@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 
 import { useState, use } from "react";
 import { useRouter } from "@/i18n/navigation";
@@ -31,6 +32,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       showToast("Order cancelled successfully.", "success");
       router.push(String(ROUTES.USER.ORDER_DETAIL(id)));
     } catch (err) {
+      void normalizeError(err);
       const msg = err instanceof Error ? err.message : "Failed to cancel order.";
       showToast(msg, "error");
     } finally {

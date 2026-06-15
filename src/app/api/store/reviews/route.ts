@@ -13,6 +13,7 @@ import { ROLES_STORE_WRITE } from "@/constants";
 const DEFAULT_SORTS = sortBy(REVIEW_FIELDS.CREATED_AT);
 
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(createApiHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],

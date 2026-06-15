@@ -15,7 +15,6 @@ const __P = {
 } as const;
 
 type Product = { id: string; slug?: string; [key: string]: unknown };
-
 type Props = {
   locale: string;
   query: string;

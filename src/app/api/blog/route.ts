@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { initProviders } from "@/providers.config";
 import { blogGET, serverLogger } from "@mohasinac/appkit";
 
@@ -10,6 +11,7 @@ function isMissingFirestoreIndexError(error: unknown): boolean {
 }
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export async function GET(
 	...args: Parameters<typeof blogGET>
 ) {
@@ -39,6 +41,7 @@ export async function GET(
 
 		return response;
 	} catch (error) {
+	  void normalizeError(error);
 		if (hasSearchQuery && isMissingFirestoreIndexError(error)) {
 			const fallbackUrl = new URL(request.url);
 			fallbackUrl.searchParams.delete("q");

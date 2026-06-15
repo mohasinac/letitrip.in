@@ -41,6 +41,7 @@ function isScheduleActive(item: Record<string, unknown>): boolean {
  * consent state. Used by the admin UI to preview ad slot fill before publish.
  */
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

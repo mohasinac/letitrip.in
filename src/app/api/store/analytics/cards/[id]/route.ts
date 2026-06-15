@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import {
   ApiErrors,
@@ -10,6 +11,7 @@ import {
 import { ROLES_STORE_WRITE } from "@/constants";
 
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
@@ -26,6 +28,7 @@ export const PATCH = withProviders(
         const updated = await analyticsCardsRepository.update(id, body);
         return successResponse(updated);
       } catch (err) {
+        void normalizeError(err);
         return errorResponse(err instanceof Error ? err.message : "Update failed", 400);
       }
     },
@@ -33,6 +36,7 @@ export const PATCH = withProviders(
 );
 
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

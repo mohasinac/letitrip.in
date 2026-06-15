@@ -31,6 +31,7 @@ const DEFAULT_SORTS = sortBy(COMMON_FIELDS.CREATED_AT);
  * full unfiltered dataset so stat cards remain accurate.
  */
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_ONLY],

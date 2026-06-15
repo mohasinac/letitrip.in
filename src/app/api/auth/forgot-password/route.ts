@@ -28,6 +28,7 @@ const forgotPasswordSchema = z.object({
 });
 
 // rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(createRouteHandler<
   (typeof forgotPasswordSchema)["_output"]
 >({

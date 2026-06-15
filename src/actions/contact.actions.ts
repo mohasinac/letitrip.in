@@ -1,4 +1,5 @@
 "use server";
+import { normalizeError } from "@mohasinac/appkit";
 
 import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
@@ -94,6 +95,7 @@ export async function sendContactAction(
           description: message,
         });
       } catch (err) {
+        void normalizeError(err);
         serverLogger.warn(
           "Contact form ticket creation failed (non-fatal — email already sent)",
           { error: (err as Error).message },

@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { NextRequest, NextResponse } from "next/server";
 import {
   siteSettingsRepository,
@@ -17,6 +18,7 @@ function clamp(n: number, min: number, max: number) {
 }
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const platform = searchParams.get("platform") as SocialPlatform | null;
@@ -65,6 +67,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: "Unsupported platform" }, { status: 400 });
     }
   } catch (err) {
+    void normalizeError(err);
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error(`[social-feed] ${platform} fetch failed:`, message);
     return NextResponse.json({ error: `Failed to fetch ${platform} posts` }, { status: 502 });

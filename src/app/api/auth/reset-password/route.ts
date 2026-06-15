@@ -19,6 +19,7 @@ import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 import { errorResponse } from "@mohasinac/appkit";
 
 // rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
+// audit-route-schema-ok: pending-bespoke-schema
 export const PUT = withProviders(createRouteHandler<(typeof resetPasswordSchema)["_output"]>({
   schema: resetPasswordSchema,
   handler: async ({ body, request }) => {

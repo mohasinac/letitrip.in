@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 // audit-auth-gates-ok — checkout page is protected by server-side layout auth redirect
 
 import { useCallback, useState, useEffect, useMemo } from "react";
@@ -385,7 +386,7 @@ function renderPaymentStep({
         {step === "processing" ? CK.PAYMENT_PROCESSING_HEADING : CK.PAYMENT_HEADING}
       </Heading>
       {step === "processing" ? (
-        <Div className="h-20 animate-pulse rounded-lg bg-zinc-100 dark:bg-slate-800" />
+        <Div className="h-20 animate-pulse bg-zinc-100 dark:bg-slate-800" rounded="lg" />
       ) : (
         <Stack gap="md">
           {actionError && (
@@ -723,6 +724,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
       setStep("otp");
       showToast(CK.OTP_SENT_TOAST, "success");
     } catch (err) {
+      void normalizeError(err);
       const msg = err instanceof Error ? err.message : "Failed to send OTP";
       setActionError(msg);
       showToast(msg, "error");
@@ -740,6 +742,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
       setStep("payment");
       showToast(CK.OTP_VERIFIED_TOAST, "success");
     } catch (err) {
+      void normalizeError(err);
       const msg = err instanceof Error ? err.message : CK.OTP_ERROR_DEFAULT;
       setOtpError(msg);
       showToast(msg, "error");
@@ -817,6 +820,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
       showToast("Payment successful! Your order has been placed.", "success");
       router.push(firstOrderId ? `${String(ROUTES.USER.CHECKOUT_SUCCESS)}?orderId=${firstOrderId}` : String(ROUTES.USER.CHECKOUT_SUCCESS));
     } catch (err) {
+      void normalizeError(err);
       const msg = err instanceof Error ? err.message : "Payment failed. Please retry.";
       setActionError(msg);
       showToast(msg, "error");
@@ -852,6 +856,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
       showToast("Order placed successfully! Cash on delivery confirmed.", "success");
       router.push(firstCodOrderId ? `${String(ROUTES.USER.CHECKOUT_SUCCESS)}?orderId=${firstCodOrderId}` : String(ROUTES.USER.CHECKOUT_SUCCESS));
     } catch (err) {
+      void normalizeError(err);
       const msg = err instanceof Error ? err.message : "Order failed. Please retry.";
       setActionError(msg);
       showToast(msg, "error");
@@ -884,6 +889,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
       showToast(CK.ADMIN_BYPASS_TOAST, "success");
       router.push(firstOrderId ? `${String(ROUTES.USER.CHECKOUT_SUCCESS)}?orderId=${firstOrderId}` : String(ROUTES.USER.CHECKOUT_SUCCESS));
     } catch (err) {
+      void normalizeError(err);
       const msg = err instanceof Error ? err.message : "Admin bypass failed. Please retry.";
       setActionError(msg);
       showToast(msg, "error");

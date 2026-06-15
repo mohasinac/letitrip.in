@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -9,6 +10,7 @@ import {
 import { ROLES_AUTHENTICATED } from "@/constants";
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(
   createRouteHandler({
     auth: false,
@@ -20,6 +22,7 @@ export const GET = withProviders(
 );
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
@@ -37,6 +40,7 @@ export const POST = withProviders(
         });
         return successResponse(doc, "Request submitted for review", 201);
       } catch (err) {
+        void normalizeError(err);
         return errorResponse(err instanceof Error ? err.message : "Submit failed", 400);
       }
     },

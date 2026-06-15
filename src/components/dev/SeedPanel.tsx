@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 // audit-auth-gates-ok — imports @/actions/demo-seed.types (types only, no function calls)
 
 /**
@@ -1597,7 +1598,7 @@ function ProgressBar({ value, total }: { value: number; total: number }) {
         </Text>
         <Text className="font-mono text-zinc-600 dark:text-slate-400" size="xs">{pct}%</Text>
       </Row>
-      <Div className="w-full h-2 rounded-full bg-zinc-200 dark:bg-slate-700 overflow-hidden">
+      <Div className="w-full h-2 bg-zinc-200 dark:bg-slate-700 overflow-hidden" rounded="full">
         <Div
           className="h-full rounded-full bg-amber-500 dark:bg-amber-400 transition-all duration-300"
           style={{ width: `${pct}%` }}
@@ -1721,7 +1722,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
         </Row>
       </Row>
 
-      <Div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-slate-700">
+      <Div className="overflow-x-auto dark:border-slate-700" rounded="lg" border="default">
         <table className="w-full text-xs border-collapse">
           <thead>
             <tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
@@ -1868,7 +1869,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         {meta.mediaSlugPatterns && meta.mediaSlugPatterns.length > 0 && (
           <Div>
             <Text className="text-violet-700 dark:text-violet-400 tracking-wider mb-2 m-0" size="xs" weight="bold" transform="uppercase">🖼️ Media Slug Patterns (SEO filenames)</Text>
-            <Div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-slate-700">
+            <Div className="overflow-x-auto dark:border-slate-700" rounded="lg" border="default">
               <table className="w-full text-xs border-collapse">
                 <thead>
                   <tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
@@ -1921,7 +1922,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         <SchemaFieldsTable fields={meta.fields} />
 
         {meta.piiFields && meta.piiFields.length > 0 && (
-          <Div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/40">
+          <Div className="flex items-start gap-2 px-3 py-2 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/40" rounded="lg">
             <Span size="xs" className="text-red-700 dark:text-red-300 leading-relaxed">
               🔒 PII fields: <Span weight="bold">{meta.piiFields.join(", ")}</Span> — masked in DB with Firestore encryption. Never returned in full to client.
             </Span>
@@ -2233,6 +2234,7 @@ export function SeedPanel() {
       try {
         await provider.signInWithToken(customToken);
       } catch (signInErr) {
+        void normalizeError(signInErr);
         const msg = signInErr instanceof Error ? signInErr.message : "Realtime sign-in failed";
         setColRunStates(Object.fromEntries(queue.map((c) => [c, "error" as ColRunState])));
         setColErrors(Object.fromEntries(queue.map((c) => [c, msg])));
@@ -2259,6 +2261,7 @@ export function SeedPanel() {
       // except to surface a transport-level failure above.
       await res.json().catch(() => null);
     } catch (err) {
+      void normalizeError(err);
       const msg = err instanceof Error ? err.message : "Network error";
       setColRunStates(Object.fromEntries(queue.map((c) => [c, "error" as ColRunState])));
       setColErrors(Object.fromEntries(queue.map((c) => [c, msg])));
@@ -2358,7 +2361,7 @@ export function SeedPanel() {
           {renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDocs, collectionCount: ALL_COLLECTIONS.length })}
 
           {isRunning && (
-            <Div className="rounded-xl p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-300 dark:border-amber-700">
+            <Div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-300 dark:border-amber-700" rounded="xl" padding="md">
               <Text className="text-amber-800 dark:text-amber-300 mb-2" size="sm" weight="semibold">{dryRun ? "Dry-running" : "Seeding"} collections…</Text>
               <ProgressBar value={completedCount} total={totalQueued} />
             </Div>
@@ -2406,7 +2409,7 @@ function renderSeedPanelToolbar({
   setFilterStatus: React.Dispatch<React.SetStateAction<StatusFilter>>;
 }) {
   return (
-    <Div className="sticky z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-zinc-200 dark:border-slate-800 shadow-sm" style={{ top: "var(--header-height, 0px)" }}>
+    <Div className="sticky z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-zinc-200 dark:border-slate-800" shadow="sm" style={{ top: "var(--header-height, 0px)" }}>
       <Container size="2xl">
         <Stack gap="sm" className="py-2.5">
           <Div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -2510,15 +2513,15 @@ function renderSeedPanelHero() {
 function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDocs, collectionCount }: { isLoadingStatus: boolean; totalExistingDocs: number; totalSeedDocs: number; collectionCount: number }) {
   return (
     <Div className="grid grid-cols-3 gap-3 sm:gap-4">
-      <Div className="rounded-xl p-4 bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-center flex flex-col gap-1">
+      <Div className="bg-zinc-50 dark:bg-white/5 dark:border-white/10 text-center flex flex-col gap-1" rounded="xl" padding="md" border="default">
         <span className="text-2xl font-extrabold text-zinc-900 dark:text-white font-mono leading-none">{isLoadingStatus ? <span className="text-zinc-300 dark:text-slate-600">—</span> : totalExistingDocs.toLocaleString()}</span>
         <span className="text-xs text-zinc-500 dark:text-slate-400">docs in DB</span>
       </Div>
-      <Div className="rounded-xl p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 text-center flex flex-col gap-1">
+      <Div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 text-center flex flex-col gap-1" rounded="xl" padding="md">
         <span className="text-2xl font-extrabold text-amber-600 dark:text-amber-400 font-mono leading-none">{isLoadingStatus ? <span className="text-amber-200 dark:text-amber-900">—</span> : totalSeedDocs.toLocaleString()}</span>
         <span className="text-xs text-zinc-500 dark:text-slate-400">docs in seed files</span>
       </Div>
-      <Div className="rounded-xl p-4 bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 text-center flex flex-col gap-1">
+      <Div className="bg-zinc-50 dark:bg-white/5 dark:border-white/10 text-center flex flex-col gap-1" rounded="xl" padding="md" border="default">
         <span className="text-2xl font-extrabold text-zinc-500 dark:text-slate-300 font-mono leading-none">{collectionCount}</span>
         <span className="text-xs text-zinc-500 dark:text-slate-400">collections</span>
       </Div>
@@ -2614,7 +2617,7 @@ function renderSeedPanelPagination({ page, setPage, totalPages, PAGE_SIZE, filte
 
 function renderSeedScaleSummary() {
   return (
-    <Div className="rounded-2xl p-5 bg-zinc-50 dark:bg-white/[0.03] border border-zinc-200 dark:border-white/10">
+    <Div className="p-5 bg-zinc-50 dark:bg-white/[0.03] dark:border-white/10" rounded="2xl" border="default">
       <Heading level={3} className="text-amber-600 dark:text-amber-400 m-0 mb-4" size="base" weight="bold">📊 Target Seed Scale</Heading>
       <Grid cols="halves" gap="none" className="gap-x-10">
         {[

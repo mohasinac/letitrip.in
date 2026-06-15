@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 import { useSearchParams } from "next/navigation";
 import { ResetPasswordView, useResetPassword, useToast } from "@mohasinac/appkit/client";
 
@@ -16,6 +17,7 @@ export function ResetPasswordPageClient() {
           await reset.mutateAsync({ token: code, newPassword });
           showToast("Your password has been reset successfully.", "success");
         } catch (err) {
+          void normalizeError(err);
           showToast(err instanceof Error ? err.message : "Failed to reset password.", "error");
         }
       }}

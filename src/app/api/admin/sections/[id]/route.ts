@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 /**
  * Admin Homepage Sections Detail API Route
@@ -27,6 +28,7 @@ const sectionUpdateSchema = z.object({
  * Update a homepage section (order, enabled status, or config)
  */
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
@@ -75,6 +77,7 @@ export const PATCH = withProviders(
 
         return successResponse(section);
       } catch (error) {
+        void normalizeError(error);
         serverLogger.error("Failed to update section", {
           id,
           error: error instanceof Error ? error.message : String(error),
@@ -94,6 +97,7 @@ export const PATCH = withProviders(
  * Delete a homepage section
  */
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
@@ -118,6 +122,7 @@ export const DELETE = withProviders(
 
         return successResponse({ success: true });
       } catch (error) {
+        void normalizeError(error);
         serverLogger.error("Failed to delete section", {
           id,
           error: error instanceof Error ? error.message : String(error),

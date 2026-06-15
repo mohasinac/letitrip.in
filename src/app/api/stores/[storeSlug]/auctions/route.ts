@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { NextResponse } from "next/server";
 import {
   storeRepository,
@@ -71,6 +72,7 @@ async function _GET(
       baseOpts: { storeId: store.id },
     });
   } catch (err) {
+    void normalizeError(err);
     logError("storeAuctions", "listingProcessor upstream failed — falling back to local repo", err);
     upstream = null;
   }
@@ -90,6 +92,7 @@ async function _GET(
       totalPages = result.totalPages;
       hasMore = result.hasMore;
     } catch (error) {
+      void normalizeError(error);
       logError("storeAuctions", `GET /api/stores/${storeSlug}/auctions failed`, error);
       return NextResponse.json(
         { success: false, error: "Failed to fetch store auctions" },
@@ -107,4 +110,5 @@ async function _GET(
 }
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(_GET);

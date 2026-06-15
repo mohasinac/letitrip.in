@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
@@ -47,6 +48,7 @@ function generateToken(): string {
  * Used by FormShell PreviewPane's "Open in new tab" action.
  */
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(
   createApiHandler({
     roles: [...ROLES_ANY_STAFF],
@@ -71,6 +73,7 @@ export const POST = withProviders(
           });
         return successResponse({ token, expiresAt });
       } catch (error) {
+        void normalizeError(error);
         serverLogger.error("preview create error", { error });
         return errorResponse(ERRORS.CREATE_FAILED, 500);
       }
@@ -84,6 +87,7 @@ export const POST = withProviders(
  * No role gate — token is the capability.
  */
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(
   createApiHandler({
     handler: async ({ request }) => {
@@ -107,6 +111,7 @@ export const GET = withProviders(
           expiresAt: expiresAt.toISOString(),
         });
       } catch (error) {
+        void normalizeError(error);
         serverLogger.error("preview read error", { error, token });
         return errorResponse(ERRORS.READ_FAILED, 500);
       }

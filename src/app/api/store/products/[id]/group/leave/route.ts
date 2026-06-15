@@ -5,6 +5,7 @@ import { ROLES_STORE_WRITE } from "@/constants";
 
 /** DELETE /api/store/products/[id]/group/leave — child leaves its group */
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const DELETE = withProviders(createApiHandler({
   roles: [...ROLES_STORE_WRITE],
   handler: async ({ user, params }) => {

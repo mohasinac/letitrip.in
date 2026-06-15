@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 /**
  * Shared watermark helpers for /api/media/[...slug] and /api/media/ext.
  * Both routes apply the same watermark logic; this module is the single source.
@@ -61,6 +62,7 @@ export async function loadWatermarkConfig(): Promise<WatermarkConfig> {
     watermarkCache = { value, expiresAt: Date.now() + WATERMARK_CACHE_TTL_MS };
     return value;
   } catch (err) {
+    void normalizeError(err);
     serverLogger.warn(
       "media-proxy: siteSettingsRepository.getSingleton failed; using default watermark",
       { error: err instanceof Error ? err.message : String(err) },

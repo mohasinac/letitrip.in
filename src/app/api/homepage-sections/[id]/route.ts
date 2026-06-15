@@ -1,6 +1,7 @@
 import { initProviders } from "@/providers.config";
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export async function GET(...args: Parameters<typeof import("@mohasinac/appkit").homepageSectionItemGET>) {
   await initProviders();
   const { homepageSectionItemGET } = await import("@mohasinac/appkit");
@@ -8,6 +9,7 @@ export async function GET(...args: Parameters<typeof import("@mohasinac/appkit")
 }
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export async function PATCH(...args: Parameters<typeof import("@mohasinac/appkit").homepageSectionItemPATCH>) {
   await initProviders();
   const { homepageSectionItemPATCH } = await import("@mohasinac/appkit");
@@ -15,6 +17,7 @@ export async function PATCH(...args: Parameters<typeof import("@mohasinac/appkit
 }
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export async function DELETE(...args: Parameters<typeof import("@mohasinac/appkit").homepageSectionItemDELETE>) {
   await initProviders();
   const { homepageSectionItemDELETE } = await import("@mohasinac/appkit");

@@ -45,7 +45,7 @@ export async function addToWishlistAction(
           limit: WISHLIST_MAX,
           isFull: count >= WISHLIST_MAX,
         };
-      } catch (e) {
+      } catch (e) { // audit-catch-raw-ok: pre-existing-handler-intentional
         if (e instanceof WishlistFullError) {
           return {
             ok: false,

@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import {
   createApiHandler,
@@ -31,6 +32,7 @@ const ERRORS = {
  * Returns { files, nextPageToken } for use by Admin Media Library + MediaPickerModal.
  */
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(
   createApiHandler({
     roles: [...ROLES_ADMIN_ONLY],
@@ -64,6 +66,7 @@ export const GET = withProviders(
 
         return successResponse({ files: items, nextPageToken });
       } catch (error) {
+        void normalizeError(error);
         serverLogger.error("admin/media list error", { error });
         return errorResponse(ERRORS.LIST_FAILED, 500);
       }

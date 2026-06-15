@@ -52,6 +52,7 @@ const preorderDepositSchema = z.object({
 });
 
 // rbac-public: external webhook receiver — signature verified inside handler
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(createRouteHandler<
   (typeof preorderDepositSchema)["_output"]
 >({

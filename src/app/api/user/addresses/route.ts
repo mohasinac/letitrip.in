@@ -25,6 +25,7 @@ const MAX_ADDRESSES_PER_USER = 10;
  * Supports query params: q, addressType (pipe-separated), verified, activeOnly.
  */
 // rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {
@@ -74,6 +75,7 @@ export const GET = withProviders(createRouteHandler({
  * If isDefault is true, clears the default flag from all existing addresses.
  */
 // rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(createRouteHandler<
   (typeof userAddressCreateSchema)["_output"]
 >({

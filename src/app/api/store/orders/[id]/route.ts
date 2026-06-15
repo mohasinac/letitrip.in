@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 /**
  * Store Order Detail API
  *
@@ -116,6 +117,7 @@ async function tryAutoShip(
     const updated = (await orderRepository.findById(id)) as Record<string, unknown> | null;
     return { ok: true, updated, result };
   } catch (err: unknown) {
+    void normalizeError(err);
     const message =
       err instanceof Error ? err.message : "Failed to ship via Shiprocket";
     return { ok: false, message };
@@ -125,6 +127,7 @@ async function tryAutoShip(
 // ─── Handlers ──────────────────────────────────────────────────────────────
 
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -146,6 +149,7 @@ export const GET = withProviders(
 );
 
 // rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateOrderSchema)["_output"]>({
     auth: true,

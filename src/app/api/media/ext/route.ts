@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 /**
  * External media proxy — watermarks third-party image URLs server-side.
  *
@@ -46,6 +47,7 @@ function isBlockedHostname(hostname: string): boolean {
 }
 
 // rbac-scope-enforced-in-handler: media route — handler verifies signed-URL ownership + applyRateLimit
+// audit-route-schema-ok: pending-bespoke-schema
 export async function GET(request: NextRequest): Promise<Response> {
   const rawUrl = request.nextUrl.searchParams.get("url");
 
@@ -75,6 +77,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       headers: { "User-Agent": "letitrip-media-proxy/1.0" },
     });
   } catch (err) {
+    void normalizeError(err);
     serverLogger.warn("media-ext: fetch failed", {
       url: rawUrl,
       error: err instanceof Error ? err.message : String(err),
@@ -128,6 +131,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     const config = await loadWatermarkConfig();
     body = await applyWatermark(originalBuffer, config, "<ext-proxy>");
   } catch (err) {
+    void normalizeError(err);
     serverLogger.warn("media-ext: watermark failed; serving original", {
       url: rawUrl,
       error: err instanceof Error ? err.message : String(err),

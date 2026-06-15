@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 /**
  * Admin Sessions API Route
@@ -22,6 +23,7 @@ import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(createRouteHandler({
   roles: [...ROLES_ADMIN_MOD],
   permission: "admin:sessions:read",
@@ -79,6 +81,7 @@ export const GET = withProviders(createRouteHandler({
           role: userRecord.customClaims?.role || "user",
         });
       } catch (error) {
+        void normalizeError(error);
         serverLogger.warn(`Failed to fetch user ${uid}`, { error });
         userMap.set(uid, {
           uid,

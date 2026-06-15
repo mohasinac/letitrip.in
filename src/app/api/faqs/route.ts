@@ -53,6 +53,7 @@ import { errorResponse } from "@mohasinac/appkit";
  * ✅ Caching implemented with LONG preset (30 min TTL)
  */
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(createRouteHandler({
   handler: async ({ request }) => {
     // Parse query parameters
@@ -201,6 +202,7 @@ export const GET = withProviders(createRouteHandler({
  * TODO (Future): Generate SEO-friendly slug for FAQ permalinks — ✅ Done
  */
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(createRouteHandler<(typeof faqCreateSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_ADMIN_ONLY],

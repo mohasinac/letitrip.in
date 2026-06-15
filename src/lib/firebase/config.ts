@@ -30,18 +30,14 @@ const canInitializeClientFirebase =
 const app: FirebaseApp = canInitializeClientFirebase
   ? (getApps()[0] ?? initializeApp(firebaseConfig))
   : (null as unknown as FirebaseApp);
-
 const auth: Auth = canInitializeClientFirebase
   ? getAuth(app)
   : (null as unknown as Auth);
-
 const storage: FirebaseStorage = canInitializeClientFirebase
   ? getStorage(app)
   : (null as unknown as FirebaseStorage);
-
 const realtimeDb: Database = canInitializeClientFirebase
   ? getDatabase(app)
   : (null as unknown as Database);
-
 export { app, auth, storage, realtimeDb };
 

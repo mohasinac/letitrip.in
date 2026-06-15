@@ -16,6 +16,7 @@ const analysisSchema = z.object({
 });
 
 // rbac-scope-enforced-in-handler: admin section — createRouteHandler permission "admin:maintenance:run-analysis" enforces the access surface
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

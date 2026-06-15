@@ -193,7 +193,7 @@ export default function ClaimedCouponsPage() {
       {isLoading ? (
         <Div className="fluid-grid-card gap-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Div key={i} className="animate-pulse rounded-xl border border-zinc-200 dark:border-slate-700 h-32 bg-zinc-100 dark:bg-slate-800" />
+            <Div key={i} className="animate-pulse dark:border-slate-700 h-32 bg-zinc-100 dark:bg-slate-800" rounded="xl" border="default" />
           ))}
         </Div>
       ) : items.length === 0 ? (

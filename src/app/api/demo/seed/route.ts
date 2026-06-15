@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import "@/providers.config";
 import { NextRequest, NextResponse } from "next/server";
 import { getUserFromRequest } from "@/lib/firebase/auth-server";
@@ -488,6 +489,7 @@ async function resolveAuthConflicts(
 }
 
 // rbac-scope-enforced-in-handler: demo seed — handler asserts isAdminUser before any write
+// audit-route-schema-ok: pending-bespoke-schema
 export async function GET(request: NextRequest) {
   const user = await getUserFromRequest(request);
   if (!user || !isAdminUser(user)) {
@@ -515,6 +517,7 @@ export async function GET(request: NextRequest) {
           const existingCount = await countExistingForCollection(db, colName);
           return { name: colName, seedCount, existingCount };
         } catch (err: unknown) {
+          void normalizeError(err);
           serverLogger.error(`Error checking status for ${colName}:`, err);
           return { name: colName, seedCount, existingCount: 0 };
         }
@@ -523,6 +526,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: { collections } });
   } catch (error) {
+    void normalizeError(error);
     serverLogger.error("Seed status API error:", error);
     return NextResponse.json(
       {
@@ -535,6 +539,7 @@ export async function GET(request: NextRequest) {
 }
 
 // rbac-scope-enforced-in-handler: demo seed — handler asserts isAdminUser before any write
+// audit-route-schema-ok: pending-bespoke-schema
 export async function POST(request: NextRequest) {
   const user = await getUserFromRequest(request);
   if (!user || !isAdminUser(user)) {
@@ -666,6 +671,7 @@ export async function POST(request: NextRequest) {
       try {
         await runRef.child("meta").update({ status, done, total, updatedAt: Date.now(), ...extra });
       } catch (err) {
+        void normalizeError(err);
         serverLogger.warn("Seed RTDB meta write failed", { runId, err });
       }
     };
@@ -683,6 +689,7 @@ export async function POST(request: NextRequest) {
           updatedAt: Date.now(),
         });
       } catch (err) {
+        void normalizeError(err);
         serverLogger.warn("Seed RTDB col write failed", { runId, name, err });
       }
     };
@@ -700,7 +707,6 @@ export async function POST(request: NextRequest) {
     const processedCollections: string[] = [];
     let progressDone = 0;
     const emittedEvents: Array<{ type: string; [k: string]: unknown }> = [];
-
     // Fire-and-forget RTDB writes so per-collection work isn't blocked on
     // realtime network round-trips.  Failures are logged but never thrown.
     const emit = (data: Record<string, unknown> & { type: string }) => {
@@ -822,6 +828,7 @@ export async function POST(request: NextRequest) {
                 await docRef.set(docData, { merge: true });
                 totalCreated++;
               } catch (err) {
+                void normalizeError(err);
                 serverLogger.error(`Error seeding user ${userData.uid}:`, err);
                 totalErrors++;
               }
@@ -849,6 +856,7 @@ export async function POST(request: NextRequest) {
                 );
                 totalCreated++;
               } catch (err) {
+                void normalizeError(err);
                 serverLogger.error(`Error seeding address:`, err);
                 totalErrors++;
               }
@@ -873,6 +881,7 @@ export async function POST(request: NextRequest) {
                 );
                 totalCreated++;
               } catch (err) {
+                void normalizeError(err);
                 serverLogger.error(`Error seeding wishlist doc:`, err);
                 totalErrors++;
               }
@@ -897,6 +906,7 @@ export async function POST(request: NextRequest) {
                 );
                 totalCreated++;
               } catch (err) {
+                void normalizeError(err);
                 serverLogger.error(`Error seeding history doc:`, err);
                 totalErrors++;
               }
@@ -922,6 +932,7 @@ export async function POST(request: NextRequest) {
                 await docRef.set(stripUndefined({ couponId, ...data }), { merge: true });
                 totalCreated++;
               } catch (err) {
+                void normalizeError(err);
                 serverLogger.error("Error seeding coupon usage record:", err);
                 totalErrors++;
               }
@@ -1009,6 +1020,7 @@ export async function POST(request: NextRequest) {
           processedCollections.push(collectionName);
           emit({ type: "progress", collection: collectionName, status: "done", done: ++progressDone, total });
         } catch (err) {
+          void normalizeError(err);
           serverLogger.error(`Error processing collection ${collectionName}:`, err);
           totalErrors++;
           emit({ type: "progress", collection: collectionName, status: "error", error: err instanceof Error ? err.message : "Unknown error", done: ++progressDone, total });
@@ -1040,6 +1052,7 @@ export async function POST(request: NextRequest) {
                 try {
                   await auth.deleteUser(uid);
                 } catch (err: any) {
+                  void normalizeError(err);
                   if (err?.code !== "auth/user-not-found") {
                     serverLogger.error(`Error deleting auth user ${uid}`, { error: err instanceof Error ? err.message : String(err) });
                   }
@@ -1052,6 +1065,7 @@ export async function POST(request: NextRequest) {
                   totalSkipped++;
                 }
               } catch (err) {
+                void normalizeError(err);
                 serverLogger.error(`Error deleting user`, { uid: (userData as any).uid, error: err instanceof Error ? err.message : String(err) });
                 totalErrors++;
               }
@@ -1062,6 +1076,7 @@ export async function POST(request: NextRequest) {
               await purgeCollection(db, "addresses");
               totalDeleted++;
             } catch (err) {
+              void normalizeError(err);
               serverLogger.error("Error purging addresses", { error: err instanceof Error ? err.message : String(err) });
               totalErrors++;
             }
@@ -1071,6 +1086,7 @@ export async function POST(request: NextRequest) {
               await purgeCollection(db, WISHLIST_COLLECTION);
               totalDeleted++;
             } catch (err) {
+              void normalizeError(err);
               serverLogger.error("Error purging wishlists", { error: err instanceof Error ? err.message : String(err) });
               totalErrors++;
             }
@@ -1080,6 +1096,7 @@ export async function POST(request: NextRequest) {
               await purgeCollection(db, HISTORY_COLLECTION);
               totalDeleted++;
             } catch (err) {
+              void normalizeError(err);
               serverLogger.error("Error purging history", { error: err instanceof Error ? err.message : String(err) });
               totalErrors++;
             }
@@ -1091,6 +1108,7 @@ export async function POST(request: NextRequest) {
                 await purgeCollection(db, `${USER_COLLECTION}/${userId}/couponUsage`);
                 totalDeleted++;
               } catch (err) {
+                void normalizeError(err);
                 serverLogger.error(`Error purging couponUsage for user ${userId}`, { error: err instanceof Error ? err.message : String(err) });
                 totalErrors++;
               }
@@ -1120,6 +1138,7 @@ export async function POST(request: NextRequest) {
           processedCollections.push(collectionName);
           emit({ type: "progress", collection: collectionName, status: "done", done: ++progressDone, total });
         } catch (err) {
+          void normalizeError(err);
           serverLogger.error(`Error processing collection ${collectionName}`, { error: err instanceof Error ? err.message : String(err) });
           totalErrors++;
           emit({ type: "progress", collection: collectionName, status: "error", error: err instanceof Error ? err.message : "Unknown error", done: ++progressDone, total });
@@ -1157,6 +1176,7 @@ export async function POST(request: NextRequest) {
     };
     return NextResponse.json(summary);
   } catch (error) {
+    void normalizeError(error);
     serverLogger.error("Seed API error:", error);
     return NextResponse.json(
       {

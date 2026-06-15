@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 /**
  * Cache Revalidation Endpoint
  *
@@ -47,6 +48,7 @@ const COLLECTION_CACHE_PATHS: Record<string, string[]> = {
 };
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export async function POST(request: NextRequest) {
   try {
     // --- Authentication ---
@@ -110,6 +112,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ cleared: clearedPaths }, { status: 200 });
   } catch (error) {
+    void normalizeError(error);
     return handleApiError(error);
   }
 }

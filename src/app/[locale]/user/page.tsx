@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 import { useRef, useState } from "react";
 import {
   UserAccountHubView,
@@ -110,6 +111,7 @@ export default function Page() {
       });
       await updateProfile.mutateAsync({ photoURL: url });
     } catch (e: any) {
+      void normalizeError(e);
       showToast(e?.message ?? "Upload failed.", "error");
     } finally {
       setUploading(false);

@@ -21,7 +21,7 @@ interface ProfilePageClientProps {
 function renderProfileLoadingSkeleton() {
   return (
     <Div className="w-full max-w-2xl space-y-4 animate-pulse">
-      <Div className="h-20 w-20 rounded-full bg-zinc-200 dark:bg-slate-700" />
+      <Div className="h-20 w-20 bg-zinc-200 dark:bg-slate-700" rounded="full" />
       <Div className="h-6 bg-zinc-200 dark:bg-slate-700 rounded w-1/2" />
       <Div className="h-4 bg-zinc-200 dark:bg-slate-700 rounded w-2/3" />
     </Div>
@@ -179,7 +179,7 @@ function renderProfileEditForm({
         />
         <Text className="text-zinc-400 dark:text-zinc-400" size="xs" align="end">{bio.length}/500</Text>
       </Div>
-      <Div className="flex items-center justify-between rounded-lg border border-zinc-200 dark:border-slate-700 px-4 py-3">
+      <Div className="flex items-center justify-between dark:border-slate-700 px-4 py-3" rounded="lg" border="default">
         <>
           <Text className="text-zinc-800 dark:text-zinc-200" size="sm" weight="medium">Public profile</Text>
           <Text className="text-zinc-500 dark:text-zinc-400 mt-0.5" size="xs">

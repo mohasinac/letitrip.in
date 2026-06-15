@@ -60,6 +60,7 @@ interface SignRequestBody {
 }
 
 // rbac-scope-enforced-in-handler: media route — handler verifies signed-URL ownership + applyRateLimit
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {

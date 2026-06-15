@@ -1,4 +1,5 @@
 "use server";
+import { normalizeError } from "@mohasinac/appkit";
 
 import { wrapAction } from "@mohasinac/appkit/server";
 /**
@@ -76,6 +77,7 @@ export async function makeOfferAction(
     const data = await makeOffer(user.uid, user.email ?? "", parsed.data as MakeOfferInput);
     return { ok: true, data };
   } catch (err) {
+    void normalizeError(err);
     // Log unexpected failures so Vercel's digest-only prod errors are debuggable.
     if (err instanceof Error && err.message) {
       // eslint-disable-next-line no-console
@@ -106,6 +108,7 @@ export async function respondToOfferAction(
     const data = await respondToOffer(user.uid, parsed.data as RespondToOfferInput);
     return { ok: true, data };
   } catch (err) {
+    void normalizeError(err);
     if (err instanceof Error && err.message) return { ok: false, error: err.message };
     return { ok: false, error: "Failed to respond to offer. Please try again." };
   }
@@ -121,6 +124,7 @@ export async function acceptCounterOfferAction(
     const data = await acceptCounterOffer(user.uid, parsed.data.offerId);
     return { ok: true, data };
   } catch (err) {
+    void normalizeError(err);
     if (err instanceof Error && err.message) return { ok: false, error: err.message };
     return { ok: false, error: "Failed to accept counter offer. Please try again." };
   }
@@ -139,6 +143,7 @@ export async function counterOfferByBuyerAction(
     const data = await counterOfferByBuyer(user.uid, user.email ?? "", parsed.data as BuyerCounterInput);
     return { ok: true, data };
   } catch (err) {
+    void normalizeError(err);
     if (err instanceof Error && err.message) return { ok: false, error: err.message };
     return { ok: false, error: "Failed to submit counter offer. Please try again." };
   }
@@ -154,6 +159,7 @@ export async function withdrawOfferAction(
     await withdrawOffer(user.uid, parsed.data.offerId);
     return { ok: true, data: undefined };
   } catch (err) {
+    void normalizeError(err);
     if (err instanceof Error && err.message) return { ok: false, error: err.message };
     return { ok: false, error: "Failed to withdraw offer. Please try again." };
   }
@@ -183,6 +189,7 @@ export async function checkoutOfferAction(
     const data = await checkoutOffer(user.uid, offerId);
     return { ok: true, data };
   } catch (err) {
+    void normalizeError(err);
     if (err instanceof Error && err.message) return { ok: false, error: err.message };
     return { ok: false, error: "Failed to checkout offer. Please try again." };
   }

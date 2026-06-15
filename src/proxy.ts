@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 /**
  * next-intl Proxy — with crash-safe error handling + RBAC first gate
  *
@@ -48,6 +49,7 @@ export default function middleware(request: NextRequest): NextResponse {
     // ── next-intl locale proxy ─────────────────────────────────────────────
     return intlMiddleware(request);
   } catch (error) {
+    void normalizeError(error);
     const err = error instanceof Error ? error : new Error(String(error));
     console.error(
       JSON.stringify({

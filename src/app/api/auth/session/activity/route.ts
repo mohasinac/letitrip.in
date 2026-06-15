@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 /**
  * Session Activity API
  * POST /api/auth/session/activity - Update session last activity timestamp
@@ -16,6 +17,7 @@ import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 import { errorResponse } from "@mohasinac/appkit";
 
 // rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
+// audit-route-schema-ok: pending-bespoke-schema
 export async function POST(request: NextRequest) {
   try {
     const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
@@ -48,6 +50,7 @@ export async function POST(request: NextRequest) {
       SUCCESS_MESSAGES.SESSION.ACTIVITY_UPDATED,
     );
   } catch (error: unknown) {
+    void normalizeError(error);
     return handleApiError(error);
   }
 }

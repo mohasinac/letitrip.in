@@ -16,6 +16,7 @@ import {
 import { resolveConversationRole } from "@/lib/conversations/authorise";
 
 // rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

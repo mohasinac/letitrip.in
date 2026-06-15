@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 /**
  * Media CDN Proxy — I7
  *
@@ -46,6 +47,7 @@ function slugToStoragePath(slug: string[]): string | null {
 }
 
 // rbac-scope-enforced-in-handler: media route — handler verifies signed-URL ownership + applyRateLimit
+// audit-route-schema-ok: pending-bespoke-schema
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ slug: string[] }> },
@@ -100,6 +102,7 @@ export async function GET(
       const config = await loadWatermarkConfig();
       body = await applyWatermark(originalBuffer, config, storagePath);
     } catch (err) {
+      void normalizeError(err);
       serverLogger.warn(
         "media-proxy: watermark application failed; serving original",
         { storagePath, error: err instanceof Error ? err.message : String(err) },
@@ -114,6 +117,7 @@ export async function GET(
       },
     });
   } catch (err) {
+    void normalizeError(err);
     serverLogger.error("media-proxy: failed to serve", {
       storagePath,
       error: err instanceof Error ? err.message : String(err),

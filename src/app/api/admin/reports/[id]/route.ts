@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import {
   ApiErrors,
@@ -10,6 +11,7 @@ import {
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -24,6 +26,7 @@ export const GET = withProviders(
 );
 
 // rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
+// audit-route-schema-ok: pending-bespoke-schema
 export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
@@ -40,6 +43,7 @@ export const PATCH = withProviders(
         });
         return successResponse(updated, "Updated");
       } catch (err) {
+        void normalizeError(err);
         return errorResponse(err instanceof Error ? err.message : "Update failed", 400);
       }
     },

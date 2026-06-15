@@ -126,7 +126,7 @@ export default function Page() {
         </>
 
         {error && (
-          <Div className="rounded-xl bg-error-surface border border-error/20 px-4 py-3 text-sm text-error">
+          <Div className="bg-error-surface border border-error/20 px-4 py-3 text-sm text-error" rounded="xl">
             {error}
           </Div>
         )}

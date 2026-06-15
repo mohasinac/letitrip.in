@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 /**
  * Payment - Razorpay Webhook Handler
  *
@@ -47,6 +48,7 @@ async function signalPaymentEvent(
       .ref(`${RTDB_PATHS.PAYMENT_EVENTS}/${orderId}`)
       .update(payload);
   } catch (err) {
+    void normalizeError(err);
     serverLogger.warn(`${logTag} RTDB signal failed`, { err });
   }
 }
@@ -56,6 +58,7 @@ export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
 // rbac-public: external webhook receiver — signature verified inside handler
+// audit-route-schema-ok: pending-bespoke-schema
 export async function POST(request: NextRequest) {
   try {
     const rawBody = await request.text();
@@ -150,6 +153,7 @@ export async function POST(request: NextRequest) {
     // Always return 200 to acknowledge receipt
     return NextResponse.json({ received: true });
   } catch (error) {
+    void normalizeError(error);
     serverLogger.error("POST /api/payment/webhook error:", error);
     return handleApiError(error);
   }

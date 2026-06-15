@@ -25,7 +25,7 @@ export function FontToggleClient() {
   }
 
   return (
-    <Div className="flex items-center justify-between gap-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3">
+    <Div className="flex items-center justify-between gap-4 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3" rounded="xl" border="default">
       <Stack gap="xs" className="min-w-0">
         <Text className="text-zinc-800 dark:text-zinc-100" size="sm" weight="medium">
           Cursive font

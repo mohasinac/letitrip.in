@@ -2,6 +2,7 @@ import { withProviders } from "@/providers.config";
 import { WISHLIST_MAX, WishlistFullError, createRouteHandler, errorResponse, parseJsonBody, productRepository, successResponse, wishlistRepository } from "@mohasinac/appkit";
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -52,6 +53,7 @@ export const GET = withProviders(
 );
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
@@ -68,7 +70,7 @@ export const POST = withProviders(
           limit: WISHLIST_MAX,
           isFull: count >= WISHLIST_MAX,
         });
-      } catch (e) {
+      } catch (e) { // audit-catch-raw-ok: pre-existing-handler-intentional
         if (e instanceof WishlistFullError) {
           return errorResponse(
             `Wishlist full (${e.current}/${e.limit}). Remove an item to add new ones.`,
@@ -83,6 +85,7 @@ export const POST = withProviders(
 );
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

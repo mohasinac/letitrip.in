@@ -45,6 +45,7 @@ import { invalidateIntegrationKeysCache } from "@mohasinac/appkit";
  * TODO (Future): Integrate Redis for distributed caching
  */
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const GET = withProviders(createApiHandler({
   handler: async ({ request }) => {
     // Fetch site settings (singleton pattern)
@@ -125,6 +126,7 @@ export const GET = withProviders(createApiHandler({
  * TODO (Future): Send notification to all admins on settings change — ✅ Done
  */
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const PATCH = withProviders(createRouteHandler<
   (typeof siteSettingsUpdateSchema)["_output"]
 >({

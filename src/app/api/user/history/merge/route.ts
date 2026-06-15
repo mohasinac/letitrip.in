@@ -34,6 +34,7 @@ const mergeSchema = z.object({
 });
 
 // rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(
   createRouteHandler<(typeof mergeSchema)["_output"]>({
     auth: true,

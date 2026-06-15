@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 /**
  * POST /api/copilot/chat
  *
@@ -71,6 +72,7 @@ Rules:
 // ---------------------------------------------------------------------------
 
 // rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(createApiHandler<(typeof chatSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
@@ -138,6 +140,7 @@ export const POST = withProviders(createApiHandler<(typeof chatSchema)["_output"
         SUCCESS_MESSAGES.COPILOT.RESPONSE_OK,
       );
     } catch (error) {
+      void normalizeError(error);
       serverLogger.error("copilot.generation", {
         error: error instanceof Error ? error.message : String(error),
         conversationId,

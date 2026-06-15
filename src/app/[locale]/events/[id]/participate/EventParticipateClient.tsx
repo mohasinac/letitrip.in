@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 
 import { useState, useCallback } from "react";
 import { Link } from "@/i18n/navigation";
@@ -70,7 +71,7 @@ interface Props {
 
 function renderLoginRequired() {
   return (
-    <Div className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-6 py-10 text-center space-y-3">
+    <Div className="dark:border-zinc-700 px-6 py-10 text-center space-y-3" rounded="xl" border="default">
       <Heading level={2} className="text-zinc-900 dark:text-zinc-100" size="xl" weight="bold">
         Login Required
       </Heading>
@@ -222,7 +223,7 @@ function renderSuccessState({
 }) {
   return (
     <Div className="space-y-4 py-6">
-      <Div className="rounded-2xl border border-success/20 bg-success-surface px-5 py-5 space-y-2">
+      <Div className="border border-success/20 bg-success-surface px-5 py-5 space-y-2" rounded="2xl">
         <Div className="flex items-center gap-2">
           <Span weight="semibold" className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] tracking-wide" transform="uppercase">
             Confirmed
@@ -543,6 +544,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
       setFormErrors({});
       showToast("Your entry has been submitted!", "success");
     } catch (err) {
+      void normalizeError(err);
       const isAbort = err instanceof Error && err.name === "AbortError";
       const msg = isAbort
         ? "Submission timed out — please try again."
@@ -596,7 +598,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
   if (isSubmitted && !atEntryLimit) {
     return (
       <Div className="space-y-4">
-        <Div className="rounded-2xl border border-success/20 bg-success-surface px-5 py-5 space-y-2">
+        <Div className="border border-success/20 bg-success-surface px-5 py-5 space-y-2" rounded="2xl">
           <Div className="flex items-center gap-2">
             <Span weight="semibold" className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] tracking-wide" transform="uppercase">
               Confirmed

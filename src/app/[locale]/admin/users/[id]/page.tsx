@@ -36,7 +36,6 @@ export default function Page() {
   const id = params?.id ?? "";
   const [tab, setTab] = useState<TabId>("overview");
   const [user, setUser] = useState<Record<string, unknown> | null>(null);
-
   useEffect(() => {
     fetch(`/api/admin/users/${id}`)
       .then((r) => r.json())

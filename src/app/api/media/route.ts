@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 /**
  * DELETE /api/media?url=...
@@ -50,6 +51,7 @@ function extractStoragePath(url: string): string | null {
 }
 
 // rbac-scope-enforced-in-handler: media route — handler verifies signed-URL ownership + applyRateLimit
+// audit-route-schema-ok: pending-bespoke-schema
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {
@@ -107,6 +109,7 @@ export const DELETE = withProviders(createRouteHandler({
       });
       return successResponse({ deleted: true });
     } catch (err) {
+      void normalizeError(err);
       serverLogger.error("Failed to delete staged media", {
         uid: user!.uid,
         path: storagePath,

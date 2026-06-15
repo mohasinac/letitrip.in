@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 /**
  * GET /api/auth/google/start
  *
@@ -31,6 +32,7 @@ const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
+// audit-route-schema-ok: pending-bespoke-schema
 export async function GET(request: NextRequest) {
   try {
     const rl = await applyRateLimit(request, RateLimitPresets.OAUTH);
@@ -86,6 +88,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.redirect(googleAuthUrl.toString());
   } catch (error) {
+    void normalizeError(error);
     serverLogger.error("GET /api/auth/google/start error", { error });
     return handleApiError(error);
   }

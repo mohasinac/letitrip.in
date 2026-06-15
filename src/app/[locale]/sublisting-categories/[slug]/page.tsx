@@ -101,7 +101,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
 
         {/* Listings grid */}
         {listings.length === 0 ? (
-          <Div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-700 py-20 text-center">
+          <Div className="flex flex-col items-center justify-center border-dashed dark:border-zinc-700 py-20 text-center" rounded="2xl" border="default">
             <Text as="span" className="text-4xl mb-3">📦</Text>
             <Text className="text-zinc-700 dark:text-zinc-300" size="base" weight="semibold">No listings yet</Text>
             <Text className="mt-1 text-zinc-400 dark:text-zinc-400" size="sm">

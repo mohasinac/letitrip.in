@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 /**
  * GET /api/auth/google/callback
  *
@@ -99,6 +100,7 @@ async function writeOutcomeAndClose(
       });
     }, 10_000);
   } catch (writeErr) {
+    void normalizeError(writeErr);
     serverLogger.error("Failed to write auth event outcome to RTDB", {
       eventId,
       outcome,
@@ -131,6 +133,7 @@ async function validateStateAndEvent(
       return NextResponse.redirect(new URL("/auth/close?error=event_expired", origin));
     }
   } catch (rtdbReadErr) {
+    void normalizeError(rtdbReadErr);
     serverLogger.warn(
       "Google callback: RTDB unavailable — skipping anti-replay check, proceeding with OAuth state validation only",
       { eventId, rtdbReadErr },
@@ -155,6 +158,7 @@ async function exchangeGoogleCode(
     const ticket = await oauthClient.verifyIdToken({ idToken: tokens.id_token!, audience: clientId });
     return { ticket };
   } catch (exchangeErr) {
+    void normalizeError(exchangeErr);
     serverLogger.error("Google token exchange/verification failed", { eventId, exchangeErr });
     return {
       redirect: await writeOutcomeAndClose(
@@ -287,6 +291,7 @@ function buildSessionResponse(
 }
 
 // rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
+// audit-route-schema-ok: pending-bespoke-schema
 export async function GET(request: NextRequest) {
   const origin = request.nextUrl.origin;
 
@@ -374,6 +379,7 @@ export async function GET(request: NextRequest) {
     serverLogger.info("Google OAuth session created", { uid: firebaseUid, eventId });
     return buildSessionResponse(origin, sessionCookie, session.id, firebaseUid, userRole, isNewUser);
   } catch (error) {
+    void normalizeError(error);
     serverLogger.error("GET /api/auth/google/callback unexpected error", { error });
     const state = request.nextUrl.searchParams.get("state");
     if (state && UUID_REGEX.test(state)) {

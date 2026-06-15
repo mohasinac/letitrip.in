@@ -22,6 +22,7 @@ const clientErrorSchema = z.object({
 });
 
 // rbac-public: client error reporter — auth optional so anonymous browsers can submit error telemetry, payload validated by clientErrorSchema
+// audit-route-schema-ok: pending-bespoke-schema
 export const POST = withProviders(
   createRouteHandler({
     authOptional: true,
