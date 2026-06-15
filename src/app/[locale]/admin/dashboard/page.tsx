@@ -237,7 +237,7 @@ export default function Page() {
             <Row className="mb-4" align="center" gap="sm">
               <Div className="text-sm font-semibold text-[var(--appkit-color-text)]">Dev Settings</Div>
               {(prefs.mockRazorpay || prefs.mockShiprocket || adminBypassEnabled) && (
-                <Div className="text-xs px-2 py-0.5 bg-warning-surface text-warning font-medium" rounded="full">
+                <Div className="text-xs py-0.5 bg-warning-surface text-warning font-medium" padding="x-xs" rounded="full">
                   Mock active
                 </Div>
               )}

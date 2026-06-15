@@ -2020,11 +2020,11 @@ function ResourceAccordionCard({
       </Row>
 
       {dbStatus && seedCount > 0 && (
-        <Div className="px-4 pb-2"><SeedProgressBar seeded={existingCount} target={seedCount} size="sm" /></Div>
+        <Div className="pb-2" padding="x-md"><SeedProgressBar seeded={existingCount} target={seedCount} size="sm" /></Div>
       )}
 
       {runError && (
-        <Div className="px-4 pb-2">
+        <Div className="pb-2" padding="x-md">
           <span className="text-xs text-red-600 dark:text-red-400" title={runError}>✗ {runError}</span>
         </Div>
       )}
