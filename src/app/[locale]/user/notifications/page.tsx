@@ -91,7 +91,7 @@ function NotifCard({
         <Div className="space-y-0.5 min-w-0">
           <Row gap="sm" align="center">
             {!notif.isRead && (
-              <Span className="inline-block h-2 w-2 rounded-full bg-primary shrink-0" />
+              <Span className="inline-block h-2 w-2 bg-primary shrink-0" rounded="full" />
             )}
             <Text className="text-[var(--appkit-color-text)] line-clamp-1" size="sm" weight="semibold">
               {notif.title}

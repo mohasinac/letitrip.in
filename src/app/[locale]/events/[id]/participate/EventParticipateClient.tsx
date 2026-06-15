@@ -220,7 +220,7 @@ function renderSuccessState({
     <Stack padding="y-lg" gap="md">
       <Stack className="border border-success/20 bg-success-surface px-5 py-5" gap="sm" rounded="2xl">
         <Row align="center" gap="sm">
-          <Span weight="semibold" className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] tracking-wide" transform="uppercase">
+          <Span weight="semibold" className="inline-flex items-center bg-success text-white px-2.5 py-0.5 text-[11px] tracking-wide" rounded="full" transform="uppercase">
             Confirmed
           </Span>
           <Heading level={2} className="text-success" size="lg" weight="bold">
@@ -585,7 +585,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
       <Stack gap="md">
         <Stack className="border border-success/20 bg-success-surface px-5 py-5" gap="sm" rounded="2xl">
           <Row align="center" gap="sm">
-            <Span weight="semibold" className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] tracking-wide" transform="uppercase">
+            <Span weight="semibold" className="inline-flex items-center bg-success text-white px-2.5 py-0.5 text-[11px] tracking-wide" rounded="full" transform="uppercase">
               Confirmed
             </Span>
             <Heading level={2} className="text-success" size="lg" weight="bold">

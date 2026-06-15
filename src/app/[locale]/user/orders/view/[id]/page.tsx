@@ -97,7 +97,7 @@ function renderItemRow(item: OrderItemT, key: string | number) {
         {isPrizeDraw && revealStatus && (
           <Row gap="sm" className="mt-1" wrap>
             {revealStatus === "revealed" ? (
-              <Span weight="semibold" className="inline-flex items-center rounded-full bg-success-surface px-2 py-0.5 text-[10px] text-success">
+              <Span weight="semibold" className="inline-flex items-center bg-success-surface py-0.5 text-[10px] text-success" rounded="full" padding="x-xs">
                 Prize revealed{item.revealedItemNumber != null ? ` (#${item.revealedItemNumber})` : ""}
               </Span>
             ) : revealStatus === "open" ? (
@@ -105,11 +105,11 @@ function renderItemRow(item: OrderItemT, key: string | number) {
                 Reveal pending
               </Span>
             ) : revealStatus === "pending" ? (
-              <Span weight="semibold" className="inline-flex items-center rounded-full bg-warning-surface px-2 py-0.5 text-[10px] text-warning">
+              <Span weight="semibold" className="inline-flex items-center bg-warning-surface py-0.5 text-[10px] text-warning" rounded="full" padding="x-xs">
                 Awaiting reveal window
               </Span>
             ) : (
-              <Span weight="semibold" className="inline-flex items-center rounded-full bg-zinc-200 dark:bg-slate-700 px-2 py-0.5 text-[10px]" color="primary">
+              <Span weight="semibold" className="inline-flex items-center py-0.5 text-[10px]" rounded="full" padding="x-xs" surface="subtle" color="primary">
                 Reveal closed
               </Span>
             )}
@@ -188,7 +188,7 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
           </Text>
           {date && <Text variant="secondary" className="mt-0.5" size="xs">{date}</Text>}
         </Div>
-        <Span size="xs" weight="semibold" className={`rounded-full px-3 py-1 capitalize ${statusColor}`}>
+        <Span size="xs" weight="semibold" className={`py-1 capitalize ${statusColor}`} rounded="full" padding="x-sm">
           {order.orderStatus.replace(/_/g, " ")}
         </Span>
       </Row>

@@ -192,7 +192,7 @@ export default function UserEventsPage() {
                     )}
                     <Row gap="xs" wrap>
                       {eventType && (
-                        <Span size="xs" className="rounded-full bg-[var(--appkit-color-border-subtle)] px-2 py-0.5 text-[var(--appkit-color-text-muted)]">
+                        <Span size="xs" className="bg-[var(--appkit-color-border-subtle)] py-0.5 text-[var(--appkit-color-text-muted)]" rounded="full" padding="x-xs">
                           {eventType}
                         </Span>
                       )}

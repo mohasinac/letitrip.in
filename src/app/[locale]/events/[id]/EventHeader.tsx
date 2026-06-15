@@ -1,4 +1,4 @@
-import { Div, Heading, Row, Stack, Text } from "@mohasinac/appkit/ui";
+import { Div, Heading, Row, Span, Stack, Text } from "@mohasinac/appkit/ui";
 import { MediaImage } from "@mohasinac/appkit/client";
 import { EVENT_LABELS } from "./_constants";
 import {
@@ -50,11 +50,11 @@ export function EventHeader({
       <Stack gap="3">
         <Row align="center" gap="sm" wrap>
           {eventType ? (
-            <span
-              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${typeBadgeClass(eventType)}`}
+            <Span
+              className={`inline-flex items-center px-2.5 py-0.5 text-xs font-semibold capitalize ${typeBadgeClass(eventType)}`} rounded="full"
             >
               {eventType}
-            </span>
+            </Span>
           ) : null}
           {eventStatus ? (
             <span
