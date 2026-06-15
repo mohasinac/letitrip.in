@@ -39,7 +39,7 @@ export default async function Page() {
   return (
     <Div className={`${__P.p6} max-w-5xl mx-auto`}>
       <Div className="mb-6">
-        <Heading level={1} className="text-2xl" weight="semibold">Navigation Permissions</Heading>
+        <Heading level={1} weight="semibold" size="2xl">Navigation Permissions</Heading>
         <Text className="mt-1 text-zinc-500 dark:text-zinc-400" size="sm">
           Enable or disable individual navigation items. Disabled items are hidden from the nav and return 404.
         </Text>

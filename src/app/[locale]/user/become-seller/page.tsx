@@ -50,7 +50,7 @@ export default function Page() {
           <Stack gap="sm">
             <Heading
               level={2}
-              className="text-lg font-semibold text-zinc-900 dark:text-zinc-100"
+              className="text-zinc-900 dark:text-zinc-100" size="lg" weight="semibold"
             >
               Sell collectibles to a verified community
             </Heading>
@@ -103,7 +103,7 @@ export default function Page() {
         >
           <Heading
             level={2}
-            className="text-lg font-semibold text-success"
+            className="text-success" size="lg" weight="semibold"
           >
             Application received
           </Heading>
@@ -125,7 +125,7 @@ export default function Page() {
         >
           <Heading
             level={2}
-            className="text-lg font-semibold text-zinc-900 dark:text-zinc-100"
+            className="text-zinc-900 dark:text-zinc-100" size="lg" weight="semibold"
           >
             You&apos;re already a seller
           </Heading>

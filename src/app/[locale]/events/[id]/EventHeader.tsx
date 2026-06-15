@@ -67,7 +67,7 @@ export function EventHeader({
 
         <Heading
           level={1}
-          className="text-2xl font-bold text-zinc-900 dark:text-zinc-100"
+          className="text-zinc-900 dark:text-zinc-100" size="2xl" weight="bold"
         >
           {title}
         </Heading>

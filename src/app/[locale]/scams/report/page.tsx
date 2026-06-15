@@ -319,7 +319,7 @@ function ScamReportForm({ userId }: { userId: string }) {
       <Form onSubmit={handleSubmit}>
         <Stack gap="lg">
           <Stack gap="xs">
-            <Heading level={1} className="text-2xl" weight="bold">
+            <Heading level={1} weight="bold" size="2xl">
               Report a Scammer
             </Heading>
             <Text variant="secondary" size="sm">

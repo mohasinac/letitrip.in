@@ -75,7 +75,7 @@ export default async function Page() {
                 <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[color:var(--appkit-color-warning,theme(colors.amber.500))]/10 text-[color:var(--appkit-color-warning,theme(colors.amber.600))]">
                   <ShieldAlert className="h-5 w-5" />
                 </span>
-                <Heading level={1} className="text-3xl" weight="bold">
+                <Heading level={1} weight="bold" size="3xl">
                   Scam Awareness FAQs
                 </Heading>
               </Row>

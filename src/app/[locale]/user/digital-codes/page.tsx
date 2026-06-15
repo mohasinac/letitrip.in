@@ -115,7 +115,7 @@ export default function UserDigitalCodesPage() {
   return (
     <Div className="w-full space-y-6">
       <Div>
-        <Heading level={1} className="text-2xl text-[var(--appkit-color-text)]" weight="semibold">
+        <Heading level={1} className="text-[var(--appkit-color-text)]" size="2xl" weight="semibold">
           My Digital Codes
         </Heading>
         {!loading && (

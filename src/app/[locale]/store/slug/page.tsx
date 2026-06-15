@@ -124,7 +124,7 @@ export default function Page() {
 
   return (
     <Div className="mx-auto max-w-2xl">
-      <Heading level={1} className="text-2xl text-zinc-900 dark:text-zinc-50 mb-1" weight="bold">
+      <Heading level={1} className="text-zinc-900 dark:text-zinc-50 mb-1" size="2xl" weight="bold">
         Store URL / Slug
       </Heading>
       <Text variant="secondary" className="mb-6" size="sm">

@@ -163,7 +163,7 @@ function renderPage({
     <Div className="mx-auto max-w-4xl">
       <Row justify="between" align="start" className="mb-6" gap="md">
         <Div>
-          <Heading level={1} className="text-2xl" weight="bold">Sub-listing Categories</Heading>
+          <Heading level={1} weight="bold" size="2xl">Sub-listing Categories</Heading>
           <Text variant="secondary" className="mt-1" size="sm">
             Group your listings of the same collectible across conditions, grades, or prices. Buyers browsing one listing will see all others in the group.
           </Text>
@@ -188,7 +188,7 @@ function renderPage({
         </Div>
       ) : filtered.length === 0 ? (
         <Div className="flex flex-col items-center justify-center border border-dashed border-[var(--appkit-color-border)] py-16 text-center" rounded="2xl">
-          <Text className="text-3xl mb-2">🏷️</Text>
+          <Text className="mb-2" size="3xl">🏷️</Text>
           <Text size="sm" weight="semibold">
             {search ? "No categories match your search" : "No sub-listing categories yet"}
           </Text>

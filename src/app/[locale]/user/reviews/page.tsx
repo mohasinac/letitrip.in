@@ -123,7 +123,7 @@ export default function UserReviewsPage() {
   return (
     <Div className="w-full space-y-6">
       <Div>
-        <Heading level={1} className="text-2xl text-zinc-900 dark:text-zinc-100" weight="semibold">
+        <Heading level={1} className="text-zinc-900 dark:text-zinc-100" size="2xl" weight="semibold">
           My Reviews
         </Heading>
         {!loading && data && (

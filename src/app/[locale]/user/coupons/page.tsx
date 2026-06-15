@@ -161,7 +161,7 @@ export default function ClaimedCouponsPage() {
   return (
     <Stack gap="md">
       <Div>
-        <Heading level={1} className="text-2xl text-zinc-900 dark:text-zinc-100" weight="semibold">
+        <Heading level={1} className="text-zinc-900 dark:text-zinc-100" size="2xl" weight="semibold">
           My Coupons
         </Heading>
         <Text variant="secondary" className="mt-0.5" size="sm">

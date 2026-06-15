@@ -143,7 +143,7 @@ export default function Page() {
         <Section className="border-b py-10">
           <Container size="xl">
             <Stack gap="sm">
-              <Heading level={1} className="text-3xl" weight="bold">Scam Types — LetItRip Scam Registry</Heading>
+              <Heading level={1} weight="bold" size="3xl">Scam Types — LetItRip Scam Registry</Heading>
               <Text variant="secondary" className="max-w-2xl" size="base">
                 27 documented scam patterns across 7 categories, specific to India&apos;s collectibles aftermarket. Learn how each scam works and how to protect yourself.
               </Text>

@@ -137,7 +137,7 @@ export default function TicketDetailPage({ params }: PageProps) {
         </Link>
         <Row justify="between" align="start" wrap gap="3" className="mt-1">
           <Div className="min-w-0">
-            <Heading level={1} className="text-2xl text-[var(--appkit-color-text)]" weight="semibold">
+            <Heading level={1} className="text-[var(--appkit-color-text)]" size="2xl" weight="semibold">
               {ticket.subject}
             </Heading>
             <Row gap="sm" className="mt-1" wrap>

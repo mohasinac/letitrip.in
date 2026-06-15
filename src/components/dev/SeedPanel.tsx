@@ -2504,7 +2504,7 @@ function renderSeedPanelHero() {
   return (
     <Div className="flex flex-col items-center text-center gap-3 pt-2">
       <span className="text-5xl leading-none">🎮</span>
-      <Heading level={1} className="text-3xl font-extrabold text-amber-600 dark:text-amber-400 m-0">LetItRip Demo Seed</Heading>
+      <Heading level={1} className="font-extrabold text-amber-600 dark:text-amber-400 m-0" size="3xl">LetItRip Demo Seed</Heading>
       <Text className="text-zinc-600 dark:text-slate-300 max-w-xl m-0" size="base">Admin seed tool — expand each resource card to see what&apos;s seeded, pending counts, live DB state, and the UI path to verify.</Text>
     </Div>
   );

@@ -57,7 +57,7 @@ export default async function Page({ params }: Props) {
         <Div className="space-y-3">
           <Heading
             level={2}
-            className="text-lg font-semibold text-zinc-900 dark:text-zinc-100"
+            className="text-zinc-900 dark:text-zinc-100" size="lg" weight="semibold"
           >
             {EVENT_LABELS.OVERVIEW_POLL_HEADING}
           </Heading>

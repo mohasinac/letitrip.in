@@ -243,7 +243,7 @@ export default function UserMessagesPage({ initialActiveId }: UserMessagesPagePr
     <Div className={PAGE_CONTAINER}>
       <Row justify="between" align="end" wrap gap="3" className="mb-4">
         <Div>
-          <Heading level={1} className="text-2xl" weight="semibold">
+          <Heading level={1} weight="semibold" size="2xl">
             Messages
           </Heading>
           <Text variant="secondary" className="mt-0.5" size="sm">

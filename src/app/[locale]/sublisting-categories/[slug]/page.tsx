@@ -84,7 +84,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
 
           <Div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
             <>
-              <Heading level={1} className="text-2xl text-zinc-900 dark:text-zinc-50 sm:text-3xl" weight="bold">
+              <Heading level={1} className="text-zinc-900 dark:text-zinc-50 sm:text-3xl" size="2xl" weight="bold">
                 {displayName}
               </Heading>
               {category.description && (
@@ -102,7 +102,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
         {/* Listings grid */}
         {listings.length === 0 ? (
           <Div className="flex flex-col items-center justify-center border-dashed dark:border-zinc-700 py-20 text-center" rounded="2xl" border="default">
-            <Text as="span" className="text-4xl mb-3">📦</Text>
+            <Text as="span" className="mb-3" size="4xl">📦</Text>
             <Text className="text-zinc-700 dark:text-zinc-300" size="base" weight="semibold">No listings yet</Text>
             <Text className="mt-1 text-zinc-400 dark:text-zinc-400" size="sm">
               Check back soon — sellers are still adding items.

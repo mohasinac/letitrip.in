@@ -143,7 +143,7 @@ export default function UserHistoryPage() {
     <Div className="w-full max-w-3xl space-y-6">
       <Row justify="between" align="end" wrap gap="3">
         <Div>
-          <Heading level={1} className="text-2xl text-[var(--appkit-color-text)]" weight="semibold">
+          <Heading level={1} className="text-[var(--appkit-color-text)]" size="2xl" weight="semibold">
             Recently Viewed
           </Heading>
           <Text variant="secondary" className="mt-0.5" size="sm">

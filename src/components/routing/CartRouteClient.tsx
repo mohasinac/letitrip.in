@@ -923,7 +923,7 @@ export function CartRouteClient() {
         <Div surface="card" padding="lg">
           <Heading
             level={2}
-            className="mb-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100"
+            className="mb-2 text-zinc-900 dark:text-zinc-100" size="lg" weight="semibold"
           >
             Your cart is empty
           </Heading>

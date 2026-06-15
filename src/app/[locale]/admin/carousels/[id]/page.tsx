@@ -30,7 +30,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
               ← Carousels
             </Link>
           </Row>
-          <Heading level={1} className="mb-6 text-2xl" weight="bold">New Named Carousel</Heading>
+          <Heading level={1} className="mb-6" size="2xl" weight="bold">New Named Carousel</Heading>
           <EmptyState
             title="Named carousel creation via API"
             description={
@@ -70,7 +70,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
 
         <Row justify="between" className="mb-6">
           <Div>
-            <Heading level={1} className="text-2xl" weight="bold">
+            <Heading level={1} weight="bold" size="2xl">
               {carousel.name}
             </Heading>
             <Row className="mt-1" gap="sm">

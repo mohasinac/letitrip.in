@@ -61,7 +61,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   return (
     <Div className="w-full max-w-lg space-y-6">
       <>
-        <Heading level={1} className="text-2xl text-zinc-900 dark:text-zinc-100" weight="bold">Cancel Order</Heading>
+        <Heading level={1} className="text-zinc-900 dark:text-zinc-100" size="2xl" weight="bold">Cancel Order</Heading>
         <Text className="mt-1 text-zinc-500 dark:text-zinc-400" size="sm">Order #{id}</Text>
       </>
 

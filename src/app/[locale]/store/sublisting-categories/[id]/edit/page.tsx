@@ -75,7 +75,7 @@ export default function Page() {
   return (
     <Div className="mx-auto max-w-2xl">
       <Div className="mb-6">
-        <Heading level={1} className="text-2xl text-zinc-900 dark:text-zinc-50" weight="bold">
+        <Heading level={1} className="text-zinc-900 dark:text-zinc-50" size="2xl" weight="bold">
           Edit Sub-listing Category
         </Heading>
         <Text className="mt-1 text-zinc-500 dark:text-zinc-400" size="sm">

@@ -93,7 +93,7 @@ export default function UserSupportPage() {
     <Div className="w-full space-y-6">
       <Row justify="between" wrap align="center">
         <Div>
-          <Heading level={1} className="text-2xl text-[var(--appkit-color-text)]" weight="semibold">
+          <Heading level={1} className="text-[var(--appkit-color-text)]" size="2xl" weight="semibold">
             Support Tickets
           </Heading>
           {!loading && data && (

@@ -18,7 +18,7 @@ export default function Page() {
 
   return (
     <Div className="mx-auto max-w-2xl">
-      <Heading level={1} className="mb-6 text-2xl" weight="semibold">New Template</Heading>
+      <Heading level={1} className="mb-6" size="2xl" weight="semibold">New Template</Heading>
       <Form onSubmit={handleSubmit}>
         <Stack gap="md">
           {error && <Text color="danger">{error}</Text>}

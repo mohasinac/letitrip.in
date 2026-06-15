@@ -90,7 +90,7 @@ function StatCard({ label, value, href }: { label: string; value: number | null;
       className="flex flex-col gap-1 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3.5 shadow-sm hover:border-[var(--appkit-color-primary)] transition-colors"
     >
       <Span size="xs" className="text-[var(--appkit-color-text-muted)]">{label}</Span>
-      <Span weight="bold" className="text-2xl text-[var(--appkit-color-text)]">
+      <Span weight="bold" className="text-[var(--appkit-color-text)]" size="2xl">
         {value === null ? "—" : value}
       </Span>
     </Link>

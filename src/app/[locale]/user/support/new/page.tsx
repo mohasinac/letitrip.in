@@ -87,7 +87,7 @@ export default function NewSupportTicketPage() {
         >
           ← All tickets
         </Link>
-        <Heading level={1} className="text-2xl text-[var(--appkit-color-text)] mt-1" weight="semibold">
+        <Heading level={1} className="text-[var(--appkit-color-text)] mt-1" size="2xl" weight="semibold">
           New support ticket
         </Heading>
         <Text variant="secondary" className="mt-0.5" size="sm">

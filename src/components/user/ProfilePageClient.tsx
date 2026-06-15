@@ -279,7 +279,7 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
   return (
     <Div className="w-full space-y-6">
       {standalone && (
-        <Heading level={1} className="text-2xl text-zinc-900 dark:text-zinc-100" weight="bold">My Profile</Heading>
+        <Heading level={1} className="text-zinc-900 dark:text-zinc-100" size="2xl" weight="bold">My Profile</Heading>
       )}
       {!editing
         ? renderProfileViewMode({ profile, resolvedName, namePlaceholder, avatarLetter, profileBio, profileIsPublic, handleEdit })

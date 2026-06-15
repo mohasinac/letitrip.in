@@ -40,7 +40,7 @@ function renderInvoiceHeader(order: OrderData, orderDate: string) {
   return (
     <Row justify="between" align="start" className="mb-8 print:mb-6">
       <Div>
-        <Heading level={2} className="text-2xl print:text-black" weight="bold">LetItRip</Heading>
+        <Heading level={2} className="print:text-black" size="2xl" weight="bold">LetItRip</Heading>
         <Text variant="secondary" className="mt-0.5 print:text-gray-500" size="xs">letitrip.in</Text>
       </Div>
       <Div className="text-right">
@@ -207,7 +207,7 @@ export default function InvoicePage({ params }: { params: Promise<{ id: string }
         {renderInvoiceTotals(order)}
         <Text
           variant="secondary"
-          className="mt-12 text-center text-xs print:text-gray-400 print:mt-8"
+          className="mt-12 text-center print:text-gray-400 print:mt-8" size="xs"
         >
           Thank you for shopping with LetItRip · letitrip.in
         </Text>
