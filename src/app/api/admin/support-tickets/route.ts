@@ -14,8 +14,8 @@ import { ROLES_TRUST_SAFETY } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(SUPPORT_TICKET_FIELDS.CREATED_AT);
 
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

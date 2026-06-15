@@ -23,8 +23,8 @@ const schema = z.object({
   types: typePrefsSchema.optional(),
 });
 
-// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -46,8 +46,8 @@ export const GET = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const PUT = withProviders(
   createRouteHandler({
     auth: true,

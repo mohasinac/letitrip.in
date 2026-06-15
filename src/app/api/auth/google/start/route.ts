@@ -31,8 +31,8 @@ import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export async function GET(request: NextRequest) {
   try {
     const rl = await applyRateLimit(request, RateLimitPresets.OAUTH);

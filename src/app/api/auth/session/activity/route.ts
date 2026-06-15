@@ -16,8 +16,8 @@ import { getOptionalSessionCookie } from "@mohasinac/appkit";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 import { errorResponse } from "@mohasinac/appkit";
 
-// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export async function POST(request: NextRequest) {
   try {
     const rl = await applyRateLimit(request, RateLimitPresets.AUTH);

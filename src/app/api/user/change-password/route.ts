@@ -13,8 +13,8 @@ import { successResponse } from "@mohasinac/appkit";
 import { changePasswordSchema } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 
-// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const POST = withProviders(createRouteHandler<
   (typeof changePasswordSchema)["_output"]
 >({

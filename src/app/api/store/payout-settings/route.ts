@@ -44,8 +44,8 @@ const updatePayoutSchema = z.discriminatedUnion("method", [upiSchema, bankSchema
 
 // --- GET ----------------------------------------------------------------------
 
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const GET = withProviders(createApiHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
@@ -60,8 +60,8 @@ export const GET = withProviders(createApiHandler({
 
 // --- PATCH --------------------------------------------------------------------
 
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],

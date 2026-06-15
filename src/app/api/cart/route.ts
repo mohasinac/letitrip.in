@@ -26,8 +26,8 @@ const addToCartSchema = z.object({
   quantity: z.number().int().min(1, "quantity must be at least 1").max(99),
 });
 
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
@@ -63,8 +63,8 @@ export const GET = withProviders(createRouteHandler({
   },
 }));
 
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_output"]>({
   auth: true,
   schema: addToCartSchema,
@@ -149,8 +149,8 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
   },
 }));
 
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {

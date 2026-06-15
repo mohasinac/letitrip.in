@@ -33,8 +33,8 @@ function slugify(input: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -103,8 +103,8 @@ export const GET = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const POST = withProviders(
   createRouteHandler<(typeof bundleCreateSchema)["_output"]>({
     auth: true,

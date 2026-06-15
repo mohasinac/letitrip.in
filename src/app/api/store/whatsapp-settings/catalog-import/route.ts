@@ -38,8 +38,8 @@ interface MetaCatalogResponse {
   error?: { message: string };
 }
 
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

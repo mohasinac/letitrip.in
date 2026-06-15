@@ -13,8 +13,8 @@ import { ROLES_ADMIN_MOD } from "@/constants";
  * Sieve filters (eventId, userId, reviewStatus, submittedAt) so the admin
  * filter UI actually narrows results.
  */
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

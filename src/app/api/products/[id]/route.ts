@@ -5,12 +5,12 @@ import {
   productItemDELETE,
 } from "@mohasinac/appkit";
 
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(productItemGET);
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const PATCH = withProviders(productItemPATCH);
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const DELETE = withProviders(productItemDELETE);

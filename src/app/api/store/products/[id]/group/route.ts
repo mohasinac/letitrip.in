@@ -8,8 +8,8 @@ const MSG_PRODUCT_NOT_FOUND = "Product not found.";
 const MSG_NOT_YOUR_PRODUCT = "This product does not belong to your store.";
 
 /** POST — start a group (this product becomes parent) */
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const POST = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
@@ -31,8 +31,8 @@ export const POST = withProviders(createRouteHandler({
 }));
 
 /** PATCH — update groupTitle */
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const PATCH = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
@@ -53,8 +53,8 @@ export const PATCH = withProviders(createRouteHandler({
 }));
 
 /** DELETE — dissolve the group */
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],

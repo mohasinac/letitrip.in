@@ -16,8 +16,8 @@ const updateFaqSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -49,15 +49,15 @@ const updateHandler = createRouteHandler<(typeof updateFaqSchema)["_output"]>({
   },
 });
 
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const PUT = withProviders(updateHandler);
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const PATCH = withProviders(updateHandler);
 
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

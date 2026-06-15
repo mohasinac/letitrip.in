@@ -57,8 +57,8 @@ function mergeListingTypeFilter(filters: string | null | undefined): string {
   return parts.join(",");
 }
 
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(async (request: Request) => {
   try {
     const url = new URL(request.url);

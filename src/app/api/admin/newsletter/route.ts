@@ -30,8 +30,8 @@ const DEFAULT_SORTS = sortBy(COMMON_FIELDS.CREATED_AT);
  * meta.total / active / unsubscribed are always computed from the
  * full unfiltered dataset so stat cards remain accurate.
  */
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_ONLY],

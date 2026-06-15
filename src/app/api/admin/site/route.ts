@@ -9,8 +9,8 @@ import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const siteGroupSchema = z.record(z.string(), z.unknown());
 
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -24,8 +24,8 @@ export const GET = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const PUT = withProviders(
   createRouteHandler<(typeof siteGroupSchema)["_output"]>({
     auth: true,

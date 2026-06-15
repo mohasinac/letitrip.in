@@ -17,8 +17,8 @@ function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
 }
 
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const platform = searchParams.get("platform") as SocialPlatform | null;

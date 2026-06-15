@@ -82,7 +82,7 @@ function renderInvoiceItemsTable(order: OrderData) {
   return (
     <Table className="w-full text-sm mb-6 border-collapse">
       <Thead>
-        <Tr className="border-b border-zinc-200 dark:border-slate-700 print:border-gray-300">
+        <Tr className="print:border-gray-300" border="default">
           {(["Item", "Qty", "Price"] as const).map((h, i) => (
             <Th
               key={h}
@@ -99,7 +99,7 @@ function renderInvoiceItemsTable(order: OrderData) {
       <Tbody>
         {order.items?.map(
           (item: NonNullable<typeof order>["items"][number], i: number) => (
-            <Tr key={i} className="border-b border-zinc-100 dark:border-slate-800 print:border-gray-200">
+            <Tr key={i} className="print:border-gray-200" border="subtle">
               <Td className="py-2.5 text-zinc-800 dark:text-zinc-200 print:text-black">
                 {item.title}
                 {item.attributes && Object.keys(item.attributes).length > 0 && (

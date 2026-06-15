@@ -54,8 +54,8 @@ const PAGE_SUGGESTIONS: Array<{
   { title: "FAQs", subtitle: "Help & answers", url: String(ROUTES.PUBLIC.FAQS ?? "/faqs"), keywords: ["faq", "help", "question", "support"] },
 ];
 
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(
   createRouteHandler({
     auth: false,

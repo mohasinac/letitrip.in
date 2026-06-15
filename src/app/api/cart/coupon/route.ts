@@ -70,8 +70,8 @@ function detectConflict(
   return null;
 }
 
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createRouteHandler<{ code: string }>({
     auth: true,
@@ -192,8 +192,8 @@ export const POST = withProviders(
 );
 
 // DELETE /api/cart/coupon — remove one coupon by code, or all if no code given
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const DELETE = withProviders(
   createRouteHandler<{ code?: string }>({
     auth: true,

@@ -34,8 +34,8 @@ import { AuthenticationError, ValidationError } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { COLLECTION_CACHE_PATHS } from "@mohasinac/appkit";
 
-// rbac-scope-enforced-in-handler: gated by x-api-key header against CACHE_REVALIDATION_SECRET env var; not user-authenticated
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: gated by x-api-key header against CACHE_REVALIDATION_SECRET env var; not user-authenticated
 export async function POST(request: NextRequest) {
   try {
     // --- Authentication ---

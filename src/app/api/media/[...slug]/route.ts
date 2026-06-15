@@ -46,8 +46,8 @@ function slugToStoragePath(slug: string[]): string | null {
   return joined;
 }
 
-// rbac-scope-enforced-in-handler: media route — handler verifies signed-URL ownership + applyRateLimit
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: media route — handler verifies signed-URL ownership + applyRateLimit
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ slug: string[] }> },

@@ -47,8 +47,8 @@ const COLLECTION_CACHE_PATHS: Record<string, string[]> = {
   coupons: ["/api/admin/coupons"],
 };
 
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export async function POST(request: NextRequest) {
   try {
     // --- Authentication ---

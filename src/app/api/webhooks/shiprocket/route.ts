@@ -69,8 +69,8 @@ function verifyShiprocketSignature(body: string, signature: string): boolean {
 
 // --- Route --------------------------------------------------------------------
 
-// rbac-public: external webhook receiver — signature verified inside handler
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: external webhook receiver — signature verified inside handler
 export async function POST(request: NextRequest) {
   let rawBody = "";
   try {

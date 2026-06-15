@@ -12,8 +12,8 @@ const refundSchema = z.object({
   reason: z.string().min(1),
 });
 
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const POST = withProviders(
   createRouteHandler<(typeof refundSchema)["_output"]>({
     auth: true,

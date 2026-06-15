@@ -22,8 +22,8 @@ import { serverLogger } from "@mohasinac/appkit";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(createRouteHandler({
   roles: [...ROLES_ADMIN_MOD],
   permission: "admin:sessions:read",

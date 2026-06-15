@@ -488,8 +488,8 @@ async function resolveAuthConflicts(
   }
 }
 
-// rbac-scope-enforced-in-handler: demo seed — handler asserts isAdminUser before any write
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: demo seed — handler asserts isAdminUser before any write
 export async function GET(request: NextRequest) {
   const user = await getUserFromRequest(request);
   if (!user || !isAdminUser(user)) {
@@ -538,8 +538,8 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// rbac-scope-enforced-in-handler: demo seed — handler asserts isAdminUser before any write
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: demo seed — handler asserts isAdminUser before any write
 export async function POST(request: NextRequest) {
   const user = await getUserFromRequest(request);
   if (!user || !isAdminUser(user)) {

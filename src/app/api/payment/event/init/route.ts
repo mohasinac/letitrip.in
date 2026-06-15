@@ -47,8 +47,8 @@ const bodySchema = z.object({
   razorpayOrderId: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
 });
 
-// rbac-public: external webhook receiver — signature verified inside handler
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: external webhook receiver — signature verified inside handler
 export const POST = withProviders(createRouteHandler<(typeof bodySchema)["_output"]>({
   auth: true,
   schema: bodySchema,

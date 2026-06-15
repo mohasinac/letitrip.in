@@ -26,8 +26,8 @@ function getTodayIST(): string {
   return new Date(istMs).toISOString().split("T")[0];
 }
 
-// rbac-public: external webhook receiver — signature verified inside handler
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: external webhook receiver — signature verified inside handler
 export const POST = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {

@@ -93,8 +93,8 @@ function maskSecret(value: string | undefined): string {
   return `${value.slice(0, 4)}...${value.slice(-4)}`;
 }
 
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -182,8 +182,8 @@ export const GET = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const PATCH = withProviders(
   createRouteHandler<(typeof adsConfigPatchSchema)["_output"]>({
     auth: true,
@@ -215,8 +215,8 @@ export const PATCH = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const POST = withProviders(
   createRouteHandler<(typeof adInventoryItemSchema)["_output"]>({
     auth: true,

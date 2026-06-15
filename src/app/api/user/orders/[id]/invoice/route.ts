@@ -13,8 +13,8 @@ import { ROLES_AUTHENTICATED } from "@/constants";
  * environments where the function isn't deployed, we return a plaintext
  * invoice summary so the download flow still works end-to-end.
  */
-// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

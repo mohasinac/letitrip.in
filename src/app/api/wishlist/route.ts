@@ -1,8 +1,8 @@
 import { withProviders } from "@/providers.config";
 import { WISHLIST_MAX, WishlistFullError, createRouteHandler, errorResponse, parseJsonBody, productRepository, successResponse, wishlistRepository } from "@mohasinac/appkit";
 
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -52,8 +52,8 @@ export const GET = withProviders(
   }),
 );
 
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
@@ -84,8 +84,8 @@ export const POST = withProviders(
   }),
 );
 
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

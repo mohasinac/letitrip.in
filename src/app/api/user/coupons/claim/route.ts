@@ -34,8 +34,8 @@ const claimSchema = z.object({
     .optional(),
 });
 
-// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const POST = withProviders(
   createRouteHandler<(typeof claimSchema)["_output"]>({
     auth: true,

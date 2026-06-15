@@ -43,8 +43,8 @@ async function firestoreFallback(uid: string) {
   };
 }
 
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

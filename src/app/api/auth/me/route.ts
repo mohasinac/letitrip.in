@@ -1,8 +1,8 @@
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, userRepository, applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 
-// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

@@ -6,8 +6,8 @@ import { ROLES_ADMIN_ONLY } from "@/constants";
 const MSG_PRODUCT_NOT_FOUND = "Product not found.";
 
 /** POST — start a group (admin, no ownership check) */
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const POST = withProviders(createApiHandler({
   roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:products:write",
@@ -25,8 +25,8 @@ export const POST = withProviders(createApiHandler({
 }));
 
 /** PATCH — update groupTitle (admin) */
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const PATCH = withProviders(createApiHandler({
   roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:products:write",
@@ -43,8 +43,8 @@ export const PATCH = withProviders(createApiHandler({
 }));
 
 /** DELETE — dissolve the group (admin) */
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const DELETE = withProviders(createApiHandler({
   roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:products:delete",

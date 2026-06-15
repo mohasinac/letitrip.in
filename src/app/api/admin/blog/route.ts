@@ -66,8 +66,8 @@ const createBlogPostSchema = z.object({
  * meta.total / published / drafts / featured are always computed from the
  * full unfiltered dataset so stat cards remain accurate regardless of filter.
  */
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
@@ -149,8 +149,8 @@ export const GET = withProviders(createRouteHandler({
 /**
  * POST /api/admin/blog — Create a new blog post
  */
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const POST = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],

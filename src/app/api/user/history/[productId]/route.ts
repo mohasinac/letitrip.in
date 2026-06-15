@@ -8,8 +8,8 @@ import {
   removeHistoryItem,
 } from "@mohasinac/appkit";
 
-// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 // audit-route-schema-ok: pending-bespoke-schema
+// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
