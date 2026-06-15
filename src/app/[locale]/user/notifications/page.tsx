@@ -15,7 +15,7 @@ import {
   useToast,
   useUrlTable,
 } from "@mohasinac/appkit/client";
-import { ListingToolbar, Span } from "@mohasinac/appkit/ui";
+import { FieldSelect, ListingToolbar, Span } from "@mohasinac/appkit/ui";
 
 const __P = {
   p4: "p-4",
@@ -252,30 +252,22 @@ export default function NotificationsPage() {
           </Row>
           <Row gap="md" wrap>
             <Div>
-              {/* eslint-disable-next-line lir/no-raw-html-elements -- short filter; <Select> drops UX */}
-              <select
-                value={typeFilter}
-                onChange={(e) => table.set("type", e.target.value)}
-                className="rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-1.5 text-sm text-[var(--appkit-color-text)]"
+              <FieldSelect
+                name="type"
                 aria-label="Filter by type"
-              >
-                {TYPE_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
+                value={typeFilter}
+                onChange={(v) => table.set("type", v)}
+                options={TYPE_OPTIONS}
+              />
             </Div>
             <Div>
-              {/* eslint-disable-next-line lir/no-raw-html-elements -- short filter */}
-              <select
-                value={readFilter}
-                onChange={(e) => table.set("read", e.target.value)}
-                className="rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-1.5 text-sm text-[var(--appkit-color-text)]"
+              <FieldSelect
+                name="read"
                 aria-label="Filter by read status"
-              >
-                {READ_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
+                value={readFilter}
+                onChange={(v) => table.set("read", v)}
+                options={READ_OPTIONS}
+              />
             </Div>
           </Row>
         </Stack>

@@ -14,7 +14,7 @@ import {
   Row,
   Badge,
 } from "@mohasinac/appkit/client";
-import { ListingToolbar } from "@mohasinac/appkit/ui";
+import { FieldSelect, ListingToolbar } from "@mohasinac/appkit/ui";
 import { TICKET_STATUSES } from "@/constants";
 
 const __P = {
@@ -124,17 +124,13 @@ export default function UserSupportPage() {
       />
 
       <Div>
-        {/* eslint-disable-next-line lir/no-raw-html-elements -- short status filter */}
-        <select
-          value={status}
-          onChange={(e) => table.set("status", e.target.value)}
-          className="rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-1.5 text-sm text-[var(--appkit-color-text)]"
+        <FieldSelect
+          name="status"
           aria-label="Filter by ticket status"
-        >
-          {TICKET_STATUSES.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
+          value={status}
+          onChange={(v) => table.set("status", v)}
+          options={TICKET_STATUSES}
+        />
       </Div>
 
       {loading ? (

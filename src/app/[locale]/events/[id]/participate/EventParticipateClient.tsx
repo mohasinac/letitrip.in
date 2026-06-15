@@ -2,7 +2,7 @@
 import { Row, Stack, normalizeError } from "@mohasinac/appkit";
 import { useState, useCallback } from "react";
 import { Link } from "@/i18n/navigation";
-import { Button, Div, Heading, Input, RichText, Select, Span, Text, Textarea } from "@mohasinac/appkit/ui";
+import { Button, Checkbox, Div, Heading, Input, RadioGroup, RichText, Select, Span, Text, Textarea } from "@mohasinac/appkit/ui";
 import { Label } from "@mohasinac/appkit/client";
 import { EventParticipateView, useSession, useToast, ROUTES } from "@mohasinac/appkit/client";
 import { SpinWheelView } from "@mohasinac/appkit";
@@ -130,35 +130,31 @@ function renderPollForm({
       <Text weight="medium" color="primary">
         {isMultiSelect ? "Select all that apply:" : "Choose one:"}
       </Text>
-      <Stack gap="sm">
-        {pollConfig.options.map((opt) => (
-          <Label
-            key={opt.id}
-            className="flex items-center gap-3 cursor-pointer rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
-          >
-            {isMultiSelect ? (
-              <input
-                type="checkbox"
+      {isMultiSelect ? (
+        <Stack gap="sm">
+          {pollConfig.options.map((opt) => (
+            <Label
+              key={opt.id}
+              className="flex items-center gap-3 cursor-pointer rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+            >
+              <Checkbox
                 name="poll-option"
                 value={opt.id}
                 checked={selectedVotes.includes(opt.id)}
                 onChange={() => toggleVote(opt.id)}
-                className="accent-primary"
               />
-            ) : (
-              <input
-                type="radio"
-                name="poll-option"
-                value={opt.id}
-                checked={selectedVotes.includes(opt.id)}
-                onChange={() => toggleVote(opt.id)}
-                className="accent-primary"
-              />
-            )}
-            <Text color="muted">{opt.label}</Text>
-          </Label>
-        ))}
-      </Stack>
+              <Text color="muted">{opt.label}</Text>
+            </Label>
+          ))}
+        </Stack>
+      ) : (
+        <RadioGroup
+          name="poll-option"
+          value={selectedVotes[0]}
+          onChange={toggleVote}
+          options={pollConfig.options.map((opt) => ({ value: opt.id, label: opt.label }))}
+        />
+      )}
       {pollConfig.allowComment ? (
         <Textarea
           value={pollComment}
@@ -329,8 +325,7 @@ function renderDynamicField(
       <Stack gap="xs">
         {(field.options ?? []).map((opt) => (
           <Label key={opt} className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
+            <Checkbox
               checked={selected.includes(opt)}
               onChange={() =>
                 onChange(
@@ -339,7 +334,6 @@ function renderDynamicField(
                     : [...selected, opt],
                 )
               }
-              className="accent-primary"
             />
             <Text size="sm" color="muted">{opt}</Text>
           </Label>
@@ -348,20 +342,12 @@ function renderDynamicField(
     );
   } else if (field.type === "radio") {
     control = (
-      <Stack gap="xs">
-        {(field.options ?? []).map((opt) => (
-          <Label key={opt} className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name={field.id}
-              checked={value === opt}
-              onChange={() => onChange(opt)}
-              className="accent-primary"
-            />
-            <Text size="sm" color="muted">{opt}</Text>
-          </Label>
-        ))}
-      </Stack>
+      <RadioGroup
+        name={field.id}
+        value={typeof value === "string" ? value : ""}
+        onChange={onChange}
+        options={(field.options ?? []).map((opt) => ({ value: opt, label: opt }))}
+      />
     );
   } else if (field.type === "rating") {
     const rating = Number(value ?? 0);

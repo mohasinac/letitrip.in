@@ -14,6 +14,7 @@ import {
   Input,
   Textarea,
   Button,
+  FieldSelect,
 } from "@mohasinac/appkit/client";
 import { TICKET_CATEGORIES, type TicketCategory } from "@/constants";
 
@@ -98,17 +99,13 @@ export default function NewSupportTicketPage() {
       <Stack gap="md" className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`} rounded="xl">
         <Div>
           <Text className="text-[var(--appkit-color-text-muted)] mb-1" size="xs" weight="medium">Category</Text>
-          {/* eslint-disable-next-line lir/no-raw-html-elements -- short category select */}
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value as TicketCategory)}
-            className="w-full rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)]"
+          <FieldSelect
+            name="category"
             aria-label="Ticket category"
-          >
-            {TICKET_CATEGORIES.map((c) => (
-              <option key={c.value} value={c.value}>{c.label}</option>
-            ))}
-          </select>
+            value={category}
+            onChange={(v) => setCategory(v as TicketCategory)}
+            options={TICKET_CATEGORIES}
+          />
         </Div>
 
         {category === "order_issue" && (

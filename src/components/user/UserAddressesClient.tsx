@@ -15,6 +15,7 @@ import {
   Row,
   Input,
   Button,
+  FieldSelect,
 } from "@mohasinac/appkit/client";
 
 const __P = {
@@ -114,18 +115,16 @@ export function UserAddressesClient() {
         {labels.length > 0 && (
           <Div className="min-w-[160px]">
             <Text className="text-[var(--appkit-color-text-muted)] mb-1" size="xs" weight="medium">Label</Text>
-            {/* eslint-disable-next-line lir/no-raw-html-elements -- inline filter; small surface */}
-            <select
-              value={labelFilter}
-              onChange={(e) => setLabelFilter(e.target.value)}
-              className="w-full rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)]"
+            <FieldSelect
+              name="labelFilter"
               aria-label="Filter by label"
-            >
-              <option value="">All labels</option>
-              {labels.map((l) => (
-                <option key={l} value={l}>{l}</option>
-              ))}
-            </select>
+              value={labelFilter}
+              onChange={setLabelFilter}
+              options={[
+                { value: "", label: "All labels" },
+                ...labels.map((l) => ({ value: l, label: l })),
+              ]}
+            />
           </Div>
         )}
       </Row>

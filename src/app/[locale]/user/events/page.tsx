@@ -15,7 +15,7 @@ import {
   Row,
   Badge,
 } from "@mohasinac/appkit/client";
-import { ListingToolbar } from "@mohasinac/appkit/ui";
+import { FieldSelect, ListingToolbar } from "@mohasinac/appkit/ui";
 import { API_ROUTES } from "@/constants";
 
 const SORT_OPTIONS = [
@@ -127,17 +127,13 @@ export default function UserEventsPage() {
       />
 
       <Div>
-        {/* eslint-disable-next-line lir/no-raw-html-elements -- short status filter; <Select> wrapper drops this UX */}
-        <select
-          value={status}
-          onChange={(e) => table.set("status", e.target.value)}
-          className="rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-1.5 text-sm text-[var(--appkit-color-text)]"
+        <FieldSelect
+          name="status"
           aria-label="Filter by review status"
-        >
-          {STATUS_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
+          value={status}
+          onChange={(v) => table.set("status", v)}
+          options={STATUS_OPTIONS}
+        />
       </Div>
 
       {loading ? (

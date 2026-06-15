@@ -3,7 +3,7 @@ import { Stack, normalizeError } from "@mohasinac/appkit";
 import { useState, use } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
-import { useToast, useOrder, ROUTES, Div, Button, Label, Textarea } from "@mohasinac/appkit/client";
+import { useToast, useOrder, ROUTES, Div, Button, Label, Textarea, Form } from "@mohasinac/appkit/client";
 import { cancelOrderAction } from "@/actions/order.actions";
 import { Heading, Span, Text } from "@mohasinac/appkit";
 
@@ -77,7 +77,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
           </Link>
         </Stack>
       ) : (
-        <form
+        <Form
           onSubmit={handleSubmit}
           className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 space-y-5"
         >
@@ -116,7 +116,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
               Keep Order
             </Link>
           </Div>
-        </form>
+        </Form>
       )}
     </Stack>
   );
