@@ -70,7 +70,7 @@ interface Props {
 
 function renderLoginRequired() {
   return (
-    <Div className="dark:border-zinc-700 px-6 text-center space-y-3" padding="y-2xl" rounded="xl" border="default">
+    <Div className="px-6 text-center space-y-3" padding="y-2xl" rounded="xl" border="default">
       <Heading level={2} size="xl" weight="bold" color="primary">
         Login Required
       </Heading>

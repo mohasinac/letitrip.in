@@ -24,7 +24,7 @@ export function FontToggleClient() {
   }
 
   return (
-    <Row className="dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4" padding="y-sm" align="center" justify="between" gap="md" rounded="xl" border="default">
+    <Row className="bg-white dark:bg-zinc-800 px-4" padding="y-sm" align="center" justify="between" gap="md" rounded="xl" border="default">
       <Stack gap="xs" className="min-w-0">
         <Text size="sm" weight="medium" color="primary">
           Cursive font

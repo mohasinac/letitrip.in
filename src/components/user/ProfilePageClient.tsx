@@ -178,7 +178,7 @@ function renderProfileEditForm({
         />
         <Text className="text-zinc-400 dark:text-zinc-400" size="xs" align="end">{bio.length}/500</Text>
       </Div>
-      <Row className="dark:border-slate-700 px-4" padding="y-sm" align="center" justify="between" rounded="lg" border="default">
+      <Row className="px-4" padding="y-sm" align="center" justify="between" rounded="lg" border="default">
         <>
           <Text size="sm" weight="medium" color="primary">Public profile</Text>
           <Text className="mt-0.5" color="muted" size="xs">

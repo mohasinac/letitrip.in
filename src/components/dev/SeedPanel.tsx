@@ -1722,7 +1722,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
         </Row>
       </Row>
 
-      <Div className="overflow-x-auto dark:border-slate-700" rounded="lg" border="default">
+      <Div className="overflow-x-auto" rounded="lg" border="default">
         <table className="w-full text-xs border-collapse">
           <thead>
             <tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
@@ -1869,7 +1869,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         {meta.mediaSlugPatterns && meta.mediaSlugPatterns.length > 0 && (
           <Div>
             <Text className="text-violet-700 dark:text-violet-400 tracking-wider mb-2 m-0" size="xs" weight="bold" transform="uppercase">🖼️ Media Slug Patterns (SEO filenames)</Text>
-            <Div className="overflow-x-auto dark:border-slate-700" rounded="lg" border="default">
+            <Div className="overflow-x-auto" rounded="lg" border="default">
               <table className="w-full text-xs border-collapse">
                 <thead>
                   <tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">

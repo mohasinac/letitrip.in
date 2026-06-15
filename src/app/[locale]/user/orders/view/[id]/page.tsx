@@ -139,8 +139,7 @@ function renderOrderGroup(g: OrderGroup, gi: number) {
   const headerLine = g.items[0].item;
   return (
     <Div
-      key={`bundle-${gi}`}
-      className="dark:border-slate-700" rounded="lg" padding="sm" border="default"
+      key={`bundle-${gi}`} rounded="lg" padding="sm" border="default"
     >
       <Row gap="sm" align="center" justify="between" className="mb-2" wrap>
         <Text size="sm" weight="semibold" color="primary">

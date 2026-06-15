@@ -98,7 +98,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
         </Row>
 
         {slides.length === 0 ? (
-          <Div className="text-center dark:border-slate-700" padding="y-4xl" rounded="xl" border="default">
+          <Div className="text-center" padding="y-4xl" rounded="xl" border="default">
             <Text variant="muted">No slides in this carousel yet.</Text>
           </Div>
         ) : (

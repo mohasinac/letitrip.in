@@ -87,8 +87,7 @@ export default function Page() {
               {doc.replies.map((r) => (
                 <Stack
                   key={r.id}
-                  gap="xs"
-                  className="dark:border-slate-700" rounded="default" padding="sm" border="default"
+                  gap="xs" rounded="default" padding="sm" border="default"
                 >
                   <Text size="xs" color="muted">
                     {r.authorName ?? r.authorId} ·{" "}
