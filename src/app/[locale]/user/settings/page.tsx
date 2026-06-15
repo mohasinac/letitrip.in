@@ -116,7 +116,7 @@ function renderAccountTab({
 
       <SectionCard>
         <Accordion title="Change Email">
-          <Stack gap="md" className="pt-3">
+          <Stack gap="md" padding="t-sm">
             <Text variant="secondary" size="xs">
               A verification link will be sent to your new address. Your email updates after you click the link.
             </Text>
@@ -138,7 +138,7 @@ function renderAccountTab({
 
       <SectionCard>
         <Accordion title="Change Password">
-          <Stack gap="md" className="pt-3">
+          <Stack gap="md" padding="t-sm">
             <Form onSubmit={handlePasswordSubmit} className="grid gap-4 md:grid-cols-[1fr_240px] md:items-start">
               <Stack gap="sm">
                 <Input id="current-password" type="password" label="Current Password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required autoComplete="current-password" />

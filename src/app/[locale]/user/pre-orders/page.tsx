@@ -176,7 +176,7 @@ export default function UserPreOrdersPage() {
                     {order.status.toLowerCase()}
                   </Badge>
                 </Row>
-                <Stack gap="xs" className="mt-3 pt-3 border-t border-[var(--appkit-color-border-subtle)]">
+                <Stack gap="xs" className="mt-3 border-t border-[var(--appkit-color-border-subtle)]" padding="t-sm">
                   {preOrderItems.map((item, idx) => (
                     <Row key={idx} justify="between">
                       <Text className="text-[var(--appkit-color-text)]" size="sm">

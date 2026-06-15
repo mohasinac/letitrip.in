@@ -860,7 +860,7 @@ export function CartRouteClient() {
             </Div>
           )}
           renderTotal={() => (
-            <Div className="border-t border-zinc-100 dark:border-slate-700 pt-3">
+            <Div className="border-t border-zinc-100 dark:border-slate-700" padding="t-sm">
               <Row align="center" justify="between">
                 <Text weight="semibold" color="primary">Total</Text>
                 <Text weight="semibold" color="primary">

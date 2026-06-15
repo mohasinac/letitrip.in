@@ -2049,7 +2049,7 @@ function GroupDivider({
 }) {
   const { label, icon } = GROUP_CONFIG[groupKey];
   return (
-    <Row gap="sm" className="pt-4 pb-1">
+    <Row gap="sm" className="pb-1" padding="t-md">
       <Span size="sm" className="leading-none">{icon}</Span>
       <Span size="xs" weight="bold" variant="muted" className="tracking-widest whitespace-nowrap" transform="uppercase">
         {label}
@@ -2502,7 +2502,7 @@ function renderSeedPanelToolbar({
 
 function renderSeedPanelHero() {
   return (
-    <Stack className="text-center pt-2" align="center" gap="3">
+    <Stack className="text-center" padding="t-xs" align="center" gap="3">
       <span className="text-5xl leading-none">🎮</span>
       <Heading level={1} className="font-extrabold text-amber-600 dark:text-amber-400 m-0" size="3xl">LetItRip Demo Seed</Heading>
       <Text className="max-w-xl m-0" color="muted" size="base">Admin seed tool — expand each resource card to see what&apos;s seeded, pending counts, live DB state, and the UI path to verify.</Text>
@@ -2602,7 +2602,7 @@ function renderSeedPanelCollectionList(p: {
 
 function renderSeedPanelPagination({ page, setPage, totalPages, PAGE_SIZE, filteredCollections }: { page: number; setPage: React.Dispatch<React.SetStateAction<number>>; totalPages: number; PAGE_SIZE: number; filteredCollections: SeedCollectionName[] }) {
   return (
-    <Row justify="between" className="pt-2 border-t border-zinc-200 dark:border-slate-700">
+    <Row justify="between" className="border-t border-zinc-200 dark:border-slate-700" padding="t-xs">
       <Span size="xs" variant="muted">Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filteredCollections.length)} of {filteredCollections.length}</Span>
       <Row gap="xs">
         <Button type="button" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-2.5 py-1 rounded-lg text-sm font-medium border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-slate-700 transition-colors">‹ Prev</Button>

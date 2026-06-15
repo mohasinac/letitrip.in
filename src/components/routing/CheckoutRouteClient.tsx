@@ -546,7 +546,7 @@ function renderOrderSummary({
           <Text>−₹{(totalDiscount / 100).toFixed(2)}</Text>
         </Row>
       )}
-      <Row className="border-t border-zinc-200 dark:border-slate-700 pt-3" align="center" justify="between">
+      <Row className="border-t border-zinc-200 dark:border-slate-700" padding="t-sm" align="center" justify="between">
         <Text weight="semibold" color="primary">{CK.ORDER_SUMMARY_TOTAL}</Text>
         <Text weight="semibold" color="primary">{formattedTotal}</Text>
       </Row>

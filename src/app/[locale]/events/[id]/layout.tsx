@@ -103,7 +103,7 @@ export default async function Layout({ children, params }: Props) {
         totalEntries={totalEntries}
       />
       <EventTabBar tabs={tabs} />
-      <Div className="pt-2">{children}</Div>
+      <Div padding="t-xs">{children}</Div>
     </Stack>
   );
 }

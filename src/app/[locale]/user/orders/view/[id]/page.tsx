@@ -278,7 +278,7 @@ function renderOrderPayment(order: NonNullable<OrderData>) {
             <Text size="sm">{paise(order.tax, order.currency)}</Text>
           </Row>
         )}
-        <Div className="border-t border-zinc-100 dark:border-slate-800 pt-2 mt-1">
+        <Div className="border-t border-zinc-100 dark:border-slate-800 mt-1" padding="t-xs">
           <Row justify="between">
             <Text size="sm" weight="semibold" color="primary">Total</Text>
             <Text size="sm" weight="semibold" color="primary">

@@ -153,7 +153,7 @@ function renderInvoiceTotals(order: OrderData) {
       )}
       <Row
         justify="between"
-        className="text-sm font-semibold border-t border-zinc-200 dark:border-slate-700 print:border-gray-300 pt-2 mt-1"
+        className="text-sm font-semibold border-t border-zinc-200 dark:border-slate-700 print:border-gray-300 mt-1" padding="t-xs"
       >
         <Text className="print:text-black" color="primary" weight="semibold">Total</Text>
         <Text className="print:text-black" color="primary" weight="semibold">

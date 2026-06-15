@@ -150,7 +150,7 @@ export default function NewSupportTicketPage() {
           </Text>
         </Stack>
 
-        <Row gap="sm" className="pt-2">
+        <Row gap="sm" padding="t-xs">
           <Button
             type="button"
             variant="primary"

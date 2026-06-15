@@ -208,7 +208,7 @@ export default function UserEventsPage() {
                   </Badge>
                 </Row>
                 {(entry.points !== undefined || entry.spinUsed) && (
-                  <Row gap="md" className="mt-3 pt-3 border-t border-[var(--appkit-color-border-subtle)]" wrap>
+                  <Row gap="md" className="mt-3 border-t border-[var(--appkit-color-border-subtle)]" padding="t-sm" wrap>
                     {entry.points !== undefined && (
                       <Text variant="secondary" size="xs">
                         Points: <Span weight="medium" className="text-[var(--appkit-color-text)]">{entry.points}</Span>

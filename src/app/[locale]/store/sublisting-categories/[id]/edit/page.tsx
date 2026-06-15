@@ -131,7 +131,7 @@ export default function Page() {
           </Div>
         )}
 
-        <Div className="flex gap-3 pt-2">
+        <Div className="flex gap-3" padding="t-xs">
           <Button
             type="submit"
             variant="primary"
