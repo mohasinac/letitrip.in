@@ -134,13 +134,13 @@ export default function Page() {
       <Main>
         {/* Breadcrumb strip */}
         <Div className="border-b appkit-breadcrumb-strip">
-          <Container size="xl" className="py-3">
+          <Container size="xl" padding="y-sm">
             <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Scam Registry", href: registryHref }, { label: "Scam Types" }]} />
           </Container>
         </Div>
 
         {/* Page header */}
-        <Section className="border-b py-10">
+        <Section className="border-b" padding="y-2xl">
           <Container size="xl">
             <Stack gap="sm">
               <Heading level={1} weight="bold" size="3xl">Scam Types — LetItRip Scam Registry</Heading>
@@ -159,7 +159,7 @@ export default function Page() {
         </Section>
 
         {/* Category sections */}
-        <Section className="py-10">
+        <Section padding="y-2xl">
           <Container size="xl">
             <Stack gap="xl">
               {SCAM_CATEGORIES.map(renderCategorySection)}
@@ -168,7 +168,7 @@ export default function Page() {
         </Section>
 
         {/* Footer CTA */}
-        <Section className="border-t py-8">
+        <Section className="border-t" padding="y-xl">
           <Container size="xl">
             <Row justify="between" align="center" gap="md" wrap>
               <Stack gap="xs">

@@ -56,7 +56,7 @@ export default async function Page() {
       <Main>
         {/* Breadcrumb strip */}
         <Div className="border-b appkit-breadcrumb-strip">
-          <Container size="xl" className="py-3">
+          <Container size="xl" padding="y-sm">
             <Breadcrumb
               items={[
                 { label: "Home", href: "/" },
@@ -68,7 +68,7 @@ export default async function Page() {
         </Div>
 
         {/* Page header */}
-        <Section className="border-b py-10">
+        <Section className="border-b" padding="y-2xl">
           <Container size="xl">
             <Stack gap="sm">
               <Row gap="sm" align="center">
@@ -107,7 +107,7 @@ export default async function Page() {
         </Section>
 
         {/* FAQ list */}
-        <Section className="py-10">
+        <Section padding="y-2xl">
           <Container size="xl" className="max-w-3xl">
             {faqs.length === 0 ? (
               <Text variant="secondary">No FAQs found.</Text>
@@ -136,7 +136,7 @@ export default async function Page() {
         </Section>
 
         {/* Footer CTA */}
-        <Section className="border-t py-8">
+        <Section className="border-t" padding="y-xl">
           <Container size="xl">
             <Row justify="between" align="center" gap="md" wrap>
               <Stack gap="xs">

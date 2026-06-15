@@ -61,7 +61,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
 
   return (
     <Main className="min-h-screen bg-zinc-50 dark:bg-slate-950">
-      <Div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <Div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" padding="y-lg">
 
         {/* Breadcrumb */}
         <Nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 flex-wrap">

@@ -9,7 +9,7 @@ export function StoreAboutClient({ store }: { store: StoreDetail }) {
       store={store}
       renderStats={(s) =>
         s.itemsSold != null || s.totalReviews != null || s.averageRating != null ? (
-          <Div className="flex gap-6 text-sm text-zinc-600 dark:text-zinc-400 border-y py-4">
+          <Div className="flex gap-6 text-sm text-zinc-600 dark:text-zinc-400 border-y" padding="y-md">
             {s.itemsSold != null && (
               <Div className="text-center">
                 <Div className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{s.itemsSold}</Div>

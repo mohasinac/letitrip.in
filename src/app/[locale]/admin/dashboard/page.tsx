@@ -45,7 +45,7 @@ function ToggleRow({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <Row className="py-3 border-b border-[var(--appkit-color-border-subtle)] last:border-0" align="center" justify="between" gap="md">
+    <Row className="border-b border-[var(--appkit-color-border-subtle)] last:border-0" padding="y-sm" align="center" justify="between" gap="md">
       <Div className="flex-1 min-w-0">
         <Div className="text-sm font-medium text-[var(--appkit-color-text)]">{label}</Div>
         <Div className="text-xs text-[var(--appkit-color-text-muted)] mt-0.5">{description}</Div>
@@ -199,7 +199,7 @@ export default function Page() {
       renderAlerts={() => (
         <Div className="space-y-3">
           {loadError && (
-            <Div className="border border-error/30 bg-error-surface px-4 py-3 text-sm text-error" rounded="xl">
+            <Div className="border border-error/30 bg-error-surface px-4 text-sm text-error" padding="y-sm" rounded="xl">
               <Span weight="semibold">Couldn&apos;t load dashboard data — </Span>
               <Span>{loadError}. Refresh to retry; if it persists, your admin session may have expired.</Span>
             </Div>
@@ -266,7 +266,7 @@ export default function Page() {
               enabled={adminBypassEnabled}
               onChange={toggleAdminBypass}
             />
-            <Row className="py-3" align="center" justify="between" gap="md">
+            <Row align="center" justify="between" gap="md" padding="y-sm">
               <>
                 <Text size="sm" weight="medium" color="primary">Seed Data</Text>
                 <Text className="mt-0.5" color="muted" size="xs">Load or reset Firestore seed collections</Text>
@@ -284,7 +284,7 @@ export default function Page() {
       renderRecentActivity={() =>
         recentOrders.length > 0 ? (
           <Div className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden}`}>
-            <Row className="px-4 py-3 border-b border-[var(--appkit-color-border-subtle)]" align="center" justify="between">
+            <Row className="px-4 border-b border-[var(--appkit-color-border-subtle)]" padding="y-sm" align="center" justify="between">
               <Text className="text-[var(--appkit-color-text)]" size="sm" weight="semibold">Recent Orders</Text>
               <Link href={String(ROUTES.ADMIN.ORDERS)} className="text-xs text-[var(--appkit-color-primary)] hover:underline">View all →</Link>
             </Row>

@@ -261,7 +261,7 @@ export default function UserMessagesPage({ initialActiveId }: UserMessagesPagePr
             isLoading={isLoading}
             hasItems={conversations.length > 0}
             renderLoading={() => (
-              <Stack gap="sm" className="py-2">
+              <Stack gap="sm" padding="y-xs">
                 <Skeleton variant="rectangular" height="56px" />
                 <Skeleton variant="rectangular" height="56px" />
                 <Skeleton variant="rectangular" height="56px" />

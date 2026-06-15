@@ -42,7 +42,7 @@ export default function Page() {
   return (
     <Section>
       <Container size="2xl">
-        <Stack gap="lg" className="py-6">
+        <Stack gap="lg" padding="y-lg">
           <Heading level={1}>Item Requests · Approval Queue</Heading>
           <Text color="muted">
             Buyer requests awaiting approval before going live on the community board.

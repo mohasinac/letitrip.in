@@ -21,7 +21,7 @@ function renderInvoiceActionBar(id: string) {
       justify="between"
       align="center"
       gap="md"
-      className="print:hidden sticky top-[var(--header-height,0px)] z-[var(--appkit-z-dropdown)] px-6 py-3 bg-white dark:bg-slate-900 border-b border-zinc-200 dark:border-slate-700"
+      className="print:hidden sticky top-[var(--header-height,0px)] z-[var(--appkit-z-dropdown)] px-6 bg-white dark:bg-slate-900 border-b border-zinc-200 dark:border-slate-700" padding="y-sm"
     >
       <Link
         href={String(ROUTES.USER.ORDER_DETAIL(id))}
@@ -200,7 +200,7 @@ export default function InvoicePage({ params }: { params: Promise<{ id: string }
   return (
     <>
       {renderInvoiceActionBar(id)}
-      <Div className="max-w-2xl mx-auto px-6 py-10 print:px-0 print:py-0 print:max-w-none">
+      <Div className="max-w-2xl mx-auto px-6 print:px-0 print:py-0 print:max-w-none" padding="y-2xl">
         {renderInvoiceHeader(order, orderDate)}
         {order.address && renderInvoiceAddress(order.address)}
         {renderInvoiceItemsTable(order)}

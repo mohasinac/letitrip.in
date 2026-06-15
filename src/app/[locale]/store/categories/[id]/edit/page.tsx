@@ -56,14 +56,14 @@ export default function Page() {
     router.push(String(ROUTES.STORE.STORE_CATEGORIES));
   };
 
-  if (loading) return <Section><Container size="md"><Stack gap="md" className="py-6">Loading…</Stack></Container></Section>;
+  if (loading) return <Section><Container size="md"><Stack gap="md" padding="y-lg">Loading…</Stack></Container></Section>;
 
   const f = form as Record<string, string | number | boolean | undefined>;
 
   return (
     <Section>
       <Container size="md">
-        <Stack gap="lg" className="py-6">
+        <Stack gap="lg" padding="y-lg">
           <Heading level={1}>Edit Storefront Category</Heading>
           <Stack gap="md">
             <Input label="Label" value={String(f.label ?? "")} onChange={(e) => setForm({ ...form, label: e.target.value })} />

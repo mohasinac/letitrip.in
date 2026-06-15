@@ -11,7 +11,7 @@ export function RoutePlaceholderView({
 }: RoutePlaceholderViewProps) {
   return (
     <Main>
-      <Section className="py-12">
+      <Section padding="y-3xl">
         <Container size="xl">
           <Stack gap="md">
             <Heading level={1} size="3xl" weight="semibold" color="primary">

@@ -50,7 +50,7 @@ export default function Page() {
   if (loading) return (
     <Section>
       <Container size="md">
-        <Stack gap="md" className="py-6">
+        <Stack gap="md" padding="y-lg">
           <Skeleton variant="rectangular" height="32px" />
           <Skeleton variant="rectangular" height="120px" />
           <Skeleton variant="rectangular" height="80px" />
@@ -63,7 +63,7 @@ export default function Page() {
   return (
     <Section>
       <Container size="md">
-        <Stack gap="lg" className="py-6">
+        <Stack gap="lg" padding="y-lg">
           <Stack gap="xs">
             <Heading level={1}>{doc.title}</Heading>
             <Text size="xs" color="muted">

@@ -61,7 +61,7 @@ export default function Page() {
   return (
     <Section>
       <Container size="md">
-        <Stack gap="lg" className="py-6">
+        <Stack gap="lg" padding="y-lg">
           <Heading level={1}>New Grouped Listing</Heading>
           <Stack gap="md">
             <Input

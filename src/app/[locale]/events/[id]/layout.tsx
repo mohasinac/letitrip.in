@@ -92,7 +92,7 @@ export default async function Layout({ children, params }: Props) {
   }
 
   return (
-    <Div className="mx-auto max-w-3xl px-4 py-10 space-y-6">
+    <Div className="mx-auto max-w-3xl px-4 space-y-6" padding="y-2xl">
       <EventHeader
         title={event.title ?? ""}
         coverImage={coverImage}

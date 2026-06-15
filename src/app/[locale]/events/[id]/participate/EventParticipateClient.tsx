@@ -70,7 +70,7 @@ interface Props {
 
 function renderLoginRequired() {
   return (
-    <Div className="dark:border-zinc-700 px-6 py-10 text-center space-y-3" rounded="xl" border="default">
+    <Div className="dark:border-zinc-700 px-6 text-center space-y-3" padding="y-2xl" rounded="xl" border="default">
       <Heading level={2} size="xl" weight="bold" color="primary">
         Login Required
       </Heading>
@@ -221,7 +221,7 @@ function renderSuccessState({
   hasLeaderboard: boolean;
 }) {
   return (
-    <Div className="space-y-4 py-6">
+    <Div className="space-y-4" padding="y-lg">
       <Div className="border border-success/20 bg-success-surface px-5 py-5 space-y-2" rounded="2xl">
         <Row align="center" gap="sm">
           <Span weight="semibold" className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] tracking-wide" transform="uppercase">
@@ -644,7 +644,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
       }
       renderAction={() =>
         atEntryLimit && !isSubmitted ? (
-          <Div className="text-center py-4">
+          <Div className="text-center" padding="y-md">
             <Text size="sm" color="muted">
               You have reached the maximum of {maxEntries} {maxEntries === 1 ? "entry" : "entries"} for this event.
             </Text>

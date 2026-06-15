@@ -38,7 +38,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
 
   if (requiresLogin && !user) {
     return (
-      <Div className="dark:border-zinc-700 px-6 py-8 text-center space-y-3" rounded="xl" border="default">
+      <Div className="dark:border-zinc-700 px-6 text-center space-y-3" padding="y-xl" rounded="xl" border="default">
         <Text weight="semibold" color="primary">Login required to vote</Text>
         <Text size="sm" color="muted">
           Please log in to cast your vote in this poll.
@@ -55,7 +55,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
 
   if (isSubmitted) {
     return (
-      <Div className="border border-success/20 bg-success-surface px-6 py-8 text-center space-y-2" rounded="xl">
+      <Div className="border border-success/20 bg-success-surface px-6 text-center space-y-2" padding="y-xl" rounded="xl">
         <Text className="text-success" size="lg" weight="semibold">Vote recorded!</Text>
         <Text className="text-success" size="sm">
           Thank you for participating. Results will be shown after the poll closes.
@@ -66,7 +66,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
 
   if (!isActive) {
     return (
-      <Div className="dark:border-zinc-700 px-6 py-6 text-center" rounded="xl" border="default">
+      <Div className="dark:border-zinc-700 px-6 text-center" padding="y-lg" rounded="xl" border="default">
         <Text size="sm" color="muted">This poll has ended.</Text>
       </Div>
     );

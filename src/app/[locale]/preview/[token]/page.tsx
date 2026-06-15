@@ -60,12 +60,12 @@ export default async function PreviewPage({
 
   return (
     <Section surface="default" className="min-h-screen">
-      <Div className="bg-warning-surface border-b border-warning/30 px-4 py-2 text-center">
+      <Div className="bg-warning-surface border-b border-warning/30 px-4 text-center" padding="y-xs">
         <Text className="text-warning" size="sm" weight="medium">
           {PREVIEW_COPY.banner}
         </Text>
       </Div>
-      <Container className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+      <Container className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8" padding="y-xl">
         <Text className="mb-4 tracking-wide" color="muted" size="xs" transform="uppercase">
           {preview.kind}
           {PREVIEW_COPY.kindSuffix}

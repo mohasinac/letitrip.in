@@ -83,7 +83,7 @@ export default function Page() {
   return (
     <Section>
       <Container size="md">
-        <Stack gap="lg" className="py-6">
+        <Stack gap="lg" padding="y-lg">
           <Heading level={1}>Report a problem</Heading>
           <Text color="muted">
             Reports go to the LetItRip trust & safety team. Frivolous reports may impact your account.

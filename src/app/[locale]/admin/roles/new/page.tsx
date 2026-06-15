@@ -64,7 +64,7 @@ export default function Page() {
   return (
     <Section>
       <Container size="md">
-        <Stack gap="lg" className="py-6">
+        <Stack gap="lg" padding="y-lg">
           <Heading level={1}>New Custom Role</Heading>
           <Stack gap="md">
             <Input label="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Catalog Editor" />

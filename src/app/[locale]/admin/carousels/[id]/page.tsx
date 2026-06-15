@@ -20,7 +20,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
   const { id } = await params;
   if (id === "new") {
     return (
-      <Section className="py-8">
+      <Section padding="y-xl">
         <Container>
           <Row className="mb-6" gap="sm">
             <Link
@@ -57,7 +57,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
   const atMax = carousel.slideIds.length >= MAX_SLIDES_PER_CAROUSEL;
 
   return (
-    <Section className="py-8">
+    <Section padding="y-xl">
       <Container>
         <Row className="mb-2" gap="sm">
           <Link
@@ -98,7 +98,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
         </Row>
 
         {slides.length === 0 ? (
-          <Div className="py-16 text-center dark:border-slate-700" rounded="xl" border="default">
+          <Div className="text-center dark:border-slate-700" padding="y-4xl" rounded="xl" border="default">
             <Text variant="muted">No slides in this carousel yet.</Text>
           </Div>
         ) : (

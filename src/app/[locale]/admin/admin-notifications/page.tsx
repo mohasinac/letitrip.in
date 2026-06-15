@@ -42,7 +42,7 @@ export default function Page() {
   return (
     <Section>
       <Container size="2xl">
-        <Stack gap="lg" className="py-6">
+        <Stack gap="lg" padding="y-lg">
           <Heading level={1}>Admin Notifications</Heading>
           <Text color="muted">
             System, security, moderation, payouts, fraud, and growth alerts surfaced for the admin team.

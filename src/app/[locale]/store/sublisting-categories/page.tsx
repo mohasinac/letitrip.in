@@ -120,7 +120,7 @@ function renderCategoryRow(
       key={cat.id}
       align="center"
       gap="md"
-      className="bg-[var(--appkit-color-surface)] px-4 py-3 hover:bg-[var(--appkit-color-surface-raised)] transition-colors"
+      className="bg-[var(--appkit-color-surface)] px-4 hover:bg-[var(--appkit-color-surface-raised)] transition-colors" padding="y-sm"
     >
       <Div className="flex-1 min-w-0">
         <Row gap="xs" align="center" wrap>
@@ -182,13 +182,13 @@ function renderPage({
       </Row>
 
       {loading ? (
-        <Row className="py-16" align="center" justify="center">
+        <Row align="center" justify="center" padding="y-4xl">
           <Text variant="secondary" size="sm">
             Loading…
           </Text>
         </Row>
       ) : filtered.length === 0 ? (
-        <Stack className="justify-center border border-dashed border-[var(--appkit-color-border)] py-16 text-center" align="center" rounded="2xl">
+        <Stack className="justify-center border border-dashed border-[var(--appkit-color-border)] text-center" padding="y-4xl" align="center" rounded="2xl">
           <Text className="mb-2" size="3xl">🏷️</Text>
           <Text size="sm" weight="semibold">
             {search ? "No categories match your search" : "No sub-listing categories yet"}

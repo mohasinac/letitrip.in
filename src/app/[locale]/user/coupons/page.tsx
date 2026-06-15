@@ -152,7 +152,7 @@ export default function ClaimedCouponsPage() {
   if (sessionLoading) return null;
   if (!user) {
     return (
-      <Div className="py-12 text-center">
+      <Div className="text-center" padding="y-3xl">
         <Text>Please sign in to view your coupons.</Text>
       </Div>
     );
@@ -197,7 +197,7 @@ export default function ClaimedCouponsPage() {
           ))}
         </Div>
       ) : items.length === 0 ? (
-        <Div className="py-16 text-center">
+        <Div className="text-center" padding="y-4xl">
           <Text variant="secondary">No {tab} coupons.</Text>
         </Div>
       ) : (

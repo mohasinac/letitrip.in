@@ -81,7 +81,7 @@ export default function Page() {
     return (
       <Section>
         <Container size="md">
-          <Div className="py-6 text-sm text-zinc-500 dark:text-zinc-400">Loading…</Div>
+          <Div className="text-sm text-zinc-500 dark:text-zinc-400" padding="y-lg">Loading…</Div>
         </Container>
       </Section>
     );
@@ -90,7 +90,7 @@ export default function Page() {
   return (
     <Section>
       <Container size="md">
-        <Stack gap="lg" className="py-6">
+        <Stack gap="lg" padding="y-lg">
           <Heading level={1}>Edit Grouped Listing</Heading>
           <Stack gap="md">
             <Input

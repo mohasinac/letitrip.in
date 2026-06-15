@@ -51,7 +51,7 @@ export default function Page() {
   return (
     <Section>
       <Container size="md">
-        <Stack gap="lg" className="py-6">
+        <Stack gap="lg" padding="y-lg">
           <Heading level={1}>Post an Item Request</Heading>
           <Text color="muted">
             Tell sellers what you're hunting. Requests are approved before going live.

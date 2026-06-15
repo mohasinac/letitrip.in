@@ -33,7 +33,7 @@ export default function Page() {
   return (
     <Section>
       <Container size="2xl">
-        <Stack gap="lg" className="py-6">
+        <Stack gap="lg" padding="y-lg">
           <Row justify="between">
             <Heading level={1}>Custom Roles</Heading>
             <Button

@@ -119,7 +119,7 @@ export default async function Page({
       </Div>
 
       {/* Tab content */}
-      <Div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <Div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8" padding="y-xl">
         {/* ── COUPONS tab ──────────────────────────────────────────────── */}
         {(activeTab === "coupons" || activeTab === "all") && (
           <Div className={activeTab === "all" ? "mb-12" : ""}>
@@ -146,7 +146,7 @@ export default async function Page({
               adSlotId="search-inline"
             />
             {promotedProducts.length === 0 && (
-              <Div className="py-12 text-center">
+              <Div className="text-center" padding="y-3xl">
                 <Text className="text-zinc-400 dark:text-zinc-400">
                   No deals available right now. Check back soon!
                 </Text>
@@ -165,7 +165,7 @@ export default async function Page({
               adSlotId="listing-between-rows"
             />
             {featuredProducts.length === 0 && activeTab === "featured" && (
-              <Div className="py-12 text-center">
+              <Div className="text-center" padding="y-3xl">
                 <Text className="text-zinc-400 dark:text-zinc-400">
                   No featured products right now. Check back soon!
                 </Text>

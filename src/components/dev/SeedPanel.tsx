@@ -1855,7 +1855,7 @@ function renderAccordionCollapsedHeader({
 
 function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number, seedCount: number) {
   return (
-    <Div surface="default" className="border-t border-zinc-200 dark:border-slate-700 px-5 py-4">
+    <Div surface="default" className="border-t border-zinc-200 dark:border-slate-700 px-5" padding="y-md">
       <Stack gap="md">
         <Text className="leading-relaxed m-0" color="muted" size="sm">{meta.description}</Text>
 
@@ -1922,7 +1922,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         <SchemaFieldsTable fields={meta.fields} />
 
         {meta.piiFields && meta.piiFields.length > 0 && (
-          <Row className="px-3 py-2 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/40" align="start" gap="sm" rounded="lg">
+          <Row className="px-3 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/40" padding="y-xs" align="start" gap="sm" rounded="lg">
             <Span size="xs" className="text-red-700 dark:text-red-300 leading-relaxed">
               🔒 PII fields: <Span weight="bold">{meta.piiFields.join(", ")}</Span> — masked in DB with Firestore encryption. Never returned in full to client.
             </Span>
@@ -2014,7 +2014,7 @@ function ResourceAccordionCard({
         onClick={toggleExpanded}
         gap="sm"
         align="center"
-        className="w-full px-4 py-3 text-left bg-transparent border-0 cursor-pointer hover:bg-zinc-50 dark:hover:bg-slate-800/40 transition-colors"
+        className="w-full px-4 text-left bg-transparent border-0 cursor-pointer hover:bg-zinc-50 dark:hover:bg-slate-800/40 transition-colors" padding="y-sm"
       >
         {renderAccordionCollapsedHeader({ meta, runState, isLoadingStatus, dbStatus, existingCount, seedCount, isComplete, isEmpty, statusVariant, statusLabel, expanded, col, selected, onToggle, isRunning })}
       </Row>
@@ -2356,7 +2356,7 @@ export function SeedPanel() {
       {renderSeedPanelToolbar({ selectedCollections, setSelectedCollections, isFiltered, filteredCollections, isRunning, fetchStatus, isLoadingStatus, searchQuery, setSearchQuery, sortBy, setSortBy, dryRun, setDryRun, run, filterGroup, setFilterGroup, filterStatus, setFilterStatus })}
 
       <Container size="2xl">
-        <Stack gap="lg" className="py-8">
+        <Stack gap="lg" padding="y-xl">
           {renderSeedPanelHero()}
           {renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDocs, collectionCount: ALL_COLLECTIONS.length })}
 
@@ -2580,7 +2580,7 @@ function renderSeedPanelCollectionList(p: {
   toggleGroup: (cols: SeedCollectionName[], select: boolean) => void;
 }) {
   if (p.filteredCollections.length === 0) {
-    return <Div className="py-10 text-center text-sm text-zinc-500 dark:text-slate-400">No collections match your filters.</Div>;
+    return <Div className="text-center text-sm text-zinc-500 dark:text-slate-400" padding="y-2xl">No collections match your filters.</Div>;
   }
   if (p.isFiltered) {
     return <Stack gap="none" className="gap-1.5">{p.paginatedCollections.map((col) => renderAccordionCard(col, p))}</Stack>;
@@ -2627,7 +2627,7 @@ function renderSeedScaleSummary() {
           ["Bids (auction history)", "120+"], ["FAQs (all categories)", "55+"], ["Blog Posts", "20+"],
           ["Events", "15+"], ["Coupons (global + store)", "20+"], ["Notifications (all types)", "47+"], ["Wishlists", "40+"],
         ].map(([label, count]) => (
-          <Row key={label} justify="between" className="py-2 border-b border-zinc-100 dark:border-white/5 last:border-0">
+          <Row key={label} justify="between" className="border-b border-zinc-100 dark:border-white/5 last:border-0" padding="y-xs">
             <Span size="sm">{label}</Span>
             <span className="text-sm font-mono font-bold text-amber-600 dark:text-amber-400 tabular-nums">{count}</span>
           </Row>

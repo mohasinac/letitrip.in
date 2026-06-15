@@ -29,7 +29,7 @@ export default async function Page({ params }: Props) {
 
   if (leaderboard.length === 0) {
     return (
-      <Div className="dark:border-zinc-700 px-6 py-10 text-center" rounded="xl" border="default">
+      <Div className="dark:border-zinc-700 px-6 text-center" padding="y-2xl" rounded="xl" border="default">
         <Text color="muted">
           {EVENT_LABELS.LEADERBOARD_EMPTY}
         </Text>
@@ -46,7 +46,7 @@ export default async function Page({ params }: Props) {
       {leaderboard.slice(0, EVENT_META.LEADERBOARD_VISIBLE_LIMIT).map((entry, idx) => (
         <Row
           key={entry.id}
-          className="px-4 py-2 dark:border-zinc-700" align="center" justify="between" rounded="lg" border="default"
+          className="px-4 dark:border-zinc-700" padding="y-xs" align="center" justify="between" rounded="lg" border="default"
         >
           <Text weight="medium" color="muted">
             #{idx + 1} {entry.userDisplayName ?? EVENT_LABELS.PARTICIPANT_FALLBACK}
