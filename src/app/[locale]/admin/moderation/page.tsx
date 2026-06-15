@@ -97,7 +97,7 @@ export default function Page() {
                       </Text>
                     ) : null}
                   </Stack>
-                  <Row className="gap-2">
+                  <Row gap="sm">
                     <Button
                       variant="primary"
                       size="sm"
@@ -126,7 +126,7 @@ export default function Page() {
         title="Reject media"
         size="sm"
         actions={
-          <Row justify="end" className="gap-2">
+          <Row justify="end" gap="sm">
             <Button variant="ghost" onClick={closeRejectModal} disabled={submitting}>
               Cancel
             </Button>

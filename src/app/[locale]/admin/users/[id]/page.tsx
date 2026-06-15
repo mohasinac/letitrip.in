@@ -80,42 +80,42 @@ export default function Page() {
             </Stack>
           )}
           {tab === "orders" && (
-            <Row className="gap-2">
+            <Row gap="sm">
               <Button asChild variant="outline">
                 <Link href={`/admin/orders?buyerId=${id}`}>Open Orders filtered by buyer</Link>
               </Button>
             </Row>
           )}
           {tab === "store" && (
-            <Row className="gap-2">
+            <Row gap="sm">
               <Button asChild variant="outline">
                 <Link href={`/admin/stores?ownerId=${id}`}>Open Stores filtered by owner</Link>
               </Button>
             </Row>
           )}
           {tab === "reviews" && (
-            <Row className="gap-2">
+            <Row gap="sm">
               <Button asChild variant="outline">
                 <Link href={`/admin/reviews?buyerId=${id}`}>Open Reviews filtered by buyer</Link>
               </Button>
             </Row>
           )}
           {tab === "sessions" && (
-            <Row className="gap-2">
+            <Row gap="sm">
               <Button asChild variant="outline">
                 <Link href={`/admin/sessions?userId=${id}`}>Open Sessions filtered by user</Link>
               </Button>
             </Row>
           )}
           {tab === "bids" && (
-            <Row className="gap-2">
+            <Row gap="sm">
               <Button asChild variant="outline">
                 <Link href={`/admin/bids?bidderId=${id}`}>Open Bids filtered by bidder</Link>
               </Button>
             </Row>
           )}
           {tab === "reports" && (
-            <Row className="gap-2">
+            <Row gap="sm">
               <Button asChild variant="outline">
                 <Link href={`/admin/reports?reporterId=${id}`}>Reports filed by user</Link>
               </Button>

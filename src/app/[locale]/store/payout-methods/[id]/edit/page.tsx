@@ -91,7 +91,7 @@ export default function Page() {
               value={String(f.upiVpa ?? "")}
               onChange={(e) => setForm({ ...form, upiVpa: e.target.value })}
             />
-            <Row className="gap-4">
+            <Row gap="md">
               <Toggle
                 checked={!!f.isDefault}
                 onChange={(v) => setForm({ ...form, isDefault: v })}
@@ -104,11 +104,11 @@ export default function Page() {
               />
             </Row>
           </Stack>
-          <Row justify="between" className="gap-2">
+          <Row justify="between" gap="sm">
             <Button variant="danger" onClick={() => setConfirmDelete(true)}>
               {ACTIONS.STORE["delete-listing"].label}
             </Button>
-            <Row className="gap-2">
+            <Row gap="sm">
               <Button variant="ghost" onClick={() => router.back()} disabled={saving}>
                 Cancel
               </Button>

@@ -101,7 +101,7 @@ export function UserAddressesClient() {
         </Link>
       </Div>
 
-      <Row gap="md" align="end" className="flex-wrap">
+      <Row gap="md" align="end" wrap>
         <Div className="flex-1 min-w-[200px]">
           <Input
             id="address-search"

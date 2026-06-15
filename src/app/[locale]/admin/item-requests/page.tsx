@@ -74,7 +74,7 @@ export default function Page() {
                       by {r.opDisplayName} · status: {r.status}
                     </Text>
                   </Stack>
-                  <Row className="gap-2">
+                  <Row gap="sm">
                     <Button
                       variant="primary"
                       size="sm"

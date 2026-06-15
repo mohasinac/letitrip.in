@@ -70,7 +70,7 @@ export default function Page() {
               rows={5}
               placeholder="Condition, year, edition, budget range, any other notes…"
             />
-            <Row className="gap-4">
+            <Row gap="md">
               <Input
                 label="Category (slug)"
                 value={form.category}
@@ -93,7 +93,7 @@ export default function Page() {
               }
             />
           </Stack>
-          <Row justify="end" className="gap-2">
+          <Row justify="end" gap="sm">
             <Button variant="ghost" onClick={() => router.back()}>Cancel</Button>
             <Button variant="primary" onClick={onSave} disabled={saving} isLoading={saving}>
               Submit for review

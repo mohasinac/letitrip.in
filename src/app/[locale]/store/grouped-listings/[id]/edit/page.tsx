@@ -122,7 +122,7 @@ export default function Page() {
               label="Featured on homepage"
             />
           </Stack>
-          <Row justify="end" className="gap-2">
+          <Row justify="end" gap="sm">
             <Button variant="ghost" onClick={() => router.back()}>Cancel</Button>
             <Button variant="primary" onClick={onSave} disabled={saving} isLoading={saving}>
               Save Changes

@@ -81,14 +81,14 @@ export default function Page() {
             <Input label="Name" value={String(f.name ?? "")} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             <Textarea label="Description" value={String(f.description ?? "")} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} />
             <Textarea label="Defaults (JSON)" value={defaultsJson} onChange={(e) => setDefaultsJson(e.target.value)} rows={8} />
-            <Row className="gap-4">
+            <Row gap="md">
               <Toggle checked={!!f.isShared} onChange={(v) => setForm({ ...form, isShared: v })} label="Shared" />
               <Toggle checked={f.isActive !== false} onChange={(v) => setForm({ ...form, isActive: v })} label="Active" />
             </Row>
           </Stack>
-          <Row justify="between" className="gap-2">
+          <Row justify="between" gap="sm">
             <Button variant="danger" onClick={() => setConfirmDelete(true)}>{ACTIONS.STORE["delete-listing"].label}</Button>
-            <Row className="gap-2">
+            <Row gap="sm">
               <Button variant="ghost" onClick={() => router.back()}>Cancel</Button>
               <Button variant="primary" onClick={onSave} disabled={saving} isLoading={saving}>{ACTIONS.STORE["save-changes"].label}</Button>
             </Row>

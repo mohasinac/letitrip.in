@@ -82,14 +82,14 @@ export default function Page() {
             />
             <Input type="number" label="Flat rate (paise)" value={String(f.flatRateInPaise ?? 0)} onChange={(e) => setForm({ ...form, flatRateInPaise: Number(e.target.value) || 0 })} />
             <Input type="number" label="Estimated days" value={String(f.estimatedDays ?? 0)} onChange={(e) => setForm({ ...form, estimatedDays: Number(e.target.value) || 0 })} />
-            <Row className="gap-4">
+            <Row gap="md">
               <Toggle checked={!!f.isDefault} onChange={(v) => setForm({ ...form, isDefault: v })} label="Default" />
               <Toggle checked={f.isActive !== false} onChange={(v) => setForm({ ...form, isActive: v })} label="Active" />
             </Row>
           </Stack>
-          <Row justify="between" className="gap-2">
+          <Row justify="between" gap="sm">
             <Button variant="danger" onClick={() => setConfirmDelete(true)}>{ACTIONS.STORE["delete-listing"].label}</Button>
-            <Row className="gap-2">
+            <Row gap="sm">
               <Button variant="ghost" onClick={() => router.back()}>Cancel</Button>
               <Button variant="primary" onClick={onSave} disabled={saving} isLoading={saving}>{ACTIONS.STORE["save-changes"].label}</Button>
             </Row>

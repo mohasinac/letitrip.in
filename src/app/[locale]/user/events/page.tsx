@@ -194,7 +194,7 @@ export default function UserEventsPage() {
                         Event #{entry.eventId}
                       </Text>
                     )}
-                    <Row gap="xs" className="flex-wrap">
+                    <Row gap="xs" wrap>
                       {eventType && (
                         <Span size="xs" className="rounded-full bg-[var(--appkit-color-border-subtle)] px-2 py-0.5 text-[var(--appkit-color-text-muted)]">
                           {eventType}
@@ -208,7 +208,7 @@ export default function UserEventsPage() {
                   </Badge>
                 </Row>
                 {(entry.points !== undefined || entry.spinUsed) && (
-                  <Row gap="md" className="mt-3 pt-3 border-t border-[var(--appkit-color-border-subtle)] flex-wrap">
+                  <Row gap="md" className="mt-3 pt-3 border-t border-[var(--appkit-color-border-subtle)]" wrap>
                     {entry.points !== undefined && (
                       <Text variant="secondary" size="xs">
                         Points: <Span weight="medium" className="text-[var(--appkit-color-text)]">{entry.points}</Span>

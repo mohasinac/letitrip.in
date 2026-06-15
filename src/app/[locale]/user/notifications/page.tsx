@@ -254,7 +254,7 @@ export default function NotificationsPage() {
               </Button>
             )}
           </Row>
-          <Row gap="md" className="flex-wrap">
+          <Row gap="md" wrap>
             <Div>
               {/* eslint-disable-next-line lir/no-raw-html-elements -- short filter; <Select> drops UX */}
               <select

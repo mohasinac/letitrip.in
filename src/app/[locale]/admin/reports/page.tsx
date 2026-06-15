@@ -93,7 +93,7 @@ export default function Page() {
                       by {r.reporterId} · {new Date(r.createdAt).toLocaleString()}
                     </Text>
                   </Stack>
-                  <Row className="gap-2">
+                  <Row gap="sm">
                     <Button
                       variant="outline"
                       size="sm"
@@ -129,7 +129,7 @@ export default function Page() {
         title="Action report"
         size="sm"
         actions={
-          <Row justify="end" className="gap-2">
+          <Row justify="end" gap="sm">
             <Button variant="ghost" onClick={closeActionModal} disabled={submitting}>
               Cancel
             </Button>

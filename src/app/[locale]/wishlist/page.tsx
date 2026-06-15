@@ -286,11 +286,11 @@ function renderWishlistHeader({
 }) {
   return (
     <Div>
-      <Row gap="sm" className="flex-wrap">
+      <Row gap="sm" wrap>
         <Heading level={1} className="text-2xl text-zinc-900 dark:text-zinc-100" weight="semibold">
           My Wishlist
         </Heading>
-        <Row gap="sm" className="ml-auto flex-wrap">
+        <Row gap="sm" className="ml-auto" wrap>
           {selectedIds.size > 0 && (
             <>
               <Text className="text-zinc-600 dark:text-zinc-300" size="sm">{selectedIds.size} selected</Text>

@@ -95,7 +95,7 @@ function renderItemRow(item: OrderItemT, key: string | number) {
           </Text>
         )}
         {isPrizeDraw && revealStatus && (
-          <Row gap="sm" className="mt-1 flex-wrap">
+          <Row gap="sm" className="mt-1" wrap>
             {revealStatus === "revealed" ? (
               <Span weight="semibold" className="inline-flex items-center rounded-full bg-success-surface px-2 py-0.5 text-[10px] text-success">
                 Prize revealed{item.revealedItemNumber != null ? ` (#${item.revealedItemNumber})` : ""}
@@ -142,7 +142,7 @@ function renderOrderGroup(g: OrderGroup, gi: number) {
       key={`bundle-${gi}`}
       className="rounded-lg border border-zinc-200 dark:border-slate-700 p-3"
     >
-      <Row gap="sm" align="center" justify="between" className="mb-2 flex-wrap">
+      <Row gap="sm" align="center" justify="between" className="mb-2" wrap>
         <Text className="text-zinc-900 dark:text-zinc-100" size="sm" weight="semibold">
           {BUNDLE_COPY.orderDetail.bundleHeader(headerLine.title)}
         </Text>

@@ -98,7 +98,7 @@ function ConversationListItem({ conversation, active, onSelect, mobileHref }: Co
             {conversation.lastMessage}
           </Text>
         </Div>
-        <Stack gap="xs" className="items-end shrink-0">
+        <Stack gap="xs" className="shrink-0" align="end">
           <Text variant="secondary" size="xs">
             {relativeTime(conversation.lastMessageAt)}
           </Text>

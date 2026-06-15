@@ -71,7 +71,7 @@ export default function Page() {
             </Text>
           </Stack>
           <Text>{doc.description}</Text>
-          <Row className="gap-4 text-sm text-zinc-500 dark:text-zinc-400">
+          <Row className="text-sm text-zinc-500 dark:text-zinc-400" gap="md">
             {doc.category ? <Text>Category: {doc.category}</Text> : null}
             {doc.brand ? <Text>Brand: {doc.brand}</Text> : null}
             {doc.maxBudgetInPaise ? (

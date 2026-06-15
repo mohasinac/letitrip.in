@@ -158,7 +158,7 @@ export default function UserHistoryPage() {
         )}
       </Row>
 
-      <Row gap="sm" className="flex-wrap">
+      <Row gap="sm" wrap>
         {TABS.map((tab) => (
           <Button
             key={tab.key}

@@ -170,7 +170,7 @@ function WhatHappenedSection({
             </Label>
             <Select id="scamPlatform" value={form.scamPlatform} onValueChange={(v) => field("scamPlatform")(v)} options={SCAM_PLATFORM_OPTIONS} className={CLS_INPUT} />
           </Stack>
-          <Row gap="md" className="flex-wrap">
+          <Row gap="md" wrap>
             <Stack gap="xs" className="flex-1 min-w-[140px]">
               <Label className="text-sm font-medium" htmlFor="amountLost">Amount Lost (₹) — optional</Label>
               <Input id="amountLost" type="number" min="0" step="1" value={form.amountLost} onChange={(e) => field("amountLost")(e.target.value)} placeholder="e.g. 2500" className={CLS_INPUT} />

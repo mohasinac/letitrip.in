@@ -114,7 +114,7 @@ export default function Page() {
               }
             />
           </Stack>
-          <Row justify="end" className="gap-2">
+          <Row justify="end" gap="sm">
             <Button variant="ghost" onClick={() => router.back()}>
               Cancel
             </Button>

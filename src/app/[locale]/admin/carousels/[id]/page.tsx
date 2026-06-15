@@ -22,7 +22,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
     return (
       <Section className="py-8">
         <Container>
-          <Row className="mb-6 gap-2">
+          <Row className="mb-6" gap="sm">
             <Link
               href={String(ROUTES.ADMIN.CAROUSELS)}
               className="text-sm text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text)]"
@@ -59,7 +59,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
   return (
     <Section className="py-8">
       <Container>
-        <Row className="mb-2 gap-2">
+        <Row className="mb-2" gap="sm">
           <Link
             href={String(ROUTES.ADMIN.CAROUSELS)}
             className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300"
@@ -73,7 +73,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
             <Heading level={1} className="text-2xl" weight="bold">
               {carousel.name}
             </Heading>
-            <Row className="mt-1 gap-2">
+            <Row className="mt-1" gap="sm">
               <Badge variant={carousel.status === "active" ? "success" : "secondary"} >
                 {carousel.status}
               </Badge>

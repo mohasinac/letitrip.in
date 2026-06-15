@@ -122,7 +122,7 @@ function renderCategoryRow(
       className="bg-[var(--appkit-color-surface)] px-4 py-3 hover:bg-[var(--appkit-color-surface-raised)] transition-colors"
     >
       <Div className="flex-1 min-w-0">
-        <Row gap="xs" align="center" className="flex-wrap">
+        <Row gap="xs" align="center" wrap>
           <Text className="truncate" size="sm" weight="medium">{cat.name}</Text>
           {cat.itemCode && <Badge variant="secondary" className="text-[10px]">{cat.itemCode}</Badge>}
           {typeof cat.productCount === "number" && (

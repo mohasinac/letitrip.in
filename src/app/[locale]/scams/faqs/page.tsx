@@ -83,7 +83,7 @@ export default async function Page() {
                 Common questions about spotting, avoiding, and reporting collectibles scams in India.
                 Learn how LetItRip protects you and what to do if something goes wrong.
               </Text>
-              <Row gap="sm" className="flex-wrap pt-1">
+              <Row gap="sm" className="pt-1" wrap>
                 <Text variant="secondary" size="sm">
                   {faqs.length} answers
                 </Text>
@@ -138,7 +138,7 @@ export default async function Page() {
         {/* Footer CTA */}
         <Section className="border-t py-8">
           <Container size="xl">
-            <Row justify="between" align="center" className="flex-wrap gap-4">
+            <Row justify="between" align="center" gap="md" wrap>
               <Stack gap="xs">
                 <Heading level={3} size="base" weight="semibold">
                   Encountered a scammer?

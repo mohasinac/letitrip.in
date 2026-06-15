@@ -69,7 +69,7 @@ function CouponWalletCard({
 }) {
   return (
     <Div surface="card" padding="md" className="flex flex-col gap-2">
-      <Row align="center" gap="sm" className="flex-wrap">
+      <Row align="center" gap="sm" wrap>
         <Text className="font-mono px-2 py-0.5 rounded bg-zinc-100 dark:bg-slate-800 text-zinc-700 dark:text-zinc-200" size="xs">
           {claim.couponCode}
         </Text>

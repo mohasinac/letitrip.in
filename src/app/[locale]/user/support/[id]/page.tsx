@@ -140,7 +140,7 @@ export default function TicketDetailPage({ params }: PageProps) {
             <Heading level={1} className="text-2xl text-[var(--appkit-color-text)]" weight="semibold">
               {ticket.subject}
             </Heading>
-            <Row gap="sm" className="mt-1 flex-wrap">
+            <Row gap="sm" className="mt-1" wrap>
               <Text variant="secondary" size="xs" transform="capitalize">
                 {(ticket.category ?? "general").replaceAll("_", " ")}
               </Text>

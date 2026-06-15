@@ -168,7 +168,7 @@ export default function UserSupportPage() {
                   <Text className="text-[var(--appkit-color-text)] truncate" size="sm" weight="semibold">
                     {t.subject}
                   </Text>
-                  <Row gap="sm" className="mt-1 flex-wrap">
+                  <Row gap="sm" className="mt-1" wrap>
                     <Text variant="secondary" size="xs" transform="capitalize">
                       {(t.category ?? "general").replaceAll("_", " ")}
                     </Text>
