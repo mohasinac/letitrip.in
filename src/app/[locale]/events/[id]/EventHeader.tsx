@@ -38,7 +38,7 @@ export function EventHeader({
   return (
     <Stack gap="md">
       {coverImage ? (
-        <Div className={`relative aspect-[16/7] w-full ${__O.hidden} rounded-xl bg-zinc-100 dark:bg-slate-800`}>
+        <Div className={`relative aspect-[16/7] w-full ${__O.hidden}`} rounded="xl" surface="subtle">
           <MediaImage
             src={coverImage}
             alt={title || EVENT_LABELS.COVER_ALT_FALLBACK}

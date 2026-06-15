@@ -46,7 +46,7 @@ function StatCard({
   Icon: React.ComponentType<{ className?: string }>;
 }) {
   return (
-    <Div className={`relative rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden} shadow-sm hover:shadow-md transition-shadow`}>
+    <Div className={`relative border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden} hover:shadow-md transition-shadow`} rounded="xl" shadow="sm">
       <Div
         className="absolute top-0 left-0 right-0 h-[3px]"
         // audit-inline-style-ok: runtime theme gradient

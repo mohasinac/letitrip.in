@@ -53,7 +53,7 @@ export function SearchResultsClient({ locale, query, total, products }: Props) {
             <AdSlot id="listing-between-rows" />
           </Stack>
         ) : (
-          <Div className={`rounded-xl border border-zinc-200 bg-white ${__P.p6} text-center dark:border-slate-700 dark:bg-slate-900`}>
+          <Div className={`${__P.p6} text-center dark:border-slate-700 dark:bg-slate-900`} rounded="xl" surface="default" border="default">
             <Text size="base" weight="semibold" color="primary">
               No results for &ldquo;{query}&rdquo;
             </Text>

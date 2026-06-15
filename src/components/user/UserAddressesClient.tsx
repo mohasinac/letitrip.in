@@ -79,7 +79,7 @@ export function UserAddressesClient() {
     return (
       <Div className="grid sm:grid-cols-2 gap-4">
         {Array.from({ length: 3 }).map((_, i) => (
-          <Div key={i} className={`rounded-xl border border-zinc-200 dark:border-slate-700 animate-pulse ${__P.p4} space-y-2`}>
+          <Div key={i} className={`animate-pulse ${__P.p4} space-y-2`} rounded="xl" border="default">
             <Div className="h-4 w-1/3" surface="subtle" rounded="default" />
             <Div className="h-3 w-3/4" surface="subtle" rounded="default" />
             <Div className="h-3 w-1/2" surface="subtle" rounded="default" />
@@ -131,7 +131,7 @@ export function UserAddressesClient() {
       </Row>
 
       {confirmDeleteId && (
-        <Div className={`rounded-xl border border-error/20 bg-error-surface ${__P.p4} space-y-3`}>
+        <Div className={`border border-error/20 bg-error-surface ${__P.p4} space-y-3`} rounded="xl">
           <Text className="text-error" size="sm" weight="medium">
             Delete this address? This cannot be undone.
           </Text>

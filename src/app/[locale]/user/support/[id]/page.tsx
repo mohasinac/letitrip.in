@@ -104,7 +104,7 @@ export default function TicketDetailPage({ params }: PageProps) {
   if (isLoading) {
     return (
       <Stack className="w-full max-w-3xl" gap="md">
-        <Div className={`animate-pulse rounded-xl border border-[var(--appkit-color-border)] ${__P.p5} space-y-3`}>
+        <Div className={`animate-pulse border border-[var(--appkit-color-border)] ${__P.p5} space-y-3`} rounded="xl">
           <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
           <Div className="h-3 w-2/3 bg-[var(--appkit-color-border)]" rounded="default" />
         </Div>
@@ -164,7 +164,7 @@ export default function TicketDetailPage({ params }: PageProps) {
         </Row>
       </Div>
 
-      <Div className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`}>
+      <Div className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`} rounded="xl">
         <Text className="text-[var(--appkit-color-text-muted)] tracking-wider mb-2" size="xs" weight="semibold" transform="uppercase">
           Your original message
         </Text>
@@ -185,11 +185,7 @@ export default function TicketDetailPage({ params }: PageProps) {
             return (
               <Div
                 key={m.id}
-                className={`rounded-xl border p-4 ${
-                  mine
-                    ? "border-[var(--appkit-color-primary)] bg-[var(--appkit-color-surface)]"
-                    : "border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface-input)]"
-                }`}
+                className={`border ${ mine ? "border-[var(--appkit-color-primary)] bg-[var(--appkit-color-surface)]" : "border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface-input)]" }`} rounded="xl" padding="md"
               >
                 <Row justify="between" className="mb-2">
                   <Text className="text-[var(--appkit-color-text)] tracking-wider" size="xs" weight="semibold" transform="uppercase">
@@ -205,13 +201,13 @@ export default function TicketDetailPage({ params }: PageProps) {
       </Stack>
 
       {closed ? (
-        <Div className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5} text-center`}>
+        <Div className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5} text-center`} rounded="xl">
           <Text variant="secondary" size="sm">
             This ticket is {ticket.status}. Open a new ticket if you need further help.
           </Text>
         </Div>
       ) : (
-        <Stack gap="sm" className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`}>
+        <Stack gap="sm" className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`} rounded="xl">
           <Text className="text-[var(--appkit-color-text)]" size="sm" weight="semibold">Add a reply</Text>
           <Textarea
             value={reply}

@@ -47,7 +47,7 @@ function StatPill({ label, value }: { label: string; value: string | number }) {
 
 function SectionCard({ title, viewAllHref, children }: { title: string; viewAllHref: string; children: React.ReactNode }) {
   return (
-    <Div className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5} shadow-sm`}>
+    <Div className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`} rounded="xl" shadow="sm">
       <Row className="mb-3" align="center" justify="between">
         <Text className="text-[var(--appkit-color-text)]" size="sm" weight="semibold">{title}</Text>
         <Link href={viewAllHref} className="text-xs text-[var(--appkit-color-primary)] hover:underline">View all →</Link>

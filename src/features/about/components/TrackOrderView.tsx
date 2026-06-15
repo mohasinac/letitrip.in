@@ -60,10 +60,10 @@ export async function TrackOrderView() {
       >
         {/* Sign-in prompt */}
         <Section
-          className={`${themed.bgSecondary} rounded-2xl border ${themed.border} p-8 text-center`}
+          className={`${themed.bgSecondary} border ${themed.border} text-center`} rounded="2xl" padding="xl"
         >
           <Div
-            className={`w-16 h-16 bg-primary/10 dark:bg-primary/15 rounded-full ${flex.center} mx-auto mb-4`}
+            className={`w-16 h-16 bg-primary/10 dark:bg-primary/15 ${flex.center} mx-auto mb-4`} rounded="full"
           >
             <ShoppingBag className="w-8 h-8 text-primary" />
           </Div>
@@ -101,7 +101,7 @@ export async function TrackOrderView() {
                   {String(index + 1).padStart(2, "0")}
                 </Caption>
                 <Div
-                  className={`w-12 h-12 ${bg} rounded-xl ${flex.center} mb-4`}
+                  className={`w-12 h-12 ${bg} ${flex.center} mb-4`} rounded="xl"
                 >
                   <Icon className={`w-6 h-6 ${color}`} />
                 </Div>
@@ -118,7 +118,7 @@ export async function TrackOrderView() {
 
         {/* Need help */}
         <Section
-          className={`${themed.bgSecondary} rounded-xl border ${themed.border} p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4`}
+          className={`${themed.bgSecondary} border ${themed.border} flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4`} rounded="xl" padding="lg"
         >
           <Stack gap="sm">
             <Heading level={2} className="mb-1">

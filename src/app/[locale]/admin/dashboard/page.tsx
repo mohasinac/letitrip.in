@@ -233,7 +233,7 @@ export default function Page() {
             ))}
           </Div>
 
-          <Div className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`}>
+          <Div className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`} rounded="xl">
             <Row className="mb-4" align="center" gap="sm">
               <Div className="text-sm font-semibold text-[var(--appkit-color-text)]">Dev Settings</Div>
               {(prefs.mockRazorpay || prefs.mockShiprocket || adminBypassEnabled) && (
@@ -283,7 +283,7 @@ export default function Page() {
       )}
       renderRecentActivity={() =>
         recentOrders.length > 0 ? (
-          <Div className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden}`}>
+          <Div className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden}`} rounded="xl">
             <Row className="px-4 border-b border-[var(--appkit-color-border-subtle)]" padding="y-sm" align="center" justify="between">
               <Text className="text-[var(--appkit-color-text)]" size="sm" weight="semibold">Recent Orders</Text>
               <Link href={String(ROUTES.ADMIN.ORDERS)} className="text-xs text-[var(--appkit-color-primary)] hover:underline">View all →</Link>

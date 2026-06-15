@@ -82,7 +82,7 @@ function HistoryRow({ item, onRemove }: HistoryRowProps) {
   return (
     <Row gap="md" align="center" className={CARD}>
       <Link href={href} className="shrink-0">
-        <Div className={`relative h-16 w-16 ${__O.hidden} rounded-lg bg-[var(--appkit-color-border-subtle)]`}>
+        <Div className={`relative h-16 w-16 ${__O.hidden} bg-[var(--appkit-color-border-subtle)]`} rounded="lg">
           <MediaImage
             src={item.productSnapshot?.thumb}
             alt={title}

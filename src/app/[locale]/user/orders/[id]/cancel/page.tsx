@@ -65,7 +65,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       </>
 
       {!cancellable ? (
-        <Div className={`rounded-xl border border-warning/20 bg-warning-surface ${__P.p5} space-y-3`}>
+        <Div className={`border border-warning/20 bg-warning-surface ${__P.p5} space-y-3`} rounded="xl">
           <Text className="text-warning" size="sm" weight="medium">
             This order cannot be cancelled because it is already <Span weight="bold">{order.orderStatus.toLowerCase()}</Span>.
           </Text>

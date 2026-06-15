@@ -205,7 +205,7 @@ function renderPage({
           )}
         </Stack>
       ) : (
-        <Div className={`divide-y divide-[var(--appkit-color-border)] rounded-xl border border-[var(--appkit-color-border)] ${__O.hidden}`}>
+        <Div className={`divide-y divide-[var(--appkit-color-border)] border border-[var(--appkit-color-border)] ${__O.hidden}`} rounded="xl">
           {filtered.map((cat) => renderCategoryRow(cat, deletingId, handleDelete))}
         </Div>
       )}

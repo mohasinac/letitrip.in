@@ -180,11 +180,7 @@ function renderAddressStep({
         <Div
           key={address.id}
           onClick={select}
-          className={`cursor-pointer rounded-xl border p-4 transition ${
-            isSelected
-              ? "border-zinc-900 bg-zinc-50 dark:border-zinc-100 dark:bg-slate-800"
-              : "border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900"
-          }`}
+          className={`cursor-pointer border transition ${ isSelected ? "border-zinc-900 bg-zinc-50 dark:border-zinc-100 dark:bg-slate-800" : "border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900" }`} rounded="xl" padding="md"
         >
           <Text weight="medium" color="primary">
             {address.label ?? address.fullName}
@@ -199,7 +195,7 @@ function renderAddressStep({
         </Div>
       )}
       renderEmptyState={() => (
-        <Div className={`rounded-xl border border-dashed border-zinc-300 dark:border-slate-600 ${__P.p6} text-center`}>
+        <Div className={`border border-dashed border-zinc-300 dark:border-slate-600 ${__P.p6} text-center`} rounded="xl">
           <Text className="mb-3" color="muted" size="sm">
             No saved addresses yet.
           </Text>
@@ -267,7 +263,7 @@ function renderOtpConsentStep({
           {isSendingOtp ? CK.OTP_SENDING_BTN : CK.OTP_SEND_BTN}
         </Button>
         {adminBypassEnabled && (
-          <Div className={`rounded-lg border border-warning/30 bg-warning-surface ${__P.p3}`}>
+          <Div className={`border border-warning/30 bg-warning-surface ${__P.p3}`} rounded="lg">
             <Text className="mb-1 text-warning tracking-wide" size="xs" weight="semibold" transform="uppercase">
               {CK.ADMIN_BYPASS_PANEL_LABEL}
             </Text>
@@ -409,7 +405,7 @@ function renderPaymentStep({
             {CK.PAYMENT_COD_BTN}
           </Button>
           {adminBypassEnabled && (
-            <Div className={`mt-1 rounded-lg border border-warning/30 bg-warning-surface ${__P.p3}`}>
+            <Div className={`mt-1 border border-warning/30 bg-warning-surface ${__P.p3}`} rounded="lg">
               <Text className="mb-2 text-warning tracking-wide" size="xs" weight="semibold" transform="uppercase">
                 {CK.ADMIN_BYPASS_PANEL_LABEL}
               </Text>
@@ -528,7 +524,7 @@ function renderOrderSummary({
         {CK.ORDER_SUMMARY_HEADING}
       </Heading>
       {selectedAddress && (
-        <Div className={`mb-3 rounded-lg bg-zinc-50 dark:bg-slate-800 ${__P.p3}`}>
+        <Div className={`mb-3 ${__P.p3}`} rounded="lg" surface="muted">
           <Text className="mb-1" color="muted" size="xs" weight="medium" transform="uppercase">
             {CK.SHIPPING_TO}
           </Text>

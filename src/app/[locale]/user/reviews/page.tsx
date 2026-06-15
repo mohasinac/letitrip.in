@@ -163,7 +163,7 @@ export default function UserReviewsPage() {
       {loading ? (
         <Stack gap="md">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Div key={i} className={`animate-pulse rounded-xl border border-zinc-200 dark:border-slate-700 ${__P.p5} space-y-3`}>
+            <Div key={i} className={`animate-pulse ${__P.p5} space-y-3`} rounded="xl" border="default">
               <Div className="h-4 w-1/3" surface="subtle" rounded="default" />
               <Div className="h-3 w-1/2" surface="subtle" rounded="default" />
               <Div className="h-3 w-full" surface="subtle" rounded="default" />

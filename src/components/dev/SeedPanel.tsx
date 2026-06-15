@@ -1655,8 +1655,8 @@ function SeedProgressBar({
     pct >= 100 ? "bg-emerald-500 dark:bg-emerald-400" : pct > 0 ? "bg-amber-500 dark:bg-amber-400" : "bg-zinc-300 dark:bg-slate-600";
   const h = size === "sm" ? "h-1.5" : "h-2";
   return (
-    <Div className={`w-full ${h} rounded-full bg-zinc-200 dark:bg-slate-700 overflow-hidden`}>
-      <Div className={`h-full rounded-full ${color} transition-all duration-500`} style={{ width: `${pct}%` }} />
+    <Div className={`w-full ${h} dark:bg-slate-700 overflow-hidden`} rounded="full" surface="subtle">
+      <Div className={`h-full ${color} transition-all duration-500`} rounded="full" style={{ width: `${pct}%` }} />
     </Div>
   );
 }
@@ -2007,7 +2007,7 @@ function ResourceAccordionCard({
     runState === "error" || doneButFailed ? "bg-red-50 dark:bg-red-900/10" : "";
 
   return (
-    <Div className={`rounded-xl border transition-colors ${borderColor} ${bgColor} overflow-hidden`}>
+    <Div className={`border transition-colors ${borderColor} ${bgColor} overflow-hidden`} rounded="xl">
       <Row
         as="button"
         type="button"
@@ -2531,7 +2531,7 @@ function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDoc
 
 function renderSeedPanelDoneSummary({ errorCount, dryRun, completedCount, colErrors }: { errorCount: number; dryRun: boolean; completedCount: number; colErrors: Record<string, string> }) {
   return (
-    <Div className={`rounded-xl p-4 border ${errorCount > 0 ? "bg-red-50 dark:bg-red-900/10 border-red-300 dark:border-red-700" : "bg-emerald-50 dark:bg-emerald-900/10 border-emerald-300 dark:border-emerald-700"}`}>
+    <Div className={`border ${errorCount > 0 ? "bg-red-50 dark:bg-red-900/10 border-red-300 dark:border-red-700" : "bg-emerald-50 dark:bg-emerald-900/10 border-emerald-300 dark:border-emerald-700"}`} rounded="xl" padding="md">
       <Text className={`text-sm font-semibold ${errorCount > 0 ? "text-red-700 dark:text-red-300" : "text-emerald-700 dark:text-emerald-300"}`}>
         {errorCount > 0 ? `✗ Completed with ${errorCount} error${errorCount > 1 ? "s" : ""} — ${completedCount - errorCount} succeeded` : `✓ ${dryRun ? "Dry run" : "Seed"} complete — all ${completedCount} collections processed`}
       </Text>

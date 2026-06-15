@@ -95,7 +95,7 @@ export default function NewSupportTicketPage() {
         </Text>
       </Div>
 
-      <Stack gap="md" className={`rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`}>
+      <Stack gap="md" className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`} rounded="xl">
         <Div>
           <Text className="text-[var(--appkit-color-text-muted)] mb-1" size="xs" weight="medium">Category</Text>
           {/* eslint-disable-next-line lir/no-raw-html-elements -- short category select */}

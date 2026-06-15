@@ -25,7 +25,7 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
       <Text variant="secondary" className="mb-8 max-w-xl mx-auto" align="center">{t("lifecycleSubtitle")}</Text>
       <Stack gap="3">
         {statusSteps.map(({ label, desc, color, badge, icon }) => (
-          <Div key={label} className={`flex items-start gap-4 ${__P.p4} rounded-xl border ${color}`}>
+          <Div key={label} className={`flex items-start gap-4 ${__P.p4} border ${color}`} rounded="xl">
             <Div className="text-2xl flex-shrink-0 mt-0.5">{icon}</Div>
             <Div className="flex-1">
               <Row gap="sm" className="mb-1">
@@ -35,7 +35,7 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
             </Div>
           </Div>
         ))}
-        <Div className={`flex items-start gap-4 ${__P.p4} rounded-xl border bg-error-surface border-error/20`}>
+        <Div className={`flex items-start gap-4 ${__P.p4} border bg-error-surface border-error/20`} rounded="xl">
           <Div className="text-2xl flex-shrink-0 mt-0.5">❌</Div>
           <Div className="flex-1">
             <Row gap="sm" className="mb-1">
@@ -68,8 +68,8 @@ function renderOrdersInfoCards(infoCards: InfoCard[], t: T) {
       <Heading level={2} className="mb-8" align="center">{t("infoTitle")}</Heading>
       <Grid className={`${THEME_CONSTANTS.spacing.gap.md} sm:grid-cols-2`}>
         {infoCards.map(({ icon: Icon, title, text, color, iconColor }) => (
-          <Div key={title} className={`rounded-xl border ${__P.p5} ${color}`}>
-            <Div className={`w-10 h-10 rounded-lg bg-white/60 dark:bg-white/10 ${flex.center} mb-3`}>
+          <Div key={title} className={`border ${__P.p5} ${color}`} rounded="xl">
+            <Div className={`w-10 h-10 bg-white/60 dark:bg-white/10 ${flex.center} mb-3`} rounded="lg">
               <Icon className={`w-5 h-5 ${iconColor}`} />
             </Div>
             <Text className="mb-1" weight="semibold">{title}</Text>
@@ -83,7 +83,7 @@ function renderOrdersInfoCards(infoCards: InfoCard[], t: T) {
 
 function renderOrdersCta(t: T) {
   return (
-    <Section className={`rounded-2xl ${__P.p8} text-center ${themed.bgSecondary} border ${themed.border}`}>
+    <Section className={`${__P.p8} text-center ${themed.bgSecondary} border ${themed.border}`} rounded="2xl">
       <Heading level={2} className="mb-3">{t("ctaTitle")}</Heading>
       <Text variant="secondary" className="mb-6 max-w-lg mx-auto">{t("ctaText")}</Text>
       <Div className={`${flex.center} gap-4 flex-wrap`}>
@@ -252,7 +252,7 @@ export async function HowOrdersWorkView() {
         </Div>
       </Section>
 
-      <Div className={`${page.container.md} py-10 md:py-12 lg:py-16 space-y-14`}>
+      <Div className={`${page.container.md} md:py-12 lg:py-16 space-y-14`} padding="y-2xl">
         {renderOrdersLifecycle(STATUS_STEPS, t)}
         {renderOrdersDiagram(DIAGRAM_STEPS, t)}
         {renderOrdersInfoCards(INFO_CARDS, t)}

@@ -24,7 +24,7 @@ function renderFeeTable(feeRows: FeeRow[], t: T) {
   return (
     <Section>
       <Heading level={2} className="mb-6">{t("tableTitle")}</Heading>
-      <Div className={`${__O.xAuto} rounded-xl border ${themed.border}`}>
+      <Div className={`${__O.xAuto} border ${themed.border}`} rounded="xl">
         <Table className="w-full text-sm">
           <Thead className={themed.bgSecondary}>
             <Tr>
@@ -56,7 +56,7 @@ function renderPayoutExample(payoutRows: PayoutRow[], t: T) {
     <Section>
       <Heading level={2} className="mb-3">{t("payoutExampleTitle")}</Heading>
       <Text variant="secondary" className="mb-6">{t("payoutExampleSubtitle")}</Text>
-      <Div className={`rounded-xl border ${themed.border} ${themed.bgPrimary} ${__P.p5} max-w-sm`}>
+      <Div className={`border ${themed.border} ${themed.bgPrimary} ${__P.p5} max-w-sm`} rounded="xl">
         <Heading level={3} className="mb-4" size="base">{t("payoutExampleProduct")}</Heading>
         <Stack gap="sm">
           {payoutRows.map((row, i) => (
@@ -73,7 +73,7 @@ function renderPayoutExample(payoutRows: PayoutRow[], t: T) {
 
 function renderFeesDisclaimer(t: T) {
   return (
-    <Section className={`rounded-xl border ${themed.border} ${__P.p5} ${themed.bgSecondary}`}>
+    <Section className={`border ${themed.border} ${__P.p5} ${themed.bgSecondary}`} rounded="xl">
       <Heading level={3} className="mb-2" size="base">{t("disclaimerTitle")}</Heading>
       <Caption className="leading-relaxed">{t("disclaimerText")}</Caption>
     </Section>
@@ -146,7 +146,7 @@ export async function FeesView() {
         </Div>
       </Section>
 
-      <Div className={`${page.container.sm} py-10 md:py-12 lg:py-16 space-y-12`}>
+      <Div className={`${page.container.sm} md:py-12 lg:py-16 space-y-12`} padding="y-2xl">
         {renderFeeTable(FEE_ROWS, t)}
         {renderPayoutExample(OFFER_PAYOUT_ROWS, t)}
         {renderFeesDisclaimer(t)}

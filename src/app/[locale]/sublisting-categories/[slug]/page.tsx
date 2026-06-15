@@ -77,7 +77,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
         {/* Category header */}
         <Div className="mb-8">
           {category.display?.coverImage && (
-            <Div className={`mb-4 h-36 w-full ${__O.hidden} rounded-2xl relative`}>
+            <Div className={`mb-4 h-36 w-full ${__O.hidden} relative`} rounded="2xl">
               <MediaImage src={category.display.coverImage} alt={displayName} priority />
             </Div>
           )}
@@ -147,7 +147,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
                   href={href}
                   className="group flex flex-col overflow-hidden rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 hover:border-[var(--appkit-color-primary)]/50 hover:shadow-md transition-all"
                 >
-                  <Div className={`aspect-square w-full ${__O.hidden} bg-zinc-100 dark:bg-zinc-800 relative`}>
+                  <Div className={`aspect-square w-full ${__O.hidden} relative`} surface="subtle">
                     <MediaImage
                       src={image || undefined}
                       alt={title}

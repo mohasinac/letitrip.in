@@ -48,7 +48,7 @@ function renderProfileViewMode({
     <Stack surface="card" padding="lg" gap="5">
       <Row align="center" gap="md">
         {profile.photoURL ? (
-          <Div className={`h-20 w-20 rounded-full ${__O.hidden} relative ring-2 ring-zinc-100 dark:ring-slate-700`}>
+          <Div className={`h-20 w-20 ${__O.hidden} relative ring-2 ring-zinc-100 dark:ring-slate-700`} rounded="full">
             <MediaImage src={profile.photoURL} alt="Avatar" size="thumbnail" />
           </Div>
         ) : (

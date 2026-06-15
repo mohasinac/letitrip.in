@@ -102,7 +102,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
             <Text variant="muted">No slides in this carousel yet.</Text>
           </Div>
         ) : (
-          <Div className={`${__O.hidden} rounded-xl border border-zinc-200 dark:border-slate-700`}>
+          <Div className={`${__O.hidden}`} rounded="xl" border="default">
             <Table className="w-full text-sm">
               <Thead className="bg-zinc-50 dark:bg-slate-800">
                 <Tr>

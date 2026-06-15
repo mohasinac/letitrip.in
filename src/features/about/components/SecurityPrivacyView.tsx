@@ -41,8 +41,8 @@ function renderSecurityCards(sections: SecurityCard[]) {
     <Section>
       <Grid className={`${THEME_CONSTANTS.spacing.gap.md} md:grid-cols-2`}>
         {sections.map(({ icon: Icon, title, text, color, iconColor }) => (
-          <Div key={title} className={`rounded-xl border ${__P.p5} ${color}`}>
-            <Div className={`w-10 h-10 rounded-lg bg-white/60 dark:bg-white/10 ${flex.center} mb-3`}>
+          <Div key={title} className={`border ${__P.p5} ${color}`} rounded="xl">
+            <Div className={`w-10 h-10 bg-white/60 dark:bg-white/10 ${flex.center} mb-3`} rounded="lg">
               <Icon className={`w-5 h-5 ${iconColor}`} />
             </Div>
             <Text className="mb-1" weight="semibold">{title}</Text>
@@ -70,7 +70,7 @@ function renderSecurityDiagram(diagramSteps: FlowStep[], t: T) {
 
 function renderSecurityCta(t: T) {
   return (
-    <Section className={`rounded-2xl ${__P.p8} text-center ${themed.bgSecondary} border ${themed.border}`}>
+    <Section className={`${__P.p8} text-center ${themed.bgSecondary} border ${themed.border}`} rounded="2xl">
       <Heading level={2} className="mb-3">{t("ctaTitle")}</Heading>
       <Text variant="secondary" className="mb-6 max-w-lg mx-auto">{t("ctaText")}</Text>
       <Div className={`${flex.center} gap-4 flex-wrap`}>
@@ -229,7 +229,7 @@ export async function SecurityPrivacyView() {
         </Div>
       </Section>
 
-      <Div className={`${page.container.md} py-10 md:py-12 lg:py-16 space-y-14`}>
+      <Div className={`${page.container.md} md:py-12 lg:py-16 space-y-14`} padding="y-2xl">
         {renderSecurityOverview(t)}
         {renderSecurityCards(SECTIONS)}
         {renderSecurityDiagram(DIAGRAM_STEPS, t)}

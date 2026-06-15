@@ -83,7 +83,7 @@ export async function HowOffersWorkView() {
         </Div>
       </Section>
 
-      <Div className={`${page.container.md} py-10 md:py-12 lg:py-16 space-y-14`}>
+      <Div className={`${page.container.md} md:py-12 lg:py-16 space-y-14`} padding="y-2xl">
         {/* Steps */}
         <Section>
           <Heading level={2} className="mb-8" align="center">
@@ -93,9 +93,9 @@ export async function HowOffersWorkView() {
             {STEPS.map(({ number, icon, title, text }) => (
               <Div
                 key={number}
-                className={`${flex.center} gap-4 p-5 rounded-xl border ${themed.border} ${themed.bgPrimary}`}
+                className={`${flex.center} gap-4 p-5 border ${themed.border} ${themed.bgPrimary}`} rounded="xl"
               >
-                <Div className={`flex-shrink-0 w-10 h-10 rounded-full ${CLS_STEP_NUMBER} ${flex.center} text-xl`}>
+                <Div className={`flex-shrink-0 w-10 h-10 ${CLS_STEP_NUMBER} ${flex.center} text-xl`} rounded="full">
                   {icon}
                 </Div>
                 <Div>
@@ -125,10 +125,10 @@ export async function HowOffersWorkView() {
           <Heading level={2} className="mb-6" align="center">
             {t("rulesTitle")}
           </Heading>
-          <Div className={`rounded-xl border ${__P.p6} ${themed.bgSecondary} ${themed.border} space-y-3`}>
+          <Div className={`border ${__P.p6} ${themed.bgSecondary} ${themed.border} space-y-3`} rounded="xl">
             {RULES.map((rule, i) => (
               <Div key={i} className={`${flex.center} gap-3`}>
-                <Div className={`flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 dark:bg-primary/15 ${flex.center} text-sm font-semibold text-primary`}>
+                <Div className={`flex-shrink-0 w-6 h-6 bg-primary/10 dark:bg-primary/15 ${flex.center} text-sm font-semibold text-primary`} rounded="full">
                   {i + 1}
                 </Div>
                 <Text variant="secondary" className="leading-relaxed" size="sm">
@@ -141,7 +141,7 @@ export async function HowOffersWorkView() {
 
         {/* CTA */}
         <Section
-          className={`rounded-2xl p-8 text-center ${themed.bgSecondary} border ${themed.border}`}
+          className={`text-center ${themed.bgSecondary} border ${themed.border}`} rounded="2xl" padding="xl"
         >
           <Heading level={2} className="mb-3">
             {t("ctaTitle")}
