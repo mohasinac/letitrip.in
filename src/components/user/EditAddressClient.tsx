@@ -2,8 +2,7 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { AddressForm, useAddress, useUpdateAddress, useToast, ROUTES, Div } from "@mohasinac/appkit/client";
-import { Heading, Text } from "@mohasinac/appkit";
-
+import { Heading, Stack, Text } from "@mohasinac/appkit";
 interface Props {
   addressId: string;
 }
@@ -26,11 +25,11 @@ export function EditAddressClient({ addressId }: Props) {
 
   if (isLoading) {
     return (
-      <Div className="max-w-lg space-y-4 animate-pulse">
+      <Stack className="max-w-lg animate-pulse" gap="md">
         {Array.from({ length: 6 }).map((_, i) => (
           <Div key={i} className="h-10 dark:bg-slate-700" surface="subtle" rounded="lg" />
         ))}
-      </Div>
+      </Stack>
     );
   }
 
@@ -41,7 +40,7 @@ export function EditAddressClient({ addressId }: Props) {
   }
 
   return (
-    <Div className="max-w-lg space-y-4">
+    <Stack className="max-w-lg" gap="md">
       <Heading level={1} size="xl" weight="bold" color="primary">Edit Address</Heading>
       <AddressForm
         initialData={address}
@@ -51,6 +50,6 @@ export function EditAddressClient({ addressId }: Props) {
         submitLabel="Update Address"
         defaultCountry="India"
       />
-    </Div>
+    </Stack>
   );
 }

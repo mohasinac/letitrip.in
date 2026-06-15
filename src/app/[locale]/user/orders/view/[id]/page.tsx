@@ -179,7 +179,7 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
     : "";
   const statusColor = STATUS_COLORS[order.orderStatus] ?? "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
   return (
-    <Div surface="card" padding="md" className="space-y-3">
+    <Stack surface="card" padding="md" gap="3">
       <Row justify="between" wrap gap="3" align="start">
         <Div>
           <Text className="tracking-wider" color="muted" size="xs" transform="uppercase">Order</Text>
@@ -200,7 +200,7 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
           )}
         </Div>
       )}
-    </Div>
+    </Stack>
   );
 }
 

@@ -101,7 +101,7 @@ export default function UserEventsPage() {
   const filterCount = status ? 1 : 0;
 
   return (
-    <Div className="w-full space-y-6">
+    <Stack className="w-full" gap="lg">
       <Div>
         <Heading level={1} className="text-[var(--appkit-color-text)]" size="2xl" weight="semibold">
           My Events
@@ -143,13 +143,13 @@ export default function UserEventsPage() {
       {loading ? (
         <Stack gap="md">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Div
+            <Stack
               key={i}
-              className="animate-pulse border border-[var(--appkit-color-border)] p-5 space-y-3" rounded="xl"
+              className="animate-pulse border border-[var(--appkit-color-border)] p-5" gap="3" rounded="xl"
             >
               <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
               <Div className="h-3 w-2/3 bg-[var(--appkit-color-border)]" rounded="default" />
-            </Div>
+            </Stack>
           ))}
         </Stack>
       ) : entries.length === 0 ? (
@@ -181,7 +181,7 @@ export default function UserEventsPage() {
                 className="border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-5" rounded="xl" shadow="sm"
               >
                 <Row justify="between" align="start" gap="3">
-                  <Div className="space-y-1 min-w-0">
+                  <Stack className="min-w-0" gap="xs">
                     {event ? (
                       <Link
                         href={String(ROUTES.PUBLIC.EVENT_DETAIL(entry.eventId))}
@@ -202,7 +202,7 @@ export default function UserEventsPage() {
                       )}
                       <Text variant="secondary" size="xs">{date}</Text>
                     </Row>
-                  </Div>
+                  </Stack>
                   <Badge variant={statusVariant} className="shrink-0 capitalize">
                     {entry.reviewStatus}
                   </Badge>
@@ -231,6 +231,6 @@ export default function UserEventsPage() {
           })}
         </Stack>
       )}
-    </Div>
+    </Stack>
   );
 }

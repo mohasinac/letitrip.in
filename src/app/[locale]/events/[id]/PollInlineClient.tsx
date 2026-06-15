@@ -1,6 +1,5 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit";
-
+import { Stack, normalizeError } from "@mohasinac/appkit";
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useSession, useToast, ROUTES, Div, Button, Label, Textarea, Text } from "@mohasinac/appkit/client";
@@ -38,7 +37,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
 
   if (requiresLogin && !user) {
     return (
-      <Div className="px-6 text-center space-y-3" padding="y-xl" rounded="xl" border="default">
+      <Stack className="px-6 text-center" gap="3" padding="y-xl" rounded="xl" border="default">
         <Text weight="semibold" color="primary">Login required to vote</Text>
         <Text size="sm" color="muted">
           Please log in to cast your vote in this poll.
@@ -49,18 +48,18 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
         >
           Log In to Vote
         </Link>
-      </Div>
+      </Stack>
     );
   }
 
   if (isSubmitted) {
     return (
-      <Div className="border border-success/20 bg-success-surface px-6 text-center space-y-2" padding="y-xl" rounded="xl">
+      <Stack className="border border-success/20 bg-success-surface px-6 text-center" gap="sm" padding="y-xl" rounded="xl">
         <Text className="text-success" size="lg" weight="semibold">Vote recorded!</Text>
         <Text className="text-success" size="sm">
           Thank you for participating. Results will be shown after the poll closes.
         </Text>
-      </Div>
+      </Stack>
     );
   }
 
@@ -112,11 +111,11 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
   };
 
   return (
-    <Div className="space-y-4">
+    <Stack gap="md">
       <Text size="sm" weight="medium" color="muted">
         {isMultiSelect ? "Select all that apply:" : "Choose one:"}
       </Text>
-      <Div className="space-y-2">
+      <Stack gap="sm">
         {pollConfig.options.map((opt) => (
           <Label
             key={opt.id}
@@ -146,7 +145,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
             <Text as="span" size="sm" color="primary">{opt.label}</Text>
           </Label>
         ))}
-      </Div>
+      </Stack>
       {pollConfig.allowComment && (
         <Textarea
           value={comment}
@@ -166,6 +165,6 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
       >
         {isLoading ? "Submitting…" : "Cast Vote"}
       </Button>
-    </Div>
+    </Stack>
   );
 }

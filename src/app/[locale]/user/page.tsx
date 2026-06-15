@@ -1,5 +1,5 @@
 "use client";
-import { Row, normalizeError } from "@mohasinac/appkit";
+import { Row, Stack, normalizeError } from "@mohasinac/appkit";
 import { useRef, useState } from "react";
 import {
   UserAccountHubView,
@@ -129,7 +129,7 @@ export default function Page() {
       labels={{ title: "My Account" }}
       renderProfile={() =>
         userLoading ? null : user ? (
-          <Div className="space-y-4">
+          <Stack gap="md">
             <Div className={`relative flex items-center gap-4 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden} ${__P.p5} shadow-sm`}>
               <Div
                 className="absolute top-0 left-0 right-0 h-[3px]"
@@ -202,7 +202,7 @@ export default function Page() {
               <StatCard label="Unread alerts" value={unreadCount ?? 0}              href={String(ROUTES.USER.NOTIFICATIONS)} />
               <StatCard label="Support"       value={"Open"}                         href={String(ROUTES.USER.SUPPORT)} />
             </Div>
-          </Div>
+          </Stack>
         ) : null
       }
       renderNav={() => (

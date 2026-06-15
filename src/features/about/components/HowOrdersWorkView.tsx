@@ -1,5 +1,5 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Section, Span, Row, FlowDiagram, Div, Grid, TextLink } from "@mohasinac/appkit/ui";
+import { Div, FlowDiagram, Grid, Heading, Row, Section, Span, Stack, Text, TextLink } from "@mohasinac/appkit/ui";
 import type { FlowStep } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 import { PackageSearch, MapPinned, FileText, XCircle } from "lucide-react";
@@ -23,7 +23,7 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
     <Section>
       <Heading level={2} className="mb-3" align="center">{t("lifecycleTitle")}</Heading>
       <Text variant="secondary" className="mb-8 max-w-xl mx-auto" align="center">{t("lifecycleSubtitle")}</Text>
-      <Div className="space-y-3">
+      <Stack gap="3">
         {statusSteps.map(({ label, desc, color, badge, icon }) => (
           <Div key={label} className={`flex items-start gap-4 ${__P.p4} rounded-xl border ${color}`}>
             <Div className="text-2xl flex-shrink-0 mt-0.5">{icon}</Div>
@@ -44,7 +44,7 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
             <Text variant="secondary" className="leading-relaxed" size="sm">{t("sCancelDesc")}</Text>
           </Div>
         </Div>
-      </Div>
+      </Stack>
     </Section>
   );
 }

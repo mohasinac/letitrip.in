@@ -121,7 +121,7 @@ export default function UserReviewsPage() {
   const filterCount = (status ? 1 : 0);
 
   return (
-    <Div className="w-full space-y-6">
+    <Stack className="w-full" gap="lg">
       <Div>
         <Heading level={1} size="2xl" weight="semibold" color="primary">
           My Reviews
@@ -185,14 +185,12 @@ export default function UserReviewsPage() {
             const statusColor = STATUS_COLORS[review.status] ?? "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
             const productHref = String(ROUTES.PUBLIC.PRODUCT_DETAIL(review.productId));
             return (
-              <Div
+              <Stack
                 key={review.id}
                 surface="card"
-                padding="md"
-                className="space-y-3"
-              >
+                padding="md" gap="3">
                 <Row justify="between" wrap align="start" gap="3">
-                  <Div className="space-y-1 min-w-0">
+                  <Stack className="min-w-0" gap="xs">
                     <Link href={productHref} className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 hover:underline line-clamp-1">
                       {review.productTitle}
                     </Link>
@@ -201,7 +199,7 @@ export default function UserReviewsPage() {
                         {review.storeName}
                       </Text>
                     )}
-                  </Div>
+                  </Stack>
                   <Row gap="sm" className="shrink-0">
                     {review.verified && (
                       <Text as="span" className={CLS_REPLY_BADGE}>
@@ -226,11 +224,11 @@ export default function UserReviewsPage() {
                     </Text>
                   )}
                 </Row>
-              </Div>
+              </Stack>
             );
           })}
         </Stack>
       )}
-    </Div>
+    </Stack>
   );
 }

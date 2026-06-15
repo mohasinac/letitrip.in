@@ -1,11 +1,12 @@
 import { Div } from "@mohasinac/appkit/client";
 import { ProfilePageClient, ProfileActivityPanel } from "@/components";
 
+import { Stack } from "@mohasinac/appkit";
 export default function Page() {
   return (
-    <Div className="space-y-6">
+    <Stack gap="lg">
       <ProfilePageClient />
       <ProfileActivityPanel />
-    </Div>
+    </Stack>
   );
 }

@@ -113,7 +113,7 @@ export default function UserDigitalCodesPage() {
   const loading = sessionLoading || isLoading;
 
   return (
-    <Div className="w-full space-y-6">
+    <Stack className="w-full" gap="lg">
       <Div>
         <Heading level={1} className="text-[var(--appkit-color-text)]" size="2xl" weight="semibold">
           My Digital Codes
@@ -140,13 +140,13 @@ export default function UserDigitalCodesPage() {
       {loading ? (
         <Stack gap="md">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Div
+            <Stack
               key={i}
-              className="animate-pulse border border-[var(--appkit-color-border)] p-5 space-y-3" rounded="xl"
+              className="animate-pulse border border-[var(--appkit-color-border)] p-5" gap="3" rounded="xl"
             >
               <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
               <Div className="h-8 w-full bg-[var(--appkit-color-border)]" rounded="default" />
-            </Div>
+            </Stack>
           ))}
         </Stack>
       ) : codeItems.length === 0 ? (
@@ -166,6 +166,6 @@ export default function UserDigitalCodesPage() {
           ))}
         </Stack>
       )}
-    </Div>
+    </Stack>
   );
 }

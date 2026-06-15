@@ -23,7 +23,7 @@ export function PromotionsProductsClient({ title, subtitle, products, adSlotId }
       subtitle={subtitle}
       hasProducts={products.length > 0}
       renderProducts={() => (
-        <Div className="space-y-6">
+        <Stack gap="lg">
           <Div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
             {products.map((product) => (
               <InteractiveProductCard
@@ -36,7 +36,7 @@ export function PromotionsProductsClient({ title, subtitle, products, adSlotId }
             ))}
           </Div>
           <AdSlot id={adSlotId} />
-        </Div>
+        </Stack>
       )}
     />
   );

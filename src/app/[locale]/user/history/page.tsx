@@ -140,7 +140,7 @@ export default function UserHistoryPage() {
   );
 
   return (
-    <Div className="w-full max-w-3xl space-y-6">
+    <Stack className="w-full max-w-3xl" gap="lg">
       <Row justify="between" align="end" wrap gap="3">
         <Div>
           <Heading level={1} className="text-[var(--appkit-color-text)]" size="2xl" weight="semibold">
@@ -202,6 +202,6 @@ export default function UserHistoryPage() {
         cancelText="Cancel"
         variant="warning"
       />
-    </Div>
+    </Stack>
   );
 }

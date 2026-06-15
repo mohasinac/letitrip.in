@@ -79,7 +79,7 @@ export default function NewSupportTicketPage() {
   }
 
   return (
-    <Div className="w-full max-w-3xl space-y-6">
+    <Stack className="w-full max-w-3xl" gap="lg">
       <Div>
         <Link
           href={String(ROUTES.USER.SUPPORT)}
@@ -135,7 +135,7 @@ export default function NewSupportTicketPage() {
           helperText={`${subject.trim().length}/200 — at least ${MIN_SUBJECT} characters`}
         />
 
-        <Div className="space-y-1">
+        <Stack gap="xs">
           <Text className="text-[var(--appkit-color-text-muted)]" size="xs" weight="medium">Describe the issue</Text>
           <Textarea
             value={description}
@@ -148,7 +148,7 @@ export default function NewSupportTicketPage() {
           <Text variant="secondary" size="xs" align="end">
             {description.trim().length}/5000 — at least {MIN_DESCRIPTION} characters
           </Text>
-        </Div>
+        </Stack>
 
         <Row gap="sm" className="pt-2">
           <Button
@@ -169,6 +169,6 @@ export default function NewSupportTicketPage() {
           </Button>
         </Row>
       </Stack>
-    </Div>
+    </Stack>
   );
 }

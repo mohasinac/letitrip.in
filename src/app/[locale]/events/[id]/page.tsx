@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { Div, Heading, RichText } from "@mohasinac/appkit/ui";
+import { Div, Heading, RichText, Stack } from "@mohasinac/appkit/ui";
 import { EVENT_LABELS } from "./_constants";
 import { eventIsActive } from "./_helpers";
 import { getEventCached } from "./_data";
@@ -36,7 +36,7 @@ export default async function Page({ params }: Props) {
     : [];
 
   return (
-    <Div className="space-y-6">
+    <Stack gap="lg">
       {description ? <RichText html={description} /> : null}
       {images.length > 0 && (
         <Div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -54,7 +54,7 @@ export default async function Page({ params }: Props) {
         </Div>
       )}
       {pollConfig?.options?.length ? (
-        <Div className="space-y-3">
+        <Stack gap="3">
           <Heading
             level={2} size="lg" weight="semibold" color="primary">
             {EVENT_LABELS.OVERVIEW_POLL_HEADING}
@@ -64,8 +64,8 @@ export default async function Page({ params }: Props) {
             pollConfig={pollConfig}
             isActive={isActive}
           />
-        </Div>
+        </Stack>
       ) : null}
-    </Div>
+    </Stack>
   );
 }

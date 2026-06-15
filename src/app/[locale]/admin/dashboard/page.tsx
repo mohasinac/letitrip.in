@@ -1,5 +1,5 @@
 "use client";
-import { Row, normalizeError } from "@mohasinac/appkit";
+import { Row, Stack, normalizeError } from "@mohasinac/appkit";
 import { AdminDashboardView, ROUTES, Span, Text, Div, Toggle, useToast } from "@mohasinac/appkit/client";
 import { ADMIN_CHECKOUT_BYPASS_FLAG_KEY } from "@mohasinac/appkit";
 import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "lucide-react";
@@ -197,7 +197,7 @@ export default function Page() {
     <AdminDashboardView
       labels={{ title: "Admin Dashboard" }}
       renderAlerts={() => (
-        <Div className="space-y-3">
+        <Stack gap="3">
           {loadError && (
             <Div className="border border-error/30 bg-error-surface px-4 text-sm text-error" padding="y-sm" rounded="xl">
               <Span weight="semibold">Couldn&apos;t load dashboard data — </Span>
@@ -210,10 +210,10 @@ export default function Page() {
             <StatCard label="Pending Reviews" value={stats?.pendingReviews ?? null} href={String(ROUTES.ADMIN.REVIEWS)} />
             <StatCard label="Active Coupons" value={stats?.activeCoupons ?? null} href={String(ROUTES.ADMIN.COUPONS)} />
           </Div>
-        </Div>
+        </Stack>
       )}
       renderQuickActions={() => (
-        <Div className="space-y-8">
+        <Stack gap="xl">
           <Div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {QUICK_ACTIONS.map(({ label, href, Icon }) => (
               <Link
@@ -279,7 +279,7 @@ export default function Page() {
               </Link>
             </Row>
           </Div>
-        </Div>
+        </Stack>
       )}
       renderRecentActivity={() =>
         recentOrders.length > 0 ? (

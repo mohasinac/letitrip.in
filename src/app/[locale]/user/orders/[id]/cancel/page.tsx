@@ -1,6 +1,5 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit";
-
+import { Stack, normalizeError } from "@mohasinac/appkit";
 import { useState, use } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
@@ -42,11 +41,11 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 
   if (isLoading) {
     return (
-      <Div className="w-full max-w-lg space-y-4 animate-pulse">
+      <Stack className="w-full max-w-lg animate-pulse" gap="md">
         <Div className="h-6 dark:bg-slate-700 w-1/2" surface="subtle" rounded="default" />
         <Div className="h-4 dark:bg-slate-700 w-3/4" surface="subtle" rounded="default" />
         <Div className="h-24 dark:bg-slate-700" surface="subtle" rounded="default" />
-      </Div>
+      </Stack>
     );
   }
 
@@ -59,7 +58,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const cancellable = ["pending", "processing"].includes(order.orderStatus);
 
   return (
-    <Div className="w-full max-w-lg space-y-6">
+    <Stack className="w-full max-w-lg" gap="lg">
       <>
         <Heading level={1} size="2xl" weight="bold" color="primary">Cancel Order</Heading>
         <Text className="mt-1" color="muted" size="sm">Order #{id}</Text>
@@ -82,7 +81,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
           onSubmit={handleSubmit}
           className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 space-y-5"
         >
-          <Div className="space-y-1">
+          <Stack gap="xs">
             <Label
               htmlFor="reason"
               className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
@@ -99,7 +98,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
               className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
             />
             <Text size="xs" color="faint" align="end">{reason.length}/500</Text>
-          </Div>
+          </Stack>
 
           <Div className="flex gap-3">
             <Button
@@ -119,6 +118,6 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
           </Div>
         </form>
       )}
-    </Div>
+    </Stack>
   );
 }

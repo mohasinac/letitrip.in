@@ -90,7 +90,7 @@ export default function UserSupportPage() {
   const filterCount = status ? 1 : 0;
 
   return (
-    <Div className="w-full space-y-6">
+    <Stack className="w-full" gap="lg">
       <Row justify="between" wrap align="center">
         <Div>
           <Heading level={1} className="text-[var(--appkit-color-text)]" size="2xl" weight="semibold">
@@ -186,6 +186,6 @@ export default function UserSupportPage() {
           ))}
         </Stack>
       )}
-    </Div>
+    </Stack>
   );
 }

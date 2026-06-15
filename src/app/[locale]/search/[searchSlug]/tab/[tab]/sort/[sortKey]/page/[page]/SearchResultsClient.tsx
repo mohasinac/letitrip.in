@@ -29,18 +29,18 @@ export function SearchResultsClient({ locale, query, total, products }: Props) {
       total={total}
       isLoading={false}
       renderSearchInput={() => (
-        <Div className="space-y-4">
+        <Stack gap="md">
           {/* audit-raw-form-input-ok: plain GET-form URL search bar */}
           <form method="get" action={`/${locale}/search`} className="flex items-center gap-2">
             <Input name="q" defaultValue={query} placeholder="Search products, categories, stores" />
             <Button type="submit">Search</Button>
           </form>
           <AdSlot id="search-inline" />
-        </Div>
+        </Stack>
       )}
       renderResults={() =>
         products.length > 0 ? (
-          <Div className="space-y-6">
+          <Stack gap="lg">
             <Div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
               {products.map((product) => (
                 <InteractiveProductCard
@@ -51,7 +51,7 @@ export function SearchResultsClient({ locale, query, total, products }: Props) {
               ))}
             </Div>
             <AdSlot id="listing-between-rows" />
-          </Div>
+          </Stack>
         ) : (
           <Div className={`rounded-xl border border-zinc-200 bg-white ${__P.p6} text-center dark:border-slate-700 dark:bg-slate-900`}>
             <Text size="base" weight="semibold" color="primary">

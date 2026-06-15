@@ -1,4 +1,4 @@
-import { Div, Heading, Row, Text } from "@mohasinac/appkit/ui";
+import { Div, Heading, Row, Stack, Text } from "@mohasinac/appkit/ui";
 import { MediaImage } from "@mohasinac/appkit/client";
 import { EVENT_LABELS } from "./_constants";
 import {
@@ -36,7 +36,7 @@ export function EventHeader({
   const endsAtFormatted = formatEventDate(endsAt);
 
   return (
-    <Div className="space-y-4">
+    <Stack gap="md">
       {coverImage ? (
         <Div className={`relative aspect-[16/7] w-full ${__O.hidden} rounded-xl bg-zinc-100 dark:bg-slate-800`}>
           <MediaImage
@@ -47,7 +47,7 @@ export function EventHeader({
         </Div>
       ) : null}
 
-      <Div className="space-y-3">
+      <Stack gap="3">
         <Row align="center" gap="sm" wrap>
           {eventType ? (
             <span
@@ -103,7 +103,7 @@ export function EventHeader({
           </Text>
           <ShareEventButton />
         </Row>
-      </Div>
-    </Div>
+      </Stack>
+    </Stack>
   );
 }

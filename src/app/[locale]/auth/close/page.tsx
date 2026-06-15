@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Button, Div, Row, Text } from "@mohasinac/appkit/ui";
+import { Button, Div, Row, Stack, Text } from "@mohasinac/appkit/ui";
 const __P = {
   p6: "p-6",
 } as const;
@@ -40,7 +40,7 @@ export default function Page() {
   if (error) {
     return (
       <Div className={`flex min-h-screen items-center justify-center ${__P.p6} text-center`}>
-        <Div className="space-y-3">
+        <Stack gap="3">
           <Text className="text-error" size="lg" weight="semibold">Sign-in failed</Text>
           <Text size="sm" color="muted">{decodeURIComponent(error)}</Text>
           <Button
@@ -51,7 +51,7 @@ export default function Page() {
           >
             Close window
           </Button>
-        </Div>
+        </Stack>
       </Div>
     );
   }

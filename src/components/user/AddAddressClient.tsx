@@ -2,8 +2,7 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { AddressForm, useCreateAddress, useToast, ROUTES, Div } from "@mohasinac/appkit/client";
-import { Heading } from "@mohasinac/appkit";
-
+import { Heading, Stack } from "@mohasinac/appkit";
 export function AddAddressClient() {
   const router = useRouter();
   const { showToast } = useToast();
@@ -19,7 +18,7 @@ export function AddAddressClient() {
   });
 
   return (
-    <Div className="max-w-lg space-y-4">
+    <Stack className="max-w-lg" gap="md">
       <Heading level={1} size="xl" weight="bold" color="primary">Add New Address</Heading>
       <AddressForm
         onSubmit={async (data) => { await create.mutateAsync(data); }}
@@ -28,6 +27,6 @@ export function AddAddressClient() {
         submitLabel="Save Address"
         defaultCountry="India"
       />
-    </Div>
+    </Stack>
   );
 }

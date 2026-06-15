@@ -1,5 +1,5 @@
 import { THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Section, Caption, Div, Table, Thead, Tbody, Tr, Th, Td } from "@mohasinac/appkit/ui";
+import { Caption, Div, Heading, Section, Stack, Table, Tbody, Td, Text, Th, Thead, Tr } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 
 const __P = {
@@ -58,14 +58,14 @@ function renderPayoutExample(payoutRows: PayoutRow[], t: T) {
       <Text variant="secondary" className="mb-6">{t("payoutExampleSubtitle")}</Text>
       <Div className={`rounded-xl border ${themed.border} ${themed.bgPrimary} ${__P.p5} max-w-sm`}>
         <Heading level={3} className="mb-4" size="base">{t("payoutExampleProduct")}</Heading>
-        <Div className="space-y-2">
+        <Stack gap="sm">
           {payoutRows.map((row, i) => (
             <Div key={i} className={`flex justify-between text-sm ${row.highlight ? "border-t border-neutral-200 dark:border-neutral-700 pt-2 mt-2 font-bold" : ""}`}>
               <Text className={row.highlight ? "font-bold" : "text-neutral-600 dark:text-neutral-400"}>{row.label}</Text>
               <Text className={row.highlight ? CLS_HIGHLIGHT : ""}>{row.example}</Text>
             </Div>
           ))}
-        </Div>
+        </Stack>
       </Div>
     </Section>
   );

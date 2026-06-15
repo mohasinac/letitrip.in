@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Div } from "@mohasinac/appkit/ui";
+import { Div, Stack } from "@mohasinac/appkit/ui";
 import { ROUTES } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants";
 import { EVENT_LABELS, EVENT_META, EVENT_TAB } from "./_constants";
@@ -92,7 +92,7 @@ export default async function Layout({ children, params }: Props) {
   }
 
   return (
-    <Div className="mx-auto max-w-3xl px-4 space-y-6" padding="y-2xl">
+    <Stack className="mx-auto max-w-3xl px-4" gap="lg" padding="y-2xl">
       <EventHeader
         title={event.title ?? ""}
         coverImage={coverImage}
@@ -104,6 +104,6 @@ export default async function Layout({ children, params }: Props) {
       />
       <EventTabBar tabs={tabs} />
       <Div className="pt-2">{children}</Div>
-    </Div>
+    </Stack>
   );
 }

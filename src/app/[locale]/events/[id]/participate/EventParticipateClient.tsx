@@ -1,5 +1,5 @@
 "use client";
-import { Row, normalizeError } from "@mohasinac/appkit";
+import { Row, Stack, normalizeError } from "@mohasinac/appkit";
 import { useState, useCallback } from "react";
 import { Link } from "@/i18n/navigation";
 import { Button, Div, Heading, Input, RichText, Select, Span, Text, Textarea } from "@mohasinac/appkit/ui";
@@ -70,7 +70,7 @@ interface Props {
 
 function renderLoginRequired() {
   return (
-    <Div className="px-6 text-center space-y-3" padding="y-2xl" rounded="xl" border="default">
+    <Stack className="px-6 text-center" gap="3" padding="y-2xl" rounded="xl" border="default">
       <Heading level={2} size="xl" weight="bold" color="primary">
         Login Required
       </Heading>
@@ -83,13 +83,13 @@ function renderLoginRequired() {
       >
         Log In
       </Link>
-    </Div>
+    </Stack>
   );
 }
 
 function renderEventInfoBlock(event: ParticipateEventInput) {
   return (
-    <Div className="space-y-1">
+    <Stack gap="xs">
       <Heading level={2} size="xl" weight="bold" color="primary">
         Participate in {event.title}
       </Heading>
@@ -106,7 +106,7 @@ function renderEventInfoBlock(event: ParticipateEventInput) {
           })}
         </Text>
       ) : null}
-    </Div>
+    </Stack>
   );
 }
 
@@ -126,11 +126,11 @@ function renderPollForm({
   setPollComment: (v: string) => void;
 }) {
   return (
-    <Div className="space-y-3">
+    <Stack gap="3">
       <Text weight="medium" color="primary">
         {isMultiSelect ? "Select all that apply:" : "Choose one:"}
       </Text>
-      <Div className="space-y-2">
+      <Stack gap="sm">
         {pollConfig.options.map((opt) => (
           <Label
             key={opt.id}
@@ -158,7 +158,7 @@ function renderPollForm({
             <Text color="muted">{opt.label}</Text>
           </Label>
         ))}
-      </Div>
+      </Stack>
       {pollConfig.allowComment ? (
         <Textarea
           value={pollComment}
@@ -167,7 +167,7 @@ function renderPollForm({
           rows={3}
         />
       ) : null}
-    </Div>
+    </Stack>
   );
 }
 
@@ -189,7 +189,7 @@ function renderSubmitAction({
   handleSubmit: () => void;
 }) {
   return (
-    <Div className="space-y-2">
+    <Stack gap="sm">
       {error ? (
         <Text className="text-error" size="sm">{error}</Text>
       ) : null}
@@ -207,7 +207,7 @@ function renderSubmitAction({
       >
         {isLoading ? "Submitting…" : "Submit Participation"}
       </Button>
-    </Div>
+    </Stack>
   );
 }
 
@@ -221,8 +221,8 @@ function renderSuccessState({
   hasLeaderboard: boolean;
 }) {
   return (
-    <Div className="space-y-4" padding="y-lg">
-      <Div className="border border-success/20 bg-success-surface px-5 py-5 space-y-2" rounded="2xl">
+    <Stack padding="y-lg" gap="md">
+      <Stack className="border border-success/20 bg-success-surface px-5 py-5" gap="sm" rounded="2xl">
         <Row align="center" gap="sm">
           <Span weight="semibold" className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] tracking-wide" transform="uppercase">
             Confirmed
@@ -234,7 +234,7 @@ function renderSuccessState({
         <Text className="text-success" size="sm">
           Your entry for <Span weight="bold">{eventTitle}</Span> has been recorded. We&apos;ll notify you of any updates here and over email.
         </Text>
-      </Div>
+      </Stack>
       {hasLeaderboard && (
         <Div className={CLS_PARTICIPATE_INFO_ROW}>
           <Div>
@@ -264,7 +264,7 @@ function renderSuccessState({
           Event home →
         </Link>
       </Div>
-    </Div>
+    </Stack>
   );
 }
 
@@ -326,7 +326,7 @@ function renderDynamicField(
   } else if (field.type === "multiselect" || field.type === "checkbox") {
     const selected = Array.isArray(value) ? (value as string[]) : [];
     control = (
-      <Div className="space-y-1">
+      <Stack gap="xs">
         {(field.options ?? []).map((opt) => (
           <Label key={opt} className="flex items-center gap-2 cursor-pointer">
             <input
@@ -344,11 +344,11 @@ function renderDynamicField(
             <Text size="sm" color="muted">{opt}</Text>
           </Label>
         ))}
-      </Div>
+      </Stack>
     );
   } else if (field.type === "radio") {
     control = (
-      <Div className="space-y-1">
+      <Stack gap="xs">
         {(field.options ?? []).map((opt) => (
           <Label key={opt} className="flex items-center gap-2 cursor-pointer">
             <input
@@ -361,7 +361,7 @@ function renderDynamicField(
             <Text size="sm" color="muted">{opt}</Text>
           </Label>
         ))}
-      </Div>
+      </Stack>
     );
   } else if (field.type === "rating") {
     const rating = Number(value ?? 0);
@@ -409,14 +409,14 @@ function renderDynamicField(
   }
 
   return (
-    <Div key={field.id} className="space-y-1">
+    <Stack key={field.id} gap="xs">
       <Label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
         {field.label}
         {field.required && <Text as="span" className="text-error ml-1">*</Text>}
       </Label>
       {control}
       {error && <Text className="text-error" size="xs">{error}</Text>}
-    </Div>
+    </Stack>
   );
 }
 
@@ -578,7 +578,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
 
   const dynamicForm =
     (isSurvey || isFeedback) && formFields.length > 0 ? (
-      <Div className="space-y-4">
+      <Stack gap="md">
         {formFields
           .slice()
           .sort((a, b) => a.order - b.order)
@@ -590,14 +590,14 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
               formErrors[field.id] ?? null,
             ),
           )}
-      </Div>
+      </Stack>
     ) : null;
 
   // After a successful submission allow re-submit if maxEntries > 1
   if (isSubmitted && !atEntryLimit) {
     return (
-      <Div className="space-y-4">
-        <Div className="border border-success/20 bg-success-surface px-5 py-5 space-y-2" rounded="2xl">
+      <Stack gap="md">
+        <Stack className="border border-success/20 bg-success-surface px-5 py-5" gap="sm" rounded="2xl">
           <Row align="center" gap="sm">
             <Span weight="semibold" className="inline-flex items-center rounded-full bg-success text-white px-2.5 py-0.5 text-[11px] tracking-wide" transform="uppercase">
               Confirmed
@@ -609,7 +609,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
           <Text className="text-success" size="sm">
             {submissionCount} of {maxEntries} {maxEntries === 1 ? "entry" : "entries"} recorded for <Span weight="bold">{event.title}</Span>.
           </Text>
-        </Div>
+        </Stack>
         <Button variant="primary" className="w-full" onClick={() => setIsSubmitted(false)}>
           Submit another entry
         </Button>
@@ -626,7 +626,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
             </Link>
           </Div>
         )}
-      </Div>
+      </Stack>
     );
   }
 

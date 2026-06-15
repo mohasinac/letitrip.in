@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { Link } from "@/i18n/navigation";
 import { useProfile, useUpdateProfile, useToast, useAuth, ROUTES, ImageUpload, useMediaUpload, Div, Button, Form, Label, Input, Textarea, MediaImage, Toggle } from "@mohasinac/appkit/client";
-import { Heading, Row, Text } from "@mohasinac/appkit";
+import { Heading, Row, Stack, Text } from "@mohasinac/appkit";
 const __O = {
   hidden: "overflow-hidden",
 } as const;
@@ -19,11 +19,11 @@ interface ProfilePageClientProps {
 
 function renderProfileLoadingSkeleton() {
   return (
-    <Div className="w-full max-w-2xl space-y-4 animate-pulse">
+    <Stack className="w-full max-w-2xl animate-pulse" gap="md">
       <Div className="h-20 w-20 dark:bg-slate-700" surface="subtle" rounded="full" />
       <Div className="h-6 dark:bg-slate-700 w-1/2" surface="subtle" rounded="default" />
       <Div className="h-4 dark:bg-slate-700 w-2/3" surface="subtle" rounded="default" />
-    </Div>
+    </Stack>
   );
 }
 
@@ -45,7 +45,7 @@ function renderProfileViewMode({
   handleEdit: () => void;
 }) {
   return (
-    <Div surface="card" padding="lg" className="space-y-5">
+    <Stack surface="card" padding="lg" gap="5">
       <Row align="center" gap="md">
         {profile.photoURL ? (
           <Div className={`h-20 w-20 rounded-full ${__O.hidden} relative ring-2 ring-zinc-100 dark:ring-slate-700`}>
@@ -95,7 +95,7 @@ function renderProfileViewMode({
           Manage Addresses
         </Link>
       </Div>
-    </Div>
+    </Stack>
   );
 }
 
@@ -129,7 +129,7 @@ function renderProfileEditForm({
       className="space-y-5"
     >
       <Heading level={2} size="base" weight="semibold" color="primary">Edit Profile</Heading>
-      <Div className="space-y-1">
+      <Stack gap="xs">
         <Label className={LABEL_CLS}>Display Name</Label>
         <Input
           type="text"
@@ -138,8 +138,8 @@ function renderProfileEditForm({
           placeholder="Your full name"
           className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
         />
-      </Div>
-      <Div className="space-y-1">
+      </Stack>
+      <Stack gap="xs">
         <Label className={LABEL_CLS}>Phone Number</Label>
         <Input
           type="tel"
@@ -148,7 +148,7 @@ function renderProfileEditForm({
           placeholder="+91 xxxxx xxxxx"
           className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
         />
-      </Div>
+      </Stack>
       <ImageUpload
         label="Profile Photo"
         currentImage={photoURL}
@@ -164,7 +164,7 @@ function renderProfileEditForm({
         }}
         onChange={(url) => setPhotoURL(url)}
       />
-      <Div className="space-y-1">
+      <Stack gap="xs">
         <Label className={LABEL_CLS}>
           Bio <Text as="span" weight="normal" color="faint">(max 500 chars)</Text>
         </Label>
@@ -177,7 +177,7 @@ function renderProfileEditForm({
           className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
         />
         <Text className="text-zinc-400 dark:text-zinc-400" size="xs" align="end">{bio.length}/500</Text>
-      </Div>
+      </Stack>
       <Row className="px-4" padding="y-sm" align="center" justify="between" rounded="lg" border="default">
         <>
           <Text size="sm" weight="medium" color="primary">Public profile</Text>
@@ -276,13 +276,13 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
   const profileIsPublic = (profile as any)?.publicProfile?.isPublic ?? true;
 
   return (
-    <Div className="w-full space-y-6">
+    <Stack className="w-full" gap="lg">
       {standalone && (
         <Heading level={1} size="2xl" weight="bold" color="primary">My Profile</Heading>
       )}
       {!editing
         ? renderProfileViewMode({ profile, resolvedName, namePlaceholder, avatarLetter, profileBio, profileIsPublic, handleEdit })
         : renderProfileEditForm({ displayName, setDisplayName, phoneNumber, setPhoneNumber, photoURL, setPhotoURL, bio, setBio, isPublic, setIsPublic, isPending: update.isPending, handleSave, onCancel: () => setEditing(false), upload, user })}
-    </Div>
+    </Stack>
   );
 }

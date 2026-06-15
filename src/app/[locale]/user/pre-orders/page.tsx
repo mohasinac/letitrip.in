@@ -97,7 +97,7 @@ export default function UserPreOrdersPage() {
   const loading = sessionLoading || isLoading;
 
   return (
-    <Div className="w-full space-y-6">
+    <Stack className="w-full" gap="lg">
       <Div>
         <Heading level={1} className="text-[var(--appkit-color-text)]" size="2xl" weight="semibold">
           My Pre-Orders
@@ -124,13 +124,13 @@ export default function UserPreOrdersPage() {
       {loading ? (
         <Stack gap="md">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Div
+            <Stack
               key={i}
-              className="animate-pulse border border-[var(--appkit-color-border)] p-5 space-y-3" rounded="xl"
+              className="animate-pulse border border-[var(--appkit-color-border)] p-5" gap="3" rounded="xl"
             >
               <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
               <Div className="h-3 w-1/2 bg-[var(--appkit-color-border)]" rounded="default" />
-            </Div>
+            </Stack>
           ))}
         </Stack>
       ) : orders.length === 0 ? (
@@ -163,7 +163,7 @@ export default function UserPreOrdersPage() {
                 className="border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-5" rounded="xl" shadow="sm"
               >
                 <Row justify="between" align="start" gap="3">
-                  <Div className="space-y-1 min-w-0">
+                  <Stack className="min-w-0" gap="xs">
                     <Link
                       href={String(ROUTES.USER.ORDER_DETAIL(order.id))}
                       className="text-sm font-semibold text-[var(--appkit-color-text)] hover:underline"
@@ -171,7 +171,7 @@ export default function UserPreOrdersPage() {
                       Order #{order.id}
                     </Link>
                     <Text variant="secondary" size="xs">{date}</Text>
-                  </Div>
+                  </Stack>
                   <Badge variant={statusVariant} className="shrink-0 capitalize">
                     {order.status.toLowerCase()}
                   </Badge>
@@ -194,6 +194,6 @@ export default function UserPreOrdersPage() {
           })}
         </Stack>
       )}
-    </Div>
+    </Stack>
   );
 }

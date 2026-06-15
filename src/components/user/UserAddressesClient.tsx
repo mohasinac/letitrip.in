@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
-import { Heading, Text } from "@mohasinac/appkit";
+import { Heading, Stack, Text } from "@mohasinac/appkit";
 import {
   AddressBook,
   useAddresses,
@@ -90,7 +90,7 @@ export function UserAddressesClient() {
   }
 
   return (
-    <Div className="space-y-6">
+    <Stack gap="lg">
       <Row align="center" justify="between">
         <Heading level={1} size="xl" weight="bold" color="primary">My Addresses</Heading>
         <Link
@@ -166,6 +166,6 @@ export function UserAddressesClient() {
         emptyLabel="You have no saved addresses yet."
         addLabel="Add New Address"
       />
-    </Div>
+    </Stack>
   );
 }

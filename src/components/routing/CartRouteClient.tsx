@@ -48,7 +48,7 @@ import {
 import type { CartItem } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 
-import { Row } from "@mohasinac/appkit";
+import { Row, Stack } from "@mohasinac/appkit";
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -737,7 +737,7 @@ export function CartRouteClient() {
           offers: offerBucket.length,
         };
         return (
-          <Div className="space-y-4">
+          <Stack gap="md">
             {/* ── Tab bar ── */}
             <Div className="flex gap-1 p-1 text-sm" surface="subtle" rounded="xl">
               {CART_TABS.map(({ key, label }) => {
@@ -831,7 +831,7 @@ export function CartRouteClient() {
                 onMoveToWishlist={handleMoveToWishlist}
               />
             )}
-          </Div>
+          </Stack>
         );
       }}
       renderSummary={() => (
@@ -872,7 +872,7 @@ export function CartRouteClient() {
         />
       )}
       renderCheckoutButton={() => (
-        <Div className="mt-3 space-y-2">
+        <Stack className="mt-3" gap="sm">
           {isEmpty || selectedCount === 0 || hasOnlyOos ? (
             <Button
               disabled
@@ -918,7 +918,7 @@ export function CartRouteClient() {
               Or checkout all {allItemIds.length} items
             </Button>
           )}
-        </Div>
+        </Stack>
       )}
       renderEmpty={() => (
         <Div surface="card" padding="lg">
@@ -967,7 +967,7 @@ function AuctionsTabItems({ auctionBucket, filteredAuctions, sellerGroupsAuction
     return <Text className={EMPTY_STATE_CLASS}>No auctions match &ldquo;{searchQuery.trim()}&rdquo;</Text>;
   }
   return (
-    <Div className="space-y-4">
+    <Stack gap="md">
       <Text className="text-warning bg-warning-surface border border-warning/20 rounded-lg px-3 py-2" size="xs">
         Won auction items must be paid before you can bid on new auctions or purchase new items.
       </Text>
@@ -976,7 +976,7 @@ function AuctionsTabItems({ auctionBucket, filteredAuctions, sellerGroupsAuction
           <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={false} locked lockedBadge="Won auction — payment required" />
         </Div>
       ))}
-    </Div>
+    </Stack>
   );
 }
 
@@ -1013,13 +1013,13 @@ function CartTabItems({ cartBucket, oosItems, filteredCartItems, filteredOos, se
             <Text className="tracking-wide text-[var(--appkit-color-error)]" size="xs" weight="semibold" transform="uppercase">Unavailable ({oosItems.length})</Text>
             <Link href={String(ROUTES.USER.WISHLIST)} className="text-xs text-primary-600 dark:text-primary-400 hover:underline underline-offset-2">View wishlist →</Link>
           </Row>
-          <Div className="space-y-3">
+          <Stack gap="3">
             {sellerGroupsOos.map((group) => (
               <Div key={group.sellerId} surface="card" padding="sm" className="opacity-60">
                 <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={true} />
               </Div>
             ))}
-          </Div>
+          </Stack>
         </Div>
       )}
     </>
@@ -1048,7 +1048,7 @@ function OffersTabItems({ offerBucket, filteredOffers, sellerGroupsOffers, norma
   }
   const noop = () => {};
   return (
-    <Div className="space-y-4">
+    <Stack gap="md">
       <Text className="text-warning bg-warning-surface border border-warning/20 rounded-lg px-3 py-2" size="xs">
         Accepted offers must be paid. These items cannot be removed from your cart.
       </Text>
@@ -1057,7 +1057,7 @@ function OffersTabItems({ offerBucket, filteredOffers, sellerGroupsOffers, norma
           <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={null} onToggleItem={noop} onQtyChange={noop} onRemove={noop} onMoveToWishlist={noop} isOutOfStock={false} locked lockedBadge="Offer accepted — payment required" />
         </Div>
       ))}
-    </Div>
+    </Stack>
   );
 }
 
@@ -1123,7 +1123,7 @@ function SellerGroupSection({
       </Row>
 
       {/* Items */}
-      <Div className="space-y-3">
+      <Stack gap="3">
         {group.items.map((item) => {
           const iid = item.itemId ?? item.id;
           const isChecked = !effectiveSelected || effectiveSelected.has(iid);
@@ -1168,7 +1168,7 @@ function SellerGroupSection({
             </Row>
           );
         })}
-      </Div>
+      </Stack>
     </Div>
   );
 }

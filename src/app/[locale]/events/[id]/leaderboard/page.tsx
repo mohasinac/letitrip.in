@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Div, Heading, Row, Text } from "@mohasinac/appkit/ui";
+import { Div, Heading, Row, Stack, Text } from "@mohasinac/appkit/ui";
 import { EVENT_LABELS, EVENT_META } from "../_constants";
 import { getEventCached, getLeaderboardCached } from "../_data";
 
@@ -38,7 +38,7 @@ export default async function Page({ params }: Props) {
   }
 
   return (
-    <Div className="space-y-2">
+    <Stack gap="sm">
       <Heading
         level={2} size="lg" weight="semibold" color="primary">
         {EVENT_LABELS.LEADERBOARD_HEADING}
@@ -56,6 +56,6 @@ export default async function Page({ params }: Props) {
           </Text>
         </Row>
       ))}
-    </Div>
+    </Stack>
   );
 }

@@ -69,7 +69,7 @@ export default function UserBidsPage() {
   const filterCount = status ? 1 : 0;
 
   return (
-    <Div className="w-full space-y-6">
+    <Stack className="w-full" gap="lg">
       <Div>
         <Heading level={1} className="text-[var(--appkit-color-text)]" size="2xl" weight="semibold">
           My Bids
@@ -111,13 +111,13 @@ export default function UserBidsPage() {
       {loading ? (
         <Stack gap="md">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Div
+            <Stack
               key={i}
-              className="animate-pulse border border-[var(--appkit-color-border)] p-5 space-y-3" rounded="xl"
+              className="animate-pulse border border-[var(--appkit-color-border)] p-5" gap="3" rounded="xl"
             >
               <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
               <Div className="h-3 w-1/2 bg-[var(--appkit-color-border)]" rounded="default" />
-            </Div>
+            </Stack>
           ))}
         </Stack>
       ) : (
@@ -137,6 +137,6 @@ export default function UserBidsPage() {
           }
         />
       )}
-    </Div>
+    </Stack>
   );
 }
