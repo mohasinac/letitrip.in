@@ -84,8 +84,8 @@ function NotifCard({
   onDelete: (id: string) => void;
 }) {
   return (
-    <Div
-      className={`border px-5 space-y-2 transition-colors ${ notif.isRead ? "border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)]" : "border-[var(--appkit-color-primary)] bg-[var(--appkit-color-surface)]" }`} rounded="xl" shadow="sm" padding="y-md"
+    <Stack
+      className={`border px-5 transition-colors ${ notif.isRead ? "border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)]" : "border-[var(--appkit-color-primary)] bg-[var(--appkit-color-surface)]" }`} gap="sm" rounded="xl" shadow="sm" padding="y-md"
     >
       <Row justify="between" wrap gap="3" align="start">
         <Div className="space-y-0.5 min-w-0">
@@ -133,7 +133,7 @@ function NotifCard({
           Delete
         </Button>
       </Row>
-    </Div>
+    </Stack>
   );
 }
 
@@ -285,10 +285,10 @@ export default function NotificationsPage() {
           return (
             <Stack gap="md">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Div key={i} className={`animate-pulse border border-[var(--appkit-color-border)] ${__P.p4} space-y-2`} rounded="xl">
+                <Stack key={i} className={`animate-pulse border border-[var(--appkit-color-border)] ${__P.p4}`} gap="sm" rounded="xl">
                   <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
                   <Div className="h-3 w-2/3 bg-[var(--appkit-color-border)]" rounded="default" />
-                </Div>
+                </Stack>
               ))}
             </Stack>
           );

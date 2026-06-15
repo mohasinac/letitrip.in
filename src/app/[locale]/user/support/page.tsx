@@ -140,10 +140,10 @@ export default function UserSupportPage() {
       {loading ? (
         <Stack gap="md">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Div key={i} className={`animate-pulse border border-[var(--appkit-color-border)] ${__P.p5} space-y-3`} rounded="xl">
+            <Stack key={i} className={`animate-pulse border border-[var(--appkit-color-border)] ${__P.p5}`} gap="3" rounded="xl">
               <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
               <Div className="h-3 w-1/2 bg-[var(--appkit-color-border)]" rounded="default" />
-            </Div>
+            </Stack>
           ))}
         </Stack>
       ) : tickets.length === 0 ? (

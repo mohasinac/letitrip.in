@@ -125,7 +125,7 @@ export async function HowOffersWorkView() {
           <Heading level={2} className="mb-6" align="center">
             {t("rulesTitle")}
           </Heading>
-          <Div className={`border ${__P.p6} ${themed.bgSecondary} ${themed.border} space-y-3`} rounded="xl">
+          <Stack className={`border ${__P.p6} ${themed.bgSecondary} ${themed.border}`} gap="3" rounded="xl">
             {RULES.map((rule, i) => (
               <Div key={i} className={`${flex.center} gap-3`}>
                 <Div className={`flex-shrink-0 w-6 h-6 bg-primary/10 dark:bg-primary/15 ${flex.center} text-sm font-semibold text-primary`} rounded="full">
@@ -136,7 +136,7 @@ export async function HowOffersWorkView() {
                 </Text>
               </Div>
             ))}
-          </Div>
+          </Stack>
         </Section>
 
         {/* CTA */}

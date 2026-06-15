@@ -39,7 +39,7 @@ export default function Page() {
 
   if (error) {
     return (
-      <Div className={`flex min-h-screen items-center justify-center ${__P.p6} text-center`}>
+      <Row className={`min-h-screen ${__P.p6} text-center`} align="center" justify="center">
         <Stack gap="3">
           <Text className="text-error" size="lg" weight="semibold">Sign-in failed</Text>
           <Text size="sm" color="muted">{decodeURIComponent(error)}</Text>
@@ -52,7 +52,7 @@ export default function Page() {
             Close window
           </Button>
         </Stack>
-      </Div>
+      </Row>
     );
   }
 

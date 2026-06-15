@@ -25,7 +25,7 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
       <Text variant="secondary" className="mb-8 max-w-xl mx-auto" align="center">{t("lifecycleSubtitle")}</Text>
       <Stack gap="3">
         {statusSteps.map(({ label, desc, color, badge, icon }) => (
-          <Div key={label} className={`flex items-start gap-4 ${__P.p4} border ${color}`} rounded="xl">
+          <Row key={label} className={`${__P.p4} border ${color}`} align="start" gap="md" rounded="xl">
             <Div className="text-2xl flex-shrink-0 mt-0.5">{icon}</Div>
             <Div className="flex-1">
               <Row gap="sm" className="mb-1">
@@ -33,9 +33,9 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
               </Row>
               <Text variant="secondary" className="leading-relaxed" size="sm">{desc}</Text>
             </Div>
-          </Div>
+          </Row>
         ))}
-        <Div className={`flex items-start gap-4 ${__P.p4} border bg-error-surface border-error/20`} rounded="xl">
+        <Row className={`${__P.p4} border bg-error-surface border-error/20`} align="start" gap="md" rounded="xl">
           <Div className="text-2xl flex-shrink-0 mt-0.5">❌</Div>
           <Div className="flex-1">
             <Row gap="sm" className="mb-1">
@@ -43,7 +43,7 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
             </Row>
             <Text variant="secondary" className="leading-relaxed" size="sm">{t("sCancelDesc")}</Text>
           </Div>
-        </Div>
+        </Row>
       </Stack>
     </Section>
   );

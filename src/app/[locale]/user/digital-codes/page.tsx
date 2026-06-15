@@ -59,7 +59,7 @@ function paise(amount: number) {
 
 function CodeRevealRow({ item, orderId }: { item: OrderItem; orderId: string }) {
   return (
-    <Div className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p4} space-y-3`} rounded="lg">
+    <Stack className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p4}`} gap="3" rounded="lg">
       <Row justify="between" align="start">
         <Div className="space-y-0.5">
           <Link
@@ -78,7 +78,7 @@ function CodeRevealRow({ item, orderId }: { item: OrderItem; orderId: string }) 
         </Link>
       </Row>
       <CodeRevealPanel orderId={orderId} fetchCode={fetchOrderCode} />
-    </Div>
+    </Stack>
   );
 }
 

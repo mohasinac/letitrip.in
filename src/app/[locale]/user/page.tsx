@@ -130,7 +130,7 @@ export default function Page() {
       renderProfile={() =>
         userLoading ? null : user ? (
           <Stack gap="md">
-            <Div className={`relative flex items-center gap-4 border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden} ${__P.p5}`} rounded="xl" shadow="sm">
+            <Row className={`relative border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden} ${__P.p5}`} align="center" gap="md" rounded="xl" shadow="sm">
               <Div
                 className="absolute top-0 left-0 right-0 h-[3px]"
                 // audit-inline-style-ok: runtime brand gradient
@@ -193,7 +193,7 @@ export default function Page() {
                   View / edit profile →
                 </Link>
               </Div>
-            </Div>
+            </Row>
 
             <Div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
               <StatCard label="Orders"        value={totalOrders}                   href={String(ROUTES.USER.ORDERS)} />

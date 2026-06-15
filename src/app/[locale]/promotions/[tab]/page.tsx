@@ -2,16 +2,7 @@ import { Suspense } from "react";
 import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 import { redirect } from "@/i18n/navigation";
-import {
-  AdSlot,
-  CouponsIndexListing,
-  Div,
-  getPromotions,
-  Heading,
-  PromotionsHero,
-  productFeaturesRepository,
-  Text,
-} from "@mohasinac/appkit";
+import { AdSlot, CouponsIndexListing, Div, Heading, PromotionsHero, Row, Text, getPromotions, productFeaturesRepository } from "@mohasinac/appkit";
 import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
 import { PromotionsProductsClient } from "./PromotionsProductsClient";
 
@@ -97,7 +88,7 @@ export default async function Page({
 
       {/* Tab navigation */}
       <Div surface="default" className="border-b border-zinc-200 dark:border-slate-700">
-        <Div className={`mx-auto flex max-w-5xl items-center gap-1 px-4 sm:px-6 lg:px-8 ${__O.xAuto} scrollbar-hide`} padding="y-xs">
+        <Row className={`mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 ${__O.xAuto} scrollbar-hide`} align="center" gap="xs" padding="y-xs">
           {VALID_TABS.map((tabValue) => {
             const isActive = tabValue === activeTab;
             return (
@@ -115,7 +106,7 @@ export default async function Page({
               </Link>
             );
           })}
-        </Div>
+        </Row>
       </Div>
 
       {/* Tab content */}

@@ -1,5 +1,5 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Section, Stack, FlowDiagram, Div, Grid, TextLink } from "@mohasinac/appkit/ui";
+import { Div, FlowDiagram, Grid, Heading, Row, Section, Stack, Text, TextLink } from "@mohasinac/appkit/ui";
 import type { FlowStep } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 import { Smartphone, Banknote } from "lucide-react";
@@ -23,13 +23,13 @@ function renderCheckoutSteps(steps: CheckoutStep[], t: T) {
       <Heading level={2} className="mb-8" align="center">{t("stepsTitle")}</Heading>
       <Stack gap="md">
         {steps.map(({ number, icon, title, text }) => (
-          <Div key={number} className={`flex items-start ${THEME_CONSTANTS.spacing.gap.md} ${__P.p5} border ${themed.border} ${themed.bgPrimary}`} rounded="xl">
+          <Row key={number} className={`${THEME_CONSTANTS.spacing.gap.md} ${__P.p5} border ${themed.border} ${themed.bgPrimary}`} align="start" rounded="xl">
             <Div className={`flex-shrink-0 w-10 h-10 bg-primary/10 dark:bg-primary/15 ${flex.center} text-xl`} rounded="full">{icon}</Div>
             <Div>
               <Text className="mb-0.5" weight="semibold">{number}. {title}</Text>
               <Text variant="secondary" className="leading-relaxed" size="sm">{text}</Text>
             </Div>
-          </Div>
+          </Row>
         ))}
       </Stack>
     </Section>

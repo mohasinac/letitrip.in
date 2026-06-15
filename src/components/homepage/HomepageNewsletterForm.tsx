@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { z } from "zod";
 import { THEME_CONSTANTS, API_ROUTES } from "@/constants";
-import { Text, Div, Button, Form, FieldInput } from "@mohasinac/appkit/ui";
+import { Button, Div, FieldInput, Form, Stack, Text } from "@mohasinac/appkit/ui";
 import { FormShellContext, useFormShellState, useToast } from "@mohasinac/appkit/client";
 
 const newsletterSchema = z.object({
@@ -56,7 +56,7 @@ export function HomepageNewsletterForm() {
   return (
     <FormShellContext.Provider value={shellCtx}>
       <Form onSubmit={onSubmit} className={`mx-auto flex w-full max-w-xl flex-col ${THEME_CONSTANTS.spacing.gap.xs}`}>
-        <Div className={`flex w-full flex-col ${THEME_CONSTANTS.spacing.gap.xs} sm:flex-row`} data-section="homepagenewsletterform-div-9">
+        <Stack className={`w-full ${THEME_CONSTANTS.spacing.gap.xs} sm:flex-row`} data-section="homepagenewsletterform-div-9">
           <FieldInput
             name="email"
             type="email"
@@ -71,7 +71,7 @@ export function HomepageNewsletterForm() {
           <Button type="submit" disabled={pending} className="w-full sm:w-auto">
             {pending ? "Subscribing..." : "Subscribe"}
           </Button>
-        </Div>
+        </Stack>
         {success ? (
           <Text size="sm" className={`${THEME_CONSTANTS.themed.textSuccess}`} role="status">
             {success}

@@ -104,10 +104,10 @@ export default function TicketDetailPage({ params }: PageProps) {
   if (isLoading) {
     return (
       <Stack className="w-full max-w-3xl" gap="md">
-        <Div className={`animate-pulse border border-[var(--appkit-color-border)] ${__P.p5} space-y-3`} rounded="xl">
+        <Stack className={`animate-pulse border border-[var(--appkit-color-border)] ${__P.p5}`} gap="3" rounded="xl">
           <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
           <Div className="h-3 w-2/3 bg-[var(--appkit-color-border)]" rounded="default" />
-        </Div>
+        </Stack>
       </Stack>
     );
   }
