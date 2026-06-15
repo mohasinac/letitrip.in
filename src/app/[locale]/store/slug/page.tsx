@@ -194,7 +194,7 @@ function renderSlugInput({ newSlug, checkState, checkMessage, checkColor, handle
         </Text>
       )}
       {checkState === "checking" && !checkMessage && (
-        <Text className="mt-1 text-zinc-400 dark:text-zinc-400" size="xs">Checking availability…</Text>
+        <Text className="mt-1" color="faint" size="xs">Checking availability…</Text>
       )}
       {checkState === "available" && !checkMessage && (
         <Text className="mt-1 text-success" size="xs">This slug is available.</Text>

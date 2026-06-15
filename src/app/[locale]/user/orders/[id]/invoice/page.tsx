@@ -61,7 +61,7 @@ function renderInvoiceHeader(order: OrderData, orderDate: string) {
 function renderInvoiceAddress(a: NonNullable<OrderData["address"]>) {
   return (
     <Stack gap="xs" className="mb-6">
-      <Text className="tracking-wider text-zinc-400 dark:text-zinc-400 print:text-gray-500" size="xs" weight="semibold" transform="uppercase">
+      <Text className="tracking-wider print:text-gray-500" color="faint" size="xs" weight="semibold" transform="uppercase">
         Delivered to
       </Text>
       <Text className="print:text-black" color="primary" size="sm">{a.line1}</Text>
@@ -103,7 +103,7 @@ function renderInvoiceItemsTable(order: OrderData) {
               <Td className="py-2.5 text-zinc-800 dark:text-zinc-200 print:text-black">
                 {item.title}
                 {item.attributes && Object.keys(item.attributes).length > 0 && (
-                  <Span size="xs" className="ml-1.5 text-zinc-400 dark:text-zinc-400 print:text-gray-500">
+                  <Span size="xs" className="ml-1.5 print:text-gray-500" color="faint">
                     ({Object.entries(item.attributes).map(([k, v]) => `${k}: ${v}`).join(", ")})
                   </Span>
                 )}

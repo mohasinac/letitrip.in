@@ -62,7 +62,7 @@ function renderProfileViewMode({
         )}
         <Div className="space-y-0.5 min-w-0">
           <Text className="truncate" color="primary" size="lg" weight="semibold">
-            {resolvedName || <Text as="span" className="text-zinc-400 dark:text-zinc-400 italic">{namePlaceholder}</Text>}
+            {resolvedName || <Text as="span" className="italic" color="faint">{namePlaceholder}</Text>}
           </Text>
           <Text className="truncate" color="muted" size="sm">{profile.email}</Text>
           {profile.phoneNumber && (
@@ -73,7 +73,7 @@ function renderProfileViewMode({
       {profileBio && (
         <Text className="leading-relaxed" color="muted" size="sm">{profileBio}</Text>
       )}
-      <Text className="text-zinc-400 dark:text-zinc-400" size="xs">
+      <Text size="xs" color="faint">
         Profile visibility:{" "}
         <Text as="span" className={profileIsPublic ? "text-success font-medium" : "text-zinc-500 dark:text-zinc-400 font-medium"}>
           {profileIsPublic ? "Public" : "Private"}
@@ -176,7 +176,7 @@ function renderProfileEditForm({
           placeholder="Tell buyers a little about yourself…"
           className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
         />
-        <Text className="text-zinc-400 dark:text-zinc-400" size="xs" align="end">{bio.length}/500</Text>
+        <Text size="xs" align="end" color="faint">{bio.length}/500</Text>
       </Stack>
       <Row className="px-4" padding="y-sm" align="center" justify="between" rounded="lg" border="default">
         <>

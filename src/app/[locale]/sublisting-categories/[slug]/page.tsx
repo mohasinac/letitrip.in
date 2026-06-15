@@ -104,7 +104,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
           <Stack className="justify-center border-dashed py-20 text-center" align="center" rounded="2xl" border="default">
             <Text as="span" className="mb-3" size="4xl">📦</Text>
             <Text size="base" weight="semibold" color="muted">No listings yet</Text>
-            <Text className="mt-1 text-zinc-400 dark:text-zinc-400" size="sm">
+            <Text className="mt-1" color="faint" size="sm">
               Check back soon — sellers are still adding items.
             </Text>
             <Link
