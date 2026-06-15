@@ -55,7 +55,7 @@ export default function Page() {
             <Heading level={1}>Analytics Cards</Heading>
             <Button variant="primary">New custom card</Button>
           </Row>
-          <Text className="text-zinc-600 dark:text-slate-400">
+          <Text color="muted">
             Built-in cards ship by default. Toggle visibility or add custom cards.
           </Text>
           {loading ? (

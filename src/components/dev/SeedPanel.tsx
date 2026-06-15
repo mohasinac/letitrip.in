@@ -1593,10 +1593,10 @@ function ProgressBar({ value, total }: { value: number; total: number }) {
   return (
     <Div className="w-full">
       <Row justify="between" className="mb-1">
-        <Text className="text-zinc-600 dark:text-slate-400" size="xs">
+        <Text size="xs" color="muted">
           {value} / {total} collections
         </Text>
-        <Text className="font-mono text-zinc-600 dark:text-slate-400" size="xs">{pct}%</Text>
+        <Text className="font-mono" color="muted" size="xs">{pct}%</Text>
       </Row>
       <Div className="w-full h-2 bg-zinc-200 dark:bg-slate-700 overflow-hidden" rounded="full">
         <Div
@@ -1857,7 +1857,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
   return (
     <Div surface="default" className="border-t border-zinc-200 dark:border-slate-700 px-5 py-4">
       <Stack gap="md">
-        <Text className="text-zinc-600 dark:text-slate-300 leading-relaxed m-0" size="sm">{meta.description}</Text>
+        <Text className="leading-relaxed m-0" color="muted" size="sm">{meta.description}</Text>
 
         <Row wrap gap="sm">
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800/40 text-xs text-indigo-700 dark:text-indigo-300 font-mono">🔑 {meta.slugPattern}</span>
@@ -1903,7 +1903,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
           <Text className="text-emerald-700 dark:text-emerald-400 tracking-wider mb-2 m-0" size="xs" weight="bold" transform="uppercase">✓ What&apos;s Seeded</Text>
           <Stack gap="none" className="gap-1.5">
             {meta.seededItems.map((item, i) => (
-              <Text key={i} className="text-zinc-700 dark:text-slate-300 leading-snug pl-3 border-l-2 border-emerald-400 dark:border-emerald-700 m-0" size="sm">{item}</Text>
+              <Text key={i} className="leading-snug pl-3 border-l-2 border-emerald-400 dark:border-emerald-700 m-0" color="muted" size="sm">{item}</Text>
             ))}
           </Stack>
         </Div>
@@ -1913,7 +1913,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
             <Text className="text-amber-700 dark:text-amber-400 tracking-wider mb-2 m-0" size="xs" weight="bold" transform="uppercase">⏳ Pending / Needed</Text>
             <Stack gap="none" className="gap-1.5">
               {meta.pendingItems.map((item, i) => (
-                <Text key={i} className="text-zinc-600 dark:text-slate-400 leading-snug pl-3 border-l-2 border-amber-400 dark:border-amber-700 m-0" size="sm">{item}</Text>
+                <Text key={i} className="leading-snug pl-3 border-l-2 border-amber-400 dark:border-amber-700 m-0" color="muted" size="sm">{item}</Text>
               ))}
             </Stack>
           </Div>
@@ -2505,7 +2505,7 @@ function renderSeedPanelHero() {
     <Stack className="text-center pt-2" align="center" gap="3">
       <span className="text-5xl leading-none">🎮</span>
       <Heading level={1} className="font-extrabold text-amber-600 dark:text-amber-400 m-0" size="3xl">LetItRip Demo Seed</Heading>
-      <Text className="text-zinc-600 dark:text-slate-300 max-w-xl m-0" size="base">Admin seed tool — expand each resource card to see what&apos;s seeded, pending counts, live DB state, and the UI path to verify.</Text>
+      <Text className="max-w-xl m-0" color="muted" size="base">Admin seed tool — expand each resource card to see what&apos;s seeded, pending counts, live DB state, and the UI path to verify.</Text>
     </Stack>
   );
 }

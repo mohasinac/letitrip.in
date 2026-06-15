@@ -43,7 +43,7 @@ export default function Page() {
               New role
             </Button>
           </Row>
-          <Text className="text-zinc-600 dark:text-slate-400">
+          <Text color="muted">
             Custom roles layer on top of the built-in user/seller/moderator/employee/admin
             roles. Users gain permissions via custom-role membership or per-user overrides.
           </Text>

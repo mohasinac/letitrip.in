@@ -44,7 +44,7 @@ export default function Page() {
       <Container size="2xl">
         <Stack gap="lg" className="py-6">
           <Heading level={1}>Admin Notifications</Heading>
-          <Text className="text-zinc-600 dark:text-slate-400">
+          <Text color="muted">
             System, security, moderation, payouts, fraud, and growth alerts surfaced for the admin team.
           </Text>
           {loading ? (

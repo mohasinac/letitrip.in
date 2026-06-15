@@ -41,7 +41,7 @@ export default function Page() {
               Post a request
             </Button>
           </Row>
-          <Text className="text-zinc-600 dark:text-slate-400">
+          <Text color="muted">
             Looking for something specific? Post a request and sellers will reach out.
           </Text>
           {loading ? (

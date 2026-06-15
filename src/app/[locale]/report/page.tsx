@@ -85,7 +85,7 @@ export default function Page() {
       <Container size="md">
         <Stack gap="lg" className="py-6">
           <Heading level={1}>Report a problem</Heading>
-          <Text className="text-zinc-600 dark:text-slate-400">
+          <Text color="muted">
             Reports go to the LetItRip trust & safety team. Frivolous reports may impact your account.
           </Text>
           <Stack gap="md">

@@ -53,7 +53,7 @@ export default function Page() {
       <Container size="md">
         <Stack gap="lg" className="py-6">
           <Heading level={1}>Post an Item Request</Heading>
-          <Text className="text-zinc-600 dark:text-slate-400">
+          <Text color="muted">
             Tell sellers what you're hunting. Requests are approved before going live.
           </Text>
           <Stack gap="md">

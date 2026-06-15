@@ -44,7 +44,7 @@ export default function Page() {
       <Container size="2xl">
         <Stack gap="lg" className="py-6">
           <Heading level={1}>Item Requests · Approval Queue</Heading>
-          <Text className="text-zinc-600 dark:text-slate-400">
+          <Text color="muted">
             Buyer requests awaiting approval before going live on the community board.
           </Text>
           {loading ? (

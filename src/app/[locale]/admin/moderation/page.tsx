@@ -65,7 +65,7 @@ export default function Page() {
       <Container size="2xl">
         <Stack gap="lg" className="py-6">
           <Heading level={1}>Moderation Queue</Heading>
-          <Text className="text-zinc-600 dark:text-slate-400">
+          <Text color="muted">
             Pending media awaiting review. Approving releases the asset; rejecting blocks it.
           </Text>
           {loading ? (
