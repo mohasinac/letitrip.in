@@ -140,9 +140,9 @@ export default function UserDigitalCodesPage() {
       {loading ? (
         <Stack gap="md">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Stack
+            <Stack padding="5" 
               key={i}
-              className="animate-pulse border border-[var(--appkit-color-border)] p-5" gap="3" rounded="xl"
+              className="animate-pulse border border-[var(--appkit-color-border)]" gap="3" rounded="xl"
             >
               <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
               <Div className="h-8 w-full bg-[var(--appkit-color-border)]" rounded="default" />

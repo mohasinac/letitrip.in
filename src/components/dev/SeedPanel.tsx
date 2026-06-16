@@ -2617,7 +2617,7 @@ function renderSeedPanelPagination({ page, setPage, totalPages, PAGE_SIZE, filte
 
 function renderSeedScaleSummary() {
   return (
-    <Div className="p-5 dark:bg-white/[0.03] dark:border-white/10" surface="muted" rounded="2xl" border="default">
+    <Div padding="5" className="dark:bg-white/[0.03] dark:border-white/10" surface="muted" rounded="2xl" border="default">
       <Heading level={3} className="m-0 mb-4" color="warning" size="base" weight="bold">📊 Target Seed Scale</Heading>
       <Grid cols="halves" gap="none" className="gap-x-10">
         {[

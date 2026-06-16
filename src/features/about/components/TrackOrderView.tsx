@@ -94,8 +94,8 @@ export async function TrackOrderView() {
           {/* eslint-disable-next-line lir/no-hardcoded-grid-cols -- responsive 1→2→4 breakpoint; FLUID_GRID tokens not yet available */}
           <Grid className="grid-cols-1 sm:grid-cols-2 xl:grid-cols-4" gap="lg">
             {STEPS.map(({ icon: Icon, title, text, color, bg }, index) => (
-              <Card
-                className={`${themed.bgSecondary} rounded-xl border ${themed.border} p-6 relative`}
+              <Card padding="lg" 
+                className={`${themed.bgSecondary} rounded-xl border ${themed.border} relative`}
               >
                 <Caption className="absolute top-4 right-4" weight="bold">
                   {String(index + 1).padStart(2, "0")}

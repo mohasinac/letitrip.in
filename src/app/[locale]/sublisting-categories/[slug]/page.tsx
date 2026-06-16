@@ -157,7 +157,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
                       fallback="📦"
                     />
                   </Div>
-                  <Stack className="p-2.5" gap="xs">
+                  <Stack padding="xs" className=".5" gap="xs">
                     {(isAuction || isPreOrder || condition) && (
                       <Row wrap gap="xs">
                         {isAuction && (

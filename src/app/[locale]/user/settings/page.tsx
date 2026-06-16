@@ -34,9 +34,9 @@ const TAB_LABELS: Record<Tab, string> = {
 
 function SectionCard({ children }: { children: React.ReactNode }) {
   return (
-    <Stack
+    <Stack padding="5" 
       gap="md"
-      className="relative border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden p-5" rounded="xl" shadow="sm"
+      className="relative border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden" rounded="xl" shadow="sm"
     >
       <Div
         className="absolute top-0 left-0 right-0 h-[3px]"

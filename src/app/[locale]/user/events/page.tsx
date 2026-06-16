@@ -139,9 +139,9 @@ export default function UserEventsPage() {
       {loading ? (
         <Stack gap="md">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Stack
+            <Stack padding="5" 
               key={i}
-              className="animate-pulse border border-[var(--appkit-color-border)] p-5" gap="3" rounded="xl"
+              className="animate-pulse border border-[var(--appkit-color-border)]" gap="3" rounded="xl"
             >
               <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
               <Div className="h-3 w-2/3 bg-[var(--appkit-color-border)]" rounded="default" />
@@ -172,9 +172,9 @@ export default function UserEventsPage() {
             const statusVariant = REVIEW_STATUS_VARIANT[entry.reviewStatus] ?? "pending";
             const eventType = event ? EVENT_TYPE_LABELS[event.type] ?? event.type : "";
             return (
-              <Div
+              <Div padding="5" 
                 key={entry.id}
-                className="border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-5" rounded="xl" shadow="sm"
+                className="border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)]" rounded="xl" shadow="sm"
               >
                 <Row justify="between" align="start" gap="3">
                   <Stack className="min-w-0" gap="xs">
