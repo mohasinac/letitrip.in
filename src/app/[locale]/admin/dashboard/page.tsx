@@ -1,6 +1,6 @@
 "use client";
 import { Row, Stack, normalizeError } from "@mohasinac/appkit";
-import { AdminDashboardView, ROUTES, Span, Text, Div, Toggle, useToast } from "@mohasinac/appkit/client";
+import { AdminDashboardView, ROUTES, Span, Text, Div, Grid, Toggle, useToast } from "@mohasinac/appkit/client";
 import { ADMIN_CHECKOUT_BYPASS_FLAG_KEY } from "@mohasinac/appkit";
 import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -47,8 +47,8 @@ function ToggleRow({
   return (
     <Row className="border-b border-[var(--appkit-color-border-subtle)] last:border-0" padding="y-sm" align="center" justify="between" gap="md">
       <Div className="flex-1 min-w-0">
-        <Div className="text-sm font-medium text-[var(--appkit-color-text)]">{label}</Div>
-        <Div className="text-xs text-[var(--appkit-color-text-muted)] mt-0.5">{description}</Div>
+        <Text size="sm" weight="medium">{label}</Text>
+        <Text size="xs" color="muted" className="mt-0.5">{description}</Text>
       </Div>
       <Toggle checked={enabled} onChange={onChange} size="md" />
     </Row>
@@ -199,22 +199,24 @@ export default function Page() {
       renderAlerts={() => (
         <Stack gap="3">
           {loadError && (
-            <Div className="border border-error/30 px-4 text-sm text-error" surface="danger-surface" padding="y-sm" rounded="xl">
-              <Span weight="semibold">Couldn&apos;t load dashboard data — </Span>
-              <Span>{loadError}. Refresh to retry; if it persists, your admin session may have expired.</Span>
+            <Div className="border border-error/30 text-error" surface="danger-surface" padding="md" rounded="xl">
+              <Text size="sm">
+                <Span weight="semibold">Couldn&apos;t load dashboard data — </Span>
+                <Span>{loadError}. Refresh to retry; if it persists, your admin session may have expired.</Span>
+              </Text>
             </Div>
           )}
-          <Div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Grid cols={2} gap="3" className="sm:grid-cols-4">
             <StatCard label="Pending Orders" value={stats?.pendingOrders ?? null} href={String(ROUTES.ADMIN.ORDERS)} />
             <StatCard label="Pending Payouts" value={stats?.pendingPayouts ?? null} href={String(ROUTES.ADMIN.PAYOUTS)} />
             <StatCard label="Pending Reviews" value={stats?.pendingReviews ?? null} href={String(ROUTES.ADMIN.REVIEWS)} />
             <StatCard label="Active Coupons" value={stats?.activeCoupons ?? null} href={String(ROUTES.ADMIN.COUPONS)} />
-          </Div>
+          </Grid>
         </Stack>
       )}
       renderQuickActions={() => (
         <Stack gap="xl">
-          <Div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Grid cols={2} gap="3" className="sm:grid-cols-4">
             {QUICK_ACTIONS.map(({ label, href, Icon }) => (
               <Link
                 key={label}
@@ -231,15 +233,15 @@ export default function Page() {
                 {label}
               </Link>
             ))}
-          </Div>
+          </Grid>
 
           <Div className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`} rounded="xl">
             <Row className="mb-4" align="center" gap="sm">
-              <Div className="text-sm font-semibold text-[var(--appkit-color-text)]">Dev Settings</Div>
+              <Text size="sm" weight="semibold">Dev Settings</Text>
               {(prefs.mockRazorpay || prefs.mockShiprocket || adminBypassEnabled) && (
-                <Div className="text-xs py-0.5 text-warning font-medium" surface="warning-surface" padding="x-xs" rounded="full">
+                <Span size="xs" weight="medium" surface="subtle" padding="pill-sm" rounded="full" className="text-warning">
                   Mock active
-                </Div>
+                </Span>
               )}
             </Row>
             <ToggleRow
@@ -284,7 +286,7 @@ export default function Page() {
       renderRecentActivity={() =>
         recentOrders.length > 0 ? (
           <Div className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden}`} rounded="xl">
-            <Row className="px-4 border-b border-[var(--appkit-color-border-subtle)]" padding="y-sm" align="center" justify="between">
+            <Row className="border-b border-[var(--appkit-color-border-subtle)]" padding="md" align="center" justify="between">
               <Text className="text-[var(--appkit-color-text)]" size="sm" weight="semibold">Recent Orders</Text>
               <Link href={String(ROUTES.ADMIN.ORDERS)} className="text-xs text-[var(--appkit-color-primary)] hover:underline">View all →</Link>
             </Row>
