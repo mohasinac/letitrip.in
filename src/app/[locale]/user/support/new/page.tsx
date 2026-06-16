@@ -38,7 +38,7 @@ export default function NewSupportTicketPage() {
 
   if (!sessionLoading && !user) {
     return (
-      <Div className="py-24 text-center">
+      <Div padding="y-6xl" className="text-center">
         <Text variant="secondary">Sign in to open a support ticket.</Text>
       </Div>
     );

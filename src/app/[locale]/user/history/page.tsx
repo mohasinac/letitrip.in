@@ -172,7 +172,7 @@ export default function UserHistoryPage() {
       </Row>
 
       {filtered.length === 0 ? (
-        <Div className="py-24 text-center">
+        <Div padding="y-6xl" className="text-center">
           <Text variant="secondary">
             Nothing here yet — products you view will appear here.
           </Text>

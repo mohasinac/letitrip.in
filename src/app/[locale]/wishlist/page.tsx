@@ -378,7 +378,7 @@ function renderWishlistItems({
   }
   if (filteredItems.length === 0) {
     return (
-      <Div className="py-24 text-center">
+      <Div padding="y-6xl" className="text-center">
         <Text variant="secondary">
           {wl.items.length === 0 ? "Your wishlist is empty." : "No items match your search or filters."}
         </Text>

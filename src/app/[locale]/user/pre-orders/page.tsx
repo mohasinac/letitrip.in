@@ -134,7 +134,7 @@ export default function UserPreOrdersPage() {
           ))}
         </Stack>
       ) : orders.length === 0 ? (
-        <Div className="py-24 text-center">
+        <Div padding="y-6xl" className="text-center">
           <Text variant="secondary">You haven&apos;t placed any pre-orders yet.</Text>
           <Link
             href={String(ROUTES.PUBLIC.PRE_ORDERS)}

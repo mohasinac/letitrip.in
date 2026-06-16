@@ -143,7 +143,7 @@ export default function UserSupportPage() {
           ))}
         </Stack>
       ) : tickets.length === 0 ? (
-        <Div className="py-24 text-center">
+        <Div padding="y-6xl" className="text-center">
           <Text variant="secondary">
             {status ? `No ${status.replace("_", " ")} tickets.` : "You haven't opened any support tickets yet."}
           </Text>

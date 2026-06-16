@@ -42,8 +42,8 @@ export async function TrackOrderView() {
   return (
     <Container className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Header */}
-      <Section
-        tone="accent-banner" padding="y-2-5xl" className="text-white"
+      <Section color="inverse" 
+        tone="accent-banner" padding="y-2-5xl"
       >
         <Container className={`${page.container.sm} text-center`}>
           <Heading color="inverse" level={1} variant="none" className="mb-4">

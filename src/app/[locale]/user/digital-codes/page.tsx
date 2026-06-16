@@ -150,7 +150,7 @@ export default function UserDigitalCodesPage() {
           ))}
         </Stack>
       ) : codeItems.length === 0 ? (
-        <Div className="py-24 text-center">
+        <Div padding="y-6xl" className="text-center">
           <Text variant="secondary">You haven&apos;t purchased any digital codes yet.</Text>
           <Link
             href={String(ROUTES.PUBLIC.DIGITAL_CODES)}

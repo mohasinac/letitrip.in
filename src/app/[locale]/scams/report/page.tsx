@@ -392,7 +392,7 @@ export default function Page() {
   }
 
   return (
-    <Main className="px-4 py-10 sm:px-6 lg:px-8">
+    <Main padding="y-2xl" className="px-4 sm:px-6 lg:px-8">
       <ScamReportForm userId={user.uid} />
     </Main>
   );

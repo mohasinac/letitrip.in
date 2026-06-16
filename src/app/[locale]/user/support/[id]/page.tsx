@@ -114,7 +114,7 @@ export default function TicketDetailPage({ params }: PageProps) {
 
   if (!ticket) {
     return (
-      <Div className="py-24 text-center">
+      <Div padding="y-6xl" className="text-center">
         <Text variant="secondary">Ticket not found.</Text>
         <Link href={String(ROUTES.USER.SUPPORT)} className="mt-3 inline-block text-sm text-[var(--appkit-color-primary)] hover:underline">
           ← Back to all tickets

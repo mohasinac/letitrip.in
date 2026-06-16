@@ -127,7 +127,7 @@ export default function UserPrizeDrawsPage() {
           ))}
         </Stack>
       ) : orders.length === 0 ? (
-        <Div className="py-24 text-center">
+        <Div padding="y-6xl" className="text-center">
           <Text variant="secondary">You haven&apos;t entered any prize draws yet.</Text>
           <Link
             href={String(ROUTES.PUBLIC.PRIZE_DRAWS)}

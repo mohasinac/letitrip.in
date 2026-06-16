@@ -287,7 +287,7 @@ export default function NotificationsPage() {
         }
         if (filtered.length === 0) {
           return (
-            <Div className="py-24 text-center">
+            <Div padding="y-6xl" className="text-center">
               <Text variant="secondary">No notifications match the current filters.</Text>
             </Div>
           );

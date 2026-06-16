@@ -149,7 +149,7 @@ export default function UserEventsPage() {
           ))}
         </Stack>
       ) : entries.length === 0 ? (
-        <Div className="py-24 text-center">
+        <Div padding="y-6xl" className="text-center">
           <Text variant="secondary">You haven&apos;t entered any events yet.</Text>
           <Link
             href={String(ROUTES.PUBLIC.EVENTS)}

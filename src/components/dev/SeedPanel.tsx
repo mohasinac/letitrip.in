@@ -2352,7 +2352,7 @@ export function SeedPanel() {
   useEffect(() => { setPage(1); }, [searchQuery, filterGroup, filterStatus, sortBy]);
 
   return (
-    <Section surface="muted" className="min-h-screen text-zinc-900 dark:text-white">
+    <Section color="inverse" surface="muted" className="min-h-screen text-zinc-900 dark:">
       {renderSeedPanelToolbar({ selectedCollections, setSelectedCollections, isFiltered, filteredCollections, isRunning, fetchStatus, isLoadingStatus, searchQuery, setSearchQuery, sortBy, setSortBy, dryRun, setDryRun, run, filterGroup, setFilterGroup, filterStatus, setFilterStatus })}
 
       <Container size="2xl">
@@ -2411,7 +2411,7 @@ function renderSeedPanelToolbar({
   return (
     <Div border="default" className="sticky z-30 backdrop-blur-md border-b" surface="default" shadow="sm" style={{ top: "var(--header-height, 0px)" }}>
       <Container size="2xl">
-        <Stack gap="sm" className="py-2.5">
+        <Stack padding="y-xs" gap="sm" className=".5">
           <Stack className="sm:flex-row sm:items-center" gap="sm">
             <Div className="flex-1 min-w-0">
               <Heading level={2} className="m-0 leading-none" color="primary" size="sm" weight="bold">
