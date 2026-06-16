@@ -1,4 +1,5 @@
 import { normalizeError } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 import { NextResponse } from "next/server";
 import {
   storeRepository,
@@ -78,7 +79,7 @@ async function _GET(
   }
 
   if (upstream) {
-    items = sanitizeProductsForPublic(upstream.items as Array<Record<string, unknown>>);
+    items = sanitizeProductsForPublic(upstream.items as Array<Record<string, JsonValue>>);
     total = upstream.total;
     resultPage = upstream.page;
     totalPages = upstream.totalPages;
@@ -86,7 +87,7 @@ async function _GET(
   } else {
     try {
       const result = await productRepository.list({ filters, sorts, page, pageSize });
-      items = sanitizeProductsForPublic(result.items as unknown as Array<Record<string, unknown>>);
+      items = sanitizeProductsForPublic(result.items as unknown as Array<Record<string, JsonValue>>);
       total = result.total;
       resultPage = result.page;
       totalPages = result.totalPages;

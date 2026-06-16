@@ -88,7 +88,7 @@ function renderScamTypeCard(
             <Stack gap="xs" as="ul">
               {scamType.howToAvoid.map((tip, i) => (
                 <Row key={i} gap="sm" align="start" as="li">
-                  <Span weight="bold" className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center bg-[color:var(--appkit-color-success,theme(colors.green.600))]/10 text-[10px] text-[color:var(--appkit-color-success,theme(colors.green.700))]" rounded="full">{i + 1}</Span>
+                  <Span layout="flex" weight="bold" className="mt-1 h-4 w-4 shrink-0 justify-center bg-[color:var(--appkit-color-success,theme(colors.green.600))]/10 text-[10px] text-[color:var(--appkit-color-success,theme(colors.green.700))]" rounded="full">{i + 1}</Span>
                   <Text variant="secondary" className="leading-relaxed" size="sm">{tip}</Text>
                 </Row>
               ))}
@@ -105,7 +105,7 @@ function renderCategorySection(category: (typeof SCAM_CATEGORIES)[number]) {
   return (
     <Stack key={category.id} gap="md" id={category.id}>
       <Row gap="sm" align="center">
-        <Span className="flex h-9 w-9 items-center justify-center bg-[color:var(--appkit-color-primary,theme(colors.blue.600))]/10 text-[color:var(--appkit-color-primary,theme(colors.blue.600))]" rounded="lg">
+        <Span layout="flex" className="h-9 w-9 justify-center bg-[color:var(--appkit-color-primary,theme(colors.blue.600))]/10 text-[color:var(--appkit-color-primary,theme(colors.blue.600))]" rounded="lg">
           {CATEGORY_ICON_MAP[category.id]}
         </Span>
         <Heading level={2} size="xl" weight="bold">{category.label}</Heading>

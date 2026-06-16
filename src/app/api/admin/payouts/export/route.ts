@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import type { JsonValue } from "@mohasinac/appkit";
 import { createRouteHandler, payoutRepository, sortBy, COMMON_FIELDS } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
@@ -39,7 +40,7 @@ export const GET = withProviders(
         "createdAt",
       ]);
 
-      const dataRows = (result.items as unknown as Record<string, unknown>[]).map((p) =>
+      const dataRows = (result.items as unknown as Record<string, JsonValue>[]).map((p) =>
         csvRow([
           p["id"],
           p["storeId"] ?? p["sellerId"] ?? "",

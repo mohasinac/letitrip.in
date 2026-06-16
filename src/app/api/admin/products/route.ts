@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import type { JsonValue } from "@mohasinac/appkit";
 /**
  * Admin Products API Route
  * GET  /api/admin/products — Delegated to @mohasinac/feat-admin
@@ -84,7 +85,7 @@ export const POST = withProviders(createApiHandler({
       );
     }
 
-    const data = validation.data as Record<string, unknown> & {
+    const data = validation.data as Record<string, JsonValue> & {
       mainImage?: string;
       images?: string[];
       video?: { url?: string; thumbnailUrl?: string };

@@ -344,7 +344,7 @@ function renderWishlistFilterContent({
         <Text className="mb-2 tracking-wide" color="muted" size="xs" weight="semibold" transform="uppercase">Price range (₹)</Text>
         <Row gap="sm">
           <Input type="number" placeholder="Min" min={0} value={pending.minPrice} onChange={(e) => setPending((p) => ({ ...p, minPrice: e.target.value }))} className="h-8 text-sm" />
-          <Span className="flex items-center" color="faint">–</Span>
+          <Span layout="flex" color="faint">–</Span>
           <Input type="number" placeholder="Max" min={0} value={pending.maxPrice} onChange={(e) => setPending((p) => ({ ...p, maxPrice: e.target.value }))} className="h-8 text-sm" />
         </Row>
       </Div>

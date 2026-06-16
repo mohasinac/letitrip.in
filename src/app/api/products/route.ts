@@ -1,4 +1,5 @@
 import { normalizeError } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 import { NextResponse } from "next/server";
 import {
   productRepository,
@@ -209,7 +210,7 @@ async function _GET(request: Request): Promise<NextResponse> {
         success: true,
         data: {
           items: sanitizeProductsForPublic(
-            items as unknown as Array<Record<string, unknown>>,
+            items as unknown as Array<Record<string, JsonValue>>,
           ),
           total: items.length,
         },
@@ -384,7 +385,7 @@ async function _GET(request: Request): Promise<NextResponse> {
     // pass; only triggers when at least one type is off.
     if (!requestedListingType && enabledTypeSet.size > 0 && enabledTypeSet.size < 7) {
       const before = items.length;
-      items = (items as Array<Record<string, unknown>>).filter((it) => {
+      items = (items as Array<Record<string, JsonValue>>).filter((it) => {
         const lt = typeof it.listingType === "string" ? it.listingType : "standard";
         return enabledTypeSet.has(lt);
       });
@@ -396,7 +397,7 @@ async function _GET(request: Request): Promise<NextResponse> {
       success: true,
       data: {
         items: sanitizeProductsForPublic(
-          items as Array<Record<string, unknown>>,
+          items as Array<Record<string, JsonValue>>,
         ),
         total,
         page: resultPage,

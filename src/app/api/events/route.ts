@@ -1,4 +1,5 @@
 import { normalizeError } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 import { NextResponse } from "next/server";
 import {
   eventRepository,
@@ -71,7 +72,7 @@ async function _GET(request: Request): Promise<NextResponse> {
     try {
       const result = await eventRepository.list({ filters, sorts, page, pageSize });
       // Strip internal fields (createdBy) before returning
-      items = (result.items as unknown as Array<Record<string, unknown>>).map(
+      items = (result.items as unknown as Array<Record<string, JsonValue>>).map(
         ({ createdBy: _createdBy, ...rest }) => rest,
       );
       total = result.total;

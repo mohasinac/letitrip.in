@@ -231,7 +231,7 @@ export async function createSellerProductAction(input: unknown): Promise<void> {
     const store = await getSellerStore(user.uid);
     if (store) {
       const caps = await getStoreCapabilities(store.id);
-      const lt = (parsed.data as Record<string, unknown>).listingType;
+      const lt = (parsed.data as Record<string, JsonValue>).listingType;
       if (lt === "auction" && !caps.includes("host_auctions")) {
         throw new AuthorizationError("Your store is not approved to create auction listings.");
       }
@@ -241,7 +241,7 @@ export async function createSellerProductAction(input: unknown): Promise<void> {
     }
   }
 
-  return createSellerProduct(user.uid, user.name ?? user.email ?? "Seller", user.email ?? "", parsed.data as Record<string, unknown>);
+  return createSellerProduct(user.uid, user.name ?? user.email ?? "Seller", user.email ?? "", parsed.data as Record<string, JsonValue>);
 }
 
 // --- Read Actions -------------------------------------------------------------
@@ -334,7 +334,7 @@ export async function sellerUpdateProductAction(
       const parsed = productUpdateSchema.partial().safeParse(input);
       if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE);
       const profile = await userRepository.findById(user.uid);
-      return sellerUpdateProduct(user.uid, profile?.role ?? "user", id, parsed.data as Record<string, unknown>) as any;
+      return sellerUpdateProduct(user.uid, profile?.role ?? "user", id, parsed.data as Record<string, JsonValue>) as any;
   });
 }
 

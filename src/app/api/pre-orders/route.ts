@@ -1,4 +1,5 @@
 import { normalizeError } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 import { NextResponse } from "next/server";
 import {
   productRepository,
@@ -74,7 +75,7 @@ export const GET = withProviders(async (request: Request) => {
     );
 
     const items = sanitizeProductsForPublic(
-      result.items as unknown as Array<Record<string, unknown>>,
+      result.items as unknown as Array<Record<string, JsonValue>>,
     );
     const totalPages = Math.max(1, Math.ceil(result.total / pageSize));
 

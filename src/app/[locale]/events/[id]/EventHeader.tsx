@@ -50,15 +50,15 @@ export function EventHeader({
       <Stack gap="3">
         <Row align="center" gap="sm" wrap>
           {eventType ? (
-            <Span
-              className={`inline-flex items-center capitalize ${typeBadgeClass(eventType)}`} padding="pill-sm" size="xs" weight="semibold" rounded="full"
+            <Span layout="inline-flex" 
+              className={`capitalize ${typeBadgeClass(eventType)}`} padding="pill-sm" size="xs" weight="semibold" rounded="full"
             >
               {eventType}
             </Span>
           ) : null}
           {eventStatus ? (
-            <Span
-              className={`inline-flex items-center capitalize ${statusBadgeClass(eventStatus)}`} padding="pill-sm" size="xs" weight="semibold" rounded="full"
+            <Span layout="inline-flex" 
+              className={`capitalize ${statusBadgeClass(eventStatus)}`} padding="pill-sm" size="xs" weight="semibold" rounded="full"
             >
               {eventStatus}
             </Span>

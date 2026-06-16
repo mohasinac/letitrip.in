@@ -1860,9 +1860,9 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         <Text className="leading-relaxed m-0" color="muted" size="sm">{meta.description}</Text>
 
         <Row wrap gap="sm">
-          <Span className="inline-flex items-center gap-1.5 px-2.5 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800/40 text-indigo-700 dark:text-indigo-300 font-mono" size="xs" rounded="md" padding="y-2xs">🔑 {meta.slugPattern}</Span>
+          <Span layout="inline-flex" gap="xs" className=".5 px-2.5 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800/40 text-indigo-700 dark:text-indigo-300 font-mono" size="xs" rounded="md" padding="y-2xs">🔑 {meta.slugPattern}</Span>
           {meta.mediaFields?.map((f) => (
-            <Span key={f} className="inline-flex items-center gap-1.5 px-2.5 bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/40 text-violet-700 dark:text-violet-300 font-mono" size="xs" rounded="md" padding="y-2xs">🖼️ {f}</Span>
+            <Span layout="inline-flex" gap="xs" key={f} className=".5 px-2.5 bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/40 text-violet-700 dark:text-violet-300 font-mono" size="xs" rounded="md" padding="y-2xs">🖼️ {f}</Span>
           ))}
         </Row>
 

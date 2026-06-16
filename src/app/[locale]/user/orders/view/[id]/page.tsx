@@ -97,7 +97,7 @@ function renderItemRow(item: OrderItemT, key: string | number) {
         {isPrizeDraw && revealStatus && (
           <Row gap="sm" className="mt-1" wrap>
             {revealStatus === "revealed" ? (
-              <Span color="success" surface="success-surface" weight="semibold" className="inline-flex items-center text-[10px]" rounded="full" padding="pill-xs">
+              <Span layout="inline-flex" color="success" surface="success-surface" weight="semibold" className="text-[10px]" rounded="full" padding="pill-xs">
                 Prize revealed{item.revealedItemNumber != null ? ` (#${item.revealedItemNumber})` : ""}
               </Span>
             ) : revealStatus === "open" ? (
@@ -105,11 +105,11 @@ function renderItemRow(item: OrderItemT, key: string | number) {
                 Reveal pending
               </Span>
             ) : revealStatus === "pending" ? (
-              <Span color="warning" surface="warning-surface" weight="semibold" className="inline-flex items-center text-[10px]" rounded="full" padding="pill-xs">
+              <Span layout="inline-flex" color="warning" surface="warning-surface" weight="semibold" className="text-[10px]" rounded="full" padding="pill-xs">
                 Awaiting reveal window
               </Span>
             ) : (
-              <Span weight="semibold" className="inline-flex items-center text-[10px]" rounded="full" padding="pill-xs" surface="subtle" color="primary">
+              <Span layout="inline-flex" weight="semibold" className="text-[10px]" rounded="full" padding="pill-xs" surface="subtle" color="primary">
                 Reveal closed
               </Span>
             )}

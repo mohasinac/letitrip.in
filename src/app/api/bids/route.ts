@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import type { JsonValue } from "@mohasinac/appkit";
 import { z } from "zod";
 import {
   createRouteHandler,
@@ -59,7 +60,7 @@ export const POST = withProviders(
         const result = await placeBid(user!.uid, user!.email ?? "", body!);
         return successResponse(result, "Bid placed", 201);
       } catch (err) {
-        const errData = (e: unknown) => "data" in (e as object) ? ((e as { data?: unknown }).data as Record<string, unknown> | undefined) : undefined;
+        const errData = (e: unknown) => "data" in (e as object) ? ((e as { data?: unknown }).data as Record<string, JsonValue> | undefined) : undefined;
         if (err instanceof NotFoundError) return errorResponse(err.message, 404, errData(err));
         if (err instanceof ValidationError) return errorResponse(err.message, 400, errData(err));
         if (err instanceof AuthorizationError) return errorResponse(err.message, 403, errData(err));
