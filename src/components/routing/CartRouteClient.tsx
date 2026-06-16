@@ -1095,8 +1095,8 @@ function SellerGroupSection({
   return (
     <Div>
       {/* Seller header */}
-      <Row className="mb-2 gap-1.5" align="center" justify="between" wrap>
-        <Row className="gap-1.5" align="center" wrap>
+      <Row gap="xs" className="mb-2 .5" align="center" justify="between" wrap>
+        <Row gap="xs" className=".5" align="center" wrap>
           <Text className="tracking-wide" color="muted" size="xs" weight="semibold" transform="uppercase">
             Sold by
           </Text>
