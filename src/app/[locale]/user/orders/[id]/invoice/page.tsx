@@ -100,7 +100,7 @@ function renderInvoiceItemsTable(order: OrderData) {
         {order.items?.map(
           (item: NonNullable<typeof order>["items"][number], i: number) => (
             <Tr key={i} className="print:border-gray-200" border="subtle">
-              <Td className="py-2.5 print:text-black" color="primary">
+              <Td className="print:text-black" padding="sm" color="primary">
                 {item.title}
                 {item.attributes && Object.keys(item.attributes).length > 0 && (
                   <Span size="xs" className="ml-1.5 print:text-gray-500" color="faint">
@@ -108,10 +108,10 @@ function renderInvoiceItemsTable(order: OrderData) {
                   </Span>
                 )}
               </Td>
-              <Td className="py-2.5 text-center print:text-black" color="muted">
+              <Td className="text-center print:text-black" padding="sm" color="muted">
                 {item.quantity}
               </Td>
-              <Td className="py-2.5 text-right print:text-black" color="primary">
+              <Td className="text-right print:text-black" padding="sm" color="primary">
                 {paise(item.price * item.quantity, item.currency)}
               </Td>
             </Tr>

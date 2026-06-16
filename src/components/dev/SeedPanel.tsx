@@ -1726,14 +1726,14 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
         <Table size="sm">
           <Thead>
             <Tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
-              <Th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[38%]">Field</Th>
-              <Th className="text-left px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[14%]">Type</Th>
-              <Th className="text-center px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">🔍</Th>
-              <Th className="text-center px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">⚙️</Th>
-              <Th className="text-center px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">↕</Th>
-              <Th className="text-center px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">🔒</Th>
-              <Th className="text-center px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">📇</Th>
-              <Th className="text-left px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">Note</Th>
+              <Th className="text-left px-3 font-semibold text-zinc-600 dark:text-slate-300 w-[38%]" padding="xs-tall">Field</Th>
+              <Th className="text-left font-semibold text-zinc-600 dark:text-slate-300 w-[14%]" padding="xs-tall">Type</Th>
+              <Th className="text-center font-semibold text-zinc-600 dark:text-slate-300" padding="xs-tall">🔍</Th>
+              <Th className="text-center font-semibold text-zinc-600 dark:text-slate-300" padding="xs-tall">⚙️</Th>
+              <Th className="text-center font-semibold text-zinc-600 dark:text-slate-300" padding="xs-tall">↕</Th>
+              <Th className="text-center font-semibold text-zinc-600 dark:text-slate-300" padding="xs-tall">🔒</Th>
+              <Th className="text-center font-semibold text-zinc-600 dark:text-slate-300" padding="xs-tall">📇</Th>
+              <Th className="text-left font-semibold text-zinc-600 dark:text-slate-300" padding="xs-tall">Note</Th>
             </Tr>
             <Tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
               <Th className="px-3 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-left" />
@@ -1749,7 +1749,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
           <Tbody>
             {shown.length === 0 ? (
               <Tr>
-                <Td colSpan={8} className="px-3 py-4 text-center text-zinc-400 dark:text-slate-500">
+                <Td colSpan={8} className="text-center text-zinc-400 dark:text-slate-500" padding="sm-tall">
                   No fields match filter.
                 </Td>
               </Tr>
@@ -1761,28 +1761,28 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
                     f.pii ? "bg-red-50/40 dark:bg-red-900/5" : "hover:bg-zinc-50/60 dark:hover:bg-slate-800/30"
                   }`}
                 >
-                  <Td className="px-3 py-2 font-mono text-zinc-800 dark:text-slate-200 break-all">{f.name}</Td>
-                  <Td className="px-2 py-2">
+                  <Td className="px-3 font-mono text-zinc-800 dark:text-slate-200 break-all" padding="xs-tall">{f.name}</Td>
+                  <Td padding="xs-tall">
                     <Span className={`px-1.5 py-0.5 text-[10px] leading-none ${TYPE_CHIP[f.type]}`} weight="semibold" rounded="default">
                       {f.type}
                     </Span>
                   </Td>
-                  <Td className="px-2 py-2 text-center">
+                  <Td className="text-center" padding="xs-tall">
                     <Cap active={f.searchable} label="✓" color="bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300" />
                   </Td>
-                  <Td className="px-2 py-2 text-center">
+                  <Td className="text-center" padding="xs-tall">
                     <Cap active={f.filterable} label="✓" color="bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300" />
                   </Td>
-                  <Td className="px-2 py-2 text-center">
+                  <Td className="text-center" padding="xs-tall">
                     <Cap active={f.sortable} label="✓" color="bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300" />
                   </Td>
-                  <Td className="px-2 py-2 text-center">
+                  <Td className="text-center" padding="xs-tall">
                     <Cap active={f.pii} label="🔒" color="bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300" />
                   </Td>
-                  <Td className="px-2 py-2 text-center">
+                  <Td className="text-center" padding="xs-tall">
                     <Cap active={f.indexed} label="✓" color="bg-zinc-200 dark:bg-slate-700 text-zinc-600 dark:text-slate-300" />
                   </Td>
-                  <Td className="px-2 py-2 text-zinc-400 dark:text-slate-500 italic text-[10px] max-w-[120px] truncate" title={f.note}>
+                  <Td className="text-zinc-400 dark:text-slate-500 italic text-[10px] max-w-[120px] truncate" padding="xs-tall" title={f.note}>
                     {f.note ?? ""}
                   </Td>
                 </Tr>
@@ -1873,17 +1873,17 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
               <Table size="sm">
                 <Thead>
                   <Tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
-                    <Th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[22%]">Context type</Th>
-                    <Th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[40%]">Pattern</Th>
-                    <Th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300">Example</Th>
+                    <Th className="text-left px-3 font-semibold text-zinc-600 dark:text-slate-300 w-[22%]" padding="xs-tall">Context type</Th>
+                    <Th className="text-left px-3 font-semibold text-zinc-600 dark:text-slate-300 w-[40%]" padding="xs-tall">Pattern</Th>
+                    <Th className="text-left px-3 font-semibold text-zinc-600 dark:text-slate-300" padding="xs-tall">Example</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
                   {meta.mediaSlugPatterns.map((p) => (
                     <Tr key={p.type} className="border-b border-zinc-100 dark:border-slate-800 last:border-0 hover:bg-zinc-50/60 dark:hover:bg-slate-800/30">
-                      <Td className="px-3 py-2 font-mono text-indigo-700 dark:text-indigo-300 whitespace-nowrap">{p.type}</Td>
-                      <Td className="px-3 py-2 font-mono text-zinc-700 dark:text-slate-300 text-[10px] break-all">{p.pattern}</Td>
-                      <Td className="px-3 py-2 font-mono text-zinc-400 dark:text-slate-500 italic text-[10px] break-all">{p.example}</Td>
+                      <Td className="px-3 font-mono text-indigo-700 dark:text-indigo-300 whitespace-nowrap" padding="xs-tall">{p.type}</Td>
+                      <Td className="px-3 font-mono text-zinc-700 dark:text-slate-300 text-[10px] break-all" padding="xs-tall">{p.pattern}</Td>
+                      <Td className="px-3 font-mono text-zinc-400 dark:text-slate-500 italic text-[10px] break-all" padding="xs-tall">{p.example}</Td>
                     </Tr>
                   ))}
                 </Tbody>
