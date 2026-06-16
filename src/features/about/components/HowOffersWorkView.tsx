@@ -1,5 +1,5 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Heading, Text, Section, Stack, FlowDiagram, Div, TextLink } from "@mohasinac/appkit/ui";
+import { Div, FlowDiagram, Heading, Row, Section, Stack, Text, TextLink } from "@mohasinac/appkit/ui";
 import type { FlowStep } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 
@@ -91,13 +91,13 @@ export async function HowOffersWorkView() {
           </Heading>
           <Stack gap="lg">
             {STEPS.map(({ number, icon, title, text }) => (
-              <Div
+              <Row align="center" justify="center" gap="md" 
                 key={number}
-                className={`${flex.center} gap-4 p-5`} border="default" surface="muted" rounded="xl"
+                className={`p-5`} border="default" surface="muted" rounded="xl"
               >
-                <Div className={`flex-shrink-0 w-10 h-10 ${CLS_STEP_NUMBER} ${flex.center} text-xl`} rounded="full">
+                <Row align="center" justify="center" className={`flex-shrink-0 w-10 h-10 ${CLS_STEP_NUMBER} text-xl`} rounded="full">
                   {icon}
-                </Div>
+                </Row>
                 <Div>
                   <Text className="mb-0.5" weight="semibold">
                     {number}. {title}
@@ -106,7 +106,7 @@ export async function HowOffersWorkView() {
                     {text}
                   </Text>
                 </Div>
-              </Div>
+              </Row>
             ))}
           </Stack>
         </Section>
@@ -127,14 +127,14 @@ export async function HowOffersWorkView() {
           </Heading>
           <Stack className={`${__P.p6}`} border="default" surface="subtle" gap="3" rounded="xl">
             {RULES.map((rule, i) => (
-              <Div key={i} className={`${flex.center} gap-3`}>
-                <Div textSize="sm" className={`flex-shrink-0 w-6 h-6 bg-primary/10 dark:bg-primary/15 ${flex.center} font-semibold text-primary`} rounded="full">
+              <Row align="center" justify="center" gap="3" key={i}>
+                <Row align="center" justify="center" textSize="sm" className={`flex-shrink-0 w-6 h-6 bg-primary/10 dark:bg-primary/15 font-semibold text-primary`} rounded="full">
                   {i + 1}
-                </Div>
+                </Row>
                 <Text variant="secondary" className="leading-relaxed" size="sm">
                   {rule}
                 </Text>
-              </Div>
+              </Row>
             ))}
           </Stack>
         </Section>
@@ -149,11 +149,11 @@ export async function HowOffersWorkView() {
           <Text variant="secondary" className="mb-6 max-w-lg mx-auto">
             {t("ctaText")}
           </Text>
-          <Div className={`${flex.center} gap-4 flex-wrap`}>
+          <Row align="center" justify="center" gap="md" wrap >
             <TextLink href={ROUTES.PUBLIC.HOW_AUCTIONS_WORK} variant="muted">
               {t("seeAuctions")}
             </TextLink>
-          </Div>
+          </Row>
         </Section>
       </Div>
     </Div>

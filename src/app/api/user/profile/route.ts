@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import type { JsonValue } from "@mohasinac/appkit";
 import { z } from "zod";
 import { userRepository } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
@@ -86,7 +87,7 @@ export const PATCH = withProviders(createApiHandler<(typeof updateProfileSchema)
 
     // Persist bio + visibility into publicProfile sub-object when provided
     if (bio !== undefined || profileIsPublic !== undefined) {
-      const existing = (updatedUser.publicProfile as Record<string, unknown>) ?? {};
+      const existing = (updatedUser.publicProfile as Record<string, JsonValue>) ?? {};
       await userRepository.update(user!.uid, {
         publicProfile: {
           ...existing,

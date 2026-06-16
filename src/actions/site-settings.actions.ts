@@ -1,6 +1,7 @@
 "use server";
 
 import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
+import type { JsonValue } from "@mohasinac/appkit";
 /**
  * Site Settings Server Actions � thin entrypoint
  */
@@ -16,7 +17,7 @@ export async function getSiteSettingsAction(): Promise<ActionResult<unknown>> {
   });
 }
 
-export async function updateSiteSettingsAction(data: Record<string, unknown>): Promise<void> {
+export async function updateSiteSettingsAction(data: Record<string, JsonValue>): Promise<void> {
   const admin = await requireRoleUser(["admin"]);
   const rl = await rateLimitByIdentifier(`site-settings:update:${admin.uid}`, RateLimitPresets.STRICT);
   if (!rl.success) throw new AuthorizationError("Too many requests. Please slow down.");

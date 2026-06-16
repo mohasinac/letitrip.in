@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import type { JsonValue } from "@mohasinac/appkit";
 import { z } from "zod";
 import { userRepository, createRouteHandler, successResponse } from "@mohasinac/appkit";
 
@@ -29,7 +30,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     handler: async ({ user }) => {
-      const prefs = (user as Record<string, unknown>).notificationPreferences ?? {
+      const prefs = (user as Record<string, JsonValue>).notificationPreferences ?? {
         channels: { email: true, whatsapp: true, sms: true },
         types: {
           orderUpdates: true,
