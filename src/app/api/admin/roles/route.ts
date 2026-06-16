@@ -5,6 +5,7 @@ import {
   customRolesRepository,
   errorResponse,
   parseJsonBody,
+  type JsonValue,
   successResponse,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY } from "@/constants";

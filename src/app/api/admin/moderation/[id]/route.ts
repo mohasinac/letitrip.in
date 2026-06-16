@@ -6,6 +6,7 @@ import {
   errorResponse,
   moderationQueueRepository,
   parseJsonBody,
+  type JsonValue,
   successResponse,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";

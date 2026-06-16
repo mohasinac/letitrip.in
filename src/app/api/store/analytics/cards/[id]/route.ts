@@ -6,6 +6,7 @@ import {
   createRouteHandler,
   errorResponse,
   parseJsonBody,
+  type JsonValue,
   successResponse,
 } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";

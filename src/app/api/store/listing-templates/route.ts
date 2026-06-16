@@ -6,6 +6,7 @@ import {
   errorResponse,
   listingTemplatesRepository,
   parseJsonBody,
+  type JsonValue,
   storeRepository,
   successResponse,
 } from "@mohasinac/appkit";

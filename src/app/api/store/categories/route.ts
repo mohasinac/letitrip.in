@@ -5,6 +5,7 @@ import {
   createRouteHandler,
   errorResponse,
   parseJsonBody,
+  type JsonValue,
   storeCategoriesRepository,
   storeRepository,
   successResponse,

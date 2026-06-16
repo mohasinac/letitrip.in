@@ -6,6 +6,7 @@ import {
   errorResponse,
   groupedListingsRepository,
   parseJsonBody,
+  type JsonValue,
   storeRepository,
   successResponse,
 } from "@mohasinac/appkit";

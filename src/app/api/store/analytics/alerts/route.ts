@@ -6,6 +6,7 @@ import {
   createRouteHandler,
   errorResponse,
   parseJsonBody,
+  type JsonValue,
   storeRepository,
   successResponse,
 } from "@mohasinac/appkit";
