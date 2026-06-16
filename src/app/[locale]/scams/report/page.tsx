@@ -59,7 +59,7 @@ function TagInput({
         {values.map((v) => (
           <Div layout="inline-flex" gap="1" textWeight="medium" textSize="xs" 
             key={v}
-            className="items-center bg-[color:var(--appkit-color-surface-elevated,theme(colors.zinc.100))] px-2.5" padding="y-2xs" rounded="full"
+            className="items-center bg-[color:var(--appkit-color-surface-elevated,theme(colors.zinc.100))] .5" paddingY="y-2xs" paddingX="x-xs" rounded="full"
           >
             {v}
             <Button

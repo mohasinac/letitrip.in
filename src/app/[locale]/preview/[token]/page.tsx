@@ -60,7 +60,7 @@ export default async function PreviewPage({
 
   return (
     <Section surface="default" className="min-h-screen">
-      <Div className="border-b border-warning/30 px-4 text-center" surface="warning-surface" padding="y-xs">
+      <Div className="border-b border-warning/30 text-center" surface="warning-surface" paddingY="y-xs" paddingX="x-md">
         <Text className="text-warning" size="sm" weight="medium">
           {PREVIEW_COPY.banner}
         </Text>

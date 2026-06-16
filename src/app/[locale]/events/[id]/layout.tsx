@@ -93,7 +93,7 @@ export default async function Layout({ children, params }: Props) {
   }
 
   return (
-    <Stack className="mx-auto max-w-3xl px-4" gap="lg" padding="y-2xl">
+    <Stack className="mx-auto max-w-3xl" gap="lg" paddingY="y-2xl" paddingX="x-md">
       <EventHeader
         title={event.title ?? ""}
         coverImage={coverImage}
