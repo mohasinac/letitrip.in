@@ -127,3 +127,6 @@ functions/.env.letitrip-in-app
 test-results/*
 .claude/scheduled_tasks.lock
 /appkit
+
+# .bak files left behind by codemods or backups
+*.bak

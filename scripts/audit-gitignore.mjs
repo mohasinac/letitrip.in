@@ -67,6 +67,8 @@ const ALLOWED_UNANCHORED_FILES = new Set([
   // Log globs — intentionally match everywhere
   "*.log",
   "npm-debug.log*",
+  // Stray backup files — intentionally match everywhere
+  "*.bak",
   "yarn-debug.log*",
   "yarn-error.log*",
   // Debug logs emitted anywhere in the tree
