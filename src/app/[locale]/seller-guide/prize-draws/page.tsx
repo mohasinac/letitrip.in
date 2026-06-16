@@ -30,7 +30,7 @@ export default function Page() {
 
           <Section>
             <Heading level={2} className={H2}>Creating a Prize Draw</Heading>
-            <Ol className="list-decimal space-y-2 pl-5 text-sm text-zinc-600 dark:text-zinc-400">
+            <Ol marker="decimal" spacing="comfortable" indent="lg" size="sm" color="muted">
               <Li>Go to <Span weight="bold">Store Dashboard → Listings → Prize Draws → New Prize Draw</Span>.</Li>
               <Li>Set the listing title, description, entry price, and total number of entries.</Li>
               <Li>Upload your prize codes (CSV or one-per-line). Codes are encrypted and never shown until reveal.</Li>
@@ -54,7 +54,7 @@ export default function Page() {
 
           <Section>
             <Heading level={2} className={H2}>Rules and Policies</Heading>
-            <Ul className="list-disc space-y-2 pl-5 text-sm text-zinc-600 dark:text-zinc-400">
+            <Ul marker="disc" spacing="comfortable" indent="lg" size="sm" color="muted">
               <Li>Codes must be valid and unused at the time of upload.</Li>
               <Li>You are responsible for ensuring the prize is fulfilled as described.</Li>
               <Li>Prize draws are subject to LetItRip&apos;s platform fees on each entry sold.</Li>
@@ -64,7 +64,7 @@ export default function Page() {
 
           <Section>
             <Heading level={2} className={H2}>Tips</Heading>
-            <Ul className="list-disc space-y-2 pl-5 text-sm text-zinc-600 dark:text-zinc-400">
+            <Ul marker="disc" spacing="comfortable" indent="lg" size="sm" color="muted">
               <Li>Set entry price at 5–10% of the item retail value for strong conversion.</Li>
               <Li>Use a short reveal window (24–72 h) to create urgency.</Li>
               <Li>Promote the listing on your store page and social channels before it goes live.</Li>

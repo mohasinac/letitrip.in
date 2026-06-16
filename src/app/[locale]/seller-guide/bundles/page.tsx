@@ -29,7 +29,7 @@ export default function Page() {
 
           <Section>
             <Heading level={2} className={H2}>Creating a Bundle</Heading>
-            <Ol className="list-decimal space-y-2 pl-5 text-sm text-zinc-600 dark:text-zinc-400">
+            <Ol marker="decimal" spacing="comfortable" indent="lg" size="sm" color="muted">
               <Li>Go to <Span weight="bold">Store Dashboard → Listings → Bundles → New Bundle</Span>.</Li>
               <Li>Set a title, description, and cover image for the bundle.</Li>
               <Li>Search for and add the individual products you want to include.</Li>
@@ -48,7 +48,7 @@ export default function Page() {
 
           <Section>
             <Heading level={2} className={H2}>Tips</Heading>
-            <Ul className="list-disc space-y-2 pl-5 text-sm text-zinc-600 dark:text-zinc-400">
+            <Ul marker="disc" spacing="comfortable" indent="lg" size="sm" color="muted">
               <Li>Offer a 5–15% discount vs buying items individually to drive bundle conversions.</Li>
               <Li>Use themed bundles (e.g. &quot;Pokémon Starter Kit&quot;) that tell a story.</Li>
               <Li>Pin your best bundles to the top of your store page.</Li>

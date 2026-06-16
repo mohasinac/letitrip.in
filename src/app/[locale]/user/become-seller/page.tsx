@@ -63,7 +63,7 @@ export default function Page() {
             <Text className="tracking-widest" color="faint" size="xs" weight="semibold" transform="uppercase">
               What you get
             </Text>
-            <Ul className="list-disc pl-5 text-sm text-zinc-700 dark:text-zinc-300 space-y-1">
+            <Ul marker="disc" spacing="tight" indent="lg" size="sm" color="primary">
               <Li>A storefront page with your own URL and branding</Li>
               <Li>Standard listings, auctions, pre-orders, and bundles</Li>
               <Li>Built-in payouts via UPI or bank transfer</Li>

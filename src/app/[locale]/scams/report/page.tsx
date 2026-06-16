@@ -329,7 +329,7 @@ function ScamReportForm({ userId }: { userId: string }) {
           </Stack>
 
           <Alert variant="warning" title="Before you submit">
-            <Ul className="list-disc space-y-1 pl-4 text-sm">
+            <Ul marker="disc" spacing="tight" indent="md" size="sm">
               <Li>Only report genuine scam incidents — false reports can be contested.</Li>
               <Li>Max 5 pending reports per user. Verified reports are not counted.</Li>
               <Li>Evidence (screenshots, receipts) significantly speeds up verification.</Li>
