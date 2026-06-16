@@ -1632,7 +1632,7 @@ function StatusDot({
       return <Span className="shrink-0" color="error" aria-label="Failed">✗</Span>;
     }
     if (typeof seedCount === "number" && seedCount === 0) {
-      return <Span className="text-zinc-400 dark:text-slate-500 shrink-0" aria-label="No data">–</Span>;
+      return <Span className="shrink-0" color="faint" aria-label="No data">–</Span>;
     }
     return <Span className="text-emerald-500 shrink-0" aria-label="Done">✓</Span>;
   }
