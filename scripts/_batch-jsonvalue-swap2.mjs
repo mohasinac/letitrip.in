@@ -25,7 +25,7 @@ for (const rel of FILES) {
   if (!after.includes("import type { JsonValue }") && !/import .*JsonValue.*from/.test(after)) {
     const lines = after.split("\n");
     let firstImportIdx = -1;
-    for (let i = 0; i < Math.min(lines.length, 12); i++) {
+    for (let i = 0; i < Math.min(lines.length, 30); i++) {
       if (/^import /.test(lines[i])) { firstImportIdx = i; break; }
     }
     if (firstImportIdx === -1) {
