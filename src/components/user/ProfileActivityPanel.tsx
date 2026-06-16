@@ -92,7 +92,7 @@ export function ProfileActivityPanel() {
       <Heading level={2} className="text-[var(--appkit-color-text)]" size="lg" weight="semibold">Your activity</Heading>
 
       {/* eslint-disable-next-line lir/no-hardcoded-grid-cols -- fixed 4-stat strip; FLUID_GRID token oversizes */}
-      <Div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <Div layout="grid" gap="3" className="grid-cols-2 md:grid-cols-4">
         <StatPill label="Lifetime orders" value={totalOrders} />
         <StatPill label="Lifetime spent" value={formatINR(totalSpent)} />
         <StatPill label="Bids placed" value={bidsData?.total ?? 0} />
@@ -100,7 +100,7 @@ export function ProfileActivityPanel() {
       </Div>
 
       {/* eslint-disable-next-line lir/no-hardcoded-grid-cols, lir/require-xl-breakpoints -- 3-panel activity row stays 3-wide above lg */}
-      <Div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <Div layout="grid" gap="4" className="grid-cols-1 lg:grid-cols-3">
         <SectionCard title="Recent orders" viewAllHref={String(ROUTES.USER.ORDERS)}>
           {recentOrders.length === 0 ? (
             <Text variant="secondary" size="xs">No orders yet.</Text>

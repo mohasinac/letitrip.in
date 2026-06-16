@@ -25,7 +25,7 @@ export function PromotionsProductsClient({ title, subtitle, products, adSlotId }
       hasProducts={products.length > 0}
       renderProducts={() => (
         <Stack gap="lg">
-          <Div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
+          <Div layout="grid" gap="4" className="grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
             {products.map((product) => (
               <InteractiveProductCard
                 key={product.id}

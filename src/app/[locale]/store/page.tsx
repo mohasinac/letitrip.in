@@ -95,7 +95,7 @@ export default function Page() {
       labels={{ title: "Store Dashboard" }}
       isLoading={isLoading}
       renderStats={(busy) => (
-        <Div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <Div layout="grid" gap="4" className="grid-cols-2 sm:grid-cols-3">
           <StatCard
             label="Total Revenue"
             value={stats ? `${stats.currency} ${stats.totalRevenue.toLocaleString()}` : "—"}
@@ -141,7 +141,7 @@ export default function Page() {
         </Div>
       )}
       renderQuickActions={() => (
-        <Div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <Div layout="grid" gap="3" className="grid-cols-2 sm:grid-cols-3">
           {QUICK_ACTIONS.map(({ label, href, Icon }) => (
             <Link
               key={label}

@@ -116,7 +116,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
             </Link>
           </Stack>
         ) : (
-          <Div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          <Div layout="grid" gap="3" className="grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {listings.map((listing) => {
               const l = listing as Record<string, JsonValue>;
               const id = String(l.id ?? "");

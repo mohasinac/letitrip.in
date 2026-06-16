@@ -40,7 +40,7 @@ export default async function Page({ params }: Props) {
     <Stack gap="lg">
       {description ? <RichText html={description} /> : null}
       {images.length > 0 && (
-        <Div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <Div layout="grid" gap="3" className="grid-cols-2 sm:grid-cols-3">
           {images.map((src, i) => (
             <Div key={i} className={`aspect-video ${__O.hidden}`} rounded="xl" surface="muted" border="default">
               <Image

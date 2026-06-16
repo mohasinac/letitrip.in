@@ -195,7 +195,7 @@ export default function Page() {
               </Div>
             </Row>
 
-            <Div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            <Div layout="grid" gap="3" className="grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
               <StatCard label="Orders"        value={totalOrders}                   href={String(ROUTES.USER.ORDERS)} />
               <StatCard label="Total spent"   value={formatINR(totalSpentPaise)}    href={String(ROUTES.USER.ORDERS)} />
               <StatCard label="Wishlist"      value={wishlistCount ?? 0}            href={String(ROUTES.USER.WISHLIST)} />
@@ -206,7 +206,7 @@ export default function Page() {
         ) : null
       }
       renderNav={() => (
-        <Div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        <Div layout="grid" gap="3" className="grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
           {NAV_LINKS.map(({ label, href, Icon }) => (
             <Link
               key={label}

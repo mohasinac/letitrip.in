@@ -78,7 +78,7 @@ export function UserAddressesClient() {
 
   if (isLoading) {
     return (
-      <Div className="grid sm:grid-cols-2 gap-4">
+      <Div layout="grid" gap="4" className="sm:grid-cols-2">
         {Array.from({ length: 3 }).map((_, i) => (
           <Stack key={i} className={`animate-pulse ${__P.p4}`} gap="sm" rounded="xl" border="default">
             <Div className="h-4 w-1/3" surface="subtle" rounded="default" />
