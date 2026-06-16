@@ -70,7 +70,7 @@ function renderSecurityDiagram(diagramSteps: FlowStep[], t: T) {
 
 function renderSecurityCta(t: T) {
   return (
-    <Section className={`${__P.p8} text-center ${themed.bgSecondary} border ${themed.border}`} rounded="2xl">
+    <Section className={`${__P.p8} text-center`} border="default" surface="subtle" rounded="2xl">
       <Heading level={2} className="mb-3">{t("ctaTitle")}</Heading>
       <Text variant="secondary" className="mb-6 max-w-lg mx-auto">{t("ctaText")}</Text>
       <Div className={`${flex.center} gap-4 flex-wrap`}>

@@ -93,7 +93,7 @@ export async function HowOffersWorkView() {
             {STEPS.map(({ number, icon, title, text }) => (
               <Div
                 key={number}
-                className={`${flex.center} gap-4 p-5 border ${themed.border} ${themed.bgPrimary}`} rounded="xl"
+                className={`${flex.center} gap-4 p-5`} border="default" surface="muted" rounded="xl"
               >
                 <Div className={`flex-shrink-0 w-10 h-10 ${CLS_STEP_NUMBER} ${flex.center} text-xl`} rounded="full">
                   {icon}
@@ -125,7 +125,7 @@ export async function HowOffersWorkView() {
           <Heading level={2} className="mb-6" align="center">
             {t("rulesTitle")}
           </Heading>
-          <Stack className={`border ${__P.p6} ${themed.bgSecondary} ${themed.border}`} gap="3" rounded="xl">
+          <Stack className={`${__P.p6}`} border="default" surface="subtle" gap="3" rounded="xl">
             {RULES.map((rule, i) => (
               <Div key={i} className={`${flex.center} gap-3`}>
                 <Div className={`flex-shrink-0 w-6 h-6 bg-primary/10 dark:bg-primary/15 ${flex.center} text-sm font-semibold text-primary`} rounded="full">
@@ -141,7 +141,7 @@ export async function HowOffersWorkView() {
 
         {/* CTA */}
         <Section
-          className={`text-center ${themed.bgSecondary} border ${themed.border}`} rounded="2xl" padding="xl"
+          className={`text-center`} border="default" surface="subtle" rounded="2xl" padding="xl"
         >
           <Heading level={2} className="mb-3">
             {t("ctaTitle")}

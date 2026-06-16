@@ -23,7 +23,7 @@ function renderReviewsSteps(steps: ReviewStep[], t: T) {
       <Heading level={2} className="mb-8" align="center">{t("stepsTitle")}</Heading>
       <Stack gap="md">
         {steps.map(({ number, icon, title, text }) => (
-          <Row key={number} className={`${__P.p5} border ${themed.border} ${themed.bgPrimary}`} gap="md" align="start" rounded="xl">
+          <Row key={number} className={`${__P.p5}`} border="default" surface="muted" gap="md" align="start" rounded="xl">
             <Div className={`flex-shrink-0 w-10 h-10 bg-primary/10 dark:bg-primary/15 ${flex.center} text-xl`} rounded="full">{icon}</Div>
             <Div>
               <Text className="mb-0.5" weight="semibold">{number}. {title}</Text>
@@ -71,7 +71,7 @@ function renderReviewsInfoCards(infoCards: ReviewInfoCard[], t: T) {
 
 function renderReviewsCta(t: T) {
   return (
-    <Section className={`${__P.p8} text-center ${themed.bgSecondary} border ${themed.border}`} rounded="2xl">
+    <Section className={`${__P.p8} text-center`} border="default" surface="subtle" rounded="2xl">
       <Heading level={2} className="mb-3">{t("ctaTitle")}</Heading>
       <Text variant="secondary" className="mb-6 max-w-lg mx-auto">{t("ctaText")}</Text>
       <Div className={`${flex.center} gap-4 flex-wrap`}>
