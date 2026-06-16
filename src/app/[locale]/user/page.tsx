@@ -213,8 +213,8 @@ export default function Page() {
               href={String(href)}
               className="group flex items-center gap-3 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3.5 text-sm font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
             >
-              <Span layout="flex" 
-                className="flex-shrink-0 w-7 h-7 justify-center" rounded="md"
+              <Span layout="flex-center" 
+                className="flex-shrink-0 w-7 h-7" rounded="md"
                 // audit-inline-style-ok: runtime brand gradient
                 style={{ background: BRAND_GRAD }}
               >

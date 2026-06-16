@@ -60,7 +60,7 @@ export default async function Page() {
           <Container size="xl">
             <Stack gap="sm">
               <Row gap="sm" align="center">
-                <Span layout="flex" className="h-10 w-10 justify-center bg-[color:var(--appkit-color-warning,theme(colors.amber.500))]/10 text-[color:var(--appkit-color-warning,theme(colors.amber.600))]" rounded="lg">
+                <Span layout="flex-center" className="h-10 w-10 bg-[color:var(--appkit-color-warning,theme(colors.amber.500))]/10 text-[color:var(--appkit-color-warning,theme(colors.amber.600))]" rounded="lg">
                   <ShieldAlert className="h-5 w-5" />
                 </Span>
                 <Heading level={1} weight="bold" size="3xl">
