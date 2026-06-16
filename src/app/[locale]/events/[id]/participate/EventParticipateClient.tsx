@@ -1,6 +1,6 @@
 "use client";
 import { Row, Stack, normalizeError } from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { FirestoreDocument, FirestoreValue } from "@mohasinac/appkit";
 import { useState, useCallback } from "react";
 import { Link } from "@/i18n/navigation";
 import { Button, Checkbox, Div, Heading, Input, RadioGroup, RichText, Row, Select, Span, Text, Textarea } from "@mohasinac/appkit/ui";
@@ -293,8 +293,8 @@ function validateField(field: SurveyFormField, value: unknown): string | null {
 
 function renderDynamicField(
   field: SurveyFormField,
-  value: unknown,
-  onChange: (v: unknown) => void,
+  value: FirestoreValue,
+  onChange: (v: FirestoreValue) => void,
   error: string | null,
 ) {
   let control: React.ReactNode;
@@ -445,7 +445,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
   const [error, setError] = useState<string | null>(null);
   const [selectedVotes, setSelectedVotes] = useState<string[]>([]);
   const [pollComment, setPollComment] = useState("");
-  const [formResponses, setFormResponses] = useState<Record<string, JsonValue>>({});
+  const [formResponses, setFormResponses] = useState<FirestoreDocument>({});
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const isSurvey = event.type === "survey";
@@ -479,7 +479,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
     );
   }
 
-  const setFieldValue = (fieldId: string, value: unknown) => {
+  const setFieldValue = (fieldId: string, value: FirestoreValue) => {
     setFormResponses((prev) => ({ ...prev, [fieldId]: value }));
     setFormErrors((prev) => {
       const next = { ...prev };
@@ -506,7 +506,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15_000);
     try {
-      const body: Record<string, JsonValue> = {};
+      const body: FirestoreDocument = {};
       if (event.type === "poll" && selectedVotes.length > 0) {
         body.pollVotes = selectedVotes;
         if (pollComment) body.pollComment = pollComment;

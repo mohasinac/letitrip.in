@@ -5,6 +5,7 @@ import {
   createRouteHandler,
   errorResponse,
   parseJsonBody,
+  type FirestoreDocument,
   shippingConfigsRepository,
   storeRepository,
   successResponse,
@@ -35,7 +36,7 @@ export const POST = withProviders(
     handler: async ({ request, user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return ApiErrors.forbidden("No store");
-      const body = await parseJsonBody<Record<string, JsonValue>>(request);
+      const body = await parseJsonBody<FirestoreDocument>(request);
       try {
         const doc = await shippingConfigsRepository.create({
           ...body,

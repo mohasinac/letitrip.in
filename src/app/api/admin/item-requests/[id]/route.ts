@@ -6,7 +6,7 @@ import {
   errorResponse,
   itemRequestsRepository,
   parseJsonBody,
-  type JsonValue,
+  type FirestoreDocument,
   successResponse,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
@@ -21,7 +21,7 @@ export const PATCH = withProviders(
       const id = (params as { id: string }).id;
       const doc = await itemRequestsRepository.findById(id);
       if (!doc) return ApiErrors.notFound("Not found");
-      const patch = await parseJsonBody<Record<string, JsonValue>>(request);
+      const patch = await parseJsonBody<FirestoreDocument>(request);
       if (patch.status === "open" && !doc.approvedAt) {
         patch.approvedAt = new Date();
         patch.approvedBy = user!.uid;

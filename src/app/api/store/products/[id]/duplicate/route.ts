@@ -1,5 +1,5 @@
 import { normalizeError } from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { FirestoreDocument } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -31,8 +31,8 @@ export const POST = withProviders(
       }
       try {
         const now = new Date();
-        const copy: Record<string, JsonValue> = {
-          ...(source as unknown as Record<string, JsonValue>),
+        const copy: FirestoreDocument = {
+          ...(source as unknown as FirestoreDocument),
           title: `${(source as { title?: string }).title ?? "Listing"} (copy)`,
           status: "draft",
           slug: undefined,

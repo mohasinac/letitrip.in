@@ -1,5 +1,5 @@
 import { withProviders } from "@/providers.config";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { FirestoreDocument } from "@mohasinac/appkit";
 import { z } from "zod";
 import {
   createRouteHandler,
@@ -57,7 +57,7 @@ export const PUT = withProviders(createRouteHandler<(typeof updateSchema)["_outp
       }
     }
 
-    const patch: Record<string, JsonValue> = { updatedAt: new Date() };
+    const patch: FirestoreDocument = { updatedAt: new Date() };
     if (body?.name !== undefined) patch.name = body.name;
     if (body?.itemCode !== undefined) patch.itemCode = body.itemCode;
     if (body?.description !== undefined) patch.description = body.description;

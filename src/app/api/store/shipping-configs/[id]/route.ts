@@ -5,6 +5,7 @@ import {
   createRouteHandler,
   errorResponse,
   parseJsonBody,
+  type FirestoreDocument,
   shippingConfigsRepository,
   storeRepository,
   successResponse,
@@ -43,7 +44,7 @@ export const PATCH = withProviders(
     handler: async ({ request, user, params }) => {
       const { error } = await loadAndAssertOwner(user!.uid, (params as { id: string }).id);
       if (error) return error;
-      const body = await parseJsonBody<Record<string, JsonValue>>(request);
+      const body = await parseJsonBody<FirestoreDocument>(request);
       try {
         const updated = await shippingConfigsRepository.update(
           (params as { id: string }).id,

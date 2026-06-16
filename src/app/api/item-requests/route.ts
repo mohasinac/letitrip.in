@@ -5,7 +5,7 @@ import {
   errorResponse,
   itemRequestsRepository,
   parseJsonBody,
-  type JsonValue,
+  type FirestoreDocument,
   successResponse,
 } from "@mohasinac/appkit";
 import { ROLES_AUTHENTICATED } from "@/constants";
@@ -29,7 +29,7 @@ export const POST = withProviders(
     auth: true,
     roles: [...ROLES_AUTHENTICATED],
     handler: async ({ request, user }) => {
-      const body = await parseJsonBody<Record<string, JsonValue>>(request);
+      const body = await parseJsonBody<FirestoreDocument>(request);
       try {
         const doc = await itemRequestsRepository.create({
           ...body,
@@ -38,7 +38,7 @@ export const POST = withProviders(
           status: "pending-approval",
           replies: [],
           replyCount: 0,
-        });
+        } as FirestoreDocument);
         return successResponse(doc, "Request submitted for review", 201);
       } catch (err) {
         void normalizeError(err);
