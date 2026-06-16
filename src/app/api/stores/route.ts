@@ -11,7 +11,7 @@ import {
   type ListingProcessorResponse,
 } from "@/lib/listing-processor";
 import { validateSieveFilters } from "@/lib/sieve-validators";
-import type { StoreListItem } from "@mohasinac/appkit";
+import type { StoreListItem, JsonValue } from "@mohasinac/appkit";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 24;
@@ -27,8 +27,8 @@ const SAFE_STORE_FILTER_FIELDS = new Set([
   "averageRating", "stats.totalProducts",
 ]);
 
-function toPublicStore(s: Record<string, unknown>): StoreListItem {
-  const stats = s.stats as Record<string, unknown> | undefined;
+function toPublicStore(s: Record<string, JsonValue>): StoreListItem {
+  const stats = s.stats as Record<string, JsonValue> | undefined;
   return {
     id: s.id as string,
     storeSlug: s.storeSlug as string,
@@ -91,7 +91,7 @@ async function _GET(request: Request): Promise<NextResponse> {
   }
 
   if (upstream) {
-    items = (upstream.items as Array<Record<string, unknown>>).map(toPublicStore);
+    items = (upstream.items as Array<Record<string, JsonValue>>).map(toPublicStore);
     total = upstream.total;
     resultPage = upstream.page;
     totalPages = upstream.totalPages;
@@ -99,7 +99,7 @@ async function _GET(request: Request): Promise<NextResponse> {
   } else {
     try {
       const result = await storeRepository.listStores({ filters: filtersForRepo, sorts, page, pageSize });
-      items = (result.items as unknown as Array<Record<string, unknown>>).map(toPublicStore);
+      items = (result.items as unknown as Array<Record<string, JsonValue>>).map(toPublicStore);
       total = result.total;
       resultPage = result.page;
       totalPages = result.totalPages;
