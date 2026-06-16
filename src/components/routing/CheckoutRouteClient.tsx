@@ -536,12 +536,12 @@ function renderOrderSummary({
           </Text>
         </Div>
       )}
-      <Row className="text-sm text-zinc-600 dark:text-zinc-400 mb-1" align="center" justify="between">
+      <Row textSize="sm" className="text-zinc-600 dark:text-zinc-400 mb-1" align="center" justify="between">
         <Text>Subtotal</Text>
         <Text>{formattedSubtotal}</Text>
       </Row>
       {totalDiscount > 0 && (
-        <Row className="text-sm text-success mb-1" align="center" justify="between">
+        <Row textSize="sm" className="text-success mb-1" align="center" justify="between">
           <Text>Coupon discount</Text>
           <Text>−₹{(totalDiscount / 100).toFixed(2)}</Text>
         </Row>

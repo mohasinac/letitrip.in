@@ -128,7 +128,7 @@ export async function HowOffersWorkView() {
           <Stack className={`${__P.p6}`} border="default" surface="subtle" gap="3" rounded="xl">
             {RULES.map((rule, i) => (
               <Div key={i} className={`${flex.center} gap-3`}>
-                <Div className={`flex-shrink-0 w-6 h-6 bg-primary/10 dark:bg-primary/15 ${flex.center} text-sm font-semibold text-primary`} rounded="full">
+                <Div textSize="sm" className={`flex-shrink-0 w-6 h-6 bg-primary/10 dark:bg-primary/15 ${flex.center} font-semibold text-primary`} rounded="full">
                   {i + 1}
                 </Div>
                 <Text variant="secondary" className="leading-relaxed" size="sm">

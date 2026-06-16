@@ -125,18 +125,18 @@ function renderInvoiceItemsTable(order: OrderData) {
 function renderInvoiceTotals(order: OrderData) {
   return (
     <Stack gap="xs" className="ml-auto max-w-xs">
-      <Row justify="between" className="text-sm">
+      <Row textSize="sm" justify="between">
         <Text variant="secondary">Subtotal</Text>
         <Text>{paise(order.subtotal, order.currency)}</Text>
       </Row>
       {order.shippingCost !== undefined && (
-        <Row justify="between" className="text-sm">
+        <Row textSize="sm" justify="between">
           <Text variant="secondary">Shipping</Text>
           <Text>{order.shippingCost === 0 ? "Free" : paise(order.shippingCost, order.currency)}</Text>
         </Row>
       )}
       {order.discount !== undefined && order.discount > 0 && (
-        <Row justify="between" className="text-sm">
+        <Row textSize="sm" justify="between">
           <Text variant="secondary">
             Discount{order.couponCode ? ` (${order.couponCode})` : ""}
           </Text>
@@ -146,14 +146,14 @@ function renderInvoiceTotals(order: OrderData) {
         </Row>
       )}
       {order.tax !== undefined && order.tax > 0 && (
-        <Row justify="between" className="text-sm">
+        <Row textSize="sm" justify="between">
           <Text variant="secondary">Tax (GST)</Text>
           <Text>{paise(order.tax, order.currency)}</Text>
         </Row>
       )}
-      <Row border="default" 
+      <Row textSize="sm" border="default" 
         justify="between"
-        className="text-sm font-semibold border-t print:border-gray-300 mt-1" padding="t-xs"
+        className="font-semibold border-t print:border-gray-300 mt-1" padding="t-xs"
       >
         <Text className="print:text-black" color="primary" weight="semibold">Total</Text>
         <Text className="print:text-black" color="primary" weight="semibold">

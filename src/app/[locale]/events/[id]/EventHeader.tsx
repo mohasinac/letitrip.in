@@ -70,7 +70,7 @@ export function EventHeader({
           {title}
         </Heading>
 
-        <Row gap="md" className="flex-wrap text-sm" color="muted">
+        <Row textSize="sm" gap="md" className="flex-wrap" color="muted">
           {startsAtFormatted ? (
             <Text as="span">
               {EVENT_LABELS.HEADER_START}{" "}

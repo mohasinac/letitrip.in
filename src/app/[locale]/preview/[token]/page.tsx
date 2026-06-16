@@ -70,7 +70,7 @@ export default async function PreviewPage({
           {preview.kind}
           {PREVIEW_COPY.kindSuffix}
         </Text>
-        <Div className={`${__O.auto} ${__P.p4} font-mono text-xs whitespace-pre`} rounded="lg" surface="muted">
+        <Div textSize="xs" className={`${__O.auto} ${__P.p4} font-mono whitespace-pre`} rounded="lg" surface="muted">
           {JSON.stringify(preview.draft, null, 2)}
         </Div>
         <Text className="mt-4" color="muted" size="xs">

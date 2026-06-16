@@ -52,7 +52,7 @@ export default function Page() {
             onChange={(k: string) => setTab(k as TabId)}
           />
           {tab === "overview" && user && (
-            <Stack gap="sm" className="text-sm">
+            <Stack textSize="sm" gap="sm">
               <Text>
                 <Span weight="bold">Email:</Span> {(user.email as string) ?? "—"}
               </Text>

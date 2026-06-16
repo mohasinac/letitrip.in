@@ -9,22 +9,22 @@ export function StoreAboutClient({ store }: { store: StoreDetail }) {
       store={store}
       renderStats={(s) =>
         s.itemsSold != null || s.totalReviews != null || s.averageRating != null ? (
-          <Row gap="lg" className="text-sm border-y" color="muted" padding="y-md">
+          <Row textSize="sm" gap="lg" className="border-y" color="muted" padding="y-md">
             {s.itemsSold != null && (
               <Div className="text-center">
-                <Div className="text-lg font-bold" color="primary">{s.itemsSold}</Div>
+                <Div textSize="lg" className="font-bold" color="primary">{s.itemsSold}</Div>
                 <Div>Items Sold</Div>
               </Div>
             )}
             {s.totalReviews != null && (
               <Div className="text-center">
-                <Div className="text-lg font-bold" color="primary">{s.totalReviews}</Div>
+                <Div textSize="lg" className="font-bold" color="primary">{s.totalReviews}</Div>
                 <Div>Reviews</Div>
               </Div>
             )}
             {s.averageRating != null && (
               <Div className="text-center">
-                <Div className="text-lg font-bold" color="primary">{s.averageRating.toFixed(1)}</Div>
+                <Div textSize="lg" className="font-bold" color="primary">{s.averageRating.toFixed(1)}</Div>
                 <Div>Avg Rating</Div>
               </Div>
             )}

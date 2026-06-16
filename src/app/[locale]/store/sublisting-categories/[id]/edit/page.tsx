@@ -126,7 +126,7 @@ export default function Page() {
         </>
 
         {error && (
-          <Div className="border border-error/20 text-sm" color="error" surface="danger-surface" padding="inline" rounded="xl">
+          <Div textSize="sm" className="border border-error/20" color="error" surface="danger-surface" padding="inline" rounded="xl">
             {error}
           </Div>
         )}

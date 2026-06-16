@@ -98,7 +98,7 @@ function HistoryRow({ item, onRemove }: HistoryRowProps) {
         >
           {title}
         </Link>
-        <Row gap="sm" className="mt-1 text-xs">
+        <Row textSize="xs" gap="sm" className="mt-1">
           <Span className={TYPE_CHIP}>{TYPE_LABEL[item.productType]}</Span>
           {item.productSnapshot?.storeName && (
             <Text variant="secondary" className="line-clamp-1" size="xs">

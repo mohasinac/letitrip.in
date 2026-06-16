@@ -193,7 +193,7 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
         </Span>
       </Row>
       {order.trackingNumber && (
-        <Div className="text-xs" color="muted">
+        <Div textSize="xs" color="muted">
           Tracking: <Span weight="medium" color="muted">{order.trackingNumber}</Span>
           {order.shippingCarrier && (
             <Span className="ml-1.5">via {order.shippingCarrier}</Span>

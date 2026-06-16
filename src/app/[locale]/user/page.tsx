@@ -73,7 +73,7 @@ function StatCard({ label, value, href }: { label: string; value: string | numbe
       className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3 shadow-sm hover:border-[var(--appkit-color-primary)] hover:shadow-md transition-colors"
     >
       <Div className="text-2xl font-bold text-[var(--appkit-color-text)] leading-tight">{value}</Div>
-      <Div className="text-xs text-[var(--appkit-color-text-muted)] mt-0.5">{label}</Div>
+      <Div textSize="xs" className="text-[var(--appkit-color-text-muted)] mt-0.5">{label}</Div>
     </Link>
   );
 }
@@ -184,7 +184,7 @@ export default function Page() {
                   {user.displayName ?? "My Account"}
                 </Div>
                 {user.email && (
-                  <Div className="text-sm text-[var(--appkit-color-text-muted)] truncate">{user.email}</Div>
+                  <Div textSize="sm" className="text-[var(--appkit-color-text-muted)] truncate">{user.email}</Div>
                 )}
                 <Link
                   href={String(ROUTES.USER.PROFILE)}

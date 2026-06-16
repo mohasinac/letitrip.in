@@ -81,7 +81,7 @@ export default function Page() {
     return (
       <Section>
         <Container size="md">
-          <Div className="text-sm" color="muted" padding="y-lg">Loading…</Div>
+          <Div textSize="sm" color="muted" padding="y-lg">Loading…</Div>
         </Container>
       </Section>
     );

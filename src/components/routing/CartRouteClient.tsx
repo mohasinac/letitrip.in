@@ -739,7 +739,7 @@ export function CartRouteClient() {
         return (
           <Stack gap="md">
             {/* ── Tab bar ── */}
-            <Row gap="xs" className="p-1 text-sm" surface="subtle" rounded="xl">
+            <Row textSize="sm" gap="xs" className="p-1" surface="subtle" rounded="xl">
               {CART_TABS.map(({ key, label }) => {
                 const count = tabCounts[key];
                 return (
