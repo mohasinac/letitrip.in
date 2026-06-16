@@ -39,7 +39,7 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
           <Div className="text-2xl flex-shrink-0 mt-0.5">❌</Div>
           <Div className="flex-1">
             <Row gap="sm" className="mb-1">
-              <Span size="xs" weight="semibold" className="inline-block bg-error-surface text-error" rounded="full" padding="pill-xs">{t("sCancelLabel")}</Span>
+              <Span color="error" surface="danger-surface" size="xs" weight="semibold" className="inline-block" rounded="full" padding="pill-xs">{t("sCancelLabel")}</Span>
             </Row>
             <Text variant="secondary" className="leading-relaxed" size="sm">{t("sCancelDesc")}</Text>
           </Div>
