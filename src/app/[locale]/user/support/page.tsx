@@ -129,7 +129,7 @@ export default function UserSupportPage() {
           aria-label="Filter by ticket status"
           value={status}
           onChange={(v) => table.set("status", v)}
-          options={TICKET_STATUSES}
+          options={[...TICKET_STATUSES]}
         />
       </Div>
 

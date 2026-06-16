@@ -7,7 +7,7 @@
     "plugins": [{ "name": "next" }],
     "paths": {
       "@/*": ["./src/*"],
-      "@mohasinac/appkit": ["./appkit/src/index.ts"],
+      "@mohasinac/appkit": ["./appkit/src/server-entry.ts"],
       "@mohasinac/appkit/client": ["./appkit/src/client.ts"],
       "@mohasinac/appkit/server": ["./appkit/src/server.ts"],
       "@mohasinac/appkit/ui": ["./appkit/src/ui/index.ts"],

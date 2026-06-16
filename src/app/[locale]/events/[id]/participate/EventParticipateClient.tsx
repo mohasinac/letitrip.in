@@ -1,5 +1,5 @@
 "use client";
-import { Row, Stack, normalizeError } from "@mohasinac/appkit";
+import { Stack, normalizeError } from "@mohasinac/appkit";
 import type { FirestoreDocument, FirestoreValue } from "@mohasinac/appkit";
 import { useState, useCallback } from "react";
 import { Link } from "@/i18n/navigation";

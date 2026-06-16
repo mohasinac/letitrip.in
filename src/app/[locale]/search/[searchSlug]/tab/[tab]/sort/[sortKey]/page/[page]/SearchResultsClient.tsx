@@ -7,6 +7,7 @@ import {
   InteractiveProductCard,
   ROUTES,
   SearchView,
+  Stack,
   Text,
 } from "@mohasinac/appkit/client";
 

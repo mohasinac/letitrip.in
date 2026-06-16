@@ -3,6 +3,7 @@ import {
   PromotionsViewProductSection,
   InteractiveProductCard,
   Div,
+  Stack,
   AdSlot,
   ROUTES,
   type AdSlotId,

@@ -49,9 +49,9 @@ export default async function Page({ params }: Props) {
   const hasLeaderboard =
     (event as { hasLeaderboard?: boolean }).hasLeaderboard === true;
   const ev = event as unknown as Record<string, JsonValue>;
-  const pollConfig = ev.pollConfig as Parameters<typeof EventParticipateClient>[0]["event"]["pollConfig"];
-  const surveyConfig = ev.surveyConfig as Parameters<typeof EventParticipateClient>[0]["event"]["surveyConfig"];
-  const feedbackConfig = ev.feedbackConfig as Parameters<typeof EventParticipateClient>[0]["event"]["feedbackConfig"];
+  const pollConfig = ev.pollConfig as unknown as Parameters<typeof EventParticipateClient>[0]["event"]["pollConfig"];
+  const surveyConfig = ev.surveyConfig as unknown as Parameters<typeof EventParticipateClient>[0]["event"]["surveyConfig"];
+  const feedbackConfig = ev.feedbackConfig as unknown as Parameters<typeof EventParticipateClient>[0]["event"]["feedbackConfig"];
   type SpinPrize = { id: string; label: string; weight: number; isActive: boolean; couponId?: string };
   const spinPrizes = Array.isArray(ev.spinPrizes) ? (ev.spinPrizes as SpinPrize[]) : [];
   const spinWindowStart = typeof ev.spinWindowStart === "string" ? ev.spinWindowStart : null;

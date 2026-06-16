@@ -104,7 +104,7 @@ export default function NewSupportTicketPage() {
             aria-label="Ticket category"
             value={category}
             onChange={(v) => setCategory(v as TicketCategory)}
-            options={TICKET_CATEGORIES}
+            options={[...TICKET_CATEGORIES]}
           />
         </Div>
 
