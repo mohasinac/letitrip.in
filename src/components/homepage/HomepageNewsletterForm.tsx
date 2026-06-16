@@ -56,7 +56,7 @@ export function HomepageNewsletterForm() {
   return (
     <FormShellContext.Provider value={shellCtx}>
       <Form onSubmit={onSubmit} className={`mx-auto flex w-full max-w-xl flex-col ${THEME_CONSTANTS.spacing.gap.xs}`}>
-        <Stack className={`w-full ${THEME_CONSTANTS.spacing.gap.xs} sm:flex-row`} data-section="homepagenewsletterform-div-9">
+        <Stack className={`w-full sm:flex-row`} gap="xs" data-section="homepagenewsletterform-div-9">
           <FieldInput
             name="email"
             type="email"

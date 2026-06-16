@@ -23,7 +23,7 @@ function renderReviewsSteps(steps: ReviewStep[], t: T) {
       <Heading level={2} className="mb-8" align="center">{t("stepsTitle")}</Heading>
       <Stack gap="md">
         {steps.map(({ number, icon, title, text }) => (
-          <Row key={number} className={`${THEME_CONSTANTS.spacing.gap.md} ${__P.p5} border ${themed.border} ${themed.bgPrimary}`} align="start" rounded="xl">
+          <Row key={number} className={`${__P.p5} border ${themed.border} ${themed.bgPrimary}`} gap="md" align="start" rounded="xl">
             <Div className={`flex-shrink-0 w-10 h-10 bg-primary/10 dark:bg-primary/15 ${flex.center} text-xl`} rounded="full">{icon}</Div>
             <Div>
               <Text className="mb-0.5" weight="semibold">{number}. {title}</Text>
@@ -54,7 +54,7 @@ function renderReviewsInfoCards(infoCards: ReviewInfoCard[], t: T) {
   return (
     <Section>
       <Heading level={2} className="mb-8" align="center">{t("infoTitle")}</Heading>
-      <Grid className={`${THEME_CONSTANTS.spacing.gap.md} sm:grid-cols-2`}>
+      <Grid className={`sm:grid-cols-2`} gap="md">
         {infoCards.map(({ icon: Icon, title, text, color, iconColor }) => (
           <Div key={title} className={`border ${__P.p5} ${color}`} rounded="xl">
             <Div className={`w-10 h-10 dark:bg-white/10 ${flex.center} mb-3`} surface="default" rounded="lg">

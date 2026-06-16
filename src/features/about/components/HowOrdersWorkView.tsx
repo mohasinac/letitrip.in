@@ -66,7 +66,7 @@ function renderOrdersInfoCards(infoCards: InfoCard[], t: T) {
   return (
     <Section>
       <Heading level={2} className="mb-8" align="center">{t("infoTitle")}</Heading>
-      <Grid className={`${THEME_CONSTANTS.spacing.gap.md} sm:grid-cols-2`}>
+      <Grid className={`sm:grid-cols-2`} gap="md">
         {infoCards.map(({ icon: Icon, title, text, color, iconColor }) => (
           <Div key={title} className={`border ${__P.p5} ${color}`} rounded="xl">
             <Div className={`w-10 h-10 dark:bg-white/10 ${flex.center} mb-3`} surface="default" rounded="lg">

@@ -39,7 +39,7 @@ function renderSecurityOverview(t: T) {
 function renderSecurityCards(sections: SecurityCard[]) {
   return (
     <Section>
-      <Grid className={`${THEME_CONSTANTS.spacing.gap.md} md:grid-cols-2`}>
+      <Grid className={`md:grid-cols-2`} gap="md">
         {sections.map(({ icon: Icon, title, text, color, iconColor }) => (
           <Div key={title} className={`border ${__P.p5} ${color}`} rounded="xl">
             <Div className={`w-10 h-10 dark:bg-white/10 ${flex.center} mb-3`} surface="default" rounded="lg">
