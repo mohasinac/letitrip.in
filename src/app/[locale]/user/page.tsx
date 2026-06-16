@@ -161,11 +161,11 @@ export default function Page() {
                     {(user.displayName ?? user.email ?? "U")[0].toUpperCase()}
                   </Row>
                 )}
-                <Row className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors opacity-0 group-hover:opacity-100" align="center" justify="center">
+                <Row surface="overlay-xs" className="absolute inset-0 bg-black/0 group-hover: transition-colors opacity-0 group-hover:opacity-100" align="center" justify="center">
                   <Camera className="w-5 h-5 text-white" />
                 </Row>
                 {uploading && (
-                  <Row className="absolute inset-0 bg-black/60 text-white text-[10px] font-semibold" align="center" justify="center">
+                  <Row surface="overlay-lg" className="absolute inset-0 text-white text-[10px] font-semibold" align="center" justify="center">
                     Saving…
                   </Row>
                 )}
