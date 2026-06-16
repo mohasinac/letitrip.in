@@ -1738,11 +1738,11 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
             <Tr border="default" surface="muted">
               <Th className="px-3 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-left" />
               <Th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-left" />
-              <Th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-center">Search</Th>
-              <Th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-center">Filter</Th>
-              <Th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-center">Sort</Th>
-              <Th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-center">PII</Th>
-              <Th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-center">Index</Th>
+              <Th className="px-2 pb-1.5 text-[10px] text-center" color="faint" weight="normal">Search</Th>
+              <Th className="px-2 pb-1.5 text-[10px] text-center" color="faint" weight="normal">Filter</Th>
+              <Th className="px-2 pb-1.5 text-[10px] text-center" color="faint" weight="normal">Sort</Th>
+              <Th className="px-2 pb-1.5 text-[10px] text-center" color="faint" weight="normal">PII</Th>
+              <Th className="px-2 pb-1.5 text-[10px] text-center" color="faint" weight="normal">Index</Th>
               <Th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-left" />
             </Tr>
           </Thead>
