@@ -83,7 +83,7 @@ export default function Page() {
         </Text>
       </Div>
 
-      <Form onSubmit={handleSubmit} className="space-y-4">
+      <Form onSubmit={handleSubmit} spacing="md">
         <>
           <Label className={LBL_CLS}>
             Category name <Text as="span" className="text-error">*</Text>
