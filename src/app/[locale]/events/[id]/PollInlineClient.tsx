@@ -37,7 +37,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
 
   if (requiresLogin && !user) {
     return (
-      <Stack className="px-6 text-center" gap="3" padding="y-xl" rounded="xl" border="default">
+      <Stack className="text-center" gap="3" padding="lg" rounded="xl" border="default">
         <Text weight="semibold" color="primary">Login required to vote</Text>
         <Text size="sm" color="muted">
           Please log in to cast your vote in this poll.
@@ -54,7 +54,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
 
   if (isSubmitted) {
     return (
-      <Stack className="border border-success/20 px-6 text-center" surface="success-surface" gap="sm" padding="y-xl" rounded="xl">
+      <Stack className="border border-success/20 text-center" surface="success-surface" gap="sm" padding="lg" rounded="xl">
         <Text className="text-success" size="lg" weight="semibold">Vote recorded!</Text>
         <Text className="text-success" size="sm">
           Thank you for participating. Results will be shown after the poll closes.
@@ -65,7 +65,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
 
   if (!isActive) {
     return (
-      <Div className="px-6 text-center" padding="y-lg" rounded="xl" border="default">
+      <Div className="text-center" padding="lg" rounded="xl" border="default">
         <Text size="sm" color="muted">This poll has ended.</Text>
       </Div>
     );
@@ -159,9 +159,10 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
       <Button
         type="button"
         variant="primary"
+        size="lg"
         disabled={isLoading || selectedVotes.length === 0}
         onClick={handleSubmit}
-        className="w-full rounded-xl px-6 py-3 text-sm font-semibold disabled:opacity-60 transition-opacity"
+        className="w-full rounded-xl disabled:opacity-60 transition-opacity"
       >
         {isLoading ? "Submitting…" : "Cast Vote"}
       </Button>
