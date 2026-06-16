@@ -137,13 +137,13 @@ export default function Page() {
                 style={{ background: BRAND_GRAD }}
                 aria-hidden="true"
               />
-              <Button
+              <Button rounded="full" 
                 variant="ghost"
                 type="button"
                 onClick={() => fileRef.current?.click()}
                 disabled={uploading}
                 aria-label="Change profile photo"
-                className="group relative h-16 w-16 flex-shrink-0 rounded-full overflow-hidden ring-2 ring-[var(--appkit-color-border)] p-0 min-h-0 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
+                className="group relative h-16 w-16 flex-shrink-0 overflow-hidden ring-2 ring-[var(--appkit-color-border)] p-0 min-h-0 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
               >
                 {user.photoURL ? (
                   // eslint-disable-next-line lir/no-raw-media-elements, @next/next/no-img-element

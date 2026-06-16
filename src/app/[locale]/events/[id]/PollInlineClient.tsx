@@ -157,13 +157,13 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
         />
       )}
       {error && <Text className="text-error" size="sm">{error}</Text>}
-      <Button
+      <Button rounded="xl" 
         type="button"
         variant="primary"
         size="lg"
         disabled={isLoading || selectedVotes.length === 0}
         onClick={handleSubmit}
-        className="w-full rounded-xl disabled:opacity-60 transition-opacity"
+        className="w-full disabled:opacity-60 transition-opacity"
       >
         {isLoading ? "Submitting…" : "Cast Vote"}
       </Button>

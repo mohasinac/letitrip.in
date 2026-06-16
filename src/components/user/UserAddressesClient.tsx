@@ -135,20 +135,20 @@ export function UserAddressesClient() {
             Delete this address? This cannot be undone.
           </Text>
           <Row gap="3" >
-            <Button
+            <Button rounded="lg" 
               type="button"
               variant="danger"
               onClick={handleDeleteConfirm}
               disabled={deleteAddress.isPending}
-              className="rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-60 transition-colors"
+              className="px-4 py-2 text-sm font-semibold disabled:opacity-60 transition-colors"
             >
               {deleteAddress.isPending ? "Deleting…" : "Delete"}
             </Button>
-            <Button
+            <Button rounded="lg" 
               type="button"
               variant="outline"
               onClick={() => setConfirmDeleteId(null)}
-              className="rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+              className="px-4 py-2 text-sm font-medium transition-colors"
             >
               Cancel
             </Button>

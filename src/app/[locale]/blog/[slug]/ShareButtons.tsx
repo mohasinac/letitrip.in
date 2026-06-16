@@ -32,17 +32,17 @@ export function ShareButtons({ title }: ShareButtonsProps) {
   return (
     <Row border="default" className="mt-6 border-t" padding="t-lg" align="center" gap="3">
       <Span size="sm" weight="medium" color="muted">Share:</Span>
-      <Button gap="xs" 
+      <Button rounded="lg" gap="xs" 
         type="button"
         onClick={handleCopy}
-        className="inline-flex items-center .5 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+        className="inline-flex items-center .5 border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
       >
         🔗 {copied ? "Copied!" : "Copy Link"}
       </Button>
-      <Button gap="xs" 
+      <Button rounded="lg" gap="xs" 
         type="button"
         onClick={handleTwitterShare}
-        className="inline-flex items-center .5 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+        className="inline-flex items-center .5 border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
       >
         🐦 Share on X
       </Button>

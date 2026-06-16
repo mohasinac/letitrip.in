@@ -167,11 +167,11 @@ function MessageInput({ disabled, onSend, placeholder, sendLabel }: MessageInput
         disabled={disabled || submitting}
         className="flex-1 resize-none rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:border-primary focus:outline-none"
       />
-      <Button
+      <Button rounded="lg" 
         type="button"
         onClick={() => void handleSubmit()}
         disabled={disabled || submitting || draft.trim().length === 0}
-        className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed"
+        className="bg-primary px-4 py-2 text-sm font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {sendLabel}
       </Button>

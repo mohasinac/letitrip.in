@@ -111,19 +111,19 @@ export default function Page() {
         )}
 
         <Row gap="3" padding="t-xs">
-          <Button
+          <Button rounded="lg" 
             type="submit"
             variant="primary"
             disabled={!name.trim() || saving}
-            className="rounded-lg px-5 py-2.5 text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="px-5 py-2.5 text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {saving ? "Creating…" : "Create category"}
           </Button>
-          <Button
+          <Button rounded="lg" 
             type="button"
             variant="outline"
             onClick={() => router.back()}
-            className="rounded-lg px-5 py-2.5 text-sm font-medium"
+            className="px-5 py-2.5 text-sm font-medium"
           >
             Cancel
           </Button>
