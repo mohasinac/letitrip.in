@@ -1677,7 +1677,7 @@ const TYPE_CHIP: Record<FieldDef["type"], string> = {
 function Cap({ active, label, color }: { active?: boolean; label: string; color: string }) {
   if (!active) return <Span className="text-zinc-300 dark:text-slate-700 select-none" size="xs">—</Span>;
   return (
-    <Span className={`inline-block px-1.5 py-0.5 text-[10px] leading-none ${color}`} weight="semibold" rounded="full">
+    <Span padding="pill-2xs" className={`inline-block text-[10px] leading-none ${color}`} weight="semibold" rounded="full">
       {label}
     </Span>
   );
@@ -1763,7 +1763,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
                 >
                   <Td className="px-3 font-mono break-all" padding="xs-tall" color="primary">{f.name}</Td>
                   <Td padding="xs-tall">
-                    <Span className={`px-1.5 py-0.5 text-[10px] leading-none ${TYPE_CHIP[f.type]}`} weight="semibold" rounded="default">
+                    <Span padding="pill-2xs" className={`text-[10px] leading-none ${TYPE_CHIP[f.type]}`} weight="semibold" rounded="default">
                       {f.type}
                     </Span>
                   </Td>
