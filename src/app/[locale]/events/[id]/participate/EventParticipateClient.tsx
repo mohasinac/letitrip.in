@@ -94,7 +94,7 @@ function renderEventInfoBlock(event: ParticipateEventInput) {
         Participate in {event.title}
       </Heading>
       {event.description ? (
-        <Div className="text-zinc-600 dark:text-zinc-400">
+        <Div color="muted">
           <RichText html={event.description} />
         </Div>
       ) : null}
