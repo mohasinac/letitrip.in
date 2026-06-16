@@ -1839,7 +1839,7 @@ function renderAccordionCollapsedHeader({
         {isLoadingStatus ? (
           <Span size="xs" variant="muted">…</Span>
         ) : dbStatus ? (
-          <Span className={`font-mono py-0.5 ${isComplete ? "text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/40" : isEmpty ? "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30" : "text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/40"}`} size="xs" weight="semibold" rounded="full" padding="x-xs">
+          <Span className={`font-mono ${isComplete ? "text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/40" : isEmpty ? "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30" : "text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/40"}`} size="xs" weight="semibold" rounded="full" padding="pill-xs">
             {existingCount}/{seedCount}
           </Span>
         ) : null}

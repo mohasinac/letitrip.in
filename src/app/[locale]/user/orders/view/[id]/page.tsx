@@ -97,7 +97,7 @@ function renderItemRow(item: OrderItemT, key: string | number) {
         {isPrizeDraw && revealStatus && (
           <Row gap="sm" className="mt-1" wrap>
             {revealStatus === "revealed" ? (
-              <Span weight="semibold" className="inline-flex items-center bg-success-surface py-0.5 text-[10px] text-success" rounded="full" padding="x-xs">
+              <Span weight="semibold" className="inline-flex items-center bg-success-surface text-[10px] text-success" rounded="full" padding="pill-xs">
                 Prize revealed{item.revealedItemNumber != null ? ` (#${item.revealedItemNumber})` : ""}
               </Span>
             ) : revealStatus === "open" ? (
@@ -105,11 +105,11 @@ function renderItemRow(item: OrderItemT, key: string | number) {
                 Reveal pending
               </Span>
             ) : revealStatus === "pending" ? (
-              <Span weight="semibold" className="inline-flex items-center bg-warning-surface py-0.5 text-[10px] text-warning" rounded="full" padding="x-xs">
+              <Span weight="semibold" className="inline-flex items-center bg-warning-surface text-[10px] text-warning" rounded="full" padding="pill-xs">
                 Awaiting reveal window
               </Span>
             ) : (
-              <Span weight="semibold" className="inline-flex items-center py-0.5 text-[10px]" rounded="full" padding="x-xs" surface="subtle" color="primary">
+              <Span weight="semibold" className="inline-flex items-center text-[10px]" rounded="full" padding="pill-xs" surface="subtle" color="primary">
                 Reveal closed
               </Span>
             )}
@@ -188,7 +188,7 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
           </Text>
           {date && <Text variant="secondary" className="mt-0.5" size="xs">{date}</Text>}
         </Div>
-        <Span size="xs" weight="semibold" className={`py-1 capitalize ${statusColor}`} rounded="full" padding="x-sm">
+        <Span size="xs" weight="semibold" className={`capitalize ${statusColor}`} rounded="full" padding="pill-md">
           {order.orderStatus.replace(/_/g, " ")}
         </Span>
       </Row>
