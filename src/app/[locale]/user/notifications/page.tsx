@@ -88,7 +88,7 @@ function NotifCard({
       className={`border px-5 transition-colors ${ notif.isRead ? "border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)]" : "border-[var(--appkit-color-primary)] bg-[var(--appkit-color-surface)]" }`} gap="sm" rounded="xl" shadow="sm" padding="y-md"
     >
       <Row justify="between" wrap gap="3" align="start">
-        <Div className="space-y-0.5 min-w-0">
+        <Stack gap="none" className=".5 min-w-0">
           <Row gap="sm" align="center">
             {!notif.isRead && (
               <Span className="inline-block h-2 w-2 bg-primary shrink-0" rounded="full" />
@@ -98,7 +98,7 @@ function NotifCard({
             </Text>
           </Row>
           <Text variant="secondary" className="line-clamp-2" size="sm">{notif.message}</Text>
-        </Div>
+        </Stack>
         <Text variant="secondary" className="shrink-0 mt-0.5" size="xs">
           {timeAgo(notif.createdAt)}
         </Text>

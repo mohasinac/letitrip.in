@@ -838,7 +838,7 @@ export function CartRouteClient() {
         <CartSummary
           labels={{ title: "Summary" }}
           renderBreakdown={() => (
-            <Div className="space-y-1.5">
+            <Stack gap="xs" className=".5">
               <Row align="center" justify="between">
                 <Text size="sm" color="muted">
                   {selectedCount === allItemIds.length
@@ -857,7 +857,7 @@ export function CartRouteClient() {
               <Text className="mt-2" color="muted" size="xs">
                 Apply coupons at checkout
               </Text>
-            </Div>
+            </Stack>
           )}
           renderTotal={() => (
             <Div border="subtle" className="border-t dark:border-slate-700" padding="t-sm">

@@ -61,7 +61,7 @@ function renderProfileViewMode({
             {avatarLetter}
           </Row>
         )}
-        <Div className="space-y-0.5 min-w-0">
+        <Stack gap="none" className=".5 min-w-0">
           <Text className="truncate" color="primary" size="lg" weight="semibold">
             {resolvedName || <Text as="span" className="italic" color="faint">{namePlaceholder}</Text>}
           </Text>
@@ -69,7 +69,7 @@ function renderProfileViewMode({
           {profile.phoneNumber && (
             <Text size="sm" color="muted">{profile.phoneNumber}</Text>
           )}
-        </Div>
+        </Stack>
       </Row>
       {profileBio && (
         <Text className="leading-relaxed" color="muted" size="sm">{profileBio}</Text>
