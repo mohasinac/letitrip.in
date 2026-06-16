@@ -133,9 +133,9 @@ function renderPollForm({
       {isMultiSelect ? (
         <Stack gap="sm">
           {pollConfig.options.map((opt) => (
-            <Label
+            <Label layout="flex" gap="lg" 
               key={opt.id}
-              className="flex items-center gap-3 cursor-pointer rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+              className="cursor-pointer rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
             >
               <Checkbox
                 name="poll-option"
@@ -324,7 +324,7 @@ function renderDynamicField(
     control = (
       <Stack gap="xs">
         {(field.options ?? []).map((opt) => (
-          <Label key={opt} className="flex items-center gap-2 cursor-pointer">
+          <Label layout="flex" gap="md" key={opt} className="cursor-pointer">
             <Checkbox
               checked={selected.includes(opt)}
               onChange={() =>
