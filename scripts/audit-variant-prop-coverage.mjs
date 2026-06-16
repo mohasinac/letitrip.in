@@ -21,7 +21,7 @@
 // the per-callsite count across both src/ and appkit/src/ excluding primitive
 // source dirs. Tighten this number whenever the sweep drives the count down;
 // the audit will block any regression.
-const BASELINE = 1765;
+const BASELINE = 1758;
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";

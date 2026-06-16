@@ -1620,16 +1620,16 @@ function StatusDot({
   if (state === "running")
     return (
       <Span
-        className="inline-block w-3.5 h-3.5 border-2 border-amber-500 border-t-transparent rounded-full animate-spin shrink-0"
+        className="inline-block w-3.5 h-3.5 border-2 border-amber-500 border-t-transparent animate-spin shrink-0" rounded="full"
         aria-label="Running"
       />
     );
   if (state === "queued")
-    return <Span className="inline-block w-3.5 h-3.5 rounded-full border-2 border-zinc-300 dark:border-slate-600 shrink-0" aria-label="Queued" />;
+    return <Span className="inline-block w-3.5 h-3.5 border-2 border-zinc-300 dark:border-slate-600 shrink-0" rounded="full" aria-label="Queued" />;
   if (state === "done") {
     // A "done" runner event with 0 docs in DB is not a success.
     if (typeof seedCount === "number" && seedCount > 0 && (existingCount ?? 0) === 0) {
-      return <Span className="text-red-500 shrink-0" aria-label="Failed">✗</Span>;
+      return <Span className="shrink-0" color="error" aria-label="Failed">✗</Span>;
     }
     if (typeof seedCount === "number" && seedCount === 0) {
       return <Span className="text-zinc-400 dark:text-slate-500 shrink-0" aria-label="No data">–</Span>;
@@ -1637,7 +1637,7 @@ function StatusDot({
     return <Span className="text-emerald-500 shrink-0" aria-label="Done">✓</Span>;
   }
   if (state === "error")
-    return <Span className="text-red-500 shrink-0" aria-label="Error">✗</Span>;
+    return <Span className="shrink-0" color="error" aria-label="Error">✗</Span>;
   return null;
 }
 
@@ -1675,9 +1675,9 @@ const TYPE_CHIP: Record<FieldDef["type"], string> = {
 };
 
 function Cap({ active, label, color }: { active?: boolean; label: string; color: string }) {
-  if (!active) return <Span className="text-zinc-300 dark:text-slate-700 text-xs select-none">—</Span>;
+  if (!active) return <Span className="text-zinc-300 dark:text-slate-700 select-none" size="xs">—</Span>;
   return (
-    <Span className={`inline-block px-1.5 py-0.5 rounded-full text-[10px] font-semibold leading-none ${color}`}>
+    <Span className={`inline-block px-1.5 py-0.5 text-[10px] leading-none ${color}`} weight="semibold" rounded="full">
       {label}
     </Span>
   );
@@ -1697,7 +1697,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
     <>
       <Row justify="between" gap="sm" wrap className="mb-2">
         <Text className="text-indigo-600 dark:text-indigo-400 tracking-wider m-0" size="xs" weight="bold" transform="uppercase">
-          📐 Schema Fields <Span className="text-zinc-400 dark:text-slate-500 font-normal normal-case tracking-normal">({fields.length} fields)</Span>
+          📐 Schema Fields <Span className="text-zinc-400 normal-case tracking-normal" weight="normal">({fields.length} fields)</Span>
         </Text>
         <Row gap="sm">
           <Input
@@ -1763,7 +1763,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
                 >
                   <td className="px-3 py-2 font-mono text-zinc-800 dark:text-slate-200 break-all">{f.name}</td>
                   <td className="px-2 py-2">
-                    <Span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold leading-none ${TYPE_CHIP[f.type]}`}>
+                    <Span className={`px-1.5 py-0.5 text-[10px] leading-none ${TYPE_CHIP[f.type]}`} weight="semibold" rounded="default">
                       {f.type}
                     </Span>
                   </td>
@@ -1801,7 +1801,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
           { label: "🔒 PII",        color: "text-red-600 dark:text-red-400" },
           { label: "📇 Indexed",    color: "text-zinc-500 dark:text-slate-400" },
         ].map(({ label, color }) => (
-          <Span key={label} className={`text-[10px] font-medium ${color}`}>{label}</Span>
+          <Span key={label} className={`text-[10px] ${color}`} weight="medium">{label}</Span>
         ))}
       </Row>
     </>
@@ -1839,7 +1839,7 @@ function renderAccordionCollapsedHeader({
         {isLoadingStatus ? (
           <Span size="xs" variant="muted">…</Span>
         ) : dbStatus ? (
-          <Span className={`text-xs font-mono font-semibold px-2 py-0.5 rounded-full ${isComplete ? "text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/40" : isEmpty ? "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30" : "text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/40"}`}>
+          <Span className={`font-mono py-0.5 ${isComplete ? "text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/40" : isEmpty ? "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30" : "text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/40"}`} size="xs" weight="semibold" rounded="full" padding="x-xs">
             {existingCount}/{seedCount}
           </Span>
         ) : null}
@@ -1860,9 +1860,9 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         <Text className="leading-relaxed m-0" color="muted" size="sm">{meta.description}</Text>
 
         <Row wrap gap="sm">
-          <Span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800/40 text-xs text-indigo-700 dark:text-indigo-300 font-mono">🔑 {meta.slugPattern}</Span>
+          <Span className="inline-flex items-center gap-1.5 px-2.5 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800/40 text-indigo-700 dark:text-indigo-300 font-mono" size="xs" rounded="md" padding="y-2xs">🔑 {meta.slugPattern}</Span>
           {meta.mediaFields?.map((f) => (
-            <Span key={f} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/40 text-xs text-violet-700 dark:text-violet-300 font-mono">🖼️ {f}</Span>
+            <Span key={f} className="inline-flex items-center gap-1.5 px-2.5 bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/40 text-violet-700 dark:text-violet-300 font-mono" size="xs" rounded="md" padding="y-2xs">🖼️ {f}</Span>
           ))}
         </Row>
 
@@ -1894,7 +1894,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
 
         <Div>
           <Row justify="between" className="mb-2">
-            <Span className="text-xs font-mono text-zinc-500 dark:text-slate-400">DB: {existingCount} / {seedCount} seed docs</Span>
+            <Span className="font-mono text-zinc-500" size="xs">DB: {existingCount} / {seedCount} seed docs</Span>
           </Row>
           <SeedProgressBar seeded={existingCount} target={seedCount} />
         </Div>
@@ -2025,7 +2025,7 @@ function ResourceAccordionCard({
 
       {runError && (
         <Div className="pb-2" padding="x-md">
-          <Span className="text-xs text-red-600 dark:text-red-400" title={runError}>✗ {runError}</Span>
+          <Span className="text-red-600 dark:text-red-400" size="xs" title={runError}>✗ {runError}</Span>
         </Div>
       )}
 
@@ -2455,7 +2455,7 @@ function renderSeedPanelToolbar({
             <Div className="hidden sm:block w-px h-6 shrink-0" surface="subtle" />
             <Row gap="sm" wrap className="shrink-0">
               <Checkbox
-                label={<Span className="text-xs text-zinc-600 dark:text-slate-300 whitespace-nowrap">Dry run</Span>}
+                label={<Span className="text-zinc-600 whitespace-nowrap" size="xs">Dry run</Span>}
                 checked={dryRun}
                 onChange={(e) => setDryRun(e.target.checked)}
                 disabled={isRunning}
@@ -2503,7 +2503,7 @@ function renderSeedPanelToolbar({
 function renderSeedPanelHero() {
   return (
     <Stack className="text-center" padding="t-xs" align="center" gap="3">
-      <Span className="text-5xl leading-none">🎮</Span>
+      <Span className="leading-none" size="5xl">🎮</Span>
       <Heading level={1} className="font-extrabold dark:text-amber-400 m-0" color="warning" size="3xl">LetItRip Demo Seed</Heading>
       <Text className="max-w-xl m-0" color="muted" size="base">Admin seed tool — expand each resource card to see what&apos;s seeded, pending counts, live DB state, and the UI path to verify.</Text>
     </Stack>
@@ -2514,16 +2514,16 @@ function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDoc
   return (
     <Div className="grid grid-cols-3 gap-3 sm:gap-4">
       <Stack className="dark:bg-white/5 dark:border-white/10 text-center" surface="muted" gap="xs" rounded="xl" padding="md" border="default">
-        <Span className="text-2xl font-extrabold text-zinc-900 dark:text-white font-mono leading-none">{isLoadingStatus ? <Span className="text-zinc-300 dark:text-slate-600">—</Span> : totalExistingDocs.toLocaleString()}</Span>
-        <Span className="text-xs text-zinc-500 dark:text-slate-400">docs in DB</Span>
+        <Span className="font-extrabold text-zinc-900 dark:text-white font-mono leading-none" size="2xl">{isLoadingStatus ? <Span className="text-zinc-300 dark:text-slate-600">—</Span> : totalExistingDocs.toLocaleString()}</Span>
+        <Span className="text-zinc-500" size="xs">docs in DB</Span>
       </Stack>
       <Stack className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 text-center" gap="xs" rounded="xl" padding="md">
-        <Span className="text-2xl font-extrabold text-amber-600 dark:text-amber-400 font-mono leading-none">{isLoadingStatus ? <Span className="text-amber-200 dark:text-amber-900">—</Span> : totalSeedDocs.toLocaleString()}</Span>
-        <Span className="text-xs text-zinc-500 dark:text-slate-400">docs in seed files</Span>
+        <Span className="font-extrabold text-amber-600 dark:text-amber-400 font-mono leading-none" size="2xl">{isLoadingStatus ? <Span className="text-amber-200 dark:text-amber-900">—</Span> : totalSeedDocs.toLocaleString()}</Span>
+        <Span className="text-zinc-500" size="xs">docs in seed files</Span>
       </Stack>
       <Stack className="dark:bg-white/5 dark:border-white/10 text-center" surface="muted" gap="xs" rounded="xl" padding="md" border="default">
-        <Span className="text-2xl font-extrabold text-zinc-500 dark:text-slate-300 font-mono leading-none">{collectionCount}</Span>
-        <Span className="text-xs text-zinc-500 dark:text-slate-400">collections</Span>
+        <Span className="font-extrabold text-zinc-500 font-mono leading-none" size="2xl">{collectionCount}</Span>
+        <Span className="text-zinc-500" size="xs">collections</Span>
       </Stack>
     </Div>
   );
@@ -2629,7 +2629,7 @@ function renderSeedScaleSummary() {
         ].map(([label, count]) => (
           <Row key={label} justify="between" className="border-b border-zinc-100 dark:border-white/5 last:border-0" padding="y-xs">
             <Span size="sm">{label}</Span>
-            <Span className="text-sm font-mono font-bold text-amber-600 dark:text-amber-400 tabular-nums">{count}</Span>
+            <Span className="font-mono text-amber-600 dark:text-amber-400 tabular-nums" size="sm" weight="bold">{count}</Span>
           </Row>
         ))}
       </Grid>
