@@ -96,7 +96,7 @@ export default async function Page() {
 
         {/* FAQ list */}
         <Section padding="y-2xl">
-          <Container size="xl" className="max-w-3xl">
+          <Container size="xl">
             {faqs.length === 0 ? (
               <Text variant="secondary">No FAQs found.</Text>
             ) : (

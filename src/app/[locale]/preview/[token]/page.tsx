@@ -65,7 +65,7 @@ export default async function PreviewPage({
           {PREVIEW_COPY.banner}
         </Text>
       </Div>
-      <Container className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8" padding="y-xl">
+      <Container padding="y-xl">
         <Text className="mb-4 tracking-wide" color="muted" size="xs" transform="uppercase">
           {preview.kind}
           {PREVIEW_COPY.kindSuffix}
