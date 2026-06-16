@@ -369,7 +369,7 @@ function renderWishlistItems({
 }) {
   if (isLoading) {
     return (
-      <Div className="fluid-grid-card gap-4">
+      <Div gap="4" className="fluid-grid-card">
         {Array.from({ length: 8 }).map((_, i) => (
           <Div key={i} className="animate-pulse aspect-[3/4]" surface="subtle" rounded="xl" border="default" />
         ))}
@@ -389,7 +389,7 @@ function renderWishlistItems({
     );
   }
   return (
-    <Div className="fluid-grid-card gap-4">
+    <Div gap="4" className="fluid-grid-card">
       {filteredItems.map((item) => {
         const slug = item.product?.slug ?? item.productSlug ?? item.productId;
         return (

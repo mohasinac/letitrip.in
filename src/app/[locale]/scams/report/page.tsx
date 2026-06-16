@@ -57,9 +57,9 @@ function TagInput({
       <Text size="sm" weight="medium">{label}</Text>
       <Row gap="xs" wrap>
         {values.map((v) => (
-          <Div textWeight="medium" textSize="xs" 
+          <Div layout="inline-flex" gap="1" textWeight="medium" textSize="xs" 
             key={v}
-            className="inline-flex items-center gap-1 bg-[color:var(--appkit-color-surface-elevated,theme(colors.zinc.100))] px-2.5" padding="y-2xs" rounded="full"
+            className="items-center bg-[color:var(--appkit-color-surface-elevated,theme(colors.zinc.100))] px-2.5" padding="y-2xs" rounded="full"
           >
             {v}
             <Button

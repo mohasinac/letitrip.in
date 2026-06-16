@@ -191,7 +191,7 @@ export default function ClaimedCouponsPage() {
 
       {/* Tab body */}
       {isLoading ? (
-        <Div className="fluid-grid-card gap-3">
+        <Div gap="3" className="fluid-grid-card">
           {Array.from({ length: 4 }).map((_, i) => (
             <Div key={i} className="animate-pulse h-32" surface="subtle" rounded="xl" border="default" />
           ))}
@@ -201,7 +201,7 @@ export default function ClaimedCouponsPage() {
           <Text variant="secondary">No {tab} coupons.</Text>
         </Div>
       ) : (
-        <Div className="fluid-grid-card gap-3">
+        <Div gap="3" className="fluid-grid-card">
           {items.map((c) => (
             <CouponWalletCard
               key={c.id}
