@@ -79,7 +79,7 @@ function renderProfileViewMode({
           {profileIsPublic ? "Public" : "Private"}
         </Text>
       </Text>
-      <Row gap="3" className="flex-wrap" padding="t-2xs">
+      <Row wrap gap="3" padding="t-2xs">
         <Button
           type="button"
           variant="outline"

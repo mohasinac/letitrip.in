@@ -33,7 +33,7 @@ export function StoreAboutClient({ store }: { store: StoreDetail }) {
       }
       renderSocialLinks={(links) =>
         links && Object.values(links).some(Boolean) ? (
-          <Row gap="3" className="flex-wrap">
+          <Row wrap gap="3">
             {links.twitter && (
               <TextLink href={links.twitter} external className="text-primary hover:underline" size="sm">
                 <Text as="span">Twitter</Text>
