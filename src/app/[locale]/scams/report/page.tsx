@@ -353,11 +353,11 @@ function ScamReportForm({ userId }: { userId: string }) {
             >
               Cancel
             </Link>
-            <Button
+            <Button gap="md" 
               type="submit"
               variant="primary"
               disabled={isSubmitting || !form.agreed}
-              className="flex items-center gap-2 disabled:opacity-60"
+              className="flex items-center disabled:opacity-60"
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
               {isSubmitting ? "Submitting…" : "Submit Report"}
