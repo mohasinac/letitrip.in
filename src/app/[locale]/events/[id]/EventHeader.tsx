@@ -97,7 +97,7 @@ export function EventHeader({
           ) : null}
         </Div>
 
-        <Row className="pt-1" align="center" gap="sm">
+        <Row align="center" gap="sm" padding="t-2xs">
           <Text size="sm" color="muted">
             {EVENT_LABELS.HEADER_SHARE}
           </Text>

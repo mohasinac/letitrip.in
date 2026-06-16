@@ -79,7 +79,7 @@ function renderProfileViewMode({
           {profileIsPublic ? "Public" : "Private"}
         </Text>
       </Text>
-      <Div className="flex flex-wrap gap-3 pt-1">
+      <Div className="flex flex-wrap gap-3" padding="t-2xs">
         <Button
           type="button"
           variant="outline"
@@ -192,7 +192,7 @@ function renderProfileEditForm({
           aria-label="Public profile"
         />
       </Row>
-      <Div className="flex gap-3 pt-1">
+      <Div className="flex gap-3" padding="t-2xs">
         <Button
           type="button"
           variant="outline"

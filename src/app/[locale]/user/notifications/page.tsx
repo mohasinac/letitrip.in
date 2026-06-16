@@ -103,7 +103,7 @@ function NotifCard({
           {timeAgo(notif.createdAt)}
         </Text>
       </Row>
-      <Row gap="3" className="pt-1">
+      <Row gap="3" padding="t-2xs">
         {notif.actionUrl && notif.actionLabel && (
           <Link
             href={notif.actionUrl}

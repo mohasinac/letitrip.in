@@ -147,7 +147,7 @@ export default function Page() {
               <Text variant="secondary" className="max-w-2xl" size="base">
                 27 documented scam patterns across 7 categories, specific to India&apos;s collectibles aftermarket. Learn how each scam works and how to protect yourself.
               </Text>
-              <Row gap="sm" className="pt-1" wrap>
+              <Row gap="sm" wrap padding="t-2xs">
                 <Text variant="secondary" size="sm">{SCAM_TYPES.length} documented scam types</Text>
                 <Text variant="secondary" size="sm">·</Text>
                 <Text variant="secondary" size="sm">{SCAM_CATEGORIES.length} categories</Text>

@@ -212,7 +212,7 @@ export default function UserReviewsPage() {
                   <Text size="sm" weight="medium" color="primary">{review.title}</Text>
                   <Text variant="secondary" className="mt-1 line-clamp-3" size="sm">{review.comment}</Text>
                 </Div>
-                <Row justify="between" className="pt-1">
+                <Row justify="between" padding="t-2xs">
                   <Text variant="secondary" size="xs">{date}</Text>
                   {review.helpfulCount > 0 && (
                     <Text variant="secondary" size="xs">
