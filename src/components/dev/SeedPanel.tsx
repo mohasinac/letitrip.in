@@ -1725,7 +1725,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
       <Div className="overflow-x-auto" rounded="lg" border="default">
         <Table size="sm">
           <Thead>
-            <Tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
+            <Tr border="default" surface="muted">
               <Th className="text-left px-3 w-[38%]" padding="xs-tall" color="muted" weight="semibold">Field</Th>
               <Th className="text-left w-[14%]" padding="xs-tall" color="muted" weight="semibold">Type</Th>
               <Th className="text-center" padding="xs-tall" color="muted" weight="semibold">🔍</Th>
@@ -1735,7 +1735,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
               <Th className="text-center" padding="xs-tall" color="muted" weight="semibold">📇</Th>
               <Th className="text-left" padding="xs-tall" color="muted" weight="semibold">Note</Th>
             </Tr>
-            <Tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
+            <Tr border="default" surface="muted">
               <Th className="px-3 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-left" />
               <Th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-left" />
               <Th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-center">Search</Th>
@@ -1761,7 +1761,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
                     f.pii ? "bg-red-50/40 dark:bg-red-900/5" : "hover:bg-zinc-50/60 dark:hover:bg-slate-800/30"
                   }`}
                 >
-                  <Td className="px-3 font-mono text-zinc-800 dark:text-slate-200 break-all" padding="xs-tall">{f.name}</Td>
+                  <Td className="px-3 font-mono break-all" padding="xs-tall" color="primary">{f.name}</Td>
                   <Td padding="xs-tall">
                     <Span className={`px-1.5 py-0.5 text-[10px] leading-none ${TYPE_CHIP[f.type]}`} weight="semibold" rounded="default">
                       {f.type}
@@ -1872,7 +1872,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
             <Div className="overflow-x-auto" rounded="lg" border="default">
               <Table size="sm">
                 <Thead>
-                  <Tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
+                  <Tr border="default" surface="muted">
                     <Th className="text-left px-3 w-[22%]" padding="xs-tall" color="muted" weight="semibold">Context type</Th>
                     <Th className="text-left px-3 w-[40%]" padding="xs-tall" color="muted" weight="semibold">Pattern</Th>
                     <Th className="text-left px-3" padding="xs-tall" color="muted" weight="semibold">Example</Th>
