@@ -22,7 +22,7 @@ export function SearchPageClient({ locale, query }: Props) {
       )}
       renderResults={() =>
         !query ? (
-          <Div className={`${__P.p6} text-center dark:border-slate-700 dark:bg-slate-900`} rounded="xl" surface="default" border="default">
+          <Div className={`${__P.p6} text-center`} rounded="xl" surface="default" border="default">
             <Text size="base" weight="semibold" color="primary">
               Search the marketplace
             </Text>

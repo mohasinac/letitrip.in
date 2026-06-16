@@ -1655,7 +1655,7 @@ function SeedProgressBar({
     pct >= 100 ? "bg-emerald-500 dark:bg-emerald-400" : pct > 0 ? "bg-amber-500 dark:bg-amber-400" : "bg-zinc-300 dark:bg-slate-600";
   const h = size === "sm" ? "h-1.5" : "h-2";
   return (
-    <Div className={`w-full ${h} dark:bg-slate-700 overflow-hidden`} rounded="full" surface="subtle">
+    <Div className={`w-full ${h} overflow-hidden`} rounded="full" surface="subtle">
       <Div className={`h-full ${color} transition-all duration-500`} rounded="full" style={{ width: `${pct}%` }} />
     </Div>
   );
@@ -2513,7 +2513,7 @@ function renderSeedPanelHero() {
 function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDocs, collectionCount }: { isLoadingStatus: boolean; totalExistingDocs: number; totalSeedDocs: number; collectionCount: number }) {
   return (
     <Div className="grid grid-cols-3 gap-3 sm:gap-4">
-      <Stack className="dark:bg-white/5 dark:border-white/10 text-center" surface="muted" gap="xs" rounded="xl" padding="md" border="default">
+      <Stack className="dark:border-white/10 text-center" surface="muted" gap="xs" rounded="xl" padding="md" border="default">
         <Span className="font-extrabold text-zinc-900 dark:text-white font-mono leading-none" size="2xl">{isLoadingStatus ? <Span className="text-zinc-300 dark:text-slate-600">—</Span> : totalExistingDocs.toLocaleString()}</Span>
         <Span className="text-zinc-500" size="xs">docs in DB</Span>
       </Stack>
@@ -2521,7 +2521,7 @@ function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDoc
         <Span className="font-extrabold text-amber-600 dark:text-amber-400 font-mono leading-none" size="2xl">{isLoadingStatus ? <Span className="text-amber-200 dark:text-amber-900">—</Span> : totalSeedDocs.toLocaleString()}</Span>
         <Span className="text-zinc-500" size="xs">docs in seed files</Span>
       </Stack>
-      <Stack className="dark:bg-white/5 dark:border-white/10 text-center" surface="muted" gap="xs" rounded="xl" padding="md" border="default">
+      <Stack className="dark:border-white/10 text-center" surface="muted" gap="xs" rounded="xl" padding="md" border="default">
         <Span className="font-extrabold text-zinc-500 font-mono leading-none" size="2xl">{collectionCount}</Span>
         <Span className="text-zinc-500" size="xs">collections</Span>
       </Stack>
