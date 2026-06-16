@@ -1726,14 +1726,14 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
         <Table size="sm">
           <Thead>
             <Tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
-              <Th className="text-left px-3 font-semibold text-zinc-600 dark:text-slate-300 w-[38%]" padding="xs-tall">Field</Th>
-              <Th className="text-left font-semibold text-zinc-600 dark:text-slate-300 w-[14%]" padding="xs-tall">Type</Th>
-              <Th className="text-center font-semibold text-zinc-600 dark:text-slate-300" padding="xs-tall">🔍</Th>
-              <Th className="text-center font-semibold text-zinc-600 dark:text-slate-300" padding="xs-tall">⚙️</Th>
-              <Th className="text-center font-semibold text-zinc-600 dark:text-slate-300" padding="xs-tall">↕</Th>
-              <Th className="text-center font-semibold text-zinc-600 dark:text-slate-300" padding="xs-tall">🔒</Th>
-              <Th className="text-center font-semibold text-zinc-600 dark:text-slate-300" padding="xs-tall">📇</Th>
-              <Th className="text-left font-semibold text-zinc-600 dark:text-slate-300" padding="xs-tall">Note</Th>
+              <Th className="text-left px-3 w-[38%]" padding="xs-tall" color="muted" weight="semibold">Field</Th>
+              <Th className="text-left w-[14%]" padding="xs-tall" color="muted" weight="semibold">Type</Th>
+              <Th className="text-center" padding="xs-tall" color="muted" weight="semibold">🔍</Th>
+              <Th className="text-center" padding="xs-tall" color="muted" weight="semibold">⚙️</Th>
+              <Th className="text-center" padding="xs-tall" color="muted" weight="semibold">↕</Th>
+              <Th className="text-center" padding="xs-tall" color="muted" weight="semibold">🔒</Th>
+              <Th className="text-center" padding="xs-tall" color="muted" weight="semibold">📇</Th>
+              <Th className="text-left" padding="xs-tall" color="muted" weight="semibold">Note</Th>
             </Tr>
             <Tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
               <Th className="px-3 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-left" />
@@ -1780,7 +1780,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
                     <Cap active={f.pii} label="🔒" color="bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300" />
                   </Td>
                   <Td className="text-center" padding="xs-tall">
-                    <Cap active={f.indexed} label="✓" color="bg-zinc-200 dark:bg-slate-700 text-zinc-600 dark:text-slate-300" />
+                    <Cap active={f.indexed} label="✓" color="bg-zinc-200 dark:bg-slate-700" />
                   </Td>
                   <Td className="text-zinc-400 dark:text-slate-500 italic text-[10px] max-w-[120px] truncate" padding="xs-tall" title={f.note}>
                     {f.note ?? ""}
@@ -1873,9 +1873,9 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
               <Table size="sm">
                 <Thead>
                   <Tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
-                    <Th className="text-left px-3 font-semibold text-zinc-600 dark:text-slate-300 w-[22%]" padding="xs-tall">Context type</Th>
-                    <Th className="text-left px-3 font-semibold text-zinc-600 dark:text-slate-300 w-[40%]" padding="xs-tall">Pattern</Th>
-                    <Th className="text-left px-3 font-semibold text-zinc-600 dark:text-slate-300" padding="xs-tall">Example</Th>
+                    <Th className="text-left px-3 w-[22%]" padding="xs-tall" color="muted" weight="semibold">Context type</Th>
+                    <Th className="text-left px-3 w-[40%]" padding="xs-tall" color="muted" weight="semibold">Pattern</Th>
+                    <Th className="text-left px-3" padding="xs-tall" color="muted" weight="semibold">Example</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
