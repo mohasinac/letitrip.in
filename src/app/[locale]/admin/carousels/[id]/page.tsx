@@ -115,7 +115,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
               <Tbody className="divide-y divide-zinc-100 dark:divide-slate-700">
                 {slides.map((slide, idx) => (
                   <Tr key={slide.id} className="bg-white hover:bg-zinc-50 dark:bg-slate-900 dark:hover:bg-slate-800">
-                    <Td className="text-zinc-500 dark:text-zinc-400" padding="md">{idx + 1}</Td>
+                    <Td padding="md" color="muted">{idx + 1}</Td>
                     <Td weight="medium" padding="md" color="primary">{slide.title}</Td>
                     <Td padding="md">
                       <Badge variant={slide.active ? "success" : "secondary"} >
