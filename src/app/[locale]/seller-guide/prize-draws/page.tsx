@@ -18,7 +18,7 @@ export default function Page() {
     <SellerGuideView
       labels={{ title: "Prize Draws Guide" }}
       sections={
-        <Stack gap="none" className="max-w-3xl space-y-8">
+        <Stack gap="none" className="max-w-3xl">
           <Section>
             <Heading level={2} className={H2}>What are Prize Draws?</Heading>
             <Text color="muted">
