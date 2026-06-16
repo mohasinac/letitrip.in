@@ -146,11 +146,11 @@ export async function FeesView() {
         </Div>
       </Section>
 
-      <Div className={`${page.container.sm} space-y-12`} padding="content-banner">
+      <Stack gap="section" className={`${page.container.sm}`} padding="content-banner">
         {renderFeeTable(FEE_ROWS, t)}
         {renderPayoutExample(OFFER_PAYOUT_ROWS, t)}
         {renderFeesDisclaimer(t)}
-      </Div>
+      </Stack>
     </Div>
   );
 }

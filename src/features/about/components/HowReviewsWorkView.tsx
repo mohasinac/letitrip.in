@@ -192,12 +192,12 @@ export async function HowReviewsWorkView() {
         </Div>
       </Section>
 
-      <Div className={`${page.container.md} space-y-14`} padding="content-banner">
+      <Stack gap="14" className={`${page.container.md}`} padding="content-banner">
         {renderReviewsSteps(STEPS, t)}
         {renderReviewsDiagram(DIAGRAM_STEPS, t)}
         {renderReviewsInfoCards(INFO_CARDS, t)}
         {renderReviewsCta(t)}
-      </Div>
+      </Stack>
     </Div>
   );
 }

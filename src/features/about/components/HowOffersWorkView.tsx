@@ -83,7 +83,7 @@ export async function HowOffersWorkView() {
         </Div>
       </Section>
 
-      <Div className={`${page.container.md} space-y-14`} padding="content-banner">
+      <Stack gap="14" className={`${page.container.md}`} padding="content-banner">
         {/* Steps */}
         <Section>
           <Heading level={2} className="mb-8" align="center">
@@ -154,7 +154,7 @@ export async function HowOffersWorkView() {
             </TextLink>
           </Row>
         </Section>
-      </Div>
+      </Stack>
     </Div>
   );
 }

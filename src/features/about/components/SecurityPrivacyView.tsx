@@ -1,5 +1,5 @@
 import { ROUTES, THEME_CONSTANTS } from "@/constants";
-import { Div, FlowDiagram, Grid, Heading, Row, Section, Text, TextLink } from "@mohasinac/appkit/ui";
+import { Div, FlowDiagram, Grid, Heading, Row, Section, Stack, Text, TextLink } from "@mohasinac/appkit/ui";
 import type { FlowStep } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 import {
@@ -229,13 +229,13 @@ export async function SecurityPrivacyView() {
         </Div>
       </Section>
 
-      <Div className={`${page.container.md} space-y-14`} padding="content-banner">
+      <Stack gap="14" className={`${page.container.md}`} padding="content-banner">
         {renderSecurityOverview(t)}
         {renderSecurityCards(SECTIONS)}
         {renderSecurityDiagram(DIAGRAM_STEPS, t)}
         <Text variant="secondary" size="sm" align="center">{t("lastUpdated")}</Text>
         {renderSecurityCta(t)}
-      </Div>
+      </Stack>
     </Div>
   );
 }

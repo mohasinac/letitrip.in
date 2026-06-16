@@ -252,12 +252,12 @@ export async function HowOrdersWorkView() {
         </Div>
       </Section>
 
-      <Div className={`${page.container.md} space-y-14`} padding="content-banner">
+      <Stack gap="14" className={`${page.container.md}`} padding="content-banner">
         {renderOrdersLifecycle(STATUS_STEPS, t)}
         {renderOrdersDiagram(DIAGRAM_STEPS, t)}
         {renderOrdersInfoCards(INFO_CARDS, t)}
         {renderOrdersCta(t)}
-      </Div>
+      </Stack>
     </Div>
   );
 }

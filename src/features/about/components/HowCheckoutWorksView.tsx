@@ -176,12 +176,12 @@ export async function HowCheckoutWorksView() {
         </Div>
       </Section>
 
-      <Div className={`${page.container.md} space-y-14`} padding="content-banner">
+      <Stack gap="14" className={`${page.container.md}`} padding="content-banner">
         {renderCheckoutSteps(STEPS, t)}
         {renderCheckoutDiagram(DIAGRAM_STEPS, t)}
         {renderCheckoutPaymentMethods(PAYMENT_METHODS, t)}
         {renderCheckoutCta(t)}
-      </Div>
+      </Stack>
     </Div>
   );
 }
