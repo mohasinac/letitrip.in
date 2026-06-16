@@ -18,6 +18,7 @@ import {
   ROUTES,
   sortBy,
 } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 
 const PER_TYPE_LIMIT = 5;
 const PAGE_SUGGESTION_LIMIT = 3;
@@ -82,8 +83,8 @@ export const GET = withProviders(
                 sorts: sortBy("createdAt"),
                 pageSize: PER_TYPE_LIMIT,
               })
-              .catch(() => ({ items: [] as Record<string, unknown>[] }))
-          : Promise.resolve({ items: [] as Record<string, unknown>[] }),
+              .catch(() => ({ items: [] as Record<string, JsonValue>[] }))
+          : Promise.resolve({ items: [] as Record<string, JsonValue>[] }),
         wantCategory
           ? categoriesRepository
               .list({
@@ -91,14 +92,14 @@ export const GET = withProviders(
                 sorts: sortBy("name", "ASC"),
                 pageSize: PER_TYPE_LIMIT,
               })
-              .catch(() => ({ items: [] as Record<string, unknown>[] }))
-          : Promise.resolve({ items: [] as Record<string, unknown>[] }),
+              .catch(() => ({ items: [] as Record<string, JsonValue>[] }))
+          : Promise.resolve({ items: [] as Record<string, JsonValue>[] }),
         wantBlog
           ? blogRepository
               .listPublished({}, { filters: filters(q), sorts: sortBy("publishedAt"), pageSize: PER_TYPE_LIMIT })
-              .then((r) => ({ items: r.items as unknown as Record<string, unknown>[] }))
-              .catch(() => ({ items: [] as Record<string, unknown>[] }))
-          : Promise.resolve({ items: [] as Record<string, unknown>[] }),
+              .then((r) => ({ items: r.items as unknown as Record<string, JsonValue>[] }))
+              .catch(() => ({ items: [] as Record<string, JsonValue>[] }))
+          : Promise.resolve({ items: [] as Record<string, JsonValue>[] }),
         wantEvent
           ? eventRepository
               .list({
@@ -106,8 +107,8 @@ export const GET = withProviders(
                 sorts: sortBy("startsAt"),
                 pageSize: PER_TYPE_LIMIT,
               })
-              .catch(() => ({ items: [] as Record<string, unknown>[] }))
-          : Promise.resolve({ items: [] as Record<string, unknown>[] }),
+              .catch(() => ({ items: [] as Record<string, JsonValue>[] }))
+          : Promise.resolve({ items: [] as Record<string, JsonValue>[] }),
       ]);
 
       const wantPage = wantAll || typeFilter === "page";

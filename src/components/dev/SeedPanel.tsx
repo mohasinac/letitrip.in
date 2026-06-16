@@ -2504,7 +2504,7 @@ function renderSeedPanelHero() {
   return (
     <Stack className="text-center" padding="t-xs" align="center" gap="3">
       <Span className="leading-none" size="5xl">🎮</Span>
-      <Heading level={1} className="font-extrabold dark:text-amber-400 m-0" color="warning" size="3xl">LetItRip Demo Seed</Heading>
+      <Heading level={1} className="m-0" color="warning" size="3xl" weight="bold">LetItRip Demo Seed</Heading>
       <Text className="max-w-xl m-0" color="muted" size="base">Admin seed tool — expand each resource card to see what&apos;s seeded, pending counts, live DB state, and the UI path to verify.</Text>
     </Stack>
   );
@@ -2618,7 +2618,7 @@ function renderSeedPanelPagination({ page, setPage, totalPages, PAGE_SIZE, filte
 function renderSeedScaleSummary() {
   return (
     <Div className="p-5 dark:bg-white/[0.03] dark:border-white/10" surface="muted" rounded="2xl" border="default">
-      <Heading level={3} className="dark:text-amber-400 m-0 mb-4" color="warning" size="base" weight="bold">📊 Target Seed Scale</Heading>
+      <Heading level={3} className="m-0 mb-4" color="warning" size="base" weight="bold">📊 Target Seed Scale</Heading>
       <Grid cols="halves" gap="none" className="gap-x-10">
         {[
           ["Standard Products", "100+"], ["Auction Listings", "20"], ["Pre-orders", "10"],
