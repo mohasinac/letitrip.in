@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import type { JsonValue } from "@mohasinac/appkit";
 
 const isDev = process.env.NODE_ENV === "development";
 const logDir = path.join(process.cwd(), "logs");
@@ -18,7 +19,7 @@ function emit(
   severity: "INFO" | "WARNING" | "ERROR",
   job: string,
   message: string,
-  data?: Record<string, unknown>,
+  data?: Record<string, JsonValue>,
 ) {
   const entry = JSON.stringify({
     severity,
@@ -38,7 +39,7 @@ function emit(
 export function logInfo(
   job: string,
   message: string,
-  data?: Record<string, unknown>,
+  data?: Record<string, JsonValue>,
 ) {
   emit("INFO", job, message, data);
 }
@@ -46,7 +47,7 @@ export function logInfo(
 export function logWarn(
   job: string,
   message: string,
-  data?: Record<string, unknown>,
+  data?: Record<string, JsonValue>,
 ) {
   emit("WARNING", job, message, data);
 }
@@ -55,7 +56,7 @@ export function logError(
   job: string,
   message: string,
   error: unknown,
-  data?: Record<string, unknown>,
+  data?: Record<string, JsonValue>,
 ) {
   emit("ERROR", job, message, {
     error: error instanceof Error ? error.message : String(error),
