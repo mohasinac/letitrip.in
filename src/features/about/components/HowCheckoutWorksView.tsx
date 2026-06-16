@@ -176,7 +176,7 @@ export async function HowCheckoutWorksView() {
         </Div>
       </Section>
 
-      <Div className={`${page.container.md} md:py-12 lg:py-16 space-y-14`} padding="y-2xl">
+      <Div className={`${page.container.md} space-y-14`} padding="content-banner">
         {renderCheckoutSteps(STEPS, t)}
         {renderCheckoutDiagram(DIAGRAM_STEPS, t)}
         {renderCheckoutPaymentMethods(PAYMENT_METHODS, t)}

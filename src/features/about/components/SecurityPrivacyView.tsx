@@ -229,7 +229,7 @@ export async function SecurityPrivacyView() {
         </Div>
       </Section>
 
-      <Div className={`${page.container.md} md:py-12 lg:py-16 space-y-14`} padding="y-2xl">
+      <Div className={`${page.container.md} space-y-14`} padding="content-banner">
         {renderSecurityOverview(t)}
         {renderSecurityCards(SECTIONS)}
         {renderSecurityDiagram(DIAGRAM_STEPS, t)}

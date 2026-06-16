@@ -146,7 +146,7 @@ export async function FeesView() {
         </Div>
       </Section>
 
-      <Div className={`${page.container.sm} md:py-12 lg:py-16 space-y-12`} padding="y-2xl">
+      <Div className={`${page.container.sm} space-y-12`} padding="content-banner">
         {renderFeeTable(FEE_ROWS, t)}
         {renderPayoutExample(OFFER_PAYOUT_ROWS, t)}
         {renderFeesDisclaimer(t)}

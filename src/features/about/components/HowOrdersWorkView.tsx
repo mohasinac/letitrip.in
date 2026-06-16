@@ -252,7 +252,7 @@ export async function HowOrdersWorkView() {
         </Div>
       </Section>
 
-      <Div className={`${page.container.md} md:py-12 lg:py-16 space-y-14`} padding="y-2xl">
+      <Div className={`${page.container.md} space-y-14`} padding="content-banner">
         {renderOrdersLifecycle(STATUS_STEPS, t)}
         {renderOrdersDiagram(DIAGRAM_STEPS, t)}
         {renderOrdersInfoCards(INFO_CARDS, t)}

@@ -83,7 +83,7 @@ export async function HowOffersWorkView() {
         </Div>
       </Section>
 
-      <Div className={`${page.container.md} md:py-12 lg:py-16 space-y-14`} padding="y-2xl">
+      <Div className={`${page.container.md} space-y-14`} padding="content-banner">
         {/* Steps */}
         <Section>
           <Heading level={2} className="mb-8" align="center">
