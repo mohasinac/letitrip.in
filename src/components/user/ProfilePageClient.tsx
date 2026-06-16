@@ -176,7 +176,7 @@ function renderProfileEditForm({
         />
         <Text size="xs" align="end" color="faint">{bio.length}/500</Text>
       </Stack>
-      <Row className="px-4" padding="y-sm" align="center" justify="between" rounded="lg" border="default">
+      <Row padding="inline" align="center" justify="between" rounded="lg" border="default">
         <>
           <Text size="sm" weight="medium" color="primary">Public profile</Text>
           <Text className="mt-0.5" color="muted" size="xs">

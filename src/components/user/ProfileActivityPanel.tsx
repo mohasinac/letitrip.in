@@ -38,7 +38,7 @@ function formatINR(paise: number): string {
 
 function StatPill({ label, value }: { label: string; value: string | number }) {
   return (
-    <Div className="border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4" padding="y-sm" rounded="lg">
+    <Div className="border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)]" padding="inline" rounded="lg">
       <Text className="text-[var(--appkit-color-text)] leading-tight" size="xl" weight="bold">{value}</Text>
       <Text className="text-[var(--appkit-color-text-muted)] mt-0.5" size="xs">{label}</Text>
     </Div>
@@ -128,7 +128,7 @@ export function ProfileActivityPanel() {
           ) : (
             <Stack gap="sm">
               {bidsData.bids.slice(0, 5).map((b) => (
-                <Div key={b.id} className="border border-[var(--appkit-color-border)] px-3" padding="y-xs" rounded="md">
+                <Div key={b.id} className="border border-[var(--appkit-color-border)]" padding="inlineSm" rounded="md">
                   <Text className="text-[var(--appkit-color-text)] truncate" size="xs" weight="medium">{b.productId ?? "Auction"}</Text>
                   <Text className="text-[11px] text-[var(--appkit-color-text-muted)]">
                     {formatINR(b.amount)} · {b.status ?? "active"}
@@ -145,7 +145,7 @@ export function ProfileActivityPanel() {
           ) : (
             <Stack gap="sm">
               {reviewsData.reviews.slice(0, 5).map((r) => (
-                <Div key={r.id} className="border border-[var(--appkit-color-border)] px-3" padding="y-xs" rounded="md">
+                <Div key={r.id} className="border border-[var(--appkit-color-border)]" padding="inlineSm" rounded="md">
                   <Text className="text-[var(--appkit-color-text)] truncate" size="xs" weight="medium">{r.title ?? r.productId}</Text>
                   <Text className="text-[11px] text-[var(--appkit-color-text-muted)]">{"★".repeat(r.rating ?? 0)}</Text>
                 </Div>

@@ -1922,7 +1922,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         <SchemaFieldsTable fields={meta.fields} />
 
         {meta.piiFields && meta.piiFields.length > 0 && (
-          <Row className="px-3 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/40" padding="y-xs" align="start" gap="sm" rounded="lg">
+          <Row className="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/40" padding="inlineSm" align="start" gap="sm" rounded="lg">
             <Span size="xs" className="leading-relaxed" color="error">
               🔒 PII fields: <Span weight="bold">{meta.piiFields.join(", ")}</Span> — masked in DB with Firestore encryption. Never returned in full to client.
             </Span>
@@ -2014,7 +2014,7 @@ function ResourceAccordionCard({
         onClick={toggleExpanded}
         gap="sm"
         align="center"
-        className="w-full px-4 text-left bg-transparent border-0 cursor-pointer hover:bg-zinc-50 dark:hover:bg-slate-800/40 transition-colors" padding="y-sm"
+        className="w-full text-left bg-transparent border-0 cursor-pointer hover:bg-zinc-50 dark:hover:bg-slate-800/40 transition-colors" padding="inline"
       >
         {renderAccordionCollapsedHeader({ meta, runState, isLoadingStatus, dbStatus, existingCount, seedCount, isComplete, isEmpty, statusVariant, statusLabel, expanded, col, selected, onToggle, isRunning })}
       </Row>

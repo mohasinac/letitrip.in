@@ -120,7 +120,7 @@ function renderCategoryRow(
       key={cat.id}
       align="center"
       gap="md"
-      className="bg-[var(--appkit-color-surface)] px-4 hover:bg-[var(--appkit-color-surface-raised)] transition-colors" padding="y-sm"
+      className="bg-[var(--appkit-color-surface)] hover:bg-[var(--appkit-color-surface-raised)] transition-colors" padding="inline"
     >
       <Div className="flex-1 min-w-0">
         <Row gap="xs" align="center" wrap>

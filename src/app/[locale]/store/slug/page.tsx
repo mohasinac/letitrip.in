@@ -132,7 +132,7 @@ export default function Page() {
       </Text>
 
       {loadError && (
-        <Div className="mb-4 border border-error/20 px-4 text-sm" color="error" surface="danger-surface" padding="y-sm" rounded="lg">
+        <Div className="mb-4 border border-error/20 text-sm" color="error" surface="danger-surface" padding="inline" rounded="lg">
           Could not load your current store slug. Please refresh the page.
         </Div>
       )}
@@ -142,7 +142,7 @@ export default function Page() {
         {renderSlugInput({ newSlug, checkState, checkMessage, checkColor, handleSlugChange })}
         {renderFeedbackBanners({ saveError, saveSuccess, currentSlug })}
 
-        <Div className="border border-warning/20 px-3 text-xs" color="warning" surface="warning-surface" padding="y-xs" rounded="lg">
+        <Div className="border border-warning/20 text-xs" color="warning" surface="warning-surface" padding="inlineSm" rounded="lg">
           Changing your slug will update your store URL immediately. Any saved links or bookmarks to the old URL will stop working.
         </Div>
 
@@ -211,12 +211,12 @@ function renderFeedbackBanners({ saveError, saveSuccess, currentSlug }: {
   return (
     <>
       {saveError && (
-        <Div className="border border-error/20 px-3 text-sm" color="error" surface="danger-surface" padding="y-xs" rounded="lg">
+        <Div className="border border-error/20 text-sm" color="error" surface="danger-surface" padding="inlineSm" rounded="lg">
           {saveError}
         </Div>
       )}
       {saveSuccess && (
-        <Div className="border border-success/20 px-3 text-sm" color="success" surface="success-surface" padding="y-xs" rounded="lg">
+        <Div className="border border-success/20 text-sm" color="success" surface="success-surface" padding="inlineSm" rounded="lg">
           Store slug updated successfully. Your new store URL is{" "}
           <Span weight="semibold" className="font-mono">{SITE_BASE}{currentSlug}</Span>.
         </Div>
