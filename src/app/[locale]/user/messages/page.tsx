@@ -268,9 +268,11 @@ export default function UserMessagesPage({ initialActiveId }: UserMessagesPagePr
               </Stack>
             )}
             renderEmptyState={() => (
-              <Text variant="secondary" className="py-6" size="sm" align="center">
-                You haven't started any conversations yet.
-              </Text>
+              <Stack padding="y-lg" align="center">
+                <Text variant="secondary" size="sm" align="center">
+                  You haven't started any conversations yet.
+                </Text>
+              </Stack>
             )}
             renderList={() => (
               <Stack gap="sm">
@@ -311,9 +313,11 @@ export default function UserMessagesPage({ initialActiveId }: UserMessagesPagePr
               renderMessages={() => (
                 <Div ref={messageListRef} className={MESSAGE_LIST_CLASS}>
                   {conversation.messages.length === 0 ? (
-                    <Text variant="secondary" className="py-6" size="sm" align="center">
-                      No messages yet — say hello!
-                    </Text>
+                    <Stack padding="y-lg" align="center">
+                      <Text variant="secondary" size="sm" align="center">
+                        No messages yet — say hello!
+                      </Text>
+                    </Stack>
                   ) : (
                     conversation.messages.map((m) => (
                       <MessageBubble
