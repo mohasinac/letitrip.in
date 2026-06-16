@@ -20,6 +20,7 @@ async function addToWishlistAndRemoveFromCart(item: CartItem, failedIds: string[
 }
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { JsonValue } from "@mohasinac/appkit";
 import { Link } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import {
@@ -155,7 +156,7 @@ function getProductHref(
 function groupBySeller(items: CartItemWithListingType[]): SellerGroup[] {
   const map = new Map<string, SellerGroup>();
   for (const item of items) {
-    const meta = item.meta as unknown as Record<string, unknown>;
+    const meta = item.meta as unknown as Record<string, JsonValue>;
     const sid = (meta.storeId as string | undefined) ?? "unknown";
     const sname =
       (item.meta.attributes?.storeName as string | undefined) ||
