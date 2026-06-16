@@ -199,7 +199,7 @@ export default function Page() {
       renderAlerts={() => (
         <Stack gap="3">
           {loadError && (
-            <Div className="border border-error/30 text-error" surface="danger-surface" padding="md" rounded="xl">
+            <Div className="border border-error/30" color="error" surface="danger-surface" padding="md" rounded="xl">
               <Text size="sm">
                 <Span weight="semibold">Couldn&apos;t load dashboard data — </Span>
                 <Span>{loadError}. Refresh to retry; if it persists, your admin session may have expired.</Span>
