@@ -101,7 +101,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
 
         {/* Listings grid */}
         {listings.length === 0 ? (
-          <Stack className="justify-center border-dashed py-20 text-center" align="center" rounded="2xl" border="default">
+          <Stack className="justify-center border-dashed text-center" align="center" padding="y-4xl" rounded="2xl" border="default">
             <Text as="span" className="mb-3" size="4xl">📦</Text>
             <Text size="base" weight="semibold" color="muted">No listings yet</Text>
             <Text className="mt-1" color="faint" size="sm">
