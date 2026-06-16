@@ -177,10 +177,10 @@ function renderAddressStep({
       getAddressId={(a) => a.id}
       onSelectAddress={handleSelectAddress}
       renderAddressCard={(address, { isSelected, select }) => (
-        <Div
+        <Div border="default" 
           key={address.id}
           onClick={select}
-          className={`cursor-pointer border transition ${ isSelected ? "border-zinc-900 bg-zinc-50 dark:border-zinc-100 dark:bg-slate-800" : "border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900" }`} rounded="xl" padding="md"
+          className={`cursor-pointer transition ${ isSelected ? "border-zinc-900 bg-zinc-50 dark:border-zinc-100 dark:bg-slate-800" : " bg-white dark:bg-slate-900" }`} rounded="xl" padding="md"
         >
           <Text weight="medium" color="primary">
             {address.label ?? address.fullName}
@@ -546,7 +546,7 @@ function renderOrderSummary({
           <Text>−₹{(totalDiscount / 100).toFixed(2)}</Text>
         </Row>
       )}
-      <Row className="border-t border-zinc-200 dark:border-slate-700" padding="t-sm" align="center" justify="between">
+      <Row border="default" className="border-t" padding="t-sm" align="center" justify="between">
         <Text weight="semibold" color="primary">{CK.ORDER_SUMMARY_TOTAL}</Text>
         <Text weight="semibold" color="primary">{formattedTotal}</Text>
       </Row>

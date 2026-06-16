@@ -1855,7 +1855,7 @@ function renderAccordionCollapsedHeader({
 
 function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number, seedCount: number) {
   return (
-    <Div surface="default" className="border-t border-zinc-200 dark:border-slate-700 px-5" padding="y-md">
+    <Div border="default" surface="default" className="border-t px-5" padding="y-md">
       <Stack gap="md">
         <Text className="leading-relaxed m-0" color="muted" size="sm">{meta.description}</Text>
 
@@ -2409,7 +2409,7 @@ function renderSeedPanelToolbar({
   setFilterStatus: React.Dispatch<React.SetStateAction<StatusFilter>>;
 }) {
   return (
-    <Div className="sticky z-30 backdrop-blur-md border-b border-zinc-200" surface="default" shadow="sm" style={{ top: "var(--header-height, 0px)" }}>
+    <Div border="default" className="sticky z-30 backdrop-blur-md border-b" surface="default" shadow="sm" style={{ top: "var(--header-height, 0px)" }}>
       <Container size="2xl">
         <Stack gap="sm" className="py-2.5">
           <Stack className="sm:flex-row sm:items-center" gap="sm">
@@ -2602,7 +2602,7 @@ function renderSeedPanelCollectionList(p: {
 
 function renderSeedPanelPagination({ page, setPage, totalPages, PAGE_SIZE, filteredCollections }: { page: number; setPage: React.Dispatch<React.SetStateAction<number>>; totalPages: number; PAGE_SIZE: number; filteredCollections: SeedCollectionName[] }) {
   return (
-    <Row justify="between" className="border-t border-zinc-200 dark:border-slate-700" padding="t-xs">
+    <Row border="default" justify="between" className="border-t" padding="t-xs">
       <Span size="xs" variant="muted">Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filteredCollections.length)} of {filteredCollections.length}</Span>
       <Row gap="xs">
         <Button type="button" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-2.5 py-1 rounded-lg text-sm font-medium border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-slate-700 transition-colors">‹ Prev</Button>
@@ -2627,7 +2627,7 @@ function renderSeedScaleSummary() {
           ["Bids (auction history)", "120+"], ["FAQs (all categories)", "55+"], ["Blog Posts", "20+"],
           ["Events", "15+"], ["Coupons (global + store)", "20+"], ["Notifications (all types)", "47+"], ["Wishlists", "40+"],
         ].map(([label, count]) => (
-          <Row key={label} justify="between" className="border-b border-zinc-100 dark:border-white/5 last:border-0" padding="y-xs">
+          <Row border="subtle" key={label} justify="between" className="border-b dark:border-white/5 last:border-0" padding="y-xs">
             <Span size="sm">{label}</Span>
             <Span className="font-mono text-amber-600 dark:text-amber-400 tabular-nums" size="sm" weight="bold">{count}</Span>
           </Row>

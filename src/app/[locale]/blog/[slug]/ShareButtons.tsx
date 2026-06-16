@@ -30,7 +30,7 @@ export function ShareButtons({ title }: ShareButtonsProps) {
   };
 
   return (
-    <Row className="mt-6 border-t border-zinc-200 dark:border-zinc-700" padding="t-lg" align="center" gap="3">
+    <Row border="default" className="mt-6 border-t" padding="t-lg" align="center" gap="3">
       <Span size="sm" weight="medium" color="muted">Share:</Span>
       <Button
         type="button"

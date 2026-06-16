@@ -87,7 +87,7 @@ export default async function Page({
       />
 
       {/* Tab navigation */}
-      <Div surface="default" className="border-b border-zinc-200 dark:border-slate-700">
+      <Div border="default" surface="default" className="border-b">
         <Row className={`mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 ${__O.xAuto} scrollbar-hide`} align="center" gap="xs" padding="y-xs">
           {VALID_TABS.map((tabValue) => {
             const isActive = tabValue === activeTab;

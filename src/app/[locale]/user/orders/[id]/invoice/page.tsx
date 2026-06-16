@@ -17,11 +17,11 @@ type OrderData = NonNullable<ReturnType<typeof useOrder>["order"]>;
 
 function renderInvoiceActionBar(id: string) {
   return (
-    <Row
+    <Row border="default" 
       justify="between"
       align="center"
       gap="md"
-      className="print:hidden sticky top-[var(--header-height,0px)] z-[var(--appkit-z-dropdown)] px-6 border-b border-zinc-200 dark:border-slate-700" surface="default" padding="y-sm"
+      className="print:hidden sticky top-[var(--header-height,0px)] z-[var(--appkit-z-dropdown)] px-6 border-b" surface="default" padding="y-sm"
     >
       <Link
         href={String(ROUTES.USER.ORDER_DETAIL(id))}
@@ -151,9 +151,9 @@ function renderInvoiceTotals(order: OrderData) {
           <Text>{paise(order.tax, order.currency)}</Text>
         </Row>
       )}
-      <Row
+      <Row border="default" 
         justify="between"
-        className="text-sm font-semibold border-t border-zinc-200 dark:border-slate-700 print:border-gray-300 mt-1" padding="t-xs"
+        className="text-sm font-semibold border-t print:border-gray-300 mt-1" padding="t-xs"
       >
         <Text className="print:text-black" color="primary" weight="semibold">Total</Text>
         <Text className="print:text-black" color="primary" weight="semibold">

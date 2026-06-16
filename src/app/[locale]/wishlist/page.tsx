@@ -340,7 +340,7 @@ function renderWishlistFilterContent({
           ))}
         </Stack>
       </Div>
-      <Div className="border-t border-zinc-200 dark:border-zinc-700" padding="t-md">
+      <Div border="default" className="border-t" padding="t-md">
         <Text className="mb-2 tracking-wide" color="muted" size="xs" weight="semibold" transform="uppercase">Price range (₹)</Text>
         <Row gap="sm">
           <Input type="number" placeholder="Min" min={0} value={pending.minPrice} onChange={(e) => setPending((p) => ({ ...p, minPrice: e.target.value }))} className="h-8 text-sm" />

@@ -170,7 +170,7 @@ export default function ClaimedCouponsPage() {
       </Div>
 
       {/* Tab bar */}
-      <Row gap="xs" className="border-b border-zinc-200 dark:border-slate-700">
+      <Row border="default" gap="xs" className="border-b">
         {TABS.map((t) => {
           const count = wallet[t.key]?.length ?? 0;
           const active = t.key === tab;
