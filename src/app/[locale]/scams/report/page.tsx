@@ -357,7 +357,7 @@ function ScamReportForm({ userId }: { userId: string }) {
               type="submit"
               variant="primary"
               disabled={isSubmitting || !form.agreed}
-              className="flex items-center disabled:opacity-60"
+              className="disabled:opacity-60"
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
               {isSubmitting ? "Submitting…" : "Submit Report"}

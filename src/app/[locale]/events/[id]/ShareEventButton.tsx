@@ -19,7 +19,7 @@ export function ShareEventButton() {
     <Button rounded="lg" gap="xs" 
       type="button"
       onClick={handleCopy}
-      className="inline-flex items-center border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+      className="inline- border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
     >
       🔗 {copied ? "Copied!" : "Copy Link"}
     </Button>
