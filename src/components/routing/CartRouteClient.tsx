@@ -969,7 +969,7 @@ function AuctionsTabItems({ auctionBucket, filteredAuctions, sellerGroupsAuction
   }
   return (
     <Stack gap="md">
-      <Text className="text-warning bg-warning-surface border border-warning/20 rounded-lg px-3 py-2" size="xs">
+      <Text paddingY="xs" className="text-warning bg-warning-surface border border-warning/20 rounded-lg px-3" size="xs">
         Won auction items must be paid before you can bid on new auctions or purchase new items.
       </Text>
       {sellerGroupsAuctions.map((group) => (
@@ -1050,7 +1050,7 @@ function OffersTabItems({ offerBucket, filteredOffers, sellerGroupsOffers, norma
   const noop = () => {};
   return (
     <Stack gap="md">
-      <Text className="text-warning bg-warning-surface border border-warning/20 rounded-lg px-3 py-2" size="xs">
+      <Text paddingY="xs" className="text-warning bg-warning-surface border border-warning/20 rounded-lg px-3" size="xs">
         Accepted offers must be paid. These items cannot be removed from your cart.
       </Text>
       {sellerGroupsOffers.map((group) => (

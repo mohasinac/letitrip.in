@@ -232,7 +232,7 @@ export default function UserMessagesPage({ initialActiveId }: UserMessagesPagePr
   if (!userId) {
     return (
       <Div className={PAGE_CONTAINER}>
-        <Text variant="secondary" className="py-12" align="center">
+        <Text paddingY="3xl" variant="secondary" align="center">
           Sign in to view your conversations.
         </Text>
       </Div>
@@ -339,7 +339,7 @@ export default function UserMessagesPage({ initialActiveId }: UserMessagesPagePr
               )}
             />
           ) : (
-            <Text variant="secondary" className="py-6" size="sm" align="center">
+            <Text paddingY="lg" variant="secondary" size="sm" align="center">
               Loading conversation…
             </Text>
           )
