@@ -70,7 +70,7 @@ interface Props {
 
 function renderLoginRequired() {
   return (
-    <Stack className="px-6 text-center" gap="3" padding="y-2xl" rounded="xl" border="default">
+    <Stack className="text-center" gap="3" padding="lg" rounded="xl" border="default">
       <Heading level={2} size="xl" weight="bold" color="primary">
         Login Required
       </Heading>
@@ -218,7 +218,7 @@ function renderSuccessState({
 }) {
   return (
     <Stack padding="y-lg" gap="md">
-      <Stack className="border border-success/20 py-5" surface="success-surface" padding="x-md" gap="sm" rounded="2xl">
+      <Stack className="border border-success/20" surface="success-surface" padding="md" gap="sm" rounded="2xl">
         <Row align="center" gap="sm">
           <Span weight="semibold" className="inline-flex items-center bg-success text-white text-[11px] tracking-wide" padding="pill-sm" rounded="full" transform="uppercase">
             Confirmed
@@ -583,7 +583,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
   if (isSubmitted && !atEntryLimit) {
     return (
       <Stack gap="md">
-        <Stack className="border border-success/20 py-5" surface="success-surface" padding="x-md" gap="sm" rounded="2xl">
+        <Stack className="border border-success/20" surface="success-surface" padding="md" gap="sm" rounded="2xl">
           <Row align="center" gap="sm">
             <Span weight="semibold" className="inline-flex items-center bg-success text-white text-[11px] tracking-wide" padding="pill-sm" rounded="full" transform="uppercase">
               Confirmed
