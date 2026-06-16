@@ -61,7 +61,7 @@ function renderProfileViewMode({
             {avatarLetter}
           </Row>
         )}
-        <Stack gap="none" className=".5 min-w-0">
+        <Stack gap="none" className="min-w-0">
           <Text className="truncate" color="primary" size="lg" weight="semibold">
             {resolvedName || <Text as="span" className="italic" color="faint">{namePlaceholder}</Text>}
           </Text>

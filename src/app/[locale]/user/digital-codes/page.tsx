@@ -61,7 +61,7 @@ function CodeRevealRow({ item, orderId }: { item: OrderItem; orderId: string }) 
   return (
     <Stack className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p4}`} gap="3" rounded="lg">
       <Row justify="between" align="start">
-        <Stack gap="none" className=".5">
+        <Stack gap="none" className="">
           <Link
             href={String(ROUTES.PUBLIC.DIGITAL_CODE_DETAIL(item.productId))}
             className="text-sm font-semibold text-[var(--appkit-color-text)] hover:underline line-clamp-1"

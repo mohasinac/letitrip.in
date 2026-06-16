@@ -839,7 +839,7 @@ export function CartRouteClient() {
         <CartSummary
           labels={{ title: "Summary" }}
           renderBreakdown={() => (
-            <Stack gap="xs" className=".5">
+            <Stack gap="xs" className="">
               <Row align="center" justify="between">
                 <Text size="sm" color="muted">
                   {selectedCount === allItemIds.length
@@ -1096,8 +1096,8 @@ function SellerGroupSection({
   return (
     <Div>
       {/* Seller header */}
-      <Row gap="xs" className="mb-2 .5" align="center" justify="between" wrap>
-        <Row gap="xs" className=".5" align="center" wrap>
+      <Row gap="xs" className="mb-2" align="center" justify="between" wrap>
+        <Row gap="xs" className="" align="center" wrap>
           <Text className="tracking-wide" color="muted" size="xs" weight="semibold" transform="uppercase">
             Sold by
           </Text>

@@ -1860,9 +1860,9 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         <Text className="leading-relaxed m-0" color="muted" size="sm">{meta.description}</Text>
 
         <Row wrap gap="sm">
-          <Span layout="inline-flex" gap="xs" className=".5 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800/40 text-indigo-700 dark:text-indigo-300 font-mono" size="xs" rounded="md" padding="pill-sm-tall">🔑 {meta.slugPattern}</Span>
+          <Span layout="inline-flex" gap="xs" className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800/40 text-indigo-700 dark:text-indigo-300 font-mono" size="xs" rounded="md" padding="pill-sm-tall">🔑 {meta.slugPattern}</Span>
           {meta.mediaFields?.map((f) => (
-            <Span layout="inline-flex" gap="xs" key={f} className=".5 bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/40 text-violet-700 dark:text-violet-300 font-mono" size="xs" rounded="md" padding="pill-sm-tall">🖼️ {f}</Span>
+            <Span layout="inline-flex" gap="xs" key={f} className="bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/40 text-violet-700 dark:text-violet-300 font-mono" size="xs" rounded="md" padding="pill-sm-tall">🖼️ {f}</Span>
           ))}
         </Row>
 
@@ -2411,7 +2411,7 @@ function renderSeedPanelToolbar({
   return (
     <Div border="default" className="sticky z-30 backdrop-blur-md border-b" surface="default" shadow="sm" style={{ top: "var(--header-height, 0px)" }}>
       <Container size="2xl">
-        <Stack padding="y-xs" gap="sm" className=".5">
+        <Stack padding="y-xs" gap="sm" className="">
           <Stack align="center" className="sm:flex-row sm:" gap="sm">
             <Div className="flex-1 min-w-0">
               <Heading level={2} className="m-0 leading-none" color="primary" size="sm" weight="bold">
