@@ -2580,7 +2580,7 @@ function renderSeedPanelCollectionList(p: {
   toggleGroup: (cols: SeedCollectionName[], select: boolean) => void;
 }) {
   if (p.filteredCollections.length === 0) {
-    return <Div className="text-center text-sm text-zinc-500 dark:text-slate-400" padding="y-2xl">No collections match your filters.</Div>;
+    return <Div className="text-center text-sm" color="muted" padding="y-2xl">No collections match your filters.</Div>;
   }
   if (p.isFiltered) {
     return <Stack gap="none" className="gap-1.5">{p.paginatedCollections.map((col) => renderAccordionCard(col, p))}</Stack>;
