@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { JsonValue } from "@mohasinac/appkit";
 import { notFound } from "next/navigation";
 import { Div, Heading, RichText, Stack } from "@mohasinac/appkit/ui";
 import { EVENT_LABELS } from "./_constants";
@@ -30,7 +31,7 @@ export default async function Page({ params }: Props) {
     typeof event.description === "string" ? event.description : "";
   const isActive = eventIsActive(event);
   const pollConfig = (event as { pollConfig?: PollConfig }).pollConfig;
-  const ev = event as unknown as Record<string, unknown>;
+  const ev = event as unknown as Record<string, JsonValue>;
   const images: string[] = Array.isArray(ev.images)
     ? (ev.images as unknown[]).filter((u): u is string => typeof u === "string")
     : [];

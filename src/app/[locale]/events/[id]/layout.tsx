@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { JsonValue } from "@mohasinac/appkit";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Div, Stack } from "@mohasinac/appkit/ui";
@@ -24,7 +25,7 @@ export async function generateMetadata({
   const event = await getEventCached(id);
   if (!event) return { title: EVENT_META.NOT_FOUND_TITLE };
 
-  const e = event as unknown as Record<string, unknown>;
+  const e = event as unknown as Record<string, JsonValue>;
   const coverImage =
     typeof e.imageUrl === "string"
       ? e.imageUrl
@@ -52,7 +53,7 @@ export default async function Layout({ children, params }: Props) {
   ]);
   if (!event) notFound();
 
-  const e = event as unknown as Record<string, unknown>;
+  const e = event as unknown as Record<string, JsonValue>;
   const coverImage =
     typeof e.imageUrl === "string"
       ? e.imageUrl

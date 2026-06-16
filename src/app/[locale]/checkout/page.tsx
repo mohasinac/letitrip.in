@@ -2,6 +2,7 @@ import { redirect } from "@/i18n/navigation";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 import { CheckoutRouteClient } from "@/components";
 import { ROUTES, siteSettingsRepository, ADMIN_CHECKOUT_BYPASS_FLAG_KEY, isAdminUser } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 
 export default async function Page() {
   const user = await getServerSessionUser();
@@ -15,7 +16,7 @@ export default async function Page() {
   let adminBypassEnabled = false;
   if (isAdminUser(user)) {
     const settings = await siteSettingsRepository.getSingleton();
-    const flags = settings?.featureFlags as Record<string, unknown> | undefined;
+    const flags = settings?.featureFlags as Record<string, JsonValue> | undefined;
     adminBypassEnabled = flags?.[ADMIN_CHECKOUT_BYPASS_FLAG_KEY] === true;
   }
 
