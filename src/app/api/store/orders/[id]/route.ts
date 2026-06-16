@@ -35,6 +35,7 @@ import {
   OrderStatusValues,
   ShippingMethodValues,
 } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 import { shipOrderAction } from "@/actions/seller.actions";
 import { ROLES_STORE_WRITE } from "@/constants";
 
@@ -93,7 +94,7 @@ async function getSellerShippingMethod(uid: string): Promise<string | null> {
 type ShiprocketPackageInput = z.infer<typeof shiprocketPackageSchema>;
 
 type AutoShipResult =
-  | { ok: true; updated: Record<string, unknown> | null; result: unknown }
+  | { ok: true; updated: Record<string, JsonValue> | null; result: unknown }
   | { ok: false; message: string };
 
 /**
@@ -114,7 +115,7 @@ async function tryAutoShip(
       packageHeight: pkg.height,
       courierId: pkg.courierId,
     });
-    const updated = (await orderRepository.findById(id)) as Record<string, unknown> | null;
+    const updated = (await orderRepository.findById(id)) as Record<string, JsonValue> | null;
     return { ok: true, updated, result };
   } catch (err: unknown) {
     void normalizeError(err);
@@ -222,13 +223,13 @@ export const PATCH = withProviders(
         await orderRepository.updateStatus(
           id,
           status,
-          trackingData as Record<string, unknown>,
+          trackingData as Record<string, JsonValue>,
         );
       } else {
         await orderRepository.updateStatus(
           id,
           order.status as (typeof OrderStatusValues)[keyof typeof OrderStatusValues],
-          trackingData as Record<string, unknown>,
+          trackingData as Record<string, JsonValue>,
         );
       }
 
