@@ -23,7 +23,7 @@ export const PATCH = withProviders(
       if (doc.ownerId !== user!.uid && doc.scope !== "seller") {
         return ApiErrors.forbidden("Not yours");
       }
-      const body = await parseJsonBody<Record<string, unknown>>(request);
+      const body = await parseJsonBody<Record<string, JsonValue>>(request);
       try {
         const updated = await analyticsCardsRepository.update(id, body);
         return successResponse(updated);

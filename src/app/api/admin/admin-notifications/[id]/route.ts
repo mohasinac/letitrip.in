@@ -18,7 +18,7 @@ export const PATCH = withProviders(
       const id = (params as { id: string }).id;
       const doc = await adminNotificationsRepository.findById(id);
       if (!doc) return ApiErrors.notFound("Not found");
-      const body = await parseJsonBody<Record<string, unknown>>(request);
+      const body = await parseJsonBody<Record<string, JsonValue>>(request);
       const updated = await adminNotificationsRepository.update(id, body);
       return successResponse(updated);
     },

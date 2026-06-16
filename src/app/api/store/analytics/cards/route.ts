@@ -33,7 +33,7 @@ export const POST = withProviders(
     auth: true,
     roles: [...ROLES_STORE_WRITE],
     handler: async ({ request, user }) => {
-      const body = await parseJsonBody<Record<string, unknown>>(request);
+      const body = await parseJsonBody<Record<string, JsonValue>>(request);
       try {
         const doc = await analyticsCardsRepository.create({
           ...body,

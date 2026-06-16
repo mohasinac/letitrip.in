@@ -36,7 +36,7 @@ export const PUT = withProviders(
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return ApiErrors.forbidden("No store");
       const existing = await storeGoogleConfigRepository.getByStore(store.id);
-      const body = await parseJsonBody<Record<string, unknown>>(request);
+      const body = await parseJsonBody<Record<string, JsonValue>>(request);
       try {
         const doc = existing
           ? await storeGoogleConfigRepository.update(existing.id, {

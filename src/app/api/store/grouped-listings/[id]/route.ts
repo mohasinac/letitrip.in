@@ -44,7 +44,7 @@ export const PATCH = withProviders(
       const doc = await groupedListingsRepository.findById(id);
       if (!doc) return ApiErrors.notFound(GROUP_NOT_FOUND);
       if (doc.storeId !== store.id) return ApiErrors.forbidden("Not your group");
-      const body = await parseJsonBody<Record<string, unknown>>(request);
+      const body = await parseJsonBody<Record<string, JsonValue>>(request);
       try {
         await groupedListingsRepository.update(id, body);
         return successResponse({ id }, "Group updated");

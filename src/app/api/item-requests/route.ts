@@ -28,7 +28,7 @@ export const POST = withProviders(
     auth: true,
     roles: [...ROLES_AUTHENTICATED],
     handler: async ({ request, user }) => {
-      const body = await parseJsonBody<Record<string, unknown>>(request);
+      const body = await parseJsonBody<Record<string, JsonValue>>(request);
       try {
         const doc = await itemRequestsRepository.create({
           ...body,

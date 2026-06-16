@@ -29,7 +29,7 @@ export const POST = withProviders(
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
     handler: async ({ request, user }) => {
-      const body = await parseJsonBody<Record<string, unknown>>(request);
+      const body = await parseJsonBody<Record<string, JsonValue>>(request);
       try {
         const doc = await customRolesRepository.create({
           ...body,

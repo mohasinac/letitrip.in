@@ -188,7 +188,7 @@ function renderPage({
           </Text>
         </Row>
       ) : filtered.length === 0 ? (
-        <Stack className="justify-center border border-dashed border-[var(--appkit-color-border)] text-center" padding="y-4xl" align="center" rounded="2xl">
+        <Stack justify="center" className="border border-dashed border-[var(--appkit-color-border)] text-center" padding="y-4xl" align="center" rounded="2xl">
           <Text className="mb-2" size="3xl">🏷️</Text>
           <Text size="sm" weight="semibold">
             {search ? "No categories match your search" : "No sub-listing categories yet"}

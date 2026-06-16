@@ -27,7 +27,7 @@ export const POST = withProviders(
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
     handler: async ({ request }) => {
-      const body = await parseJsonBody<Record<string, unknown>>(request);
+      const body = await parseJsonBody<Record<string, JsonValue>>(request);
       const doc = await adminNotificationsRepository.create({
         ...body,
         isRead: false,

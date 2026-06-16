@@ -35,7 +35,7 @@ export const POST = withProviders(
     handler: async ({ request, user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return ApiErrors.forbidden("No store");
-      const body = await parseJsonBody<Record<string, unknown>>(request);
+      const body = await parseJsonBody<Record<string, JsonValue>>(request);
       try {
         const doc = await payoutMethodsRepository.create({
           ...body,

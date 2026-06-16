@@ -82,7 +82,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
             </Div>
           )}
 
-          <Stack className="sm:flex-row sm:items-start sm:justify-between" gap="xs">
+          <Stack align="start" justify="between" className="sm:flex-row sm: sm:" gap="xs">
             <>
               <Heading level={1} color="primary" size="2xl" weight="bold" smSize="3xl">
                 {displayName}
@@ -101,7 +101,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
 
         {/* Listings grid */}
         {listings.length === 0 ? (
-          <Stack className="justify-center border-dashed text-center" align="center" padding="y-4xl" rounded="2xl" border="default">
+          <Stack justify="center" className="border-dashed text-center" align="center" padding="y-4xl" rounded="2xl" border="default">
             <Text as="span" className="mb-3" size="4xl">📦</Text>
             <Text size="base" weight="semibold" color="muted">No listings yet</Text>
             <Text className="mt-1" color="faint" size="sm">

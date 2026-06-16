@@ -24,7 +24,7 @@ export const PATCH = withProviders(
       const doc = await analyticsAlertsRepository.findById(id);
       if (!doc) return ApiErrors.notFound("Alert not found");
       if (doc.ownerId !== user!.uid) return ApiErrors.forbidden("Not your alert");
-      const body = await parseJsonBody<Record<string, unknown>>(request);
+      const body = await parseJsonBody<Record<string, JsonValue>>(request);
       try {
         await analyticsAlertsRepository.update(id, body);
         return successResponse({ id }, "Alert updated");

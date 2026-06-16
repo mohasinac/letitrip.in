@@ -35,7 +35,7 @@ export const PATCH = withProviders(
       const id = (params as { id: string }).id;
       const doc = await reportsRepository.findById(id);
       if (!doc) return ApiErrors.notFound("Not found");
-      const body = await parseJsonBody<Record<string, unknown>>(request);
+      const body = await parseJsonBody<Record<string, JsonValue>>(request);
       try {
         const updated = await reportsRepository.update(id, {
           ...body,

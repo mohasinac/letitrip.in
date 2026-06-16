@@ -43,7 +43,7 @@ export const PATCH = withProviders(
     handler: async ({ request, user, params }) => {
       const { error } = await loadAndAssertOwner(user!.uid, (params as { id: string }).id);
       if (error) return error;
-      const body = await parseJsonBody<Record<string, unknown>>(request);
+      const body = await parseJsonBody<Record<string, JsonValue>>(request);
       try {
         const updated = await shippingConfigsRepository.update(
           (params as { id: string }).id,
