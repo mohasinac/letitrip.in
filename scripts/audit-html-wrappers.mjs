@@ -263,7 +263,7 @@ const BASELINES = {
   // Variant-catalogue raw-tag baselines — locked 2026-06-14. Drive each
   // to 0 in the consumer sweep (the audit will let you tighten the number
   // every time the count drops).
-  RAW_SPAN: 79,
+  RAW_SPAN: 0,
   RAW_LIST: 124,
   RAW_TABLE: 97,
   RAW_NAV_HEADER_FOOTER: 0,
