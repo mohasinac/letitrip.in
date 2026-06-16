@@ -48,11 +48,11 @@ function StatCard({
       />
       <Row className="px-5 pb-5" padding="t-lg" align="start" justify="between" gap="3">
         <Div className="min-w-0 flex-1">
-          <Div className="text-[11px] font-semibold uppercase tracking-widest text-[var(--appkit-color-text-muted)]">{label}</Div>
+          <Div textWeight="semibold" className="text-[11px] uppercase tracking-widest text-[var(--appkit-color-text-muted)]">{label}</Div>
           {isLoading ? (
             <Div className="mt-2 h-7 w-20 animate-pulse bg-[var(--appkit-color-border)]" rounded="default" />
           ) : (
-            <Div className="mt-2 text-2xl font-bold text-[var(--appkit-color-text)] tabular-nums leading-none">{value}</Div>
+            <Div textWeight="bold" className="mt-2 text-2xl text-[var(--appkit-color-text)] tabular-nums leading-none">{value}</Div>
           )}
         </Div>
         <Row

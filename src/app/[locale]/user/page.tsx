@@ -72,7 +72,7 @@ function StatCard({ label, value, href }: { label: string; value: string | numbe
       href={href}
       className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3 shadow-sm hover:border-[var(--appkit-color-primary)] hover:shadow-md transition-colors"
     >
-      <Div className="text-2xl font-bold text-[var(--appkit-color-text)] leading-tight">{value}</Div>
+      <Div textWeight="bold" className="text-2xl text-[var(--appkit-color-text)] leading-tight">{value}</Div>
       <Div textSize="xs" className="text-[var(--appkit-color-text-muted)] mt-0.5">{label}</Div>
     </Link>
   );
@@ -153,8 +153,8 @@ export default function Page() {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <Row
-                    className="h-full w-full text-white text-xl font-bold" align="center" justify="center"
+                  <Row textWeight="bold" 
+                    className="h-full w-full text-white text-xl" align="center" justify="center"
                     // audit-inline-style-ok: runtime brand gradient
                     style={{ background: BRAND_GRAD }}
                   >
@@ -165,7 +165,7 @@ export default function Page() {
                   <Camera className="w-5 h-5 text-white" />
                 </Row>
                 {uploading && (
-                  <Row surface="overlay-lg" className="absolute inset-0 text-white text-[10px] font-semibold" align="center" justify="center">
+                  <Row textWeight="semibold" surface="overlay-lg" className="absolute inset-0 text-white text-[10px]" align="center" justify="center">
                     Saving…
                   </Row>
                 )}
@@ -180,7 +180,7 @@ export default function Page() {
                 onChange={(e) => onPickFile(e.target.files?.[0] ?? null)}
               />
               <Div className="min-w-0 flex-1">
-                <Div className="font-semibold text-[var(--appkit-color-text)] truncate">
+                <Div textWeight="semibold" className="text-[var(--appkit-color-text)] truncate">
                   {user.displayName ?? "My Account"}
                 </Div>
                 {user.email && (

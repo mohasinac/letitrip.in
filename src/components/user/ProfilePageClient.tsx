@@ -52,8 +52,8 @@ function renderProfileViewMode({
             <MediaImage src={profile.photoURL} alt="Avatar" size="thumbnail" />
           </Div>
         ) : (
-          <Row
-            className="h-20 w-20 text-3xl font-bold ring-2 ring-zinc-100 dark:ring-slate-700" align="center" justify="center" rounded="full"
+          <Row textWeight="bold" 
+            className="h-20 w-20 text-3xl ring-2 ring-zinc-100 dark:ring-slate-700" align="center" justify="center" rounded="full"
             // audit-inline-style-ok: dynamic CSS
             style={{ background: "var(--appkit-color-primary-50)", color: "var(--appkit-color-primary)" }} /* eslint-disable-line lir/no-inline-static-style */
           >

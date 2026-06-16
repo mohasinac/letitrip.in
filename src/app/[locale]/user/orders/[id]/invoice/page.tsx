@@ -151,9 +151,9 @@ function renderInvoiceTotals(order: OrderData) {
           <Text>{paise(order.tax, order.currency)}</Text>
         </Row>
       )}
-      <Row textSize="sm" border="default" 
+      <Row textWeight="semibold" textSize="sm" border="default" 
         justify="between"
-        className="font-semibold border-t print:border-gray-300 mt-1" padding="t-xs"
+        className="border-t print:border-gray-300 mt-1" padding="t-xs"
       >
         <Text className="print:text-black" color="primary" weight="semibold">Total</Text>
         <Text className="print:text-black" color="primary" weight="semibold">

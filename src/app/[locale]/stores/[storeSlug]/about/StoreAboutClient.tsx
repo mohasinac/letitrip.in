@@ -12,19 +12,19 @@ export function StoreAboutClient({ store }: { store: StoreDetail }) {
           <Row textSize="sm" gap="lg" className="border-y" color="muted" padding="y-md">
             {s.itemsSold != null && (
               <Div className="text-center">
-                <Div textSize="lg" className="font-bold" color="primary">{s.itemsSold}</Div>
+                <Div textWeight="bold" textSize="lg" color="primary">{s.itemsSold}</Div>
                 <Div>Items Sold</Div>
               </Div>
             )}
             {s.totalReviews != null && (
               <Div className="text-center">
-                <Div textSize="lg" className="font-bold" color="primary">{s.totalReviews}</Div>
+                <Div textWeight="bold" textSize="lg" color="primary">{s.totalReviews}</Div>
                 <Div>Reviews</Div>
               </Div>
             )}
             {s.averageRating != null && (
               <Div className="text-center">
-                <Div textSize="lg" className="font-bold" color="primary">{s.averageRating.toFixed(1)}</Div>
+                <Div textWeight="bold" textSize="lg" color="primary">{s.averageRating.toFixed(1)}</Div>
                 <Div>Avg Rating</Div>
               </Div>
             )}
