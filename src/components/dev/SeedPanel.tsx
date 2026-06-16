@@ -1,5 +1,5 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit";
+import { Table, Tbody, Td, Th, Thead, Tr, normalizeError } from "@mohasinac/appkit";
 // audit-auth-gates-ok — imports @/actions/demo-seed.types (types only, no function calls)
 
 /**
@@ -1723,73 +1723,73 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
       </Row>
 
       <Div className="overflow-x-auto" rounded="lg" border="default">
-        <table className="w-full text-xs border-collapse">
-          <thead>
-            <tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
-              <th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[38%]">Field</th>
-              <th className="text-left px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[14%]">Type</th>
-              <th className="text-center px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">🔍</th>
-              <th className="text-center px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">⚙️</th>
-              <th className="text-center px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">↕</th>
-              <th className="text-center px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">🔒</th>
-              <th className="text-center px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">📇</th>
-              <th className="text-left px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">Note</th>
-            </tr>
-            <tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
-              <th className="px-3 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-left" />
-              <th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-left" />
-              <th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-center">Search</th>
-              <th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-center">Filter</th>
-              <th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-center">Sort</th>
-              <th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-center">PII</th>
-              <th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-center">Index</th>
-              <th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-left" />
-            </tr>
-          </thead>
-          <tbody>
+        <Table className="w-full text-xs border-collapse">
+          <Thead>
+            <Tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
+              <Th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[38%]">Field</Th>
+              <Th className="text-left px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[14%]">Type</Th>
+              <Th className="text-center px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">🔍</Th>
+              <Th className="text-center px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">⚙️</Th>
+              <Th className="text-center px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">↕</Th>
+              <Th className="text-center px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">🔒</Th>
+              <Th className="text-center px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">📇</Th>
+              <Th className="text-left px-2 py-2 font-semibold text-zinc-600 dark:text-slate-300">Note</Th>
+            </Tr>
+            <Tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
+              <Th className="px-3 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-left" />
+              <Th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-left" />
+              <Th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-center">Search</Th>
+              <Th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-center">Filter</Th>
+              <Th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-center">Sort</Th>
+              <Th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-center">PII</Th>
+              <Th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-center">Index</Th>
+              <Th className="px-2 pb-1.5 text-[10px] font-normal text-zinc-400 dark:text-slate-500 text-left" />
+            </Tr>
+          </Thead>
+          <Tbody>
             {shown.length === 0 ? (
-              <tr>
-                <td colSpan={8} className="px-3 py-4 text-center text-zinc-400 dark:text-slate-500">
+              <Tr>
+                <Td colSpan={8} className="px-3 py-4 text-center text-zinc-400 dark:text-slate-500">
                   No fields match filter.
-                </td>
-              </tr>
+                </Td>
+              </Tr>
             ) : (
               shown.map((f) => (
-                <tr
+                <Tr
                   key={f.name}
                   className={`border-b border-zinc-100 dark:border-slate-800 last:border-0 transition-colors ${
                     f.pii ? "bg-red-50/40 dark:bg-red-900/5" : "hover:bg-zinc-50/60 dark:hover:bg-slate-800/30"
                   }`}
                 >
-                  <td className="px-3 py-2 font-mono text-zinc-800 dark:text-slate-200 break-all">{f.name}</td>
-                  <td className="px-2 py-2">
+                  <Td className="px-3 py-2 font-mono text-zinc-800 dark:text-slate-200 break-all">{f.name}</Td>
+                  <Td className="px-2 py-2">
                     <Span className={`px-1.5 py-0.5 text-[10px] leading-none ${TYPE_CHIP[f.type]}`} weight="semibold" rounded="default">
                       {f.type}
                     </Span>
-                  </td>
-                  <td className="px-2 py-2 text-center">
+                  </Td>
+                  <Td className="px-2 py-2 text-center">
                     <Cap active={f.searchable} label="✓" color="bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300" />
-                  </td>
-                  <td className="px-2 py-2 text-center">
+                  </Td>
+                  <Td className="px-2 py-2 text-center">
                     <Cap active={f.filterable} label="✓" color="bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300" />
-                  </td>
-                  <td className="px-2 py-2 text-center">
+                  </Td>
+                  <Td className="px-2 py-2 text-center">
                     <Cap active={f.sortable} label="✓" color="bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300" />
-                  </td>
-                  <td className="px-2 py-2 text-center">
+                  </Td>
+                  <Td className="px-2 py-2 text-center">
                     <Cap active={f.pii} label="🔒" color="bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300" />
-                  </td>
-                  <td className="px-2 py-2 text-center">
+                  </Td>
+                  <Td className="px-2 py-2 text-center">
                     <Cap active={f.indexed} label="✓" color="bg-zinc-200 dark:bg-slate-700 text-zinc-600 dark:text-slate-300" />
-                  </td>
-                  <td className="px-2 py-2 text-zinc-400 dark:text-slate-500 italic text-[10px] max-w-[120px] truncate" title={f.note}>
+                  </Td>
+                  <Td className="px-2 py-2 text-zinc-400 dark:text-slate-500 italic text-[10px] max-w-[120px] truncate" title={f.note}>
                     {f.note ?? ""}
-                  </td>
-                </tr>
+                  </Td>
+                </Tr>
               ))
             )}
-          </tbody>
-        </table>
+          </Tbody>
+        </Table>
       </Div>
 
       {/* Legend */}
@@ -1870,24 +1870,24 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
           <Div>
             <Text className="text-violet-700 dark:text-violet-400 tracking-wider mb-2 m-0" size="xs" weight="bold" transform="uppercase">🖼️ Media Slug Patterns (SEO filenames)</Text>
             <Div className="overflow-x-auto" rounded="lg" border="default">
-              <table className="w-full text-xs border-collapse">
-                <thead>
-                  <tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
-                    <th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[22%]">Context type</th>
-                    <th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[40%]">Pattern</th>
-                    <th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300">Example</th>
-                  </tr>
-                </thead>
-                <tbody>
+              <Table className="w-full text-xs border-collapse">
+                <Thead>
+                  <Tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
+                    <Th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[22%]">Context type</Th>
+                    <Th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[40%]">Pattern</Th>
+                    <Th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300">Example</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
                   {meta.mediaSlugPatterns.map((p) => (
-                    <tr key={p.type} className="border-b border-zinc-100 dark:border-slate-800 last:border-0 hover:bg-zinc-50/60 dark:hover:bg-slate-800/30">
-                      <td className="px-3 py-2 font-mono text-indigo-700 dark:text-indigo-300 whitespace-nowrap">{p.type}</td>
-                      <td className="px-3 py-2 font-mono text-zinc-700 dark:text-slate-300 text-[10px] break-all">{p.pattern}</td>
-                      <td className="px-3 py-2 font-mono text-zinc-400 dark:text-slate-500 italic text-[10px] break-all">{p.example}</td>
-                    </tr>
+                    <Tr key={p.type} className="border-b border-zinc-100 dark:border-slate-800 last:border-0 hover:bg-zinc-50/60 dark:hover:bg-slate-800/30">
+                      <Td className="px-3 py-2 font-mono text-indigo-700 dark:text-indigo-300 whitespace-nowrap">{p.type}</Td>
+                      <Td className="px-3 py-2 font-mono text-zinc-700 dark:text-slate-300 text-[10px] break-all">{p.pattern}</Td>
+                      <Td className="px-3 py-2 font-mono text-zinc-400 dark:text-slate-500 italic text-[10px] break-all">{p.example}</Td>
+                    </Tr>
                   ))}
-                </tbody>
-              </table>
+                </Tbody>
+              </Table>
             </Div>
           </Div>
         )}

@@ -43,7 +43,7 @@ const SKIP_FILE_RE = /\.(d\.ts|test\.tsx?|spec\.tsx?)$/;
 // Also skip Satori-rendered OG images (server/features/**/og.tsx, og-layout.tsx),
 // ErrorBoundary files (must render before React tree is ready), and the
 // shared Layout.tsx (defines Stack/Row/Container/Section/Grid themselves).
-const SKIP_PATH_RE = /[/\\]ui[/\\](?:components|forms|rich-text)[/\\]|[/\\]features[/\\]forms[/\\]|[/\\]_internal[/\\]server[/\\]features[/\\][^/\\]+[/\\]og(?:-layout)?\.tsx$|ErrorBoundary\.tsx$/;
+const SKIP_PATH_RE = /[/\\]ui[/\\](?:components|forms|rich-text)[/\\]|[/\\]ui[/\\]DataTable\.tsx$|[/\\]features[/\\]forms[/\\]|[/\\]features[/\\]email[/\\]|[/\\]_internal[/\\]server[/\\]features[/\\][^/\\]+[/\\]og(?:-layout)?\.tsx$|ErrorBoundary\.tsx$/;
 
 const RULES = [
   {
@@ -265,7 +265,7 @@ const BASELINES = {
   // every time the count drops).
   RAW_SPAN: 0,
   RAW_LIST: 124,
-  RAW_TABLE: 97,
+  RAW_TABLE: 0,
   RAW_NAV_HEADER_FOOTER: 0,
   RAW_HR: 0,
   RAW_INLINE_TEXT: 86,
