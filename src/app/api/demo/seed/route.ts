@@ -1,4 +1,5 @@
 import { normalizeError } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 import "@/providers.config";
 import { NextRequest, NextResponse } from "next/server";
 import { getUserFromRequest } from "@/lib/firebase/auth-server";
@@ -665,7 +666,7 @@ export async function POST(request: NextRequest) {
     const writeMeta = async (
       status: "running" | "done" | "error",
       done: number,
-      extra: Record<string, unknown> = {},
+      extra: Record<string, JsonValue> = {},
     ) => {
       if (!runRef) return;
       try {
@@ -709,7 +710,7 @@ export async function POST(request: NextRequest) {
     const emittedEvents: Array<{ type: string; [k: string]: unknown }> = [];
     // Fire-and-forget RTDB writes so per-collection work isn't blocked on
     // realtime network round-trips.  Failures are logged but never thrown.
-    const emit = (data: Record<string, unknown> & { type: string }) => {
+    const emit = (data: Record<string, JsonValue> & { type: string }) => {
       emittedEvents.push(data);
       if (data.type === "progress" && typeof data.collection === "string" && typeof data.status === "string") {
         void writeCol(

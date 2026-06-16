@@ -1,4 +1,5 @@
 import { AD_FIELDS } from "@/constants";
+import type { JsonValue } from "@mohasinac/appkit";
 
 type AdProvider = "manual" | "adsense" | "thirdParty";
 type AdStatus = typeof AD_FIELDS.STATUS_VALUES[keyof typeof AD_FIELDS.STATUS_VALUES];
@@ -86,7 +87,7 @@ function trimOrUndefined(value: string | undefined): string | undefined {
 }
 
 export function normalizeProviderCredentials(
-  credentials: ProviderCredentialsRecord | Record<string, unknown> | undefined,
+  credentials: ProviderCredentialsRecord | Record<string, JsonValue> | undefined,
 ): ProviderCredentialsRecord {
   return {
     adsenseClientId: trimOrUndefined(String(credentials?.adsenseClientId || "")),

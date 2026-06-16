@@ -1,4 +1,5 @@
 import { normalizeError } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 /**
  * Payment - Razorpay Webhook Handler
  *
@@ -85,7 +86,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse event
-    let event: { event: string; payload: Record<string, unknown> };
+    let event: { event: string; payload: Record<string, JsonValue> };
     try {
       event = JSON.parse(rawBody);
     } catch {
