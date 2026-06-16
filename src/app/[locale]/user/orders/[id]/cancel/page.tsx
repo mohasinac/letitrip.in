@@ -78,9 +78,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
         </Stack>
       ) : (
         <Form
-          onSubmit={handleSubmit}
-          className="rounded-xl border border-zinc-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 space-y-5"
-        >
+          onSubmit={handleSubmit} rounded="xl" padding="lg" surface="default" border="default" spacing="md">
           <Stack gap="xs">
             <Label
               htmlFor="reason"

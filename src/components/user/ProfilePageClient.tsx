@@ -125,9 +125,7 @@ function renderProfileEditForm({
   return (
     <Div surface="card" padding="lg">
     <Form
-      onSubmit={handleSave}
-      className="space-y-5"
-    >
+      onSubmit={handleSave} spacing="md">
       <Heading level={2} size="base" weight="semibold" color="primary">Edit Profile</Heading>
       <Stack gap="xs">
         <Label className={LABEL_CLS}>Display Name</Label>
