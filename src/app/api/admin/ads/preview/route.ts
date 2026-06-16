@@ -10,15 +10,16 @@ import {
   siteSettingsRepository,
   successResponse,
 } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 import { defaultPlacements } from "../validation";
 
-function normalizeAdSettings(settings: Record<string, unknown>) {
-  const adSettingsRaw = (settings.adSettings as Record<string, unknown> | undefined) ?? {};
+function normalizeAdSettings(settings: Record<string, JsonValue>) {
+  const adSettingsRaw = (settings.adSettings as Record<string, JsonValue> | undefined) ?? {};
   const inventory = Array.isArray(adSettingsRaw.inventory)
-    ? (adSettingsRaw.inventory as Array<Record<string, unknown>>)
+    ? (adSettingsRaw.inventory as Array<Record<string, JsonValue>>)
     : [];
   const placements = Array.isArray(adSettingsRaw.placements)
-    ? (adSettingsRaw.placements as Array<Record<string, unknown>>)
+    ? (adSettingsRaw.placements as Array<Record<string, JsonValue>>)
     : [];
   return {
     inventory,
@@ -27,7 +28,7 @@ function normalizeAdSettings(settings: Record<string, unknown>) {
   };
 }
 
-function isScheduleActive(item: Record<string, unknown>): boolean {
+function isScheduleActive(item: Record<string, JsonValue>): boolean {
   const now = Date.now();
   const start = item.startAt ? new Date(String(item.startAt)).getTime() : 0;
   const end = item.endAt ? new Date(String(item.endAt)).getTime() : Infinity;
@@ -56,7 +57,7 @@ export const GET = withProviders(
         return errorResponse("placementId query param is required", 400);
       }
 
-      const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, unknown>;
+      const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const { inventory, placements } = normalizeAdSettings(settings);
       const resolvedPlacements = placements.length > 0 ? placements : defaultPlacements();
 

@@ -11,6 +11,7 @@ import {
   siteSettingsRepository,
   successResponse,
 } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 import {
   defaultPlacements,
   getProviderCredentialIssues,
@@ -70,13 +71,13 @@ const adsConfigPatchSchema = z.object({
     .optional(),
 });
 
-function normalizeAdSettings(settings: Record<string, unknown>) {
-  const adSettingsRaw = (settings.adSettings as Record<string, unknown> | undefined) ?? {};
+function normalizeAdSettings(settings: Record<string, JsonValue>) {
+  const adSettingsRaw = (settings.adSettings as Record<string, JsonValue> | undefined) ?? {};
   const inventory = Array.isArray(adSettingsRaw.inventory)
-    ? (adSettingsRaw.inventory as Array<Record<string, unknown>>)
+    ? (adSettingsRaw.inventory as Array<Record<string, JsonValue>>)
     : [];
   const placements = Array.isArray(adSettingsRaw.placements)
-    ? (adSettingsRaw.placements as Array<Record<string, unknown>>)
+    ? (adSettingsRaw.placements as Array<Record<string, JsonValue>>)
     : [];
 
   return {
@@ -109,7 +110,7 @@ export const GET = withProviders(
       const page = Math.max(1, Number(url.searchParams.get("page") || "1"));
       const pageSize = Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize") || "20")));
 
-      const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, unknown>;
+      const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const placements = normalized.placements.length > 0 ? normalized.placements : defaultPlacements();
       const providerCredentials = normalizeProviderCredentials(normalized.providerCredentials);
@@ -191,7 +192,7 @@ export const PATCH = withProviders(
     permission: "admin:ads:write",
     schema: adsConfigPatchSchema,
     handler: async ({ body }) => {
-      const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, unknown>;
+      const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const mergedCredentials = normalizeProviderCredentials({
         ...normalized.providerCredentials,
@@ -228,7 +229,7 @@ export const POST = withProviders(
         return errorResponse("Invalid request", 400);
       }
 
-      const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, unknown>;
+      const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const placements = normalized.placements.length > 0 ? normalized.placements : defaultPlacements();
       const providerCredentials = normalizeProviderCredentials(normalized.providerCredentials);

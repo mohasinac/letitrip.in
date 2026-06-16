@@ -84,7 +84,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
 
           <Stack className="sm:flex-row sm:items-start sm:justify-between" gap="xs">
             <>
-              <Heading level={1} className="sm:text-3xl" color="primary" size="2xl" weight="bold">
+              <Heading level={1} color="primary" size="2xl" weight="bold" smSize="3xl">
                 {displayName}
               </Heading>
               {category.description && (

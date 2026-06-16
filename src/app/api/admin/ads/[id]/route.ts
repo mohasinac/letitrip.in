@@ -11,6 +11,7 @@ import {
   siteSettingsRepository,
   successResponse,
 } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 import {
   defaultPlacements,
   getPublishValidation,
@@ -45,13 +46,13 @@ const adPatchSchema = z
   })
   .strict();
 
-function normalizeAdSettings(settings: Record<string, unknown>) {
-  const adSettingsRaw = (settings.adSettings as Record<string, unknown> | undefined) ?? {};
+function normalizeAdSettings(settings: Record<string, JsonValue>) {
+  const adSettingsRaw = (settings.adSettings as Record<string, JsonValue> | undefined) ?? {};
   const inventory = Array.isArray(adSettingsRaw.inventory)
-    ? (adSettingsRaw.inventory as Array<Record<string, unknown>>)
+    ? (adSettingsRaw.inventory as Array<Record<string, JsonValue>>)
     : [];
   const placements = Array.isArray(adSettingsRaw.placements)
-    ? (adSettingsRaw.placements as Array<Record<string, unknown>>)
+    ? (adSettingsRaw.placements as Array<Record<string, JsonValue>>)
     : [];
 
   return {
@@ -75,7 +76,7 @@ export const GET = withProviders(
         return errorResponse(MSG_AD_ID_REQUIRED, 400);
       }
 
-      const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, unknown>;
+      const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const placements = normalized.placements.length > 0 ? normalized.placements : defaultPlacements();
       const item = normalized.inventory.find((entry) => String(entry.id) === id);
@@ -102,7 +103,7 @@ export const PATCH = withProviders(
         return errorResponse(MSG_AD_ID_REQUIRED, 400);
       }
 
-      const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, unknown>;
+      const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const placements = normalized.placements.length > 0 ? normalized.placements : defaultPlacements();
       const providerCredentials = normalizeProviderCredentials(normalized.providerCredentials);
@@ -112,12 +113,12 @@ export const PATCH = withProviders(
       }
 
       const nowIso = new Date().toISOString();
-      const prevStatus = String((existing as Record<string, unknown>).status ?? "draft");
+      const prevStatus = String((existing as Record<string, JsonValue>).status ?? "draft");
       const nextStatus = body?.status ?? prevStatus;
 
       // Audit trail — track every status transition
-      const existingHistory = Array.isArray((existing as Record<string, unknown>).statusHistory)
-        ? ((existing as Record<string, unknown>).statusHistory as Array<unknown>)
+      const existingHistory = Array.isArray((existing as Record<string, JsonValue>).statusHistory)
+        ? ((existing as Record<string, JsonValue>).statusHistory as Array<unknown>)
         : [];
 
       const statusHistoryEntry =
@@ -129,12 +130,12 @@ export const PATCH = withProviders(
         ...existing,
         ...(body ?? {}),
         creative: {
-          ...((existing.creative as Record<string, unknown> | undefined) ?? {}),
-          ...((body?.creative as Record<string, unknown> | undefined) ?? {}),
+          ...((existing.creative as Record<string, JsonValue> | undefined) ?? {}),
+          ...((body?.creative as Record<string, JsonValue> | undefined) ?? {}),
         },
         updatedAt: nowIso,
         updatedBy: user?.uid || "admin",
-        lastStatusChange: statusHistoryEntry ? nowIso : (existing as Record<string, unknown>).lastStatusChange,
+        lastStatusChange: statusHistoryEntry ? nowIso : (existing as Record<string, JsonValue>).lastStatusChange,
         statusHistory: statusHistoryEntry
           ? [...existingHistory.slice(-19), statusHistoryEntry]
           : existingHistory,
@@ -142,11 +143,11 @@ export const PATCH = withProviders(
         publishedAt:
           body?.status === AD_FIELDS.STATUS_VALUES.ACTIVE && prevStatus !== AD_FIELDS.STATUS_VALUES.ACTIVE
             ? nowIso
-            : (existing as Record<string, unknown>).publishedAt,
+            : (existing as Record<string, JsonValue>).publishedAt,
         publishedBy:
           body?.status === AD_FIELDS.STATUS_VALUES.ACTIVE && prevStatus !== AD_FIELDS.STATUS_VALUES.ACTIVE
             ? (user?.uid || "admin")
-            : (existing as Record<string, unknown>).publishedBy,
+            : (existing as Record<string, JsonValue>).publishedBy,
       };
 
       if (nextStatus === AD_FIELDS.STATUS_VALUES.ACTIVE || nextStatus === AD_FIELDS.STATUS_VALUES.SCHEDULED) {
@@ -194,7 +195,7 @@ export const DELETE = withProviders(
         return errorResponse(MSG_AD_ID_REQUIRED, 400);
       }
 
-      const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, unknown>;
+      const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const placements = normalized.placements.length > 0 ? normalized.placements : defaultPlacements();
       const providerCredentials = normalizeProviderCredentials(normalized.providerCredentials);

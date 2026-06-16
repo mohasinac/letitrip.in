@@ -1,7 +1,8 @@
 import { withProviders } from "@/providers.config";
 import { createApiHandler as createRouteHandler, siteSettingsRepository, successResponse } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 
-function isAdActive(item: Record<string, unknown>): boolean {
+function isAdActive(item: Record<string, JsonValue>): boolean {
   if (String(item.status || "") !== "active") return false;
   const now = Date.now();
   if (item.startAt) {
@@ -25,10 +26,10 @@ export const GET = withProviders(
       const slot = url.searchParams.get("slot")?.trim();
       if (!slot) return successResponse(null);
 
-      const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, unknown>;
-      const adSettingsRaw = (settings.adSettings as Record<string, unknown> | undefined) ?? {};
+      const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
+      const adSettingsRaw = (settings.adSettings as Record<string, JsonValue> | undefined) ?? {};
       const inventory = Array.isArray(adSettingsRaw.inventory)
-        ? (adSettingsRaw.inventory as Array<Record<string, unknown>>)
+        ? (adSettingsRaw.inventory as Array<Record<string, JsonValue>>)
         : [];
 
       const candidates = inventory
