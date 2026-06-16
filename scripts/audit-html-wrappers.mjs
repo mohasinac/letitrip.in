@@ -259,7 +259,7 @@ const BASELINES = {
   // utilities. Locked 2026-06-14 with the theme-system rollout; drive to 0
   // as feature views switch to `<Section gradient=…>`, `<Card variant=…>`,
   // `<Text gradient=…>` and the catalogue gradient slots.
-  RAW_GRADIENT_UTILITY: 45,
+  RAW_GRADIENT_UTILITY: 19,
   // Variant-catalogue raw-tag baselines — locked 2026-06-14. Drive each
   // to 0 in the consumer sweep (the audit will let you tighten the number
   // every time the count drops).
