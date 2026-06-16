@@ -11,6 +11,7 @@
 
 import { z } from "zod";
 import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,
