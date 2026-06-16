@@ -537,7 +537,7 @@ function renderOrderSummary({
           </Text>
         </Div>
       )}
-      <Row textSize="sm" className="text-zinc-600 dark:text-zinc-400 mb-1" align="center" justify="between">
+      <Row color="muted" textSize="sm" className="text-zinc-600 dark: mb-1" align="center" justify="between">
         <Text>Subtotal</Text>
         <Text>{formattedSubtotal}</Text>
       </Row>
