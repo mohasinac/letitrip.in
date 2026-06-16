@@ -72,7 +72,7 @@ export async function ShippingPolicyView() {
     <Div className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Header */}
       <Section
-        className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white md:py-16 lg:py-20`} padding="y-2-5xl"
+        tone="accent-banner" padding="y-2-5xl" className="text-white"
       >
         <Div className={`${page.container.sm}`}>
           <Heading level={1} variant="none" className="mb-3 text-white">

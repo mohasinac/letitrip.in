@@ -43,7 +43,7 @@ export async function TrackOrderView() {
     <Container className="-mx-4 md:-mx-6 lg:-mx-8 -mt-6 sm:-mt-8 lg:-mt-10">
       {/* Header */}
       <Section
-        className={`${THEME_CONSTANTS.accentBanner.pageHero} text-white md:py-16 lg:py-20`} padding="y-2-5xl"
+        tone="accent-banner" padding="y-2-5xl" className="text-white"
       >
         <Container className={`${page.container.sm} text-center`}>
           <Heading level={1} variant="none" className="mb-4 text-white">
