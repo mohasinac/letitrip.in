@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
-import { Span, carouselsRepository } from "@mohasinac/appkit";
+import { Code, Span, carouselsRepository } from "@mohasinac/appkit";
 import { ROUTES } from "@mohasinac/appkit/client";
 import { Heading, Section, Container, Row, Div, Text, Badge, EmptyState, Table, Thead, Tbody, Tr, Th, Td } from "@mohasinac/appkit/client";
 import { MAX_SLIDES_PER_CAROUSEL } from "@mohasinac/appkit";
@@ -37,8 +37,8 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
               <Span>
                 Named carousels group and organise slides for contextual use (e.g. homepage,
                 category pages). To create one, POST to{" "}
-                <code className="font-mono text-xs bg-[var(--appkit-color-border)] px-1 py-0.5 rounded">/api/admin/carousel</code>{" "}
-                with a <code className="font-mono text-xs bg-[var(--appkit-color-border)] px-1 py-0.5 rounded">name</code> field,
+                <Code size="xs" padding="inline" rounded="default" surface="subtle">/api/admin/carousel</Code>{" "}
+                with a <Code size="xs" padding="inline" rounded="default" surface="subtle">name</Code> field,
                 or use the LetItRip CLI. An admin UI form is planned for a future session.
               </Span>
             }

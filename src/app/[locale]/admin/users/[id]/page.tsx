@@ -1,17 +1,6 @@
 "use client";
 
-import {
-  Container,
-  Stack,
-  Heading,
-  Span,
-  Text,
-  Section,
-  Row,
-  Button,
-  Divider,
-  TabStrip,
-} from "@mohasinac/appkit/client";
+import { Button, Code, Container, Divider, Heading, Row, Section, Span, Stack, TabStrip, Text } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -53,7 +42,7 @@ export default function Page() {
             </Heading>
             <Text size="xs" color="muted">
               {(user?.email as string) ?? "—"} · role {(user?.role as string) ?? "user"} · uid{" "}
-              <code className="font-mono">{id}</code>
+              <Code className="font-mono">{id}</Code>
             </Text>
           </Stack>
           <Divider />
