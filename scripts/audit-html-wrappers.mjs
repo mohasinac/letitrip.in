@@ -264,7 +264,7 @@ const BASELINES = {
   // to 0 in the consumer sweep (the audit will let you tighten the number
   // every time the count drops).
   RAW_SPAN: 0,
-  RAW_LIST: 124,
+  RAW_LIST: 0,
   RAW_TABLE: 0,
   RAW_NAV_HEADER_FOOTER: 0,
   RAW_HR: 0,
@@ -273,7 +273,7 @@ const BASELINES = {
   RAW_FIGURE: 0,
   RAW_FIELDSET: 0,
   RAW_LABEL: 0,
-  RAW_ANCHOR: 20,
+  RAW_ANCHOR: 0,
   RAW_MEDIA_EMBED: 0,
 };
 
