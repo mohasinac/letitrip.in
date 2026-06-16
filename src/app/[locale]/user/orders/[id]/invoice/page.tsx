@@ -80,7 +80,7 @@ function renderInvoiceAddress(a: NonNullable<OrderData["address"]>) {
 
 function renderInvoiceItemsTable(order: OrderData) {
   return (
-    <Table className="w-full text-sm mb-6 border-collapse">
+    <Table className="mb-6" size="sm">
       <Thead>
         <Tr className="print:border-gray-300" border="default">
           {(["Item", "Qty", "Price"] as const).map((h, i) => (

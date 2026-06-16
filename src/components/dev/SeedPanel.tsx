@@ -1723,7 +1723,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
       </Row>
 
       <Div className="overflow-x-auto" rounded="lg" border="default">
-        <Table className="w-full text-xs border-collapse">
+        <Table size="sm">
           <Thead>
             <Tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
               <Th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[38%]">Field</Th>
@@ -1870,7 +1870,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
           <Div>
             <Text className="text-violet-700 dark:text-violet-400 tracking-wider mb-2 m-0" size="xs" weight="bold" transform="uppercase">🖼️ Media Slug Patterns (SEO filenames)</Text>
             <Div className="overflow-x-auto" rounded="lg" border="default">
-              <Table className="w-full text-xs border-collapse">
+              <Table size="sm">
                 <Thead>
                   <Tr className="bg-zinc-50 dark:bg-slate-800/60 border-b border-zinc-200 dark:border-slate-700">
                     <Th className="text-left px-3 py-2 font-semibold text-zinc-600 dark:text-slate-300 w-[22%]">Context type</Th>

@@ -25,7 +25,7 @@ function renderFeeTable(feeRows: FeeRow[], t: T) {
     <Section>
       <Heading level={2} className="mb-6">{t("tableTitle")}</Heading>
       <Div className={`${__O.xAuto}`} border="default" rounded="xl">
-        <Table className="w-full text-sm">
+        <Table size="sm">
           <Thead className={themed.bgSecondary}>
             <Tr>
               <Th className="text-left" padding="md" weight="semibold">{t("colFeeType")}</Th>

@@ -103,7 +103,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
           </Div>
         ) : (
           <Div className={`${__O.hidden}`} rounded="xl" border="default">
-            <Table className="w-full text-sm">
+            <Table size="sm">
               <Thead surface="muted">
                 <Tr>
                   <Th className="text-left" padding="md" color="muted" weight="medium">Order</Th>
