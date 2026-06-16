@@ -1900,7 +1900,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         </Div>
 
         <Div>
-          <Text className="dark:text-emerald-400 tracking-wider mb-2 m-0" color="success" size="xs" weight="bold" transform="uppercase">✓ What&apos;s Seeded</Text>
+          <Text className="tracking-wider mb-2 m-0" color="success" size="xs" weight="bold" transform="uppercase">✓ What&apos;s Seeded</Text>
           <Stack gap="none" className="gap-1.5">
             {meta.seededItems.map((item, i) => (
               <Text key={i} className="leading-snug pl-3 border-l-2 border-emerald-400 dark:border-emerald-700 m-0" color="muted" size="sm">{item}</Text>
@@ -1910,7 +1910,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
 
         {meta.pendingItems.length > 0 && (
           <Div>
-            <Text className="dark:text-amber-400 tracking-wider mb-2 m-0" color="warning" size="xs" weight="bold" transform="uppercase">⏳ Pending / Needed</Text>
+            <Text className="tracking-wider mb-2 m-0" color="warning" size="xs" weight="bold" transform="uppercase">⏳ Pending / Needed</Text>
             <Stack gap="none" className="gap-1.5">
               {meta.pendingItems.map((item, i) => (
                 <Text key={i} className="leading-snug pl-3 border-l-2 border-amber-400 dark:border-amber-700 m-0" color="muted" size="sm">{item}</Text>
@@ -1923,7 +1923,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
 
         {meta.piiFields && meta.piiFields.length > 0 && (
           <Row className="px-3 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/40" padding="y-xs" align="start" gap="sm" rounded="lg">
-            <Span size="xs" className="dark:text-red-300 leading-relaxed" color="error">
+            <Span size="xs" className="leading-relaxed" color="error">
               🔒 PII fields: <Span weight="bold">{meta.piiFields.join(", ")}</Span> — masked in DB with Firestore encryption. Never returned in full to client.
             </Span>
           </Row>
@@ -2538,7 +2538,7 @@ function renderSeedPanelDoneSummary({ errorCount, dryRun, completedCount, colErr
       {errorCount > 0 && (
         <Stack gap="xs" className="mt-2">
           {Object.entries(colErrors).map(([col, msg]) => (
-            <Text key={col} className="dark:text-red-400" color="error" size="xs"><Span weight="bold">{COLLECTION_META[col as SeedCollectionName]?.label ?? col}:</Span> {msg}</Text>
+            <Text key={col} color="error" size="xs"><Span weight="bold">{COLLECTION_META[col as SeedCollectionName]?.label ?? col}:</Span> {msg}</Text>
           ))}
         </Stack>
       )}
