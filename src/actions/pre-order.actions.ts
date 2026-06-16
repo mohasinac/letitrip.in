@@ -10,6 +10,7 @@ import {
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
 import { addItemToCart, productRepository } from "@mohasinac/appkit";
 import { getDefaultCurrency } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 
 export async function reservePreOrderAction(productId: string): Promise<void> {
   if (!productId) throw new ValidationError("Product ID is required");
@@ -26,7 +27,7 @@ export async function reservePreOrderAction(productId: string): Promise<void> {
   const product = await productRepository.findByIdOrSlug(productId).catch(() => null);
   if (!product) throw new ValidationError("Pre-order product not found.");
 
-  const p = product as unknown as Record<string, unknown>;
+  const p = product as unknown as Record<string, JsonValue>;
   const price = typeof p.price === "number" ? p.price : null;
   if (!price || price <= 0) throw new ValidationError("Invalid product price.");
 
