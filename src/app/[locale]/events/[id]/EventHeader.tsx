@@ -51,14 +51,14 @@ export function EventHeader({
         <Row align="center" gap="sm" wrap>
           {eventType ? (
             <Span
-              className={`inline-flex items-center px-2.5 py-0.5 capitalize ${typeBadgeClass(eventType)}`} size="xs" weight="semibold" rounded="full"
+              className={`inline-flex items-center capitalize ${typeBadgeClass(eventType)}`} padding="pill-sm" size="xs" weight="semibold" rounded="full"
             >
               {eventType}
             </Span>
           ) : null}
           {eventStatus ? (
             <Span
-              className={`inline-flex items-center px-2.5 py-0.5 capitalize ${statusBadgeClass(eventStatus)}`} size="xs" weight="semibold" rounded="full"
+              className={`inline-flex items-center capitalize ${statusBadgeClass(eventStatus)}`} padding="pill-sm" size="xs" weight="semibold" rounded="full"
             >
               {eventStatus}
             </Span>
