@@ -263,7 +263,7 @@ function renderOtpConsentStep({
           {isSendingOtp ? CK.OTP_SENDING_BTN : CK.OTP_SEND_BTN}
         </Button>
         {adminBypassEnabled && (
-          <Div className={`border border-warning/30 bg-warning-surface ${__P.p3}`} rounded="lg">
+          <Div className={`border border-warning/30 ${__P.p3}`} surface="warning-surface" rounded="lg">
             <Text className="mb-1 text-warning tracking-wide" size="xs" weight="semibold" transform="uppercase">
               {CK.ADMIN_BYPASS_PANEL_LABEL}
             </Text>
@@ -405,7 +405,7 @@ function renderPaymentStep({
             {CK.PAYMENT_COD_BTN}
           </Button>
           {adminBypassEnabled && (
-            <Div className={`mt-1 border border-warning/30 bg-warning-surface ${__P.p3}`} rounded="lg">
+            <Div className={`mt-1 border border-warning/30 ${__P.p3}`} surface="warning-surface" rounded="lg">
               <Text className="mb-2 text-warning tracking-wide" size="xs" weight="semibold" transform="uppercase">
                 {CK.ADMIN_BYPASS_PANEL_LABEL}
               </Text>

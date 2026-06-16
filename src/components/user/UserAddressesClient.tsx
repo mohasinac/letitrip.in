@@ -130,7 +130,7 @@ export function UserAddressesClient() {
       </Row>
 
       {confirmDeleteId && (
-        <Stack className={`border border-error/20 bg-error-surface ${__P.p4}`} gap="3" rounded="xl">
+        <Stack className={`border border-error/20 ${__P.p4}`} surface="danger-surface" gap="3" rounded="xl">
           <Text className="text-error" size="sm" weight="medium">
             Delete this address? This cannot be undone.
           </Text>

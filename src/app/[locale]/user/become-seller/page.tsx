@@ -97,7 +97,7 @@ export default function Page() {
         <Stack
           gap="md"
           padding="lg"
-          className="border border-success/20 bg-success-surface" rounded="xl"
+          className="border border-success/20" surface="success-surface" rounded="xl"
         >
           <Heading
             level={2}

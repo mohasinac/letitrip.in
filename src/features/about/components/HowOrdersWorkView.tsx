@@ -35,7 +35,7 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
             </Div>
           </Row>
         ))}
-        <Row className={`${__P.p4} border bg-error-surface border-error/20`} align="start" gap="md" rounded="xl">
+        <Row className={`${__P.p4} border border-error/20`} surface="danger-surface" align="start" gap="md" rounded="xl">
           <Div className="text-2xl flex-shrink-0 mt-0.5">❌</Div>
           <Div className="flex-1">
             <Row gap="sm" className="mb-1">

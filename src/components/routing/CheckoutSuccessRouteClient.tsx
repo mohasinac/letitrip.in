@@ -7,7 +7,7 @@ export function CheckoutSuccessRouteClient() {
     <CheckoutSuccessView
       labels={{ title: "Order Confirmed" }}
       renderHero={() => (
-        <Div className="border border-success/20 bg-success-surface" rounded="xl" padding="md">
+        <Div className="border border-success/20" surface="success-surface" rounded="xl" padding="md">
           <Heading level={2} className="mb-2 text-success" size="lg" weight="semibold">
             Thank you for your order
           </Heading>

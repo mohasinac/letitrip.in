@@ -199,7 +199,7 @@ export default function Page() {
       renderAlerts={() => (
         <Stack gap="3">
           {loadError && (
-            <Div className="border border-error/30 bg-error-surface px-4 text-sm text-error" padding="y-sm" rounded="xl">
+            <Div className="border border-error/30 px-4 text-sm text-error" surface="danger-surface" padding="y-sm" rounded="xl">
               <Span weight="semibold">Couldn&apos;t load dashboard data — </Span>
               <Span>{loadError}. Refresh to retry; if it persists, your admin session may have expired.</Span>
             </Div>
@@ -237,7 +237,7 @@ export default function Page() {
             <Row className="mb-4" align="center" gap="sm">
               <Div className="text-sm font-semibold text-[var(--appkit-color-text)]">Dev Settings</Div>
               {(prefs.mockRazorpay || prefs.mockShiprocket || adminBypassEnabled) && (
-                <Div className="text-xs py-0.5 bg-warning-surface text-warning font-medium" padding="x-xs" rounded="full">
+                <Div className="text-xs py-0.5 text-warning font-medium" surface="warning-surface" padding="x-xs" rounded="full">
                   Mock active
                 </Div>
               )}

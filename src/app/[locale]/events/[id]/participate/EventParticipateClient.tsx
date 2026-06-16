@@ -218,7 +218,7 @@ function renderSuccessState({
 }) {
   return (
     <Stack padding="y-lg" gap="md">
-      <Stack className="border border-success/20 bg-success-surface px-5 py-5" gap="sm" rounded="2xl">
+      <Stack className="border border-success/20 py-5" surface="success-surface" padding="x-md" gap="sm" rounded="2xl">
         <Row align="center" gap="sm">
           <Span weight="semibold" className="inline-flex items-center bg-success text-white px-2.5 py-0.5 text-[11px] tracking-wide" rounded="full" transform="uppercase">
             Confirmed
@@ -583,7 +583,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
   if (isSubmitted && !atEntryLimit) {
     return (
       <Stack gap="md">
-        <Stack className="border border-success/20 bg-success-surface px-5 py-5" gap="sm" rounded="2xl">
+        <Stack className="border border-success/20 py-5" surface="success-surface" padding="x-md" gap="sm" rounded="2xl">
           <Row align="center" gap="sm">
             <Span weight="semibold" className="inline-flex items-center bg-success text-white px-2.5 py-0.5 text-[11px] tracking-wide" rounded="full" transform="uppercase">
               Confirmed

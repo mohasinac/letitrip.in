@@ -54,7 +54,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
 
   if (isSubmitted) {
     return (
-      <Stack className="border border-success/20 bg-success-surface px-6 text-center" gap="sm" padding="y-xl" rounded="xl">
+      <Stack className="border border-success/20 px-6 text-center" surface="success-surface" gap="sm" padding="y-xl" rounded="xl">
         <Text className="text-success" size="lg" weight="semibold">Vote recorded!</Text>
         <Text className="text-success" size="sm">
           Thank you for participating. Results will be shown after the poll closes.
