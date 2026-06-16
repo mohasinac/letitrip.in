@@ -57,11 +57,11 @@ export function EventHeader({
             </Span>
           ) : null}
           {eventStatus ? (
-            <span
+            <Span
               className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${statusBadgeClass(eventStatus)}`}
             >
               {eventStatus}
-            </span>
+            </Span>
           ) : null}
         </Row>
 

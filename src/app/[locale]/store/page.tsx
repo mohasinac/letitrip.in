@@ -1,13 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import {
-  StoreDashboardView,
-  SellerTopProducts,
-  useStoreDashboard,
-  ROUTES,
-  Div,
-} from "@mohasinac/appkit/client";
-
+import { Div, ROUTES, SellerTopProducts, Span, StoreDashboardView, useStoreDashboard } from "@mohasinac/appkit/client";
 const __O = {
   hidden: "overflow-hidden",
 } as const;
@@ -155,13 +148,13 @@ export default function Page() {
               href={String(href)}
               className="group flex items-center gap-3 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3.5 text-sm font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
             >
-              <span
+              <Span
                 className="flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center"
                 // audit-inline-style-ok: runtime brand gradient
                 style={{ background: BRAND_GRAD }}
               >
                 <Icon className="w-3.5 h-3.5 text-white" />
-              </span>
+              </Span>
               {label}
             </Link>
           ))}

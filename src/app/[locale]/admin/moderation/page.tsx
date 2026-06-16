@@ -80,9 +80,7 @@ export default function Page() {
             <Stack gap="sm">
               {items.map((m) => (
                 <Row
-                  key={m.id}
-                  className="items-start justify-between" rounded="default" padding="md" border="default"
-                >
+                  key={m.id} rounded="default" padding="md" border="default" align="start" justify="between">
                   <Stack gap="xs" className="flex-1 min-w-0">
                     <Text weight="medium">
                       {m.mediaType} · {m.entityType} · {m.entityId}

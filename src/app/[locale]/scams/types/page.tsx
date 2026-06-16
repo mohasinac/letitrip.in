@@ -105,9 +105,9 @@ function renderCategorySection(category: (typeof SCAM_CATEGORIES)[number]) {
   return (
     <Stack key={category.id} gap="md" id={category.id}>
       <Row gap="sm" align="center">
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[color:var(--appkit-color-primary,theme(colors.blue.600))]/10 text-[color:var(--appkit-color-primary,theme(colors.blue.600))]">
+        <Span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[color:var(--appkit-color-primary,theme(colors.blue.600))]/10 text-[color:var(--appkit-color-primary,theme(colors.blue.600))]">
           {CATEGORY_ICON_MAP[category.id]}
-        </span>
+        </Span>
         <Heading level={2} size="xl" weight="bold">{category.label}</Heading>
       </Row>
       <Text variant="secondary" className="max-w-2xl" size="sm">{category.description}</Text>

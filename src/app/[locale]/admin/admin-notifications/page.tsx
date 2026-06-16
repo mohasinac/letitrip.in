@@ -59,9 +59,7 @@ export default function Page() {
             <Stack gap="sm">
               {items.map((n) => (
                 <Row
-                  key={n.id}
-                  className="items-start justify-between" rounded="default" padding="md" border="default"
-                >
+                  key={n.id} rounded="default" padding="md" border="default" align="start" justify="between">
                   <Stack gap="xs" className="flex-1">
                     <Row gap="sm">
                       <Text weight="medium">{n.title}</Text>

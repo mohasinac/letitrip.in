@@ -1,17 +1,7 @@
 "use client";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import {
-  sortBy,
-  useSession,
-  useUrlTable,
-  ROUTES,
-  Div,
-  Heading,
-  Text,
-  Stack,
-  AuctionBidsTable,
-} from "@mohasinac/appkit/client";
+import { AuctionBidsTable, Div, Heading, ROUTES, Span, Stack, Text, sortBy, useSession, useUrlTable } from "@mohasinac/appkit/client";
 import { FieldSelect, ListingToolbar } from "@mohasinac/appkit/ui";
 import type { BidDocument } from "@mohasinac/appkit";
 import { Link } from "@/i18n/navigation";
@@ -121,7 +111,7 @@ export default function UserBidsPage() {
           bids={bids}
           portal="buyer"
           emptyLabel={
-            <span>
+            <Span>
               You haven&apos;t placed any bids yet.{" "}
               <Link
                 href={String(ROUTES.PUBLIC.AUCTIONS)}
@@ -129,7 +119,7 @@ export default function UserBidsPage() {
               >
                 Browse auctions
               </Link>
-            </span>
+            </Span>
           }
         />
       )}

@@ -1619,25 +1619,25 @@ function StatusDot({
 }) {
   if (state === "running")
     return (
-      <span
+      <Span
         className="inline-block w-3.5 h-3.5 border-2 border-amber-500 border-t-transparent rounded-full animate-spin shrink-0"
         aria-label="Running"
       />
     );
   if (state === "queued")
-    return <span className="inline-block w-3.5 h-3.5 rounded-full border-2 border-zinc-300 dark:border-slate-600 shrink-0" aria-label="Queued" />;
+    return <Span className="inline-block w-3.5 h-3.5 rounded-full border-2 border-zinc-300 dark:border-slate-600 shrink-0" aria-label="Queued" />;
   if (state === "done") {
     // A "done" runner event with 0 docs in DB is not a success.
     if (typeof seedCount === "number" && seedCount > 0 && (existingCount ?? 0) === 0) {
-      return <span className="text-red-500 shrink-0" aria-label="Failed">✗</span>;
+      return <Span className="text-red-500 shrink-0" aria-label="Failed">✗</Span>;
     }
     if (typeof seedCount === "number" && seedCount === 0) {
-      return <span className="text-zinc-400 dark:text-slate-500 shrink-0" aria-label="No data">–</span>;
+      return <Span className="text-zinc-400 dark:text-slate-500 shrink-0" aria-label="No data">–</Span>;
     }
-    return <span className="text-emerald-500 shrink-0" aria-label="Done">✓</span>;
+    return <Span className="text-emerald-500 shrink-0" aria-label="Done">✓</Span>;
   }
   if (state === "error")
-    return <span className="text-red-500 shrink-0" aria-label="Error">✗</span>;
+    return <Span className="text-red-500 shrink-0" aria-label="Error">✗</Span>;
   return null;
 }
 
@@ -1675,11 +1675,11 @@ const TYPE_CHIP: Record<FieldDef["type"], string> = {
 };
 
 function Cap({ active, label, color }: { active?: boolean; label: string; color: string }) {
-  if (!active) return <span className="text-zinc-300 dark:text-slate-700 text-xs select-none">—</span>;
+  if (!active) return <Span className="text-zinc-300 dark:text-slate-700 text-xs select-none">—</Span>;
   return (
-    <span className={`inline-block px-1.5 py-0.5 rounded-full text-[10px] font-semibold leading-none ${color}`}>
+    <Span className={`inline-block px-1.5 py-0.5 rounded-full text-[10px] font-semibold leading-none ${color}`}>
       {label}
-    </span>
+    </Span>
   );
 }
 
@@ -1697,7 +1697,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
     <>
       <Row justify="between" gap="sm" wrap className="mb-2">
         <Text className="text-indigo-600 dark:text-indigo-400 tracking-wider m-0" size="xs" weight="bold" transform="uppercase">
-          📐 Schema Fields <span className="text-zinc-400 dark:text-slate-500 font-normal normal-case tracking-normal">({fields.length} fields)</span>
+          📐 Schema Fields <Span className="text-zinc-400 dark:text-slate-500 font-normal normal-case tracking-normal">({fields.length} fields)</Span>
         </Text>
         <Row gap="sm">
           <Input
@@ -1763,9 +1763,9 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
                 >
                   <td className="px-3 py-2 font-mono text-zinc-800 dark:text-slate-200 break-all">{f.name}</td>
                   <td className="px-2 py-2">
-                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold leading-none ${TYPE_CHIP[f.type]}`}>
+                    <Span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold leading-none ${TYPE_CHIP[f.type]}`}>
                       {f.type}
-                    </span>
+                    </Span>
                   </td>
                   <td className="px-2 py-2 text-center">
                     <Cap active={f.searchable} label="✓" color="bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300" />
@@ -1801,7 +1801,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
           { label: "🔒 PII",        color: "text-red-600 dark:text-red-400" },
           { label: "📇 Indexed",    color: "text-zinc-500 dark:text-slate-400" },
         ].map(({ label, color }) => (
-          <span key={label} className={`text-[10px] font-medium ${color}`}>{label}</span>
+          <Span key={label} className={`text-[10px] font-medium ${color}`}>{label}</Span>
         ))}
       </Row>
     </>
@@ -1839,9 +1839,9 @@ function renderAccordionCollapsedHeader({
         {isLoadingStatus ? (
           <Span size="xs" variant="muted">…</Span>
         ) : dbStatus ? (
-          <span className={`text-xs font-mono font-semibold px-2 py-0.5 rounded-full ${isComplete ? "text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/40" : isEmpty ? "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30" : "text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/40"}`}>
+          <Span className={`text-xs font-mono font-semibold px-2 py-0.5 rounded-full ${isComplete ? "text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/40" : isEmpty ? "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30" : "text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/40"}`}>
             {existingCount}/{seedCount}
-          </span>
+          </Span>
         ) : null}
         <Badge variant={statusVariant as "success" | "warning" | "danger" | "default"}>{statusLabel}</Badge>
         <Span size="xs" variant="muted" className="w-4 select-none" align="center">{expanded ? "▲" : "▼"}</Span>
@@ -1860,9 +1860,9 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         <Text className="leading-relaxed m-0" color="muted" size="sm">{meta.description}</Text>
 
         <Row wrap gap="sm">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800/40 text-xs text-indigo-700 dark:text-indigo-300 font-mono">🔑 {meta.slugPattern}</span>
+          <Span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800/40 text-xs text-indigo-700 dark:text-indigo-300 font-mono">🔑 {meta.slugPattern}</Span>
           {meta.mediaFields?.map((f) => (
-            <span key={f} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/40 text-xs text-violet-700 dark:text-violet-300 font-mono">🖼️ {f}</span>
+            <Span key={f} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/40 text-xs text-violet-700 dark:text-violet-300 font-mono">🖼️ {f}</Span>
           ))}
         </Row>
 
@@ -1894,7 +1894,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
 
         <Div>
           <Row justify="between" className="mb-2">
-            <span className="text-xs font-mono text-zinc-500 dark:text-slate-400">DB: {existingCount} / {seedCount} seed docs</span>
+            <Span className="text-xs font-mono text-zinc-500 dark:text-slate-400">DB: {existingCount} / {seedCount} seed docs</Span>
           </Row>
           <SeedProgressBar seeded={existingCount} target={seedCount} />
         </Div>
@@ -2025,7 +2025,7 @@ function ResourceAccordionCard({
 
       {runError && (
         <Div className="pb-2" padding="x-md">
-          <span className="text-xs text-red-600 dark:text-red-400" title={runError}>✗ {runError}</span>
+          <Span className="text-xs text-red-600 dark:text-red-400" title={runError}>✗ {runError}</Span>
         </Div>
       )}
 
@@ -2418,7 +2418,7 @@ function renderSeedPanelToolbar({
                 📋 Resource Collections
                 <Span size="xs" weight="normal" variant="muted" className="ml-2">
                   {selectedCollections.size} / {ALL_COLLECTIONS.length} selected
-                  {isFiltered && <span className="ml-1 text-amber-600 dark:text-amber-400">· {filteredCollections.length} match</span>}
+                  {isFiltered && <Span className="ml-1 text-amber-600 dark:text-amber-400">· {filteredCollections.length} match</Span>}
                 </Span>
               </Heading>
             </Div>
@@ -2455,7 +2455,7 @@ function renderSeedPanelToolbar({
             <Div className="hidden sm:block w-px h-6 shrink-0" surface="subtle" />
             <Row gap="sm" wrap className="shrink-0">
               <Checkbox
-                label={<span className="text-xs text-zinc-600 dark:text-slate-300 whitespace-nowrap">Dry run</span>}
+                label={<Span className="text-xs text-zinc-600 dark:text-slate-300 whitespace-nowrap">Dry run</Span>}
                 checked={dryRun}
                 onChange={(e) => setDryRun(e.target.checked)}
                 disabled={isRunning}
@@ -2472,8 +2472,8 @@ function renderSeedPanelToolbar({
                 const cfg = g === "all" ? { label: "All", icon: "☰" } : { label: GROUP_CONFIG[g].label, icon: GROUP_CONFIG[g].icon };
                 return (
                   <Button type="button" key={g} onClick={() => setFilterGroup(g)} className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors ${active ? "bg-amber-500 text-white" : "bg-zinc-200 dark:bg-slate-700 text-zinc-700 dark:text-slate-300 hover:bg-zinc-300 dark:hover:bg-slate-600"}`}>
-                    <span>{cfg.icon}</span>
-                    <span className="hidden sm:inline ml-0.5">{cfg.label}</span>
+                    <Span>{cfg.icon}</Span>
+                    <Span className="hidden sm:inline ml-0.5">{cfg.label}</Span>
                   </Button>
                 );
               })}
@@ -2503,7 +2503,7 @@ function renderSeedPanelToolbar({
 function renderSeedPanelHero() {
   return (
     <Stack className="text-center" padding="t-xs" align="center" gap="3">
-      <span className="text-5xl leading-none">🎮</span>
+      <Span className="text-5xl leading-none">🎮</Span>
       <Heading level={1} className="font-extrabold dark:text-amber-400 m-0" color="warning" size="3xl">LetItRip Demo Seed</Heading>
       <Text className="max-w-xl m-0" color="muted" size="base">Admin seed tool — expand each resource card to see what&apos;s seeded, pending counts, live DB state, and the UI path to verify.</Text>
     </Stack>
@@ -2514,16 +2514,16 @@ function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDoc
   return (
     <Div className="grid grid-cols-3 gap-3 sm:gap-4">
       <Stack className="dark:bg-white/5 dark:border-white/10 text-center" surface="muted" gap="xs" rounded="xl" padding="md" border="default">
-        <span className="text-2xl font-extrabold text-zinc-900 dark:text-white font-mono leading-none">{isLoadingStatus ? <span className="text-zinc-300 dark:text-slate-600">—</span> : totalExistingDocs.toLocaleString()}</span>
-        <span className="text-xs text-zinc-500 dark:text-slate-400">docs in DB</span>
+        <Span className="text-2xl font-extrabold text-zinc-900 dark:text-white font-mono leading-none">{isLoadingStatus ? <Span className="text-zinc-300 dark:text-slate-600">—</Span> : totalExistingDocs.toLocaleString()}</Span>
+        <Span className="text-xs text-zinc-500 dark:text-slate-400">docs in DB</Span>
       </Stack>
       <Stack className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 text-center" gap="xs" rounded="xl" padding="md">
-        <span className="text-2xl font-extrabold text-amber-600 dark:text-amber-400 font-mono leading-none">{isLoadingStatus ? <span className="text-amber-200 dark:text-amber-900">—</span> : totalSeedDocs.toLocaleString()}</span>
-        <span className="text-xs text-zinc-500 dark:text-slate-400">docs in seed files</span>
+        <Span className="text-2xl font-extrabold text-amber-600 dark:text-amber-400 font-mono leading-none">{isLoadingStatus ? <Span className="text-amber-200 dark:text-amber-900">—</Span> : totalSeedDocs.toLocaleString()}</Span>
+        <Span className="text-xs text-zinc-500 dark:text-slate-400">docs in seed files</Span>
       </Stack>
       <Stack className="dark:bg-white/5 dark:border-white/10 text-center" surface="muted" gap="xs" rounded="xl" padding="md" border="default">
-        <span className="text-2xl font-extrabold text-zinc-500 dark:text-slate-300 font-mono leading-none">{collectionCount}</span>
-        <span className="text-xs text-zinc-500 dark:text-slate-400">collections</span>
+        <Span className="text-2xl font-extrabold text-zinc-500 dark:text-slate-300 font-mono leading-none">{collectionCount}</Span>
+        <Span className="text-xs text-zinc-500 dark:text-slate-400">collections</Span>
       </Stack>
     </Div>
   );
@@ -2629,7 +2629,7 @@ function renderSeedScaleSummary() {
         ].map(([label, count]) => (
           <Row key={label} justify="between" className="border-b border-zinc-100 dark:border-white/5 last:border-0" padding="y-xs">
             <Span size="sm">{label}</Span>
-            <span className="text-sm font-mono font-bold text-amber-600 dark:text-amber-400 tabular-nums">{count}</span>
+            <Span className="text-sm font-mono font-bold text-amber-600 dark:text-amber-400 tabular-nums">{count}</Span>
           </Row>
         ))}
       </Grid>

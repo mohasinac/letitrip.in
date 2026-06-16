@@ -1,19 +1,7 @@
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import { ShieldAlert } from "lucide-react";
-import {
-  Container,
-  Div,
-  Section,
-  Stack,
-  Row,
-  Heading,
-  Text,
-  Breadcrumb,
-  Main,
-  ROUTES,
-  faqJsonLd,
-} from "@mohasinac/appkit";
+import { Breadcrumb, Container, Div, Heading, Main, ROUTES, Row, Section, Span, Stack, Text, faqJsonLd } from "@mohasinac/appkit";
 import { listPublicFaqs } from "@mohasinac/appkit/server";
 import { generateMetadata as _gm } from "@/constants";
 
@@ -72,9 +60,9 @@ export default async function Page() {
           <Container size="xl">
             <Stack gap="sm">
               <Row gap="sm" align="center">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[color:var(--appkit-color-warning,theme(colors.amber.500))]/10 text-[color:var(--appkit-color-warning,theme(colors.amber.600))]">
+                <Span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[color:var(--appkit-color-warning,theme(colors.amber.500))]/10 text-[color:var(--appkit-color-warning,theme(colors.amber.600))]">
                   <ShieldAlert className="h-5 w-5" />
-                </span>
+                </Span>
                 <Heading level={1} weight="bold" size="3xl">
                   Scam Awareness FAQs
                 </Heading>
