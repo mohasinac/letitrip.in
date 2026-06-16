@@ -2514,7 +2514,7 @@ function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDoc
   return (
     <Div className="grid grid-cols-3 gap-3 sm:gap-4">
       <Stack className="dark:border-white/10 text-center" surface="muted" gap="xs" rounded="xl" padding="md" border="default">
-        <Span className="font-extrabold text-zinc-900 dark:text-white font-mono leading-none" size="2xl">{isLoadingStatus ? <Span className="text-zinc-300 dark:text-slate-600">—</Span> : totalExistingDocs.toLocaleString()}</Span>
+        <Span className="font-extrabold font-mono leading-none" color="primary" size="2xl">{isLoadingStatus ? <Span className="text-zinc-300 dark:text-slate-600">—</Span> : totalExistingDocs.toLocaleString()}</Span>
         <Span className="text-zinc-500" size="xs">docs in DB</Span>
       </Stack>
       <Stack className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 text-center" gap="xs" rounded="xl" padding="md">
