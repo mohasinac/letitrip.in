@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { JsonValue } from "@mohasinac/appkit";
 
 import { Link } from "@/i18n/navigation";
 import { useProfile, useUpdateProfile, useToast, useAuth, ROUTES, ImageUpload, useMediaUpload, Div, Button, Form, Label, Input, Textarea, MediaImage, Toggle } from "@mohasinac/appkit/client";
@@ -119,7 +120,7 @@ function renderProfileEditForm({
   isPending: boolean;
   handleSave: (e: React.FormEvent) => Promise<void>;
   onCancel: () => void;
-  upload: (file: File, folder?: string, isPublic?: boolean, context?: Record<string, unknown>) => Promise<string>;
+  upload: (file: File, folder?: string, isPublic?: boolean, context?: Record<string, JsonValue>) => Promise<string>;
   user: { displayName?: string | null; email?: string | null } | null | undefined;
 }) {
   return (

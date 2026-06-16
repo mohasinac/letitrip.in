@@ -1,5 +1,6 @@
 "use client";
 import { Stack, normalizeError } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useSession, useToast, ROUTES, Div, Button, Label, Textarea, Text } from "@mohasinac/appkit/client";
@@ -86,7 +87,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
     setIsLoading(true);
     setError(null);
     try {
-      const body: Record<string, unknown> = { pollVotes: selectedVotes };
+      const body: Record<string, JsonValue> = { pollVotes: selectedVotes };
       if (comment) body.pollComment = comment;
       const res = await fetch(API_ROUTES.EVENTS.ENTRIES(eventId), {
         method: "POST",

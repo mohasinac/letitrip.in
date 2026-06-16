@@ -1,5 +1,6 @@
 "use client";
 import { Row, Stack, normalizeError } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 import { useState, useCallback } from "react";
 import { Link } from "@/i18n/navigation";
 import { Button, Checkbox, Div, Heading, Input, RadioGroup, RichText, Row, Select, Span, Text, Textarea } from "@mohasinac/appkit/ui";
@@ -444,7 +445,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
   const [error, setError] = useState<string | null>(null);
   const [selectedVotes, setSelectedVotes] = useState<string[]>([]);
   const [pollComment, setPollComment] = useState("");
-  const [formResponses, setFormResponses] = useState<Record<string, unknown>>({});
+  const [formResponses, setFormResponses] = useState<Record<string, JsonValue>>({});
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const isSurvey = event.type === "survey";
@@ -505,7 +506,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15_000);
     try {
-      const body: Record<string, unknown> = {};
+      const body: Record<string, JsonValue> = {};
       if (event.type === "poll" && selectedVotes.length > 0) {
         body.pollVotes = selectedVotes;
         if (pollComment) body.pollComment = pollComment;

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+import type { JsonValue } from "@mohasinac/appkit";
   Container,
   Stack,
   Heading,
@@ -26,7 +27,7 @@ export default function Page() {
   const { showToast } = useToast();
   const params = useParams<{ id: string }>();
   const id = params?.id ?? "";
-  const [form, setForm] = useState<Record<string, unknown>>({});
+  const [form, setForm] = useState<Record<string, JsonValue>>({});
   const [permissionsText, setPermissionsText] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

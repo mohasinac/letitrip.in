@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { JsonValue } from "@mohasinac/appkit";
 import { notFound } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
 import { ROUTES } from "@mohasinac/appkit";
@@ -47,7 +48,7 @@ export default async function Page({ params }: Props) {
 
   const hasLeaderboard =
     (event as { hasLeaderboard?: boolean }).hasLeaderboard === true;
-  const ev = event as unknown as Record<string, unknown>;
+  const ev = event as unknown as Record<string, JsonValue>;
   const pollConfig = ev.pollConfig as Parameters<typeof EventParticipateClient>[0]["event"]["pollConfig"];
   const surveyConfig = ev.surveyConfig as Parameters<typeof EventParticipateClient>[0]["event"]["surveyConfig"];
   const feedbackConfig = ev.feedbackConfig as Parameters<typeof EventParticipateClient>[0]["event"]["feedbackConfig"];

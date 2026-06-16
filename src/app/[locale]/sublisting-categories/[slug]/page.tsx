@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { JsonValue } from "@mohasinac/appkit";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { Heading, Main, MediaImage, Nav, ROUTES, Row, Stack, Text, categoriesRepository, isAuctionListing, isPreOrderListing } from "@mohasinac/appkit";
@@ -55,7 +56,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
 
   const listings = await categoriesRepository
     .getSublistingListings(category.id, 40)
-    .catch((): Record<string, unknown>[] => []);
+    .catch((): Record<string, JsonValue>[] => []);
 
   const displayName = category.name + (category.itemCode ? ` (${category.itemCode})` : "");
 
@@ -117,7 +118,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
         ) : (
           <Div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {listings.map((listing) => {
-              const l = listing as Record<string, unknown>;
+              const l = listing as Record<string, JsonValue>;
               const id = String(l.id ?? "");
               const listingSlug = typeof l.slug === "string" ? l.slug : id;
               const title = String(l.title ?? l.name ?? "Listing");

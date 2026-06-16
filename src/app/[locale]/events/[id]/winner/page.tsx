@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { JsonValue } from "@mohasinac/appkit";
 import { notFound } from "next/navigation";
 import { EventRaffleWinnerView, couponsRepository } from "@mohasinac/appkit";
 import { EVENT_META } from "../_constants";
@@ -27,7 +28,7 @@ export default async function Page({ params }: Props) {
 
   // Plan §10 — when the prize is a coupon AND the viewer is the winner,
   // resolve the coupon code so the view can render a one-click Claim CTA.
-  const eventAny = event as unknown as Record<string, unknown>;
+  const eventAny = event as unknown as Record<string, JsonValue>;
   const couponId =
     typeof eventAny.rafflePrizeCouponId === "string"
       ? eventAny.rafflePrizeCouponId

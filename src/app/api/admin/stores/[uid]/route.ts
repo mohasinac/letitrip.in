@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import type { JsonValue } from "@mohasinac/appkit";
 import {
   ROLES_ADMIN_MOD,
   STORE_FIELDS,
@@ -49,7 +50,7 @@ export const PATCH = withProviders(
       const store = await storeRepository.findById(storeId);
       if (!store) return errorResponse("Store not found", 404);
 
-      const update: Record<string, unknown> = {};
+      const update: Record<string, JsonValue> = {};
       if (body!.storeStatus !== undefined) update.status = body!.storeStatus;
       if (body!.adminNotes !== undefined) update.adminNotes = body!.adminNotes;
       if (body!.isFeatured !== undefined) update.isFeatured = body!.isFeatured;

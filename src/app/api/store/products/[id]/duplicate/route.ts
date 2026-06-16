@@ -1,4 +1,5 @@
 import { normalizeError } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -30,8 +31,8 @@ export const POST = withProviders(
       }
       try {
         const now = new Date();
-        const copy: Record<string, unknown> = {
-          ...(source as unknown as Record<string, unknown>),
+        const copy: Record<string, JsonValue> = {
+          ...(source as unknown as Record<string, JsonValue>),
           title: `${(source as { title?: string }).title ?? "Listing"} (copy)`,
           status: "draft",
           slug: undefined,

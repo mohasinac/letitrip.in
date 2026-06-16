@@ -1,5 +1,6 @@
 "use client";
 import { normalizeError } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 
 import {
   Container,
@@ -26,7 +27,7 @@ export default function Page() {
   const { showToast } = useToast();
   const params = useParams<{ id: string }>();
   const id = params?.id ?? "";
-  const [form, setForm] = useState<Record<string, unknown>>({});
+  const [form, setForm] = useState<Record<string, JsonValue>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);

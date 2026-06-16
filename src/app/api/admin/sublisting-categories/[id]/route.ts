@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import type { JsonValue } from "@mohasinac/appkit";
 import { z } from "zod";
 import {
   createRouteHandler,
@@ -49,7 +50,7 @@ export const PUT = withProviders(
       if (!existing || existing.categoryType !== "sublisting") {
         return errorResponse(MSG_SUBLISTING_CAT_NOT_FOUND, 404);
       }
-      const patch: Record<string, unknown> = { updatedAt: new Date() };
+      const patch: Record<string, JsonValue> = { updatedAt: new Date() };
       if (body?.name !== undefined) patch.name = body.name;
       if (body?.itemCode !== undefined) patch.itemCode = body.itemCode;
       if (body?.description !== undefined) patch.description = body.description;

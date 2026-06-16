@@ -1,4 +1,5 @@
 import { normalizeError } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 /**
  * POST /api/webhooks/shiprocket
  *
@@ -105,7 +106,7 @@ export async function POST(request: NextRequest) {
     const orderId = order.id!;
 
     // Determine updates
-    const updates: Record<string, unknown> = {
+    const updates: Record<string, JsonValue> = {
       shiprocketStatus: status,
       shiprocketUpdatedAt: new Date(),
     };

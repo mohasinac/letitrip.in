@@ -10,6 +10,7 @@
  */
 
 import { logError } from "@/lib/logger";
+import type { JsonValue } from "@mohasinac/appkit";
 
 const GATEWAY_URL = () => process.env.FIREBASE_FUNCTION_GATEWAY_URL;
 const SECRET = () => process.env.LETITRIP_INTERNAL_SECRET;
@@ -46,7 +47,7 @@ function resolveUrl(action: GatewayAction): { url: string; viaGateway: boolean }
 
 export async function callFirebaseFunction<T = unknown>(
   action: GatewayAction,
-  params: Record<string, unknown> = {},
+  params: Record<string, JsonValue> = {},
 ): Promise<T | null> {
   const resolved = resolveUrl(action);
   if (!resolved) return null;

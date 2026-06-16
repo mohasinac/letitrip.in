@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { JsonValue } from "@mohasinac/appkit";
 import type { Metadata } from "next";
 import { Container, Div, Section, Text } from "@mohasinac/appkit";
 import { getAdminDb } from "@mohasinac/appkit/server";
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
 
 interface PreviewDoc {
   kind: string;
-  draft: Record<string, unknown>;
+  draft: Record<string, JsonValue>;
   expiresAt: { toDate?: () => Date };
 }
 

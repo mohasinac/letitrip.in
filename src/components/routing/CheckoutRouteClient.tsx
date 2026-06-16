@@ -1,5 +1,6 @@
 "use client";
 import { normalizeError } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
 // audit-auth-gates-ok — checkout page is protected by server-side layout auth redirect
 
 import { useCallback, useState, useEffect, useMemo } from "react";
@@ -52,7 +53,7 @@ interface RazorpayResponse {
 
 function loadRazorpayScript(): Promise<boolean> {
   return new Promise((resolve) => {
-    if (typeof window !== "undefined" && (window as unknown as Record<string, unknown>).Razorpay) {
+    if (typeof window !== "undefined" && (window as unknown as Record<string, JsonValue>).Razorpay) {
       resolve(true);
       return;
     }
@@ -789,7 +790,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
         name: process.env.NEXT_PUBLIC_SITE_NAME ?? "LetItRip",
         prefill: {
           email: user.email ?? undefined,
-          name: (user as unknown as Record<string, unknown>).displayName as string | undefined,
+          name: (user as unknown as Record<string, JsonValue>).displayName as string | undefined,
         },
       });
 

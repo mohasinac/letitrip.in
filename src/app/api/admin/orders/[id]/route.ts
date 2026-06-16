@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import type { JsonValue } from "@mohasinac/appkit";
 import { z } from "zod";
 import {
   adminUpdateOrder,
@@ -69,7 +70,7 @@ export const PATCH = withProviders(
     schema: updateOrderSchema,
     handler: async ({ body, params, user }) => {
       const id = (params as { id: string }).id;
-      const update: Record<string, unknown> = { ...body };
+      const update: Record<string, JsonValue> = { ...body };
       // ST-3 — recalculate totalPrice when items[] is replaced so the
       // header total stays in sync with the line-item sum.
       if (body!.items && Array.isArray(body!.items)) {
