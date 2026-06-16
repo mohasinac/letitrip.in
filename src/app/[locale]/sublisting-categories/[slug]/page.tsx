@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
-import { Heading, Main, MediaImage, Nav, ROUTES, Stack, Text, categoriesRepository, isAuctionListing, isPreOrderListing } from "@mohasinac/appkit";
+import { Heading, Main, MediaImage, Nav, ROUTES, Row, Stack, Text, categoriesRepository, isAuctionListing, isPreOrderListing } from "@mohasinac/appkit";
 import { Div } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants";
 
@@ -158,7 +158,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
                   </Div>
                   <Stack className="p-2.5" gap="xs">
                     {(isAuction || isPreOrder || condition) && (
-                      <Div className="flex flex-wrap gap-1">
+                      <Row gap="xs" className="flex-wrap">
                         {isAuction && (
                           <Text as="span" className={CLS_AUCTION_PILL}>
                             Auction
@@ -174,7 +174,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
                             {condition}
                           </Text>
                         )}
-                      </Div>
+                      </Row>
                     )}
                     <Text className="line-clamp-2 leading-snug" color="primary" size="xs" weight="medium">
                       {title}

@@ -70,7 +70,7 @@ export function EventHeader({
           {title}
         </Heading>
 
-        <Div className="flex flex-wrap gap-4 text-sm" color="muted">
+        <Row gap="md" className="flex-wrap text-sm" color="muted">
           {startsAtFormatted ? (
             <Text as="span">
               {EVENT_LABELS.HEADER_START}{" "}
@@ -95,7 +95,7 @@ export function EventHeader({
               </Text>
             </Text>
           ) : null}
-        </Div>
+        </Row>
 
         <Row align="center" gap="sm" padding="t-2xs">
           <Text size="sm" color="muted">

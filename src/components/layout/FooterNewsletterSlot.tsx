@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Div, Text, Button, Form, FieldInput } from "@mohasinac/appkit/ui";
+import { Button, Div, FieldInput, Form, Row, Text } from "@mohasinac/appkit/ui";
 import { useToast } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
@@ -45,7 +45,7 @@ export function FooterNewsletterSlot() {
       <Text size="xs" weight="medium" color="muted">
         Get deals &amp; drops in your inbox
       </Text>
-      <Div className="flex gap-2 w-full">
+      <Row gap="sm" className="w-full">
         <FieldInput
           name="email"
           type="email"
@@ -65,7 +65,7 @@ export function FooterNewsletterSlot() {
         >
           {pending ? "…" : "Subscribe"}
         </Button>
-      </Div>
+      </Row>
     </Form>
   );
 }

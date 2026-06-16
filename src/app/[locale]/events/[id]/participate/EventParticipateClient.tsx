@@ -2,7 +2,7 @@
 import { Row, Stack, normalizeError } from "@mohasinac/appkit";
 import { useState, useCallback } from "react";
 import { Link } from "@/i18n/navigation";
-import { Button, Checkbox, Div, Heading, Input, RadioGroup, RichText, Select, Span, Text, Textarea } from "@mohasinac/appkit/ui";
+import { Button, Checkbox, Div, Heading, Input, RadioGroup, RichText, Row, Select, Span, Text, Textarea } from "@mohasinac/appkit/ui";
 import { Label } from "@mohasinac/appkit/client";
 import { EventParticipateView, useSession, useToast, ROUTES } from "@mohasinac/appkit/client";
 import { SpinWheelView } from "@mohasinac/appkit";
@@ -352,7 +352,7 @@ function renderDynamicField(
   } else if (field.type === "rating") {
     const rating = Number(value ?? 0);
     control = (
-      <Div className="flex gap-1">
+      <Row gap="xs" >
         {[1, 2, 3, 4, 5].map((star) => (
           <Button
             key={star}
@@ -366,7 +366,7 @@ function renderDynamicField(
             ★
           </Button>
         ))}
-      </Div>
+      </Row>
     );
   } else {
     const inputType =

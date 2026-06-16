@@ -1,5 +1,5 @@
 "use client";
-import { Stack, normalizeError } from "@mohasinac/appkit";
+import { Row, Stack, normalizeError } from "@mohasinac/appkit";
 import { useState, use } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
@@ -98,7 +98,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
             <Text size="xs" color="faint" align="end">{reason.length}/500</Text>
           </Stack>
 
-          <Div className="flex gap-3">
+          <Row gap="3" >
             <Button
               type="submit"
               variant="danger"
@@ -113,7 +113,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
             >
               Keep Order
             </Link>
-          </Div>
+          </Row>
         </Form>
       )}
     </Stack>

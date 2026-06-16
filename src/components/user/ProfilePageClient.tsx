@@ -79,7 +79,7 @@ function renderProfileViewMode({
           {profileIsPublic ? "Public" : "Private"}
         </Text>
       </Text>
-      <Div className="flex flex-wrap gap-3" padding="t-2xs">
+      <Row gap="3" className="flex-wrap" padding="t-2xs">
         <Button
           type="button"
           variant="outline"
@@ -94,7 +94,7 @@ function renderProfileViewMode({
         >
           Manage Addresses
         </Link>
-      </Div>
+      </Row>
     </Stack>
   );
 }
@@ -190,7 +190,7 @@ function renderProfileEditForm({
           aria-label="Public profile"
         />
       </Row>
-      <Div className="flex gap-3" padding="t-2xs">
+      <Row gap="3" padding="t-2xs">
         <Button
           type="button"
           variant="outline"
@@ -208,7 +208,7 @@ function renderProfileEditForm({
         >
           {isPending ? "Saving…" : "Save Changes"}
         </Button>
-      </Div>
+      </Row>
     </Form>
     </Div>
   );

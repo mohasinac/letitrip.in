@@ -1,7 +1,7 @@
 "use client";
 import { StoreAboutView, type StoreDetail } from "@mohasinac/appkit/client";
 import { Div, Text } from "@mohasinac/appkit/client";
-import { TextLink } from "@mohasinac/appkit";
+import { Row, TextLink } from "@mohasinac/appkit";
 
 export function StoreAboutClient({ store }: { store: StoreDetail }) {
   return (
@@ -9,7 +9,7 @@ export function StoreAboutClient({ store }: { store: StoreDetail }) {
       store={store}
       renderStats={(s) =>
         s.itemsSold != null || s.totalReviews != null || s.averageRating != null ? (
-          <Div className="flex gap-6 text-sm border-y" color="muted" padding="y-md">
+          <Row gap="lg" className="text-sm border-y" color="muted" padding="y-md">
             {s.itemsSold != null && (
               <Div className="text-center">
                 <Div className="text-lg font-bold" color="primary">{s.itemsSold}</Div>
@@ -28,12 +28,12 @@ export function StoreAboutClient({ store }: { store: StoreDetail }) {
                 <Div>Avg Rating</Div>
               </Div>
             )}
-          </Div>
+          </Row>
         ) : null
       }
       renderSocialLinks={(links) =>
         links && Object.values(links).some(Boolean) ? (
-          <Div className="flex gap-3 flex-wrap">
+          <Row gap="3" className="flex-wrap">
             {links.twitter && (
               <TextLink href={links.twitter} external className="text-primary hover:underline" size="sm">
                 <Text as="span">Twitter</Text>
@@ -54,7 +54,7 @@ export function StoreAboutClient({ store }: { store: StoreDetail }) {
                 <Text as="span">LinkedIn</Text>
               </TextLink>
             )}
-          </Div>
+          </Row>
         ) : null
       }
     />

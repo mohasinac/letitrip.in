@@ -739,7 +739,7 @@ export function CartRouteClient() {
         return (
           <Stack gap="md">
             {/* ── Tab bar ── */}
-            <Div className="flex gap-1 p-1 text-sm" surface="subtle" rounded="xl">
+            <Row gap="xs" className="p-1 text-sm" surface="subtle" rounded="xl">
               {CART_TABS.map(({ key, label }) => {
                 const count = tabCounts[key];
                 return (
@@ -754,7 +754,7 @@ export function CartRouteClient() {
                 </Button>
                 );
               })}
-            </Div>
+            </Row>
 
             {/* ── Search + clear ── */}
             {!isEmpty && cartItems.length > 1 && (

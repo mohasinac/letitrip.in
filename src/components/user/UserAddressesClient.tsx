@@ -134,7 +134,7 @@ export function UserAddressesClient() {
           <Text className="text-error" size="sm" weight="medium">
             Delete this address? This cannot be undone.
           </Text>
-          <Div className="flex gap-3">
+          <Row gap="3" >
             <Button
               type="button"
               variant="danger"
@@ -152,7 +152,7 @@ export function UserAddressesClient() {
             >
               Cancel
             </Button>
-          </Div>
+          </Row>
         </Stack>
       )}
 

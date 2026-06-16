@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 
 import { useRouter } from "@/i18n/navigation"
 import { useParams } from "next/navigation";
-import { Heading, ROUTES, Text } from "@mohasinac/appkit";
+import { Heading, ROUTES, Row, Text } from "@mohasinac/appkit";
 import { Div, Button, Form, Label, Input, Textarea } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
@@ -131,7 +131,7 @@ export default function Page() {
           </Div>
         )}
 
-        <Div className="flex gap-3" padding="t-xs">
+        <Row gap="3" padding="t-xs">
           <Button
             type="submit"
             variant="primary"
@@ -148,7 +148,7 @@ export default function Page() {
           >
             Cancel
           </Button>
-        </Div>
+        </Row>
       </Form>
     </Div>
   );
