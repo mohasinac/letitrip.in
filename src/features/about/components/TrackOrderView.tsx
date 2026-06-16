@@ -97,7 +97,7 @@ export async function TrackOrderView() {
               <Card
                 className={`${themed.bgSecondary} rounded-xl border ${themed.border} p-6 relative`}
               >
-                <Caption className="absolute top-4 right-4 font-bold">
+                <Caption className="absolute top-4 right-4" weight="bold">
                   {String(index + 1).padStart(2, "0")}
                 </Caption>
                 <Div
