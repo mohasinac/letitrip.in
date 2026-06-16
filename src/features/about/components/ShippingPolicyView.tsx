@@ -75,10 +75,10 @@ export async function ShippingPolicyView() {
         tone="accent-banner" padding="y-2-5xl" className="text-white"
       >
         <Div className={`${page.container.sm}`}>
-          <Heading level={1} variant="none" className="mb-3 text-white">
+          <Heading color="inverse" level={1} variant="none" className="mb-3">
             {t("title")}
           </Heading>
-          <Text variant="none" className="text-white/80">
+          <Text color="inverse" variant="none" className="/80">
             {t("lastUpdated")}
           </Text>
         </Div>
