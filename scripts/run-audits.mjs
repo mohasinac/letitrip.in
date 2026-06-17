@@ -74,6 +74,10 @@ const AUDITS = [
   // and `messages/en.json` errors.codes.* keys. UNKNOWN is the only allowed
   // JSON-only key (fallback sentinel used by error-display-map).
   { name: "error-display-i18n",              script: "scripts/audit-error-display-i18n.mjs" },
+  // Strict-zero. Flags raw `html: \`<` literals outside the email primitives
+  // source. Forces every email sender to compose <EmailDoc> family + serialise
+  // via renderToStaticMarkup.
+  { name: "email-raw-html",                  script: "scripts/audit-email-raw-html.mjs" },
   // Catches consumer-side `className=` on appkit primitives that contains
   // a token covered by one of the primitive's own variant props. Baseline-
   // drift while the consumer sweep is in flight — current count locks

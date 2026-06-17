@@ -238,6 +238,15 @@ const checks = [
     cwd: ROOT,
   },
   {
+    // Strict-zero. Flags raw `html: \`<` literals outside the email primitives
+    // source. Phase 11 (2026-06-17) rewrote every sender to compose <EmailDoc>
+    // family primitives + serialise via renderToStaticMarkup.
+    label: "audit-email-raw-html",
+    cmd: "node",
+    args: ["scripts/audit-email-raw-html.mjs"],
+    cwd: ROOT,
+  },
+  {
     // Catches consumer-side `className=` on appkit primitives that maps to
     // a variant prop. Baseline-drift; regressions block until the sweep
     // drives the count down.
