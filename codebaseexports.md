@@ -1716,6 +1716,18 @@ Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 | audit-server-action-envelope.mjs | strict-0 | Every server action returns `ActionResult` or `void` (Track W6) |
 | audit-usemutation-onerror.mjs | strict-0 | Every mutation flows through `useApiMutation` (not raw `useMutation`) |
 
+### ESLint mirror rules (`scripts/eslint-rules/index.mjs`)
+
+5 consumer-local rules under the `letitrip/*` namespace fire inline in the editor for audit patterns whose check-on-stop hook would otherwise wait until the end of every turn. Registered in [eslint.config.mjs](eslint.config.mjs); kept distinct from the shared `lir/*` plugin (at `../packages/packages/eslint-plugin-letitrip/`) to avoid forking the monorepo plugin.
+
+| Rule | Mirrors | Severity | Catches |
+|------|---------|----------|---------|
+| letitrip/no-double-navigation | audit-double-navigation | error | `table.set(...)` followed by `table.setPage(N)` — second call overwrites the URL update (root-cause #13) |
+| letitrip/no-jsx-text-comment | audit-jsx-text-comments | error | `// comment` in JSX child position — renders as literal text in the DOM |
+| letitrip/no-hardcoded-sticky-offset | audit-sticky-offsets | error | `sticky top-N` className — should use `top-[var(--header-height,0px)]` (root-cause #2) |
+| letitrip/no-button-as-toggle | audit-code-quality / BUTTON_AS_TOGGLE | warn | `<Button role="switch">` — Button styles override toggle sizing; use `<Toggle>` (root-cause #15). Currently "warn" because the Toggle primitive itself violates this; flip to "error" once Toggle is rewritten |
+| letitrip/no-dark-mode-orphan | audit-dark-mode (orphan rule subset) | warn | `dark:text-X` / `dark:bg-X` without a base `text-*` / `bg-*` in the same className — leaves light mode undefined |
+
 ### Audits delegated to appkit/scripts/ via the dispatcher
 
 Three appkit audits run directly from the consumer dispatcher (separate from the `appkit` npm-prefix entry that runs the chain):

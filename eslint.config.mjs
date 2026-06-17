@@ -3,6 +3,7 @@ import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import nextPlugin from "@next/eslint-plugin-next";
 import lirPlugin from "../packages/packages/eslint-plugin-letitrip/index.js";
+import letitripPlugin from "./scripts/eslint-rules/index.mjs";
 import reactPlugin from "eslint-plugin-react";
 import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import { defineEslintConfig } from "@mohasinac/appkit/configs";
@@ -60,6 +61,27 @@ export default tseslint.config(
   // Auto-fixable rules: lir/no-deep-barrel-import, lir/use-i18n-navigation
   //   → run: npm run lint:fix
   ...lirPlugin.configs.recommended,
+  // ── Consumer-local rules (letitrip/) — Phase 16 audit→ESLint mirrors ────
+  // Mirrors of audit-double-navigation, audit-jsx-text-comments,
+  // audit-sticky-offsets, audit-dark-mode (orphan subset), and the
+  // BUTTON_AS_TOGGLE rule from audit-code-quality. Each fires inline in the
+  // editor so the violation is caught before the stop hook runs. See
+  // scripts/eslint-rules/index.mjs.
+  {
+    files: ["src/**/*.{ts,tsx}", "appkit/src/**/*.{ts,tsx}"],
+    plugins: { letitrip: letitripPlugin },
+    rules: {
+      "letitrip/no-double-navigation": "error",        // root-cause #13
+      "letitrip/no-jsx-text-comment": "error",         // DOM-text leak
+      "letitrip/no-hardcoded-sticky-offset": "error",  // root-cause #2
+      // root-cause #15. Currently "warn" because Toggle.tsx itself uses
+      // <Button role="switch"> internally — fixing the primitive requires
+      // refactoring its JSX surface and is deferred. See the deferred list
+      // in scripts/eslint-rules/index.mjs.
+      "letitrip/no-button-as-toggle": "warn",
+      "letitrip/no-dark-mode-orphan": "warn",          // light/dark parity — softer for gradual adoption
+    },
+  },
   // ── packages/** — extend lint coverage to workspace packages ────────────
   // Barrel / feature / Firebase rules don't apply (packages are standalone
   // libraries that have no @/ aliases or feature-tier structure).
