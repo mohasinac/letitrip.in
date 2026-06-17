@@ -1901,7 +1901,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
 
         <Div>
           <Text className="tracking-wider mb-2 m-0" color="success" size="xs" weight="bold" transform="uppercase">✓ What&apos;s Seeded</Text>
-          <Stack gap="none" className="gap-1.5">
+          <Stack gap="1.5">
             {meta.seededItems.map((item, i) => (
               <Text key={i} className="leading-snug pl-3 border-l-2 border-emerald-400 dark:border-emerald-700 m-0" color="muted" size="sm">{item}</Text>
             ))}
@@ -1911,7 +1911,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         {meta.pendingItems.length > 0 && (
           <Div>
             <Text className="tracking-wider mb-2 m-0" color="warning" size="xs" weight="bold" transform="uppercase">⏳ Pending / Needed</Text>
-            <Stack gap="none" className="gap-1.5">
+            <Stack gap="1.5">
               {meta.pendingItems.map((item, i) => (
                 <Text key={i} className="leading-snug pl-3 border-l-2 border-amber-400 dark:border-amber-700 m-0" color="muted" size="sm">{item}</Text>
               ))}
@@ -2583,7 +2583,7 @@ function renderSeedPanelCollectionList(p: {
     return <Div textSize="sm" className="text-center" color="muted" padding="y-2xl">No collections match your filters.</Div>;
   }
   if (p.isFiltered) {
-    return <Stack gap="none" className="gap-1.5">{p.paginatedCollections.map((col) => renderAccordionCard(col, p))}</Stack>;
+    return <Stack gap="1.5">{p.paginatedCollections.map((col) => renderAccordionCard(col, p))}</Stack>;
   }
   return (
     <Stack gap="px">
@@ -2592,7 +2592,7 @@ function renderSeedPanelCollectionList(p: {
         return (
           <Div key={key}>
             <GroupDivider groupKey={key} allSelected={allGroupSelected} onSelectAll={(select) => p.toggleGroup(cols, select)} isRunning={p.isRunning} />
-            <Stack gap="none" className="gap-1.5 mt-2">{cols.map((col) => renderAccordionCard(col, p))}</Stack>
+            <Stack gap="1.5" className="mt-2">{cols.map((col) => renderAccordionCard(col, p))}</Stack>
           </Div>
         );
       })}
