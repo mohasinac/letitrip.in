@@ -81,11 +81,11 @@ function renderProfileViewMode({
         </Text>
       </Text>
       <Row wrap gap="3" padding="t-2xs">
-        <Button rounded="xl" 
+        <Button rounded="xl"
           type="button"
           variant="outline"
           onClick={handleEdit}
-          className="px-4 py-2 text-sm font-medium"
+          paddingX="md" paddingY="sm" textSize="sm" weight="medium"
         >
           Edit Profile
         </Button>
@@ -192,20 +192,22 @@ function renderProfileEditForm({
         />
       </Row>
       <Row gap="3" padding="t-2xs">
-        <Button rounded="xl" 
+        <Button rounded="xl"
           type="button"
           variant="outline"
           onClick={onCancel}
           disabled={isPending}
-          className="px-4 py-2 text-sm font-medium disabled:opacity-60 transition-colors"
+          paddingX="md" paddingY="sm" textSize="sm" weight="medium"
+          className="disabled:opacity-60 transition-colors"
         >
           Cancel
         </Button>
-        <Button rounded="xl" 
+        <Button rounded="xl"
           type="submit"
           variant="primary"
           disabled={isPending}
-          className="px-4 py-2 text-sm font-semibold disabled:opacity-60 transition-colors"
+          paddingX="md" paddingY="sm" textSize="sm" weight="semibold"
+          className="disabled:opacity-60 transition-colors"
         >
           {isPending ? "Saving…" : "Save Changes"}
         </Button>
