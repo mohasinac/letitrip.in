@@ -59,6 +59,11 @@ export async function GET(request: NextRequest): Promise<Response> {
   // HMAC verification (config-gated by MEDIA_EXT_HMAC_SECRET). When the env
   // var is unset, every request passes through — back-compat for callers that
   // haven't migrated to signExtMediaUrl() yet.
+  //
+  // Note: enabling the env var while SSR-rendered img tags still use the
+  // unsigned EXT_URL helper will start returning 401 for cached HTML pages.
+  // See _signing.ts header for which surfaces should use the signer and which
+  // surfaces should stay on the unsigned helper.
   const ts = request.nextUrl.searchParams.get("ts");
   const sig = request.nextUrl.searchParams.get("sig");
   // We re-derive the encoded URL from the searchParams so the bytes match

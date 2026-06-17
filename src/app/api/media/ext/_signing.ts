@@ -13,6 +13,29 @@
  * Digest: HMAC-SHA-256 over `${encoded-url}.${ts}`. The encoded URL is the
  * value as it appears in the `url=` query parameter so caller-side and
  * route-side agree on the exact bytes.
+ *
+ * ## When to use this — and when not to
+ *
+ * Use `signExtMediaUrl()` for **short-lived** server-issued URLs that the
+ * browser fetches **within ~60 s** of generation:
+ *  - URLs embedded in JSON API responses the client immediately renders.
+ *  - One-shot redirect targets (`Response.redirect(signedUrl)`).
+ *  - Server actions returning a signed proxy URL for a freshly uploaded
+ *    third-party asset.
+ *
+ * **Do NOT use it for SSR-rendered `<img src>` attributes.** Vercel's edge
+ * cache typically holds rendered HTML for minutes to hours; a 60-second
+ * signature embedded in cached HTML expires long before the browser fetches
+ * the URL, and every cached pageview after expiry returns 401. The current
+ * HMAC model doesn't fit the SSR-rendered img use case. If a future story
+ * needs to enforce HMAC on SSR-rendered images, the signing model has to
+ * change first — e.g. session-scoped tokens computed in the browser, or a
+ * sliding replay window tied to the page's cache TTL.
+ *
+ * This is why the existing consumer-side `resolveMediaUrl()` helper does
+ * NOT call `signExtMediaUrl()` — and why no SSR sweep was performed when
+ * the signing infra landed. Use the unsigned `MEDIA_ENDPOINTS.EXT_URL` for
+ * cacheable surfaces; use `signExtMediaUrl` for the use cases above.
  */
 
 import { createHmac, timingSafeEqual } from "node:crypto";
