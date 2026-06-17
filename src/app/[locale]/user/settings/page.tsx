@@ -120,6 +120,7 @@ function renderAccountTab({
             <Text variant="secondary" size="xs">
               A verification link will be sent to your new address. Your email updates after you click the link.
             </Text>
+            {/* audit-variant-ok: change-email Form — grid grid-cols-[1fr_240px] custom split + gap-4 + md:items-start */}
             <Form onSubmit={handleEmailSubmit} className="grid gap-4 md:grid-cols-[1fr_240px] md:items-start">
               <Stack gap="sm">
                 <Input id="new-email" type="email" label="New Email Address" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required autoComplete="email" placeholder="new@example.com" />
@@ -139,6 +140,7 @@ function renderAccountTab({
       <SectionCard>
         <Accordion title="Change Password">
           <Stack gap="md" padding="t-sm">
+            {/* audit-variant-ok: change-password Form — grid grid-cols-[1fr_240px] custom split + gap-4 + md:items-start */}
             <Form onSubmit={handlePasswordSubmit} className="grid gap-4 md:grid-cols-[1fr_240px] md:items-start">
               <Stack gap="sm">
                 <Input id="current-password" type="password" label="Current Password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required autoComplete="current-password" />

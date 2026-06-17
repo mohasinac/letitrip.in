@@ -153,14 +153,15 @@ export default function Page() {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <Row textWeight="bold" 
-                    className="h-full w-full text-white text-xl" align="center" justify="center"
+                  <Row textWeight="bold" textSize="xl"
+                    className="h-full w-full text-white" align="center" justify="center"
                     // audit-inline-style-ok: runtime brand gradient
                     style={{ background: BRAND_GRAD }}
                   >
                     {(user.displayName ?? user.email ?? "U")[0].toUpperCase()}
                   </Row>
                 )}
+                {/* audit-variant-ok: hover overlay — group-hover opacity transition over surface=overlay-xs scrim; Row lacks group-hover variant */}
                 <Row surface="overlay-xs" className="absolute inset-0 bg-black/0 group-hover: transition-colors opacity-0 group-hover:opacity-100" align="center" justify="center">
                   <Camera className="w-5 h-5 text-white" />
                 </Row>
