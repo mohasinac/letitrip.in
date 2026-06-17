@@ -65,7 +65,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
       <Div paddingX="x-page" className="mx-auto max-w-7xl" padding="y-lg">
 
         {/* Breadcrumb */}
-        <Nav aria-label="Breadcrumb" layout="flex" gap="2xs" className="mb-5 text-xs flex-wrap" color="muted">
+        <Nav aria-label="Breadcrumb" layout="flex-wrap" gap="2xs" textSize="xs" className="mb-5" color="muted">
           <Link href={String(ROUTES.HOME)} className="hover:text-[var(--appkit-color-primary)] transition-colors">
             Home
           </Link>
