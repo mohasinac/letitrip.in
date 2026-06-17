@@ -1,5 +1,5 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError, type JsonArray } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
 // audit-auth-gates-ok — checkout page is protected by server-side layout auth redirect
 
@@ -105,7 +105,7 @@ interface AppliedCoupon {
 }
 
 interface ServerCartResponse {
-  cart: { items: unknown[]; appliedCoupons?: AppliedCoupon[] };
+  cart: { items: JsonArray; appliedCoupons?: AppliedCoupon[] };
   subtotal: number;
   itemCount: number;
 }

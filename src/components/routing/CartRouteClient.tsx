@@ -20,7 +20,7 @@ async function addToWishlistAndRemoveFromCart(item: CartItem, failedIds: string[
 }
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { JsonValue, JsonArray } from "@mohasinac/appkit";
 import { Link } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import {
@@ -98,7 +98,7 @@ interface SellerGroup {
 interface ServerCartResponse {
   cart: {
     items: ServerCartItem[];
-    appliedCoupons?: unknown[];
+    appliedCoupons?: JsonArray;
     selectedItemIds?: string[] | null;
   };
   subtotal: number;

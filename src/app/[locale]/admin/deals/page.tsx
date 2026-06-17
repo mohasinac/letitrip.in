@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "@/i18n/navigation";
-import { ROUTES } from "@mohasinac/appkit/client";
+import { ROUTES, type JsonArray } from "@mohasinac/appkit/client";
 import {
   toRecordArray,
   toStringValue,
@@ -19,7 +19,7 @@ import type {
 import { useAdminProductFlagMutation } from "@/hooks";
 
 interface ProductsResponse {
-  items?: unknown[];
+  items?: JsonArray;
   total?: number;
 }
 
