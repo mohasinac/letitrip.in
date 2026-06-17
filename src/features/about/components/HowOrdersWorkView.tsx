@@ -27,7 +27,7 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
       <Stack gap="3">
         {statusSteps.map(({ label, desc, color, badge, icon }) => (
           <Row key={label} className={`${__P.p4} border ${color}`} align="start" gap="md" rounded="xl">
-            <Div className="text-2xl flex-shrink-0 mt-0.5">{icon}</Div>
+            <Div textSize="2xl" className="flex-shrink-0 mt-0.5">{icon}</Div>
             <Div className="flex-1">
               <Row gap="sm" className="mb-1">
                 <Span size="xs" weight="semibold" className={`inline-block ${badge}`} rounded="full" padding="pill-xs">{label}</Span>
@@ -37,7 +37,7 @@ function renderOrdersLifecycle(statusSteps: StatusStep[], t: T) {
           </Row>
         ))}
         <Row className={`${__P.p4} border border-error/20`} surface="danger-surface" align="start" gap="md" rounded="xl">
-          <Div className="text-2xl flex-shrink-0 mt-0.5">❌</Div>
+          <Div textSize="2xl" className="flex-shrink-0 mt-0.5">❌</Div>
           <Div className="flex-1">
             <Row gap="sm" className="mb-1">
               <Span color="error" surface="danger-surface" size="xs" weight="semibold" className="inline-block" rounded="full" padding="pill-xs">{t("sCancelLabel")}</Span>

@@ -95,7 +95,7 @@ export async function HowOffersWorkView() {
               <Row padding="5" align="center" justify="center" gap="md" 
                 key={number} border="default" surface="muted" rounded="xl"
               >
-                <Row align="center" justify="center" className={`flex-shrink-0 w-10 h-10 ${CLS_STEP_NUMBER} text-xl`} rounded="full">
+                <Row align="center" justify="center" textSize="xl" className={`flex-shrink-0 w-10 h-10 ${CLS_STEP_NUMBER}`} rounded="full">
                   {icon}
                 </Row>
                 <Div>

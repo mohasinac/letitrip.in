@@ -246,4 +246,4 @@ export const PRIMITIVE_SOURCE_DIRS = [
  * primitive-internal `className` that the audit must allow. Use sparingly
  * with a reason after the colon, on the same line or the previous line.
  */
-export const VARIANT_OK_MARKER = /\/\/\s*audit-variant-ok(?::[^\n]*)?/;
+export const VARIANT_OK_MARKER = /(?:\/\/|\{?\/\*)\s*audit-variant-ok(?::[^\n]*)?/;
