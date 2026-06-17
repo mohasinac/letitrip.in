@@ -1726,7 +1726,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
         <Table size="sm">
           <Thead>
             <Tr border="default" surface="muted">
-              <Th className="text-left px-3 w-[38%]" padding="xs-tall" color="muted" weight="semibold">Field</Th>
+              <Th className="text-left w-[38%]" padding="sm" color="muted" weight="semibold">Field</Th>
               <Th className="text-left w-[14%]" padding="xs-tall" color="muted" weight="semibold">Type</Th>
               <Th className="text-center" padding="xs-tall" color="muted" weight="semibold">🔍</Th>
               <Th className="text-center" padding="xs-tall" color="muted" weight="semibold">⚙️</Th>
@@ -1873,9 +1873,9 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
               <Table size="sm">
                 <Thead>
                   <Tr border="default" surface="muted">
-                    <Th className="text-left px-3 w-[22%]" padding="xs-tall" color="muted" weight="semibold">Context type</Th>
-                    <Th className="text-left px-3 w-[40%]" padding="xs-tall" color="muted" weight="semibold">Pattern</Th>
-                    <Th className="text-left px-3" padding="xs-tall" color="muted" weight="semibold">Example</Th>
+                    <Th className="text-left w-[22%]" padding="sm" color="muted" weight="semibold">Context type</Th>
+                    <Th className="text-left w-[40%]" padding="sm" color="muted" weight="semibold">Pattern</Th>
+                    <Th className="text-left" padding="sm" color="muted" weight="semibold">Example</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
