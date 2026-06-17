@@ -37,7 +37,7 @@ import type {
   MainNavbarItem,
   AppLayoutShellSidebarLink,
 } from "@mohasinac/appkit/client";
-import { THEME_CONSTANTS } from "./theme";
+import { NAV_ICON_COLORS, NAV_ICON_SIZE_SM } from "./styles/nav-icons";
 import { ROUTES } from "./routes";
 
 // ---------------------------------------------------------------------------
@@ -58,8 +58,8 @@ export interface NavItem {
 //                        stores, events, blog, reviews
 // ---------------------------------------------------------------------------
 
-const { navIcons } = THEME_CONSTANTS.colors;
-const iconSm = THEME_CONSTANTS.icon.size.sm;
+const navIcons = NAV_ICON_COLORS;
+const iconSm = NAV_ICON_SIZE_SM;
 const CLS_SCAM_ICON = "text-error";
 
 export const MAIN_NAV_ITEMS: NavItem[] = [

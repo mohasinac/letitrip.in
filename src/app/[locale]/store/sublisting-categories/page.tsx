@@ -63,6 +63,7 @@ export default function Page() {
       .then((r) => r.json())
       .then((res) => {
         const data = (res as any)?.data;
+        // audit-unknown-ok: SubListing list response items
         const items: unknown[] = data?.items ?? [];
         setTotal(typeof data?.total === "number" ? data.total : items.length);
         setRows(

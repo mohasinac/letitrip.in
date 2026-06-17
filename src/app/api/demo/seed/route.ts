@@ -708,6 +708,7 @@ export async function POST(request: NextRequest) {
     let totalErrors = 0;
     const processedCollections: string[] = [];
     let progressDone = 0;
+    // audit-unknown-ok: demo seed event emitter
     const emittedEvents: Array<{ type: string; [k: string]: unknown }> = [];
     // Fire-and-forget RTDB writes so per-collection work isn't blocked on
     // realtime network round-trips.  Failures are logged but never thrown.

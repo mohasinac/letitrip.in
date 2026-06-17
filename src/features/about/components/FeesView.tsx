@@ -1,4 +1,5 @@
-import { THEME_CONSTANTS } from "@/constants";
+import { PAGE_CONTAINER } from "@/constants/styles/page";
+import { THEMED_BG_PRIMARY, THEMED_BG_SECONDARY } from "@/constants/styles/themed";
 import { Caption, Div, Heading, Row, Section, Stack, Table, Tbody, Td, Text, Th, Thead, Tr } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 
@@ -10,7 +11,8 @@ const __P = {
 const __O = {
   xAuto: "overflow-x-auto",
 } as const;
-const { themed, page } = THEME_CONSTANTS;
+const themed = { bgPrimary: THEMED_BG_PRIMARY, bgSecondary: THEMED_BG_SECONDARY };
+const page = { container: PAGE_CONTAINER };
 const CLS_RATE_CELL = "py-3 px-4 font-semibold text-violet-700 dark:text-violet-400";
 const CLS_HIGHLIGHT = "font-bold text-emerald-700 dark:text-emerald-400";
 

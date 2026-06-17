@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { z } from "zod";
-import { THEME_CONSTANTS, API_ROUTES } from "@/constants";
+import { API_ROUTES } from "@/constants";
+import { THEMED_TEXT_SUCCESS } from "@/constants/styles/themed";
 import { Button, Div, FieldInput, Form, Stack, Text } from "@mohasinac/appkit/ui";
 import { FormShellContext, useFormShellState, useToast } from "@mohasinac/appkit/client";
 
@@ -56,7 +57,7 @@ export function HomepageNewsletterForm() {
 
   return (
     <FormShellContext.Provider value={shellCtx}>
-      <Form onSubmit={onSubmit} className={`mx-auto flex w-full max-w-xl flex-col ${THEME_CONSTANTS.spacing.gap.xs}`}>
+      <Form onSubmit={onSubmit} className="mx-auto flex w-full max-w-xl flex-col gap-1">
         <Stack className={`w-full sm:flex-row`} gap="xs" data-section="homepagenewsletterform-div-9">
           <FieldInput
             name="email"
@@ -74,7 +75,7 @@ export function HomepageNewsletterForm() {
           </Button>
         </Stack>
         {success ? (
-          <Text size="sm" className={`${THEME_CONSTANTS.themed.textSuccess}`} role="status">
+          <Text size="sm" className={THEMED_TEXT_SUCCESS} role="status">
             {success}
           </Text>
         ) : null}

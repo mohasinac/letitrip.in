@@ -73,6 +73,7 @@ export async function placeBidAction(
         if (err instanceof AuthorizationError)
           return { ok: false, error: "Please sign in to place a bid." };
         if (err instanceof ValidationError) {
+          // audit-unknown-ok: Bid action — Razorpay error data extraction
           const veData = "data" in err ? (err as { data?: unknown }).data : undefined;
           return {
             ok: false,
@@ -135,6 +136,7 @@ export async function buyNowAction(
         if (err instanceof AuthorizationError)
           return { ok: false, error: "Please sign in to purchase." };
         if (err instanceof ValidationError) {
+          // audit-unknown-ok: Bid action — Razorpay error data extraction
           const veData = "data" in err ? (err as { data?: unknown }).data : undefined;
           return {
             ok: false,
