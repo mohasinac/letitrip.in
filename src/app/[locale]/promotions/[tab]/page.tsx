@@ -90,7 +90,7 @@ export default async function Page({
 
       {/* Tab navigation */}
       <Div border="default" surface="default" className="border-b">
-        <Row className={`mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 ${__O.xAuto} scrollbar-hide`} align="center" gap="xs" padding="y-xs">
+        <Row className={`mx-auto max-w-5xl ${__O.xAuto} scrollbar-hide`} align="center" gap="xs" padding="y-xs">
           {VALID_TABS.map((tabValue) => {
             const isActive = tabValue === activeTab;
             return (
@@ -112,7 +112,7 @@ export default async function Page({
       </Div>
 
       {/* Tab content */}
-      <Div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8" padding="y-xl">
+      <Div paddingX="x-page" className="max-w-5xl mx-auto" padding="y-xl">
         {/* ── COUPONS tab ──────────────────────────────────────────────── */}
         {(activeTab === "coupons" || activeTab === "all") && (
           <Div className={activeTab === "all" ? "mb-12" : ""}>
