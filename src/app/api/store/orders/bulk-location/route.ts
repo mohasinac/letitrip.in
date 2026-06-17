@@ -1,5 +1,5 @@
 import { withProviders } from "@/providers.config";
-import { createApiHandler, successResponse, ApiErrors, orderRepository, storeRepository } from "@mohasinac/appkit";
+import { createApiHandler, successResponse, ApiErrors, orderRepository, storeRepository, type JsonValue } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 const BULK_MAX = 50;
@@ -13,8 +13,8 @@ export const PATCH = withProviders(createApiHandler({
     if (!store) return ApiErrors.forbidden("No store found for this account");
 
     const body = await request.json() as {
-      orderIds?: unknown;
-      physicalLocation?: unknown;
+      orderIds?: JsonValue;
+      physicalLocation?: JsonValue;
     };
 
     if (!Array.isArray(body.orderIds) || body.orderIds.length === 0) {
@@ -23,7 +23,7 @@ export const PATCH = withProviders(createApiHandler({
     if (body.orderIds.length > BULK_MAX) {
       return ApiErrors.badRequest(`Maximum ${BULK_MAX} orders per request`);
     }
-    const loc = body.physicalLocation as { zone?: unknown; shelf?: unknown; bin?: unknown } | undefined;
+    const loc = body.physicalLocation as { zone?: JsonValue; shelf?: JsonValue; bin?: JsonValue } | undefined;
     if (!loc || typeof loc.zone !== "string" || typeof loc.shelf !== "string" || typeof loc.bin !== "string") {
       return ApiErrors.badRequest("physicalLocation must have zone, shelf, and bin strings");
     }

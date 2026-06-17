@@ -26,6 +26,7 @@
  */
 
 import { withProviders } from "@/providers.config";
+import type { JsonValue } from "@mohasinac/appkit";
 import {
   ALLOWED_TYPES_LABEL,
   MAX_BYTES,
@@ -52,11 +53,11 @@ const DEFAULT_MEDIA_FOLDER = "uploads";
 const SIGNED_URL_TTL_MS = 15 * 60 * 1000; // 15 min — enough for slow mobile uploads
 
 interface SignRequestBody {
-  contentType?: unknown;
-  size?: unknown;
-  folder?: unknown;
-  isPublic?: unknown;
-  context?: unknown;
+  contentType?: JsonValue;
+  size?: JsonValue;
+  folder?: JsonValue;
+  isPublic?: JsonValue;
+  context?: JsonValue;
 }
 
 // audit-route-schema-ok: pending-bespoke-schema

@@ -41,6 +41,7 @@ async function _GET(request: Request): Promise<NextResponse> {
   if (safe) parts.push(safe);
   const filters = parts.join(",");
 
+  // audit-unknown-ok: receives upstream listingProcessor items (unknown[] from gateway)
   let items: unknown[];
   let total: number;
   let resultPage: number;

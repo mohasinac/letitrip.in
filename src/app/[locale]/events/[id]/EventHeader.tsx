@@ -1,4 +1,5 @@
 import { Div, Heading, Row, Span, Stack, Text } from "@mohasinac/appkit/ui";
+import type { FirestoreValue } from "@mohasinac/appkit";
 import { MediaImage } from "@mohasinac/appkit/client";
 import { EVENT_LABELS } from "./_constants";
 import {
@@ -18,8 +19,8 @@ interface Props {
   coverImage: string | null;
   eventType: string;
   eventStatus: string;
-  startsAt: unknown;
-  endsAt: unknown;
+  startsAt: FirestoreValue;
+  endsAt: FirestoreValue;
   totalEntries?: number;
 }
 

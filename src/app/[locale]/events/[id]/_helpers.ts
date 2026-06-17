@@ -3,6 +3,8 @@
  * (layout / overview / participate / leaderboard).
  */
 
+import type { FirestoreValue } from "@mohasinac/appkit";
+
 import { LOCALE_CONFIG } from "@/constants";
 import {
   EVENT_BADGE_FALLBACK,
@@ -13,8 +15,8 @@ import {
 } from "./_constants";
 
 type RawEvent = {
-  status?: unknown;
-  endsAt?: unknown;
+  status?: FirestoreValue;
+  endsAt?: FirestoreValue;
 };
 
 // audit-unknown-ok: callback entry point — accepts arbitrary payload value

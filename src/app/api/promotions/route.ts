@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import type { JsonValue } from "@mohasinac/appkit";
 /**
  * Promotions API Route â€” thin proxy
  *
@@ -23,9 +24,9 @@ export const GET = withProviders(
   createRouteHandler({
     handler: async () => {
       const data = await callFirebaseFunction<{
-        promotedProducts: unknown;
-        featuredProducts: unknown;
-        activeCoupons: unknown;
+        promotedProducts: JsonValue;
+        featuredProducts: JsonValue;
+        activeCoupons: JsonValue;
       }>("promotionsApi");
 
       if (!data) {

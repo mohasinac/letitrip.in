@@ -56,6 +56,7 @@ async function _GET(
   }
   const filters = filterParts.join(",");
 
+  // audit-unknown-ok: receives upstream listingProcessor items (unknown[] from gateway)
   let items: unknown[];
   let total: number;
   let resultPage: number;

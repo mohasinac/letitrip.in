@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import type { JsonValue } from "@mohasinac/appkit";
 /**
  * Admin Analytics API Route â€” thin proxy
  *
@@ -31,9 +32,9 @@ export const GET = withProviders(
       const endDate = url.searchParams.get("endDate") ?? undefined;
 
       const data = await callFirebaseFunction<{
-        summary: unknown;
-        ordersByMonth: unknown;
-        topProducts: unknown;
+        summary: JsonValue;
+        ordersByMonth: JsonValue;
+        topProducts: JsonValue;
       }>("adminAnalytics", { startDate, endDate });
 
       if (!data) {

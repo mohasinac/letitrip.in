@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import type { JsonValue } from "@mohasinac/appkit";
 /**
  * Store (Seller) Analytics API Route â€” thin proxy
  *
@@ -54,9 +55,9 @@ export const GET = withProviders(
       const uid = user!.uid;
 
       const data = await callFirebaseFunction<{
-        summary: unknown;
-        revenueByMonth: unknown;
-        topProducts: unknown;
+        summary: JsonValue;
+        revenueByMonth: JsonValue;
+        topProducts: JsonValue;
       }>("storeAnalytics", { uid }).catch(() => null);
 
       if (!data) {

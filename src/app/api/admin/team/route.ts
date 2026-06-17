@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import type { JsonValue } from "@mohasinac/appkit";
 import { z } from "zod";
 import {
   createRouteHandler,
@@ -53,7 +54,7 @@ export const GET = withProviders(
       type RawUser = (typeof result.items)[number] & {
         permissionGroup?: string;
         permissions?: string[];
-        updatedAt?: unknown;
+        updatedAt?: JsonValue;
       };
 
       const serialize = (u: RawUser) => ({

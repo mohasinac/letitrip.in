@@ -323,7 +323,8 @@ async function _GET(request: Request): Promise<NextResponse> {
     // Q3: prefer the colocated listingProcessor Firebase Function when the
     // FIREBASE_FUNCTION_LISTING_URL env var is set; otherwise fall back to the
     // local repository call (keeps dev workflow working without the Function).
-    let items: unknown[];
+    // audit-unknown-ok: receives upstream listingProcessor items (unknown[] from gateway)
+  let items: unknown[];
     let total: number;
     let resultPage: number;
     let totalPages: number;

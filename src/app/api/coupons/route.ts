@@ -25,6 +25,7 @@ async function _GET(request: Request): Promise<NextResponse> {
     ? `validity.isActive==true,${extraFilters}`
     : "validity.isActive==true";
 
+  // audit-unknown-ok: receives upstream listingProcessor items (unknown[] from gateway)
   let items: unknown[];
   let total: number;
   let resultPage: number;

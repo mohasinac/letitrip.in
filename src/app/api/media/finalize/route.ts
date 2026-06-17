@@ -22,6 +22,7 @@
  */
 
 import { withProviders } from "@/providers.config";
+import type { JsonValue } from "@mohasinac/appkit";
 import { fileTypeFromBuffer } from "file-type";
 import {
   ALLOWED_TYPES_LABEL,
@@ -44,8 +45,8 @@ const SIGNED_READ_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days, matches legacy up
 const HEAD_BYTES = 4096; // file-type matches well within 4 KB for every supported format
 
 interface FinalizeRequestBody {
-  storagePath?: unknown;
-  isPublic?: unknown;
+  storagePath?: JsonValue;
+  isPublic?: JsonValue;
 }
 
 function pathBelongsToUser(storagePath: string, uid: string): boolean {

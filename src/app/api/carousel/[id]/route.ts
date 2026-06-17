@@ -91,8 +91,8 @@ export async function POST(request: NextRequest) {
 
     const unknown = collections.filter((c) => !(c in COLLECTION_CACHE_PATHS));
     if (unknown.length > 0) {
-      // audit-unknown-ok: literal string content — not a type annotation
       serverLogger.warn(
+        // audit-unknown-ok: literal string content — not a type annotation
         `Cache revalidation: unknown collections ignored: ${unknown.join(", ")}`,
       );
     }

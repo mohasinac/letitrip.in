@@ -69,6 +69,7 @@ async function _GET(request: Request): Promise<NextResponse> {
   // listStores() adds status==active + isPublic==true as Firestore .where() — don't duplicate.
   const filtersForRepo = userParts.join(",");
 
+  // audit-unknown-ok: receives upstream listingProcessor items (unknown[] from gateway)
   let items: unknown[];
   let total: number;
   let resultPage: number;
