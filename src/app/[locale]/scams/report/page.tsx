@@ -57,9 +57,9 @@ function TagInput({
       <Text size="sm" weight="medium">{label}</Text>
       <Row gap="xs" wrap>
         {values.map((v) => (
-          <Div layout="inline-flex" gap="1" textWeight="medium" textSize="xs" 
+          <Div layout="inline-flex" gap="1" align="center" textWeight="medium" textSize="xs"
             key={v}
-            className="items-center bg-[color:var(--appkit-color-surface-elevated,theme(colors.zinc.100))]" paddingY="y-2xs" paddingX="x-xs" rounded="full"
+            className="bg-[color:var(--appkit-color-surface-elevated,theme(colors.zinc.100))]" paddingY="y-2xs" paddingX="x-xs" rounded="full"
           >
             {v}
             <Button
@@ -206,7 +206,7 @@ function PrivacyAgreementSection({
       <CardBody>
         <Stack gap="md">
           <Heading level={2} size="base" weight="semibold">Section 3 — Privacy & Agreement</Heading>
-          <Label className="flex cursor-pointer items-start gap-3">
+          <Label layout="flex-start" gap="lg" className="cursor-pointer">
             {/* audit-raw-form-input-ok: custom rich-Label checkbox with multi-line description block */}
             <input type="checkbox" checked={form.reportedByAnon} onChange={(e) => field("reportedByAnon")(e.target.checked)} className="mt-0.5 h-4 w-4 rounded" />
             <Stack gap="none">
@@ -214,7 +214,7 @@ function PrivacyAgreementSection({
               <Text variant="secondary" size="xs">Your name will not appear on the public profile page — shown as "Anonymous reporter".</Text>
             </Stack>
           </Label>
-          <Label className="flex cursor-pointer items-start gap-3">
+          <Label layout="flex-start" gap="lg" className="cursor-pointer">
             {/* audit-raw-form-input-ok: custom rich-Label checkbox with multi-line description block */}
             <input type="checkbox" required checked={form.agreed} onChange={(e) => field("agreed")(e.target.checked)} className="mt-0.5 h-4 w-4 rounded" />
             <Stack gap="none">
@@ -384,7 +384,7 @@ export default function Page() {
   }
 
   return (
-    <Main padding="y-2xl" className="px-4 sm:px-6 lg:px-8">
+    <Main paddingY="y-2xl" paddingX="x-page">
       <ScamReportForm userId={user.uid} />
     </Main>
   );
