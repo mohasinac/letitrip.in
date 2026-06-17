@@ -94,6 +94,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
                 </Text>
               )}
             </>
+            {/* audit-variant-ok: listing count pill — primary-tinted bg-primary/10 chip + px-3 py-1 over Text inline-flex layout */}
             <Text as="span" className="mt-2 inline-flex h-fit shrink-0 items-center rounded-full bg-[var(--appkit-color-primary)]/10 px-3 py-1 text-[var(--appkit-color-primary)] sm:mt-0" size="sm" weight="semibold">
               {listings.length} listing{listings.length !== 1 ? "s" : ""}
             </Text>
@@ -171,6 +172,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
                           </Text>
                         )}
                         {condition && (
+                          // audit-variant-ok: condition pill — bg-zinc-100 + px-1.5/py-0.5 micro padding + text-[10px] under-10
                           <Text as="span" className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 text-[10px]" color="muted" transform="capitalize">
                             {condition}
                           </Text>

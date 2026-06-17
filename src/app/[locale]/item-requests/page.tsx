@@ -58,6 +58,7 @@ export default function Page() {
           ) : (
             <Stack gap="sm">
               {items.map((r) => (
+                // audit-variant-ok: item-request row — cursor-pointer + hover-bg-zinc-50 interactive list-row pattern
                 <Row
                   key={r.id}
                   className="cursor-pointer hover:bg-zinc-50 dark:hover:bg-slate-800" align="start" justify="between" rounded="default" padding="md" border="default"

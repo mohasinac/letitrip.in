@@ -293,7 +293,7 @@ export default function LayoutShellClient({
       contentClassName={isDashboard ? "w-full" : undefined}
       searchSlotRenderer={(onClose) => (
         <Div border="default" className="border-b" surface="default">
-          <Row className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8" padding="y-xs" align="center" gap="sm">
+          <Row paddingX="x-page" className="mx-auto w-full max-w-screen-xl" padding="y-xs" align="center" gap="sm">
             <Search
               value={searchQuery}
               onChange={setSearchQuery}
