@@ -7,7 +7,7 @@ import { ROLES_ADMIN_MOD } from "@/constants";
 function escape(value: unknown): string {
   const s = String(value ?? "");
   return s.includes(",") || s.includes('"') || s.includes("\n")
-    ? `"${s.replace(/"/g, '""')}"`
+ ? `"${s.replace(/"/g, '""')}"`
     : s;
 }
 

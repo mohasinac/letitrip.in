@@ -31,10 +31,10 @@ export function EventTabBar({ tabs }: Props) {
             aria-selected={isActive}
             scroll={false}
             className={`px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 -mb-px transition-colors ${
-              isActive
-                ? "border-primary text-primary"
-                : "border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
-            }`}
+ isActive
+ ? "border-primary text-primary"
+ : "border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
+ }`}
           >
             {tab.label}
           </Link>

@@ -144,7 +144,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     icon: "👤",
     group: "core",
     description: "Platform accounts (Auth + Firestore). Roles: admin (super-admin, full platform control), seller (owns stores, lists products, manages orders/payouts), employee (admin-lite, assigned by super-admin), moderator (reviews content/reports), user (buyer — browse, buy, bid, wishlist, review). 18 seeded: 1 admin, 7 sellers, 10 buyers. Auth record always upserted on re-seed.",
-    slugPattern: "user-{name}  (e.g. user-yugi-muto)",
+    slugPattern: "user-{name} (e.g. user-yugi-muto)",
     mediaFields: ["photoURL"],
     mediaSlugPatterns: [
       { type: "user-avatar", pattern: "user-{name}-avatar.{ext}", example: "user-yugi-muto-avatar.webp" },
@@ -219,7 +219,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     icon: "🏪",
     group: "core",
     description: "Seller storefronts. Any user with role:seller owns a store. Store owners can: list products (all 7 listing types), manage orders, configure shipping, set payout methods, run coupons, view analytics, connect WhatsApp/Google. Admin can approve/suspend/ban stores. 8 seeded across YGO + collectibles categories.",
-    slugPattern: "store-{name}  (e.g. store-kaiba-corp-cards)",
+    slugPattern: "store-{name} (e.g. store-kaiba-corp-cards)",
     mediaFields: ["storeLogoURL", "storeBannerURL"],
     mediaSlugPatterns: [
       { type: "store-logo",   pattern: "store-{name}-logo.{ext}",   example: "store-kaiba-corp-cards-logo.webp" },
@@ -316,7 +316,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     icon: "📦",
     group: "listings",
     description: "All 7 listing types in one collection (107 seeded). Sellers create via store dashboard; admin can edit/approve/reject any. Standard: buy-now. Auction: time-limited bidding + optional BIN. Pre-order: future release with deposit. Prize-draw: entry-based reveal with RNG. Classified: local meetup, no cart (chat CTA). Digital-code: instant delivery, auto-claim or manual-email. Live: regulated species with jurisdiction + CITES checks.",
-    slugPattern: "product-{name}  /  auction-{name}  /  preorder-{name}",
+    slugPattern: "product-{name} / auction-{name} / preorder-{name}",
     mediaFields: ["images[]", "youtubeId", "prizeDrawItems[].images[]"],
     mediaSlugPatterns: [
       { type: "product-image",    pattern: "product-{name}-{category}-{store}-image-{n}.{ext}",   example: "product-charizard-psa10-pokemon-cards-mistys-image-1.webp" },
@@ -521,7 +521,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     icon: "💖",
     group: "transactional",
     description: "One doc per user (20-item hard cap, server returns 409 WISHLIST_FULL). Buyers save products for later; bulk-remove + move-to-cart actions. Idempotent re-add. Price-at-add snapshot for price-drop alerts.",
-    slugPattern: "wishlist-{userSlug}  (e.g. wishlist-user-yugi-muto)",
+    slugPattern: "wishlist-{userSlug} (e.g. wishlist-user-yugi-muto)",
     seededItems: [
       "3 docs: wishlist-user-yugi-muto (8), wishlist-user-seto-kaiba (5), wishlist-user-admin-letitrip (4)",
       "Mix of standard, auction, and pre-order YGO products",
@@ -540,7 +540,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     icon: "🕓",
     group: "transactional",
     description: "One doc per user (50-item FIFO silent evict). Tracks recently viewed products. Guest users mirror to localStorage; merged on login via /api/user/history/merge. Newest-first ordering, no duplicates.",
-    slugPattern: "history-{userSlug}  (e.g. history-user-yugi-muto)",
+    slugPattern: "history-{userSlug} (e.g. history-user-yugi-muto)",
     seededItems: [
       "3 docs: history-user-yugi-muto (15), history-user-seto-kaiba (8), history-user-admin-letitrip (10)",
       "items ordered newest-first (viewedAt desc) — no duplicates",
@@ -558,7 +558,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     icon: "🎟️",
     group: "transactional",
     description: "Discount codes. Admin creates platform-wide coupons; sellers create store-scoped coupons. Types: percentage, fixed, free_shipping, buy_x_get_y. Per-user limits enforced via couponUsage subcollection. Applied at checkout; validated against min-purchase, date range, first-time-user restrictions.",
-    slugPattern: "coupon-*  (e.g. coupon-heart-of-the-cards)",
+    slugPattern: "coupon-* (e.g. coupon-heart-of-the-cards)",
     seededItems: [
       "5 admin coupons: HEART-OF-CARDS, MILLENNIUM-DEAL, SHADOW-REALM-SALE, DUEL-DISK-DISCOUNT, EXODIA-VIP",
       "5 seller coupons (Kaiba): KAIBA-CORP-15, BLUE-EYES-BUNDLE, OBELISK-PROMO, TOURNAMENT-PACK, RARE-HUNTER-10",
@@ -629,7 +629,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     group: "transactional",
     description: "Product reviews (1-5 stars + text + optional images/video). Buyers submit after purchase (verified-purchase flag). Sellers can respond once. Admin can moderate (approve/reject/flag). Helpful-count voting. Feeds into product avgRating + store reputation.",
     slugPattern: "review-{productName}-{userName}-{YYYYMMDD}",
-    mediaFields: ["images[]  (optional)"],
+    mediaFields: ["images[] (optional)"],
     mediaSlugPatterns: [
       { type: "review-image", pattern: "review-{productId}-image-{n}.{ext}", example: "review-product-charizard-psa10-image-1.webp" },
       { type: "review-video", pattern: "review-{productId}-video-1.{ext}",   example: "review-product-charizard-psa10-video-1.mp4" },
@@ -730,7 +730,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     icon: "🎪",
     group: "content",
     description: "Platform events. Admin creates events (sale/offer/poll/survey/feedback/raffle/spin_wheel). Users register via entries. Raffle types: open_raffle, top_n_scorers, top_n_participants, spin_wheel. Admin triggers raffle draws; winners get auto-issued coupon prizes. Spin wheel has per-user limits + time windows.",
-    slugPattern: "event-{title}  (e.g. event-battle-city-tournament)",
+    slugPattern: "event-{title} (e.g. event-battle-city-tournament)",
     mediaFields: ["bannerImage"],
     mediaSlugPatterns: [
       { type: "event-cover",            pattern: "event-{title}-image-{n}.{ext}", example: "event-pokemon-regional-tournament-mumbai-image-1.webp" },
@@ -806,7 +806,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     icon: "🗂️",
     group: "content",
     description: "Named carousel containers (EX2). Each carousel holds up to 5 slide IDs. carouselId on CarouselSectionConfig selects which carousel to render; null = default hero.",
-    slugPattern: "carousel-{name}  (e.g. carousel-hero-default)",
+    slugPattern: "carousel-{name} (e.g. carousel-hero-default)",
     seededItems: [
       "1 default carousel (carousel-hero-default, slideIds: [])",
     ],
@@ -854,8 +854,8 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     icon: "🏠",
     group: "content",
     description: "All homepage layout sections. 24 sections with YGO-themed copy. autoScroll on all horizontal sections.",
-    slugPattern: "section-*  (e.g. section-featured-products)",
-    mediaFields: ["config.imageUrl  (ad-banner / custom-cards types)"],
+    slugPattern: "section-* (e.g. section-featured-products)",
+    mediaFields: ["config.imageUrl (ad-banner / custom-cards types)"],
     seededItems: [
       "24 sections: welcome, hero carousel, featured products, trending, new arrivals, auctions, pre-orders, category grid, brand list, blog preview, events preview, FAQ preview, trust badges, how-it-works, newsletter, WhatsApp CTA, ad banners, and more",
       "YGO-themed section titles and descriptions",
@@ -876,7 +876,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     icon: "❓",
     group: "content",
     description: "FAQ knowledge base. Admin creates/edits/pins FAQs. Public pages show by category + search. showOnHomepage flag drives homepage FAQ section. Keyword search via pre-tokenized searchTokens[]. Stats track views + helpful votes for relevance ranking.",
-    slugPattern: "faq-*  (e.g. faq-how-does-bidding-work)",
+    slugPattern: "faq-* (e.g. faq-how-does-bidding-work)",
     seededItems: [
       "55 FAQs across categories: general, orders_payment, shipping_delivery, returns_refunds, product_information, account_security",
       "YGO-specific FAQs (card grading, booster odds, tournament rules, etc.)",
@@ -963,7 +963,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     icon: "⚙️",
     group: "system",
     description: "Single global settings document with 13 setting groups controlling the entire platform.",
-    slugPattern: "site_settings/global  (singleton)",
+    slugPattern: "site_settings/global (singleton)",
     mediaFields: ["branding.logo", "branding.favicon", "seoDefaults.ogImage"],
     seededItems: [
       "1 doc at site_settings/global",
@@ -1104,7 +1104,7 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
     icon: "🤝",
     group: "transactional",
     description: "Make-an-Offer negotiations. Buyers submit price offers on allowOffers:true products. Sellers accept/decline/counter from store dashboard. Accepted offers lock price → buyer redirected to checkout. Paid offers create linked orders with offerId. Auto-expiry after 48h. 7 statuses: pending→accepted→paid | declined | countered | expired | withdrawn.",
-    slugPattern: "offer-{buyerName}-{productName}-{status}  (semantic seed IDs only; production uses Firestore auto-IDs)",
+    slugPattern: "offer-{buyerName}-{productName}-{status} (semantic seed IDs only; production uses Firestore auto-IDs)",
     seededItems: [
       "10 offers across all 7 statuses: pending ×2, accepted ×1, declined ×1, countered ×2, expired ×1, withdrawn ×1, paid ×2",
       "Yugi as buyer on Kaiba Corp: offer-yugi-blue-eyes-pending, offer-yugi-dark-magician-paid",
@@ -1712,10 +1712,10 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
             type="button"
             onClick={() => setShowPiiOnly((v) => !v)}
             className={`text-[10px] px-2 py-1 rounded-full border font-medium transition-colors ${
-              showPiiOnly
-                ? "bg-red-500 text-white border-red-500"
-                : "border-zinc-300 dark:border-slate-600 text-zinc-500 dark:text-slate-400 hover:border-red-400 hover:text-red-500"
-            }`}
+ showPiiOnly
+ ? "bg-red-500 text-white border-red-500"
+ : "border-zinc-300 dark:border-slate-600 text-zinc-500 dark:text-slate-400 hover:border-red-400 hover:text-red-500"
+ }`}
           >
             🔒 PII only
           </Button>
@@ -1758,8 +1758,8 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
                 <Tr
                   key={f.name}
                   className={`border-b border-zinc-100 dark:border-slate-800 last:border-0 transition-colors ${
-                    f.pii ? "bg-red-50/40 dark:bg-red-900/5" : "hover:bg-zinc-50/60 dark:hover:bg-slate-800/30"
-                  }`}
+ f.pii ? "bg-red-50/40 dark:bg-red-900/5" : "hover:bg-zinc-50/60 dark:hover:bg-slate-800/30"
+ }`}
                 >
                   <Td className="px-3 font-mono break-all" padding="xs-tall" color="primary">{f.name}</Td>
                   <Td padding="xs-tall">

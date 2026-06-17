@@ -81,7 +81,7 @@ export function watermarkUrlToStoragePath(url: string): string | null {
 
 function escapeXml(input: string): string {
   return input.replace(/[<>&"']/g, (c) =>
-    c === "<" ? "&lt;" : c === ">" ? "&gt;" : c === "&" ? "&amp;" : c === '"' ? "&quot;" : "&apos;",
+ c === "<" ? "&lt;" : c === ">" ? "&gt;" : c === "&" ? "&amp;" : c === '"' ? "&quot;" : "&apos;",
   );
 }
 

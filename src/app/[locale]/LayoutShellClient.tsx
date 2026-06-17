@@ -218,7 +218,7 @@ export default function LayoutShellClient({
       appkitV && appkitV !== appV ? `appkit ${appkitV}` : "",
       sha ? `#${sha}` : "",
     ].filter(Boolean);
-    const versionSuffix = versionParts.length > 0 ? `  ·  ${versionParts.join(" · ")}` : "";
+    const versionSuffix = versionParts.length > 0 ? ` · ${versionParts.join(" · ")}` : "";
     return {
       brandName: BRAND.NAME,
       brandDescription: BRAND.DESCRIPTION,
