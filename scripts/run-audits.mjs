@@ -106,6 +106,7 @@ const AUDITS = [
   { name: "firestore-storage-urls",          script: "scripts/audit-firestore-storage-urls.mjs" },
   { name: "raw-img-src",                     script: "scripts/audit-raw-img-src.mjs" },
   { name: "finalize-magic-bytes",            script: "scripts/audit-finalize-magic-bytes.mjs" },
+  { name: "media-ext-hmac",                  script: "scripts/audit-media-ext-hmac.mjs" },
   { name: "storage-rules-shape",             script: "scripts/audit-storage-rules-shape.mjs" },
   // W6 — error contract / silent-failure gates (workstreams 1, 3, 5)
   { name: "silent-body-parse",               script: "scripts/audit-silent-body-parse.mjs" },

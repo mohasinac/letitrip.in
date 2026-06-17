@@ -1711,6 +1711,7 @@ Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 | audit-firestore-storage-urls.mjs | strict-0 | No raw `firebasestorage.googleapis.com` / `storage.googleapis.com/v0/` URLs in source |
 | audit-raw-img-src.mjs | strict-0 | JSX `src="https://..."` blocked for Firebase Storage / GCS / googleusercontent (except `lh3.*` Google photos) |
 | audit-finalize-magic-bytes.mjs | strict-0 | `/api/media/finalize` always calls `fileTypeFromBuffer()` + emits `422 MIME_MISMATCH` |
+| audit-media-ext-hmac.mjs | strict-0 | `MEDIA_EXT_HMAC_SECRET` is read only by `src/app/api/media/ext/_signing.ts`; route handler calls `verifyExtSignature()` before any upstream fetch |
 | audit-storage-rules-shape.mjs | strict-0 | `appkit/firebase/base/storage.rules` stays `allow read: if true` / `allow write: if false` |
 | audit-silent-body-parse.mjs | strict-0 | No silent `request.json().catch(() => ({}))` outside `createRouteHandler` |
 | audit-server-action-envelope.mjs | strict-0 | Every server action returns `ActionResult` or `void` (Track W6) |

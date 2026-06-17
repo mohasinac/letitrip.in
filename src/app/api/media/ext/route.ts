@@ -18,6 +18,7 @@ import {
   applyWatermark,
   loadWatermarkConfig,
 } from "../_watermark";
+import { verifyExtSignature } from "./_signing";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -53,6 +54,24 @@ export async function GET(request: NextRequest): Promise<Response> {
 
   if (!rawUrl) {
     return new NextResponse("Missing url parameter.", { status: 400 });
+  }
+
+  // HMAC verification (config-gated by MEDIA_EXT_HMAC_SECRET). When the env
+  // var is unset, every request passes through — back-compat for callers that
+  // haven't migrated to signExtMediaUrl() yet.
+  const ts = request.nextUrl.searchParams.get("ts");
+  const sig = request.nextUrl.searchParams.get("sig");
+  // We re-derive the encoded URL from the searchParams so the bytes match
+  // what the signer hashed (URLSearchParams.toString() re-encodes consistently).
+  const encodedUrl = encodeURIComponent(rawUrl);
+  const verify = verifyExtSignature(encodedUrl, ts, sig);
+  if (!verify.ok) {
+    serverLogger.warn("media-ext: HMAC verification failed", {
+      reason: verify.reason ?? "MISMATCH",
+      hasTs: !!ts,
+      hasSig: !!sig,
+    });
+    return new NextResponse("Invalid or missing media signature.", { status: 401 });
   }
 
   let parsed: URL;
