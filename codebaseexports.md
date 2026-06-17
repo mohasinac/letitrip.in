@@ -1548,54 +1548,177 @@ Route constants defined in `appkit/src/next/routing/route-map.ts` via the `ROUTE
 
 ## 20. Firebase Jobs
 
-Firebase Functions defined in `functions/src/`. Key functions:
+Firebase Functions are declared once in the appkit registry (single source of truth) and bound from [functions/src/index.ts](functions/src/index.ts). Consumer extensions live in [functions/src/consumer-functions.ts](functions/src/consumer-functions.ts) (empty by default).
+
+Registry sources:
+- [appkit/src/_internal/server/functions/scheduled.ts](appkit/src/_internal/server/functions/scheduled.ts) — `SCHEDULED_FUNCTIONS` (21 entries)
+- [appkit/src/_internal/server/functions/firestore.ts](appkit/src/_internal/server/functions/firestore.ts) — `FIRESTORE_TRIGGER_FUNCTIONS` (13 entries)
+- [appkit/src/_internal/server/functions/https.ts](appkit/src/_internal/server/functions/https.ts) — `HTTPS_FUNCTIONS` (7 entries)
+- Aggregated in [appkit/src/_internal/server/functions/manifest.ts](appkit/src/_internal/server/functions/manifest.ts) as `APPKIT_FUNCTIONS`
+
+All functions deploy to region `asia-south1`. HTTPS functions require `LETITRIP_INTERNAL_SECRET` env var (enforced by `audit-functions-registry-completeness.mjs`).
+
+### Scheduled (21 functions)
+
+| Function | Cron | Purpose |
+|----------|------|---------|
+| auctionSettlement | every 15 minutes (UTC) | Settle expired auctions + notify winners |
+| pendingOrderTimeout | every 2 hours | Cancel pending orders past timeout |
+| couponExpiry | daily 00:05 UTC | Mark coupons inactive past endDate |
+| offerExpiry | daily 00:15 UTC | Mark offers inactive past endDate |
+| productStatsSync | daily 01:00 UTC | Recompute aggregated product stats |
+| dailyDataCleanup | daily 02:00 UTC | Drafts + transient record cleanup |
+| countersReconcile | daily 03:00 UTC | Reconcile aggregated counters vs source-of-truth |
+| positionsReconcile | daily 03:30 UTC | Reconcile bid / auction positions |
+| draftPrune | weekly Sun 03:00 UTC | Prune store form drafts > 30 days |
+| cartPrune | weekly Sun 04:00 UTC | Prune abandoned carts |
+| autoPayoutEligibility | daily 04:45 UTC | Recompute auto-payout eligibility |
+| mediaTmpCleanup | daily 04:30 IST | Delete orphaned `tmp/*` media uploads |
+| payoutBatch | daily 06:00 UTC | Dispatch the day's payout batch |
+| weeklyPayoutEligibility | weekly Sat 05:00 UTC | Recompute weekly seller payout eligibility |
+| notificationPrune | weekly Mon 01:00 UTC | Prune read notifications past retention |
+| cleanupRtdbEvents | every 5 minutes | Reap stale RTDB auth-event nodes |
+| prizeRevealOpen | every 5 minutes | Flip prize-draw reveals pending→open + opening notifications |
+| prizeRevealClose | every 5 minutes | Flip prize-draw reveals open→closed |
+| prizeRevealExpiry | every 6 hours UTC | Auto-refund unrevealed prize-draw entries past deadline |
+| prizeRevealReminder | daily 10:00 IST | Nudge prize-draw buyers <24h to deadline |
+| bundleStockSync | daily 10:05 IST | Flip bundle isSold when any item runs OOS |
+
+### Firestore Triggers (13 functions)
 
 | Function | Trigger | Purpose |
 |----------|---------|---------|
-| onProductWriteHandler | Firestore onWrite(products) | Bundle stock sync on product changes |
-| scheduledBundleStockSync | Scheduled (daily) | Batch stock synchronization |
-| mediaTmpCleanup | Scheduled | Clean up tmp/ uploads |
-| onUserCreate | Auth onCreate | Initialize user profile |
-| onOrderStatusChange | Firestore onUpdate(orders) | Trigger notifications on status change |
+| onBidPlaced | documentCreated `bids/{bidId}` | Bid creation side-effects (notifications, outbid emails) |
+| onOrderCreate | documentCreated `orders/{orderId}` | Notify store + decrement stock |
+| onOrderStatusChange | documentUpdated `orders/{orderId}` | Status transition notifications + returns |
+| onProductWrite | documentWritten `products/{productId}` | Search index + stats + audits |
+| onProductStockChange | documentWritten `products/{productId}` | Recompute bundleStockStatus + groupedListing activeMemberCount |
+| onReviewWrite | documentWritten `reviews/{reviewId}` | Recompute product + store rating aggregates |
+| onCategoryWrite | documentWritten `categories/{categoryId}` | Path materialization + slug indexes |
+| onStoreWrite | documentWritten `stores/{storeId}` | Status mirror + owner uid index |
+| onSupportTicketCreate | documentCreated `supportTickets/{ticketId}` | Confirm to reporter + queue routing |
+| onSupportTicketUpdate | documentUpdated `supportTickets/{ticketId}` | Notify reporter on status change |
+| onUserBanChange | documentUpdated `users/{uid}` | Append ban-history audit entries |
+| onScamReportCreate | documentCreated `scammerProfiles/{scammerId}` | Notify reporter + scam-read employees |
+| onScamReportUpdate | documentUpdated `scammerProfiles/{scammerId}` | Notify reporter on verified/rejected flip |
+
+### HTTPS Callables (7 functions, server-to-server)
+
+| Function | Memory | Purpose |
+|----------|--------|---------|
+| adminAnalytics | 512 MiB | Admin analytics roll-ups (heavy queries offloaded from Vercel) |
+| storeAnalytics | 256 MiB | Per-store analytics roll-ups |
+| promotionsApi | 256 MiB | Coupon + offer evaluation |
+| listingProcessor | 256 MiB | Sieve query processor (auctions / pre-orders / prize-draws) |
+| triggerEventRaffle | 256 MiB | Admin-triggered raffle draw (crypto.randomInt) |
+| assignSpinPrize | 256 MiB | Weighted random spin-wheel + coupon issuance |
+| gateway | 512 MiB | Multiplexed endpoint dispatching on `input.action` to all 6 above |
 
 ---
 
 ## 21. Audit Scripts
 
-### Appkit Scripts (`appkit/scripts/`)
+Single dispatcher: [scripts/run-audits.mjs](scripts/run-audits.mjs). Runs every audit in registry order; `--all` is the default, `--no-fail-fast` runs all even on failure. Stop hook ([scripts/claude-hooks/check-on-stop.mjs](scripts/claude-hooks/check-on-stop.mjs)) runs the fast subset after every Claude turn.
 
-| Script | What It Checks |
-|--------|----------------|
-| audit-double-navigation.mjs | Double `router.replace()` anti-pattern |
-| audit-repository-fields.mjs | Repository method signatures |
-| audit-use-client.mjs | Client directive placement |
-| audit-violations.mjs | `_internal/` boundary violations |
-| audit-query-provider.mjs | React Query setup |
-| audit-export-paths.mjs | Import alias usage |
-| verify-entries.mjs | Client entry firebase-admin free |
-| verify-css-build.mjs | Compiled CSS class completeness |
+**State legend**: **strict-0** = zero tolerance, any violation fails; **drift** = baseline-locked, only regressions fail; **report** = informational counts.
 
-### Consumer Scripts (`scripts/`)
+### Appkit audits (21 scripts in `appkit/scripts/`)
 
-| Script | What It Checks |
-|--------|----------------|
-| audit-ssr-in-appkit.mjs | Route files are thin shims (baseline: 8) |
-| audit-code-quality.mjs | Code style violations (baseline: 685) |
-| audit-typography.mjs | Font/typography class usage (baseline: 1071) |
-| audit-inline-styles.mjs | Inline CSS (baseline: 756) |
-| audit-html-wrappers.mjs | HTML tag misuse |
-| audit-suspense-boundaries.mjs | Suspense component nesting |
-| audit-hex-tokens.mjs | Hardcoded color values |
-| audit-auth-gates.mjs | Auth protection patterns |
-| audit-bom.mjs | BOM (Byte Order Mark) detection |
-| audit-inline-actions.mjs | Non-modularized server actions |
-| audit-sieve-constants.mjs | Sieve filter definitions |
-| audit-config-factories.mjs | Config factory patterns |
-| audit-product-form-shell.mjs | Product form patterns |
-| audit-dashboard-padding.mjs | Layout spacing |
-| audit-env-alignment.mjs | Environment variable sync |
-| audit-root-cause.mjs | Root cause analysis |
-| audit-user-pages-overhaul.mjs | User page migration |
-| audit-gitignore.mjs | Git ignore rules |
-| audit-dark-mode.mjs | Dark mode class usage |
-| audit-toast-coverage.mjs | Toast notification usage (baseline: 12) |
+All 21 run as a chain via `appkit`'s `npm run check:audits` (the first entry in the dispatcher).
+
+| Script | State | What it catches |
+|--------|-------|-----------------|
+| audit-violations.mjs | strict-0 | `_internal/` boundary breaches — imports from `_internal/server` into client bundles |
+| verify-entries.mjs | strict-0 | Client entry barrels stay firebase-admin-free |
+| verify-css-build.mjs | strict-0 | Compiled CSS class completeness vs source utilities |
+| audit-use-client.mjs | strict-0 | `"use client"` first-line on files with React hooks / next-intl / next/navigation |
+| audit-double-navigation.mjs | strict-0 | `table.set(...); table.setPage(1)` paired calls (race condition root-cause #13) |
+| audit-repository-fields.mjs | strict-0 | Deprecated Sieve fields + root-level sort paths in repositories |
+| audit-query-provider.mjs | strict-0 | React Query Provider scope (no QueryClient set root-cause #19) |
+| audit-export-paths.mjs | strict-0 | Import-alias hygiene (no deep `dist/...` paths) |
+| audit-listing-indices.mjs | strict-0 | Firestore composite indices for `listingType+...` queries (J13) |
+| audit-listing-type-reads.mjs | strict-0 | No reads of the dropped `isAuction` / `isPreOrder` booleans |
+| audit-create-with-id.mjs | strict-0 | `createWithId` overrides in PII-encrypting subclasses (root-cause #9) |
+| audit-css-imports.mjs | strict-0 | No `@import "pkg"` in `globals.css` (Turbopack PostCSS trap root-cause #10) |
+| audit-appkit-reexports.mjs | strict-0 | Re-exports respect the firebase-admin client-bundle trap (root-cause #6 + #18) |
+| audit-action-confirmation.mjs | strict-0 | Destructive ACTIONS carry `confirmation` config |
+| audit-route-strings.mjs | strict-0 | No hardcoded route strings outside `ROUTES` registry |
+| audit-paginated-select.mjs | strict-0 | >5-option selects use `<PaginatedSelect>` |
+| audit-sieve-constants-views.mjs | strict-0 | Views use `SIEVE_OP` / `sieveBuilder` constants, not raw filter strings |
+| audit-schema-registry-completeness.mjs | strict-0 | Every API route has a schema in `SCHEMAS.api[...]` |
+| audit-firestore-schema-coverage.mjs | strict-0 | Every collection's repository has a Zod schema |
+| audit-catch-normalize.mjs | strict-0 | Every `catch (e)` site flows through `normalizeError(e)` |
+| audit-route-schema-registry.mjs | strict-0 | All 464 route exports are registered (or carry suppression marker) |
+| audit-z-any-z-unknown.mjs | strict-0 | No `z.any()` / `z.unknown()` in schema definitions |
+
+### Consumer audits (58 scripts in `scripts/`)
+
+Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
+
+| Script | State | What it catches |
+|--------|-------|-----------------|
+| audit-ssr-in-appkit.mjs | drift | Route-shim thresholds (`page.tsx` ≤ 30 lines) + sidecar files + brand strings inside `_internal/` |
+| audit-hex-tokens.mjs | strict-0 (`--fix`) | Hardcoded hex colors outside `tokens.css` |
+| audit-config-factories.mjs | strict-0 | Config factory pattern compliance |
+| audit-html-wrappers.mjs | drift | Raw `<div>` / `<span>` wrappers + `RAW_GRADIENT_UTILITY` token misuse |
+| audit-code-quality.mjs | drift | Code style — `BUTTON_AS_TOGGLE` + others |
+| audit-bom.mjs | strict-0 | Byte-Order-Mark detection in TS/TSX sources |
+| audit-suspense-boundaries.mjs | strict-0 | Listing page shims wrap `useUrlTable()` in `<Suspense>` (root-cause #17) |
+| audit-auth-gates.mjs | strict-0 | Public-CTA gating |
+| audit-inline-actions.mjs | strict-0 | No duplicate inline `action` definitions (CTA Registry Rule #7) |
+| audit-product-form-shell.mjs | strict-0 | Product form pages use shell wrappers |
+| audit-dashboard-padding.mjs | strict-0 | Dashboard pages don't double-pad |
+| audit-user-pages-overhaul.mjs | strict-0 | User-page migration completeness checklist |
+| audit-root-cause.mjs | strict-0 | Recurrent root-cause patterns (rolled into CLAUDE.md §Recurrent Root Cause Patterns) |
+| audit-dark-mode.mjs | strict-0 | Dark-mode companion class completeness on text/bg color pairs |
+| audit-gitignore.mjs | strict-0 | `.gitignore` shape (no accidental commit of `dist/` etc.) |
+| audit-typography.mjs | strict-0 | Raw HTML typography tags must use `<Heading>` / `<Text>` / `<Span>` primitives |
+| audit-inline-styles.mjs | strict-0 | `style={{ color }}` / `backgroundColor` / `borderColor` outside primitives + `RAW_JUSTIFY_ON_ROW` etc. |
+| audit-env-alignment.mjs | strict-0 | `.env.local` consistency with `.env.example` |
+| audit-sieve-constants.mjs | strict-0 | Same as appkit's `sieve-constants-views` for consumer sources |
+| audit-toast-coverage.mjs | drift | User-facing handlers carry toast feedback or `// toast-intentionally-silent` marker |
+| audit-auth-gate-derivation.mjs | strict-0 | Login gates don't derive from UX-affordance flags |
+| audit-route-nav-field-constants.mjs | strict-0 | Route / nav / field-name constants honored (no raw string literals) |
+| audit-spinner-defaults.mjs | strict-0 | No bare "Loading…" text spinners in view components |
+| audit-silent-fetch-catch.mjs | strict-0 | No silent `.catch(() => {})` swallows (root-cause #4) |
+| audit-listing-pagesize.mjs | strict-0 | List endpoints clamp `pageSize ≤ 50` (Hobby tier rule #6) |
+| audit-jsx-text-comments.mjs | strict-0 | No `// comment` lines inside JSX child position (renders as text) |
+| audit-seed-external-urls.mjs | strict-0 | Seed data uses `seedExtMedia()`, not raw firebase storage URLs |
+| audit-raw-form-input.mjs | strict-0 | No raw `<form>` / `<input>` / `<select>` / `<textarea>` in product code (Rule #9) |
+| audit-sticky-offsets.mjs | strict-0 | Sticky elements use `var(--header-height)` not hardcoded `top-N` (root-cause #2) |
+| audit-firebase-alias.mjs | strict-0 | Webpack + Turbopack `firebase` alias in `next.config.js` (root-cause #14) |
+| audit-semantic-colors.mjs | strict-0 | Status colors use semantic tokens (`text-error` etc.) not raw red/green/amber |
+| audit-theme-drift.mjs | strict-0 | TS theme presets aligned with matching CSS blocks in `tokens.css` |
+| audit-error-display-i18n.mjs | strict-0 | `ERROR_CODES` / `HTTP_ERROR_CODES` enum values match `messages/en.json` errors.codes.* (UNKNOWN sentinel allowed) |
+| audit-email-raw-html.mjs | strict-0 | Raw `html: \`<` literals outside email primitives — every sender uses `<EmailDoc>` + `renderToStaticMarkup` |
+| audit-form-mutation-hook.mjs | strict-0 | `<Form>` callsites use `useApiMutation` + `apiClient`, not raw `fetch()` |
+| audit-variant-prop-coverage.mjs | drift | className tokens on primitives that should use variant props (catalogued in [scripts/variant-catalogue.mjs](scripts/variant-catalogue.mjs)). **Other-session lane.** |
+| audit-functions-registry-completeness.mjs | strict-0 | Every Firebase function declares `secretEnvVar`; HTTPS funcs declare `options.secrets[]` |
+| audit-payment-provider-import.mjs | strict-0 | `razorpay` only imported from `appkit/src/providers/payment-razorpay/**` |
+| audit-shipping-provider-import.mjs | strict-0 | Shiprocket REST host only called from `appkit/src/providers/shipping-shiprocket/**` |
+| audit-mock-flag-production.mjs | strict-0 | `siteSettings.featureFlags.useMockPayment/Shipping` throws in `NODE_ENV=production` |
+| audit-orphan-dev-routes.mjs | strict-0 | No new `/api/dev/mock-*` routes — webhook simulation goes through admin-only `/api/admin/dev/...` |
+| audit-checkout-bypass.mjs | strict-0 | `adminCheckoutBypass` only consumed by `/api/admin/checkout-bypass/route.ts` + RBAC |
+| audit-auth-rate-limit.mjs | strict-0 | Every `/api/auth/**` route applies `RateLimitPresets.<AUTH \| PASSWORD_RESET \| OAUTH>` |
+| audit-inline-session-cookie.mjs | strict-0 | Only `src/lib/firebase/auth-server.ts` reads `cookies().get("__session")` |
+| audit-inline-role-check.mjs | strict-0 | Role checks use `isAdminUser()` etc. predicates, not `user.role === "admin"` |
+| audit-route-rbac.mjs | strict-0 | Every API route wraps `createRouteHandler({ auth, roles, permission })` or carries `// rbac-public:` |
+| audit-page-rbac.mjs | strict-0 | Dashboard pages have ancestor `makeAdminSectionLayout(perm)` / `<RoleGuard>` |
+| audit-mock-gating.mjs | strict-0 | `__mocks__/*` files are jest-only and seed data only imported by `/api/demo/seed` |
+| audit-form-schema.mjs | strict-0 | Every `<FormShell>` / `useFormShellState(...)` references a Zod schema (Track D) |
+| audit-quick-form-drawer-schema.mjs | strict-0 | Every `<QuickFormDrawer>` passes `schema` prop |
+| audit-media-direct-upload.mjs | strict-0 | No `request.formData()` / `arrayBuffer()` outside `/api/media/sign` + `/finalize` (Track E) |
+| audit-firestore-storage-urls.mjs | strict-0 | No raw `firebasestorage.googleapis.com` / `storage.googleapis.com/v0/` URLs in source |
+| audit-raw-img-src.mjs | strict-0 | JSX `src="https://..."` blocked for Firebase Storage / GCS / googleusercontent (except `lh3.*` Google photos) |
+| audit-finalize-magic-bytes.mjs | strict-0 | `/api/media/finalize` always calls `fileTypeFromBuffer()` + emits `422 MIME_MISMATCH` |
+| audit-storage-rules-shape.mjs | strict-0 | `appkit/firebase/base/storage.rules` stays `allow read: if true` / `allow write: if false` |
+| audit-silent-body-parse.mjs | strict-0 | No silent `request.json().catch(() => ({}))` outside `createRouteHandler` |
+| audit-server-action-envelope.mjs | strict-0 | Every server action returns `ActionResult` or `void` (Track W6) |
+| audit-usemutation-onerror.mjs | strict-0 | Every mutation flows through `useApiMutation` (not raw `useMutation`) |
+
+### Audits delegated to appkit/scripts/ via the dispatcher
+
+Three appkit audits run directly from the consumer dispatcher (separate from the `appkit` npm-prefix entry that runs the chain):
+- `appkit/scripts/audit-catch-normalize.mjs`
+- `appkit/scripts/audit-route-schema-registry.mjs`
+- `appkit/scripts/audit-unknown-leakage.mjs` — **closed strict-0** (W18 complete 2026-06-17: 992 → 0)
