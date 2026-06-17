@@ -1,36 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Div, FieldInput, Form, Row, Text } from "@mohasinac/appkit/ui";
-import { useToast } from "@mohasinac/appkit/client";
+import { Button, FieldInput, Form, Row, Text } from "@mohasinac/appkit/ui";
+import { useApiMutation, useToast, apiClient } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
 export function FooterNewsletterSlot() {
   const [email, setEmail] = useState("");
-  const [pending, setPending] = useState(false);
   const [done, setDone] = useState(false);
   const { showToast } = useToast();
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!email.trim() || pending) return;
-    setPending(true);
-    try {
-      const res = await fetch(API_ROUTES.NEWSLETTER.SUBSCRIBE, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), source: "footer" }),
-      });
-      if (!res.ok) throw new Error();
+  const subscribeMutation = useApiMutation({
+    mutationFn: (payload: { email: string }) =>
+      apiClient.post(API_ROUTES.NEWSLETTER.SUBSCRIBE, {
+        ...payload,
+        source: "footer",
+      }),
+    onSuccess: () => {
       setDone(true);
       setEmail("");
       showToast("Subscribed! Check your inbox.", "success");
-    } catch {
+    },
+    onError: () => {
       showToast("Could not subscribe. Please try again.", "error");
-    } finally {
-      setPending(false);
-    }
-  }
+    },
+  });
 
   if (done) {
     return (
@@ -41,7 +35,10 @@ export function FooterNewsletterSlot() {
   }
 
   return (
-    <Form onSubmit={handleSubmit} className="flex flex-col gap-2 w-full">
+    <Form
+      onSubmit={(e) => e.preventDefault()}
+      className="flex flex-col gap-2 w-full"
+    >
       <Text size="xs" weight="medium" color="muted">
         Get deals &amp; drops in your inbox
       </Text>
@@ -54,16 +51,20 @@ export function FooterNewsletterSlot() {
           placeholder="you@example.com"
           autoComplete="email"
           required
-          disabled={pending}
+          disabled={subscribeMutation.isPending}
           className="flex-1 min-w-0"
         />
         <Button
           type="submit"
           variant="primary"
-          disabled={pending}
+          disabled={subscribeMutation.isPending}
           className="flex-shrink-0"
+          onClick={() => {
+            if (!email.trim() || subscribeMutation.isPending) return;
+            subscribeMutation.mutate({ email: email.trim() });
+          }}
         >
-          {pending ? "…" : "Subscribe"}
+          {subscribeMutation.isPending ? "…" : "Subscribe"}
         </Button>
       </Row>
     </Form>

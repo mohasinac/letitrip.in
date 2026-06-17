@@ -78,6 +78,11 @@ const AUDITS = [
   // source. Forces every email sender to compose <EmailDoc> family + serialise
   // via renderToStaticMarkup.
   { name: "email-raw-html",                  script: "scripts/audit-email-raw-html.mjs" },
+  // Strict-zero. Flags raw `fetch()` calls in any file that renders <Form>.
+  // The canonical pattern is useApiMutation + apiClient. Suppress with
+  // `// audit-form-mutation-hook-ok: <reason>` only for genuine non-form
+  // fetches (CSV blob downloads etc).
+  { name: "form-mutation-hook",              script: "scripts/audit-form-mutation-hook.mjs" },
   // Catches consumer-side `className=` on appkit primitives that contains
   // a token covered by one of the primitive's own variant props. Baseline-
   // drift while the consumer sweep is in flight — current count locks

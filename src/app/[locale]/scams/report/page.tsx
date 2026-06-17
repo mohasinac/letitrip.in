@@ -4,7 +4,7 @@ import { normalizeError } from "@mohasinac/appkit";
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
-import { useSession, ROUTES, SCAM_TYPES, SCAM_PLATFORM_LABELS, Div, Button, Form, Label, Input, Textarea, Select } from "@mohasinac/appkit/client";
+import { useSession, ROUTES, SCAM_TYPES, SCAM_PLATFORM_LABELS, Div, Button, Form, Label, Input, Textarea, Select, useApiMutation, apiClient } from "@mohasinac/appkit/client";
 import { Alert, Stack, Heading, Text, Row, Card, CardBody, Main, Ul, Li } from "@mohasinac/appkit";
 import { ChevronLeft, Loader2, Plus, X } from "lucide-react";
 import { API_ROUTES } from "@/constants";
@@ -249,11 +249,24 @@ function ScamReportForm({ userId }: { userId: string }) {
     reportedByAnon: false,
     agreed: false,
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const field = <K extends keyof FormState>(key: K) => (val: FormState[K]) =>
     setForm((f) => ({ ...f, [key]: val }));
+
+  const reportMutation = useApiMutation({
+    mutationFn: (payload: Record<string, unknown>) =>
+      apiClient.post(API_ROUTES.SCAMS.REPORTS, payload),
+    onSuccess: () => {
+      router.push(String(ROUTES.PUBLIC.SCAMS) as Parameters<typeof router.push>[0]);
+    },
+    onError: (err: Error) => {
+      void normalizeError(err);
+      setError(err.message ?? "An error occurred. Please try again.");
+    },
+  });
+
+  const isSubmitting = reportMutation.isPending;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -269,42 +282,21 @@ function ScamReportForm({ userId }: { userId: string }) {
       setError("Description must be at least 100 characters.");
       return;
     }
-
-    setIsSubmitting(true);
     setError(null);
 
-    try {
-      const payload = {
-        displayName: form.displayName,
-        phones: form.phones.join(","),
-        upiIds: form.upiIds.join(","),
-        emails: form.emails.join(","),
-        scamType: form.scamType,
-        scamPlatform: form.scamPlatform,
-        amountLost: form.amountLost ? parseFloat(form.amountLost) : undefined,
-        itemInvolved: form.itemInvolved,
-        description: form.description,
-        reportedByAnon: form.reportedByAnon,
-      };
-
-      const res = await fetch(API_ROUTES.SCAMS.REPORTS, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error((data as { message?: string }).message ?? "Submission failed");
-      }
-
-      router.push(String(ROUTES.PUBLIC.SCAMS) as Parameters<typeof router.push>[0]);
-    } catch (err) {
-      void normalizeError(err);
-      setError(err instanceof Error ? err.message : "An error occurred. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    const payload = {
+      displayName: form.displayName,
+      phones: form.phones.join(","),
+      upiIds: form.upiIds.join(","),
+      emails: form.emails.join(","),
+      scamType: form.scamType,
+      scamPlatform: form.scamPlatform,
+      amountLost: form.amountLost ? parseFloat(form.amountLost) : undefined,
+      itemInvolved: form.itemInvolved,
+      description: form.description,
+      reportedByAnon: form.reportedByAnon,
+    };
+    reportMutation.mutate(payload);
   }
 
   return (

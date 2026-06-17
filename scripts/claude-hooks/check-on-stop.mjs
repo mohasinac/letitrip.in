@@ -247,6 +247,13 @@ const checks = [
     cwd: ROOT,
   },
   {
+    // Strict-zero. Flags raw fetch() calls in <Form>-rendering files.
+    label: "audit-form-mutation-hook",
+    cmd: "node",
+    args: ["scripts/audit-form-mutation-hook.mjs"],
+    cwd: ROOT,
+  },
+  {
     // Catches consumer-side `className=` on appkit primitives that maps to
     // a variant prop. Baseline-drift; regressions block until the sweep
     // drives the count down.

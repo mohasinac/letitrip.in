@@ -4,7 +4,7 @@ import React, { useState } from "react";
 
 import { useRouter } from "@/i18n/navigation";
 import { Heading, ROUTES, Row, Text } from "@mohasinac/appkit";
-import { Div, Button, Form, Label, Input, Textarea } from "@mohasinac/appkit/client";
+import { Div, Button, Form, Label, Input, Textarea, useApiMutation, apiClient } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
 const LBL_CLS = "block text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-1";
@@ -14,35 +14,29 @@ export default function Page() {
   const [name, setName] = useState("");
   const [itemCode, setItemCode] = useState("");
   const [description, setDescription] = useState("");
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const createMutation = useApiMutation({
+    mutationFn: (payload: { name: string; itemCode?: string; description?: string }) =>
+      apiClient.post(API_ROUTES.STORE.SUBLISTING_CATEGORIES, payload),
+    onSuccess: () => {
+      router.push(String(ROUTES.STORE.SUBLISTING_CATEGORIES));
+    },
+    onError: (err: Error) => {
+      setError(err.message ?? "Failed to create category");
+    },
+  });
+  const saving = createMutation.isPending;
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
-    setSaving(true);
     setError("");
-    try {
-      const res = await fetch(API_ROUTES.STORE.SUBLISTING_CATEGORIES, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name.trim(),
-          itemCode: itemCode.trim() || undefined,
-          description: description.trim() || undefined,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError((data as any)?.error?.message ?? "Failed to create category");
-        return;
-      }
-      router.push(String(ROUTES.STORE.SUBLISTING_CATEGORIES));
-    } catch {
-      setError("Network error — please try again.");
-    } finally {
-      setSaving(false);
-    }
+    createMutation.mutate({
+      name: name.trim(),
+      itemCode: itemCode.trim() || undefined,
+      description: description.trim() || undefined,
+    });
   };
 
   return (
