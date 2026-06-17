@@ -159,7 +159,7 @@ function isInsideComment(line) {
 // Suppression marker for documented-legitimate dynamic inline styles
 // (backgroundImage URLs, computed widths/positions, CSS variable expressions, etc).
 // Use sparingly with a reason — most inline styles should be converted to classes.
-const SUPPRESS_RE = /\/\/\s*audit-inline-style-ok/;
+const SUPPRESS_RE = /(?:\/\/|\{?\/\*)\s*audit-inline-style-ok/;
 
 const violations = {};
 for (const rule of RULES) violations[rule.id] = [];

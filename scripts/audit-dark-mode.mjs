@@ -47,8 +47,12 @@ import { dirname } from "node:path";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 
+const BASELINE = 0;
+
 const args = process.argv.slice(2);
+const strict = args.includes("--strict");
 const verbose = args.includes("--verbose");
+const threshold = strict ? 0 : BASELINE;
 
 const SCAN_DIRS = [
   join(ROOT, "appkit", "src", "features"),
