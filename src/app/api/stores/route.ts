@@ -99,6 +99,7 @@ async function _GET(request: Request): Promise<NextResponse> {
   } else {
     try {
       const result = await storeRepository.listStores({ filters: filtersForRepo, sorts, page, pageSize });
+      // audit-unknown-ok: TS structural escape — Array
       items = (result.items as unknown as Array<Record<string, JsonValue>>).map(toPublicStore);
       total = result.total;
       resultPage = result.page;

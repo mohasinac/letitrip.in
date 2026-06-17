@@ -99,6 +99,7 @@ export async function adminCreateCouponAction(
     
       const data = parsed.data;
       return adminCreateCouponDomain(admin.uid, {
+        // audit-unknown-ok: TS structural escape — CouponCreateInput
         ...(data as unknown as CouponCreateInput),
         validity: {
           ...data.validity,

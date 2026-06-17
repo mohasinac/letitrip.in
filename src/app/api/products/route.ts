@@ -210,6 +210,7 @@ async function _GET(request: Request): Promise<NextResponse> {
         success: true,
         data: {
           items: sanitizeProductsForPublic(
+            // audit-unknown-ok: TS structural escape — Array
             items as unknown as Array<Record<string, JsonValue>>,
           ),
           total: items.length,

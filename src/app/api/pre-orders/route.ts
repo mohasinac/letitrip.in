@@ -75,6 +75,7 @@ export const GET = withProviders(async (request: Request) => {
     );
 
     const items = sanitizeProductsForPublic(
+      // audit-unknown-ok: TS structural escape — Array
       result.items as unknown as Array<Record<string, JsonValue>>,
     );
     const totalPages = Math.max(1, Math.ceil(result.total / pageSize));

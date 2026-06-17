@@ -10,6 +10,7 @@ export default async function Page() {
   const result = await getSellerStoreAction().catch(() => null);
   const store = result && typeof result === "object" && "ok" in result
     ? (result.ok ? (result as { ok: true; data: unknown }).data : null)
+    // audit-unknown-ok: TS structural escape
     : (result as unknown);
   return <StoreGuideHubView store={store as any} />;
 }

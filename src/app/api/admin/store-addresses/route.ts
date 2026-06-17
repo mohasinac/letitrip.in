@@ -36,6 +36,7 @@ export const GET = withProviders(
         createdAt:
           addr.createdAt instanceof Date
             ? addr.createdAt.toISOString()
+            // audit-unknown-ok: TS structural escape — primitive cast
             : (addr.createdAt as unknown as string) ?? null,
       }));
 

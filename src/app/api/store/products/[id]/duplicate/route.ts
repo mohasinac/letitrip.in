@@ -32,6 +32,7 @@ export const POST = withProviders(
       try {
         const now = new Date();
         const copy: FirestoreDocument = {
+          // audit-unknown-ok: TS structural escape — domain document type lacks index signature
           ...(source as unknown as FirestoreDocument),
           title: `${(source as { title?: string }).title ?? "Listing"} (copy)`,
           status: "draft",

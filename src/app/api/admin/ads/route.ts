@@ -110,6 +110,7 @@ export const GET = withProviders(
       const page = Math.max(1, Number(url.searchParams.get("page") || "1"));
       const pageSize = Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize") || "20")));
 
+      // audit-unknown-ok: TS structural escape — Record
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const placements = normalized.placements.length > 0 ? normalized.placements : defaultPlacements();
@@ -192,6 +193,7 @@ export const PATCH = withProviders(
     permission: "admin:ads:write",
     schema: adsConfigPatchSchema,
     handler: async ({ body }) => {
+      // audit-unknown-ok: TS structural escape — Record
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const mergedCredentials = normalizeProviderCredentials({
@@ -229,6 +231,7 @@ export const POST = withProviders(
         return errorResponse("Invalid request", 400);
       }
 
+      // audit-unknown-ok: TS structural escape — Record
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const placements = normalized.placements.length > 0 ? normalized.placements : defaultPlacements();

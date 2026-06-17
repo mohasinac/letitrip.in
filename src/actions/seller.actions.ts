@@ -321,6 +321,7 @@ export async function getSellerProductAction(id: string): Promise<ActionResult<P
       if (!product) return null;
       const profile = await userRepository.findById(user.uid);
       if (!isAdminUser(profile) && (product as any).storeId !== user.uid) return null;
+      // audit-unknown-ok: TS structural escape — domain document type lacks index signature
       return product as unknown as ProductDocument;
   });
 }

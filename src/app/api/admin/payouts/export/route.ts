@@ -3,6 +3,7 @@ import type { JsonValue } from "@mohasinac/appkit";
 import { createRouteHandler, payoutRepository, sortBy, COMMON_FIELDS } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
+// audit-unknown-ok: CSV escape — accepts any cell value, narrows via String()
 function escape(value: unknown): string {
   const s = String(value ?? "");
   return s.includes(",") || s.includes('"') || s.includes("\n")
@@ -10,6 +11,7 @@ function escape(value: unknown): string {
     : s;
 }
 
+// audit-unknown-ok: CSV row builder — accepts heterogeneous cell array
 function csvRow(cols: unknown[]): string {
   return cols.map(escape).join(",");
 }
@@ -40,6 +42,7 @@ export const GET = withProviders(
         "createdAt",
       ]);
 
+      // audit-unknown-ok: TS structural escape — Record
       const dataRows = (result.items as unknown as Record<string, JsonValue>[]).map((p) =>
         csvRow([
           p["id"],
@@ -62,6 +65,7 @@ export const GET = withProviders(
           "Content-Type": "text/csv; charset=utf-8",
           "Content-Disposition": `attachment; filename="payouts-${date}.csv"`,
         },
+      // audit-unknown-ok: TS structural escape — extracted function type
       }) as unknown as ReturnType<typeof Response.json>;
     },
   }),

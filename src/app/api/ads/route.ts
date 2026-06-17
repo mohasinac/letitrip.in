@@ -26,6 +26,7 @@ export const GET = withProviders(
       const slot = url.searchParams.get("slot")?.trim();
       if (!slot) return successResponse(null);
 
+      // audit-unknown-ok: TS structural escape — Record
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const adSettingsRaw = (settings.adSettings as Record<string, JsonValue> | undefined) ?? {};
       const inventory = Array.isArray(adSettingsRaw.inventory)

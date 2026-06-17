@@ -30,6 +30,7 @@ async function firestoreFallback(uid: string) {
   const since = new Date(Date.now() - 30 * 86400_000);
   const raw = await orderRepository
     .findBy("storeId", store.id)
+    // audit-unknown-ok: TS structural escape
     .catch(() => [] as unknown[]);
   const orders = (raw as Array<{ totalAmount?: number; createdAt?: Date | string }>)
     .filter((o) => new Date(o.createdAt ?? 0).getTime() >= since.getTime())

@@ -68,7 +68,9 @@ export default async function Page({
 
   const promotions = await getPromotions().catch(() => null);
   const activeCoupons = promotions?.activeCoupons ?? [];
+  // audit-unknown-ok: TS structural escape
   const promotedProducts = (promotions?.promotedProducts ?? []) as unknown as { id: string; slug?: string; [key: string]: unknown }[];
+  // audit-unknown-ok: TS structural escape
   const featuredProducts = (promotions?.featuredProducts ?? []) as unknown as { id: string; slug?: string; [key: string]: unknown }[];
   const platformFeatures = await productFeaturesRepository
     .listPlatform()

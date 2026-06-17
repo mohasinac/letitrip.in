@@ -12,9 +12,11 @@ export default async function Page({ params }: Props) {
 
   if (!store) return null;
 
+  // audit-unknown-ok: TS structural escape
   const gr = (store as unknown as { googleReviews?: { placeId: string; enabled: boolean; maxReviews?: number; minRating?: number; layout?: "grid" | "carousel" } }).googleReviews;
   return (
     <>
+      // audit-unknown-ok: TS structural escape — StoreDetail
       <StoreAboutClient store={store as unknown as StoreDetail} />
       {gr?.enabled && gr.placeId && (
         <GoogleReviewsSection

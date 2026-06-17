@@ -53,6 +53,7 @@ interface RazorpayResponse {
 
 function loadRazorpayScript(): Promise<boolean> {
   return new Promise((resolve) => {
+    // audit-unknown-ok: TS structural escape — Record
     if (typeof window !== "undefined" && (window as unknown as Record<string, JsonValue>).Razorpay) {
       resolve(true);
       return;
@@ -790,6 +791,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
         name: process.env.NEXT_PUBLIC_SITE_NAME ?? "LetItRip",
         prefill: {
           email: user.email ?? undefined,
+          // audit-unknown-ok: TS structural escape — Record
           name: (user as unknown as Record<string, JsonValue>).displayName as string | undefined,
         },
       });

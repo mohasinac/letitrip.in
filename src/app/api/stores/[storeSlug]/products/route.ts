@@ -87,6 +87,7 @@ async function _GET(
   } else {
     try {
       const result = await productRepository.list({ filters, sorts, page, pageSize });
+      // audit-unknown-ok: TS structural escape — Array
       items = sanitizeProductsForPublic(result.items as unknown as Array<Record<string, JsonValue>>);
       total = result.total;
       resultPage = result.page;

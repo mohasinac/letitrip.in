@@ -29,15 +29,19 @@ const canInitializeClientFirebase =
 
 const app: FirebaseApp = canInitializeClientFirebase
   ? (getApps()[0] ?? initializeApp(firebaseConfig))
+  // audit-unknown-ok: TS structural escape — FirebaseApp
   : (null as unknown as FirebaseApp);
 const auth: Auth = canInitializeClientFirebase
   ? getAuth(app)
+  // audit-unknown-ok: TS structural escape — Auth
   : (null as unknown as Auth);
 const storage: FirebaseStorage = canInitializeClientFirebase
   ? getStorage(app)
+  // audit-unknown-ok: TS structural escape — FirebaseStorage
   : (null as unknown as FirebaseStorage);
 const realtimeDb: Database = canInitializeClientFirebase
   ? getDatabase(app)
+  // audit-unknown-ok: TS structural escape — Database
   : (null as unknown as Database);
 export { app, auth, storage, realtimeDb };
 

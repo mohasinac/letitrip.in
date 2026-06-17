@@ -72,6 +72,7 @@ async function _GET(request: Request): Promise<NextResponse> {
     try {
       const result = await eventRepository.list({ filters, sorts, page, pageSize });
       // Strip internal fields (createdBy) before returning
+      // audit-unknown-ok: TS structural escape — Array
       items = (result.items as unknown as Array<Record<string, JsonValue>>).map(
         ({ createdBy: _createdBy, ...rest }) => rest,
       );

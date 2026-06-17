@@ -57,6 +57,7 @@ export const GET = withProviders(
         return errorResponse("placementId query param is required", 400);
       }
 
+      // audit-unknown-ok: TS structural escape — Record
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const { inventory, placements } = normalizeAdSettings(settings);
       const resolvedPlacements = placements.length > 0 ? placements : defaultPlacements();

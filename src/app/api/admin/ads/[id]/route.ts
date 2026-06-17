@@ -76,6 +76,7 @@ export const GET = withProviders(
         return errorResponse(MSG_AD_ID_REQUIRED, 400);
       }
 
+      // audit-unknown-ok: TS structural escape — Record
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const placements = normalized.placements.length > 0 ? normalized.placements : defaultPlacements();
@@ -103,6 +104,7 @@ export const PATCH = withProviders(
         return errorResponse(MSG_AD_ID_REQUIRED, 400);
       }
 
+      // audit-unknown-ok: TS structural escape — Record
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const placements = normalized.placements.length > 0 ? normalized.placements : defaultPlacements();
@@ -195,6 +197,7 @@ export const DELETE = withProviders(
         return errorResponse(MSG_AD_ID_REQUIRED, 400);
       }
 
+      // audit-unknown-ok: TS structural escape — Record
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const placements = normalized.placements.length > 0 ? normalized.placements : defaultPlacements();

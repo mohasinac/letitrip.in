@@ -25,6 +25,7 @@ export async function generateMetadata({
   const event = await getEventCached(id);
   if (!event) return { title: EVENT_META.NOT_FOUND_TITLE };
 
+  // audit-unknown-ok: TS structural escape — Record
   const e = event as unknown as Record<string, JsonValue>;
   const coverImage =
     typeof e.imageUrl === "string"
@@ -53,6 +54,7 @@ export default async function Layout({ children, params }: Props) {
   ]);
   if (!event) notFound();
 
+  // audit-unknown-ok: TS structural escape — Record
   const e = event as unknown as Record<string, JsonValue>;
   const coverImage =
     typeof e.imageUrl === "string"

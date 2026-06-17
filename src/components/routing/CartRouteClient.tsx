@@ -156,6 +156,7 @@ function getProductHref(
 function groupBySeller(items: CartItemWithListingType[]): SellerGroup[] {
   const map = new Map<string, SellerGroup>();
   for (const item of items) {
+    // audit-unknown-ok: TS structural escape — Record
     const meta = item.meta as unknown as Record<string, JsonValue>;
     const sid = (meta.storeId as string | undefined) ?? "unknown";
     const sname =

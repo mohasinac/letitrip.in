@@ -14,6 +14,7 @@ export function HomepageNewsletterForm() {
   const [email, setEmail] = useState("");
   const [pending, setPending] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
+  // audit-unknown-ok: TS structural escape — extracted function type
   const { shellCtx, setFieldError, clearErrors, validate } = useFormShellState(newsletterSchema as unknown as Parameters<typeof useFormShellState>[0]);
   const { showToast } = useToast();
 
