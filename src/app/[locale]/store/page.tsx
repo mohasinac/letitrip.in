@@ -47,7 +47,7 @@ function StatCard({
         style={{ background: gradient }}
         aria-hidden="true"
       />
-      <Row paddingX="x-5" className="pb-5" padding="t-lg" align="start" justify="between" gap="3">
+      <Row paddingX="x-5" paddingY="b-md-lg" padding="t-lg" align="start" justify="between" gap="3">
         <Div className="min-w-0 flex-1">
           <Div textWeight="semibold" className="text-[11px] uppercase tracking-widest text-[var(--appkit-color-text-muted)]">{label}</Div>
           {isLoading ? (
