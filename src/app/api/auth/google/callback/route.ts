@@ -61,6 +61,7 @@ export type AuthEventOutcome =
 /** Auth event cleanup is best-effort. `auth/user-not-found` is the normal
  * case (the synthetic auth user was never claimed); any other failure is
  * worth a warning so the cleanupRtdbEvents job can be cross-checked. */
+// audit-unknown-ok: error-handler entry point — accepts thrown values of any shape
 function logAuthCleanupRejection(eventId: string, reason: unknown): void {
   const code = (reason as { code?: string } | null)?.code;
   if (code === "auth/user-not-found") return;

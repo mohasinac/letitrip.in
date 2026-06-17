@@ -1,6 +1,7 @@
 import { getSellerStoreAction, listSellerMyProductsAction, listSellerOrdersAction } from "@/actions/seller.actions";
 import { PrintCenterView } from "@mohasinac/appkit/client";
 
+// audit-unknown-ok: callback entry point — accepts arbitrary payload value
 function unwrap<T>(result: unknown, fallback: T): T {
   if (!result || typeof result !== "object") return fallback;
   if ("ok" in result) {

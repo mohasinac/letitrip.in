@@ -55,6 +55,7 @@ export function logWarn(
 export function logError(
   job: string,
   message: string,
+  // audit-unknown-ok: error-handler entry point — accepts thrown values of any shape
   error: unknown,
   data?: Record<string, JsonValue>,
 ) {

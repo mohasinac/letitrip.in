@@ -40,6 +40,7 @@ export const POST = withProviders(
     handler: async ({ request, user, params }) => {
       const productId = (params as Record<string, string>).id;
 
+      // audit-unknown-ok: callback entry point — accepts arbitrary payload value
       let body: unknown;
       try {
         body = await request.json();

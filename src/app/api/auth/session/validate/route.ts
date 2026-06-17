@@ -73,6 +73,7 @@ export async function GET(request: NextRequest) {
         emailVerified: user.emailVerified,
       },
     });
+  // audit-unknown-ok: error-handler entry point — accepts thrown values of any shape
   } catch (error: unknown) {
     void normalizeError(error);
     return handleApiError(error);

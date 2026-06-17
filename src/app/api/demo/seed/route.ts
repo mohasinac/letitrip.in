@@ -517,6 +517,7 @@ export async function GET(request: NextRequest) {
         try {
           const existingCount = await countExistingForCollection(db, colName);
           return { name: colName, seedCount, existingCount };
+        // audit-unknown-ok: error-handler entry point — accepts thrown values of any shape
         } catch (err: unknown) {
           void normalizeError(err);
           serverLogger.error(`Error checking status for ${colName}:`, err);

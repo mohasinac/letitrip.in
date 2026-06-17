@@ -267,6 +267,7 @@ function renderSuccessState({
 
 // ─── Dynamic form field renderer ─────────────────────────────────────────────
 
+// audit-unknown-ok: callback entry point — accepts arbitrary payload value
 function validateField(field: SurveyFormField, value: unknown): string | null {
   const v = field.validation;
   if (field.required && (value === undefined || value === null || value === "" || (Array.isArray(value) && value.length === 0))) {

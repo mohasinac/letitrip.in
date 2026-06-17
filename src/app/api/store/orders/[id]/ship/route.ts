@@ -17,6 +17,7 @@ export const POST = withProviders(
       try {
         const result = await shipOrderAction(orderId, body);
         return successResponse(result, "Order marked as shipped");
+      // audit-unknown-ok: error-handler entry point — accepts thrown values of any shape
       } catch (err: unknown) {
         void normalizeError(err);
         const msg = err instanceof Error ? err.message : "Failed to ship order";

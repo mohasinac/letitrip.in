@@ -9,6 +9,7 @@ export const metadata = {
 export default async function Page() {
   const result = await getSellerStoreAction().catch(() => null);
   const store = result && typeof result === "object" && "ok" in result
+    // audit-unknown-ok: callback entry point — accepts arbitrary payload value
     ? (result.ok ? (result as { ok: true; data: unknown }).data : null)
     // audit-unknown-ok: TS structural escape
     : (result as unknown);

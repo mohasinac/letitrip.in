@@ -74,6 +74,7 @@ export async function POST(request: NextRequest) {
     response.cookies.delete("__session_id");
 
     return response;
+  // audit-unknown-ok: error-handler entry point — accepts thrown values of any shape
   } catch (error: unknown) {
     void normalizeError(error);
     return handleApiError(error);
