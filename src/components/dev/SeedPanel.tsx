@@ -1855,7 +1855,7 @@ function renderAccordionCollapsedHeader({
 
 function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number, seedCount: number) {
   return (
-    <Div border="default" surface="default" className="border-t px-5" padding="y-md">
+    <Div border="default" surface="default" paddingX="x-5" className="border-t" padding="y-md">
       <Stack gap="md">
         <Text className="leading-relaxed m-0" color="muted" size="sm">{meta.description}</Text>
 
