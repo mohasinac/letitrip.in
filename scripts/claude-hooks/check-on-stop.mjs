@@ -230,6 +230,14 @@ const checks = [
     cwd: ROOT,
   },
   {
+    // Strict-zero parity between ERROR_CODES / HTTP_ERROR_CODES enum values
+    // and `messages/en.json` errors.codes.* keys.
+    label: "audit-error-display-i18n",
+    cmd: "node",
+    args: ["scripts/audit-error-display-i18n.mjs"],
+    cwd: ROOT,
+  },
+  {
     // Catches consumer-side `className=` on appkit primitives that maps to
     // a variant prop. Baseline-drift; regressions block until the sweep
     // drives the count down.

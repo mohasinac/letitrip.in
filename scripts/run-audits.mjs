@@ -70,6 +70,10 @@ const AUDITS = [
   // flicker because the runtime ThemeProvider writes the TS preset over the
   // CSS block on hydration.
   { name: "theme-drift",                     script: "scripts/audit-theme-drift.mjs" },
+  // Strict-zero parity between ERROR_CODES / HTTP_ERROR_CODES enum values
+  // and `messages/en.json` errors.codes.* keys. UNKNOWN is the only allowed
+  // JSON-only key (fallback sentinel used by error-display-map).
+  { name: "error-display-i18n",              script: "scripts/audit-error-display-i18n.mjs" },
   // Catches consumer-side `className=` on appkit primitives that contains
   // a token covered by one of the primitive's own variant props. Baseline-
   // drift while the consumer sweep is in flight — current count locks
