@@ -200,7 +200,8 @@ export default function InvoicePage({ params }: { params: Promise<{ id: string }
   return (
     <>
       {renderInvoiceActionBar(id)}
-      <Div className="max-w-2xl mx-auto px-6 print:px-0 print:py-0 print:max-w-none" padding="y-2xl">
+      {/* audit-variant-ok: invoice page wrapper — print:px-0 / print:py-0 print resets on top of paddingX=x-lg; print variant not in tokens */}
+      <Div className="max-w-2xl mx-auto print:px-0 print:py-0 print:max-w-none" paddingX="x-lg" paddingY="y-2xl">
         {renderInvoiceHeader(order, orderDate)}
         {order.address && renderInvoiceAddress(order.address)}
         {renderInvoiceItemsTable(order)}
