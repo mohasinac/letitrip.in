@@ -1737,13 +1737,13 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
             </Tr>
             <Tr border="default" surface="muted">
               <Th weight="normal" className="px-3 pb-1.5 text-[10px] text-zinc-400 dark:text-slate-500 text-left" />
-              <Th weight="normal" className="px-2 pb-1.5 text-[10px] text-zinc-400 dark:text-slate-500 text-left" />
-              <Th className="px-2 pb-1.5 text-[10px] text-center" color="faint" weight="normal">Search</Th>
-              <Th className="px-2 pb-1.5 text-[10px] text-center" color="faint" weight="normal">Filter</Th>
-              <Th className="px-2 pb-1.5 text-[10px] text-center" color="faint" weight="normal">Sort</Th>
-              <Th className="px-2 pb-1.5 text-[10px] text-center" color="faint" weight="normal">PII</Th>
-              <Th className="px-2 pb-1.5 text-[10px] text-center" color="faint" weight="normal">Index</Th>
-              <Th weight="normal" className="px-2 pb-1.5 text-[10px] text-zinc-400 dark:text-slate-500 text-left" />
+              <Th weight="normal" padding="compact" className="text-[10px] text-zinc-400 dark:text-slate-500 text-left" />
+              <Th padding="compact" className="text-[10px] text-center" color="faint" weight="normal">Search</Th>
+              <Th padding="compact" className="text-[10px] text-center" color="faint" weight="normal">Filter</Th>
+              <Th padding="compact" className="text-[10px] text-center" color="faint" weight="normal">Sort</Th>
+              <Th padding="compact" className="text-[10px] text-center" color="faint" weight="normal">PII</Th>
+              <Th padding="compact" className="text-[10px] text-center" color="faint" weight="normal">Index</Th>
+              <Th weight="normal" padding="compact" className="text-[10px] text-zinc-400 dark:text-slate-500 text-left" />
             </Tr>
           </Thead>
           <Tbody>
