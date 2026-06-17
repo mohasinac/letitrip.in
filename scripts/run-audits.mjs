@@ -101,16 +101,13 @@ const AUDITS = [
   // W6 — error contract / silent-failure gates (workstreams 1, 3, 5)
   { name: "silent-body-parse",               script: "scripts/audit-silent-body-parse.mjs" },
   { name: "server-action-envelope",          script: "scripts/audit-server-action-envelope.mjs" },
-  // unknown-elimination W3/W4 — strict-zero in current state (codemod
-  // sweep complete). `MIGRATE=report` opts back into permissive mode for
-  // local migration work.
+  // unknown-elimination — strict-zero. No env-var opt-out.
   { name: "catch-normalize",                 script: "appkit/scripts/audit-catch-normalize.mjs" },
   { name: "route-schema-registry",           script: "appkit/scripts/audit-route-schema-registry.mjs" },
-  // unknown-elimination W5 — surfaces residual `: unknown`,
-  // `Record<string, unknown>`, `as unknown` outside the allowlist.
-  // REPORT MODE: bulk-suppression markers were rejected; the only path
-  // to strict-zero is real per-site migration to concrete types. Flip
-  // via `MIGRATE=strict` once the W5 sweep completes.
+  // unknown-leakage — strict-zero. Every `: unknown` / `Record<string, unknown>` /
+  // `as unknown` outside the allowlist is a violation. Per-line `// audit-
+  // unknown-ok: <reason>` markers are accepted for genuine architectural
+  // entry points.
   { name: "unknown-leakage",                 script: "appkit/scripts/audit-unknown-leakage.mjs" },
   { name: "usemutation-onerror",             script: "scripts/audit-usemutation-onerror.mjs" },
 ];
