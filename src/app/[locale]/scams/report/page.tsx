@@ -4,7 +4,7 @@ import { normalizeError } from "@mohasinac/appkit";
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
-import { useSession, ROUTES, SCAM_TYPES, SCAM_PLATFORM_LABELS, Div, Button, Form, Label, Input, Textarea, Select, useApiMutation, apiClient } from "@mohasinac/appkit/client";
+import { useSession, ROUTES, SCAM_TYPES, SCAM_PLATFORM_LABELS, Div, Button, Form, Label, Input, Textarea, Select, useApiMutation, apiClient, type FirestoreDocument } from "@mohasinac/appkit/client";
 import { Alert, Stack, Heading, Text, Row, Card, CardBody, Main, Ul, Li } from "@mohasinac/appkit";
 import { ChevronLeft, Loader2, Plus, X } from "lucide-react";
 import { API_ROUTES } from "@/constants";
@@ -255,7 +255,7 @@ function ScamReportForm({ userId }: { userId: string }) {
     setForm((f) => ({ ...f, [key]: val }));
 
   const reportMutation = useApiMutation({
-    mutationFn: (payload: Record<string, unknown>) =>
+    mutationFn: (payload: FirestoreDocument) =>
       apiClient.post(API_ROUTES.SCAMS.REPORTS, payload),
     onSuccess: () => {
       router.push(String(ROUTES.PUBLIC.SCAMS) as Parameters<typeof router.push>[0]);

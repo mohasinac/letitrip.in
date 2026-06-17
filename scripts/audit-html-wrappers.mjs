@@ -43,7 +43,7 @@ const SKIP_FILE_RE = /\.(d\.ts|test\.tsx?|spec\.tsx?)$/;
 // Also skip Satori-rendered OG images (server/features/**/og.tsx, og-layout.tsx),
 // ErrorBoundary files (must render before React tree is ready), and the
 // shared Layout.tsx (defines Stack/Row/Container/Section/Grid themselves).
-const SKIP_PATH_RE = /[/\\]ui[/\\](?:components|forms|rich-text)[/\\]|[/\\]ui[/\\]DataTable\.tsx$|[/\\]features[/\\]forms[/\\]|[/\\]features[/\\]email[/\\]|[/\\]_internal[/\\]server[/\\]features[/\\][^/\\]+[/\\]og(?:-layout)?\.tsx$|ErrorBoundary\.tsx$/;
+const SKIP_PATH_RE = /[/\\]ui[/\\](?:components|forms|rich-text)[/\\]|[/\\]ui[/\\]DataTable\.tsx$|[/\\]features[/\\]forms[/\\]|[/\\]features[/\\]email[/\\]|[/\\]features[/\\]contact[/\\]email\.tsx$|[/\\]_internal[/\\]server[/\\]features[/\\][^/\\]+[/\\]og(?:-layout)?\.tsx$|ErrorBoundary\.tsx$/;
 
 const RULES = [
   {

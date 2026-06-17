@@ -35,6 +35,9 @@ const ALLOWLIST = [
   // Dev-only admin tooling — rich diagnostic UI; raw HTML acceptable.
   "SeedPanel.tsx",
   "DevToolbar.tsx",
+  // Email template — composed via renderToStaticMarkup for email clients
+  // that don't run React; raw HTML is the only portable option.
+  "email.tsx",
 ];
 
 // File-name patterns where raw HTML is acceptable (internal documentation)

@@ -73,6 +73,8 @@ const ALLOWLIST_PATH_PATTERNS = [
   // (Gmail, Outlook) drop CSS variables and most stylesheet rules. These
   // components are the source-of-truth for email rendering.
   /[\\/]features[\\/]email[\\/]/,
+  // Email sender — composes primitives + raw HTML for email-client output.
+  /[\\/]features[\\/]contact[\\/]email\.tsx?$/,
   // Maintenance dashboards are admin-only diagnostic UI rendered behind
   // permission gates. They use inline styles for density + zero-CSS-load
   // robustness so they remain useful when the global CSS bundle is broken
