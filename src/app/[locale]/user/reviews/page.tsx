@@ -202,6 +202,7 @@ export default function UserReviewsPage() {
                         Verified
                       </Text>
                     )}
+                    {/* audit-variant-ok: review status pill — dynamic statusColor + px-2.5/py-0.5 micro padding */}
                     <Text as="span" className={`rounded-full px-2.5 py-0.5 capitalize ${statusColor}`} size="xs" weight="medium">
                       {review.status}
                     </Text>

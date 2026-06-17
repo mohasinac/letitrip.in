@@ -70,6 +70,7 @@ function CouponWalletCard({
   return (
     <Stack surface="card" padding="md" gap="sm">
       <Row align="center" gap="sm" wrap>
+        {/* audit-variant-ok: coupon code chip — font-mono + bg-zinc-100 + micro px-2/py-0.5 padding */}
         <Text className="font-mono px-2 py-0.5 rounded bg-zinc-100 dark:bg-slate-800" color="primary" size="xs">
           {claim.couponCode}
         </Text>

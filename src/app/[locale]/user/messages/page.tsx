@@ -121,6 +121,7 @@ function MessageBubble({ message, isMine }: MessageBubbleProps) {
     // audit-inline-style-ok: dynamic CSS
     <Stack style={{ alignItems: isMine ? "flex-end" : "flex-start" }}>
       <Div className={isMine ? BUBBLE_MINE : BUBBLE_THEIRS}>{message.body}</Div>
+      {/* audit-variant-ok: timestamp Text — text-[10px] under-10 + px-1 nudge */}
       <Text variant="secondary" className="text-[10px] mt-0.5 px-1">
         {relativeTime(message.sentAt)}
       </Text>

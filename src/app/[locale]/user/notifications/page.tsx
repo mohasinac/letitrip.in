@@ -84,6 +84,7 @@ function NotifCard({
   onDelete: (id: string) => void;
 }) {
   return (
+    // audit-variant-ok: notification card — conditional border-primary (unread) vs border-default (read) + px-5
     <Stack
       className={`border px-5 transition-colors ${ notif.isRead ? "border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)]" : "border-[var(--appkit-color-primary)] bg-[var(--appkit-color-surface)]" }`} gap="sm" rounded="xl" shadow="sm" padding="y-md"
     >

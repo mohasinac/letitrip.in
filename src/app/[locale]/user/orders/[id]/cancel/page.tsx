@@ -99,11 +99,12 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
           </Stack>
 
           <Row gap="3" >
-            <Button rounded="xl" 
+            <Button rounded="xl"
               type="submit"
               variant="danger"
               disabled={isPending}
-              className="px-4 py-2 text-sm font-semibold disabled:opacity-60 transition-colors"
+              paddingX="md" paddingY="sm" textSize="sm" weight="semibold"
+              className="disabled:opacity-60 transition-colors"
             >
               {isPending ? "Cancelling…" : "Cancel Order"}
             </Button>
