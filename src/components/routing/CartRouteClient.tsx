@@ -741,7 +741,7 @@ export function CartRouteClient() {
         return (
           <Stack gap="md">
             {/* ── Tab bar ── */}
-            <Row textSize="sm" gap="xs" className="p-1" surface="subtle" rounded="xl">
+            <Row textSize="sm" gap="xs" padding="2xs" surface="subtle" rounded="xl">
               {CART_TABS.map(({ key, label }) => {
                 const count = tabCounts[key];
                 return (
@@ -862,7 +862,7 @@ export function CartRouteClient() {
             </Stack>
           )}
           renderTotal={() => (
-            <Div border="subtle" className="border-t dark:border-slate-700" padding="t-sm">
+            <Div border="top-subtle" paddingY="t-sm">
               <Row align="center" justify="between">
                 <Text weight="semibold" color="primary">Total</Text>
                 <Text weight="semibold" color="primary">
@@ -970,6 +970,7 @@ function AuctionsTabItems({ auctionBucket, filteredAuctions, sellerGroupsAuction
   }
   return (
     <Stack gap="md">
+      {/* audit-variant-ok: warning banner — bg-warning-surface + border-warning/20 + rounded-lg + px-3 composite over Text.paddingY */}
       <Text paddingY="xs" className="text-warning bg-warning-surface border border-warning/20 rounded-lg px-3" size="xs">
         Won auction items must be paid before you can bid on new auctions or purchase new items.
       </Text>
@@ -1051,6 +1052,7 @@ function OffersTabItems({ offerBucket, filteredOffers, sellerGroupsOffers, norma
   const noop = () => {};
   return (
     <Stack gap="md">
+      {/* audit-variant-ok: warning banner — bg-warning-surface + border-warning/20 + rounded-lg + px-3 composite over Text.paddingY */}
       <Text paddingY="xs" className="text-warning bg-warning-surface border border-warning/20 rounded-lg px-3" size="xs">
         Accepted offers must be paid. These items cannot be removed from your cart.
       </Text>
