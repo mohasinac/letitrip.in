@@ -8,20 +8,19 @@
  * `scripts/variant-catalogue.mjs` for the primitive list + forbidden-utility
  * tokens, then scans every `.tsx` file outside the primitive source dirs.
  *
- * Baseline-drift mode while the consumer sweep is in flight — today's count
- * (BASELINE) is the cap; only regressions block. Drive the number to 0 as
- * the sweep replaces ad-hoc className strings with variant props. Suppression
- * marker `// audit-variant-ok: <reason>` recognised on the same line or the
- * previous line (mandatory reason after the colon).
+ * Strict-zero — any new className utility token on a primitive is a regression.
+ * Suppression marker `// audit-variant-ok: <reason>` recognised on the same line
+ * or contiguous comment lines above (mandatory reason after the colon). Use
+ * sparingly for genuinely-dynamic patterns the catalogue can't express
+ * (group-hover state overrides, asymmetric one-sided padding combos, brand
+ * placeholder bg, conditional dynamic colour classes via template literals).
  *
- * Exits 0 when violations ≤ baseline, 1 on regression.
+ * Exits 0 when violations === 0, 1 on any regression.
  */
 
-// Baseline locked 2026-06-14 at the variant-catalogue rollout. The number is
-// the per-callsite count across both src/ and appkit/src/ excluding primitive
-// source dirs. Tighten this number whenever the sweep drives the count down;
-// the audit will block any regression.
-const BASELINE = 459;
+// Strict-zero. The sweep that drove this from 4565 → 0 closed 2026-06-17;
+// see plan: C:\Users\mohsi\.claude\plans\we-have-made-lots-memoized-sun.md
+const BASELINE = 0;
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
