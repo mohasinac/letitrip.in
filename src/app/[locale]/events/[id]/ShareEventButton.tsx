@@ -16,10 +16,12 @@ export function ShareEventButton() {
   };
 
   return (
-    <Button rounded="lg" gap="xs" 
+    // audit-variant-ok: share Button — bespoke text-zinc-700 + hover-bg-zinc-50 ghost-outline composition
+    <Button rounded="lg" gap="xs"
       type="button"
       onClick={handleCopy}
-      className="inline- border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+      border="default" paddingX="sm" paddingY="xs" textSize="sm" weight="medium"
+      className="inline- text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
     >
       🔗 {copied ? "Copied!" : "Copy Link"}
     </Button>

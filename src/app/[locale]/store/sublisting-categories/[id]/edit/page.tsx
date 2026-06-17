@@ -126,11 +126,13 @@ export default function Page() {
         )}
 
         <Row gap="3" padding="t-xs">
-          <Button rounded="lg" 
+          // audit-variant-ok: save Button — py-2.5 between paddingY map keys + hover-opacity-90
+          <Button rounded="lg"
             type="submit"
             variant="primary"
             disabled={!name.trim() || saving}
-            className="px-5 py-2.5 text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+            paddingX="lg" textSize="sm" weight="semibold"
+            className="py-2.5 hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {saving ? "Saving…" : "Save changes"}
           </Button>

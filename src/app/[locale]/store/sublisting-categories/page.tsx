@@ -228,6 +228,7 @@ function renderPage({
             >
               Previous
             </Button>
+            {/* audit-variant-ok: pagination position Text — px-1 horizontal nudge; Text lacks paddingX variant */}
             <Text variant="secondary" className="px-1" size="xs">
               {page} / {totalPages}
             </Text>

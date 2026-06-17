@@ -118,7 +118,8 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
       </Text>
       <Stack gap="sm">
         {pollConfig.options.map((opt) => (
-          <Label layout="flex" gap="lg" 
+          // audit-variant-ok: poll option Label — cursor-pointer + border + px-4 py-3 + hover-bg interactive option-row pattern
+          <Label layout="flex" gap="lg"
             key={opt.id}
             className="cursor-pointer rounded-xl border border-zinc-200 dark:border-zinc-700 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 transition-colors"
           >
