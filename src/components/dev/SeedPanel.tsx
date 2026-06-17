@@ -1894,7 +1894,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
 
         <Div>
           <Row justify="between" className="mb-2">
-            <Span className="font-mono text-zinc-500 dark:text-zinc-400" size="xs">DB: {existingCount} / {seedCount} seed docs</Span>
+            <Span color="muted" className="font-mono" size="xs">DB: {existingCount} / {seedCount} seed docs</Span>
           </Row>
           <SeedProgressBar seeded={existingCount} target={seedCount} />
         </Div>
@@ -2455,7 +2455,7 @@ function renderSeedPanelToolbar({
             <Div className="hidden sm:block w-px h-6 shrink-0" surface="subtle" />
             <Row gap="sm" wrap className="shrink-0">
               <Checkbox
-                label={<Span className="text-zinc-600 dark:text-zinc-400 whitespace-nowrap" size="xs">Dry run</Span>}
+                label={<Span color="muted" className="whitespace-nowrap" size="xs">Dry run</Span>}
                 checked={dryRun}
                 onChange={(e) => setDryRun(e.target.checked)}
                 disabled={isRunning}
@@ -2515,15 +2515,15 @@ function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDoc
     <Div className="grid grid-cols-3 gap-3 sm:gap-4">
       <Stack className="dark:border-white/10 text-center" surface="muted" gap="xs" rounded="xl" padding="md" border="default">
         <Span className="font-extrabold font-mono leading-none" color="primary" size="2xl">{isLoadingStatus ? <Span className="text-zinc-300 dark:text-slate-600">—</Span> : totalExistingDocs.toLocaleString()}</Span>
-        <Span className="text-zinc-500 dark:text-zinc-400" size="xs">docs in DB</Span>
+        <Span color="muted" size="xs">docs in DB</Span>
       </Stack>
       <Stack className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 text-center" gap="xs" rounded="xl" padding="md">
         <Span className="font-extrabold text-amber-600 dark:text-amber-400 font-mono leading-none" size="2xl">{isLoadingStatus ? <Span className="text-amber-200 dark:text-amber-900">—</Span> : totalSeedDocs.toLocaleString()}</Span>
-        <Span className="text-zinc-500 dark:text-zinc-400" size="xs">docs in seed files</Span>
+        <Span color="muted" size="xs">docs in seed files</Span>
       </Stack>
       <Stack className="dark:border-white/10 text-center" surface="muted" gap="xs" rounded="xl" padding="md" border="default">
-        <Span className="font-extrabold text-zinc-500 dark:text-zinc-400 font-mono leading-none" size="2xl">{collectionCount}</Span>
-        <Span className="text-zinc-500 dark:text-zinc-400" size="xs">collections</Span>
+        <Span color="muted" className="font-extrabold font-mono leading-none" size="2xl">{collectionCount}</Span>
+        <Span color="muted" size="xs">collections</Span>
       </Stack>
     </Div>
   );
