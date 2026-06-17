@@ -89,17 +89,17 @@ export async function TrackOrderView() {
             {t("signInPrompt")}
           </Heading>
           <Row gap="md" justify="center" className="mt-6">
-            {/* audit-variant-ok: primary-fill button-as-link — px-6 py-3 outside PADDING_MAP scale; TextLink lacks button variant */}
-            <TextLink rounded="lg"
+            {/* audit-variant-ok: primary-fill button-as-link — bg-primary CTA fill; TextLink lacks button-tone variant */}
+            <TextLink rounded="lg" paddingX="xl" paddingY="md"
               href={ROUTES.AUTH.LOGIN}
-              className={`inline-${flex.center} gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 transition-colors`} weight="medium"
+              className={`inline-${flex.center} gap-2 bg-primary hover:bg-primary/90 text-white transition-colors`} weight="medium"
             >
               {t("signIn")}
             </TextLink>
-            {/* audit-variant-ok: outline button-as-link — themed bg/border/text + px-6 py-3 outside PADDING_MAP scale; TextLink lacks button variant */}
-            <TextLink rounded="lg"
+            {/* audit-variant-ok: outline button-as-link — themed bg/border/text composite; TextLink lacks themed button-tone variant */}
+            <TextLink rounded="lg" paddingX="xl" paddingY="md"
               href={ROUTES.USER.ORDERS}
-              className={`inline-${flex.center} gap-2 ${themed.bgPrimary} border ${themed.border} ${themed.textPrimary} px-6 py-3 hover:opacity-80 transition-opacity`} weight="medium"
+              className={`inline-${flex.center} gap-2 ${themed.bgPrimary} border ${themed.border} ${themed.textPrimary} hover:opacity-80 transition-opacity`} weight="medium"
             >
               {t("viewOrders")}
             </TextLink>
@@ -138,9 +138,8 @@ export async function TrackOrderView() {
         </Section>
 
         {/* Need help */}
-        {/* audit-variant-ok: need-help Section — responsive flex-col → sm:flex-row layout with gap-4; Section lacks responsive flex variants */}
         <Section
-          className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4`} border="default" surface="subtle" rounded="xl" padding="lg"
+          layout="flex-sm-row-between" gap="md" border="default" surface="subtle" rounded="xl" padding="lg"
         >
           <Stack gap="sm">
             <Heading level={2} className="mb-1">

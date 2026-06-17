@@ -39,6 +39,7 @@ function StatCard({
   Icon: React.ComponentType<{ className?: string }>;
 }) {
   return (
+    // audit-variant-ok: stat card — static shadow-sm + hover-shadow-md transition combo; Div.shadow accepts only one value
     <Div className={`relative border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden} hover:shadow-md transition-shadow`} rounded="xl" shadow="sm">
       <Div
         className="absolute top-0 left-0 right-0 h-[3px]"
