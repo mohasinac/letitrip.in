@@ -239,6 +239,11 @@ export const PRIMITIVE_SOURCE_DIRS = [
   /[\\/]appkit[\\/]src[\\/]_internal[\\/]client[\\/]scaffolds[\\/]/,
   /[\\/]appkit[\\/]src[\\/]_internal[\\/]client[\\/]features[\\/]layout[\\/]/,
   /[\\/]appkit[\\/]src[\\/]_internal[\\/]client[\\/]theme[\\/]/,
+  // Consumer dev-tool surfaces — diagnostic-only UI (SeedPanel inspector,
+  // future devtools). Bespoke styling for status indicators, completion
+  // bars, conditional emerald/amber/indigo state tints. Not user-facing;
+  // not under the variant catalogue's strict-zero scope.
+  /[\\/]src[\\/]components[\\/]dev[\\/]/,
 ];
 
 /**
