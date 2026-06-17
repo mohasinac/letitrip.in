@@ -1,4 +1,5 @@
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES } from "@/constants";
+import { PAGE_CONTAINER } from "@/constants/styles/page";
 import { Div, FlowDiagram, Heading, Row, Section, Stack, Text, TextLink } from "@mohasinac/appkit/ui";
 import type { FlowStep } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
@@ -7,7 +8,7 @@ const __P = {
   p6: "p-6",
 } as const;
 
-const { themed, flex, page } = THEME_CONSTANTS;
+const page = { container: PAGE_CONTAINER };
 
 const CLS_STEP_NUMBER = "bg-violet-100 dark:bg-violet-900/40";
 

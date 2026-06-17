@@ -6,9 +6,7 @@
  *
  * @example
  * ```tsx
- * import { THEME_CONSTANTS } from "@/constants/theme";
-import { SITE_CONFIG } from "@/constants/site";
-import { MAIN_NAV_ITEMS } from "@/constants/navigation";
+ * import { MAIN_NAV_ITEMS } from "@/constants/navigation";
  * ```
  */
 
@@ -20,10 +18,6 @@ export { API_ROUTES } from "./api";
 
 // Configuration constants
 export * from "./config";
-
-// Theme constants
-export { THEME_CONSTANTS } from "./theme";
-export type { ThemeMode } from "./theme";
 
 // Site configuration\n// (import directly: import { SITE_CONFIG, FEATURE_FLAGS } from "@mohasinac/appkit")
 

@@ -1,9 +1,26 @@
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES } from "@/constants";
+import { PAGE_CONTAINER } from "@/constants/styles/page";
+import {
+  FLEX_CENTER,
+  THEMED_BG_PRIMARY,
+  THEMED_BG_SECONDARY,
+  THEMED_BORDER,
+  THEMED_TEXT_PRIMARY,
+  THEMED_TEXT_SECONDARY,
+} from "@/constants/styles/themed";
 import { Heading, Text, Caption, Grid, Section, Container, Stack, Card, Row, Div, TextLink } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 import { ShoppingBag, Truck, MapPin, CheckCircle2 } from "lucide-react";
 
-const { themed, flex, page } = THEME_CONSTANTS;
+const themed = {
+  bgPrimary: THEMED_BG_PRIMARY,
+  bgSecondary: THEMED_BG_SECONDARY,
+  border: THEMED_BORDER,
+  textPrimary: THEMED_TEXT_PRIMARY,
+  textSecondary: THEMED_TEXT_SECONDARY,
+};
+const flex = { center: FLEX_CENTER };
+const page = { container: PAGE_CONTAINER };
 
 export async function TrackOrderView() {
   const t = await getTranslations("trackOrder");

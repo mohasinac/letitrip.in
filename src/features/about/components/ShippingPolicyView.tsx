@@ -1,9 +1,10 @@
-import { ROUTES, THEME_CONSTANTS } from "@/constants";
+import { ROUTES } from "@/constants";
+import { PAGE_CONTAINER } from "@/constants/styles/page";
 import { Heading, Text, Section, Stack, FlowDiagram, Div, TextLink } from "@mohasinac/appkit/ui";
 import type { FlowStep } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 
-const { themed, page } = THEME_CONSTANTS;
+const page = { container: PAGE_CONTAINER };
 
 const CLS_FOOTER_LINK = "text-sky-600 dark:text-sky-400 hover:underline";
 
