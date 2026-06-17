@@ -21,7 +21,7 @@
 // the per-callsite count across both src/ and appkit/src/ excluding primitive
 // source dirs. Tighten this number whenever the sweep drives the count down;
 // the audit will block any regression.
-const BASELINE = 609;
+const BASELINE = 605;
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -80,10 +80,16 @@ function walk(dir, files = []) {
 }
 
 function suppressed(lineIdx, lines) {
-  return (
-    VARIANT_OK_MARKER.test(lines[lineIdx]) ||
-    (lineIdx > 0 && VARIANT_OK_MARKER.test(lines[lineIdx - 1]))
-  );
+  if (VARIANT_OK_MARKER.test(lines[lineIdx])) return true;
+  // Walk contiguous comment lines above to find the marker. Allows stacking
+  // companion markers (`audit-inline-style-ok` + `audit-variant-ok`) on
+  // adjacent lines without forcing them to share a single comment.
+  for (let j = lineIdx - 1; j >= 0; j--) {
+    const prev = lines[j];
+    if (VARIANT_OK_MARKER.test(prev)) return true;
+    if (!/^\s*(?:\/\/|\{?\/\*)/.test(prev)) return false;
+  }
+  return false;
 }
 
 const violations = [];
