@@ -67,7 +67,7 @@ export function HomepageNewsletterForm() {
     >
       {({ setFieldError, clearErrors }) => (
         <>
-          <Stack className="w-full sm:flex-row" gap="xs" data-section="homepagenewsletterform-div-9">
+          <Stack direction="sm-row" className="w-full" gap="xs" data-section="homepagenewsletterform-div-9">
             <FieldInput
               name="email"
               type="email"

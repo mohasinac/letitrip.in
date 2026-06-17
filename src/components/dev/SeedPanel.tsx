@@ -2412,7 +2412,7 @@ function renderSeedPanelToolbar({
     <Div border="default" className="sticky z-30 backdrop-blur-md border-b" surface="default" shadow="sm" style={{ top: "var(--header-height, 0px)" }}>
       <Container size="2xl">
         <Stack padding="y-xs" gap="sm" className="">
-          <Stack align="center" className="sm:flex-row sm:" gap="sm">
+          <Stack direction="sm-row" align="center" gap="sm">
             <Div className="flex-1 min-w-0">
               <Heading level={2} className="m-0 leading-none" color="primary" size="sm" weight="bold">
                 📋 Resource Collections
@@ -2429,7 +2429,7 @@ function renderSeedPanelToolbar({
               <Button size="sm" variant="outline" onClick={fetchStatus} disabled={isRunning || isLoadingStatus}>{isLoadingStatus ? "…" : "↻ Refresh"}</Button>
             </Row>
           </Stack>
-          <Stack align="center" className="sm:flex-row sm:" gap="sm">
+          <Stack direction="sm-row" align="center" gap="sm">
             <Div className="relative flex-1">
               <Span size="sm" variant="muted" className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">🔍</Span>
               <Input bare type="text" placeholder="Search collections…" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-9 pr-8 py-1.5 text-sm rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400" />
@@ -2464,7 +2464,7 @@ function renderSeedPanelToolbar({
               <Button size="sm" variant="danger" onClick={() => run("delete")} disabled={isRunning || selectedCollections.size === 0}>{dryRun ? "🗑️ Dry Remove" : ACTIONS.ADMIN["reset-seed-data"].label}</Button>
             </Row>
           </Stack>
-          <Stack align="center" className="sm:flex-row gap-1.5 sm: sm:gap-3">
+          <Stack direction="sm-row" align="center" gap="1.5" className="sm:gap-3">
             <Row gap="xs" wrap>
               <Span size="xs" variant="muted" weight="medium" className="shrink-0">Group:</Span>
               {(["all", "core", "listings", "transactional", "content", "system", "moderation"] as const).map((g) => {
