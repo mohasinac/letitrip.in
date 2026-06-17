@@ -52,7 +52,7 @@ function StatCard({
           {isLoading ? (
             <Div className="mt-2 h-7 w-20 animate-pulse bg-[var(--appkit-color-border)]" rounded="default" />
           ) : (
-            <Div textWeight="bold" className="mt-2 text-2xl text-[var(--appkit-color-text)] tabular-nums leading-none">{value}</Div>
+            <Div textSize="2xl" textWeight="bold" className="mt-2 text-[var(--appkit-color-text)] tabular-nums leading-none">{value}</Div>
           )}
         </Div>
         <Row

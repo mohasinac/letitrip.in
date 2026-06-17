@@ -72,7 +72,7 @@ function StatCard({ label, value, href }: { label: string; value: string | numbe
       href={href}
       className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3 shadow-sm hover:border-[var(--appkit-color-primary)] hover:shadow-md transition-colors"
     >
-      <Div textWeight="bold" className="text-2xl text-[var(--appkit-color-text)] leading-tight">{value}</Div>
+      <Div textSize="2xl" textWeight="bold" className="text-[var(--appkit-color-text)] leading-tight">{value}</Div>
       <Div textSize="xs" className="text-[var(--appkit-color-text-muted)] mt-0.5">{label}</Div>
     </Link>
   );
