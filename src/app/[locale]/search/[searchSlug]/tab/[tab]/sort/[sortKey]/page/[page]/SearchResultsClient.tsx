@@ -15,7 +15,6 @@ const __P = {
   p6: "p-6",
 } as const;
 
-// audit-unknown-ok: Product shape — index signature for dynamic fields
 type Product = { id: string; slug?: string; [key: string]: unknown };
 type Props = {
   locale: string;

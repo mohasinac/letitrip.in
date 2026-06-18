@@ -32,7 +32,6 @@ export function ShareButtons({ title }: ShareButtonsProps) {
   return (
     <Row border="default" className="mt-6 border-t" padding="t-lg" align="center" gap="3">
       <Span size="sm" weight="medium" color="muted">Share:</Span>
-      {/* audit-variant-ok: copy button — bespoke text-zinc-700 + hover-bg-zinc-50 ghost-outline composition */}
       <Button rounded="lg" gap="xs"
         type="button"
         onClick={handleCopy}
@@ -41,7 +40,6 @@ export function ShareButtons({ title }: ShareButtonsProps) {
       >
         🔗 {copied ? "Copied!" : "Copy Link"}
       </Button>
-      {/* audit-variant-ok: twitter button — bespoke text-zinc-700 + hover-bg-zinc-50 ghost-outline composition */}
       <Button rounded="lg" gap="xs"
         type="button"
         onClick={handleTwitterShare}

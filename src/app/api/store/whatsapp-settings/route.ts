@@ -33,8 +33,6 @@ function maskConfig(
   };
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -55,8 +53,6 @@ const putSchema = z.object({
   catalogSyncEnabled: z.boolean().optional(),
 });
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const PUT = withProviders(
   createRouteHandler<(typeof putSchema)["_output"]>({
     auth: true,

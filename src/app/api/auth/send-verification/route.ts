@@ -16,8 +16,6 @@ import { sendVerificationEmailWithLink } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export const POST = withProviders(createRouteHandler<
   (typeof sendVerificationSchema)["_output"]
 >({

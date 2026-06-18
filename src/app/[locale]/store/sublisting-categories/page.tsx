@@ -63,7 +63,6 @@ export default function Page() {
       .then((r) => r.json())
       .then((res) => {
         const data = (res as any)?.data;
-        // audit-unknown-ok: SubListing list response items
         const items: unknown[] = data?.items ?? [];
         setTotal(typeof data?.total === "number" ? data.total : items.length);
         setRows(
@@ -76,7 +75,7 @@ export default function Page() {
           })),
         );
       })
-      .catch(() => {}) // audit-silent-catch-ok: empty state is the safe fallback when fetch fails
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, [page, sort]);
 
@@ -228,7 +227,6 @@ function renderPage({
             >
               Previous
             </Button>
-            {/* audit-variant-ok: pagination position Text — px-1 horizontal nudge; Text lacks paddingX variant */}
             <Text variant="secondary" className="px-1" size="xs">
               {page} / {totalPages}
             </Text>

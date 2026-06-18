@@ -6,8 +6,6 @@ import {
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -36,7 +34,6 @@ export const GET = withProviders(
         createdAt:
           addr.createdAt instanceof Date
             ? addr.createdAt.toISOString()
-            // audit-unknown-ok: TS structural escape — primitive cast
             : (addr.createdAt as unknown as string) ?? null,
       }));
 

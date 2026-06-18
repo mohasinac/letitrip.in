@@ -225,7 +225,6 @@ export default function Page() {
               >
                 <Row
                   className="flex-shrink-0 w-7 h-7" align="center" justify="center" rounded="md"
-                  // audit-inline-style-ok: runtime brand gradient
                   style={{ background: BRAND_GRAD }}
                 >
                   <Icon className="w-3.5 h-3.5 text-white" />

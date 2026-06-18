@@ -94,7 +94,6 @@ async function getSellerShippingMethod(uid: string): Promise<string | null> {
 type ShiprocketPackageInput = z.infer<typeof shiprocketPackageSchema>;
 
 type AutoShipResult =
-  // audit-unknown-ok: callback entry point — accepts arbitrary payload value
   | { ok: true; updated: Record<string, JsonValue> | null; result: unknown }
   | { ok: false; message: string };
 
@@ -118,7 +117,6 @@ async function tryAutoShip(
     });
     const updated = (await orderRepository.findById(id)) as Record<string, JsonValue> | null;
     return { ok: true, updated, result };
-  // audit-unknown-ok: error-handler entry point — accepts thrown values of any shape
   } catch (err: unknown) {
     void normalizeError(err);
     const message =
@@ -129,8 +127,6 @@ async function tryAutoShip(
 
 // ─── Handlers ──────────────────────────────────────────────────────────────
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -151,8 +147,6 @@ export const GET = withProviders(
   }),
 );
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateOrderSchema)["_output"]>({
     auth: true,

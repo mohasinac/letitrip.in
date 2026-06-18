@@ -35,10 +35,8 @@ interface ReviewItem {
 }
 
 const STAR_LABELS: Record<number, string> = { 1: "Terrible", 2: "Poor", 3: "Average", 4: "Good", 5: "Excellent" };
-// audit-semantic-color-ok: star rating universally uses yellow regardless of theme palette
 const CLS_STAR_ON = "text-yellow-400";
 const CLS_STAR_OFF = "text-zinc-300 dark:text-zinc-600";
-// audit-semantic-color-ok: store-reply badge uses blue palette as decorative accent, not info semantic
 const CLS_REPLY_BADGE = "rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-0.5 text-xs font-medium";
 
 const SORT_OPTIONS = [
@@ -202,7 +200,6 @@ export default function UserReviewsPage() {
                         Verified
                       </Text>
                     )}
-                    {/* audit-variant-ok: review status pill — dynamic statusColor + px-2.5/py-0.5 micro padding */}
                     <Text as="span" className={`rounded-full px-2.5 py-0.5 capitalize ${statusColor}`} size="xs" weight="medium">
                       {review.status}
                     </Text>

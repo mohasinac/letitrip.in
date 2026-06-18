@@ -16,8 +16,6 @@ const patchSchema = z.object({
   verificationNote: z.string().optional(),
 });
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -32,8 +30,6 @@ export const GET = withProviders(
   }),
 );
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const PATCH = withProviders(
   createRouteHandler<(typeof patchSchema)["_output"]>({
     auth: true,
@@ -66,8 +62,6 @@ export const PATCH = withProviders(
 );
 
 // Hard delete — admin only; employees may only update status (PATCH above).
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

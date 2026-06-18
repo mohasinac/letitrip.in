@@ -134,7 +134,6 @@ function renderPollForm({
       {isMultiSelect ? (
         <Stack gap="sm">
           {pollConfig.options.map((opt) => (
-            // audit-variant-ok: poll option Label — cursor-pointer + border + px-4 py-3 + hover-bg interactive option-row pattern
             <Label layout="flex" gap="lg"
               key={opt.id}
               className="cursor-pointer rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
@@ -268,7 +267,6 @@ function renderSuccessState({
 
 // ─── Dynamic form field renderer ─────────────────────────────────────────────
 
-// audit-unknown-ok: callback entry point — accepts arbitrary payload value
 function validateField(field: SurveyFormField, value: unknown): string | null {
   const v = field.validation;
   if (field.required && (value === undefined || value === null || value === "" || (Array.isArray(value) && value.length === 0))) {

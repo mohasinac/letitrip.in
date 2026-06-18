@@ -18,8 +18,6 @@ import {
 import { getAdminAuth } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
   schema: deleteAccountSchema,

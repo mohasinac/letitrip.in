@@ -31,7 +31,6 @@ async function firestoreFallback(uid: string) {
   const since = new Date(Date.now() - 30 * 86400_000);
   const raw = await orderRepository
     .findBy("storeId", store.id)
-    // audit-unknown-ok: TS structural escape
     .catch(() => [] as unknown[]);
   const orders = (raw as Array<{ totalAmount?: number; createdAt?: Date | string }>)
     .filter((o) => new Date(o.createdAt ?? 0).getTime() >= since.getTime())
@@ -45,8 +44,6 @@ async function firestoreFallback(uid: string) {
   };
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

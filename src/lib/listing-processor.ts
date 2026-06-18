@@ -10,7 +10,6 @@
 import { callFirebaseFunction } from "@/lib/firebase-gateway";
 
 export interface ListingProcessorResponse {
-  // audit-unknown-ok: listing processor items — collection-agnostic
   items: unknown[];
   total: number;
   page: number;

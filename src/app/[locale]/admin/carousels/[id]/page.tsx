@@ -114,7 +114,6 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
               </Thead>
               <Tbody className="divide-y divide-zinc-100 dark:divide-slate-700">
                 {slides.map((slide, idx) => (
-                  // audit-variant-ok: row hover state — bg-zinc-50 hover tint; Tr lacks hover-state variant
                   <Tr key={slide.id} className="bg-white hover:bg-zinc-50 dark:bg-slate-900 dark:hover:bg-slate-800">
                     <Td padding="md" color="muted">{idx + 1}</Td>
                     <Td weight="medium" padding="md" color="primary">{slide.title}</Td>

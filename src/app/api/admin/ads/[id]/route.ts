@@ -63,8 +63,6 @@ function normalizeAdSettings(settings: Record<string, JsonValue>) {
   };
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -76,7 +74,6 @@ export const GET = withProviders(
         return errorResponse(MSG_AD_ID_REQUIRED, 400);
       }
 
-      // audit-unknown-ok: TS structural escape — Record
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const placements = normalized.placements.length > 0 ? normalized.placements : defaultPlacements();
@@ -90,8 +87,6 @@ export const GET = withProviders(
   }),
 );
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const PATCH = withProviders(
   createRouteHandler<(typeof adPatchSchema)["_output"]>({
     auth: true,
@@ -104,7 +99,6 @@ export const PATCH = withProviders(
         return errorResponse(MSG_AD_ID_REQUIRED, 400);
       }
 
-      // audit-unknown-ok: TS structural escape — Record
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const placements = normalized.placements.length > 0 ? normalized.placements : defaultPlacements();
@@ -184,8 +178,6 @@ export const PATCH = withProviders(
   }),
 );
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
@@ -197,7 +189,6 @@ export const DELETE = withProviders(
         return errorResponse(MSG_AD_ID_REQUIRED, 400);
       }
 
-      // audit-unknown-ok: TS structural escape — Record
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const placements = normalized.placements.length > 0 ? normalized.placements : defaultPlacements();

@@ -56,7 +56,6 @@ async function _GET(
   }
   const filters = filterParts.join(",");
 
-  // audit-unknown-ok: receives upstream listingProcessor items (unknown[] from gateway)
   let items: unknown[];
   let total: number;
   let resultPage: number;
@@ -88,7 +87,6 @@ async function _GET(
   } else {
     try {
       const result = await productRepository.list({ filters, sorts, page, pageSize });
-      // audit-unknown-ok: TS structural escape — Array
       items = sanitizeProductsForPublic(result.items as unknown as Array<Record<string, JsonValue>>);
       total = result.total;
       resultPage = result.page;
@@ -112,6 +110,4 @@ async function _GET(
   return response;
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(_GET);

@@ -32,8 +32,6 @@ const CHAT_DISABLED_RESPONSE = () =>
  * GET /api/chat
  * Returns all chat rooms the authenticated user is participating in.
  */
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(createApiHandler({
   auth: true,
   handler: async ({ user }) => {
@@ -48,8 +46,6 @@ export const GET = withProviders(createApiHandler({
  * Creates a chat room for a buyer↔seller conversation on an order.
  * Idempotent — returns the existing room if it already exists.
  */
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(createApiHandler<(typeof createRoomSchema)["_output"]>({
   auth: true,
   schema: createRoomSchema,

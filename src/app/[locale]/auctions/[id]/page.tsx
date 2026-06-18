@@ -25,7 +25,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     auctionEndDate: auction.auctionEndDate instanceof Date
       ? auction.auctionEndDate
       : auction.auctionEndDate
-        // audit-unknown-ok: TS structural escape — primitive cast
         ? new Date(auction.auctionEndDate as unknown as string)
         : undefined,
   });
@@ -51,7 +50,6 @@ export default async function Page({ params }: Props) {
         auctionEndDate: auction.auctionEndDate instanceof Date
           ? auction.auctionEndDate
           : auction.auctionEndDate
-            // audit-unknown-ok: TS structural escape — primitive cast
             ? new Date(auction.auctionEndDate as unknown as string)
             : undefined,
       })

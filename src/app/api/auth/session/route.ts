@@ -27,8 +27,6 @@ import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
  * Create session cookie with session tracking
  * Also ensures user profile exists in Firestore (for OAuth users)
  */
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export async function POST(request: NextRequest) {
   try {
     const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
@@ -130,7 +128,6 @@ export async function POST(request: NextRequest) {
     });
 
     return response;
-  // audit-unknown-ok: error-handler entry point — accepts thrown values of any shape
   } catch (error: unknown) {
     void normalizeError(error);
     return handleApiError(error);
@@ -140,8 +137,6 @@ export async function POST(request: NextRequest) {
 /**
  * Clear session cookie and revoke session (logout)
  */
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export async function DELETE(request: NextRequest) {
   try {
     const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
@@ -172,7 +167,6 @@ export async function DELETE(request: NextRequest) {
     response.cookies.delete("__session_id");
 
     return response;
-  // audit-unknown-ok: error-handler entry point — accepts thrown values of any shape
   } catch (error: unknown) {
     void normalizeError(error);
     return handleApiError(error);

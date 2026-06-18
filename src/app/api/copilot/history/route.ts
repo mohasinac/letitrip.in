@@ -16,8 +16,6 @@ import { AppError } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],

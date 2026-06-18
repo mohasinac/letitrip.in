@@ -14,8 +14,6 @@ const updateStatusSchema = z.object({
   status: z.enum(Object.values(EVENT_FIELDS.STATUS_VALUES) as [string, ...string[]]),
 });
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateStatusSchema)["_output"]>({
     auth: true,

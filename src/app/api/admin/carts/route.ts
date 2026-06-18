@@ -13,8 +13,6 @@ import { ROLES_ADMIN_MOD } from "@/constants";
  * filters (userId, sessionId, updatedAt) so AdminCartsView's filter drawer
  * actually narrows server results instead of returning the first 200 unfiltered.
  */
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

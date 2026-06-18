@@ -12,8 +12,6 @@ const updateSchema = z.object({
   quantity: z.number().int().min(1).max(99),
 });
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateSchema)["_output"]>({
     auth: true,
@@ -30,8 +28,6 @@ export const PATCH = withProviders(
   }),
 );
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

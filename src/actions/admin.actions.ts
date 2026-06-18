@@ -314,7 +314,6 @@ export async function adminUpdateProductAction(
 }
 
 export async function adminCreateProductAction(
-  // audit-unknown-ok: callback entry point — accepts arbitrary payload value
   input: unknown,
 ): Promise<ActionResult<ProductDocument>> {
   return wrapAction(async () => {

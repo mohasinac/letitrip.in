@@ -1,4 +1,5 @@
 export { ScrollToTop } from "./ScrollToTop";
+export { ClientErrorReporterMount } from "./ClientErrorReporterMount";
 export { AdminAnalyticsClient } from "./admin/AdminAnalyticsClient";
 export { AdRuntimeInitializer } from "./ads/AdRuntimeInitializer";
 export { ForgotPasswordPageClient } from "./auth/ForgotPasswordPageClient";

@@ -10,8 +10,6 @@ import {
 } from "@mohasinac/appkit";
 import { ROLES_AUTHENTICATED } from "@/constants";
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(
   createRouteHandler({
     auth: false,
@@ -22,8 +20,6 @@ export const GET = withProviders(
   }),
 );
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

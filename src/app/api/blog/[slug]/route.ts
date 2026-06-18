@@ -16,8 +16,6 @@ function toSerializable(doc: any) {
   };
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(
   createRouteHandler({
     handler: async ({ params }) => {
@@ -26,7 +24,7 @@ export const GET = withProviders(
       if (!post || post.status !== BlogPostStatusValues.PUBLISHED) {
         return errorResponse("Blog post not found", 404);
       }
-      blogRepository.incrementViews(post.id).catch(() => {}); // audit-silent-catch-ok: view-count bump is best-effort analytics
+      blogRepository.incrementViews(post.id).catch(() => {});
       const related = await blogRepository
         .findRelated(post.category, post.id, 3)
         .catch(() => []);

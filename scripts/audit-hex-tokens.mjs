@@ -101,44 +101,13 @@ const TAILWIND_ARBITRARY_HEX_RE = /(?:bg|text|border|ring|fill|stroke|from|to|vi
 // ---------------------------------------------------------------------------
 
 /** File names exempt from ALL checks (hex is required by the platform API). */
-const EXEMPT_FILENAMES = new Set([
-  "opengraph-image.tsx", // ImageResponse Canvas API uses raw hex
-  "twitter-image.tsx",
-  "og.tsx",              // appkit OG renderers — ImageResponse Canvas API
-  "og-layout.tsx",       // appkit OG layout helper
-  "manifest.ts",         // Web App Manifest theme/background colors
-  "tokens.css",          // tokens definition file itself
-  "color.helper.ts",     // hex parser / blender — needs raw hex in tests
-  "email.ts",            // HTML emails — email clients ignore CSS vars
-  "consent-otp.ts",      // OTP email template
-  "GlobalError.tsx",     // renders without CSS framework on CSS-load failure
-  "ErrorBoundary.tsx",   // renders without CSS framework on CSS-load failure
-]);
+const EXEMPT_FILENAMES = new Set([]);
 
 /** Per-line escape hatch: `// audit-hex-tokens-ok: <reason>` */
 const SUPPRESS_RE = /(?:\/\/|\/\*)\s*audit-hex-tokens-ok\b/;
 
 /** Path-pattern exemptions (relative to ROOT, forward-slash). */
-const EXEMPT_PATH_PATTERNS = [
-  /[\\/]tokens[\\/]/,                    // appkit tokens module
-  /[\\/]seed[\\/]/,                       // seed data — hex is part of seeded site-settings
-  /[\\/]_internal[\\/]server[\\/]features[\\/][^\\/]+[\\/]og\.tsx?$/, // belt-and-suspenders
-  /[\\/]features[\\/]contact[\\/]/,      // email templates
-  /[\\/]features[\\/]email[\\/]/,         // email primitives (Email* components)
-  /[\\/]features[\\/]auth[\\/]consent/,  // OTP email templates
-  /[\\/]admin[\\/]components[\\/]analytics[\\/]/, // chart palettes — decorative
-  /AdminAnalyticsCharts\.tsx?$/,
-  /DashboardStats\.tsx?$/,
-  /CharacterHotspot\.tsx?$/,             // dynamic positioning from Firestore data
-  /HeroBanner\.tsx?$/,                   // dynamic theme tokens from CMS
-  /HeroCarousel\.tsx?$/,                 // dynamic gradients from CMS
-  /PromoGrid\.tsx?$/,                    // dynamic theme tokens from CMS
-  /GoogleReviewsSection\.tsx?$/,         // official Google brand colors
-  /WhatsAppCommunitySection\.tsx?$/,     // official WhatsApp brand colors
-  /SellerWhatsAppSettingsView\.tsx?$/,   // WhatsApp brand chrome
-  /CharacterHotspotForm\.tsx?$/,         // letitrip brand red palette in form editor preview
-  /NewsletterBanner\.tsx?$/,             // CMS-driven gradient seed values
-];
+const EXEMPT_PATH_PATTERNS = [];
 
 /**
  * Returns true for lines where the hex is required/expected and should not

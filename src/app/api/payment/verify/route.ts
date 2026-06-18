@@ -24,8 +24,6 @@ const verifySchema = z.object({
   platformFee: z.number().nonnegative().optional(),
 });
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: external webhook receiver — signature verified inside handler
 export const POST = withProviders(createRouteHandler<(typeof verifySchema)["_output"]>({
   auth: true,
   schema: verifySchema,

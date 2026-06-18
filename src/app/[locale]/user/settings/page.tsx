@@ -40,7 +40,6 @@ function SectionCard({ children }: { children: React.ReactNode }) {
     >
       <Div
         className="absolute top-0 left-0 right-0 h-[3px]"
-        // audit-inline-style-ok: runtime theme gradient
         style={{ background: "linear-gradient(to right,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)" }} // eslint-disable-line lir/no-inline-static-style
         aria-hidden="true"
       />
@@ -120,7 +119,6 @@ function renderAccountTab({
             <Text variant="secondary" size="xs">
               A verification link will be sent to your new address. Your email updates after you click the link.
             </Text>
-            {/* audit-variant-ok: change-email Form — grid grid-cols-[1fr_240px] custom split + gap-4 + md:items-start */}
             <Form onSubmit={handleEmailSubmit} className="grid gap-4 md:grid-cols-[1fr_240px] md:items-start">
               <Stack gap="sm">
                 <Input id="new-email" type="email" label="New Email Address" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required autoComplete="email" placeholder="new@example.com" />
@@ -140,7 +138,6 @@ function renderAccountTab({
       <SectionCard>
         <Accordion title="Change Password">
           <Stack gap="md" padding="t-sm">
-            {/* audit-variant-ok: change-password Form — grid grid-cols-[1fr_240px] custom split + gap-4 + md:items-start */}
             <Form onSubmit={handlePasswordSubmit} className="grid gap-4 md:grid-cols-[1fr_240px] md:items-start">
               <Stack gap="sm">
                 <Input id="current-password" type="password" label="Current Password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required autoComplete="current-password" />

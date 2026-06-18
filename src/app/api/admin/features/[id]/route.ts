@@ -11,8 +11,6 @@ import {
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -28,8 +26,6 @@ export const GET = withProviders(
   }),
 );
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const PUT = withProviders(
   createRouteHandler<ProductFeatureUpdatePayload>({
     auth: true,
@@ -47,8 +43,6 @@ export const PUT = withProviders(
   }),
 );
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

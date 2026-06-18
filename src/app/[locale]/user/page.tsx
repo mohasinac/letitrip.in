@@ -133,7 +133,6 @@ export default function Page() {
             <Row className={`relative border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden} ${__P.p5}`} align="center" gap="md" rounded="xl" shadow="sm">
               <Div
                 className="absolute top-0 left-0 right-0 h-[3px]"
-                // audit-inline-style-ok: runtime brand gradient
                 style={{ background: BRAND_GRAD }}
                 aria-hidden="true"
               />
@@ -155,13 +154,11 @@ export default function Page() {
                 ) : (
                   <Row textWeight="bold" textSize="xl"
                     className="h-full w-full text-white" align="center" justify="center"
-                    // audit-inline-style-ok: runtime brand gradient
                     style={{ background: BRAND_GRAD }}
                   >
                     {(user.displayName ?? user.email ?? "U")[0].toUpperCase()}
                   </Row>
                 )}
-                {/* audit-variant-ok: hover overlay — group-hover opacity transition over surface=overlay-xs scrim; Row lacks group-hover variant */}
                 <Row surface="overlay-xs" className="absolute inset-0 bg-black/0 group-hover: transition-colors opacity-0 group-hover:opacity-100" align="center" justify="center">
                   <Camera className="w-5 h-5 text-white" />
                 </Row>
@@ -216,7 +213,6 @@ export default function Page() {
             >
               <Span layout="flex-center" 
                 className="flex-shrink-0 w-7 h-7" rounded="md"
-                // audit-inline-style-ok: runtime brand gradient
                 style={{ background: BRAND_GRAD }}
               >
                 <Icon className="w-3.5 h-3.5 text-white" />

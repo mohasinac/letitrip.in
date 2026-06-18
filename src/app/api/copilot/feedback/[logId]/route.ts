@@ -11,8 +11,6 @@ const feedbackSchema = z.object({
   feedback: z.enum(["positive", "negative"]),
 });
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const PATCH = withProviders(
   createRouteHandler<(typeof feedbackSchema)["_output"]>({
     auth: true,

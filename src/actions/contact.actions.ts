@@ -87,7 +87,6 @@ export async function sendContactAction(
       // went through, the ticket is a redundancy for admin visibility.
       try {
         await supportRepository.createTicket({
-          // audit-unknown-ok: TS structural escape — primitive cast
           userId: null as unknown as string, // guest ticket
           userEmail: email,
           userDisplayName: name,

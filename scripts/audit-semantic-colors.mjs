@@ -39,45 +39,12 @@ const EXTENSIONS = [".tsx", ".jsx", ".ts"];
 const SUPPRESS_RE = /(?:\/\/|\/\*)\s*audit-semantic-color-ok\b/;
 
 // Files where raw status hues are inherent (palette tables, charts, theme map).
-const ALLOWLIST = [
-  "theme.ts",                        // canonical badge/accent map
-  "tokens.css",
-  "tokens.ts",
-  "AdminAnalyticsCharts.tsx",        // chart palette — non-semantic decorative
-  "SeedPanel.tsx",                   // dev-only admin tooling
-  "DevToolbar.tsx",                  // dev-only
-  "utils.ts",                        // appkit/src/features/forms/utils.ts — primitive style constants
-];
+const ALLOWLIST = [];
 
 // Path patterns where raw status hues are decorative, not semantic.
 // Educational / guide / help pages assign distinct hues per step or category
 // (visual variety, not error/success state) — those uses are legitimate.
-const ALLOWLIST_PATH_PATTERNS = [
-  /[\\/]tokens[\\/]/,
-  /[\\/]seed[\\/]/,
-  /chart-palette/i,
-  /[\\/]_internal[\\/]server[\\/]features[\\/][^\\/]+[\\/]og(?:-layout)?\.tsx?$/,
-  // Educational surfaces — decorative per-step palettes.
-  /[\\/]features[\\/]about[\\/]/,
-  /[\\/]features[\\/]help[\\/]/,
-  /[\\/]features[\\/]corporate[\\/]/,
-  /[\\/]features[\\/]consultation[\\/]/,
-  /[\\/]features[\\/]guides[\\/]/,
-  /[\\/]features[\\/]promotions[\\/]/,
-  /Guide(?:Hub)?View\.tsx?$/,        // any *GuideView / *GuideHubView component
-  /HelpPageView\.tsx?$/,
-  /FAQ\w*View\.tsx?$/,
-  /SpinWheelView\.tsx?$/,            // decorative spin-wheel palette
-  /AdvertisementBanner\.tsx?$/,      // ad gradients
-  /SocialPostCard\.tsx?$/,           // social brand chrome
-  /GoogleReviewsSection\.tsx?$/,
-  /WhatsAppCommunitySection\.tsx?$/,
-  /FAQHelpfulButtons\.tsx?$/,        // thumbs up/down — distinct palette
-  /[\\/]filters[\\/]/,               // filter chip color variations
-  /[\\/]about[\\/]page\./,           // consumer about page
-  /events\/\[id\]\/_constants/,      // event status palette table
-  /events\/\[id\]\/participate\//,   // participation palette
-];
+const ALLOWLIST_PATH_PATTERNS = [];
 
 // Status hues — `red`/`rose` for error, `green`/`emerald` for success,
 // `amber`/`yellow`/`orange` for warning, `sky`/`blue` for info. Excludes

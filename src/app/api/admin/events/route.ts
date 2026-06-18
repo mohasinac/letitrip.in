@@ -145,8 +145,6 @@ const createEventSchema = z.object({
 // ---------------------------------------------------------------------------
 // GET — list events
 // ---------------------------------------------------------------------------
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
@@ -195,8 +193,6 @@ export const GET = withProviders(createRouteHandler({
 // ---------------------------------------------------------------------------
 // POST — create event
 // ---------------------------------------------------------------------------
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const POST = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_ONLY],

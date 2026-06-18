@@ -50,8 +50,6 @@ function extractStoragePath(url: string): string | null {
   }
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: media route — handler verifies signed-URL ownership + applyRateLimit
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {

@@ -13,8 +13,6 @@ import {
   claimedCouponsRepository,
 } from "@mohasinac/appkit";
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const DELETE = withProviders(
   createRouteHandler<unknown, { id: string }>({
     auth: true,

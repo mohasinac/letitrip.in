@@ -210,7 +210,6 @@ async function _GET(request: Request): Promise<NextResponse> {
         success: true,
         data: {
           items: sanitizeProductsForPublic(
-            // audit-unknown-ok: TS structural escape — Array
             items as unknown as Array<Record<string, JsonValue>>,
           ),
           total: items.length,
@@ -323,7 +322,6 @@ async function _GET(request: Request): Promise<NextResponse> {
     // Q3: prefer the colocated listingProcessor Firebase Function when the
     // FIREBASE_FUNCTION_LISTING_URL env var is set; otherwise fall back to the
     // local repository call (keeps dev workflow working without the Function).
-    // audit-unknown-ok: receives upstream listingProcessor items (unknown[] from gateway)
   let items: unknown[];
     let total: number;
     let resultPage: number;
@@ -459,7 +457,5 @@ async function _GET(request: Request): Promise<NextResponse> {
   }
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(_GET);
 

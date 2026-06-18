@@ -1,5 +1,5 @@
-import { PAGE_CONTAINER } from "@/constants/styles/page";
-import { THEMED_BG_PRIMARY, THEMED_BG_SECONDARY } from "@/constants/styles/themed";
+import { PAGE_CONTAINER } from "@/constants";
+import { THEMED_BG_PRIMARY, THEMED_BG_SECONDARY } from "@/constants";
 import { Caption, Div, Heading, Row, Section, Stack, Table, Tbody, Td, Text, Th, Thead, Tr } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 
@@ -62,7 +62,6 @@ function renderPayoutExample(payoutRows: PayoutRow[], t: T) {
         <Heading level={3} className="mb-4" size="base">{t("payoutExampleProduct")}</Heading>
         <Stack gap="sm">
           {payoutRows.map((row, i) => (
-            // audit-variant-ok: payout row — conditional border-top + pt-2/mt-2 separator for highlighted (final) row
             <Row textWeight="bold" textSize="sm" key={i} className={`${row.highlight ? "border-t border-neutral-200 dark:border-neutral-700 pt-2 mt-2 " : ""}`} justify="between">
               <Text className={row.highlight ? "font-bold" : "text-neutral-600 dark:text-neutral-400"}>{row.label}</Text>
               <Text className={row.highlight ? CLS_HIGHLIGHT : ""}>{row.example}</Text>

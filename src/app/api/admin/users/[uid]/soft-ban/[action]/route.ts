@@ -8,8 +8,6 @@ import {
 } from "@mohasinac/appkit";
 import { ROLES_TRUST_SAFETY } from "@/constants";
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

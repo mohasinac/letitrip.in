@@ -12,8 +12,6 @@ const updateEntrySchema = z.object({
   status: z.enum(["CONFIRMED", "WAITLISTED", "CANCELLED"]).optional(),
 });
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateEntrySchema)["_output"]>({
     auth: true,

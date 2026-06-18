@@ -31,8 +31,6 @@ const IngestCodesSchema = z.object({
   codes: z.array(z.string().min(1).max(256)).min(1).max(200),
 });
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
@@ -40,7 +38,6 @@ export const POST = withProviders(
     handler: async ({ request, user, params }) => {
       const productId = (params as Record<string, string>).id;
 
-      // audit-unknown-ok: callback entry point — accepts arbitrary payload value
       let body: unknown;
       try {
         body = await request.json();

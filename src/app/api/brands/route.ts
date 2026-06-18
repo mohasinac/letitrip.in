@@ -11,8 +11,6 @@ import {
 
 const DEFAULT_SORTS = [sortBy(CATEGORY_FIELDS.ORDER, "ASC"), sortBy(CATEGORY_FIELDS.NAME, "ASC")].join(",");
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(
   createRouteHandler({
     auth: false,

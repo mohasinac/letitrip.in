@@ -28,7 +28,6 @@ export default async function Page({ params }: Props) {
 
   // Plan §10 — when the prize is a coupon AND the viewer is the winner,
   // resolve the coupon code so the view can render a one-click Claim CTA.
-  // audit-unknown-ok: TS structural escape — Record
   const eventAny = event as unknown as Record<string, JsonValue>;
   const couponId =
     typeof eventAny.rafflePrizeCouponId === "string"

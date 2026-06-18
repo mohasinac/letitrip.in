@@ -34,8 +34,6 @@ import { AuthenticationError, ValidationError } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { COLLECTION_CACHE_PATHS } from "@mohasinac/appkit";
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: gated by x-api-key header against CACHE_REVALIDATION_SECRET env var; not user-authenticated
 export async function POST(request: NextRequest) {
   try {
     // --- Authentication ---
@@ -79,7 +77,6 @@ export async function POST(request: NextRequest) {
     const unknown = collections.filter((c) => !(c in COLLECTION_CACHE_PATHS));
     if (unknown.length > 0) {
       serverLogger.warn(
-        // audit-unknown-ok: literal string content — not a type annotation
         `Cache revalidation: unknown collections ignored: ${unknown.join(", ")}`,
       );
     }

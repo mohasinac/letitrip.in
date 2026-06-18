@@ -47,8 +47,6 @@ function generateToken(): string {
  * Stores a short-lived draft for in-tab preview (UX4 follow-up / TS13).
  * Used by FormShell PreviewPane's "Open in new tab" action.
  */
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createApiHandler({
     roles: [...ROLES_ANY_STAFF],
@@ -86,8 +84,6 @@ export const POST = withProviders(
  * Returns the draft if still valid; otherwise 404 / 410.
  * No role gate — token is the capability.
  */
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(
   createApiHandler({
     handler: async ({ request }) => {

@@ -70,8 +70,6 @@ function buildPublicFilters(url: URL, baseFilters: string[]): string {
   return parts.filter(Boolean).join(",");
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export async function GET(request: Request): Promise<NextResponse> {
   try {
     const url = new URL(request.url);
@@ -168,8 +166,6 @@ export async function GET(request: Request): Promise<NextResponse> {
   }
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

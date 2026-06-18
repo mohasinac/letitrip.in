@@ -15,8 +15,6 @@ import {
 } from "@mohasinac/appkit";
 import { resolveConversationRole } from "@/lib/conversations/authorise";
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

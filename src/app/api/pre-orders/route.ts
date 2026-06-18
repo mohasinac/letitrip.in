@@ -58,8 +58,6 @@ function mergeListingTypeFilter(filters: string | null | undefined): string {
   return parts.join(",");
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(async (request: Request) => {
   try {
     const url = new URL(request.url);
@@ -75,7 +73,6 @@ export const GET = withProviders(async (request: Request) => {
     );
 
     const items = sanitizeProductsForPublic(
-      // audit-unknown-ok: TS structural escape — Array
       result.items as unknown as Array<Record<string, JsonValue>>,
     );
     const totalPages = Math.max(1, Math.ceil(result.total / pageSize));

@@ -16,8 +16,6 @@ function isAdActive(item: Record<string, JsonValue>): boolean {
   return true;
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(
   createRouteHandler({
     auth: false,
@@ -26,7 +24,6 @@ export const GET = withProviders(
       const slot = url.searchParams.get("slot")?.trim();
       if (!slot) return successResponse(null);
 
-      // audit-unknown-ok: TS structural escape — Record
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const adSettingsRaw = (settings.adSettings as Record<string, JsonValue> | undefined) ?? {};
       const inventory = Array.isArray(adSettingsRaw.inventory)

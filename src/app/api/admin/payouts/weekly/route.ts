@@ -47,8 +47,6 @@ const PLATFORM_COMMISSION_RATE = 0.05; // 5 %
 
 // --- Route --------------------------------------------------------------------
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const POST = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_ONLY],

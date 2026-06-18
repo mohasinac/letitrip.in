@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import { z } from "zod";
 import { API_ROUTES } from "@/constants";
-import { THEMED_TEXT_SUCCESS } from "@/constants/styles/themed";
+import { THEMED_TEXT_SUCCESS } from "@/constants";
 import { Button, FieldInput, Form, Stack, Text } from "@mohasinac/appkit/ui";
 import { useApiMutation, useToast } from "@mohasinac/appkit/client";
 import { apiClient } from "@mohasinac/appkit/client";

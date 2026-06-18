@@ -124,6 +124,5 @@ export default async function Page({ params }: Props) {
     return null;
   }
 
-  // audit-unknown-ok: TS structural escape — StoreDetail
   return <StoreAboutView store={store as unknown as StoreDetail} />;
 }

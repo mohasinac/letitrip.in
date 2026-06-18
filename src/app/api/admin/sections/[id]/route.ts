@@ -27,8 +27,6 @@ const sectionUpdateSchema = z.object({
  *
  * Update a homepage section (order, enabled status, or config)
  */
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
@@ -96,8 +94,6 @@ export const PATCH = withProviders(
  *
  * Delete a homepage section
  */
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

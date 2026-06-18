@@ -156,7 +156,6 @@ function getProductHref(
 function groupBySeller(items: CartItemWithListingType[]): SellerGroup[] {
   const map = new Map<string, SellerGroup>();
   for (const item of items) {
-    // audit-unknown-ok: TS structural escape — Record
     const meta = item.meta as unknown as Record<string, JsonValue>;
     const sid = (meta.storeId as string | undefined) ?? "unknown";
     const sname =
@@ -412,7 +411,7 @@ export function CartRouteClient() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ itemIds: next ? Array.from(next) : null }),
           credentials: FETCH_CREDENTIALS,
-        }).catch(() => {}); // audit-silent-catch-ok: cart selection sync is best-effort; UI state already updated
+        }).catch(() => {});
       }
     },
     [effectiveSelected, allItemIds, isAuthenticated],
@@ -426,7 +425,7 @@ export function CartRouteClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ itemIds: null }),
         credentials: FETCH_CREDENTIALS,
-      }).catch(() => {}); // audit-silent-catch-ok: cart selection sync is best-effort; UI state already updated
+      }).catch(() => {});
     }
   }, [isAuthenticated]);
 
@@ -911,7 +910,6 @@ export function CartRouteClient() {
               type="button"
               variant="ghost"
               onClick={async () => {
-                // toast-intentionally-silent — selectAll mutates local cart-selection state only
                 await selectAll();
                 router.push(String(ROUTES.USER.CHECKOUT));
               }}
@@ -970,7 +968,6 @@ function AuctionsTabItems({ auctionBucket, filteredAuctions, sellerGroupsAuction
   }
   return (
     <Stack gap="md">
-      {/* audit-variant-ok: warning banner — bg-warning-surface + border-warning/20 + rounded-lg + px-3 composite over Text.paddingY */}
       <Text paddingY="xs" className="text-warning bg-warning-surface border border-warning/20 rounded-lg px-3" size="xs">
         Won auction items must be paid before you can bid on new auctions or purchase new items.
       </Text>
@@ -1052,7 +1049,6 @@ function OffersTabItems({ offerBucket, filteredOffers, sellerGroupsOffers, norma
   const noop = () => {};
   return (
     <Stack gap="md">
-      {/* audit-variant-ok: warning banner — bg-warning-surface + border-warning/20 + rounded-lg + px-3 composite over Text.paddingY */}
       <Text paddingY="xs" className="text-warning bg-warning-surface border border-warning/20 rounded-lg px-3" size="xs">
         Accepted offers must be paid. These items cannot be removed from your cart.
       </Text>

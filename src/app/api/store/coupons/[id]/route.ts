@@ -51,8 +51,6 @@ const updateCouponSchema = z.object({
   action: z.enum(["activate", "deactivate"]).optional(),
 });
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -72,8 +70,6 @@ export const GET = withProviders(
   }),
 );
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateCouponSchema)["_output"]>({
     auth: true,
@@ -118,8 +114,6 @@ export const PATCH = withProviders(
   }),
 );
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

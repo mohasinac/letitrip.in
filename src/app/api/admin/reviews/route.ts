@@ -13,8 +13,6 @@ import {
 } from "@/constants";
 import { reviewRepository } from "@mohasinac/appkit";
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_ADMIN_MOD],
   permission: "admin:reviews:read",

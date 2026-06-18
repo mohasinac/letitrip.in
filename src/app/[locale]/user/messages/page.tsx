@@ -40,7 +40,6 @@ const ITEM_BASE =
 const ITEM_IDLE = "bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800";
 const ITEM_ACTIVE = "bg-primary/10 border-primary";
 const UNREAD_DOT =
-  // audit-semantic-color-ok: brand unread badge accent, not semantic error
   "inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-rose-500 px-1.5 text-xs font-semibold text-white";
 const MESSAGE_LIST_CLASS =
   "flex flex-1 flex-col gap-2 overflow-y-auto py-3 min-h-[300px]";
@@ -118,10 +117,8 @@ interface MessageBubbleProps {
 
 function MessageBubble({ message, isMine }: MessageBubbleProps) {
   return (
-    // audit-inline-style-ok: dynamic CSS
     <Stack style={{ alignItems: isMine ? "flex-end" : "flex-start" }}>
       <Div className={isMine ? BUBBLE_MINE : BUBBLE_THEIRS}>{message.body}</Div>
-      {/* audit-variant-ok: timestamp Text — text-[10px] under-10 + px-1 nudge */}
       <Text variant="secondary" className="text-[10px] mt-0.5 px-1">
         {relativeTime(message.sentAt)}
       </Text>

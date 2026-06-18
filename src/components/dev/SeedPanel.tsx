@@ -1,6 +1,5 @@
 "use client";
 import { Table, Tbody, Td, Th, Thead, Tr, normalizeError } from "@mohasinac/appkit";
-// audit-auth-gates-ok — imports @/actions/demo-seed.types (types only, no function calls)
 
 /**
  * SeedPanel — Admin data management and schema documentation panel.
@@ -2162,7 +2161,6 @@ export function SeedPanel() {
   };
 
   const fetchStatus = useCallback(async () => {
-    // toast-intentionally-silent — dev-only panel, non-fatal background refresh
     setIsLoadingStatus(true);
     try {
       const res = await fetch(API_ROUTES.DEMO.SEED, { method: "GET" });

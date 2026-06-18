@@ -69,7 +69,6 @@ async function _GET(request: Request): Promise<NextResponse> {
   // listStores() adds status==active + isPublic==true as Firestore .where() — don't duplicate.
   const filtersForRepo = userParts.join(",");
 
-  // audit-unknown-ok: receives upstream listingProcessor items (unknown[] from gateway)
   let items: unknown[];
   let total: number;
   let resultPage: number;
@@ -100,7 +99,6 @@ async function _GET(request: Request): Promise<NextResponse> {
   } else {
     try {
       const result = await storeRepository.listStores({ filters: filtersForRepo, sorts, page, pageSize });
-      // audit-unknown-ok: TS structural escape — Array
       items = (result.items as unknown as Array<Record<string, JsonValue>>).map(toPublicStore);
       total = result.total;
       resultPage = result.page;
@@ -124,6 +122,4 @@ async function _GET(request: Request): Promise<NextResponse> {
   return response;
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(_GET);

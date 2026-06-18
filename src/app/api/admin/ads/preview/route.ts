@@ -41,8 +41,6 @@ function isScheduleActive(item: Record<string, JsonValue>): boolean {
  * Returns the highest-priority eligible ad for a given placement under the given
  * consent state. Used by the admin UI to preview ad slot fill before publish.
  */
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -57,7 +55,6 @@ export const GET = withProviders(
         return errorResponse("placementId query param is required", 400);
       }
 
-      // audit-unknown-ok: TS structural escape — Record
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const { inventory, placements } = normalizeAdSettings(settings);
       const resolvedPlacements = placements.length > 0 ? placements : defaultPlacements();

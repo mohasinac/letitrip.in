@@ -55,8 +55,6 @@ const PAGE_SUGGESTIONS: Array<{
   { title: "FAQs", subtitle: "Help & answers", url: String(ROUTES.PUBLIC.FAQS ?? "/faqs"), keywords: ["faq", "help", "question", "support"] },
 ];
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(
   createRouteHandler({
     auth: false,
@@ -97,7 +95,6 @@ export const GET = withProviders(
         wantBlog
           ? blogRepository
               .listPublished({}, { filters: filters(q), sorts: sortBy("publishedAt"), pageSize: PER_TYPE_LIMIT })
-              // audit-unknown-ok: TS structural escape — Record
               .then((r) => ({ items: r.items as unknown as Record<string, JsonValue>[] }))
               .catch(() => ({ items: [] as Record<string, JsonValue>[] }))
           : Promise.resolve({ items: [] as Record<string, JsonValue>[] }),
@@ -161,7 +158,6 @@ export const GET = withProviders(
       ];
 
       const response = successResponse({ suggestions });
-      // audit-unknown-ok: TS structural escape — NextResponse
       const nextResp = response as unknown as NextResponse;
       nextResp.headers?.set(
         "Cache-Control",

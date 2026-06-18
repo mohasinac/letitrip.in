@@ -94,8 +94,6 @@ function maskSecret(value: string | undefined): string {
   return `${value.slice(0, 4)}...${value.slice(-4)}`;
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -110,7 +108,6 @@ export const GET = withProviders(
       const page = Math.max(1, Number(url.searchParams.get("page") || "1"));
       const pageSize = Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize") || "20")));
 
-      // audit-unknown-ok: TS structural escape — Record
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const placements = normalized.placements.length > 0 ? normalized.placements : defaultPlacements();
@@ -184,8 +181,6 @@ export const GET = withProviders(
   }),
 );
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const PATCH = withProviders(
   createRouteHandler<(typeof adsConfigPatchSchema)["_output"]>({
     auth: true,
@@ -193,7 +188,6 @@ export const PATCH = withProviders(
     permission: "admin:ads:write",
     schema: adsConfigPatchSchema,
     handler: async ({ body }) => {
-      // audit-unknown-ok: TS structural escape — Record
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const mergedCredentials = normalizeProviderCredentials({
@@ -218,8 +212,6 @@ export const PATCH = withProviders(
   }),
 );
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — handler uses createRouteHandler with admin roles + path-segregated guards
 export const POST = withProviders(
   createRouteHandler<(typeof adInventoryItemSchema)["_output"]>({
     auth: true,
@@ -231,7 +223,6 @@ export const POST = withProviders(
         return errorResponse("Invalid request", 400);
       }
 
-      // audit-unknown-ok: TS structural escape — Record
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const normalized = normalizeAdSettings(settings);
       const placements = normalized.placements.length > 0 ? normalized.placements : defaultPlacements();

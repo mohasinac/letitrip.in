@@ -25,7 +25,6 @@ async function _GET(request: Request): Promise<NextResponse> {
     ? `validity.isActive==true,${extraFilters}`
     : "validity.isActive==true";
 
-  // audit-unknown-ok: receives upstream listingProcessor items (unknown[] from gateway)
   let items: unknown[];
   let total: number;
   let resultPage: number;
@@ -79,6 +78,4 @@ async function _GET(request: Request): Promise<NextResponse> {
   return response;
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(_GET);

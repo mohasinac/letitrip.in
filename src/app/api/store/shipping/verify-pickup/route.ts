@@ -26,8 +26,6 @@ const verifyOTPSchema = z.object({
   pickupLocationId: z.number().int().positive(),
 });
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const POST = withProviders(createApiHandler<(typeof verifyOTPSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],

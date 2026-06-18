@@ -14,8 +14,6 @@ import { ROLES_STORE_WRITE } from "@/constants";
 // S-STORE-2-C — Duplicate listing. Copies the source product into a new
 // document with status "draft", appends "(copy)" to the title, and clears
 // statistics fields.
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
@@ -32,7 +30,6 @@ export const POST = withProviders(
       try {
         const now = new Date();
         const copy: FirestoreDocument = {
-          // audit-unknown-ok: TS structural escape — domain document type lacks index signature
           ...(source as unknown as FirestoreDocument),
           title: `${(source as { title?: string }).title ?? "Listing"} (copy)`,
           status: "draft",

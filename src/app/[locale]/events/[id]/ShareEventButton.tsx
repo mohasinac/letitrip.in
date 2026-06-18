@@ -16,7 +16,6 @@ export function ShareEventButton() {
   };
 
   return (
-    // audit-variant-ok: share Button — bespoke text-zinc-700 + hover-bg-zinc-50 ghost-outline composition
     <Button rounded="lg" gap="xs"
       type="button"
       onClick={handleCopy}

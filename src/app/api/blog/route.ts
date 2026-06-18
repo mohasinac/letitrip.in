@@ -2,7 +2,6 @@ import { normalizeError } from "@mohasinac/appkit";
 import { initProviders } from "@/providers.config";
 import { blogGET, serverLogger } from "@mohasinac/appkit";
 
-// audit-unknown-ok: error-handler entry point — accepts thrown values of any shape
 function isMissingFirestoreIndexError(error: unknown): boolean {
 	const message = error instanceof Error ? error.message : String(error);
 	return (
@@ -11,8 +10,6 @@ function isMissingFirestoreIndexError(error: unknown): boolean {
 	);
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export async function GET(
 	...args: Parameters<typeof blogGET>
 ) {

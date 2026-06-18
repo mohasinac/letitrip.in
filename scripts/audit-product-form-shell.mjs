@@ -50,10 +50,7 @@ const BARE_VIEWS = {
 };
 
 // Files that are allowed to import/render these views directly.
-const ALLOWLISTED_PATHS = new Set([
-  // The wrapper that legitimately wraps these views
-  join("src", "components", "store", "SellerProductFormShell.tsx"),
-]);
+const ALLOWLISTED_PATHS = new Set([]);
 
 // Directories that should never be scanned (source definitions live here)
 const SKIP_DIRS = new Set(["node_modules", ".next", "dist", "appkit"]);

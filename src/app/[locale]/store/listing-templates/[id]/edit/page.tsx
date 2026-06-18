@@ -44,7 +44,6 @@ export default function Page() {
   }, [id]);
 
   const onSave = async () => {
-    // audit-unknown-ok: Template defaults — arbitrary form-state initialisation
     let defaults: unknown = {};
     try {
       defaults = JSON.parse(defaultsJson || "{}");

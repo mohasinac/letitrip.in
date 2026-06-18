@@ -32,38 +32,7 @@ const EXTENSIONS = [".tsx", ".jsx"];
 
 // Files where raw HTML form/input is inherent to the implementation.
 // Each entry MUST have a 1-line justification.
-const ALLOWLIST = [
-  // The form primitives themselves wrap raw HTML internally.
-  "FormShell.tsx",
-  "FieldInput.tsx",
-  "FieldSelect.tsx",
-  "FieldCheckbox.tsx",
-  "FieldTextarea.tsx",
-  "QuickFormDrawer.tsx",
-  "Form.tsx",                  // <Form> canonical wrapper — owns the raw <form>
-  "FormGrid.tsx",
-  "FormField.tsx",
-  // Low-level UI primitives that wrap raw <input> / <textarea>.
-  "Input.tsx",
-  "Textarea.tsx",
-  "Select.tsx",
-  "Toggle.tsx",
-  "Checkbox.tsx",
-  "PaginatedSelect.tsx",
-  // Rich-text editor uses raw <input type=file> and contentEditable internally.
-  "RichTextEditor.tsx",
-  "RichTextRenderer.tsx",
-  // Media editor / uploader internals.
-  "ImageEditor.tsx",
-  "ImageCropModal.tsx",
-  "VideoTrimModal.tsx",
-  "CameraCapture.tsx",
-  "MediaUploadField.tsx",
-  "ImageUpload.tsx",
-  // Dev-only admin tooling.
-  "SeedPanel.tsx",
-  "DevToolbar.tsx",
-];
+const ALLOWLIST = [];
 
 // Per-line suppression marker. Place on same line or immediately preceding line.
 // Supports both `// audit-raw-form-input-ok` and `{/* audit-raw-form-input-ok */}`

@@ -27,24 +27,10 @@ const IGNORE_DIRS = ["node_modules", ".next", "dist", "__tests__", "scripts"];
 const EXTENSIONS = [".tsx", ".jsx"];
 
 // Files where raw HTML is acceptable (rich text renderers, markdown, etc.)
-const ALLOWLIST = [
-  "RichTextRenderer.tsx",
-  "RichText.tsx",
-  "RichTextEditor.tsx",
-  "index.style.css",
-  // Dev-only admin tooling — rich diagnostic UI; raw HTML acceptable.
-  "SeedPanel.tsx",
-  "DevToolbar.tsx",
-  // Email template — composed via renderToStaticMarkup for email clients
-  // that don't run React; raw HTML is the only portable option.
-  "email.tsx",
-];
+const ALLOWLIST = [];
 
 // File-name patterns where raw HTML is acceptable (internal documentation)
-const ALLOWLIST_PATTERNS = [
-  /GuideView\.tsx$/,         // Admin/seller/buyer guide documentation pages
-  /GuideHubView\.tsx$/,      // Guide hub landing pages
-];
+const ALLOWLIST_PATTERNS = [];
 
 // ── Patterns ─────────────────────────────────────────────────────────────────
 // Each rule: { id, label, regex, baseline }

@@ -33,8 +33,6 @@ import sharp from "sharp";
  * - outputFormat?: 'jpeg' | 'png' | 'webp' - Output format (default: original)
  * - quality?: number (1-100) - Output quality (default: 90)
  */
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: media route — handler verifies signed-URL ownership + applyRateLimit
 export const POST = withProviders(createRouteHandler<(typeof cropDataSchema)["_output"]>({
   auth: true,
   schema: cropDataSchema,

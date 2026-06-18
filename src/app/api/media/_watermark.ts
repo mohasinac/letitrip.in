@@ -37,7 +37,6 @@ const MEDIA_PROXY_PATH_PREFIX = "media/";
 
 let watermarkCache: { value: WatermarkConfig; expiresAt: number } | null = null;
 
-// audit-unknown-ok: type-narrowing entry point — accepts any value, narrows by typeof/Array.isArray
 function clampPercent(n: unknown, fallback: number): number {
   if (typeof n !== "number" || !Number.isFinite(n)) return fallback;
   return Math.max(0, Math.min(100, n));

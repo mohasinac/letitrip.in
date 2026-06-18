@@ -19,7 +19,6 @@ type RawEvent = {
   endsAt?: FirestoreValue;
 };
 
-// audit-unknown-ok: callback entry point — accepts arbitrary payload value
 export function formatEventDate(value: unknown): string {
   if (!value) return "";
   try {
@@ -32,7 +31,6 @@ export function formatEventDate(value: unknown): string {
   }
 }
 
-// audit-unknown-ok: callback entry point — accepts arbitrary payload value
 export function toIsoOrUndefined(value: unknown): string | undefined {
   if (!value) return undefined;
   if (typeof value === "string") return value;

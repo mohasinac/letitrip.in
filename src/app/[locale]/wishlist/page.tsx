@@ -30,7 +30,6 @@ import { removeFromWishlistAction } from "@/actions/wishlist.actions";
 const __P = {
   p4: "p-4",
 } as const;
-// audit-auth-gates-ok
 
 const SORT_OPTIONS = [
   { value: sortBy("addedAt", "DESC"), label: "Newest first" },

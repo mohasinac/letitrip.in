@@ -131,6 +131,11 @@ export {
 // UI labels
 export { UI_LABELS } from "./ui";
 
+// Style className tokens (extracted from the legacy THEME_CONSTANTS surface)
+export * from "./styles/page";
+export * from "./styles/themed";
+export * from "./styles/nav-icons";
+
 // Schema field name & status constants
 export {
   PRODUCT_FIELDS,

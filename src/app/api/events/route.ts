@@ -41,7 +41,6 @@ async function _GET(request: Request): Promise<NextResponse> {
   if (safe) parts.push(safe);
   const filters = parts.join(",");
 
-  // audit-unknown-ok: receives upstream listingProcessor items (unknown[] from gateway)
   let items: unknown[];
   let total: number;
   let resultPage: number;
@@ -73,7 +72,6 @@ async function _GET(request: Request): Promise<NextResponse> {
     try {
       const result = await eventRepository.list({ filters, sorts, page, pageSize });
       // Strip internal fields (createdBy) before returning
-      // audit-unknown-ok: TS structural escape — Array
       items = (result.items as unknown as Array<Record<string, JsonValue>>).map(
         ({ createdBy: _createdBy, ...rest }) => rest,
       );
@@ -99,6 +97,4 @@ async function _GET(request: Request): Promise<NextResponse> {
   return response;
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(_GET);

@@ -39,11 +39,9 @@ function StatCard({
   Icon: React.ComponentType<{ className?: string }>;
 }) {
   return (
-    // audit-variant-ok: stat card — static shadow-sm + hover-shadow-md transition combo; Div.shadow accepts only one value
     <Div className={`relative border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden} hover:shadow-md transition-shadow`} rounded="xl" shadow="sm">
       <Div
         className="absolute top-0 left-0 right-0 h-[3px]"
-        // audit-inline-style-ok: runtime theme gradient
         style={{ background: gradient }}
         aria-hidden="true"
       />
@@ -58,7 +56,6 @@ function StatCard({
         </Div>
         <Row
           className="flex-shrink-0 w-10 h-10" align="center" justify="center" rounded="lg"
-          // audit-inline-style-ok: runtime theme gradient
           style={{ background: gradient }}
         >
           <Icon className="w-5 h-5 text-white" />
@@ -88,7 +85,7 @@ export default function Page() {
     fetch(API_ROUTES.STORE.ANALYTICS)
       .then((r) => r.json())
       .then((json) => { if (json?.data?.topProducts) setTopProducts(json.data.topProducts); })
-      .catch(() => {}); // audit-silent-catch-ok: analytics card is decorative; main dashboard renders without it
+      .catch(() => {});
   }, []);
 
   return (
@@ -151,7 +148,6 @@ export default function Page() {
             >
               <Span layout="flex-center" 
                 className="flex-shrink-0 w-7 h-7" rounded="md"
-                // audit-inline-style-ok: runtime brand gradient
                 style={{ background: BRAND_GRAD }}
               >
                 <Icon className="w-3.5 h-3.5 text-white" />

@@ -1,5 +1,5 @@
 import { ROUTES } from "@/constants";
-import { PAGE_CONTAINER } from "@/constants/styles/page";
+import { PAGE_CONTAINER } from "@/constants";
 import { Div, FlowDiagram, Grid, Heading, Row, Section, Stack, Text, TextLink } from "@mohasinac/appkit/ui";
 import type { FlowStep } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";

@@ -4,8 +4,6 @@ import { productRepository, storeRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 /** DELETE /api/store/products/[id]/group/children/[childId] — unlink a child */
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const DELETE = withProviders(createApiHandler({
   roles: [...ROLES_STORE_WRITE],
   handler: async ({ user, params }) => {

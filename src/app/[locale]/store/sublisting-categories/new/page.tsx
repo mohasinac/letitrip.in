@@ -105,7 +105,6 @@ export default function Page() {
         )}
 
         <Row gap="3" padding="t-xs">
-          {/* audit-variant-ok: create Button — py-2.5 between paddingY map keys + hover-opacity-90 */}
           <Button rounded="lg"
             type="submit"
             variant="primary"

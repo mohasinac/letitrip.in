@@ -27,7 +27,6 @@ export async function reservePreOrderAction(productId: string): Promise<void> {
   const product = await productRepository.findByIdOrSlug(productId).catch(() => null);
   if (!product) throw new ValidationError("Pre-order product not found.");
 
-  // audit-unknown-ok: TS structural escape — Record
   const p = product as unknown as Record<string, JsonValue>;
   const price = typeof p.price === "number" ? p.price : null;
   if (!price || price <= 0) throw new ValidationError("Invalid product price.");

@@ -1,8 +1,6 @@
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, userRepository, applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -40,7 +38,7 @@ export const GET = withProviders(
           // Sync custom claims so next check is fast
           const adminAuth = await import("@mohasinac/appkit").then((m) => m.getAdminAuth?.());
           if (adminAuth) {
-            adminAuth.setCustomUserClaims(user!.uid, { role }).catch(() => {}); // audit-silent-catch-ok: claim sync is best-effort; next /me retry will fix
+            adminAuth.setCustomUserClaims(user!.uid, { role }).catch(() => {});
           }
         }
       }

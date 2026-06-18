@@ -23,66 +23,13 @@ const DIRS = [
 const IGNORE_DIRS = ["node_modules", ".next", "dist", "__tests__", "scripts"];
 const EXTENSIONS = [".tsx", ".jsx"];
 
-const ALLOWLIST = [
-  "RichTextRenderer.tsx",
-  "RichText.tsx",
-  "RichTextEditor.tsx",
-  "ImageCropModal.tsx",
-  "ImageEditor.tsx",
-  "VideoTrimModal.tsx",
-  "CameraCapture.tsx",
-  "MediaSlider.tsx",
-  "HeroCarousel.tsx",
-  "SpinWheelView.tsx",
-  // Dev-only toolbar — never renders in prod (IS_DEV gated to false).
-  // Cosmetic inline styles for a developer debug surface; not worth converting.
-  "DevToolbar.tsx",
-  "SeedPanel.tsx",
-  // Dynamic-position homepage components — inline styles are inherent.
-  // Hotspots have xPct/yPct positions from Firestore; banners use theme tokens
-  // resolved at runtime; sliders/carousels use transform math for animation.
-  "CharacterHotspot.tsx",
-  "CharacterHotspotForm.tsx",
-  "HeroBanner.tsx",
-  "TestimonialsCarousel.tsx",
-  "PromoGrid.tsx",
-  "TrustBadges.tsx",
-  "BeforeAfterSlider.tsx",
-  // Error UIs that render WITHOUT any CSS framework (in case CSS itself is broken).
-  // Must use inline styles for visual integrity in CSS-load-failure scenarios.
-  "GlobalError.tsx",
-  "ErrorBoundary.tsx",
-  // Dynamic-prop UI primitives where gap/width/etc come from caller props.
-  "HorizontalScroller.tsx",
-  // Button's built-in confirmation portal modal — inline styles guard
-  // against CSS-load failure on destructive actions.
-  "Button.tsx",
-];
+const ALLOWLIST = [];
 
 // File-name patterns where dynamic inline styles are acceptable (internal documentation)
-const ALLOWLIST_PATTERNS = [
-  /GuideView\.tsx$/,         // Admin/seller/buyer guide documentation pages (dynamic gradient icons)
-  /GuideHubView\.tsx$/,      // Guide hub landing pages
-];
+const ALLOWLIST_PATTERNS = [];
 
 // Path patterns where inline styles are inherent to the technology
-const ALLOWLIST_PATH_PATTERNS = [
-  /[\\/]_internal[\\/]server[\\/]features[\\/][^\\/]+[\\/]og\.tsx?$/,  // @vercel/og image renderers — no Tailwind support
-  /[\\/]_internal[\\/]server[\\/]features[\\/]seo[\\/]og-layout\.tsx?$/, // OG layout helper
-  // Email primitives must use inline styles + hardcoded hex — email clients
-  // (Gmail, Outlook) drop CSS variables and most stylesheet rules. These
-  // components are the source-of-truth for email rendering.
-  /[\\/]features[\\/]email[\\/]/,
-  // Email sender — composes primitives + raw HTML for email-client output.
-  /[\\/]features[\\/]contact[\\/]email\.tsx?$/,
-  // Maintenance dashboards are admin-only diagnostic UI rendered behind
-  // permission gates. They use inline styles for density + zero-CSS-load
-  // robustness so they remain useful when the global CSS bundle is broken
-  // (which is exactly when an admin needs them). Same justification as
-  // GlobalError.tsx + ErrorBoundary.tsx in the file-name allowlist above.
-  /[\\/]_internal[\\/]client[\\/]features[\\/]maintenance[\\/]views[\\/][^\\/]+\.tsx?$/,
-  /[\\/]admin[\\/]maintenance[\\/][^\\/]*[\\/]page\.tsx?$/,
-];
+const ALLOWLIST_PATH_PATTERNS = [];
 
 const RULES = [
   {

@@ -19,8 +19,6 @@ const updateSchema = z.object({
   pickupAddressId: z.string().max(120).optional(),
 });
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -35,8 +33,6 @@ export const GET = withProviders(
   }),
 );
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const PUT = withProviders(
   createRouteHandler<(typeof updateSchema)["_output"]>({
     auth: true,
@@ -62,8 +58,6 @@ export const PUT = withProviders(
   }),
 );
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

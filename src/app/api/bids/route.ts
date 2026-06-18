@@ -23,8 +23,6 @@ const placeBidSchema = z.object({
   autoMaxBid: z.number().positive().optional(),
 });
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(
   createRouteHandler({
     handler: async ({ request }) => {
@@ -41,8 +39,6 @@ export const GET = withProviders(
   }),
 );
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createRouteHandler<(typeof placeBidSchema)["_output"]>({
     auth: true,
@@ -60,7 +56,6 @@ export const POST = withProviders(
         const result = await placeBid(user!.uid, user!.email ?? "", body!);
         return successResponse(result, "Bid placed", 201);
       } catch (err) {
-        // audit-unknown-ok: type-narrowing entry point — accepts any value, narrows by typeof/Array.isArray
         const errData = (e: unknown) => "data" in (e as object) ? ((e as { data?: unknown }).data as Record<string, JsonValue> | undefined) : undefined;
         if (err instanceof NotFoundError) return errorResponse(err.message, 404, errData(err));
         if (err instanceof ValidationError) return errorResponse(err.message, 400, errData(err));

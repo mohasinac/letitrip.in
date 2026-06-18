@@ -14,7 +14,7 @@ import {
   WishlistCapWatcher,
   ZodSetup,
 } from "@mohasinac/appkit/client";
-import { ClientErrorReporterMount } from "@/components/ClientErrorReporterMount";
+import { ClientErrorReporterMount } from "@/components";
 import { siteSettingsRepository } from "@mohasinac/appkit";
 import { getDisabledRoutes } from "@mohasinac/appkit/server";
 import LayoutShellClient from "./LayoutShellClient";

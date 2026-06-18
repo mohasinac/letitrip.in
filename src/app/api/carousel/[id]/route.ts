@@ -47,8 +47,6 @@ const COLLECTION_CACHE_PATHS: Record<string, string[]> = {
   coupons: ["/api/admin/coupons"],
 };
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export async function POST(request: NextRequest) {
   try {
     // --- Authentication ---
@@ -92,7 +90,6 @@ export async function POST(request: NextRequest) {
     const unknown = collections.filter((c) => !(c in COLLECTION_CACHE_PATHS));
     if (unknown.length > 0) {
       serverLogger.warn(
-        // audit-unknown-ok: literal string content — not a type annotation
         `Cache revalidation: unknown collections ignored: ${unknown.join(", ")}`,
       );
     }

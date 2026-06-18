@@ -7,12 +7,8 @@ import {
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(homepageGET);
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

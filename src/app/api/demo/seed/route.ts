@@ -489,8 +489,6 @@ async function resolveAuthConflicts(
   }
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: demo seed — handler asserts isAdminUser before any write
 export async function GET(request: NextRequest) {
   const user = await getUserFromRequest(request);
   if (!user || !isAdminUser(user)) {
@@ -517,7 +515,6 @@ export async function GET(request: NextRequest) {
         try {
           const existingCount = await countExistingForCollection(db, colName);
           return { name: colName, seedCount, existingCount };
-        // audit-unknown-ok: error-handler entry point — accepts thrown values of any shape
         } catch (err: unknown) {
           void normalizeError(err);
           serverLogger.error(`Error checking status for ${colName}:`, err);
@@ -540,8 +537,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: demo seed — handler asserts isAdminUser before any write
 export async function POST(request: NextRequest) {
   const user = await getUserFromRequest(request);
   if (!user || !isAdminUser(user)) {
@@ -708,7 +703,6 @@ export async function POST(request: NextRequest) {
     let totalErrors = 0;
     const processedCollections: string[] = [];
     let progressDone = 0;
-    // audit-unknown-ok: demo seed event emitter
     const emittedEvents: Array<{ type: string; [k: string]: unknown }> = [];
     // Fire-and-forget RTDB writes so per-collection work isn't blocked on
     // realtime network round-trips.  Failures are logged but never thrown.

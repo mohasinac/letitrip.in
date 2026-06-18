@@ -4,8 +4,6 @@ import { createRouteHandler, errorResponse, parseJsonBody, successResponse } fro
 import { shipOrderAction } from "@/actions/seller.actions";
 import { ROLES_STORE_WRITE } from "@/constants";
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: store section — handler scopes queries by storeId + actor uid
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
@@ -17,7 +15,6 @@ export const POST = withProviders(
       try {
         const result = await shipOrderAction(orderId, body);
         return successResponse(result, "Order marked as shipped");
-      // audit-unknown-ok: error-handler entry point — accepts thrown values of any shape
       } catch (err: unknown) {
         void normalizeError(err);
         const msg = err instanceof Error ? err.message : "Failed to ship order";

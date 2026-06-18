@@ -3,7 +3,6 @@ import { getAdminRealtimeDb } from "@mohasinac/appkit";
 
 export const dynamic = "force-dynamic";
 
-// audit-unknown-ok: SSE chunk encoder — caller passes JSON-serialisable payload
 function sseChunk(type: string, data?: unknown): Uint8Array {
   return new TextEncoder().encode(`data: ${JSON.stringify({ type, data })}\n\n`);
 }
@@ -12,7 +11,6 @@ function sseChunk(type: string, data?: unknown): Uint8Array {
  * Enqueue an SSE chunk into the stream controller, ignoring errors that occur
  * when the stream is already closed (client disconnected).
  */
-// audit-unknown-ok: SSE chunk encoder — caller passes JSON-serialisable payload
 function tryEnqueue(controller: ReadableStreamDefaultController, type: string, data?: unknown): void {
   try {
     controller.enqueue(sseChunk(type, data));
@@ -21,8 +19,6 @@ function tryEnqueue(controller: ReadableStreamDefaultController, type: string, d
   }
 }
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },

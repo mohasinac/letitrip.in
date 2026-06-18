@@ -15,8 +15,6 @@ const analysisSchema = z.object({
   maxDocs: z.number().int().min(100).max(20000).default(5000),
 });
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: admin section — createRouteHandler permission "admin:maintenance:run-analysis" enforces the access surface
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

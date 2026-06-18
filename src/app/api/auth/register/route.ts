@@ -46,8 +46,6 @@ const registerSchema = z.object({
   }),
 });
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: authentication endpoint — applyRateLimit enforced by audit-auth-rate-limit
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting — protect against registration spam
@@ -202,7 +200,6 @@ export async function POST(request: NextRequest) {
     });
 
     return response;
-  // audit-unknown-ok: error-handler entry point — accepts thrown values of any shape
   } catch (error: unknown) {
     void normalizeError(error);
     return handleApiError(error);

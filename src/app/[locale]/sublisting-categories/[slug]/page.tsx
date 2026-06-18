@@ -20,7 +20,6 @@ function fmt(paise: number, currency = "INR"): string {
 
 export const revalidate = 300;
 
-// audit-semantic-color-ok: amber palette is the brand auction-pill colour, not semantic warning
 const CLS_AUCTION_PILL = "rounded-full bg-amber-100 dark:bg-amber-900/30 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300";
 const CLS_PREORDER_PILL = "rounded-full bg-indigo-100 dark:bg-indigo-900/30 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-700 dark:text-indigo-300";
 
@@ -94,7 +93,6 @@ export default async function SublistingCategoryPage({ params }: Props) {
                 </Text>
               )}
             </>
-            {/* audit-variant-ok: listing count pill — primary-tinted bg-primary/10 chip + px-3 py-1 over Text inline-flex layout */}
             <Text as="span" className="mt-2 inline-flex h-fit shrink-0 items-center rounded-full bg-[var(--appkit-color-primary)]/10 px-3 py-1 text-[var(--appkit-color-primary)] sm:mt-0" size="sm" weight="semibold">
               {listings.length} listing{listings.length !== 1 ? "s" : ""}
             </Text>
@@ -172,7 +170,6 @@ export default async function SublistingCategoryPage({ params }: Props) {
                           </Text>
                         )}
                         {condition && (
-                          // audit-variant-ok: condition pill — bg-zinc-100 + px-1.5/py-0.5 micro padding + text-[10px] under-10
                           <Text as="span" className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 text-[10px]" color="muted" transform="capitalize">
                             {condition}
                           </Text>

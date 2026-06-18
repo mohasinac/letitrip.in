@@ -6,8 +6,6 @@ import { successResponse } from "@mohasinac/appkit";
 import { createApiHandler } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const GET = withProviders(createApiHandler({
   auth: true,
   handler: async ({ user }) => {
@@ -66,8 +64,6 @@ const updateProfileSchema = z.object({
   acknowledgeScamAwareness: z.boolean().optional(),
 });
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const PATCH = withProviders(createApiHandler<(typeof updateProfileSchema)["_output"]>({
   auth: true,
   schema: updateProfileSchema,

@@ -48,8 +48,6 @@ const createNotificationSchema = z.object({
 /**
  * GET /api/notifications — List authenticated user's notifications
  */
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ request, user }) => {
@@ -70,8 +68,6 @@ export const GET = withProviders(createRouteHandler({
 /**
  * POST /api/notifications — Create a notification (admin only, or internal system calls)
  */
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_ONLY],

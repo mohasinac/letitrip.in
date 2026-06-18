@@ -26,8 +26,6 @@ const sendSchema = z.object({
   body: z.string().min(1).max(MESSAGE_MAX_LENGTH),
 });
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-scope-enforced-in-handler: user section — handler scopes queries by actor uid
 export const POST = withProviders(
   createRouteHandler<(typeof sendSchema)["_output"]>({
     auth: true,

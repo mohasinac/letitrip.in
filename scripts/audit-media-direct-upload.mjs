@@ -29,10 +29,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 
 const API_DIR = join(ROOT, "src", "app", "api");
-const EXEMPT = new Set([
-  join(ROOT, "src", "app", "api", "media", "sign", "route.ts"),
-  join(ROOT, "src", "app", "api", "media", "finalize", "route.ts"),
-]);
+const EXEMPT = new Set([]);
 
 const SKIP = new Set(["node_modules", "dist", ".next", ".git"]);
 

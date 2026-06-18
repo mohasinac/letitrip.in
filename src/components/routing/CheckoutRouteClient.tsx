@@ -1,7 +1,6 @@
 "use client";
 import { normalizeError, type JsonArray } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
-// audit-auth-gates-ok — checkout page is protected by server-side layout auth redirect
 
 import { useCallback, useState, useEffect, useMemo } from "react";
 import {
@@ -53,7 +52,6 @@ interface RazorpayResponse {
 
 function loadRazorpayScript(): Promise<boolean> {
   return new Promise((resolve) => {
-    // audit-unknown-ok: TS structural escape — Record
     if (typeof window !== "undefined" && (window as unknown as Record<string, JsonValue>).Razorpay) {
       resolve(true);
       return;
@@ -179,7 +177,6 @@ function renderAddressStep({
       getAddressId={(a) => a.id}
       onSelectAddress={handleSelectAddress}
       renderAddressCard={(address, { isSelected, select }) => (
-        // audit-variant-ok: selectable address card — conditional zinc-900 selected border/bg vs default white; explicit dark-mode token pairs
         <Div border="default"
           key={address.id}
           onClick={select}
@@ -273,7 +270,6 @@ function renderOtpConsentStep({
             <Text className="mb-2 text-warning" size="xs">
               {CK.ADMIN_BYPASS_CONSENT_DESC}
             </Text>
-            {/* audit-variant-ok: admin-bypass dev button — warning-tinted full-width override; Button.variant ghost+danger would lose warning surface */}
             <Button
               type="button"
               onClick={handleAdminBypass}
@@ -342,7 +338,6 @@ function renderOtpStep({
         >
           {isVerifyingOtp ? CK.OTP_VERIFYING_BTN : CK.OTP_VERIFY_BTN}
         </Button>
-        {/* audit-variant-ok: OTP resend Button — full-width underline-style text-link masquerading as ghost button */}
         <Button
           type="button"
           variant="ghost"
@@ -401,7 +396,6 @@ function renderPaymentStep({
           >
             {CK.PAYMENT_ONLINE_BTN}
           </Button>
-          {/* audit-variant-ok: COD secondary Button — full-width outline over white surface; explicit dark-mode token pairs for theme contrast */}
           <Button
             type="button"
             onClick={handlePlaceCodOrder}
@@ -415,7 +409,6 @@ function renderPaymentStep({
               <Text className="mb-2 text-warning tracking-wide" size="xs" weight="semibold" transform="uppercase">
                 {CK.ADMIN_BYPASS_PANEL_LABEL}
               </Text>
-              {/* audit-variant-ok: admin-bypass dev button — warning-tinted full-width override; Button.variant ghost+danger would lose warning surface */}
               <Button
                 type="button"
                 onClick={handleAdminBypass}
@@ -543,7 +536,6 @@ function renderOrderSummary({
           </Text>
         </Div>
       )}
-      {/* audit-variant-ok: summary line Row — explicit zinc/slate companion pair on top of color="muted"; legacy explicit shade for design parity */}
       <Row color="muted" textSize="sm" className="text-zinc-600 dark:text-zinc-400 mb-1" align="center" justify="between">
         <Text>Subtotal</Text>
         <Text>{formattedSubtotal}</Text>
@@ -559,7 +551,6 @@ function renderOrderSummary({
         <Text weight="semibold" color="primary">{formattedTotal}</Text>
       </Row>
       {step === "address" && (
-        // audit-variant-ok: continue Button — high-contrast zinc-900/100 inverted in dark mode; bespoke primary-action color over Button.variant default
         <Button
           type="button"
           onClick={handleAdvanceToVerification}
@@ -798,7 +789,6 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
         name: process.env.NEXT_PUBLIC_SITE_NAME ?? "LetItRip",
         prefill: {
           email: user.email ?? undefined,
-          // audit-unknown-ok: TS structural escape — Record
           name: (user as unknown as Record<string, JsonValue>).displayName as string | undefined,
         },
       });

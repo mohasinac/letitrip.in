@@ -29,8 +29,6 @@ const mergeCartSchema = z.object({
     .max(50), // Reasonable cap to prevent abuse
 });
 
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const POST = withProviders(createRouteHandler<(typeof mergeCartSchema)["_output"]>({
   auth: true,
   schema: mergeCartSchema,

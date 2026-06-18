@@ -48,13 +48,9 @@ export default async function Page({ params }: Props) {
 
   const hasLeaderboard =
     (event as { hasLeaderboard?: boolean }).hasLeaderboard === true;
-  // audit-unknown-ok: TS structural escape — Record
   const ev = event as unknown as Record<string, JsonValue>;
-  // audit-unknown-ok: TS structural escape — extracted function type
   const pollConfig = ev.pollConfig as unknown as Parameters<typeof EventParticipateClient>[0]["event"]["pollConfig"];
-  // audit-unknown-ok: TS structural escape — extracted function type
   const surveyConfig = ev.surveyConfig as unknown as Parameters<typeof EventParticipateClient>[0]["event"]["surveyConfig"];
-  // audit-unknown-ok: TS structural escape — extracted function type
   const feedbackConfig = ev.feedbackConfig as unknown as Parameters<typeof EventParticipateClient>[0]["event"]["feedbackConfig"];
   type SpinPrize = { id: string; label: string; weight: number; isActive: boolean; couponId?: string };
   const spinPrizes = Array.isArray(ev.spinPrizes) ? (ev.spinPrizes as SpinPrize[]) : [];

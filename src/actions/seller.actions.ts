@@ -220,7 +220,6 @@ export async function bulkSellerOrderAction(
 
 // --- Create Seller Product ----------------------------------------------------
 
-// audit-unknown-ok: callback entry point — accepts arbitrary payload value
 export async function createSellerProductAction(input: unknown): Promise<void> {
   const user = await requireRoleUser(["seller", "admin"]);
   const rl = await rateLimitByIdentifier(`create-seller-product:${user.uid}`, RateLimitPresets.API);
@@ -322,14 +321,12 @@ export async function getSellerProductAction(id: string): Promise<ActionResult<P
       if (!product) return null;
       const profile = await userRepository.findById(user.uid);
       if (!isAdminUser(profile) && (product as any).storeId !== user.uid) return null;
-      // audit-unknown-ok: TS structural escape — domain document type lacks index signature
       return product as unknown as ProductDocument;
   });
 }
 
 export async function sellerUpdateProductAction(
   id: string,
-  // audit-unknown-ok: callback entry point — accepts arbitrary payload value
   input: unknown,
 ): Promise<ActionResult<ProductDocument>> {
   return wrapAction(async () => {

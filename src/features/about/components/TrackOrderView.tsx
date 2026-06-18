@@ -1,5 +1,5 @@
 import { ROUTES } from "@/constants";
-import { PAGE_CONTAINER } from "@/constants/styles/page";
+import { PAGE_CONTAINER } from "@/constants";
 import {
   FLEX_CENTER,
   THEMED_BG_PRIMARY,
@@ -7,7 +7,7 @@ import {
   THEMED_BORDER,
   THEMED_TEXT_PRIMARY,
   THEMED_TEXT_SECONDARY,
-} from "@/constants/styles/themed";
+} from "@/constants";
 import { Heading, Text, Caption, Grid, Section, Container, Stack, Card, Row, Div, TextLink } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 import { ShoppingBag, Truck, MapPin, CheckCircle2 } from "lucide-react";
@@ -72,7 +72,6 @@ export async function TrackOrderView() {
         </Container>
       </Section>
 
-      {/* audit-variant-ok: page container — responsive md:py-16 ladder beyond y-2-5xl base + space-y between sections; Container lacks space-y variant */}
       <Container
         className={`${page.container.md} md:py-16 space-y-14 md:space-y-16`} padding="y-2-5xl"
       >
@@ -89,14 +88,12 @@ export async function TrackOrderView() {
             {t("signInPrompt")}
           </Heading>
           <Row gap="md" justify="center" className="mt-6">
-            {/* audit-variant-ok: primary-fill button-as-link — bg-primary CTA fill; TextLink lacks button-tone variant */}
             <TextLink rounded="lg" paddingX="xl" paddingY="md"
               href={ROUTES.AUTH.LOGIN}
               className={`inline-${flex.center} gap-2 bg-primary hover:bg-primary/90 text-white transition-colors`} weight="medium"
             >
               {t("signIn")}
             </TextLink>
-            {/* audit-variant-ok: outline button-as-link — themed bg/border/text composite; TextLink lacks themed button-tone variant */}
             <TextLink rounded="lg" paddingX="xl" paddingY="md"
               href={ROUTES.USER.ORDERS}
               className={`inline-${flex.center} gap-2 ${themed.bgPrimary} border ${themed.border} ${themed.textPrimary} hover:opacity-80 transition-opacity`} weight="medium"
@@ -114,7 +111,6 @@ export async function TrackOrderView() {
           {/* eslint-disable-next-line lir/no-hardcoded-grid-cols -- responsive 1→2→4 breakpoint; FLUID_GRID tokens not yet available */}
           <Grid className="grid-cols-1 sm:grid-cols-2 xl:grid-cols-4" gap="lg">
             {STEPS.map(({ icon: Icon, title, text, color, bg }, index) => (
-              // audit-variant-ok: step Card — themed bgSecondary + border slot; rounded-xl + relative absolute-positioning anchor
               <Card padding="lg"
                 className={`${themed.bgSecondary} rounded-xl border ${themed.border} relative`}
               >
@@ -156,7 +152,6 @@ export async function TrackOrderView() {
             >
               {t("helpCenter")}
             </TextLink>
-            {/* audit-variant-ok: contact-support button-as-link — primary fill + px-4 py-2 padding; TextLink lacks button variant */}
             <TextLink rounded="lg"
               href={ROUTES.PUBLIC.CONTACT}
               className="bg-primary hover:bg-primary/90 text-white px-4 py-2 transition-colors" size="sm"

@@ -44,8 +44,6 @@ import { invalidateIntegrationKeysCache } from "@mohasinac/appkit";
  * TODO (Future): Support ETag for conditional requests — ✅ Done
  * TODO (Future): Integrate Redis for distributed caching
  */
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const GET = withProviders(createApiHandler({
   handler: async ({ request }) => {
     // Fetch site settings (singleton pattern)
@@ -125,8 +123,6 @@ export const GET = withProviders(createApiHandler({
  * TODO (Future): Invalidate distributed caches (Redis)
  * TODO (Future): Send notification to all admins on settings change — ✅ Done
  */
-// audit-route-schema-ok: pending-bespoke-schema
-// rbac-public: public read endpoint — Firestore rules + payload schema enforce visibility
 export const PATCH = withProviders(createRouteHandler<
   (typeof siteSettingsUpdateSchema)["_output"]
 >({

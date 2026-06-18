@@ -9,7 +9,6 @@ import {
   type AdSlotId,
 } from "@mohasinac/appkit/client";
 
-// audit-unknown-ok: Product shape — index signature for dynamic fields
 type Product = { id: string; slug?: string; [key: string]: unknown };
 type Props = {
   title: string;

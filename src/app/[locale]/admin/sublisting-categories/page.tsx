@@ -7,7 +7,6 @@ export const metadata = { title: "Sub-listing Categories — Admin" };
 export default function Page() {
   return (
     <>
-      {/* audit-variant-ok: page-header Row — asymmetric pt-4/pb-2 single-axis paddings */}
       <Row className="pt-4 pb-2" padding="x-md" align="center" justify="between">
         <Heading level={1} size="lg" weight="semibold" color="primary">
           Sub-listing Categories
