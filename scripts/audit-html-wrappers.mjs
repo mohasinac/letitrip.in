@@ -268,7 +268,13 @@ const BASELINES = {
   RAW_TABLE: 0,
   RAW_NAV_HEADER_FOOTER: 0,
   RAW_HR: 0,
-  RAW_INLINE_TEXT: 86,
+  // RAW_INLINE_TEXT — strict-zero locked 2026-06-17 (Phase H1). Live count
+  // was already 0 by the time the historical baseline of 86 came up for
+  // review; the residue was from before the rich-text + dev-tool exclusions
+  // in SKIP_PATH_RE started covering every legitimate <code>/<pre>/
+  // <blockquote>/<kbd>/<q> site. Any future raw inline-text tag in feature
+  // views is a regression — use <Code>/<Pre>/<Blockquote>/<Kbd>/<Quote>.
+  RAW_INLINE_TEXT: 0,
   RAW_DISCLOSURE: 0,
   RAW_FIGURE: 0,
   RAW_FIELDSET: 0,
