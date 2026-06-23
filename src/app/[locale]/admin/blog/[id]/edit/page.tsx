@@ -1,17 +1,6 @@
-"use client";
+import { BlogEditClient } from "./blog-edit-client";
 
-import { useRouter } from "@/i18n/navigation";
-import { use } from "react";
-import { AdminBlogEditorView, ROUTES } from "@mohasinac/appkit";
-
-export default function Page({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
-  const router = useRouter();
-  return (
-    <AdminBlogEditorView
-      postId={id}
-      onSaved={() => router.push(String(ROUTES.ADMIN.BLOG))}
-      onDeleted={() => router.push(String(ROUTES.ADMIN.BLOG))}
-    />
-  );
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <BlogEditClient id={id} />;
 }

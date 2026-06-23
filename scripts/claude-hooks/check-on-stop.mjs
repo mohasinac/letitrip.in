@@ -301,6 +301,7 @@ const checks = [
   { label: "audit-raw-img-src", cmd: "node", args: ["scripts/audit-raw-img-src.mjs"], cwd: ROOT },
   { label: "audit-finalize-magic-bytes", cmd: "node", args: ["scripts/audit-finalize-magic-bytes.mjs"], cwd: ROOT },
   { label: "audit-storage-rules-shape", cmd: "node", args: ["scripts/audit-storage-rules-shape.mjs"], cwd: ROOT },
+  { label: "audit-unnecessary-use-client", cmd: "node", args: ["scripts/audit-unnecessary-use-client.mjs"], cwd: ROOT },
 ];
 
 // Baseline violation counts — strict-zero. All three audits verified clean ✓

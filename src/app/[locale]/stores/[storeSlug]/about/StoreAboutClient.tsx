@@ -1,4 +1,5 @@
 "use client";
+// audit-unnecessary-use-client-ok: passes JSX render-prop callbacks to StoreAboutView (client component); functions cannot cross RSC→client boundary
 import { StoreAboutView, type StoreDetail } from "@mohasinac/appkit/client";
 import { Div, Text } from "@mohasinac/appkit/client";
 import { Row, TextLink } from "@mohasinac/appkit";

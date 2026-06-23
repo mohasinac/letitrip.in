@@ -1,17 +1,6 @@
-"use client";
+import { CouponEditClient } from "./coupon-edit-client";
 
-import { useRouter } from "@/i18n/navigation";
-import { use } from "react";
-import { AdminCouponEditorView, ROUTES } from "@mohasinac/appkit";
-
-export default function Page({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
-  const router = useRouter();
-  return (
-    <AdminCouponEditorView
-      couponId={id}
-      onSaved={() => router.push(String(ROUTES.ADMIN.COUPONS))}
-      onDeleted={() => router.push(String(ROUTES.ADMIN.COUPONS))}
-    />
-  );
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <CouponEditClient id={id} />;
 }

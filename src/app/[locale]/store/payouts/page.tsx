@@ -1,4 +1,3 @@
-"use client";
 import { SellerPayoutsView, SellerPayoutRequestView } from "@mohasinac/appkit/client";
 import { Stack } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";

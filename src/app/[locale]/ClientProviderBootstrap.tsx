@@ -1,4 +1,5 @@
 "use client";
+// audit-unnecessary-use-client-ok: module-level Firebase client SDK registrations must execute browser-side; no hook import is needed
 
 import {
   FirebaseClientAuthProvider,

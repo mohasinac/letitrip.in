@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { redirect } from "@/i18n/navigation";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 import { CheckoutRouteClient } from "@/components";
@@ -20,5 +21,9 @@ export default async function Page() {
     adminBypassEnabled = flags?.[ADMIN_CHECKOUT_BYPASS_FLAG_KEY] === true;
   }
 
-  return <CheckoutRouteClient adminBypassEnabled={adminBypassEnabled} />;
+  return (
+    <Suspense>
+      <CheckoutRouteClient adminBypassEnabled={adminBypassEnabled} />
+    </Suspense>
+  );
 }

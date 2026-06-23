@@ -1,14 +1,5 @@
-"use client";
-
-import { useRouter } from "@/i18n/navigation";
-import { AdminFaqEditorView, ROUTES } from "@mohasinac/appkit";
+import { FaqNewClient } from "./faq-new-client";
 
 export default function Page() {
-  const router = useRouter();
-  return (
-    <AdminFaqEditorView
-      onSaved={(id) => router.push(String(ROUTES.ADMIN.FAQS_EDIT(id)))}
-      onDeleted={() => router.push(String(ROUTES.ADMIN.FAQS))}
-    />
-  );
+  return <FaqNewClient />;
 }

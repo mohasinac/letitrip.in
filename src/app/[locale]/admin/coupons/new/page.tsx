@@ -1,13 +1,5 @@
-"use client";
-
-import { useRouter } from "@/i18n/navigation";
-import { AdminCouponEditorView, ROUTES } from "@mohasinac/appkit";
+import { CouponNewClient } from "./coupon-new-client";
 
 export default function Page() {
-  const router = useRouter();
-  return (
-    <AdminCouponEditorView
-      onSaved={(id) => router.push(String(ROUTES.ADMIN.COUPONS_EDIT(id)))}
-    />
-  );
+  return <CouponNewClient />;
 }

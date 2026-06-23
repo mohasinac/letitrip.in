@@ -1,18 +1,6 @@
-"use client";
+import { CarouselEditClient } from "./carousel-edit-client";
 
-import { AdminCarouselEditorView, ROUTES } from "@mohasinac/appkit";
-import { useRouter } from "@/i18n/navigation"
-import { useParams } from "next/navigation";
-
-export default function Page() {
-  const router = useRouter();
-  const params = useParams<{ id: string }>();
-  return (
-    <AdminCarouselEditorView
-      slideId={params.id}
-      onSaved={() => router.push(String(ROUTES.ADMIN.CAROUSEL))}
-      onDeleted={() => router.push(String(ROUTES.ADMIN.CAROUSEL))}
-      onCancel={() => router.push(String(ROUTES.ADMIN.CAROUSEL))}
-    />
-  );
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <CarouselEditClient id={id} />;
 }

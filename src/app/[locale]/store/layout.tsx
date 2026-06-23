@@ -1,5 +1,3 @@
-"use client";
-
 import { Suspense, type ReactNode } from "react";
 import { DashboardLayoutClient, RoleGuard } from "@mohasinac/appkit/client";
 import { STORE_NAV_GROUPS } from "@/constants";

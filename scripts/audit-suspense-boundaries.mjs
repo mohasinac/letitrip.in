@@ -66,6 +66,9 @@ const SUSPENSE_REQUIRED = new Set([
   // Category/brand detail pages (have toolbar + filters)
   "CategoryDetailPageView",
   "BrandDetailPageView",
+  // Cart and checkout route clients (call useSearchParams internally)
+  "CartRouteClient",
+  "CheckoutRouteClient",
 ]);
 
 // ─── Walk only page.tsx files ─────────────────────────────────────────────────

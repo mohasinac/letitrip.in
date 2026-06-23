@@ -41,6 +41,51 @@
 
 ---
 
+### S-use-client-suspense — Fix incorrect "use client" directives + missing Suspense boundaries (2026-06-24)
+
+**appkit modified (12 files) · 50 consumer files edited · 22 new files created · `audit-unnecessary-use-client` strict-0 ✓ · `audit-suspense-boundaries` strict-0 ✓ · tsc exits 0**
+
+**Track A — Missing `<Suspense>` on public pages:**
+- `cart/page.tsx` — wrapped `<CartRouteClient>` in `<Suspense>` (no boundary existed; SSR crash in prod)
+- `checkout/page.tsx` — wrapped return in `<Suspense>`
+- `audit-suspense-boundaries.mjs` — added `CartRouteClient` + `CheckoutRouteClient` to `SUSPENSE_REQUIRED` set
+
+**Track B — Removed unnecessary `"use client"` from 12 appkit files:**
+- Pure utility / display files that contain zero hooks, zero browser APIs, and zero next/navigation imports. Removing the directive makes them valid RSCs while all existing behaviour is unchanged.
+- `_internal/client/features/maintenance/views/MaintenanceDashboardView.tsx`
+- `_internal/client/features/maintenance/views/ServerErrorDetailView.tsx`
+- `_internal/client/features/filters/filter-load-options.ts`
+- `_internal/client/features/layout/filterNavItems.ts`
+- `src/client/api/surface-error.ts`
+- `features/products/components/FeatureBadge.tsx`
+- `features/products/components/ProductCardMetadataSection.tsx`
+- `features/orders/components/RefundHistoryTable.tsx`
+- `features/events/components/EventSaleBanner.tsx`
+- `features/homepage/components/SocialPostCard.tsx`
+- `ui/components/VacationBanner.tsx`
+- `_internal/client/features/layout/index.ts`
+
+**Track C — Removed unnecessary `"use client"` from 15 consumer pages:**
+- These pages render client components but have no hooks of their own — RSC pages do not need `"use client"` just because their children are Client Components.
+- 11 store pages: `store/live`, `store/digital-codes`, `store/classified`, `store/bundles`, `store/google-reviews`, `store/analytics/alerts`, `store/offers`, `store/shipping-configs`, `store/payout-methods`, `store/templates`, `store/categories`, `store/payouts`
+- 1 admin page: `admin/prize-draws`
+- 2 layout files: `store/layout.tsx`, `demo/layout.tsx`
+
+**Track D — Report page RSC refactor (eliminated `useSearchParams` from the page boundary):**
+- `report/page.tsx` → async RSC, reads `searchParams` as a Next.js 15 page prop
+- Created `report/report-form-client.tsx` — `"use client"` component with all form state, accepts `initialEntityType` + `initialEntityId` props
+
+**Track E — 20 admin/store editor pages converted to RSC + 21 thin client wrappers created:**
+- Pattern: async RSC page awaits `params` → passes `id` to a `*-client.tsx` wrapper that owns `useRouter` and navigation callbacks
+- 16 admin editor pages (8 edit + 8 new): blog, bundles, carousel, categories, coupons, faqs, products, sublisting-categories
+- 4 store pages: `store/coupons/page.tsx`, `store/coupons/new/page.tsx`, `store/products/page.tsx`, `store/grouped-listings/page.tsx`
+- 7 files received `// audit-unnecessary-use-client-ok: <reason>` suppression markers (render-prop callbacks cross RSC→client boundary: BlogPostPageClient, ProductPageClient, PromotionsProductsClient, SearchPageClient, SearchResultsClient, StoreAboutClient, ClientProviderBootstrap)
+
+**Track F — New audit script:**
+- `scripts/audit-unnecessary-use-client.mjs` — strict-0, walks `src/app/**/*.{ts,tsx}` + `appkit/src/**/*.{ts,tsx}`, flags `"use client"` files that import no React hook / next/navigation hook / next-intl hook / browser global. Skips `error.tsx` / `global-error.tsx` (Next.js framework requirement). Registered in `scripts/run-audits.mjs` and `scripts/claude-hooks/check-on-stop.mjs`.
+
+---
+
 ### S-page-form-audit-sweep — Admin/Store/User Page & Form Audit (2026-05-21)
 
 **appkit 2.7.51 rebuilt · consumer pages updated · `npm run check` exits 0**

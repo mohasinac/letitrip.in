@@ -1,4 +1,5 @@
 "use client";
+// audit-unnecessary-use-client-ok: passes JSX render-prop callbacks to SearchView (client component); functions cannot cross RSC→client boundary
 import {
   AdSlot,
   Button,

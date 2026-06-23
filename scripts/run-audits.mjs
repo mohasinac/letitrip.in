@@ -120,6 +120,10 @@ const AUDITS = [
   // entry points.
   { name: "unknown-leakage",                 script: "appkit/scripts/audit-unknown-leakage.mjs" },
   { name: "usemutation-onerror",             script: "scripts/audit-usemutation-onerror.mjs" },
+  // Strict-zero. Flags page/layout files that declare "use client" but import
+  // no React hook, next/navigation hook, next-intl hook, or browser global.
+  // RSC pages can render Client Components without the directive.
+  { name: "unnecessary-use-client",         script: "scripts/audit-unnecessary-use-client.mjs" },
 ];
 
 function parseArgs(argv) {

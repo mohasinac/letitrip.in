@@ -1443,6 +1443,38 @@ All pages are thin shims delegating to appkit `_internal/server/features/*/` hel
 | Public | ~105 | /products/[id], /categories, /blog, /events, /auctions, /stores, /about, /contact, /faqs, /seller, /cart, /checkout |
 | **Total** | **~301** | |
 
+### RSC + thin client-wrapper pattern (applied 2026-06-24)
+
+Editor and list pages that previously used `"use client"` only for `useRouter` callbacks are now split into:
+- **`page.tsx`** — async RSC, no `"use client"`. Awaits `params`, passes `id` as a serializable string prop.
+- **`*-client.tsx`** — `"use client"` wrapper owning `useRouter` and any navigation/mutation callbacks.
+
+Affected files (21 client wrappers created):
+
+| Client wrapper | RSC page |
+|---|---|
+| `admin/blog/[id]/edit/blog-edit-client.tsx` | `admin/blog/[id]/edit/page.tsx` |
+| `admin/blog/new/blog-new-client.tsx` | `admin/blog/new/page.tsx` |
+| `admin/bundles/[id]/edit/bundle-edit-client.tsx` | `admin/bundles/[id]/edit/page.tsx` |
+| `admin/bundles/new/bundle-new-client.tsx` | `admin/bundles/new/page.tsx` |
+| `admin/carousel/[id]/edit/carousel-edit-client.tsx` | `admin/carousel/[id]/edit/page.tsx` |
+| `admin/carousel/new/carousel-new-client.tsx` | `admin/carousel/new/page.tsx` |
+| `admin/categories/[id]/edit/category-edit-client.tsx` | `admin/categories/[id]/edit/page.tsx` |
+| `admin/categories/new/category-new-client.tsx` | `admin/categories/new/page.tsx` |
+| `admin/coupons/[id]/edit/coupon-edit-client.tsx` | `admin/coupons/[id]/edit/page.tsx` |
+| `admin/coupons/new/coupon-new-client.tsx` | `admin/coupons/new/page.tsx` |
+| `admin/faqs/[id]/edit/faq-edit-client.tsx` | `admin/faqs/[id]/edit/page.tsx` |
+| `admin/faqs/new/faq-new-client.tsx` | `admin/faqs/new/page.tsx` |
+| `admin/products/[id]/edit/product-edit-client.tsx` | `admin/products/[id]/edit/page.tsx` |
+| `admin/products/new/product-new-client.tsx` | `admin/products/new/page.tsx` |
+| `admin/sublisting-categories/[id]/edit/sublisting-category-edit-client.tsx` | `admin/sublisting-categories/[id]/edit/page.tsx` |
+| `admin/sublisting-categories/new/sublisting-category-new-client.tsx` | `admin/sublisting-categories/new/page.tsx` |
+| `report/report-form-client.tsx` | `report/page.tsx` (reads searchParams as RSC prop) |
+| `store/coupons/seller-coupons-client.tsx` | `store/coupons/page.tsx` |
+| `store/coupons/new/coupon-new-client.tsx` | `store/coupons/new/page.tsx` |
+| `store/products/seller-products-client.tsx` | `store/products/page.tsx` |
+| `store/grouped-listings/grouped-listings-client.tsx` | `store/grouped-listings/page.tsx` |
+
 ---
 
 ## 17. Config
@@ -1716,6 +1748,7 @@ Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 | audit-silent-body-parse.mjs | strict-0 | No silent `request.json().catch(() => ({}))` outside `createRouteHandler` |
 | audit-server-action-envelope.mjs | strict-0 | Every server action returns `ActionResult` or `void` (Track W6) |
 | audit-usemutation-onerror.mjs | strict-0 | Every mutation flows through `useApiMutation` (not raw `useMutation`) |
+| audit-unnecessary-use-client.mjs | strict-0 | Page / component files with `"use client"` import at least one React hook, next/navigation hook, next-intl hook, or browser global — RSC pages that only render Client Components must not carry the directive (root-cause #17 corollary) |
 
 ### ESLint mirror rules (`scripts/eslint-rules/index.mjs`)
 

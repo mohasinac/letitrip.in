@@ -1,17 +1,6 @@
-"use client";
+import { BundleEditClient } from "./bundle-edit-client";
 
-import { use } from "react";
-import { useRouter } from "@/i18n/navigation";
-import { AdminBundleEditorView, ROUTES } from "@mohasinac/appkit";
-
-export default function Page({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
-  const router = useRouter();
-  return (
-    <AdminBundleEditorView
-      bundleId={id}
-      onSaved={() => router.push(String(ROUTES.ADMIN.BUNDLES))}
-      onDeleted={() => router.push(String(ROUTES.ADMIN.BUNDLES))}
-    />
-  );
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <BundleEditClient id={id} />;
 }

@@ -1,5 +1,3 @@
-"use client";
-
 import { SellerAnalyticsAlertsView } from "@mohasinac/appkit/client";
 
 export default function Page() {
