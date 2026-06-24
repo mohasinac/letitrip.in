@@ -85,7 +85,7 @@ export default function Page() {
     fetch(API_ROUTES.STORE.ANALYTICS)
       .then((r) => r.json())
       .then((json) => { if (json?.data?.topProducts) setTopProducts(json.data.topProducts); })
-      .catch(() => {});
+      .catch(console.error);
   }, []);
 
   return (

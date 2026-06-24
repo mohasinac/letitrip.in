@@ -411,7 +411,7 @@ export function CartRouteClient() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ itemIds: next ? Array.from(next) : null }),
           credentials: FETCH_CREDENTIALS,
-        }).catch(() => {});
+        }).catch(console.error);
       }
     },
     [effectiveSelected, allItemIds, isAuthenticated],
@@ -425,7 +425,7 @@ export function CartRouteClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ itemIds: null }),
         credentials: FETCH_CREDENTIALS,
-      }).catch(() => {});
+      }).catch(console.error);
     }
   }, [isAuthenticated]);
 

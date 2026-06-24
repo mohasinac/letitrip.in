@@ -75,7 +75,7 @@ export default function Page() {
           })),
         );
       })
-      .catch(() => {})
+      .catch(console.error)
       .finally(() => setLoading(false));
   }, [page, sort]);
 
