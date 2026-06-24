@@ -33,7 +33,7 @@ import {
   type Unsubscribe,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
-import type { SeedCollectionName } from "@/actions/demo-seed.types";
+import type { SeedCollectionName } from "@mohasinac/appkit";
 
 // ─── Collection order ─────────────────────────────────────────────────────────
 

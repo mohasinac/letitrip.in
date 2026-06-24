@@ -18,6 +18,7 @@ import {
   Text,
   useAddresses,
   useAuth,
+  useAuthGate,
   useBottomActions,
   useCartQuery,
   useCreateAddress,
@@ -573,6 +574,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { showToast } = useToast();
+  const { requireAuth } = useAuthGate();
 
   const { data: addresses, isLoading: addressesLoading } = useAddresses({
     enabled: !!user?.uid,
@@ -926,7 +928,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
         label: isSendingOtp ? CK.OTP_SENDING_BTN : CK.OTP_SEND_BTN,
         variant: "primary" as const,
         disabled: isSendingOtp || isProcessingPayment,
-        onClick: handleSendOtp,
+        onClick: () => requireAuth(ACTION_ID.SEND_OTP, handleSendOtp),
         grow: true,
       }];
     }
@@ -936,7 +938,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
         label: isVerifyingOtp ? CK.OTP_VERIFYING_BTN : CK.OTP_VERIFY_BTN,
         variant: "primary" as const,
         disabled: isVerifyingOtp || otpCode.length < 6,
-        onClick: handleVerifyOtp,
+        onClick: () => requireAuth(ACTION_ID.VERIFY_OTP, handleVerifyOtp),
         grow: true,
       }];
     }
