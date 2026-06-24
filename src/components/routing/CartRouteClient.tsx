@@ -910,8 +910,12 @@ export function CartRouteClient() {
               type="button"
               variant="ghost"
               onClick={async () => {
-                await selectAll();
-                router.push(String(ROUTES.USER.CHECKOUT));
+                try {
+                  await selectAll();
+                  router.push(String(ROUTES.USER.CHECKOUT));
+                } catch (err) {
+                  showToast(err instanceof Error ? err.message : "Failed to select all items", "error");
+                }
               }}
               className="w-full text-xs text-zinc-500 dark:text-zinc-400 underline underline-offset-2 hover:text-zinc-700 dark:hover:text-zinc-200"
             >

@@ -2167,7 +2167,7 @@ export function SeedPanel() {
       const payload = await res.json();
       setStatus((payload?.data?.collections ?? []) as ColStatus[]);
     } catch {
-      // non-fatal
+      // toast-intentionally-silent: dev panel background poll, non-fatal
     } finally {
       setIsLoadingStatus(false);
     }
