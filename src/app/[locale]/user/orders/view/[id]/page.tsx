@@ -14,6 +14,7 @@ import {
   Row,
   Stack,
   Button,
+  MediaImage,
 } from "@mohasinac/appkit/client";
 import {
   groupOrderItemsByBundle,
@@ -78,7 +79,7 @@ function renderItemRow(item: OrderItemT, key: string | number) {
     <Row key={key} gap="3" align="start">
       {item.image && (
         <Div className="h-16 w-16 shrink-0" surface="elevated" rounded="lg" overflow="hidden">
-          <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+          <MediaImage src={item.image} alt={item.title} size="thumbnail" />
         </Div>
       )}
       <Div className="flex-1 min-w-0">
