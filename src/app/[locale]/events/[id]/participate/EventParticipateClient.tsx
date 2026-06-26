@@ -9,7 +9,7 @@ import { EventParticipateView, useSession, useToast, ROUTES } from "@mohasinac/a
 import { SpinWheelView } from "@mohasinac/appkit";
 import { API_ROUTES } from "@/constants";
 
-const CLS_STAR_ON = "text-yellow-400 border-yellow-400";
+const CLS_STAR_ON = "text-star border-star";
 
 type SpinPrize = { id: string; label: string; weight: number; isActive: boolean; couponId?: string };
 
@@ -136,7 +136,7 @@ function renderPollForm({
           {pollConfig.options.map((opt) => (
             <Label layout="flex" gap="lg"
               key={opt.id}
-              className="cursor-pointer rounded-lg border border-zinc-200 dark:border-zinc-700 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+              rounded="lg" padding="inline" className="cursor-pointer border border-[var(--appkit-color-border)] hover:bg-[var(--appkit-color-bg)] transition-colors"
             >
               <Checkbox
                 name="poll-option"

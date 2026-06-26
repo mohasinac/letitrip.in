@@ -7,6 +7,7 @@ import {
 } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

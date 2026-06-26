@@ -13,6 +13,7 @@ const reviewEntrySchema = z.object({
   points: z.number().optional(),
 });
 
+// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
 export const PATCH = withProviders(
   createRouteHandler<(typeof reviewEntrySchema)["_output"]>({
     auth: true,

@@ -12,6 +12,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
+    permission: "admin:notifications:read",
     handler: async () => {
       const result = await adminNotificationsRepository.listUnread();
       return successResponse({ items: result.items });

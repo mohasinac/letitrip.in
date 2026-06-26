@@ -489,6 +489,7 @@ async function resolveAuthConflicts(
   }
 }
 
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export async function GET(request: NextRequest) {
   const user = await getUserFromRequest(request);
   if (!user || !isAdminUser(user)) {
@@ -537,6 +538,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export async function POST(request: NextRequest) {
   const user = await getUserFromRequest(request);
   if (!user || !isAdminUser(user)) {
@@ -1184,4 +1186,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

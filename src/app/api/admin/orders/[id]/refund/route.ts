@@ -12,6 +12,7 @@ const refundSchema = z.object({
   reason: z.string().min(1),
 });
 
+// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
 export const POST = withProviders(
   createRouteHandler<(typeof refundSchema)["_output"]>({
     auth: true,

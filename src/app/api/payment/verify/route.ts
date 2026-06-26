@@ -24,6 +24,7 @@ const verifySchema = z.object({
   platformFee: z.number().nonnegative().optional(),
 });
 
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(createRouteHandler<(typeof verifySchema)["_output"]>({
   auth: true,
   schema: verifySchema,

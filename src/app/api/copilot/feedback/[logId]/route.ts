@@ -11,6 +11,7 @@ const feedbackSchema = z.object({
   feedback: z.enum(["positive", "negative"]),
 });
 
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const PATCH = withProviders(
   createRouteHandler<(typeof feedbackSchema)["_output"]>({
     auth: true,

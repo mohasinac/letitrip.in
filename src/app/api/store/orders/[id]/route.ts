@@ -131,6 +131,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const order = await orderRepository.findById(id);
@@ -151,6 +152,7 @@ export const PATCH = withProviders(
   createRouteHandler<(typeof updateOrderSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
     schema: updateOrderSchema,
     handler: async ({ user, body, params }) => {
       const id = (params as { id: string }).id;

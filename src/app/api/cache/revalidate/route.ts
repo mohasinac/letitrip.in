@@ -34,6 +34,7 @@ import { AuthenticationError, ValidationError } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { COLLECTION_CACHE_PATHS } from "@mohasinac/appkit";
 
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export async function POST(request: NextRequest) {
   try {
     // --- Authentication ---
@@ -101,4 +102,3 @@ export async function POST(request: NextRequest) {
     return handleApiError(error);
   }
 }
-

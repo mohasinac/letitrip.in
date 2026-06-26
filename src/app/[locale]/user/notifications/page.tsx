@@ -85,7 +85,7 @@ function NotifCard({
 }) {
   return (
     <Stack
-      className={`border px-5 transition-colors ${ notif.isRead ? "border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)]" : "border-[var(--appkit-color-primary)] bg-[var(--appkit-color-surface)]" }`} gap="sm" rounded="xl" shadow="sm" padding="y-md"
+      className={`border transition-colors ${ notif.isRead ? "border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)]" : "border-[var(--appkit-color-primary)] bg-[var(--appkit-color-surface)]" }`} gap="sm" rounded="xl" shadow="sm" paddingX="x-5" paddingY="y-md"
     >
       <Row justify="between" wrap gap="3" align="start">
         <Stack gap="none" className="min-w-0">

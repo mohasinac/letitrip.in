@@ -1,5 +1,5 @@
 import React from "react";
-import { Div, Heading, Text } from "@mohasinac/appkit";
+import { Alert, Div, Heading, Text } from "@mohasinac/appkit";
 export const dynamic = "force-dynamic";
 
 /**
@@ -12,17 +12,17 @@ export const dynamic = "force-dynamic";
  */
 export default function CloudLogsPage(): React.JSX.Element {
   return (
-    <Div style={{ padding: "1.5rem", maxWidth: "1000px", margin: "0 auto" }}>
-      <Heading level={1} style={{ fontSize: "1.5rem", fontWeight: 600 }}>Cloud Logging</Heading>
-      <Text as="p" style={{ color: "var(--appkit-color-text-muted)", marginTop: "0.5rem" }}>
+    <Div className="max-w-[1000px] mx-auto" padding="lg">
+      <Heading level={1} size="xl" weight="semibold">Cloud Logging</Heading>
+      <Text className="mt-2 text-[var(--appkit-color-text-muted)]">
         Live stream of Cloud Logging entries (Vercel + Cloud Functions + Cloud Run).
       </Text>
-      <Text as="p" style={{ marginTop: "1rem", padding: "1rem", background: "var(--appkit-color-warning-surface)", border: "1px solid var(--appkit-color-warning)", borderRadius: 6 }}>
+      <Alert variant="warning" className="mt-4">
         Cloud Logging REST integration pending. For now, use the Cloud Console
         log explorer or the structured rows in <code>/admin/maintenance/server-errors</code>,
         <code>/admin/maintenance/function-errors</code>, and{" "}
         <code>/admin/maintenance/client-errors</code>.
-      </Text>
+      </Alert>
     </Div>
   );
 }

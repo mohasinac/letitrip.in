@@ -12,6 +12,7 @@ import {
   sortBy,
 } from "@mohasinac/appkit";
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(
   createRouteHandler({
     handler: async ({ request, params }) => {

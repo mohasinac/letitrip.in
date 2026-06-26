@@ -60,7 +60,7 @@ export default function Page() {
               {items.map((r) => (
                 <Row
                   key={r.id}
-                  className="cursor-pointer hover:bg-zinc-50 dark:hover:bg-slate-800" align="start" justify="between" rounded="default" padding="md" border="default"
+                  className="cursor-pointer hover:bg-[var(--appkit-color-bg)]" align="start" justify="between" rounded="default" padding="md" border="default"
                   onClick={() =>
                     router.push(String(ROUTES.PUBLIC.ITEM_REQUEST_DETAIL(r.id)))
                   }

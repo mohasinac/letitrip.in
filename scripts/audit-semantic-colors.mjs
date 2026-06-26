@@ -44,7 +44,25 @@ const ALLOWLIST = [];
 // Path patterns where raw status hues are decorative, not semantic.
 // Educational / guide / help pages assign distinct hues per step or category
 // (visual variety, not error/success state) — those uses are legitimate.
-const ALLOWLIST_PATH_PATTERNS = [];
+const ALLOWLIST_PATH_PATTERNS = [
+  // Token definition files — raw hues ARE the semantic-token mapping targets
+  /appkit[/\\]src[/\\]tokens[/\\]/,
+  /appkit[/\\]src[/\\]_internal[/\\]shared[/\\]styles[/\\]/,
+  /src[/\\]constants[/\\]styles[/\\]/,
+  // Educational guide/help pages — distinct hues per category or workflow step
+  // (visual variety for navigation, not error/success/warning status)
+  /appkit[/\\]src[/\\]features[/\\]about[/\\]/,
+  /src[/\\]features[/\\]about[/\\]/,
+  /appkit[/\\]src[/\\]features[/\\]account[/\\]components[/\\]Buyer.*Guide/,
+  /appkit[/\\]src[/\\]features[/\\]admin[/\\]components[/\\]Admin.*Guide/,
+  /appkit[/\\]src[/\\]features[/\\]stores[/\\]components[/\\]StoreGuideHub/,
+  // Dev-only seed panel — not user-facing production UI; uses data-type palette
+  /src[/\\]components[/\\]dev[/\\]/,
+  // Role indicator dot — decorative category distinction (moderator/seller/employee)
+  /appkit[/\\]src[/\\]features[/\\]layout[/\\]AppLayoutShell/,
+  // Event type label palette — sale/raffle/spin_wheel category colours, not status
+  /src[/\\]app[/\\].*events[/\\].*_constants/,
+];
 
 // Status hues — `red`/`rose` for error, `green`/`emerald` for success,
 // `amber`/`yellow`/`orange` for warning, `sky`/`blue` for info. Excludes

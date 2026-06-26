@@ -24,6 +24,7 @@ const validateSchema = z.object({
  * Body: { code: string, orderTotal: number }
  * Returns: { valid: boolean, discountAmount: number, coupon?, error? }
  */
+// rbac-public: public endpoint — no authentication required
 export const POST = withProviders(createRouteHandler<(typeof validateSchema)["_output"]>({
   auth: true,
   schema: validateSchema,
@@ -42,4 +43,3 @@ export const POST = withProviders(createRouteHandler<(typeof validateSchema)["_o
     return successResponse(result);
   },
 }));
-

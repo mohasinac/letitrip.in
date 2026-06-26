@@ -33,6 +33,7 @@ import sharp from "sharp";
  * - outputFormat?: 'jpeg' | 'png' | 'webp' - Output format (default: original)
  * - quality?: number (1-100) - Output quality (default: 90)
  */
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(createRouteHandler<(typeof cropDataSchema)["_output"]>({
   auth: true,
   schema: cropDataSchema,
@@ -142,4 +143,3 @@ export const POST = withProviders(createRouteHandler<(typeof cropDataSchema)["_o
     );
   },
 }));
-

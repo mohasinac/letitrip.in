@@ -18,9 +18,11 @@ const requestPayoutSchema = z.object({
   notes: z.string().max(500).optional(),
 });
 
+// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const POST = withProviders(createRouteHandler<{ paymentMethod: "bank_transfer" | "upi"; notes?: string }>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
   schema: requestPayoutSchema,
   handler: async ({ user, body }) => {
     const displayName = (user as { uid: string; displayName?: string | null }).displayName ?? "";

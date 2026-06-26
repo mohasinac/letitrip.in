@@ -28,8 +28,38 @@ const ALLOWLIST = [];
 // File-name patterns where dynamic inline styles are acceptable (internal documentation)
 const ALLOWLIST_PATTERNS = [];
 
-// Path patterns where inline styles are inherent to the technology
-const ALLOWLIST_PATH_PATTERNS = [];
+// Path patterns where inline styles are inherent to the technology.
+// CLAUDE.md §"Theme / Tokens / Variants Architecture" lists the primitive source directories.
+// CLAUDE.md §"Inline Style Rules" lists additional allowlisted files.
+const ALLOWLIST_PATH_PATTERNS = [
+  // Email primitives — email clients require inline styles; CSS classes are ignored.
+  /appkit[/\\]src[/\\]features[/\\]email[/\\]/,
+  // Contact email templates — renderToStaticMarkup HTML email output.
+  /appkit[/\\]src[/\\]features[/\\]contact[/\\]email\.tsx$/,
+  // UI component primitives — variant system owns the underlying CSS.
+  /appkit[/\\]src[/\\]ui[/\\]components[/\\]/,
+  /appkit[/\\]src[/\\]ui[/\\]forms[/\\]/,
+  /appkit[/\\]src[/\\]ui[/\\]rich-text[/\\]/,
+  // Media primitives — Canvas/ImageCrop/VideoTrim require computed positioning.
+  /appkit[/\\]src[/\\]features[/\\]media[/\\]/,
+  // Internal client primitives — animated/positioned UI components.
+  /appkit[/\\]src[/\\]_internal[/\\]client[/\\]/,
+  // OG image renderers — @vercel/og/ImageResponse ONLY supports inline styles; CSS classes are ignored.
+  /appkit[/\\]src[/\\]_internal[/\\]server[/\\]/,
+  // ErrorBoundary + GlobalError — critical-path CSS must work when the CSS bundle fails to load.
+  /appkit[/\\]src[/\\]react[/\\]ErrorBoundary\.tsx$/,
+  /appkit[/\\]src[/\\]next[/\\]components[/\\]GlobalError\.tsx$/,
+  // FormShell — calc(var(--appkit-z-modal) ± N) z-index expressions can't be CSS classes.
+  /appkit[/\\]src[/\\]features[/\\]shell[/\\]FormShell\.tsx$/,
+  // CLAUDE.md §"Inline Style Rules" explicitly allowlists these animation/canvas components:
+  /appkit[/\\]src[/\\]features[/\\]homepage[/\\]components[/\\]HeroCarousel\.tsx$/,
+  /appkit[/\\]src[/\\]features[/\\]events[/\\]components[/\\]SpinWheelView\.tsx$/,
+  /appkit[/\\]src[/\\]features[/\\]before-after[/\\]components[/\\]BeforeAfterSlider\.tsx$/,
+  // Character hotspot admin canvas tool — 120+ dynamic inline positions from user-authored JSON.
+  /appkit[/\\]src[/\\]features[/\\]homepage[/\\]components[/\\]CharacterHotspot/,
+  // DataTable UI primitive — col.width is dynamic user-configured table column sizing.
+  /appkit[/\\]src[/\\]ui[/\\]DataTable\.tsx$/,
+];
 
 const RULES = [
   {
@@ -146,10 +176,10 @@ for (const rule of RULES) {
 
   if (hits.length > 0) {
     console.error(`\n[${rule.id}] ${hits.length} violation(s) — ${rule.label}`);
-    for (const v of hits.slice(0, 10)) {
+    for (const v of hits) {
       console.error(`  ${v.file}:${v.line} — ${v.text}`);
     }
-    if (hits.length > 10) console.error(`  ... and ${hits.length - 10} more`);
+
   }
 }
 

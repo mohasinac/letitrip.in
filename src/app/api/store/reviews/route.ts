@@ -12,9 +12,11 @@ import { ROLES_STORE_WRITE } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(REVIEW_FIELDS.CREATED_AT);
 
+// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const GET = withProviders(createApiHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
   handler: async ({ request, user }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store) {

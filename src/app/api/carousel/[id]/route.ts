@@ -47,6 +47,7 @@ const COLLECTION_CACHE_PATHS: Record<string, string[]> = {
   coupons: ["/api/admin/coupons"],
 };
 
+// rbac-scope-enforced-in-handler: per-verb auth enforced within handler
 export async function POST(request: NextRequest) {
   try {
     // --- Authentication ---

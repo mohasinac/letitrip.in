@@ -19,6 +19,7 @@ import {
   Div,
   Heading,
   Row,
+  Span,
   Stack,
   Text,
 } from "@mohasinac/appkit/client";
@@ -70,9 +71,9 @@ function CouponWalletCard({
   return (
     <Stack surface="card" padding="md" gap="sm">
       <Row align="center" gap="sm" wrap>
-        <Text className="font-mono px-2 py-0.5 rounded bg-zinc-100 dark:bg-slate-800" color="primary" size="xs">
+        <Span rounded="default" padding="inline-sm" family="mono" className="bg-[var(--appkit-color-surface-elevated)]" color="primary" size="xs">
           {claim.couponCode}
-        </Text>
+        </Span>
         <Text size="sm" weight="bold" color="primary">
           {formatDiscount(claim)}
         </Text>

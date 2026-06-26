@@ -13,6 +13,7 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 /**
  * PATCH /api/notifications/read-all
  */
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const PATCH = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
@@ -23,4 +24,3 @@ export const PATCH = withProviders(createRouteHandler({
     return successResponse({ count }, SUCCESS_MESSAGES.NOTIFICATION.ALL_READ);
   },
 }));
-

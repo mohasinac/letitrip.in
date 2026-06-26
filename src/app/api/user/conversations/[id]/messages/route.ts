@@ -26,6 +26,7 @@ const sendSchema = z.object({
   body: z.string().min(1).max(MESSAGE_MAX_LENGTH),
 });
 
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const POST = withProviders(
   createRouteHandler<(typeof sendSchema)["_output"]>({
     auth: true,

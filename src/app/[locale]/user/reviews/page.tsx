@@ -9,6 +9,7 @@ import {
   ROUTES,
   Div,
   Heading,
+  Span,
   Text,
   Stack,
   Row,
@@ -35,9 +36,9 @@ interface ReviewItem {
 }
 
 const STAR_LABELS: Record<number, string> = { 1: "Terrible", 2: "Poor", 3: "Average", 4: "Good", 5: "Excellent" };
-const CLS_STAR_ON = "text-yellow-400";
+const CLS_STAR_ON = "text-star";
 const CLS_STAR_OFF = "text-zinc-300 dark:text-zinc-600";
-const CLS_REPLY_BADGE = "rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-0.5 text-xs font-medium";
+const CLS_REPLY_BADGE = "rounded-full bg-info-surface text-info px-2 py-0.5 text-xs font-medium";
 
 const SORT_OPTIONS = [
   { value: sortBy("createdAt", "DESC"), label: "Newest" },
@@ -200,9 +201,9 @@ export default function UserReviewsPage() {
                         Verified
                       </Text>
                     )}
-                    <Text as="span" className={`rounded-full px-2.5 py-0.5 capitalize ${statusColor}`} size="xs" weight="medium">
+                    <Span rounded="full" padding="pill-sm" transform="capitalize" className={statusColor} size="xs" weight="medium">
                       {review.status}
-                    </Text>
+                    </Span>
                   </Row>
                 </Row>
                 <StarDisplay rating={review.rating} />

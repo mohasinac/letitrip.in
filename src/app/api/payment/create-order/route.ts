@@ -25,6 +25,7 @@ const createOrderSchema = z.object({
   receipt: z.string().optional(),
 });
 
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(createRouteHandler<(typeof createOrderSchema)["_output"]>({
   auth: true,
   schema: createOrderSchema,

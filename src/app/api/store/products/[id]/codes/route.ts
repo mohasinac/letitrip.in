@@ -35,6 +35,7 @@ export const POST = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
     handler: async ({ request, user, params }) => {
       const productId = (params as Record<string, string>).id;
 

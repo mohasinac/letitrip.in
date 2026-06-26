@@ -120,7 +120,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
         {pollConfig.options.map((opt) => (
           <Label layout="flex" gap="lg"
             key={opt.id}
-            className="cursor-pointer rounded-xl border border-zinc-200 dark:border-zinc-700 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 transition-colors"
+            rounded="xl" padding="inline" className="cursor-pointer border border-[var(--appkit-color-border)] hover:bg-[var(--appkit-color-bg)] transition-colors"
           >
             {isMultiSelect ? (
               // audit-raw-form-input-ok: native checkbox inside a Label wrapper — standard radio/checkbox group pattern

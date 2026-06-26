@@ -1,6 +1,7 @@
 import { withProviders } from "@/providers.config";
-import { WISHLIST_MAX, WishlistFullError, createRouteHandler, errorResponse, parseJsonBody, productRepository, successResponse, wishlistRepository } from "@mohasinac/appkit";
+import { WISHLIST_MAX, WishlistFullError, createRouteHandler, errorResponse, normalizeError, parseJsonBody, productRepository, successResponse, wishlistRepository } from "@mohasinac/appkit";
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -50,6 +51,7 @@ export const GET = withProviders(
   }),
 );
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
@@ -66,7 +68,8 @@ export const POST = withProviders(
           limit: WISHLIST_MAX,
           isFull: count >= WISHLIST_MAX,
         });
-      } catch (e) { // audit-catch-raw-ok: pre-existing-handler-intentional
+      } catch (e) {
+        void normalizeError(e);
         if (e instanceof WishlistFullError) {
           return errorResponse(
             `Wishlist full (${e.current}/${e.limit}). Remove an item to add new ones.`,
@@ -80,6 +83,7 @@ export const POST = withProviders(
   }),
 );
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

@@ -34,6 +34,7 @@ const claimSchema = z.object({
     .optional(),
 });
 
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const POST = withProviders(
   createRouteHandler<(typeof claimSchema)["_output"]>({
     auth: true,

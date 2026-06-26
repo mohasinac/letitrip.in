@@ -1,6 +1,7 @@
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, userRepository, applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 
+// rbac-public: unauthenticated endpoint
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

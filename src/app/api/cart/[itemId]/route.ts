@@ -12,6 +12,7 @@ const updateSchema = z.object({
   quantity: z.number().int().min(1).max(99),
 });
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateSchema)["_output"]>({
     auth: true,
@@ -28,6 +29,7 @@ export const PATCH = withProviders(
   }),
 );
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

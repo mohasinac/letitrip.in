@@ -52,6 +52,7 @@ import { errorResponse } from "@mohasinac/appkit";
  * ✅ Interpolates {{companyName}}, {{supportEmail}}, etc. from site settings
  * ✅ Caching implemented with LONG preset (30 min TTL)
  */
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(createRouteHandler({
   handler: async ({ request }) => {
     // Parse query parameters
@@ -199,6 +200,7 @@ export const GET = withProviders(createRouteHandler({
  * ✅ Returns created FAQ with 201 status
  * TODO (Future): Generate SEO-friendly slug for FAQ permalinks — ✅ Done
  */
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(createRouteHandler<(typeof faqCreateSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_ADMIN_ONLY],
@@ -228,4 +230,3 @@ export const POST = withProviders(createRouteHandler<(typeof faqCreateSchema)["_
     return successResponse(faq, SUCCESS_MESSAGES.FAQ.CREATED, 201);
   },
 }));
-

@@ -5,6 +5,7 @@ import {
   successResponse,
 } from "@mohasinac/appkit";
 
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

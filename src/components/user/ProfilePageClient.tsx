@@ -54,8 +54,7 @@ function renderProfileViewMode({
           </Div>
         ) : (
           <Row textWeight="bold" textSize="3xl"
-            className="h-20 w-20 ring-2 ring-zinc-100 dark:ring-slate-700" align="center" justify="center" rounded="full"
-            style={{ background: "var(--appkit-color-primary-50)", color: "var(--appkit-color-primary)" }} /* eslint-disable-line lir/no-inline-static-style */
+            className="h-20 w-20 ring-2 ring-zinc-100 dark:ring-slate-700 bg-[var(--appkit-color-primary-50)] text-[var(--appkit-color-primary)]" align="center" justify="center" rounded="full"
           >
             {avatarLetter}
           </Row>

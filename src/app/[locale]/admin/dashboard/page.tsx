@@ -1,6 +1,6 @@
 "use client";
 import { Row, Stack, normalizeError } from "@mohasinac/appkit";
-import { AdminDashboardView, ROUTES, Span, Text, Div, Grid, Toggle, useToast } from "@mohasinac/appkit/client";
+import { AdminDashboardView, ROUTES, Span, Text, Div, Grid, Toggle, useToast, DynamicBgDiv } from "@mohasinac/appkit/client";
 import { ADMIN_CHECKOUT_BYPASS_FLAG_KEY } from "@mohasinac/appkit";
 import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -223,12 +223,12 @@ export default function Page() {
                 href={String(href)}
                 className="group flex items-center gap-3 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3.5 text-sm font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
               >
-                <Row
-                  className="flex-shrink-0 w-7 h-7" align="center" justify="center" rounded="md"
-                  style={{ background: BRAND_GRAD }}
+                <DynamicBgDiv
+                  background={BRAND_GRAD}
+                  className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-md"
                 >
                   <Icon className="w-3.5 h-3.5 text-white" />
-                </Row>
+                </DynamicBgDiv>
                 {label}
               </Link>
             ))}

@@ -22,6 +22,7 @@ import { trimDataSchema } from "@mohasinac/appkit";
  * ⚠️ DISABLED on free tier
  * Requires Firebase Cloud Functions with FFmpeg or paid tier upgrade
  */
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(createRouteHandler<(typeof trimDataSchema)["_output"]>({
   auth: true,
   schema: trimDataSchema,
@@ -39,4 +40,3 @@ export const POST = withProviders(createRouteHandler<(typeof trimDataSchema)["_o
     );
   },
 }));
-

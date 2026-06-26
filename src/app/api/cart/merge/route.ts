@@ -29,6 +29,7 @@ const mergeCartSchema = z.object({
     .max(50), // Reasonable cap to prevent abuse
 });
 
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(createRouteHandler<(typeof mergeCartSchema)["_output"]>({
   auth: true,
   schema: mergeCartSchema,
@@ -70,4 +71,3 @@ export const POST = withProviders(createRouteHandler<(typeof mergeCartSchema)["_
     });
   },
 }));
-

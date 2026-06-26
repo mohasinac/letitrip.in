@@ -18,6 +18,7 @@ export const POST = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const source = await productRepository.findById(id);

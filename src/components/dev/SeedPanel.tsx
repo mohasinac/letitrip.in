@@ -29,6 +29,7 @@ import {
   Text,
   Div,
   Span,
+  ProgressBarFill,
   getClientRealtimeProvider,
   type Unsubscribe,
 } from "@mohasinac/appkit/client";
@@ -1597,11 +1598,8 @@ function ProgressBar({ value, total }: { value: number; total: number }) {
         </Text>
         <Text className="font-mono" color="muted" size="xs">{pct}%</Text>
       </Row>
-      <Div className="w-full h-2 overflow-hidden" surface="subtle" rounded="full">
-        <Div
-          className="h-full bg-amber-500 dark:bg-amber-400 transition-all duration-300" rounded="full"
-          style={{ width: `${pct}%` }}
-        />
+      <Div overflow="hidden" className="w-full h-2" surface="subtle" rounded="full">
+        <ProgressBarFill pct={pct} className="h-full bg-amber-500 dark:bg-amber-400 transition-all duration-300 rounded-full" />
       </Div>
     </Div>
   );
@@ -1654,8 +1652,8 @@ function SeedProgressBar({
     pct >= 100 ? "bg-emerald-500 dark:bg-emerald-400" : pct > 0 ? "bg-amber-500 dark:bg-amber-400" : "bg-zinc-300 dark:bg-slate-600";
   const h = size === "sm" ? "h-1.5" : "h-2";
   return (
-    <Div className={`w-full ${h} overflow-hidden`} rounded="full" surface="subtle">
-      <Div className={`h-full ${color} transition-all duration-500`} rounded="full" style={{ width: `${pct}%` }} />
+    <Div overflow="hidden" className={`w-full ${h}`} rounded="full" surface="subtle">
+      <ProgressBarFill pct={pct} className={`h-full ${color} transition-all duration-500 rounded-full`} />
     </Div>
   );
 }
@@ -1721,7 +1719,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
         </Row>
       </Row>
 
-      <Div className="overflow-x-auto" rounded="lg" border="default">
+      <Div overflow="x-auto" rounded="lg" border="default">
         <Table size="sm">
           <Thead>
             <Tr border="default" surface="muted">
@@ -1868,7 +1866,7 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
         {meta.mediaSlugPatterns && meta.mediaSlugPatterns.length > 0 && (
           <Div>
             <Text className="text-violet-700 dark:text-violet-400 tracking-wider mb-2 m-0" size="xs" weight="bold" transform="uppercase">🖼️ Media Slug Patterns (SEO filenames)</Text>
-            <Div className="overflow-x-auto" rounded="lg" border="default">
+            <Div overflow="x-auto" rounded="lg" border="default">
               <Table size="sm">
                 <Thead>
                   <Tr border="default" surface="muted">
@@ -2006,7 +2004,7 @@ function ResourceAccordionCard({
     runState === "error" || doneButFailed ? "bg-red-50 dark:bg-red-900/10" : "";
 
   return (
-    <Div className={`border transition-colors ${borderColor} ${bgColor} overflow-hidden`} rounded="xl">
+    <Div overflow="hidden" className={`border transition-colors ${borderColor} ${bgColor}`} rounded="xl">
       <Row
         as="button"
         type="button"
@@ -2407,7 +2405,7 @@ function renderSeedPanelToolbar({
   setFilterStatus: React.Dispatch<React.SetStateAction<StatusFilter>>;
 }) {
   return (
-    <Div border="default" className="sticky z-30 backdrop-blur-md border-b" surface="default" shadow="sm" style={{ top: "var(--header-height, 0px)" }}>
+    <Div border="default" className="sticky top-[var(--header-height,0px)] z-30 backdrop-blur-md border-b" surface="default" shadow="sm">
       <Container size="2xl">
         <Stack padding="y-xs" gap="sm" className="">
           <Stack direction="sm-row" align="center" gap="sm">

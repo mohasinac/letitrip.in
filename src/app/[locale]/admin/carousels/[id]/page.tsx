@@ -114,7 +114,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
               </Thead>
               <Tbody className="divide-y divide-zinc-100 dark:divide-slate-700">
                 {slides.map((slide, idx) => (
-                  <Tr key={slide.id} className="bg-white hover:bg-zinc-50 dark:bg-slate-900 dark:hover:bg-slate-800">
+                  <Tr key={slide.id} className="bg-[var(--appkit-color-surface)] hover:bg-[var(--appkit-color-bg)] dark:bg-[var(--appkit-color-surface-elevated)] dark:hover:bg-[var(--appkit-color-surface-elevated)]">
                     <Td padding="md" color="muted">{idx + 1}</Td>
                     <Td weight="medium" padding="md" color="primary">{slide.title}</Td>
                     <Td padding="md">

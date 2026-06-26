@@ -36,7 +36,7 @@ export function ShareButtons({ title }: ShareButtonsProps) {
         type="button"
         onClick={handleCopy}
         border="default" paddingX="sm" paddingY="xs" textSize="sm" weight="medium"
-        className="inline- text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+        className="inline- text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-bg)] transition-colors"
       >
         🔗 {copied ? "Copied!" : "Copy Link"}
       </Button>
@@ -44,7 +44,7 @@ export function ShareButtons({ title }: ShareButtonsProps) {
         type="button"
         onClick={handleTwitterShare}
         border="default" paddingX="sm" paddingY="xs" textSize="sm" weight="medium"
-        className="inline- text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+        className="inline- text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-bg)] transition-colors"
       >
         🐦 Share on X
       </Button>

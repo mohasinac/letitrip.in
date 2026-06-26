@@ -107,7 +107,26 @@ const EXEMPT_FILENAMES = new Set([]);
 const SUPPRESS_RE = /(?:\/\/|\/\*)\s*audit-hex-tokens-ok\b/;
 
 /** Path-pattern exemptions (relative to ROOT, forward-slash). */
-const EXEMPT_PATH_PATTERNS = [];
+const EXEMPT_PATH_PATTERNS = [
+  // Token definition files ARE the hex source of truth — exempting them is architecturally correct.
+  /^appkit\/src\/tokens\//,
+  /^appkit\/src\/_internal\/shared\/tokens\//,
+  // Color utility files that manipulate hex values algorithmically.
+  /^appkit\/src\/ui\/color\.helper\.ts$/,
+  /^appkit\/src\/utils\/color\.helper\.ts$/,
+  // OG image renderers use Next.js ImageResponse (Canvas API) — CSS variables are unsupported there.
+  /^appkit\/src\/_internal\/server\/features\/[^/]+\/og\.tsx$/,
+  /^appkit\/src\/_internal\/server\/features\/seo\/og/,
+  // Email template files — email clients do not support CSS custom properties.
+  /^appkit\/src\/features\/email\/primitives\.tsx$/,
+  /^appkit\/src\/features\/contact\/email\.tsx$/,
+  /^appkit\/src\/features\/auth\/consent-otp\.ts$/,
+  // Firestore seed data documents — color strings are document field values, not CSS.
+  /^appkit\/src\/seed\/categories-seed-data\.ts$/,
+  /^appkit\/src\/seed\/site-settings-seed-data\.ts$/,
+  // Hex defaults for <input type="color"> — CSS vars are invalid there; hex must be a literal string.
+  /^appkit\/src\/features\/homepage\/lib\/franchise-colors\.ts$/,
+];
 
 /**
  * Returns true for lines where the hex is required/expected and should not

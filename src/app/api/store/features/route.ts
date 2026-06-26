@@ -18,6 +18,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
+  permission: "store:api:write",
     handler: async ({ user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store)
@@ -40,6 +41,7 @@ export const POST = withProviders(
   createRouteHandler<ProductFeatureStoreCreatePayload>({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
+  permission: "store:api:write",
     schema: productFeatureStoreCreateSchema,
     handler: async ({ body, user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);

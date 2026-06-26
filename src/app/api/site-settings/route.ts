@@ -44,6 +44,7 @@ import { invalidateIntegrationKeysCache } from "@mohasinac/appkit";
  * TODO (Future): Support ETag for conditional requests — ✅ Done
  * TODO (Future): Integrate Redis for distributed caching
  */
+// rbac-scope-enforced-in-handler: per-verb auth enforced within handler
 export const GET = withProviders(createApiHandler({
   handler: async ({ request }) => {
     // Fetch site settings (singleton pattern)
@@ -123,6 +124,7 @@ export const GET = withProviders(createApiHandler({
  * TODO (Future): Invalidate distributed caches (Redis)
  * TODO (Future): Send notification to all admins on settings change — ✅ Done
  */
+// rbac-scope-enforced-in-handler: per-verb auth enforced within handler
 export const PATCH = withProviders(createRouteHandler<
   (typeof siteSettingsUpdateSchema)["_output"]
 >({
@@ -166,5 +168,4 @@ export const PATCH = withProviders(createRouteHandler<
     );
   },
 }));
-
 

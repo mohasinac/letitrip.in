@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { productRepository } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 
+// rbac-scope-enforced-in-handler: per-verb auth enforced within handler
 export const GET = withProviders(async (
   _req: Request,
   { params }: { params: Promise<{ groupId: string }> }

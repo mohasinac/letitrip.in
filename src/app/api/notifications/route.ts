@@ -48,6 +48,7 @@ const createNotificationSchema = z.object({
 /**
  * GET /api/notifications — List authenticated user's notifications
  */
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ request, user }) => {
@@ -68,6 +69,7 @@ export const GET = withProviders(createRouteHandler({
 /**
  * POST /api/notifications — Create a notification (admin only, or internal system calls)
  */
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_ONLY],
@@ -83,4 +85,3 @@ export const POST = withProviders(createRouteHandler({
     return successResponse(notification, SUCCESS_MESSAGES.NOTIFICATION.SENT);
   },
 }));
-

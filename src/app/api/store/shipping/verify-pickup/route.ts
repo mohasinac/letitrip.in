@@ -26,9 +26,11 @@ const verifyOTPSchema = z.object({
   pickupLocationId: z.number().int().positive(),
 });
 
+// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const POST = withProviders(createApiHandler<(typeof verifyOTPSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
   schema: verifyOTPSchema,
   handler: async ({ user, body }) => {
     const { otp, pickupLocationId } = body || {};
@@ -89,7 +91,6 @@ export const POST = withProviders(createApiHandler<(typeof verifyOTPSchema)["_ou
     );
   },
 }));
-
 
 
 

@@ -21,6 +21,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_READ],
+  permission: "store:api:write",
     handler: async ({ user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return ApiErrors.forbidden("No store found for this account");
@@ -35,6 +36,7 @@ export const POST = withProviders(
   createRouteHandler<(typeof createSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
+  permission: "store:api:write",
     schema: createSchema,
     handler: async ({ body, user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);

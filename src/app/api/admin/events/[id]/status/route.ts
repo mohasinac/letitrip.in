@@ -14,6 +14,7 @@ const updateStatusSchema = z.object({
   status: z.enum(Object.values(EVENT_FIELDS.STATUS_VALUES) as [string, ...string[]]),
 });
 
+// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateStatusSchema)["_output"]>({
     auth: true,

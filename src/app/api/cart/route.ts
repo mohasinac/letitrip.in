@@ -26,6 +26,7 @@ const addToCartSchema = z.object({
   quantity: z.number().int().min(1, "quantity must be at least 1").max(99),
 });
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
@@ -61,6 +62,7 @@ export const GET = withProviders(createRouteHandler({
   },
 }));
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_output"]>({
   auth: true,
   schema: addToCartSchema,
@@ -145,6 +147,7 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
   },
 }));
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
@@ -155,4 +158,3 @@ export const DELETE = withProviders(createRouteHandler({
     );
   },
 }));
-

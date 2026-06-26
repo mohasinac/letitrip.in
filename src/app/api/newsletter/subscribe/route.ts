@@ -26,6 +26,7 @@ const subscribeSchema = z.object({
     .optional(),
 });
 
+// rbac-public: public endpoint — no authentication required
 export const POST = withProviders(createRouteHandler<(typeof subscribeSchema)["_output"]>({
   schema: subscribeSchema,
   handler: async ({ request, body }) => {
@@ -78,4 +79,3 @@ export const POST = withProviders(createRouteHandler<(typeof subscribeSchema)["_
     );
   },
 }));
-

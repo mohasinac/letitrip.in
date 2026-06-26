@@ -70,6 +70,7 @@ function verifyShiprocketSignature(body: string, signature: string): boolean {
 
 // --- Route --------------------------------------------------------------------
 
+// rbac-public: public endpoint — no authentication required
 export async function POST(request: NextRequest) {
   let rawBody = "";
   try {
@@ -154,4 +155,3 @@ export async function POST(request: NextRequest) {
     return handleApiError(error);
   }
 }
-

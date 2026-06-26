@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Div, ROUTES, SellerTopProducts, Span, StoreDashboardView, useStoreDashboard } from "@mohasinac/appkit/client";
+import { Div, DynamicBgDiv, ROUTES, SellerTopProducts, Span, StoreDashboardView, useStoreDashboard } from "@mohasinac/appkit/client";
 const __O = {
   hidden: "overflow-hidden",
 } as const;
@@ -39,10 +39,10 @@ function StatCard({
   Icon: React.ComponentType<{ className?: string }>;
 }) {
   return (
-    <Div className={`relative border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden} hover:shadow-md transition-shadow`} rounded="xl" shadow="sm">
-      <Div
+    <Div className={`relative border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden}`} rounded="xl" shadow="sm-hover-md">
+      <DynamicBgDiv
+        background={gradient}
         className="absolute top-0 left-0 right-0 h-[3px]"
-        style={{ background: gradient }}
         aria-hidden="true"
       />
       <Row paddingX="x-5" paddingY="b-md-lg" padding="t-lg" align="start" justify="between" gap="3">
@@ -54,12 +54,12 @@ function StatCard({
             <Div textSize="2xl" textWeight="bold" className="mt-2 text-[var(--appkit-color-text)] tabular-nums leading-none">{value}</Div>
           )}
         </Div>
-        <Row
-          className="flex-shrink-0 w-10 h-10" align="center" justify="center" rounded="lg"
-          style={{ background: gradient }}
+        <DynamicBgDiv
+          background={gradient}
+          className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg"
         >
           <Icon className="w-5 h-5 text-white" />
-        </Row>
+        </DynamicBgDiv>
       </Row>
     </Div>
   );
@@ -146,12 +146,12 @@ export default function Page() {
               href={String(href)}
               className="group flex items-center gap-3 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3.5 text-sm font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
             >
-              <Span layout="flex-center" 
-                className="flex-shrink-0 w-7 h-7" rounded="md"
-                style={{ background: BRAND_GRAD }}
+              <DynamicBgDiv
+                background={BRAND_GRAD}
+                className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-md"
               >
                 <Icon className="w-3.5 h-3.5 text-white" />
-              </Span>
+              </DynamicBgDiv>
               {label}
             </Link>
           ))}

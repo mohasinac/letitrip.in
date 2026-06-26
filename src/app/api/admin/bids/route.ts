@@ -8,6 +8,7 @@ import { successResponse } from "@mohasinac/appkit";
 import { bidRepository } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
+// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_ADMIN_MOD],
   permission: "admin:bids:read",
@@ -34,4 +35,3 @@ export const GET = withProviders(createApiHandler({
     });
   },
 }));
-

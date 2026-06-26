@@ -12,6 +12,7 @@ const EMPTY_ORDER_RESULT: FirebaseSieveResult<OrderDocument> = {
   hasMore: false,
 };
 
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

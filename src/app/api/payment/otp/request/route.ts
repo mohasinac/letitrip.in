@@ -26,6 +26,7 @@ function getTodayIST(): string {
   return new Date(istMs).toISOString().split("T")[0];
 }
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
@@ -64,4 +65,3 @@ export const POST = withProviders(createRouteHandler({
     return successResponse({ allowed: true, count });
   },
 }));
-

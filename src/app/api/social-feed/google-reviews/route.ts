@@ -21,6 +21,7 @@ export const dynamic = "force-dynamic";
  *   { reviews: GoogleReview[], aggregateRating: number, totalRatings: number }
  *   { error: "not-configured" } when API key is absent
  */
+// rbac-public: public endpoint — no authentication required
 export const GET = withProviders(
   createApiHandler({
     handler: async ({ request }) => {

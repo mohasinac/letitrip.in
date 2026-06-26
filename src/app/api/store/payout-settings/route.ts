@@ -44,9 +44,11 @@ const updatePayoutSchema = z.discriminatedUnion("method", [upiSchema, bankSchema
 
 // --- GET ----------------------------------------------------------------------
 
+// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const GET = withProviders(createApiHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
   handler: async ({ user }) => {
     return successResponse({
       payoutDetails: sanitisePayoutDetails(
@@ -58,9 +60,11 @@ export const GET = withProviders(createApiHandler({
 
 // --- PATCH --------------------------------------------------------------------
 
+// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
   schema: updatePayoutSchema,
   handler: async ({ user, body }) => {
     const data = body!;

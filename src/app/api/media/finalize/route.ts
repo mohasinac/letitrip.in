@@ -73,6 +73,7 @@ async function readHeadBytes(fileRef: StorageFile): Promise<Buffer> {
   return Buffer.concat(chunks);
 }
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {

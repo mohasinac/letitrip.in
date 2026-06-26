@@ -10,6 +10,7 @@ function isMissingFirestoreIndexError(error: unknown): boolean {
 	);
 }
 
+// rbac-public: public endpoint — no authentication required
 export async function GET(
 	...args: Parameters<typeof blogGET>
 ) {
@@ -59,4 +60,3 @@ export async function GET(
 		throw error;
 	}
 }
-

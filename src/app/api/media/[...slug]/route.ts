@@ -46,6 +46,7 @@ function slugToStoragePath(slug: string[]): string | null {
   return joined;
 }
 
+// rbac-scope-enforced-in-handler: per-verb auth enforced within handler
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ slug: string[] }> },

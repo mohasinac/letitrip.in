@@ -23,10 +23,12 @@ const bodySchema = z.object({
   shippingProofMimeType: z.string().min(1),
 });
 
+// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const POST = withProviders(
   createRouteHandler<(typeof bodySchema)["_output"]>({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
     schema: bodySchema,
     handler: async ({ user, body, params }) => {
       const id = (params as { id: string }).id;

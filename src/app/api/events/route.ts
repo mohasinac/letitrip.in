@@ -97,4 +97,5 @@ async function _GET(request: Request): Promise<NextResponse> {
   return response;
 }
 
+// rbac-public: public endpoint — no authentication required
 export const GET = withProviders(_GET);

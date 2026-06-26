@@ -200,7 +200,8 @@ export default function InvoicePage({ params }: { params: Promise<{ id: string }
   return (
     <>
       {renderInvoiceActionBar(id)}
-      <Div className="max-w-2xl mx-auto print:px-0 print:py-0 print:max-w-none" paddingX="x-lg" paddingY="y-2xl">
+      <Div className="print:px-[0] print:py-[0] print:max-w-none">
+      <Div className="max-w-2xl mx-auto" paddingX="x-lg" paddingY="y-2xl">
         {renderInvoiceHeader(order, orderDate)}
         {order.address && renderInvoiceAddress(order.address)}
         {renderInvoiceItemsTable(order)}
@@ -211,6 +212,7 @@ export default function InvoicePage({ params }: { params: Promise<{ id: string }
         >
           Thank you for shopping with LetItRip · letitrip.in
         </Text>
+      </Div>
       </Div>
     </>
   );

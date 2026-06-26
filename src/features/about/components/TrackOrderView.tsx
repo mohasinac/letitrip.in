@@ -1,7 +1,6 @@
 import { ROUTES } from "@/constants";
 import { PAGE_CONTAINER } from "@/constants";
 import {
-  FLEX_CENTER,
   THEMED_BG_PRIMARY,
   THEMED_BG_SECONDARY,
   THEMED_BORDER,
@@ -19,7 +18,6 @@ const themed = {
   textPrimary: THEMED_TEXT_PRIMARY,
   textSecondary: THEMED_TEXT_SECONDARY,
 };
-const flex = { center: FLEX_CENTER };
 const page = { container: PAGE_CONTAINER };
 
 export async function TrackOrderView() {
@@ -73,13 +71,14 @@ export async function TrackOrderView() {
       </Section>
 
       <Container
-        className={`${page.container.md} md:py-16 space-y-14 md:space-y-16`} padding="y-2-5xl"
+        className={page.container.md} padding="y-4xl"
       >
+        <Stack gap="hero">
         {/* Sign-in prompt */}
         <Section
           className={`text-center`} border="default" surface="subtle" rounded="2xl" padding="xl"
         >
-          <Row align="center" justify="center" 
+          <Row align="center" justify="center"
             className={`w-16 h-16 bg-primary/10 dark:bg-primary/15 mx-auto mb-4`} rounded="full"
           >
             <ShoppingBag className="w-8 h-8 text-primary" />
@@ -90,13 +89,13 @@ export async function TrackOrderView() {
           <Row gap="md" justify="center" className="mt-6">
             <TextLink rounded="lg" paddingX="xl" paddingY="md"
               href={ROUTES.AUTH.LOGIN}
-              className={`inline-${flex.center} gap-2 bg-primary hover:bg-primary/90 text-white transition-colors`} weight="medium"
+              className="bg-primary hover:bg-primary/90 text-white transition-colors" weight="medium"
             >
               {t("signIn")}
             </TextLink>
             <TextLink rounded="lg" paddingX="xl" paddingY="md"
               href={ROUTES.USER.ORDERS}
-              className={`inline-${flex.center} gap-2 ${themed.bgPrimary} border ${themed.border} ${themed.textPrimary} hover:opacity-80 transition-opacity`} weight="medium"
+              className={`${themed.bgPrimary} border ${themed.border} ${themed.textPrimary} hover:opacity-80 transition-opacity`} weight="medium"
             >
               {t("viewOrders")}
             </TextLink>
@@ -111,13 +110,13 @@ export async function TrackOrderView() {
           {/* eslint-disable-next-line lir/no-hardcoded-grid-cols -- responsive 1→2→4 breakpoint; FLUID_GRID tokens not yet available */}
           <Grid className="grid-cols-1 sm:grid-cols-2 xl:grid-cols-4" gap="lg">
             {STEPS.map(({ icon: Icon, title, text, color, bg }, index) => (
-              <Card padding="lg"
-                className={`${themed.bgSecondary} rounded-xl border ${themed.border} relative`}
+              <Card padding="lg" rounded="xl"
+                className={`${themed.bgSecondary} border ${themed.border} relative`}
               >
                 <Caption className="absolute top-4 right-4" weight="bold">
                   {String(index + 1).padStart(2, "0")}
                 </Caption>
-                <Row align="center" justify="center" 
+                <Row align="center" justify="center"
                   className={`w-12 h-12 ${bg} mb-4`} rounded="xl"
                 >
                   <Icon className={`w-6 h-6 ${color}`} />
@@ -152,14 +151,15 @@ export async function TrackOrderView() {
             >
               {t("helpCenter")}
             </TextLink>
-            <TextLink rounded="lg"
+            <TextLink rounded="lg" paddingX="md" paddingY="xs"
               href={ROUTES.PUBLIC.CONTACT}
-              className="bg-primary hover:bg-primary/90 text-white px-4 py-2 transition-colors" size="sm"
+              className="bg-primary hover:bg-primary/90 text-white transition-colors" size="sm"
             >
               {t("contactSupport")}
             </TextLink>
           </Row>
         </Section>
+        </Stack>
       </Container>
     </Container>
   );

@@ -8,6 +8,7 @@ export const POST = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
     handler: async ({ request, params }) => {
       const orderId = (params as { id: string }).id;
       const body = await parseJsonBody<Parameters<typeof shipOrderAction>[1]>(request);

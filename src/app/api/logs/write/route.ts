@@ -22,6 +22,7 @@ const logSchema = z.object({
  * POST /api/logs/write
  * Write log entry from client to server log files
  */
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = createApiHandler<(typeof logSchema)["_output"]>({
   schema: logSchema,
   handler: async ({ body }) => {
@@ -37,5 +38,4 @@ export const POST = createApiHandler<(typeof logSchema)["_output"]>({
     return successResponse(null, SUCCESS_MESSAGES.LOGS.WRITTEN);
   },
 });
-
 

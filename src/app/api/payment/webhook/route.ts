@@ -58,6 +58,7 @@ async function signalPaymentEvent(
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
+// rbac-public: public endpoint — no authentication required
 export async function POST(request: NextRequest) {
   try {
     const rawBody = await request.text();
@@ -157,4 +158,3 @@ export async function POST(request: NextRequest) {
     return handleApiError(error);
   }
 }
-

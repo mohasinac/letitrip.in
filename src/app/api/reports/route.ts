@@ -10,6 +10,7 @@ import {
 } from "@mohasinac/appkit";
 import { ROLES_AUTHENTICATED } from "@/constants";
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

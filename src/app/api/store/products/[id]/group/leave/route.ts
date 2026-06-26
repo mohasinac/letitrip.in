@@ -4,8 +4,10 @@ import { productRepository, storeRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 /** DELETE /api/store/products/[id]/group/leave — child leaves its group */
+// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const DELETE = withProviders(createApiHandler({
   roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
   handler: async ({ user, params }) => {
     const productId = (params as { id: string }).id;
 

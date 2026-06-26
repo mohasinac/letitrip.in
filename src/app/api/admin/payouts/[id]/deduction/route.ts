@@ -29,6 +29,7 @@ const deductionSchema = z.object({
   reason: z.string().min(3).max(500),
 });
 
+// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
 export const POST = withProviders(
   createRouteHandler<(typeof deductionSchema)["_output"]>({
     auth: true,

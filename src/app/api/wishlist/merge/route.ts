@@ -28,6 +28,7 @@ const mergeWishlistSchema = z.object({
     .max(200),
 });
 
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(
   createRouteHandler<(typeof mergeWishlistSchema)["_output"]>({
     auth: true,

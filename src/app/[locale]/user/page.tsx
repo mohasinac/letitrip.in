@@ -13,6 +13,7 @@ import {
   ROUTES,
   Button,
   Div,
+  DynamicBgDiv,
   Span,
 } from "@mohasinac/appkit/client";
 import { useNotifications } from "@mohasinac/appkit";
@@ -131,9 +132,9 @@ export default function Page() {
         userLoading ? null : user ? (
           <Stack gap="md">
             <Row className={`relative border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden} ${__P.p5}`} align="center" gap="md" rounded="xl" shadow="sm">
-              <Div
+              <DynamicBgDiv
+                background={BRAND_GRAD}
                 className="absolute top-0 left-0 right-0 h-[3px]"
-                style={{ background: BRAND_GRAD }}
                 aria-hidden="true"
               />
               <Button rounded="full" 
@@ -152,14 +153,14 @@ export default function Page() {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <Row textWeight="bold" textSize="xl"
-                    className="h-full w-full text-white" align="center" justify="center"
-                    style={{ background: BRAND_GRAD }}
+                  <DynamicBgDiv
+                    background={BRAND_GRAD}
+                    className="h-full w-full flex items-center justify-center text-white font-bold text-xl"
                   >
                     {(user.displayName ?? user.email ?? "U")[0].toUpperCase()}
-                  </Row>
+                  </DynamicBgDiv>
                 )}
-                <Row surface="overlay-xs" className="absolute inset-0 bg-black/0 group-hover: transition-colors opacity-0 group-hover:opacity-100" align="center" justify="center">
+                <Row surface="overlay-xs" className="absolute inset-0 bg-transparent group-hover:bg-[var(--appkit-color-text)]/40 transition-colors opacity-0 group-hover:opacity-100" align="center" justify="center">
                   <Camera className="w-5 h-5 text-white" />
                 </Row>
                 {uploading && (
@@ -211,12 +212,12 @@ export default function Page() {
               href={String(href)}
               className="group flex items-center gap-3 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3.5 text-sm font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
             >
-              <Span layout="flex-center" 
-                className="flex-shrink-0 w-7 h-7" rounded="md"
-                style={{ background: BRAND_GRAD }}
+              <DynamicBgDiv
+                background={BRAND_GRAD}
+                className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-md"
               >
                 <Icon className="w-3.5 h-3.5 text-white" />
-              </Span>
+              </DynamicBgDiv>
               {label}
             </Link>
           ))}

@@ -60,6 +60,7 @@ interface SignRequestBody {
   context?: JsonValue;
 }
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {

@@ -29,6 +29,7 @@ import {
 /** Hard timeout communicated to the client. */
 const EVENT_TTL_MS = 30 * 60 * 1000;
 
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export async function POST(request: NextRequest) {
   const user = await getUserFromRequest(request);
   if (!user || !isAdminUser(user)) {

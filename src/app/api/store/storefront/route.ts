@@ -8,11 +8,12 @@ import { successResponse } from "@mohasinac/appkit";
 import { storeRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_READ } from "@/constants";
 
+// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_STORE_READ],
+    permission: "store:api:read",
   handler: async ({ user }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);
     return successResponse({ store: store ?? null });
   },
 }));
-

@@ -6,7 +6,7 @@ import { withProviders } from "@/providers.config";
  * POST /api/user/wishlist — Add a product to the wishlist (capped at WISHLIST_MAX)
  */
 
-import { wishlistRepository } from "@mohasinac/appkit";
+import { normalizeError, wishlistRepository } from "@mohasinac/appkit";
 import {
   productRepository,
   normalizeListingType,
@@ -28,6 +28,7 @@ const addSchema = z.object({
  *
  * Returns wishlist items with product details for the authenticated user.
  */
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
@@ -64,6 +65,7 @@ export const GET = withProviders(createRouteHandler({
  * Returns 409 WISHLIST_FULL when the user has WISHLIST_MAX (20) items and the product
  * is not already in their wishlist.
  */
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const POST = withProviders(createRouteHandler<(typeof addSchema)["_output"]>({
   auth: true,
   schema: addSchema,
@@ -101,7 +103,8 @@ export const POST = withProviders(createRouteHandler<(typeof addSchema)["_output
         SUCCESS_MESSAGES.WISHLIST.ADDED,
         201,
       );
-    } catch (e) { // audit-catch-raw-ok: pre-existing-handler-intentional
+    } catch (e) {
+      void normalizeError(e);
       if (e instanceof WishlistFullError) {
         return errorResponse(
           `Wishlist full (${e.current}/${e.limit}). Remove an item to add new ones.`,

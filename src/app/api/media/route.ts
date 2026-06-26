@@ -50,6 +50,7 @@ function extractStoragePath(url: string): string | null {
   }
 }
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {

@@ -13,6 +13,7 @@ import {
 } from "@/constants";
 import { reviewRepository } from "@mohasinac/appkit";
 
+// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_ADMIN_MOD],
   permission: "admin:reviews:read",
@@ -55,4 +56,3 @@ export const GET = withProviders(createApiHandler({
     });
   },
 }));
-

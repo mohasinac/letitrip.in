@@ -21,6 +21,7 @@ const createAddressSchema = z.object({
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_READ],
+  permission: "store:addresses:read",
   handler: async ({ user }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store) return ApiErrors.forbidden("No store found for this account");

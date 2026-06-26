@@ -9,6 +9,7 @@ import {
 
 const DEFAULT_SORTS = sortBy(NOTIFICATION_FIELDS.CREATED_AT);
 
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

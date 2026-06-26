@@ -18,6 +18,7 @@ import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { callFirebaseFunction } from "@/lib/firebase-gateway";
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(
   createRouteHandler({
     handler: async () => {

@@ -14,6 +14,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
+    permission: "admin:team:read",
     handler: async () => {
       const result = await customRolesRepository.listActive();
       return successResponse({ items: result.items });

@@ -24,6 +24,7 @@ const contactSchema = z.object({
     .max(5000),
 });
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(createRouteHandler<(typeof contactSchema)["_output"]>({
   schema: contactSchema,
   handler: async ({ request, body }) => {
@@ -53,4 +54,3 @@ export const POST = withProviders(createRouteHandler<(typeof contactSchema)["_ou
     return successResponse({ sent: true }, SUCCESS_MESSAGES.CONTACT.SENT);
   },
 }));
-

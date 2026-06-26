@@ -49,7 +49,7 @@ import {
 import type { CartItem } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 
-import { Row, Stack } from "@mohasinac/appkit";
+import { Row, Stack, normalizeError } from "@mohasinac/appkit";
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -722,6 +722,16 @@ export function CartRouteClient() {
   // ---------------------------------------------------------------------------
   // Render
   // ---------------------------------------------------------------------------
+  async function handleSelectAllAndCheckout() {
+    try {
+      await selectAll();
+      router.push(String(ROUTES.USER.CHECKOUT));
+    } catch (err) {
+      void normalizeError(err);
+      showToast(err instanceof Error ? err.message : "Failed to select all items", "error");
+    }
+  }
+
   return (
     <>
     <CartView
@@ -909,15 +919,8 @@ export function CartRouteClient() {
             <Button
               type="button"
               variant="ghost"
-              onClick={async () => {
-                try {
-                  await selectAll();
-                  router.push(String(ROUTES.USER.CHECKOUT));
-                } catch (err) {
-                  showToast(err instanceof Error ? err.message : "Failed to select all items", "error");
-                }
-              }}
-              className="w-full text-xs text-zinc-500 dark:text-zinc-400 underline underline-offset-2 hover:text-zinc-700 dark:hover:text-zinc-200"
+              onClick={handleSelectAllAndCheckout}
+              className="w-full text-[0.75rem] text-[var(--appkit-color-text-muted)] underline underline-offset-2 hover:text-[var(--appkit-color-text)]"
             >
               Or checkout all {allItemIds.length} items
             </Button>
@@ -972,7 +975,7 @@ function AuctionsTabItems({ auctionBucket, filteredAuctions, sellerGroupsAuction
   }
   return (
     <Stack gap="md">
-      <Text paddingY="xs" className="text-warning bg-warning-surface border border-warning/20 rounded-lg px-3" size="xs">
+      <Text paddingY="xs" paddingX="x-xs" rounded="default" className="text-warning bg-[var(--appkit-color-warning-surface)] border border-warning/20" size="xs">
         Won auction items must be paid before you can bid on new auctions or purchase new items.
       </Text>
       {sellerGroupsAuctions.map((group) => (
@@ -1053,7 +1056,7 @@ function OffersTabItems({ offerBucket, filteredOffers, sellerGroupsOffers, norma
   const noop = () => {};
   return (
     <Stack gap="md">
-      <Text paddingY="xs" className="text-warning bg-warning-surface border border-warning/20 rounded-lg px-3" size="xs">
+      <Text paddingY="xs" paddingX="x-xs" rounded="default" className="text-warning bg-[var(--appkit-color-warning-surface)] border border-warning/20" size="xs">
         Accepted offers must be paid. These items cannot be removed from your cart.
       </Text>
       {sellerGroupsOffers.map((group) => (

@@ -51,6 +51,7 @@ const preorderDepositSchema = z.object({
   notes: z.string().max(500).optional(),
 });
 
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(createRouteHandler<
   (typeof preorderDepositSchema)["_output"]
 >({
@@ -167,4 +168,3 @@ export const POST = withProviders(createRouteHandler<
     return successResponse({ orderId: order.id });
   },
 }));
-

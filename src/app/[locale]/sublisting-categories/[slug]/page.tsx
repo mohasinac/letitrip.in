@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { JsonValue } from "@mohasinac/appkit";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
-import { Heading, Main, MediaImage, Nav, ROUTES, Row, Stack, Text, categoriesRepository, isAuctionListing, isPreOrderListing } from "@mohasinac/appkit";
+import { Heading, Main, MediaImage, Nav, ROUTES, Row, Span, Stack, Text, categoriesRepository, isAuctionListing, isPreOrderListing } from "@mohasinac/appkit";
 import { Div } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants";
 
@@ -20,7 +20,7 @@ function fmt(paise: number, currency = "INR"): string {
 
 export const revalidate = 300;
 
-const CLS_AUCTION_PILL = "rounded-full bg-amber-100 dark:bg-amber-900/30 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300";
+const CLS_AUCTION_PILL = "rounded-full bg-warning-surface text-warning px-1.5 py-0.5 text-[10px] font-semibold";
 const CLS_PREORDER_PILL = "rounded-full bg-indigo-100 dark:bg-indigo-900/30 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-700 dark:text-indigo-300";
 
 interface Props {
@@ -93,9 +93,9 @@ export default async function SublistingCategoryPage({ params }: Props) {
                 </Text>
               )}
             </>
-            <Text as="span" className="mt-2 inline-flex h-fit shrink-0 items-center rounded-full bg-[var(--appkit-color-primary)]/10 px-3 py-1 text-[var(--appkit-color-primary)] sm:mt-0" size="sm" weight="semibold">
+            <Span layout="inline-flex" rounded="full" padding="pill-md" className="mt-2 h-fit shrink-0 bg-[var(--appkit-color-primary)]/10 text-[var(--appkit-color-primary)] sm:mt-0" size="sm" weight="semibold">
               {listings.length} listing{listings.length !== 1 ? "s" : ""}
-            </Text>
+            </Span>
           </Stack>
         </Div>
 
@@ -170,9 +170,9 @@ export default async function SublistingCategoryPage({ params }: Props) {
                           </Text>
                         )}
                         {condition && (
-                          <Text as="span" className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 text-[10px]" color="muted" transform="capitalize">
+                          <Span rounded="full" padding="pill-2xs" className="bg-[var(--appkit-color-surface-elevated)] text-[10px]" color="muted" transform="capitalize">
                             {condition}
-                          </Text>
+                          </Span>
                         )}
                       </Row>
                     )}

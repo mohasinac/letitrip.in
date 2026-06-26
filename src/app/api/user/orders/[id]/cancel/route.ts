@@ -10,6 +10,7 @@ const cancelSchema = z.object({
   reason: z.string().min(1).max(500).default("Cancelled by user"),
 });
 
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const POST = withProviders(
   createRouteHandler<(typeof cancelSchema)["_output"]>({
     auth: true,

@@ -17,6 +17,7 @@ function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
 }
 
+// rbac-public: public endpoint — no authentication required
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const platform = searchParams.get("platform") as SocialPlatform | null;

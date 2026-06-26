@@ -8,8 +8,10 @@ import { successResponse } from "@mohasinac/appkit";
 import { offerRepository, storeRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_READ } from "@/constants";
 
+// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_STORE_READ],
+    permission: "store:api:read",
   handler: async ({ request, user }) => {
     const url = new URL(request.url);
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
@@ -49,4 +51,3 @@ export const GET = withProviders(createApiHandler({
     });
   },
 }));
-

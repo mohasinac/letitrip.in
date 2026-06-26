@@ -35,6 +35,7 @@ const DEFAULT_SORTS = sortBy(ORDER_FIELDS.ORDER_DATE);
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
+  permission: "store:api:write",
   handler: async ({ user, request }) => {
     const searchParams = getSearchParams(request);
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });

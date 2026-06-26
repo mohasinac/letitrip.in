@@ -181,7 +181,7 @@ function renderAddressStep({
         <Div border="default"
           key={address.id}
           onClick={select}
-          className={`cursor-pointer transition ${ isSelected ? "border-zinc-900 bg-zinc-50 dark:border-zinc-100 dark:bg-slate-800" : " bg-white dark:bg-slate-900" }`} rounded="xl" padding="md"
+          className={`cursor-pointer transition ${ isSelected ? "border-[var(--appkit-color-text)] bg-[var(--appkit-color-surface)] dark:border-[var(--appkit-color-text)] dark:bg-[var(--appkit-color-surface-elevated)]" : "bg-[var(--appkit-color-surface)] dark:bg-[var(--appkit-color-surface-elevated)]" }`} rounded="xl" padding="md"
         >
           <Text weight="medium" color="primary">
             {address.label ?? address.fullName}
@@ -275,7 +275,7 @@ function renderOtpConsentStep({
               type="button"
               onClick={handleAdminBypass}
               disabled={isProcessingPayment}
-              className="w-full border border-warning/40 bg-warning-surface text-warning hover:opacity-80 text-sm"
+              textSize="sm" className="w-full border border-warning/40 bg-[var(--appkit-color-warning-surface)] text-warning hover:opacity-80"
             >
               {CK.ADMIN_BYPASS_CONSENT_BTN}
             </Button>
@@ -344,7 +344,7 @@ function renderOtpStep({
           variant="ghost"
           onClick={handleSendOtp}
           disabled={isSendingOtp}
-          className="w-full text-sm text-zinc-600 dark:text-zinc-400 underline"
+          textSize="sm" className="w-full text-[var(--appkit-color-text-muted)] underline"
         >
           {isSendingOtp ? CK.OTP_RESENDING_BTN : CK.OTP_RESEND_BTN}
         </Button>
@@ -401,7 +401,7 @@ function renderPaymentStep({
             type="button"
             onClick={handlePlaceCodOrder}
             disabled={isProcessingPayment || cartIsEmpty}
-            className="w-full border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-slate-700"
+            className="w-full border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] dark:bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-bg)] dark:hover:bg-[var(--appkit-color-surface-elevated)]"
           >
             {CK.PAYMENT_COD_BTN}
           </Button>
@@ -414,7 +414,7 @@ function renderPaymentStep({
                 type="button"
                 onClick={handleAdminBypass}
                 disabled={isProcessingPayment || cartIsEmpty}
-              className="w-full border border-warning/40 bg-warning-surface text-warning hover:opacity-80 text-sm"
+              textSize="sm" className="w-full border border-warning/40 bg-[var(--appkit-color-warning-surface)] text-warning hover:opacity-80"
               >
                 {CK.ADMIN_BYPASS_PAYMENT_BTN}
               </Button>
@@ -537,7 +537,7 @@ function renderOrderSummary({
           </Text>
         </Div>
       )}
-      <Row color="muted" textSize="sm" className="text-zinc-600 dark:text-zinc-400 mb-1" align="center" justify="between">
+      <Row color="muted" textSize="sm" className="mb-1" align="center" justify="between">
         <Text>Subtotal</Text>
         <Text>{formattedSubtotal}</Text>
       </Row>
@@ -556,7 +556,7 @@ function renderOrderSummary({
           type="button"
           onClick={handleAdvanceToVerification}
           disabled={!selectedAddress || addressesLoading}
-          className="mt-4 w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
+          className="mt-4 w-full bg-[var(--appkit-color-text)] text-[var(--appkit-color-bg)] hover:bg-[var(--appkit-color-text)] dark:bg-[var(--appkit-color-bg)] dark:text-[var(--appkit-color-text)]"
         >
           {CK.ADDRESS_CONTINUE_BTN}
         </Button>

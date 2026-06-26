@@ -12,6 +12,7 @@ const messageSchema = z.object({
 
 // GET messages are read directly from Firebase RTDB on the client via real-time subscription.
 // This POST handler is the server-side entry point for sending a new message.
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

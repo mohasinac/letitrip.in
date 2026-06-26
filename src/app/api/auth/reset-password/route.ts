@@ -18,6 +18,7 @@ import { createRouteHandler } from "@mohasinac/appkit";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 import { errorResponse } from "@mohasinac/appkit";
 
+// rbac-public: unauthenticated endpoint
 export const PUT = withProviders(createRouteHandler<(typeof resetPasswordSchema)["_output"]>({
   schema: resetPasswordSchema,
   handler: async ({ body, request }) => {
@@ -33,4 +34,3 @@ export const PUT = withProviders(createRouteHandler<(typeof resetPasswordSchema)
     return successResponse(undefined, SUCCESS_MESSAGES.USER.PASSWORD_CHANGED);
   },
 }));
-

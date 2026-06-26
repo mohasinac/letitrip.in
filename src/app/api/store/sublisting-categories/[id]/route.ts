@@ -69,6 +69,7 @@ export const PUT = withProviders(createRouteHandler<(typeof updateSchema)["_outp
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
   handler: async ({ params, user }) => {
     const id = (params as Record<string, string>)?.id;
     if (!id) return ApiErrors.badRequest("Missing id");

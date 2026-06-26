@@ -46,6 +46,7 @@ const registerSchema = z.object({
   }),
 });
 
+// rbac-public: unauthenticated endpoint
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting — protect against registration spam
@@ -205,5 +206,4 @@ export async function POST(request: NextRequest) {
     return handleApiError(error);
   }
 }
-
 

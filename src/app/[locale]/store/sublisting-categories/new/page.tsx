@@ -110,7 +110,7 @@ export default function Page() {
             variant="primary"
             disabled={!name.trim() || saving}
             paddingX="lg" textSize="sm" weight="semibold"
-            className="py-2.5 hover:opacity-90 transition-opacity disabled:opacity-50"
+            paddingY="y-xs-tall" className="hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {saving ? "Creating…" : "Create category"}
           </Button>

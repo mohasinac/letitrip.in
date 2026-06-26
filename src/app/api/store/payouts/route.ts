@@ -54,6 +54,7 @@ async function computeSellerEarnings(storeId: string) {
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
+  permission: "store:api:write",
   handler: async ({ request, user }) => {
     const uid = user!.uid;
     const store = await storeRepository.findByOwnerId(uid);

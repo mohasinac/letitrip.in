@@ -24,6 +24,7 @@ const schema = z.object({
   types: typePrefsSchema.optional(),
 });
 
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -45,6 +46,7 @@ export const GET = withProviders(
   }),
 );
 
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const PUT = withProviders(
   createRouteHandler({
     auth: true,

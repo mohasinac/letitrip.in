@@ -16,6 +16,7 @@ import { ValidationError } from "@mohasinac/appkit";
 import { userRepository } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(createRouteHandler<(typeof verifyPhoneSchema)["_output"]>({
   auth: true,
   schema: verifyPhoneSchema,
@@ -40,4 +41,3 @@ export const POST = withProviders(createRouteHandler<(typeof verifyPhoneSchema)[
     );
   },
 }));
-

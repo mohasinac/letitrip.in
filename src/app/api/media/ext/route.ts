@@ -47,6 +47,7 @@ function isBlockedHostname(hostname: string): boolean {
   return false;
 }
 
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export async function GET(request: NextRequest): Promise<Response> {
   const rawUrl = request.nextUrl.searchParams.get("url");
 

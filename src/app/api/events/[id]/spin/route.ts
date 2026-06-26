@@ -6,6 +6,7 @@ import {
   assignSpinPrizeAction,
 } from "@mohasinac/appkit/server";
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

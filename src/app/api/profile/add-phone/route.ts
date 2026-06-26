@@ -16,6 +16,7 @@ import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(createRouteHandler<(typeof addPhoneSchema)["_output"]>({
   auth: true,
   schema: addPhoneSchema,
@@ -45,4 +46,3 @@ export const POST = withProviders(createRouteHandler<(typeof addPhoneSchema)["_o
     );
   },
 }));
-

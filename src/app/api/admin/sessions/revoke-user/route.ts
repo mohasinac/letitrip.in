@@ -27,6 +27,7 @@ const revokeUserSchema = z.object({
  *
  * Revokes all active sessions for the given user and returns the count.
  */
+// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
 export const POST = withProviders(createRouteHandler<(typeof revokeUserSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
@@ -49,4 +50,3 @@ export const POST = withProviders(createRouteHandler<(typeof revokeUserSchema)["
     );
   },
 }));
-

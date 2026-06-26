@@ -9,6 +9,7 @@ import {
   useChangeEmail,
   useToast,
   Div,
+  DynamicBgDiv,
   Row,
   Stack,
   Text,
@@ -38,9 +39,9 @@ function SectionCard({ children }: { children: React.ReactNode }) {
       gap="md"
       className="relative border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] overflow-hidden" rounded="xl" shadow="sm"
     >
-      <Div
+      <DynamicBgDiv
+        background="linear-gradient(to right,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)"
         className="absolute top-0 left-0 right-0 h-[3px]"
-        style={{ background: "linear-gradient(to right,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)" }} // eslint-disable-line lir/no-inline-static-style
         aria-hidden="true"
       />
       {children}
@@ -119,7 +120,7 @@ function renderAccountTab({
             <Text variant="secondary" size="xs">
               A verification link will be sent to your new address. Your email updates after you click the link.
             </Text>
-            <Form onSubmit={handleEmailSubmit} className="grid gap-4 md:grid-cols-[1fr_240px] md:items-start">
+            <Form onSubmit={handleEmailSubmit} className="grid gap-[1rem] md:grid-cols-[1fr_240px]" align="start">
               <Stack gap="sm">
                 <Input id="new-email" type="email" label="New Email Address" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required autoComplete="email" placeholder="new@example.com" />
                 <Input id="email-password" type="password" label="Current Password" value={emailPassword} onChange={(e) => setEmailPassword(e.target.value)} required autoComplete="current-password" />
@@ -138,7 +139,7 @@ function renderAccountTab({
       <SectionCard>
         <Accordion title="Change Password">
           <Stack gap="md" padding="t-sm">
-            <Form onSubmit={handlePasswordSubmit} className="grid gap-4 md:grid-cols-[1fr_240px] md:items-start">
+            <Form onSubmit={handlePasswordSubmit} className="grid gap-[1rem] md:grid-cols-[1fr_240px]" align="start">
               <Stack gap="sm">
                 <Input id="current-password" type="password" label="Current Password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required autoComplete="current-password" />
                 <Input id="new-password" type="password" label="New Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={8} autoComplete="new-password" />

@@ -9,6 +9,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_READ],
+  permission: "store:api:write",
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const slug = url.searchParams.get("slug")?.toLowerCase().trim() ?? "";

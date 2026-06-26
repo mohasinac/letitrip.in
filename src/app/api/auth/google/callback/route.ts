@@ -290,6 +290,7 @@ function buildSessionResponse(
   return response;
 }
 
+// rbac-public: unauthenticated endpoint
 export async function GET(request: NextRequest) {
   const origin = request.nextUrl.origin;
 
@@ -394,5 +395,4 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL("/auth/close?error=unexpected", origin));
   }
 }
-
 

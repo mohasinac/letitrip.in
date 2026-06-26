@@ -47,6 +47,7 @@ const bodySchema = z.object({
   razorpayOrderId: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
 });
 
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(createRouteHandler<(typeof bodySchema)["_output"]>({
   auth: true,
   schema: bodySchema,
@@ -74,4 +75,3 @@ export const POST = withProviders(createRouteHandler<(typeof bodySchema)["_outpu
     });
   },
 }));
-

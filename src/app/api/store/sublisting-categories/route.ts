@@ -25,6 +25,7 @@ const createSchema = z.object({
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_READ],
+  permission: "store:api:write",
   handler: async ({ request }) => {
     const url = new URL(request.url);
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
@@ -44,6 +45,7 @@ export const GET = withProviders(createRouteHandler({
 export const POST = withProviders(createRouteHandler<(typeof createSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
+  permission: "store:api:write",
   schema: createSchema,
   handler: async ({ body, user }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);

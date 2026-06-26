@@ -11,8 +11,10 @@ import { successResponse, ApiErrors } from "@mohasinac/appkit";
 import { productRepository, storeRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_READ } from "@/constants";
 
+// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_STORE_READ],
+    permission: "store:api:read",
   handler: async ({ request, user }) => {
     // Resolve the store owned by this user — storeId is the public-facing key on products
     const store = await storeRepository.findByOwnerId(user!.uid);

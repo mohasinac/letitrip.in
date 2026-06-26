@@ -77,12 +77,9 @@ function renderItemRow(item: OrderItemT, key: string | number) {
   return (
     <Row key={key} gap="3" align="start">
       {item.image && (
-        <Div
-          role="img"
-          aria-label={item.title}
-          className="h-16 w-16 shrink-0 bg-cover bg-center" surface="subtle" rounded="lg"
-          style={{ backgroundImage: `url(${item.image})` }}
-        />
+        <Div className="h-16 w-16 shrink-0" surface="elevated" rounded="lg" overflow="hidden">
+          <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+        </Div>
       )}
       <Div className="flex-1 min-w-0">
         <Text className="line-clamp-2" color="primary" size="sm" weight="medium">

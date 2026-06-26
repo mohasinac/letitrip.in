@@ -15,6 +15,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
+    permission: "admin:reviews:write",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const doc = await reportsRepository.findById(id);

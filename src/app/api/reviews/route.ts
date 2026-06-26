@@ -70,6 +70,7 @@ function buildPublicFilters(url: URL, baseFilters: string[]): string {
   return parts.filter(Boolean).join(",");
 }
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export async function GET(request: Request): Promise<NextResponse> {
   try {
     const url = new URL(request.url);
@@ -166,6 +167,7 @@ export async function GET(request: Request): Promise<NextResponse> {
   }
 }
 
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

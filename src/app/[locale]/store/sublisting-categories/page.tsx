@@ -227,7 +227,7 @@ function renderPage({
             >
               Previous
             </Button>
-            <Text variant="secondary" className="px-1" size="xs">
+            <Text variant="secondary" size="xs" className="px-[0.25rem]">
               {page} / {totalPages}
             </Text>
             <Button

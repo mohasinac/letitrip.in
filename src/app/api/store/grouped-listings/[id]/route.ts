@@ -18,6 +18,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const store = await storeRepository.findByOwnerId(user!.uid);
@@ -34,6 +35,7 @@ export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
     handler: async ({ request, user, params }) => {
       const id = (params as { id: string }).id;
       const store = await storeRepository.findByOwnerId(user!.uid);
@@ -57,6 +59,7 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const store = await storeRepository.findByOwnerId(user!.uid);

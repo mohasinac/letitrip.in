@@ -27,6 +27,7 @@ const forgotPasswordSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),
 });
 
+// rbac-public: unauthenticated endpoint
 export const POST = withProviders(createRouteHandler<
   (typeof forgotPasswordSchema)["_output"]
 >({
@@ -54,4 +55,3 @@ export const POST = withProviders(createRouteHandler<
     );
   },
 }));
-

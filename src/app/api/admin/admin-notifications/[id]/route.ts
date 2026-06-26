@@ -13,6 +13,7 @@ export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
+    permission: "admin:notifications:write",
     handler: async ({ request, params }) => {
       const id = (params as { id: string }).id;
       const doc = await adminNotificationsRepository.findById(id);

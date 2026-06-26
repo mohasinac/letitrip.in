@@ -43,6 +43,7 @@ export interface UnavailableItem {
 
 // --- POST Handler -------------------------------------------------------------
 
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(createRouteHandler<(typeof schema)["_output"]>({
   auth: true,
   schema,
@@ -86,4 +87,3 @@ export const POST = withProviders(createRouteHandler<(typeof schema)["_output"]>
     return successResponse({ available, unavailable });
   },
 }));
-
