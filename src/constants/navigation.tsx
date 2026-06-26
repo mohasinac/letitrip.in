@@ -178,6 +178,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.DIGITAL_CODES),   "Digital Codes",   "admin:products:read"),
       adminItem(String(ROUTES.ADMIN.LIVE),            "Live Items",      "admin:products:read"),
       adminItem(String(ROUTES.ADMIN.ORDERS),          "Orders",          "admin:orders:read"),
+      adminItem(String(ROUTES.ADMIN.FULFILLMENT),     "Fulfillment",     "admin:orders:read"),
       adminItem(String(ROUTES.ADMIN.RETURN_REQUESTS), "Returns",         "admin:returns:read"),
       adminItem(String(ROUTES.ADMIN.STORES),          "Stores",          "admin:stores:read"),
       adminItem(String(ROUTES.ADMIN.STORE_ADDRESSES), "Store Addresses", "admin:store-addresses:read"),
@@ -317,6 +318,13 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
       { href: String(ROUTES.STORE.ORDERS),  label: "Orders"  },
       { href: String(ROUTES.STORE.BIDS),    label: "Bids"    },
       { href: String(ROUTES.STORE.REVIEWS), label: "Reviews" },
+    ],
+  },
+  {
+    title: "Fulfilment",
+    items: [
+      { href: String(ROUTES.STORE.FULFILLMENT),  label: "Pick & Pack"   },
+      { href: String(ROUTES.STORE.PRINT_CENTER), label: "Print Labels"  },
     ],
   },
   {

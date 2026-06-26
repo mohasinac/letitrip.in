@@ -23,6 +23,7 @@ const updateProductSchema = z.object({
   isSold: z.boolean().optional(),
   category: z.string().optional(),
   tags: z.array(z.string()).optional(),
+  barcodeId: z.string().optional(),
 }).passthrough();
 
 export const GET = withProviders(
@@ -40,7 +41,7 @@ export const GET = withProviders(
 );
 
 export const PATCH = withProviders(
-  createRouteHandler<(typeof updateProductSchema)["_output"]>({
+  createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
     permission: "admin:products:write",

@@ -38,6 +38,7 @@ import {
 import type { JsonValue } from "@mohasinac/appkit";
 import { shipOrderAction } from "@/actions/seller.actions";
 import { ROLES_STORE_WRITE } from "@/constants";
+import { USER_ROLE } from "@/constants/api-roles";
 
 const ORDER_NOT_FOUND = "Order not found";
 
@@ -66,6 +67,9 @@ const updateOrderSchema = z.object({
    * `shipOrderAction` and returns the Shiprocket auto-create result.
    */
   shiprocketPackage: shiprocketPackageSchema.optional(),
+  markPicked: z.boolean().optional(),
+  markPacked: z.boolean().optional(),
+  assignedWorkerId: z.string().optional(),
 });
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
@@ -151,7 +155,7 @@ export const GET = withProviders(
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateOrderSchema)["_output"]>({
     auth: true,
-    roles: [...ROLES_STORE_WRITE],
+    roles: [...ROLES_STORE_WRITE, USER_ROLE.EMPLOYEE],
     permission: "store:api:write",
     schema: updateOrderSchema,
     handler: async ({ user, body, params }) => {
@@ -160,20 +164,45 @@ export const PATCH = withProviders(
       if (!order) return errorResponse(ORDER_NOT_FOUND, 404);
 
       const isAdmin = user!.role === "admin";
-      if (!isAdmin) {
-        const storeId = await resolveSellerStoreId(user!.uid);
-        if (!storeId || order.storeId !== storeId)
-          return errorResponse(ORDER_NOT_FOUND, 404);
+      const isEmployee = user!.role === USER_ROLE.EMPLOYEE;
 
-        if (
-          body!.status &&
-          !(SELLER_ALLOWED_STATUSES as readonly string[]).includes(body!.status)
-        ) {
-          return errorResponse(
-            "Sellers can only update status to processing or shipped",
-            403,
-          );
+      if (!isAdmin) {
+        if (isEmployee) {
+          const userDoc = (await userRepository.findById(user!.uid)) as { storeId?: string } | null;
+          if (!userDoc?.storeId || order.storeId !== userDoc.storeId)
+            return errorResponse(ORDER_NOT_FOUND, 404);
+        } else {
+          const storeId = await resolveSellerStoreId(user!.uid);
+          if (!storeId || order.storeId !== storeId)
+            return errorResponse(ORDER_NOT_FOUND, 404);
+
+          if (
+            body!.status &&
+            !(SELLER_ALLOWED_STATUSES as readonly string[]).includes(body!.status)
+          ) {
+            return errorResponse(
+              "Sellers can only update status to processing or shipped",
+              403,
+            );
+          }
         }
+      }
+
+      // ── Fulfilment flags — handled before the shipping path.
+      if (body!.markPicked) {
+        await orderRepository.markPicked(id);
+        const updated = await orderRepository.findById(id);
+        return successResponse(updated, "Order marked as picked");
+      }
+      if (body!.markPacked) {
+        await orderRepository.markPacked(id);
+        const updated = await orderRepository.findById(id);
+        return successResponse(updated, "Order marked as packed");
+      }
+      if (body!.assignedWorkerId !== undefined) {
+        await orderRepository.assignWorker(id, body!.assignedWorkerId);
+        const updated = await orderRepository.findById(id);
+        return successResponse(updated, "Worker assigned");
       }
 
       const {

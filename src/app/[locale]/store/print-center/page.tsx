@@ -32,13 +32,14 @@ export default async function Page() {
 
   const products = ((productsResult as any).items ?? []).map((p: any) => ({
     id: p.id,
-    name: p.name,
+    name: p.title ?? p.name,
     price: p.price,
     slug: p.slug ?? p.id,
     listingType: p.listingType,
     condition: p.condition,
     stockCount: p.stockCount,
     physicalLocation: p.physicalLocation,
+    barcodeId: p.barcodeId,
   }));
 
   const orders = ((ordersResult as any).items ?? []).map((o: any) => ({
@@ -48,9 +49,10 @@ export default async function Page() {
     buyerDisplayName: o.shippingAddress?.fullName,
     buyerCity: o.shippingAddress?.city,
     items: (o.items ?? []).map((item: any) => ({
-      productName: item.productName ?? item.name ?? "Item",
+      productName: item.productName ?? item.productTitle ?? item.name ?? "Item",
       quantity: item.quantity ?? 1,
-      price: item.price ?? 0,
+      price: item.price ?? item.unitPrice ?? 0,
+      barcodeId: item.barcodeId,
     })),
     physicalLocation: o.physicalLocation,
   }));
