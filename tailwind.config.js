@@ -177,6 +177,7 @@ module.exports = defineTailwindConfig({
           DEFAULT: "var(--appkit-color-info)",
           surface: "var(--appkit-color-info-surface)",
         },
+        star: "var(--appkit-color-star)",
         surface: {
           DEFAULT: "var(--appkit-color-surface)",
           elevated: "var(--appkit-color-surface-elevated)",

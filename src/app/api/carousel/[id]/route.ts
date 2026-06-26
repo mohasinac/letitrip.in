@@ -88,10 +88,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ cleared: "all" }, { status: 200 });
     }
 
-    const unknown = collections.filter((c) => !(c in COLLECTION_CACHE_PATHS));
-    if (unknown.length > 0) {
+    const unrecognized = collections.filter((c) => !(c in COLLECTION_CACHE_PATHS));
+    if (unrecognized.length > 0) {
       serverLogger.warn(
-        `Cache revalidation: unknown collections ignored: ${unknown.join(", ")}`,
+        `Cache revalidation: unrecognized collections ignored: ${unrecognized.join(", ")}`,
       );
     }
 
