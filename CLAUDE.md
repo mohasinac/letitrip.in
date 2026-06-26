@@ -583,14 +583,49 @@ When the user says "publish appkit" or "release appkit":
 3. npm run build   (in appkit/)
 4. npm publish     (in appkit/)
 5. Update letitrip/package.json  "@mohasinac/appkit": "^X.Y.Z"
-6. Delete package-lock.json + npm install  (lockfile must resolve from npm, not file:)
-7. npx tsc --noEmit  (both repos, must be 0 errors)
-8. Commit appkit/package.json + letitrip/package.json + package-lock.json
+6. Remove appkit/src/** lines from tsconfig.json  (see tsconfig rule below)
+7. Delete package-lock.json + npm install  (lockfile must resolve from npm, not file:)
+8. npx tsc --noEmit  (both repos, must be 0 errors)
+9. Commit appkit/package.json + letitrip/package.json + package-lock.json + tsconfig.json
 ```
 
 **Why `file:` works locally but not on Vercel**: `appkit/dist/` is gitignored. Vercel CLI respects gitignore when uploading, so `dist/` is excluded. `npm ci` with a `file:` dep links to a dist-less directory → build failure. The npm registry version ships `dist/` inside the tarball.
 
-**Vercel deploy**: Auto-deploy on push is disabled (`vercel.json` → `"deploymentEnabled": false` for all branches). Run `vercel --prod` manually only when the user asks to deploy.
+### 🛑 tsconfig.json `include` — must match the pin mode
+
+| Consumer pin | `appkit/src/**` in `tsconfig.json` include | Why |
+|---|---|---|
+| `"file:./appkit"` (local dev) | **YES — include both lines** | VSCode sees appkit types live without rebuilding dist |
+| `"^X.Y.Z"` (npm registry) | **NO — remove both lines** | Types come from `dist/*.d.ts`; keeping them causes Vercel Linux OOM/crash after 5–8 min (Root Cause #23) |
+
+Switching modes? Update `tsconfig.json` immediately — it is the most common cause of "local passes, Vercel fails".
+
+### ✅ DEPLOY TO VERCEL PRODUCTION — only when explicitly asked
+
+Use the pre-flight deploy script which catches the most common mistakes before they reach Vercel:
+
+```powershell
+node scripts/deploy.mjs
+```
+
+Or manually:
+
+```powershell
+# 1. Confirm lockfile resolves from npm (not file:./appkit)
+# In package-lock.json, node_modules/@mohasinac/appkit should show
+# "resolved": "https://registry.npmjs.org/..." NOT "link": true
+
+# 2. Confirm tsconfig.json does NOT include appkit/src/**
+# (should find 0 matches)
+
+# 3. Full quality gate
+npm run check
+
+# 4. Deploy
+vercel --prod
+```
+
+Auto-deploy on push is disabled (`vercel.json` → `"deploymentEnabled": false`). Always use `node scripts/deploy.mjs` or `vercel --prod` explicitly.
 
 **Danger sign**: if `package-lock.json` shows `"resolved": "appkit"` with `"link": true` after switching to npm, the lockfile still points to the local directory. Delete it and re-run `npm install`.
 
@@ -718,6 +753,7 @@ The 4 layout shells (`AdminLayoutShell`, `StoreLayoutShell`, `UserLayoutShell`, 
 | 20 | **Public appkit prop / hook signature changes must update consumer call sites in the same commit** | Renaming, removing, or retyping a publicly-exported prop (e.g. `open` → `isOpen`), changing a hook return-shape (`showToast(obj)` → `showToast(msg, variant)`), or dropping an exported symbol from `index.ts` / `client.ts` / `server.ts` MUST be paired with the consumer-side update in the same commit. Consumer code is silently typechecked against the bundled `dist/*.d.ts` from `file:./appkit`, so a half-finished change typechecks locally (where the source still has the old export from working memory) but breaks the moment the dist is rebuilt or the consumer reads a stale type. Always run `npm --prefix appkit run build` and `npx tsc --noEmit` in the consumer after touching any exported appkit surface. |
 | 21 | **Three-layer style system — Theme (colours + fonts) → Tokens (fixed scales) → Variants (the only styling API). Raw HTML wrappers, raw className utilities on primitives, and `THEME_CONSTANTS` interpolation bypass the variant system.** | The single source of truth for every styling intent: (a) **colours + fonts** flow through `--appkit-color-*` / `--appkit-font-*` written by `<ThemeProvider>` on `<html>`; (b) **everything else** (spacing, radii, shadows, breakpoints, motion, gradients) lives in fixed token maps in `appkit/src/tokens/`; (c) every primitive (`<Text>`, `<Card>`, `<Section>`, `<StickyToolbar>`, `<MediaImage>`, …) exposes typed variant enums — never raw className. Admin custom themes go through Site Settings → Themes (`<ThemeManagerView>`); the registry-aware `<ThemeProvider registry={buildThemeRegistry(siteSettings.theme)}>` mounts in `LayoutShellClient` and writes the active record's tokens to `<html>` at runtime. Two built-in themes (`default-light` = cobalt+lime, `default-dark` = hot-pink) cannot be deleted; the `audit-theme-drift` script verifies they stay aligned with the matching `tokens.css` blocks. Gradients flow through `--appkit-gradient-*` so `<Text gradient="brand">`, `<Section tone="page-header">`, `<Card variant="gradient-…">` re-style automatically per theme. Raw `bg-gradient-to-*` utilities are flagged by `audit-html-wrappers/RAW_GRADIENT_UTILITY`. Inline `style={{ color: … }}` / `backgroundColor` / `borderColor` is flagged by `audit-inline-styles/INLINE_COLOR_OVERRIDE`. New primitives shipped 2026-06-14: `Anchor`, `MediaAudio`, `Iframe`, `HorizontalRule`, `Fieldset`/`Legend`, `Details`/`Summary`, `Dialog`, `StickyToolbar`, `IconBox`, `Kbd`, `Quote`, `Show`/`Hide`, `FallbackShell`, `HotspotMarker`, plus 10 `Email*` primitives. SiteLogo no longer accepts `className`; pick `size: "sm"|"md"|"lg"|"xl"|"hero"` + `tone: "brand"|"mono"|"inverse"|"on-primary"` — gradient stops still consume `--appkit-color-primary-*` so any theme restyles the logo. |
 | 22 | **Suppression-marker spray instead of fixing the root cause** | When a strict-zero audit is failing, the only legitimate close is a real fix — a primitive extension, a Zod migration, a type narrowing, a behaviour change. Adding a per-line `// audit-X-ok: <reason>` marker to silence the violation is **not progress** — it is the violation hidden from the counter. Markers are reserved for **architecturally irreducible** cases (TS structural escapes, primitive-internal `className`, type-guard params that TS forces to `unknown`). Each marker carries a *specific* reason, not boilerplate. The lesson cost: 2026-06-17 sprayed ~133 `audit-variant-ok` markers across 16 files under the heading of "Phase 14 burn-down progress" — that work was rolled back and the variant plan reassigned to a separate session because the markers hid violations without removing className tokens. Before adding any marker, ask: "does a primitive variant exist or can be added to absorb this?" If yes, extend the primitive or rewrite the call site. Only mark when the answer is provably no (e.g. dynamic className from runtime data with no representable enum). |
+| 23 | **`appkit/src/**` in consumer `tsconfig.json` breaks Vercel Linux builds** | The consumer `tsconfig.json` must NOT include `appkit/src/**/*.ts` or `appkit/src/**/*.tsx` when the consumer pin is `"@mohasinac/appkit": "^X.Y.Z"` (npm registry). Including those paths causes the consumer TypeScript compiler to compile thousands of appkit source files alongside consumer code. On Windows this succeeds (case-insensitive FS, local dev cache). On Vercel's Linux build servers it fails: either OOM during compilation or case-sensitivity errors in appkit's import paths that don't surface on Windows. Symptom: local `npm run build` passes, Vercel `npm run build` exits 1 after 5–8 minutes with no accessible error log. Fix: delete the two `appkit/src/**` lines from `tsconfig.json` — types are already provided by `dist/*.d.ts` in `node_modules/@mohasinac/appkit`. The `scripts/deploy.mjs` pre-flight check enforces this. **When to re-add them**: only if you switch back to `file:./appkit` for local development (the lines are needed so VSCode sees appkit types without a full `npm run build` of the dist). |
 
 ---
 
@@ -770,6 +806,7 @@ The 4 layout shells (`AdminLayoutShell`, `StoreLayoutShell`, `UserLayoutShell`, 
 | Hand-rolled `if (!email || !/.+@.+/.test(email))` validation in submit handler | Define a Zod schema in `appkit/src/features/<feature>/schemas/<name>.ts`, call `schema.safeParse(values)`, iterate `parsed.error.issues` → `setFieldError(issue.path[0], issue.message)`. |
 | Hardcoded `top-16` / `top-20` / `top-[64px]` on a sticky element | `top-[var(--header-height,0px)]` — enforced by `audit-sticky-offsets.mjs`. The header height changes with breakpoint, mobile keyboard, and announcement banner state. |
 | Removing the Firebase webpack/Turbopack `firebase` alias from `next.config.js` or `defineNextConfig` | Never — `audit-firebase-alias.mjs` enforces both. Removing either alias causes the dual-module-instance prod outage (Root Cause #14). |
+| `appkit/src/**/*.ts` in consumer `tsconfig.json` `include` when using the npm version | Remove both `appkit/src/**` lines whenever the consumer pin is `^X.Y.Z` (npm registry). Local Windows builds succeed; Vercel Linux builds OOM or hit case-sensitivity errors after 5–8 minutes. Types come from `dist/*.d.ts`. See Root Cause #23 and `scripts/deploy.mjs` pre-flight check. |
 
 ---
 
