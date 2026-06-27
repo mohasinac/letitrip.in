@@ -125,6 +125,24 @@ const checks = [
     cwd: ROOT,
   },
   {
+    label: "audit-schema-base-fields",
+    cmd: "node",
+    args: ["scripts/audit-schema-base-fields.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-listing-type-imports",
+    cmd: "node",
+    args: ["scripts/audit-listing-type-imports.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-per-type-data-pattern",
+    cmd: "node",
+    args: ["scripts/audit-per-type-data-pattern.mjs"],
+    cwd: ROOT,
+  },
+  {
     label: "audit-repository-fields",
     cmd: "node",
     args: ["appkit/scripts/audit-repository-fields.mjs"],

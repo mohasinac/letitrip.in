@@ -1,0 +1,94 @@
+// Public listing endpoint for classified ads — mirrors /api/products?listingType=classified
+import { normalizeError } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
+import { NextResponse } from "next/server";
+import {
+  productRepository,
+  sanitizeProductsForPublic,
+  parseListingParams,
+  PRODUCT_FIELDS,
+  sieveFilter,
+  SIEVE_OP,
+  sortBy,
+} from "@mohasinac/appkit";
+import { withProviders } from "@/providers.config";
+import { logError } from "@/lib/logger";
+import { validateSieveFilters } from "@/lib/sieve-validators";
+
+const DEFAULT_PAGE = 1;
+const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_SORTS = sortBy(PRODUCT_FIELDS.CREATED_AT);
+
+const PUBLIC_LISTING_CACHE_CONTROL =
+  "public, max-age=60, s-maxage=120, stale-while-revalidate=60";
+
+const LISTING_TYPE_CLAUSE = sieveFilter(PRODUCT_FIELDS.LISTING_TYPE, SIEVE_OP.EQ, "classified");
+
+const SAFE_CLASSIFIED_FILTER_FIELDS = new Set([
+  PRODUCT_FIELDS.STATUS,
+  PRODUCT_FIELDS.CATEGORY,
+  PRODUCT_FIELDS.CATEGORY_SLUG,
+  PRODUCT_FIELDS.BRAND,
+  PRODUCT_FIELDS.STORE_ID,
+  PRODUCT_FIELDS.CONDITION,
+  PRODUCT_FIELDS.PRICE,
+  PRODUCT_FIELDS.FEATURED,
+]);
+
+function mergeListingTypeFilter(filters: string | null | undefined): string {
+  const safe = filters ? validateSieveFilters(filters, SAFE_CLASSIFIED_FILTER_FIELDS) : "";
+  const parts = safe
+    .split(",")
+    .map((c) => c.trim())
+    .filter(Boolean)
+    .filter((c) => !c.startsWith(`${PRODUCT_FIELDS.LISTING_TYPE}=`));
+  parts.push(LISTING_TYPE_CLAUSE);
+  return parts.join(",");
+}
+
+// rbac-public: public endpoint — no authentication required
+export const GET = withProviders(async (request: Request) => {
+  try {
+    const url = new URL(request.url);
+    const std = parseListingParams(url);
+    const page = Math.max(1, std.page ?? DEFAULT_PAGE);
+    const pageSize = Math.min(50, Math.max(1, std.pageSize ?? DEFAULT_PAGE_SIZE));
+    const sorts = std.sorts ?? DEFAULT_SORTS;
+    const filters = mergeListingTypeFilter(std.filters);
+
+    const result = await productRepository.list(
+      { filters, sorts, page, pageSize },
+      {},
+    );
+
+    const items = sanitizeProductsForPublic(
+      result.items as unknown as Array<Record<string, JsonValue>>,
+    );
+    const totalPages = Math.max(1, Math.ceil(result.total / pageSize));
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: {
+          items,
+          total: result.total,
+          page,
+          pageSize,
+          totalPages,
+          hasMore: page < totalPages,
+        },
+      },
+      { headers: { "Cache-Control": PUBLIC_LISTING_CACHE_CONTROL } },
+    );
+  } catch (error) {
+    void normalizeError(error);
+    logError("classified", "GET /api/classified failed", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : "Internal server error",
+      },
+      { status: 500 },
+    );
+  }
+});
