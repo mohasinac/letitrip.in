@@ -34,7 +34,8 @@ vi.mock("@mohasinac/appkit", () => ({
     schema?: { safeParse: (d: unknown) => { success: boolean; data?: unknown; error?: { issues: { message: string }[] } } };
     handler: (ctx: { user?: unknown; body?: unknown; params?: unknown }) => Promise<Response>;
   }) => {
-    return async (request: Request, context: { params?: Record<string, string> }) => {
+    return async (request: Request, context?: { params?: unknown }) => {
+      const params = context?.params instanceof Promise ? await (context.params as Promise<Record<string, string>>) : (context?.params as Record<string, string> | undefined);
       if (opts.auth && !_user)
         return new Response(JSON.stringify({ ok: false }), { status: 401 });
       if (opts.roles && _user && !opts.roles.includes(_user.role))
@@ -48,7 +49,7 @@ vi.mock("@mohasinac/appkit", () => ({
         body = result.data;
       }
       try {
-        return await opts.handler({ user: _user ?? undefined, body, params: context?.params });
+        return await opts.handler({ user: _user ?? undefined, body, params });
       } catch (e: unknown) {
         const name = (e as Error)?.name;
         if (name === "AuthorizationError") return new Response(JSON.stringify({ ok: false, error: (e as Error).message }), { status: 403 });

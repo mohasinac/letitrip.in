@@ -41,7 +41,8 @@ vi.mock("@mohasinac/appkit", () => ({
     schema?: { safeParse: (d: unknown) => { success: boolean; data?: unknown; error?: { issues: { message: string }[] } } };
     handler: (ctx: { user?: unknown; body?: unknown; params?: unknown }) => Promise<Response>;
   }) => {
-    return async (request: Request, context: { params?: Record<string, string> }) => {
+    return async (request: Request, context?: { params?: unknown }) => {
+      const params = context?.params instanceof Promise ? await (context.params as Promise<Record<string, string>>) : (context?.params as Record<string, string> | undefined);
       if (opts.auth && !_user)
         return new Response(JSON.stringify({ ok: false }), { status: 401 });
       if (opts.roles && _user && !opts.roles.includes(_user.role))
@@ -54,7 +55,7 @@ vi.mock("@mohasinac/appkit", () => ({
           return new Response(JSON.stringify({ ok: false, error: result.error?.issues[0]?.message }), { status: 400 });
         body = result.data;
       }
-      return opts.handler({ user: _user ?? undefined, body, params: context?.params });
+      return opts.handler({ user: _user ?? undefined, body, params });
     };
   },
 }));

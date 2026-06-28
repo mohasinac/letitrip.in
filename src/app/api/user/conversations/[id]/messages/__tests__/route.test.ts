@@ -39,6 +39,7 @@ vi.mock("@mohasinac/appkit", () => ({
     handler: (ctx: { user?: unknown; body?: unknown; params?: unknown }) => Promise<Response>;
   }) => {
     return async (request: Request, context?: { params?: unknown }) => {
+      const params = context?.params instanceof Promise ? await (context.params as Promise<Record<string, string>>) : (context?.params as Record<string, string> | undefined);
       if (opts.auth && !_user)
         return new Response(JSON.stringify({ ok: false, error: "Unauthorized" }), { status: 401 });
       let body: unknown;
@@ -51,7 +52,7 @@ vi.mock("@mohasinac/appkit", () => ({
         }
         body = result.data;
       }
-      return opts.handler({ user: _user ?? undefined, body, params: context?.params });
+      return opts.handler({ user: _user ?? undefined, body, params });
     };
   },
 }));

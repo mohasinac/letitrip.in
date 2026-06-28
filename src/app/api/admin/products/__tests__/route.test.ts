@@ -38,6 +38,8 @@ vi.mock("@mohasinac/appkit", () => ({
   getDefaultCurrency: () => "INR",
   ERROR_MESSAGES: { VALIDATION: { FAILED: "Validation failed" } },
   SUCCESS_MESSAGES: { PRODUCT: { CREATED: "Product created" } },
+  FIREBASE_STORAGE_HOST: "test-storage.example.com",
+  GCS_HOST: "test-gcs.example.com",
   createApiHandler: (opts: {
     auth?: boolean;
     roles?: string[];
@@ -72,7 +74,7 @@ const validProductBody = {
   category: "trading-cards",
   price: 500000,
   stockQuantity: 1,
-  mainImage: "/media/product-img.jpg",
+  mainImage: "https://cdn.example.com/media/product-img.jpg",
   storeId: "store-palace",
   listingType: "standard",
 };

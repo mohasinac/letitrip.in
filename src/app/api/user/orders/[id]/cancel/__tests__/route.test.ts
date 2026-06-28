@@ -24,7 +24,8 @@ vi.mock("@mohasinac/appkit", () => ({
     schema?: { safeParse: (d: unknown) => { success: boolean; data?: unknown; error?: { issues: { message: string }[] } } };
     handler: (ctx: { user?: unknown; body?: unknown; params?: unknown }) => Promise<Response>;
   }) => {
-    return async (request: Request, { params }: { params: unknown } = { params: {} }) => {
+    return async (request: Request, context?: { params?: unknown }) => {
+      const params = context?.params instanceof Promise ? await (context.params as Promise<Record<string, string>>) : (context?.params as Record<string, string> | undefined);
       if (opts.auth && !_user)
         return new Response(JSON.stringify({ ok: false }), { status: 401 });
       let body: unknown;

@@ -63,7 +63,8 @@ vi.mock("@mohasinac/appkit", () => ({
     roles?: readonly string[];
     handler: (ctx: { user?: unknown; request: Request; params?: unknown }) => Promise<Response>;
   }) => {
-    return async (request: Request, { params }: { params: unknown } = { params: {} }) => {
+    return async (request: Request, context?: { params?: unknown }) => {
+      const params = context?.params instanceof Promise ? await (context.params as Promise<Record<string, string>>) : (context?.params as Record<string, string> | undefined);
       if (!_user) return new Response(JSON.stringify({ ok: false }), { status: 401 });
       if (opts.roles && !opts.roles.includes(_user.role))
         return new Response(JSON.stringify({ ok: false }), { status: 403 });

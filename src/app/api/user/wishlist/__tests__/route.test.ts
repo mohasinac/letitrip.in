@@ -49,7 +49,8 @@ vi.mock("@mohasinac/appkit", () => {
       schema?: { safeParse: (d: unknown) => { success: boolean; data?: unknown; error?: { issues: unknown[] } } };
       handler: (ctx: { user?: unknown; body?: unknown; request: Request; params: Record<string, string> }) => Promise<Response>;
     }) => {
-      return async (request: Request, context: { params?: Record<string, string> } = {}) => {
+      return async (request: Request, context?: { params?: unknown }) => {
+      const params = context?.params instanceof Promise ? await (context.params as Promise<Record<string, string>>) : (context?.params as Record<string, string> | undefined);
         if (opts.auth && !_user) {
           return new Response(JSON.stringify({ ok: false, error: "Unauthorized" }), { status: 401 });
         }
@@ -66,7 +67,7 @@ vi.mock("@mohasinac/appkit", () => {
             return new Response(JSON.stringify({ ok: false, error: "Validation failed" }), { status: 400 });
           }
         }
-        return opts.handler({ user: _user ?? undefined, body, request, params: context.params ?? {} });
+        return opts.handler({ user: _user ?? undefined, body, request, params: params ?? {} });
       };
     },
   };
