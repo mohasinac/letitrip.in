@@ -81,42 +81,42 @@ beforeEach(() => {
 describe("POST /api/store/reviews/[id]/reply", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await POST(makeReq({ reply: "Thank you!" }) as never, { params: { id: "review-123" } });
+    const res = await POST(makeReq({ reply: "Thank you!" }) as never, { params: Promise.resolve({ id: "review-123" }) });
     expect(res.status).toBe(401);
   });
 
   it("buyer → 403", async () => {
     _user = { uid: "buyer-uid", role: "user" };
-    const res = await POST(makeReq({ reply: "Thank you!" }) as never, { params: { id: "review-123" } });
+    const res = await POST(makeReq({ reply: "Thank you!" }) as never, { params: Promise.resolve({ id: "review-123" }) });
     expect(res.status).toBe(403);
   });
 
   it("missing reply → 400", async () => {
-    const res = await POST(makeReq({}) as never, { params: { id: "review-123" } });
+    const res = await POST(makeReq({}) as never, { params: Promise.resolve({ id: "review-123" }) });
     expect(res.status).toBe(400);
   });
 
   it("review not found → 404", async () => {
     mockReviewFindById.mockResolvedValue(null);
-    const res = await POST(makeReq({ reply: "Thanks" }) as never, { params: { id: "nonexistent" } });
+    const res = await POST(makeReq({ reply: "Thanks" }) as never, { params: Promise.resolve({ id: "nonexistent" }) });
     expect(res.status).toBe(404);
   });
 
   it("review belongs to different store → 403 (AuthorizationError)", async () => {
     mockReviewFindById.mockResolvedValue({ ...mockReview, storeId: "store-OTHER" });
-    const res = await POST(makeReq({ reply: "Thanks" }) as never, { params: { id: "review-123" } });
+    const res = await POST(makeReq({ reply: "Thanks" }) as never, { params: Promise.resolve({ id: "review-123" }) });
     expect(res.status).toBe(403);
   });
 
   it("seller has no store → 403", async () => {
     mockStoreFindByOwner.mockResolvedValue(null);
-    const res = await POST(makeReq({ reply: "Thanks" }) as never, { params: { id: "review-123" } });
+    const res = await POST(makeReq({ reply: "Thanks" }) as never, { params: Promise.resolve({ id: "review-123" }) });
     expect(res.status).toBe(403);
   });
 
   it("stores sellerReply and sellerRepliedAt on review", async () => {
     const before = new Date();
-    await POST(makeReq({ reply: "Thank you for your feedback!" }) as never, { params: { id: "review-123" } });
+    await POST(makeReq({ reply: "Thank you for your feedback!" }) as never, { params: Promise.resolve({ id: "review-123" }) });
     const updateArg = mockReviewUpdate.mock.calls[0][1] as { sellerReply: string; sellerRepliedAt: Date };
     expect(updateArg.sellerReply).toBe("Thank you for your feedback!");
     expect(updateArg.sellerRepliedAt).toBeInstanceOf(Date);
@@ -124,7 +124,7 @@ describe("POST /api/store/reviews/[id]/reply", () => {
   });
 
   it("success → 200", async () => {
-    const res = await POST(makeReq({ reply: "Thanks!" }) as never, { params: { id: "review-123" } });
+    const res = await POST(makeReq({ reply: "Thanks!" }) as never, { params: Promise.resolve({ id: "review-123" }) });
     expect(res.status).toBe(200);
   });
 });

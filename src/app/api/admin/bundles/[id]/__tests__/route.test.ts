@@ -80,7 +80,7 @@ const bundleDoc = {
   bundleStockStatus: "in_stock",
 };
 
-const routeParams = { params: { id: "bundle-pokemon-starter" } };
+const routeParams = { params: Promise.resolve({ id: "bundle-pokemon-starter" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();

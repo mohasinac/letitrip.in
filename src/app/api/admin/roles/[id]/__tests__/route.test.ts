@@ -50,7 +50,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { GET, PATCH, DELETE } from "../route";
 
-const params = { params: { id: "role-content-team" } };
+const params = { params: Promise.resolve({ id: "role-content-team" }) };
 const makeRequest = (method: string, body?: unknown) =>
   new Request("http://localhost/api/admin/roles/role-content-team", {
     method,

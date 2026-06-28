@@ -112,8 +112,8 @@ describe("GET /api/user/events", () => {
     });
     await GET(makeReq() as never);
     // Same eventId should only trigger one fetch
-    const eventFetchCallsForSale = mockEventFindById.mock.calls.filter(
-      ([id]: [string]) => id === "event-summer-sale",
+    const eventFetchCallsForSale = (mockEventFindById.mock.calls as Array<[string, ...unknown[]]>).filter(
+      ([id]) => id === "event-summer-sale",
     );
     expect(eventFetchCallsForSale).toHaveLength(1);
   });

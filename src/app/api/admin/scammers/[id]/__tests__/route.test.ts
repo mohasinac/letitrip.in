@@ -80,18 +80,18 @@ beforeEach(() => {
 describe("GET /api/admin/scammers/[id]", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await GET(makeReq("GET") as never, { params: { id: "scammer-123" } });
+    const res = await GET(makeReq("GET") as never, { params: Promise.resolve({ id: "scammer-123" }) });
     expect(res.status).toBe(401);
   });
 
   it("not found → 404", async () => {
     mockFindById.mockResolvedValue(null);
-    const res = await GET(makeReq("GET") as never, { params: { id: "scammer-nonexistent" } });
+    const res = await GET(makeReq("GET") as never, { params: Promise.resolve({ id: "scammer-nonexistent" }) });
     expect(res.status).toBe(404);
   });
 
   it("found → 200 with scammer data", async () => {
-    const res = await GET(makeReq("GET") as never, { params: { id: "scammer-123" } });
+    const res = await GET(makeReq("GET") as never, { params: Promise.resolve({ id: "scammer-123" }) });
     expect(res.status).toBe(200);
     const json = await res.clone().json() as { data: typeof mockScammer };
     expect(json.data.id).toBe("scammer-123");
@@ -101,23 +101,23 @@ describe("GET /api/admin/scammers/[id]", () => {
 describe("PATCH /api/admin/scammers/[id]", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await PATCH(makeReq("PATCH", { status: "verified" }) as never, { params: { id: "scammer-123" } });
+    const res = await PATCH(makeReq("PATCH", { status: "verified" }) as never, { params: Promise.resolve({ id: "scammer-123" }) });
     expect(res.status).toBe(401);
   });
 
   it("invalid status value → 400", async () => {
-    const res = await PATCH(makeReq("PATCH", { status: "fake-status" }) as never, { params: { id: "scammer-123" } });
+    const res = await PATCH(makeReq("PATCH", { status: "fake-status" }) as never, { params: Promise.resolve({ id: "scammer-123" }) });
     expect(res.status).toBe(400);
   });
 
   it("not found → 404", async () => {
     mockFindById.mockResolvedValue(null);
-    const res = await PATCH(makeReq("PATCH", { status: "verified" }) as never, { params: { id: "scammer-x" } });
+    const res = await PATCH(makeReq("PATCH", { status: "verified" }) as never, { params: Promise.resolve({ id: "scammer-x" }) });
     expect(res.status).toBe(404);
   });
 
   it("status=verified → sets verifiedBy and verifiedAt", async () => {
-    await PATCH(makeReq("PATCH", { status: "verified" }) as never, { params: { id: "scammer-123" } });
+    await PATCH(makeReq("PATCH", { status: "verified" }) as never, { params: Promise.resolve({ id: "scammer-123" }) });
     const updateArg = mockUpdate.mock.calls[0][1] as { status: string; verifiedBy: string; verifiedAt: Date };
     expect(updateArg.status).toBe("verified");
     expect(updateArg.verifiedBy).toBe("admin-uid");
@@ -125,27 +125,27 @@ describe("PATCH /api/admin/scammers/[id]", () => {
   });
 
   it("status=rejected → sets verifiedBy and verifiedAt", async () => {
-    await PATCH(makeReq("PATCH", { status: "rejected" }) as never, { params: { id: "scammer-123" } });
+    await PATCH(makeReq("PATCH", { status: "rejected" }) as never, { params: Promise.resolve({ id: "scammer-123" }) });
     const updateArg = mockUpdate.mock.calls[0][1] as { status: string; verifiedBy: string };
     expect(updateArg.status).toBe("rejected");
     expect(updateArg.verifiedBy).toBe("admin-uid");
   });
 
   it("status=pending_review → does NOT set verifiedBy", async () => {
-    await PATCH(makeReq("PATCH", { status: "pending_review" }) as never, { params: { id: "scammer-123" } });
+    await PATCH(makeReq("PATCH", { status: "pending_review" }) as never, { params: Promise.resolve({ id: "scammer-123" }) });
     const updateArg = mockUpdate.mock.calls[0][1] as { status: string; verifiedBy?: string };
     expect(updateArg.status).toBe("pending_review");
     expect(updateArg.verifiedBy).toBeUndefined();
   });
 
   it("verificationNote → updated when provided", async () => {
-    await PATCH(makeReq("PATCH", { verificationNote: "Confirmed scammer" }) as never, { params: { id: "scammer-123" } });
+    await PATCH(makeReq("PATCH", { verificationNote: "Confirmed scammer" }) as never, { params: Promise.resolve({ id: "scammer-123" }) });
     const updateArg = mockUpdate.mock.calls[0][1] as { verificationNote: string };
     expect(updateArg.verificationNote).toBe("Confirmed scammer");
   });
 
   it("success → 200 with { id }", async () => {
-    const res = await PATCH(makeReq("PATCH", { status: "verified" }) as never, { params: { id: "scammer-123" } });
+    const res = await PATCH(makeReq("PATCH", { status: "verified" }) as never, { params: Promise.resolve({ id: "scammer-123" }) });
     expect(res.status).toBe(200);
     const json = await res.clone().json() as { data: { id: string } };
     expect(json.data.id).toBe("scammer-123");
@@ -153,7 +153,7 @@ describe("PATCH /api/admin/scammers/[id]", () => {
 
   it("updatedAt always set on update", async () => {
     const before = new Date();
-    await PATCH(makeReq("PATCH", { verificationNote: "test" }) as never, { params: { id: "scammer-123" } });
+    await PATCH(makeReq("PATCH", { verificationNote: "test" }) as never, { params: Promise.resolve({ id: "scammer-123" }) });
     const updateArg = mockUpdate.mock.calls[0][1] as { updatedAt: Date };
     expect(updateArg.updatedAt).toBeInstanceOf(Date);
     expect(updateArg.updatedAt.getTime()).toBeGreaterThanOrEqual(before.getTime());
@@ -163,24 +163,24 @@ describe("PATCH /api/admin/scammers/[id]", () => {
 describe("DELETE /api/admin/scammers/[id]", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await DELETE(makeReq("DELETE") as never, { params: { id: "scammer-123" } });
+    const res = await DELETE(makeReq("DELETE") as never, { params: Promise.resolve({ id: "scammer-123" }) });
     expect(res.status).toBe(401);
   });
 
   it("employee role → 403 (admin-only hard delete)", async () => {
     _user = { uid: "emp-uid", role: "employee" };
-    const res = await DELETE(makeReq("DELETE") as never, { params: { id: "scammer-123" } });
+    const res = await DELETE(makeReq("DELETE") as never, { params: Promise.resolve({ id: "scammer-123" }) });
     expect(res.status).toBe(403);
   });
 
   it("not found → 404", async () => {
     mockFindById.mockResolvedValue(null);
-    const res = await DELETE(makeReq("DELETE") as never, { params: { id: "scammer-x" } });
+    const res = await DELETE(makeReq("DELETE") as never, { params: Promise.resolve({ id: "scammer-x" }) });
     expect(res.status).toBe(404);
   });
 
   it("success → deletes and returns 200 with { id }", async () => {
-    const res = await DELETE(makeReq("DELETE") as never, { params: { id: "scammer-123" } });
+    const res = await DELETE(makeReq("DELETE") as never, { params: Promise.resolve({ id: "scammer-123" }) });
     expect(res.status).toBe(200);
     expect(mockDelete).toHaveBeenCalledWith("scammer-123");
   });

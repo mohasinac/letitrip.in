@@ -5,7 +5,7 @@ vi.mock("@mohasinac/appkit", () => ({
     findById: vi.fn(),
     findByOwnerId: vi.fn(),
   },
-  isAdminUser: vi.fn((user: { role?: string }) => user.role === "admin"),
+  isAdminUser: vi.fn((u: { role?: string }) => u.role === "admin"),
 }));
 
 import { resolveConversationRole } from "../conversations/authorise";

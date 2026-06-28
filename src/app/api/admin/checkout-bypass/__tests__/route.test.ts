@@ -67,7 +67,12 @@ vi.mock("@mohasinac/appkit", () => ({
         if (!result.success) return new Response(JSON.stringify({ ok: false }), { status: 400 });
         body = result.data;
       }
-      return opts.handler({ user: _user ?? undefined, body });
+      try {
+        return await opts.handler({ user: _user ?? undefined, body });
+      } catch (e) {
+        if (e instanceof Response) return e;
+        throw e;
+      }
     };
   },
 }));

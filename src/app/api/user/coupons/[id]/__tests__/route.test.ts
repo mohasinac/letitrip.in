@@ -56,7 +56,7 @@ const mockClaim = {
 const makeReq = () =>
   new Request("http://localhost/api/user/coupons/claim-abc", { method: "DELETE" });
 
-const mockContext = { params: { id: "claim-abc" } };
+const mockContext = { params: Promise.resolve({ id: "claim-abc" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();

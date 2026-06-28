@@ -55,7 +55,7 @@ const makeRequest = (method: string, body?: unknown) =>
     headers: body ? { "Content-Type": "application/json" } : {},
     body: body ? JSON.stringify(body) : undefined,
   });
-const params = { params: { id: "emp-1" } };
+const params = { params: Promise.resolve({ id: "emp-1" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();

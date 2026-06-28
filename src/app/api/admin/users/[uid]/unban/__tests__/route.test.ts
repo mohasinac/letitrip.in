@@ -75,37 +75,37 @@ beforeEach(() => {
 describe("POST /api/admin/users/[uid]/unban", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await POST(makeReq() as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq() as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(401);
   });
 
   it("moderator → 403 (admin-only)", async () => {
     _user = { uid: "mod-uid", role: "moderator" };
-    const res = await POST(makeReq() as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq() as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(403);
   });
 
   it("user not found → 404", async () => {
     mockFindById.mockResolvedValue(null);
-    const res = await POST(makeReq() as never, { params: { uid: "nonexistent" } });
+    const res = await POST(makeReq() as never, { params: Promise.resolve({ uid: "nonexistent" }) });
     expect(res.status).toBe(404);
   });
 
   it("re-enables Firebase Auth account using uid param (Firestore doc ID)", async () => {
-    await POST(makeReq() as never, { params: { uid: "user-ravi" } });
+    await POST(makeReq() as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     // Route uses params.uid, not target.uid
     expect(mockAuthUpdateUser).toHaveBeenCalledWith("user-ravi", { disabled: false });
   });
 
   it("Auth re-enable failure → swallowed, unban proceeds", async () => {
     mockAuthUpdateUser.mockRejectedValue(new Error("Firebase error"));
-    const res = await POST(makeReq() as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq() as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(200);
     expect(mockUserUpdate).toHaveBeenCalled();
   });
 
   it("clears isDisabled and hardBan fields from Firestore", async () => {
-    await POST(makeReq() as never, { params: { uid: "user-ravi" } });
+    await POST(makeReq() as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     const updateArg = mockUserUpdate.mock.calls[0][1] as {
       isDisabled: boolean;
       hardBanReason: unknown;
@@ -119,7 +119,7 @@ describe("POST /api/admin/users/[uid]/unban", () => {
   });
 
   it("sends restoration notification to user", async () => {
-    await POST(makeReq() as never, { params: { uid: "user-ravi" } });
+    await POST(makeReq() as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(mockSendNotification).toHaveBeenCalledWith(expect.objectContaining({
       userId: "user-ravi",
       type: "account_action",
@@ -128,12 +128,12 @@ describe("POST /api/admin/users/[uid]/unban", () => {
 
   it("notification failure → swallowed, unban succeeds", async () => {
     mockSendNotification.mockRejectedValue(new Error("RTDB down"));
-    const res = await POST(makeReq() as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq() as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(200);
   });
 
   it("success → 200 with { uid }", async () => {
-    const res = await POST(makeReq() as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq() as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(200);
     const json = await res.clone().json() as { data: { uid: string } };
     expect(json.data.uid).toBe("user-ravi");

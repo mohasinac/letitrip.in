@@ -44,7 +44,7 @@ vi.mock("@mohasinac/appkit/server", () => ({
 
 import { POST } from "../route";
 
-const params = { params: { id: "event-summer-holo-raffle-2026" } };
+const params = { params: Promise.resolve({ id: "event-summer-holo-raffle-2026" }) };
 
 const makePost = () =>
   new Request("http://localhost/api/admin/events/event-summer-holo-raffle-2026/trigger-raffle", {

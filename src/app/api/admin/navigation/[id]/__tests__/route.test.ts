@@ -62,7 +62,7 @@ const navItems = [
 
 const makeSettings = () => ({ navbarConfig: { navItems: [...navItems] } });
 
-const routeParams = { params: { id: "nav-new-arrivals" } };
+const routeParams = { params: Promise.resolve({ id: "nav-new-arrivals" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -94,7 +94,7 @@ describe("PUT /api/admin/navigation/[id]", () => {
   it("nav item not found → 404", async () => {
     const res = await PUT(
       makeRequest({ label: "X" }),
-      { params: { id: "nav-nonexistent" } } as never,
+      { params: Promise.resolve({ id: "nav-nonexistent" }) } as never,
     );
     expect(res.status).toBe(404);
     const json = await res.clone().json() as { error: string };
@@ -146,7 +146,7 @@ describe("PATCH /api/admin/navigation/[id]", () => {
   it("nav item not found → 404", async () => {
     const res = await PATCH(
       makeRequest({ isVisible: false }),
-      { params: { id: "nav-ghost" } } as never,
+      { params: Promise.resolve({ id: "nav-ghost" }) } as never,
     );
     expect(res.status).toBe(404);
   });
@@ -186,7 +186,7 @@ describe("DELETE /api/admin/navigation/[id]", () => {
   it("nav item not found → 404 (length unchanged = item wasn't there)", async () => {
     const res = await DELETE(
       new Request("http://localhost", { method: "DELETE" }) as never,
-      { params: { id: "nav-ghost" } } as never,
+      { params: Promise.resolve({ id: "nav-ghost" }) } as never,
     );
     expect(res.status).toBe(404);
     const json = await res.clone().json() as { error: string };

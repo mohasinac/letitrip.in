@@ -81,24 +81,24 @@ beforeEach(() => {
 describe("GET /api/admin/orders/[id]", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await GET(makeReq("GET") as never, { params: { id: "order-123" } });
+    const res = await GET(makeReq("GET") as never, { params: Promise.resolve({ id: "order-123" }) });
     expect(res.status).toBe(401);
   });
 
   it("seller role → 403", async () => {
     _user = { uid: "seller-uid", role: "seller" };
-    const res = await GET(makeReq("GET") as never, { params: { id: "order-123" } });
+    const res = await GET(makeReq("GET") as never, { params: Promise.resolve({ id: "order-123" }) });
     expect(res.status).toBe(403);
   });
 
   it("order not found → 404", async () => {
     mockFindById.mockResolvedValue(null);
-    const res = await GET(makeReq("GET") as never, { params: { id: "nonexistent" } });
+    const res = await GET(makeReq("GET") as never, { params: Promise.resolve({ id: "nonexistent" }) });
     expect(res.status).toBe(404);
   });
 
   it("found → 200 with order data", async () => {
-    const res = await GET(makeReq("GET") as never, { params: { id: "order-123" } });
+    const res = await GET(makeReq("GET") as never, { params: Promise.resolve({ id: "order-123" }) });
     expect(res.status).toBe(200);
     const json = await res.clone().json() as { data: typeof mockOrder };
     expect(json.data.id).toBe("order-123");
@@ -108,23 +108,23 @@ describe("GET /api/admin/orders/[id]", () => {
 describe("PATCH /api/admin/orders/[id]", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await PATCH(makeReq("PATCH", { status: "SHIPPED" }) as never, { params: { id: "order-123" } });
+    const res = await PATCH(makeReq("PATCH", { status: "SHIPPED" }) as never, { params: Promise.resolve({ id: "order-123" }) });
     expect(res.status).toBe(401);
   });
 
   it("moderator → allowed (ROLES_ADMIN_MOD)", async () => {
     _user = { uid: "mod-uid", role: "moderator" };
-    const res = await PATCH(makeReq("PATCH", { status: "SHIPPED" }) as never, { params: { id: "order-123" } });
+    const res = await PATCH(makeReq("PATCH", { status: "SHIPPED" }) as never, { params: Promise.resolve({ id: "order-123" }) });
     expect(res.status).toBe(200);
   });
 
   it("status update → adminUpdateOrder called with actorId, orderId, update", async () => {
-    await PATCH(makeReq("PATCH", { status: "SHIPPED" }) as never, { params: { id: "order-123" } });
+    await PATCH(makeReq("PATCH", { status: "SHIPPED" }) as never, { params: Promise.resolve({ id: "order-123" }) });
     expect(mockAdminUpdateOrder).toHaveBeenCalledWith("admin-uid", "order-123", expect.objectContaining({ status: "SHIPPED" }));
   });
 
   it("tracking update → passes trackingNumber through", async () => {
-    await PATCH(makeReq("PATCH", { trackingNumber: "TRK123456" }) as never, { params: { id: "order-123" } });
+    await PATCH(makeReq("PATCH", { trackingNumber: "TRK123456" }) as never, { params: Promise.resolve({ id: "order-123" }) });
     expect(mockAdminUpdateOrder).toHaveBeenCalledWith("admin-uid", "order-123", expect.objectContaining({ trackingNumber: "TRK123456" }));
   });
 
@@ -133,13 +133,13 @@ describe("PATCH /api/admin/orders/[id]", () => {
       { productId: "product-1", productTitle: "Item A", quantity: 2, unitPrice: 50000, totalPrice: 100000 },
       { productId: "product-2", productTitle: "Item B", quantity: 1, unitPrice: 75000, totalPrice: 75000 },
     ];
-    await PATCH(makeReq("PATCH", { items: newItems }) as never, { params: { id: "order-123" } });
+    await PATCH(makeReq("PATCH", { items: newItems }) as never, { params: Promise.resolve({ id: "order-123" }) });
     const updateArg = mockAdminUpdateOrder.mock.calls[0][2] as { items: unknown[]; totalPrice: number };
     expect(updateArg.totalPrice).toBe(175000); // 100000 + 75000
   });
 
   it("no items[] → totalPrice NOT set in update", async () => {
-    await PATCH(makeReq("PATCH", { status: "DELIVERED" }) as never, { params: { id: "order-123" } });
+    await PATCH(makeReq("PATCH", { status: "DELIVERED" }) as never, { params: Promise.resolve({ id: "order-123" }) });
     const updateArg = mockAdminUpdateOrder.mock.calls[0][2] as { totalPrice?: number };
     expect(updateArg.totalPrice).toBeUndefined();
   });
@@ -149,13 +149,13 @@ describe("PATCH /api/admin/orders/[id]", () => {
       { productId: "product-1", productTitle: "Item A", quantity: 1, unitPrice: 50000, totalPrice: 50000 },
       { productId: "product-2", productTitle: "Item B", quantity: 1, unitPrice: 0, totalPrice: 0 },
     ];
-    await PATCH(makeReq("PATCH", { items: newItems }) as never, { params: { id: "order-123" } });
+    await PATCH(makeReq("PATCH", { items: newItems }) as never, { params: Promise.resolve({ id: "order-123" }) });
     const updateArg = mockAdminUpdateOrder.mock.calls[0][2] as { totalPrice: number };
     expect(updateArg.totalPrice).toBe(50000); // 50000 + 0
   });
 
   it("success → 200 with id and updated fields", async () => {
-    const res = await PATCH(makeReq("PATCH", { status: "DELIVERED" }) as never, { params: { id: "order-123" } });
+    const res = await PATCH(makeReq("PATCH", { status: "DELIVERED" }) as never, { params: Promise.resolve({ id: "order-123" }) });
     expect(res.status).toBe(200);
     const json = await res.clone().json() as { data: { id: string; status: string } };
     expect(json.data.id).toBe("order-123");

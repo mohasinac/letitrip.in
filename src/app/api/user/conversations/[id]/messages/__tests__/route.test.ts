@@ -72,7 +72,7 @@ const makeReq = (body: unknown) =>
     body: JSON.stringify(body),
   });
 
-const mockContext = { params: { id: "conv-abc" } };
+const mockContext = { params: Promise.resolve({ id: "conv-abc" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();

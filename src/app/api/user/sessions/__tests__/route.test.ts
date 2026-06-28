@@ -89,17 +89,17 @@ describe("GET /api/user/sessions", () => {
 describe("DELETE /api/user/sessions/[id]", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await DELETE(makeDeleteReq("sess-1") as never, { params: { id: "sess-1" } } as never);
+    const res = await DELETE(makeDeleteReq("sess-1") as never, { params: Promise.resolve({ id: "sess-1" }) } as never);
     expect(res.status).toBe(401);
   });
 
   it("calls revokeSession with sessionId and uid", async () => {
-    await DELETE(makeDeleteReq("sess-abc") as never, { params: { id: "sess-abc" } } as never);
+    await DELETE(makeDeleteReq("sess-abc") as never, { params: Promise.resolve({ id: "sess-abc" }) } as never);
     expect(mockRevokeSession).toHaveBeenCalledWith("sess-abc", "test-uid");
   });
 
   it("success → 200", async () => {
-    const res = await DELETE(makeDeleteReq("sess-1") as never, { params: { id: "sess-1" } } as never);
+    const res = await DELETE(makeDeleteReq("sess-1") as never, { params: Promise.resolve({ id: "sess-1" }) } as never);
     expect(res.status).toBe(200);
   });
 });

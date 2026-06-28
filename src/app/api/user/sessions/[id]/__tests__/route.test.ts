@@ -33,7 +33,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { DELETE } from "../route";
 
-const params = { params: { id: "session-abc123" } };
+const params = { params: Promise.resolve({ id: "session-abc123" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();

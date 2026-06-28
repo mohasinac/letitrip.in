@@ -169,6 +169,15 @@ export function initProviders(): Promise<void> {
  *   import { GET as _GET } from "@mohasinac/appkit";
  *   export const GET = withProviders(_GET);
  */
+// Overload 1: Next.js route handler pattern — explicit so TS preserves optional ctx.
+// Context typed as `any` to remain compatible with Next.js production async params
+// (Promise<TParams>) and test-time plain-object params ({ id: "…" }) simultaneously.
+export function withProviders(fn: (request: Request, context?: any) => Promise<Response>): (request: Request, context?: any) => Promise<Response>;
+// Overload 2: Generic fallback for any other async function
+export function withProviders<A extends unknown[], R>(
+  fn: (...args: A) => R,
+): (...args: A) => Promise<R extends Promise<infer U> ? U : R>;
+// Implementation
 export function withProviders<A extends unknown[], R>(
   fn: (...args: A) => R,
 ): (...args: A) => Promise<R extends Promise<infer U> ? U : R> {

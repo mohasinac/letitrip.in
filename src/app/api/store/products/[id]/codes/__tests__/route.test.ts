@@ -73,7 +73,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { POST } from "../route";
 
-const params = { params: { id: "product-steam-cyberpunk" } };
+const params = { params: Promise.resolve({ id: "product-steam-cyberpunk" }) };
 
 const makeRequest = (body: unknown) =>
   new Request("http://localhost/api/store/products/product-steam-cyberpunk/codes", {

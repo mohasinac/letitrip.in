@@ -61,7 +61,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { GET, PUT, DELETE } from "../route";
 
-const params = { params: { id: "brand-hot-wheels" } };
+const params = { params: Promise.resolve({ id: "brand-hot-wheels" }) };
 
 const makeRequest = (method: string, body?: unknown) =>
   new Request(`http://localhost/api/admin/brands/brand-hot-wheels`, {

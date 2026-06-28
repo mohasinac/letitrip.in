@@ -49,7 +49,7 @@ const groupDoc = {
   storeId: "store-pokemon-palace",
 };
 
-const routeParams = { params: { id: "group-pokemon-starter-bundle" } };
+const routeParams = { params: Promise.resolve({ id: "group-pokemon-starter-bundle" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();

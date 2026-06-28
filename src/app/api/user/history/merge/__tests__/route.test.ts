@@ -14,10 +14,9 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 let _user: { uid: string; role: string } | null = null;
 
-const HISTORY_MAX = 50;
-
-const { mockMergeGuestHistory } = vi.hoisted(() => ({
+const { mockMergeGuestHistory, HISTORY_MAX } = vi.hoisted(() => ({
   mockMergeGuestHistory: vi.fn(),
+  HISTORY_MAX: 50,
 }));
 
 vi.mock("@/providers.config", () => ({ withProviders: (fn: unknown) => fn }));

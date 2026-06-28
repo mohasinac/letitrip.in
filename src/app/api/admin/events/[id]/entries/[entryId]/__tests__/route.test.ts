@@ -48,7 +48,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { PATCH } from "../route";
 
-const routeParams = { params: { id: "event-summer-holo-sale-2026", entryId: "entry-001" } };
+const routeParams = { params: Promise.resolve({ id: "event-summer-holo-sale-2026", entryId: "entry-001" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();

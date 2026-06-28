@@ -33,7 +33,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { DELETE } from "../route";
 
-const params = { params: { productId: "product-charizard-psa9" } };
+const params = { params: Promise.resolve({ productId: "product-charizard-psa9" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -68,7 +68,7 @@ describe("DELETE /api/user/history/[productId]", () => {
   });
 
   it("productId in response matches the param (not uid or any other field)", async () => {
-    const auctionParams = { params: { productId: "auction-pikachu-trophy" } };
+    const auctionParams = { params: Promise.resolve({ productId: "auction-pikachu-trophy" }) };
     const res = await DELETE(new Request("http://localhost") as never, auctionParams as never);
     const json = await res.clone().json() as { data: { productId: string } };
     expect(json.data.productId).toBe("auction-pikachu-trophy");
@@ -77,7 +77,7 @@ describe("DELETE /api/user/history/[productId]", () => {
   it("non-existent productId → still 200 (idempotent, no 404 guard)", async () => {
     const res = await DELETE(
       new Request("http://localhost") as never,
-      { params: { productId: "product-not-in-history" } } as never,
+      { params: Promise.resolve({ productId: "product-not-in-history" }) } as never,
     );
     expect(res.status).toBe(200);
     expect(mockRemoveHistoryItem).toHaveBeenCalledWith("buyer-uid", "product-not-in-history");

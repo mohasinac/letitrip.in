@@ -47,7 +47,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { GET, PATCH, DELETE } from "../route";
 
-const params = { params: { id: "addr-user-home-001" } };
+const params = { params: Promise.resolve({ id: "addr-user-home-001" }) };
 
 const mockAddress = {
   id: "addr-user-home-001",

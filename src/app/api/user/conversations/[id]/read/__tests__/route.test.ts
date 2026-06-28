@@ -56,7 +56,7 @@ const mockConv = {
 const makeReq = () =>
   new Request("http://localhost/api/user/conversations/conv-abc/read", { method: "POST" });
 
-const mockContext = { params: { id: "conv-abc" } };
+const mockContext = { params: Promise.resolve({ id: "conv-abc" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();

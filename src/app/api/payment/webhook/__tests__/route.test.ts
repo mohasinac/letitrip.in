@@ -76,7 +76,7 @@ const makeEvent = (eventName: string, paymentEntity?: Record<string, string>) =>
 beforeEach(() => {
   vi.clearAllMocks();
   mockVerifyWebhookSignature.mockResolvedValue(true);
-  process.env.NODE_ENV = "test";
+  (process.env as Record<string, string>).NODE_ENV = "test";
 });
 
 describe("POST /api/payment/webhook", () => {

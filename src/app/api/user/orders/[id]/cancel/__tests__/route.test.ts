@@ -44,7 +44,7 @@ vi.mock("@mohasinac/appkit", () => ({
 import { z } from "zod";
 import { POST } from "../route";
 
-const params = { params: { id: "order-2-20260601-x1y2z3" } };
+const params = { params: Promise.resolve({ id: "order-2-20260601-x1y2z3" }) };
 
 const makeRequest = (body: unknown) =>
   new Request("http://localhost/api/user/orders/order-2-20260601-x1y2z3/cancel", {

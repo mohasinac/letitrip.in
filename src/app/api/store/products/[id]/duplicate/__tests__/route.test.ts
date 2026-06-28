@@ -79,50 +79,50 @@ beforeEach(() => {
 describe("POST /api/store/products/[id]/duplicate", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await POST({} as never, { params: { id: "product-charizard" } } as never);
+    const res = await POST({} as never, { params: Promise.resolve({ id: "product-charizard" }) } as never);
     expect(res.status).toBe(401);
   });
 
   it("buyer → 403", async () => {
     _user = { uid: "buyer-uid", role: "user" };
-    const res = await POST({} as never, { params: { id: "product-charizard" } } as never);
+    const res = await POST({} as never, { params: Promise.resolve({ id: "product-charizard" }) } as never);
     expect(res.status).toBe(403);
   });
 
   it("source product not found → 404", async () => {
     mockProductFindById.mockResolvedValue(null);
-    const res = await POST({} as never, { params: { id: "product-missing" } } as never);
+    const res = await POST({} as never, { params: Promise.resolve({ id: "product-missing" }) } as never);
     expect(res.status).toBe(404);
   });
 
   it("no store → 403", async () => {
     mockStoreFindByOwner.mockResolvedValue(null);
-    const res = await POST({} as never, { params: { id: "product-charizard" } } as never);
+    const res = await POST({} as never, { params: Promise.resolve({ id: "product-charizard" }) } as never);
     expect(res.status).toBe(403);
   });
 
   it("product belongs to different store → 403", async () => {
     mockProductFindById.mockResolvedValue({ ...mockProduct, storeId: "store-other" });
-    const res = await POST({} as never, { params: { id: "product-charizard" } } as never);
+    const res = await POST({} as never, { params: Promise.resolve({ id: "product-charizard" }) } as never);
     expect(res.status).toBe(403);
     const json = await res.clone().json() as { error: string };
     expect(json.error).toMatch(/not your/i);
   });
 
   it("copy has status=draft", async () => {
-    await POST({} as never, { params: { id: "product-charizard" } } as never);
+    await POST({} as never, { params: Promise.resolve({ id: "product-charizard" }) } as never);
     const createArg = mockProductCreate.mock.calls[0][0] as { status: string };
     expect(createArg.status).toBe("draft");
   });
 
   it("copy title has '(copy)' appended", async () => {
-    await POST({} as never, { params: { id: "product-charizard" } } as never);
+    await POST({} as never, { params: Promise.resolve({ id: "product-charizard" }) } as never);
     const createArg = mockProductCreate.mock.calls[0][0] as { title: string };
     expect(createArg.title).toBe("Charizard PSA 9 (copy)");
   });
 
   it("stats fields reset to zero", async () => {
-    await POST({} as never, { params: { id: "product-charizard" } } as never);
+    await POST({} as never, { params: Promise.resolve({ id: "product-charizard" }) } as never);
     const createArg = mockProductCreate.mock.calls[0][0] as {
       viewCount: number;
       purchaseCount: number;
@@ -136,13 +136,13 @@ describe("POST /api/store/products/[id]/duplicate", () => {
   });
 
   it("copy does not have id from source (new document)", async () => {
-    await POST({} as never, { params: { id: "product-charizard" } } as never);
+    await POST({} as never, { params: Promise.resolve({ id: "product-charizard" }) } as never);
     const createArg = mockProductCreate.mock.calls[0][0] as { id?: string };
     expect(createArg.id).toBeUndefined();
   });
 
   it("success → 201 with created product", async () => {
-    const res = await POST({} as never, { params: { id: "product-charizard" } } as never);
+    const res = await POST({} as never, { params: Promise.resolve({ id: "product-charizard" }) } as never);
     expect(res.status).toBe(201);
     const json = await res.clone().json() as { data: { id: string } };
     expect(json.data.id).toBe("product-charizard-copy");

@@ -59,7 +59,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { GET, PUT, DELETE } from "../route";
 
-const params = { params: { id: "category-action-figures" } };
+const params = { params: Promise.resolve({ id: "category-action-figures" }) };
 const makeRequest = (method: string, body?: unknown) =>
   new Request("http://localhost/api/admin/categories/category-action-figures", {
     method,

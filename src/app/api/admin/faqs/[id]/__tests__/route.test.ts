@@ -65,7 +65,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { GET, PUT, PATCH, DELETE } from "../route";
 
-const params = { params: { id: "faq-how-to-bid" } };
+const params = { params: Promise.resolve({ id: "faq-how-to-bid" }) };
 const makeRequest = (method: string, body?: unknown) =>
   new Request("http://localhost/api/admin/faqs/faq-how-to-bid", {
     method,

@@ -73,7 +73,7 @@ vi.mock("@mohasinac/appkit", () => ({
 import { GET, PUT, DELETE } from "../route";
 
 const featureDoc = { id: "feature-free-shipping", name: "Free Shipping", scope: "platform", isActive: true };
-const routeParams = { params: { id: "feature-free-shipping" } };
+const routeParams = { params: Promise.resolve({ id: "feature-free-shipping" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();

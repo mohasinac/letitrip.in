@@ -64,7 +64,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { DELETE } from "../route";
 
-const params = { params: { id: "product-hw-child-1" } };
+const params = { params: Promise.resolve({ id: "product-hw-child-1" }) };
 
 const mockParent = { id: "product-hw-parent", slug: "product-hw-parent", storeId: "store-diecast-depot" };
 const mockChild = {

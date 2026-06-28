@@ -60,7 +60,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { GET, PUT, DELETE } from "../route";
 
-const params = { params: { id: "slide-hero" } };
+const params = { params: Promise.resolve({ id: "slide-hero" }) };
 const mockSlide = { id: "slide-hero", title: "Hero Slide", active: true };
 
 beforeEach(() => {

@@ -84,40 +84,40 @@ beforeEach(() => {
 describe("POST /api/admin/users/[uid]/soft-ban", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await POST(makeReq({ action: "place_bids", reason: "Shill bidding" }) as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq({ action: "place_bids", reason: "Shill bidding" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(401);
   });
 
   it("regular user → 403 (trust & safety only)", async () => {
     _user = { uid: "buyer-uid", role: "user" };
-    const res = await POST(makeReq({ action: "place_bids", reason: "Shill bidding" }) as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq({ action: "place_bids", reason: "Shill bidding" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(403);
   });
 
   it("employee → allowed (ROLES_TRUST_SAFETY includes employee)", async () => {
     _user = { uid: "emp-uid", role: "employee" };
-    const res = await POST(makeReq({ action: "place_bids", reason: "Shill bidding" }) as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq({ action: "place_bids", reason: "Shill bidding" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(200);
   });
 
   it("missing reason → 400 (required field)", async () => {
-    const res = await POST(makeReq({ action: "place_bids" }) as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq({ action: "place_bids" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(400);
   });
 
   it("invalid action → 400", async () => {
-    const res = await POST(makeReq({ action: "fly_away", reason: "test" }) as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq({ action: "fly_away", reason: "test" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(400);
   });
 
   it("user not found → 404", async () => {
     mockFindById.mockResolvedValue(null);
-    const res = await POST(makeReq({ action: "place_bids", reason: "test" }) as never, { params: { uid: "nonexistent" } });
+    const res = await POST(makeReq({ action: "place_bids", reason: "test" }) as never, { params: Promise.resolve({ uid: "nonexistent" }) });
     expect(res.status).toBe(404);
   });
 
   it("new ban → stored in softBans array with action, reason, bannedBy, bannedAt", async () => {
-    await POST(makeReq({ action: "place_bids", reason: "Shill bidding" }) as never, { params: { uid: "user-ravi" } });
+    await POST(makeReq({ action: "place_bids", reason: "Shill bidding" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     const updateArg = mockUpdate.mock.calls[0][1] as { softBans: { action: string; reason: string; bannedBy: string; bannedAt: Date }[] };
     expect(updateArg.softBans).toHaveLength(1);
     expect(updateArg.softBans[0]!.action).toBe("place_bids");
@@ -131,7 +131,7 @@ describe("POST /api/admin/users/[uid]/soft-ban", () => {
       ...mockTarget,
       softBans: [{ action: "place_bids", reason: "Old reason", bannedBy: "mod-1", bannedAt: new Date() }],
     });
-    await POST(makeReq({ action: "place_bids", reason: "New reason" }) as never, { params: { uid: "user-ravi" } });
+    await POST(makeReq({ action: "place_bids", reason: "New reason" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     const updateArg = mockUpdate.mock.calls[0][1] as { softBans: { reason: string }[] };
     // Should have exactly one entry for place_bids
     const bidBans = updateArg.softBans.filter((b) => b.reason !== undefined);
@@ -144,26 +144,26 @@ describe("POST /api/admin/users/[uid]/soft-ban", () => {
       ...mockTarget,
       softBans: [{ action: "write_reviews", reason: "Fake reviews", bannedBy: "mod-1", bannedAt: new Date() }],
     });
-    await POST(makeReq({ action: "place_bids", reason: "Shill" }) as never, { params: { uid: "user-ravi" } });
+    await POST(makeReq({ action: "place_bids", reason: "Shill" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     const updateArg = mockUpdate.mock.calls[0][1] as { softBans: { action: string }[] };
     expect(updateArg.softBans).toHaveLength(2);
   });
 
   it("expiresAt provided → stored as Date on ban", async () => {
     const expiryStr = "2026-12-31T00:00:00.000Z";
-    await POST(makeReq({ action: "place_bids", reason: "test", expiresAt: expiryStr }) as never, { params: { uid: "user-ravi" } });
+    await POST(makeReq({ action: "place_bids", reason: "test", expiresAt: expiryStr }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     const updateArg = mockUpdate.mock.calls[0][1] as { softBans: { expiresAt: Date | null }[] };
     expect(updateArg.softBans[0]!.expiresAt).toBeInstanceOf(Date);
   });
 
   it("no expiresAt → ban stored with expiresAt: null", async () => {
-    await POST(makeReq({ action: "place_bids", reason: "test" }) as never, { params: { uid: "user-ravi" } });
+    await POST(makeReq({ action: "place_bids", reason: "test" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     const updateArg = mockUpdate.mock.calls[0][1] as { softBans: { expiresAt: Date | null }[] };
     expect(updateArg.softBans[0]!.expiresAt).toBeNull();
   });
 
   it("sends ban notification to target user", async () => {
-    await POST(makeReq({ action: "place_bids", reason: "Shill bidding" }) as never, { params: { uid: "user-ravi" } });
+    await POST(makeReq({ action: "place_bids", reason: "Shill bidding" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(mockSendNotification).toHaveBeenCalledWith(expect.objectContaining({
       userId: "user-ravi",
       type: "account_action",
@@ -172,12 +172,12 @@ describe("POST /api/admin/users/[uid]/soft-ban", () => {
 
   it("notification failure → swallowed, request still succeeds", async () => {
     mockSendNotification.mockRejectedValue(new Error("RTDB down"));
-    const res = await POST(makeReq({ action: "place_bids", reason: "test" }) as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq({ action: "place_bids", reason: "test" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(200);
   });
 
   it("success → 200 with { uid, action }", async () => {
-    const res = await POST(makeReq({ action: "place_bids", reason: "test" }) as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq({ action: "place_bids", reason: "test" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(200);
     const json = await res.clone().json() as { data: { uid: string; action: string } };
     expect(json.data.uid).toBe("user-ravi");

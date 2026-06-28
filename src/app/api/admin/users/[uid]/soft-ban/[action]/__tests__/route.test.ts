@@ -69,29 +69,29 @@ beforeEach(() => {
 describe("DELETE /api/admin/users/[uid]/soft-ban/[action]", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await DELETE(makeReq() as never, { params: { uid: "user-ravi", action: "place_bids" } });
+    const res = await DELETE(makeReq() as never, { params: Promise.resolve({ uid: "user-ravi", action: "place_bids" }) });
     expect(res.status).toBe(401);
   });
 
   it("regular user → 403 (trust & safety only)", async () => {
     _user = { uid: "buyer-uid", role: "user" };
-    const res = await DELETE(makeReq() as never, { params: { uid: "user-ravi", action: "place_bids" } });
+    const res = await DELETE(makeReq() as never, { params: Promise.resolve({ uid: "user-ravi", action: "place_bids" }) });
     expect(res.status).toBe(403);
   });
 
   it("user not found → 404", async () => {
     mockFindById.mockResolvedValue(null);
-    const res = await DELETE(makeReq() as never, { params: { uid: "nonexistent", action: "place_bids" } });
+    const res = await DELETE(makeReq() as never, { params: Promise.resolve({ uid: "nonexistent", action: "place_bids" }) });
     expect(res.status).toBe(404);
   });
 
   it("action not in softBans → 404", async () => {
-    const res = await DELETE(makeReq() as never, { params: { uid: "user-ravi", action: "send_messages" } });
+    const res = await DELETE(makeReq() as never, { params: Promise.resolve({ uid: "user-ravi", action: "send_messages" }) });
     expect(res.status).toBe(404);
   });
 
   it("removes only the specified ban action", async () => {
-    await DELETE(makeReq() as never, { params: { uid: "user-ravi", action: "place_bids" } });
+    await DELETE(makeReq() as never, { params: Promise.resolve({ uid: "user-ravi", action: "place_bids" }) });
     const updateArg = mockUpdate.mock.calls[0][1] as { softBans: { action: string }[] };
     expect(updateArg.softBans.find((b) => b.action === "place_bids")).toBeUndefined();
     // Other bans remain
@@ -99,7 +99,7 @@ describe("DELETE /api/admin/users/[uid]/soft-ban/[action]", () => {
   });
 
   it("sends lift notification to user", async () => {
-    await DELETE(makeReq() as never, { params: { uid: "user-ravi", action: "place_bids" } });
+    await DELETE(makeReq() as never, { params: Promise.resolve({ uid: "user-ravi", action: "place_bids" }) });
     expect(mockNotifCreate).toHaveBeenCalledWith(expect.objectContaining({
       userId: "user-ravi",
       type: "account_action",
@@ -108,12 +108,12 @@ describe("DELETE /api/admin/users/[uid]/soft-ban/[action]", () => {
 
   it("notification failure → swallowed, request succeeds", async () => {
     mockNotifCreate.mockRejectedValue(new Error("DB down"));
-    const res = await DELETE(makeReq() as never, { params: { uid: "user-ravi", action: "place_bids" } });
+    const res = await DELETE(makeReq() as never, { params: Promise.resolve({ uid: "user-ravi", action: "place_bids" }) });
     expect(res.status).toBe(200);
   });
 
   it("success → 200 with { uid, action }", async () => {
-    const res = await DELETE(makeReq() as never, { params: { uid: "user-ravi", action: "place_bids" } });
+    const res = await DELETE(makeReq() as never, { params: Promise.resolve({ uid: "user-ravi", action: "place_bids" }) });
     expect(res.status).toBe(200);
     const json = await res.clone().json() as { data: { uid: string; action: string } };
     expect(json.data.uid).toBe("user-ravi");

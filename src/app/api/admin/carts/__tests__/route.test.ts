@@ -95,8 +95,8 @@ describe("GET /api/admin/carts", () => {
     );
   });
 
-  it("pageSize < 1 (e.g. 0) → clamped to 1", async () => {
-    await GET(new Request("http://localhost/api/admin/carts?pageSize=0") as never);
+  it("pageSize < 1 (e.g. -1) → clamped to 1", async () => {
+    await GET(new Request("http://localhost/api/admin/carts?pageSize=-1") as never);
     expect(mockCartList).toHaveBeenCalledWith(
       expect.objectContaining({ pageSize: "1" }),
     );

@@ -46,7 +46,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { DELETE } from "../route";
 
-const params = { params: { id: "notif-order-shipped-001" } };
+const params = { params: Promise.resolve({ id: "notif-order-shipped-001" }) };
 
 const mockNotif = {
   id: "notif-order-shipped-001",

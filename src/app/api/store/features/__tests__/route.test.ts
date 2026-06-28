@@ -19,17 +19,18 @@ const {
   mockStoreFindByOwnerId,
   mockListFiltered,
   mockCreate,
+  MAX_STORE_CUSTOM_FEATURES,
+  STORE_CAP_REACHED,
 } = vi.hoisted(() => ({
   mockStoreFindByOwnerId: vi.fn(),
   mockListFiltered: vi.fn(),
   mockCreate: vi.fn(),
+  MAX_STORE_CUSTOM_FEATURES: 10,
+  STORE_CAP_REACHED: "Store feature limit reached",
 }));
 
 vi.mock("@/providers.config", () => ({ withProviders: (fn: unknown) => fn }));
 vi.mock("@/constants", () => ({ ROLES_STORE_WRITE: ["seller", "admin"] }));
-
-const MAX_STORE_CUSTOM_FEATURES = 10;
-const STORE_CAP_REACHED = "Store feature limit reached";
 
 vi.mock("@mohasinac/appkit", () => ({
   storeRepository: { findByOwnerId: mockStoreFindByOwnerId },

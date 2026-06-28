@@ -36,8 +36,6 @@ vi.mock("@mohasinac/appkit", () => ({
     new Response(JSON.stringify({ ok: false, error: msg, details }), { status }),
   serverLogger: { info: vi.fn(), error: vi.fn() },
   getDefaultCurrency: () => "INR",
-  FIREBASE_STORAGE_HOST: "firebasestorage.googleapis.com",
-  GCS_HOST: "storage.googleapis.com",
   ERROR_MESSAGES: { VALIDATION: { FAILED: "Validation failed" } },
   SUCCESS_MESSAGES: { PRODUCT: { CREATED: "Product created" } },
   createApiHandler: (opts: {
@@ -74,7 +72,7 @@ const validProductBody = {
   category: "trading-cards",
   price: 500000,
   stockQuantity: 1,
-  mainImage: "https://firebasestorage.googleapis.com/v0/b/test/o/product-img.jpg",
+  mainImage: "/media/product-img.jpg",
   storeId: "store-palace",
   listingType: "standard",
 };

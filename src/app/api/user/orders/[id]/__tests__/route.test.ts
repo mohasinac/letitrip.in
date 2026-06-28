@@ -39,7 +39,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { GET } from "../route";
 
-const params = { params: { id: "order-1-20260601-a1b2c3" } };
+const params = { params: Promise.resolve({ id: "order-1-20260601-a1b2c3" }) };
 const mockOrder = {
   id: "order-1-20260601-a1b2c3",
   buyerId: "buyer-uid",

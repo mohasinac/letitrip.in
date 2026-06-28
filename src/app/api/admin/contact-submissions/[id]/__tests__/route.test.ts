@@ -76,7 +76,7 @@ const mockSubmission = {
   status: "unread",
 };
 
-const routeParams = { params: { id: "contact-001" } };
+const routeParams = { params: Promise.resolve({ id: "contact-001" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();

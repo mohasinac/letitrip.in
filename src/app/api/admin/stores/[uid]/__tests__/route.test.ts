@@ -61,7 +61,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { GET, PATCH } from "../route";
 
-const params = { params: { uid: "store-pokemon-palace" } };
+const params = { params: Promise.resolve({ uid: "store-pokemon-palace" }) };
 
 const makeRequest = (method: string, body?: unknown) =>
   new Request("http://localhost/api/admin/stores/store-pokemon-palace", {

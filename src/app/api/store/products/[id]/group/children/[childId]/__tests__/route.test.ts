@@ -58,7 +58,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { DELETE } from "../route";
 
-const params = { params: { id: "product-hw-parent", childId: "product-hw-child-1" } };
+const params = { params: Promise.resolve({ id: "product-hw-parent", childId: "product-hw-child-1" }) };
 
 const mockParent = {
   id: "product-hw-parent",
@@ -77,10 +77,13 @@ beforeEach(() => {
   vi.clearAllMocks();
   _user = { uid: "seller-uid", role: "seller" };
   mockStoreFindByOwnerId.mockResolvedValue({ id: "store-diecast-depot" });
-  // findById called with parent then child (parallel via Promise.all)
-  mockProductFindById
-    .mockResolvedValueOnce(mockParent)
-    .mockResolvedValueOnce(mockChild);
+  // Use mockImplementation so individual tests can override with mockResolvedValueOnce
+  // without the queue growing across beforeEach + test body (Promise.all parallel fetch)
+  mockProductFindById.mockImplementation(async (id: string) => {
+    if (id === "product-hw-parent") return mockParent;
+    if (id === "product-hw-child-1") return mockChild;
+    return null;
+  });
   mockUnlinkChildFromGroup.mockResolvedValue(undefined);
 });
 

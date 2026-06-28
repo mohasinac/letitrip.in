@@ -61,7 +61,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { GET, PATCH, DELETE } from "../route";
 
-const params = { params: { id: "product-charizard-psa9" } };
+const params = { params: Promise.resolve({ id: "product-charizard-psa9" }) };
 
 const makeRequest = (method: string, body?: unknown) =>
   new Request("http://localhost/api/admin/products/product-charizard-psa9", {

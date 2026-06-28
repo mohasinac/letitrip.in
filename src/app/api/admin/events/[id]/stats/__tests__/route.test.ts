@@ -55,7 +55,7 @@ vi.mock("@mohasinac/appkit", () => ({
 import { GET } from "../route";
 
 const mockEvent = { id: "event-summer-holo-sale-2026", title: "Summer Holo Sale", status: "active" };
-const routeParams = { params: { id: "event-summer-holo-sale-2026" } };
+const routeParams = { params: Promise.resolve({ id: "event-summer-holo-sale-2026" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -109,8 +109,8 @@ describe("GET /api/admin/events/[id]/stats", () => {
   it("approved entries filtered by reviewStatus==approved", async () => {
     await GET(new Request("http://localhost") as never, routeParams as never);
     const calls = mockListForEvent.mock.calls;
-    const hasApprovedFilter = calls.some(
-      ([, opts]: [string, { filters?: string }]) => opts.filters?.includes("reviewStatus") && opts.filters.includes("approved"),
+    const hasApprovedFilter = (calls as Array<[string, { filters?: string }]>).some(
+      ([, opts]) => opts.filters?.includes("reviewStatus") && opts.filters.includes("approved"),
     );
     expect(hasApprovedFilter).toBe(true);
   });
@@ -118,8 +118,8 @@ describe("GET /api/admin/events/[id]/stats", () => {
   it("flagged entries filtered by reviewStatus==flagged", async () => {
     await GET(new Request("http://localhost") as never, routeParams as never);
     const calls = mockListForEvent.mock.calls;
-    const hasFlaggedFilter = calls.some(
-      ([, opts]: [string, { filters?: string }]) => opts.filters?.includes("reviewStatus") && opts.filters.includes("flagged"),
+    const hasFlaggedFilter = (calls as Array<[string, { filters?: string }]>).some(
+      ([, opts]) => opts.filters?.includes("reviewStatus") && opts.filters.includes("flagged"),
     );
     expect(hasFlaggedFilter).toBe(true);
   });

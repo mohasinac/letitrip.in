@@ -63,7 +63,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { GET, PATCH, DELETE } from "../route";
 
-const params = { params: { id: "review-charizard-psa9-ravi-20260508" } };
+const params = { params: Promise.resolve({ id: "review-charizard-psa9-ravi-20260508" }) };
 
 const makeRequest = (method: string, body?: unknown) =>
   new Request("http://localhost/api/admin/reviews/review-charizard-psa9-ravi-20260508", {

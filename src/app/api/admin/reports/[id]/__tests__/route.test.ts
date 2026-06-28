@@ -49,7 +49,7 @@ vi.mock("@mohasinac/appkit", () => ({
 import { GET, PATCH } from "../route";
 
 const mockReport = { id: "report-001", type: "scam", status: "open", reporter: "user-ravi" };
-const routeParams = { params: { id: "report-001" } };
+const routeParams = { params: Promise.resolve({ id: "report-001" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();

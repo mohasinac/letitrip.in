@@ -74,7 +74,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { POST } from "../route";
 
-const params = { params: { id: "product-hot-wheels-parent" } };
+const params = { params: Promise.resolve({ id: "product-hot-wheels-parent" }) };
 
 const makeRequest = (body: unknown) =>
   new Request("http://localhost/api/store/products/product-hot-wheels-parent/group/children", {
@@ -110,11 +110,14 @@ beforeEach(() => {
   vi.clearAllMocks();
   _user = { uid: "seller-uid", role: "seller" };
   mockStoreFindByOwnerId.mockResolvedValue({ id: "store-diecast-depot" });
-  // Default: first call = parent, second call = child (for link mode)
-  mockProductFindById
-    .mockResolvedValueOnce(mockParent)
-    .mockResolvedValueOnce(mockChild);
-  mockAddChildProduct.mockResolvedValue({ id: "product-hw-new-child", ...mockParent });
+  // Use mockImplementation so individual tests can override with mockResolvedValueOnce
+  // without the queue growing across beforeEach + test body calls
+  mockProductFindById.mockImplementation(async (id: string) => {
+    if (id === "product-hot-wheels-parent") return mockParent;
+    if (id === "product-hw-child-1") return mockChild;
+    return null;
+  });
+  mockAddChildProduct.mockResolvedValue({ ...mockParent, id: "product-hw-new-child" });
   mockLinkChildToGroup.mockResolvedValue(undefined);
 });
 

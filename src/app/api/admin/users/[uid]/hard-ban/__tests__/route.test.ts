@@ -106,23 +106,23 @@ beforeEach(() => {
 describe("POST /api/admin/users/[uid]/hard-ban", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await POST(makeReq({ reason: "Fraud" }) as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq({ reason: "Fraud" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(401);
   });
 
   it("moderator → 403 (admin-only)", async () => {
     _user = { uid: "mod-uid", role: "moderator" };
-    const res = await POST(makeReq({ reason: "Fraud" }) as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq({ reason: "Fraud" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(403);
   });
 
   it("missing reason → 400", async () => {
-    const res = await POST(makeReq({}) as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq({}) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(400);
   });
 
   it("self-ban → 400 (cannot ban yourself)", async () => {
-    const res = await POST(makeReq({ reason: "test" }) as never, { params: { uid: "admin-uid" } });
+    const res = await POST(makeReq({ reason: "test" }) as never, { params: Promise.resolve({ uid: "admin-uid" }) });
     expect(res.status).toBe(400);
     const json = await res.clone().json() as { error: string };
     expect(json.error).toContain("Cannot ban yourself");
@@ -130,26 +130,26 @@ describe("POST /api/admin/users/[uid]/hard-ban", () => {
 
   it("user not found → 404", async () => {
     mockFindById.mockResolvedValue(null);
-    const res = await POST(makeReq({ reason: "Fraud" }) as never, { params: { uid: "nonexistent" } });
+    const res = await POST(makeReq({ reason: "Fraud" }) as never, { params: Promise.resolve({ uid: "nonexistent" }) });
     expect(res.status).toBe(404);
   });
 
   it("banning another admin → 400", async () => {
     mockFindById.mockResolvedValue(adminTarget);
-    const res = await POST(makeReq({ reason: "Rogue admin" }) as never, { params: { uid: "uid-admin2" } });
+    const res = await POST(makeReq({ reason: "Rogue admin" }) as never, { params: Promise.resolve({ uid: "uid-admin2" }) });
     expect(res.status).toBe(400);
     const json = await res.clone().json() as { error: string };
     expect(json.error).toContain("Cannot ban an admin");
   });
 
   it("disables Firebase Auth account using uid param (Firestore doc ID)", async () => {
-    await POST(makeReq({ reason: "Fraud" }) as never, { params: { uid: "user-ravi" } });
+    await POST(makeReq({ reason: "Fraud" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     // Route uses params.uid (the Firestore doc ID), not target.uid
     expect(mockAuthUpdateUser).toHaveBeenCalledWith("user-ravi", { disabled: true });
   });
 
   it("sets isDisabled, hardBanReason, hardBannedAt, hardBannedBy on Firestore doc", async () => {
-    await POST(makeReq({ reason: "Fraud" }) as never, { params: { uid: "user-ravi" } });
+    await POST(makeReq({ reason: "Fraud" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     const updateArg = mockUserUpdate.mock.calls[0][1] as {
       isDisabled: boolean;
       hardBanReason: string;
@@ -164,13 +164,13 @@ describe("POST /api/admin/users/[uid]/hard-ban", () => {
 
   it("revokes active sessions", async () => {
     mockSessionsFind.mockResolvedValue([{ id: "sess-1" }, { id: "sess-2" }]);
-    await POST(makeReq({ reason: "Fraud" }) as never, { params: { uid: "user-ravi" } });
+    await POST(makeReq({ reason: "Fraud" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(mockSessionDelete).toHaveBeenCalledTimes(2);
   });
 
   it("session revocation failure → swallowed, ban proceeds", async () => {
     mockSessionsFind.mockRejectedValue(new Error("DB error"));
-    const res = await POST(makeReq({ reason: "Fraud" }) as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq({ reason: "Fraud" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(200);
   });
 
@@ -178,14 +178,14 @@ describe("POST /api/admin/users/[uid]/hard-ban", () => {
     mockFindById.mockResolvedValue(sellerTarget);
     mockStoreFind.mockResolvedValue({ id: "store-seller", status: "active" });
     mockProductFindByStore.mockResolvedValue([{ id: "product-1" }, { id: "product-2" }]);
-    await POST(makeReq({ reason: "Fraud" }) as never, { params: { uid: "uid-seller" } });
+    await POST(makeReq({ reason: "Fraud" }) as never, { params: Promise.resolve({ uid: "uid-seller" }) });
     expect(mockStoreUpdate).toHaveBeenCalledWith("store-seller", { status: "suspended" });
     expect(mockProductUpdate).toHaveBeenCalledTimes(2);
     expect(mockProductUpdate).toHaveBeenCalledWith("product-1", { status: "archived" });
   });
 
   it("buyer (non-seller) → store/products cascade NOT triggered", async () => {
-    await POST(makeReq({ reason: "Fraud" }) as never, { params: { uid: "user-ravi" } });
+    await POST(makeReq({ reason: "Fraud" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(mockStoreFind).not.toHaveBeenCalled();
   });
 
@@ -195,14 +195,14 @@ describe("POST /api/admin/users/[uid]/hard-ban", () => {
       { id: "bid-2", status: "active" },
       { id: "bid-3", status: "outbid" },
     ]);
-    await POST(makeReq({ reason: "Fraud" }) as never, { params: { uid: "user-ravi" } });
+    await POST(makeReq({ reason: "Fraud" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     // Only active bids cancelled
     expect(mockBidUpdate).toHaveBeenCalledTimes(2);
     expect(mockBidUpdate).toHaveBeenCalledWith("bid-1", { status: "cancelled" });
   });
 
   it("sends ban notification to target user", async () => {
-    await POST(makeReq({ reason: "Fraud" }) as never, { params: { uid: "user-ravi" } });
+    await POST(makeReq({ reason: "Fraud" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(mockSendNotification).toHaveBeenCalledWith(expect.objectContaining({
       userId: "user-ravi",
       type: "account_action",
@@ -212,12 +212,12 @@ describe("POST /api/admin/users/[uid]/hard-ban", () => {
 
   it("notification failure → swallowed, ban succeeds", async () => {
     mockSendNotification.mockRejectedValue(new Error("RTDB down"));
-    const res = await POST(makeReq({ reason: "Fraud" }) as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq({ reason: "Fraud" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(200);
   });
 
   it("success → 200 with { uid }", async () => {
-    const res = await POST(makeReq({ reason: "Fraud" }) as never, { params: { uid: "user-ravi" } });
+    const res = await POST(makeReq({ reason: "Fraud" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(200);
     const json = await res.clone().json() as { data: { uid: string } };
     expect(json.data.uid).toBe("user-ravi");

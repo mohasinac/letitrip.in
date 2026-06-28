@@ -56,7 +56,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { GET, PATCH } from "../route";
 
-const params = { params: { id: "modq-report-001" } };
+const params = { params: Promise.resolve({ id: "modq-report-001" }) };
 
 const mockDoc = {
   id: "modq-report-001",

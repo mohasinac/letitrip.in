@@ -126,24 +126,24 @@ describe("GET /api/user/orders", () => {
 describe("GET /api/user/orders/[id]", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await GET_ID(makeIdReq("order-1") as never, { params: { id: "order-1" } } as never);
+    const res = await GET_ID(makeIdReq("order-1") as never, { params: Promise.resolve({ id: "order-1" }) } as never);
     expect(res.status).toBe(401);
   });
 
   it("order not found → 404", async () => {
     mockGetOrderById.mockResolvedValue(null);
-    const res = await GET_ID(makeIdReq("nonexistent") as never, { params: { id: "nonexistent" } } as never);
+    const res = await GET_ID(makeIdReq("nonexistent") as never, { params: Promise.resolve({ id: "nonexistent" }) } as never);
     expect(res.status).toBe(404);
   });
 
   it("order found → 200 with mapped document", async () => {
-    const res = await GET_ID(makeIdReq("order-1") as never, { params: { id: "order-1" } } as never);
+    const res = await GET_ID(makeIdReq("order-1") as never, { params: Promise.resolve({ id: "order-1" }) } as never);
     expect(res.status).toBe(200);
     expect(mockGetOrderById).toHaveBeenCalledWith("buyer-uid", "order-1");
   });
 
   it("delegates getOrderByIdForUser with uid + orderId", async () => {
-    await GET_ID(makeIdReq("order-abc") as never, { params: { id: "order-abc" } } as never);
+    await GET_ID(makeIdReq("order-abc") as never, { params: Promise.resolve({ id: "order-abc" }) } as never);
     expect(mockGetOrderById).toHaveBeenCalledWith("buyer-uid", "order-abc");
   });
 });

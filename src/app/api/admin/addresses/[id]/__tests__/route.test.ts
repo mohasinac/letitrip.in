@@ -74,7 +74,7 @@ const mockAddress = {
   isDefault: false,
 };
 
-const routeParams = { params: { id: "addr-001" } };
+const routeParams = { params: Promise.resolve({ id: "addr-001" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();

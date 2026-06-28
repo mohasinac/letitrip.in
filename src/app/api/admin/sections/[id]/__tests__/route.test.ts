@@ -85,35 +85,35 @@ beforeEach(() => {
 describe("PATCH /api/admin/sections/[id]", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await PATCH(makeReq("PATCH", { enabled: false }) as never, { params: { id: "section-welcome" } });
+    const res = await PATCH(makeReq("PATCH", { enabled: false }) as never, { params: Promise.resolve({ id: "section-welcome" }) });
     expect(res.status).toBe(401);
   });
 
   it("buyer role → 403 (admin-only)", async () => {
     _user = { uid: "buyer-uid", role: "user" };
-    const res = await PATCH(makeReq("PATCH", { enabled: false }) as never, { params: { id: "section-welcome" } });
+    const res = await PATCH(makeReq("PATCH", { enabled: false }) as never, { params: Promise.resolve({ id: "section-welcome" }) });
     expect(res.status).toBe(403);
   });
 
   it("updates section with provided fields", async () => {
-    await PATCH(makeReq("PATCH", { enabled: false, order: 3 }) as never, { params: { id: "section-welcome" } });
+    await PATCH(makeReq("PATCH", { enabled: false, order: 3 }) as never, { params: Promise.resolve({ id: "section-welcome" }) });
     expect(mockUpdate).toHaveBeenCalledWith("section-welcome", expect.objectContaining({ enabled: false, order: 3 }));
   });
 
   it("section not found after update → 404", async () => {
     mockFindById.mockResolvedValue(null);
-    const res = await PATCH(makeReq("PATCH", { enabled: false }) as never, { params: { id: "section-welcome" } });
+    const res = await PATCH(makeReq("PATCH", { enabled: false }) as never, { params: Promise.resolve({ id: "section-welcome" }) });
     expect(res.status).toBe(404);
   });
 
   it("update throws → 500", async () => {
     mockUpdate.mockRejectedValue(new Error("DB error"));
-    const res = await PATCH(makeReq("PATCH", { enabled: false }) as never, { params: { id: "section-welcome" } });
+    const res = await PATCH(makeReq("PATCH", { enabled: false }) as never, { params: Promise.resolve({ id: "section-welcome" }) });
     expect(res.status).toBe(500);
   });
 
   it("success → 200 with updated section", async () => {
-    const res = await PATCH(makeReq("PATCH", { enabled: false }) as never, { params: { id: "section-welcome" } });
+    const res = await PATCH(makeReq("PATCH", { enabled: false }) as never, { params: Promise.resolve({ id: "section-welcome" }) });
     expect(res.status).toBe(200);
     const json = await res.clone().json() as { data: typeof mockSection };
     expect(json.data.id).toBe("section-welcome");
@@ -123,29 +123,29 @@ describe("PATCH /api/admin/sections/[id]", () => {
 describe("DELETE /api/admin/sections/[id]", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await DELETE(makeReq("DELETE") as never, { params: { id: "section-welcome" } });
+    const res = await DELETE(makeReq("DELETE") as never, { params: Promise.resolve({ id: "section-welcome" }) });
     expect(res.status).toBe(401);
   });
 
   it("buyer role → 403 (admin-only)", async () => {
     _user = { uid: "buyer-uid", role: "user" };
-    const res = await DELETE(makeReq("DELETE") as never, { params: { id: "section-welcome" } });
+    const res = await DELETE(makeReq("DELETE") as never, { params: Promise.resolve({ id: "section-welcome" }) });
     expect(res.status).toBe(403);
   });
 
   it("deletes section by id", async () => {
-    await DELETE(makeReq("DELETE") as never, { params: { id: "section-welcome" } });
+    await DELETE(makeReq("DELETE") as never, { params: Promise.resolve({ id: "section-welcome" }) });
     expect(mockDelete).toHaveBeenCalledWith("section-welcome");
   });
 
   it("delete throws → 500", async () => {
     mockDelete.mockRejectedValue(new Error("DB error"));
-    const res = await DELETE(makeReq("DELETE") as never, { params: { id: "section-welcome" } });
+    const res = await DELETE(makeReq("DELETE") as never, { params: Promise.resolve({ id: "section-welcome" }) });
     expect(res.status).toBe(500);
   });
 
   it("success → 200 with { success: true }", async () => {
-    const res = await DELETE(makeReq("DELETE") as never, { params: { id: "section-welcome" } });
+    const res = await DELETE(makeReq("DELETE") as never, { params: Promise.resolve({ id: "section-welcome" }) });
     expect(res.status).toBe(200);
     const json = await res.clone().json() as { data: { success: boolean } };
     expect(json.data.success).toBe(true);

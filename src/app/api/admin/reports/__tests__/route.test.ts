@@ -57,7 +57,7 @@ const mockReports = [
 ];
 
 const listParams = {};
-const detailParams = { params: { id: "report-1" } };
+const detailParams = { params: Promise.resolve({ id: "report-1" }) };
 
 const makeListReq = () => new Request("http://localhost/api/admin/reports");
 const makePatchReq = (body: unknown) =>

@@ -62,7 +62,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { GET, PATCH } from "../route";
 
-const params = { params: { id: "ticket-order-issue-ravi-20260508" } };
+const params = { params: Promise.resolve({ id: "ticket-order-issue-ravi-20260508" }) };
 
 const mockTicket = {
   id: "ticket-order-issue-ravi-20260508",

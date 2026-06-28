@@ -47,23 +47,23 @@ beforeEach(() => {
 describe("DELETE /api/admin/sessions/[id]", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await DELETE(makeReq() as never, { params: { id: "session-123" } });
+    const res = await DELETE(makeReq() as never, { params: Promise.resolve({ id: "session-123" }) });
     expect(res.status).toBe(401);
   });
 
   it("buyer role → 403 (admin/moderator only)", async () => {
     _user = { uid: "buyer-uid", role: "user" };
-    const res = await DELETE(makeReq() as never, { params: { id: "session-123" } });
+    const res = await DELETE(makeReq() as never, { params: Promise.resolve({ id: "session-123" }) });
     expect(res.status).toBe(403);
   });
 
   it("revokeSession called with session id and admin uid", async () => {
-    await DELETE(makeReq() as never, { params: { id: "session-123" } });
+    await DELETE(makeReq() as never, { params: Promise.resolve({ id: "session-123" }) });
     expect(mockRevokeSession).toHaveBeenCalledWith("session-123", "admin-uid");
   });
 
   it("success → 200", async () => {
-    const res = await DELETE(makeReq() as never, { params: { id: "session-123" } });
+    const res = await DELETE(makeReq() as never, { params: Promise.resolve({ id: "session-123" }) });
     expect(res.status).toBe(200);
   });
 });

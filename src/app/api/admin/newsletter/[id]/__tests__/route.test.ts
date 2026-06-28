@@ -41,7 +41,7 @@ vi.mock("@mohasinac/appkit", () => ({
 import { GET, DELETE } from "../route";
 
 const mockSubscriber = { id: "sub-001", email: "ravi@example.com", status: "active" };
-const routeParams = { params: { id: "sub-001" } };
+const routeParams = { params: Promise.resolve({ id: "sub-001" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();

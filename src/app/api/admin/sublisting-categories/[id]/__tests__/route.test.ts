@@ -66,7 +66,7 @@ const sublistingDoc = {
   display: { coverImage: "/media/base-set.jpg" },
 };
 
-const routeParams = { params: { id: "sublisting-base-set" } };
+const routeParams = { params: Promise.resolve({ id: "sublisting-base-set" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();

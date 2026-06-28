@@ -60,7 +60,7 @@ function makeReq(body: unknown): Request {
 }
 
 function makeCtx(id = "order-1") {
-  return { params: { id } };
+  return { params: Promise.resolve({ id }) };
 }
 
 beforeEach(() => {

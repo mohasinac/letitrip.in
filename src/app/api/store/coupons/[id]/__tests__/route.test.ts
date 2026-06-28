@@ -71,7 +71,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { GET, PATCH, DELETE } from "../route";
 
-const params = { params: { id: "coupon-palace15" } };
+const params = { params: Promise.resolve({ id: "coupon-palace15" }) };
 const makeRequest = (method: string, body?: unknown) =>
   new Request("http://localhost/api/store/coupons/coupon-palace15", {
     method,

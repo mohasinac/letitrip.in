@@ -87,30 +87,30 @@ beforeEach(() => {
 describe("GET /api/admin/users/[uid]", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await GET(makeReq("GET") as never, { params: { uid: "user-ravi" } });
+    const res = await GET(makeReq("GET") as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(401);
   });
 
   it("seller role → 403 (requires admin or moderator)", async () => {
     _user = { uid: "seller-uid", role: "seller" };
-    const res = await GET(makeReq("GET") as never, { params: { uid: "user-ravi" } });
+    const res = await GET(makeReq("GET") as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(403);
   });
 
   it("moderator can view user", async () => {
     _user = { uid: "mod-uid", role: "moderator" };
-    const res = await GET(makeReq("GET") as never, { params: { uid: "user-ravi" } });
+    const res = await GET(makeReq("GET") as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(200);
   });
 
   it("user not found → 404", async () => {
     mockFindById.mockResolvedValue(null);
-    const res = await GET(makeReq("GET") as never, { params: { uid: "nonexistent" } });
+    const res = await GET(makeReq("GET") as never, { params: Promise.resolve({ uid: "nonexistent" }) });
     expect(res.status).toBe(404);
   });
 
   it("found → 200 with user data", async () => {
-    const res = await GET(makeReq("GET") as never, { params: { uid: "user-ravi" } });
+    const res = await GET(makeReq("GET") as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(200);
     const json = await res.clone().json() as { data: typeof mockUserDoc };
     expect(json.data.uid).toBe("uid-ravi");
@@ -120,38 +120,38 @@ describe("GET /api/admin/users/[uid]", () => {
 describe("PATCH /api/admin/users/[uid]", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await PATCH(makeReq("PATCH", { role: "seller" }) as never, { params: { uid: "user-ravi" } });
+    const res = await PATCH(makeReq("PATCH", { role: "seller" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(401);
   });
 
   it("moderator → allowed to patch (ROLES_ADMIN_MOD)", async () => {
     _user = { uid: "mod-uid", role: "moderator" };
-    const res = await PATCH(makeReq("PATCH", { emailVerified: true }) as never, { params: { uid: "user-ravi" } });
+    const res = await PATCH(makeReq("PATCH", { emailVerified: true }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(200);
   });
 
   it("invalid role value → 400", async () => {
-    const res = await PATCH(makeReq("PATCH", { role: "superadmin" }) as never, { params: { uid: "user-ravi" } });
+    const res = await PATCH(makeReq("PATCH", { role: "superadmin" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(400);
   });
 
   it("role update → adminUpdateUser called with actorId and targetId", async () => {
-    await PATCH(makeReq("PATCH", { role: "seller" }) as never, { params: { uid: "user-ravi" } });
+    await PATCH(makeReq("PATCH", { role: "seller" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(mockAdminUpdateUser).toHaveBeenCalledWith("admin-uid", "user-ravi", expect.objectContaining({ role: "seller" }));
   });
 
   it("emailVerified update → adminUpdateUser called", async () => {
-    await PATCH(makeReq("PATCH", { emailVerified: false }) as never, { params: { uid: "user-ravi" } });
+    await PATCH(makeReq("PATCH", { emailVerified: false }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(mockAdminUpdateUser).toHaveBeenCalledWith("admin-uid", "user-ravi", expect.objectContaining({ emailVerified: false }));
   });
 
   it("displayName update → adminUpdateUser called", async () => {
-    await PATCH(makeReq("PATCH", { displayName: "Ravi K." }) as never, { params: { uid: "user-ravi" } });
+    await PATCH(makeReq("PATCH", { displayName: "Ravi K." }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(mockAdminUpdateUser).toHaveBeenCalledWith("admin-uid", "user-ravi", expect.objectContaining({ displayName: "Ravi K." }));
   });
 
   it("success → 200 with uid and updated fields", async () => {
-    const res = await PATCH(makeReq("PATCH", { role: "seller" }) as never, { params: { uid: "user-ravi" } });
+    const res = await PATCH(makeReq("PATCH", { role: "seller" }) as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(200);
     const json = await res.clone().json() as { data: { uid: string; role: string } };
     expect(json.data.uid).toBe("user-ravi");
@@ -162,23 +162,23 @@ describe("PATCH /api/admin/users/[uid]", () => {
 describe("DELETE /api/admin/users/[uid]", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await DELETE(makeReq("DELETE") as never, { params: { uid: "user-ravi" } });
+    const res = await DELETE(makeReq("DELETE") as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(401);
   });
 
   it("moderator → 403 (ROLES_ADMIN_ONLY)", async () => {
     _user = { uid: "mod-uid", role: "moderator" };
-    const res = await DELETE(makeReq("DELETE") as never, { params: { uid: "user-ravi" } });
+    const res = await DELETE(makeReq("DELETE") as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(403);
   });
 
   it("admin → adminDeleteUser called with actorId and targetId", async () => {
-    await DELETE(makeReq("DELETE") as never, { params: { uid: "user-ravi" } });
+    await DELETE(makeReq("DELETE") as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(mockAdminDeleteUser).toHaveBeenCalledWith("admin-uid", "user-ravi");
   });
 
   it("success → 200", async () => {
-    const res = await DELETE(makeReq("DELETE") as never, { params: { uid: "user-ravi" } });
+    const res = await DELETE(makeReq("DELETE") as never, { params: Promise.resolve({ uid: "user-ravi" }) });
     expect(res.status).toBe(200);
   });
 });

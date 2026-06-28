@@ -32,7 +32,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { DELETE } from "../route";
 
-const params = { params: { productId: "product-hot-wheels-redline" } };
+const params = { params: Promise.resolve({ productId: "product-hot-wheels-redline" }) };
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -68,7 +68,7 @@ describe("DELETE /api/user/wishlist/[productId]", () => {
 
   it("non-existent productId → still calls removeFromWishlist (idempotent), 200", async () => {
     // removeFromWishlist is a no-op for missing productIds — no 404 guard in the route
-    const missingParams = { params: { productId: "product-does-not-exist" } };
+    const missingParams = { params: Promise.resolve({ productId: "product-does-not-exist" }) };
     const res = await DELETE(new Request("http://localhost") as never, missingParams as never);
     expect(res.status).toBe(200);
     expect(mockRemoveFromWishlist).toHaveBeenCalledWith("buyer-uid", "product-does-not-exist");

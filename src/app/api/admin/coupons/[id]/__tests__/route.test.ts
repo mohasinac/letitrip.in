@@ -70,7 +70,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { GET, PATCH, DELETE } from "../route";
 
-const params = { params: { id: "coupon-welcome10" } };
+const params = { params: Promise.resolve({ id: "coupon-welcome10" }) };
 const makeRequest = (method: string, body?: unknown) =>
   new Request("http://localhost/api/admin/coupons/coupon-welcome10", {
     method,

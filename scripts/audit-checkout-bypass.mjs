@@ -51,7 +51,9 @@ for (const root of SCAN) {
     const rel = relative(ROOT, file);
     // Schema definition + admin site-settings UI need to *describe* the flag.
     // Allow those by requiring "definition" or "schema" or "site-settings" in path.
-    if (rel.includes("schemas") || rel.includes("seed") || rel.includes("admin/site-settings")) continue;
+    // Also allow __tests__ co-located with the bypass route.
+    if (rel.includes("schemas") || rel.includes("seed") || rel.includes("admin/site-settings") ||
+        rel.includes("checkout-bypass/__tests__") || rel.includes("checkout-bypass\\__tests__")) continue;
     const src = readFileSync(file, "utf8")
       .replace(/\/\*[\s\S]*?\*\//g, " ")
       .replace(/(^|\s)\/\/[^\n]*/g, "$1 ");

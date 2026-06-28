@@ -75,7 +75,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { POST, PATCH, DELETE } from "../route";
 
-const params = { params: { id: "product-hot-wheels-redline" } };
+const params = { params: Promise.resolve({ id: "product-hot-wheels-redline" }) };
 
 const baseProduct = {
   id: "product-hot-wheels-redline",

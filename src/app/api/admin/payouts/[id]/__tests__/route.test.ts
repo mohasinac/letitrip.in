@@ -67,7 +67,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { GET, PATCH } from "../route";
 
-const params = { params: { id: "payout-pokemon-palace-20260601-a1b2c3" } };
+const params = { params: Promise.resolve({ id: "payout-pokemon-palace-20260601-a1b2c3" }) };
 
 const makeRequest = (method: string, body?: unknown) =>
   new Request("http://localhost/api/admin/payouts/payout-pokemon-palace-20260601-a1b2c3", {

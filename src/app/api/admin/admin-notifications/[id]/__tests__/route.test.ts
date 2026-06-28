@@ -49,7 +49,7 @@ vi.mock("@mohasinac/appkit", () => ({
 
 import { PATCH } from "../route";
 
-const routeParams = { params: { id: "notif-admin-001" } };
+const routeParams = { params: Promise.resolve({ id: "notif-admin-001" }) };
 const mockNotif = { id: "notif-admin-001", title: "System Alert", isRead: false };
 
 beforeEach(() => {
