@@ -38,6 +38,8 @@ export const GET = withProviders(createRouteHandler({
       items.map((item) => productRepository.findById(item.productId)),
     );
 
+    const rawCount = items.length;
+
     const enriched = items
       .map((item, i) => {
         const result = productResults[i];
@@ -49,9 +51,9 @@ export const GET = withProviders(createRouteHandler({
     return successResponse({
       items: enriched,
       meta: {
-        total: enriched.length,
+        total: rawCount,
         limit: WISHLIST_MAX,
-        isFull: enriched.length >= WISHLIST_MAX,
+        isFull: rawCount >= WISHLIST_MAX,
       },
     });
   },

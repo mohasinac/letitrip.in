@@ -21,7 +21,6 @@ const verifySchema = z.object({
   razorpay_signature: z.string().min(1),
   addressId: z.string().min(1),
   notes: z.string().max(500).optional(),
-  platformFee: z.number().nonnegative().optional(),
 });
 
 // rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification

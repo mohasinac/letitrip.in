@@ -96,13 +96,16 @@ export const PUT = withProviders(
       );
 
       const updated: WhatsAppConfig = {
-        catalogSyncEnabled: catalogSyncEnabled ?? existing?.catalogSyncEnabled ?? false,
-        connected,
+        // Start with existing config so unmentioned fields are preserved
         ...(existing ?? {}),
+        catalogSyncEnabled: catalogSyncEnabled ?? existing?.catalogSyncEnabled ?? false,
         ...(phoneNumber != null ? { phoneNumber } : {}),
         ...(wabaId != null ? { wabaId } : {}),
         ...(catalogId != null ? { catalogId } : {}),
         accessToken: resolvedToken,
+        // connected must come after the existing spread so the freshly-computed
+        // value is not overwritten by existing.connected (BUG-WA1 fix)
+        connected,
         ...(connected && !existing?.connected ? { connectedAt: new Date() } : {}),
       };
 
