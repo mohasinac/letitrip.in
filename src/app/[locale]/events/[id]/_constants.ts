@@ -50,12 +50,15 @@ export const EVENT_TYPE_BADGE: Record<string, string> = {
   feedback: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
   raffle: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200",
   spin_wheel: "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
+  lottery: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
 } as const;
 
 export const EVENT_STATUS_BADGE: Record<string, string> = {
   active: "bg-success-surface text-success",
   ended: "bg-error-surface text-error",
   draft: "bg-warning-surface text-warning",
+  paused: "bg-warning-surface text-warning",
+  cancelled: "bg-error-surface text-error",
 } as const;
 
 export const EVENT_BADGE_FALLBACK =
@@ -69,10 +72,13 @@ export const EVENT_TYPE = {
   FEEDBACK: "feedback",
   RAFFLE: "raffle",
   SPIN_WHEEL: "spin_wheel",
+  LOTTERY: "lottery",
 } as const;
 
 export const EVENT_STATUS = {
   ACTIVE: "active",
   ENDED: "ended",
   DRAFT: "draft",
+  PAUSED: "paused",
+  CANCELLED: "cancelled",
 } as const;

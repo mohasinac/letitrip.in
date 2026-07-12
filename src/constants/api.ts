@@ -156,5 +156,13 @@ export const API_ROUTES = {
     // SB-UNI-N — reveal a digital code for a confirmed order
     CODE: (id: string) => `/api/orders/${id}/code`,
   },
+  LOTTERY: {
+    PULL: (id: string) => `/api/events/${id}/lottery-pull`,
+    ENTRIES: (id: string) => `/api/events/${id}/lottery-entries`,
+    PRODUCT_PULL: (id: string) => `/api/products/${id}/lottery-pull`,
+    PRODUCT_ENTRIES: (id: string) => `/api/products/${id}/lottery-entries`,
+    FLAG_ENTRY: (entryId: string) => `/api/lottery-entries/${entryId}/flag`,
+    REOPEN_SLOT: (entryId: string) => `/api/lottery-entries/${entryId}/reopen-slot`,
+  },
   USER: USER_LETITRIP,
 } as const;

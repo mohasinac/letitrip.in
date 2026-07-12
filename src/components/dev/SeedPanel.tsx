@@ -54,7 +54,7 @@ const TRANSACTIONAL_COLLECTIONS: SeedCollectionName[] = [
 ];
 
 const CONTENT_COLLECTIONS: SeedCollectionName[] = [
-  "blogPosts", "events", "eventEntries", "carousels", "carouselSlides", "homepageSections", "faqs",
+  "blogPosts", "events", "eventEntries", "lotteryEntries", "carousels", "carouselSlides", "homepageSections", "faqs",
 ];
 
 const SYSTEM_COLLECTIONS: SeedCollectionName[] = [
@@ -799,6 +799,39 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "spinPrizeId",         type: "string",    note: "SB9 — id of the SpinPrize won" },
       { name: "spinPrizeCouponCode", type: "string",    note: "SB9 — coupon code issued after spin" },
       { name: "spinWonAt",           type: "timestamp", sortable: true, note: "SB9 — when the spin was recorded" },
+    ],
+  },
+  lotteryEntries: {
+    label: "Lottery Entries",
+    icon: "🎰",
+    group: "content",
+    description: "Lottery pull entries. Users submit a TX ID + phone + slot number and are immediately assigned a prize slot (server-side weighted draw). Admin can flag fraudulent entries.",
+    slugPattern: "auto-ID",
+    seededItems: [
+      "5 entries for event-pokemon-number-draw-july-2026 (userLotteryNumber 1–5, status drawn)",
+    ],
+    pendingItems: [],
+    uiPath: "/admin/lotteries",
+    piiFields: ["userPhone", "userEmail", "userDisplayName"],
+    mediaFields: [],
+    mediaSlugPatterns: [],
+    fields: [
+      { name: "sourceType",              type: "enum",      filterable: true, indexed: true, note: "event | product" },
+      { name: "eventId",                 type: "ref",       filterable: true, indexed: true },
+      { name: "productId",               type: "ref",       filterable: true, indexed: true },
+      { name: "userId",                  type: "ref",       filterable: true, indexed: true },
+      { name: "userDisplayName",         type: "string",    searchable: true, pii: true },
+      { name: "userPhone",               type: "string",    filterable: true, pii: true },
+      { name: "userEmail",               type: "string",    filterable: true, pii: true },
+      { name: "transactionId",           type: "string",    searchable: true },
+      { name: "paymentTime",             type: "timestamp", sortable: true },
+      { name: "purchasedItemNumber",     type: "number" },
+      { name: "userLotteryNumber",       type: "number",    sortable: true, indexed: true },
+      { name: "assignedPrizeSlotNumber", type: "number" },
+      { name: "status",                  type: "enum",      filterable: true, indexed: true, note: "pending | drawn | won | flagged | cancelled" },
+      { name: "isFlagged",               type: "boolean",   filterable: true },
+      { name: "flagNote",                type: "string" },
+      { name: "submittedAt",             type: "timestamp", sortable: true, indexed: true },
     ],
   },
   carousels: {

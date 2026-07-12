@@ -44,8 +44,8 @@ export function toIsoOrUndefined(value: unknown): string | undefined {
  
 export function eventIsActive(event: RawEvent, now: number = Date.now()): boolean {
   const status = typeof event.status === "string" ? event.status : "";
-  if (status === EVENT_STATUS.ACTIVE) return true;
-  if (!event.endsAt) return false;
+  if (status !== "active") return false;
+  if (!event.endsAt) return true;
   const endsAtMs = new Date(event.endsAt as string | number | Date).getTime();
   return Number.isFinite(endsAtMs) && endsAtMs > now;
 }

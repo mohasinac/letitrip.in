@@ -459,6 +459,19 @@
 | EventRaffleWinnerView | View | Raffle winner announcement |
 | SpinWheelView | View | Spin wheel game |
 
+### Lottery (`appkit/src/_internal/client/features/lottery/`)
+
+| Export | Type | Purpose |
+|--------|------|---------|
+| LotterySlotGrid | Grid | Visual slot grid (never shows price/weight) |
+| LotteryPullForm | Form | User lottery pull form (TX ID + phone + slot) |
+| LotteryListView | Listing | Card grid of lottery events |
+| LotteryDetailView | Detail | Full lottery event page with slot grid + pull form |
+| LotteryEntriesView | Admin | Admin/owner entry table with flag action |
+| LotteryAdminSlotView | Admin | Admin-only slot view with price + weight |
+| LotteryAdminEditView | Admin | Lottery create/edit form with slot builder |
+| PrizeDrawLotteryDetailView | Detail | Prize-draw product in lottery mode |
+
 ### FAQ (`appkit/src/features/faq/components/`)
 
 | Export | Type | Purpose |
@@ -860,8 +873,9 @@
 | OfferRepository | offers | listByProduct, listByUser, listByStore | Price negotiation |
 | WishlistRepository | wishlists | getOrCreate, addItem, removeItem, findByUser, isFull | Wishlists |
 | HistoryRepository | history | addItem, removeItem, findByUser, clear | View history |
-| EventRepository / EventsRepository | events | findBySlug, listByStatus | Events |
+| EventRepository / EventsRepository | events | findBySlug, listByStatus, list | Events |
 | EventEntryRepository / EventEntriesRepository | eventEntries | findByEvent, findByUser | Event participation |
+| LotteryEntryRepository | lotteryEntries | listForSource, listForUser, countByUser, countByTransactionId, flagEntry, createEntry | Lottery pulls + entries |
 | NewsletterRepository | newsletter | findByEmail, subscribe, unsubscribe | Newsletter |
 | CopilotLogRepository | copilotLogs | findByUser | AI chat history |
 | ScammerRepository | scammers | findByUserId, findByPhone | Scam registry |

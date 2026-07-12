@@ -235,6 +235,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     items: [
       adminItem(String(ROUTES.ADMIN.EVENTS),            "Events",      "admin:events:read"),
       adminItem(String(ROUTES.ADMIN.ALL_EVENT_ENTRIES), "All Entries", "admin:event-entries:read"),
+      adminItem(String(ROUTES.ADMIN.LOTTERIES),         "Lotteries",   "admin:events:read"),
     ],
   },
   {

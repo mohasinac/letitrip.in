@@ -21,6 +21,7 @@ import {
   REVIEW_PII_FIELDS,
   OFFER_PII_FIELDS,
   EVENT_ENTRY_PII_FIELDS,
+  LOTTERY_ENTRY_PII_FIELDS,
   CHAT_PII_FIELDS,
   getPiiConfigError,
 } from "@mohasinac/appkit";
@@ -47,6 +48,7 @@ import {
   claimedCouponsSeedData,
   eventsSeedData,
   eventEntriesSeedData,
+  lotteryEntriesSeedData,
   payoutsSeedData,
   notificationsSeedData,
   blogPostsSeedData,
@@ -93,6 +95,7 @@ import { NOTIFICATIONS_COLLECTION } from "@mohasinac/appkit";
 import { PAYOUT_COLLECTION } from "@mohasinac/appkit";
 import { BLOG_POSTS_COLLECTION } from "@mohasinac/appkit";
 import { EVENTS_COLLECTION, EVENT_ENTRIES_COLLECTION } from "@mohasinac/appkit";
+import { LOTTERY_ENTRIES_COLLECTION } from "@mohasinac/appkit";
 import { SESSION_COLLECTION } from "@mohasinac/appkit";
 import { CART_COLLECTION } from "@mohasinac/appkit";
 import { STORE_COLLECTION } from "@mohasinac/appkit";
@@ -128,6 +131,7 @@ type CollectionName =
   | "blogPosts"
   | "events"
   | "eventEntries"
+  | "lotteryEntries"
   | "sessions"
   | "carts"
   | "wishlists"
@@ -187,6 +191,7 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   blogPosts: BLOG_POSTS_COLLECTION,
   events: EVENTS_COLLECTION,
   eventEntries: EVENT_ENTRIES_COLLECTION,
+  lotteryEntries: LOTTERY_ENTRIES_COLLECTION,
   sessions: SESSION_COLLECTION,
   carts: CART_COLLECTION,
   wishlists: WISHLIST_COLLECTION,
@@ -255,6 +260,7 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   blogPosts: blogPostsSeedData,
   events: eventsSeedData,
   eventEntries: eventEntriesSeedData,
+  lotteryEntries: lotteryEntriesSeedData,
   sessions: sessionsSeedData,
   carts: cartsSeedData,
   wishlists: wishlistsSeedData,
@@ -291,6 +297,7 @@ const PII_ENCRYPTED_COLLECTIONS = new Set<CollectionName>([
   "bids",
   "payouts",
   "eventEntries",
+  "lotteryEntries",
   "offers",
 ]);
 
@@ -334,6 +341,7 @@ function encryptSeedPii(collection: string, data: any, _original?: any): any {
     products: ["sellerName", "sellerEmail"],
     offers: OFFER_PII_FIELDS,
     eventEntries: EVENT_ENTRY_PII_FIELDS,
+    lotteryEntries: LOTTERY_ENTRY_PII_FIELDS,
     chatRooms: CHAT_PII_FIELDS,
   };
   const fields = PII_MAP[collection];

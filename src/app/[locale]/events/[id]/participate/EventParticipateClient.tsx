@@ -7,6 +7,7 @@ import { Button, Checkbox, Div, Heading, Input, RadioGroup, RichText, Row, Selec
 import { Label } from "@mohasinac/appkit/client";
 import { EventParticipateView, useSession, useToast, ROUTES } from "@mohasinac/appkit/client";
 import { SpinWheelView } from "@mohasinac/appkit";
+import { LotteryPullForm } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
 const CLS_STAR_ON = "text-star border-star";
@@ -58,6 +59,11 @@ export interface ParticipateEventInput {
   spinPrizes?: SpinPrize[];
   spinWindowStart?: string | null;
   spinWindowEnd?: string | null;
+  lotteryConfig?: {
+    totalSlots: number;
+    maxPullsPerUser: number;
+    slots: Array<{ slotNumber: number; name: string; isBooked: boolean; bookedByUserLotteryNumber?: number; bookedByDisplayName?: string }>;
+  } | null;
 }
 
 interface Props {
@@ -475,6 +481,22 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
       <>
         {!embedded && renderEventInfoBlock(event)}
         <SpinWheelParticipate event={event} />
+      </>
+    );
+  }
+
+  // Lottery events get their own pull form
+  if (event.type === "lottery") {
+    if (!user) return renderLoginRequired();
+    return (
+      <>
+        {!embedded && renderEventInfoBlock(event)}
+        <LotteryPullForm
+          sourceType="event"
+          eventId={event.id}
+          totalSlots={event.lotteryConfig?.totalSlots ?? 0}
+          maxPullsPerUser={event.lotteryConfig?.maxPullsPerUser ?? 1}
+        />
       </>
     );
   }
