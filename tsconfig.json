@@ -20,6 +20,7 @@
     "node_modules",
     ".next/dev",
     "functions",
-    "scripts"
+    "scripts",
+    "src/**/__tests__/**"
   ]
 }
