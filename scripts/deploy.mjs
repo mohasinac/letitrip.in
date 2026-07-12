@@ -142,6 +142,7 @@ if (failed) {
     cwd: ROOT,
     stdio: "inherit",
     shell: true,
+    env: { ...process.env, NODE_OPTIONS: "--max-old-space-size=8192" },
   });
   if (result.status !== 0) {
     fail("npm run check failed — fix all errors before deploying");

@@ -25,7 +25,7 @@
     "lint": "eslint src appkit/src",
     "lint:fix": "eslint src appkit/src --fix",
     "check:types:appkit": "npm --prefix ./appkit run check:types",
-    "check:types:app": "tsc --noEmit",
+    "check:types:app": "node --max-old-space-size=8192 node_modules/typescript/bin/tsc --noEmit",
     "check:types": "npm run check:types:appkit && npm run check:types:app",
     "check:audits": "npm run audit:all",
     "check:lint": "npm run lint",
