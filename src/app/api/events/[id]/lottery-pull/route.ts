@@ -4,34 +4,32 @@ import {
   errorResponse,
   parseJsonBody,
   successResponse,
-  applyRateLimit,
 } from "@mohasinac/appkit";
-import { submitLotteryPullAction } from "@mohasinac/appkit/server";
+import { applyRateLimit, RateLimitPresets, submitLotteryPullAction } from "@mohasinac/appkit/server";
 
-// rbac-scope-enforced-in-handler: auth required; enforced inside submitLotteryPullAction
+// rbac-scope-enforced-in-handler: any authenticated user may submit a lottery pull; soft-ban check inside
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
     handler: async ({ user, request, params }) => {
-      const rl = await applyRateLimit(request, { limit: 5, window: 60 });
-      if (!rl.success) {
-        return errorResponse("Too many requests. Please try again in a minute.", 429);
-      }
+      const rl = await applyRateLimit(request, RateLimitPresets.STRICT);
+      if (!rl.success) return errorResponse("Too many requests", 429);
 
-      const eventId = (params as { id: string }).id;
-      const body = await parseJsonBody(request);
+      const id = (params as { id: string }).id;
+      const body = await parseJsonBody(request) as Record<string, unknown>;
 
       const result = await submitLotteryPullAction({
-        ...(body as Record<string, unknown>),
         sourceType: "event",
-        eventId,
+        eventId: id,
         userId: user!.uid,
-        userDisplayName: user!.displayName ?? undefined,
-        userEmail: user!.email ?? undefined,
+        userPhone: body.userPhone,
+        transactionId: body.transactionId,
+        paymentTime: body.paymentTime,
+        purchasedItemNumber: body.purchasedItemNumber,
       });
 
-      if (!result.ok) return errorResponse(result.error ?? "Failed to submit pull", 400);
-      return successResponse(result.data, "Lottery pull submitted", 201);
+      if (!result.ok) return errorResponse(result.error ?? "Lottery pull failed", 400);
+      return successResponse(result.data, "Slot assigned");
     },
   }),
 );

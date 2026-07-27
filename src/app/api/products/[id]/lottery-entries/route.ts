@@ -1,43 +1,34 @@
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
+  sortBy,
   successResponse,
-  isAdminUser,
 } from "@mohasinac/appkit";
 import { getLotteryEntriesForAdmin, getLotteryEntriesForUser } from "@mohasinac/appkit/server";
-import { productRepository } from "@mohasinac/appkit";
 
-// rbac-scope-enforced-in-handler: admin/store-owner gets all; user gets own only
+// rbac-scope-enforced-in-handler: admin + store owner see all entries; user sees own only
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    handler: async ({ user, params }) => {
-      const productId = (params as { id: string }).id;
-      const model = { page: 1, pageSize: 20 };
-
-      if (isAdminUser(user!)) {
-        const result = await getLotteryEntriesForAdmin("product", productId, model);
-        return successResponse(result, "Lottery entries retrieved");
-      }
-
-      // Check if store owner
-      const product = await productRepository.findById(productId).catch(() => null);
-      if (product && product.storeId === user!.uid) {
-        const result = await getLotteryEntriesForAdmin("product", productId, model);
-        return successResponse(result, "Lottery entries retrieved");
-      }
-
-      // Regular user — own entries only
-      const result = await getLotteryEntriesForUser(user!.uid, model);
-      const filtered = { ...result, items: result.items.filter((e: { productId?: string }) => e.productId === productId) };
-      const safe = {
-        ...filtered,
-        items: filtered.items.map((entry) => {
-          const { userPhone: _p, userEmail: _e, transactionId: _t, ...rest } = entry;
-          return rest;
-        }),
+    handler: async ({ user, request, params }) => {
+      const id = (params as { id: string }).id;
+      const sp = new URL(request.url).searchParams;
+      const model = {
+        filters: sp.get("filters") ?? undefined,
+        sorts: sp.get("sorts") ?? sortBy("submittedAt"),
+        page: Number(sp.get("page") ?? 1),
+        pageSize: Math.min(Number(sp.get("pageSize") ?? 20), 50),
       };
-      return successResponse(safe, "Your lottery entries");
+
+      const isStaff =
+        user!.role === "admin" ||
+        user!.role === "moderator" ||
+        user!.role === "seller";
+      const result = isStaff
+        ? await getLotteryEntriesForAdmin("product", id, model)
+        : await getLotteryEntriesForUser(user!.uid, model);
+
+      return successResponse(result);
     },
   }),
 );

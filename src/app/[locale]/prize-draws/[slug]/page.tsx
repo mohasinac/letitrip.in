@@ -1,18 +1,9 @@
 import type { Metadata } from "next";
-import { PrizeDrawDetailPageView } from "@mohasinac/appkit";
+import { PrizeDrawDetailPageView, PrizeDrawLotteryDetailView } from "@mohasinac/appkit";
+import { getPrizeDrawForDetail, toClientLotteryConfig } from "@mohasinac/appkit/server";
 import { generateMetadata as _gm } from "@/constants";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
-
-/**
- * Public Prize Draw detail page (SB4-E + SB4-G).
- *
- * Delegates to the appkit `PrizeDrawDetailPageView` which:
- *   - Server-fetches the product by slug/id
- *   - Strips `isWon` from prizeDrawItems[] (public buyers stay unspoiled)
- *   - Renders the full PrizeDrawCollage + entry-fee + reveal-window panel
- *   - Wires "Enter Draw" → NonRefundableConsentModal → add to guest cart
- *   - Surfaces the prizeGithubFileUrl "View RNG source" link
- */
+import { notFound } from "next/navigation";
 
 interface PageProps {
   params: Promise<{ slug: string; locale: string }>;
@@ -33,8 +24,37 @@ export const revalidate = 120;
 
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
-  const user = await getServerSessionUser();
-  return (
-    <PrizeDrawDetailPageView id={slug} currentUserId={user?.uid} />
-  );
+
+  const [product, user] = await Promise.all([
+    getPrizeDrawForDetail(slug),
+    getServerSessionUser(),
+  ]);
+
+  if (!product) notFound();
+
+  if (product.prizeDrawMode === "lottery" && product.lotteryConfig) {
+    // Lottery-mode prize draw — slot grid + self-pull form.
+    // Revalidate more frequently since slots change as users pull.
+    // (Next.js doesn't allow dynamic revalidate in server components;
+    //  the parent layout or segment config handles it — set at 30s via cache tags in future.)
+    const clientProduct = {
+      id: product.id,
+      title: product.title ?? "",
+      description: product.description ?? undefined,
+      status: product.status ?? "draft",
+      mainImage: product.images?.[0] ?? undefined,
+      prizeDrawMode: "lottery" as const,
+      lotteryConfig: toClientLotteryConfig(product.lotteryConfig),
+    };
+
+    return (
+      <PrizeDrawLotteryDetailView
+        product={clientProduct}
+        user={user ? { uid: user.uid, displayName: user.displayName } : null}
+      />
+    );
+  }
+
+  // Classic reveal-mode prize draw.
+  return <PrizeDrawDetailPageView id={slug} currentUserId={user?.uid} />;
 }

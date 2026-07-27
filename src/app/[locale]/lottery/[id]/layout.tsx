@@ -1,30 +1,30 @@
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
-import type { ReactNode } from "react";
-import { getLotteryEventCached, buildLotteryMetadata } from "@mohasinac/appkit/server";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { getLotteryEventCached } from "@mohasinac/appkit/server";
+import { generateMetadata as _gm } from "@/constants";
+
+interface LayoutProps {
+  children: React.ReactNode;
+  params: Promise<{ locale: string; id: string }>;
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const event = await getLotteryEventCached(id);
+  if (!event) return _gm({ title: "Lottery Not Found — LetItRip", description: "", path: "/lottery" });
+  return _gm({
+    title: `${event.title} — Lottery — LetItRip`,
+    description: `Enter the ${event.title} lottery on LetItRip. Slots assigned instantly on submission.`,
+    path: `/lottery/${id}`,
+  });
+}
 
 export const revalidate = 30;
 
-type Props = {
-  params: Promise<{ locale: string; id: string }>;
-  children: ReactNode;
-};
-
-export async function generateMetadata({ params }: Omit<Props, "children">): Promise<Metadata> {
-  const { id } = await params;
-  const event = await getLotteryEventCached(id);
-  return buildLotteryMetadata(event);
-}
-
-export default async function LotteryDetailLayout({ params, children }: Props) {
+export default async function Layout({ children, params }: LayoutProps) {
   const { id } = await params;
   const event = await getLotteryEventCached(id);
   if (!event) notFound();
-
-  return (
-    <Suspense fallback={null}>
-      {children}
-    </Suspense>
-  );
+  return <Suspense>{children}</Suspense>;
 }

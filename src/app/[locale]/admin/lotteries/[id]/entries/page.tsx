@@ -1,23 +1,30 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { getLotteryEventCached, getLotteryEntriesForAdmin } from "@mohasinac/appkit/server";
-import { LotteryEntriesView } from "@mohasinac/appkit/client";
+import { LotteryEntriesView, sortBy } from "@mohasinac/appkit";
+import {
+  getLotteryEventCached,
+  getLotteryEntriesForAdmin,
+  flagLotteryEntryAction,
+  reopenLotterySlotAction,
+} from "@mohasinac/appkit/server";
+import { getServerSessionUser } from "@/lib/firebase/auth-server";
 
 export const dynamic = "force-dynamic";
 
-type Props = {
+interface Props {
   params: Promise<{ locale: string; id: string }>;
-};
+}
 
-export default async function AdminLotteryEntriesPage({ params }: Props) {
+export default async function Page({ params }: Props) {
   const { id } = await params;
-  const [event, entriesResult] = await Promise.all([
+  const [event, user] = await Promise.all([
     getLotteryEventCached(id),
-    getLotteryEntriesForAdmin("event", id, { page: 1, pageSize: 20 }),
+    getServerSessionUser(),
   ]);
-
   if (!event) notFound();
 
-  const entries = (entriesResult.items ?? []).map((e) => ({
+  const result = await getLotteryEntriesForAdmin("event", id, { sorts: sortBy("submittedAt"), page: 1, pageSize: 50 });
+  const entries = (result.items ?? []).map((e) => ({
     id: e.id,
     userLotteryNumber: e.userLotteryNumber,
     userDisplayName: e.userDisplayName,
@@ -30,12 +37,27 @@ export default async function AdminLotteryEntriesPage({ params }: Props) {
     submittedAt: e.submittedAt,
   }));
 
+  async function handleFlag(entryId: string, flagNote: string): Promise<void> {
+    "use server";
+    await flagLotteryEntryAction({ entryId, flagNote, flaggedByUserId: user?.uid ?? "unknown" });
+  }
+
+  async function handleReopen(slotNumber: number): Promise<void> {
+    "use server";
+    await reopenLotterySlotAction({ sourceType: "event", sourceId: id, slotNumber });
+  }
+
   return (
-    <LotteryEntriesView
-      sourceType="event"
-      sourceId={id}
-      entries={entries}
-      isAdmin
-    />
+    <Suspense>
+      <LotteryEntriesView
+        sourceType="event"
+        sourceId={id}
+        entries={entries}
+        isAdmin={true}
+        isStoreOwner={false}
+        onFlagEntry={handleFlag}
+        onReopenSlot={handleReopen}
+      />
+    </Suspense>
   );
 }

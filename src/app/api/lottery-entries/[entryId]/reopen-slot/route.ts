@@ -11,7 +11,7 @@ export const POST = withProviders(
   createRouteHandler({
     roles: ["admin"],
     permission: "admin:events:write",
-    handler: async ({ user, request, params }) => {
+    handler: async ({ user, request }) => {
       const body = await parseJsonBody(request) as {
         sourceType?: "event" | "product";
         sourceId?: string;
