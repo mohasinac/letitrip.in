@@ -62,12 +62,11 @@ function requireFile(label, abs) {
 // ────────────────────────────────────────────────────────────────────────────
 
 check(
-  // The toggle handle now lives in a shared primitive (plan §1 hoist) so the
-  // three role sidebars (admin/store/user) all share one themed implementation.
-  "Cohort 1 · sidebar toggle is themed (no hardcoded green gradient)",
+  // The toggle handle uses --appkit-gradient-sidebar so dark mode gets a
+  // visually distinct gradient (pink → sky-blue) rather than flat pink.
+  "Cohort 1 · sidebar toggle is themed (uses --appkit-gradient-sidebar token)",
   join(APPKIT, "src/_internal/client/features/layout/SidebarCollapseToggle.tsx"),
-  "--appkit-color-primary-700",
-  "--appkit-color-secondary-500",
+  "--appkit-gradient-sidebar",
 );
 
 check(
