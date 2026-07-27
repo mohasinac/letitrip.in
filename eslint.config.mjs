@@ -508,6 +508,8 @@ export default tseslint.config(
     // Server-side throw paths must propagate awaited; fire-and-forget without
     // explicit `void` is banned. The rule requires the type-checker; we use
     // the type-aware tseslint parser for these files.
+    // __tests__/** excluded: test files are excluded from tsconfig (commit f269e4b59)
+    // so projectService would error with "not found by the project service".
     files: [
       "src/app/api/**/*.ts",
       "src/actions/**/*.ts",
@@ -515,6 +517,7 @@ export default tseslint.config(
       "appkit/src/_internal/server/jobs/**/*.ts",
       "appkit/src/features/**/repository/**/*.ts",
     ],
+    ignores: ["**/__tests__/**"],
     languageOptions: {
       parserOptions: {
         projectService: true,
