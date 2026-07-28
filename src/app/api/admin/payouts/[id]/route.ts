@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   PAYOUT_FIELDS,
@@ -20,7 +21,7 @@ const updatePayoutSchema = z.object({
   notes: z.string().optional(),
 });
 
-export const GET = withProviders(
+const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
@@ -35,7 +36,7 @@ export const GET = withProviders(
   }),
 );
 
-export const PATCH = withProviders(
+const __PATCH__g = withProviders(
   createRouteHandler<(typeof updatePayoutSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
@@ -48,3 +49,8 @@ export const PATCH = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("PAYOUTS", __GET__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const PATCH = withFeatureGuard("PAYOUTS", __PATCH__g);

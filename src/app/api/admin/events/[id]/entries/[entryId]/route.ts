@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
@@ -14,7 +15,7 @@ const reviewEntrySchema = z.object({
 });
 
 // rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
-export const PATCH = withProviders(
+const __PATCH__g = withProviders(
   createRouteHandler<(typeof reviewEntrySchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
@@ -33,3 +34,6 @@ export const PATCH = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const PATCH = withFeatureGuard("EVENTS", __PATCH__g);

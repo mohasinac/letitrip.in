@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
@@ -30,7 +31,7 @@ const deductionSchema = z.object({
 });
 
 // rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
-export const POST = withProviders(
+const __POST__g = withProviders(
   createRouteHandler<(typeof deductionSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
@@ -62,3 +63,6 @@ export const POST = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("PAYOUTS", __POST__g);

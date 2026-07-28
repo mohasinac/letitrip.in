@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { initProviders } from "@/providers.config";
 import { getAdminRealtimeDb } from "@mohasinac/appkit";
 
@@ -20,7 +21,7 @@ function tryEnqueue(controller: ReadableStreamDefaultController, type: string, d
 }
 
 // rbac-public: public endpoint — no authentication required
-export async function GET(
+async function __GET__g(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ): Promise<Response> {
@@ -64,3 +65,6 @@ export async function GET(
     },
   });
 }
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("AUCTIONS", __GET__g);

@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 /**
  * Admin Payouts API
@@ -32,7 +33,7 @@ const DEFAULT_SORTS = sortBy(COMMON_FIELDS.CREATED_AT);
  *
  * summary stats are always computed from the full unfiltered dataset.
  */
-export const GET = withProviders(createRouteHandler({
+const __GET__g = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
   permission: "admin:payouts:read",
@@ -135,3 +136,5 @@ export const GET = withProviders(createRouteHandler({
   },
 }));
 
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("PAYOUTS", __GET__g);

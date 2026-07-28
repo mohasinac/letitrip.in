@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   bidRepository,
@@ -9,7 +10,7 @@ import {
 const PAGE_SIZE = 25;
 
 // rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
-export const GET = withProviders(
+const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     handler: async ({ user, request }) => {
@@ -20,3 +21,6 @@ export const GET = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("AUCTIONS", __GET__g);

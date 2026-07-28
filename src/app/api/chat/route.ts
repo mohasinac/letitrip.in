@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { normalizeError } from "@mohasinac/appkit";
 /**
  * GET  /api/chat   — list all chat rooms for the authenticated user
@@ -33,7 +34,7 @@ const CHAT_DISABLED_RESPONSE = () =>
  * Returns all chat rooms the authenticated user is participating in.
  */
 // rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
-export const GET = withProviders(createApiHandler({
+const __GET__g = withProviders(createApiHandler({
   auth: true,
   handler: async ({ user }) => {
     if (!FEATURE_FLAGS.CHAT_ENABLED) return CHAT_DISABLED_RESPONSE();
@@ -48,7 +49,7 @@ export const GET = withProviders(createApiHandler({
  * Idempotent — returns the existing room if it already exists.
  */
 // rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
-export const POST = withProviders(createApiHandler<(typeof createRoomSchema)["_output"]>({
+const __POST__g = withProviders(createApiHandler<(typeof createRoomSchema)["_output"]>({
   auth: true,
   schema: createRoomSchema,
   handler: async ({ user, body }) => {
@@ -111,3 +112,8 @@ export const POST = withProviders(createApiHandler<(typeof createRoomSchema)["_o
     return successResponse({ room }, SUCCESS_MESSAGES.CHAT.ROOM_CREATED, 201);
   },
 }));
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("CHAT", __GET__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("CHAT", __POST__g);

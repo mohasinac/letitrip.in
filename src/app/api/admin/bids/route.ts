@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 /**
  * Admin Bids API Route
@@ -9,7 +10,7 @@ import { bidRepository } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 // rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
-export const GET = withProviders(createApiHandler({
+const __GET__g = withProviders(createApiHandler({
   roles: [...ROLES_ADMIN_MOD],
   permission: "admin:bids:read",
   handler: async ({ request }) => {
@@ -35,3 +36,6 @@ export const GET = withProviders(createApiHandler({
     });
   },
 }));
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("AUCTIONS", __GET__g);

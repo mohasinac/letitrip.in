@@ -127,6 +127,10 @@ const AUDITS = [
   // no React hook, next/navigation hook, next-intl hook, or browser global.
   // RSC pages can render Client Components without the directive.
   { name: "unnecessary-use-client",         script: "scripts/audit-unnecessary-use-client.mjs" },
+  // P-1: feature-flag discipline — all FEATURE_* reads via getFlag(), route guards present
+  { name: "feature-flags",                  script: "scripts/audit-feature-flags.mjs" },
+  // P-1: no raw fetch() in UI components — use server actions or src/lib/api/ wrappers
+  { name: "direct-fetch-ui",               script: "scripts/audit-direct-fetch-ui.mjs" },
 ];
 
 function parseArgs(argv) {

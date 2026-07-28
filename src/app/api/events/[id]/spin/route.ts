@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -7,7 +8,7 @@ import {
 } from "@mohasinac/appkit/server";
 
 // rbac-scope-enforced-in-handler: auth and ownership enforced within handler
-export const POST = withProviders(
+const __POST__g = withProviders(
   createRouteHandler({
     auth: true,
     handler: async ({ params, user }) => {
@@ -28,3 +29,6 @@ export const POST = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("EVENTS", __POST__g);

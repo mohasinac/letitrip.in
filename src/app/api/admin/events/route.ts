@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   EVENT_FIELDS,
@@ -145,7 +146,7 @@ const createEventSchema = z.object({
 // ---------------------------------------------------------------------------
 // GET — list events
 // ---------------------------------------------------------------------------
-export const GET = withProviders(createRouteHandler({
+const __GET__g = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
   permission: "admin:events:read",
@@ -193,7 +194,7 @@ export const GET = withProviders(createRouteHandler({
 // ---------------------------------------------------------------------------
 // POST — create event
 // ---------------------------------------------------------------------------
-export const POST = withProviders(createRouteHandler({
+const __POST__g = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:events:write",
@@ -258,3 +259,7 @@ export const POST = withProviders(createRouteHandler({
   },
 }));
 
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("EVENTS", __GET__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("EVENTS", __POST__g);

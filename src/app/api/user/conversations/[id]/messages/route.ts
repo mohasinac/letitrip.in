@@ -8,6 +8,7 @@
  * 404 covers both "no such conversation" and "caller has no claim" so we
  * never leak conversation existence.
  */
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
@@ -27,7 +28,7 @@ const sendSchema = z.object({
 });
 
 // rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
-export const POST = withProviders(
+const __POST__g = withProviders(
   createRouteHandler<(typeof sendSchema)["_output"]>({
     auth: true,
     schema: sendSchema,
@@ -58,3 +59,6 @@ export const POST = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("CHAT", __POST__g);

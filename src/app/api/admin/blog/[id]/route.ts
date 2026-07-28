@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
@@ -36,7 +37,7 @@ const updateBlogPostSchema = z.object({
   metaDescription: z.string().optional(),
 });
 
-export const GET = withProviders(
+const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
@@ -50,7 +51,7 @@ export const GET = withProviders(
   }),
 );
 
-export const PATCH = withProviders(
+const __PATCH__g = withProviders(
   createRouteHandler<(typeof updateBlogPostSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
@@ -85,7 +86,7 @@ export const PATCH = withProviders(
   }),
 );
 
-export const DELETE = withProviders(
+const __DELETE__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
@@ -97,3 +98,10 @@ export const DELETE = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("BLOG", __GET__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const PATCH = withFeatureGuard("BLOG", __PATCH__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const DELETE = withFeatureGuard("BLOG", __DELETE__g);

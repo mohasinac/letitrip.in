@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
@@ -51,7 +52,7 @@ const updateCouponSchema = z.object({
   action: z.enum(["activate", "deactivate"]).optional(),
 });
 
-export const GET = withProviders(
+const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
@@ -71,7 +72,7 @@ export const GET = withProviders(
   }),
 );
 
-export const PATCH = withProviders(
+const __PATCH__g = withProviders(
   createRouteHandler<(typeof updateCouponSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
@@ -116,7 +117,7 @@ export const PATCH = withProviders(
   }),
 );
 
-export const DELETE = withProviders(
+const __DELETE__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
@@ -136,3 +137,10 @@ export const DELETE = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("COUPONS", __GET__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const PATCH = withFeatureGuard("COUPONS", __PATCH__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const DELETE = withFeatureGuard("COUPONS", __DELETE__g);

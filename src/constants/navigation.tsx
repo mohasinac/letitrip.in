@@ -372,23 +372,20 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
       { href: String(ROUTES.USER.PROFILE),       label: "My Profile"    },
       { href: String(ROUTES.USER.SETTINGS),      label: "Settings"      },
       { href: String(ROUTES.USER.NOTIFICATIONS), label: "Notifications" },
-      { href: String(ROUTES.USER.MESSAGES),      label: "Messages"      },
+      // Messages: hidden P-1 (FEATURE_CHAT=false) — re-add when FEATURE_CHAT enabled
     ],
-  }, 
+  },
   {
     title: "Shopping",
     items: [
-      { href: String(ROUTES.USER.ORDERS),        label: "My Orders"     },
-      { href: String(ROUTES.USER.RETURNS),        label: "Returns"       },
-      { href: String(ROUTES.USER.BIDS),           label: "My Bids"       },
-      { href: String(ROUTES.USER.PRE_ORDERS),     label: "Pre-Orders"    },
-      { href: String(ROUTES.USER.DIGITAL_CODES),  label: "Digital Codes" },
-      { href: String(ROUTES.USER.PRIZE_DRAWS),    label: "Prize Draws"   },
-      { href: String(ROUTES.USER.EVENTS),         label: "My Events"     },
-      { href: String(ROUTES.USER.REVIEWS),        label: "My Reviews"    },
-      { href: String(ROUTES.USER.OFFERS),         label: "My Offers"     },
-      { href: String(ROUTES.USER.CLAIMED_COUPONS), label: "My Coupons"   },
-      { href: String(ROUTES.USER.ADDRESSES),      label: "Addresses"     },
+      { href: String(ROUTES.USER.ORDERS),    label: "My Orders"  },
+      { href: String(ROUTES.USER.RETURNS),   label: "Returns"    },
+      { href: String(ROUTES.USER.REVIEWS),   label: "My Reviews" },
+      { href: String(ROUTES.USER.ADDRESSES), label: "Addresses"  },
+      // Disabled in P-1 (re-add when the corresponding FEATURE_* is enabled):
+      // My Bids → FEATURE_AUCTIONS, Pre-Orders → FEATURE_PREORDERS,
+      // Digital Codes, Prize Draws → FEATURE_PRIZE_DRAWS,
+      // My Events → FEATURE_EVENTS, My Offers, My Coupons → FEATURE_COUPONS
     ],
   },
   {
@@ -401,7 +398,7 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
     title: "Help",
     items: [
       { href: String(ROUTES.USER.SUPPORT), label: "Support Tickets" },
-      { href: String(ROUTES.PUBLIC.HELP), label: "Help Center" },
+      { href: String(ROUTES.PUBLIC.HELP),  label: "Help Center"     },
     ],
   },
 ];

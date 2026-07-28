@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import type { JsonValue } from "@mohasinac/appkit";
 import { z } from "zod";
@@ -24,7 +25,7 @@ const placeBidSchema = z.object({
 });
 
 // rbac-scope-enforced-in-handler: auth and ownership enforced within handler
-export const GET = withProviders(
+const __GET__g = withProviders(
   createRouteHandler({
     handler: async ({ request }) => {
       const searchParams = getSearchParams(request);
@@ -41,7 +42,7 @@ export const GET = withProviders(
 );
 
 // rbac-scope-enforced-in-handler: auth and ownership enforced within handler
-export const POST = withProviders(
+const __POST__g = withProviders(
   createRouteHandler<(typeof placeBidSchema)["_output"]>({
     auth: true,
     schema: placeBidSchema,
@@ -67,3 +68,8 @@ export const POST = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("AUCTIONS", __GET__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("AUCTIONS", __POST__g);

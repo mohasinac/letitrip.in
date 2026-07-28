@@ -17,6 +17,7 @@ import {
 import { ClientErrorReporterMount } from "@/components";
 import { siteSettingsRepository } from "@mohasinac/appkit";
 import { getDisabledRoutes } from "@mohasinac/appkit/server";
+import { getFlag } from "@/lib/features";
 import LayoutShellClient from "./LayoutShellClient";
 import QueryProvider from "./QueryProvider";
 import { LOCALE_CONFIG } from "@/constants";
@@ -67,6 +68,16 @@ export default async function Layout({ children, params }: Props) {
   // inside LayoutShellClient (built-ins + admin records + default ids).
   const siteSettingsTheme = siteSettings?.theme;
 
+  // P-1: feature flags control which public nav items are visible.
+  const navFeatureFlags = {
+    auctions: getFlag("AUCTIONS"),
+    preOrders: getFlag("PREORDERS"),
+    prizeDraws: getFlag("PRIZE_DRAWS"),
+    events: getFlag("EVENTS"),
+    blog: getFlag("BLOG"),
+    scams: getFlag("SCAM_REGISTRY"),
+  };
+
   return (
     <QueryProvider>
       <NextIntlClientProvider
@@ -85,7 +96,7 @@ export default async function Layout({ children, params }: Props) {
             <BottomActionsProvider>
               <DashboardNavProvider>
                 <LayoutClient>
-                  <LayoutShellClient seedPanelEnabled={seedPanelEnabled} siteLogoUrl={siteLogoUrl} siteSettingsTheme={siteSettingsTheme}><Suspense>{children}</Suspense></LayoutShellClient>
+                  <LayoutShellClient seedPanelEnabled={seedPanelEnabled} siteLogoUrl={siteLogoUrl} siteSettingsTheme={siteSettingsTheme} navFeatureFlags={navFeatureFlags}><Suspense>{children}</Suspense></LayoutShellClient>
                 </LayoutClient>
               </DashboardNavProvider>
             </BottomActionsProvider>

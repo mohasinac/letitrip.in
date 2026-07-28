@@ -4,6 +4,7 @@
  * Auth delegated to `resolveConversationRole` so all conversation routes
  * share one set of rules.
  */
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -15,7 +16,7 @@ import {
 import { resolveConversationRole } from "@/lib/conversations/authorise";
 
 // rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
-export const GET = withProviders(
+const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     handler: async ({ user, params }) => {
@@ -32,3 +33,6 @@ export const GET = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("CHAT", __GET__g);

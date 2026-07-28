@@ -4,6 +4,7 @@
  * Validates no pending payout exists and that earnings are available.
  */
 
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
@@ -19,7 +20,7 @@ const requestPayoutSchema = z.object({
 });
 
 // rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
-export const POST = withProviders(createRouteHandler<{ paymentMethod: "bank_transfer" | "upi"; notes?: string }>({
+const __POST__g = withProviders(createRouteHandler<{ paymentMethod: "bank_transfer" | "upi"; notes?: string }>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
     permission: "store:api:write",
@@ -39,3 +40,6 @@ export const POST = withProviders(createRouteHandler<{ paymentMethod: "bank_tran
     return successResponse({ payout }, "Payout request submitted successfully.");
   },
 }));
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("PAYOUTS", __POST__g);

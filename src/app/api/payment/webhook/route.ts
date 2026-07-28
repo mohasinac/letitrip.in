@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { normalizeError } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
 /**
@@ -59,7 +60,7 @@ export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
 // rbac-public: public endpoint — no authentication required
-export async function POST(request: NextRequest) {
+async function __POST__g(request: NextRequest) {
   try {
     const rawBody = await request.text();
     const signature = request.headers.get("x-razorpay-signature") ?? "";
@@ -158,3 +159,6 @@ export async function POST(request: NextRequest) {
     return handleApiError(error);
   }
 }
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("RAZORPAY", __POST__g);

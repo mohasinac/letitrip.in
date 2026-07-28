@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 /**
  * Seller Payouts API
@@ -51,7 +52,7 @@ async function computeSellerEarnings(storeId: string) {
 
 // --- GET — List payouts + earnings summary ---------------------------------
 
-export const GET = withProviders(createRouteHandler({
+const __GET__g = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
   permission: "store:api:write",
@@ -130,3 +131,5 @@ export const GET = withProviders(createRouteHandler({
   },
 }));
 
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("PAYOUTS", __GET__g);

@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 /**
  * Pre-Order Deposit Payment
@@ -52,7 +53,7 @@ const preorderDepositSchema = z.object({
 });
 
 // rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
-export const POST = withProviders(createRouteHandler<
+const __POST__g = withProviders(createRouteHandler<
   (typeof preorderDepositSchema)["_output"]
 >({
   auth: true,
@@ -168,3 +169,6 @@ export const POST = withProviders(createRouteHandler<
     return successResponse({ orderId: order.id });
   },
 }));
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("RAZORPAY", __POST__g);

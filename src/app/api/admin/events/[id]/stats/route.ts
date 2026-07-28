@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   EVENT_FIELDS,
@@ -13,7 +14,7 @@ import {
   SIEVE_OP,
 } from "@mohasinac/appkit";
 
-export const GET = withProviders(
+const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
@@ -41,3 +42,6 @@ export const GET = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("EVENTS", __GET__g);

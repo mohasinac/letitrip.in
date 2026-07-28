@@ -320,6 +320,12 @@ const checks = [
   { label: "audit-finalize-magic-bytes", cmd: "node", args: ["scripts/audit-finalize-magic-bytes.mjs"], cwd: ROOT },
   { label: "audit-storage-rules-shape", cmd: "node", args: ["scripts/audit-storage-rules-shape.mjs"], cwd: ROOT },
   { label: "audit-unnecessary-use-client", cmd: "node", args: ["scripts/audit-unnecessary-use-client.mjs"], cwd: ROOT },
+  // ── P-1: feature-flag discipline (strict-zero) ───────────────────────────
+  { label: "audit-feature-flags",   cmd: "node", args: ["scripts/audit-feature-flags.mjs"],   cwd: ROOT },
+  // NOTE: audit-direct-fetch-ui is in run-audits.mjs (so npm run check catches it)
+  // but NOT in the stop hook — 96 pre-existing violations across non-P1 features
+  // must be fixed by Group K before it moves here. Adding to stop hook too early
+  // would block every Claude turn on known pre-existing issues.
 ];
 
 // Baseline violation counts — strict-zero. All three audits verified clean ✓

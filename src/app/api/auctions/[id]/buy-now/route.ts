@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -12,7 +13,7 @@ import {
 import { isSoftBanned } from "@mohasinac/appkit/server";
 
 // rbac-scope-enforced-in-handler: auth and ownership enforced within handler
-export const POST = withProviders(
+const __POST__g = withProviders(
   createRouteHandler({
     auth: true,
     handler: async ({ user, params }) => {
@@ -45,3 +46,6 @@ export const POST = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("AUCTIONS", __POST__g);

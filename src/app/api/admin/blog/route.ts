@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 /**
  * Admin Blog API Route
@@ -66,7 +67,7 @@ const createBlogPostSchema = z.object({
  * meta.total / published / drafts / featured are always computed from the
  * full unfiltered dataset so stat cards remain accurate regardless of filter.
  */
-export const GET = withProviders(createRouteHandler({
+const __GET__g = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
   permission: "admin:blog:read",
@@ -147,7 +148,7 @@ export const GET = withProviders(createRouteHandler({
 /**
  * POST /api/admin/blog — Create a new blog post
  */
-export const POST = withProviders(createRouteHandler({
+const __POST__g = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
   permission: "admin:blog:write",
@@ -186,3 +187,7 @@ export const POST = withProviders(createRouteHandler({
   },
 }));
 
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("BLOG", __GET__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("BLOG", __POST__g);

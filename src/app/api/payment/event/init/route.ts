@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 /**
  * POST /api/payment/event/init
@@ -48,7 +49,7 @@ const bodySchema = z.object({
 });
 
 // rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
-export const POST = withProviders(createRouteHandler<(typeof bodySchema)["_output"]>({
+const __POST__g = withProviders(createRouteHandler<(typeof bodySchema)["_output"]>({
   auth: true,
   schema: bodySchema,
   handler: async ({ request, user, body }) => {
@@ -87,3 +88,6 @@ export const POST = withProviders(createRouteHandler<(typeof bodySchema)["_outpu
     });
   },
 }));
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("RAZORPAY", __POST__g);

@@ -1,9 +1,10 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, successResponse, ApiErrors, sortBy, sieveFilter, sieveAnd, SIEVE_OP, BID_FIELDS, PRODUCT_FIELDS, COMMON_FIELDS } from "@mohasinac/appkit";
 import { bidRepository, productRepository, storeRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_READ } from "@/constants";
 
-export const GET = withProviders(createRouteHandler({
+const __GET__g = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_READ],
   permission: "store:api:write",
@@ -61,3 +62,6 @@ export const GET = withProviders(createRouteHandler({
     });
   },
 }));
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("AUCTIONS", __GET__g);

@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { normalizeError } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
 import { NextResponse } from "next/server";
@@ -111,4 +112,7 @@ async function _GET(
 }
 
 // rbac-scope-enforced-in-handler: per-verb auth enforced within handler
-export const GET = withProviders(_GET);
+const __GET__g = withProviders(_GET);
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("AUCTIONS", __GET__g);

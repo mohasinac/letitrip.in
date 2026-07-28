@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   EVENT_FIELDS,
@@ -22,7 +23,7 @@ const updateEventSchema = z.object({
   status: z.string().optional(),
 }).passthrough();
 
-export const GET = withProviders(
+const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
@@ -37,7 +38,7 @@ export const GET = withProviders(
   }),
 );
 
-export const PATCH = withProviders(
+const __PATCH__g = withProviders(
   createRouteHandler<(typeof updateEventSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
@@ -57,7 +58,7 @@ export const PATCH = withProviders(
   }),
 );
 
-export const DELETE = withProviders(
+const __DELETE__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
@@ -69,3 +70,10 @@ export const DELETE = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("EVENTS", __GET__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const PATCH = withFeatureGuard("EVENTS", __PATCH__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const DELETE = withFeatureGuard("EVENTS", __DELETE__g);

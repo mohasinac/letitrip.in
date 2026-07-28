@@ -3,6 +3,7 @@
  * counter and flip `isRead` on inbound messages. Same auth + RTDB ping
  * fan-out as the send-message route.
  */
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -16,7 +17,7 @@ import {
 import { resolveConversationRole } from "@/lib/conversations/authorise";
 
 // rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
-export const POST = withProviders(
+const __POST__g = withProviders(
   createRouteHandler({
     auth: true,
     handler: async ({ user, params }) => {
@@ -40,3 +41,6 @@ export const POST = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("CHAT", __POST__g);

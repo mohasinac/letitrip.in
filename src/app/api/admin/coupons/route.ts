@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 /**
  * Admin Coupons API Route
@@ -66,7 +67,7 @@ const couponCreateSchema = z.object({
 /**
  * GET /api/admin/coupons
  */
-export const GET = withProviders(createRouteHandler({
+const __GET__g = withProviders(createRouteHandler({
   roles: [...ROLES_ADMIN_MOD],
   permission: "admin:coupons:read",
   handler: async ({ request }) => {
@@ -101,7 +102,7 @@ export const GET = withProviders(createRouteHandler({
 /**
  * POST /api/admin/coupons
  */
-export const POST = withProviders(createRouteHandler({
+const __POST__g = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:coupons:write",
@@ -137,3 +138,7 @@ export const POST = withProviders(createRouteHandler({
   },
 }));
 
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("COUPONS", __GET__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("COUPONS", __POST__g);

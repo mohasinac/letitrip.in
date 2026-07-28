@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   sendChatMessage,
@@ -13,7 +14,7 @@ const messageSchema = z.object({
 // GET messages are read directly from Firebase RTDB on the client via real-time subscription.
 // This POST handler is the server-side entry point for sending a new message.
 // rbac-scope-enforced-in-handler: auth and ownership enforced within handler
-export const POST = withProviders(
+const __POST__g = withProviders(
   createRouteHandler({
     auth: true,
     schema: messageSchema,
@@ -24,3 +25,6 @@ export const POST = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("CHAT", __POST__g);

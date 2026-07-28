@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   PAYOUT_FIELDS,
@@ -47,7 +48,7 @@ const PLATFORM_COMMISSION_RATE = 0.05; // 5 %
 
 // --- Route --------------------------------------------------------------------
 
-export const POST = withProviders(createRouteHandler({
+const __POST__g = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:payouts:write",
@@ -201,3 +202,5 @@ export const POST = withProviders(createRouteHandler({
   },
 }));
 
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("PAYOUTS", __POST__g);

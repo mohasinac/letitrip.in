@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -8,7 +9,7 @@ import {
 } from "@mohasinac/appkit";
 
 // rbac-scope-enforced-in-handler: auth and ownership enforced within handler
-export const GET = withProviders(
+const __GET__g = withProviders(
   createRouteHandler({
     handler: async ({ request, params }) => {
       const productId = (params as { id: string }).id;
@@ -21,3 +22,6 @@ export const GET = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("AUCTIONS", __GET__g);

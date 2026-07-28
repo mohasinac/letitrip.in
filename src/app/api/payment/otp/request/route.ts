@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 /**
  * Payment OTP - Request Gate
@@ -27,7 +28,7 @@ function getTodayIST(): string {
 }
 
 // rbac-scope-enforced-in-handler: auth and ownership enforced within handler
-export const POST = withProviders(createRouteHandler({
+const __POST__g = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     // 1. Per-user 15-minute cooldown — checked via Firestore so it persists across
@@ -65,3 +66,6 @@ export const POST = withProviders(createRouteHandler({
     return successResponse({ allowed: true, count });
   },
 }));
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("RAZORPAY", __POST__g);

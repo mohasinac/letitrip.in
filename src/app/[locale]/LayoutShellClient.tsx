@@ -102,6 +102,7 @@ export default function LayoutShellClient({
   seedPanelEnabled = true,
   siteLogoUrl,
   siteSettingsTheme,
+  navFeatureFlags,
 }: {
   children: ReactNode;
   seedPanelEnabled?: boolean;
@@ -112,6 +113,15 @@ export default function LayoutShellClient({
    * built-ins and the active default is picked by user mode.
    */
   siteSettingsTheme?: SiteSettingsThemeInput;
+  /** P-1 feature flags — controls which public nav items are rendered. */
+  navFeatureFlags?: {
+    auctions?: boolean;
+    preOrders?: boolean;
+    prizeDraws?: boolean;
+    events?: boolean;
+    blog?: boolean;
+    scams?: boolean;
+  };
 }) {
   const themeRegistry = useMemo(
     () => buildThemeRegistry(siteSettingsTheme),
@@ -150,15 +160,19 @@ export default function LayoutShellClient({
   const navItems = useMemo<MainNavbarItem[]>(
     () =>
       MAIN_NAV_ITEMS
-        // W1-43: hide listing-type-specific nav items when the type is disabled in siteSettings.
+        // P-1: hide items behind feature flags (env-var gates passed from server layout).
+        // W1-43: also hide listing-type items when the type is disabled in siteSettings.
         .filter((item) => {
-          if (item.key === "auctions") return listingTypeFlags.auction;
-          if (item.key === "preOrders") return listingTypeFlags["pre-order"];
-          if (item.key === "prizeDraws") return listingTypeFlags["prize-draw"];
+          if (item.key === "auctions")   return (navFeatureFlags?.auctions ?? true) && listingTypeFlags.auction;
+          if (item.key === "preOrders")  return (navFeatureFlags?.preOrders ?? true) && listingTypeFlags["pre-order"];
+          if (item.key === "prizeDraws") return (navFeatureFlags?.prizeDraws ?? true) && listingTypeFlags["prize-draw"];
+          if (item.key === "events")     return navFeatureFlags?.events ?? true;
+          if (item.key === "blog")       return navFeatureFlags?.blog ?? true;
+          if (item.key === "scams")      return navFeatureFlags?.scams ?? true;
           return true;
         })
         .map((item) => ({ ...item, label: tNav(item.key as Parameters<typeof tNav>[0]) })),
-    [tNav, listingTypeFlags],
+    [tNav, listingTypeFlags, navFeatureFlags],
   );
 
   // Sidebar sections: BROWSE (nav items) + SUPPORT

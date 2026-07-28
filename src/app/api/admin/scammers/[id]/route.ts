@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
@@ -16,7 +17,7 @@ const patchSchema = z.object({
   verificationNote: z.string().optional(),
 });
 
-export const GET = withProviders(
+const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: ROLES_TRUST_SAFETY,
@@ -30,7 +31,7 @@ export const GET = withProviders(
   }),
 );
 
-export const PATCH = withProviders(
+const __PATCH__g = withProviders(
   createRouteHandler<(typeof patchSchema)["_output"]>({
     auth: true,
     roles: ROLES_TRUST_SAFETY,
@@ -62,7 +63,7 @@ export const PATCH = withProviders(
 );
 
 // Hard delete — admin only; employees may only update status (PATCH above).
-export const DELETE = withProviders(
+const __DELETE__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: ROLES_ADMIN_ONLY,
@@ -75,3 +76,10 @@ export const DELETE = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("SCAM_REGISTRY", __GET__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const PATCH = withFeatureGuard("SCAM_REGISTRY", __PATCH__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const DELETE = withFeatureGuard("SCAM_REGISTRY", __DELETE__g);

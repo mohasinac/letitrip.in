@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
@@ -22,7 +23,7 @@ const createCouponSchema = z.object({
   applicableCategories: z.array(z.string()).optional(),
 });
 
-export const GET = withProviders(createRouteHandler({
+const __GET__g = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_READ],
   permission: "store:api:write",
@@ -44,7 +45,7 @@ export const GET = withProviders(createRouteHandler({
   },
 }));
 
-export const POST = withProviders(createRouteHandler<(typeof createCouponSchema)["_output"]>({
+const __POST__g = withProviders(createRouteHandler<(typeof createCouponSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
   permission: "store:api:write",
@@ -89,3 +90,7 @@ export const POST = withProviders(createRouteHandler<(typeof createCouponSchema)
   },
 }));
 
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("COUPONS", __GET__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("COUPONS", __POST__g);

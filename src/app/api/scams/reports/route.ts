@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { createRouteHandler, successResponse } from "@mohasinac/appkit";
@@ -27,7 +28,7 @@ function parseCommaSeparated(raw: string): string[] {
 }
 
 // rbac-public: public endpoint — no authentication required
-export const POST = withProviders(
+const __POST__g = withProviders(
   createRouteHandler<(typeof createReportSchema)["_output"]>({
     auth: true,
     schema: createReportSchema,
@@ -83,3 +84,6 @@ export const POST = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const POST = withFeatureGuard("SCAM_REGISTRY", __POST__g);

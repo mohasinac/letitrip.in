@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   chatRepository,
@@ -7,7 +8,7 @@ import {
 } from "@mohasinac/appkit";
 
 // rbac-scope-enforced-in-handler: auth and ownership enforced within handler
-export const GET = withProviders(
+const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     handler: async ({ user, params }) => {
@@ -23,7 +24,7 @@ export const GET = withProviders(
 );
 
 // rbac-scope-enforced-in-handler: auth and ownership enforced within handler
-export const DELETE = withProviders(
+const __DELETE__g = withProviders(
   createRouteHandler({
     auth: true,
     handler: async ({ user, params }) => {
@@ -33,3 +34,8 @@ export const DELETE = withProviders(
     },
   }),
 );
+
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const GET = withFeatureGuard("CHAT", __GET__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const DELETE = withFeatureGuard("CHAT", __DELETE__g);
