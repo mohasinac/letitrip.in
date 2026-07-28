@@ -72,8 +72,8 @@ check(
 check(
   "Cohort 1 · DashboardLayoutClient widens padding + centers wide screens",
   join(APPKIT, "src/_internal/client/features/layout/DashboardLayoutClient.tsx"),
-  "md:pl-14",
-  "lg:pl-16",
+  "lg:pl-14",
+  "xl:pl-16",
   "max-w-screen-2xl",
 );
 
