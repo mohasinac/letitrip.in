@@ -53,14 +53,14 @@ export async function POST(request: NextRequest) {
     });
   } catch (rtdbErr) {
     void normalizeError(rtdbErr);
-    serverLogger.error("RTDB unavailable — seed event node not created", {
+    serverLogger.warn("RTDB unavailable — seed will run without live progress updates", {
       runId,
       rtdbErr,
     });
-    return NextResponse.json(
-      { success: false, message: "Realtime channel unavailable." },
-      { status: 503 },
-    );
+    return NextResponse.json({
+      success: true,
+      data: { runId: null, customToken: null, expiresAt: null },
+    });
   }
 
   const syntheticUid = `seed_event_${runId}`;

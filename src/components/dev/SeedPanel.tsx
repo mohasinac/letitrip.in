@@ -2152,6 +2152,39 @@ function subscribeToSeedRun(
   });
 }
 
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+interface SeedProgressEvent {
+  type: string;
+  collection: string;
+  status: "running" | "done" | "error";
+  done?: number;
+  total?: number;
+  error?: string;
+}
+
+function applyFinalEvents(events: SeedProgressEvent[]): {
+  newStates: Record<string, ColRunState>;
+  newErrors: Record<string, string>;
+  doneCount: number;
+} {
+  const newStates: Record<string, ColRunState> = {};
+  const newErrors: Record<string, string> = {};
+  let doneCount = 0;
+  for (const ev of events) {
+    if (ev.type !== "progress") continue;
+    if (ev.status === "done") {
+      newStates[ev.collection] = "done";
+      if (typeof ev.done === "number") doneCount = ev.done;
+    } else if (ev.status === "error") {
+      newStates[ev.collection] = "error";
+      if (typeof ev.error === "string") newErrors[ev.collection] = ev.error;
+      if (typeof ev.done === "number") doneCount = ev.done;
+    }
+  }
+  return { newStates, newErrors, doneCount };
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function SeedPanel() {
@@ -2246,7 +2279,7 @@ export function SeedPanel() {
         return;
       }
 
-      // 1. Mint a per-run RTDB token.
+      // 1. Mint a per-run RTDB token (may return runId:null when RTDB is unavailable).
       const initRes = await fetch(API_ROUTES.DEMO.SEED_EVENT_INIT, { method: "POST" });
       const initData = await initRes.json().catch(() => ({ success: false }));
       if (!initRes.ok || !initData?.success) {
@@ -2255,29 +2288,30 @@ export function SeedPanel() {
         setColErrors(Object.fromEntries(queue.map((c) => [c, msg])));
         return;
       }
-      const { runId, customToken } = initData.data as { runId: string; customToken: string };
+      const { runId, customToken } = initData.data as { runId: string | null; customToken: string | null };
 
-      // 2. Authenticate the realtime provider with the per-run custom token
-      //    and subscribe to /seed_events/{runId}.
-      const provider = getClientRealtimeProvider();
-      try {
-        await provider.signInWithToken(customToken);
-      } catch (signInErr) {
-        void normalizeError(signInErr);
-        const msg = signInErr instanceof Error ? signInErr.message : "Realtime sign-in failed";
-        setColRunStates(Object.fromEntries(queue.map((c) => [c, "error" as ColRunState])));
-        setColErrors(Object.fromEntries(queue.map((c) => [c, msg])));
-        return;
+      // 2. Authenticate the realtime provider and subscribe for live updates.
+      //    Skipped when RTDB is unavailable (runId === null).
+      if (runId && customToken) {
+        const provider = getClientRealtimeProvider();
+        try {
+          await provider.signInWithToken(customToken);
+        } catch (signInErr) {
+          void normalizeError(signInErr);
+          const msg = signInErr instanceof Error ? signInErr.message : "Realtime sign-in failed";
+          setColRunStates(Object.fromEntries(queue.map((c) => [c, "error" as ColRunState])));
+          setColErrors(Object.fromEntries(queue.map((c) => [c, msg])));
+          return;
+        }
+        unsubscribeRef.current?.();
+        unsubscribeRef.current = subscribeToSeedRun(runId, setColRunStates, setColErrors, setCompletedCount);
       }
-      unsubscribeRef.current?.();
-      unsubscribeRef.current = subscribeToSeedRun(runId, setColRunStates, setColErrors, setCompletedCount);
 
-      // 3. Kick off the seed.  Server writes per-collection progress to RTDB
-      //    as it works and returns a summary when finished.
+      // 3. Kick off the seed. Omit runId when RTDB is unavailable.
       const res = await fetch(API_ROUTES.DEMO.SEED, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, collections: queue, dryRun: false, runId }),
+        body: JSON.stringify({ action, collections: queue, dryRun: false, ...(runId ? { runId } : {}) }),
       });
 
       if (!res.ok) {
@@ -2286,9 +2320,21 @@ export function SeedPanel() {
         setColErrors(Object.fromEntries(queue.map((c) => [c, err.message ?? "Request failed"])));
         return;
       }
-      // Final summary is also captured live via RTDB; we ignore the body here
-      // except to surface a transport-level failure above.
-      await res.json().catch(() => null);
+
+      const body = await res.json().catch(() => null);
+
+      // When RTDB is unavailable (no runId), process the events array from the final
+      // JSON response to update per-collection states synchronously after the run.
+      if (!runId && body?.data?.events) {
+        const { newStates, newErrors, doneCount } = applyFinalEvents(
+          body.data.events as SeedProgressEvent[],
+        );
+        setColRunStates((prev) => ({ ...prev, ...newStates }));
+        if (Object.keys(newErrors).length > 0) {
+          setColErrors((prev) => ({ ...prev, ...newErrors }));
+        }
+        setCompletedCount(doneCount);
+      }
     } catch (err) {
       void normalizeError(err);
       const msg = err instanceof Error ? err.message : "Network error";

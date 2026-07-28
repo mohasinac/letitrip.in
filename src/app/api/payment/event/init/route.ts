@@ -31,7 +31,7 @@ import { withProviders } from "@/providers.config";
  *  6. usePaymentEvent.status → 'success' → UI navigates to order confirmation
  */
 
-import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit";
+import { getAdminAuth, getAdminRealtimeDb, normalizeError } from "@mohasinac/appkit";
 import { successResponse, errorResponse } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
@@ -56,9 +56,19 @@ export const POST = withProviders(createRouteHandler<(typeof bodySchema)["_outpu
     if (!rl.success) return errorResponse("Too many requests", 429);
     const { razorpayOrderId } = body!;
     const db = getAdminRealtimeDb();
-    await db
-      .ref(`${RTDB_PATHS.PAYMENT_EVENTS}/${razorpayOrderId}`)
-      .set({ status: "pending", uid: user!.uid, createdAt: Date.now() });
+    let rtdbEnabled = true;
+    try {
+      await db
+        .ref(`${RTDB_PATHS.PAYMENT_EVENTS}/${razorpayOrderId}`)
+        .set({ status: "pending", uid: user!.uid, createdAt: Date.now() });
+    } catch (rtdbErr) {
+      void normalizeError(rtdbErr);
+      serverLogger.warn("Payment event RTDB write failed — live status updates unavailable", {
+        razorpayOrderId,
+        rtdbErr,
+      });
+      rtdbEnabled = false;
+    }
     const syntheticUid = `payment_event_${razorpayOrderId}`;
     const customToken = await getAdminAuth().createCustomToken(syntheticUid, {
       paymentEventId: razorpayOrderId,
@@ -67,11 +77,13 @@ export const POST = withProviders(createRouteHandler<(typeof bodySchema)["_outpu
     serverLogger.info("Payment event initialised", {
       razorpayOrderId,
       uid: user!.uid,
+      rtdbEnabled,
     });
     return successResponse({
       eventId: razorpayOrderId,
       customToken,
       expiresAt,
+      rtdbEnabled,
     });
   },
 }));

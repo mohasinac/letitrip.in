@@ -49,16 +49,22 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Verify the event node exists and is still pending
-    const db = getAdminRealtimeDb();
-    const snap = await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).get();
-    if (!snap.exists() || snap.val()?.status !== RTDBPayloadStatus.PENDING) {
-      serverLogger.warn("Google OAuth start: event not found or expired", {
-        eventId,
-      });
-      return NextResponse.redirect(
-        new URL(`/auth/close?error=event_expired`, request.nextUrl.origin),
-      );
+    // Verify the event node exists and is still pending (anti-replay).
+    // If RTDB is unavailable, skip the check — the callback validates state independently.
+    try {
+      const db = getAdminRealtimeDb();
+      const snap = await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).get();
+      if (!snap.exists() || snap.val()?.status !== RTDBPayloadStatus.PENDING) {
+        serverLogger.warn("Google OAuth start: event not found or expired", {
+          eventId,
+        });
+        return NextResponse.redirect(
+          new URL(`/auth/close?error=event_expired`, request.nextUrl.origin),
+        );
+      }
+    } catch (rtdbErr) {
+      void normalizeError(rtdbErr);
+      serverLogger.warn("Google OAuth start: RTDB unavailable, skipping anti-replay check", { eventId });
     }
 
     const clientId = process.env.GOOGLE_CLIENT_ID?.trim();
