@@ -82,6 +82,7 @@ export default function Page() {
   const [topProducts, setTopProducts] = useState<TopProduct[]>([]);
 
   useEffect(() => {
+    // audit-direct-fetch-ok: store analytics summary; no server action yet
     fetch(API_ROUTES.STORE.ANALYTICS)
       .then((r) => r.json())
       .then((json) => { if (json?.data?.topProducts) setTopProducts(json.data.topProducts); })

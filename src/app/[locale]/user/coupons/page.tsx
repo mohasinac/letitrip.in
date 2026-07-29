@@ -121,6 +121,7 @@ export default function ClaimedCouponsPage() {
     queryKey: ["user-coupons", user?.uid],
     enabled: !!user?.uid,
     queryFn: async () => {
+      // audit-direct-fetch-ok: FEATURE_COUPONS=false in P-1
       const res = await fetch("/api/user/coupons", { credentials: "include" });
       if (!res.ok) throw new Error("Failed to load coupons");
       return res.json();
@@ -138,6 +139,7 @@ export default function ClaimedCouponsPage() {
 
   const handleRemove = async (id: string) => {
     try {
+      // audit-direct-fetch-ok: FEATURE_COUPONS=false in P-1
       const res = await fetch(`/api/user/coupons/${id}`, {
         method: "DELETE",
         credentials: "include",

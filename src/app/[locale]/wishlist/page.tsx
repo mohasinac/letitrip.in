@@ -20,12 +20,13 @@ import {
   isPreOrderListing,
   useAuthGate,
   ACTION_ID,
+  ACTIONS,
   LoginRequiredModal,
   useBottomActions,
 } from "@mohasinac/appkit/client";
 import type { EnrichedWishlistItem } from "@mohasinac/appkit/client";
 import { Span } from "@mohasinac/appkit/ui";
-import { removeFromWishlistAction } from "@/actions/wishlist.actions";
+import { removeFromWishlistAction, addWishlistItemToCartAction } from "@/actions/wishlist.actions";
 
 const __P = {
   p4: "p-4",
@@ -70,6 +71,7 @@ export default function WishlistPage() {
   const [sort, setSort] = useState("-addedAt");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBulkRemoving, setIsBulkRemoving] = useState(false);
+  const [isBulkAddingToCart, setIsBulkAddingToCart] = useState(false);
 
   const toggleSelect = (id: string, next: boolean) => {
     setSelectedIds((prev) => {
@@ -112,6 +114,19 @@ export default function WishlistPage() {
     }
   }, [selectedIds, isBulkRemoving, user?.uid, wl, showToast]);
 
+  const handleAddSelectedToCart = useCallback(async () => {
+    if (selectedIds.size === 0 || isBulkAddingToCart) return;
+    const ids = Array.from(selectedIds);
+    setIsBulkAddingToCart(true);
+    const results = await Promise.allSettled(ids.map((id) => addWishlistItemToCartAction(id)));
+    const added = results.filter((r) => r.status === "fulfilled").length;
+    const failed = ids.length - added;
+    clearSelection();
+    if (added > 0) showToast(`${added} item${added !== 1 ? "s" : ""} added to cart.`, "success");
+    if (failed > 0) showToast(`${failed} item${failed !== 1 ? "s" : ""} could not be added.`, "error");
+    setIsBulkAddingToCart(false);
+  }, [selectedIds, isBulkAddingToCart, showToast]);
+
   const handleRemoveAll = useCallback(async () => {
     if (wl.items.length === 0 || isBulkRemoving) return;
     const count = wl.items.length;
@@ -148,6 +163,7 @@ export default function WishlistPage() {
 
     void (async () => {
       try {
+        // audit-direct-fetch-ok: best-effort stale validation in useEffect, no loading state needed
         const res = await fetch("/api/user/wishlist/validate", {
           method: "POST",
           credentials: "include",
@@ -239,10 +255,17 @@ export default function WishlistPage() {
             onClearSelection: clearSelection,
             actions: [
               {
+                id: ACTIONS.USER["wishlist-bulk-move-to-cart"].id,
+                label: isBulkAddingToCart ? "Adding…" : ACTIONS.USER["wishlist-bulk-move-to-cart"].label,
+                variant: "primary",
+                disabled: isBulkAddingToCart || isBulkRemoving,
+                onClick: handleAddSelectedToCart,
+              },
+              {
                 id: ACTION_ID.REMOVE_FROM_WISHLIST,
                 label: isBulkRemoving ? "Removing…" : `Remove ${selectedIds.size}`,
                 variant: "danger",
-                disabled: isBulkRemoving,
+                disabled: isBulkRemoving || isBulkAddingToCart,
                 onClick: handleRemoveSelected,
               },
             ],
@@ -254,7 +277,7 @@ export default function WishlistPage() {
   return (
     <>
     <ListingLayout
-      headerSlot={renderWishlistHeader({ isLoading, wl, selectedIds, isBulkRemoving, handleRemoveSelected, clearSelection, handleRemoveAll })}
+      headerSlot={renderWishlistHeader({ isLoading, wl, selectedIds, isBulkRemoving, isBulkAddingToCart, handleRemoveSelected, handleAddSelectedToCart, clearSelection, handleRemoveAll })}
       searchSlot={<Input placeholder="Search wishlist…" value={search} onChange={(e) => setSearch(e.target.value)} className="h-9 text-sm" />}
       sortSlot={<Select options={SORT_OPTIONS} value={sort} onValueChange={setSort} className="h-9 text-sm min-w-[160px]" />}
       filterContent={renderWishlistFilterContent({ pending, setPending })}
@@ -273,16 +296,19 @@ export default function WishlistPage() {
 // ─── Sub-renderers ────────────────────────────────────────────────────────────
 
 function renderWishlistHeader({
-  isLoading, wl, selectedIds, isBulkRemoving, handleRemoveSelected, clearSelection, handleRemoveAll,
+  isLoading, wl, selectedIds, isBulkRemoving, isBulkAddingToCart, handleRemoveSelected, handleAddSelectedToCart, clearSelection, handleRemoveAll,
 }: {
   isLoading: boolean;
   wl: ReturnType<typeof useWishlistWithGuest>;
   selectedIds: Set<string>;
   isBulkRemoving: boolean;
+  isBulkAddingToCart: boolean;
   handleRemoveSelected: () => void;
+  handleAddSelectedToCart: () => void;
   clearSelection: () => void;
   handleRemoveAll: () => void;
 }) {
+  const busy = isBulkRemoving || isBulkAddingToCart;
   return (
     <Div>
       <Row gap="sm" wrap>
@@ -293,14 +319,17 @@ function renderWishlistHeader({
           {selectedIds.size > 0 && (
             <>
               <Text size="sm" color="muted">{selectedIds.size} selected</Text>
-              <Button variant="ghost" size="sm" onClick={handleRemoveSelected} disabled={isBulkRemoving} className="text-error hover:opacity-80 hover:bg-error-surface">
+              <Button variant="primary" size="sm" onClick={handleAddSelectedToCart} disabled={busy}>
+                {isBulkAddingToCart ? "Adding…" : "Add to cart"}
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleRemoveSelected} disabled={busy} className="text-error hover:opacity-80 hover:bg-error-surface">
                 {isBulkRemoving ? "Removing…" : "Remove selected"}
               </Button>
-              <Button variant="ghost" size="sm" onClick={clearSelection} disabled={isBulkRemoving}>Deselect</Button>
+              <Button variant="ghost" size="sm" onClick={clearSelection} disabled={busy}>Deselect</Button>
             </>
           )}
           {!isLoading && wl.total > 0 && selectedIds.size === 0 && (
-            <Button variant="ghost" size="sm" onClick={handleRemoveAll} disabled={isBulkRemoving} className="text-error hover:opacity-80 hover:bg-error-surface">
+            <Button variant="ghost" size="sm" onClick={handleRemoveAll} disabled={busy} className="text-error hover:opacity-80 hover:bg-error-surface">
               {isBulkRemoving ? "Clearing…" : "Remove all"}
             </Button>
           )}

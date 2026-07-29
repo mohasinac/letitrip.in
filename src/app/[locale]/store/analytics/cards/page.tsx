@@ -24,6 +24,7 @@ export default function Page() {
 
   const load = () => {
     setLoading(true);
+    // audit-direct-fetch-ok: store analytics; no server action in appkit yet
     fetch(API_ROUTES.STORE.ANALYTICS_CARDS)
       .then((r) => r.json())
       .then((j) => setItems(j?.data?.items ?? []))
@@ -33,6 +34,7 @@ export default function Page() {
   useEffect(load, []);
 
   const toggle = async (id: string, current: boolean) => {
+    // audit-direct-fetch-ok: store analytics; no server action in appkit yet
     const res = await fetch(API_ROUTES.STORE.ANALYTICS_CARD_BY_ID(id), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },

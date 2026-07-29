@@ -1,0 +1,40 @@
+// NOT "use client" — typed REST wrappers for payment routes.
+// Imported from "use client" components; audit-direct-fetch-ui ignores /lib/api/.
+
+const JSON_HEADERS = { "Content-Type": "application/json" } as const;
+const CREDS = "include" as const;
+
+export interface AttachProofBody {
+  proofUrl: string;
+  transactionId?: string;
+  mimeType?: string;
+}
+
+export interface AttachProofResult {
+  ok: boolean;
+  code?: string;
+  error?: string;
+}
+
+export async function attachPaymentProof(
+  orderId: string,
+  body: AttachProofBody,
+): Promise<AttachProofResult> {
+  const res = await fetch(`/api/orders/${orderId}/payment-proof`, {
+    method: "POST",
+    headers: JSON_HEADERS,
+    credentials: CREDS,
+    body: JSON.stringify(body),
+  });
+  const json = await res.json().catch(() => ({})) as Omit<AttachProofResult, "ok">;
+  return { ok: res.ok, ...json };
+}
+
+export async function createCheckoutOrder(body: unknown): Promise<Response> {
+  return fetch("/api/checkout", {
+    method: "POST",
+    headers: JSON_HEADERS,
+    credentials: CREDS,
+    body: JSON.stringify(body),
+  });
+}

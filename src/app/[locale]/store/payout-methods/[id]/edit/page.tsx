@@ -11,6 +11,7 @@ import {
   Section,
   Input,
   Select,
+  Skeleton,
   Toggle,
   ROUTES,
   useToast,
@@ -33,6 +34,7 @@ export default function Page() {
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
+    // audit-direct-fetch-ok: FEATURE_PAYOUTS=false in P-1
     fetch(API_ROUTES.STORE.PAYOUT_METHOD_BY_ID(id))
       .then((r) => r.json())
       .then((j) => setForm(j?.data ?? {}))
@@ -42,6 +44,7 @@ export default function Page() {
   const onSave = async () => {
     setSaving(true);
     try {
+      // audit-direct-fetch-ok: FEATURE_PAYOUTS=false in P-1
       const res = await fetch(API_ROUTES.STORE.PAYOUT_METHOD_BY_ID(id), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -59,11 +62,12 @@ export default function Page() {
   };
 
   const onDelete = async () => {
+    // audit-direct-fetch-ok: FEATURE_PAYOUTS=false in P-1
     await fetch(API_ROUTES.STORE.PAYOUT_METHOD_BY_ID(id), { method: "DELETE" });
     router.push(String(ROUTES.STORE.PAYOUT_METHODS));
   };
 
-  if (loading) return <Section><Container size="md"><Stack gap="md" padding="y-lg">Loading…</Stack></Container></Section>;
+  if (loading) return <Section><Container size="md"><Stack gap="md" padding="y-lg"><Skeleton height="lg" /></Stack></Container></Section>;
 
   const f = form as Record<string, string | boolean | undefined>;
 

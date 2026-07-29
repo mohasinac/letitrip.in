@@ -1,0 +1,78 @@
+name: Toggle Feature Flag
+
+on:
+  workflow_dispatch:
+    inputs:
+      feature:
+        description: Feature flag to toggle
+        required: true
+        type: choice
+        options:
+          - FEATURE_AUCTIONS
+          - FEATURE_PREORDERS
+          - FEATURE_PRIZE_DRAWS
+          - FEATURE_BLOG
+          - FEATURE_EVENTS
+          - FEATURE_CHAT
+          - FEATURE_SCAM_REGISTRY
+          - FEATURE_RAZORPAY
+          - FEATURE_COD
+          - FEATURE_COUPONS
+          - FEATURE_SHIPROCKET
+          - FEATURE_PAYOUTS
+          - FEATURE_ANALYTICS_FUNCTION
+      enabled:
+        description: Set to true to enable, false to disable
+        required: true
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+jobs:
+  toggle:
+    name: Update Vercel env and redeploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Vercel environment variable
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          # Remove existing env var if present
+          curl -s -X DELETE \
+            "https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}/env?key=${{ inputs.feature }}&target=production" \
+            -H "Authorization: Bearer ${VERCEL_TOKEN}" || true
+
+          # Create the env var with the new value
+          curl -s -X POST \
+            "https://api.vercel.com/v10/projects/${VERCEL_PROJECT_ID}/env" \
+            -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{\"key\":\"${{ inputs.feature }}\",\"value\":\"${{ inputs.enabled }}\",\"type\":\"plain\",\"target\":[\"production\"]}"
+
+      - name: Trigger Vercel redeploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          # Get the latest production deployment alias to redeploy
+          LATEST=$(curl -s \
+            "https://api.vercel.com/v6/deployments?projectId=${VERCEL_PROJECT_ID}&target=production&limit=1" \
+            -H "Authorization: Bearer ${VERCEL_TOKEN}" | \
+            node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const j=JSON.parse(d);console.log(j.deployments?.[0]?.uid||'');});")
+
+          if [ -n "$LATEST" ]; then
+            curl -s -X POST \
+              "https://api.vercel.com/v13/deployments" \
+              -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+              -H "Content-Type: application/json" \
+              -d "{\"deploymentId\":\"${LATEST}\",\"target\":\"production\",\"meta\":{\"action\":\"feature-toggle\",\"flag\":\"${{ inputs.feature }}\",\"value\":\"${{ inputs.enabled }}\"}}"
+          fi
+
+      - name: Summary
+        run: |
+          echo "### Feature Flag Updated" >> $GITHUB_STEP_SUMMARY
+          echo "**Flag:** \`${{ inputs.feature }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Value:** \`${{ inputs.enabled }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "Vercel production redeployment triggered." >> $GITHUB_STEP_SUMMARY

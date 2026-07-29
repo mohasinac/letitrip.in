@@ -36,6 +36,7 @@ export default function Page() {
   const onSave = async () => {
     setSaving(true);
     const body = { ...form, slug: form.slug || slugify(form.label) };
+    // audit-direct-fetch-ok: store categories; no server action in appkit yet
     const res = await fetch(API_ROUTES.STORE.STORE_CATEGORIES, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

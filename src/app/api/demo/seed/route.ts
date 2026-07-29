@@ -163,6 +163,10 @@ interface SeedRequest {
   action: "load" | "delete";
   collections?: CollectionName[];
   dryRun?: boolean;
+  /** When true, seeds ALL product types (auctions, pre-orders, prize-draws, classifieds,
+   *  digital codes, live items) + events, blog posts, coupons, bids, lottery entries.
+   *  Default false: only standard products are seeded. */
+  full?: boolean;
   /** Optional RTDB run id from POST /api/demo/seed/event/init. When present,
    *  per-collection progress is written to /seed_events/{runId} for live UI updates. */
   runId?: string;
@@ -567,7 +571,27 @@ export async function POST(request: NextRequest) {
 
   try {
     const body: SeedRequest = await request.json();
-    const { action, collections, dryRun = false, runId } = body;
+    const { action, collections, dryRun = false, runId, full = false } = body;
+
+    // In P-1 default mode only seed standard products. Full mode includes all listing types.
+    const activeSeedDataMap = full
+      ? SEED_DATA_MAP
+      : {
+          ...SEED_DATA_MAP,
+          products: productsStandardSeedData,
+          // Exclude feature-flagged collections from default run
+          bids: [],
+          events: [],
+          eventEntries: [],
+          lotteryEntries: [],
+          blogPosts: [],
+          coupons: [],
+          couponUsage: [],
+          claimedCoupons: [],
+          payouts: [],
+          conversations: [],
+          scammerProfiles: [],
+        };
 
     if (!action || !["load", "delete"].includes(action)) {
       return NextResponse.json(
@@ -609,7 +633,7 @@ export async function POST(request: NextRequest) {
     if (dryRun) {
       const collectionPlans = await Promise.all(
         collectionsToProcess.map(async (collectionName) => {
-          const seedCount = SEED_DATA_MAP[collectionName]?.length ?? 0;
+          const seedCount = activeSeedDataMap[collectionName]?.length ?? 0;
           const existingCount = await countExistingForCollection(db, collectionName);
           const wouldCreate = action === "load" ? Math.max(seedCount - existingCount, 0) : 0;
           const wouldDelete = action === "delete" ? Math.min(seedCount, existingCount) : 0;
@@ -741,7 +765,7 @@ export async function POST(request: NextRequest) {
         emit({ type: "progress", collection: collectionName, status: "running", done: progressDone, total });
         try {
           const firestoreCollection = COLLECTION_MAP[collectionName];
-          const seedData = SEED_DATA_MAP[collectionName];
+          const seedData = activeSeedDataMap[collectionName];
 
           if (!seedData || seedData.length === 0) {
             serverLogger.info(`⚠️ No seed data for ${collectionName}`);
@@ -1042,7 +1066,7 @@ export async function POST(request: NextRequest) {
         emit({ type: "progress", collection: collectionName, status: "running", done: progressDone, total });
         try {
           const firestoreCollection = COLLECTION_MAP[collectionName];
-          const seedData = SEED_DATA_MAP[collectionName];
+          const seedData = activeSeedDataMap[collectionName];
 
           if (collectionName === "users") {
             // Auth + Firestore — delete each seed user's auth account then Firestore doc.

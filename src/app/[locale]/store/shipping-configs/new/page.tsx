@@ -36,6 +36,7 @@ export default function Page() {
   const onSave = async () => {
     setSaving(true);
     try {
+      // audit-direct-fetch-ok: shipping config; no server action yet
       const res = await fetch(API_ROUTES.STORE.SHIPPING_CONFIGS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

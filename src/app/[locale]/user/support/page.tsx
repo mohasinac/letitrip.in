@@ -60,6 +60,7 @@ export default function UserSupportPage() {
   const { data, isLoading } = useQuery<{ tickets: TicketItem[]; total: number }>({
     queryKey: ["user-support-tickets"],
     queryFn: () =>
+      // audit-direct-fetch-ok: support tickets; no server action yet
       fetch("/api/support/tickets?pageSize=50")
         .then((r) => r.json())
         .then((r) => r.data),

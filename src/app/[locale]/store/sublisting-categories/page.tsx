@@ -59,6 +59,7 @@ export default function Page() {
       pageSize: String(PAGE_SIZE),
       sorts: sort,
     });
+    // audit-direct-fetch-ok: sublisting categories; no server action yet
     fetch(`${API_ROUTES.STORE.SUBLISTING_CATEGORIES}?${params.toString()}`)
       .then((r) => r.json())
       .then((res) => {
@@ -87,6 +88,7 @@ export default function Page() {
       return;
     setDeletingId(id);
     try {
+      // audit-direct-fetch-ok: sublisting categories; no server action yet
       await fetch(API_ROUTES.STORE.SUBLISTING_CATEGORY_BY_ID(id), { method: "DELETE" });
       load();
     } catch {

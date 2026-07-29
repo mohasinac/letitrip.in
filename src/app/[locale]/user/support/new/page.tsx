@@ -53,6 +53,7 @@ export default function NewSupportTicketPage() {
     if (!canSubmit || submitting) return;
     setSubmitting(true);
     try {
+      // audit-direct-fetch-ok: support tickets; no server action yet
       const res = await fetch("/api/support/tickets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

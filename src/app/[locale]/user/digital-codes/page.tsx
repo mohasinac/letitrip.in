@@ -28,6 +28,7 @@ const SORT_OPTIONS = [
 ];
 
 async function fetchOrderCode(orderId: string): Promise<RevealedCode> {
+  // audit-direct-fetch-ok: digital-codes not in P-1 scope
   const res = await fetch(`/api/orders/${orderId}/code`);
   const body = await res.json();
   if (!res.ok) throw new Error(body?.error ?? "Could not retrieve code");
@@ -90,6 +91,7 @@ export default function UserDigitalCodesPage() {
   const { data, isLoading } = useQuery<{ items: OrderDoc[] }>({
     queryKey: ["user-digital-codes"],
     queryFn: () =>
+      // audit-direct-fetch-ok: digital-codes not in P-1 scope
       fetch(`${API_ROUTES.USER.ORDERS}?perPage=100`)
         .then((r) => r.json())
         .then((r) => r.data),

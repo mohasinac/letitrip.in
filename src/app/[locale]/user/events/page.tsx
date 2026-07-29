@@ -76,6 +76,7 @@ export default function UserEventsPage() {
   const { data, isLoading } = useQuery<{ items: EntryItem[] }>({
     queryKey: ["user-events"],
     queryFn: () =>
+      // audit-direct-fetch-ok: FEATURE_EVENTS=false in P-1
       fetch(API_ROUTES.USER.EVENTS)
         .then((r) => r.json())
         .then((r) => r.data),

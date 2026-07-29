@@ -51,6 +51,7 @@ export default function Page() {
       return;
     }
     setSaving(true);
+    // audit-direct-fetch-ok: listing templates; no server action yet
     const res = await fetch(API_ROUTES.STORE.LISTING_TEMPLATES, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

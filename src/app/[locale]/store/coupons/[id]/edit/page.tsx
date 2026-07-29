@@ -58,6 +58,7 @@ export default function Page() {
 
   useEffect(() => {
     if (!couponId) return;
+    // audit-direct-fetch-ok: FEATURE_COUPONS=false in P-1
     fetch(API_ROUTES.STORE.COUPON_BY_ID(couponId))
       .then((r) => r.json())
       .then((json) => {
@@ -68,6 +69,7 @@ export default function Page() {
   }, [couponId]);
 
   const handleSave = async (draft: CouponEditorDraft) => {
+    // audit-direct-fetch-ok: FEATURE_COUPONS=false in P-1
     const res = await fetch(API_ROUTES.STORE.COUPON_BY_ID(couponId), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },

@@ -150,6 +150,7 @@ export default function NotificationsPage() {
   const { data, isLoading } = useQuery<NotifResponse>({
     queryKey: ["user-notifications"],
     queryFn: () =>
+      // audit-direct-fetch-ok: notifications; no server action in appkit for mark-read/delete yet
       fetch("/api/user/notifications?pageSize=100")
         .then((r) => r.json())
         .then((r) => r.data),
@@ -168,6 +169,7 @@ export default function NotificationsPage() {
 
   const { mutate: markRead } = useApiMutation({
     mutationFn: (id: string) =>
+      // audit-direct-fetch-ok: notifications; no server action in appkit for mark-read/delete yet
       fetch(`/api/user/notifications/${id}`, { method: "PATCH" }),
     onSuccess: invalidateNotifications,
     onError: () => showToast("Could not mark notification as read.", "error"),
@@ -175,6 +177,7 @@ export default function NotificationsPage() {
 
   const { mutate: markAllRead, isPending: markingAll } = useApiMutation({
     mutationFn: () =>
+      // audit-direct-fetch-ok: notifications; no server action in appkit for mark-read/delete yet
       fetch("/api/user/notifications/read-all", { method: "POST" }),
     onSuccess: () => {
       invalidateNotifications();
@@ -185,6 +188,7 @@ export default function NotificationsPage() {
 
   const { mutate: deleteNotif } = useApiMutation({
     mutationFn: (id: string) =>
+      // audit-direct-fetch-ok: notifications; no server action in appkit for mark-read/delete yet
       fetch(`/api/user/notifications/${id}`, { method: "DELETE" }),
     onSuccess: () => {
       invalidateNotifications();

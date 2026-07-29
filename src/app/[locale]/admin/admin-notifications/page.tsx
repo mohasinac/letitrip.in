@@ -22,6 +22,7 @@ export default function Page() {
 
   const load = () => {
     setLoading(true);
+    // audit-direct-fetch-ok: admin control-plane; no server action in appkit yet
     fetch(API_ROUTES.ADMIN.ADMIN_NOTIFICATIONS)
       .then((r) => r.json())
       .then((j) => setItems(j?.data?.items ?? []))
@@ -31,6 +32,7 @@ export default function Page() {
   useEffect(load, []);
 
   const markRead = async (id: string) => {
+    // audit-direct-fetch-ok: admin control-plane; no server action in appkit yet
     await fetch(`${API_ROUTES.ADMIN.ADMIN_NOTIFICATIONS}/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },

@@ -88,6 +88,7 @@ export default function UserReviewsPage() {
 
   const { data, isLoading } = useQuery<{ reviews: ReviewItem[]; total: number }>({
     queryKey: ["user-reviews"],
+    // audit-direct-fetch-ok: React Query queryFn; no server action for reviews list yet
     queryFn: () => fetch("/api/user/reviews").then((r) => r.json()).then((r) => r.data),
     enabled: !sessionLoading && !!user,
     staleTime: 30_000,

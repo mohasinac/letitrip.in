@@ -45,6 +45,7 @@ function paise(n: number, currency = "INR") {
 const CODE_REVEAL_STATUSES = new Set(["confirmed", "processing", "delivered"]);
 
 async function fetchOrderCode(orderId: string): Promise<RevealedCode> {
+  // audit-direct-fetch-ok: digital code reveal; no server action yet
   const res = await fetch(`/api/orders/${orderId}/code`);
   const body = await res.json();
   if (!res.ok) throw new Error(body?.error ?? "Could not retrieve code");

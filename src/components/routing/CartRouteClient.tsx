@@ -1,20 +1,11 @@
 "use client";
 
-const JSON_HEADERS = { "Content-Type": "application/json" } as const;
-const FETCH_CREDENTIALS = "include" as const;
+import { deleteCartItem, updateCartItemQty, validateCart, persistCartSelection, addToWishlist } from "@/lib/api/cart-client";
+
 const CLS_CHECKOUT_BTN = "w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200";
 
-async function deleteCartItem(itemId: string) {
-  return fetch(`/api/cart/${encodeURIComponent(itemId)}`, { method: "DELETE", credentials: FETCH_CREDENTIALS });
-}
-
 async function addToWishlistAndRemoveFromCart(item: CartItem, failedIds: string[]) {
-  const res = await fetch("/api/wishlist", {
-    method: "POST",
-    headers: JSON_HEADERS,
-    body: JSON.stringify({ productId: item.productId }),
-    credentials: FETCH_CREDENTIALS,
-  });
+  const res = await addToWishlist(item.productId);
   if (!res.ok) { failedIds.push(item.productId); return; }
   await deleteCartItem(item.id);
 }
@@ -283,11 +274,7 @@ export function CartRouteClient() {
   const runCartValidation = useCallback(async () => {
     const productIds = cartItems.map((i) => i.productId);
     try {
-      const res = await fetch("/api/cart/validate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productIds }),
-      });
+      const res = await validateCart(productIds);
       if (!res.ok) return;
       const data = (await res.json()) as ValidateResponse;
       const { stale, moveable } = data.data;
@@ -406,26 +393,17 @@ export function CartRouteClient() {
       const next = current.size >= allItemIds.length ? null : current;
       setSelectedIds(next);
       if (isAuthenticated) {
-        await fetch("/api/cart/selection", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ itemIds: next ? Array.from(next) : null }),
-          credentials: FETCH_CREDENTIALS,
-        }).catch(console.error);
+        await persistCartSelection(next ? Array.from(next) : null);
       }
     },
     [effectiveSelected, allItemIds, isAuthenticated],
   );
 
   const selectAll = useCallback(async () => {
+    // toast-intentionally-silent: selection sync is fire-and-forget; persistCartSelection never throws
     setSelectedIds(null);
     if (isAuthenticated) {
-      await fetch("/api/cart/selection", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ itemIds: null }),
-        credentials: FETCH_CREDENTIALS,
-      }).catch(console.error);
+      await persistCartSelection(null);
     }
   }, [isAuthenticated]);
 
@@ -453,12 +431,7 @@ export function CartRouteClient() {
     setIsRemoving(true);
     try {
       if (isAuthenticated) {
-        await Promise.allSettled(
-          toRemove.map((item) => {
-            const id = item.itemId ?? item.id;
-            return fetch(`/api/cart/${encodeURIComponent(id)}`, { method: "DELETE", credentials: "include" });
-          }),
-        );
+        await Promise.allSettled(toRemove.map((item) => deleteCartItem(item.itemId ?? item.id)));
         refetch?.();
       } else {
         toRemove.forEach((item) => guest.remove(item.productId));
@@ -479,12 +452,7 @@ export function CartRouteClient() {
     setIsRemoving(true);
     try {
       if (isAuthenticated) {
-        await Promise.allSettled(
-          toRemove.map((item) => {
-            const id = item.itemId ?? item.id;
-            return fetch(`/api/cart/${encodeURIComponent(id)}`, { method: "DELETE", credentials: "include" });
-          }),
-        );
+        await Promise.allSettled(toRemove.map((item) => deleteCartItem(item.itemId ?? item.id)));
         refetch?.();
       } else {
         toRemove.forEach((item) => guest.remove(item.productId));
@@ -515,12 +483,7 @@ export function CartRouteClient() {
         return;
       }
       try {
-        const wishlistRes = await fetch("/api/wishlist", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ productId }),
-          credentials: FETCH_CREDENTIALS,
-        });
+        const wishlistRes = await addToWishlist(productId);
         if (!wishlistRes.ok) {
           const errData = (await wishlistRes.json().catch(() => ({}))) as { code?: string };
           if (errData.code === "WISHLIST_FULL") {
@@ -530,10 +493,7 @@ export function CartRouteClient() {
           }
           return;
         }
-        await fetch(`/api/cart/${encodeURIComponent(cartItemId)}`, {
-          method: "DELETE",
-          credentials: FETCH_CREDENTIALS,
-        });
+        await deleteCartItem(cartItemId);
         setMoveableIds((prev) => { const next = new Set(prev); next.delete(productId); return next; });
         refetch?.();
         showToast("Item saved to wishlist.", "info");
@@ -558,12 +518,7 @@ export function CartRouteClient() {
       // Optimistic: apply immediately, revert on failure
       setOptimisticQty((prev) => { const m = new Map(prev); m.set(id, qty); return m; });
       try {
-        const res = await fetch(`/api/cart/${encodeURIComponent(id)}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ quantity: qty }),
-          credentials: FETCH_CREDENTIALS,
-        });
+        const res = await updateCartItemQty(id, qty);
         if (!res.ok) {
           setOptimisticQty((prev) => { const m = new Map(prev); m.delete(id); return m; });
           showToast("Could not update quantity. Please try again.", "error");
@@ -591,10 +546,7 @@ export function CartRouteClient() {
       const timer = setTimeout(async () => {
         undoTimers.current.delete(id);
         try {
-          const res = await fetch(`/api/cart/${encodeURIComponent(id)}`, {
-            method: "DELETE",
-            credentials: FETCH_CREDENTIALS,
-          });
+          const res = await deleteCartItem(id);
           if (!res.ok) {
             setPendingRemoveIds((prev) => { const s = new Set(prev); s.delete(id); return s; });
             showToast("Could not remove item. Please try again.", "error");

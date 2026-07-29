@@ -32,6 +32,7 @@ export default function Page() {
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
+    // audit-direct-fetch-ok: store categories; no server action in appkit yet
     fetch(API_ROUTES.STORE.STORE_CATEGORY_BY_ID(id))
       .then((r) => r.json())
       .then((j) => setForm(j?.data ?? {}))
@@ -40,6 +41,7 @@ export default function Page() {
 
   const onSave = async () => {
     setSaving(true);
+    // audit-direct-fetch-ok: store categories; no server action in appkit yet
     const res = await fetch(API_ROUTES.STORE.STORE_CATEGORY_BY_ID(id), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -53,6 +55,7 @@ export default function Page() {
   };
 
   const onDelete = async () => {
+    // audit-direct-fetch-ok: store categories; no server action in appkit yet
     await fetch(API_ROUTES.STORE.STORE_CATEGORY_BY_ID(id), { method: "DELETE" });
     router.push(String(ROUTES.STORE.STORE_CATEGORIES));
   };

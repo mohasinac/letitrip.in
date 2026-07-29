@@ -75,6 +75,7 @@ export default function TicketDetailPage({ params }: PageProps) {
   const { data: ticket, isLoading } = useQuery<TicketDoc>({
     queryKey: ["user-support-ticket", id],
     queryFn: () =>
+      // audit-direct-fetch-ok: support tickets; no server action yet
       fetch(`/api/support/tickets/${id}`)
         .then((r) => r.json())
         .then((r) => r.data),
@@ -84,6 +85,7 @@ export default function TicketDetailPage({ params }: PageProps) {
 
   const sendReply = useApiMutation({
     mutationFn: (body: string) =>
+      // audit-direct-fetch-ok: support tickets; no server action yet
       fetch(`/api/support/tickets/${id}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -35,6 +35,7 @@ import {
   verifyConsentOtpAction,
 } from "@/actions/checkout.actions";
 import { UI_LABELS } from "@/constants";
+import { createCheckoutOrder } from "@/lib/api/payment-client";
 
 const __P = {
   p3: "p-3",
@@ -359,8 +360,12 @@ function renderPaymentStep({
   isProcessingPayment,
   cartIsEmpty,
   adminBypassEnabled,
+  showCashOption,
+  showRazorpay,
+  showCod,
   handlePayOnline,
   handlePlaceCodOrder,
+  handlePlaceCashOrder,
   handleAdminBypass,
 }: {
   step: CheckoutStep;
@@ -368,8 +373,12 @@ function renderPaymentStep({
   isProcessingPayment: boolean;
   cartIsEmpty: boolean;
   adminBypassEnabled: boolean;
+  showCashOption: boolean;
+  showRazorpay: boolean;
+  showCod: boolean;
   handlePayOnline: () => Promise<void>;
   handlePlaceCodOrder: () => Promise<void>;
+  handlePlaceCashOrder: () => Promise<void>;
   handleAdminBypass: () => Promise<void>;
 }) {
   return (
@@ -389,22 +398,36 @@ function renderPaymentStep({
           {actionError && (
             <Text className="text-error" size="sm">{actionError}</Text>
           )}
-          <Button
-            type="button"
-            onClick={handlePayOnline}
-            disabled={isProcessingPayment || cartIsEmpty}
-            className={PRIMARY_BTN_CLS}
-          >
-            {CK.PAYMENT_ONLINE_BTN}
-          </Button>
-          <Button
-            type="button"
-            onClick={handlePlaceCodOrder}
-            disabled={isProcessingPayment || cartIsEmpty}
-            className="w-full border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] dark:bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-bg)] dark:hover:bg-[var(--appkit-color-surface-elevated)]"
-          >
-            {CK.PAYMENT_COD_BTN}
-          </Button>
+          {showCashOption && (
+            <Button
+              type="button"
+              onClick={handlePlaceCashOrder}
+              disabled={isProcessingPayment || cartIsEmpty}
+              className={PRIMARY_BTN_CLS}
+            >
+              {isProcessingPayment ? "Placing order…" : "Pay via UPI / Cash"}
+            </Button>
+          )}
+          {showRazorpay && (
+            <Button
+              type="button"
+              onClick={handlePayOnline}
+              disabled={isProcessingPayment || cartIsEmpty}
+              className={PRIMARY_BTN_CLS}
+            >
+              {CK.PAYMENT_ONLINE_BTN}
+            </Button>
+          )}
+          {showCod && (
+            <Button
+              type="button"
+              onClick={handlePlaceCodOrder}
+              disabled={isProcessingPayment || cartIsEmpty}
+              className="w-full border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] dark:bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-bg)] dark:hover:bg-[var(--appkit-color-surface-elevated)]"
+            >
+              {CK.PAYMENT_COD_BTN}
+            </Button>
+          )}
           {adminBypassEnabled && (
             <Div className={`mt-1 border border-warning/30 ${__P.p3}`} surface="warning-surface" rounded="lg">
               <Text className="mb-2 text-warning tracking-wide" size="xs" weight="semibold" transform="uppercase">
@@ -570,7 +593,17 @@ function renderOrderSummary({
 
 // --- Component ---------------------------------------------------------------
 
-export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypassEnabled?: boolean }) {
+export function CheckoutRouteClient({
+  adminBypassEnabled = false,
+  showCashOption = true,
+  showRazorpay = false,
+  showCod = false,
+}: {
+  adminBypassEnabled?: boolean;
+  showCashOption?: boolean;
+  showRazorpay?: boolean;
+  showCod?: boolean;
+}) {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const { showToast } = useToast();
@@ -654,6 +687,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
     setIsCouponLoading(true);
     setCouponError("");
     try {
+      // audit-direct-fetch-ok: FEATURE_COUPONS=false in P-1; no server action yet for coupon cart ops
       const res = await fetch("/api/cart/coupon", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -681,6 +715,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
     async (code: string) => {
       setLocalCoupons((prev) => (prev ?? effectiveCoupons).filter((c) => c.code !== code));
       try {
+        // audit-direct-fetch-ok: FEATURE_COUPONS=false in P-1; no server action yet for coupon cart ops
         await fetch("/api/cart/coupon", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -756,6 +791,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
     setStep("processing");
     try {
       // 1. Create Razorpay order on server
+      // audit-direct-fetch-ok: FEATURE_RAZORPAY=false in P-1; Razorpay payment flow disabled
       const createRes = await fetch("/api/payment/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -796,6 +832,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
       });
 
       // 4. Verify payment and place orders
+      // audit-direct-fetch-ok: FEATURE_RAZORPAY=false in P-1; Razorpay verify disabled
       const verifyRes = await fetch("/api/payment/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -834,6 +871,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
     setActionError("");
     setStep("processing");
     try {
+      // audit-direct-fetch-ok: FEATURE_COD=false in P-1; COD checkout disabled
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -864,12 +902,47 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
     }
   }, [selectedAddress, router, showToast]);
 
+  const handlePlaceCashOrder = useCallback(async () => {
+    if (!selectedAddress) return;
+    setIsProcessingPayment(true);
+    setActionError("");
+    setStep("processing");
+    try {
+      const res = await createCheckoutOrder({
+        addressId: selectedAddress.id,
+        paymentMethod: "cash",
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(
+          (err as { error?: string }).error ?? "Order placement failed",
+        );
+      }
+      const cashData = await res.json().catch(() => ({}));
+      const firstOrderId = (cashData?.data?.orderIds as string[] | undefined)?.[0];
+      if (firstOrderId) {
+        router.push(String(ROUTES.USER.ORDER_PAYMENT(firstOrderId)));
+      } else {
+        router.push(String(ROUTES.USER.CHECKOUT_SUCCESS));
+      }
+    } catch (err) {
+      void normalizeError(err);
+      const msg = err instanceof Error ? err.message : "Order failed. Please retry.";
+      setActionError(msg);
+      showToast(msg, "error");
+      setStep("payment");
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  }, [selectedAddress, router, showToast]);
+
   const handleAdminBypass = useCallback(async () => {
     if (!selectedAddress) return;
     setIsProcessingPayment(true);
     setActionError("");
     setStep("processing");
     try {
+      // audit-direct-fetch-ok: admin dev utility, no server action needed
       const res = await fetch("/api/admin/checkout-bypass", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -990,7 +1063,7 @@ export function CheckoutRouteClient({ adminBypassEnabled = false }: { adminBypas
           return (
             <Stack gap="lg">
               {renderCouponSection({ couponCode, setCouponCode, couponError, isCouponLoading, effectiveCoupons, handleApplyCoupon, handleRemoveCoupon })}
-              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, handlePayOnline, handlePlaceCodOrder, handleAdminBypass })}
+              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showRazorpay, showCod, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handleAdminBypass })}
             </Stack>
           );
         }}

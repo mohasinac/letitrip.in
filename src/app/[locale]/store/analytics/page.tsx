@@ -33,6 +33,7 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // audit-direct-fetch-ok: store analytics; no server action in appkit yet
     fetch(API_ROUTES.STORE.ANALYTICS)
       .then((r) => r.json())
       .then((json) => {

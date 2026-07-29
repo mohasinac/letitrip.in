@@ -44,6 +44,7 @@ export default function Page() {
       return;
     }
     setSaving(true);
+    // audit-direct-fetch-ok: advanced store feature; no server action yet
     const res = await fetch(API_ROUTES.STORE.GROUPED_LISTINGS, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

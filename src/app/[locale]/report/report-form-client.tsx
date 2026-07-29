@@ -60,6 +60,7 @@ export function ReportFormClient({ initialEntityType, initialEntityId }: Props) 
       return;
     }
     setSaving(true);
+    // audit-direct-fetch-ok: reports not in P-1 scope; no server action yet
     const res = await fetch("/api/reports", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

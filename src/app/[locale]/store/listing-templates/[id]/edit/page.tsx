@@ -33,6 +33,7 @@ export default function Page() {
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
+    // audit-direct-fetch-ok: listing templates; no server action yet
     fetch(API_ROUTES.STORE.LISTING_TEMPLATE_BY_ID(id))
       .then((r) => r.json())
       .then((j) => {
@@ -52,6 +53,7 @@ export default function Page() {
       return;
     }
     setSaving(true);
+    // audit-direct-fetch-ok: listing templates; no server action yet
     const res = await fetch(API_ROUTES.STORE.LISTING_TEMPLATE_BY_ID(id), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -65,6 +67,7 @@ export default function Page() {
   };
 
   const onDelete = async () => {
+    // audit-direct-fetch-ok: listing templates; no server action yet
     await fetch(API_ROUTES.STORE.LISTING_TEMPLATE_BY_ID(id), { method: "DELETE" });
     router.push(String(ROUTES.STORE.LISTING_TEMPLATES));
   };

@@ -26,6 +26,7 @@ export default function Page() {
   const [posting, setPosting] = useState(false);
 
   const load = () => {
+    // audit-direct-fetch-ok: item-requests not in P-1 scope; no server action yet
     fetch(`/api/item-requests/${id}`)
       .then((r) => r.json())
       .then((j) => setDoc(j?.data ?? null))
@@ -37,6 +38,7 @@ export default function Page() {
   const postReply = async () => {
     if (!reply.trim()) return;
     setPosting(true);
+    // audit-direct-fetch-ok: item-requests not in P-1 scope; no server action yet
     await fetch(`/api/item-requests/${id}/replies`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

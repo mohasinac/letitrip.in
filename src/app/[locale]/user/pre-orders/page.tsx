@@ -65,6 +65,7 @@ export default function UserPreOrdersPage() {
   const { data, isLoading } = useQuery<{ items: OrderDoc[] }>({
     queryKey: ["user-pre-orders"],
     queryFn: () =>
+      // audit-direct-fetch-ok: FEATURE_PREORDERS=false in P-1
       fetch(`${API_ROUTES.USER.ORDERS}?perPage=100`)
         .then((r) => r.json())
         .then((r) => r.data),

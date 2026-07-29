@@ -27,6 +27,7 @@ export default function Page() {
   const [tab, setTab] = useState<TabId>("overview");
   const [user, setUser] = useState<Record<string, JsonValue> | null>(null);
   useEffect(() => {
+    // audit-direct-fetch-ok: admin control-plane; no server action in appkit yet
     fetch(`/api/admin/users/${id}`)
       .then((r) => r.json())
       .then((j) => setUser(j?.data ?? null))

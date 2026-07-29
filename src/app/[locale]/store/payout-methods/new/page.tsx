@@ -37,6 +37,7 @@ export default function Page() {
   const onSave = async () => {
     setSaving(true);
     try {
+      // audit-direct-fetch-ok: FEATURE_PAYOUTS=false in P-1
       const res = await fetch(API_ROUTES.STORE.PAYOUT_METHODS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

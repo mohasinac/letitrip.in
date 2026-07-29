@@ -9,6 +9,7 @@ export function CouponNewClient() {
   const router = useRouter();
 
   const handleSave = async (draft: CouponEditorDraft) => {
+    // audit-direct-fetch-ok: FEATURE_COUPONS=false in P-1
     const res = await fetch(API_ROUTES.STORE.COUPONS, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

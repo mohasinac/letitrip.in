@@ -10,6 +10,7 @@ export function GroupedListingsClient() {
       onCreateClick={() => router.push(String(ROUTES.STORE.GROUPED_LISTINGS_NEW))}
       onEditClick={(id) => router.push(String(ROUTES.STORE.GROUPED_LISTINGS_EDIT(id)))}
       onDeleteClick={async (id) => {
+        // audit-direct-fetch-ok: advanced store feature; no server action yet
         await fetch(`/api/store/grouped-listings/${id}`, { method: "DELETE" });
         router.refresh();
       }}

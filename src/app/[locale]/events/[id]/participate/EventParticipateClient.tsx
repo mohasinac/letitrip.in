@@ -417,6 +417,7 @@ function renderDynamicField(
 
 function SpinWheelParticipate({ event }: { event: ParticipateEventInput }) {
   const onSpin = useCallback(async (eventId: string) => {
+    // audit-direct-fetch-ok: FEATURE_EVENTS=false in P-1
     const res = await fetch(`/api/events/${eventId}/spin`, {
       method: "POST",
       credentials: "include",
@@ -536,6 +537,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
       if ((isSurvey || isFeedback) && Object.keys(formResponses).length > 0) {
         body.formResponses = formResponses;
       }
+      // audit-direct-fetch-ok: FEATURE_EVENTS=false in P-1
       const res = await fetch(API_ROUTES.EVENTS.ENTRIES(event.id), {
         method: "POST",
         headers: { "Content-Type": "application/json" },

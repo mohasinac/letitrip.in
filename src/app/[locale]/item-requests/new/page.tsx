@@ -34,6 +34,7 @@ export default function Page() {
       return;
     }
     setSaving(true);
+    // audit-direct-fetch-ok: item-requests not in P-1 scope; no server action yet
     const res = await fetch("/api/item-requests", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

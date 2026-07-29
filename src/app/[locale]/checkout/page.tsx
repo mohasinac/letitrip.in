@@ -4,6 +4,7 @@ import { getServerSessionUser } from "@/lib/firebase/auth-server";
 import { CheckoutRouteClient } from "@/components";
 import { ROUTES, siteSettingsRepository, ADMIN_CHECKOUT_BYPASS_FLAG_KEY, isAdminUser } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
+import { getFlag } from "@/lib/features";
 
 export default async function Page() {
   const user = await getServerSessionUser();
@@ -21,9 +22,20 @@ export default async function Page() {
     adminBypassEnabled = flags?.[ADMIN_CHECKOUT_BYPASS_FLAG_KEY] === true;
   }
 
+  const showRazorpay = getFlag("RAZORPAY");
+  const showCod = getFlag("COD");
+  // Cash/UPI manual payment is always active in P-1. Disabled only if both
+  // Razorpay and COD are enabled (future patches where we have online payments).
+  const showCashOption = !(showRazorpay && showCod);
+
   return (
     <Suspense>
-      <CheckoutRouteClient adminBypassEnabled={adminBypassEnabled} />
+      <CheckoutRouteClient
+        adminBypassEnabled={adminBypassEnabled}
+        showCashOption={showCashOption}
+        showRazorpay={showRazorpay}
+        showCod={showCod}
+      />
     </Suspense>
   );
 }

@@ -1,0 +1,46 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Quality Gate + Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build appkit
+        run: npm --prefix appkit run build
+
+      - name: Run quality gate
+        run: npm run check
+
+      - name: Run tests
+        run: |
+          npm run test -- --run
+          npm --prefix appkit run test -- --run
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy to production
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: vercel --prod --token "$VERCEL_TOKEN" --yes
+
+      - name: Summary
+        run: |
+          echo "### Production Deploy Complete" >> $GITHUB_STEP_SUMMARY
+          echo "Quality gate passed. Deployed to \`https://letitrip.in\`." >> $GITHUB_STEP_SUMMARY

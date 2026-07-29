@@ -31,6 +31,7 @@ export default function UserBidsPage() {
   const { data, isLoading } = useQuery<{ bids: BidDocument[]; total: number }>({
     queryKey: ["user-bids"],
     queryFn: () =>
+      // audit-direct-fetch-ok: FEATURE_AUCTIONS=false in P-1
       fetch("/api/user/bids?limit=100")
         .then((r) => r.json())
         .then((r) => r.data),

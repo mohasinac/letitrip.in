@@ -189,7 +189,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     title: "Finance",
     items: [
       adminItem(String(ROUTES.ADMIN.ANALYTICS), "Analytics", "admin:analytics:view"),
-      adminItem(String(ROUTES.ADMIN.PAYOUTS),   "Payouts",   "admin:payouts:read"),
+      // Payouts hidden until FEATURE_PAYOUTS (P7).
     ],
   },
   {
@@ -199,20 +199,17 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.BRANDS),                "Brands",        "admin:brands:read"),
       adminItem(String(ROUTES.ADMIN.SUBLISTING_CATEGORIES), "Sub-listings",  "admin:categories:read"),
       adminItem(String(ROUTES.ADMIN.FEATURES),              "Feature Badges","admin:categories:read"),
-      adminItem(String(ROUTES.ADMIN.BUNDLES),               "Bundles",       "admin:categories:read"),
-      adminItem(String(ROUTES.ADMIN.PRIZE_DRAWS),           "Prize Draws",   "admin:products:read"),
-      adminItem(String(ROUTES.ADMIN.COUPONS),               "Coupons",       "admin:coupons:read"),
       adminItem(String(ROUTES.ADMIN.DEALS),                 "Deals",         "admin:deals:read"),
       adminItem(String(ROUTES.ADMIN.FEATURED),              "Featured",      "admin:featured:read"),
+      // Hidden until feature patch ships: Bundles, Prize Draws (P10), Coupons (P2).
     ],
   },
   {
     title: "Content",
     items: [
       adminItem(String(ROUTES.ADMIN.REVIEWS), "Reviews", "admin:reviews:read"),
-      adminItem(String(ROUTES.ADMIN.BLOG),    "Blog",    "admin:blog:read"),
-      adminItem(String(ROUTES.ADMIN.BIDS),    "Bids",    "admin:bids:read"),
       adminItem(String(ROUTES.ADMIN.MEDIA),   "Media",   "admin:media:read"),
+      // Blog hidden until FEATURE_BLOG (P3). Bids hidden until FEATURE_AUCTIONS (P5).
     ],
   },
   {
@@ -230,22 +227,16 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.CONTACT),             "Contact",            "admin:contact:read"),
     ],
   },
-  {
-    title: "Events",
-    items: [
-      adminItem(String(ROUTES.ADMIN.EVENTS),            "Events",      "admin:events:read"),
-      adminItem(String(ROUTES.ADMIN.ALL_EVENT_ENTRIES), "All Entries", "admin:event-entries:read"),
-      adminItem(String(ROUTES.ADMIN.LOTTERIES),         "Lotteries",   "admin:events:read"),
-    ],
-  },
+  // Events group hidden until FEATURE_EVENTS (P4). Re-add:
+  // { title: "Events", items: [Events, All Entries, Lotteries] }
   {
     title: "Trust & Safety",
     items: [
       adminItem(String(ROUTES.ADMIN.SUPPORT_TICKETS), "Support Tickets", "admin:support-tickets:read"),
-      adminItem(String(ROUTES.ADMIN.SCAMMERS),        "Scam Registry",   "admin:scammers:read"),
       adminItem(String(ROUTES.ADMIN.MODERATION),      "Moderation",      "admin:moderation:read"),
       adminItem(String(ROUTES.ADMIN.REPORTS),         "Reports",         "admin:moderation:read"),
       adminItem(String(ROUTES.ADMIN.ITEM_REQUESTS),   "Item Requests",   "admin:moderation:read"),
+      // Scam Registry hidden until FEATURE_SCAM_REGISTRY (P12).
     ],
   },
   {
@@ -287,6 +278,9 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
 // Store dashboard sidebar
 // ---------------------------------------------------------------------------
 
+// P-1: Seller nav trimmed to MVP scope. Re-add disabled items when their
+// feature patch ships: Auctions→P5, Pre-Orders→P6, Payouts→P7, Coupons→P2,
+// Prize Draws→P10, Bundles→when enabled, Fulfilment→P-14 (Shiprocket).
 export const STORE_NAV_GROUPS: StoreNavGroup[] = [
   {
     title: "Overview",
@@ -297,60 +291,34 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
   {
     title: "Listings",
     items: [
-      { href: String(ROUTES.STORE.PRODUCTS),                label: "Products"          },
-      { href: String(ROUTES.STORE.AUCTIONS),                label: "Auctions"          },
-      { href: String(ROUTES.STORE.PRE_ORDERS),              label: "Pre-Orders"        },
-      { href: String(ROUTES.STORE.BUNDLES),                 label: "Bundles"           },
-      { href: String(ROUTES.STORE.PRIZE_DRAWS),             label: "Prize Draws"       },
-      { href: String(ROUTES.STORE.CLASSIFIED),              label: "Classifieds"       },
-      { href: String(ROUTES.STORE.DIGITAL_CODES),           label: "Digital Codes"     },
-      { href: String(ROUTES.STORE.LIVE_ITEMS),              label: "Live Items"        },
-      { href: String(ROUTES.STORE.OFFERS),                  label: "Offers"            },
-      { href: String(ROUTES.STORE.SUBLISTING_CATEGORIES),   label: "Sub-listing Groups"},
-      { href: String(ROUTES.STORE.FEATURES),                label: "Feature Badges"    },
-      { href: String(ROUTES.STORE.TEMPLATES),               label: "Templates"         },
-      { href: String(ROUTES.STORE.LISTING_TEMPLATES),       label: "Listing Templates" },
-      { href: String(ROUTES.STORE.GROUPED_LISTINGS),        label: "Grouped Listings"  },
+      { href: String(ROUTES.STORE.PRODUCTS), label: "Products" },
+      // Disabled until feature patches: Auctions(P5), Pre-Orders(P6), Prize Draws(P10),
+      // Bundles, Classifieds, Digital Codes, Live Items, Offers, Sub-listing Groups,
+      // Feature Badges, Templates, Listing Templates, Grouped Listings.
     ],
   },
   {
     title: "Orders & Reviews",
     items: [
       { href: String(ROUTES.STORE.ORDERS),  label: "Orders"  },
-      { href: String(ROUTES.STORE.BIDS),    label: "Bids"    },
       { href: String(ROUTES.STORE.REVIEWS), label: "Reviews" },
+      // Bids hidden until FEATURE_AUCTIONS (P5).
     ],
   },
   {
-    title: "Fulfilment",
+    title: "Analytics",
     items: [
-      { href: String(ROUTES.STORE.FULFILLMENT),  label: "Pick & Pack"   },
-      { href: String(ROUTES.STORE.PRINT_CENTER), label: "Print Labels"  },
-    ],
-  },
-  {
-    title: "Finance",
-    items: [
-      { href: String(ROUTES.STORE.ANALYTICS),       label: "Analytics"        },
-      { href: String(ROUTES.STORE.ANALYTICS_CARDS),  label: "Analytics Cards"  },
-      { href: String(ROUTES.STORE.ANALYTICS_ALERTS), label: "Analytics Alerts" },
-      { href: String(ROUTES.STORE.PAYOUTS),          label: "Payouts"          },
-      { href: String(ROUTES.STORE.PAYOUT_SETTINGS), label: "Payout Settings"  },
-      { href: String(ROUTES.STORE.PAYOUT_METHODS),  label: "Payout Methods"   },
+      { href: String(ROUTES.STORE.ANALYTICS), label: "Analytics" },
+      // Payouts hidden until FEATURE_PAYOUTS (P7).
     ],
   },
   {
     title: "Store",
     items: [
-      { href: String(ROUTES.STORE.STOREFRONT),         label: "Storefront"          },
-      { href: String(ROUTES.STORE.SHIPPING),           label: "Shipping"            },
-      { href: String(ROUTES.STORE.SHIPPING_CONFIGS),   label: "Shipping Configs"    },
-      { href: String(ROUTES.STORE.STORE_CATEGORIES),   label: "Store Categories"    },
-      { href: String(ROUTES.STORE.ADDRESSES),          label: "Addresses"           },
-      { href: String(ROUTES.STORE.COUPONS),            label: "Coupons"             },
-      { href: String(ROUTES.STORE.WHATSAPP),           label: "WhatsApp"            },
-      { href: String(ROUTES.STORE.GOOGLE_REVIEWS),     label: "Google Reviews"      },
-      { href: String(ROUTES.STORE.SLUG),               label: "Store URL"           },
+      { href: String(ROUTES.STORE.STOREFRONT), label: "Storefront" },
+      { href: String(ROUTES.STORE.SHIPPING),   label: "Shipping"   },
+      { href: String(ROUTES.STORE.ADDRESSES),  label: "Addresses"  },
+      // Coupons hidden until FEATURE_COUPONS (P2).
     ],
   },
   {
@@ -379,13 +347,11 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
     title: "Shopping",
     items: [
       { href: String(ROUTES.USER.ORDERS),    label: "My Orders"  },
-      { href: String(ROUTES.USER.RETURNS),   label: "Returns"    },
-      { href: String(ROUTES.USER.REVIEWS),   label: "My Reviews" },
+      { href: String(ROUTES.USER.WISHLIST),  label: "Wishlist"   },
       { href: String(ROUTES.USER.ADDRESSES), label: "Addresses"  },
-      // Disabled in P-1 (re-add when the corresponding FEATURE_* is enabled):
-      // My Bids → FEATURE_AUCTIONS, Pre-Orders → FEATURE_PREORDERS,
-      // Digital Codes, Prize Draws → FEATURE_PRIZE_DRAWS,
-      // My Events → FEATURE_EVENTS, My Offers, My Coupons → FEATURE_COUPONS
+      { href: String(ROUTES.USER.REVIEWS),   label: "My Reviews" },
+      // Hidden until feature patch ships: Returns, My Bids (P5), Pre-Orders (P6),
+      // Digital Codes, Prize Draws (P10), My Events (P4), My Coupons (P2).
     ],
   },
   {

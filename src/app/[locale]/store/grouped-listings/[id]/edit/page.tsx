@@ -44,6 +44,7 @@ export default function Page() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    // audit-direct-fetch-ok: advanced store feature; no server action yet
     fetch(API_ROUTES.STORE.GROUPED_LISTING_BY_ID(id))
       .then((r) => r.json())
       .then((json) => {
@@ -63,6 +64,7 @@ export default function Page() {
 
   const onSave = async () => {
     setSaving(true);
+    // audit-direct-fetch-ok: advanced store feature; no server action yet
     const res = await fetch(API_ROUTES.STORE.GROUPED_LISTING_BY_ID(id), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },

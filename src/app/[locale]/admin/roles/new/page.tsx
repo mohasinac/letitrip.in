@@ -42,6 +42,7 @@ export default function Page() {
       .split(/[\n,]/)
       .map((s) => s.trim())
       .filter(Boolean);
+    // audit-direct-fetch-ok: RBAC roles management; no server action in appkit yet
     const res = await fetch(API_ROUTES.ADMIN.ROLES, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

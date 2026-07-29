@@ -1,18 +1,8 @@
 "use server";
 
 import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
-/**
- * Wishlist Server Actions â€” thin entrypoint
- *
- * Authenticates, validates, rate-limits, then delegates to appkit
- * domain functions.  No business logic here.
- */
-
 import { requireAuthUser } from "@mohasinac/appkit";
-import {
-  rateLimitByIdentifier,
-  RateLimitPresets,
-} from "@mohasinac/appkit";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit";
 import { AuthorizationError } from "@mohasinac/appkit";
 import {
   addToWishlist,
@@ -20,8 +10,12 @@ import {
   getWishlistForUser,
   WishlistFullError,
   WISHLIST_MAX,
+  addItemToCart,
+  productRepository,
 } from "@mohasinac/appkit";
 import type { UserWishlistItem } from "@mohasinac/appkit";
+
+const RATE_LIMIT_MSG = "Too many requests. Please slow down.";
 
 export type EnrichedWishlistItem = UserWishlistItem;
 
@@ -31,31 +25,31 @@ export async function addToWishlistAction(
   | { ok: false; code: "WISHLIST_FULL"; limit: number; current: number }>> {
   return wrapAction(async () => {
     const user = await requireAuthUser();
-      const rl = await rateLimitByIdentifier(
-        `wishlist:add:${user.uid}`,
-        RateLimitPresets.API,
-      );
-      if (!rl.success)
-        throw new AuthorizationError("Too many requests. Please slow down.");
-      try {
-        const { count } = await addToWishlist(user.uid, productId);
+    const rl = await rateLimitByIdentifier(
+      `wishlist:add:${user.uid}`,
+      RateLimitPresets.API,
+    );
+    if (!rl.success)
+      throw new AuthorizationError(RATE_LIMIT_MSG);
+    try {
+      const { count } = await addToWishlist(user.uid, productId);
+      return {
+        ok: true,
+        count,
+        limit: WISHLIST_MAX,
+        isFull: count >= WISHLIST_MAX,
+      };
+    } catch (e) { // audit-catch-raw-ok: pre-existing-handler-intentional
+      if (e instanceof WishlistFullError) {
         return {
-          ok: true,
-          count,
-          limit: WISHLIST_MAX,
-          isFull: count >= WISHLIST_MAX,
+          ok: false,
+          code: "WISHLIST_FULL",
+          limit: e.limit,
+          current: e.current,
         };
-      } catch (e) { // audit-catch-raw-ok: pre-existing-handler-intentional
-        if (e instanceof WishlistFullError) {
-          return {
-            ok: false,
-            code: "WISHLIST_FULL",
-            limit: e.limit,
-            current: e.current,
-          };
-        }
-        throw e;
       }
+      throw e;
+    }
   });
 }
 
@@ -68,7 +62,7 @@ export async function removeFromWishlistAction(
     RateLimitPresets.API,
   );
   if (!rl.success)
-    throw new AuthorizationError("Too many requests. Please slow down.");
+    throw new AuthorizationError(RATE_LIMIT_MSG);
   return removeFromWishlist(user.uid, productId);
 }
 
@@ -78,7 +72,32 @@ export async function getWishlistAction(): Promise<ActionResult<{
 }>> {
   return wrapAction(async () => {
     const user = await requireAuthUser();
-      return getWishlistForUser(user.uid);
+    return getWishlistForUser(user.uid);
   });
 }
 
+export async function addWishlistItemToCartAction(
+  productId: string,
+): Promise<ActionResult<{ success: boolean }>> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+    const rl = await rateLimitByIdentifier(`cart:add:${user.uid}`, RateLimitPresets.API);
+    if (!rl.success) throw new AuthorizationError(RATE_LIMIT_MSG);
+
+    const product = await productRepository.findById(productId);
+    if (!product) throw new Error(`Product not found: ${productId}`);
+
+    await addItemToCart(user.uid, {
+      productId,
+      productTitle: product.title,
+      productImage: product.mainImage ?? product.images?.[0] ?? "",
+      price: product.price,
+      currency: product.currency,
+      quantity: 1,
+      storeId: product.storeId,
+      storeName: product.storeName ?? "",
+      listingType: product.listingType ?? "standard",
+    });
+    return { success: true };
+  });
+}

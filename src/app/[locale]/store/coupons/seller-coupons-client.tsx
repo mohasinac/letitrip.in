@@ -8,6 +8,7 @@ export function SellerCouponsClient() {
   const router = useRouter();
 
   const handleToggle = async (couponId: string, currentlyActive: boolean) => {
+    // audit-direct-fetch-ok: FEATURE_COUPONS=false in P-1
     await fetch(API_ROUTES.STORE.COUPON_BY_ID(couponId), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -16,6 +17,7 @@ export function SellerCouponsClient() {
   };
 
   const handleDelete = async (couponId: string) => {
+    // audit-direct-fetch-ok: FEATURE_COUPONS=false in P-1
     await fetch(API_ROUTES.STORE.COUPON_BY_ID(couponId), { method: "DELETE" });
   };
 

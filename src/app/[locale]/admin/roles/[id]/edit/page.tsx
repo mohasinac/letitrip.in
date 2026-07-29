@@ -34,6 +34,7 @@ export default function Page() {
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
+    // audit-direct-fetch-ok: RBAC roles management; no server action in appkit yet
     fetch(API_ROUTES.ADMIN.ROLE_BY_ID(id))
       .then((r) => r.json())
       .then((j) => {
@@ -47,6 +48,7 @@ export default function Page() {
   const onSave = async () => {
     setSaving(true);
     const permissions = permissionsText.split(/[\n,]/).map((s) => s.trim()).filter(Boolean);
+    // audit-direct-fetch-ok: RBAC roles management; no server action in appkit yet
     const res = await fetch(API_ROUTES.ADMIN.ROLE_BY_ID(id), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -60,6 +62,7 @@ export default function Page() {
   };
 
   const onDelete = async () => {
+    // audit-direct-fetch-ok: RBAC roles management; no server action in appkit yet
     await fetch(API_ROUTES.ADMIN.ROLE_BY_ID(id), { method: "DELETE" });
     router.push(String(ROUTES.ADMIN.ROLES));
   };

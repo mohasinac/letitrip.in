@@ -24,6 +24,7 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // audit-direct-fetch-ok: RBAC roles management; no server action in appkit yet
     fetch(API_ROUTES.ADMIN.ROLES)
       .then((r) => r.json())
       .then((j) => setItems(j?.data?.items ?? []))

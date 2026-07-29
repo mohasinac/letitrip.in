@@ -22,6 +22,7 @@ export default function Page() {
 
   const load = () => {
     setLoading(true);
+    // audit-direct-fetch-ok: admin item-requests; not P-1 scope; no server action yet
     fetch(API_ROUTES.ADMIN.ITEM_REQUESTS)
       .then((r) => r.json())
       .then((json) => setItems(json?.data?.items ?? []))
@@ -31,6 +32,7 @@ export default function Page() {
   useEffect(load, []);
 
   const action = async (id: string, status: ItemRequestDocument["status"]) => {
+    // audit-direct-fetch-ok: admin item-requests; not P-1 scope; no server action yet
     await fetch(API_ROUTES.ADMIN.ITEM_REQUEST_BY_ID(id), {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },

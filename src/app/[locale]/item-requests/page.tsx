@@ -22,6 +22,7 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // audit-direct-fetch-ok: item-requests not in P-1 scope; no server action yet
     fetch("/api/item-requests")
       .then((r) => r.json())
       .then((json) => setItems(json?.data?.items ?? []))

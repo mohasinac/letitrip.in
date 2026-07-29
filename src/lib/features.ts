@@ -55,9 +55,9 @@ export function anyFlagEnabled(...names: FeatureFlag[]): boolean {
  * Use at the export site:
  *   export const GET = withFeatureGuard("AUCTIONS", withProviders(handler));
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- route handler signatures vary
 export function withFeatureGuard(flag: FeatureFlag, handler: (...args: any[]) => any) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- route handler signatures vary
   return (...args: any[]) => {
     if (!getFlag(flag)) {
       return NextResponse.json({ error: "Not Found" }, { status: 404 });

@@ -24,6 +24,7 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // audit-direct-fetch-ok: listing templates; no server action yet
     fetch(API_ROUTES.STORE.LISTING_TEMPLATES)
       .then((r) => r.json())
       .then((json) => setItems(json?.data?.items ?? []))

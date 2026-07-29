@@ -89,6 +89,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
     try {
       const body: Record<string, JsonValue> = { pollVotes: selectedVotes };
       if (comment) body.pollComment = comment;
+      // audit-direct-fetch-ok: FEATURE_EVENTS=false in P-1
       const res = await fetch(API_ROUTES.EVENTS.ENTRIES(eventId), {
         method: "POST",
         headers: { "Content-Type": "application/json" },

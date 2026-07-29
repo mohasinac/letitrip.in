@@ -62,6 +62,7 @@ export default function UserPrizeDrawsPage() {
   const { data, isLoading } = useQuery<{ items: OrderDoc[] }>({
     queryKey: ["user-prize-draws"],
     queryFn: () =>
+      // audit-direct-fetch-ok: FEATURE_PRIZE_DRAWS=false in P-1
       fetch(`${API_ROUTES.USER.ORDERS}?perPage=100`)
         .then((r) => r.json())
         .then((r) => r.data),

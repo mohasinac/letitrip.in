@@ -2199,6 +2199,7 @@ export function SeedPanel() {
   const [isRunning, setIsRunning] = useState(false);
   const [completedCount, setCompletedCount] = useState(0);
   const [totalQueued, setTotalQueued] = useState(0);
+  const [fullSeed, setFullSeed] = useState(false);
 
   // ─── Search / filter / sort / pagination ────────────────────────────────────
   type SortKey = "default" | "name-asc" | "name-desc" | "seed-asc" | "seed-desc" | "db-asc" | "db-desc";
@@ -2266,7 +2267,7 @@ export function SeedPanel() {
         const res = await fetch(API_ROUTES.DEMO.SEED, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action, collections: queue, dryRun }),
+          body: JSON.stringify({ action, collections: queue, dryRun, full: fullSeed }),
         });
         const data = await res.json().catch(() => ({ success: false, message: res.statusText }));
         if (!res.ok || !data.success) {
@@ -2311,7 +2312,7 @@ export function SeedPanel() {
       const res = await fetch(API_ROUTES.DEMO.SEED, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, collections: queue, dryRun: false, ...(runId ? { runId } : {}) }),
+        body: JSON.stringify({ action, collections: queue, dryRun: false, full: fullSeed, ...(runId ? { runId } : {}) }),
       });
 
       if (!res.ok) {
@@ -2428,7 +2429,7 @@ export function SeedPanel() {
 
   return (
     <Section color="inverse" surface="muted" className="min-h-screen text-zinc-900 dark:text-zinc-100">
-      {renderSeedPanelToolbar({ selectedCollections, setSelectedCollections, isFiltered, filteredCollections, isRunning, fetchStatus, isLoadingStatus, searchQuery, setSearchQuery, sortBy, setSortBy, dryRun, setDryRun, run, filterGroup, setFilterGroup, filterStatus, setFilterStatus })}
+      {renderSeedPanelToolbar({ selectedCollections, setSelectedCollections, isFiltered, filteredCollections, isRunning, fetchStatus, isLoadingStatus, searchQuery, setSearchQuery, sortBy, setSortBy, dryRun, setDryRun, fullSeed, setFullSeed, run, filterGroup, setFilterGroup, filterStatus, setFilterStatus })}
 
       <Container size="2xl">
         <Stack gap="lg" padding="y-xl">
@@ -2462,7 +2463,7 @@ type StatusFilter = "all" | "seeded" | "partial" | "empty";
 
 function renderSeedPanelToolbar({
   selectedCollections, setSelectedCollections, isFiltered, filteredCollections, isRunning, fetchStatus, isLoadingStatus,
-  searchQuery, setSearchQuery, sortBy, setSortBy, dryRun, setDryRun, run, filterGroup, setFilterGroup, filterStatus, setFilterStatus,
+  searchQuery, setSearchQuery, sortBy, setSortBy, dryRun, setDryRun, fullSeed, setFullSeed, run, filterGroup, setFilterGroup, filterStatus, setFilterStatus,
 }: {
   selectedCollections: Set<SeedCollectionName>;
   setSelectedCollections: React.Dispatch<React.SetStateAction<Set<SeedCollectionName>>>;
@@ -2477,6 +2478,8 @@ function renderSeedPanelToolbar({
   setSortBy: React.Dispatch<React.SetStateAction<SortKey>>;
   dryRun: boolean;
   setDryRun: (v: boolean) => void;
+  fullSeed: boolean;
+  setFullSeed: (v: boolean) => void;
   run: (action: "load" | "delete") => void;
   filterGroup: GroupKey | "all";
   setFilterGroup: React.Dispatch<React.SetStateAction<GroupKey | "all">>;
@@ -2533,6 +2536,12 @@ function renderSeedPanelToolbar({
                 label={<Span color="muted" className="whitespace-nowrap" size="xs">Dry run</Span>}
                 checked={dryRun}
                 onChange={(e) => setDryRun(e.target.checked)}
+                disabled={isRunning}
+              />
+              <Checkbox
+                label={<Span color="warning" className="whitespace-nowrap" size="xs" weight="medium">Full (dev)</Span>}
+                checked={fullSeed}
+                onChange={(e) => setFullSeed(e.target.checked)}
                 disabled={isRunning}
               />
               <Button size="sm" variant="primary" isLoading={isRunning} onClick={() => run("load")} disabled={isRunning || selectedCollections.size === 0}>{dryRun ? "⚡ Dry Add" : "⚡ Add Seed"}</Button>

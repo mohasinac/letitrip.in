@@ -17,6 +17,11 @@
     "start": "next start",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:iphone": "playwright test --project=iphone-13",
+    "test:e2e:laptop": "playwright test --project=laptop-14",
+    "test:e2e:monitor": "playwright test --project=monitor-30",
+    "test:e2e:prod": "TEST_BASE_URL=https://letitrip.in playwright test",
     "analyze:logs": "node scripts/analyze-logs.mjs",
     "audit": "node scripts/run-audits.mjs",
     "audit:all": "node scripts/run-audits.mjs --all",
@@ -37,7 +42,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "@mohasinac/appkit": "^3.1.7",
+    "@mohasinac/appkit": "^3.2.0",
     "@mohasinac/sievejs": "^1.0.0",
     "@tanstack/react-query": "^5.90.21",
     "@upstash/ratelimit": "^2.0.8",
@@ -62,6 +67,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.0",
     "@tailwindcss/typography": "^0.5.19",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",

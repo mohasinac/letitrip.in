@@ -39,6 +39,7 @@ export default function Page() {
   const checkTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    // audit-direct-fetch-ok: store slug/profile; no server action yet
     fetch(API_ROUTES.STORE.STOREFRONT)
       .then((r) => r.json())
       .then((res) => {
@@ -64,6 +65,7 @@ export default function Page() {
     }
     setCheckState("checking");
     setCheckMessage(null);
+    // audit-direct-fetch-ok: store slug/profile; no server action yet
     fetch(API_ROUTES.STORE.SLUG_CHECK(value))
       .then((r) => r.json())
       .then((res) => {
@@ -94,6 +96,7 @@ export default function Page() {
     setSaveError(null);
     setSaveSuccess(false);
     try {
+      // audit-direct-fetch-ok: store slug/profile; no server action yet
       const res = await fetch(API_ROUTES.STORE.PROFILE, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
