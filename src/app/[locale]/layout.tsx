@@ -63,7 +63,7 @@ export default async function Layout({ children, params }: Props) {
     }
   }
   const seedPanelEnabled = siteSettings?.featureFlags?.seedPanel ?? true;
-  const siteLogoUrl = siteSettings?.logo?.url || "/logo.svg";
+  const siteLogoUrl = siteSettings?.logo?.url || undefined;
   // siteSettings.theme drives the registry-aware <ThemeProvider> mounted
   // inside LayoutShellClient (built-ins + admin records + default ids).
   const siteSettingsTheme = siteSettings?.theme;

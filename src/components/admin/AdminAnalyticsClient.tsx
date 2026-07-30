@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { AdminAnalyticsView, Div, Label, Input } from "@mohasinac/appkit/client";
+import { AdminLiveOverviewCard } from "./analytics/AdminLiveOverviewCard";
 
 import { Row } from "@mohasinac/appkit";
 function today() {
@@ -21,8 +22,10 @@ export function AdminAnalyticsClient() {
   const endpoint = `/api/admin/analytics?startDate=${startDate}&endDate=${endDate}`;
 
   return (
-    <AdminAnalyticsView
-      endpoint={endpoint}
+    <>
+      <AdminLiveOverviewCard />
+      <AdminAnalyticsView
+        endpoint={endpoint}
       renderDateRange={() => (
         <Row surface="muted" padding="inline" align="center" gap="3" wrap rounded="xl" border="default">
           <Label layout="flex" gap="md" color="muted" size="sm">
@@ -48,6 +51,7 @@ export function AdminAnalyticsClient() {
           </Label>
         </Row>
       )}
-    />
+      />
+    </>
   );
 }

@@ -30,6 +30,7 @@ import {
   addressesSeedData,
   storeAddressesSeedData,
   categoriesSeedData,
+  categoriesP1SeedData,
   storesSeedData,
   sessionsSeedData,
   productsStandardSeedData,
@@ -579,6 +580,7 @@ export async function POST(request: NextRequest) {
       : {
           ...SEED_DATA_MAP,
           products: productsStandardSeedData,
+          categories: categoriesP1SeedData,
           // Exclude feature-flagged collections from default run
           bids: [],
           events: [],

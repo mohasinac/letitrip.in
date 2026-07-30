@@ -28,6 +28,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { AdRuntimeInitializer } from "@/components";
 import { FooterNewsletterSlot } from "@/components";
+import { usePresence } from "@/lib/analytics/usePresence";
 import { MAIN_NAV_ITEMS, SIDEBAR_SUPPORT_LINKS, FOOTER_LINK_GROUPS } from "@/constants";
 import { BRAND, getBrandCopyright } from "@/constants";
 import { FOOTER_TRUST_BAR_ITEMS, FOOTER_SOCIAL_LINKS, FOOTER_BOTTOM_LINKS } from "@/constants";
@@ -214,6 +215,8 @@ export default function LayoutShellClient({
       />
     ) : null;
 
+
+  usePresence(user?.uid ?? null);
 
   const shellUser = buildShellUser(user);
 

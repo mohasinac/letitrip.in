@@ -22,6 +22,7 @@ export const FEATURE_FLAGS = [
   "ANALYTICS_FUNCTION",
   "GST",
   "MOCK_PAYMENT",
+  "BUNDLES",
 ] as const;
 
 export type FeatureFlag = (typeof FEATURE_FLAGS)[number];
