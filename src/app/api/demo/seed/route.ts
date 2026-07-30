@@ -161,7 +161,7 @@ type CollectionName =
   | "adminNotifications";
 
 interface SeedRequest {
-  action: "load" | "delete";
+  action: "load" | "delete" | "clear";
   collections?: CollectionName[];
   dryRun?: boolean;
   /** When true, seeds ALL product types (auctions, pre-orders, prize-draws, classifieds,
@@ -595,9 +595,9 @@ export async function POST(request: NextRequest) {
           scammerProfiles: [],
         };
 
-    if (!action || !["load", "delete"].includes(action)) {
+    if (!action || !["load", "delete", "clear"].includes(action)) {
       return NextResponse.json(
-        { success: false, message: 'Invalid action. Use "load" or "delete".' },
+        { success: false, message: 'Invalid action. Use "load", "delete", or "clear".' },
         { status: 400 },
       );
     }
@@ -1179,6 +1179,48 @@ export async function POST(request: NextRequest) {
       }
 
       emit({ type: "done", success: true, message: `Deleted seed data. Removed ${totalDeleted} docs, errors ${totalErrors}.`, totals: { deleted: totalDeleted, skipped: totalSkipped, errors: totalErrors } });
+    } else if (action === "clear") {
+      // Nuclear option: purge ALL Firestore collections + all Firebase Auth users.
+      // Ignores the `collections` request param — always processes every known collection.
+      for (const collectionName of collectionsToProcess) {
+        emit({ type: "progress", collection: collectionName, status: "running", done: progressDone, total });
+        try {
+          const firestoreCollection = COLLECTION_MAP[collectionName];
+
+          if (collectionName === "couponUsage") {
+            // Subcollection under users — dropped automatically when user docs are purged.
+            processedCollections.push(collectionName);
+            emit({ type: "progress", collection: collectionName, status: "done", done: ++progressDone, total });
+            continue;
+          }
+
+          if (collectionName === "users") {
+            // Delete ALL Firebase Auth users except the platform admin.
+            const PROTECTED_UIDS = new Set(["user-admin-letitrip"]);
+            let pageToken: string | undefined;
+            do {
+              const listResult = await auth.listUsers(1000, pageToken);
+              for (const userRecord of listResult.users) {
+                if (!PROTECTED_UIDS.has(userRecord.uid)) {
+                  try { await auth.deleteUser(userRecord.uid); } catch {}
+                }
+              }
+              pageToken = listResult.pageToken;
+            } while (pageToken);
+          }
+
+          await purgeCollection(db, firestoreCollection);
+          processedCollections.push(collectionName);
+          totalDeleted++;
+          emit({ type: "progress", collection: collectionName, status: "done", done: ++progressDone, total });
+        } catch (err) {
+          void normalizeError(err);
+          serverLogger.error(`Error clearing ${collectionName}`, { error: err instanceof Error ? err.message : String(err) });
+          totalErrors++;
+          emit({ type: "progress", collection: collectionName, status: "error", error: err instanceof Error ? err.message : "Unknown error", done: ++progressDone, total });
+        }
+      }
+      emit({ type: "done", success: true, message: `Cleared all data. Purged ${processedCollections.length} collections, ${totalErrors} errors.`, totals: { deleted: totalDeleted, skipped: 0, errors: totalErrors } });
     } else {
       emit({ type: "done", success: false, message: "Invalid action" });
     }
@@ -1196,6 +1238,8 @@ export async function POST(request: NextRequest) {
         message:
           action === "load"
             ? `Loaded seed data. Created ${totalCreated}, errors ${totalErrors}.`
+            : action === "clear"
+            ? `Cleared all data. Purged ${processedCollections.length} collections, ${totalErrors} errors.`
             : `Deleted seed data. Removed ${totalDeleted} docs, errors ${totalErrors}.`,
         totals: {
           created: totalCreated,

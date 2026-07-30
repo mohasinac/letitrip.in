@@ -94,12 +94,16 @@ const ALL_COLLECTIONS: SeedCollectionName[] = [
   ...STORE_COLLECTIONS,
 ];
 
-const DEFAULT_SELECTED: SeedCollectionName[] = [
-  ...CORE_COLLECTIONS,
-  ...LISTINGS_COLLECTIONS,
-  ...TRANSACTIONAL_COLLECTIONS,
-  ...CONTENT_COLLECTIONS,
+/** P-1 patch scope — only these collections have seed data at MVP. */
+const P1_COLLECTIONS: SeedCollectionName[] = [
+  "users", "addresses", "stores", "categories",
+  "products", "productFeatures",
+  "orders", "carts", "wishlists", "history", "reviews",
+  "siteSettings", "homepageSections", "carouselSlides", "faqs",
+  "notifications", "sessions",
 ];
+
+const DEFAULT_SELECTED: SeedCollectionName[] = P1_COLLECTIONS;
 
 // ─── Collection metadata ──────────────────────────────────────────────────────
 
@@ -2251,8 +2255,9 @@ export function SeedPanel() {
     unsubscribeRef.current = null;
   }, []);
 
-  async function run(action: "load" | "delete") {
-    const queue = ALL_COLLECTIONS.filter((c) => selectedCollections.has(c));
+  async function run(action: "load" | "delete", overrideQueue?: SeedCollectionName[], overrideFull?: boolean) {
+    const queue = overrideQueue ?? ALL_COLLECTIONS.filter((c) => selectedCollections.has(c));
+    const useFull = overrideFull ?? fullSeed;
     if (queue.length === 0) return;
 
     setIsRunning(true);
@@ -2267,7 +2272,7 @@ export function SeedPanel() {
         const res = await fetch(API_ROUTES.DEMO.SEED, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action, collections: queue, dryRun, full: fullSeed }),
+          body: JSON.stringify({ action, collections: queue, dryRun, full: useFull }),
         });
         const data = await res.json().catch(() => ({ success: false, message: res.statusText }));
         if (!res.ok || !data.success) {
@@ -2312,7 +2317,7 @@ export function SeedPanel() {
       const res = await fetch(API_ROUTES.DEMO.SEED, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, collections: queue, dryRun: false, full: fullSeed, ...(runId ? { runId } : {}) }),
+        body: JSON.stringify({ action, collections: queue, dryRun: false, full: useFull, ...(runId ? { runId } : {}) }),
       });
 
       if (!res.ok) {
@@ -2341,6 +2346,75 @@ export function SeedPanel() {
       const msg = err instanceof Error ? err.message : "Network error";
       setColRunStates(Object.fromEntries(queue.map((c) => [c, "error" as ColRunState])));
       setColErrors(Object.fromEntries(queue.map((c) => [c, msg])));
+    } finally {
+      unsubscribeRef.current?.();
+      unsubscribeRef.current = null;
+      await fetchStatus();
+      setIsRunning(false);
+    }
+  }
+
+  // ─── P-1 quick actions ───────────────────────────────────────────────────────
+
+  const [clearConfirm, setClearConfirm] = useState(false);
+
+  /** Remove seed then re-seed for P-1 collections only (non-full mode). */
+  async function resetP1() {
+    await run("delete", P1_COLLECTIONS, false);
+    await run("load", P1_COLLECTIONS, false);
+  }
+
+  /** Delete P-1 seed data without re-seeding. */
+  async function removeP1() {
+    await run("delete", P1_COLLECTIONS, false);
+  }
+
+  /** Purge ALL Firestore collections + all Firebase Auth users. */
+  async function clearAll() {
+    setClearConfirm(false);
+    const allCols = ALL_COLLECTIONS;
+    setIsRunning(true);
+    setCompletedCount(0);
+    setTotalQueued(allCols.length);
+    setColErrors({});
+    setColRunStates(Object.fromEntries(allCols.map((c) => [c, "queued" as ColRunState])));
+
+    try {
+      const initRes = await fetch(API_ROUTES.DEMO.SEED_EVENT_INIT, { method: "POST" });
+      const initData = await initRes.json().catch(() => ({ success: false }));
+      const { runId, customToken } = (initData?.data ?? {}) as { runId?: string | null; customToken?: string | null };
+
+      if (runId && customToken) {
+        const provider = getClientRealtimeProvider();
+        try { await provider.signInWithToken(customToken); } catch {}
+        unsubscribeRef.current?.();
+        unsubscribeRef.current = subscribeToSeedRun(runId, setColRunStates, setColErrors, setCompletedCount);
+      }
+
+      const res = await fetch(API_ROUTES.DEMO.SEED, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "clear", dryRun: false, ...(runId ? { runId } : {}) }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: res.statusText }));
+        const msg = err.message ?? "Request failed";
+        setColRunStates(Object.fromEntries(allCols.map((c) => [c, "error" as ColRunState])));
+        setColErrors(Object.fromEntries(allCols.map((c) => [c, msg])));
+        return;
+      }
+      const body = await res.json().catch(() => null);
+      if (!runId && body?.data?.events) {
+        const { newStates, newErrors, doneCount } = applyFinalEvents(body.data.events as SeedProgressEvent[]);
+        setColRunStates((prev) => ({ ...prev, ...newStates }));
+        if (Object.keys(newErrors).length > 0) setColErrors((prev) => ({ ...prev, ...newErrors }));
+        setCompletedCount(doneCount);
+      }
+    } catch (err) {
+      void normalizeError(err);
+      const msg = err instanceof Error ? err.message : "Network error";
+      setColRunStates(Object.fromEntries(allCols.map((c) => [c, "error" as ColRunState])));
+      setColErrors(Object.fromEntries(allCols.map((c) => [c, msg])));
     } finally {
       unsubscribeRef.current?.();
       unsubscribeRef.current = null;
@@ -2429,7 +2503,7 @@ export function SeedPanel() {
 
   return (
     <Section color="inverse" surface="muted" className="min-h-screen text-zinc-900 dark:text-zinc-100">
-      {renderSeedPanelToolbar({ selectedCollections, setSelectedCollections, isFiltered, filteredCollections, isRunning, fetchStatus, isLoadingStatus, searchQuery, setSearchQuery, sortBy, setSortBy, dryRun, setDryRun, fullSeed, setFullSeed, run, filterGroup, setFilterGroup, filterStatus, setFilterStatus })}
+      {renderSeedPanelToolbar({ selectedCollections, setSelectedCollections, isFiltered, filteredCollections, isRunning, fetchStatus, isLoadingStatus, searchQuery, setSearchQuery, sortBy, setSortBy, dryRun, setDryRun, fullSeed, setFullSeed, run, filterGroup, setFilterGroup, filterStatus, setFilterStatus, clearAll, removeP1, resetP1, clearConfirm, setClearConfirm })}
 
       <Container size="2xl">
         <Stack gap="lg" padding="y-xl">
@@ -2464,6 +2538,7 @@ type StatusFilter = "all" | "seeded" | "partial" | "empty";
 function renderSeedPanelToolbar({
   selectedCollections, setSelectedCollections, isFiltered, filteredCollections, isRunning, fetchStatus, isLoadingStatus,
   searchQuery, setSearchQuery, sortBy, setSortBy, dryRun, setDryRun, fullSeed, setFullSeed, run, filterGroup, setFilterGroup, filterStatus, setFilterStatus,
+  clearAll, removeP1, resetP1, clearConfirm, setClearConfirm,
 }: {
   selectedCollections: Set<SeedCollectionName>;
   setSelectedCollections: React.Dispatch<React.SetStateAction<Set<SeedCollectionName>>>;
@@ -2480,11 +2555,16 @@ function renderSeedPanelToolbar({
   setDryRun: (v: boolean) => void;
   fullSeed: boolean;
   setFullSeed: (v: boolean) => void;
-  run: (action: "load" | "delete") => void;
+  run: (action: "load" | "delete", overrideQueue?: SeedCollectionName[], overrideFull?: boolean) => void;
   filterGroup: GroupKey | "all";
   setFilterGroup: React.Dispatch<React.SetStateAction<GroupKey | "all">>;
   filterStatus: StatusFilter;
   setFilterStatus: React.Dispatch<React.SetStateAction<StatusFilter>>;
+  clearAll: () => void;
+  removeP1: () => void;
+  resetP1: () => void;
+  clearConfirm: boolean;
+  setClearConfirm: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   return (
     <Div border="default" className="sticky top-[var(--header-height,0px)] z-30 backdrop-blur-md border-b" surface="default" shadow="sm">
@@ -2502,7 +2582,7 @@ function renderSeedPanelToolbar({
             </Div>
             <Row gap="px" wrap className="gap-1.5">
               <Button size="sm" variant="outline" onClick={() => setSelectedCollections(new Set(ALL_COLLECTIONS))} disabled={isRunning}>Select All</Button>
-              <Button size="sm" variant="outline" onClick={() => setSelectedCollections(new Set(DEFAULT_SELECTED))} disabled={isRunning}>Default</Button>
+              <Button size="sm" variant="outline" onClick={() => setSelectedCollections(new Set(P1_COLLECTIONS))} disabled={isRunning}>P-1 Default</Button>
               <Button size="sm" variant="outline" onClick={() => setSelectedCollections(new Set())} disabled={isRunning}>Clear</Button>
               <Button size="sm" variant="outline" onClick={fetchStatus} disabled={isRunning || isLoadingStatus}>{isLoadingStatus ? "…" : "↻ Refresh"}</Button>
             </Row>
@@ -2578,6 +2658,24 @@ function renderSeedPanelToolbar({
               )}
             </Row>
           </Stack>
+
+          {/* ── P-1 quick actions ──────────────────────────────────────────── */}
+          <Row gap="sm" align="center" className="pt-1.5 border-t border-red-200 dark:border-red-900/40 flex-wrap">
+            <Span size="xs" weight="bold" className="text-red-600 dark:text-red-400 shrink-0 whitespace-nowrap">⚠️ P-1 scope:</Span>
+            <Row gap="xs" wrap>
+              {clearConfirm ? (
+                <>
+                  <Span size="xs" weight="medium" className="text-red-700 dark:text-red-300 shrink-0 whitespace-nowrap">Delete all Firestore data?</Span>
+                  <Button size="sm" variant="danger" onClick={clearAll} disabled={isRunning} className="shrink-0">Yes, clear everything</Button>
+                  <Button size="sm" variant="ghost" onClick={() => setClearConfirm(false)} disabled={isRunning} className="shrink-0">Cancel</Button>
+                </>
+              ) : (
+                <Button size="sm" variant="danger" onClick={() => setClearConfirm(true)} disabled={isRunning} className="shrink-0">🗑 Clear All Data</Button>
+              )}
+              <Button size="sm" variant="outline" onClick={removeP1} disabled={isRunning} className="border-red-400 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 shrink-0">✗ Remove Seed (P-1)</Button>
+              <Button size="sm" variant="primary" onClick={resetP1} disabled={isRunning} className="shrink-0">↺ Reset Seed (P-1)</Button>
+            </Row>
+          </Row>
         </Stack>
       </Container>
     </Div>
