@@ -36,7 +36,43 @@ jobs:
         run: npm run check:types:app
 
       - name: Appkit internal audits
-        run: npm --prefix ./appkit run check:audits
+        working-directory: appkit
+        run: |
+          failed=""
+          for script in \
+            scripts/audit-violations.mjs \
+            scripts/verify-entries.mjs \
+            scripts/verify-css-build.mjs \
+            scripts/audit-use-client.mjs \
+            scripts/audit-double-navigation.mjs \
+            scripts/audit-repository-fields.mjs \
+            scripts/audit-query-provider.mjs \
+            scripts/audit-export-paths.mjs \
+            scripts/audit-listing-indices.mjs \
+            scripts/audit-listing-type-reads.mjs \
+            scripts/audit-create-with-id.mjs \
+            scripts/audit-css-imports.mjs \
+            scripts/audit-appkit-reexports.mjs \
+            scripts/audit-action-confirmation.mjs \
+            scripts/audit-route-strings.mjs \
+            scripts/audit-paginated-select.mjs \
+            scripts/audit-sieve-constants-views.mjs \
+            scripts/audit-schema-registry-completeness.mjs \
+            scripts/audit-firestore-schema-coverage.mjs \
+            scripts/audit-catch-normalize.mjs \
+            scripts/audit-route-schema-registry.mjs \
+            scripts/audit-z-any-z-unknown.mjs; do
+            echo ""
+            echo "=== $script ==="
+            node "$script" 2>&1 || failed="$failed $script"
+          done
+          if [ -n "$failed" ]; then
+            echo ""
+            echo "FAILED audits:$failed"
+            exit 1
+          fi
+          echo ""
+          echo "All appkit audits passed."
 
       - name: Consumer audits
         run: node scripts/run-audits.mjs --all --no-fail-fast 2>&1
