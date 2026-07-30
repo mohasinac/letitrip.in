@@ -29,8 +29,20 @@ jobs:
       - name: Build appkit
         run: npm --prefix appkit run build
 
-      - name: Run quality gate
-        run: npm run check
+      - name: Type check — appkit
+        run: npm run check:types:appkit
+
+      - name: Type check — consumer
+        run: npm run check:types:app
+
+      - name: Appkit internal audits
+        run: npm --prefix ./appkit run check:audits
+
+      - name: Consumer audits
+        run: node scripts/run-audits.mjs --all --no-fail-fast 2>&1
+
+      - name: Lint
+        run: npm run check:lint
 
   test:
     name: Unit Tests
