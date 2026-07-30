@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# npm config
-/.npmrc
+# npm config (auth tokens go in shell env, not here)
+# /.npmrc is committed — contains legacy-peer-deps=true for ESLint 10 compat
 
 # dependencies
 /node_modules
