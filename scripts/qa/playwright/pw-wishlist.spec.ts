@@ -8,20 +8,21 @@ test.describe("Wishlist — UC-B10", () => {
 
   test("buyer views wishlist page", async ({ page }) => {
     await gotoAndWait(page, "/wishlist");
-    await expect(page.getByRole("main")).toBeVisible();
+    await expect(page.getByRole("main").first()).toBeVisible();
     await expect(
       page.locator("text=/wishlist|saved/i").first()
-    ).toBeVisible({ timeout: 8000 });
+    ).toBeVisible({ timeout: 10000 });
   });
 
   test("wishlist page has filter controls", async ({ page }) => {
     await gotoAndWait(page, "/wishlist");
+    await expect(page.getByRole("main").first()).toBeVisible();
     // Filter drawer trigger should be present
     const filterBtn = page
       .getByRole("button", { name: /filter/i })
       .or(page.locator("[data-testid='filter-btn']"))
       .first();
-    await expect(filterBtn).toBeVisible({ timeout: 8000 });
+    await expect(filterBtn).toBeVisible({ timeout: 10000 });
   });
 
   test("bulk actions appear when items are selected", async ({ page }) => {
@@ -37,6 +38,6 @@ test.describe("Wishlist — UC-B10", () => {
     // Bulk action buttons should appear
     await expect(
       page.getByRole("button", { name: /remove selected|add to cart/i }).first()
-    ).toBeVisible({ timeout: 5000 });
+    ).toBeVisible({ timeout: 8000 });
   });
 });

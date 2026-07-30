@@ -18,6 +18,11 @@ test4.txt
 test5.txt
 /vendor
 
+# Playwright
+/playwright-report/
+/test-results/
+/.auth/
+
 # next.js
 /.next/
 /out/
