@@ -180,36 +180,34 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-W6-3-extras (2026-05-23): ROLES_AUTHENTICATED + RAW_P_TAG/RAW_EM baseline tightens
+### ✅ LAST COMPLETED — P-1 post-deploy groups P/Q/R/S/U (2026-07-31): logo fix, analytics, bundles guard
 
 **Done this session:**
-- **New `ROLES_AUTHENTICATED` constant** in api-roles.ts (4-role tuple: `user + seller + moderator + admin`) — caught the 6 outlier routes that W6-3's 1-3-role sweep missed (`/api/item-requests` POST, `/api/item-requests/[id]/replies` POST, `/api/reports` POST, `/api/user/orders/[id]/{invoice,label,qr}` GET). Sweep driven by a small run-once script (deleted post-sweep). Commit `ebab85b71`.
-- **audit-typography baselines** RAW_P_TAG (3→0) and RAW_EM (2→0) — both at 0 actual count; tightened to match so a stray `<p className=...>` or `<em>` regressions block immediately. Commit `3bdc136aa`.
+- **Group P (logo)**: `layout.tsx:66` — `siteSettings?.logo?.url || "/logo.svg"` fallback so SVG wordmark always shows. Commits `8ef3b0daa`.
+- **Group S (analytics)**: `getCategoryForDetail` + `getProductForDetail` fire-and-forget `incrementViewCount`; `AdminLiveOverviewCard` RTDB presence + pageview panel in `AdminAnalyticsView`; `AdminTopProductsTable` viewCount column; `viewCount` field on `AnalyticsTopProduct` type + `adminAnalytics` job. Appkit `3.2.2`.
+- **Group U (bundles)**: `featureFlags.listingTypes.bundle: false` in site-settings seed; `bundle?: boolean` on `SiteSettingsDocument`; `bundle: true` in defaults; `/admin/bundles/layout.tsx` feature guard.
+- **Seed preservation**: removed `viewCount: 0` from categories + products seeds so analytics survive reseed. Appkit `3.2.3`.
+- **Firebase**: rules + indexes + storage + all 40+ functions deployed (2026-07-31).
+- **Vercel**: `vercel --prod` → live at https://letitrip.in (appkit 3.2.3). Commits `bc320dd50`, `8ef3b0daa`, `ab519c4bf`.
 
 ---
 
-### ✅ PREVIOUS LAST — S-W6-3-role-sweep (2026-05-23): 249 inline role tuples → ROLES_* constants across 148 API route files
+### ✅ PREVIOUS LAST — S-W6-3-extras (2026-05-23): ROLES_AUTHENTICATED + RAW_P_TAG/RAW_EM baseline tightens
 
-**Done:**
-- Long-standing tracker row **W6-3** ✅. Sweep replaces every inline `roles: [...]` tuple in `src/app/api/` with `roles: [...ROLES_X]`.
-- Breakdown: ROLES_ADMIN_ONLY 81 · ROLES_ADMIN_MOD 81 · ROLES_STORE_WRITE 66 · ROLES_STORE_READ 13 · ROLES_TRUST_SAFETY 6 · ROLES_ANY_STAFF 2 — 249 sites across 148 files.
-- Also tightened `audit-inline-styles` RAW_OVERFLOW baseline 98→92.
-- Commits: `af8e58d95` (RAW_OVERFLOW), `8e5b2ffcf` (sweep), `825017478` (prompt+plan).
+**Done this session:**
+- **New `ROLES_AUTHENTICATED` constant** in api-roles.ts (4-role tuple: `user + seller + moderator + admin`) — caught the 6 outlier routes that W6-3's 1-3-role sweep missed. Commit `ebab85b71`.
+- **audit-typography baselines** RAW_P_TAG (3→0) and RAW_EM (2→0) tightened to floor. Commit `3bdc136aa`.
 
 ---
 
-### ✅ PREVIOUS LAST — S-audit-tighten + eslint-react-pin (2026-05-23): close audit slack + silence React-version warning
+### ⏳ CURRENT — P-1 is LIVE. Awaiting next directive from CEO.
 
-**Done this session (mini):**
-- **eslint react settings**: pinned `settings.react.version = "19.0"` — silences the "React version not specified" warning at the top of every `npm run lint`. Commit `f78fe9aa0`.
-- **audit-code-quality baseline**: 761 → 533 (228 closed).
-- **audit-typography baselines** (1071 → 816): HTML_TYPOGRAPHY_CLASSES 685→543, APPKIT_SPAN_RAW_CLASSES 254→252, RAW_BUTTON 127→16.
-- Future regressions in these categories now block at the precise true floor. Commit `7044921bf`.
+**P-1 status:** Deployed and live at https://letitrip.in (2026-07-31). All Firebase rules/indexes/functions current. appkit 3.2.3 on npm.
 
-**Done this session:**
-- **W0-5 ✅**: Deleted `DemoSeedView` + `DemoSeedViewProps` re-export lines from `appkit/src/features/admin/components/index.ts`. All three barrels clean.
-- **W6-12 ✅**: Moved `AdminListingScaffoldRow` type into `DataListingView.tsx`. Updated 4 type-only importers (AdminFaqsView, AdminPrizeDrawsView, AdminProductsView, AdminViewCards). Removed `AdminListingScaffold` from `admin/components/index.ts`, `appkit/src/index.ts`, `appkit/src/client.ts`. Deleted `AdminListingScaffold.tsx` (304 lines gone). 4 deliberate skips documented: AdminCarouselView (D&D), SellerBidsView (grouped-by-auction), SellerOrdersView (615 LOC), SellerProductsView (597 LOC).
-- `npm run check` exits 0. Commits: appkit `5930a1e`, consumer `1290b65c6`.
+**Immediate follow-up options** (pull when explicitly prioritised by CEO):
+- **Browser smoke on prod** — sign in → add to cart → checkout (cash/UPI) → seller marks shipped → admin verifies payment. Validates P-1 happy path end-to-end on real Firebase.
+- **P-2 Coupons** — branch `patch/p2-coupons`. Guard coupon field at checkout + API routes. See roadmap for full checklist.
+- **Seed real content** — swap YGO demo data for actual LetItRip collectibles via `/demo/seed` + admin panel before first real users arrive.
 
 ---
 
@@ -217,12 +215,11 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **Tier SB-UNI Phase 3–9** *(pull individually)* | SB-UNI-Q (per-type detail/list views) · R (per-type forms + seller flow) · T (search facets) · W-2/3/4 (CTA sweep public/seller/admin) · W-5 (lint rule) · Y-1..Y-7 (FormShell migration). | Phase 2 (M/N/O) now closed. Pull next sub-tier when prioritised. |
-| – | **S-polish-pass** | 10-phase listing quality polish. Full plan: `~/.claude/plans/plan-to-find-and-polished-aho.md`. Task rows in `Tier PL`. **Foundational rules**: (a) no in-memory filtering; (b) human-readable URL params; (c) `useUrlTable` + `usePendingFilters`. | After SB-UNI-Phase2 — quality polish + test foundation. |
-| – | **S-STORE sprint** *(12 sessions — pull when explicitly scheduled)* | Store seller dashboard + pages overhaul. See `~/.claude/plans/store-pages-dashboard-langing-dazzling-abelson.md`. Rows in `Tier S-STORE` in tracker. S-STORE-1-A (dashboard route) already done as a standalone fix. **Always implement S-STORE-CROSS-A/B/C/D primitives at the start of S-STORE-1 or S-STORE-2** — they are shared infrastructure every other session depends on. See § S-STORE Cross-cutting Primitives below. | Start with S-STORE-1 (critical fixes) when sprint is prioritised. |
-| – | **S6-followup** | Q6-views: switch the 4 listing views (`ProductsIndexListing`, `AuctionsListView`, `PreOrdersListView`, `StoreProductsPageView`) from `useQuery` to `useInfiniteQuery` to wire the existing `useInfiniteScroll` primitive. Substantial refactor with regression surface. | Pull when prioritised. |
-| – | **S1-polish** | Slot-shell polish deferred from S1: admin alerts/charts/recent-activity, user notifications filters, seller analytics charts/top-products. Feature work — new endpoints + hooks. | Pull when prioritised. |
-| – | **S2-browser-smoke** | Browser smoke: sign in → cart → consent OTP → COD + Razorpay test card → coupon → auction-add-to-cart-block. Then `vercel --prod`. | One-off post-S2 validation. |
+| 1 | **Browser smoke + real content seed** | Validate P-1 happy path end-to-end on prod Firebase; seed real collectibles content. | Do before real users arrive. |
+| 2 | **P-2 Coupons** (`patch/p2-coupons`) | Add `FEATURE_COUPONS` guard to checkout UI + all coupon API routes; E2E spec. | First revenue-protective feature after MVP. |
+| 3 | **P-3 Blog** (`patch/p3-blog`) | Confirm `FEATURE_BLOG` guard; write 3+ real posts in admin before enabling. | Low risk, high SEO value. |
+| – | **Tier SB-UNI Phase 3–9** *(pull individually)* | SB-UNI-Q (per-type detail/list views) · R (per-type forms + seller flow) · T (search facets). | Pull when prioritised. |
+| – | **S-polish-pass** | 10-phase listing quality polish. Plan: `~/.claude/plans/plan-to-find-and-polished-aho.md`. | After SB-UNI-Phase2. |
 
 **Post-beta backlog** (not in S1–S11; pull only when explicitly scheduled):
 AK1–3 (DI refactor) · AP1–16 (GoF patterns) · LP1–3 (custom ESLint rules) · Tier DX 38 tasks (`docs.letitrip.in` portal) · EMG1 → Tier PAY (EMI/installments) · EMG4 → Tier CHAT (live chat) · EMG2/EMG3 (loyalty + gift cards holding bay)
