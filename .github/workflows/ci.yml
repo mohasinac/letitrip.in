@@ -35,44 +35,72 @@ jobs:
       - name: Type check — consumer
         run: npm run check:types:app
 
-      - name: Appkit internal audits
+      - name: audit-violations
         working-directory: appkit
-        run: |
-          failed=""
-          for script in \
-            scripts/audit-violations.mjs \
-            scripts/verify-entries.mjs \
-            scripts/verify-css-build.mjs \
-            scripts/audit-use-client.mjs \
-            scripts/audit-double-navigation.mjs \
-            scripts/audit-repository-fields.mjs \
-            scripts/audit-query-provider.mjs \
-            scripts/audit-export-paths.mjs \
-            scripts/audit-listing-indices.mjs \
-            scripts/audit-listing-type-reads.mjs \
-            scripts/audit-create-with-id.mjs \
-            scripts/audit-css-imports.mjs \
-            scripts/audit-appkit-reexports.mjs \
-            scripts/audit-action-confirmation.mjs \
-            scripts/audit-route-strings.mjs \
-            scripts/audit-paginated-select.mjs \
-            scripts/audit-sieve-constants-views.mjs \
-            scripts/audit-schema-registry-completeness.mjs \
-            scripts/audit-firestore-schema-coverage.mjs \
-            scripts/audit-catch-normalize.mjs \
-            scripts/audit-route-schema-registry.mjs \
-            scripts/audit-z-any-z-unknown.mjs; do
-            echo ""
-            echo "=== $script ==="
-            node "$script" 2>&1 || failed="$failed $script"
-          done
-          if [ -n "$failed" ]; then
-            echo ""
-            echo "FAILED audits:$failed"
-            exit 1
-          fi
-          echo ""
-          echo "All appkit audits passed."
+        run: node scripts/audit-violations.mjs
+      - name: verify-entries
+        working-directory: appkit
+        run: node scripts/verify-entries.mjs
+      - name: verify-css-build
+        working-directory: appkit
+        run: node scripts/verify-css-build.mjs
+      - name: audit-use-client
+        working-directory: appkit
+        run: node scripts/audit-use-client.mjs
+      - name: audit-double-navigation
+        working-directory: appkit
+        run: node scripts/audit-double-navigation.mjs
+      - name: audit-repository-fields
+        working-directory: appkit
+        run: node scripts/audit-repository-fields.mjs
+      - name: audit-query-provider
+        working-directory: appkit
+        run: node scripts/audit-query-provider.mjs
+      - name: audit-export-paths
+        working-directory: appkit
+        run: node scripts/audit-export-paths.mjs
+      - name: audit-listing-indices
+        working-directory: appkit
+        run: node scripts/audit-listing-indices.mjs
+      - name: audit-listing-type-reads
+        working-directory: appkit
+        run: node scripts/audit-listing-type-reads.mjs
+      - name: audit-create-with-id
+        working-directory: appkit
+        run: node scripts/audit-create-with-id.mjs
+      - name: audit-css-imports
+        working-directory: appkit
+        run: node scripts/audit-css-imports.mjs
+      - name: audit-appkit-reexports
+        working-directory: appkit
+        run: node scripts/audit-appkit-reexports.mjs
+      - name: audit-action-confirmation
+        working-directory: appkit
+        run: node scripts/audit-action-confirmation.mjs
+      - name: audit-route-strings
+        working-directory: appkit
+        run: node scripts/audit-route-strings.mjs
+      - name: audit-paginated-select
+        working-directory: appkit
+        run: node scripts/audit-paginated-select.mjs
+      - name: audit-sieve-constants-views
+        working-directory: appkit
+        run: node scripts/audit-sieve-constants-views.mjs
+      - name: audit-schema-registry-completeness
+        working-directory: appkit
+        run: node scripts/audit-schema-registry-completeness.mjs
+      - name: audit-firestore-schema-coverage
+        working-directory: appkit
+        run: node scripts/audit-firestore-schema-coverage.mjs
+      - name: audit-catch-normalize
+        working-directory: appkit
+        run: node scripts/audit-catch-normalize.mjs
+      - name: audit-route-schema-registry
+        working-directory: appkit
+        run: node scripts/audit-route-schema-registry.mjs
+      - name: audit-z-any-z-unknown
+        working-directory: appkit
+        run: node scripts/audit-z-any-z-unknown.mjs
 
       - name: Consumer audits
         run: node scripts/run-audits.mjs --all --no-fail-fast 2>&1
