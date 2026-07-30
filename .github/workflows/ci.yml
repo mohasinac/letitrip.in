@@ -26,8 +26,17 @@ jobs:
       - name: Install appkit dev dependencies
         run: npm --prefix appkit install --legacy-peer-deps
 
-      - name: Run quality gate
-        run: npm run check
+      - name: Type check — appkit
+        run: npm run check:types:appkit
+
+      - name: Type check — consumer
+        run: npm run check:types:app
+
+      - name: Audits
+        run: npm run check:audits
+
+      - name: Lint
+        run: npm run check:lint
 
   test:
     name: Unit Tests
