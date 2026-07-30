@@ -8,26 +8,32 @@ vi.mock("@/providers.config", () => ({
   withProviders: (fn: (...args: unknown[]) => unknown) => fn,
 }));
 
-vi.mock("@mohasinac/appkit", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@mohasinac/appkit")>();
-  return {
-    ...actual,
-    successResponse: (data: unknown) =>
-      new Response(JSON.stringify({ ok: true, data }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      }),
-    errorResponse: (msg: string, status = 400, code?: string) =>
-      new Response(JSON.stringify({ ok: false, error: msg, code }), {
-        status,
-        headers: { "Content-Type": "application/json" },
-      }),
-    createRouteHandler:
-      (_opts: unknown, handler: (...args: unknown[]) => unknown) =>
-      (...args: unknown[]) =>
-        handler(...args),
-  };
-});
+// Static mock — avoids loading real appkit dist which has a broken relative import in server-entry.js.
+// createRouteHandler is called as createRouteHandler({ roles, permission, handler }) (single-object arg),
+// so the mock extracts `handler` from the options object rather than treating it as a curried call.
+vi.mock("@mohasinac/appkit", () => ({
+  successResponse: (data: unknown) =>
+    new Response(JSON.stringify({ ok: true, data }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    }),
+  errorResponse: (msg: string, status = 400, code?: string) =>
+    new Response(JSON.stringify({ ok: false, error: msg, code }), {
+      status,
+      headers: { "Content-Type": "application/json" },
+    }),
+  createRouteHandler:
+    ({
+      handler,
+    }: {
+      handler: (ctx: {
+        request: Request;
+        params: Record<string, string>;
+      }) => unknown;
+    }) =>
+    async (req: Request, ctx: { params: Promise<Record<string, string>> }) =>
+      handler({ request: req, params: await ctx.params }),
+}));
 
 vi.mock("@/constants/api-roles", () => ({
   ROLES_ADMIN_MOD: ["admin", "moderator"],

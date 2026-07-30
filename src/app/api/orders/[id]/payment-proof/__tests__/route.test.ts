@@ -1,6 +1,5 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
 
-// Mock the server action
 vi.mock("@mohasinac/appkit/server", () => ({
   attachPaymentProofAction: vi.fn(),
 }));
@@ -9,23 +8,20 @@ vi.mock("@/providers.config", () => ({
   withProviders: (fn: (...args: unknown[]) => unknown) => fn,
 }));
 
-vi.mock("@mohasinac/appkit", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@mohasinac/appkit")>();
-  return {
-    ...actual,
-    successResponse: (data: unknown) =>
-      new Response(JSON.stringify({ ok: true, data }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      }),
-    errorResponse: (msg: string, status = 400, code?: string) =>
-      new Response(JSON.stringify({ ok: false, error: msg, code }), {
-        status,
-        headers: { "Content-Type": "application/json" },
-      }),
-    parseJsonBody: async <T>(req: Request) => (await req.json()) as T,
-  };
-});
+// Static mock — avoids loading real appkit dist which has a broken relative import in server-entry.js
+vi.mock("@mohasinac/appkit", () => ({
+  successResponse: (data: unknown) =>
+    new Response(JSON.stringify({ ok: true, data }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    }),
+  errorResponse: (msg: string, status = 400, code?: string) =>
+    new Response(JSON.stringify({ ok: false, error: msg, code }), {
+      status,
+      headers: { "Content-Type": "application/json" },
+    }),
+  parseJsonBody: async <T>(req: Request) => (await req.json()) as T,
+}));
 
 const makeParams = (id = "order-test-1") =>
   ({ params: Promise.resolve({ id }) }) as Parameters<
