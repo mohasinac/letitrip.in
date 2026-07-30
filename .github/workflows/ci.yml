@@ -23,8 +23,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build appkit
-        run: npm --prefix appkit run build
+      - name: Install appkit dev dependencies
+        run: npm --prefix appkit install --legacy-peer-deps
 
       - name: Run quality gate
         run: npm run check
@@ -46,8 +46,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build appkit
-        run: npm --prefix appkit run build
+      - name: Install appkit dev dependencies
+        run: npm --prefix appkit install --legacy-peer-deps
 
       - name: Run consumer tests
         run: npm run test -- --run
