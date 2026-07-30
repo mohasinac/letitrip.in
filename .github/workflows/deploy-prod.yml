@@ -17,11 +17,14 @@ jobs:
           node-version: "22"
           cache: "npm"
 
-      - name: Install dependencies
+      - name: Install consumer dependencies
         run: npm ci
 
       - name: Install appkit dev dependencies
         run: npm --prefix appkit install --legacy-peer-deps
+
+      - name: Build appkit
+        run: npm --prefix appkit run build
 
       - name: Run quality gate
         run: npm run check
