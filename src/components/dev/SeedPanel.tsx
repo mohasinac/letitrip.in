@@ -2659,21 +2659,24 @@ function renderSeedPanelToolbar({
             </Row>
           </Stack>
 
-          {/* ── P-1 quick actions ──────────────────────────────────────────── */}
-          <Row gap="sm" align="center" className="pt-1.5 border-t border-red-200 dark:border-red-900/40 flex-wrap">
-            <Span size="xs" weight="bold" className="text-red-600 dark:text-red-400 shrink-0 whitespace-nowrap">⚠️ P-1 scope:</Span>
-            <Row gap="xs" wrap>
+          {/* ── Quick actions ─────────────────────────────────────────────── */}
+          <Row gap="sm" align="center" className="pt-1.5 border-t border-zinc-200 dark:border-zinc-700 flex-wrap">
+            <Row gap="xs" wrap align="center" className="flex-1">
+              <Span size="xs" weight="semibold" color="muted" className="shrink-0 whitespace-nowrap">P-1:</Span>
+              <Button size="sm" variant="primary" onClick={resetP1} disabled={isRunning} className="shrink-0">↺ Reset Seed</Button>
+              <Button size="sm" variant="outline" onClick={removeP1} disabled={isRunning} className="shrink-0">✗ Remove Seed</Button>
+            </Row>
+            <Row gap="xs" wrap align="center">
+              <Span size="xs" weight="semibold" className="text-red-500 shrink-0 whitespace-nowrap">Nuclear:</Span>
               {clearConfirm ? (
                 <>
-                  <Span size="xs" weight="medium" className="text-red-700 dark:text-red-300 shrink-0 whitespace-nowrap">Delete all Firestore data?</Span>
-                  <Button size="sm" variant="danger" onClick={clearAll} disabled={isRunning} className="shrink-0">Yes, clear everything</Button>
+                  <Span size="xs" weight="medium" className="text-red-600 dark:text-red-400 shrink-0 whitespace-nowrap">Wipe all Firestore? (Auth kept)</Span>
+                  <Button size="sm" variant="danger" onClick={clearAll} disabled={isRunning} className="shrink-0">Yes, clear all</Button>
                   <Button size="sm" variant="ghost" onClick={() => setClearConfirm(false)} disabled={isRunning} className="shrink-0">Cancel</Button>
                 </>
               ) : (
                 <Button size="sm" variant="danger" onClick={() => setClearConfirm(true)} disabled={isRunning} className="shrink-0">🗑 Clear All Data</Button>
               )}
-              <Button size="sm" variant="outline" onClick={removeP1} disabled={isRunning} className="border-red-400 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 shrink-0">✗ Remove Seed (P-1)</Button>
-              <Button size="sm" variant="primary" onClick={resetP1} disabled={isRunning} className="shrink-0">↺ Reset Seed (P-1)</Button>
             </Row>
           </Row>
         </Stack>
@@ -2712,12 +2715,18 @@ function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDoc
 }
 
 function renderSeedPanelDoneSummary({ errorCount, dryRun, completedCount, colErrors }: { errorCount: number; dryRun: boolean; completedCount: number; colErrors: Record<string, string> }) {
+  const allErrors = Object.values(colErrors);
+  const isAllUnauthorized = allErrors.length > 0 && allErrors.every((m) => m === "Unauthorized." || m?.toLowerCase().includes("unauthorized"));
   return (
     <Div className={`border ${errorCount > 0 ? "bg-red-50 dark:bg-red-900/10 border-red-300 dark:border-red-700" : "bg-emerald-50 dark:bg-emerald-900/10 border-emerald-300 dark:border-emerald-700"}`} rounded="xl" padding="md">
       <Text className={`${errorCount > 0 ? "text-red-700 dark:text-red-300" : "text-emerald-700 dark:text-emerald-300"}`} size="sm" weight="semibold">
         {errorCount > 0 ? `✗ Completed with ${errorCount} error${errorCount > 1 ? "s" : ""} — ${completedCount - errorCount} succeeded` : `✓ ${dryRun ? "Dry run" : "Seed"} complete — all ${completedCount} collections processed`}
       </Text>
-      {errorCount > 0 && (
+      {isAllUnauthorized ? (
+        <Text color="error" size="sm" className="mt-2">
+          🔒 <Span weight="bold">Not signed in as admin.</Span> Go to <Span weight="semibold">letitrip.in → Sign In</Span> as the admin account, then return here and try again.
+        </Text>
+      ) : errorCount > 0 && (
         <Stack gap="xs" className="mt-2">
           {Object.entries(colErrors).map(([col, msg]) => (
             <Text key={col} color="error" size="xs"><Span weight="bold">{COLLECTION_META[col as SeedCollectionName]?.label ?? col}:</Span> {msg}</Text>
