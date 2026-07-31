@@ -1180,14 +1180,13 @@ export async function POST(request: NextRequest) {
 
       emit({ type: "done", success: true, message: `Deleted seed data. Removed ${totalDeleted} docs, errors ${totalErrors}.`, totals: { deleted: totalDeleted, skipped: totalSkipped, errors: totalErrors } });
     } else if (action === "clear") {
-      // Purge ALL Firestore collections across all patches. Firebase Auth users are kept intact.
+      // Purge ALL Firestore collections. Firebase Auth users + preserved collections are kept.
       // Always processes every known collection regardless of the `collections` request param.
+      const CLEAR_PRESERVE = new Set<CollectionName>(["siteSettings", "homepageSections", "faqs"]);
       const allCollections = Object.keys(COLLECTION_MAP) as CollectionName[];
       for (const collectionName of allCollections) {
         emit({ type: "progress", collection: collectionName, status: "running", done: progressDone, total });
         try {
-          const firestoreCollection = COLLECTION_MAP[collectionName];
-
           if (collectionName === "couponUsage") {
             // Subcollection — dropped automatically when parent user docs are purged.
             processedCollections.push(collectionName);
@@ -1195,6 +1194,14 @@ export async function POST(request: NextRequest) {
             continue;
           }
 
+          if (CLEAR_PRESERVE.has(collectionName)) {
+            // Preserved — keep site settings, homepage sections, and FAQs intact.
+            processedCollections.push(collectionName);
+            emit({ type: "progress", collection: collectionName, status: "done", done: ++progressDone, total });
+            continue;
+          }
+
+          const firestoreCollection = COLLECTION_MAP[collectionName];
           await purgeCollection(db, firestoreCollection);
           processedCollections.push(collectionName);
           totalDeleted++;
@@ -1206,7 +1213,7 @@ export async function POST(request: NextRequest) {
           emit({ type: "progress", collection: collectionName, status: "error", error: err instanceof Error ? err.message : "Unknown error", done: ++progressDone, total });
         }
       }
-      emit({ type: "done", success: true, message: `Cleared all Firestore data. Purged ${processedCollections.length} collections, ${totalErrors} errors. Firebase Auth users preserved.`, totals: { deleted: totalDeleted, skipped: 0, errors: totalErrors } });
+      emit({ type: "done", success: true, message: `Cleared all Firestore data. Preserved: site settings, homepage sections, FAQs + all Auth logins. Purged ${totalDeleted} collections, ${totalErrors} errors.`, totals: { deleted: totalDeleted, skipped: 0, errors: totalErrors } });
     } else {
       emit({ type: "done", success: false, message: "Invalid action" });
     }
@@ -1225,7 +1232,7 @@ export async function POST(request: NextRequest) {
           action === "load"
             ? `Loaded seed data. Created ${totalCreated}, errors ${totalErrors}.`
             : action === "clear"
-            ? `Cleared all data. Purged ${processedCollections.length} collections, ${totalErrors} errors.`
+            ? `Cleared all data. Preserved: site settings, homepage sections, FAQs. Purged ${totalDeleted} collections, ${totalErrors} errors.`
             : `Deleted seed data. Removed ${totalDeleted} docs, errors ${totalErrors}.`,
         totals: {
           created: totalCreated,

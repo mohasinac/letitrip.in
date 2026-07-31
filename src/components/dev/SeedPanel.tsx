@@ -103,6 +103,9 @@ const P1_COLLECTIONS: SeedCollectionName[] = [
   "notifications", "sessions",
 ];
 
+/** Collections preserved by "Clear All Data" + seeded by "⚡ Seed Templates" (site foundations). */
+const TEMPLATE_COLLECTIONS: SeedCollectionName[] = ["siteSettings", "homepageSections", "faqs"];
+
 const DEFAULT_SELECTED: SeedCollectionName[] = P1_COLLECTIONS;
 
 // ─── Collection metadata ──────────────────────────────────────────────────────
@@ -2357,6 +2360,7 @@ export function SeedPanel() {
   // ─── P-1 quick actions ───────────────────────────────────────────────────────
 
   const [clearConfirm, setClearConfirm] = useState(false);
+  const [showAllCollections, setShowAllCollections] = useState(false);
 
   /** Remove seed then re-seed for P-1 collections only (non-full mode). */
   async function resetP1() {
@@ -2367,6 +2371,11 @@ export function SeedPanel() {
   /** Delete P-1 seed data without re-seeding. */
   async function removeP1() {
     await run("delete", P1_COLLECTIONS, false);
+  }
+
+  /** Re-seed site foundation collections only (site settings + homepage + FAQs). */
+  async function seedTemplates() {
+    await run("load", TEMPLATE_COLLECTIONS, false);
   }
 
   /** Purge ALL Firestore collections + all Firebase Auth users. */
@@ -2450,6 +2459,16 @@ export function SeedPanel() {
   const filteredCollections = useMemo(() => {
     let result: SeedCollectionName[] = [...ALL_COLLECTIONS];
 
+    // Hide collections with no seed data AND no DB docs (noise with nothing to show/do)
+    if (!showAllCollections) {
+      result = result.filter((col) => {
+        const st = status.find((s) => s.name === col);
+        const seedCount = st?.seedCount ?? 0;
+        const existingCount = st?.existingCount ?? 0;
+        return seedCount > 0 || existingCount > 0 || selectedCollections.has(col);
+      });
+    }
+
     if (searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase();
       result = result.filter((col) => {
@@ -2493,7 +2512,7 @@ export function SeedPanel() {
     }
 
     return result;
-  }, [searchQuery, filterGroup, filterStatus, sortBy, status]);
+  }, [searchQuery, filterGroup, filterStatus, sortBy, status, showAllCollections, selectedCollections]);
 
   const totalPages = Math.max(1, Math.ceil(filteredCollections.length / PAGE_SIZE));
   const paginatedCollections = filteredCollections.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -2503,7 +2522,7 @@ export function SeedPanel() {
 
   return (
     <Section color="inverse" surface="muted" className="min-h-screen text-zinc-900 dark:text-zinc-100">
-      {renderSeedPanelToolbar({ selectedCollections, setSelectedCollections, isFiltered, filteredCollections, isRunning, fetchStatus, isLoadingStatus, searchQuery, setSearchQuery, sortBy, setSortBy, dryRun, setDryRun, fullSeed, setFullSeed, run, filterGroup, setFilterGroup, filterStatus, setFilterStatus, clearAll, removeP1, resetP1, clearConfirm, setClearConfirm })}
+      {renderSeedPanelToolbar({ selectedCollections, setSelectedCollections, isFiltered, filteredCollections, isRunning, fetchStatus, isLoadingStatus, searchQuery, setSearchQuery, sortBy, setSortBy, dryRun, setDryRun, fullSeed, setFullSeed, run, filterGroup, setFilterGroup, filterStatus, setFilterStatus, clearAll, removeP1, resetP1, clearConfirm, setClearConfirm, seedTemplates, showAllCollections, setShowAllCollections })}
 
       <Container size="2xl">
         <Stack gap="lg" padding="y-xl">
@@ -2538,7 +2557,7 @@ type StatusFilter = "all" | "seeded" | "partial" | "empty";
 function renderSeedPanelToolbar({
   selectedCollections, setSelectedCollections, isFiltered, filteredCollections, isRunning, fetchStatus, isLoadingStatus,
   searchQuery, setSearchQuery, sortBy, setSortBy, dryRun, setDryRun, fullSeed, setFullSeed, run, filterGroup, setFilterGroup, filterStatus, setFilterStatus,
-  clearAll, removeP1, resetP1, clearConfirm, setClearConfirm,
+  clearAll, removeP1, resetP1, clearConfirm, setClearConfirm, seedTemplates, showAllCollections, setShowAllCollections,
 }: {
   selectedCollections: Set<SeedCollectionName>;
   setSelectedCollections: React.Dispatch<React.SetStateAction<Set<SeedCollectionName>>>;
@@ -2565,6 +2584,9 @@ function renderSeedPanelToolbar({
   resetP1: () => void;
   clearConfirm: boolean;
   setClearConfirm: React.Dispatch<React.SetStateAction<boolean>>;
+  seedTemplates: () => void;
+  showAllCollections: boolean;
+  setShowAllCollections: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   return (
     <Div border="default" className="sticky top-[var(--header-height,0px)] z-30 backdrop-blur-md border-b" surface="default" shadow="sm">
@@ -2656,6 +2678,7 @@ function renderSeedPanelToolbar({
               {isFiltered && (
                 <Button type="button" variant="ghost" onClick={() => { setSearchQuery(""); setFilterGroup("all"); setFilterStatus("all"); setSortBy("default"); }} className="text-[11px] text-amber-600 dark:text-amber-400 hover:underline ml-1 shrink-0 p-0 h-auto">✕ Clear</Button>
               )}
+              <Button type="button" variant="ghost" onClick={() => setShowAllCollections((v) => !v)} className="text-[11px] text-zinc-400 dark:text-slate-500 hover:underline ml-1 shrink-0 p-0 h-auto">{showAllCollections ? "Hide zero-seed" : "Show all"}</Button>
             </Row>
           </Stack>
 
@@ -2665,12 +2688,13 @@ function renderSeedPanelToolbar({
               <Span size="xs" weight="semibold" color="muted" className="shrink-0 whitespace-nowrap">P-1:</Span>
               <Button size="sm" variant="primary" onClick={resetP1} disabled={isRunning} className="shrink-0">↺ Reset Seed</Button>
               <Button size="sm" variant="outline" onClick={removeP1} disabled={isRunning} className="shrink-0">✗ Remove Seed</Button>
+              <Button size="sm" variant="outline" onClick={seedTemplates} disabled={isRunning} className="shrink-0">⚡ Seed Templates</Button>
             </Row>
             <Row gap="xs" wrap align="center">
               <Span size="xs" weight="semibold" className="text-red-500 shrink-0 whitespace-nowrap">Nuclear:</Span>
               {clearConfirm ? (
                 <>
-                  <Span size="xs" weight="medium" className="text-red-600 dark:text-red-400 shrink-0 whitespace-nowrap">Wipe all Firestore? (Auth kept)</Span>
+                  <Span size="xs" weight="medium" className="text-red-600 dark:text-red-400 shrink-0 whitespace-nowrap">Wipe all data? Keeps: site settings, homepage, FAQs + all logins</Span>
                   <Button size="sm" variant="danger" onClick={clearAll} disabled={isRunning} className="shrink-0">Yes, clear all</Button>
                   <Button size="sm" variant="ghost" onClick={() => setClearConfirm(false)} disabled={isRunning} className="shrink-0">Cancel</Button>
                 </>
