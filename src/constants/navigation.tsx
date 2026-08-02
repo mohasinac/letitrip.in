@@ -227,8 +227,13 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.CONTACT),             "Contact",            "admin:contact:read"),
     ],
   },
-  // Events group hidden until FEATURE_EVENTS (P4). Re-add:
-  // { title: "Events", items: [Events, All Entries, Lotteries] }
+  {
+    title: "Events",
+    items: [
+      adminItem(String(ROUTES.ADMIN.EVENTS),            "Events",       "admin:events:read"),
+      adminItem(String(ROUTES.ADMIN.ALL_EVENT_ENTRIES), "All Entries",  "admin:events:read"),
+    ],
+  },
   {
     title: "Trust & Safety",
     items: [
@@ -350,8 +355,9 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
       { href: String(ROUTES.USER.WISHLIST),  label: "Wishlist"   },
       { href: String(ROUTES.USER.ADDRESSES), label: "Addresses"  },
       { href: String(ROUTES.USER.REVIEWS),   label: "My Reviews" },
+      { href: String(ROUTES.USER.EVENTS),    label: "My Events"  },
       // Hidden until feature patch ships: Returns, My Bids (P5), Pre-Orders (P6),
-      // Digital Codes, Prize Draws (P10), My Events (P4), My Coupons (P2).
+      // Digital Codes, Prize Draws (P10), My Coupons (P2).
     ],
   },
   {
