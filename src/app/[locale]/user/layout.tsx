@@ -1,20 +1,13 @@
-"use client";
-
-import { Suspense, useMemo, type ReactNode } from "react";
-import { DashboardLayoutClient, RoleGuard, useSession } from "@mohasinac/appkit/client";
-import { isAdminUser, isSellerUser } from "@mohasinac/appkit";
-import { getUserNavGroups } from "@/constants";
+import type { ReactNode } from "react";
+import { RoleGuard } from "@mohasinac/appkit/client";
+import { getFlag } from "@/lib/features";
+import { UserLayoutClient } from "./UserLayoutClient";
 
 export default function UserLayout({ children }: { children: ReactNode }) {
-  const { user } = useSession();
-  const isSeller = isSellerUser(user) || isAdminUser(user);
-  const groups = useMemo(() => getUserNavGroups(isSeller), [isSeller]);
-
+  const auctionsOn = getFlag("AUCTIONS");
   return (
     <RoleGuard>
-      <DashboardLayoutClient variant="user" groups={groups}>
-        <Suspense>{children}</Suspense>
-      </DashboardLayoutClient>
+      <UserLayoutClient flags={{ auctionsOn }}>{children}</UserLayoutClient>
     </RoleGuard>
   );
 }

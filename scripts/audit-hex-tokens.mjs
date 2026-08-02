@@ -126,6 +126,8 @@ const EXEMPT_PATH_PATTERNS = [
   /^appkit\/src\/seed\/site-settings-seed-data\.ts$/,
   // Hex defaults for <input type="color"> — CSS vars are invalid there; hex must be a literal string.
   /^appkit\/src\/features\/homepage\/lib\/franchise-colors\.ts$/,
+  // Background seed defaults — Firestore document field values for default layout background colors.
+  /^appkit\/src\/features\/layout\/background-seed-defaults\.ts$/,
 ];
 
 /**
