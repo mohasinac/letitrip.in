@@ -14,6 +14,7 @@
  * `raffle` / `prize-draw` from the matching win surface, `promo` from a
  * homepage banner.
  */
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
@@ -34,7 +35,9 @@ const claimSchema = z.object({
     .optional(),
 });
 
-export const POST = withProviders(
+export const POST = withFeatureGuard(
+  "COUPONS",
+  withProviders(
   createRouteHandler<(typeof claimSchema)["_output"]>({
     auth: true,
     schema: claimSchema,
@@ -72,4 +75,5 @@ export const POST = withProviders(
       return successResponse({ claim }, "Coupon claimed.", 201);
     },
   }),
+  ),
 );

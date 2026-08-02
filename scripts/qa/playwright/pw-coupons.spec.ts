@@ -186,4 +186,18 @@ test.describe("Feature flag guard — COUPONS API", () => {
     const res = await page.request.get(`${BASE_URL}/api/store/coupons`);
     expect([401, 404]).toContain(res.status());
   });
+
+  test("GET /api/user/coupons without auth → 401 or 404 (never 200)", async ({ page }) => {
+    // After P-2 wires withFeatureGuard("COUPONS") + auth: true,
+    // unauthenticated callers must never receive wallet data.
+    const res = await page.request.get(`${BASE_URL}/api/user/coupons`);
+    expect([401, 404]).toContain(res.status());
+  });
+
+  test("POST /api/user/coupons/claim without auth → 401 or 404", async ({ page }) => {
+    const res = await page.request.post(`${BASE_URL}/api/user/coupons/claim`, {
+      data: { couponCode: "WELCOME10", source: "manual" },
+    });
+    expect([401, 404]).toContain(res.status());
+  });
 });
