@@ -4,7 +4,6 @@ import { ROLES_STORE_WRITE } from "@/constants";
 
 const BULK_MAX = 50;
 
-// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const PATCH = withProviders(createApiHandler({
   roles: [...ROLES_STORE_WRITE],
     permission: "store:api:write",
@@ -31,7 +30,7 @@ export const PATCH = withProviders(createApiHandler({
 
     const orderIds = body.orderIds as string[];
 
-    // Verify ownership — reject batch on any mismatch
+    // Verify ownership â€” reject batch on any mismatch
     const orders = await Promise.all(orderIds.map((id) => orderRepository.findById(id)));
     for (const [i, o] of orders.entries()) {
       if (!o || o.storeId !== store.id) {

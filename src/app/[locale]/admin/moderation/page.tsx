@@ -15,6 +15,7 @@ import {
   ACTIONS,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
+import { getAdminModerationQueue, updateAdminModeration } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
 import type { ModerationQueueDocument } from "@mohasinac/appkit";
 
@@ -27,8 +28,7 @@ export default function Page() {
 
   const load = () => {
     setLoading(true);
-    // audit-direct-fetch-ok: admin control-plane; no server action in appkit yet
-    fetch(API_ROUTES.ADMIN.MODERATION_QUEUE)
+    getAdminModerationQueue(API_ROUTES.ADMIN.MODERATION_QUEUE)
       .then((r) => r.json())
       .then((json) => setItems(json?.data?.items ?? []))
       .finally(() => setLoading(false));
@@ -37,12 +37,7 @@ export default function Page() {
   useEffect(load, []);
 
   const review = async (id: string, status: "approved" | "rejected", reason?: string) => {
-    // audit-direct-fetch-ok: admin control-plane; no server action in appkit yet
-    await fetch(API_ROUTES.ADMIN.MODERATION_BY_ID(id), {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status, reason }),
-    });
+    await updateAdminModeration(API_ROUTES.ADMIN.MODERATION_BY_ID(id), { status, reason });
     load();
   };
 

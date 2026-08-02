@@ -7,6 +7,7 @@ const __O = {
 import { TrendingUp, ShoppingBag, Clock, Package, Plus, BarChart2, Wallet, Store, Star } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
+import { getStoreAnalytics } from "@/lib/api/store-client";
 
 import { Row } from "@mohasinac/appkit";
 // Brand gradient mirrors the SiteLogo wordmark — using CSS var tokens
@@ -82,8 +83,7 @@ export default function Page() {
   const [topProducts, setTopProducts] = useState<TopProduct[]>([]);
 
   useEffect(() => {
-    // audit-direct-fetch-ok: store analytics summary; no server action yet
-    fetch(API_ROUTES.STORE.ANALYTICS)
+    getStoreAnalytics(API_ROUTES.STORE.ANALYTICS)
       .then((r) => r.json())
       .then((json) => { if (json?.data?.topProducts) setTopProducts(json.data.topProducts); })
       .catch(console.error);

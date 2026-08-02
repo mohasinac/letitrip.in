@@ -58,6 +58,9 @@ const RE_ID_MEMBER = /^(readonly\s+)?id\s*\??\s*:\s*string\b/;
 // Matches an interface declaration (possibly exported, possibly multi-word name)
 const RE_INTERFACE = /^(?:export\s+)?interface\s+\w/;
 
+// Matches a type alias declaration (possibly exported)
+const RE_TYPE_ALIAS = /^(?:export\s+)?type\s+\w/;
+
 // True when the interface header (up to and including the opening brace) contains
 // "extends ... BaseDocument".
 function headerExtendsBase(headerLines) {
@@ -88,20 +91,26 @@ for (const file of collectSchemaFiles()) {
     // Only interested in id: string members (interface member shape)
     if (!RE_ID_MEMBER.test(t)) continue;
 
-    // Suppression on current line or the line above
-    const suppressHere = raw.includes("// audit-schema-base-ok:");
-    const suppressPrev = i > 0 && lines[i - 1].includes("// audit-schema-base-ok:");
-    if (suppressHere || suppressPrev) continue;
-
-    // Scan backward for the nearest `interface` keyword to get enclosing interface
+    // Scan backward for the nearest `interface` or `type` declaration that owns this id
     let headerStart = -1;
+    let ownerIsTypeAlias = false;
     for (let j = i - 1; j >= 0; j--) {
-      if (RE_INTERFACE.test(lines[j].trimStart())) {
+      const lineT = lines[j].trimStart();
+      if (RE_INTERFACE.test(lineT)) {
         headerStart = j;
+        ownerIsTypeAlias = false;
+        break;
+      }
+      if (RE_TYPE_ALIAS.test(lineT)) {
+        headerStart = j;
+        ownerIsTypeAlias = true;
         break;
       }
     }
-    if (headerStart === -1) continue; // Not inside an interface
+    // Not inside any named declaration — skip
+    if (headerStart === -1) continue;
+    // Inside a type alias — type aliases are not Firestore collection roots; skip
+    if (ownerIsTypeAlias) continue;
 
     // Collect the interface header — from headerStart until the first `{`
     const headerLines = [];

@@ -1,16 +1,16 @@
 /**
  * POST /api/user/coupons/claim
  *
- * Plan §10 — claim a coupon into the user's wallet. Idempotent: a second
+ * Plan Â§10 â€” claim a coupon into the user's wallet. Idempotent: a second
  * claim for the same code is a 200 no-op returning the existing claim row.
  *
  * Validation order:
  *   1. Coupon exists.
  *   2. Coupon is currently valid (validity.isActive + within window).
- *   3. `restrictions.firstTimeUserOnly` is honoured (best-effort — checkout
+ *   3. `restrictions.firstTimeUserOnly` is honoured (best-effort â€” checkout
  *      still validates again at redeem time).
  *
- * Source enum is purely analytic — `manual` from a page CTA, `spin` /
+ * Source enum is purely analytic â€” `manual` from a page CTA, `spin` /
  * `raffle` / `prize-draw` from the matching win surface, `promo` from a
  * homepage banner.
  */
@@ -34,7 +34,6 @@ const claimSchema = z.object({
     .optional(),
 });
 
-// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const POST = withProviders(
   createRouteHandler<(typeof claimSchema)["_output"]>({
     auth: true,

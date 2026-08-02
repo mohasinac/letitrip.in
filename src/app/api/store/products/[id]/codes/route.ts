@@ -1,107 +1,46 @@
-/**
- * Z1 — Digital-code pool ingestion (SB-UNI-N).
- *
- * POST /api/store/products/[id]/codes
- * Body: { codes: string[] }
- *
- * Batch-writes up to 200 codes per request into the
- * `products/{id}/codes/` subcollection. Updates digitalCode.codePoolSize
- * and digitalCode.codesAvailable atomically in the same write batch.
- * Seller must own the product; product must be listingType:"digital-code".
- */
-
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
-  ApiErrors,
   successResponse,
+  errorResponse,
   productRepository,
   storeRepository,
+  userRepository,
 } from "@mohasinac/appkit";
-import { getAdminDb } from "@mohasinac/appkit/server";
-import {
-  PRODUCT_CODES_SUBCOLLECTION,
-  PRODUCT_COLLECTION,
-} from "@mohasinac/appkit";
-import type { ProductCodeDocument } from "@mohasinac/appkit";
-import { z } from "zod";
 import { ROLES_STORE_WRITE } from "@/constants";
+import { USER_ROLE } from "@/constants/api-roles";
 
-const IngestCodesSchema = z.object({
-  codes: z.array(z.string().min(1).max(256)).min(1).max(200),
-});
+const NOT_FOUND_MSG = "No product found for this barcode";
 
-export const POST = withProviders(
+export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: [...ROLES_STORE_WRITE],
+    roles: [...ROLES_STORE_WRITE, USER_ROLE.EMPLOYEE],
     permission: "store:api:write",
-    handler: async ({ request, user, params }) => {
-      const productId = (params as Record<string, string>).id;
+    handler: async ({ request, user }) => {
+      const url = new URL(request.url);
+      const barcode = url.searchParams.get("barcode")?.trim();
+      if (!barcode) return errorResponse("barcode param required", 400);
 
-      let body: unknown;
-      try {
-        body = await request.json();
-      } catch {
-        return ApiErrors.badRequest("Invalid JSON body");
+      const product = await productRepository.findByBarcodeId(barcode);
+      if (!product) return errorResponse(NOT_FOUND_MSG, 404);
+
+      if (user!.role === "admin") {
+        return successResponse(product);
       }
 
-      const parsed = IngestCodesSchema.safeParse(body);
-      if (!parsed.success) {
-        return ApiErrors.badRequest(
-          parsed.error.issues[0]?.message ?? "Invalid request",
-        );
+      if (user!.role === "employee") {
+        const userDoc = (await userRepository.findById(user!.uid)) as { storeId?: string } | null;
+        if (!userDoc?.storeId || product.storeId !== userDoc.storeId)
+          return errorResponse(NOT_FOUND_MSG, 404);
+        return successResponse(product);
       }
 
-      const { codes } = parsed.data;
+      const store = await storeRepository.findByOwnerId(user!.uid);
+      if (!store || product.storeId !== store.id)
+        return errorResponse(NOT_FOUND_MSG, 404);
 
-      const product = await productRepository.findById(productId);
-      if (!product) return ApiErrors.notFound("Product not found");
-      if (product.listingType !== "digital-code") {
-        return ApiErrors.badRequest("Product is not a digital-code listing");
-      }
-
-      // Seller auth: verify the store belongs to this user (unless admin)
-      if (user!.role !== "admin") {
-        const store = await storeRepository.findByOwnerId(user!.uid);
-        if (!store || store.id !== product.storeId) {
-          return ApiErrors.forbidden("Not your product");
-        }
-      }
-
-      const db = getAdminDb();
-      const productRef = db.collection(PRODUCT_COLLECTION).doc(productId);
-      const codesCollRef = productRef.collection(PRODUCT_CODES_SUBCOLLECTION);
-
-      const now = new Date();
-      const batch = db.batch();
-
-      for (const code of codes) {
-        const codeRef = codesCollRef.doc();
-        const codeDoc: Omit<ProductCodeDocument, "id"> = {
-          productId,
-          code,
-          status: "available",
-          createdAt: now,
-          updatedAt: now,
-        };
-        batch.set(codeRef, codeDoc);
-      }
-
-      const prevAvailable = product.digitalCode?.codesAvailable ?? 0;
-      const prevPoolSize = product.digitalCode?.codePoolSize ?? 0;
-      batch.update(productRef, {
-        "digitalCode.codePoolSize": prevPoolSize + codes.length,
-        "digitalCode.codesAvailable": prevAvailable + codes.length,
-        updatedAt: now,
-      });
-
-      await batch.commit();
-
-      return successResponse({
-        inserted: codes.length,
-        codesAvailable: prevAvailable + codes.length,
-      });
+      return successResponse(product);
     },
   }),
 );

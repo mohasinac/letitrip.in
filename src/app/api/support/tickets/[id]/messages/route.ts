@@ -5,42 +5,124 @@ import {
   successResponse,
   errorResponse,
   supportRepository,
+  orderRepository,
+  userRepository,
 } from "@mohasinac/appkit";
+import { isSoftBanned } from "@mohasinac/appkit/server";
 
-const schema = z.object({
-  body: z.string().min(1).max(5000),
-  newStatus: z.enum(["open", "in_progress", "waiting_on_user", "resolved", "closed"]).optional(),
+const MAX_OPEN_TICKETS = 2;
+const _MAX_ORDER_TICKETS = 1;
+
+const createSchema = z.object({
+  category: z.enum([
+    "order_issue",
+    "billing_payment",
+    "account",
+    "listing_dispute",
+    "scam_report",
+    "refund_request",
+    "auction_dispute",
+    "general",
+    // ST-4 â€” sellers request admin-only store field changes
+    "store_change_request",
+    // ST-3 â€” buyers/sellers request order line-item mutation
+    "order_modification_request",
+    // ST-5 â€” appeal a ban (bypasses soft-ban guard + active-ticket limit)
+    "unban_request",
+  ]),
+  subject: z.string().min(3).max(200),
+  description: z.string().min(10).max(5000),
+  orderId: z.string().optional(),
 });
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
-export const POST = withProviders(
-  createRouteHandler<(typeof schema)["_output"]>({
+export const GET = withProviders(
+  createRouteHandler({
     auth: true,
-    schema,
-    handler: async ({ user, params, body }) => {
-      const ticketId = (params as { id: string }).id;
-      const ticket = await supportRepository.getTicketById(ticketId);
-      if (!ticket) return errorResponse("Ticket not found", 404);
+    handler: async ({ user, request }) => {
+      const { searchParams } = new URL(request.url);
+      const page = Math.max(1, Number(searchParams.get("page") ?? "1"));
+      const pageSize = Math.min(50, Math.max(1, Number(searchParams.get("pageSize") ?? "20")));
 
-      const isOwner = ticket.userId === user!.uid;
-      const isStaff =
-        user!.role === "admin" ||
-        user!.role === "employee" ||
-        user!.role === "moderator";
+      const result = await supportRepository.getUserTickets(user!.uid, page, pageSize);
+      return successResponse(result);
+    },
+  }),
+);
 
-      if (!isOwner && !isStaff) return errorResponse("Forbidden", 403);
-      if (ticket.status === "closed") return errorResponse("This ticket is closed", 400);
+export const POST = withProviders(
+  createRouteHandler<(typeof createSchema)["_output"]>({
+    auth: true,
+    schema: createSchema,
+    handler: async ({ user, body }) => {
+      const { category, subject, description, orderId } = body!;
+      // ST-5 â€” `unban_request` is the formal appeal channel. It bypasses the
+      // create_support_tickets soft-ban guard AND the active-ticket limit so
+      // a soft-banned user (or one already at the ticket cap) can still file
+      // an appeal.
+      const isUnbanRequest = category === "unban_request";
 
-      const message = {
-        id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-        authorId: user!.uid,
-        authorRole: isStaff ? ("support" as const) : ("user" as const),
-        body: body!.body,
-        createdAt: new Date(),
-      };
+      // Soft ban check (skipped for unban_request appeals)
+      if (!isUnbanRequest) {
+        const userDoc = await userRepository.findById(user!.uid);
+        if (userDoc && isSoftBanned(userDoc, "create_support_tickets")) {
+          const ban = userDoc.softBans?.find((b) => b.action === "create_support_tickets");
+          return errorResponse(
+            `Your account is restricted from creating support tickets. Reason: ${ban?.reason ?? "Policy violation"}. Open an "Appeal a ban" ticket if you believe this is an error.`,
+            403,
+          );
+        }
+      }
 
-      await supportRepository.addMessage(ticketId, message, body!.newStatus as any);
-      return successResponse(message, "Message sent", 201);
+      // General ticket limit (skipped for unban_request appeals)
+      if (category !== "order_issue" && !isUnbanRequest) {
+        const activeCount = await supportRepository.countActiveTickets(user!.uid);
+        if (activeCount >= MAX_OPEN_TICKETS) {
+          return errorResponse(
+            `You already have ${MAX_OPEN_TICKETS} open tickets. Please wait for them to be resolved before opening a new one.`,
+            422,
+          );
+        }
+      }
+
+      // Order ticket limit
+      if (category === "order_issue") {
+        if (!orderId) return errorResponse("orderId is required for order_issue tickets", 400);
+
+        const order = await orderRepository.findById(orderId);
+        if (!order) return errorResponse("Order not found", 404);
+        if (order.userId !== user!.uid) return errorResponse("Order does not belong to you", 403);
+
+        const ineligibleStatuses = ["DELIVERED", "CANCELLED", "REFUNDED"];
+        if (ineligibleStatuses.includes(order.status)) {
+          return errorResponse("Support tickets can only be opened for active orders.", 400);
+        }
+
+        const existing = await supportRepository.getActiveOrderTicket(user!.uid, orderId);
+        if (existing) {
+          return errorResponse("You already have an open ticket for this order.", 422);
+        }
+      }
+
+      // Same-category waiting_on_user check
+      const waitingTicket = await supportRepository.getActiveCategoryTicket(user!.uid, category);
+      if (waitingTicket && waitingTicket.status === "waiting_on_user") {
+        return errorResponse(
+          "You have an unanswered question from support for this topic. Please respond to your existing ticket first.",
+          422,
+        );
+      }
+
+      const ticket = await supportRepository.createTicket({
+        userId: user!.uid,
+        userEmail: user!.email ?? "",
+        userDisplayName: user!.displayName ?? "User",
+        category,
+        subject,
+        description,
+        orderId,
+      });
+
+      return successResponse(ticket, "Ticket created", 201);
     },
   }),
 );

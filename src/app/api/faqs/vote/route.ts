@@ -11,7 +11,6 @@ const voteSchema = z.object({
   vote: z.enum(["helpful", "not-helpful"]),
 });
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(
   createRouteHandler({
     schema: voteSchema,

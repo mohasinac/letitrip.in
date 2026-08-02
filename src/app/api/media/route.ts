@@ -5,7 +5,7 @@ import { withProviders } from "@/providers.config";
  *
  * Deletes a staged (tmp/*) media file from Cloud Storage.
  * Only files under the tmp/ prefix belonging to the authenticated user
- * may be deleted — canonical (non-tmp) files are never touched.
+ * may be deleted â€” canonical (non-tmp) files are never touched.
  *
  * Used by MediaUploadList / MediaUploadField onAbort to clean up
  * files that were uploaded but the parent form was dismissed without saving.
@@ -50,7 +50,6 @@ function extractStoragePath(url: string): string | null {
   }
 }
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {
@@ -83,7 +82,7 @@ export const DELETE = withProviders(createRouteHandler({
     const ownerUid = pathSegments.length >= 2 ? pathSegments[pathSegments.length - 2] : pathSegments[0];
 
     if (ownerUid !== user!.uid) {
-      serverLogger.warn("Media delete rejected — uid mismatch", {
+      serverLogger.warn("Media delete rejected â€” uid mismatch", {
         requestedPath: storagePath,
         requestUid: user!.uid,
         inferredOwner: ownerUid,
@@ -98,7 +97,7 @@ export const DELETE = withProviders(createRouteHandler({
     try {
       const [exists] = await fileRef.exists();
       if (!exists) {
-        // Idempotent — already gone is success
+        // Idempotent â€” already gone is success
         return successResponse({ deleted: false, reason: "not_found" });
       }
       await fileRef.delete();

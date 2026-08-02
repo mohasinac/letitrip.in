@@ -17,6 +17,7 @@ import {
 import { ListingToolbar } from "@mohasinac/appkit/ui";
 import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
+import { getOrderDigitalCode, getUserOrders } from "@/lib/api/user-client";
 
 const __P = {
   p4: "p-4",
@@ -28,8 +29,7 @@ const SORT_OPTIONS = [
 ];
 
 async function fetchOrderCode(orderId: string): Promise<RevealedCode> {
-  // audit-direct-fetch-ok: digital-codes not in P-1 scope
-  const res = await fetch(`/api/orders/${orderId}/code`);
+  const res = await getOrderDigitalCode(`/api/orders/${orderId}/code`);
   const body = await res.json();
   if (!res.ok) throw new Error(body?.error ?? "Could not retrieve code");
   return body.data as RevealedCode;
@@ -91,8 +91,7 @@ export default function UserDigitalCodesPage() {
   const { data, isLoading } = useQuery<{ items: OrderDoc[] }>({
     queryKey: ["user-digital-codes"],
     queryFn: () =>
-      // audit-direct-fetch-ok: digital-codes not in P-1 scope
-      fetch(`${API_ROUTES.USER.ORDERS}?perPage=100`)
+      getUserOrders(`${API_ROUTES.USER.ORDERS}?perPage=100`)
         .then((r) => r.json())
         .then((r) => r.data),
     enabled: !sessionLoading && !!user,

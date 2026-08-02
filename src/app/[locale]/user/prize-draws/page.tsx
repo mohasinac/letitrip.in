@@ -21,6 +21,7 @@ const SORT_OPTIONS = [
   { value: sortBy("createdAt", "ASC"),  label: "Oldest" },
 ];
 import { API_ROUTES } from "@/constants";
+import { getUserOrders } from "@/lib/api/user-client";
 
 interface OrderItem {
   productId: string;
@@ -62,8 +63,7 @@ export default function UserPrizeDrawsPage() {
   const { data, isLoading } = useQuery<{ items: OrderDoc[] }>({
     queryKey: ["user-prize-draws"],
     queryFn: () =>
-      // audit-direct-fetch-ok: FEATURE_PRIZE_DRAWS=false in P-1
-      fetch(`${API_ROUTES.USER.ORDERS}?perPage=100`)
+      getUserOrders(`${API_ROUTES.USER.ORDERS}?perPage=100`)
         .then((r) => r.json())
         .then((r) => r.data),
     enabled: !sessionLoading && !!user,

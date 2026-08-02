@@ -12,11 +12,10 @@ const updateSchema = z.object({
     .min(3)
     .max(50)
     .regex(/^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$/, {
-      message: "Slug must be 3–50 characters, only lowercase letters, numbers, and hyphens.",
+      message: "Slug must be 3â€“50 characters, only lowercase letters, numbers, and hyphens.",
     }),
 });
 
-// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const PUT = withProviders(
   createRouteHandler<(typeof updateSchema)["_output"]>({
     auth: true,
@@ -28,7 +27,7 @@ export const PUT = withProviders(
 
       if (!SLUG_RE.test(newSlug)) {
         return ApiErrors.badRequest(
-          "Slug must be 3–50 characters, only lowercase letters, numbers, and hyphens.",
+          "Slug must be 3â€“50 characters, only lowercase letters, numbers, and hyphens.",
         );
       }
 

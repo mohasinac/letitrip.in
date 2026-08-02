@@ -10,8 +10,8 @@ import { sortBy } from "@mohasinac/appkit";
 const DEFAULT_SORTS = sortBy(EVENT_FIELDS.CREATED_AT);
 /**
  * Admin Events API Route
- * GET /api/admin/events  — Paginated list with Sieve filtering
- * POST /api/admin/events — Create a new event
+ * GET /api/admin/events  â€” Paginated list with Sieve filtering
+ * POST /api/admin/events â€” Create a new event
  */
 
 import { z } from "zod";
@@ -144,7 +144,7 @@ const createEventSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
-// GET — list events
+// GET â€” list events
 // ---------------------------------------------------------------------------
 const __GET__g = withProviders(createRouteHandler({
   auth: true,
@@ -192,7 +192,7 @@ const __GET__g = withProviders(createRouteHandler({
 }));
 
 // ---------------------------------------------------------------------------
-// POST — create event
+// POST â€” create event
 // ---------------------------------------------------------------------------
 const __POST__g = withProviders(createRouteHandler({
   auth: true,
@@ -259,7 +259,5 @@ const __POST__g = withProviders(createRouteHandler({
   },
 }));
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("EVENTS", __GET__g);
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const POST = withFeatureGuard("EVENTS", __POST__g);

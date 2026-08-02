@@ -27,7 +27,6 @@ import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
  * Create session cookie with session tracking
  * Also ensures user profile exists in Firestore (for OAuth users)
  */
-// rbac-public: unauthenticated endpoint
 export async function POST(request: NextRequest) {
   try {
     const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
@@ -138,7 +137,6 @@ export async function POST(request: NextRequest) {
 /**
  * Clear session cookie and revoke session (logout)
  */
-// rbac-public: unauthenticated endpoint
 export async function DELETE(request: NextRequest) {
   try {
     const rl = await applyRateLimit(request, RateLimitPresets.AUTH);

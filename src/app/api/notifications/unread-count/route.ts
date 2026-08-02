@@ -1,7 +1,7 @@
 import { withProviders } from "@/providers.config";
 /**
  * Notifications Unread Count API
- * GET /api/notifications/unread-count — Get unread notification count for current user
+ * GET /api/notifications/unread-count â€” Get unread notification count for current user
  */
 
 import { createRouteHandler } from "@mohasinac/appkit";
@@ -11,7 +11,6 @@ import { notificationRepository } from "@mohasinac/appkit";
 /**
  * GET /api/notifications/unread-count
  */
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {

@@ -2,23 +2,23 @@ import { normalizeError } from "@mohasinac/appkit";
 /**
  * GET /api/auth/google/callback
  *
- * Step 3 of the Google OAuth popup flow — Google redirects here after consent.
+ * Step 3 of the Google OAuth popup flow â€” Google redirects here after consent.
  *
  * Query params:
- *   code   — Authorization code from Google
- *   state  — eventId set in /api/auth/google/start
- *   error  — Set by Google if the user denied consent
+ *   code   â€” Authorization code from Google
+ *   state  â€” eventId set in /api/auth/google/start
+ *   error  â€” Set by Google if the user denied consent
  *
  * Flow:
  *   1. Validate state (eventId) format and RTDB existence
  *   2. If Google returned an error (user cancelled), write { status:'error' } to RTDB
  *   3. Exchange authorization code for Google tokens (server-side, secret stays on server)
- *   4. Verify Google ID token → extract uid/email/name/photo
+ *   4. Verify Google ID token â†’ extract uid/email/name/photo
  *   5. Find or create Firebase Auth user linked to this Google account
- *   6. Exchange Firebase custom token → Firebase ID token → __session cookie
+ *   6. Exchange Firebase custom token â†’ Firebase ID token â†’ __session cookie
  *   7. Create session record in Firestore
  *   8. Write { status:'success' } to RTDB (main window hook fires)
- *   9. Delete the RTDB event node (best-effort — cleanup function handles stragglers)
+ *   9. Delete the RTDB event node (best-effort â€” cleanup function handles stragglers)
  *  10. Redirect popup to /auth/close (window.close())
  *
  * Security:
@@ -81,7 +81,7 @@ async function writeOutcomeAndClose(
     await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).update(outcome);
     // Self-delete after a short grace period so the client can read the outcome.
     // The scheduled cleanupRtdbEvents function handles nodes that survive longer.
-    // Failures are logged but never thrown — both deletions are idempotent
+    // Failures are logged but never thrown â€” both deletions are idempotent
     // (delete on a missing node is a no-op).
     setTimeout(() => {
       void Promise.allSettled([
@@ -90,7 +90,7 @@ async function writeOutcomeAndClose(
       ]).then(([rtdbResult, authResult]) => {
         if (rtdbResult.status === "rejected") {
           serverLogger.warn(
-            "Auth-event RTDB cleanup failed (non-fatal — cleanupRtdbEvents will retry)",
+            "Auth-event RTDB cleanup failed (non-fatal â€” cleanupRtdbEvents will retry)",
             { eventId, err: rtdbResult.reason },
           );
         }
@@ -135,7 +135,7 @@ async function validateStateAndEvent(
   } catch (rtdbReadErr) {
     void normalizeError(rtdbReadErr);
     serverLogger.warn(
-      "Google callback: RTDB unavailable — skipping anti-replay check, proceeding with OAuth state validation only",
+      "Google callback: RTDB unavailable â€” skipping anti-replay check, proceeding with OAuth state validation only",
       { eventId, rtdbReadErr },
     );
   }
@@ -290,7 +290,6 @@ function buildSessionResponse(
   return response;
 }
 
-// rbac-public: unauthenticated endpoint
 export async function GET(request: NextRequest) {
   const origin = request.nextUrl.origin;
 

@@ -38,3 +38,30 @@ export async function createCheckoutOrder(body: unknown): Promise<Response> {
     body: JSON.stringify(body),
   });
 }
+
+// ── Razorpay ─────────────────────────────────────────────────────────────────
+
+export async function createRazorpayOrder(amount: number): Promise<Response> {
+  return fetch("/api/payment/create-order", {
+    method: "POST",
+    headers: JSON_HEADERS,
+    credentials: CREDS,
+    body: JSON.stringify({ amount }),
+  });
+}
+
+export interface RazorpayVerifyBody {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+  addressId: string;
+}
+
+export async function verifyRazorpayPayment(body: RazorpayVerifyBody): Promise<Response> {
+  return fetch("/api/payment/verify", {
+    method: "POST",
+    headers: JSON_HEADERS,
+    credentials: CREDS,
+    body: JSON.stringify(body),
+  });
+}

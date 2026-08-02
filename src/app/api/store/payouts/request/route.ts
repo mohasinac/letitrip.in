@@ -19,7 +19,6 @@ const requestPayoutSchema = z.object({
   notes: z.string().max(500).optional(),
 });
 
-// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 const __POST__g = withProviders(createRouteHandler<{ paymentMethod: "bank_transfer" | "upi"; notes?: string }>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
@@ -41,5 +40,4 @@ const __POST__g = withProviders(createRouteHandler<{ paymentMethod: "bank_transf
   },
 }));
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const POST = withFeatureGuard("PAYOUTS", __POST__g);

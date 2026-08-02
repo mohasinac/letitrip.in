@@ -13,12 +13,12 @@ import { withProviders } from "@/providers.config";
  * here together with productId and addressId.
  *
  * Body:
- *   razorpay_order_id    — Razorpay order ID from create-order step
- *   razorpay_payment_id  — Payment ID returned by Razorpay checkout
- *   razorpay_signature   — HMAC-SHA256 signature from Razorpay
- *   productId            — Pre-order product being reserved
- *   addressId            — User's selected shipping address ID
- *   notes                — Optional order notes
+ *   razorpay_order_id    â€” Razorpay order ID from create-order step
+ *   razorpay_payment_id  â€” Payment ID returned by Razorpay checkout
+ *   razorpay_signature   â€” HMAC-SHA256 signature from Razorpay
+ *   productId            â€” Pre-order product being reserved
+ *   addressId            â€” User's selected shipping address ID
+ *   notes                â€” Optional order notes
  *
  * Returns: { orderId }
  */
@@ -52,7 +52,6 @@ const preorderDepositSchema = z.object({
   notes: z.string().max(500).optional(),
 });
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 const __POST__g = withProviders(createRouteHandler<
   (typeof preorderDepositSchema)["_output"]
 >({
@@ -93,7 +92,7 @@ const __POST__g = withProviders(createRouteHandler<
     if (!isPreOrderListing(product))
       throw new ValidationError("Product is not a pre-order item");
 
-    // 4. Fetch user address (SB-UNI-A 2026-05-13 — unified addresses w/ ownerType guard)
+    // 4. Fetch user address (SB-UNI-A 2026-05-13 â€” unified addresses w/ ownerType guard)
     const addressDoc = await addressesRepository.findById(addressId);
     const address =
       addressDoc &&
@@ -163,12 +162,11 @@ const __POST__g = withProviders(createRouteHandler<
     );
 
     serverLogger.info(
-      `Pre-order deposit placed: order ${order.id} for product ${productId} by user ${user!.uid} — deposit ₹${depositPaidAmount}`,
+      `Pre-order deposit placed: order ${order.id} for product ${productId} by user ${user!.uid} â€” deposit â‚¹${depositPaidAmount}`,
     );
 
     return successResponse({ orderId: order.id });
   },
 }));
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const POST = withFeatureGuard("RAZORPAY", __POST__g);

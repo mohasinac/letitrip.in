@@ -1,9 +1,9 @@
 import { withProviders } from "@/providers.config";
 /**
  * Coupon Validate API Route
- * POST /api/coupons/validate — Validate a coupon code against a purchase amount
+ * POST /api/coupons/validate â€” Validate a coupon code against a purchase amount
  *
- * Public endpoint (requires auth — validates per-user usage limits)
+ * Public endpoint (requires auth â€” validates per-user usage limits)
  */
 
 import { successResponse } from "@mohasinac/appkit";
@@ -14,7 +14,7 @@ import { createRouteHandler } from "@mohasinac/appkit";
 
 const validateSchema = z.object({
   code: z.string().min(1),
-  /** Order total in rupees — used to check minPurchase and calculate discount */
+  /** Order total in rupees â€” used to check minPurchase and calculate discount */
   orderTotal: z.number().min(0),
 });
 
@@ -24,7 +24,6 @@ const validateSchema = z.object({
  * Body: { code: string, orderTotal: number }
  * Returns: { valid: boolean, discountAmount: number, coupon?, error? }
  */
-// rbac-public: public endpoint — no authentication required
 export const POST = withProviders(createRouteHandler<(typeof validateSchema)["_output"]>({
   auth: true,
   schema: validateSchema,
