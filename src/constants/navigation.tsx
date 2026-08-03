@@ -211,7 +211,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.REVIEWS), "Reviews", "admin:reviews:read"),
       adminItem(String(ROUTES.ADMIN.MEDIA),   "Media",   "admin:media:read"),
       adminItem(String(ROUTES.ADMIN.BLOG),    "Blog",    "admin:blog:read"),
-      // Bids hidden until FEATURE_AUCTIONS (P5).
+      adminItem(String(ROUTES.ADMIN.BIDS),    "Bids",    "admin:bids:read"),
     ],
   },
   {
@@ -309,7 +309,7 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
     items: [
       { href: String(ROUTES.STORE.ORDERS),  label: "Orders"  },
       { href: String(ROUTES.STORE.REVIEWS), label: "Reviews" },
-      // Bids hidden until FEATURE_AUCTIONS (P5).
+      { href: String(ROUTES.STORE.BIDS),    label: "Bids"    },
     ],
   },
   {
@@ -359,8 +359,8 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
       { href: String(ROUTES.USER.REVIEWS),          label: "My Reviews" },
       { href: String(ROUTES.USER.CLAIMED_COUPONS),  label: "My Coupons" },
       { href: String(ROUTES.USER.EVENTS),           label: "My Events"  },
-      // Hidden until feature patch ships: Returns, My Bids (P5), Pre-Orders (P6),
-      // Digital Codes, Prize Draws (P10).
+      { href: String(ROUTES.USER.BIDS),             label: "My Bids"    },
+      // Hidden until feature patch ships: Returns, Pre-Orders (P6), Digital Codes, Prize Draws (P10).
     ],
   },
   {
