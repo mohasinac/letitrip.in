@@ -24,10 +24,6 @@ vi.mock("@mohasinac/appkit/server", () => ({
       return { ok: false, error: e instanceof Error ? e.message : String(e) };
     }
   },
-  adminCreateCoupon: mockAdminCreateCouponDomain,
-  adminUpdateCoupon: mockAdminUpdateCouponDomain,
-  adminDeleteCoupon: mockAdminDeleteCouponDomain,
-  listAdminCoupons: mockListAdminCouponsDomain,
 }));
 
 vi.mock("@mohasinac/appkit", () => ({
@@ -36,6 +32,10 @@ vi.mock("@mohasinac/appkit", () => ({
   RateLimitPresets: { API: "api", STRICT: "strict" },
   AuthorizationError: class AuthorizationError extends Error { constructor(msg: string) { super(msg); this.name = "AuthorizationError"; } },
   ValidationError: class ValidationError extends Error { constructor(msg: string) { super(msg); this.name = "ValidationError"; } },
+  adminCreateCoupon: mockAdminCreateCouponDomain,
+  adminUpdateCoupon: mockAdminUpdateCouponDomain,
+  adminDeleteCoupon: mockAdminDeleteCouponDomain,
+  listAdminCoupons: mockListAdminCouponsDomain,
 }));
 
 import {
@@ -54,12 +54,14 @@ function makeValidCreateInput() {
     code: "WELCOME10",
     name: "Welcome 10% Off",
     type: "percentage" as const,
-    discountConfig: { value: 10, minPurchase: 0 },
+    discount: { value: 10, minPurchase: 0 },
+    usage: {},
     validity: {
       startDate: "2026-07-01",
       endDate: "2026-12-31",
       isActive: true,
     },
+    restrictions: {},
   };
 }
 
@@ -109,10 +111,10 @@ describe("adminCreateCouponAction", () => {
     expect(result.ok).toBe(false);
   });
 
-  it("discountConfig.value <= 0 → { ok: false }", async () => {
+  it("discount.value <= 0 → { ok: false }", async () => {
     const result = await adminCreateCouponAction({
       ...makeValidCreateInput(),
-      discountConfig: { value: 0, minPurchase: 0 },
+      discount: { value: 0, minPurchase: 0 },
     } as any);
     expect(result.ok).toBe(false);
   });

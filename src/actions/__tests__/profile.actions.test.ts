@@ -30,12 +30,6 @@ vi.mock("@mohasinac/appkit/server", () => ({
       return { ok: false, error: e instanceof Error ? e.message : String(e) };
     }
   },
-  updateUserProfile: mockUpdateUserProfile,
-  getUserProfile: mockGetUserProfile,
-  getUserSessions: mockGetUserSessions,
-  getPublicUserProfile: mockGetPublicUserProfile,
-  getSellerReviews: mockGetSellerReviews,
-  getProfileStoreProducts: mockGetProfileStoreProducts,
 }));
 
 vi.mock("@mohasinac/appkit", () => ({
@@ -45,6 +39,12 @@ vi.mock("@mohasinac/appkit", () => ({
   AuthorizationError: class AuthorizationError extends Error { constructor(msg: string) { super(msg); this.name = "AuthorizationError"; } },
   ValidationError: class ValidationError extends Error { constructor(msg: string) { super(msg); this.name = "ValidationError"; } },
   userRepository: { update: mockUserRepositoryUpdate },
+  updateUserProfile: mockUpdateUserProfile,
+  getUserProfile: mockGetUserProfile,
+  getUserSessions: mockGetUserSessions,
+  getPublicUserProfile: mockGetPublicUserProfile,
+  getSellerReviews: mockGetSellerReviews,
+  getProfileStoreProducts: mockGetProfileStoreProducts,
 }));
 
 import {
@@ -217,8 +217,8 @@ describe("getSellerReviewsAction — no auth required", () => {
   });
 
   it("valid → getSellerReviews called with sellerId", async () => {
-    await getSellerReviewsAction("user-seller-1", { page: 1 });
-    expect(mockGetSellerReviews).toHaveBeenCalledWith("user-seller-1", expect.any(Object));
+    await getSellerReviewsAction("user-seller-1");
+    expect(mockGetSellerReviews).toHaveBeenCalledWith("user-seller-1");
   });
 });
 
@@ -234,7 +234,7 @@ describe("getProfileStoreProductsAction — no auth required", () => {
   });
 
   it("valid → getProfileStoreProducts called with sellerId", async () => {
-    await getProfileStoreProductsAction("user-seller-1", { page: 1 });
-    expect(mockGetProfileStoreProducts).toHaveBeenCalledWith("user-seller-1", expect.any(Object));
+    await getProfileStoreProductsAction("user-seller-1");
+    expect(mockGetProfileStoreProducts).toHaveBeenCalledWith("user-seller-1");
   });
 });
