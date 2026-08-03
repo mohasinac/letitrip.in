@@ -39,7 +39,7 @@ async function loginAs(page: Page, role: keyof typeof CREDS, maxRetries = 3) {
         path: "/",
         httpOnly: true,
         secure: true,
-        sameSite: "Strict",
+        sameSite: "Lax",
       },
     ]);
     return;

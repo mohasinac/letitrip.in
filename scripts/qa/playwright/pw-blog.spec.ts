@@ -27,7 +27,7 @@ test.describe("Blog — Admin + Public", () => {
   test("API: draft posts are NOT returned to public callers", async ({ page }) => {
     // Create a draft post via API
     await loginAsAdmin(page);
-    const cookies = await page.context().cookies();
+    const cookies = await page.context().cookies([BASE_URL]);
     const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
 
     const createRes = await page.request.post(`${BASE_URL}/api/admin/blog`, {
@@ -67,7 +67,7 @@ test.describe("Blog — Admin + Public", () => {
 
   test("API: published posts are visible to public", async ({ page }) => {
     await loginAsAdmin(page);
-    const cookies = await page.context().cookies();
+    const cookies = await page.context().cookies([BASE_URL]);
     const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
 
     const createRes = await page.request.post(`${BASE_URL}/api/admin/blog`, {

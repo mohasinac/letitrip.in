@@ -27,7 +27,10 @@ test.describe("Events — P4", () => {
 
   test("admin can create a sale event via API", async ({ page }) => {
     await loginAsAdmin(page);
+    const cookies = await page.context().cookies([BASE_URL]);
+    const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
     const createRes = await page.request.post(`${BASE_URL}/api/admin/events`, {
+      headers: { Cookie: cookieHeader, "Content-Type": "application/json" },
       data: {
         type: "sale",
         title: "E2E Test Sale Event",
@@ -49,7 +52,9 @@ test.describe("Events — P4", () => {
 
     // Clean up
     if (body.data.id) {
-      await page.request.delete(`${BASE_URL}/api/admin/events/${body.data.id}`);
+      await page.request.delete(`${BASE_URL}/api/admin/events/${body.data.id}`, {
+        headers: { Cookie: cookieHeader },
+      });
     }
   });
 
