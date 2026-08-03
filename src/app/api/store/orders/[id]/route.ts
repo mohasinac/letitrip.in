@@ -1,267 +1,47 @@
-import { normalizeError } from "@mohasinac/appkit";
-/**
- * Store Order Detail API
- *
- * GET   /api/store/orders/[id]
- *   Read a single order (seller scope — admin can see all).
- *
- * PATCH /api/store/orders/[id]
- *   Update order status / tracking. The standard path is a manual update —
- *   the seller types in a carrier + tracking number.
- *
- *   When the seller's `shippingConfig.method === "shiprocket"` AND no manual
- *   tracking data is supplied, status=shipped triggers the full Shiprocket
- *   auto-create flow via `shipOrderAction`:
- *
- *     1. Validate package dimensions in body.shiprocketPackage
- *     2. Delegate to shipOrderAction({ method: "shiprocket", … })
- *     3. shipOrderAction calls Shiprocket create-order → AWB → pickup and
- *        writes shiprocketOrderId/shipmentId/AWB/trackingUrl/status back to
- *        the order.
- *
- *   This is O5 — "Shiprocket auto-create on ship". The dedicated POST
- *   `/api/store/orders/[id]/ship` endpoint still works for callers that
- *   prefer an explicit ship request.
- */
 import { withProviders } from "@/providers.config";
-import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  orderRepository,
-  storeRepository,
-  userRepository,
-  OrderStatusValues,
-  ShippingMethodValues,
-} from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
-import { shipOrderAction } from "@/actions/seller.actions";
+import { createApiHandler, successResponse, ApiErrors, orderRepository, storeRepository, type JsonValue } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
-import { USER_ROLE } from "@/constants/api-roles";
 
-const ORDER_NOT_FOUND = "Order not found";
+const BULK_MAX = 50;
 
-// ─── Validation ────────────────────────────────────────────────────────────
-
-const shiprocketPackageSchema = z.object({
-  weight: z.number().positive().max(500),
-  length: z.number().positive().max(200),
-  breadth: z.number().positive().max(200),
-  height: z.number().positive().max(200),
-  courierId: z.number().int().positive().optional(),
-});
-
-const updateOrderSchema = z.object({
-  status: z
-    .enum(["confirmed", "processing", "shipped", "delivered", "cancelled"])
-    .optional(),
-  trackingNumber: z.string().optional(),
-  shippingCarrier: z.string().optional(),
-  trackingUrl: z.string().url().optional(),
-  cancellationReason: z.string().optional(),
-  /**
-   * Package dimensions required when the seller's shipping method is
-   * `shiprocket` and they are transitioning the order to `status="shipped"`
-   * via this PATCH endpoint. When present, this route delegates to
-   * `shipOrderAction` and returns the Shiprocket auto-create result.
-   */
-  shiprocketPackage: shiprocketPackageSchema.optional(),
-  markPicked: z.boolean().optional(),
-  markPacked: z.boolean().optional(),
-  assignedWorkerId: z.string().optional(),
-});
-
-// ─── Helpers ───────────────────────────────────────────────────────────────
-
-async function resolveSellerStoreId(uid: string): Promise<string | null> {
-  const store = await storeRepository.findByOwnerId(uid);
-  return store?.id ?? null;
-}
-
-const SELLER_ALLOWED_STATUSES = ["processing", "shipped"] as const;
-
-interface SellerShippingConfigLike {
-  isConfigured?: boolean;
-  method?: string;
-}
-
-async function getSellerShippingMethod(uid: string): Promise<string | null> {
-  const userDoc = (await userRepository.findById(uid)) as
-    | { shippingConfig?: SellerShippingConfigLike }
-    | null;
-  const cfg = userDoc?.shippingConfig;
-  if (!cfg?.isConfigured) return null;
-  return cfg.method ?? null;
-}
-
-type ShiprocketPackageInput = z.infer<typeof shiprocketPackageSchema>;
-
-type AutoShipResult =
-  | { ok: true; updated: Record<string, JsonValue> | null; result: unknown }
-  | { ok: false; message: string };
-
-/**
- * Dispatch the Shiprocket auto-ship flow for an order.
- * Returns a discriminated result so the caller can build the response
- * without any additional try/catch nesting.
- */
-async function tryAutoShip(
-  id: string,
-  pkg: ShiprocketPackageInput,
-): Promise<AutoShipResult> {
-  try {
-    const result = await shipOrderAction(id, {
-      method: "shiprocket",
-      packageWeight: pkg.weight,
-      packageLength: pkg.length,
-      packageBreadth: pkg.breadth,
-      packageHeight: pkg.height,
-      courierId: pkg.courierId,
-    });
-    const updated = (await orderRepository.findById(id)) as Record<string, JsonValue> | null;
-    return { ok: true, updated, result };
-  } catch (err: unknown) {
-    void normalizeError(err);
-    const message =
-      err instanceof Error ? err.message : "Failed to ship via Shiprocket";
-    return { ok: false, message };
-  }
-}
-
-// ─── Handlers ──────────────────────────────────────────────────────────────
-
-export const GET = withProviders(
-  createRouteHandler({
-    auth: true,
-    roles: [...ROLES_STORE_WRITE],
+export const PATCH = withProviders(createApiHandler({
+  roles: [...ROLES_STORE_WRITE],
     permission: "store:api:write",
-    handler: async ({ user, params }) => {
-      const id = (params as { id: string }).id;
-      const order = await orderRepository.findById(id);
-      if (!order) return errorResponse(ORDER_NOT_FOUND, 404);
+  handler: async ({ request, user }) => {
+    const store = await storeRepository.findByOwnerId(user!.uid);
+    if (!store) return ApiErrors.forbidden("No store found for this account");
 
-      if (user!.role !== "admin") {
-        const storeId = await resolveSellerStoreId(user!.uid);
-        if (!storeId || order.storeId !== storeId)
-          return errorResponse(ORDER_NOT_FOUND, 404);
+    const body = await request.json() as {
+      orderIds?: JsonValue;
+      physicalLocation?: JsonValue;
+    };
+
+    if (!Array.isArray(body.orderIds) || body.orderIds.length === 0) {
+      return ApiErrors.badRequest("orderIds must be a non-empty array");
+    }
+    if (body.orderIds.length > BULK_MAX) {
+      return ApiErrors.badRequest(`Maximum ${BULK_MAX} orders per request`);
+    }
+    const loc = body.physicalLocation as { zone?: JsonValue; shelf?: JsonValue; bin?: JsonValue } | undefined;
+    if (!loc || typeof loc.zone !== "string" || typeof loc.shelf !== "string" || typeof loc.bin !== "string") {
+      return ApiErrors.badRequest("physicalLocation must have zone, shelf, and bin strings");
+    }
+    const physicalLocation = { zone: loc.zone, shelf: loc.shelf, bin: loc.bin };
+
+    const orderIds = body.orderIds as string[];
+
+    // Verify ownership â€” reject batch on any mismatch
+    const orders = await Promise.all(orderIds.map((id) => orderRepository.findById(id)));
+    for (const [i, o] of orders.entries()) {
+      if (!o || o.storeId !== store.id) {
+        return ApiErrors.forbidden(`Order ${orderIds[i]} does not belong to your store`);
       }
+    }
 
-      return successResponse(order);
-    },
-  }),
-);
+    await Promise.all(
+      orderIds.map((id) => orderRepository.update(id, { physicalLocation } as never)),
+    );
 
-export const PATCH = withProviders(
-  createRouteHandler<(typeof updateOrderSchema)["_output"]>({
-    auth: true,
-    roles: [...ROLES_STORE_WRITE, USER_ROLE.EMPLOYEE],
-    permission: "store:api:write",
-    schema: updateOrderSchema,
-    handler: async ({ user, body, params }) => {
-      const id = (params as { id: string }).id;
-      const order = await orderRepository.findById(id);
-      if (!order) return errorResponse(ORDER_NOT_FOUND, 404);
-
-      const isAdmin = user!.role === "admin";
-      const isEmployee = user!.role === USER_ROLE.EMPLOYEE;
-
-      if (!isAdmin) {
-        if (isEmployee) {
-          const userDoc = (await userRepository.findById(user!.uid)) as { storeId?: string } | null;
-          if (!userDoc?.storeId || order.storeId !== userDoc.storeId)
-            return errorResponse(ORDER_NOT_FOUND, 404);
-        } else {
-          const storeId = await resolveSellerStoreId(user!.uid);
-          if (!storeId || order.storeId !== storeId)
-            return errorResponse(ORDER_NOT_FOUND, 404);
-
-          if (
-            body!.status &&
-            !(SELLER_ALLOWED_STATUSES as readonly string[]).includes(body!.status)
-          ) {
-            return errorResponse(
-              "Sellers can only update status to processing or shipped",
-              403,
-            );
-          }
-        }
-      }
-
-      // ── Fulfilment flags — handled before the shipping path.
-      if (body!.markPicked) {
-        await orderRepository.markPicked(id);
-        const updated = await orderRepository.findById(id);
-        return successResponse(updated, "Order marked as picked");
-      }
-      if (body!.markPacked) {
-        await orderRepository.markPacked(id);
-        const updated = await orderRepository.findById(id);
-        return successResponse(updated, "Order marked as packed");
-      }
-      if (body!.assignedWorkerId !== undefined) {
-        await orderRepository.assignWorker(id, body!.assignedWorkerId);
-        const updated = await orderRepository.findById(id);
-        return successResponse(updated, "Worker assigned");
-      }
-
-      const {
-        status,
-        cancellationReason,
-        shiprocketPackage,
-        ...trackingData
-      } = body!;
-
-      // ── O5 — auto-fire Shiprocket flow when the seller's method is shiprocket
-      //    and the transition is to "shipped" with no manual tracking fields.
-      const noManualTracking =
-        !trackingData.trackingNumber &&
-        !trackingData.shippingCarrier &&
-        !trackingData.trackingUrl;
-
-      if (status === "shipped" && noManualTracking) {
-        const method = await getSellerShippingMethod(user!.uid);
-        if (method === ShippingMethodValues.SHIPROCKET) {
-          if (!shiprocketPackage) {
-            return errorResponse(
-              "Shiprocket auto-ship requires package dimensions (shiprocketPackage)",
-              400,
-              { code: "SHIPROCKET_PACKAGE_REQUIRED" },
-            );
-          }
-          const shipResult = await tryAutoShip(id, shiprocketPackage);
-          if (!shipResult.ok) {
-            return errorResponse(shipResult.message, 400, { code: "SHIPROCKET_FAILED" });
-          }
-          return successResponse(
-            { ...shipResult.updated, shiprocket: shipResult.result },
-            "Order shipped via Shiprocket",
-          );
-        }
-      }
-
-      // ── Manual / non-shiprocket path (existing behaviour).
-      if (status === "cancelled") {
-        await orderRepository.cancelOrder(
-          id,
-          cancellationReason ?? "Cancelled by seller",
-        );
-      } else if (status) {
-        await orderRepository.updateStatus(
-          id,
-          status,
-          trackingData as Record<string, JsonValue>,
-        );
-      } else {
-        await orderRepository.updateStatus(
-          id,
-          order.status as (typeof OrderStatusValues)[keyof typeof OrderStatusValues],
-          trackingData as Record<string, JsonValue>,
-        );
-      }
-
-      const updated = await orderRepository.findById(id);
-      return successResponse(updated, "Order updated");
-    },
-  }),
-);
+    return successResponse({ updated: orderIds.length });
+  },
+}));

@@ -21,7 +21,6 @@ const clientErrorSchema = z.object({
   userAgent: z.string().max(1024).optional(),
 });
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(
   createRouteHandler({
     authOptional: true,

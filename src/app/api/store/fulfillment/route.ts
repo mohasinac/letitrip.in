@@ -10,7 +10,6 @@ import {
 import { ROLES_STORE_WRITE } from "@/constants";
 import { USER_ROLE } from "@/constants/api-roles";
 
-// rbac-public: scope enforced per-role inside handler
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { SellerAnalyticsView, SellerAnalyticsStats, SellerTopProducts, Div, Text } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
+import { getStoreAnalytics } from "@/lib/api/store-client";
 
 const __P = {
   p4: "p-4",
@@ -33,8 +34,7 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // audit-direct-fetch-ok: store analytics; no server action in appkit yet
-    fetch(API_ROUTES.STORE.ANALYTICS)
+    getStoreAnalytics(API_ROUTES.STORE.ANALYTICS)
       .then((r) => r.json())
       .then((json) => {
         if (!json?.data) throw new Error("No data");

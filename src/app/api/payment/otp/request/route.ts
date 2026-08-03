@@ -27,11 +27,10 @@ function getTodayIST(): string {
   return new Date(istMs).toISOString().split("T")[0];
 }
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 const __POST__g = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
-    // 1. Per-user 15-minute cooldown — checked via Firestore so it persists across
+    // 1. Per-user 15-minute cooldown â€” checked via Firestore so it persists across
     //    devices and server restarts (in-memory rate limiting is insufficient here).
     const cooldown = await smsCounterRepository.checkAndSetUserCooldown(
       user!.uid,
@@ -39,7 +38,7 @@ const __POST__g = withProviders(createRouteHandler({
     if (!cooldown.allowed) {
       const minutesLeft = Math.ceil(cooldown.retryAfterSeconds / 60);
       serverLogger.warn(
-        `OTP cooldown active for uid ${user!.uid} — retry in ${cooldown.retryAfterSeconds}s`,
+        `OTP cooldown active for uid ${user!.uid} â€” retry in ${cooldown.retryAfterSeconds}s`,
       );
       throw new ApiError(
         429,
@@ -47,14 +46,14 @@ const __POST__g = withProviders(createRouteHandler({
       );
     }
 
-    // 2. Daily global cap — protects the Firebase free-tier SMS quota (1 000/day IST).
+    // 2. Daily global cap â€” protects the Firebase free-tier SMS quota (1 000/day IST).
     const dateStr = getTodayIST();
     const { allowed, count } =
       await smsCounterRepository.checkAndIncrement(dateStr);
 
     if (!allowed) {
       serverLogger.warn(
-        `OTP daily limit reached for ${dateStr} — request by uid ${user!.uid}`,
+        `OTP daily limit reached for ${dateStr} â€” request by uid ${user!.uid}`,
       );
       throw new ApiError(429, ERROR_MESSAGES.CHECKOUT.OTP_DAILY_LIMIT);
     }
@@ -67,5 +66,4 @@ const __POST__g = withProviders(createRouteHandler({
   },
 }));
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const POST = withFeatureGuard("RAZORPAY", __POST__g);

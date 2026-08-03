@@ -1,5 +1,5 @@
 /**
- * GET /api/user/conversations — list the authenticated buyer's conversations.
+ * GET /api/user/conversations â€” list the authenticated buyer's conversations.
  */
 import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
@@ -9,7 +9,6 @@ import {
   listConversationsForBuyer,
 } from "@mohasinac/appkit";
 
-// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
@@ -20,5 +19,4 @@ const __GET__g = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("CHAT", __GET__g);

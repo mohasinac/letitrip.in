@@ -16,6 +16,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
+import { createPayoutMethod } from "@/lib/api/store-client";
 import { useState } from "react";
 
 export default function Page() {
@@ -37,12 +38,7 @@ export default function Page() {
   const onSave = async () => {
     setSaving(true);
     try {
-      // audit-direct-fetch-ok: FEATURE_PAYOUTS=false in P-1
-      const res = await fetch(API_ROUTES.STORE.PAYOUT_METHODS, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+      const res = await createPayoutMethod(API_ROUTES.STORE.PAYOUT_METHODS, form as Record<string, unknown>);
       if (!res.ok) throw new Error("Save failed");
       showToast("Payout method saved", "success");
       router.push(String(ROUTES.STORE.PAYOUT_METHODS));

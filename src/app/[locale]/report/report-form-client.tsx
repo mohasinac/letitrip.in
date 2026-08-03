@@ -14,6 +14,7 @@ import {
   useToast,
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
+import { submitReport } from "@/lib/api/report-client";
 import { useState } from "react";
 
 const ENTITY_TYPES = [
@@ -60,20 +61,12 @@ export function ReportFormClient({ initialEntityType, initialEntityId }: Props) 
       return;
     }
     setSaving(true);
-    // audit-direct-fetch-ok: reports not in P-1 scope; no server action yet
-    const res = await fetch("/api/reports", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        entityType: form.entityType,
-        entityId: form.entityId,
-        reason: form.reason,
-        detail: form.detail,
-        evidenceUrls: form.evidenceUrls
-          .split("\n")
-          .map((s) => s.trim())
-          .filter(Boolean),
-      }),
+    const res = await submitReport({
+      entityType: form.entityType,
+      entityId: form.entityId,
+      reason: form.reason,
+      detail: form.detail,
+      evidenceUrls: form.evidenceUrls.split("\n").map((s) => s.trim()).filter(Boolean),
     });
     setSaving(false);
     if (res.ok) {

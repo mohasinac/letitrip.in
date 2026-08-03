@@ -113,7 +113,6 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   if (alreadyPaid) {
     return (
       <Stack className={CONTAINER_CLS} gap="md">
-        {/* audit-variant-ok: themed success border color not in BORDER_MAP */}
         <Stack padding="md" className="border border-success/20" surface="success-surface" gap="3" rounded="xl">
           <Text className="text-success" size="sm" weight="medium">Payment already verified for this order.</Text>
         </Stack>
@@ -130,7 +129,6 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       <Text className="mt-1" color="muted" size="sm">Order #{id}</Text>
 
       {/* UPI instructions */}
-      {/* audit-variant-ok: themed primary border color not in BORDER_MAP */}
       <Stack padding="md" className="border border-primary/20" surface="default" gap="3" rounded="xl">
         <Text size="sm" weight="semibold" color="primary">Step 1 — Transfer payment via UPI</Text>
         {upiVpa ? (

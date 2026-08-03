@@ -19,6 +19,7 @@ import {
 import { useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { API_ROUTES } from "@/constants";
+import { getShippingConfig, updateShippingConfig, deleteShippingConfig } from "@/lib/api/store-client";
 import { useEffect, useState } from "react";
 
 export default function Page() {
@@ -32,8 +33,7 @@ export default function Page() {
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
-    // audit-direct-fetch-ok: shipping config; no server action yet
-    fetch(API_ROUTES.STORE.SHIPPING_CONFIG_BY_ID(id))
+    getShippingConfig(API_ROUTES.STORE.SHIPPING_CONFIG_BY_ID(id))
       .then((r) => r.json())
       .then((j) => setForm(j?.data ?? {}))
       .finally(() => setLoading(false));
@@ -41,12 +41,7 @@ export default function Page() {
 
   const onSave = async () => {
     setSaving(true);
-    // audit-direct-fetch-ok: shipping config; no server action yet
-    const res = await fetch(API_ROUTES.STORE.SHIPPING_CONFIG_BY_ID(id), {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    const res = await updateShippingConfig(API_ROUTES.STORE.SHIPPING_CONFIG_BY_ID(id), form as Record<string, unknown>);
     setSaving(false);
     if (res.ok) {
       showToast("Saved", "success");
@@ -55,8 +50,7 @@ export default function Page() {
   };
 
   const onDelete = async () => {
-    // audit-direct-fetch-ok: shipping config; no server action yet
-    await fetch(API_ROUTES.STORE.SHIPPING_CONFIG_BY_ID(id), { method: "DELETE" });
+    await deleteShippingConfig(API_ROUTES.STORE.SHIPPING_CONFIG_BY_ID(id));
     router.push(String(ROUTES.STORE.SHIPPING_CONFIGS));
   };
 

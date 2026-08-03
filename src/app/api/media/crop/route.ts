@@ -24,7 +24,7 @@ import sharp from "sharp";
  * Requires authentication
  *
  * Body:
- * - sourceUrl: string (required) — Must be an approved CDN/Storage domain
+ * - sourceUrl: string (required) â€” Must be an approved CDN/Storage domain
  * - x: number (required) - Crop X position
  * - y: number (required) - Crop Y position
  * - width: number (required) - Crop width
@@ -33,7 +33,6 @@ import sharp from "sharp";
  * - outputFormat?: 'jpeg' | 'png' | 'webp' - Output format (default: original)
  * - quality?: number (1-100) - Output quality (default: 90)
  */
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(createRouteHandler<(typeof cropDataSchema)["_output"]>({
   auth: true,
   schema: cropDataSchema,

@@ -22,7 +22,6 @@ import { getOptionalSessionCookie } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 
-// rbac-public: unauthenticated endpoint
 export async function POST(request: NextRequest) {
   try {
     const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
@@ -32,7 +31,7 @@ export async function POST(request: NextRequest) {
     const sessionCookie = getOptionalSessionCookie(request);
     const sessionId = request.cookies.get("__session_id")?.value;
 
-    // Verify session cookie first — needed for both revocation and token revocation
+    // Verify session cookie first â€” needed for both revocation and token revocation
     let decodedUid: string | null = null;
     if (sessionCookie) {
       try {

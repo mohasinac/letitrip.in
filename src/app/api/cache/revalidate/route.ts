@@ -15,16 +15,16 @@ import { normalizeError } from "@mohasinac/appkit";
  *   Omit `collections` (or send an empty array) to clear ALL cached entries.
  *
  * Supported collection names and their cache-key prefixes:
- *   categories        → /api/categories
- *   products          → /api/products
- *   carouselSlides    → /api/carousel
- *   homepageSections  → /api/homepage-sections
- *   siteSettings      → /api/site-settings
- *   faqs              → /api/faqs
- *   reviews           → /api/reviews
- *   blogPosts         → /api/admin/blog, /api/blog
- *   events            → /api/admin/events, /api/events
- *   coupons           → /api/admin/coupons
+ *   categories        â†’ /api/categories
+ *   products          â†’ /api/products
+ *   carouselSlides    â†’ /api/carousel
+ *   homepageSections  â†’ /api/homepage-sections
+ *   siteSettings      â†’ /api/site-settings
+ *   faqs              â†’ /api/faqs
+ *   reviews           â†’ /api/reviews
+ *   blogPosts         â†’ /api/admin/blog, /api/blog
+ *   events            â†’ /api/admin/events, /api/events
+ *   coupons           â†’ /api/admin/coupons
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -33,9 +33,9 @@ import { handleApiError } from "@mohasinac/appkit";
 import { AuthenticationError, ValidationError } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { COLLECTION_CACHE_PATHS } from "@mohasinac/appkit";
+import { withProviders } from "@/providers.config";
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
-export async function POST(request: NextRequest) {
+async function postHandler(request: NextRequest) {
   try {
     // --- Authentication ---
     const secret = process.env.CACHE_REVALIDATION_SECRET;
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     if (!secret) {
       serverLogger.warn(
-        "Cache revalidation: CACHE_REVALIDATION_SECRET is not configured — endpoint disabled",
+        "Cache revalidation: CACHE_REVALIDATION_SECRET is not configured â€” endpoint disabled",
       );
       return NextResponse.json(
         { error: "Endpoint not configured" },
@@ -102,3 +102,5 @@ export async function POST(request: NextRequest) {
     return handleApiError(error);
   }
 }
+
+export const POST = withProviders(postHandler);

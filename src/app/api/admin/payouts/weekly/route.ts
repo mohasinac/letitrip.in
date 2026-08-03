@@ -7,7 +7,7 @@ import {
 /**
  * POST /api/admin/payouts/weekly
  *
- * Admin-manual trigger — processes weekly payouts for Shiprocket orders.
+ * Admin-manual trigger â€” processes weekly payouts for Shiprocket orders.
  * The scheduled version of this logic runs automatically every Saturday
  * at 05:00 UTC via the `weeklyPayoutEligibility` Firebase Function.
  * Use this endpoint for on-demand admin-initiated runs only.
@@ -25,7 +25,7 @@ import {
  *        - Update all included orders: payoutStatus='requested', payoutId=<new>
  *   4. Return a summary object
  *
- * This endpoint is intentionally idempotent — orders with payoutStatus
+ * This endpoint is intentionally idempotent â€” orders with payoutStatus
  * already set to 'requested' or 'paid' are silently skipped.
  */
 
@@ -150,7 +150,7 @@ const __POST__g = withProviders(createRouteHandler({
                 bankName: seller.payoutDetails.bankAccount.bankName,
               }
             : undefined,
-        notes: `Automated weekly payout — ${orders.length} Shiprocket delivered order(s)`,
+        notes: `Automated weekly payout â€” ${orders.length} Shiprocket delivered order(s)`,
         requestedAt: new Date(),
       };
 
@@ -202,5 +202,4 @@ const __POST__g = withProviders(createRouteHandler({
   },
 }));
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const POST = withFeatureGuard("PAYOUTS", __POST__g);

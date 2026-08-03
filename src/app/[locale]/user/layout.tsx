@@ -4,10 +4,11 @@ import { getFlag } from "@/lib/features";
 import { UserLayoutClient } from "./UserLayoutClient";
 
 export default function UserLayout({ children }: { children: ReactNode }) {
+  const eventsOn = getFlag("EVENTS");
   const auctionsOn = getFlag("AUCTIONS");
   return (
     <RoleGuard>
-      <UserLayoutClient flags={{ auctionsOn }}>{children}</UserLayoutClient>
+      <UserLayoutClient flags={{ eventsOn, auctionsOn }}>{children}</UserLayoutClient>
     </RoleGuard>
   );
 }

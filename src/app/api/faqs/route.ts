@@ -45,14 +45,13 @@ import { errorResponse } from "@mohasinac/appkit";
  * - priority: number (optional, 1-10)
  * - featured: boolean (optional)
  *
- * ✅ Fetches FAQs via faqsRepository.findAll()
- * ✅ Filters by category, priority, tags, showOnHomepage params
- * ✅ Full-text search on question + answer text
- * ✅ Sorted by priority (desc) then order (asc)
- * ✅ Interpolates {{companyName}}, {{supportEmail}}, etc. from site settings
- * ✅ Caching implemented with LONG preset (30 min TTL)
+ * âœ… Fetches FAQs via faqsRepository.findAll()
+ * âœ… Filters by category, priority, tags, showOnHomepage params
+ * âœ… Full-text search on question + answer text
+ * âœ… Sorted by priority (desc) then order (asc)
+ * âœ… Interpolates {{companyName}}, {{supportEmail}}, etc. from site settings
+ * âœ… Caching implemented with LONG preset (30 min TTL)
  */
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(createRouteHandler({
   handler: async ({ request }) => {
     // Parse query parameters
@@ -63,7 +62,7 @@ export const GET = withProviders(createRouteHandler({
     const showOnHomepageParam = getBooleanParam(searchParams, "showOnHomepage");
     const showOnHomepageStr = searchParams.get("showOnHomepage");
     const tags = searchParams.get("tags")?.split(",").filter(Boolean);
-    // Sieve DSL params — allow callers to use full Sieve filter/sort expressions
+    // Sieve DSL params â€” allow callers to use full Sieve filter/sort expressions
     const sieveFilters = getStringParam(searchParams, "filters");
     const sieveSorts = getStringParam(searchParams, "sorts");
     const page = getNumberParam(searchParams, "page", 1, { min: 1 });
@@ -192,21 +191,20 @@ export const GET = withProviders(createRouteHandler({
  * - tags: string[]
  * - relatedFAQs: string[]
  *
- * ✅ Requires admin authentication via requireRoleFromRequest
- * ✅ Validates body with faqCreateSchema (Zod)
- * ✅ Auto-assigns order (max existing + 1)
- * ✅ Creates FAQ via faqsRepository.create()
- * ✅ Invalidates FAQ cache after creation
- * ✅ Returns created FAQ with 201 status
- * TODO (Future): Generate SEO-friendly slug for FAQ permalinks — ✅ Done
+ * âœ… Requires admin authentication via requireRoleFromRequest
+ * âœ… Validates body with faqCreateSchema (Zod)
+ * âœ… Auto-assigns order (max existing + 1)
+ * âœ… Creates FAQ via faqsRepository.create()
+ * âœ… Invalidates FAQ cache after creation
+ * âœ… Returns created FAQ with 201 status
+ * TODO (Future): Generate SEO-friendly slug for FAQ permalinks â€” âœ… Done
  */
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(createRouteHandler<(typeof faqCreateSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_ADMIN_ONLY],
   schema: faqCreateSchema,
   handler: async ({ user, body }) => {
-    // Auto-assign order — single Firestore query, avoids full collection load
+    // Auto-assign order â€” single Firestore query, avoids full collection load
     const latestFAQ = await faqsRepository.list({
       sorts: sortBy(FAQ_FIELDS.ORDER),
       page: "1",

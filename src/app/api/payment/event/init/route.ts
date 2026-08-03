@@ -8,28 +8,28 @@ import { withProviders } from "@/providers.config";
  * to that single RTDB path.
  *
  * Security model:
- *  - Requires a valid session cookie — users must be authenticated.
+ *  - Requires a valid session cookie â€” users must be authenticated.
  *  - The custom token claim { paymentEventId: razorpayOrderId } restricts
  *    the token to read ONLY /payment_events/{razorpayOrderId}.
  *    See database.rules.json.
  *  - The event node TTL is 15 min server-side (enforced by the
  *    cleanupPaymentEvents Firebase Function) and 5 min client-side
  *    (usePaymentEvent hard-timeout).
- *  - The Razorpay order ID is the node key — the webhook knows it directly,
+ *  - The Razorpay order ID is the node key â€” the webhook knows it directly,
  *    so no secondary lookup is needed when signalling the outcome.
  *
  * Returns:
  *   { eventId: string, customToken: string, expiresAt: number }
  *
  * Typical call sequence:
- *  1. Client calls POST /api/payment/create-order → receives razorpayOrderId
+ *  1. Client calls POST /api/payment/create-order â†’ receives razorpayOrderId
  *  2. Client calls this endpoint with { razorpayOrderId }
  *  3. Client subscribes via usePaymentEvent.subscribe(eventId, customToken)
  *  4. Client opens Razorpay modal
- *  5a. Razorpay client handler fires → client calls POST /api/payment/verify
- *      → verify route signals RTDB { status:'success', orderIds:[…] }
- *  5b. Razorpay webhook fires → signals RTDB (fallback for dropped connections)
- *  6. usePaymentEvent.status → 'success' → UI navigates to order confirmation
+ *  5a. Razorpay client handler fires â†’ client calls POST /api/payment/verify
+ *      â†’ verify route signals RTDB { status:'success', orderIds:[â€¦] }
+ *  5b. Razorpay webhook fires â†’ signals RTDB (fallback for dropped connections)
+ *  6. usePaymentEvent.status â†’ 'success' â†’ UI navigates to order confirmation
  */
 
 import { getAdminAuth, getAdminRealtimeDb, normalizeError } from "@mohasinac/appkit";
@@ -48,7 +48,6 @@ const bodySchema = z.object({
   razorpayOrderId: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
 });
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 const __POST__g = withProviders(createRouteHandler<(typeof bodySchema)["_output"]>({
   auth: true,
   schema: bodySchema,
@@ -64,7 +63,7 @@ const __POST__g = withProviders(createRouteHandler<(typeof bodySchema)["_output"
         .set({ status: "pending", uid: user!.uid, createdAt: Date.now() });
     } catch (rtdbErr) {
       void normalizeError(rtdbErr);
-      serverLogger.warn("Payment event RTDB write failed — live status updates unavailable", {
+      serverLogger.warn("Payment event RTDB write failed â€” live status updates unavailable", {
         razorpayOrderId,
         rtdbErr,
       });
@@ -89,5 +88,4 @@ const __POST__g = withProviders(createRouteHandler<(typeof bodySchema)["_output"
   },
 }));
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const POST = withFeatureGuard("RAZORPAY", __POST__g);

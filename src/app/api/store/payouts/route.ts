@@ -3,7 +3,7 @@ import { withProviders } from "@/providers.config";
 /**
  * Seller Payouts API
  *
- * GET /api/store/payouts — List authenticated seller's payouts + earnings summary
+ * GET /api/store/payouts â€” List authenticated seller's payouts + earnings summary
  *
  * Mutations use Server Action: requestPayoutAction.
  */
@@ -50,7 +50,7 @@ async function computeSellerEarnings(storeId: string) {
   };
 }
 
-// --- GET — List payouts + earnings summary ---------------------------------
+// --- GET â€” List payouts + earnings summary ---------------------------------
 
 const __GET__g = withProviders(createRouteHandler({
   auth: true,
@@ -131,5 +131,4 @@ const __GET__g = withProviders(createRouteHandler({
   },
 }));
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("PAYOUTS", __GET__g);

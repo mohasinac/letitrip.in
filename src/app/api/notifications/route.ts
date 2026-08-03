@@ -1,8 +1,8 @@
 import { withProviders } from "@/providers.config";
 /**
  * Notifications API Route
- * GET  /api/notifications         — List user's notifications (paginated)
- * POST /api/notifications         — Create a notification (admin/system only)
+ * GET  /api/notifications         â€” List user's notifications (paginated)
+ * POST /api/notifications         â€” Create a notification (admin/system only)
  */
 
 import { z } from "zod";
@@ -46,9 +46,8 @@ const createNotificationSchema = z.object({
 });
 
 /**
- * GET /api/notifications — List authenticated user's notifications
+ * GET /api/notifications â€” List authenticated user's notifications
  */
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ request, user }) => {
@@ -67,9 +66,8 @@ export const GET = withProviders(createRouteHandler({
 }));
 
 /**
- * POST /api/notifications — Create a notification (admin only, or internal system calls)
+ * POST /api/notifications â€” Create a notification (admin only, or internal system calls)
  */
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_ONLY],

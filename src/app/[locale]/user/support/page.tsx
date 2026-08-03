@@ -16,6 +16,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { FieldSelect, ListingToolbar } from "@mohasinac/appkit/ui";
 import { TICKET_STATUSES } from "@/constants";
+import { getSupportTickets } from "@/lib/api/support-client";
 
 const __P = {
   p5: "p-5",
@@ -60,8 +61,7 @@ export default function UserSupportPage() {
   const { data, isLoading } = useQuery<{ tickets: TicketItem[]; total: number }>({
     queryKey: ["user-support-tickets"],
     queryFn: () =>
-      // audit-direct-fetch-ok: support tickets; no server action yet
-      fetch("/api/support/tickets?pageSize=50")
+      getSupportTickets()
         .then((r) => r.json())
         .then((r) => r.data),
     enabled: !sessionLoading && !!user,

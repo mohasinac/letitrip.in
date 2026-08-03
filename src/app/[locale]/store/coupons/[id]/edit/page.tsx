@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { Div, ROUTES, Row, SellerCouponEditorView, Text } from "@mohasinac/appkit";
 import type { CouponEditorDraft } from "@mohasinac/appkit";
 import { API_ROUTES } from "@/constants";
+import { getStoreCoupon, updateStoreCoupon } from "@/lib/api/store-client";
 
 interface CouponData {
   id: string;
@@ -58,8 +59,7 @@ export default function Page() {
 
   useEffect(() => {
     if (!couponId) return;
-    // audit-direct-fetch-ok: FEATURE_COUPONS=false in P-1
-    fetch(API_ROUTES.STORE.COUPON_BY_ID(couponId))
+    getStoreCoupon(API_ROUTES.STORE.COUPON_BY_ID(couponId))
       .then((r) => r.json())
       .then((json) => {
         const coupon = (json?.data ?? json) as CouponData;
@@ -69,30 +69,25 @@ export default function Page() {
   }, [couponId]);
 
   const handleSave = async (draft: CouponEditorDraft) => {
-    // audit-direct-fetch-ok: FEATURE_COUPONS=false in P-1
-    const res = await fetch(API_ROUTES.STORE.COUPON_BY_ID(couponId), {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        validity: {
-          startDate: draft.startDate,
-          endDate: draft.endDate,
-          isActive: draft.isActive,
-        },
-        usage: {
-          totalLimit: Number(draft.totalLimit) || 0,
-          perUserLimit: Number(draft.perUserLimit) || 0,
-        },
-        discount: {
-          value: draft.type !== "free_shipping" ? Number(draft.value) || 0 : 0,
-          ...(draft.minPurchase ? { minPurchase: Math.round(Number(draft.minPurchase) * 100) } : {}),
-          ...(draft.maxDiscount ? { maxDiscount: Math.round(Number(draft.maxDiscount) * 100) } : {}),
-        },
-        restrictions: {
-          applicableProducts: draft.applicableProducts ?? [],
-          applicableCategories: draft.applicableCategories ?? [],
-        },
-      }),
+    const res = await updateStoreCoupon(API_ROUTES.STORE.COUPON_BY_ID(couponId), {
+      validity: {
+        startDate: draft.startDate,
+        endDate: draft.endDate,
+        isActive: draft.isActive,
+      },
+      usage: {
+        totalLimit: Number(draft.totalLimit) || 0,
+        perUserLimit: Number(draft.perUserLimit) || 0,
+      },
+      discount: {
+        value: draft.type !== "free_shipping" ? Number(draft.value) || 0 : 0,
+        ...(draft.minPurchase ? { minPurchase: Math.round(Number(draft.minPurchase) * 100) } : {}),
+        ...(draft.maxDiscount ? { maxDiscount: Math.round(Number(draft.maxDiscount) * 100) } : {}),
+      },
+      restrictions: {
+        applicableProducts: draft.applicableProducts ?? [],
+        applicableCategories: draft.applicableCategories ?? [],
+      },
     });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));

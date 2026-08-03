@@ -12,7 +12,7 @@ import { withProviders } from "@/providers.config";
  * Returns:
  *   { available: CartItemDocument[], unavailable: UnavailableItem[] }
  *
- * NOTE: This check is advisory only — it is NOT atomic.  The actual checkout
+ * NOTE: This check is advisory only â€” it is NOT atomic.  The actual checkout
  * route uses a Firestore transaction that re-validates stock under a lock.
  */
 
@@ -43,7 +43,6 @@ export interface UnavailableItem {
 
 // --- POST Handler -------------------------------------------------------------
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(createRouteHandler<(typeof schema)["_output"]>({
   auth: true,
   schema,

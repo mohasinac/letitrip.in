@@ -63,5 +63,4 @@ const __GET__g = withProviders(createRouteHandler({
   },
 }));
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("AUCTIONS", __GET__g);

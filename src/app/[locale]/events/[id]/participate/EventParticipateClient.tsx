@@ -9,6 +9,7 @@ import { EventParticipateView, useSession, useToast, ROUTES } from "@mohasinac/a
 import { SpinWheelView } from "@mohasinac/appkit";
 import { LotteryPullForm } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
+import { spinEventWheel, submitEventEntry } from "@/lib/api/events-client";
 
 const CLS_STAR_ON = "text-star border-star";
 
@@ -417,11 +418,7 @@ function renderDynamicField(
 
 function SpinWheelParticipate({ event }: { event: ParticipateEventInput }) {
   const onSpin = useCallback(async (eventId: string) => {
-    // audit-direct-fetch-ok: FEATURE_EVENTS=false in P-1
-    const res = await fetch(`/api/events/${eventId}/spin`, {
-      method: "POST",
-      credentials: "include",
-    });
+    const res = await spinEventWheel(eventId);
     const data = await res.json().catch(() => ({})) as {
       data?: { spinPrizeId?: string; spinPrizeTitle?: string; spinPrizeCouponCode?: string };
       error?: string;
@@ -537,13 +534,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
       if ((isSurvey || isFeedback) && Object.keys(formResponses).length > 0) {
         body.formResponses = formResponses;
       }
-      // audit-direct-fetch-ok: FEATURE_EVENTS=false in P-1
-      const res = await fetch(API_ROUTES.EVENTS.ENTRIES(event.id), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-        signal: controller.signal,
-      });
+      const res = await submitEventEntry(API_ROUTES.EVENTS.ENTRIES(event.id), body as Record<string, unknown>, controller.signal);
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error((data as Record<string, string>).error ?? "Failed to submit entry");

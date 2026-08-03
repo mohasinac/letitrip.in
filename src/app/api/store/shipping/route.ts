@@ -1,8 +1,8 @@
 /**
  * Seller Shipping Configuration API
  *
- * GET  /api/seller/shipping  — Read current shipping config (token redacted)
- * PATCH /api/seller/shipping — Update shipping config:
+ * GET  /api/seller/shipping  â€” Read current shipping config (token redacted)
+ * PATCH /api/seller/shipping â€” Update shipping config:
  *   - Custom method: save fixed price + carrier name
  *   - Shiprocket method: authenticate with Shiprocket credentials, save token,
  *     and optionally register a pickup address (which triggers OTP to seller's phone)
@@ -88,7 +88,6 @@ function sanitiseConfig(config: SellerShippingConfig | undefined): Omit<
 
 // --- GET ---------------------------------------------------------------------
 
-// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const GET = withProviders(createApiHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
@@ -102,7 +101,6 @@ export const GET = withProviders(createApiHandler({
 
 // --- PATCH --------------------------------------------------------------------
 
-// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const PATCH = withProviders(createApiHandler<(typeof updateShippingSchema)["_output"]>(
   {
     auth: true,
@@ -172,7 +170,7 @@ export const PATCH = withProviders(createApiHandler<(typeof updateShippingSchema
           isConfigured: Boolean(existing?.pickupAddress?.isVerified),
         };
 
-        // Register new pickup address → triggers OTP
+        // Register new pickup address â†’ triggers OTP
         if (data.pickupAddress && token) {
           serverLogger.info("Registering Shiprocket pickup address", {
             uid: user!.uid,

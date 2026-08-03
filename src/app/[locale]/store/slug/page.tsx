@@ -13,6 +13,7 @@ import {
   ACTIONS,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
+import { getStorefront, checkStoreSlug, updateStoreProfile } from "@/lib/api/store-client";
 
 type CheckState = "idle" | "checking" | "available" | "taken" | "invalid";
 
@@ -39,8 +40,7 @@ export default function Page() {
   const checkTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    // audit-direct-fetch-ok: store slug/profile; no server action yet
-    fetch(API_ROUTES.STORE.STOREFRONT)
+    getStorefront(API_ROUTES.STORE.STOREFRONT)
       .then((r) => r.json())
       .then((res) => {
         const slug = (res as any)?.data?.store?.storeSlug ?? null;
@@ -65,8 +65,7 @@ export default function Page() {
     }
     setCheckState("checking");
     setCheckMessage(null);
-    // audit-direct-fetch-ok: store slug/profile; no server action yet
-    fetch(API_ROUTES.STORE.SLUG_CHECK(value))
+    checkStoreSlug(API_ROUTES.STORE.SLUG_CHECK(value))
       .then((r) => r.json())
       .then((res) => {
         const available = (res as any)?.data?.available;
@@ -96,12 +95,7 @@ export default function Page() {
     setSaveError(null);
     setSaveSuccess(false);
     try {
-      // audit-direct-fetch-ok: store slug/profile; no server action yet
-      const res = await fetch(API_ROUTES.STORE.PROFILE, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ storeSlug: newSlug }),
-      });
+      const res = await updateStoreProfile(API_ROUTES.STORE.PROFILE, { storeSlug: newSlug });
       const json = (await res.json()) as any;
       if (!res.ok) {
         setSaveError(json?.error?.message ?? "Failed to update slug. Please try again.");

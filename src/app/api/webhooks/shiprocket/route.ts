@@ -31,7 +31,7 @@ import type { OrderDocument } from "@mohasinac/appkit";
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
-// --- Shiprocket → our internal order status mapping --------------------------
+// --- Shiprocket â†’ our internal order status mapping --------------------------
 
 const SHIPPED_STATUSES = new Set([
   "Shipped",
@@ -70,7 +70,6 @@ function verifyShiprocketSignature(body: string, signature: string): boolean {
 
 // --- Route --------------------------------------------------------------------
 
-// rbac-public: public endpoint — no authentication required
 export async function POST(request: NextRequest) {
   let rawBody = "";
   try {
@@ -130,7 +129,7 @@ export async function POST(request: NextRequest) {
         srOrderId,
         status,
       });
-      // Do not override status automatically on cancellation — admin handles manually
+      // Do not override status automatically on cancellation â€” admin handles manually
     }
 
     await orderRepository.update(

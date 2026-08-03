@@ -1,5 +1,4 @@
 "use client";
-// audit-unnecessary-use-client-ok: passes JSX render-prop callback to PromotionsViewProductSection (client component); functions cannot cross RSC→client boundary
 import {
   PromotionsViewProductSection,
   InteractiveProductCard,

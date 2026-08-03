@@ -16,6 +16,7 @@ import {
   useSession,
   useToast,
 } from "@mohasinac/appkit/client";
+import { getSupportTicket, getSupportTicketMessages } from "@/lib/api/support-client";
 
 const __P = {
   p5: "p-5",
@@ -75,8 +76,7 @@ export default function TicketDetailPage({ params }: PageProps) {
   const { data: ticket, isLoading } = useQuery<TicketDoc>({
     queryKey: ["user-support-ticket", id],
     queryFn: () =>
-      // audit-direct-fetch-ok: support tickets; no server action yet
-      fetch(`/api/support/tickets/${id}`)
+      getSupportTicket(id)
         .then((r) => r.json())
         .then((r) => r.data),
     enabled: !sessionLoading && !!user,
@@ -85,12 +85,7 @@ export default function TicketDetailPage({ params }: PageProps) {
 
   const sendReply = useApiMutation({
     mutationFn: (body: string) =>
-      // audit-direct-fetch-ok: support tickets; no server action yet
-      fetch(`/api/support/tickets/${id}/messages`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ body }),
-      }).then(async (r) => {
+      getSupportTicketMessages(id, { body }).then(async (r) => {
         const j = await r.json();
         if (!r.ok || !j?.ok) throw new Error(j?.error ?? "Could not send reply.");
         return j.data;

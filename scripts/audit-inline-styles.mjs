@@ -57,6 +57,9 @@ const ALLOWLIST_PATH_PATTERNS = [
   /appkit[/\\]src[/\\]features[/\\]before-after[/\\]components[/\\]BeforeAfterSlider\.tsx$/,
   // Character hotspot admin canvas tool — 120+ dynamic inline positions from user-authored JSON.
   /appkit[/\\]src[/\\]features[/\\]homepage[/\\]components[/\\]CharacterHotspot/,
+  // Admin Copilot chat UI — dynamic per-message bubble geometry (sender vs receiver radius values)
+  // that change at runtime and cannot be expressed as static Tailwind classes.
+  /appkit[/\\]src[/\\]features[/\\]copilot[/\\]/,
   // DataTable UI primitive — col.width is dynamic user-configured table column sizing.
   /appkit[/\\]src[/\\]ui[/\\]DataTable\.tsx$/,
 ];

@@ -1,25 +1,113 @@
 import { withProviders } from "@/providers.config";
-import { createApiHandler, ApiErrors, successResponse } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit";
+/**
+ * Admin Products API Route
+ * GET  /api/admin/products â€” Delegated to @mohasinac/feat-admin
+ * POST /api/admin/products â€” Create a new product (admin, local)
+ */
+
+
+import { createApiHandler } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit";
 import { productRepository } from "@mohasinac/appkit";
-import { ROLES_ADMIN_ONLY } from "@/constants";
+import { serverLogger } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import {
+  finalizeStagedMediaUrl,
+  finalizeStagedMediaField,
+  finalizeStagedMediaArray,
+} from "@mohasinac/appkit";
+import {
+  validateRequestBody,
+  formatZodErrors,
+  productCreateSchema,
+} from "@/validation/request-schemas";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
-/** DELETE /api/admin/products/[id]/group/children/[childId] — unlink a child (admin) */
-// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
-export const DELETE = withProviders(createApiHandler({
-  roles: [...ROLES_ADMIN_ONLY],
-  permission: "admin:products:delete",
-  handler: async ({ params }) => {
-    const { id: parentDocId, childId } = params as { id: string; childId: string };
+/**
+ * GET /api/admin/products
+ */
+export const GET = withProviders(createApiHandler({
+  roles: [...ROLES_ADMIN_MOD],
+  permission: "admin:products:read",
+  handler: async ({ request }) => {
+    const url = new URL(request.url);
+    const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
+    const pageSize = Math.min(
+      50,
+      Math.max(1, Number(url.searchParams.get("pageSize")) || 50),
+    );
+    const filters = url.searchParams.get("filters") ?? undefined;
+    const sorts =
+      url.searchParams.get("sorts") ??
+      url.searchParams.get("sort") ??
+      "-createdAt";
+    const result = await productRepository.list({
+      filters,
+      sorts,
+      page,
+      pageSize,
+    });
+    return successResponse({
+      items: result.items,
+      total: result.total,
+      page: result.page,
+      pageSize: result.pageSize,
+      totalPages: result.totalPages,
+      hasMore: result.hasMore,
+    });
+  },
+}));
 
-    const [parent, child] = await Promise.all([
-      productRepository.findById(parentDocId),
-      productRepository.findById(childId),
-    ]);
+/**
+ * POST /api/admin/products
+ *
+ * Create a new product as admin (can set any status, sellerId etc.)
+ */
+export const POST = withProviders(createApiHandler({
+  auth: true,
+  roles: [...ROLES_ADMIN_MOD],
+  permission: "admin:products:write",
+    handler: async ({ request, user: _user }) => {
+    const body = await request.json();
+    const validation = validateRequestBody(productCreateSchema, body);
 
-    if (!parent) return ApiErrors.notFound("Parent product not found");
-    if (!child) return ApiErrors.notFound("Child product not found");
+    if (!validation.success) {
+      return errorResponse(
+        ERROR_MESSAGES.VALIDATION.FAILED,
+        400,
+        formatZodErrors(validation.errors),
+      );
+    }
 
-    await productRepository.unlinkChildFromGroup(parent, child);
-    return successResponse({ unlinked: true }, "Listing unlinked from group");
+    const data = validation.data as Record<string, JsonValue> & {
+      mainImage?: string;
+      images?: string[];
+      video?: { url?: string; thumbnailUrl?: string };
+    };
+    if (typeof data.mainImage === "string" && data.mainImage) {
+      data.mainImage = await finalizeStagedMediaUrl(data.mainImage);
+    }
+    if (Array.isArray(data.images) && data.images.length > 0) {
+      data.images = await finalizeStagedMediaArray(data.images);
+    }
+    if (data.video?.url) {
+      data.video = {
+        ...data.video,
+        url: await finalizeStagedMediaUrl(data.video.url),
+        thumbnailUrl: await finalizeStagedMediaField(data.video.thumbnailUrl),
+      };
+    }
+
+    const product = await productRepository.create({
+      ...data,
+      storeId: body.storeId,
+      storeName: body.storeName || "Admin",
+    } as any);
+
+    serverLogger.info("Admin created product", { productId: product.id });
+
+    return successResponse(product, SUCCESS_MESSAGES.PRODUCT.CREATED, 201);
   },
 }));

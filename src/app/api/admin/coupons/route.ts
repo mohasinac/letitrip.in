@@ -2,8 +2,8 @@ import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 /**
  * Admin Coupons API Route
- * GET  /api/admin/coupons — Delegated to @mohasinac/feat-admin
- * POST /api/admin/coupons — Create a new coupon (admin, local)
+ * GET  /api/admin/coupons â€” Delegated to @mohasinac/feat-admin
+ * POST /api/admin/coupons â€” Create a new coupon (admin, local)
  */
 
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
@@ -138,7 +138,5 @@ const __POST__g = withProviders(createRouteHandler({
   },
 }));
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("COUPONS", __GET__g);
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const POST = withFeatureGuard("COUPONS", __POST__g);

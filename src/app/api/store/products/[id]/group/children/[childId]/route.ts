@@ -1,29 +1,46 @@
 import { withProviders } from "@/providers.config";
-import { createApiHandler, ApiErrors, successResponse } from "@mohasinac/appkit";
-import { productRepository, storeRepository } from "@mohasinac/appkit";
+import {
+  createRouteHandler,
+  successResponse,
+  errorResponse,
+  productRepository,
+  storeRepository,
+  userRepository,
+} from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
+import { USER_ROLE } from "@/constants/api-roles";
 
-/** DELETE /api/store/products/[id]/group/children/[childId] — unlink a child */
-// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
-export const DELETE = withProviders(createApiHandler({
-  roles: [...ROLES_STORE_WRITE],
+const NOT_FOUND_MSG = "No product found for this barcode";
+
+export const GET = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: [...ROLES_STORE_WRITE, USER_ROLE.EMPLOYEE],
     permission: "store:api:write",
-  handler: async ({ user, params }) => {
-    const { id: parentDocId, childId } = params as { id: string; childId: string };
+    handler: async ({ request, user }) => {
+      const url = new URL(request.url);
+      const barcode = url.searchParams.get("barcode")?.trim();
+      if (!barcode) return errorResponse("barcode param required", 400);
 
-    const store = await storeRepository.findByOwnerId(user!.uid);
-    if (!store) return ApiErrors.forbidden("No store found for this account");
+      const product = await productRepository.findByBarcodeId(barcode);
+      if (!product) return errorResponse(NOT_FOUND_MSG, 404);
 
-    const [parent, child] = await Promise.all([
-      productRepository.findById(parentDocId),
-      productRepository.findById(childId),
-    ]);
+      if (user!.role === "admin") {
+        return successResponse(product);
+      }
 
-    if (!parent) return ApiErrors.notFound("Parent product not found");
-    if (!child) return ApiErrors.notFound("Child product not found");
-    if (parent.storeId !== store.id) return ApiErrors.forbidden("Not your product");
+      if (user!.role === "employee") {
+        const userDoc = (await userRepository.findById(user!.uid)) as { storeId?: string } | null;
+        if (!userDoc?.storeId || product.storeId !== userDoc.storeId)
+          return errorResponse(NOT_FOUND_MSG, 404);
+        return successResponse(product);
+      }
 
-    await productRepository.unlinkChildFromGroup(parent, child);
-    return successResponse({ unlinked: true }, "Listing unlinked from group");
-  },
-}));
+      const store = await storeRepository.findByOwnerId(user!.uid);
+      if (!store || product.storeId !== store.id)
+        return errorResponse(NOT_FOUND_MSG, 404);
+
+      return successResponse(product);
+    },
+  }),
+);

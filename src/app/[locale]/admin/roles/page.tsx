@@ -15,6 +15,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
+import { getAdminRoles } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
 import type { CustomRoleDocument } from "@mohasinac/appkit";
 
@@ -24,8 +25,7 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // audit-direct-fetch-ok: RBAC roles management; no server action in appkit yet
-    fetch(API_ROUTES.ADMIN.ROLES)
+    getAdminRoles(API_ROUTES.ADMIN.ROLES)
       .then((r) => r.json())
       .then((j) => setItems(j?.data?.items ?? []))
       .finally(() => setLoading(false));

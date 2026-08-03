@@ -63,12 +63,12 @@ const SAFE_PRODUCT_FILTER_FIELDS = new Set([
 
 /**
  * Builds a Sieve filter string by combining:
- *   1. Per-field query params (status, category, brand, …) — the UX-facing API
- *   2. A raw Sieve filter string via `f=` (short) or `filters=` (long) — gated
+ *   1. Per-field query params (status, category, brand, â€¦) â€” the UX-facing API
+ *   2. A raw Sieve filter string via `f=` (short) or `filters=` (long) â€” gated
  *      through `validateSieveFilters` so only safelisted fields go through.
  *
  * Multi-value pipe params (e.g. condition=new|used) are expanded to multiple
- * AND clauses (condition==new,condition==used) via expandSieveParam — pipe is
+ * AND clauses (condition==new,condition==used) via expandSieveParam â€” pipe is
  * only valid for string-matching operators (@=, _=, _-= and CI variants).
  */
 function buildFilters(url: URL, rawFilters: string | null): string {
@@ -82,7 +82,7 @@ function buildFilters(url: URL, rawFilters: string | null): string {
   const statusParam = param(url, TABLE_KEYS.STATUS);
   if (statusParam) parts.push(sieveFilter(PRODUCT_FIELDS.STATUS, SIEVE_OP.EQ, statusParam));
 
-  // categorySlugs is an array field — use @= (array-contains). Accepts either
+  // categorySlugs is an array field â€” use @= (array-contains). Accepts either
   // ?category= or ?categorySlug= from callers; both map to the same array field.
   const categoryParam = param(url, TABLE_KEYS.CATEGORY) || param(url, TABLE_KEYS.CATEGORY_SLUG);
   if (categoryParam) parts.push(expandSieveParam(PRODUCT_FIELDS.CATEGORY_SLUGS, categoryParam, SIEVE_OP.CONTAINS));
@@ -103,7 +103,7 @@ function buildFilters(url: URL, rawFilters: string | null): string {
   //   - as in-memory post-filtering in the local fallback repo path
   // See the _GET handler below for how q is threaded through.
 
-  // RangeFilter UI sends values in rupees (maxBound=500000 = ₹5 lakh, step=500).
+  // RangeFilter UI sends values in rupees (maxBound=500000 = â‚¹5 lakh, step=500).
   // Firestore stores price in paise (1 INR = 100 paise) so multiply by 100.
   const minPriceRs = param(url, TABLE_KEYS.MIN_PRICE);
   if (minPriceRs !== null && !Number.isNaN(Number(minPriceRs))) {
@@ -122,7 +122,7 @@ function buildFilters(url: URL, rawFilters: string | null): string {
   //   - as in-memory post-filtering in the local fallback repo path
   // See the _GET handler below for how inStock is threaded through.
 
-  // SB1-G — canonical listingType discriminator
+  // SB1-G â€” canonical listingType discriminator
   const listingTypeParam = param(url, TABLE_KEYS.LISTING_TYPE);
   if (listingTypeParam) {
     parts.push(sieveFilter(PRODUCT_FIELDS.LISTING_TYPE, SIEVE_OP.EQ, listingTypeParam));
@@ -134,7 +134,7 @@ function buildFilters(url: URL, rawFilters: string | null): string {
   const isPromoted = param(url, "isPromoted");
   if (isPromoted === "true") parts.push(sieveFilter(PRODUCT_FIELDS.IS_PROMOTED, SIEVE_OP.EQ, true));
 
-  // Same paise conversion as minPrice/maxPrice — AuctionFilters sends rupees.
+  // Same paise conversion as minPrice/maxPrice â€” AuctionFilters sends rupees.
   const minBidRs = param(url, TABLE_KEYS.MIN_BID);
   if (minBidRs !== null && !Number.isNaN(Number(minBidRs))) {
     parts.push(sieveFilter(PRODUCT_FIELDS.CURRENT_BID, SIEVE_OP.GTE, String(Math.round(Number(minBidRs) * 100))));
@@ -192,7 +192,7 @@ const IDS_MAX = 20;
 async function _GET(request: Request): Promise<NextResponse> {
   const url = new URL(request.url);
 
-  // Batch `ids=` mode — used by Compare overlay (BK3) to fetch up to IDS_MAX
+  // Batch `ids=` mode â€” used by Compare overlay (BK3) to fetch up to IDS_MAX
   // products in a single round-trip. Bypasses the sieve / filters path.
   const idsParam = param(url, "ids");
   if (idsParam) {
@@ -235,7 +235,7 @@ async function _GET(request: Request): Promise<NextResponse> {
   const requestedPageSize = std.pageSize ?? DEFAULT_PAGE_SIZE;
   if (requestedPageSize > 50) {
     return NextResponse.json(
-      { success: false, error: "pageSize cannot exceed 50 — paginate instead." },
+      { success: false, error: "pageSize cannot exceed 50 â€” paginate instead." },
       { status: 400 },
     );
   }
@@ -243,7 +243,7 @@ async function _GET(request: Request): Promise<NextResponse> {
   const sorts = std.sorts ?? DEFAULT_SORTS;
   const cursor = std.cursor;
 
-  // W1-43 — listing-type feature flag gating. If the caller requested a
+  // W1-43 â€” listing-type feature flag gating. If the caller requested a
   // disabled type (?listingType=auction with auctions off), return empty
   // results immediately. For no-filter calls, post-filter excludes disabled
   // types from the response so the public listing pages stay clean.
@@ -292,7 +292,7 @@ async function _GET(request: Request): Promise<NextResponse> {
   const filtersBase = buildFilters(url, std.filters);
 
   // Build date-range Sieve clauses for the Firebase Function (which handles them
-  // server-side). Not applied in filtersBase — see comment in buildFilters.
+  // server-side). Not applied in filtersBase â€” see comment in buildFilters.
   const dateFromClause =
     dateFrom && listingTypeForDate === "auction"
       ? sieveFilter(PRODUCT_FIELDS.AUCTION_END_DATE, SIEVE_OP.GTE, dateFrom)
@@ -334,7 +334,7 @@ async function _GET(request: Request): Promise<NextResponse> {
     // crash, 401 from a secret-binding regression, network blip), fall through
     // to the local repository so the route stays available. The function and
     // the repository share the same Sieve filter logic so results are
-    // semantically identical — only the data-locality differs.
+    // semantically identical â€” only the data-locality differs.
     let upstream: ListingProcessorResponse | null = null;
     try {
       upstream = await callListingProcessor("products", {
@@ -348,7 +348,7 @@ async function _GET(request: Request): Promise<NextResponse> {
       void normalizeError(upstreamErr);
       logError(
         "products",
-        "listingProcessor upstream failed — falling back to local repo",
+        "listingProcessor upstream failed â€” falling back to local repo",
         upstreamErr,
       );
       upstream = null;
@@ -380,7 +380,7 @@ async function _GET(request: Request): Promise<NextResponse> {
       hasMore = result.hasMore;
     }
 
-    // W1-43 — when no specific listingType was requested, strip any documents
+    // W1-43 â€” when no specific listingType was requested, strip any documents
     // whose listingType is currently disabled in site settings. Cheap O(n)
     // pass; only triggers when at least one type is off.
     if (!requestedListingType && enabledTypeSet.size > 0 && enabledTypeSet.size < 7) {
@@ -432,8 +432,8 @@ async function _GET(request: Request): Promise<NextResponse> {
 
     if (isIndexError || isPermissionError) {
       const warning = isPermissionError
-        ? "Firestore permission denied — check security rules for the products collection"
-        : "Firestore index missing — run: firebase deploy --only firestore:indexes";
+        ? "Firestore permission denied â€” check security rules for the products collection"
+        : "Firestore index missing â€” run: firebase deploy --only firestore:indexes";
       logError("products", `GET /api/products recoverable DB error: ${warning}`, error);
       return NextResponse.json({
         success: true,
@@ -457,5 +457,4 @@ async function _GET(request: Request): Promise<NextResponse> {
   }
 }
 
-// rbac-scope-enforced-in-handler: per-verb auth enforced within handler
 export const GET = withProviders(_GET);

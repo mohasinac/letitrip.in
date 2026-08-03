@@ -6,7 +6,6 @@ import { successResponse } from "@mohasinac/appkit";
 import { createApiHandler } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 
-// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const GET = withProviders(createApiHandler({
   auth: true,
   handler: async ({ user }) => {
@@ -65,7 +64,6 @@ const updateProfileSchema = z.object({
   acknowledgeScamAwareness: z.boolean().optional(),
 });
 
-// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const PATCH = withProviders(createApiHandler<(typeof updateProfileSchema)["_output"]>({
   auth: true,
   schema: updateProfileSchema,

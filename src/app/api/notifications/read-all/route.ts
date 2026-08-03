@@ -1,7 +1,7 @@
 import { withProviders } from "@/providers.config";
 /**
  * Notifications Read-All API
- * PATCH /api/notifications/read-all — Mark all user notifications as read
+ * PATCH /api/notifications/read-all â€” Mark all user notifications as read
  */
 
 import { createRouteHandler } from "@mohasinac/appkit";
@@ -13,7 +13,6 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 /**
  * PATCH /api/notifications/read-all
  */
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const PATCH = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {

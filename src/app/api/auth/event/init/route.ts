@@ -9,7 +9,7 @@ import { withProviders } from "@/providers.config";
  *
  * Security model:
  *  - Rate-limited (same preset as auth endpoints).
- *  - No session cookie is required — this endpoint intentionally runs before login.
+ *  - No session cookie is required â€” this endpoint intentionally runs before login.
  *  - The custom token claim { authEventId: eventId } restricts the token to read
  *    ONLY /auth_events/{eventId}.  See database.rules.json.
  *  - The event node TTL is 3 min server-side (enforced by the cleanupAuthEvents
@@ -35,7 +35,6 @@ import { RTDBPayloadStatus } from "@mohasinac/appkit";
 /** RTDB node TTL communicated to the client (2 min hard timeout on the useAuthEvent hook). */
 const EVENT_TTL_MS = 2 * 60 * 1000;
 
-// rbac-public: unauthenticated endpoint
 export const POST = withProviders(createRouteHandler({
   handler: async ({ request }) => {
     const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
@@ -50,7 +49,7 @@ export const POST = withProviders(createRouteHandler({
       });
     } catch (rtdbErr) {
       void normalizeError(rtdbErr);
-      serverLogger.error("RTDB unavailable — auth event node not created; postMessage fallback will handle client signal", {
+      serverLogger.error("RTDB unavailable â€” auth event node not created; postMessage fallback will handle client signal", {
         eventId,
         rtdbErr,
       });

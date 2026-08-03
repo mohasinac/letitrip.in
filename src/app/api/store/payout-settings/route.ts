@@ -1,6 +1,6 @@
 /**
- * GET  /api/store/payout-settings — Returns masked payout details.
- * PATCH /api/store/payout-settings — Updates UPI or bank payout details.
+ * GET  /api/store/payout-settings â€” Returns masked payout details.
+ * PATCH /api/store/payout-settings â€” Updates UPI or bank payout details.
  *   Bank account number is stored in full server-side; only masked form returned.
  */
 
@@ -44,7 +44,6 @@ const updatePayoutSchema = z.discriminatedUnion("method", [upiSchema, bankSchema
 
 // --- GET ----------------------------------------------------------------------
 
-// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const GET = withProviders(createApiHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
@@ -60,7 +59,6 @@ export const GET = withProviders(createApiHandler({
 
 // --- PATCH --------------------------------------------------------------------
 
-// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
@@ -77,7 +75,7 @@ export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)[
         isConfigured: true,
       };
     } else {
-      const masked = data.accountNumber.slice(-4).padStart(data.accountNumber.length, "•");
+      const masked = data.accountNumber.slice(-4).padStart(data.accountNumber.length, "â€¢");
       details = {
         method: "bank_transfer",
         bankAccount: {

@@ -1,7 +1,7 @@
 "use server";
 
 import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
-import { requireAuthUser } from "@mohasinac/appkit";
+import { requireAuthUser, normalizeError } from "@mohasinac/appkit";
 import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit";
 import { AuthorizationError } from "@mohasinac/appkit";
 import {
@@ -39,7 +39,8 @@ export async function addToWishlistAction(
         limit: WISHLIST_MAX,
         isFull: count >= WISHLIST_MAX,
       };
-    } catch (e) { // audit-catch-raw-ok: pre-existing-handler-intentional
+    } catch (e: unknown) {
+      void normalizeError(e);
       if (e instanceof WishlistFullError) {
         return {
           ok: false,
