@@ -20,6 +20,7 @@ import {
 import { useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { API_ROUTES } from "@/constants";
+import { getAdminRole, updateAdminRole, deleteAdminRole } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
 
 export default function Page() {
@@ -34,8 +35,7 @@ export default function Page() {
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
-    // audit-direct-fetch-ok: RBAC roles management; no server action in appkit yet
-    fetch(API_ROUTES.ADMIN.ROLE_BY_ID(id))
+    getAdminRole(API_ROUTES.ADMIN.ROLE_BY_ID(id))
       .then((r) => r.json())
       .then((j) => {
         const doc = j?.data ?? {};
@@ -48,12 +48,7 @@ export default function Page() {
   const onSave = async () => {
     setSaving(true);
     const permissions = permissionsText.split(/[\n,]/).map((s) => s.trim()).filter(Boolean);
-    // audit-direct-fetch-ok: RBAC roles management; no server action in appkit yet
-    const res = await fetch(API_ROUTES.ADMIN.ROLE_BY_ID(id), {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, permissions }),
-    });
+    const res = await updateAdminRole(API_ROUTES.ADMIN.ROLE_BY_ID(id), { ...form, permissions });
     setSaving(false);
     if (res.ok) {
       showToast("Saved", "success");
@@ -62,8 +57,7 @@ export default function Page() {
   };
 
   const onDelete = async () => {
-    // audit-direct-fetch-ok: RBAC roles management; no server action in appkit yet
-    await fetch(API_ROUTES.ADMIN.ROLE_BY_ID(id), { method: "DELETE" });
+    await deleteAdminRole(API_ROUTES.ADMIN.ROLE_BY_ID(id));
     router.push(String(ROUTES.ADMIN.ROLES));
   };
 

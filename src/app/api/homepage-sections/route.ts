@@ -7,10 +7,8 @@ import {
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(homepageGET);
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

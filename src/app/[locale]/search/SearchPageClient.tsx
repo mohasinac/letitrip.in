@@ -1,6 +1,5 @@
 "use client";
-// audit-unnecessary-use-client-ok: passes JSX render-prop callbacks to SearchView (client component); functions cannot cross RSC→client boundary
-import { Button, Div, Input, SearchView, Text } from "@mohasinac/appkit/client";
+import { Button, Div, Form, Input, SearchView, Text } from "@mohasinac/appkit/client";
 
 const __P = {
   p6: "p-6",
@@ -15,11 +14,10 @@ export function SearchPageClient({ locale, query }: Props) {
       total={0}
       isLoading={false}
       renderSearchInput={() => (
-        // audit-raw-form-input-ok: plain GET-form URL search bar — Zod/FormShell overkill
-        <form method="get" action={`/${locale}/search`} className="flex items-center gap-2">
+        <Form method="get" action={`/${locale}/search`} align="center" gap="xs" className="flex">
           <Input name="q" defaultValue={query} placeholder="Search products, categories, stores" />
           <Button type="submit">Search</Button>
-        </form>
+        </Form>
       )}
       renderResults={() =>
         !query ? (

@@ -13,6 +13,7 @@ import {
   Skeleton,
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
+import { getItemRequests } from "@/lib/api/items-client";
 import { useEffect, useState } from "react";
 import type { ItemRequestDocument } from "@mohasinac/appkit";
 
@@ -22,8 +23,7 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // audit-direct-fetch-ok: item-requests not in P-1 scope; no server action yet
-    fetch("/api/item-requests")
+    getItemRequests()
       .then((r) => r.json())
       .then((json) => setItems(json?.data?.items ?? []))
       .finally(() => setLoading(false));

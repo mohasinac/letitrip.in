@@ -20,7 +20,6 @@ function tryEnqueue(controller: ReadableStreamDefaultController, type: string, d
   }
 }
 
-// rbac-public: public endpoint — no authentication required
 async function __GET__g(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -66,5 +65,4 @@ async function __GET__g(
   });
 }
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("AUCTIONS", __GET__g);

@@ -1,30 +1,115 @@
 import { withFeatureGuard } from "@/lib/features";
+import { normalizeError } from "@mohasinac/appkit";
+/**
+ * GET  /api/chat   â€” list all chat rooms for the authenticated user
+ * POST /api/chat   â€” create or return existing chat room (buyer â†” seller for an order)
+ */
+
 import { withProviders } from "@/providers.config";
 import {
-  sendChatMessage,
-  createRouteHandler,
-  successResponse,
+  chatRepository,
+  orderRepository,
+  userRepository,
 } from "@mohasinac/appkit";
+import { getAdminRealtimeDb } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit";
+import { FEATURE_FLAGS } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { NotFoundError, AuthorizationError } from "@mohasinac/appkit";
 import { z } from "zod";
+import { createApiHandler } from "@mohasinac/appkit";
 
-const messageSchema = z.object({
-  message: z.string().min(1),
+const createRoomSchema = z.object({
+  orderId: z.string().min(1),
+  ownerId: z.string().min(1),
 });
 
-// GET messages are read directly from Firebase RTDB on the client via real-time subscription.
-// This POST handler is the server-side entry point for sending a new message.
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
-const __POST__g = withProviders(
-  createRouteHandler({
-    auth: true,
-    schema: messageSchema,
-    handler: async ({ user, body, params }) => {
-      const chatId = (params as { chatId: string }).chatId;
-      const result = await sendChatMessage(user!.uid, chatId, body!.message);
-      return successResponse(result, "Message sent", 201);
-    },
-  }),
-);
+const CHAT_DISABLED_RESPONSE = () =>
+  errorResponse("Chat is temporarily unavailable", 503);
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+/**
+ * GET /api/chat
+ * Returns all chat rooms the authenticated user is participating in.
+ */
+const __GET__g = withProviders(createApiHandler({
+  auth: true,
+  handler: async ({ user }) => {
+    if (!FEATURE_FLAGS.CHAT_ENABLED) return CHAT_DISABLED_RESPONSE();
+    const rooms = await chatRepository.listForUser(user!.uid);
+    return successResponse({ rooms });
+  },
+}));
+
+/**
+ * POST /api/chat
+ * Creates a chat room for a buyerâ†”seller conversation on an order.
+ * Idempotent â€” returns the existing room if it already exists.
+ */
+const __POST__g = withProviders(createApiHandler<(typeof createRoomSchema)["_output"]>({
+  auth: true,
+  schema: createRoomSchema,
+  handler: async ({ user, body }) => {
+    if (!FEATURE_FLAGS.CHAT_ENABLED) return CHAT_DISABLED_RESPONSE();
+    const { orderId, ownerId } = body!;
+    const order = await orderRepository.findById(orderId);
+    if (!order) throw new NotFoundError(ERROR_MESSAGES.ORDER.NOT_FOUND);
+    if (order.userId !== user!.uid && ownerId !== user!.uid) {
+      throw new AuthorizationError(ERROR_MESSAGES.CHAT.NOT_AUTHORIZED);
+    }
+    const buyerId = order.userId;
+    const existing = await chatRepository.findRoom(buyerId, ownerId, orderId);
+    if (existing) {
+      // Re-open the room for the user if they had previously soft-deleted it
+      const deletedBy: string[] = existing.deletedBy ?? [];
+      if (deletedBy.includes(user!.uid)) {
+        const reopened = deletedBy.filter((id) => id !== user!.uid);
+        await chatRepository.update(existing.id, { deletedBy: reopened });
+        return successResponse({ room: { ...existing, deletedBy: reopened } });
+      }
+      return successResponse({ room: existing });
+    }
+    const [buyer, owner] = await Promise.all([
+      userRepository.findById(buyerId),
+      userRepository.findById(ownerId),
+    ]);
+    const room = await chatRepository.create({
+      buyerId,
+      ownerId,
+      orderId,
+      productId: (order as any).productId,
+      productTitle: (order as any).productTitle,
+      buyerName: buyer?.displayName ?? "Buyer",
+      ownerName: owner?.displayName ?? "Seller",
+      participantIds: [buyerId, ownerId],
+      isGroup: false,
+    });
+    try {
+      const rtdb = getAdminRealtimeDb();
+      await rtdb.ref(`/chat/${room.id}/metadata`).set({
+        chatId: room.id,
+        orderId,
+        buyerId,
+        ownerId,
+        createdAt: Date.now(),
+      });
+    } catch (err) {
+      void normalizeError(err);
+      serverLogger.warn("Failed to write chat metadata to RTDB", {
+        chatId: room.id,
+        err,
+      });
+    }
+    serverLogger.info("Chat room created", {
+      chatId: room.id,
+      buyerId,
+      ownerId,
+      orderId,
+    });
+    return successResponse({ room }, SUCCESS_MESSAGES.CHAT.ROOM_CREATED, 201);
+  },
+}));
+
+export const GET = withFeatureGuard("CHAT", __GET__g);
 export const POST = withFeatureGuard("CHAT", __POST__g);

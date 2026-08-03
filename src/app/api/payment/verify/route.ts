@@ -24,7 +24,6 @@ const verifySchema = z.object({
   notes: z.string().max(500).optional(),
 });
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 const __POST__g = withProviders(createRouteHandler<(typeof verifySchema)["_output"]>({
   auth: true,
   schema: verifySchema,
@@ -53,5 +52,4 @@ const __POST__g = withProviders(createRouteHandler<(typeof verifySchema)["_outpu
   },
 }));
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const POST = withFeatureGuard("RAZORPAY", __POST__g);

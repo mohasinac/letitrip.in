@@ -1,9 +1,9 @@
 /**
  * GET /api/search/suggestions?q=<query>&type=<resource>
  *
- * W1-19 — typeahead endpoint for the nav search box. Returns up to 5 matches
+ * W1-19 â€” typeahead endpoint for the nav search box. Returns up to 5 matches
  * per resource type (products, categories, blog posts, events). Lightweight
- * shape — no pagination, no Sieve filters — just the bare-minimum fields
+ * shape â€” no pagination, no Sieve filters â€” just the bare-minimum fields
  * needed to render a suggestion row + a click target.
  */
 import { NextResponse } from "next/server";
@@ -55,7 +55,6 @@ const PAGE_SUGGESTIONS: Array<{
   { title: "FAQs", subtitle: "Help & answers", url: String(ROUTES.PUBLIC.FAQS ?? "/faqs"), keywords: ["faq", "help", "question", "support"] },
 ];
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(
   createRouteHandler({
     auth: false,
@@ -133,7 +132,7 @@ export const GET = withProviders(
           objectID: p.id,
           type: "product" as const,
           title: p.title ?? p.name ?? "Product",
-          subtitle: typeof p.price === "number" ? `₹${(p.price / 100).toLocaleString("en-IN")}` : undefined,
+          subtitle: typeof p.price === "number" ? `â‚¹${(p.price / 100).toLocaleString("en-IN")}` : undefined,
           url: String(ROUTES.PUBLIC.PRODUCT_DETAIL?.(p.slug ?? p.id) ?? `/products/${p.slug ?? p.id}`),
         })),
         ...((categories.items ?? []) as Array<{ id: string; slug: string; name: string }>).map((c) => ({

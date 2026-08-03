@@ -1,10 +1,11 @@
 /**
- * GET  /api/user/coupons       — list current user's claimed coupons grouped by status
- * POST /api/user/coupons/claim — see ./claim/route.ts (separate path for clarity)
+ * GET  /api/user/coupons       â€” list current user's claimed coupons grouped by status
+ * POST /api/user/coupons/claim â€” see ./claim/route.ts (separate path for clarity)
  *
- * Plan §10 — the user's coupon wallet. One indexed read returns active +
+ * Plan Â§10 â€” the user's coupon wallet. One indexed read returns active +
  * expired + used buckets so the wallet page renders without further queries.
  */
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
@@ -14,8 +15,9 @@ import {
   type ClaimedCouponDocument,
 } from "@mohasinac/appkit";
 
-// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
-export const GET = withProviders(
+export const GET = withFeatureGuard(
+  "COUPONS",
+  withProviders(
   createRouteHandler({
     auth: true,
     handler: async ({ user }) => {
@@ -35,6 +37,7 @@ export const GET = withProviders(
       });
     },
   }),
+  ),
 );
 
 // Soft-remove is on the [id] subroute. This export keeps Zod imported for

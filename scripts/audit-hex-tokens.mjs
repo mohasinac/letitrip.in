@@ -126,6 +126,12 @@ const EXEMPT_PATH_PATTERNS = [
   /^appkit\/src\/seed\/site-settings-seed-data\.ts$/,
   // Hex defaults for <input type="color"> — CSS vars are invalid there; hex must be a literal string.
   /^appkit\/src\/features\/homepage\/lib\/franchise-colors\.ts$/,
+  // Background theme seed defaults — Firestore data values, not CSS styling.
+  /^appkit\/src\/features\/layout\/background-seed-defaults\.ts$/,
+  // Admin configuration editors handle hex as Firestore data (color pickers, placeholder text, document defaults).
+  /^appkit\/src\/features\/admin\/components\//,
+  // Rich-text primitive source directory owns its internal CSS including code-block button styling.
+  /^appkit\/src\/ui\/rich-text\//,
 ];
 
 /**

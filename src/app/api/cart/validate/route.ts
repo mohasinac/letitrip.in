@@ -11,7 +11,6 @@ const validateSchema = z.object({
   productIds: z.array(z.string().min(1)).min(1).max(50),
 });
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(
   createRouteHandler<(typeof validateSchema)["_output"]>({
     auth: false,
@@ -23,10 +22,10 @@ export const POST = withProviders(
         productIds.map((id) => productRepository.findById(id)),
       );
 
-      /** Truly unpublished — remove from cart AND wishlist. */
+      /** Truly unpublished â€” remove from cart AND wishlist. */
       const stale: string[] = [];
       /**
-       * Temporarily unavailable (sold/OOS/no stock) — keep in wishlist,
+       * Temporarily unavailable (sold/OOS/no stock) â€” keep in wishlist,
        * move from cart to wishlist so the user doesn't lose track.
        */
       const moveable: string[] = [];

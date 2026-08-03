@@ -2,8 +2,8 @@ import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 /**
  * Admin Blog API Route
- * GET  /api/admin/blog — List all blog posts
- * POST /api/admin/blog — Create a new blog post
+ * GET  /api/admin/blog â€” List all blog posts
+ * POST /api/admin/blog â€” Create a new blog post
  */
 
 import { z } from "zod";
@@ -59,10 +59,10 @@ const createBlogPostSchema = z.object({
  * GET /api/admin/blog
  *
  * Query params:
- *  - filters  (string) — Sieve filters (e.g. status==published, isFeatured==true)
- *  - sorts    (string) — Sieve sorts (e.g. -publishedAt)
- *  - page     (number) — page number (default 1)
- *  - pageSize (number) — results per page (default 50, max 200)
+ *  - filters  (string) â€” Sieve filters (e.g. status==published, isFeatured==true)
+ *  - sorts    (string) â€” Sieve sorts (e.g. -publishedAt)
+ *  - page     (number) â€” page number (default 1)
+ *  - pageSize (number) â€” results per page (default 50, max 200)
  *
  * meta.total / published / drafts / featured are always computed from the
  * full unfiltered dataset so stat cards remain accurate regardless of filter.
@@ -89,7 +89,7 @@ const __GET__g = withProviders(createRouteHandler({
       pageSize,
     });
 
-    // Compute summary counts + paginated results in parallel (Rule 8 — no findAll())
+    // Compute summary counts + paginated results in parallel (Rule 8 â€” no findAll())
     const [
       publishedResult,
       draftsResult,
@@ -146,7 +146,7 @@ const __GET__g = withProviders(createRouteHandler({
 }));
 
 /**
- * POST /api/admin/blog — Create a new blog post
+ * POST /api/admin/blog â€” Create a new blog post
  */
 const __POST__g = withProviders(createRouteHandler({
   auth: true,
@@ -187,7 +187,5 @@ const __POST__g = withProviders(createRouteHandler({
   },
 }));
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("BLOG", __GET__g);
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const POST = withFeatureGuard("BLOG", __POST__g);

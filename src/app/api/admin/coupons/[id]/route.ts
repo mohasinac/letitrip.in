@@ -1,109 +1,142 @@
 import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
+/**
+ * Admin Coupons API Route
+ * GET  /api/admin/coupons â€” Delegated to @mohasinac/feat-admin
+ * POST /api/admin/coupons â€” Create a new coupon (admin, local)
+ */
+
+import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit";
+import { couponsRepository } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import type { CouponCreateInput } from "@mohasinac/appkit";
 import { z } from "zod";
-import {
-  couponsRepository,
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-} from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
-const updateCouponSchema = z.object({
-  name: z.string().min(1).optional(),
-  description: z.string().optional(),
+const couponCreateSchema = z.object({
+  code: z.string().min(2).max(50),
+  name: z.string().min(1),
+  description: z.string().default(""),
+  type: z.enum(["percentage", "fixed", "free_shipping", "buy_x_get_y"]),
   discount: z.object({
     value: z.number().min(0),
     maxDiscount: z.number().optional(),
     minPurchase: z.number().optional(),
-  }).optional(),
+  }),
   usage: z.object({
     totalLimit: z.number().optional(),
     perUserLimit: z.number().optional(),
-  }).optional(),
+    currentUsage: z.number().default(0),
+  }),
   validity: z.object({
-    startDate: z.string().transform((v) => new Date(v)).optional(),
-    endDate: z.string().optional().transform((v) => (v ? new Date(v) : undefined)),
-    isActive: z.boolean().optional(),
-  }).optional(),
-  restrictions: z.object({
-    applicableProducts: z.array(z.string()).optional(),
-    applicableCategories: z.array(z.string()).optional(),
-    applicableSellers: z.array(z.string()).optional(),
-    excludeProducts: z.array(z.string()).optional(),
-    excludeCategories: z.array(z.string()).optional(),
-    firstTimeUserOnly: z.boolean().optional(),
-    combineWithSellerCoupons: z.boolean().optional(),
-  }).optional(),
-  action: z.enum(["activate", "deactivate"]).optional(),
+    startDate: z.string().transform((v) => new Date(v)),
+    endDate: z
+      .string()
+      .optional()
+      .transform((v) => (v ? new Date(v) : undefined)),
+    isActive: z.boolean().default(false),
+  }),
+  restrictions: z
+    .object({
+      applicableProducts: z.array(z.string()).optional(),
+      applicableCategories: z.array(z.string()).optional(),
+      applicableSellers: z.array(z.string()).optional(),
+      excludeProducts: z.array(z.string()).optional(),
+      excludeCategories: z.array(z.string()).optional(),
+      firstTimeUserOnly: z.boolean().default(false),
+      combineWithSellerCoupons: z.boolean().default(false),
+    })
+    .default({
+      firstTimeUserOnly: false,
+      combineWithSellerCoupons: false,
+    }),
+  createdBy: z.string().optional().default("admin"),
+}).superRefine((data, ctx) => {
+  if (data.type === "percentage" && data.discount.value > 100) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Percentage discount cannot exceed 100%",
+      path: ["discount", "value"],
+    });
+  }
 });
 
-const __GET__g = withProviders(
-  createRouteHandler({
-    auth: true,
-    roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:coupons:read",
-    handler: async ({ params }) => {
-      const id = (params as { id: string }).id;
-      const coupon = await couponsRepository.getCouponByCode(id).catch(() => null);
-      if (!coupon) return errorResponse("Coupon not found", 404);
-      return successResponse(coupon);
-    },
-  }),
-);
+/**
+ * GET /api/admin/coupons
+ */
+const __GET__g = withProviders(createRouteHandler({
+  roles: [...ROLES_ADMIN_MOD],
+  permission: "admin:coupons:read",
+  handler: async ({ request }) => {
+    const url = new URL(request.url);
+    const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
+    const pageSize = Math.min(
+      50,
+      Math.max(1, Number(url.searchParams.get("pageSize")) || 50),
+    );
+    const filters = url.searchParams.get("filters") ?? undefined;
+    const sorts =
+      url.searchParams.get("sorts") ??
+      url.searchParams.get("sort") ??
+      "-createdAt";
+    const result = await couponsRepository.list({
+      filters,
+      sorts,
+      page,
+      pageSize,
+    });
+    return successResponse({
+      items: result.items,
+      total: result.total,
+      page: result.page,
+      pageSize: result.pageSize,
+      totalPages: result.totalPages,
+      hasMore: result.hasMore,
+    });
+  },
+}));
 
-const __PATCH__g = withProviders(
-  createRouteHandler<(typeof updateCouponSchema)["_output"]>({
-    auth: true,
-    roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:coupons:write",
-    schema: updateCouponSchema,
-    handler: async ({ body, params }) => {
-      const id = (params as { id: string }).id;
-      const { action, validity, ...updateData } = body!;
+/**
+ * POST /api/admin/coupons
+ */
+const __POST__g = withProviders(createRouteHandler({
+  auth: true,
+  roles: [...ROLES_ADMIN_ONLY],
+  permission: "admin:coupons:write",
+  handler: async ({ request, user }) => {
+    const body = await request.json();
 
-      // Guard: percentage coupons cannot have discount.value > 100
-      if (updateData.discount?.value !== undefined) {
-        const existing = await couponsRepository.findById(id);
-        if (existing?.type === "percentage" && updateData.discount.value > 100) {
-          return errorResponse("Percentage discount cannot exceed 100%", 422);
-        }
-      }
+    const validation = couponCreateSchema.safeParse(body);
+    if (!validation.success) {
+      return errorResponse(ERROR_MESSAGES.VALIDATION.FAILED, 400);
+    }
 
-      if (action === "deactivate") {
-        await couponsRepository.deactivateCoupon(id);
-        return successResponse(null, "Coupon deactivated");
-      }
-      if (action === "activate") {
-        await couponsRepository.reactivateCoupon(id);
-        return successResponse(null, "Coupon reactivated");
-      }
-      if (validity?.isActive === false) {
-        await couponsRepository.deactivateCoupon(id);
-      } else if (validity?.isActive === true) {
-        await couponsRepository.reactivateCoupon(id);
-      }
-      return successResponse({ id, ...updateData }, "Coupon updated");
-    },
-  }),
-);
+    const input: CouponCreateInput = {
+      ...validation.data,
+      createdBy: user!.uid,
+      scope: "admin",
+    };
 
-const __DELETE__g = withProviders(
-  createRouteHandler({
-    auth: true,
-    roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:coupons:delete",
-    handler: async ({ params }) => {
-      const id = (params as { id: string }).id;
-      await couponsRepository.deactivateCoupon(id);
-      return successResponse(null, "Coupon deleted");
-    },
-  }),
-);
+    // Check for duplicate code
+    const existing = await couponsRepository.getCouponByCode(input.code);
+    if (existing) {
+      return errorResponse(ERROR_MESSAGES.COUPON.DUPLICATE_CODE, 409);
+    }
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+    const created = await couponsRepository.create(input);
+
+    serverLogger.info("Admin coupon created", {
+      couponId: created.id,
+      code: created.code,
+      adminUid: user!.uid,
+    });
+
+    return successResponse(created, SUCCESS_MESSAGES.COUPON.CREATED);
+  },
+}));
+
 export const GET = withFeatureGuard("COUPONS", __GET__g);
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
-export const PATCH = withFeatureGuard("COUPONS", __PATCH__g);
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
-export const DELETE = withFeatureGuard("COUPONS", __DELETE__g);
+export const POST = withFeatureGuard("COUPONS", __POST__g);

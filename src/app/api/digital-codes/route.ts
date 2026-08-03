@@ -1,4 +1,4 @@
-// Public listing endpoint for digital codes — mirrors /api/products?listingType=digital-code
+// Public listing endpoint for digital codes â€” mirrors /api/products?listingType=digital-code
 import { normalizeError } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
 import { NextResponse } from "next/server";
@@ -45,7 +45,6 @@ function mergeListingTypeFilter(filters: string | null | undefined): string {
   return parts.join(",");
 }
 
-// rbac-public: public endpoint — no authentication required
 export const GET = withProviders(async (request: Request) => {
   try {
     const url = new URL(request.url);

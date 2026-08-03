@@ -16,7 +16,6 @@ import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(createRouteHandler<(typeof addPhoneSchema)["_output"]>({
   auth: true,
   schema: addPhoneSchema,
@@ -32,7 +31,7 @@ export const POST = withProviders(createRouteHandler<(typeof addPhoneSchema)["_o
       }
     } catch (error: any) {
       if (error instanceof ValidationError) throw error;
-      // auth/user-not-found means phone is available — that's fine
+      // auth/user-not-found means phone is available â€” that's fine
       if (error.code !== "auth/user-not-found") {
         serverLogger.error("Phone availability check failed", { error });
         throw error;

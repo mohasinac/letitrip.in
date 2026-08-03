@@ -1,286 +1,116 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
-/**
- * Prize Draw Reveal API (SB4-H, SB8-C)
- *
- * POST /api/prize-draws/[id]/reveal
- *
- * Auth required. The body carries the `orderId` of the prize-draw entry the
- * buyer is revealing. The server runs a Firestore transaction to:
- *   1. Verify order ownership + paid + not already-revealed + within window
- *      + before deadline + `order.prizeDrawProductId === id`.
- *   2. Pull the live product, ensure listingType is "prize-draw".
- *   3. Filter the items array for ones that haven't been won yet.
- *   4. If the pool is exhausted → auto-refund the order and return
- *      `{ refunded: true, reason: "pool_exhausted" }`.
- *   5. Otherwise pick a winner via `crypto.randomInt`, flip the item's
- *      `isWon`, and stamp `order.prizeWon`. The flip is preserved on the
- *      product doc so future reveals can't pick the same slot — but the
- *      public-facing detail page does NOT echo `isWon` to anonymous buyers
- *      (mystery is part of the appeal; see PrizeDrawCollage hideWonState).
- *
- * Idempotent: re-posting after a successful reveal returns the already-won
- * prize without re-rolling.
- */
-
 import { z } from "zod";
-import crypto from "node:crypto";
 import {
-  createRouteHandler,
-  successResponse,
-  ValidationError,
-  NotFoundError,
-  ApiError,
-  serverLogger,
+  createApiHandler,
+  errorResponse,
   getAdminDb,
-  PRODUCT_COLLECTION,
-  ORDER_COLLECTION,
-  OrderStatusValues,
-  PaymentStatusValues,
+  parseJsonBody,
+  serverLogger,
+  successResponse,
 } from "@mohasinac/appkit";
-interface PrizeDrawItem {
-  itemNumber: number;
-  title: string;
-  description?: string;
-  images: string[];
-  video?: { url: string; thumbnailUrl?: string };
-  condition: string;
-  estimatedValue?: number;
-  isWon: boolean;
-}
-interface ProductDocument {
-  id: string;
-  title: string;
-  storeId: string;
-  listingType?: string;
-  prizeDrawItems?: PrizeDrawItem[];
-  prizeRevealWindowStart?: Date;
-  prizeRevealWindowEnd?: Date;
-  prizeGithubFileUrl?: string;
-}
-interface OrderDocument {
-  userId: string;
-  status: string;
-  paymentStatus: string;
-  prizeDrawProductId?: string;
-  prizeRevealDeadline?: Date;
-  prizeWon?: { itemNumber: number; title: string; images: string[]; wonAt: Date };
-  notes?: string;
-}
+import { ROLES_ANY_STAFF } from "@/constants";
 
-const revealSchema = z.object({
-  orderId: z.string().min(1),
+const PREVIEW_TTL_MS = 30 * 60 * 1000; // 30 minutes
+const PREVIEW_COLLECTION = "previewDrafts";
+const PREVIEW_TOKEN_PREFIX = "preview-";
+const PREVIEW_KINDS = ["product", "auction", "preorder", "blog", "event"] as const;
+
+const ERRORS = {
+  INVALID_PAYLOAD: "Invalid preview payload",
+  MISSING_TOKEN: "Missing token",
+  NOT_FOUND: "Preview not found",
+  EXPIRED: "Preview expired",
+  CREATE_FAILED: "Failed to create preview",
+  READ_FAILED: "Failed to read preview",
+} as const;
+
+const previewSchema = z.object({
+  kind: z.enum(PREVIEW_KINDS),
+  draft: z.record(z.string(), z.unknown()),
 });
 
-interface RevealSuccessResponse {
-  prizeWon: {
-    itemNumber: number;
-    title: string;
-    images: string[];
-    estimatedValue?: number;
-  };
-  alreadyRevealed?: boolean;
-  rngSourceUrl?: string;
+function generateToken(): string {
+  return (
+    PREVIEW_TOKEN_PREFIX +
+    Date.now().toString(36) +
+    "-" +
+    Math.random().toString(36).slice(2, 10)
+  );
 }
 
-interface RevealPoolExhaustedResponse {
-  refunded: true;
-  reason: "pool_exhausted";
-}
-
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
+/**
+ * POST /api/preview
+ * Body: { kind, draft }
+ * â†’ { token, expiresAt }
+ *
+ * Stores a short-lived draft for in-tab preview (UX4 follow-up / TS13).
+ * Used by FormShell PreviewPane's "Open in new tab" action.
+ */
 export const POST = withProviders(
-  createRouteHandler<(typeof revealSchema)["_output"]>({
-    auth: true,
-    schema: revealSchema,
-    handler: async ({ user, body, params }) => {
-      const productId = String(
-        (params as Record<string, string> | undefined)?.id ?? "",
-      );
-      if (!productId) throw new ValidationError("productId required");
-      const { orderId } = body!;
-      const uid = user!.uid;
-
-      const db = getAdminDb();
-      const orderRef = db.collection(ORDER_COLLECTION).doc(orderId);
-      const productRef = db.collection(PRODUCT_COLLECTION).doc(productId);
-
-      // Pre-tx — quick existence + ownership checks so we fail fast.
-      const [orderSnap, productSnap] = await Promise.all([
-        orderRef.get(),
-        productRef.get(),
-      ]);
-      if (!orderSnap.exists) throw new NotFoundError("Order not found");
-      if (!productSnap.exists) throw new NotFoundError("Prize draw not found");
-
-      const order = orderSnap.data() as OrderDocument;
-      const product = productSnap.data() as ProductDocument;
-
-      if (order.userId !== uid) {
-        throw new ApiError(403, "You can only reveal your own entries");
+  createApiHandler({
+    roles: [...ROLES_ANY_STAFF],
+    handler: async ({ request, user }) => {
+      const json = await parseJsonBody(request, { allowEmpty: true });
+      const parsed = previewSchema.safeParse(json);
+      if (!parsed.success) {
+        return errorResponse(ERRORS.INVALID_PAYLOAD, 400);
       }
-      if (product.listingType !== "prize-draw") {
-        throw new ValidationError("Listing is not a prize draw");
-      }
-      if (order.prizeDrawProductId !== productId) {
-        throw new ValidationError(
-          "Order does not belong to this prize draw",
-        );
-      }
-      if (order.paymentStatus !== PaymentStatusValues.PAID) {
-        throw new ValidationError("Order is not paid");
-      }
-      if (
-        order.status === OrderStatusValues.CANCELLED ||
-        order.status === OrderStatusValues.REFUNDED
-      ) {
-        throw new ValidationError("Order is not eligible for reveal");
-      }
-
-      // Idempotency — already-revealed orders just return the same prize.
-      if (order.prizeWon) {
-        const payload: RevealSuccessResponse = {
-          prizeWon: {
-            itemNumber: order.prizeWon.itemNumber,
-            title: order.prizeWon.title,
-            images: order.prizeWon.images,
-          },
-          alreadyRevealed: true,
-          rngSourceUrl: product.prizeGithubFileUrl,
-        };
-        return successResponse(payload);
-      }
-
-      const now = new Date();
-      const windowStart = product.prizeRevealWindowStart
-        ? new Date(product.prizeRevealWindowStart)
-        : undefined;
-      const windowEnd = product.prizeRevealWindowEnd
-        ? new Date(product.prizeRevealWindowEnd)
-        : undefined;
-      if (!windowStart || !windowEnd) {
-        throw new ValidationError("Prize draw reveal window not configured");
-      }
-      if (now < windowStart) {
-        throw new ValidationError(
-          "Reveal window has not opened yet for this draw",
-        );
-      }
-      if (now > windowEnd) {
-        throw new ValidationError("Reveal window has closed for this draw");
-      }
-      const deadline = order.prizeRevealDeadline
-        ? new Date(order.prizeRevealDeadline)
-        : undefined;
-      if (deadline && now > deadline) {
-        throw new ValidationError(
-          "Reveal deadline has passed — this entry has been refunded.",
-        );
-      }
-
-      // Transaction: lock product+order, re-check pool, pick winner, write.
-      const result = await db.runTransaction(async (tx) => {
-        const [txProductSnap, txOrderSnap] = await Promise.all([
-          tx.get(productRef),
-          tx.get(orderRef),
-        ]);
-        const txProduct = txProductSnap.data() as ProductDocument;
-        const txOrder = txOrderSnap.data() as OrderDocument;
-
-        // Re-check idempotency inside the tx.
-        if (txOrder.prizeWon) {
-          return {
-            kind: "already_revealed" as const,
-            prizeWon: txOrder.prizeWon,
-          };
-        }
-
-        const items: PrizeDrawItem[] = Array.isArray(txProduct.prizeDrawItems)
-          ? [...txProduct.prizeDrawItems]
-          : [];
-        const unwonIndices: number[] = items
-          .map((it, idx) => (it.isWon ? -1 : idx))
-          .filter((idx) => idx >= 0);
-
-        if (unwonIndices.length === 0) {
-          // SB8-C — auto-refund on pool exhaustion.
-          tx.update(orderRef, {
-            status: OrderStatusValues.REFUNDED,
-            paymentStatus: PaymentStatusValues.REFUNDED,
-            isNonRefundable: false,
-            notes: [
-              txOrder.notes,
-              "Auto-refunded: prize pool exhausted at reveal time.",
-            ]
-              .filter(Boolean)
-              .join(" "),
-            updatedAt: new Date(),
+      try {
+        const token = generateToken();
+        const expiresAt = Date.now() + PREVIEW_TTL_MS;
+        await getAdminDb()
+          .collection(PREVIEW_COLLECTION)
+          .doc(token)
+          .set({
+            kind: parsed.data.kind,
+            draft: parsed.data.draft,
+            createdBy: user?.uid ?? null,
+            createdAt: new Date(),
+            expiresAt: new Date(expiresAt),
           });
-          return { kind: "pool_exhausted" as const };
+        return successResponse({ token, expiresAt });
+      } catch (error) {
+        void normalizeError(error);
+        serverLogger.error("preview create error", { error });
+        return errorResponse(ERRORS.CREATE_FAILED, 500);
+      }
+    },
+  }),
+);
+
+/**
+ * GET /api/preview?token=<x>
+ * Returns the draft if still valid; otherwise 404 / 410.
+ * No role gate â€” token is the capability.
+ */
+export const GET = withProviders(
+  createApiHandler({
+    handler: async ({ request }) => {
+      const token = new URL(request.url).searchParams.get("token");
+      if (!token) return errorResponse(ERRORS.MISSING_TOKEN, 400);
+      try {
+        const snap = await getAdminDb()
+          .collection(PREVIEW_COLLECTION)
+          .doc(token)
+          .get();
+        if (!snap.exists) return errorResponse(ERRORS.NOT_FOUND, 404);
+        const data = snap.data() ?? {};
+        const expiresAt = (data.expiresAt as { toDate?: () => Date } | undefined)?.toDate?.()
+          ?? new Date(0);
+        if (expiresAt.getTime() < Date.now()) {
+          return errorResponse(ERRORS.EXPIRED, 410);
         }
-
-        // crypto.randomInt is rejection-sampled and uniform — safe for fairness.
-        const pickPosition = crypto.randomInt(0, unwonIndices.length);
-        const pickIndex = unwonIndices[pickPosition];
-        const winningItem = items[pickIndex];
-
-        items[pickIndex] = { ...winningItem, isWon: true };
-
-        tx.update(productRef, {
-          prizeDrawItems: items,
-          updatedAt: new Date(),
+        return successResponse({
+          kind: data.kind,
+          draft: data.draft,
+          expiresAt: expiresAt.toISOString(),
         });
-
-        const prizeWon = {
-          itemNumber: winningItem.itemNumber,
-          title: winningItem.title,
-          images: winningItem.images,
-          wonAt: new Date(),
-        };
-        tx.update(orderRef, {
-          prizeWon,
-          updatedAt: new Date(),
-        });
-
-        return { kind: "revealed" as const, prizeWon, item: winningItem };
-      });
-
-      if (result.kind === "pool_exhausted") {
-        serverLogger.info(
-          `Prize reveal pool-exhausted refund: order=${orderId} product=${productId}`,
-        );
-        const payload: RevealPoolExhaustedResponse = {
-          refunded: true,
-          reason: "pool_exhausted",
-        };
-        return successResponse(payload);
+      } catch (error) {
+        void normalizeError(error);
+        serverLogger.error("preview read error", { error, token });
+        return errorResponse(ERRORS.READ_FAILED, 500);
       }
-
-      if (result.kind === "already_revealed") {
-        const payload: RevealSuccessResponse = {
-          prizeWon: {
-            itemNumber: result.prizeWon.itemNumber,
-            title: result.prizeWon.title,
-            images: result.prizeWon.images,
-          },
-          alreadyRevealed: true,
-          rngSourceUrl: product.prizeGithubFileUrl,
-        };
-        return successResponse(payload);
-      }
-
-      serverLogger.info(
-        `Prize revealed: order=${orderId} product=${productId} item#${result.prizeWon.itemNumber}`,
-      );
-      const payload: RevealSuccessResponse = {
-        prizeWon: {
-          itemNumber: result.prizeWon.itemNumber,
-          title: result.prizeWon.title,
-          images: result.prizeWon.images,
-          estimatedValue: result.item.estimatedValue,
-        },
-        rngSourceUrl: product.prizeGithubFileUrl,
-      };
-      return successResponse(payload);
     },
   }),
 );

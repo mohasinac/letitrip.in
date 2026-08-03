@@ -1,5 +1,5 @@
 /**
- * Seller Shipping — Verify Pickup Address OTP
+ * Seller Shipping â€” Verify Pickup Address OTP
  *
  * POST /api/store/shipping/verify-pickup
  *
@@ -26,7 +26,6 @@ const verifyOTPSchema = z.object({
   pickupLocationId: z.number().int().positive(),
 });
 
-// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const POST = withProviders(createApiHandler<(typeof verifyOTPSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],

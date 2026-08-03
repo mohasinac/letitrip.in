@@ -11,6 +11,7 @@ on:
           - FEATURE_AUCTIONS
           - FEATURE_PREORDERS
           - FEATURE_PRIZE_DRAWS
+          - FEATURE_RAFFLE
           - FEATURE_BLOG
           - FEATURE_EVENTS
           - FEATURE_CHAT
@@ -21,6 +22,9 @@ on:
           - FEATURE_SHIPROCKET
           - FEATURE_PAYOUTS
           - FEATURE_ANALYTICS_FUNCTION
+          - FEATURE_GST
+          - FEATURE_MOCK_PAYMENT
+          - FEATURE_BUNDLES
       enabled:
         description: Set to true to enable, false to disable
         required: true

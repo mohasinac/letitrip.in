@@ -1,55 +1,46 @@
-import { normalizeError } from "@mohasinac/appkit";
-import type { FirestoreDocument } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
   successResponse,
   errorResponse,
-  ApiErrors,
   productRepository,
   storeRepository,
+  userRepository,
 } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
+import { USER_ROLE } from "@/constants/api-roles";
 
-// S-STORE-2-C — Duplicate listing. Copies the source product into a new
-// document with status "draft", appends "(copy)" to the title, and clears
-// statistics fields.
-export const POST = withProviders(
+const NOT_FOUND_MSG = "No product found for this barcode";
+
+export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: [...ROLES_STORE_WRITE],
+    roles: [...ROLES_STORE_WRITE, USER_ROLE.EMPLOYEE],
     permission: "store:api:write",
-    handler: async ({ user, params }) => {
-      const id = (params as { id: string }).id;
-      const source = await productRepository.findById(id);
-      if (!source) return ApiErrors.notFound("Source listing not found");
+    handler: async ({ request, user }) => {
+      const url = new URL(request.url);
+      const barcode = url.searchParams.get("barcode")?.trim();
+      if (!barcode) return errorResponse("barcode param required", 400);
+
+      const product = await productRepository.findByBarcodeId(barcode);
+      if (!product) return errorResponse(NOT_FOUND_MSG, 404);
+
+      if (user!.role === "admin") {
+        return successResponse(product);
+      }
+
+      if (user!.role === "employee") {
+        const userDoc = (await userRepository.findById(user!.uid)) as { storeId?: string } | null;
+        if (!userDoc?.storeId || product.storeId !== userDoc.storeId)
+          return errorResponse(NOT_FOUND_MSG, 404);
+        return successResponse(product);
+      }
+
       const store = await storeRepository.findByOwnerId(user!.uid);
-      if (!store) return ApiErrors.forbidden("No store");
-      if ((source as { storeId?: string }).storeId !== store.id) {
-        return ApiErrors.forbidden("Not your listing");
-      }
-      try {
-        const now = new Date();
-        const copy: FirestoreDocument = {
-          ...(source as unknown as FirestoreDocument),
-          title: `${(source as { title?: string }).title ?? "Listing"} (copy)`,
-          status: "draft",
-          slug: undefined,
-          viewCount: 0,
-          purchaseCount: 0,
-          favoriteCount: 0,
-          avgRating: 0,
-          createdAt: now,
-          updatedAt: now,
-        };
-        delete copy.id;
-        // Structural cast — ProductCreateInput shape verified by mapDoc on read.
-        const created = await productRepository.create(copy as never);
-        return successResponse(created, "Listing duplicated", 201);
-      } catch (err) {
-        void normalizeError(err);
-        return errorResponse(err instanceof Error ? err.message : "Duplicate failed", 400);
-      }
+      if (!store || product.storeId !== store.id)
+        return errorResponse(NOT_FOUND_MSG, 404);
+
+      return successResponse(product);
     },
   }),
 );

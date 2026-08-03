@@ -25,6 +25,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { useToast } from "@mohasinac/appkit/client";
 import type { ClaimedCouponDocument } from "@mohasinac/appkit";
+import { getUserCoupons, deleteUserCoupon } from "@/lib/api/user-client";
 
 type Tab = "active" | "expired" | "used";
 
@@ -121,8 +122,7 @@ export default function ClaimedCouponsPage() {
     queryKey: ["user-coupons", user?.uid],
     enabled: !!user?.uid,
     queryFn: async () => {
-      // audit-direct-fetch-ok: FEATURE_COUPONS=false in P-1
-      const res = await fetch("/api/user/coupons", { credentials: "include" });
+      const res = await getUserCoupons("/api/user/coupons");
       if (!res.ok) throw new Error("Failed to load coupons");
       return res.json();
     },
@@ -139,11 +139,7 @@ export default function ClaimedCouponsPage() {
 
   const handleRemove = async (id: string) => {
     try {
-      // audit-direct-fetch-ok: FEATURE_COUPONS=false in P-1
-      const res = await fetch(`/api/user/coupons/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
+      const res = await deleteUserCoupon(`/api/user/coupons/${id}`);
       if (!res.ok) throw new Error();
       showToast("Coupon removed from wallet.", "info");
       void refetch();

@@ -91,7 +91,7 @@ import { REVIEW_COLLECTION } from "@mohasinac/appkit";
 import { BID_COLLECTION } from "@mohasinac/appkit";
 import { COUPONS_COLLECTION } from "@mohasinac/appkit";
 import { CATEGORIES_COLLECTION } from "@mohasinac/appkit";
-// SB-UNI-C — BRANDS_COLLECTION dropped; brands live in CATEGORIES_COLLECTION with categoryType:"brand".
+// SB-UNI-C â€” BRANDS_COLLECTION dropped; brands live in CATEGORIES_COLLECTION with categoryType:"brand".
 import { NOTIFICATIONS_COLLECTION } from "@mohasinac/appkit";
 import { PAYOUT_COLLECTION } from "@mohasinac/appkit";
 import { BLOG_POSTS_COLLECTION } from "@mohasinac/appkit";
@@ -103,9 +103,9 @@ import { STORE_COLLECTION } from "@mohasinac/appkit";
 import { PRODUCT_COLLECTION } from "@mohasinac/appkit";
 
 import { CONVERSATIONS_COLLECTION } from "@mohasinac/appkit";
-// SB-UNI-B — SUBLISTING_CATEGORIES_COLLECTION removed; sublistings now live in CATEGORIES_COLLECTION with categoryType:"sublisting".
+// SB-UNI-B â€” SUBLISTING_CATEGORIES_COLLECTION removed; sublistings now live in CATEGORIES_COLLECTION with categoryType:"sublisting".
 import { GROUPED_LISTINGS_COLLECTION } from "@mohasinac/appkit";
-// SB-UNI-V — BUNDLES_COLLECTION dropped; bundles in CATEGORIES_COLLECTION with categoryType:"bundle".
+// SB-UNI-V â€” BUNDLES_COLLECTION dropped; bundles in CATEGORIES_COLLECTION with categoryType:"bundle".
 import { SCAMMER_COLLECTION } from "@mohasinac/appkit";
 import { SUPPORT_TICKET_COLLECTION } from "@mohasinac/appkit";
 import { WISHLIST_COLLECTION, HISTORY_COLLECTION } from "@mohasinac/appkit";
@@ -175,7 +175,7 @@ interface SeedRequest {
 
 const COLLECTION_MAP: Record<CollectionName, string> = {
   users: USER_COLLECTION,
-  // SB-UNI-A 2026-05-13 — top-level collection w/ ownerType:"user"|"store".
+  // SB-UNI-A 2026-05-13 â€” top-level collection w/ ownerType:"user"|"store".
   addresses: "addresses",
   couponUsage: "couponUsage", // Subcollection under users
   categories: CATEGORIES_COLLECTION,
@@ -207,7 +207,7 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   supportTickets: SUPPORT_TICKET_COLLECTION,
   productFeatures: PRODUCT_FEATURES_COLLECTION,
   offers: OFFER_COLLECTION,
-  // S-STORE foundation collections (literal names — schemas live in store-extensions feature)
+  // S-STORE foundation collections (literal names â€” schemas live in store-extensions feature)
   payoutMethods: "payoutMethods",
   shippingConfigs: "shippingConfigs",
   analyticsCards: "analyticsCards",
@@ -224,8 +224,8 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   adminNotifications: "adminNotifications",
 };
 
-// SB-UNI-A 2026-05-13 — addressesSeedData has ownerType+ownerId set.
-// storeAddressesSeedData uses legacy storeSlug — map to ownerType/ownerId.
+// SB-UNI-A 2026-05-13 â€” addressesSeedData has ownerType+ownerId set.
+// storeAddressesSeedData uses legacy storeSlug â€” map to ownerType/ownerId.
 const mergedAddressesSeedData = [
   ...addressesSeedData,
   ...storeAddressesSeedData.map((a: any) => ({
@@ -287,7 +287,7 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   itemRequests: itemRequestsSeedData,
   storeWhatsAppConfig: storeWhatsAppConfigSeedData,
   storeGoogleConfig: storeGoogleConfigSeedData,
-  // RBAC + admin inbox — no seed docs yet; entries kept so SeedPanel can list them.
+  // RBAC + admin inbox â€” no seed docs yet; entries kept so SeedPanel can list them.
   roleOverrides: [],
   customRoles: [],
   adminNotifications: [],
@@ -366,7 +366,7 @@ async function countExistingForCollection(
   if (!seedData || seedData.length === 0) return 0;
 
   if (colName === "addresses") {
-    // SB-UNI-A 2026-05-13 — top-level addresses collection w/ ownerType discriminator.
+    // SB-UNI-A 2026-05-13 â€” top-level addresses collection w/ ownerType discriminator.
     const refs = (seedData as any[])
       .filter((d) => d.id)
       // eslint-disable-next-line lir/no-hardcoded-collection
@@ -446,7 +446,7 @@ async function countExistingForCollection(
 
   // Mirror the writer: docId = slug ?? id (route.ts POST handler).
   // Many seed entries (blog posts, events, FAQs, products, etc.) carry both
-  // a prefixed `id` and a bare `slug` that differ — the docs are written under
+  // a prefixed `id` and a bare `slug` that differ â€” the docs are written under
   // the slug, so the existence check must look there too.
   const refs = (seedData as any[])
     .map((d) => d.slug ?? d.id)
@@ -502,7 +502,6 @@ async function resolveAuthConflicts(
   }
 }
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export async function GET(request: NextRequest) {
   const user = await getUserFromRequest(request);
   if (!user || !isAdminUser(user)) {
@@ -551,7 +550,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export async function POST(request: NextRequest) {
   const user = await getUserFromRequest(request);
   if (!user || !isAdminUser(user)) {
@@ -685,7 +683,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Real execution — per-collection progress streams via Firebase RTDB at
+    // Real execution â€” per-collection progress streams via Firebase RTDB at
     // /seed_events/{runId}.  The client must call POST /api/demo/seed/event/init
     // first to obtain the runId + custom token and subscribe.  Without a runId
     // the route still runs the seed; progress is just not broadcast.
@@ -729,7 +727,7 @@ export async function POST(request: NextRequest) {
 
     await writeMeta("running", 0, { action, startedAt: Date.now() });
 
-    // Inline progress object — preserves the body of the original streaming
+    // Inline progress object â€” preserves the body of the original streaming
     // block so the existing `emit({...})` call sites continue to compile.
     // `emit` now does double duty: writes to RTDB for live UI and accumulates
     // a summary that's returned in the JSON response.
@@ -756,7 +754,7 @@ export async function POST(request: NextRequest) {
       }
     };
 
-    // The block below was previously inside `new ReadableStream({ async start(controller) {` —
+    // The block below was previously inside `new ReadableStream({ async start(controller) {` â€”
     // we keep the same indentation and structure so the diff is minimal.
     {
       {
@@ -770,7 +768,7 @@ export async function POST(request: NextRequest) {
           const seedData = activeSeedDataMap[collectionName];
 
           if (!seedData || seedData.length === 0) {
-            serverLogger.info(`⚠️ No seed data for ${collectionName}`);
+            serverLogger.info(`âš ï¸ No seed data for ${collectionName}`);
             emit({ type: "progress", collection: collectionName, status: "done", done: ++progressDone, total });
             continue;
           }
@@ -843,7 +841,7 @@ export async function POST(request: NextRequest) {
                   await auth.setCustomUserClaims(uid, { role: seedRole });
                 }
 
-                // Write new Firestore document — encrypt PII fields
+                // Write new Firestore document â€” encrypt PII fields
                 let docData = stripUndefined({ ...userData });
                 // Add blind indices from plaintext BEFORE encrypting
                 docData = addPiiIndices(docData, USER_PII_INDEX_MAP);
@@ -867,7 +865,7 @@ export async function POST(request: NextRequest) {
               }
             }
           } else if (collectionName === "addresses") {
-            // SB-UNI-A 2026-05-13 — top-level addresses collection.
+            // SB-UNI-A 2026-05-13 â€” top-level addresses collection.
             // Each seed entry carries ownerType + ownerId from the merge above.
             for (const addressData of seedData) {
               try {
@@ -971,7 +969,7 @@ export async function POST(request: NextRequest) {
               }
             }
           } else if (collectionName === "siteSettings") {
-            // Site settings is a singleton document — always upsert
+            // Site settings is a singleton document â€” always upsert
             const settingsData = seedData[0];
             if (settingsData) {
               const docRef = db.collection(firestoreCollection).doc("global");
@@ -989,7 +987,7 @@ export async function POST(request: NextRequest) {
               await purgeCollection(db, firestoreCollection);
             }
 
-            // Regular collections — upsert (merge) all seed docs in batches of 500
+            // Regular collections â€” upsert (merge) all seed docs in batches of 500
             type WriteItem = {
               docRef: FirebaseFirestore.DocumentReference;
               data: Record<string, any>;
@@ -1062,7 +1060,7 @@ export async function POST(request: NextRequest) {
 
       emit({ type: "done", success: true, message: `Loaded seed data. Created ${totalCreated}, errors ${totalErrors}.`, totals: { created: totalCreated, skipped: totalSkipped, errors: totalErrors } });
     } else if (action === "delete") {
-      // Delete seed data — purge entire collections so stale docs with old IDs
+      // Delete seed data â€” purge entire collections so stale docs with old IDs
       // (from previous seed runs) are also removed.
       for (const collectionName of collectionsToProcess) {
         emit({ type: "progress", collection: collectionName, status: "running", done: progressDone, total });
@@ -1071,8 +1069,8 @@ export async function POST(request: NextRequest) {
           const seedData = activeSeedDataMap[collectionName];
 
           if (collectionName === "users") {
-            // Auth + Firestore — delete each seed user's auth account then Firestore doc.
-            // The platform admin (admin@letitrip.in) is protected — skip it here;
+            // Auth + Firestore â€” delete each seed user's auth account then Firestore doc.
+            // The platform admin (admin@letitrip.in) is protected â€” skip it here;
             // remove manually via the Firebase console if needed.
             const PROTECTED_UIDS = new Set(["user-admin-letitrip"]);
             for (const userData of seedData) {
@@ -1104,7 +1102,7 @@ export async function POST(request: NextRequest) {
               }
             }
           } else if (collectionName === "addresses") {
-            // SB-UNI-A 2026-05-13 — top-level addresses collection.
+            // SB-UNI-A 2026-05-13 â€” top-level addresses collection.
             try {
               await purgeCollection(db, "addresses");
               totalDeleted++;
@@ -1114,7 +1112,7 @@ export async function POST(request: NextRequest) {
               totalErrors++;
             }
           } else if (collectionName === "wishlists") {
-            // Top-level wishlists collection — purge all docs.
+            // Top-level wishlists collection â€” purge all docs.
             try {
               await purgeCollection(db, WISHLIST_COLLECTION);
               totalDeleted++;
@@ -1124,7 +1122,7 @@ export async function POST(request: NextRequest) {
               totalErrors++;
             }
           } else if (collectionName === "history") {
-            // Top-level history collection — purge all docs.
+            // Top-level history collection â€” purge all docs.
             try {
               await purgeCollection(db, HISTORY_COLLECTION);
               totalDeleted++;
@@ -1147,7 +1145,7 @@ export async function POST(request: NextRequest) {
               }
             }
           } else if (collectionName === "siteSettings") {
-            // Singleton document — delete by known ID.
+            // Singleton document â€” delete by known ID.
             const docRef = db.collection(firestoreCollection).doc("global");
             if ((await docRef.get()).exists) {
               await docRef.delete();
@@ -1156,7 +1154,7 @@ export async function POST(request: NextRequest) {
               totalSkipped++;
             }
           } else {
-            // All other top-level collections — purge the whole collection so
+            // All other top-level collections â€” purge the whole collection so
             // docs with IDs that differ from the current seed data are also removed.
             const countSnap = await (db.collection(firestoreCollection) as any).count().get();
             const count = countSnap.data().count;
@@ -1188,14 +1186,14 @@ export async function POST(request: NextRequest) {
         emit({ type: "progress", collection: collectionName, status: "running", done: progressDone, total });
         try {
           if (collectionName === "couponUsage") {
-            // Subcollection — dropped automatically when parent user docs are purged.
+            // Subcollection â€” dropped automatically when parent user docs are purged.
             processedCollections.push(collectionName);
             emit({ type: "progress", collection: collectionName, status: "done", done: ++progressDone, total });
             continue;
           }
 
           if (CLEAR_PRESERVE.has(collectionName)) {
-            // Preserved — keep site settings, homepage sections, and FAQs intact.
+            // Preserved â€” keep site settings, homepage sections, and FAQs intact.
             processedCollections.push(collectionName);
             emit({ type: "progress", collection: collectionName, status: "done", done: ++progressDone, total });
             continue;

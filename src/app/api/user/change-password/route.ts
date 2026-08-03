@@ -13,7 +13,6 @@ import { successResponse } from "@mohasinac/appkit";
 import { changePasswordSchema } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 
-// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const POST = withProviders(createRouteHandler<
   (typeof changePasswordSchema)["_output"]
 >({

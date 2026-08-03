@@ -19,7 +19,6 @@ const removeCouponSchema = z.object({
   code: z.string().min(1).max(50).optional(),
 });
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(
   createRouteHandler<{ code: string }>({
     auth: true,
@@ -77,7 +76,7 @@ export const POST = withProviders(
         return ApiErrors.badRequest(conflict);
       }
 
-      // Map eligible product IDs → itemIds stored on the coupon for checkout use
+      // Map eligible product IDs â†’ itemIds stored on the coupon for checkout use
       const applicableItemIds = result.eligibleProductIds
         ? cart.items
             .filter((item) => result.eligibleProductIds!.includes(item.productId))
@@ -95,7 +94,7 @@ export const POST = withProviders(
         combineWithSellerCoupons: combineFlag,
       });
 
-      // Auto-bind to the user's wallet — if they typed a code they hadn't
+      // Auto-bind to the user's wallet â€” if they typed a code they hadn't
       // claimed yet, this surfaces it under My Coupons so they can reapply
       // later without re-typing. claim() is idempotent so re-applying an
       // already-claimed coupon is a no-op.
@@ -122,7 +121,7 @@ export const POST = withProviders(
             expiresAt: fullCoupon?.validity?.endDate ?? null,
           })
           .catch(() => {
-            /* best-effort wallet bind — checkout still validates fresh */
+            /* best-effort wallet bind â€” checkout still validates fresh */
           });
       }
 
@@ -139,8 +138,7 @@ export const POST = withProviders(
   }),
 );
 
-// DELETE /api/cart/coupon — remove one coupon by code, or all if no code given
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
+// DELETE /api/cart/coupon â€” remove one coupon by code, or all if no code given
 export const DELETE = withProviders(
   createRouteHandler<{ code?: string }>({
     auth: true,

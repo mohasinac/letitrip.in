@@ -1,7 +1,7 @@
 import { withProviders } from "@/providers.config";
 /**
  * Newsletter Subscribe API Route
- * POST /api/newsletter/subscribe — Subscribe an email to the newsletter
+ * POST /api/newsletter/subscribe â€” Subscribe an email to the newsletter
  */
 
 import { z } from "zod";
@@ -26,7 +26,6 @@ const subscribeSchema = z.object({
     .optional(),
 });
 
-// rbac-public: public endpoint — no authentication required
 export const POST = withProviders(createRouteHandler<(typeof subscribeSchema)["_output"]>({
   schema: subscribeSchema,
   handler: async ({ request, body }) => {

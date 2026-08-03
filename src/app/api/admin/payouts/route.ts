@@ -3,7 +3,7 @@ import { withProviders } from "@/providers.config";
 /**
  * Admin Payouts API
  *
- * GET /api/admin/payouts — List all payouts (filterable by status)
+ * GET /api/admin/payouts â€” List all payouts (filterable by status)
  */
 
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
@@ -26,10 +26,10 @@ const DEFAULT_SORTS = sortBy(COMMON_FIELDS.CREATED_AT);
  * GET /api/admin/payouts
  *
  * Query params:
- *  - filters  (string) — Sieve filters (e.g. status==pending)
- *  - sorts    (string) — Sieve sorts (e.g. -createdAt)
- *  - page     (number) — page number (default 1)
- *  - pageSize (number) — results per page (default 50, max 200)
+ *  - filters  (string) â€” Sieve filters (e.g. status==pending)
+ *  - sorts    (string) â€” Sieve sorts (e.g. -createdAt)
+ *  - page     (number) â€” page number (default 1)
+ *  - pageSize (number) â€” results per page (default 50, max 200)
  *
  * summary stats are always computed from the full unfiltered dataset.
  */
@@ -136,5 +136,4 @@ const __GET__g = withProviders(createRouteHandler({
   },
 }));
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("PAYOUTS", __GET__g);

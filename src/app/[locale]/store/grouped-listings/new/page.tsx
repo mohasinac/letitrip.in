@@ -16,6 +16,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
+import { createGroupedListing } from "@/lib/api/store-client";
 import { useState } from "react";
 
 const THEME_OPTIONS = [
@@ -44,12 +45,7 @@ export default function Page() {
       return;
     }
     setSaving(true);
-    // audit-direct-fetch-ok: advanced store feature; no server action yet
-    const res = await fetch(API_ROUTES.STORE.GROUPED_LISTINGS, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, productIds: [] }),
-    });
+    const res = await createGroupedListing(API_ROUTES.STORE.GROUPED_LISTINGS, { ...form, productIds: [] });
     setSaving(false);
     if (res.ok) {
       showToast("Group created", "success");

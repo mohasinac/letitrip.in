@@ -3,22 +3,22 @@
  *
  * Issues a Firebase Storage v4 signed PUT URL so the browser can upload
  * media bytes directly to GCS, bypassing the Vercel function (4.5 MB
- * request cap — Rule #6).
+ * request cap â€” Rule #6).
  *
  * Body (JSON):
- * - contentType: string (required) — must be in ALLOWED_MIMES
- * - size:        number (required) — declared size in bytes; ≤ kind ceiling
- * - folder?:     string — staging subfolder under tmp/
- * - isPublic?:   boolean — recorded for the finalize step (no effect on the
+ * - contentType: string (required) â€” must be in ALLOWED_MIMES
+ * - size:        number (required) â€” declared size in bytes; â‰¤ kind ceiling
+ * - folder?:     string â€” staging subfolder under tmp/
+ * - isPublic?:   boolean â€” recorded for the finalize step (no effect on the
  *                signed URL itself); the bucket policy + finalize decide
  *                whether to issue a public download URL
- * - context?:    MediaFilenameContext — drives the SEO filename
+ * - context?:    MediaFilenameContext â€” drives the SEO filename
  *
  * Response:
- * - uploadUrl:   string — v4 signed PUT URL, 15-minute expiry
- * - storagePath: string — `tmp/{folder}/{uid}/{filename}`
- * - filename:    string — SEO filename including extension
- * - contentType: string — echoes the validated request value (must be sent
+ * - uploadUrl:   string â€” v4 signed PUT URL, 15-minute expiry
+ * - storagePath: string â€” `tmp/{folder}/{uid}/{filename}`
+ * - filename:    string â€” SEO filename including extension
+ * - contentType: string â€” echoes the validated request value (must be sent
  *                back as the Content-Type header on the browser PUT)
  *
  * After the browser uploads, it calls POST /api/media/finalize with the
@@ -50,7 +50,7 @@ import type { MediaFilenameContext } from "@mohasinac/appkit";
 const TMP_UPLOAD_PREFIX = "tmp";
 const PDF_FOLDER = "documents";
 const DEFAULT_MEDIA_FOLDER = "uploads";
-const SIGNED_URL_TTL_MS = 15 * 60 * 1000; // 15 min — enough for slow mobile uploads
+const SIGNED_URL_TTL_MS = 15 * 60 * 1000; // 15 min â€” enough for slow mobile uploads
 
 interface SignRequestBody {
   contentType?: JsonValue;
@@ -60,7 +60,6 @@ interface SignRequestBody {
   context?: JsonValue;
 }
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {
@@ -106,7 +105,7 @@ export const POST = withProviders(createRouteHandler({
     }
     const isPdf = kind === "pdf";
 
-    // Track E2 — context is REQUIRED. The random-filename fallback path is
+    // Track E2 â€” context is REQUIRED. The random-filename fallback path is
     // deleted. Every caller passes a typed MediaFilenameContext so generated
     // filenames stay SEO-friendly and the slug audits keep working.
     if (
@@ -115,7 +114,7 @@ export const POST = withProviders(createRouteHandler({
       !("type" in (contextInput as object))
     ) {
       return errorResponse(
-        "context is required — pass a MediaFilenameContext { type, ... }.",
+        "context is required â€” pass a MediaFilenameContext { type, ... }.",
         400,
         { code: "MEDIA_CONTEXT_REQUIRED" },
       );

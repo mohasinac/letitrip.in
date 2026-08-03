@@ -1,7 +1,7 @@
 import { withProviders } from "@/providers.config";
 /**
  * Contact API Route
- * POST /api/contact — Send a contact message to support and store in Firestore
+ * POST /api/contact â€” Send a contact message to support and store in Firestore
  */
 
 import { z } from "zod";
@@ -24,7 +24,6 @@ const contactSchema = z.object({
     .max(5000),
 });
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(createRouteHandler<(typeof contactSchema)["_output"]>({
   schema: contactSchema,
   handler: async ({ request, body }) => {
@@ -33,7 +32,7 @@ export const POST = withProviders(createRouteHandler<(typeof contactSchema)["_ou
     const { name, email, subject, message } = body!;
     serverLogger.info("Contact form submission received", { subject });
 
-    // Persist to Firestore (non-blocking — don't fail if it errors)
+    // Persist to Firestore (non-blocking â€” don't fail if it errors)
     contactSubmissionsRepository.save({ name, email, subject, message }).catch((err) => {
       serverLogger.error("Failed to save contact submission to Firestore", err);
     });

@@ -29,14 +29,13 @@ const mergeCartSchema = z.object({
     .max(50), // Reasonable cap to prevent abuse
 });
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(createRouteHandler<(typeof mergeCartSchema)["_output"]>({
   auth: true,
   schema: mergeCartSchema,
   handler: async ({ user, body }) => {
     const { items } = body!;
 
-    // Merge each guest item — skip products that are unavailable, continue on others
+    // Merge each guest item â€” skip products that are unavailable, continue on others
     let cart = await cartRepository.getOrCreate(user!.uid);
 
     for (const item of items) {

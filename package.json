@@ -38,7 +38,8 @@
     "check:fix": "npm run lint:fix && npm run check",
     "pre-commit": "npm run check",
     "index:generate": "node ./appkit/scripts/get-index.js",
-    "firebase": "node scripts/firebase.mjs"
+    "firebase": "node scripts/firebase.mjs",
+    "stress-test": "node scripts/stress-test.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

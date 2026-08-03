@@ -14,6 +14,7 @@ import {
   Skeleton,
 } from "@mohasinac/appkit/client";
 import { useParams } from "next/navigation";
+import { getItemRequest, replyToItemRequest } from "@/lib/api/items-client";
 import { useEffect, useState } from "react";
 import type { ItemRequestDocument } from "@mohasinac/appkit";
 
@@ -26,8 +27,7 @@ export default function Page() {
   const [posting, setPosting] = useState(false);
 
   const load = () => {
-    // audit-direct-fetch-ok: item-requests not in P-1 scope; no server action yet
-    fetch(`/api/item-requests/${id}`)
+    getItemRequest(id)
       .then((r) => r.json())
       .then((j) => setDoc(j?.data ?? null))
       .finally(() => setLoading(false));
@@ -38,12 +38,7 @@ export default function Page() {
   const postReply = async () => {
     if (!reply.trim()) return;
     setPosting(true);
-    // audit-direct-fetch-ok: item-requests not in P-1 scope; no server action yet
-    await fetch(`/api/item-requests/${id}/replies`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ body: reply }),
-    });
+    await replyToItemRequest(id, { body: reply });
     setReply("");
     setPosting(false);
     load();

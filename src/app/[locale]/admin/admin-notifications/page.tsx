@@ -13,6 +13,7 @@ import {
   Skeleton,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
+import { getAdminNotifications, markAdminNotificationRead } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
 import type { AdminNotificationDocument } from "@mohasinac/appkit";
 
@@ -22,8 +23,7 @@ export default function Page() {
 
   const load = () => {
     setLoading(true);
-    // audit-direct-fetch-ok: admin control-plane; no server action in appkit yet
-    fetch(API_ROUTES.ADMIN.ADMIN_NOTIFICATIONS)
+    getAdminNotifications(API_ROUTES.ADMIN.ADMIN_NOTIFICATIONS)
       .then((r) => r.json())
       .then((j) => setItems(j?.data?.items ?? []))
       .finally(() => setLoading(false));
@@ -32,12 +32,7 @@ export default function Page() {
   useEffect(load, []);
 
   const markRead = async (id: string) => {
-    // audit-direct-fetch-ok: admin control-plane; no server action in appkit yet
-    await fetch(`${API_ROUTES.ADMIN.ADMIN_NOTIFICATIONS}/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isRead: true, readAt: new Date() }),
-    });
+    await markAdminNotificationRead(API_ROUTES.ADMIN.ADMIN_NOTIFICATIONS, id);
     load();
   };
 

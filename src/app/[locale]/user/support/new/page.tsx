@@ -17,6 +17,7 @@ import {
   FieldSelect,
 } from "@mohasinac/appkit/client";
 import { TICKET_CATEGORIES, type TicketCategory } from "@/constants";
+import { createSupportTicket } from "@/lib/api/support-client";
 
 const __P = {
   p5: "p-5",
@@ -53,16 +54,11 @@ export default function NewSupportTicketPage() {
     if (!canSubmit || submitting) return;
     setSubmitting(true);
     try {
-      // audit-direct-fetch-ok: support tickets; no server action yet
-      const res = await fetch("/api/support/tickets", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          category,
-          subject: subject.trim(),
-          description: description.trim(),
-          ...(category === "order_issue" ? { orderId: orderId.trim() } : {}),
-        }),
+      const res = await createSupportTicket({
+        category,
+        subject: subject.trim(),
+        description: description.trim(),
+        ...(category === "order_issue" ? { orderId: orderId.trim() } : {}),
       });
       const json = await res.json();
       if (!res.ok || !json?.ok) {

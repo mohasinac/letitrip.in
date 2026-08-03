@@ -46,5 +46,4 @@ const __GET__g = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("SCAM_REGISTRY", __GET__g);

@@ -6,7 +6,7 @@ import { withProviders } from "@/providers.config";
  * POST /api/payment/create-order
  *
  * Creates a Razorpay order. Amount is computed server-side from the user's live
- * cart + current Firestore product prices — the client MUST NOT supply an amount.
+ * cart + current Firestore product prices â€” the client MUST NOT supply an amount.
  * This prevents price-manipulation attacks where a client sends a lower amount.
  *
  * Body: { currency?: string, receipt?: string }
@@ -26,7 +26,6 @@ const createOrderSchema = z.object({
   receipt: z.string().optional(),
 });
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_output"]>({
   auth: true,
   schema: createOrderSchema,
@@ -44,7 +43,7 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
       throw ApiErrors.badRequest("Your cart is empty.");
     }
 
-    // Fetch current product prices in parallel — never trust client-supplied price.
+    // Fetch current product prices in parallel â€” never trust client-supplied price.
     const selectedIds = cart.selectedItemIds?.length ? new Set(cart.selectedItemIds) : null;
     const activeItems = selectedIds
       ? cartItems.filter((item) => selectedIds.has(item.itemId))
@@ -69,7 +68,7 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
           `"${item.productTitle}" is no longer available. Please remove it from your cart.`,
         );
       }
-      // Bundle cart-lines lock their price at add-time (bundlePriceInPaise) — honour it.
+      // Bundle cart-lines lock their price at add-time (bundlePriceInPaise) â€” honour it.
       const unitPriceRs = item.bundleCategorySlug && item.bundleProductIds?.length
         ? item.price
         : product.price;
@@ -97,7 +96,7 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
     });
 
     serverLogger.info(
-      `Payment order created: ${razorpayOrder.id} for user ${uid} — base ₹${subtotalRs} + fee ₹${platformFee} + GST ₹${gstOnFee} = ₹${totalAmount}`,
+      `Payment order created: ${razorpayOrder.id} for user ${uid} â€” base â‚¹${subtotalRs} + fee â‚¹${platformFee} + GST â‚¹${gstOnFee} = â‚¹${totalAmount}`,
     );
 
     return successResponse({
@@ -112,5 +111,4 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
   },
 }));
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const POST = withFeatureGuard("RAZORPAY", __POST__g);

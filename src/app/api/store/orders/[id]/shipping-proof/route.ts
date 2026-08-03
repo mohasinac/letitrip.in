@@ -1,55 +1,47 @@
-/**
- * POST /api/store/orders/[id]/shipping-proof
- *
- * Seller records a shipping-proof media URL on the order after uploading
- * the proof via the signed-URL flow (/api/media). Accepts the already-
- * uploaded URL + MIME type; never accepts raw bytes.
- */
-
 import { withProviders } from "@/providers.config";
-import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  orderRepository,
-  storeRepository,
-} from "@mohasinac/appkit";
+import { createApiHandler, successResponse, ApiErrors, orderRepository, storeRepository, type JsonValue } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 
-const bodySchema = z.object({
-  /** Media slug URL returned by the signed-URL upload flow. */
-  shippingProofUrl: z.string().min(1),
-  shippingProofMimeType: z.string().min(1),
-});
+const BULK_MAX = 50;
 
-// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
-export const POST = withProviders(
-  createRouteHandler<(typeof bodySchema)["_output"]>({
-    auth: true,
-    roles: [...ROLES_STORE_WRITE],
+export const PATCH = withProviders(createApiHandler({
+  roles: [...ROLES_STORE_WRITE],
     permission: "store:api:write",
-    schema: bodySchema,
-    handler: async ({ user, body, params }) => {
-      const id = (params as { id: string }).id;
-      const order = await orderRepository.findById(id);
-      if (!order) return errorResponse("Order not found", 404);
+  handler: async ({ request, user }) => {
+    const store = await storeRepository.findByOwnerId(user!.uid);
+    if (!store) return ApiErrors.forbidden("No store found for this account");
 
-      if (user!.role !== "admin") {
-        const store = await storeRepository.findByOwnerId(user!.uid);
-        if (!store || order.storeId !== store.id)
-          return errorResponse("Order not found", 404);
+    const body = await request.json() as {
+      orderIds?: JsonValue;
+      physicalLocation?: JsonValue;
+    };
+
+    if (!Array.isArray(body.orderIds) || body.orderIds.length === 0) {
+      return ApiErrors.badRequest("orderIds must be a non-empty array");
+    }
+    if (body.orderIds.length > BULK_MAX) {
+      return ApiErrors.badRequest(`Maximum ${BULK_MAX} orders per request`);
+    }
+    const loc = body.physicalLocation as { zone?: JsonValue; shelf?: JsonValue; bin?: JsonValue } | undefined;
+    if (!loc || typeof loc.zone !== "string" || typeof loc.shelf !== "string" || typeof loc.bin !== "string") {
+      return ApiErrors.badRequest("physicalLocation must have zone, shelf, and bin strings");
+    }
+    const physicalLocation = { zone: loc.zone, shelf: loc.shelf, bin: loc.bin };
+
+    const orderIds = body.orderIds as string[];
+
+    // Verify ownership â€” reject batch on any mismatch
+    const orders = await Promise.all(orderIds.map((id) => orderRepository.findById(id)));
+    for (const [i, o] of orders.entries()) {
+      if (!o || o.storeId !== store.id) {
+        return ApiErrors.forbidden(`Order ${orderIds[i]} does not belong to your store`);
       }
+    }
 
-      await orderRepository.update(id, {
-        shippingProofUrl: body!.shippingProofUrl,
-        shippingProofMimeType: body!.shippingProofMimeType,
-        shippingProofUploadedAt: new Date(),
-        shippingProofUploadedBy: user!.uid,
-      });
+    await Promise.all(
+      orderIds.map((id) => orderRepository.update(id, { physicalLocation } as never)),
+    );
 
-      const updated = await orderRepository.findById(id);
-      return successResponse(updated, "Shipping proof recorded");
-    },
-  }),
-);
+    return successResponse({ updated: orderIds.length });
+  },
+}));

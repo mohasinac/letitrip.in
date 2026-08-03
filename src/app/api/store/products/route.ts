@@ -1,7 +1,7 @@
 import { withProviders } from "@/providers.config";
 /**
  * Seller Products API Route
- * GET /api/store/products — Returns the authenticated seller's products
+ * GET /api/store/products â€” Returns the authenticated seller's products
  *                            (enforces storeId=={ownerStore.id} server-side)
  *
  * Mutations use Server Action: createSellerProductAction.
@@ -11,12 +11,11 @@ import { successResponse, ApiErrors } from "@mohasinac/appkit";
 import { productRepository, storeRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_READ } from "@/constants";
 
-// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_STORE_READ],
     permission: "store:api:read",
   handler: async ({ request, user }) => {
-    // Resolve the store owned by this user — storeId is the public-facing key on products
+    // Resolve the store owned by this user â€” storeId is the public-facing key on products
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store) {
       return ApiErrors.forbidden("No store found for this account");

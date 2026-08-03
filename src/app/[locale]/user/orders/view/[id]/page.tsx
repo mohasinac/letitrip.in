@@ -21,6 +21,7 @@ import {
   BUNDLE_COPY,
   type BundleOrderGroup,
 } from "@mohasinac/appkit";
+import { getOrderDigitalCode } from "@/lib/api/user-client";
 
 const CLS_BUNDLE_BADGE = "inline-flex items-center rounded-full bg-fuchsia-100 dark:bg-fuchsia-900/30 px-2 py-0.5 text-[10px] font-semibold text-fuchsia-700 dark:text-fuchsia-300";
 
@@ -45,8 +46,7 @@ function paise(n: number, currency = "INR") {
 const CODE_REVEAL_STATUSES = new Set(["confirmed", "processing", "delivered"]);
 
 async function fetchOrderCode(orderId: string): Promise<RevealedCode> {
-  // audit-direct-fetch-ok: digital code reveal; no server action yet
-  const res = await fetch(`/api/orders/${orderId}/code`);
+  const res = await getOrderDigitalCode(`/api/orders/${orderId}/code`);
   const body = await res.json();
   if (!res.ok) throw new Error(body?.error ?? "Could not retrieve code");
   return body.data as RevealedCode;

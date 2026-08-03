@@ -1,6 +1,6 @@
 import { normalizeError } from "@mohasinac/appkit";
 /**
- * External media proxy — watermarks third-party image URLs server-side.
+ * External media proxy â€” watermarks third-party image URLs server-side.
  *
  * GET /api/media/ext?url=<encoded>
  *
@@ -47,7 +47,6 @@ function isBlockedHostname(hostname: string): boolean {
   return false;
 }
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export async function GET(request: NextRequest): Promise<Response> {
   const rawUrl = request.nextUrl.searchParams.get("url");
 
@@ -56,7 +55,7 @@ export async function GET(request: NextRequest): Promise<Response> {
   }
 
   // HMAC verification (config-gated by MEDIA_EXT_HMAC_SECRET). When the env
-  // var is unset, every request passes through — back-compat for callers that
+  // var is unset, every request passes through â€” back-compat for callers that
   // haven't migrated to signExtMediaUrl() yet.
   //
   // Note: enabling the env var while SSR-rendered img tags still use the
@@ -138,7 +137,7 @@ export async function GET(request: NextRequest): Promise<Response> {
 
   const originalBuffer = Buffer.concat(chunks.map((c) => Buffer.from(c)));
 
-  // SVGs pass through untouched — sharp can't composite them reliably
+  // SVGs pass through untouched â€” sharp can't composite them reliably
   if (contentType === SVG_MIME) {
     return new NextResponse(new Uint8Array(originalBuffer), {
       status: 200,
