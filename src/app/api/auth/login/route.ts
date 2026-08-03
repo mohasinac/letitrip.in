@@ -115,7 +115,9 @@ export async function POST(request: NextRequest) {
 
     const currentRole = userData?.role ?? SCHEMA_DEFAULTS.USER_ROLE;
 
-    // Run all independent post-auth operations in parallel
+    // Run all independent post-auth operations in parallel.
+    // updateLoginMetadata is non-critical (fails if Firestore profile doesn't exist yet);
+    // swallow its error so a missing profile never blocks the session cookie.
     const [sessionCookie, session] = await Promise.all([
       createSessionCookie(idToken),
       sessionRepository.createSession(userRecord.uid, {
@@ -124,7 +126,9 @@ export async function POST(request: NextRequest) {
         ),
       }),
       auth.setCustomUserClaims(userRecord.uid, { role: currentRole }),
-      userRepository.updateLoginMetadata(userRecord.uid),
+      userRepository.updateLoginMetadata(userRecord.uid).catch((err: unknown) => {
+        serverLogger.warn("Non-critical: updateLoginMetadata skipped", { uid: userRecord.uid, err });
+      }),
     ]);
 
     serverLogger.info("Session created successfully", { sessionId: session.id });
