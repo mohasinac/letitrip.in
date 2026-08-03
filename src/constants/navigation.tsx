@@ -210,7 +210,8 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     items: [
       adminItem(String(ROUTES.ADMIN.REVIEWS), "Reviews", "admin:reviews:read"),
       adminItem(String(ROUTES.ADMIN.MEDIA),   "Media",   "admin:media:read"),
-      // Blog hidden until FEATURE_BLOG (P3). Bids hidden until FEATURE_AUCTIONS (P5).
+      adminItem(String(ROUTES.ADMIN.BLOG),    "Blog",    "admin:blog:read"),
+      // Bids hidden until FEATURE_AUCTIONS (P5).
     ],
   },
   {

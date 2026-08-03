@@ -124,10 +124,9 @@ const EXEMPT_PATH_PATTERNS = [
   // Firestore seed data documents — color strings are document field values, not CSS.
   /^appkit\/src\/seed\/categories-seed-data\.ts$/,
   /^appkit\/src\/seed\/site-settings-seed-data\.ts$/,
+  /^appkit\/src\/features\/layout\/background-seed-defaults\.ts$/,
   // Hex defaults for <input type="color"> — CSS vars are invalid there; hex must be a literal string.
   /^appkit\/src\/features\/homepage\/lib\/franchise-colors\.ts$/,
-  // Background theme seed defaults — Firestore data values, not CSS styling.
-  /^appkit\/src\/features\/layout\/background-seed-defaults\.ts$/,
   // Admin configuration editors handle hex as Firestore data (color pickers, placeholder text, document defaults).
   /^appkit\/src\/features\/admin\/components\//,
   // Rich-text primitive source directory owns its internal CSS including code-block button styling.
@@ -142,6 +141,8 @@ const EXEMPT_PATH_PATTERNS = [
  *  - pure comment lines
  *  - Next.js viewport themeColor (browser meta tag)
  *  - Web App Manifest colour fields
+ *  - <input type="color"> — browser only accepts hex literals, not CSS vars
+ *  - placeholder= attribute values — educational/hint text, not applied colour
  */
 function isExemptLine(line) {
   const t = line.trim();
@@ -151,6 +152,10 @@ function isExemptLine(line) {
   if (t.includes("themeColor") || t.includes("prefers-color-scheme")) return true;
   // Web App Manifest colour fields — browser requires literal hex
   if (t.includes("background_color") || t.includes("theme_color")) return true;
+  // <input type="color"> — the HTML colour picker API only accepts hex strings
+  if (t.includes('type="color"') || t.includes("type='color'")) return true;
+  // placeholder= attribute — the string is instructional text, not an applied colour
+  if (/\bplaceholder\s*=/.test(t)) return true;
   return false;
 }
 
