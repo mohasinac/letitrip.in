@@ -1,34 +1,75 @@
 /**
- * DELETE /api/user/coupons/[id]
+ * POST /api/user/coupons/claim
  *
- * Plan §10 — soft-remove a claimed coupon. Status is flipped to "expired"
- * so the wallet hides it from the active tab but the audit trail (claim
- * source + dates) is preserved.
+ * Plan Â§10 â€” claim a coupon into the user's wallet. Idempotent: a second
+ * claim for the same code is a 200 no-op returning the existing claim row.
+ *
+ * Validation order:
+ *   1. Coupon exists.
+ *   2. Coupon is currently valid (validity.isActive + within window).
+ *   3. `restrictions.firstTimeUserOnly` is honoured (best-effort â€” checkout
+ *      still validates again at redeem time).
+ *
+ * Source enum is purely analytic â€” `manual` from a page CTA, `spin` /
+ * `raffle` / `prize-draw` from the matching win surface, `promo` from a
+ * homepage banner.
  */
 import { withProviders } from "@/providers.config";
+import { z } from "zod";
 import {
   createRouteHandler,
   successResponse,
   ApiErrors,
   claimedCouponsRepository,
+  couponsRepository,
+  isCouponValid,
+  type ClaimedCouponSource,
+  type CouponDocument,
 } from "@mohasinac/appkit";
 
-// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
-export const DELETE = withProviders(
-  createRouteHandler<unknown, { id: string }>({
-    auth: true,
-    handler: async ({ user, params }) => {
-      const id = params?.id;
-      if (!id) return ApiErrors.badRequest("Missing claim id.");
+const claimSchema = z.object({
+  couponCode: z.string().min(1).max(50),
+  source: z
+    .enum(["manual", "promo", "spin", "raffle", "prize-draw"])
+    .optional(),
+});
 
-      const row = await claimedCouponsRepository.findById(id);
-      if (!row) return ApiErrors.notFound("Claimed coupon not found.");
-      if (row.userId !== user!.uid) {
-        return ApiErrors.forbidden("You can only remove your own coupons.");
+export const POST = withProviders(
+  createRouteHandler<(typeof claimSchema)["_output"]>({
+    auth: true,
+    schema: claimSchema,
+    handler: async ({ user, body }) => {
+      const { couponCode, source } = body!;
+      const code = couponCode.trim().toUpperCase();
+
+      const coupon = (await couponsRepository.getCouponByCode(code)) as
+        | CouponDocument
+        | null;
+      if (!coupon) {
+        return ApiErrors.notFound("Coupon not found.");
+      }
+      if (!isCouponValid(coupon)) {
+        return ApiErrors.badRequest("This coupon is no longer valid.");
       }
 
-      await claimedCouponsRepository.softRemove(row.userId, row.couponCode);
-      return successResponse({ id }, "Coupon removed from wallet.");
+      const claim = await claimedCouponsRepository.claim({
+        userId: user!.uid,
+        couponId: coupon.id,
+        couponCode: code,
+        source: (source ?? "manual") as ClaimedCouponSource,
+        couponSnapshot: {
+          name: coupon.name,
+          description: coupon.description,
+          type: coupon.type,
+          scope: coupon.scope,
+          storeId: coupon.storeId,
+          discount: coupon.discount,
+          restrictions: coupon.restrictions,
+        },
+        expiresAt: coupon.validity.endDate ?? null,
+      });
+
+      return successResponse({ claim }, "Coupon claimed.", 201);
     },
   }),
 );

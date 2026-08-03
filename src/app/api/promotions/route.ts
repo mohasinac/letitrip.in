@@ -1,16 +1,16 @@
 import { withProviders } from "@/providers.config";
 import type { JsonValue } from "@mohasinac/appkit";
 /**
- * Promotions API Route â€” thin proxy
+ * Promotions API Route Ã¢â‚¬â€ thin proxy
  *
  * Public endpoint (no auth). Delegates to the Firebase HTTPS function
  * `promotionsApi`, which fetches promoted products, featured products, and
- * active coupons entirely on Firebase servers â€” including the coupon
+ * active coupons entirely on Firebase servers Ã¢â‚¬â€ including the coupon
  * start-date guard that Firestore cannot express as a single compound query.
  *
  * Required env vars (Vercel):
- *   FIREBASE_FUNCTION_PROMOTIONS_URL  â€” Cloud Run URL of promotionsApi
- *   LETITRIP_INTERNAL_SECRET          â€” shared secret for server-to-server auth
+ *   FIREBASE_FUNCTION_PROMOTIONS_URL  Ã¢â‚¬â€ Cloud Run URL of promotionsApi
+ *   LETITRIP_INTERNAL_SECRET          Ã¢â‚¬â€ shared secret for server-to-server auth
  */
 
 import { successResponse } from "@mohasinac/appkit";
@@ -18,7 +18,6 @@ import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { callFirebaseFunction } from "@/lib/firebase-gateway";
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(
   createRouteHandler({
     handler: async () => {

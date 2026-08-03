@@ -24,6 +24,10 @@ const {
 
 vi.mock("@/providers.config", () => ({ withProviders: (fn: unknown) => fn }));
 vi.mock("@/constants", () => ({ ROLES_ADMIN_MOD: ["admin", "moderator"] }));
+vi.mock("@/lib/features", () => ({
+  withFeatureGuard: (_flag: string, handler: unknown) => handler,
+  getFlag: () => true,
+}));
 
 vi.mock("@mohasinac/appkit", () => ({
   blogRepository: { findBySlug: mockFindBySlug, update: mockUpdate, delete: mockDelete },

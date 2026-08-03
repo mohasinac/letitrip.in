@@ -2,8 +2,8 @@ import { withProviders } from "@/providers.config";
 import type { JsonValue } from "@mohasinac/appkit";
 /**
  * Admin Products API Route
- * GET  /api/admin/products — Delegated to @mohasinac/feat-admin
- * POST /api/admin/products — Create a new product (admin, local)
+ * GET  /api/admin/products â€” Delegated to @mohasinac/feat-admin
+ * POST /api/admin/products â€” Create a new product (admin, local)
  */
 
 
@@ -28,7 +28,6 @@ import { ROLES_ADMIN_MOD } from "@/constants";
 /**
  * GET /api/admin/products
  */
-// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_ADMIN_MOD],
   permission: "admin:products:read",
@@ -66,7 +65,6 @@ export const GET = withProviders(createApiHandler({
  *
  * Create a new product as admin (can set any status, sellerId etc.)
  */
-// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
 export const POST = withProviders(createApiHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],

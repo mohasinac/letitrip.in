@@ -90,7 +90,5 @@ const __POST__g = withProviders(createRouteHandler<(typeof createCouponSchema)["
   },
 }));
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("COUPONS", __GET__g);
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const POST = withFeatureGuard("COUPONS", __POST__g);

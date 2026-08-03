@@ -1,9 +1,9 @@
 import { withProviders } from "@/providers.config";
 /**
- * User Wishlist API — Collection
+ * User Wishlist API â€” Collection
  *
- * GET  /api/user/wishlist — List current user's wishlist items (with product details)
- * POST /api/user/wishlist — Add a product to the wishlist (capped at WISHLIST_MAX)
+ * GET  /api/user/wishlist â€” List current user's wishlist items (with product details)
+ * POST /api/user/wishlist â€” Add a product to the wishlist (capped at WISHLIST_MAX)
  */
 
 import { normalizeError, wishlistRepository } from "@mohasinac/appkit";
@@ -28,7 +28,6 @@ const addSchema = z.object({
  *
  * Returns wishlist items with product details for the authenticated user.
  */
-// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
@@ -67,7 +66,6 @@ export const GET = withProviders(createRouteHandler({
  * Returns 409 WISHLIST_FULL when the user has WISHLIST_MAX (20) items and the product
  * is not already in their wishlist.
  */
-// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const POST = withProviders(createRouteHandler<(typeof addSchema)["_output"]>({
   auth: true,
   schema: addSchema,
@@ -79,7 +77,7 @@ export const POST = withProviders(createRouteHandler<(typeof addSchema)["_output
       return errorResponse(ERROR_MESSAGES.PRODUCT.NOT_FOUND, 404);
     }
 
-    // SB1-G Phase 4 — canonical listingType drives the snapshot's `productType` tag.
+    // SB1-G Phase 4 â€” canonical listingType drives the snapshot's `productType` tag.
     const lt = normalizeListingType(
       product as {
         listingType?: "standard" | "auction" | "pre-order" | "prize-draw";

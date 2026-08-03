@@ -1,14 +1,13 @@
 import { withProviders } from "@/providers.config";
 /**
  * Seller Offers API Route
- * GET /api/store/offers — Returns all incoming offers for the authenticated seller
+ * GET /api/store/offers â€” Returns all incoming offers for the authenticated seller
  */
 import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { offerRepository, storeRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_READ } from "@/constants";
 
-// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_STORE_READ],
     permission: "store:api:read",

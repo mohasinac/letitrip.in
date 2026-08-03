@@ -58,7 +58,6 @@ function mergeListingTypeFilter(filters: string | null | undefined): string {
   return parts.join(",");
 }
 
-// rbac-public: public endpoint — no authentication required
 export const GET = withProviders(async (request: Request) => {
   try {
     const url = new URL(request.url);

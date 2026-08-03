@@ -1,5 +1,5 @@
 import { normalizeError } from "@mohasinac/appkit";
-import { initProviders } from "@/providers.config";
+import { withProviders } from "@/providers.config";
 import { blogGET, serverLogger } from "@mohasinac/appkit";
 
 function isMissingFirestoreIndexError(error: unknown): boolean {
@@ -10,11 +10,9 @@ function isMissingFirestoreIndexError(error: unknown): boolean {
 	);
 }
 
-// rbac-public: public endpoint — no authentication required
-export async function GET(
+async function blogGetHandler(
 	...args: Parameters<typeof blogGET>
-) {
-	await initProviders();
+): Promise<Response> {
 	const [request] = args as [Request, ...unknown[]];
 	const requestUrl = new URL(request.url);
 	const hasSearchQuery = Boolean(requestUrl.searchParams.get("q"));
@@ -40,7 +38,7 @@ export async function GET(
 
 		return response;
 	} catch (error) {
-	  void normalizeError(error);
+		void normalizeError(error);
 		if (hasSearchQuery && isMissingFirestoreIndexError(error)) {
 			const fallbackUrl = new URL(request.url);
 			fallbackUrl.searchParams.delete("q");
@@ -60,3 +58,5 @@ export async function GET(
 		throw error;
 	}
 }
+
+export const GET = withProviders(blogGetHandler as (request: Request, context?: any) => Promise<Response>);

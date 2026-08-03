@@ -19,6 +19,7 @@ import {
 import { useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { API_ROUTES } from "@/constants";
+import { getListingTemplate, updateListingTemplate, deleteListingTemplate } from "@/lib/api/store-client";
 import { useEffect, useState } from "react";
 
 export default function Page() {
@@ -33,8 +34,7 @@ export default function Page() {
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
-    // audit-direct-fetch-ok: listing templates; no server action yet
-    fetch(API_ROUTES.STORE.LISTING_TEMPLATE_BY_ID(id))
+    getListingTemplate(API_ROUTES.STORE.LISTING_TEMPLATE_BY_ID(id))
       .then((r) => r.json())
       .then((j) => {
         const doc = j?.data ?? {};
@@ -53,12 +53,7 @@ export default function Page() {
       return;
     }
     setSaving(true);
-    // audit-direct-fetch-ok: listing templates; no server action yet
-    const res = await fetch(API_ROUTES.STORE.LISTING_TEMPLATE_BY_ID(id), {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, defaults }),
-    });
+    const res = await updateListingTemplate(API_ROUTES.STORE.LISTING_TEMPLATE_BY_ID(id), { ...form, defaults: defaults as Record<string, unknown> });
     setSaving(false);
     if (res.ok) {
       showToast("Saved", "success");
@@ -67,8 +62,7 @@ export default function Page() {
   };
 
   const onDelete = async () => {
-    // audit-direct-fetch-ok: listing templates; no server action yet
-    await fetch(API_ROUTES.STORE.LISTING_TEMPLATE_BY_ID(id), { method: "DELETE" });
+    await deleteListingTemplate(API_ROUTES.STORE.LISTING_TEMPLATE_BY_ID(id));
     router.push(String(ROUTES.STORE.LISTING_TEMPLATES));
   };
 

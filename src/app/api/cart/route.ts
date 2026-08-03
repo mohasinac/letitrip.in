@@ -2,9 +2,9 @@ import { withProviders } from "@/providers.config";
 /**
  * Cart API Routes
  *
- * GET  /api/cart          — Get current user's cart (auth required)
- * POST /api/cart          — Add item to cart (auth required)
- * DELETE /api/cart        — Clear entire cart (auth required)
+ * GET  /api/cart          â€” Get current user's cart (auth required)
+ * POST /api/cart          â€” Add item to cart (auth required)
+ * DELETE /api/cart        â€” Clear entire cart (auth required)
  */
 
 import { z } from "zod";
@@ -26,15 +26,14 @@ const addToCartSchema = z.object({
   quantity: z.number().int().min(1, "quantity must be at least 1").max(99),
 });
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
     const cart = await cartRepository.getOrCreate(user!.uid);
 
     // Hydrate any cart line missing its `storeName` snapshot from the canonical
-    // store doc. One findById per distinct storeId — bounded by distinct stores
-    // (typically ≤5) and only fires when the product snapshot lacks it.
+    // store doc. One findById per distinct storeId â€” bounded by distinct stores
+    // (typically â‰¤5) and only fires when the product snapshot lacks it.
     const missing = new Set<string>();
     for (const it of cart.items) {
       if (it.storeId && !it.storeName) missing.add(it.storeId);
@@ -62,7 +61,6 @@ export const GET = withProviders(createRouteHandler({
   },
 }));
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_output"]>({
   auth: true,
   schema: addToCartSchema,
@@ -92,7 +90,7 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
           : listingType === "classified"
             ? 'Use "Contact Seller" to arrange a meetup.'
             : listingType === "live"
-              ? "Jurisdiction check required — buy from the listing page."
+              ? "Jurisdiction check required â€” buy from the listing page."
               : "This listing type cannot be added to the cart.";
       return ApiErrors.badRequest(
         `Listings of type "${listingType}" cannot be added to the cart. ${hint}`,
@@ -115,7 +113,7 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
     }
 
     // Hydrate storeName from the canonical store doc when the denormalised
-    // product snapshot lacks it — prevents the cart UI from falling back to
+    // product snapshot lacks it â€” prevents the cart UI from falling back to
     // the storeId slug for the group header.
     let storeName = product.storeName ?? "";
     if (!storeName && product.storeId) {
@@ -147,7 +145,6 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
   },
 }));
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {

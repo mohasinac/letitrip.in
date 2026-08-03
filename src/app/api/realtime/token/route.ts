@@ -12,7 +12,6 @@ import { serverLogger } from "@mohasinac/appkit";
 import { chatRepository } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {

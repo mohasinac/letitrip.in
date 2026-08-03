@@ -1,9 +1,9 @@
 "use client";
-// audit-unnecessary-use-client-ok: passes JSX render-prop callbacks to SearchView (client component); functions cannot cross RSC→client boundary
 import {
   AdSlot,
   Button,
   Div,
+  Form,
   Input,
   InteractiveProductCard,
   ROUTES,
@@ -32,11 +32,10 @@ export function SearchResultsClient({ locale, query, total, products }: Props) {
       isLoading={false}
       renderSearchInput={() => (
         <Stack gap="md">
-          {/* audit-raw-form-input-ok: plain GET-form URL search bar */}
-          <form method="get" action={`/${locale}/search`} className="flex items-center gap-2">
+          <Form method="get" action={`/${locale}/search`} align="center" gap="xs" className="flex">
             <Input name="q" defaultValue={query} placeholder="Search products, categories, stores" />
             <Button type="submit">Search</Button>
-          </form>
+          </Form>
           <AdSlot id="search-inline" />
         </Stack>
       )}

@@ -46,10 +46,9 @@ const registerSchema = z.object({
   }),
 });
 
-// rbac-public: unauthenticated endpoint
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting — protect against registration spam
+    // Rate limiting â€” protect against registration spam
     const rateLimitResult = await applyRateLimit(
       request,
       RateLimitPresets.AUTH,

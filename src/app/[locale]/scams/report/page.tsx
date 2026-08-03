@@ -4,7 +4,7 @@ import { normalizeError } from "@mohasinac/appkit";
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
-import { useSession, ROUTES, SCAM_TYPES, SCAM_PLATFORM_LABELS, Div, Button, Form, Label, Input, Textarea, Select, useApiMutation, apiClient, type FirestoreDocument } from "@mohasinac/appkit/client";
+import { useSession, ROUTES, SCAM_TYPES, SCAM_PLATFORM_LABELS, Checkbox, Div, Button, Form, Label, Input, Textarea, Select, useApiMutation, apiClient, type FirestoreDocument } from "@mohasinac/appkit/client";
 import { Alert, Stack, Heading, Text, Row, Card, CardBody, Main, Ul, Li } from "@mohasinac/appkit";
 import { ChevronLeft, Loader2, Plus, X } from "lucide-react";
 import { API_ROUTES } from "@/constants";
@@ -206,24 +206,29 @@ function PrivacyAgreementSection({
       <CardBody>
         <Stack gap="md">
           <Heading level={2} size="base" weight="semibold">Section 3 — Privacy & Agreement</Heading>
-          <Label layout="flex-start" gap="lg" className="cursor-pointer">
-            {/* audit-raw-form-input-ok: custom rich-Label checkbox with multi-line description block */}
-            <input type="checkbox" checked={form.reportedByAnon} onChange={(e) => field("reportedByAnon")(e.target.checked)} className="mt-0.5 h-4 w-4 rounded" />
-            <Stack gap="none">
-              <Text size="sm" weight="medium">Keep my identity private</Text>
-              <Text variant="secondary" size="xs">Your name will not appear on the public profile page — shown as "Anonymous reporter".</Text>
-            </Stack>
-          </Label>
-          <Label layout="flex-start" gap="lg" className="cursor-pointer">
-            {/* audit-raw-form-input-ok: custom rich-Label checkbox with multi-line description block */}
-            <input type="checkbox" required checked={form.agreed} onChange={(e) => field("agreed")(e.target.checked)} className="mt-0.5 h-4 w-4 rounded" />
-            <Stack gap="none">
-              <Text size="sm" weight="medium">
-                I confirm this report is truthful to the best of my knowledge. <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
-              </Text>
-              <Text variant="secondary" size="xs">False reports may result in account action. All submissions are reviewed before publication.</Text>
-            </Stack>
-          </Label>
+          <Checkbox
+            checked={form.reportedByAnon}
+            onChange={(e) => field("reportedByAnon")(e.target.checked)}
+            label={
+              <Stack gap="none">
+                <Text size="sm" weight="medium">Keep my identity private</Text>
+                <Text variant="secondary" size="xs">Your name will not appear on the public profile page — shown as "Anonymous reporter".</Text>
+              </Stack>
+            }
+          />
+          <Checkbox
+            required
+            checked={form.agreed}
+            onChange={(e) => field("agreed")(e.target.checked)}
+            label={
+              <Stack gap="none">
+                <Text size="sm" weight="medium">
+                  I confirm this report is truthful to the best of my knowledge. <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
+                </Text>
+                <Text variant="secondary" size="xs">False reports may result in account action. All submissions are reviewed before publication.</Text>
+              </Stack>
+            }
+          />
         </Stack>
       </CardBody>
     </Card>

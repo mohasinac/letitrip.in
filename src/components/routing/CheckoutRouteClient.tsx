@@ -35,7 +35,13 @@ import {
   verifyConsentOtpAction,
 } from "@/actions/checkout.actions";
 import { UI_LABELS } from "@/constants";
-import { createCheckoutOrder } from "@/lib/api/payment-client";
+import {
+  createCheckoutOrder,
+  createRazorpayOrder,
+  verifyRazorpayPayment,
+} from "@/lib/api/payment-client";
+import { applyCartCoupon, removeCartCoupon } from "@/lib/api/cart-client";
+import { applyCheckoutBypass } from "@/lib/api/admin-client";
 
 const __P = {
   p3: "p-3",
@@ -598,11 +604,13 @@ export function CheckoutRouteClient({
   showCashOption = true,
   showRazorpay = false,
   showCod = false,
+  showCoupons = false,
 }: {
   adminBypassEnabled?: boolean;
   showCashOption?: boolean;
   showRazorpay?: boolean;
   showCod?: boolean;
+  showCoupons?: boolean;
 }) {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -687,13 +695,7 @@ export function CheckoutRouteClient({
     setIsCouponLoading(true);
     setCouponError("");
     try {
-      // audit-direct-fetch-ok: FEATURE_COUPONS=false in P-1; no server action yet for coupon cart ops
-      const res = await fetch("/api/cart/coupon", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code }),
-        credentials: "include",
-      });
+      const res = await applyCartCoupon(code);
       const data = await res.json() as { data?: AppliedCoupon; error?: string };
       if (!res.ok) {
         setCouponError(data.error ?? "Invalid coupon code");
@@ -715,13 +717,7 @@ export function CheckoutRouteClient({
     async (code: string) => {
       setLocalCoupons((prev) => (prev ?? effectiveCoupons).filter((c) => c.code !== code));
       try {
-        // audit-direct-fetch-ok: FEATURE_COUPONS=false in P-1; no server action yet for coupon cart ops
-        await fetch("/api/cart/coupon", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code }),
-          credentials: "include",
-        });
+        await removeCartCoupon(code);
       } catch { /* best-effort */ }
       showToast("Coupon removed.", "info");
     },
@@ -791,13 +787,7 @@ export function CheckoutRouteClient({
     setStep("processing");
     try {
       // 1. Create Razorpay order on server
-      // audit-direct-fetch-ok: FEATURE_RAZORPAY=false in P-1; Razorpay payment flow disabled
-      const createRes = await fetch("/api/payment/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: subtotal }),
-        credentials: "include",
-      });
+      const createRes = await createRazorpayOrder(subtotal);
       if (!createRes.ok) {
         const err = await createRes.json().catch(() => ({}));
         throw new Error(
@@ -832,17 +822,11 @@ export function CheckoutRouteClient({
       });
 
       // 4. Verify payment and place orders
-      // audit-direct-fetch-ok: FEATURE_RAZORPAY=false in P-1; Razorpay verify disabled
-      const verifyRes = await fetch("/api/payment/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          razorpay_order_id: rzpResponse.razorpay_order_id,
-          razorpay_payment_id: rzpResponse.razorpay_payment_id,
-          razorpay_signature: rzpResponse.razorpay_signature,
-          addressId: selectedAddress.id,
-        }),
-        credentials: "include",
+      const verifyRes = await verifyRazorpayPayment({
+        razorpay_order_id: rzpResponse.razorpay_order_id,
+        razorpay_payment_id: rzpResponse.razorpay_payment_id,
+        razorpay_signature: rzpResponse.razorpay_signature,
+        addressId: selectedAddress.id,
       });
       if (!verifyRes.ok) {
         const err = await verifyRes.json().catch(() => ({}));
@@ -871,15 +855,9 @@ export function CheckoutRouteClient({
     setActionError("");
     setStep("processing");
     try {
-      // audit-direct-fetch-ok: FEATURE_COD=false in P-1; COD checkout disabled
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          addressId: selectedAddress.id,
-          paymentMethod: "cod",
-        }),
-        credentials: "include",
+      const res = await createCheckoutOrder({
+        addressId: selectedAddress.id,
+        paymentMethod: "cod",
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -942,13 +920,7 @@ export function CheckoutRouteClient({
     setActionError("");
     setStep("processing");
     try {
-      // audit-direct-fetch-ok: admin dev utility, no server action needed
-      const res = await fetch("/api/admin/checkout-bypass", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ addressId: selectedAddress.id }),
-        credentials: "include",
-      });
+      const res = await applyCheckoutBypass({ addressId: selectedAddress.id });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(
@@ -1062,7 +1034,7 @@ export function CheckoutRouteClient({
           }
           return (
             <Stack gap="lg">
-              {renderCouponSection({ couponCode, setCouponCode, couponError, isCouponLoading, effectiveCoupons, handleApplyCoupon, handleRemoveCoupon })}
+              {showCoupons && renderCouponSection({ couponCode, setCouponCode, couponError, isCouponLoading, effectiveCoupons, handleApplyCoupon, handleRemoveCoupon })}
               {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showRazorpay, showCod, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handleAdminBypass })}
             </Stack>
           );

@@ -19,6 +19,7 @@ import {
   CartItemRow,
   CartSummary,
   CartView,
+  Checkbox,
   Div,
   Heading,
   Input,
@@ -399,11 +400,10 @@ export function CartRouteClient() {
     [effectiveSelected, allItemIds, isAuthenticated],
   );
 
-  const selectAll = useCallback(async () => {
-    // toast-intentionally-silent: selection sync is fire-and-forget; persistCartSelection never throws
+  const selectAll = useCallback(() => {
     setSelectedIds(null);
     if (isAuthenticated) {
-      await persistCartSelection(null);
+      void persistCartSelection(null);
     }
   }, [isAuthenticated]);
 
@@ -734,11 +734,12 @@ export function CartRouteClient() {
               <Row align="center" gap="3" wrap>
                 {isAuthenticated && allItemIds.length > 1 && (
                   <Row align="center" gap="sm">
-                    {/* audit-raw-form-input-ok: select-all checkbox — custom dual-mode click handler */}
-                    <input type="checkbox" id="cart-select-all" checked={isAllSelected} onChange={isAllSelected ? undefined : selectAll} onClick={!isAllSelected ? undefined : (e) => { e.preventDefault(); selectAll(); }} className="h-4 w-4 rounded border-zinc-300 dark:border-slate-600 accent-zinc-900 dark:accent-zinc-100" />
-                    <Label htmlFor="cart-select-all" className="cursor-pointer" color="muted" size="sm">
-                      Select all ({allItemIds.length} item{allItemIds.length !== 1 ? "s" : ""})
-                    </Label>
+                    <Checkbox
+                      checked={isAllSelected}
+                      onChange={isAllSelected ? undefined : selectAll}
+                      onClick={!isAllSelected ? undefined : (e) => { e.preventDefault(); selectAll(); }}
+                      label={`Select all (${allItemIds.length} item${allItemIds.length !== 1 ? "s" : ""})`}
+                    />
                   </Row>
                 )}
                 {effectiveSelected && effectiveSelected.size > 0 && (
@@ -1091,13 +1092,11 @@ function SellerGroupSection({
           return (
             <Row key={item.id} align="start" gap="3">
               {isAuthenticated && !isOutOfStock && !locked && (
-                // audit-raw-form-input-ok: per-row select checkbox aligned with row layout
-                <input
-                  type="checkbox"
+                <Checkbox
                   aria-label={`Select ${item.meta.title}`}
                   checked={isChecked}
                   onChange={() => onToggleItem(iid)}
-                  className="mt-5 h-4 w-4 flex-shrink-0 rounded border-zinc-300 dark:border-slate-600 accent-zinc-900 dark:accent-zinc-100"
+                  className="mt-5 flex-shrink-0"
                 />
               )}
               <Div className="flex-1">

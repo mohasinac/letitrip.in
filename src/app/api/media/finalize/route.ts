@@ -5,7 +5,7 @@
  *
  *  1. Pulls the object metadata (size + declared contentType from the PUT)
  *  2. Streams the first ~4 KB and runs `fileTypeFromBuffer` for magic-byte
- *     detection — well under the 4.5 MB Vercel request cap (Rule #6).
+ *     detection â€” well under the 4.5 MB Vercel request cap (Rule #6).
  *  3. Rejects mismatches or oversize uploads (the signer already enforced
  *     the size cap, but the actual PUT may have exceeded the declared size).
  *  4. Stamps `customMetadata.uploadedBy` + `uploadedAt` so abuse can be
@@ -14,8 +14,8 @@
  *     7-day v4 signed read URL).
  *
  * Body (JSON):
- * - storagePath: string (required) — the path returned by /api/media/sign
- * - isPublic?:   boolean — issue a public URL instead of a signed one
+ * - storagePath: string (required) â€” the path returned by /api/media/sign
+ * - isPublic?:   boolean â€” issue a public URL instead of a signed one
  *
  * Authorization: the path must be under `tmp/.../{uid}/...` matching the
  * authenticated caller. Cross-user finalize is rejected.
@@ -73,7 +73,6 @@ async function readHeadBytes(fileRef: StorageFile): Promise<Buffer> {
   return Buffer.concat(chunks);
 }
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {
@@ -94,7 +93,7 @@ export const POST = withProviders(createRouteHandler({
       return errorResponse("storagePath is required", 400);
     }
     if (!pathBelongsToUser(storagePath, user!.uid)) {
-      serverLogger.warn("Media finalize rejected — path/uid mismatch", {
+      serverLogger.warn("Media finalize rejected â€” path/uid mismatch", {
         uid: user!.uid,
         path: storagePath,
       });
@@ -156,7 +155,7 @@ export const POST = withProviders(createRouteHandler({
     }
     if (detectedKind !== declaredKind) {
       await fileRef.delete().catch(console.error);
-      // Structured 422 MIME_MISMATCH — Track E3 contract. Clients distinguish
+      // Structured 422 MIME_MISMATCH â€” Track E3 contract. Clients distinguish
       // "wrong content-type header" from generic upload errors and can re-prompt
       // the user accurately.
       return errorResponse(

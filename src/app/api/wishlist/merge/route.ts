@@ -7,7 +7,7 @@ import { withProviders } from "@/providers.config";
  * top-level `wishlists/wishlist-{uid}` doc. Called on login + 60s sync.
  *
  * Cap-aware: stops merging once the wishlist reaches WISHLIST_MAX.
- * No availability check — wishlists intentionally retain sold-out items so
+ * No availability check â€” wishlists intentionally retain sold-out items so
  * users can be notified when stock returns.
  */
 
@@ -28,7 +28,6 @@ const mergeWishlistSchema = z.object({
     .max(200),
 });
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(
   createRouteHandler<(typeof mergeWishlistSchema)["_output"]>({
     auth: true,

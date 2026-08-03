@@ -6,7 +6,7 @@ import { normalizeError } from "@mohasinac/appkit";
  * Opens in a popup via window.open().
  *
  * Query params:
- *   eventId  — UUID from POST /api/auth/event/init
+ *   eventId  â€” UUID from POST /api/auth/event/init
  *
  * This route:
  *   1. Validates the eventId format and verifies the node exists + is 'pending'
@@ -31,7 +31,6 @@ import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-// rbac-public: unauthenticated endpoint
 export async function GET(request: NextRequest) {
   try {
     const rl = await applyRateLimit(request, RateLimitPresets.OAUTH);
@@ -42,7 +41,7 @@ export async function GET(request: NextRequest) {
     }
     const eventId = request.nextUrl.searchParams.get("eventId") ?? "";
 
-    // Strict UUID format validation — prevents any kind of path injection
+    // Strict UUID format validation â€” prevents any kind of path injection
     if (!UUID_REGEX.test(eventId)) {
       return NextResponse.redirect(
         new URL(`/auth/close?error=invalid_event`, request.nextUrl.origin),
@@ -50,7 +49,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify the event node exists and is still pending (anti-replay).
-    // If RTDB is unavailable, skip the check — the callback validates state independently.
+    // If RTDB is unavailable, skip the check â€” the callback validates state independently.
     try {
       const db = getAdminRealtimeDb();
       const snap = await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).get();

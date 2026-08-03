@@ -16,7 +16,6 @@ function isAdActive(item: Record<string, JsonValue>): boolean {
   return true;
 }
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(
   createRouteHandler({
     auth: false,

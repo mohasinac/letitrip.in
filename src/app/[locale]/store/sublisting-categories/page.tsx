@@ -21,6 +21,7 @@ const __O = {
 import { ROUTES } from "@mohasinac/appkit/client";
 import { useUrlTable } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
+import { getSublistingCategories, deleteSublistingCategory } from "@/lib/api/store-client";
 
 import { Stack } from "@mohasinac/appkit";
 interface CategoryRow {
@@ -59,8 +60,7 @@ export default function Page() {
       pageSize: String(PAGE_SIZE),
       sorts: sort,
     });
-    // audit-direct-fetch-ok: sublisting categories; no server action yet
-    fetch(`${API_ROUTES.STORE.SUBLISTING_CATEGORIES}?${params.toString()}`)
+    getSublistingCategories(`${API_ROUTES.STORE.SUBLISTING_CATEGORIES}?${params.toString()}`)
       .then((r) => r.json())
       .then((res) => {
         const data = (res as any)?.data;
@@ -88,8 +88,7 @@ export default function Page() {
       return;
     setDeletingId(id);
     try {
-      // audit-direct-fetch-ok: sublisting categories; no server action yet
-      await fetch(API_ROUTES.STORE.SUBLISTING_CATEGORY_BY_ID(id), { method: "DELETE" });
+      await deleteSublistingCategory(API_ROUTES.STORE.SUBLISTING_CATEGORY_BY_ID(id));
       load();
     } catch {
       // eslint-disable-next-line no-alert

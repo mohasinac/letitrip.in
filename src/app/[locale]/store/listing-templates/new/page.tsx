@@ -17,6 +17,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
+import { createListingTemplate } from "@/lib/api/store-client";
 import { useState } from "react";
 
 const LISTING_TYPES = [
@@ -51,17 +52,12 @@ export default function Page() {
       return;
     }
     setSaving(true);
-    // audit-direct-fetch-ok: listing templates; no server action yet
-    const res = await fetch(API_ROUTES.STORE.LISTING_TEMPLATES, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: form.name,
-        description: form.description,
-        listingType: form.listingType,
-        defaults,
-        isShared: form.isShared,
-      }),
+    const res = await createListingTemplate(API_ROUTES.STORE.LISTING_TEMPLATES, {
+      name: form.name,
+      description: form.description,
+      listingType: form.listingType,
+      defaults: defaults as Record<string, unknown>,
+      isShared: form.isShared,
     });
     setSaving(false);
     if (res.ok) {

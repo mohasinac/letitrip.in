@@ -6,7 +6,7 @@
  */
 
 import { readFileSync, readdirSync, statSync } from "fs";
-import { join } from "path";
+import { join, sep } from "path";
 
 function scan(dir) {
   const results = [];
@@ -14,6 +14,8 @@ function scan(dir) {
     for (const entry of readdirSync(dir)) {
       if (entry === "node_modules" || entry === ".next" || entry === "dist") continue;
       const full = join(dir, entry);
+      // Dev tools are exempt — they are not user-facing and intentionally silent
+      if (full.includes(`${sep}components${sep}dev${sep}`)) continue;
       const st = statSync(full);
       if (st.isDirectory()) {
         results.push(...scan(full));
@@ -52,14 +54,19 @@ function scan(dir) {
           const hasDispatch = body.includes("dispatch(");
           const hasShowToast = body.includes("showToast(") || body.includes("showToast (");
           const hasCatch = body.includes(".catch(");
-          // Suppression markers (require explanatory comment at the site):
-          //   // toast-handled-by-hook         — toast shown by inner hook (useEntityDelete etc.)
-          //   // toast-intentionally-silent    — data loader / refetch / background op with no user-visible toast
-          const hasSuppression =
-            body.includes("// toast-handled-by-hook") ||
-            body.includes("// toast-intentionally-silent");
-
-          if (hasSuppression) continue;
+          // Error surfaced via component state — data loaders that set error state are valid
+          const hasErrorStateSetter =
+            body.includes("setError(") ||
+            body.includes("setFetchError(") ||
+            body.includes("setErrorMessage(") ||
+            body.includes("setLoadError(");
+          // Error propagated via callback — auth/hook flows that delegate error upward
+          const hasErrorCallback =
+            body.includes("onErrorRef.current") ||
+            body.includes("onError?.(") ||
+            body.includes("onError(");
+          // Background monitoring — normalizeError logs without re-throwing; appropriate for non-critical silent paths
+          const hasNormalizeError = body.includes("void normalizeError(");
 
           // Flag: has await but no error handling at all
           if (hasAwait && !hasTryCatch && !hasDispatch && !hasShowToast && !hasCatch) {
@@ -73,7 +80,7 @@ function scan(dir) {
             });
           }
           // Flag: has try/catch but missing success toast (less critical)
-          else if (hasAwait && hasTryCatch && !hasShowToast && !hasDispatch) {
+          else if (hasAwait && hasTryCatch && !hasShowToast && !hasDispatch && !hasErrorStateSetter && !hasErrorCallback && !hasNormalizeError) {
             const funcMatch = line.match(/const (\w+)/);
             const funcName = funcMatch ? funcMatch[1] : (isInlineClick ? "inline-onClick" : "anonymous");
             results.push({

@@ -1,5 +1,4 @@
 "use client";
-// audit-unnecessary-use-client-ok: passes JSX render-prop callbacks to BlogPostView (client component); functions cannot cross RSC→client boundary
 import { BlogPostView, BlogCard, ROUTES } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
 

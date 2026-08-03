@@ -12,7 +12,6 @@ import { USER_ROLE } from "@/constants/api-roles";
 
 const NOT_FOUND_MSG = "No product found for this barcode";
 
-// rbac-public: scope enforced per-role inside handler
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

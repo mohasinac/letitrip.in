@@ -1,9 +1,9 @@
 import { withProviders } from "@/providers.config";
 /**
- * User Addresses API — Collection
+ * User Addresses API â€” Collection
  *
- * GET  /api/user/addresses   — List current user's addresses
- * POST /api/user/addresses   — Create a new address
+ * GET  /api/user/addresses   â€” List current user's addresses
+ * POST /api/user/addresses   â€” Create a new address
  *
  * Max addresses per user: 10
  */
@@ -24,7 +24,6 @@ const MAX_ADDRESSES_PER_USER = 10;
  * Returns addresses for the authenticated user, ordered by createdAt desc.
  * Supports query params: q, addressType (pipe-separated), verified, activeOnly.
  */
-// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {
@@ -73,7 +72,6 @@ export const GET = withProviders(createRouteHandler({
  * Enforces a maximum of 10 addresses per user.
  * If isDefault is true, clears the default flag from all existing addresses.
  */
-// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const POST = withProviders(createRouteHandler<
   (typeof userAddressCreateSchema)["_output"]
 >({

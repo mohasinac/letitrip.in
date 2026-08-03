@@ -27,6 +27,7 @@ import {
 import type { EnrichedWishlistItem } from "@mohasinac/appkit/client";
 import { Span } from "@mohasinac/appkit/ui";
 import { removeFromWishlistAction, addWishlistItemToCartAction } from "@/actions/wishlist.actions";
+import { validateWishlist } from "@/lib/api/user-client";
 
 const __P = {
   p4: "p-4",
@@ -163,11 +164,7 @@ export default function WishlistPage() {
 
     void (async () => {
       try {
-        // audit-direct-fetch-ok: best-effort stale validation in useEffect, no loading state needed
-        const res = await fetch("/api/user/wishlist/validate", {
-          method: "POST",
-          credentials: "include",
-        });
+        const res = await validateWishlist("/api/user/wishlist/validate", {});
         if (!res.ok) return;
         const data = (await res.json()) as { data: { removedCount: number } };
         const { removedCount } = data.data;

@@ -16,6 +16,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
+import { createShippingConfig } from "@/lib/api/store-client";
 import { useState } from "react";
 
 export default function Page() {
@@ -36,12 +37,7 @@ export default function Page() {
   const onSave = async () => {
     setSaving(true);
     try {
-      // audit-direct-fetch-ok: shipping config; no server action yet
-      const res = await fetch(API_ROUTES.STORE.SHIPPING_CONFIGS, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+      const res = await createShippingConfig(API_ROUTES.STORE.SHIPPING_CONFIGS, form as Record<string, unknown>);
       if (!res.ok) throw new Error("Save failed");
       showToast("Saved", "success");
       router.push(String(ROUTES.STORE.SHIPPING_CONFIGS));

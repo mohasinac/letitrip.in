@@ -7,7 +7,6 @@ import {
 } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 
-// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const POST = withProviders(
   createRouteHandler({
     auth: true,
@@ -27,7 +26,7 @@ export const POST = withProviders(
       items.forEach((item, i) => {
         const result = results[i];
         if (result.status === "rejected" || result.value === null) {
-          // Doc deleted from DB — gone for good.
+          // Doc deleted from DB â€” gone for good.
           staleProductIds.push(item.productId);
           return;
         }

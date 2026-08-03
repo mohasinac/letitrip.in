@@ -17,6 +17,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { FieldSelect, ListingToolbar } from "@mohasinac/appkit/ui";
 import { API_ROUTES } from "@/constants";
+import { getUserEvents } from "@/lib/api/user-client";
 
 const SORT_OPTIONS = [
   { value: sortBy("submittedAt", "DESC"), label: "Newest" },
@@ -76,8 +77,7 @@ export default function UserEventsPage() {
   const { data, isLoading } = useQuery<{ items: EntryItem[] }>({
     queryKey: ["user-events"],
     queryFn: () =>
-      // audit-direct-fetch-ok: FEATURE_EVENTS=false in P-1
-      fetch(API_ROUTES.USER.EVENTS)
+      getUserEvents(API_ROUTES.USER.EVENTS)
         .then((r) => r.json())
         .then((r) => r.data),
     enabled: !sessionLoading && !!user,

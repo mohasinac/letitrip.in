@@ -15,6 +15,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
+import { createStoreCategory } from "@/lib/api/store-client";
 import { useState } from "react";
 
 function slugify(s: string) {
@@ -36,12 +37,7 @@ export default function Page() {
   const onSave = async () => {
     setSaving(true);
     const body = { ...form, slug: form.slug || slugify(form.label) };
-    // audit-direct-fetch-ok: store categories; no server action in appkit yet
-    const res = await fetch(API_ROUTES.STORE.STORE_CATEGORIES, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    const res = await createStoreCategory(API_ROUTES.STORE.STORE_CATEGORIES, body);
     setSaving(false);
     if (res.ok) {
       showToast("Saved", "success");

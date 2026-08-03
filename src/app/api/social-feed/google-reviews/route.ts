@@ -13,15 +13,14 @@ export const dynamic = "force-dynamic";
  * Proxy for Google Business Reviews via the Google Places API.
  *
  * Query params:
- *   placeId     — Google Place ID (overrides site_settings.googlePlaceId)
- *   maxReviews  — max reviews to return (default 5)
- *   minRating   — minimum star rating to include (default 0)
+ *   placeId     â€” Google Place ID (overrides site_settings.googlePlaceId)
+ *   maxReviews  â€” max reviews to return (default 5)
+ *   minRating   â€” minimum star rating to include (default 0)
  *
  * Returns:
  *   { reviews: GoogleReview[], aggregateRating: number, totalRatings: number }
  *   { error: "not-configured" } when API key is absent
  */
-// rbac-public: public endpoint — no authentication required
 export const GET = withProviders(
   createApiHandler({
     handler: async ({ request }) => {

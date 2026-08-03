@@ -12,7 +12,6 @@ const updateEntrySchema = z.object({
   status: z.enum(["CONFIRMED", "WAITLISTED", "CANCELLED"]).optional(),
 });
 
-// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
 export const PATCH = withProviders(
   createRouteHandler<(typeof updateEntrySchema)["_output"]>({
     auth: true,

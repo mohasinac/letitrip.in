@@ -1,72 +1,46 @@
 import { withProviders } from "@/providers.config";
-import { createRouteHandler, ApiErrors, successResponse } from "@mohasinac/appkit";
-import { productRepository, storeRepository, isAuctionListing } from "@mohasinac/appkit";
+import {
+  createRouteHandler,
+  successResponse,
+  errorResponse,
+  productRepository,
+  storeRepository,
+  userRepository,
+} from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
+import { USER_ROLE } from "@/constants/api-roles";
 
-const MSG_NO_STORE = "Store not found for this seller.";
-const MSG_PRODUCT_NOT_FOUND = "Product not found.";
-const MSG_NOT_YOUR_PRODUCT = "This product does not belong to your store.";
+const NOT_FOUND_MSG = "No product found for this barcode";
 
-/** POST — start a group (this product becomes parent) */
-export const POST = withProviders(createRouteHandler({
-  auth: true,
-  roles: [...ROLES_STORE_WRITE],
+export const GET = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: [...ROLES_STORE_WRITE, USER_ROLE.EMPLOYEE],
     permission: "store:api:write",
-  handler: async ({ user, params }) => {
-    const productId = (params as Record<string, string>).id;
-    const store = await storeRepository.findByOwnerId(user!.uid);
-    if (!store) return ApiErrors.forbidden(MSG_NO_STORE);
+    handler: async ({ request, user }) => {
+      const url = new URL(request.url);
+      const barcode = url.searchParams.get("barcode")?.trim();
+      if (!barcode) return errorResponse("barcode param required", 400);
 
-    const product = await productRepository.findById(productId);
-    if (!product) return ApiErrors.notFound(MSG_PRODUCT_NOT_FOUND);
-    if (product.storeId !== store.id) return ApiErrors.forbidden(MSG_NOT_YOUR_PRODUCT);
-    if (isAuctionListing(product)) return ApiErrors.badRequest("Auctions cannot be in groups");
-    if (product.groupId) return ApiErrors.badRequest("Product is already in a group");
+      const product = await productRepository.findByBarcodeId(barcode);
+      if (!product) return errorResponse(NOT_FOUND_MSG, 404);
 
-    const slug = product.slug ?? product.id;
-    await productRepository.startGroup(product.id, slug);
-    return successResponse({ groupId: slug }, "Group started");
-  },
-}));
+      if (user!.role === "admin") {
+        return successResponse(product);
+      }
 
-/** PATCH — update groupTitle */
-export const PATCH = withProviders(createRouteHandler({
-  auth: true,
-  roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
-  handler: async ({ request, user, params }) => {
-    const productId = (params as Record<string, string>).id;
-    const store = await storeRepository.findByOwnerId(user!.uid);
-    if (!store) return ApiErrors.forbidden(MSG_NO_STORE);
+      if (user!.role === "employee") {
+        const userDoc = (await userRepository.findById(user!.uid)) as { storeId?: string } | null;
+        if (!userDoc?.storeId || product.storeId !== userDoc.storeId)
+          return errorResponse(NOT_FOUND_MSG, 404);
+        return successResponse(product);
+      }
 
-    const product = await productRepository.findById(productId);
-    if (!product) return ApiErrors.notFound(MSG_PRODUCT_NOT_FOUND);
-    if (product.storeId !== store.id) return ApiErrors.forbidden(MSG_NOT_YOUR_PRODUCT);
-    if (!product.isGroupParent) return ApiErrors.badRequest("Product is not a group parent");
+      const store = await storeRepository.findByOwnerId(user!.uid);
+      if (!store || product.storeId !== store.id)
+        return errorResponse(NOT_FOUND_MSG, 404);
 
-    const body = await request.json() as { groupTitle?: string };
-    await productRepository.updateGroupTitle(product.id, body.groupTitle ?? "");
-    return successResponse({ groupTitle: body.groupTitle }, "Group title updated");
-  },
-}));
-
-/** DELETE — dissolve the group */
-export const DELETE = withProviders(createRouteHandler({
-  auth: true,
-  roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
-  handler: async ({ user, params }) => {
-    const productId = (params as Record<string, string>).id;
-    const store = await storeRepository.findByOwnerId(user!.uid);
-    if (!store) return ApiErrors.forbidden(MSG_NO_STORE);
-
-    const product = await productRepository.findById(productId);
-    if (!product) return ApiErrors.notFound(MSG_PRODUCT_NOT_FOUND);
-    if (product.storeId !== store.id) return ApiErrors.forbidden(MSG_NOT_YOUR_PRODUCT);
-    if (!product.isGroupParent) return ApiErrors.badRequest("Product is not a group parent");
-    if (!product.groupId) return ApiErrors.badRequest("No groupId on product");
-
-    await productRepository.dissolveGroup(product.groupId);
-    return successResponse({}, "Group dissolved");
-  },
-}));
+      return successResponse(product);
+    },
+  }),
+);

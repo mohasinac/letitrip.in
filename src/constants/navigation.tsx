@@ -201,7 +201,8 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.FEATURES),              "Feature Badges","admin:categories:read"),
       adminItem(String(ROUTES.ADMIN.DEALS),                 "Deals",         "admin:deals:read"),
       adminItem(String(ROUTES.ADMIN.FEATURED),              "Featured",      "admin:featured:read"),
-      // Hidden until feature patch ships: Bundles, Prize Draws (P10), Coupons (P2).
+      adminItem(String(ROUTES.ADMIN.COUPONS), "Coupons", "admin:coupons:read"),
+      // Hidden until feature patch ships: Bundles, Prize Draws (P10).
     ],
   },
   {
@@ -209,7 +210,8 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     items: [
       adminItem(String(ROUTES.ADMIN.REVIEWS), "Reviews", "admin:reviews:read"),
       adminItem(String(ROUTES.ADMIN.MEDIA),   "Media",   "admin:media:read"),
-      // Blog hidden until FEATURE_BLOG (P3). Bids hidden until FEATURE_AUCTIONS (P5).
+      adminItem(String(ROUTES.ADMIN.BLOG),    "Blog",    "admin:blog:read"),
+      // Bids hidden until FEATURE_AUCTIONS (P5).
     ],
   },
   {
@@ -323,7 +325,7 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
       { href: String(ROUTES.STORE.STOREFRONT), label: "Storefront" },
       { href: String(ROUTES.STORE.SHIPPING),   label: "Shipping"   },
       { href: String(ROUTES.STORE.ADDRESSES),  label: "Addresses"  },
-      // Coupons hidden until FEATURE_COUPONS (P2).
+      { href: String(ROUTES.STORE.COUPONS),    label: "Coupons"    },
     ],
   },
   {
@@ -351,13 +353,14 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
   {
     title: "Shopping",
     items: [
-      { href: String(ROUTES.USER.ORDERS),    label: "My Orders"  },
-      { href: String(ROUTES.USER.WISHLIST),  label: "Wishlist"   },
-      { href: String(ROUTES.USER.ADDRESSES), label: "Addresses"  },
-      { href: String(ROUTES.USER.REVIEWS),   label: "My Reviews" },
-      { href: String(ROUTES.USER.EVENTS),    label: "My Events"  },
+      { href: String(ROUTES.USER.ORDERS),          label: "My Orders"  },
+      { href: String(ROUTES.USER.WISHLIST),         label: "Wishlist"   },
+      { href: String(ROUTES.USER.ADDRESSES),        label: "Addresses"  },
+      { href: String(ROUTES.USER.REVIEWS),          label: "My Reviews" },
+      { href: String(ROUTES.USER.CLAIMED_COUPONS),  label: "My Coupons" },
+      { href: String(ROUTES.USER.EVENTS),           label: "My Events"  },
       // Hidden until feature patch ships: Returns, My Bids (P5), Pre-Orders (P6),
-      // Digital Codes, Prize Draws (P10), My Coupons (P2).
+      // Digital Codes, Prize Draws (P10).
     ],
   },
   {

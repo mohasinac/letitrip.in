@@ -17,6 +17,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
+import { createAdminRole } from "@/lib/api/admin-client";
 import { useState } from "react";
 
 function slugify(s: string) {
@@ -42,18 +43,13 @@ export default function Page() {
       .split(/[\n,]/)
       .map((s) => s.trim())
       .filter(Boolean);
-    // audit-direct-fetch-ok: RBAC roles management; no server action in appkit yet
-    const res = await fetch(API_ROUTES.ADMIN.ROLES, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: form.name,
-        slug: form.slug || slugify(form.name),
-        description: form.description,
-        permissions,
-        scope: form.scope,
-        isActive: form.isActive,
-      }),
+    const res = await createAdminRole(API_ROUTES.ADMIN.ROLES, {
+      name: form.name,
+      slug: form.slug || slugify(form.name),
+      description: form.description,
+      permissions,
+      scope: form.scope,
+      isActive: form.isActive,
     });
     setSaving(false);
     if (res.ok) {

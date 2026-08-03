@@ -24,6 +24,7 @@ export default async function Page() {
 
   const showRazorpay = getFlag("RAZORPAY");
   const showCod = getFlag("COD");
+  const showCoupons = getFlag("COUPONS");
   // Cash/UPI manual payment is always active in P-1. Disabled only if both
   // Razorpay and COD are enabled (future patches where we have online payments).
   const showCashOption = !(showRazorpay && showCod);
@@ -35,6 +36,7 @@ export default async function Page() {
         showCashOption={showCashOption}
         showRazorpay={showRazorpay}
         showCod={showCod}
+        showCoupons={showCoupons}
       />
     </Suspense>
   );

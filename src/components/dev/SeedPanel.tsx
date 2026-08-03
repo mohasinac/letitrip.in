@@ -2239,7 +2239,7 @@ export function SeedPanel() {
       const payload = await res.json();
       setStatus((payload?.data?.collections ?? []) as ColStatus[]);
     } catch {
-      // toast-intentionally-silent: dev panel background poll, non-fatal
+      // status fetch failed — keep previous state
     } finally {
       setIsLoadingStatus(false);
     }
