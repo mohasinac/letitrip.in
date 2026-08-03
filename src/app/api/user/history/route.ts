@@ -1,7 +1,7 @@
 /**
- * GET    /api/user/history — list current user's recently-viewed items
- * POST   /api/user/history — track a visit (upsert + re-visit hoist + FIFO 50)
- * DELETE /api/user/history — clear all history for the current user
+ * GET    /api/user/history â€” list current user's recently-viewed items
+ * POST   /api/user/history â€” track a visit (upsert + re-visit hoist + FIFO 50)
+ * DELETE /api/user/history â€” clear all history for the current user
  */
 import { withProviders } from "@/providers.config";
 import {
@@ -28,7 +28,6 @@ const trackSchema = z.object({
     .optional(),
 });
 
-// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -42,7 +41,6 @@ export const GET = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const POST = withProviders(
   createRouteHandler<(typeof trackSchema)["_output"]>({
     auth: true,
@@ -59,7 +57,6 @@ export const POST = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

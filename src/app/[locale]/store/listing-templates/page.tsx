@@ -15,6 +15,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
+import { getListingTemplates } from "@/lib/api/store-client";
 import { useEffect, useState } from "react";
 import type { ListingTemplateDocument } from "@mohasinac/appkit";
 
@@ -24,8 +25,7 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // audit-direct-fetch-ok: listing templates; no server action yet
-    fetch(API_ROUTES.STORE.LISTING_TEMPLATES)
+    getListingTemplates(API_ROUTES.STORE.LISTING_TEMPLATES)
       .then((r) => r.json())
       .then((json) => setItems(json?.data?.items ?? []))
       .finally(() => setLoading(false));

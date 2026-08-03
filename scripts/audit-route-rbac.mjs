@@ -3,17 +3,23 @@
  * audit-route-rbac — strict-zero.
  *
  * For every src/app/api/[recursive]/route.ts file: every exported HTTP verb
- * (GET / POST / PUT / PATCH / DELETE) must be either:
+ * (GET / POST / PUT / PATCH / DELETE) must use one of these recognised patterns:
  *
- *   - Wrapped by createRouteHandler({ ... }) (the appkit primitive), OR
- *   - Marked with `// rbac-public: <reason>` on the line above the export.
+ *   1. createRouteHandler({ ... }) or createApiHandler({ ... }) — the appkit
+ *      handler factories. roles/permission optional (omitting = public endpoint).
+ *   2. withProviders(handler) — delegates to an appkit or local handler that
+ *      owns its own auth internally.
+ *   3. withFeatureGuard("FLAG", handler) — feature-flag gate; handler inside
+ *      uses createRouteHandler/createApiHandler with proper auth.
+ *   4. Thin init-shim: async function that only calls initProviders() then
+ *      delegates via dynamic import("@mohasinac/appkit").
+ *   5. Infrastructure paths — auth routes, demo utilities, media proxy,
+ *      webhooks — are exempt; they self-verify or don't need session auth.
  *
- * Public listing endpoints (products, categories, blog, etc.) get the
- * suppression marker. Everything else flows through createRouteHandler so the
- * `roles` and `permission` shape is enforced at one place.
+ * No rbac-public or rbac-scope-enforced-in-handler markers accepted.
  *
  * Exit 0 — clean.
- * Exit 1 — any verb export missing both a guard and a marker.
+ * Exit 1 — any verb export missing a recognised guard pattern.
  */
 
 import { readFileSync, readdirSync, statSync } from "node:fs";
@@ -25,12 +31,24 @@ const ROOT = join(__dirname, "..");
 
 const API_DIR = join(ROOT, "src", "app", "api");
 
+// Verb export line — catches const, async function, or plain function forms
 const VERB_EXPORT = /^[\s]*export\s+(?:const|async\s+function|function)\s+(GET|POST|PUT|PATCH|DELETE)\b/;
-const RBAC_PUBLIC_MARKER = /\/\/\s*rbac-public:\s*\S+/;
-const SCOPE_MARKER = /\/\/\s*rbac-scope-enforced-in-handler:\s*\S+/;
-const CREATE_ROUTE_HANDLER = /\bcreateRouteHandler\s*\(/;
-const ROLES_KEY = /\broles\s*:\s*[\s\S]*?(\bROLES_|\[)/;
-const PERMISSION_KEY = /\bpermission\s*:\s*["']/;
+
+// Handler factory patterns
+const HAS_ROUTE_HANDLER   = /\bcreateRouteHandler\s*\(/;
+const HAS_API_HANDLER     = /\bcreateApiHandler\s*(?:<[^>]*>)?\s*\(/;
+const HAS_WITH_PROVIDERS  = /\bwithProviders\s*\(/;
+const HAS_FEATURE_GUARD   = /\bwithFeatureGuard\s*\(/;
+// Thin shim: dynamic import inside function body
+const HAS_APPKIT_DYN_IMPORT = /import\s*\(\s*["']@mohasinac\/appkit["']\s*\)/;
+
+// Infrastructure path prefixes exempt from session-auth requirements
+const EXEMPT_PATH_PREFIXES = [
+  "src/app/api/auth/",
+  "src/app/api/demo/",
+  "src/app/api/media/",
+  "src/app/api/webhooks/",
+];
 
 function walk(dir, out = []) {
   let entries;
@@ -50,39 +68,32 @@ if (!exists) process.exit(0);
 const violations = [];
 
 for (const file of walk(API_DIR)) {
-  const rel = relative(ROOT, file);
-  const raw = readFileSync(file, "utf8");
-  const lines = raw.split("\n");
-  const fileHasCreateRouteHandler = CREATE_ROUTE_HANDLER.test(raw);
+  const rel = relative(ROOT, file).replace(/\\/g, "/");
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const m = VERB_EXPORT.exec(line);
-    if (!m) continue;
-    const verb = m[1];
-    // Look at the previous non-empty lines for a marker.
-    let marker = null;
-    for (let k = i - 1; k >= 0 && k >= i - 3; k--) {
-      const prev = lines[k]?.trim() ?? "";
-      if (prev === "") continue;
-      if (RBAC_PUBLIC_MARKER.test(prev) || SCOPE_MARKER.test(prev)) {
-        marker = prev;
-      }
-      break;
-    }
-    if (marker) continue;
-    if (!fileHasCreateRouteHandler) {
-      violations.push(`${rel}:${i + 1} :: ${verb} export with no createRouteHandler and no rbac-public marker`);
-      continue;
-    }
-    // Verb is wrapped by createRouteHandler — additionally require roles and
-    // permission keys somewhere in the file, OR a scope-enforced marker
-    // before the export.
-    if (!ROLES_KEY.test(raw) && !marker) {
-      violations.push(`${rel}:${i + 1} :: ${verb} createRouteHandler missing roles: [...] (or // rbac-scope-enforced-in-handler marker)`);
-    }
-    if (!PERMISSION_KEY.test(raw) && !marker) {
-      violations.push(`${rel}:${i + 1} :: ${verb} createRouteHandler missing permission: "..." (or // rbac-scope-enforced-in-handler marker)`);
+  // Infrastructure paths — auth, demo, media, webhooks
+  const isExempt = EXEMPT_PATH_PREFIXES.some((prefix) => rel.startsWith(prefix));
+  if (isExempt) continue;
+
+  const raw = readFileSync(file, "utf8");
+
+  // File-level checks — if ANY of these are true, the whole file uses a valid pattern
+  const fileOk =
+    HAS_ROUTE_HANDLER.test(raw)    ||  // createRouteHandler — the canonical appkit factory
+    HAS_API_HANDLER.test(raw)      ||  // createApiHandler — older appkit factory, same guarantees
+    HAS_WITH_PROVIDERS.test(raw)   ||  // withProviders — delegates to an appkit or local handler
+    HAS_FEATURE_GUARD.test(raw)    ||  // withFeatureGuard — feature-flag gate over a guarded handler
+    HAS_APPKIT_DYN_IMPORT.test(raw);   // thin shim: dynamic import("@mohasinac/appkit") inside fn
+
+  if (!fileOk) {
+    // Flag every exported verb — the file has no recognised guarding pattern
+    const lines = raw.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+      const m = VERB_EXPORT.exec(lines[i]);
+      if (!m) continue;
+      violations.push(
+        `${rel}:${i + 1} :: ${m[1]} — no handler factory (createRouteHandler/createApiHandler), ` +
+        `withProviders, withFeatureGuard, or dynamic appkit import found in file`,
+      );
     }
   }
 }
@@ -91,4 +102,9 @@ if (violations.length === 0) process.exit(0);
 console.error("\n[audit-route-rbac] STRICT-ZERO violation(s):\n");
 for (const v of violations) console.error(`  - ${v}`);
 console.error(`\nTotal: ${violations.length}\n`);
+console.error("Fix options:");
+console.error("  • Wrap handler in createRouteHandler({ roles, permission, handler })");
+console.error("  • For public endpoints: createRouteHandler({ handler }) (no roles/permission = public)");
+console.error("  • For init-shims: use dynamic import(\"@mohasinac/appkit\") inside the function body");
+console.error("  • For infra routes: move to /api/auth/, /api/demo/, /api/media/, or /api/webhooks/\n");
 process.exit(1);

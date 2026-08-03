@@ -106,9 +106,6 @@ function check(filePath) {
     return null; // Not a client file — nothing to check.
   }
 
-  // Escape hatch: explicit suppression with reason.
-  if (content.includes("// audit-unnecessary-use-client-ok:")) return null;
-
   // Check 1: named hook imports.
   let m;
   NAMED_IMPORT_RE.lastIndex = 0;
@@ -127,6 +124,14 @@ function check(filePath) {
 
   // Check 3: browser globals.
   if (BROWSER_GLOBALS_RE.test(content)) return null;
+
+  // Check 4: JSX render-prop factories — functions passed as render* props.
+  // These function bodies execute on the client and cannot serialize across the
+  // RSC→client boundary, even without explicit hook usage.
+  if (/render\w+\s*=\s*\{/.test(content)) return null;
+
+  // Check 5: Client-only library imports (Firebase client SDK, etc.).
+  if (/from\s+["'](firebase\/|@firebase\/)/.test(content)) return null;
 
   // No justification found → violation.
   return relative(ROOT, filePath);

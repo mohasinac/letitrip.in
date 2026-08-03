@@ -1,46 +1,58 @@
-import { withProviders } from "@/providers.config";
-import {
-  updateCartItem,
-  removeCartItem,
-  cartRepository,
-  createRouteHandler,
-  successResponse,
-} from "@mohasinac/appkit";
 import { z } from "zod";
+import {
+  productRepository,
+  ProductStatusValues,
+  successResponse,
+  createRouteHandler,
+} from "@mohasinac/appkit";
+import { withProviders } from "@/providers.config";
 
-const updateSchema = z.object({
-  quantity: z.number().int().min(1).max(99),
+const validateSchema = z.object({
+  productIds: z.array(z.string().min(1)).min(1).max(50),
 });
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
-export const PATCH = withProviders(
-  createRouteHandler<(typeof updateSchema)["_output"]>({
-    auth: true,
-    schema: updateSchema,
-    handler: async ({ user, body, params }) => {
-      const itemId = (params as { itemId: string }).itemId;
-      const cart = await updateCartItem(user!.uid, itemId, { quantity: body!.quantity });
-      return successResponse({
-        cart,
-        itemCount: cartRepository.getItemCount(cart),
-        subtotal: cartRepository.getSubtotal(cart),
-      });
-    },
-  }),
-);
+export const POST = withProviders(
+  createRouteHandler<(typeof validateSchema)["_output"]>({
+    auth: false,
+    schema: validateSchema,
+    handler: async ({ body }) => {
+      const { productIds } = body!;
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
-export const DELETE = withProviders(
-  createRouteHandler({
-    auth: true,
-    handler: async ({ user, params }) => {
-      const itemId = (params as { itemId: string }).itemId;
-      const cart = await removeCartItem(user!.uid, itemId);
-      return successResponse({
-        cart,
-        itemCount: cartRepository.getItemCount(cart),
-        subtotal: cartRepository.getSubtotal(cart),
+      const results = await Promise.allSettled(
+        productIds.map((id) => productRepository.findById(id)),
+      );
+
+      /** Truly unpublished â€” remove from cart AND wishlist. */
+      const stale: string[] = [];
+      /**
+       * Temporarily unavailable (sold/OOS/no stock) â€” keep in wishlist,
+       * move from cart to wishlist so the user doesn't lose track.
+       */
+      const moveable: string[] = [];
+
+      productIds.forEach((productId, i) => {
+        const result = results[i];
+        if (result.status === "rejected" || result.value === null) {
+          stale.push(productId);
+          return;
+        }
+        const { status, availableQuantity, isSold } = result.value;
+
+        if (
+          status === ProductStatusValues.ARCHIVED ||
+          status === ProductStatusValues.DRAFT ||
+          status === ProductStatusValues.IN_REVIEW
+        ) {
+          stale.push(productId);
+        } else if (
+          isSold ||
+          (availableQuantity !== undefined && availableQuantity <= 0)
+        ) {
+          moveable.push(productId);
+        }
       });
+
+      return successResponse({ stale, moveable });
     },
   }),
 );

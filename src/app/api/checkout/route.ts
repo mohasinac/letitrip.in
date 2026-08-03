@@ -8,9 +8,9 @@ import { createCheckoutOrderAction } from "@mohasinac/appkit";
 /**
  * Checkout API
  *
- * POST /api/checkout — Place order(s) from the user's cart (COD / UPI-manual path)
+ * POST /api/checkout â€” Place order(s) from the user's cart (COD / UPI-manual path)
  *
- * Razorpay-paid orders go through `/api/payment/create-order` →
+ * Razorpay-paid orders go through `/api/payment/create-order` â†’
  * `/api/payment/verify` instead. Both routes are thin delegators over
  * appkit's `_internal/server/features/checkout/actions.ts`.
  */
@@ -22,7 +22,6 @@ const checkoutSchema = z.object({
   excludedProductIds: z.array(z.string()).optional(),
 });
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_output"]>({
   auth: true,
   schema: checkoutSchema,

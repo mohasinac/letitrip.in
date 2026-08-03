@@ -18,6 +18,7 @@ import {
 import { useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { API_ROUTES } from "@/constants";
+import { getGroupedListing, updateGroupedListing } from "@/lib/api/store-client";
 import { useEffect, useState } from "react";
 
 const THEME_OPTIONS = [
@@ -44,8 +45,7 @@ export default function Page() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    // audit-direct-fetch-ok: advanced store feature; no server action yet
-    fetch(API_ROUTES.STORE.GROUPED_LISTING_BY_ID(id))
+    getGroupedListing(API_ROUTES.STORE.GROUPED_LISTING_BY_ID(id))
       .then((r) => r.json())
       .then((json) => {
         const d = json?.data;
@@ -64,12 +64,7 @@ export default function Page() {
 
   const onSave = async () => {
     setSaving(true);
-    // audit-direct-fetch-ok: advanced store feature; no server action yet
-    const res = await fetch(API_ROUTES.STORE.GROUPED_LISTING_BY_ID(id), {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    const res = await updateGroupedListing(API_ROUTES.STORE.GROUPED_LISTING_BY_ID(id), form);
     setSaving(false);
     if (res.ok) {
       showToast("Saved", "success");

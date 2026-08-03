@@ -127,10 +127,10 @@ const EXEMPT_PATH_PATTERNS = [
   /^appkit\/src\/features\/layout\/background-seed-defaults\.ts$/,
   // Hex defaults for <input type="color"> — CSS vars are invalid there; hex must be a literal string.
   /^appkit\/src\/features\/homepage\/lib\/franchise-colors\.ts$/,
-  // RichText DOM injection — useEffect inserts a "Copy" button into <pre> blocks using
-  // style.cssText. The code-block overlay uses a fixed dark theme (independent of the page
-  // theme) because code blocks always have a dark background.
-  /^appkit\/src\/ui\/rich-text\/RichText\.tsx$/,
+  // Admin configuration editors handle hex as Firestore data (color pickers, placeholder text, document defaults).
+  /^appkit\/src\/features\/admin\/components\//,
+  // Rich-text primitive source directory owns its internal CSS including code-block button styling.
+  /^appkit\/src\/ui\/rich-text\//,
 ];
 
 /**

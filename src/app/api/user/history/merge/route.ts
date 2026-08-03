@@ -1,6 +1,6 @@
 /**
- * POST /api/user/history/merge — batch-merge guest localStorage history into Firestore.
- * Called on the null→uid transition (useHistoryMergeOnLogin).
+ * POST /api/user/history/merge â€” batch-merge guest localStorage history into Firestore.
+ * Called on the nullâ†’uid transition (useHistoryMergeOnLogin).
  */
 import { withProviders } from "@/providers.config";
 import {
@@ -33,7 +33,6 @@ const mergeSchema = z.object({
     .max(HISTORY_MAX * 4),
 });
 
-// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const POST = withProviders(
   createRouteHandler<(typeof mergeSchema)["_output"]>({
     auth: true,

@@ -14,6 +14,7 @@ import {
   Button,
   Div,
   DynamicBgDiv,
+  Input,
   Span,
 } from "@mohasinac/appkit/client";
 import { useNotifications } from "@mohasinac/appkit";
@@ -169,13 +170,12 @@ export default function Page() {
                   </Row>
                 )}
               </Button>
-              {/* audit-raw-form-input-ok: hidden native file picker, no appkit equivalent */}
-              {/* eslint-disable-next-line lir/no-raw-html-elements */}
-              <input
+              <Input
                 ref={fileRef}
                 type="file"
                 accept="image/*"
                 hidden
+                bare
                 onChange={(e) => onPickFile(e.target.files?.[0] ?? null)}
               />
               <Div className="min-w-0 flex-1">

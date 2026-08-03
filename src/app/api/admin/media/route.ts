@@ -28,10 +28,9 @@ const ERRORS = {
 /**
  * GET /api/admin/media?prefix=<dir>&pageToken=<token>&pageSize=<n>
  *
- * TS14 — lists files from Firebase Storage with prefix filter and pagination.
+ * TS14 â€” lists files from Firebase Storage with prefix filter and pagination.
  * Returns { files, nextPageToken } for use by Admin Media Library + MediaPickerModal.
  */
-// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
 export const GET = withProviders(
   createApiHandler({
     roles: [...ROLES_ADMIN_ONLY],

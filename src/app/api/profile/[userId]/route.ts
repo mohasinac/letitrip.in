@@ -1,30 +1,42 @@
 import { withProviders } from "@/providers.config";
-import {
-  userRepository,
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-} from "@mohasinac/appkit";
+/**
+ * Verify Phone Number API Route
+ * POST /api/profile/verify-phone
+ *
+ * Called AFTER client-side Firebase confirmationResult.confirm(code).
+ * Updates the phoneVerified flag in Firestore for the authenticated user.
+ */
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
-export const GET = withProviders(
-  createRouteHandler({
-    handler: async ({ params }) => {
-      const userId = (params as { userId: string }).userId;
-      const user = await userRepository.findById(userId);
-      if (!user) return errorResponse("User not found", 404);
+import { getAdminAuth } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit";
+import { verifyPhoneSchema } from "@mohasinac/appkit";
+import { ValidationError } from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit";
 
-      // Only expose safe public fields — no PII
-      return successResponse({
-        uid: user.uid,
-        displayName: user.displayName ?? null,
-        photoURL: user.photoURL ?? null,
-        avatarMetadata: user.avatarMetadata ?? null,
-        role: user.role,
-        createdAt: user.createdAt,
-        publicProfile: user.publicProfile ?? null,
-        stats: user.stats ?? null,
-      });
-    },
-  }),
-);
+export const POST = withProviders(createRouteHandler<(typeof verifyPhoneSchema)["_output"]>({
+  auth: true,
+  schema: verifyPhoneSchema,
+  handler: async ({ user }) => {
+    const auth = getAdminAuth();
+    const userRecord = await auth.getUser(user!.uid);
+
+    if (!userRecord.phoneNumber) {
+      throw new ValidationError(ERROR_MESSAGES.PHONE.NO_PHONE);
+    }
+
+    // verificationId + code validated by schema; actual verification is client-side.
+    // Mark phone as verified in Firestore.
+    await userRepository.update(user!.uid, {
+      phoneVerified: true,
+      phoneNumber: userRecord.phoneNumber,
+    } as any);
+
+    return successResponse(
+      { phoneNumber: userRecord.phoneNumber },
+      SUCCESS_MESSAGES.USER.PHONE_VERIFIED,
+    );
+  },
+}));

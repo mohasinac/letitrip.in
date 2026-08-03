@@ -191,6 +191,12 @@ const checks = [
     cwd: ROOT,
   },
   {
+    label: "audit-no-suppression-comments",
+    cmd: "node",
+    args: ["scripts/audit-no-suppression-comments.mjs"],
+    cwd: ROOT,
+  },
+  {
     label: "audit-gitignore",
     cmd: "node",
     args: ["scripts/audit-gitignore.mjs"],

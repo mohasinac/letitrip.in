@@ -54,3 +54,23 @@ export function addToWishlist(productId: string): Promise<Response> {
     credentials: CREDS,
   });
 }
+
+// ── Cart coupons ─────────────────────────────────────────────────────────────
+
+export function applyCartCoupon(code: string): Promise<Response> {
+  return fetch("/api/cart/coupon", {
+    method: "POST",
+    headers: JSON_HEADERS,
+    body: JSON.stringify({ code }),
+    credentials: CREDS,
+  });
+}
+
+export function removeCartCoupon(code: string): Promise<Response> {
+  return fetch("/api/cart/coupon", {
+    method: "DELETE",
+    headers: JSON_HEADERS,
+    body: JSON.stringify({ code }),
+    credentials: CREDS,
+  });
+}

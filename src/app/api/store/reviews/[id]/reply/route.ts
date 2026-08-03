@@ -1,44 +1,61 @@
 /**
- * POST /api/store/reviews/[id]/reply
- * Adds or updates a seller reply on a review they received.
+ * GET /api/store/reviews
+ * Lists all reviews received on the authenticated seller's store products.
+ * Supports ?rating=, ?replied= filters and sorting/pagination.
  */
 
 import { withProviders } from "@/providers.config";
-import { z } from "zod";
-import {
-  createApiHandler,
-  successResponse,
-  storeRepository,
-  reviewRepository,
-  AuthorizationError,
-} from "@mohasinac/appkit";
+import { createApiHandler, successResponse, storeRepository, reviewRepository } from "@mohasinac/appkit";
+import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit";
+import { sortBy, REVIEW_FIELDS } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 
-const replySchema = z.object({
-  reply: z.string().min(1).max(1000),
-});
+const DEFAULT_SORTS = sortBy(REVIEW_FIELDS.CREATED_AT);
 
-// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
-export const POST = withProviders(createApiHandler<{ reply: string }>({
+export const GET = withProviders(createApiHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
     permission: "store:api:write",
-  schema: replySchema,
-  handler: async ({ params, body, user }) => {
-    const reviewId = (params as Record<string, string>).id;
-    const review = await reviewRepository.findById(reviewId);
-    if (!review) return new Response(JSON.stringify({ error: "Review not found" }), { status: 404 });
-
+  handler: async ({ request, user }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);
-    if (!store || store.id !== review.storeId) {
-      throw new AuthorizationError("Not authorized to reply to this review.");
+    if (!store) {
+      return successResponse({
+        reviews: [],
+        meta: { total: 0, page: 1, pageSize: 20, totalPages: 0, hasMore: false },
+      });
     }
 
-    await reviewRepository.update(reviewId, {
-      sellerReply: body!.reply,
-      sellerRepliedAt: new Date(),
+    const sp = getSearchParams(request);
+    const page = getNumberParam(sp, "page", 1, { min: 1 });
+    const pageSize = getNumberParam(sp, "pageSize", 20, { min: 1, max: 50 });
+    const rating = getStringParam(sp, "rating");
+    const replied = getStringParam(sp, "replied");
+    const sorts = getStringParam(sp, "sorts") || DEFAULT_SORTS;
+
+    let filters = `storeId==${store.id}`;
+    if (rating) filters += `,rating==${rating}`;
+
+    const result = await reviewRepository.listForStore(store.id, {
+      filters,
+      sorts,
+      page: String(page),
+      pageSize: String(pageSize),
     });
 
-    return successResponse({ message: "Reply saved." });
+    // Apply replied filter client-side (sellerReply not indexed)
+    let reviews = result.items;
+    if (replied === "true") reviews = reviews.filter((r) => !!r.sellerReply);
+    if (replied === "false") reviews = reviews.filter((r) => !r.sellerReply);
+
+    return successResponse({
+      reviews,
+      meta: {
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+        hasMore: result.hasMore,
+      },
+    });
   },
 }));

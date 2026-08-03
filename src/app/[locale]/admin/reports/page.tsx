@@ -14,6 +14,7 @@ import {
   Skeleton,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
+import { getAdminReports, updateAdminReport } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
 import type { ReportDocument } from "@mohasinac/appkit";
 
@@ -26,8 +27,7 @@ export default function Page() {
 
   const load = () => {
     setLoading(true);
-    // audit-direct-fetch-ok: admin control-plane; no server action in appkit yet
-    fetch(API_ROUTES.ADMIN.REPORTS)
+    getAdminReports(API_ROUTES.ADMIN.REPORTS)
       .then((r) => r.json())
       .then((json) => setItems(json?.data?.items ?? []))
       .finally(() => setLoading(false));
@@ -36,12 +36,7 @@ export default function Page() {
   useEffect(load, []);
 
   const action = async (id: string, status: ReportDocument["status"], resolution?: string) => {
-    // audit-direct-fetch-ok: admin control-plane; no server action in appkit yet
-    await fetch(API_ROUTES.ADMIN.REPORT_BY_ID(id), {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status, resolution, resolvedAt: status === "actioned" || status === "dismissed" ? new Date() : undefined }),
-    });
+    await updateAdminReport(API_ROUTES.ADMIN.REPORT_BY_ID(id), { status, resolution, resolvedAt: status === "actioned" || status === "dismissed" ? new Date() : undefined });
     load();
   };
 

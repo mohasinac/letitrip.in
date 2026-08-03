@@ -27,7 +27,6 @@ function parseCommaSeparated(raw: string): string[] {
     .filter(Boolean);
 }
 
-// rbac-public: public endpoint — no authentication required
 const __POST__g = withProviders(
   createRouteHandler<(typeof createReportSchema)["_output"]>({
     auth: true,
@@ -85,5 +84,4 @@ const __POST__g = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const POST = withFeatureGuard("SCAM_REGISTRY", __POST__g);

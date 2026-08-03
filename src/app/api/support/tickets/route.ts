@@ -23,11 +23,11 @@ const createSchema = z.object({
     "refund_request",
     "auction_dispute",
     "general",
-    // ST-4 — sellers request admin-only store field changes
+    // ST-4 â€” sellers request admin-only store field changes
     "store_change_request",
-    // ST-3 — buyers/sellers request order line-item mutation
+    // ST-3 â€” buyers/sellers request order line-item mutation
     "order_modification_request",
-    // ST-5 — appeal a ban (bypasses soft-ban guard + active-ticket limit)
+    // ST-5 â€” appeal a ban (bypasses soft-ban guard + active-ticket limit)
     "unban_request",
   ]),
   subject: z.string().min(3).max(200),
@@ -35,7 +35,6 @@ const createSchema = z.object({
   orderId: z.string().optional(),
 });
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -50,14 +49,13 @@ export const GET = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(
   createRouteHandler<(typeof createSchema)["_output"]>({
     auth: true,
     schema: createSchema,
     handler: async ({ user, body }) => {
       const { category, subject, description, orderId } = body!;
-      // ST-5 — `unban_request` is the formal appeal channel. It bypasses the
+      // ST-5 â€” `unban_request` is the formal appeal channel. It bypasses the
       // create_support_tickets soft-ban guard AND the active-ticket limit so
       // a soft-banned user (or one already at the ticket cap) can still file
       // an appeal.

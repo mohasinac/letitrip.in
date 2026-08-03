@@ -5,6 +5,7 @@ import { AuctionBidsTable, Div, Heading, ROUTES, Span, Stack, Text, sortBy, useS
 import { FieldSelect, ListingToolbar } from "@mohasinac/appkit/ui";
 import type { BidDocument } from "@mohasinac/appkit";
 import { Link } from "@/i18n/navigation";
+import { getUserBids } from "@/lib/api/user-client";
 
 const SORT_OPTIONS = [
   { value: sortBy("bidTime", "DESC"), label: "Newest first" },
@@ -31,8 +32,7 @@ export default function UserBidsPage() {
   const { data, isLoading } = useQuery<{ bids: BidDocument[]; total: number }>({
     queryKey: ["user-bids"],
     queryFn: () =>
-      // audit-direct-fetch-ok: FEATURE_AUCTIONS=false in P-1
-      fetch("/api/user/bids?limit=100")
+      getUserBids("/api/user/bids?limit=100")
         .then((r) => r.json())
         .then((r) => r.data),
     enabled: !sessionLoading && !!user,

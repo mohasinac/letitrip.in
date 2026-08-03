@@ -1,6 +1,6 @@
 import { withProviders } from "@/providers.config";
 /**
- * Media Trim API Route — DISABLED for Free Tier
+ * Media Trim API Route â€” DISABLED for Free Tier
  *
  * FFmpeg video trimming requires system binaries and processing power.
  * This feature is disabled on Vercel Free + Firebase Blaze free tier.
@@ -19,10 +19,9 @@ import { trimDataSchema } from "@mohasinac/appkit";
 /**
  * POST /api/media/trim
  *
- * ⚠️ DISABLED on free tier
+ * âš ï¸ DISABLED on free tier
  * Requires Firebase Cloud Functions with FFmpeg or paid tier upgrade
  */
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(createRouteHandler<(typeof trimDataSchema)["_output"]>({
   auth: true,
   schema: trimDataSchema,

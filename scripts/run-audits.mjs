@@ -131,6 +131,9 @@ const AUDITS = [
   { name: "feature-flags",                  script: "scripts/audit-feature-flags.mjs" },
   // P-1: no raw fetch() in UI components — use server actions or src/lib/api/ wrappers
   { name: "direct-fetch-ui",               script: "scripts/audit-direct-fetch-ui.mjs" },
+  // Strict-zero: blocks every known audit suppression/escape-hatch comment marker.
+  // Fix root causes instead of suppressing audits with inline markers.
+  { name: "no-suppression-comments",       script: "scripts/audit-no-suppression-comments.mjs" },
 ];
 
 function parseArgs(argv) {

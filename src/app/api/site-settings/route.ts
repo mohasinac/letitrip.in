@@ -38,13 +38,12 @@ import { invalidateIntegrationKeysCache } from "@mohasinac/appkit";
  *
  * Get global site settings
  *
- * ✅ Fetches settings via siteSettingsRepository.getSingleton()
- * ✅ Returns public fields only for non-admin users (strips emailSettings, legalPages)
- * ✅ Cache-Control headers set (5 min public / no-cache admin)
- * TODO (Future): Support ETag for conditional requests — ✅ Done
+ * âœ… Fetches settings via siteSettingsRepository.getSingleton()
+ * âœ… Returns public fields only for non-admin users (strips emailSettings, legalPages)
+ * âœ… Cache-Control headers set (5 min public / no-cache admin)
+ * TODO (Future): Support ETag for conditional requests â€” âœ… Done
  * TODO (Future): Integrate Redis for distributed caching
  */
-// rbac-scope-enforced-in-handler: per-verb auth enforced within handler
 export const GET = withProviders(createApiHandler({
   handler: async ({ request }) => {
     // Fetch site settings (singleton pattern)
@@ -61,7 +60,7 @@ export const GET = withProviders(createApiHandler({
     let responseData: any;
 
     if (isAdmin) {
-      // Admin: include masked credential values so the UI can show "rzp_li…key4"
+      // Admin: include masked credential values so the UI can show "rzp_liâ€¦key4"
       const credentialsMasked =
         await siteSettingsRepository.getCredentialsMasked();
       responseData = { ...settingsWithoutCreds, credentialsMasked };
@@ -92,7 +91,7 @@ export const GET = withProviders(createApiHandler({
       ? "private, no-cache"
       : "public, max-age=300, s-maxage=600, stale-while-revalidate=120";
 
-    // ETag: shallow hash of the serialised response — enables conditional GET (304 Not Modified)
+    // ETag: shallow hash of the serialised response â€” enables conditional GET (304 Not Modified)
     const etag = `"${createHash("md5").update(JSON.stringify(responseData)).digest("hex")}"`;
     const ifNoneMatch = request.headers.get("if-none-match");
     if (ifNoneMatch === etag) {
@@ -116,15 +115,14 @@ export const GET = withProviders(createApiHandler({
  *
  * Body: Partial<SiteSettingsDocument>
  *
- * ✅ Requires admin authentication via requireRoleFromRequest
- * ✅ Validates body with siteSettingsUpdateSchema (Zod)
- * ✅ Updates via siteSettingsRepository.updateSingleton()
- * ✅ Writes audit log entry via serverLogger with changed fields and admin identity
- * ✅ Returns updated settings
+ * âœ… Requires admin authentication via requireRoleFromRequest
+ * âœ… Validates body with siteSettingsUpdateSchema (Zod)
+ * âœ… Updates via siteSettingsRepository.updateSingleton()
+ * âœ… Writes audit log entry via serverLogger with changed fields and admin identity
+ * âœ… Returns updated settings
  * TODO (Future): Invalidate distributed caches (Redis)
- * TODO (Future): Send notification to all admins on settings change — ✅ Done
+ * TODO (Future): Send notification to all admins on settings change â€” âœ… Done
  */
-// rbac-scope-enforced-in-handler: per-verb auth enforced within handler
 export const PATCH = withProviders(createRouteHandler<
   (typeof siteSettingsUpdateSchema)["_output"]
 >({
@@ -139,7 +137,7 @@ export const PATCH = withProviders(createRouteHandler<
     // pick up rotated credentials on the very next request.
     invalidateIntegrationKeysCache();
 
-    // Audit log — record which admin changed what fields
+    // Audit log â€” record which admin changed what fields
     serverLogger.info(ERROR_MESSAGES.API.SITE_SETTINGS_AUDIT_LOG, {
       adminId: user!.uid,
       adminEmail: user!.email,

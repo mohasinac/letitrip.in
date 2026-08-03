@@ -16,7 +16,6 @@ import { getOptionalSessionCookie } from "@mohasinac/appkit";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 import { errorResponse } from "@mohasinac/appkit";
 
-// rbac-public: unauthenticated endpoint
 export async function POST(request: NextRequest) {
   try {
     const rl = await applyRateLimit(request, RateLimitPresets.AUTH);

@@ -4,6 +4,7 @@ import { Button, Code, Container, Divider, Heading, Row, Section, Span, Stack, T
 import type { JsonValue } from "@mohasinac/appkit";
 import { Link } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
+import { getAdminUser } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
 
 // S-STORE-9B-E — User detail with tabs (Orders / Store / Reviews / Sessions / Bids / Reports).
@@ -27,8 +28,7 @@ export default function Page() {
   const [tab, setTab] = useState<TabId>("overview");
   const [user, setUser] = useState<Record<string, JsonValue> | null>(null);
   useEffect(() => {
-    // audit-direct-fetch-ok: admin control-plane; no server action in appkit yet
-    fetch(`/api/admin/users/${id}`)
+    getAdminUser(`/api/admin/users/${id}`)
       .then((r) => r.json())
       .then((j) => setUser(j?.data ?? null))
       .catch(() => setUser(null));

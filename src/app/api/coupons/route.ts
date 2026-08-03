@@ -42,7 +42,7 @@ async function _GET(request: Request): Promise<NextResponse> {
     });
   } catch (err) {
     void normalizeError(err);
-    logError("coupons", "listingProcessor upstream failed — falling back to local repo", err);
+    logError("coupons", "listingProcessor upstream failed â€” falling back to local repo", err);
     upstream = null;
   }
 
@@ -78,5 +78,4 @@ async function _GET(request: Request): Promise<NextResponse> {
   return response;
 }
 
-// rbac-public: public endpoint — no authentication required
 export const GET = withProviders(_GET);

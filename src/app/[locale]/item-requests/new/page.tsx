@@ -14,6 +14,7 @@ import {
   useToast,
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
+import { createItemRequest } from "@/lib/api/items-client";
 import { useState } from "react";
 
 export default function Page() {
@@ -34,12 +35,7 @@ export default function Page() {
       return;
     }
     setSaving(true);
-    // audit-direct-fetch-ok: item-requests not in P-1 scope; no server action yet
-    const res = await fetch("/api/item-requests", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    const res = await createItemRequest(form);
     setSaving(false);
     if (res.ok) {
       showToast("Request submitted for approval", "success");

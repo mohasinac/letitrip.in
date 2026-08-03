@@ -13,6 +13,7 @@ import {
   ACTIONS,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
+import { getAdminItemRequests, updateAdminItemRequest } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
 import type { ItemRequestDocument } from "@mohasinac/appkit";
 
@@ -22,8 +23,7 @@ export default function Page() {
 
   const load = () => {
     setLoading(true);
-    // audit-direct-fetch-ok: admin item-requests; not P-1 scope; no server action yet
-    fetch(API_ROUTES.ADMIN.ITEM_REQUESTS)
+    getAdminItemRequests(API_ROUTES.ADMIN.ITEM_REQUESTS)
       .then((r) => r.json())
       .then((json) => setItems(json?.data?.items ?? []))
       .finally(() => setLoading(false));
@@ -32,12 +32,7 @@ export default function Page() {
   useEffect(load, []);
 
   const action = async (id: string, status: ItemRequestDocument["status"]) => {
-    // audit-direct-fetch-ok: admin item-requests; not P-1 scope; no server action yet
-    await fetch(API_ROUTES.ADMIN.ITEM_REQUEST_BY_ID(id), {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
+    await updateAdminItemRequest(API_ROUTES.ADMIN.ITEM_REQUEST_BY_ID(id), { status });
     load();
   };
 

@@ -1,12 +1,8 @@
-import { withFeatureGuard } from "@/lib/features";
 import { normalizeError } from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
 import { NextResponse } from "next/server";
 import {
   storeRepository,
-  productRepository,
   parseListingParams,
-  sanitizeProductsForPublic,
 } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
@@ -15,47 +11,63 @@ import {
   type ListingProcessorResponse,
 } from "@/lib/listing-processor";
 import { validateSieveFilters } from "@/lib/sieve-validators";
-
-type RouteContext = { params: Promise<{ storeSlug: string }> };
+import type { StoreListItem, JsonValue } from "@mohasinac/appkit";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 24;
 const DEFAULT_SORT = "-createdAt";
 const CACHE = "public, max-age=60, s-maxage=120, stale-while-revalidate=60";
 
-const SAFE_STORE_AUCTION_FILTER_FIELDS = new Set(["price", "category"]);
+function param(url: URL, key: string): string | null {
+  return url.searchParams.get(key);
+}
 
-async function _GET(
-  request: Request,
-  context: RouteContext,
-): Promise<NextResponse> {
-  const { storeSlug } = await context.params;
+const SAFE_STORE_FILTER_FIELDS = new Set([
+  "storeName", "storeCategory", "status", "isPublic", "isFeatured",
+  "averageRating", "stats.totalProducts",
+]);
+
+function toPublicStore(s: Record<string, JsonValue>): StoreListItem {
+  const stats = s.stats as Record<string, JsonValue> | undefined;
+  return {
+    id: s.id as string,
+    storeSlug: s.storeSlug as string,
+    ownerId: s.ownerId as string,
+    storeName: s.storeName as string,
+    storeDescription: s.storeDescription as string | undefined,
+    storeCategory: s.storeCategory as string | undefined,
+    storeLogoURL: s.storeLogoURL as string | undefined,
+    storeBannerURL: s.storeBannerURL as string | undefined,
+    status: s.status as string,
+    isPublic: s.isPublic as boolean,
+    totalProducts: (stats?.totalProducts ?? s.totalProducts) as number | undefined,
+    itemsSold: (stats?.itemsSold ?? s.itemsSold) as number | undefined,
+    totalReviews: (stats?.totalReviews ?? s.totalReviews) as number | undefined,
+    averageRating: (stats?.averageRating ?? s.averageRating) as number | undefined,
+    createdAt: s.createdAt as string | undefined,
+  } as StoreListItem;
+}
+
+async function _GET(request: Request): Promise<NextResponse> {
   const url = new URL(request.url);
-
-  const store = await storeRepository.findBySlug(storeSlug);
-  if (!store || (store as { status?: string }).status !== "active") {
-    return NextResponse.json(
-      { success: false, error: "Store not found" },
-      { status: 404 },
-    );
-  }
-
   const std = parseListingParams(url);
-  const sorts = std.sorts ?? DEFAULT_SORT;
   const page = std.page ?? DEFAULT_PAGE;
   const pageSize = Math.min(50, Math.max(1, std.pageSize ?? DEFAULT_PAGE_SIZE));
-  const cursor = std.cursor;
 
-  const filterParts = [
-    `storeId==${store.id}`,
-    "status==published",
-    "listingType==auction",
-  ];
+  const sorts = std.sorts ?? DEFAULT_SORT;
+
+  const userParts: string[] = [];
+  if (std.q) userParts.push(`storeName@=*${std.q}`);
+  const category = param(url, "category");
+  if (category) userParts.push(`storeCategory==${category}`);
   if (std.filters) {
-    const safe = validateSieveFilters(std.filters, SAFE_STORE_AUCTION_FILTER_FIELDS);
-    if (safe) filterParts.push(safe);
+    const safe = validateSieveFilters(std.filters, SAFE_STORE_FILTER_FIELDS);
+    if (safe) userParts.push(safe);
   }
-  const filters = filterParts.join(",");
+  // listingProcessor doesn't apply baseQuery guards â€” include them in the full filter string.
+  const filtersForFunction = ["status==active", "isPublic==true", ...userParts].join(",");
+  // listStores() adds status==active + isPublic==true as Firestore .where() â€” don't duplicate.
+  const filtersForRepo = userParts.join(",");
 
   let items: unknown[];
   let total: number;
@@ -65,39 +77,38 @@ async function _GET(
 
   let upstream: ListingProcessorResponse | null = null;
   try {
-    upstream = await callListingProcessor("products", {
-      filters,
+    upstream = await callListingProcessor("stores", {
+      filters: filtersForFunction,
       sorts,
       page,
       pageSize,
-      cursor,
-      baseOpts: { storeId: store.id },
+      cursor: null,
     });
   } catch (err) {
     void normalizeError(err);
-    logError("storeAuctions", "listingProcessor upstream failed — falling back to local repo", err);
+    logError("stores", "listingProcessor upstream failed â€” falling back to local repo", err);
     upstream = null;
   }
 
   if (upstream) {
-    items = sanitizeProductsForPublic(upstream.items as Array<Record<string, JsonValue>>);
+    items = (upstream.items as Array<Record<string, JsonValue>>).map(toPublicStore);
     total = upstream.total;
     resultPage = upstream.page;
     totalPages = upstream.totalPages;
     hasMore = upstream.hasMore;
   } else {
     try {
-      const result = await productRepository.list({ filters, sorts, page, pageSize });
-      items = sanitizeProductsForPublic(result.items as unknown as Array<Record<string, JsonValue>>);
+      const result = await storeRepository.listStores({ filters: filtersForRepo, sorts, page, pageSize });
+      items = (result.items as unknown as Array<Record<string, JsonValue>>).map(toPublicStore);
       total = result.total;
       resultPage = result.page;
       totalPages = result.totalPages;
       hasMore = result.hasMore;
     } catch (error) {
       void normalizeError(error);
-      logError("storeAuctions", `GET /api/stores/${storeSlug}/auctions failed`, error);
+      logError("stores", "GET /api/stores failed", error);
       return NextResponse.json(
-        { success: false, error: "Failed to fetch store auctions" },
+        { success: false, error: "Failed to fetch stores" },
         { status: 500 },
       );
     }
@@ -111,8 +122,4 @@ async function _GET(
   return response;
 }
 
-// rbac-scope-enforced-in-handler: per-verb auth enforced within handler
-const __GET__g = withProviders(_GET);
-
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
-export const GET = withFeatureGuard("AUCTIONS", __GET__g);
+export const GET = withProviders(_GET);

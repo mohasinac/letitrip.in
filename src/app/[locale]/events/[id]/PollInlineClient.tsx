@@ -3,8 +3,9 @@ import { Stack, normalizeError } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
-import { useSession, useToast, ROUTES, Div, Button, Label, Textarea, Text } from "@mohasinac/appkit/client";
+import { useSession, useToast, ROUTES, Checkbox, RadioItem, Div, Button, Label, Textarea, Text } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
+import { submitEventEntry } from "@/lib/api/events-client";
 
 interface PollOption {
   id: string;
@@ -89,13 +90,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
     try {
       const body: Record<string, JsonValue> = { pollVotes: selectedVotes };
       if (comment) body.pollComment = comment;
-      // audit-direct-fetch-ok: FEATURE_EVENTS=false in P-1
-      const res = await fetch(API_ROUTES.EVENTS.ENTRIES(eventId), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-        credentials: "include",
-      });
+      const res = await submitEventEntry(API_ROUTES.EVENTS.ENTRIES(eventId), body);
       if (!res.ok) {
         const data = await res.json().catch(() => ({})) as { error?: string };
         throw new Error(data.error ?? "Failed to submit vote");
@@ -119,33 +114,28 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
       </Text>
       <Stack gap="sm">
         {pollConfig.options.map((opt) => (
-          <Label layout="flex" gap="lg"
+          <Div
             key={opt.id}
             rounded="xl" padding="inline" className="cursor-pointer border border-[var(--appkit-color-border)] hover:bg-[var(--appkit-color-bg)] transition-colors"
           >
             {isMultiSelect ? (
-              // audit-raw-form-input-ok: native checkbox inside a Label wrapper — standard radio/checkbox group pattern
-              <input
-                type="checkbox"
+              <Checkbox
                 name="poll-inline"
                 value={opt.id}
                 checked={selectedVotes.includes(opt.id)}
                 onChange={() => toggleVote(opt.id)}
-                className="accent-primary h-4 w-4"
+                label={<Text as="span" size="sm" color="primary">{opt.label}</Text>}
               />
             ) : (
-              // audit-raw-form-input-ok: native radio inside a Label wrapper — standard radio group pattern
-              <input
-                type="radio"
+              <RadioItem
                 name="poll-inline"
                 value={opt.id}
                 checked={selectedVotes.includes(opt.id)}
                 onChange={() => toggleVote(opt.id)}
-                className="accent-primary h-4 w-4"
+                label={<Text as="span" size="sm" color="primary">{opt.label}</Text>}
               />
             )}
-            <Text as="span" size="sm" color="primary">{opt.label}</Text>
-          </Label>
+          </Div>
         ))}
       </Stack>
       {pollConfig.allowComment && (

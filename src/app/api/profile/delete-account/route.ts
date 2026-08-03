@@ -18,7 +18,6 @@ import {
 import { getAdminAuth } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
   schema: deleteAccountSchema,

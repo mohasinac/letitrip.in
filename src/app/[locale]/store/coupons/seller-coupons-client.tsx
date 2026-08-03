@@ -3,22 +3,17 @@
 import { useRouter } from "@/i18n/navigation";
 import { SellerCouponsView, ROUTES } from "@mohasinac/appkit";
 import { API_ROUTES } from "@/constants";
+import { updateStoreCoupon, deleteStoreCoupon } from "@/lib/api/store-client";
 
 export function SellerCouponsClient() {
   const router = useRouter();
 
   const handleToggle = async (couponId: string, currentlyActive: boolean) => {
-    // audit-direct-fetch-ok: FEATURE_COUPONS=false in P-1
-    await fetch(API_ROUTES.STORE.COUPON_BY_ID(couponId), {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: currentlyActive ? "deactivate" : "activate" }),
-    });
+    await updateStoreCoupon(API_ROUTES.STORE.COUPON_BY_ID(couponId), { action: currentlyActive ? "deactivate" : "activate" });
   };
 
   const handleDelete = async (couponId: string) => {
-    // audit-direct-fetch-ok: FEATURE_COUPONS=false in P-1
-    await fetch(API_ROUTES.STORE.COUPON_BY_ID(couponId), { method: "DELETE" });
+    await deleteStoreCoupon(API_ROUTES.STORE.COUPON_BY_ID(couponId));
   };
 
   return (

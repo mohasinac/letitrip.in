@@ -14,6 +14,7 @@ import {
   Skeleton,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
+import { getAnalyticsCards, updateAnalyticsCard } from "@/lib/api/store-client";
 import { useEffect, useState } from "react";
 import type { AnalyticsCardDocument } from "@mohasinac/appkit";
 
@@ -24,8 +25,7 @@ export default function Page() {
 
   const load = () => {
     setLoading(true);
-    // audit-direct-fetch-ok: store analytics; no server action in appkit yet
-    fetch(API_ROUTES.STORE.ANALYTICS_CARDS)
+    getAnalyticsCards(API_ROUTES.STORE.ANALYTICS_CARDS)
       .then((r) => r.json())
       .then((j) => setItems(j?.data?.items ?? []))
       .finally(() => setLoading(false));
@@ -34,12 +34,7 @@ export default function Page() {
   useEffect(load, []);
 
   const toggle = async (id: string, current: boolean) => {
-    // audit-direct-fetch-ok: store analytics; no server action in appkit yet
-    const res = await fetch(API_ROUTES.STORE.ANALYTICS_CARD_BY_ID(id), {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isVisible: !current }),
-    });
+    const res = await updateAnalyticsCard(API_ROUTES.STORE.ANALYTICS_CARD_BY_ID(id), { isVisible: !current });
     if (res.ok) {
       setItems((prev) =>
         prev.map((it) => (it.id === id ? { ...it, isVisible: !current } : it)),

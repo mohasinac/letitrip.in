@@ -8,6 +8,7 @@ import {
   fetchDeviantArtPosts,
 } from "@mohasinac/appkit/server";
 import type { SocialPlatform, SocialPostType } from "@mohasinac/appkit/server";
+import { withProviders } from "@/providers.config";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +18,7 @@ function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
 }
 
-// rbac-public: public endpoint — no authentication required
-export async function GET(request: NextRequest) {
+async function socialFeedGetHandler(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const platform = searchParams.get("platform") as SocialPlatform | null;
   const handle = searchParams.get("handle") ?? "";
@@ -72,3 +72,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: `Failed to fetch ${platform} posts` }, { status: 502 });
   }
 }
+
+export const GET = withProviders(socialFeedGetHandler);
