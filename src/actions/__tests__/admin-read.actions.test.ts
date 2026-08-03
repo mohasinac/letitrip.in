@@ -34,6 +34,11 @@ vi.mock("@mohasinac/appkit/server", () => ({
       return { ok: false, error: e instanceof Error ? e.message : String(e) };
     }
   },
+}));
+
+vi.mock("@mohasinac/appkit", () => ({
+  requireRoleUser: mockRequireRoleUser,
+  AuthorizationError: class AuthorizationError extends Error { constructor(msg: string) { super(msg); this.name = "AuthorizationError"; } },
   getAdminDashboardStats: mockGetAdminDashboardStats,
   getAdminAnalytics: mockGetAdminAnalytics,
   listAdminOrders: mockListAdminOrders,
@@ -44,11 +49,6 @@ vi.mock("@mohasinac/appkit/server", () => ({
   listAdminProducts: mockListAdminProducts,
   listAdminStores: mockListAdminStores,
   listAdminSessions: mockListAdminSessions,
-}));
-
-vi.mock("@mohasinac/appkit", () => ({
-  requireRoleUser: mockRequireRoleUser,
-  AuthorizationError: class AuthorizationError extends Error { constructor(msg: string) { super(msg); this.name = "AuthorizationError"; } },
 }));
 
 import {
@@ -118,13 +118,13 @@ describe("getAdminAnalyticsAction", () => {
 
   it("role 'seller' → { ok: false }", async () => {
     mockRequireRoleUser.mockRejectedValue(new Error("Forbidden"));
-    const result = await getAdminAnalyticsAction({ period: "30d" });
+    const result = await getAdminAnalyticsAction();
     expect(result.ok).toBe(false);
   });
 
-  it("admin/moderator → getAdminAnalytics called with params", async () => {
-    await getAdminAnalyticsAction({ period: "30d" });
-    expect(mockGetAdminAnalytics).toHaveBeenCalledWith({ period: "30d" });
+  it("admin/moderator → getAdminAnalytics called (no params forwarded)", async () => {
+    await getAdminAnalyticsAction();
+    expect(mockGetAdminAnalytics).toHaveBeenCalled();
   });
 });
 

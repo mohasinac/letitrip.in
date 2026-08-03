@@ -24,9 +24,6 @@ vi.mock("@mohasinac/appkit/server", () => ({
       return { ok: false, error: e instanceof Error ? e.message : String(e) };
     }
   },
-  sellerCreateCoupon: mockSellerCreateCoupon,
-  sellerUpdateCoupon: mockSellerUpdateCoupon,
-  sellerDeleteCoupon: mockSellerDeleteCoupon,
 }));
 
 vi.mock("@mohasinac/appkit", () => ({
@@ -36,6 +33,9 @@ vi.mock("@mohasinac/appkit", () => ({
   AuthorizationError: class AuthorizationError extends Error { constructor(msg: string) { super(msg); this.name = "AuthorizationError"; } },
   ValidationError: class ValidationError extends Error { constructor(msg: string) { super(msg); this.name = "ValidationError"; } },
   userRepository: { findById: mockUserRepositoryFindById },
+  sellerCreateCoupon: mockSellerCreateCoupon,
+  sellerUpdateCoupon: mockSellerUpdateCoupon,
+  sellerDeleteCoupon: mockSellerDeleteCoupon,
 }));
 
 import {
@@ -95,13 +95,13 @@ describe("sellerCreateCouponAction", () => {
   it("discountType='flat' → sellerCreateCoupon called with type='fixed' (mapped)", async () => {
     await sellerCreateCouponAction({ ...makeValidCreateInput(), discountType: "flat" as any });
     const call = mockSellerCreateCoupon.mock.calls[0];
-    expect(call[1]).toMatchObject({ discountType: "fixed" });
+    expect(call[1]).toMatchObject({ type: "fixed" });
   });
 
   it("discountType='percentage' → sellerCreateCoupon called with type='percentage' (unchanged)", async () => {
     await sellerCreateCouponAction(makeValidCreateInput());
     const call = mockSellerCreateCoupon.mock.calls[0];
-    expect(call[1]).toMatchObject({ discountType: "percentage" });
+    expect(call[1]).toMatchObject({ type: "percentage" });
   });
 
   it("applicableToAuctions hardcoded false in normalized input", async () => {
@@ -147,17 +147,17 @@ describe("sellerUpdateCouponAction", () => {
   });
 
   it("valid → sellerUpdateCoupon called with (user.uid, role, couponId, updateInput)", async () => {
-    await sellerUpdateCouponAction("coupon-save15", { name: "Updated" });
+    await sellerUpdateCouponAction("coupon-save15", { description: "Summer sale" });
     expect(mockSellerUpdateCoupon).toHaveBeenCalledWith(
       "user-seller-1",
       "seller",
       "coupon-save15",
-      expect.objectContaining({ name: "Updated" }),
+      expect.objectContaining({ description: "Summer sale" }),
     );
   });
 
   it("valid → { ok: true }", async () => {
-    const result = await sellerUpdateCouponAction("coupon-save15", { name: "Updated" });
+    const result = await sellerUpdateCouponAction("coupon-save15", { description: "Summer sale" });
     expect(result.ok).toBe(true);
   });
 });

@@ -24,10 +24,6 @@ vi.mock("@mohasinac/appkit/server", () => ({
       return { ok: false, error: e instanceof Error ? e.message : String(e) };
     }
   },
-  listStoreAddressesForSeller: mockListStoreAddressesForSeller,
-  createStoreAddressForSeller: mockCreateStoreAddressForSeller,
-  updateStoreAddressForSeller: mockUpdateStoreAddressForSeller,
-  deleteStoreAddressForSeller: mockDeleteStoreAddressForSeller,
 }));
 
 vi.mock("@mohasinac/appkit", () => ({
@@ -36,6 +32,10 @@ vi.mock("@mohasinac/appkit", () => ({
   RateLimitPresets: { API: "api", STRICT: "strict" },
   AuthorizationError: class AuthorizationError extends Error { constructor(msg: string) { super(msg); this.name = "AuthorizationError"; } },
   ValidationError: class ValidationError extends Error { constructor(msg: string) { super(msg); this.name = "ValidationError"; } },
+  listStoreAddressesForSeller: mockListStoreAddressesForSeller,
+  createStoreAddressForSeller: mockCreateStoreAddressForSeller,
+  updateStoreAddressForSeller: mockUpdateStoreAddressForSeller,
+  deleteStoreAddressForSeller: mockDeleteStoreAddressForSeller,
 }));
 
 import {
@@ -74,7 +74,7 @@ function makeValidAddressInput() {
     city: "Mumbai",
     state: "Maharashtra",
     postalCode: "400001",
-    isPickupLocation: false,
+    country: "India",
   };
 }
 
@@ -82,6 +82,7 @@ describe("listStoreAddressesAction", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockRequireRoleUser.mockResolvedValue(makeSeller());
+    mockRateLimitByIdentifier.mockResolvedValue({ success: true });
     mockListStoreAddressesForSeller.mockResolvedValue([makeAddress()]);
   });
 
