@@ -1,5 +1,5 @@
 # LetItRip — Patch Rollout Roadmap
-> Maintained by: Claude (PM role) | CEO: Mohasin | Last updated: 2026-07-31
+> Maintained by: Claude (PM role) | CEO: Mohasin | Last updated: 2026-08-04
 > Update this file after each patch ships. Tick the [x] when live in production.
 >
 > **Principle:** Features first, 3rd-party integrations last.
@@ -11,10 +11,10 @@
 
 ```
 P-1  [x] MVP — Cash/UPI pay, catalogue, seller basics, admin basics, logo fix, layout, analytics  ← LIVE 2026-07-31
-P-2  [ ] Coupons (admin + seller, no 3rd party)
-P-3  [ ] Blog (read-only, admin-published)
-P-4  [ ] Events (sale/offer announcement types only)
-P-5  [ ] Auctions (bid, settle, winner pays via cash/UPI)
+P-2  [x] Coupons (admin + seller, no 3rd party)  ← LIVE 2026-08-04
+P-3  [x] Blog (read-only, admin-published)  ← LIVE 2026-08-04
+P-4  [x] Events (sale/offer announcement types only)  ← LIVE 2026-08-04
+P-5  [x] Auctions (bid, settle, winner pays via cash/UPI)  ← LIVE 2026-08-04
 P-6  [ ] Pre-orders
 P-7  [ ] Seller Payouts (manual UPI — admin records transfer)
 P-8  [ ] GST — tax calculation, invoice GST breakup, product HSN code + rate field

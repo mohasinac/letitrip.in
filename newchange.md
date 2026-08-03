@@ -41,6 +41,38 @@
 
 ---
 
+### S-patch-p2-p5-merge — Patch P-2→P-5 tests + sequential merge to main (2026-08-04)
+
+**19 commits merged to main · `npm run check` exits 0 · appkit 3.2.5 unchanged · Firebase Functions deployed · Vercel deployed · feature flags COUPONS/BLOG/EVENTS/AUCTIONS enabled**
+
+**Phase A — Tests written on each branch:**
+- **P-2 Coupons** (`patch/p2-coupons`): Added `withFeatureGuard("COUPONS")` to `GET/POST /api/user/coupons` and `POST /api/user/coupons/claim`; gated `renderCouponSection()` in `CheckoutRouteClient` via `couponsEnabled` prop from server layout; wrote `pw-coupons.spec.ts` (5 E2E tests) + `apply-coupon.test.ts` (8 unit tests for expired/inactive/limit/scope/percentage/fixed/markUsed/findByUserAndCode logic).
+- **P-3 Blog** (`patch/p3-blog`): Wrote `pw-blog.spec.ts` (5 E2E tests) + `blog.repository.test.ts` (5 unit tests for draft filtering, publish flow, slug lookup) + enhanced `blog/[slug]/__tests__/route.test.ts` (draft→404, published→200, flag-off→404).
+- **P-4 Events** (`patch/p4-events`): Wrote `events/[id]/entries/__tests__/route.test.ts` (5 unit tests: unauthed 401, banned 403, ended 422, duplicate idempotent, active 201) + `events/[id]/spin/__tests__/route.test.ts` (4 unit tests) + 2 more tests in `pw-events.spec.ts`.
+- **P-5 Auctions** (`patch/p5-auctions`): Wrote `bids/[id]/__tests__/route.test.ts` (5 unit tests) + 2 more tests in `pw-auctions.spec.ts` (bids list by productId + bid-below-start 422).
+
+**Phase B — Sequential merge to main:**
+- Merged P-2 (clean, no conflicts)
+- Merged P-3 (resolved: `audit-hex-tokens.mjs` exemption + `appkit` submodule → `7b553834`)
+- Merged P-4 (same conflict pattern + `navigation.tsx` kept Blog+Coupons+Events nav)
+- Merged P-5 (same + `UserLayoutClient.tsx` merged `flags: { eventsOn, auctionsOn }` + `navigation.tsx` added My Bids to Shopping group)
+
+**Key conflict resolution rule** (applies to all P3–P5 merges):
+- `appkit` submodule: always pin to main's `7b553834` — the post-suppression-marker-cleanup commit; P-branch commits (`f8e2364a`, `a7466733`) added markers that `audit-no-suppression-comments` (added by P-2) bans
+- `audit-hex-tokens.mjs`: always take main's broader directory exemptions (`/^appkit\/src\/features\/admin\/components\//` + `/^appkit\/src\/ui\/rich-text\/`)
+
+**Deploy:**
+- `tsconfig.json`: removed `appkit/src/**/*.ts` + `appkit/src/**/*.tsx` from `include` (Root Cause #23 — Vercel Linux OOM)
+- Pushed main to `origin/main` (19 commits)
+- Deployed to Vercel production via `vercel --prod`
+- Enabled `FEATURE_COUPONS`, `FEATURE_BLOG`, `FEATURE_EVENTS`, `FEATURE_AUCTIONS` in Vercel production
+
+**Firebase:** `auctionSettlement` (scheduled) + `onBidPlaced` (Firestore trigger) + `couponExpiry` (scheduled) all confirmed deployed in `asia-south1`.
+
+**Playwright:** All 10 `pw-*.spec.ts` suites run against production post-deploy.
+
+---
+
 ### S-use-client-suspense — Fix incorrect "use client" directives + missing Suspense boundaries (2026-06-24)
 
 **appkit modified (12 files) · 50 consumer files edited · 22 new files created · `audit-unnecessary-use-client` strict-0 ✓ · `audit-suspense-boundaries` strict-0 ✓ · tsc exits 0**
