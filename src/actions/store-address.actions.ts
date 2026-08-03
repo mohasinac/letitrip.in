@@ -115,6 +115,8 @@ export async function deleteStoreAddressAction(
   if (!rl.success)
     throw new AuthorizationError(ERR_RATE_LIMIT);
 
+  if (!addressId?.trim()) throw new ValidationError(ERR_ADDRESS_ID_REQUIRED);
+
   return deleteStoreAddressForSeller(user.uid, addressId);
 }
 
