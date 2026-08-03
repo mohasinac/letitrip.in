@@ -78,4 +78,46 @@ test.describe("Auctions — P5", () => {
     await gotoAndWait(page, "/store/bids");
     await expect(page.getByRole("main").first()).toBeVisible();
   });
+
+  test("GET /api/bids/[id] returns bids for a live auction", async ({ page }) => {
+    const listRes = await page.request.get(
+      `${BASE_URL}/api/products?listingType=auction&status=active&pageSize=1`,
+    );
+    if (listRes.status() === 404) {
+      test.skip();
+      return;
+    }
+    const body = await listRes.json() as { data: { items: { id: string }[] } };
+    const auctionId = body.data?.items?.[0]?.id;
+    if (!auctionId) {
+      test.skip();
+      return;
+    }
+    const bidsRes = await page.request.get(`${BASE_URL}/api/bids/${auctionId}?pageSize=5`);
+    expect(bidsRes.status()).toBe(200);
+    const bidsBody = await bidsRes.json() as { ok: boolean; data: { items: unknown[] } };
+    expect(bidsBody.ok).toBe(true);
+    expect(Array.isArray(bidsBody.data.items)).toBe(true);
+  });
+
+  test("bid below starting price returns 422", async ({ page }) => {
+    await loginAsAdmin(page);
+    const listRes = await page.request.get(
+      `${BASE_URL}/api/products?listingType=auction&status=active&pageSize=1`,
+    );
+    if (listRes.status() === 404) {
+      test.skip();
+      return;
+    }
+    const body = await listRes.json() as { data: { items: { id: string }[] } };
+    const auctionId = body.data?.items?.[0]?.id;
+    if (!auctionId) {
+      test.skip();
+      return;
+    }
+    const res = await page.request.post(`${BASE_URL}/api/bids`, {
+      data: { productId: auctionId, amount: 1 },
+    });
+    expect([400, 422]).toContain(res.status());
+  });
 });
