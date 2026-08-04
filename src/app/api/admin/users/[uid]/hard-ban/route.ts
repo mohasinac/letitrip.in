@@ -5,11 +5,12 @@ import {
   successResponse,
   errorResponse,
   userRepository,
-
   sessionRepository,
   storeRepository,
   productRepository,
   bidRepository,
+  addressesRepository,
+  savedPaymentMethodsRepository,
 } from "@mohasinac/appkit";
 import { sendNotification } from "@mohasinac/appkit/server";
 import { getAdminAuth } from "@mohasinac/appkit/server";
@@ -18,6 +19,41 @@ import { ROLES_ADMIN_ONLY } from "@/constants";
 const schema = z.object({
   reason: z.string().min(1, "Reason is required"),
 });
+
+async function cascadeAddressClusterBan(
+  uid: string,
+  banData: { banReason: string; bannedBy: string },
+): Promise<void> {
+  const userAddresses = await addressesRepository.listByOwner("user", uid);
+  const uniqueHashes = [...new Set(userAddresses.map((a) => a.addressHash).filter(Boolean))] as string[];
+  for (const hash of uniqueHashes) {
+    const cluster = await addressesRepository.listByAddressHash(hash);
+    const hasBannedAccount = cluster.some((a) => a.ownerId !== uid && a.banStatus === "banned");
+    if (!hasBannedAccount) continue;
+    const otherOwners = [...new Set(cluster.filter((a) => a.ownerId !== uid).map((a) => `${a.ownerType}|${a.ownerId}`))];
+    for (const ownerKey of otherOwners) {
+      const [ownerType, ownerId] = ownerKey.split("|");
+      await addressesRepository.banAllForOwner(ownerType as "user" | "store", ownerId, banData);
+    }
+  }
+}
+
+async function cascadePaymentClusterBan(
+  uid: string,
+  banData: { banReason: string; bannedBy: string },
+): Promise<void> {
+  const userMethods = await savedPaymentMethodsRepository.listByUser(uid);
+  for (const method of userMethods) {
+    if (!method.identifierHash) continue;
+    const cluster = await savedPaymentMethodsRepository.listByIdentifierHash(method.identifierHash);
+    const hasBannedAccount = cluster.some((m) => m.userId !== uid && m.banStatus === "banned");
+    if (!hasBannedAccount) continue;
+    const otherUserIds = [...new Set(cluster.filter((m) => m.userId !== uid).map((m) => m.userId))];
+    for (const otherId of otherUserIds) {
+      await savedPaymentMethodsRepository.banAllForUser(otherId, banData);
+    }
+  }
+}
 
 export const POST = withProviders(
   createRouteHandler<(typeof schema)["_output"]>({
@@ -75,7 +111,21 @@ export const POST = withProviders(
         await Promise.all(activeBids.map((b) => bidRepository.update(b.id, { status: "cancelled" } as any)));
       } catch { /* non-fatal */ }
 
-      // 6. Notify user
+      // 6. Cascade address ban + cross-account cluster ban
+      try {
+        const banData = { banReason: `User hard-banned: ${body!.reason}`, bannedBy: user!.uid };
+        await addressesRepository.banAllForOwner("user", uid, banData);
+        await cascadeAddressClusterBan(uid, banData);
+      } catch { /* non-fatal */ }
+
+      // 7. Cascade payment method ban + cross-account cluster ban
+      try {
+        const banData = { banReason: `User hard-banned: ${body!.reason}`, bannedBy: user!.uid };
+        await savedPaymentMethodsRepository.banAllForUser(uid, banData);
+        await cascadePaymentClusterBan(uid, banData);
+      } catch { /* non-fatal */ }
+
+      // 8. Notify user
       try {
         await sendNotification({
           userId: uid,

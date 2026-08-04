@@ -22,6 +22,8 @@ const updateAddressSchema = z.object({
   postalCode: z.string().min(6).max(6).optional(),
   country: z.string().optional(),
   isDefault: z.boolean().optional(),
+  action: z.enum(["ban", "approve_unban", "reject_unban", "flag_suspicious", "clear_ban"]).optional(),
+  banReason: z.string().optional(),
 });
 
 export const GET = withProviders(
@@ -44,15 +46,51 @@ export const PATCH = withProviders(
     roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:addresses:write",
     schema: updateAddressSchema,
-    handler: async ({ params, body }) => {
+    handler: async ({ params, body, user }) => {
       const id = (params as Record<string, string>).id;
       const existing = await addressesRepository.findById(id);
       if (!existing) return errorResponse(NOT_FOUND, 404);
+
+      const { action, banReason, ...updateFields } = body!;
+
+      if (action === "ban") {
+        const banned = await addressesRepository.banById(id, {
+          banReason: banReason ?? "Banned by admin",
+          bannedBy: user!.uid,
+        });
+        return successResponse(banned, "Address banned");
+      }
+
+      if (action === "approve_unban") {
+        await addressesRepository.clearBanById(id);
+        return successResponse({ id }, "Address unban approved");
+      }
+
+      if (action === "reject_unban") {
+        // Move back to banned; clear unban request note
+        const updated = await addressesRepository.update(id, {
+          banStatus: "banned",
+          unbanRequestNote: undefined,
+          unbanRequestedAt: undefined,
+        } as Parameters<typeof addressesRepository.update>[1]);
+        return successResponse(updated, "Unban request rejected");
+      }
+
+      if (action === "flag_suspicious") {
+        const updated = await addressesRepository.update(id, { banStatus: "suspicious" } as Parameters<typeof addressesRepository.update>[1]);
+        return successResponse(updated, "Address flagged as suspicious");
+      }
+
+      if (action === "clear_ban") {
+        await addressesRepository.clearBanById(id);
+        return successResponse({ id }, "Ban cleared");
+      }
+
       const updated = await addressesRepository.updateForOwner(
         existing.ownerType,
         existing.ownerId,
         id,
-        body!,
+        updateFields,
       );
       return successResponse(updated, "Address updated");
     },

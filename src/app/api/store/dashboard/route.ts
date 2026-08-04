@@ -45,13 +45,13 @@ export const GET = withProviders(
 
       const storeId = store.id;
 
-      const [allProducts, , , approvedReviews, pendingPayouts] =
+      const [allProducts, , , ratingAggregate, pendingPayouts] =
         await Promise.all([
           productRepository.findByStore(storeId).catch(() => []),
           // listForSeller needs productIds — defer to inline below
           Promise.resolve(null),
           Promise.resolve(null),
-          reviewRepository.findApprovedByStore(storeId).catch(() => []),
+          reviewRepository.getApprovedRatingAggregateByStore(storeId).catch(() => ({ count: 0, avgRating: 0 })),
           payoutRepository.findByStoreAndStatus(storeId, "pending").catch(() => []),
         ]);
 
@@ -65,7 +65,7 @@ export const GET = withProviders(
 
       const [ordersResult, pendingOrdersResult] = await Promise.all([
         productIds.length > 0
-          ? orderRepository.listForSeller(productIds, { page: 1, pageSize: 50 }).catch(() => ({
+          ? orderRepository.listForSeller(productIds, { page: 1, pageSize: 500 }).catch(() => ({
               items: [],
               total: 0,
             }))
@@ -75,7 +75,7 @@ export const GET = withProviders(
               .listForSeller(productIds, {
                 filters: pendingProcessingFilter,
                 page: 1,
-                pageSize: 50,
+                pageSize: 500,
               })
               .catch(() => ({ items: [], total: 0 }))
           : Promise.resolve({ items: [], total: 0 }),
@@ -90,12 +90,8 @@ export const GET = withProviders(
         0,
       );
 
-      // Average rating
-      const ratings = (approvedReviews as any[]).map((r) => Number(r.rating ?? 0)).filter(Boolean);
-      const averageRating =
-        ratings.length > 0
-          ? Math.round((ratings.reduce((s, r) => s + r, 0) / ratings.length) * 10) / 10
-          : undefined;
+      // Average rating from pre-computed aggregate (no limit, full store history)
+      const averageRating = ratingAggregate.count > 0 ? ratingAggregate.avgRating : undefined;
 
       // Pending payouts total (paise)
       const pendingPayoutsPaise = (pendingPayouts as any[]).reduce(

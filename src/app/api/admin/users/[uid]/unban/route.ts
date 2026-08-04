@@ -4,6 +4,8 @@ import {
   successResponse,
   errorResponse,
   userRepository,
+  addressesRepository,
+  savedPaymentMethodsRepository,
 } from "@mohasinac/appkit";
 import { sendNotification } from "@mohasinac/appkit/server";
 import { getAdminAuth } from "@mohasinac/appkit/server";
@@ -31,6 +33,16 @@ export const POST = withProviders(
         hardBannedAt: undefined,
         hardBannedBy: undefined,
       } as any);
+
+      // Reverse address auto-ban (leaves manually-admin-banned addresses untouched)
+      try {
+        await addressesRepository.unbanAutoForOwner("user", uid);
+      } catch { /* non-fatal */ }
+
+      // Reverse payment method auto-ban
+      try {
+        await savedPaymentMethodsRepository.unbanAutoForUser(uid);
+      } catch { /* non-fatal */ }
 
       // Notify user
       try {

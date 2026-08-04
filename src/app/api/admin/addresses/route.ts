@@ -32,6 +32,14 @@ export const GET = withProviders(
       const url = new URL(request.url);
       const ownerType = url.searchParams.get("ownerType") as "user" | "store" | null;
       const ownerId = url.searchParams.get("ownerId");
+      const banStatus = url.searchParams.get("banStatus") as "banned" | "unban_requested" | "suspicious" | null;
+      const limit = Math.min(parseInt(url.searchParams.get("limit") ?? "50", 10), 200);
+      const offset = parseInt(url.searchParams.get("offset") ?? "0", 10);
+
+      if (banStatus) {
+        const items = await addressesRepository.listByBanStatus(banStatus, limit, offset);
+        return successResponse({ items, total: items.length });
+      }
 
       if (ownerType && ownerId) {
         const items = await addressesRepository.listByOwner(ownerType, ownerId);

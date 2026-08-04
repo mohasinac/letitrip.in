@@ -239,10 +239,14 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
   {
     title: "Trust & Safety",
     items: [
-      adminItem(String(ROUTES.ADMIN.SUPPORT_TICKETS), "Support Tickets", "admin:support-tickets:read"),
-      adminItem(String(ROUTES.ADMIN.MODERATION),      "Moderation",      "admin:moderation:read"),
-      adminItem(String(ROUTES.ADMIN.REPORTS),         "Reports",         "admin:moderation:read"),
-      adminItem(String(ROUTES.ADMIN.ITEM_REQUESTS),   "Item Requests",   "admin:moderation:read"),
+      adminItem(String(ROUTES.ADMIN.SUPPORT_TICKETS),       "Support Tickets",    "admin:support-tickets:read"),
+      adminItem(String(ROUTES.ADMIN.MODERATION),            "Moderation",         "admin:moderation:read"),
+      adminItem(String(ROUTES.ADMIN.REPORTS),               "Reports",            "admin:moderation:read"),
+      adminItem(String(ROUTES.ADMIN.ITEM_REQUESTS),         "Item Requests",      "admin:moderation:read"),
+      adminItem(String(ROUTES.ADMIN.BANNED_ADDRESSES),      "Banned Addresses",   "admin:addresses:read"),
+      adminItem(String(ROUTES.ADMIN.ADDRESS_CLUSTERS),      "Address Clusters",   "admin:addresses:read"),
+      adminItem(String(ROUTES.ADMIN.PAYMENT_METHODS),       "Payment Methods",    "admin:addresses:read"),
+      adminItem(String(ROUTES.ADMIN.PAYMENT_METHODS_CLUSTERS), "Payment Clusters", "admin:addresses:read"),
       // Scam Registry hidden until FEATURE_SCAM_REGISTRY (P12).
     ],
   },

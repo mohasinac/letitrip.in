@@ -65,10 +65,25 @@ export function deleteUserNotification(url: string): Promise<Response> {
   return fetch(url, { method: "DELETE", credentials: CREDS });
 }
 
+// ── Addresses ─────────────────────────────────────────────────────────────────
+
+export function requestAddressUnban(id: string, note: string): Promise<Response> {
+  return fetch(`/api/user/addresses/${id}`, {
+    method: "PUT",
+    headers: JSON_HEADERS,
+    credentials: CREDS,
+    body: JSON.stringify({ banStatus: "unban_requested", unbanRequestNote: note }),
+  });
+}
+
 // ── Reviews ───────────────────────────────────────────────────────────────────
 
 export function getUserReviews(url: string): Promise<Response> {
   return fetch(url, { credentials: CREDS });
+}
+
+export function getUserReviewsByRole(role: "buyer" | "seller"): Promise<Response> {
+  return fetch(`/api/user/reviews?reviewerRole=${role}`, { credentials: CREDS });
 }
 
 // ── Wishlist validation ────────────────────────────────────────────────────────

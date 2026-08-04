@@ -88,7 +88,7 @@ export default function UserReviewsPage() {
   const sort = table.get("sort") ?? "-createdAt";
 
   const { data, isLoading } = useQuery<{ reviews: ReviewItem[]; total: number }>({
-    queryKey: ["user-reviews"],
+    queryKey: ["user-reviews", user?.uid],
     queryFn: () => getUserReviews("/api/user/reviews").then((r) => r.json()).then((r) => r.data),
     enabled: !sessionLoading && !!user,
     staleTime: 30_000,

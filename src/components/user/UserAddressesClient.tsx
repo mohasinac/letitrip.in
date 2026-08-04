@@ -3,9 +3,9 @@
 import { useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
-import { Heading, Stack, Text } from "@mohasinac/appkit";
+import { Heading, Stack, Text, Badge } from "@mohasinac/appkit";
 import {
-  AddressBook,
+  AddressCard,
   useAddresses,
   useDeleteAddress,
   useSetDefaultAddress,
@@ -16,7 +16,17 @@ import {
   Input,
   Button,
   FieldSelect,
+  SideDrawer,
+  Textarea,
+  useApiMutation,
 } from "@mohasinac/appkit/client";
+import type { AddressCardAddress } from "@mohasinac/appkit/client";
+import { requestAddressUnban } from "@/lib/api/user-client";
+
+interface AddressWithBan extends AddressCardAddress {
+  banStatus?: "banned" | "unban_requested" | "suspicious";
+  unbanRequestNote?: string;
+}
 
 const __P = {
   p4: "p-4",
@@ -29,8 +39,10 @@ export function UserAddressesClient() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [labelFilter, setLabelFilter] = useState<string>("");
+  const [unbanAddressId, setUnbanAddressId] = useState<string | null>(null);
+  const [unbanNote, setUnbanNote] = useState("");
 
-  const { data: rawAddresses = [], isLoading } = useAddresses();
+  const { data: rawAddresses = [], isLoading, refetch } = useAddresses();
 
   const deleteAddress = useDeleteAddress({
     onSuccess: () => {
@@ -38,14 +50,30 @@ export function UserAddressesClient() {
       setDeletingId(null);
     },
     onError: (err) => {
-      showToast(err.message ?? "Failed to delete address.", "error");
+      showToast((err as Error).message ?? "Failed to delete address.", "error");
       setDeletingId(null);
     },
   });
 
   const setDefault = useSetDefaultAddress({
     onSuccess: () => showToast("Default address updated.", "success"),
-    onError: (err) => showToast(err.message ?? "Failed to update default address.", "error"),
+    onError: (err) => showToast((err as Error).message ?? "Failed to update default address.", "error"),
+  });
+
+  const requestUnban = useApiMutation<void, Error, { id: string; note: string }>({
+    mutationFn: async ({ id, note }) => {
+      const res = await requestAddressUnban(id, note);
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(body.error ?? "Failed to submit unban request.");
+      }
+    },
+    successMessage: "Unban request submitted. Our team will review it shortly.",
+    onSuccess: () => {
+      setUnbanAddressId(null);
+      setUnbanNote("");
+      void refetch();
+    },
   });
 
   const handleDeleteRequest = (id: string) => {
@@ -61,18 +89,18 @@ export function UserAddressesClient() {
 
   const labels = useMemo(() => {
     const set = new Set<string>();
-    for (const a of (rawAddresses as any[]) ?? []) if (a?.label) set.add(a.label);
+    for (const a of (rawAddresses as unknown as AddressWithBan[]) ?? []) if (a?.label) set.add(a.label);
     return Array.from(set).sort();
   }, [rawAddresses]);
 
   const addresses = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return ((rawAddresses as any[]) ?? []).filter((a) => {
+    return ((rawAddresses as unknown as AddressWithBan[]) ?? []).filter((a) => {
       if (labelFilter && a?.label !== labelFilter) return false;
       if (!q) return true;
       return [a?.fullName, a?.addressLine1, a?.city, a?.state, a?.postalCode]
         .filter(Boolean)
-        .some((v: string) => v.toLowerCase().includes(q));
+        .some((v) => (v as string).toLowerCase().includes(q));
     });
   }, [rawAddresses, search, labelFilter]);
 
@@ -134,7 +162,7 @@ export function UserAddressesClient() {
           <Text className="text-error" size="sm" weight="medium">
             Delete this address? This cannot be undone.
           </Text>
-          <Row gap="3" >
+          <Row gap="3">
             <Button rounded="lg"
               type="button"
               variant="danger"
@@ -145,7 +173,7 @@ export function UserAddressesClient() {
             >
               {deleteAddress.isPending ? "Deleting…" : "Delete"}
             </Button>
-            <Button rounded="lg" 
+            <Button rounded="lg"
               type="button"
               variant="outline"
               onClick={() => setConfirmDeleteId(null)}
@@ -157,15 +185,105 @@ export function UserAddressesClient() {
         </Stack>
       )}
 
-      <AddressBook
-        addresses={addresses as any[]}
-        onEdit={(address) => router.push(String(ROUTES.USER.ADDRESSES_EDIT(address.id)))}
-        onDelete={handleDeleteRequest}
-        onSetDefault={(addressId) => setDefault.mutate({ addressId })}
-        onAdd={() => router.push(String(ROUTES.USER.ADDRESSES_ADD))}
-        emptyLabel="You have no saved addresses yet."
-        addLabel="Add New Address"
-      />
+      {addresses.length === 0 && (
+        <Text className="text-neutral-500 dark:text-neutral-400" size="sm">
+          You have no saved addresses yet.
+        </Text>
+      )}
+
+      <Div layout="grid" gap="4" className="sm:grid-cols-2">
+        {addresses.map((addr) => {
+          const isBanned = addr.banStatus === "banned";
+          const isUnbanPending = addr.banStatus === "unban_requested";
+          const isBanRestricted = isBanned || isUnbanPending;
+          return (
+            <Stack key={addr.id} gap="xs">
+              {isBanned && (
+                <Row gap="xs" align="center">
+                  <Badge variant="danger" size="sm">Address Banned</Badge>
+                </Row>
+              )}
+              {isUnbanPending && (
+                <Row gap="xs" align="center">
+                  <Badge variant="warning" size="sm">Review Pending</Badge>
+                </Row>
+              )}
+              <AddressCard
+                address={addr as AddressCardAddress}
+                onEdit={isBanRestricted ? undefined : (a) => router.push(String(ROUTES.USER.ADDRESSES_EDIT(a.id)))}
+                onDelete={isBanRestricted ? undefined : handleDeleteRequest}
+                onSetDefault={isBanRestricted ? undefined : (id) => setDefault.mutate({ addressId: id })}
+              />
+              {isBanned && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => { setUnbanAddressId(addr.id); setUnbanNote(""); }}
+                  className="text-xs"
+                >
+                  Request Unban
+                </Button>
+              )}
+            </Stack>
+          );
+        })}
+      </Div>
+
+      <Button rounded="lg"
+        onClick={() => router.push(String(ROUTES.USER.ADDRESSES_ADD))}
+        variant="outline"
+        paddingX="md" paddingY="md" textSize="sm" weight="medium"
+        className="mt-2 border border-dashed border-neutral-300 dark:border-[var(--appkit-color-border)] text-neutral-500 dark:text-[var(--appkit-color-text-muted)] transition hover:border-neutral-400 dark:hover:border-[var(--appkit-color-border-subtle)] hover:text-neutral-700 dark:hover:text-[var(--appkit-color-text)]"
+      >
+        + Add Address
+      </Button>
+
+      <SideDrawer
+        isOpen={!!unbanAddressId}
+        onClose={() => { setUnbanAddressId(null); setUnbanNote(""); }}
+        title="Request Address Unban"
+        mode="edit"
+        footer={
+          <Row gap="3" justify="end">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => { setUnbanAddressId(null); setUnbanNote(""); }}
+              disabled={requestUnban.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              disabled={requestUnban.isPending || !unbanNote.trim()}
+              onClick={() => {
+                if (!unbanAddressId || !unbanNote.trim()) return;
+                requestUnban.mutate({ id: unbanAddressId, note: unbanNote });
+              }}
+            >
+              {requestUnban.isPending ? "Submitting…" : "Submit Request"}
+            </Button>
+          </Row>
+        }
+      >
+        <Stack gap="md">
+          <Text size="sm" color="muted">
+            Explain why this address should be unbanned. Our support team will review your request within 1–3 business days.
+          </Text>
+          <Textarea
+            id="unban-note"
+            label="Reason for unban request"
+            value={unbanNote}
+            onChange={(e) => setUnbanNote(e.target.value)}
+            placeholder="e.g. This is my home address and I made an innocent mistake…"
+            rows={5}
+          />
+        </Stack>
+      </SideDrawer>
     </Stack>
   );
 }

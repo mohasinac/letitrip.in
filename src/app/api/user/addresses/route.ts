@@ -1,9 +1,9 @@
 import { withProviders } from "@/providers.config";
 /**
- * User Addresses API â€” Collection
+ * User Addresses API — Collection
  *
- * GET  /api/user/addresses   â€” List current user's addresses
- * POST /api/user/addresses   â€” Create a new address
+ * GET  /api/user/addresses   — List current user's addresses
+ * POST /api/user/addresses   — Create a new address
  *
  * Max addresses per user: 10
  */
@@ -22,43 +22,25 @@ const MAX_ADDRESSES_PER_USER = 10;
  * GET /api/user/addresses
  *
  * Returns addresses for the authenticated user, ordered by createdAt desc.
- * Supports query params: q, addressType (pipe-separated), verified, activeOnly.
+ * Supports query param: q (text search on label, city, postal code).
  */
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {
     const url = new URL(request!.url);
     const q = url.searchParams.get("q")?.trim().toLowerCase() ?? "";
-    const addressTypeParam = url.searchParams.get("addressType") ?? "";
-    const verified = url.searchParams.get("verified");
-    const activeOnly = url.searchParams.get("activeOnly");
 
     let addresses = await addressesRepository.listByOwner("user", user!.uid);
 
     if (q) {
       addresses = addresses.filter((a) => {
-        const line1 = ((a as any).addressLine1 ?? "").toLowerCase();
-        const line2 = ((a as any).addressLine2 ?? "").toLowerCase();
-        const postal = ((a as any).postalCode ?? "").toLowerCase();
-        const label = ((a as any).label ?? "").toLowerCase();
-        return line1.includes(q) || line2.includes(q) || postal.includes(q) || label.includes(q);
+        const line1 = (a.addressLine1 ?? "").toLowerCase();
+        const line2 = (a.addressLine2 ?? "").toLowerCase();
+        const postal = (a.postalCode ?? "").toLowerCase();
+        const label = (a.label ?? "").toLowerCase();
+        const city = (a.city ?? "").toLowerCase();
+        return line1.includes(q) || line2.includes(q) || postal.includes(q) || label.includes(q) || city.includes(q);
       });
-    }
-
-    if (addressTypeParam) {
-      const types = addressTypeParam.split("|").filter(Boolean);
-      addresses = addresses.filter((a) => {
-        const t = ((a as any).type ?? (a as any).addressType ?? "").toLowerCase();
-        return types.includes(t);
-      });
-    }
-
-    if (verified === "true") {
-      addresses = addresses.filter((a) => (a as any).verified === true);
-    }
-
-    if (activeOnly === "true") {
-      addresses = addresses.filter((a) => (a as any).active !== false);
     }
 
     return successResponse(addresses);
