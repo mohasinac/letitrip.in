@@ -136,3 +136,4 @@ test-results/*
 # .bak files left behind by codemods or backups
 *.bak
 scripts/set-razorpay-keys.mjs
+.claude/scheduled_tasks.lock
