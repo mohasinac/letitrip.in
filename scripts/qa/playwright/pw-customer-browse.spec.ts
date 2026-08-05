@@ -1,55 +1,52 @@
 import { test, expect } from "@playwright/test";
-import { gotoAndWait } from "./_setup";
+import { gotoAndWait, BASE_URL } from "./_setup";
 
 test.describe("Customer Browse — UC-B1, B2, B3", () => {
-  test("guest browses product catalogue", async ({ page }) => {
+  test("homepage loads with main heading", async ({ page }) => {
     await gotoAndWait(page, "/");
-    // Homepage main content should be visible (use .first() — nested <main> on prod)
     await expect(page.getByRole("main").first()).toBeVisible();
+    await expect(page.getByRole("heading").first()).toBeVisible({ timeout: 10000 });
   });
 
-  test("guest views products page with at least one product card", async ({ page }) => {
+  test("products listing page shows seeded product cards", async ({ page }) => {
+    const res = await page.request.get(`${BASE_URL}/api/products?status=published&pageSize=5`);
+    expect(res.status()).toBe(200);
+    const body = await res.json() as { data?: { items?: { id: string }[] } };
+    expect(body.data?.items?.length, "At least one published product must be seeded").toBeGreaterThan(0);
+
     await gotoAndWait(page, "/products");
-    // Product cards render as <a href="…/products/…"> links
     const cards = page.locator("a[href*='/products/product-'], a[href*='/products/auction-']");
-    const hasCards = await cards.first().isVisible({ timeout: 5000 }).catch(() => false);
-    if (!hasCards) {
-      // No products seeded in this environment
-      test.skip();
-      return;
-    }
-    await expect(cards.first()).toBeVisible();
+    await expect(cards.first()).toBeVisible({ timeout: 10000 });
   });
 
-  test("guest searches by keyword", async ({ page }) => {
+  test("search by keyword 'pokemon' returns results or empty state", async ({ page }) => {
     await gotoAndWait(page, "/products?q=pokemon");
     await expect(page.getByRole("main").first()).toBeVisible();
-    // Page should not be an error page
-    await expect(page.locator("h1, h2, [role='heading']").first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("heading").first()).toBeVisible({ timeout: 10000 });
+    // Must not show a crash/error page
+    await expect(page.locator("text=/something went wrong|error 500/i").first()).toHaveCount(0);
   });
 
-  test("guest filters by category via URL param", async ({ page }) => {
+  test("filter by category=trading-cards renders without error", async ({ page }) => {
     await gotoAndWait(page, "/products?category=trading-cards");
     await expect(page.getByRole("main").first()).toBeVisible();
+    await expect(page.getByRole("heading").first()).toBeVisible({ timeout: 10000 });
   });
 
-  test("guest views product detail page", async ({ page }) => {
-    // Navigate to products and click first product card
-    await gotoAndWait(page, "/products");
-    const firstCard = page
-      .locator("a[href*='/products/product-'], a[href*='/products/auction-']")
-      .first();
-    const hasCard = await firstCard.isVisible({ timeout: 5000 }).catch(() => false);
-    if (!hasCard) {
-      // No products seeded in this environment
-      test.skip();
-      return;
-    }
-    const href = await firstCard.getAttribute("href");
-    if (href) {
-      await gotoAndWait(page, href);
-      // Price should be visible on product detail (use .first() — multiple ₹ elements)
-      await expect(page.locator("text=/₹/").first()).toBeVisible({ timeout: 10000 });
-    }
+  test("product detail page shows title and price", async ({ page }) => {
+    const res = await page.request.get(`${BASE_URL}/api/products?status=published&pageSize=1`);
+    expect(res.status()).toBe(200);
+    const body = await res.json() as { data?: { items?: { id: string; title: string }[] } };
+    const first = body.data?.items?.[0];
+    expect(first?.id, "At least one published product must be seeded").toBeTruthy();
+
+    await gotoAndWait(page, `/products/${first!.id}`);
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("text=/₹/").first()).toBeVisible({ timeout: 10000 });
+  });
+
+  test("non-existent product slug shows 404", async ({ page }) => {
+    await page.goto("/products/product-does-not-exist-xyz-999");
+    await expect(page.locator("text=/404|not found/i").first()).toBeVisible({ timeout: 10000 });
   });
 });

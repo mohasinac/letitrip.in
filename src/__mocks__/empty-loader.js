@@ -1,4 +1,4 @@
-// audit-mock-gating-ok: jest-only — Jest mock module never executed in production paths.
+// audit-mock-gating-ok: jest-only — webpack empty loader for firebase-admin/* in browser build; never executed in production paths.
 /**
  * Empty webpack loader — stubs a module with an empty CommonJS export.
  *

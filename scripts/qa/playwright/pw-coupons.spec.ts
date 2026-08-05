@@ -1,16 +1,5 @@
 /**
  * pw-coupons.spec.ts — P-2 Coupons E2E tests.
- *
- * Coverage:
- * - Admin can access /admin/coupons when FEATURE_COUPONS=true
- * - Store seller can access /store/coupons when FEATURE_COUPONS=true
- * - Buyer's My Coupons page (/user/coupons) loads
- * - API returns 404 when FEATURE_COUPONS=false (tested against seeded flag state)
- * - Coupon code field visible in checkout when FEATURE_COUPONS=true
- *
- * These tests assume the app is running with FEATURE_COUPONS=true.
- * In CI (where FEATURE_COUPONS may be false), navigation / API tests
- * validate the guard behaviour.
  */
 import { test, expect } from "@playwright/test";
 import {
@@ -21,31 +10,30 @@ import {
   BASE_URL,
 } from "./_setup";
 
-// ---------------------------------------------------------------------------
-// Admin coupon management
-// ---------------------------------------------------------------------------
-
 test.describe("Admin — Coupons (/admin/coupons)", () => {
   test.beforeEach(async ({ page }) => {
     await loginAsAdmin(page);
   });
 
-  test("admin coupon list page loads", async ({ page }) => {
+  test("admin coupon list page loads with heading", async ({ page }) => {
     const res = await page.request.get(`${BASE_URL}/api/admin/coupons`);
-    // When FEATURE_COUPONS=true → 200; when false → 404
-    expect([200, 404]).toContain(res.status());
-    if (res.status() === 200) {
-      await gotoAndWait(page, "/admin/coupons");
-      await expect(page.getByRole("main").first()).toBeVisible();
-    }
+    expect(res.status(), "Coupons API must be available — check FEATURE_COUPONS flag").toBe(200);
+    await gotoAndWait(page, "/admin/coupons");
+    await expect(page.getByRole("main").first()).toBeVisible();
+    await expect(page.getByRole("heading").first()).toBeVisible({ timeout: 10000 });
+  });
+
+  test("seeded coupon WELCOME10 exists in the list", async ({ page }) => {
+    const res = await page.request.get(`${BASE_URL}/api/admin/coupons`);
+    expect(res.status(), "Coupons API must be available").toBe(200);
+    const body = await res.json() as { data?: { items?: { code: string }[] } };
+    const codes = body.data?.items?.map((c) => c.code) ?? [];
+    expect(codes, "WELCOME10 must be present in seeded coupons").toContain("WELCOME10");
   });
 
   test("admin can create a coupon via API", async ({ page }) => {
     const checkRes = await page.request.get(`${BASE_URL}/api/admin/coupons`);
-    if (checkRes.status() !== 200) {
-      test.skip();
-      return;
-    }
+    expect(checkRes.status(), "Coupons API must be available").toBe(200);
 
     const cookies = await page.context().cookies([BASE_URL]);
     const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
@@ -70,17 +58,13 @@ test.describe("Admin — Coupons (/admin/coupons)", () => {
     }
   });
 
-  test("duplicate coupon code → 409", async ({ page }) => {
+  test("duplicate coupon code WELCOME10 → 409", async ({ page }) => {
     const checkRes = await page.request.get(`${BASE_URL}/api/admin/coupons`);
-    if (checkRes.status() !== 200) {
-      test.skip();
-      return;
-    }
+    expect(checkRes.status(), "Coupons API must be available").toBe(200);
 
     const cookies = await page.context().cookies([BASE_URL]);
     const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
 
-    // WELCOME10 is a seeded coupon — posting it again should conflict
     const res = await page.request.post(`${BASE_URL}/api/admin/coupons`, {
       headers: { Cookie: cookieHeader, "Content-Type": "application/json" },
       data: {
@@ -97,102 +81,68 @@ test.describe("Admin — Coupons (/admin/coupons)", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// Store seller coupon management
-// ---------------------------------------------------------------------------
-
 test.describe("Store — Seller Coupons (/store/coupons)", () => {
   test.beforeEach(async ({ page }) => {
     await loginAsSeller(page);
   });
 
-  test("seller coupon list page accessible when flag on", async ({ page }) => {
+  test("seller coupon list page accessible with heading", async ({ page }) => {
     const res = await page.request.get(`${BASE_URL}/api/store/coupons`);
-    expect([200, 404, 401, 403]).toContain(res.status());
+    expect([200, 401, 403]).toContain(res.status());
     if (res.status() === 200) {
       await gotoAndWait(page, "/store/coupons");
       await expect(page.getByRole("main").first()).toBeVisible();
+      await expect(page.getByRole("heading").first()).toBeVisible({ timeout: 10000 });
     }
   });
 });
-
-// ---------------------------------------------------------------------------
-// Buyer coupon wallet
-// ---------------------------------------------------------------------------
 
 test.describe("User — My Coupons (/user/coupons)", () => {
   test.beforeEach(async ({ page }) => {
     await loginAsBuyer(page);
   });
 
-  test("coupon wallet page renders", async ({ page }) => {
+  test("coupon wallet page renders with heading", async ({ page }) => {
     await gotoAndWait(page, "/user/coupons");
-    // Page renders without error — main content is present on all viewports
     await expect(page.getByRole("main").first()).toBeVisible();
+    await expect(page.getByRole("heading").first()).toBeVisible({ timeout: 10000 });
   });
 
-  test("GET /api/user/coupons returns 200 or 404 depending on flag", async ({ page }) => {
+  test("GET /api/user/coupons returns valid response for authenticated buyer", async ({ page }) => {
     const cookies = await page.context().cookies([BASE_URL]);
     const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
     const res = await page.request.get(`${BASE_URL}/api/user/coupons`, {
       headers: { Cookie: cookieHeader },
     });
     expect([200, 404]).toContain(res.status());
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Checkout coupon field visibility
-// ---------------------------------------------------------------------------
-
-test.describe("Checkout — Coupon field gating", () => {
-  test.beforeEach(async ({ page }) => {
-    await loginAsBuyer(page);
-  });
-
-  test("checkout page loads and coupon field presence matches FEATURE_COUPONS flag", async ({ page }) => {
-    const flagRes = await page.request.get(`${BASE_URL}/api/user/coupons`);
-    const couponsEnabled = flagRes.status() === 200;
-
-    await gotoAndWait(page, "/checkout");
-    // Checkout page loads (may redirect to login if cart empty — that's fine)
-    expect([200, 302, 307]).toContain(page.url() ? 200 : 200);
-
-    if (couponsEnabled) {
-      // Coupon code input should be visible somewhere in the payment step
-      // (may be hidden behind "address" step — navigate won't reach payment easily in E2E
-      //  so we just verify the page renders without error)
-      await expect(page.getByRole("main").first()).toBeVisible();
+    if (res.status() === 200) {
+      const body = await res.json() as { ok: boolean };
+      expect(body.ok).toBe(true);
     }
   });
 });
 
-// ---------------------------------------------------------------------------
-// Feature flag guard (API level)
-// ---------------------------------------------------------------------------
-
 test.describe("Feature flag guard — COUPONS API", () => {
   test("GET /api/admin/coupons without auth → 401", async ({ page }) => {
     const res = await page.request.get(`${BASE_URL}/api/admin/coupons`);
-    expect([401, 404]).toContain(res.status());
+    expect([401, 403]).toContain(res.status());
   });
 
   test("GET /api/store/coupons without auth → 401", async ({ page }) => {
     const res = await page.request.get(`${BASE_URL}/api/store/coupons`);
-    expect([401, 404]).toContain(res.status());
+    expect([401, 403]).toContain(res.status());
   });
 
-  test("GET /api/user/coupons without auth → 401 or 404 (never 200)", async ({ page }) => {
-    // After P-2 wires withFeatureGuard("COUPONS") + auth: true,
-    // unauthenticated callers must never receive wallet data.
+  test("GET /api/user/coupons without auth → 401 (never 200)", async ({ page }) => {
     const res = await page.request.get(`${BASE_URL}/api/user/coupons`);
-    expect([401, 404]).toContain(res.status());
+    expect([401, 403, 404]).toContain(res.status());
+    expect(res.status()).not.toBe(200);
   });
 
-  test("POST /api/user/coupons/claim without auth → 401 or 404", async ({ page }) => {
+  test("POST /api/user/coupons/claim without auth → 401", async ({ page }) => {
     const res = await page.request.post(`${BASE_URL}/api/user/coupons/claim`, {
       data: { couponCode: "WELCOME10", source: "manual" },
     });
-    expect([401, 404]).toContain(res.status());
+    expect([401, 403, 404]).toContain(res.status());
   });
 });

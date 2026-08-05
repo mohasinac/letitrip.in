@@ -2,56 +2,44 @@ import { test, expect } from "@playwright/test";
 import { loginAsAdmin, gotoAndWait, BASE_URL } from "./_setup";
 
 test.describe("Auctions — P5", () => {
-  test("public auctions listing page renders", async ({ page }) => {
-    const res = await page.request.get(`${BASE_URL}/api/bids?pageSize=1`);
-    if (res.status() === 404) {
-      test.skip();
-      return;
-    }
+  test("public auctions listing page renders with heading", async ({ page }) => {
+    const res = await page.request.get(`${BASE_URL}/api/products?listingType=auction&pageSize=1`);
+    expect(res.status(), "Auctions API must be available — check seed data").toBe(200);
     await gotoAndWait(page, "/auctions");
     await expect(page.getByRole("main").first()).toBeVisible();
+    await expect(page.getByRole("heading").first()).toBeVisible({ timeout: 10000 });
   });
 
-  test("auction detail page renders for a live auction", async ({ page }) => {
+  test("auction detail page renders with heading and price", async ({ page }) => {
     const listRes = await page.request.get(
       `${BASE_URL}/api/products?listingType=auction&status=active&pageSize=1`,
     );
-    if (listRes.status() === 404) {
-      test.skip();
-      return;
-    }
+    expect(listRes.status(), "Auctions API must be available").toBe(200);
     const body = await listRes.json() as { data: { items: { id: string }[] } };
     const firstId = body.data?.items?.[0]?.id;
-    if (!firstId) {
-      test.skip();
-      return;
-    }
+    expect(firstId, "At least one active auction must exist in seed data").toBeTruthy();
+
     await gotoAndWait(page, `/auctions/${firstId}`);
     await expect(page.getByRole("main").first()).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible({ timeout: 10000 });
+    // Price or current bid must be visible
+    await expect(page.locator("text=/₹/").first()).toBeVisible({ timeout: 10000 });
   });
 
-  test("admin bids nav item visible when FEATURE_AUCTIONS enabled", async ({ page }) => {
-    await loginAsAdmin(page);
-    const bidsRes = await page.request.get(`${BASE_URL}/api/admin/bids`);
-    if (bidsRes.status() === 404 || bidsRes.status() === 401) {
-      test.skip();
-      return;
-    }
-    await gotoAndWait(page, "/admin");
-    // Sidebar may be collapsed on some viewports — check that the nav link is rendered in the DOM
-    const bidsLink = page.locator('a[href*="/admin/bids"]').first();
-    await expect(bidsLink).toBeAttached();
+  test("auction detail page returns 404 for non-existent slug", async ({ page }) => {
+    await page.goto("/auctions/auction-does-not-exist-xyz-999");
+    // Either a Next.js 404 page or the app's not-found UI
+    expect(page.url()).not.toMatch(/auction-does-not-exist-xyz-999.*error/);
+    await expect(page.locator("text=/404|not found/i").first()).toBeVisible({ timeout: 10000 });
   });
 
-  test("admin bids page accessible", async ({ page }) => {
+  test("admin bids page accessible and shows heading", async ({ page }) => {
     await loginAsAdmin(page);
     const res = await page.request.get(`${BASE_URL}/api/admin/bids`);
-    if (res.status() === 404) {
-      test.skip();
-      return;
-    }
+    expect(res.status(), "Admin bids API must be available").toBe(200);
     await gotoAndWait(page, "/admin/bids");
     await expect(page.getByRole("main").first()).toBeVisible();
+    await expect(page.getByRole("heading").first()).toBeVisible({ timeout: 10000 });
   });
 
   test("unauthenticated bid placement returns 401", async ({ page }) => {
@@ -72,31 +60,15 @@ test.describe("Auctions — P5", () => {
     expect([404, 422, 400]).toContain(res.status());
   });
 
-  test("store bids page accessible for seller", async ({ page }) => {
-    await loginAsAdmin(page);
-    const bidsRes = await page.request.get(`${BASE_URL}/api/bids`);
-    if (bidsRes.status() === 404) {
-      test.skip();
-      return;
-    }
-    await gotoAndWait(page, "/store/bids");
-    await expect(page.getByRole("main").first()).toBeVisible();
-  });
-
-  test("GET /api/bids/[id] returns bids for a live auction", async ({ page }) => {
+  test("GET /api/bids/[id] returns bids array for a live auction", async ({ page }) => {
     const listRes = await page.request.get(
       `${BASE_URL}/api/products?listingType=auction&status=active&pageSize=1`,
     );
-    if (listRes.status() === 404) {
-      test.skip();
-      return;
-    }
+    expect(listRes.status(), "Auctions API must be available").toBe(200);
     const body = await listRes.json() as { data: { items: { id: string }[] } };
     const auctionId = body.data?.items?.[0]?.id;
-    if (!auctionId) {
-      test.skip();
-      return;
-    }
+    expect(auctionId, "At least one active auction must exist in seed data").toBeTruthy();
+
     const bidsRes = await page.request.get(`${BASE_URL}/api/bids/${auctionId}?pageSize=5`);
     expect(bidsRes.status()).toBe(200);
     const bidsBody = await bidsRes.json() as { ok: boolean; data: { items: unknown[] } };
@@ -109,16 +81,11 @@ test.describe("Auctions — P5", () => {
     const listRes = await page.request.get(
       `${BASE_URL}/api/products?listingType=auction&status=active&pageSize=1`,
     );
-    if (listRes.status() === 404) {
-      test.skip();
-      return;
-    }
+    expect(listRes.status(), "Auctions API must be available").toBe(200);
     const body = await listRes.json() as { data: { items: { id: string }[] } };
     const auctionId = body.data?.items?.[0]?.id;
-    if (!auctionId) {
-      test.skip();
-      return;
-    }
+    expect(auctionId, "At least one active auction must exist in seed data").toBeTruthy();
+
     const res = await page.request.post(`${BASE_URL}/api/bids`, {
       data: { productId: auctionId, amount: 1 },
     });

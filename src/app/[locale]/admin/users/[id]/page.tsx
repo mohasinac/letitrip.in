@@ -6,26 +6,12 @@ import { Link } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { getAdminUser } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
-
-// S-STORE-9B-E — User detail with tabs (Orders / Store / Reviews / Sessions / Bids / Reports).
-// Each tab links to the admin listing filtered by this user's ID.
-
-const TABS = [
-  { id: "overview", label: "Overview" },
-  { id: "orders", label: "Orders" },
-  { id: "store", label: "Store" },
-  { id: "reviews", label: "Reviews" },
-  { id: "sessions", label: "Sessions" },
-  { id: "bids", label: "Bids" },
-  { id: "reports", label: "Reports" },
-] as const;
-
-type TabId = (typeof TABS)[number]["id"];
+import { ADMIN_USER_DETAIL_TABS, type AdminUserDetailTabId } from "@/constants/dashboard-tabs";
 
 export default function Page() {
   const params = useParams<{ id: string }>();
   const id = params?.id ?? "";
-  const [tab, setTab] = useState<TabId>("overview");
+  const [tab, setTab] = useState<AdminUserDetailTabId>("overview");
   const [user, setUser] = useState<Record<string, JsonValue> | null>(null);
   useEffect(() => {
     getAdminUser(`/api/admin/users/${id}`)
@@ -49,9 +35,9 @@ export default function Page() {
           </Stack>
           <Divider />
           <TabStrip
-            tabs={TABS.map((t) => ({ key: t.id, label: t.label }))}
+            tabs={ADMIN_USER_DETAIL_TABS.map((t) => ({ key: t.id, label: t.label }))}
             activeKey={tab}
-            onChange={(k: string) => setTab(k as TabId)}
+            onChange={(k: string) => setTab(k as AdminUserDetailTabId)}
           />
           {tab === "overview" && user && (
             <Stack textSize="sm" gap="sm">

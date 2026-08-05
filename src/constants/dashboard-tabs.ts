@@ -46,6 +46,15 @@ export const STORE_REVIEWS_TABS = [
 
 export type StoreReviewsTabId = (typeof STORE_REVIEWS_TABS)[number]["id"];
 
+/** Role-perspective review tabs shown on the store /reviews page. */
+export const STORE_REVIEWS_ROLE_TABS = [
+  { id: "received", label: "Received" },
+  { id: "given_to_buyers", label: "Given to Buyers" },
+  { id: "written_as_customer", label: "Written as Customer" },
+] as const satisfies readonly DashboardTab[];
+
+export type StoreReviewsRoleTabId = (typeof STORE_REVIEWS_ROLE_TABS)[number]["id"];
+
 // ---------------------------------------------------------------------------
 // Admin dashboard
 // ---------------------------------------------------------------------------
@@ -113,6 +122,19 @@ export const ADMIN_PAYOUTS_TABS = [
 ] as const satisfies readonly DashboardTab[];
 
 export type AdminPayoutsTabId = (typeof ADMIN_PAYOUTS_TABS)[number]["id"];
+
+/** Area tabs on the admin user-detail page (/admin/users/[id]). */
+export const ADMIN_USER_DETAIL_TABS = [
+  { id: "overview", label: "Overview" },
+  { id: "orders", label: "Orders" },
+  { id: "store", label: "Store" },
+  { id: "reviews", label: "Reviews" },
+  { id: "sessions", label: "Sessions" },
+  { id: "bids", label: "Bids" },
+  { id: "reports", label: "Reports" },
+] as const satisfies readonly DashboardTab[];
+
+export type AdminUserDetailTabId = (typeof ADMIN_USER_DETAIL_TABS)[number]["id"];
 
 // ---------------------------------------------------------------------------
 // User dashboard

@@ -904,6 +904,19 @@ Two built-in records (`default-light` = cobalt + lime, `default-dark` = hot-pink
 
 ---
 
+## 🛑 RULE — CHECK INDEX FILES BEFORE CREATING ANYTHING NEW
+
+Before writing any new component, hook, utility, constant, or server action:
+1. Read `appkit/index.md` to check if appkit already exports what you need.
+2. Read `src/index.md` to check if the consumer layer already has it.
+3. Read `codebaseexports.md` (auto-generated catalog) for a broader cross-repo sweep.
+
+**If it exists, import and reuse it. Never duplicate.**
+
+After every session that adds, renames, or removes an export, update the relevant `index.md`.
+
+---
+
 ## UI Primitive Rules
 
 > Enforced by `audit-typography.mjs`, `audit-html-wrappers.mjs`, `audit-inline-styles.mjs`, and `audit-code-quality.mjs`. Baselines prevent regressions; new code must use primitives.
@@ -1132,3 +1145,89 @@ Defined in `appkit/src/tokens/motion.ts`:
 5. **Image editor** — enable via `enableAdvancedCrop` prop on `ImageUpload`. Supports aspect ratio presets (Free/1:1/4:3/16:9/3:2), rotate, flip.
 6. **Multi-select** — pass `multiple` to `MediaUploadField` for batch upload. Files upload sequentially with individual progress.
 7. **FormShell Zod validation** — pass `schema` prop to auto-validate on publish; `validateOnChange` for live validation.
+
+---
+
+## 🛑 RULE — ENV FILE SYNC & CLIENT EXPOSURE
+
+1. **Before every session**, verify that every env var read in code has a corresponding entry in `.env.local`. Run `npm run audit env-alignment` to catch missing/unused vars.
+2. **Never add a `NEXT_PUBLIC_` prefix** to a secret or server-only variable (Firebase Admin keys, Razorpay secret, PII keys, internal secrets). If the code only runs server-side, the prefix is wrong.
+3. **Never pass unnecessary env vars** as props or context to client components. Read them in Server Components or API routes and pass only the derived, sanitised values downstream.
+4. **No new env vars** without a corresponding entry in `.env.local` (for local dev) and a note in `newchange.md` explaining what the key does and where to get its value.
+
+---
+
+## End-of-Plan Checklist
+
+Run these steps **in order** at the end of every plan session before marking anything ✅.
+
+### 1 — Quality Gate
+
+```bash
+npm run check
+```
+
+Must exit 0. Fix all failures before proceeding.
+
+### 2 — Appkit Publish (only when explicitly asked)
+
+```bash
+# a. Commit all appkit source changes first
+# b. Bump version in appkit/package.json (patch = +0.0.1, minor = +0.1.0)
+npm run build              # inside appkit/
+npm publish                # inside appkit/
+# c. Update letitrip/package.json "@mohasinac/appkit": "^X.Y.Z"
+# d. Remove appkit/src/** lines from tsconfig.json include[]
+# e. Delete package-lock.json + npm install
+# f. npx tsc --noEmit   (both repos, must be 0 errors)
+# g. Commit: appkit/package.json + letitrip/package.json + lock + tsconfig
+```
+
+If using `file:./appkit` locally (normal dev): skip publish entirely.
+
+### 3 — Firebase Indexes + Rules (if schema/index changed)
+
+```bash
+npm run firebase generate
+npm run firebase deploy --only indexes
+node scripts/wait-for-indexes.mjs    # wait until CREATING=0
+npm run firebase deploy --only rules
+```
+
+If indexes had stale entries causing 409:
+
+```bash
+node appkit/scripts/firebase-delete-indexes.mjs
+npm run firebase deploy --only indexes
+node scripts/wait-for-indexes.mjs
+```
+
+### 4 — Firebase Functions (if functions/ changed)
+
+```bash
+npm run firebase deploy --only functions
+```
+
+Confirm no `MODULE_NOT_FOUND` in cold-start logs after deploy.
+
+### 5 — Smoke Test
+
+```bash
+npm run test:qa smoke
+```
+
+Must exit 0.
+
+### 6 — Vercel Deploy (only when explicitly asked)
+
+```bash
+node scripts/deploy.mjs
+```
+
+Pre-flight checks: lockfile resolves from npm registry, `tsconfig.json` excludes `appkit/src/**`, `npm run check` passes. Then deploys via `vercel --prod`.
+
+### 7 — Update Index Files
+
+After any export addition, rename, or removal:
+- Update `appkit/index.md`
+- Update `src/index.md`

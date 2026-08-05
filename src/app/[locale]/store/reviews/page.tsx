@@ -7,14 +7,7 @@ import { Heading, Stack, Text, Row, Div } from "@mohasinac/appkit";
 import { Button } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { getUserReviewsByRole } from "@/lib/api/user-client";
-
-type Tab = "received" | "given_to_buyers" | "written_as_customer";
-
-const TABS: { id: Tab; label: string }[] = [
-  { id: "received", label: "Received" },
-  { id: "given_to_buyers", label: "Given to Buyers" },
-  { id: "written_as_customer", label: "Written as Customer" },
-];
+import { STORE_REVIEWS_ROLE_TABS, type StoreReviewsRoleTabId } from "@/constants/dashboard-tabs";
 
 interface ReviewItem {
   id: string;
@@ -104,14 +97,14 @@ function ReviewsTab({ role }: { role: "buyer" | "seller" }) {
 }
 
 export default function StoreReviewsPage() {
-  const [activeTab, setActiveTab] = useState<Tab>("received");
+  const [activeTab, setActiveTab] = useState<StoreReviewsRoleTabId>("received");
 
   return (
     <Stack gap="lg">
       <Heading level={1} size="2xl" weight="semibold" color="primary">Reviews</Heading>
 
       <Row gap="xs" wrap>
-        {TABS.map((tab) => (
+        {STORE_REVIEWS_ROLE_TABS.map((tab) => (
           <Button
             key={tab.id}
             type="button"

@@ -73,6 +73,36 @@ Every file we open gets the standard treatment in the same commit. Don't defer a
 
 ---
 
+## 🧪 TESTING STRATEGY
+
+### Unit Tests — Two Kinds
+
+**Kind 1 — Pure logic** (validation, clamping, cursor encoding, error mapping): `vi.mock()` is fine. These test the algorithm, not Firebase.
+
+**Kind 2 — Integration** (routes, repositories, actions): Add a sibling `*.integration.test.ts` next to the mock-based `route.test.ts`. These files:
+- Initialise Admin SDK from `FIREBASE_ADMIN_PROJECT_ID` / `FIREBASE_ADMIN_CLIENT_EMAIL` / `FIREBASE_ADMIN_PRIVATE_KEY` in `.env.local`
+- Call the actual route handler or repository against real seeded Firestore data
+- Assert on returned values (e.g. `items[0].id` starts with a known slug prefix, `total >= 1`)
+- Do NOT mock repositories, Firebase, or appkit
+
+### E2E Playwright Tests
+
+Every Playwright spec must:
+- Hit the running app at `NEXT_PUBLIC_APP_URL` (from `.env.local`).
+- Authenticate via `SMOKE_ADMIN_EMAIL` / `SMOKE_ADMIN_PASSWORD` (already wired in `_setup.ts`).
+- Assert against actual page content — not just `toBeVisible()` on `<main>`. Check headings, list items, or known seeded data.
+- Replace every `test.skip()` with a hard assertion — if seed data is missing the test fails, not silently passes.
+- Include one error-path test per spec (404 page, 401 API, invalid slug).
+
+### Writing Criteria
+
+1. A test that passes even when the feature is broken is worse than no test.
+2. Read credentials from `.env.local` env vars — never hardcode them.
+3. Seed data must be present before tests run — `POST /api/demo/seed` in global Playwright setup.
+4. Each spec is independent; no shared state between specs.
+
+---
+
 ## 🏗️ APPKIT PUBLISH & VERCEL DEPLOY WORKFLOW
 
 > **Never publish appkit or deploy to Vercel unless the user explicitly asks.**

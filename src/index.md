@@ -40,6 +40,19 @@
 | `THEME_CONFIG` | `theme.ts` | App theme token defaults |
 | `UI_CONFIG` | `ui.ts` | UI-level config (breakpoints, z-index, etc.) |
 | `APP_CONFIG` | `config.ts` | App-wide runtime config (site name, domain, etc.) |
+| `STORE_ORDERS_TABS`, `StoreOrdersTabId` | `dashboard-tabs.ts` | Order status filter tabs: all/pending/processing/shipped/delivered/cancelled/refunded/return_requested |
+| `STORE_REVIEWS_TABS`, `StoreReviewsTabId` | `dashboard-tabs.ts` | Review status filter tabs: all/pending/replied/flagged |
+| `STORE_REVIEWS_ROLE_TABS`, `StoreReviewsRoleTabId` | `dashboard-tabs.ts` | Role-perspective tabs for the store /reviews page: received/given_to_buyers/written_as_customer |
+| `ADMIN_PRODUCTS_TABS`, `AdminProductsTabId` | `dashboard-tabs.ts` | Product listing type tabs: all/standard/auction/pre-order/prize-draw/bundle |
+| `ADMIN_ORDERS_TABS`, `AdminOrdersTabId` | `dashboard-tabs.ts` | Alias of `STORE_ORDERS_TABS` for admin context |
+| `ADMIN_USERS_TABS`, `AdminUsersTabId` | `dashboard-tabs.ts` | User status tabs: all/active/suspended |
+| `ADMIN_STORES_TABS`, `AdminStoresTabId` | `dashboard-tabs.ts` | Store status tabs: all/active/pending/suspended |
+| `ADMIN_EVENTS_TABS`, `AdminEventsTabId` | `dashboard-tabs.ts` | Event type tabs: all/sale/offer/poll/survey/feedback |
+| `ADMIN_BLOG_TABS`, `AdminBlogTabId` | `dashboard-tabs.ts` | Blog status tabs: all/draft/published |
+| `ADMIN_PAYOUTS_TABS`, `AdminPayoutsTabId` | `dashboard-tabs.ts` | Payout status tabs: all/pending/processing/paid/failed |
+| `ADMIN_USER_DETAIL_TABS`, `AdminUserDetailTabId` | `dashboard-tabs.ts` | Area tabs on admin user detail page: overview/orders/store/reviews/sessions/bids/reports |
+| `USER_ORDERS_TABS`, `UserOrdersTabId` | `dashboard-tabs.ts` | Alias of `STORE_ORDERS_TABS` for user context |
+| `USER_PROFILE_TABS`, `UserProfileTabId` | `dashboard-tabs.ts` | User profile area tabs: overview/orders/wishlist/reviews/addresses/sessions |
 
 ---
 
