@@ -8,15 +8,15 @@
 export const NAV_ICON_SIZE_SM = "w-4 h-4";
 
 export const NAV_ICON_COLORS = {
-  home: "text-blue-500 dark:text-blue-400",
-  products: "text-emerald-500 dark:text-emerald-400",
-  auctions: "text-amber-500 dark:text-amber-400",
-  preOrders: "text-purple-500 dark:text-purple-400",
-  categories: "text-violet-500 dark:text-violet-400",
-  stores: "text-orange-500 dark:text-orange-400",
-  events: "text-rose-500 dark:text-rose-400",
-  blog: "text-cyan-500 dark:text-cyan-400",
-  reviews: "text-yellow-500 dark:text-yellow-400",
-  bundles: "text-teal-500 dark:text-teal-400",
-  prizeDraws: "text-pink-500 dark:text-pink-400",
+  home: "text-info",
+  products: "text-success",
+  auctions: "text-warning",
+  preOrders: "text-[var(--appkit-color-primary)]",
+  categories: "text-[var(--appkit-color-primary)]",
+  stores: "text-warning",
+  events: "text-error",
+  blog: "text-info",
+  reviews: "text-warning",
+  bundles: "text-success",
+  prizeDraws: "text-[var(--appkit-color-secondary)]",
 } as const;

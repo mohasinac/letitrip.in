@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button, Div, Row, Stack, Text } from "@mohasinac/appkit/ui";
@@ -28,7 +29,8 @@ export default function Page() {
           window.location.origin,
         );
       }
-    } catch {
+    } catch (_err) {
+      void normalizeError(_err);
       // opener may be gone or cross-origin — non-fatal
     }
 

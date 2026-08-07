@@ -144,7 +144,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
           onChange={(e) => setComment(e.target.value)}
           placeholder="Add a comment (optional)"
           rows={2}
-          className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text-muted)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
         />
       )}
       {error && <Text className="text-error" size="sm">{error}</Text>}

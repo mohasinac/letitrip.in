@@ -2,7 +2,7 @@
 
 import { deleteCartItem, updateCartItemQty, validateCart, persistCartSelection, addToWishlist } from "@/lib/api/cart-client";
 
-const CLS_CHECKOUT_BTN = "w-full bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200";
+const CLS_CHECKOUT_BTN = "w-full bg-zinc-900 text-white hover:bg-zinc-800 bg-[var(--appkit-color-surface)] dark:text-zinc-900 dark:hover:bg-zinc-200";
 
 async function addToWishlistAndRemoveFromCart(item: CartItem, failedIds: string[]) {
   const res = await addToWishlist(item.productId);
@@ -120,7 +120,7 @@ const LISTING_TYPE_SEARCH_KEYWORDS: Record<string, string[]> = {
   "prize-draw": ["raffle", "prize-draw", "prize draw", "prize"],
 };
 
-const EMPTY_STATE_CLASS = "py-6 text-center text-sm text-zinc-500 dark:text-zinc-400";
+const EMPTY_STATE_CLASS = "py-6 text-center text-sm text-[var(--appkit-color-text-muted)]";
 const ERROR_TEXT_CLASS = "text-[var(--appkit-color-error)]";
 
 // ---------------------------------------------------------------------------
@@ -323,7 +323,8 @@ export function CartRouteClient() {
           );
         }
       }
-    } catch {
+    } catch (_err) {
+      void normalizeError(_err);
       // Validation is best-effort; don't surface errors
     }
    
@@ -438,7 +439,8 @@ export function CartRouteClient() {
       }
       setSelectedIds(null);
       showToast(`${toRemove.length} item${toRemove.length !== 1 ? "s" : ""} removed.`, "info");
-    } catch {
+    } catch (_err) {
+      void normalizeError(_err);
       showToast("Could not remove items. Please try again.", "error");
     } finally {
       setIsRemoving(false);
@@ -459,7 +461,8 @@ export function CartRouteClient() {
       }
       setSelectedIds(null);
       showToast(`Cart cleared (${count} item${count !== 1 ? "s" : ""}).`, "info");
-    } catch {
+    } catch (_err) {
+      void normalizeError(_err);
       showToast("Could not clear cart. Please try again.", "error");
     } finally {
       setIsRemoving(false);
@@ -497,7 +500,8 @@ export function CartRouteClient() {
         setMoveableIds((prev) => { const next = new Set(prev); next.delete(productId); return next; });
         refetch?.();
         showToast("Item saved to wishlist.", "info");
-      } catch {
+      } catch (_err) {
+        void normalizeError(_err);
         showToast("Could not save to wishlist. Please try again.", "error");
       }
     },
@@ -526,7 +530,8 @@ export function CartRouteClient() {
           refetch?.();
           setOptimisticQty((prev) => { const m = new Map(prev); m.delete(id); return m; });
         }
-      } catch {
+      } catch (_err) {
+        void normalizeError(_err);
         setOptimisticQty((prev) => { const m = new Map(prev); m.delete(id); return m; });
         showToast("Could not update quantity. Please try again.", "error");
       }
@@ -554,7 +559,8 @@ export function CartRouteClient() {
             refetch?.();
             setPendingRemoveIds((prev) => { const s = new Set(prev); s.delete(id); return s; });
           }
-        } catch {
+        } catch (_err) {
+          void normalizeError(_err);
           setPendingRemoveIds((prev) => { const s = new Set(prev); s.delete(id); return s; });
           showToast("Could not remove item. Please try again.", "error");
         }
@@ -711,7 +717,7 @@ export function CartRouteClient() {
                   type="button"
                   variant="ghost"
                   onClick={() => { setActiveTab(key); setSearchQuery(""); }}
-                  className={["flex-1 rounded-lg px-3 py-1.5 font-medium transition-colors", activeTab === key ? "bg-white dark:bg-slate-700 text-zinc-900 dark:text-zinc-100 shadow-sm" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"].join(" ")}
+                  className={["flex-1 rounded-lg px-3 py-1.5 font-medium transition-colors", activeTab === key ? "bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text)] shadow-sm" : "text-[var(--appkit-color-text-muted)] hover:text-zinc-700 hover:text-[var(--appkit-color-text-muted)]"].join(" ")}
                 >
                   {label}{count > 0 && <Text as="span" className="ml-1.5 opacity-60" size="xs">({count})</Text>}
                 </Button>
@@ -724,7 +730,7 @@ export function CartRouteClient() {
               <Div className="relative">
                 <Input type="search" placeholder="Search by name, store, price or type (auction, raffle…)" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full text-sm pr-8" />
                 {searchQuery && (
-                  <Button type="button" variant="ghost" aria-label="Clear search" onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-base leading-none">×</Button>
+                  <Button type="button" variant="ghost" aria-label="Clear search" onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text-muted)] text-base leading-none">×</Button>
                 )}
               </Div>
             )}
@@ -1063,7 +1069,7 @@ function SellerGroupSection({
           {group.sellerSlug ? (
             <Link
               href={String(ROUTES.PUBLIC.STORE_DETAIL(group.sellerSlug))}
-              className="text-xs font-semibold uppercase tracking-wide text-zinc-800 dark:text-zinc-200 hover:underline underline-offset-2"
+              className="text-xs font-semibold uppercase tracking-wide text-[var(--appkit-color-text-muted)] hover:underline underline-offset-2"
             >
               {group.sellerName}
             </Link>

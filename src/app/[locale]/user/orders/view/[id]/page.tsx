@@ -34,7 +34,7 @@ const STATUS_COLORS: Record<string, string> = {
   cancelled:        "bg-error-surface text-error",
   refunded:         "bg-warning-surface text-warning",
   return_requested: "bg-warning-surface text-warning",
-  returned:         "bg-zinc-100 text-zinc-600 dark:bg-slate-800 dark:text-zinc-400",
+  returned:         "bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text-muted)] bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text-muted)]",
 };
 
 function paise(n: number, currency = "INR") {
@@ -164,7 +164,7 @@ function renderBack() {
   return (
     <Link
       href={String(ROUTES.USER.ORDERS)}
-      className="inline-flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors mb-2"
+      className="inline-flex items-center gap-1.5 text-sm text-[var(--appkit-color-text-muted)] hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors mb-2"
     >
       ← My Orders
     </Link>
@@ -175,7 +175,7 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
   const date = order.createdAt
     ? new Date(order.createdAt).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })
     : "";
-  const statusColor = STATUS_COLORS[order.orderStatus] ?? "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
+  const statusColor = STATUS_COLORS[order.orderStatus] ?? "bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text-muted)] bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text-muted)]";
   return (
     <Stack surface="card" padding="md" gap="3">
       <Row justify="between" wrap gap="3" align="start">

@@ -39,6 +39,7 @@
  */
 
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { normalizeError } from "@mohasinac/appkit";
 
 const REPLAY_WINDOW_MS = 60_000;
 const SECRET_ENV = "MEDIA_EXT_HMAC_SECRET";
@@ -112,8 +113,9 @@ export function verifyExtSignature(
   let expected: string;
   try {
     expected = computeExtSignature(encodedUrl, tsNum);
-  } catch {
-    return { ok: false, reason: "MISMATCH" };
+  } catch (_err) {
+    void normalizeError(_err);
+    return { ok: false, reason: "MISMATCH" }; // crypto unavailable — treat as signature failure
   }
   const a = Buffer.from(sig, "hex");
   const b = Buffer.from(expected, "hex");

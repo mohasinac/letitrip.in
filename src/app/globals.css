@@ -1,26 +1,14 @@
 /* Consumer Theme Overrides
    Note: appkit styles are imported from layout.tsx as a JS import to avoid PostCSS/Turbopack
    "Unknown AST node type 0" — @import of pre-compiled CSS through the PostCSS pipeline breaks
-   when Turbopack inlines it before tailwindcss/autoprefixer run. */
+   when Turbopack inlines it before tailwindcss/autoprefixer run.
+   --appkit-color-primary/secondary are provided by tokens.css (imported via @mohasinac/appkit/styles
+   in layout.tsx). ThemeProvider overrides them with inline style.setProperty at runtime. */
 :root {
-  /* Image 1 palette (light mode): Cobalt Blue body + Lime Green blades */
-  --appkit-color-primary:   #3570fc; /* Cobalt Blue */
-  --appkit-color-secondary: #65c408; /* Lime Green  */
-
-  /* Themed glow variables — consumed by .card-glow and .btn-glow */
-  --glow-color:   rgba(53, 112, 252, 0.12);  /* cobalt blue */
-  --glow-ring:    rgba(53, 112, 252, 0.08);
-  --glow-strong:  rgba(53, 112, 252, 0.18);
-}
-
-.dark {
-  /* Image 2 palette (dark mode): Hot Pink blades + near-black body */
-  --appkit-color-primary:   #e91e8c; /* Hot Pink */
-  --appkit-color-secondary: #e91e8c; /* Hot Pink (unified dark accent) */
-
-  --glow-color:   rgba(233, 30, 140, 0.15);  /* hot pink */
-  --glow-ring:    rgba(233, 30, 140, 0.10);
-  --glow-strong:  rgba(233, 30, 140, 0.22);
+  /* Glow variables — theme-adaptive via color-mix(); no .dark override needed. */
+  --glow-color:  color-mix(in srgb, var(--appkit-color-primary) 12%, transparent);
+  --glow-ring:   color-mix(in srgb, var(--appkit-color-primary)  8%, transparent);
+  --glow-strong: color-mix(in srgb, var(--appkit-color-primary) 18%, transparent);
 }
 
 @tailwind base;
@@ -33,7 +21,7 @@
   }
   
   body {
-    @apply bg-zinc-50 dark:bg-slate-950 text-zinc-900 dark:text-zinc-100 antialiased min-h-full overflow-x-hidden;
+    @apply bg-[var(--appkit-color-bg)] text-[var(--appkit-color-text)] antialiased min-h-full overflow-x-hidden;
     font-family: var(--font-body), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     font-feature-settings: 'rlig' 1, 'calt' 1;
     -webkit-font-smoothing: antialiased;
@@ -58,14 +46,9 @@
     letter-spacing: -0.01em;
   }
 
-  /* Selection color — use theme primary so it doesn't clash with slide backgrounds */
+  /* Selection color — adapts to the active theme via CSS color-mix(); no .dark override needed */
   ::selection {
-    background-color: rgba(53, 112, 252, 0.22); /* cobalt blue, light mode */
-    color: inherit;
-  }
-
-  .dark ::selection {
-    background-color: rgba(233, 30, 140, 0.28); /* hot pink, dark mode */
+    background-color: color-mix(in srgb, var(--appkit-color-primary) 22%, transparent);
     color: inherit;
   }
 
@@ -91,7 +74,7 @@
   }
 
   .dark *:focus-visible {
-    @apply ring-primary-400 ring-offset-slate-950;
+    @apply ring-primary-400 ring-offset-[var(--appkit-color-bg)];
   }
 }
 
@@ -125,15 +108,15 @@
   }
   
   .scrollbar-thin::-webkit-scrollbar-track {
-    @apply bg-zinc-100 dark:bg-slate-800/60 rounded-full;
+    @apply bg-[var(--appkit-color-border-subtle)] rounded-full;
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply bg-zinc-300 dark:bg-slate-600 rounded-full;
+    @apply bg-[var(--appkit-color-border)] rounded-full;
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    @apply bg-zinc-400 dark:bg-slate-500;
+    @apply bg-[var(--appkit-color-text-faint)];
   }
 
   /* Safe Area Utilities */
@@ -201,15 +184,17 @@
     backdrop-filter: blur(16px);
   }
 
-  /* Glassmorphism */
+  /* Glassmorphism — theme-adaptive via CSS variables */
   .glass {
-    @apply bg-white/85 dark:bg-slate-900/85 backdrop-blur-md;
-    @apply border border-zinc-200/60 dark:border-slate-700/40;
+    background-color: color-mix(in srgb, var(--appkit-color-surface) 85%, transparent);
+    backdrop-filter: blur(8px);
+    border: 1px solid color-mix(in srgb, var(--appkit-color-border) 60%, transparent);
   }
 
   .glass-strong {
-    @apply bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg;
-    @apply border border-zinc-200/80 dark:border-slate-800/60;
+    background-color: color-mix(in srgb, var(--appkit-color-surface) 95%, transparent);
+    backdrop-filter: blur(16px);
+    border: 1px solid color-mix(in srgb, var(--appkit-color-border) 80%, transparent);
   }
 
   /* Grid Utilities */
@@ -323,10 +308,10 @@
    text class IS present — specificity (0,3,0) for :is+:not. ──────── */
 .dark :is(
   .text-zinc-900, .text-zinc-950,
-  .text-gray-900, .text-gray-950,
+  .text-[var(--appkit-color-text)], .text-gray-950,
   .text-slate-900, .text-slate-950,
   .text-black
-):not([class*="dark:text-"]):not([class*="dark:bg-white"]) {
+):not([class*="dark:text-"]):not([class*="dark:bg-[var(--appkit-color-surface)]"]) {
   color: var(--appkit-color-text, #f4f4f5);
 }
 
@@ -460,7 +445,7 @@
   }
 
   body {
-    @apply bg-white text-black;
+    @apply bg-[var(--appkit-color-surface)] text-black;
   }
 
   .card {

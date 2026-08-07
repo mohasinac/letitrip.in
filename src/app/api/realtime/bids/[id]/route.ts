@@ -1,4 +1,5 @@
 import { withFeatureGuard } from "@/lib/features";
+import { normalizeError } from "@mohasinac/appkit";
 import { initProviders } from "@/providers.config";
 import { getAdminRealtimeDb } from "@mohasinac/appkit";
 
@@ -15,8 +16,8 @@ function sseChunk(type: string, data?: unknown): Uint8Array {
 function tryEnqueue(controller: ReadableStreamDefaultController, type: string, data?: unknown): void {
   try {
     controller.enqueue(sseChunk(type, data));
-  } catch {
-    // Stream already closed — client disconnected
+  } catch (_err) {
+    void normalizeError(_err); // Stream already closed — client disconnected before this chunk was sent
   }
 }
 

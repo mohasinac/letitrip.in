@@ -145,7 +145,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
                 <Link
                   key={id}
                   href={href}
-                  className="group flex flex-col overflow-hidden rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 hover:border-[var(--appkit-color-primary)]/50 hover:shadow-md transition-all"
+                  className="group flex flex-col overflow-hidden rounded-xl border border-[var(--appkit-color-border-subtle)] bg-[var(--appkit-color-surface)]/60 hover:border-[var(--appkit-color-primary)]/50 hover:shadow-md transition-all"
                 >
                   <Div className={`aspect-square w-full ${__O.hidden} relative`} surface="subtle">
                     <MediaImage

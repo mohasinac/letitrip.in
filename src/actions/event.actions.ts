@@ -2,7 +2,7 @@
 import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 import { z } from "zod";
 import { EVENT_FIELDS } from "@/constants";
-import { requireRoleUser, requireAuthUser } from "@mohasinac/appkit";
+import { requireRoleUser, requireAuthUser, normalizeError } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier, RateLimitPresets, } from "@mohasinac/appkit";
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
@@ -252,8 +252,8 @@ export async function enterEventAction(
       try {
         const auth = await requireAuthUser();
         user = { uid: auth.uid, displayName: auth.name ?? undefined, email: auth.email ?? undefined };
-      } catch {
-        // unauthenticated allowed for some event types
+      } catch (_err) {
+        void normalizeError(_err); // unauthenticated allowed for some event types — user stays undefined
       }
     
       const parsed = enterEventSchema.safeParse(input);

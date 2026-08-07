@@ -1,5 +1,6 @@
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, userRepository, applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
+import { safeFireAndForget } from "@mohasinac/appkit/server";
 
 export const GET = withProviders(
   createRouteHandler({
@@ -38,7 +39,7 @@ export const GET = withProviders(
           // Sync custom claims so next check is fast
           const adminAuth = await import("@mohasinac/appkit").then((m) => m.getAdminAuth?.());
           if (adminAuth) {
-            adminAuth.setCustomUserClaims(user!.uid, { role }).catch(console.error);
+            safeFireAndForget(adminAuth.setCustomUserClaims(user!.uid, { role }), "auth/me: sync custom claims");
           }
         }
       }

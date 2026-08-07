@@ -28,7 +28,7 @@ export async function HowOffersWorkView() {
     {
       emoji: "🔍",
       circleClass:
-        "bg-slate-100 dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-500",
+        "bg-[var(--appkit-color-border-subtle)] border-2 border-[var(--appkit-color-border)]",
       title: t("step1Title"),
     },
     {

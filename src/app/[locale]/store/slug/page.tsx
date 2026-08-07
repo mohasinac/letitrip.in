@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -103,7 +104,8 @@ export default function Page() {
       }
       setCurrentSlug(newSlug);
       setSaveSuccess(true);
-    } catch {
+    } catch (_err) {
+      void normalizeError(_err);
       setSaveError("Network error. Please try again.");
     } finally {
       setSaving(false);
@@ -117,7 +119,7 @@ export default function Page() {
       ? "text-success"
       : checkState === "taken" || checkState === "invalid"
       ? "text-error"
-      : "text-zinc-400 dark:text-zinc-400";
+      : "text-[var(--appkit-color-text-faint)]";
 
   return (
     <Div className="mx-auto max-w-2xl">

@@ -154,8 +154,8 @@ export async function DELETE(request: NextRequest) {
         if (decodedToken) {
           await sessionRepository.revokeSession(sessionId, decodedToken.uid);
         }
-      } catch {
-        // Session may be expired, still clear cookies
+      } catch (_err) {
+        void normalizeError(_err); // Session may be expired, still clear cookies
         serverLogger.debug("Session already expired, clearing cookies");
       }
     }

@@ -10,7 +10,7 @@ const __O = {
   hidden: "overflow-hidden",
 } as const;
 
-const LABEL_CLS = "block text-sm font-medium text-zinc-700 dark:text-zinc-300";
+const LABEL_CLS = "block text-sm font-medium text-[var(--appkit-color-text-muted)]";
 
 interface ProfilePageClientProps {
   standalone?: boolean;
@@ -49,12 +49,12 @@ function renderProfileViewMode({
     <Stack surface="card" padding="lg" gap="5">
       <Row align="center" gap="md">
         {profile.photoURL ? (
-          <Div className={`h-20 w-20 ${__O.hidden} relative ring-2 ring-zinc-100 dark:ring-slate-700`} rounded="full">
+          <Div className={`h-20 w-20 ${__O.hidden} relative ring-2 ring-zinc-100 ring-[var(--appkit-color-border)]`} rounded="full">
             <MediaImage src={profile.photoURL} alt="Avatar" size="thumbnail" />
           </Div>
         ) : (
           <Row textWeight="bold" textSize="3xl"
-            className="h-20 w-20 ring-2 ring-zinc-100 dark:ring-slate-700 bg-[var(--appkit-color-primary-50)] text-[var(--appkit-color-primary)]" align="center" justify="center" rounded="full"
+            className="h-20 w-20 ring-2 ring-zinc-100 ring-[var(--appkit-color-border)] bg-[var(--appkit-color-primary-50)] text-[var(--appkit-color-primary)]" align="center" justify="center" rounded="full"
           >
             {avatarLetter}
           </Row>
@@ -74,7 +74,7 @@ function renderProfileViewMode({
       )}
       <Text size="xs" color="faint">
         Profile visibility:{" "}
-        <Text as="span" className={profileIsPublic ? "text-success font-medium" : "text-zinc-500 dark:text-zinc-400 font-medium"}>
+        <Text as="span" className={profileIsPublic ? "text-success font-medium" : "text-[var(--appkit-color-text-muted)] font-medium"}>
           {profileIsPublic ? "Public" : "Private"}
         </Text>
       </Text>
@@ -89,7 +89,7 @@ function renderProfileViewMode({
         </Button>
         <Link
           href={String(ROUTES.USER.ADDRESSES)}
-          className="rounded-xl border border-zinc-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors"
+          className="rounded-xl border border-[var(--appkit-color-border)] px-4 py-2 text-sm font-medium text-[var(--appkit-color-text-muted)] hover:bg-zinc-50 hover:bg-[var(--appkit-color-surface-elevated)] transition-colors"
         >
           Manage Addresses
         </Link>
@@ -133,7 +133,7 @@ function renderProfileEditForm({
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
           placeholder="Your full name"
-          className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
         />
       </Stack>
       <Stack gap="xs">
@@ -143,7 +143,7 @@ function renderProfileEditForm({
           value={phoneNumber}
           onChange={(e) => setPhoneNumber(e.target.value)}
           placeholder="+91 xxxxx xxxxx"
-          className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
         />
       </Stack>
       <ImageUpload
@@ -171,7 +171,7 @@ function renderProfileEditForm({
           maxLength={500}
           rows={3}
           placeholder="Tell buyers a little about yourself…"
-          className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+          className="w-full rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
         />
         <Text size="xs" align="end" color="faint">{bio.length}/500</Text>
       </Stack>

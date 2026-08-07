@@ -1,4 +1,5 @@
 import { AD_FIELDS } from "@/constants";
+import { normalizeError } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
 
 type AdProvider = "manual" | "adsense" | "thirdParty";
@@ -76,8 +77,9 @@ function isHttpsUrl(value: string | undefined): boolean {
   try {
     const url = new URL(value);
     return url.protocol === "https:";
-  } catch {
-    return false;
+  } catch (_err) {
+    void normalizeError(_err);
+    return false; // URL constructor throws for invalid URL strings
   }
 }
 

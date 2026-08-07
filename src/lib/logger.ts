@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { normalizeError } from "@mohasinac/appkit";
 import path from "node:path";
 import type { JsonValue } from "@mohasinac/appkit";
 
@@ -10,8 +11,8 @@ function writeToFile(entry: string) {
   try {
     if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
     fs.appendFileSync(logFile, entry + "\n", "utf8");
-  } catch {
-    // file write failure must not crash the server
+  } catch (_err) {
+    void normalizeError(_err); // file write failure must not crash the server — logging is best-effort
   }
 }
 

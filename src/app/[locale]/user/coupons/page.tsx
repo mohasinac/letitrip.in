@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 
 /**
  * /user/coupons — Claimed-coupons wallet (plan §10).
@@ -143,7 +144,8 @@ export default function ClaimedCouponsPage() {
       if (!res.ok) throw new Error();
       showToast("Coupon removed from wallet.", "info");
       void refetch();
-    } catch {
+    } catch (_err) {
+      void normalizeError(_err);
       showToast("Could not remove coupon. Please try again.", "error");
     }
   };

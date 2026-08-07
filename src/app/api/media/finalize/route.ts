@@ -24,6 +24,7 @@
 import { withProviders } from "@/providers.config";
 import type { JsonValue } from "@mohasinac/appkit";
 import { fileTypeFromBuffer } from "file-type";
+import { safeFireAndForget } from "@mohasinac/appkit/server";
 import {
   ALLOWED_TYPES_LABEL,
   MAX_BYTES,
@@ -32,17 +33,19 @@ import {
   classifyMime,
   getConversionHint,
 } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES, normalizeError } from "@mohasinac/appkit";
 import { successResponse, errorResponse } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { getAdminStorage as getStorage } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 import { formatFileSize } from "@mohasinac/appkit";
+import { mediaAssetsRepository } from "@mohasinac/appkit";
 
 const TMP_PREFIX = "tmp/";
 const SIGNED_READ_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days, matches legacy upload route
 const HEAD_BYTES = 4096; // file-type matches well within 4 KB for every supported format
+const CLEANUP_LABEL = "media finalize: cleanup invalid upload";
 
 interface FinalizeRequestBody {
   storagePath?: JsonValue;
@@ -82,8 +85,9 @@ export const POST = withProviders(createRouteHandler({
     let body: FinalizeRequestBody;
     try {
       body = (await request.json()) as FinalizeRequestBody;
-    } catch {
-      return errorResponse("Invalid JSON body", 400);
+    } catch (_err) {
+      void normalizeError(_err);
+      return errorResponse("Invalid JSON body", 400); // malformed request body
     }
 
     const storagePath = typeof body.storagePath === "string" ? body.storagePath : "";
@@ -117,7 +121,7 @@ export const POST = withProviders(createRouteHandler({
 
     const declaredKind = classifyMime(declaredMime);
     if (!declaredKind) {
-      await fileRef.delete().catch(console.error);
+      safeFireAndForget(fileRef.delete(), CLEANUP_LABEL);
       const hint = getConversionHint(declaredMime);
       return errorResponse(hint ?? ERROR_MESSAGES.UPLOAD.INVALID_TYPE, 400, {
         allowed: ALLOWED_TYPES_LABEL,
@@ -127,13 +131,13 @@ export const POST = withProviders(createRouteHandler({
     }
 
     if (!Number.isFinite(size) || size <= 0) {
-      await fileRef.delete().catch(console.error);
+      safeFireAndForget(fileRef.delete(), CLEANUP_LABEL);
       return errorResponse("Uploaded object has no size", 400);
     }
 
     const maxSize = MAX_BYTES[declaredKind];
     if (size > maxSize) {
-      await fileRef.delete().catch(console.error);
+      safeFireAndForget(fileRef.delete(), CLEANUP_LABEL);
       return errorResponse(ERROR_MESSAGES.UPLOAD.FILE_TOO_LARGE, 400, {
         maxSize: MAX_LABEL[declaredKind],
         fileSize: formatFileSize(size),
@@ -147,14 +151,14 @@ export const POST = withProviders(createRouteHandler({
     const detected = await fileTypeFromBuffer(head);
     const detectedKind = detected ? classifyMime(detected.mime) : null;
     if (!detected || !detectedKind) {
-      await fileRef.delete().catch(console.error);
+      safeFireAndForget(fileRef.delete(), CLEANUP_LABEL);
       return errorResponse(ERROR_MESSAGES.UPLOAD.INVALID_TYPE, 400, {
         allowed: ALLOWED_TYPES_LABEL,
         detected: detected?.mime ?? "unknown",
       });
     }
     if (detectedKind !== declaredKind) {
-      await fileRef.delete().catch(console.error);
+      safeFireAndForget(fileRef.delete(), CLEANUP_LABEL);
       // Structured 422 MIME_MISMATCH â€” Track E3 contract. Clients distinguish
       // "wrong content-type header" from generic upload errors and can re-prompt
       // the user accurately.
@@ -173,7 +177,7 @@ export const POST = withProviders(createRouteHandler({
         head.length >= PDF_MAGIC.length &&
         head.subarray(0, PDF_MAGIC.length).toString("ascii") === PDF_MAGIC;
       if (!looksLikePdf) {
-        await fileRef.delete().catch(console.error);
+        safeFireAndForget(fileRef.delete(), CLEANUP_LABEL);
         return errorResponse(ERROR_MESSAGES.UPLOAD.INVALID_TYPE, 400, {
           allowed: `PDF (must start with ${PDF_MAGIC} header)`,
           detected: "non-pdf bytes claiming application/pdf",
@@ -191,20 +195,44 @@ export const POST = withProviders(createRouteHandler({
       },
     });
 
-    let downloadURL: string;
-    if (isPublic) {
-      await fileRef.makePublic();
-      downloadURL = `https://storage.googleapis.com/${bucket.name}/${storagePath}`;
-    } else {
-      const [signedUrl] = await fileRef.getSignedUrl({
-        version: "v4",
-        action: "read",
-        expires: Date.now() + SIGNED_READ_TTL_MS,
+    // Generate an SEO-friendly short ID from the filename (minus extension).
+    // The storage path stays internal; callers receive /media/{shortId} which
+    // resolves to the actual storagePath via the mediaAssets Firestore collection.
+    // This keeps storage structure private and gives us full URL control.
+    const filename = storagePath.split("/").pop() ?? "upload";
+    const baseShortId = filename.replace(/\.[^.]+$/, ""); // strip extension
+
+    let shortId: string;
+    try {
+      const asset = await mediaAssetsRepository.createAsset(baseShortId, {
+        storagePath,
+        uploadedBy: user!.uid,
+        contentType: declaredMime,
+        size,
+        isPublic,
+        status: "staged", // file is still in tmp/; moved to media/ when form saves
       });
-      downloadURL = signedUrl;
+      shortId = asset.id;
+    } catch (assetErr) {
+      void normalizeError(assetErr);
+      serverLogger.warn("Media finalize: failed to create mediaAssets record, falling back to path", {
+        uid: user!.uid,
+        path: storagePath,
+        error: assetErr instanceof Error ? assetErr.message : String(assetErr),
+      });
+      shortId = baseShortId; // fallback: return path-based URL
     }
 
-    const filename = storagePath.split("/").pop() ?? "";
+    const downloadURL = `/media/${shortId}`;
+    if (isPublic) {
+      await fileRef.makePublic().catch((makePublicErr: unknown) => {
+        void normalizeError(makePublicErr);
+        serverLogger.warn("Media finalize: makePublic best-effort failed", {
+          path: storagePath,
+          error: makePublicErr instanceof Error ? makePublicErr.message : String(makePublicErr),
+        });
+      });
+    }
 
     serverLogger.info("Media finalized", {
       uid: user!.uid,

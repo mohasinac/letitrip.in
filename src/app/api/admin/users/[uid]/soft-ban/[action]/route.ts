@@ -5,6 +5,8 @@ import {
   errorResponse,
   userRepository,
   notificationRepository,
+  normalizeError,
+  serverLogger,
 } from "@mohasinac/appkit";
 import { ROLES_TRUST_SAFETY } from "@/constants";
 
@@ -35,7 +37,10 @@ export const DELETE = withProviders(
           entityType: "user",
           createdAt: new Date(),
         } as any);
-      } catch { /* non-fatal */ }
+      } catch (err) {
+        void normalizeError(err);
+        serverLogger.warn("soft-ban lift: notification failed (non-fatal)", { uid, action, error: err instanceof Error ? err.message : String(err) });
+      }
 
       return successResponse({ uid, action }, "Soft ban lifted");
     },

@@ -12,6 +12,8 @@
  * limitation: the caller awaits the real Promise, not just the module load.
  */
 
+import { normalizeError } from "@mohasinac/appkit";
+
 let initPromise: Promise<void> | null = null;
 
 // ─── Email credential helpers ─────────────────────────────────────────────────
@@ -26,8 +28,9 @@ async function getResendApiKey(
   try {
     const creds = await getSiteSettingsCredentials();
     return creds.resendApiKey || process.env.RESEND_API_KEY || "";
-  } catch {
-    return process.env.RESEND_API_KEY || "";
+  } catch (_err) {
+    void normalizeError(_err);
+    return process.env.RESEND_API_KEY || ""; // site settings unavailable — fall back to env var
   }
 }
 
@@ -40,8 +43,9 @@ async function getEmailFromName(
   try {
     const settings = await getSingleton();
     return settings?.emailSettings?.fromName || process.env.EMAIL_FROM_NAME || "App";
-  } catch {
-    return process.env.EMAIL_FROM_NAME || "App";
+  } catch (_err) {
+    void normalizeError(_err);
+    return process.env.EMAIL_FROM_NAME || "App"; // site settings unavailable — fall back to env var
   }
 }
 
@@ -54,8 +58,9 @@ async function getEmailFromAddress(
   try {
     const settings = await getSingleton();
     return settings?.emailSettings?.fromEmail || process.env.EMAIL_FROM || "";
-  } catch {
-    return process.env.EMAIL_FROM || "";
+  } catch (_err) {
+    void normalizeError(_err);
+    return process.env.EMAIL_FROM || ""; // site settings unavailable — fall back to env var
   }
 }
 

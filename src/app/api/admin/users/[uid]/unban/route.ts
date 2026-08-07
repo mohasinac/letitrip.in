@@ -6,6 +6,8 @@ import {
   userRepository,
   addressesRepository,
   savedPaymentMethodsRepository,
+  normalizeError,
+  serverLogger,
 } from "@mohasinac/appkit";
 import { sendNotification } from "@mohasinac/appkit/server";
 import { getAdminAuth } from "@mohasinac/appkit/server";
@@ -24,7 +26,10 @@ export const POST = withProviders(
       // Re-enable Firebase Auth login
       try {
         await getAdminAuth().updateUser(uid, { disabled: false });
-      } catch { /* non-fatal */ }
+      } catch (err) {
+        void normalizeError(err);
+        serverLogger.warn("unban: Auth re-enable failed (non-fatal)", { uid, error: err instanceof Error ? err.message : String(err) });
+      }
 
       // Clear ban fields
       await userRepository.update(uid, {
@@ -37,12 +42,18 @@ export const POST = withProviders(
       // Reverse address auto-ban (leaves manually-admin-banned addresses untouched)
       try {
         await addressesRepository.unbanAutoForOwner("user", uid);
-      } catch { /* non-fatal */ }
+      } catch (err) {
+        void normalizeError(err);
+        serverLogger.warn("unban: address unban failed (non-fatal)", { uid, error: err instanceof Error ? err.message : String(err) });
+      }
 
       // Reverse payment method auto-ban
       try {
         await savedPaymentMethodsRepository.unbanAutoForUser(uid);
-      } catch { /* non-fatal */ }
+      } catch (err) {
+        void normalizeError(err);
+        serverLogger.warn("unban: payment method unban failed (non-fatal)", { uid, error: err instanceof Error ? err.message : String(err) });
+      }
 
       // Notify user
       try {
@@ -55,7 +66,10 @@ export const POST = withProviders(
           relatedId: uid,
           relatedType: "user",
         });
-      } catch { /* non-fatal */ }
+      } catch (err) {
+        void normalizeError(err);
+        serverLogger.warn("unban: user notification failed (non-fatal)", { uid, error: err instanceof Error ? err.message : String(err) });
+      }
 
       return successResponse({ uid }, "User unbanned");
     },

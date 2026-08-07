@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
 
@@ -18,7 +19,7 @@ const TAB_ROUTE: Record<string, string> = {
 };
 
 function decodeSearchQuery(searchSlug: string): string {
-  try { return decodeURIComponent(searchSlug).trim(); } catch { return searchSlug.trim(); }
+  try { return decodeURIComponent(searchSlug).trim(); } catch (_err) { void normalizeError(_err); return searchSlug.trim(); }
 }
 
 export default async function LegacySearchRedirectPage({ params }: Props) {

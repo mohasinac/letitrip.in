@@ -30,6 +30,7 @@ import {
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
+import { callFirebaseIdentityToolkit } from "@mohasinac/appkit/server";
 import { z } from "zod";
 import { serverLogger } from "@mohasinac/appkit";
 
@@ -78,7 +79,7 @@ export async function POST(request: NextRequest) {
       throw new AuthenticationError(ERROR_MESSAGES.USER.ACCOUNT_DISABLED);
     }
 
-    // Verify password using Firebase REST API
+    // Verify password using Firebase Identity Toolkit REST API
     const apiKey =
       process.env.FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
     if (!apiKey) {
@@ -89,25 +90,18 @@ export async function POST(request: NextRequest) {
         "SERVER_CONFIG_ERROR",
       );
     }
-    const verifyPasswordUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`;
 
-    const verifyResponse = await fetch(verifyPasswordUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    const verifyData = await callFirebaseIdentityToolkit<{ idToken: string }>(
+      "signInWithPassword",
+      { email, password, returnSecureToken: true },
+      apiKey,
+    ).catch((err: unknown) => {
+      serverLogger.error("Password verification failed", {
+        error: err instanceof Error ? err.message : String(err),
         email,
-        password,
-        returnSecureToken: true,
-      }),
-    });
-
-    if (!verifyResponse.ok) {
-      const errorData = await verifyResponse.json();
-      serverLogger.error("Password verification failed", { error: errorData });
+      });
       throw new AuthenticationError(ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS);
-    }
-
-    const verifyData = await verifyResponse.json();
+    });
     const idToken = verifyData.idToken;
 
     // Get user data from Firestore (needed for role)

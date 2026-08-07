@@ -80,8 +80,9 @@ export async function GET(request: NextRequest): Promise<Response> {
   let parsed: URL;
   try {
     parsed = new URL(rawUrl);
-  } catch {
-    return new NextResponse("Invalid url parameter.", { status: 400 });
+  } catch (_err) {
+    void normalizeError(_err);
+    return new NextResponse("Invalid url parameter.", { status: 400 }); // URL constructor throws for invalid URL strings
   }
 
   if (parsed.protocol !== "https:") {

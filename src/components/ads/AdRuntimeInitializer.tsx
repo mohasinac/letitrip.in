@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 
 import { useEffect } from "react";
 import {
@@ -14,7 +15,8 @@ function readAdConsentFromStorage(): boolean | null {
     const value = localStorage.getItem(AD_CONSENT_STORAGE_KEY);
     if (value === "true") return true;
     if (value === "false") return false;
-  } catch {
+  } catch (_err) {
+    void normalizeError(_err);
     // Ignore storage access errors.
   }
   return null;
@@ -76,7 +78,8 @@ export function AdRuntimeInitializer() {
       const granted = Boolean(customEvent.detail?.granted);
       try {
         localStorage.setItem(AD_CONSENT_STORAGE_KEY, String(granted));
-      } catch {
+      } catch (_err) {
+        void normalizeError(_err);
         // Ignore storage write errors.
       }
       setAdConsentGranted(granted);

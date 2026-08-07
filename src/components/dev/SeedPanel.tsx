@@ -1662,7 +1662,7 @@ function StatusDot({
       />
     );
   if (state === "queued")
-    return <Span className="inline-block w-3.5 h-3.5 border-2 border-zinc-300 dark:border-slate-600 shrink-0" rounded="full" aria-label="Queued" />;
+    return <Span className="inline-block w-3.5 h-3.5 border-2 border-[var(--appkit-color-border)] shrink-0" rounded="full" aria-label="Queued" />;
   if (state === "done") {
     // A "done" runner event with 0 docs in DB is not a success.
     if (typeof seedCount === "number" && seedCount > 0 && (existingCount ?? 0) === 0) {
@@ -1689,7 +1689,7 @@ function SeedProgressBar({
 }) {
   const pct = target > 0 ? Math.min(100, Math.round((seeded / target) * 100)) : 0;
   const color =
-    pct >= 100 ? "bg-emerald-500 dark:bg-emerald-400" : pct > 0 ? "bg-amber-500 dark:bg-amber-400" : "bg-zinc-300 dark:bg-slate-600";
+    pct >= 100 ? "bg-emerald-500 dark:bg-emerald-400" : pct > 0 ? "bg-amber-500 dark:bg-amber-400" : "bg-[var(--appkit-color-border)]";
   const h = size === "sm" ? "h-1.5" : "h-2";
   return (
     <Div overflow="hidden" className={`w-full ${h}`} rounded="full" surface="subtle">
@@ -1712,7 +1712,7 @@ const TYPE_CHIP: Record<FieldDef["type"], string> = {
 };
 
 function Cap({ active, label, color }: { active?: boolean; label: string; color: string }) {
-  if (!active) return <Span className="text-zinc-300 dark:text-slate-700 select-none" size="xs">—</Span>;
+  if (!active) return <Span className="text-zinc-300 text-[var(--appkit-color-text-muted)] select-none" size="xs">—</Span>;
   return (
     <Span padding="pill-2xs" className={`inline-block text-[10px] leading-none ${color}`} weight="semibold" rounded="full">
       {label}
@@ -1743,7 +1743,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
             placeholder="filter fields…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="text-xs px-2 py-1 rounded border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-indigo-400 w-32"
+            className="text-xs px-2 py-1 rounded border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-indigo-400 w-32"
           />
           <Button
             type="button"
@@ -1751,7 +1751,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
             className={`text-[10px] px-2 py-1 rounded-full border font-medium transition-colors ${
  showPiiOnly
  ? "bg-red-500 text-white border-red-500"
- : "border-zinc-300 dark:border-slate-600 text-zinc-500 dark:text-slate-400 hover:border-red-400 hover:text-red-500"
+ : "border-[var(--appkit-color-border)] text-[var(--appkit-color-text-muted)] text-[var(--appkit-color-text-muted)] hover:border-red-400 hover:text-red-500"
  }`}
           >
             🔒 PII only
@@ -1773,20 +1773,20 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
               <Th className="text-left" padding="xs-tall" color="muted" weight="semibold">Note</Th>
             </Tr>
             <Tr border="default" surface="muted">
-              <Th weight="normal" className="px-3 pb-1.5 text-[10px] text-zinc-400 dark:text-slate-500 text-left" />
-              <Th weight="normal" padding="compact" className="text-[10px] text-zinc-400 dark:text-slate-500 text-left" />
+              <Th weight="normal" className="px-3 pb-1.5 text-[10px] text-zinc-400 text-[var(--appkit-color-text-faint)] text-left" />
+              <Th weight="normal" padding="compact" className="text-[10px] text-zinc-400 text-[var(--appkit-color-text-faint)] text-left" />
               <Th padding="compact" className="text-[10px] text-center" color="faint" weight="normal">Search</Th>
               <Th padding="compact" className="text-[10px] text-center" color="faint" weight="normal">Filter</Th>
               <Th padding="compact" className="text-[10px] text-center" color="faint" weight="normal">Sort</Th>
               <Th padding="compact" className="text-[10px] text-center" color="faint" weight="normal">PII</Th>
               <Th padding="compact" className="text-[10px] text-center" color="faint" weight="normal">Index</Th>
-              <Th weight="normal" padding="compact" className="text-[10px] text-zinc-400 dark:text-slate-500 text-left" />
+              <Th weight="normal" padding="compact" className="text-[10px] text-zinc-400 text-[var(--appkit-color-text-faint)] text-left" />
             </Tr>
           </Thead>
           <Tbody>
             {shown.length === 0 ? (
               <Tr>
-                <Td colSpan={8} className="text-center text-zinc-400 dark:text-slate-500" padding="sm-tall">
+                <Td colSpan={8} className="text-center text-zinc-400 text-[var(--appkit-color-text-faint)]" padding="sm-tall">
                   No fields match filter.
                 </Td>
               </Tr>
@@ -1794,8 +1794,8 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
               shown.map((f) => (
                 <Tr
                   key={f.name}
-                  className={`border-b border-zinc-100 dark:border-slate-800 last:border-0 transition-colors ${
- f.pii ? "bg-red-50/40 dark:bg-red-900/5" : "hover:bg-zinc-50/60 dark:hover:bg-slate-800/30"
+                  className={`border-b border-[var(--appkit-color-border-subtle)] last:border-0 transition-colors ${
+ f.pii ? "bg-red-50/40 dark:bg-red-900/5" : "hover:bg-zinc-50/60 hover:bg-[var(--appkit-color-surface-elevated)]/30"
  }`}
                 >
                   <Td className="px-3 font-mono break-all" padding="xs-tall" color="primary">{f.name}</Td>
@@ -1817,9 +1817,9 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
                     <Cap active={f.pii} label="🔒" color="bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300" />
                   </Td>
                   <Td className="text-center" padding="xs-tall">
-                    <Cap active={f.indexed} label="✓" color="bg-zinc-200 dark:bg-slate-700" />
+                    <Cap active={f.indexed} label="✓" color="bg-[var(--appkit-color-border)]" />
                   </Td>
-                  <Td className="text-zinc-400 dark:text-slate-500 italic text-[10px] max-w-[120px] truncate" padding="xs-tall" title={f.note}>
+                  <Td className="text-zinc-400 text-[var(--appkit-color-text-faint)] italic text-[10px] max-w-[120px] truncate" padding="xs-tall" title={f.note}>
                     {f.note ?? ""}
                   </Td>
                 </Tr>
@@ -1836,7 +1836,7 @@ function SchemaFieldsTable({ fields }: { fields: FieldDef[] }) {
           { label: "⚙️ Filterable", color: "text-violet-600 dark:text-violet-400" },
           { label: "↕ Sortable",   color: "text-teal-600 dark:text-teal-400" },
           { label: "🔒 PII",        color: "text-red-600 dark:text-red-400" },
-          { label: "📇 Indexed",    color: "text-zinc-500 dark:text-slate-400" },
+          { label: "📇 Indexed",    color: "text-[var(--appkit-color-text-muted)] text-[var(--appkit-color-text-muted)]" },
         ].map(({ label, color }) => (
           <Span key={label} className={`text-[10px] ${color}`} weight="medium">{label}</Span>
         ))}
@@ -1917,10 +1917,10 @@ function renderAccordionExpandedBody(meta: CollectionMeta, existingCount: number
                 </Thead>
                 <Tbody>
                   {meta.mediaSlugPatterns.map((p) => (
-                    <Tr key={p.type} className="border-b border-zinc-100 dark:border-slate-800 last:border-0 hover:bg-zinc-50/60 dark:hover:bg-slate-800/30">
+                    <Tr key={p.type} className="border-b border-[var(--appkit-color-border-subtle)] last:border-0 hover:bg-zinc-50/60 hover:bg-[var(--appkit-color-surface-elevated)]/30">
                       <Td className="px-3 font-mono text-indigo-700 dark:text-indigo-300 whitespace-nowrap" padding="xs-tall">{p.type}</Td>
-                      <Td className="px-3 font-mono text-zinc-700 dark:text-slate-300 text-[10px] break-all" padding="xs-tall">{p.pattern}</Td>
-                      <Td className="px-3 font-mono text-zinc-400 dark:text-slate-500 italic text-[10px] break-all" padding="xs-tall">{p.example}</Td>
+                      <Td className="px-3 font-mono text-[var(--appkit-color-text-muted)] text-[10px] break-all" padding="xs-tall">{p.pattern}</Td>
+                      <Td className="px-3 font-mono text-[var(--appkit-color-text-faint)] italic text-[10px] break-all" padding="xs-tall">{p.example}</Td>
                     </Tr>
                   ))}
                 </Tbody>
@@ -2035,8 +2035,8 @@ function ResourceAccordionCard({
     runState === "running" ? "border-amber-400 dark:border-amber-500" :
     doneAndSeeded ? "border-emerald-400 dark:border-emerald-600" :
     runState === "error" || doneButFailed ? "border-red-400 dark:border-red-600" :
-    runState === "queued" ? "border-zinc-300 dark:border-slate-600" :
-    expanded ? "border-zinc-300 dark:border-slate-600" : "border-zinc-200 dark:border-slate-800";
+    runState === "queued" ? "border-[var(--appkit-color-border)]" :
+    expanded ? "border-[var(--appkit-color-border)]" : "border-[var(--appkit-color-border-subtle)]";
 
   const bgColor =
     runState === "running" ? "bg-amber-50 dark:bg-amber-900/10" :
@@ -2051,7 +2051,7 @@ function ResourceAccordionCard({
         onClick={toggleExpanded}
         gap="sm"
         align="center"
-        className="w-full text-left bg-transparent border-0 cursor-pointer hover:bg-zinc-50 dark:hover:bg-slate-800/40 transition-colors" padding="inline"
+        className="w-full text-left bg-transparent border-0 cursor-pointer hover:bg-zinc-50 hover:bg-[var(--appkit-color-surface-elevated)]/40 transition-colors" padding="inline"
       >
         {renderAccordionCollapsedHeader({ meta, runState, isLoadingStatus, dbStatus, existingCount, seedCount, isComplete, isEmpty, statusVariant, statusLabel, expanded, col, selected, onToggle, isRunning })}
       </Row>
@@ -2238,7 +2238,8 @@ export function SeedPanel() {
       const res = await fetch(API_ROUTES.DEMO.SEED, { method: "GET" });
       const payload = await res.json();
       setStatus((payload?.data?.collections ?? []) as ColStatus[]);
-    } catch {
+    } catch (_err) {
+      void normalizeError(_err);
       // status fetch failed — keep previous state
     } finally {
       setIsLoadingStatus(false);
@@ -2395,7 +2396,7 @@ export function SeedPanel() {
 
       if (runId && customToken) {
         const provider = getClientRealtimeProvider();
-        try { await provider.signInWithToken(customToken); } catch {}
+        try { await provider.signInWithToken(customToken); } catch (_err) { void normalizeError(_err); }
         unsubscribeRef.current?.();
         unsubscribeRef.current = subscribeToSeedRun(runId, setColRunStates, setColErrors, setCompletedCount);
       }
@@ -2521,7 +2522,7 @@ export function SeedPanel() {
   useEffect(() => { setPage(1); }, [searchQuery, filterGroup, filterStatus, sortBy]);
 
   return (
-    <Section color="inverse" surface="muted" className="min-h-screen text-zinc-900 dark:text-zinc-100">
+    <Section color="inverse" surface="muted" className="min-h-screen text-[var(--appkit-color-text)]">
       {renderSeedPanelToolbar({ selectedCollections, setSelectedCollections, isFiltered, filteredCollections, isRunning, fetchStatus, isLoadingStatus, searchQuery, setSearchQuery, sortBy, setSortBy, dryRun, setDryRun, fullSeed, setFullSeed, run, filterGroup, setFilterGroup, filterStatus, setFilterStatus, clearAll, removeP1, resetP1, clearConfirm, setClearConfirm, seedTemplates, showAllCollections, setShowAllCollections })}
 
       <Container size="2xl">
@@ -2612,7 +2613,7 @@ function renderSeedPanelToolbar({
           <Stack direction="sm-row" align="center" gap="sm">
             <Div className="relative flex-1">
               <Span size="sm" variant="muted" className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">🔍</Span>
-              <Input bare type="text" placeholder="Search collections…" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-9 pr-8 py-1.5 text-sm rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400" />
+              <Input bare type="text" placeholder="Search collections…" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-9 pr-8 py-1.5 text-sm rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400" />
               {searchQuery && <Button type="button" variant="ghost" onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-white text-xs p-0 h-auto">✕</Button>}
             </Div>
             <Div className="shrink-0">
@@ -2620,7 +2621,7 @@ function renderSeedPanelToolbar({
                 variant="ghost"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortKey)}
-                className="text-sm rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-900 dark:text-white px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400"
+                className="text-sm rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] text-zinc-900 dark:text-white px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400"
                 options={[
                   { value: "default", label: "Sort: Default" },
                   { value: "name-asc", label: "Name A → Z" },
@@ -2657,7 +2658,7 @@ function renderSeedPanelToolbar({
                 const active = filterGroup === g;
                 const cfg = g === "all" ? { label: "All", icon: "☰" } : { label: GROUP_CONFIG[g].label, icon: GROUP_CONFIG[g].icon };
                 return (
-                  <Button type="button" key={g} onClick={() => setFilterGroup(g)} className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors ${active ? "bg-amber-500 text-white" : "bg-zinc-200 dark:bg-slate-700 text-zinc-700 dark:text-slate-300 hover:bg-zinc-300 dark:hover:bg-slate-600"}`}>
+                  <Button type="button" key={g} onClick={() => setFilterGroup(g)} className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors ${active ? "bg-amber-500 text-white" : "bg-zinc-200 bg-[var(--appkit-color-border)] text-zinc-700 text-[var(--appkit-color-text-muted)] hover:bg-zinc-300 dark:hover:bg-slate-600"}`}>
                     <Span>{cfg.icon}</Span>
                     <Span className="hidden sm:inline ml-0.5">{cfg.label}</Span>
                   </Button>
@@ -2673,17 +2674,17 @@ function renderSeedPanelToolbar({
                 { key: "partial", label: "⏳ Partial", activeClass: "bg-amber-500 text-white" },
                 { key: "empty", label: "✗ Empty", activeClass: "bg-red-500 text-white" },
               ] as const).map(({ key, label, activeClass }) => (
-                <Button type="button" key={key} onClick={() => setFilterStatus(key as StatusFilter)} className={`px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors ${filterStatus === key ? activeClass : "bg-zinc-200 dark:bg-slate-700 text-zinc-700 dark:text-slate-300 hover:bg-zinc-300 dark:hover:bg-slate-600"}`}>{label}</Button>
+                <Button type="button" key={key} onClick={() => setFilterStatus(key as StatusFilter)} className={`px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors ${filterStatus === key ? activeClass : "bg-zinc-200 bg-[var(--appkit-color-border)] text-zinc-700 text-[var(--appkit-color-text-muted)] hover:bg-zinc-300 dark:hover:bg-slate-600"}`}>{label}</Button>
               ))}
               {isFiltered && (
                 <Button type="button" variant="ghost" onClick={() => { setSearchQuery(""); setFilterGroup("all"); setFilterStatus("all"); setSortBy("default"); }} className="text-[11px] text-amber-600 dark:text-amber-400 hover:underline ml-1 shrink-0 p-0 h-auto">✕ Clear</Button>
               )}
-              <Button type="button" variant="ghost" onClick={() => setShowAllCollections((v) => !v)} className="text-[11px] text-zinc-400 dark:text-slate-500 hover:underline ml-1 shrink-0 p-0 h-auto">{showAllCollections ? "Hide zero-seed" : "Show all"}</Button>
+              <Button type="button" variant="ghost" onClick={() => setShowAllCollections((v) => !v)} className="text-[11px] text-zinc-400 text-[var(--appkit-color-text-faint)] hover:underline ml-1 shrink-0 p-0 h-auto">{showAllCollections ? "Hide zero-seed" : "Show all"}</Button>
             </Row>
           </Stack>
 
           {/* ── Quick actions ─────────────────────────────────────────────── */}
-          <Row gap="sm" align="center" className="pt-1.5 border-t border-zinc-200 dark:border-zinc-700 flex-wrap">
+          <Row gap="sm" align="center" className="pt-1.5 border-t border-[var(--appkit-color-border)] flex-wrap">
             <Row gap="xs" wrap align="center" className="flex-1">
               <Span size="xs" weight="semibold" color="muted" className="shrink-0 whitespace-nowrap">P-1:</Span>
               <Button size="sm" variant="primary" onClick={resetP1} disabled={isRunning} className="shrink-0">↺ Reset Seed</Button>
@@ -2723,7 +2724,7 @@ function renderSeedPanelStats({ isLoadingStatus, totalExistingDocs, totalSeedDoc
   return (
     <Div className="grid grid-cols-3 gap-3 sm:gap-4">
       <Stack className="dark:border-white/10 text-center" surface="muted" gap="xs" rounded="xl" padding="md" border="default">
-        <Span className="font-extrabold font-mono leading-none" color="primary" size="2xl">{isLoadingStatus ? <Span className="text-zinc-300 dark:text-slate-600">—</Span> : totalExistingDocs.toLocaleString()}</Span>
+        <Span className="font-extrabold font-mono leading-none" color="primary" size="2xl">{isLoadingStatus ? <Span className="text-zinc-300 text-[var(--appkit-color-text-muted)]">—</Span> : totalExistingDocs.toLocaleString()}</Span>
         <Span color="muted" size="xs">docs in DB</Span>
       </Stack>
       <Stack className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 text-center" gap="xs" rounded="xl" padding="md">
@@ -2820,11 +2821,11 @@ function renderSeedPanelPagination({ page, setPage, totalPages, PAGE_SIZE, filte
     <Row border="default" justify="between" className="border-t" padding="t-xs">
       <Span size="xs" variant="muted">Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filteredCollections.length)} of {filteredCollections.length}</Span>
       <Row gap="xs">
-        <Button rounded="lg" type="button" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-2.5 py-1 text-sm font-medium border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-slate-700 transition-colors">‹ Prev</Button>
+        <Button rounded="lg" type="button" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-2.5 py-1 text-sm font-medium border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] text-zinc-700 text-[var(--appkit-color-text-muted)] disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-slate-700 transition-colors">‹ Prev</Button>
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-          <Button type="button" key={n} onClick={() => setPage(n)} className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${n === page ? "bg-amber-500 text-white font-bold" : "border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 hover:bg-zinc-50 dark:hover:bg-slate-700"}`}>{n}</Button>
+          <Button type="button" key={n} onClick={() => setPage(n)} className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${n === page ? "bg-amber-500 text-white font-bold" : "border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] text-zinc-700 text-[var(--appkit-color-text-muted)] hover:bg-zinc-50 dark:hover:bg-slate-700"}`}>{n}</Button>
         ))}
-        <Button rounded="lg" type="button" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-2.5 py-1 text-sm font-medium border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-zinc-700 dark:text-slate-300 disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-slate-700 transition-colors">Next ›</Button>
+        <Button rounded="lg" type="button" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-2.5 py-1 text-sm font-medium border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] text-zinc-700 text-[var(--appkit-color-text-muted)] disabled:opacity-40 hover:bg-zinc-50 dark:hover:bg-slate-700 transition-colors">Next ›</Button>
       </Row>
     </Row>
   );
@@ -2832,7 +2833,7 @@ function renderSeedPanelPagination({ page, setPage, totalPages, PAGE_SIZE, filte
 
 function renderSeedScaleSummary() {
   return (
-    <Div padding="5" className="dark:bg-white/[0.03] dark:border-white/10" surface="muted" rounded="2xl" border="default">
+    <Div padding="5" className="dark:bg-[var(--appkit-color-surface)]/[0.03] dark:border-white/10" surface="muted" rounded="2xl" border="default">
       <Heading level={3} className="m-0 mb-4" color="warning" size="base" weight="bold">📊 Target Seed Scale</Heading>
       <Grid cols="halves" gap="none" className="gap-x-10">
         {[

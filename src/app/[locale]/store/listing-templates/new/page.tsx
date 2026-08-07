@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 
 import {
   Container,
@@ -47,7 +48,8 @@ export default function Page() {
     let defaults: unknown = {};
     try {
       defaults = JSON.parse(form.defaultsJson || "{}");
-    } catch {
+    } catch (_err) {
+      void normalizeError(_err);
       showToast("Defaults must be valid JSON", "error");
       return;
     }

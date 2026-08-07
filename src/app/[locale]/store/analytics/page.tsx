@@ -1,8 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
-import { SellerAnalyticsView, SellerAnalyticsStats, SellerTopProducts, Div, Text } from "@mohasinac/appkit/client";
+import { useQuery } from "@tanstack/react-query";
+import { SellerAnalyticsView, SellerAnalyticsStats, SellerTopProducts, Div, Text, apiClient } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
-import { getStoreAnalytics } from "@/lib/api/store-client";
 
 const __P = {
   p4: "p-4",
@@ -29,39 +28,31 @@ function rupees(paise: number) {
 }
 
 export default function Page() {
-  const [data, setData] = useState<AnalyticsData>({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, isPending, error } = useQuery<AnalyticsData>({
+    queryKey: ["store-analytics"],
+    queryFn: () => apiClient.get<AnalyticsData>(API_ROUTES.STORE.ANALYTICS),
+    staleTime: 60_000,
+  });
 
-  useEffect(() => {
-    getStoreAnalytics(API_ROUTES.STORE.ANALYTICS)
-      .then((r) => r.json())
-      .then((json) => {
-        if (!json?.data) throw new Error("No data");
-        setData(json.data);
-      })
-      .catch((err: Error) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const summary = data.summary ?? {
+  const summary = data?.summary ?? {
     totalOrders: 0,
     totalRevenue: 0,
     totalProducts: 0,
     publishedProducts: 0,
   };
+  const errorMessage = error instanceof Error ? error.message : null;
 
   return (
     <SellerAnalyticsView
       labels={{ title: "Store Analytics" }}
-      isLoading={loading}
+      isLoading={isPending}
       renderStats={() =>
-        error ? (
+        errorMessage ? (
           <Div className={`${__P.p4} border border-[var(--appkit-color-border)]`} rounded="lg">
             <Text className="text-[var(--appkit-color-text-muted)]" size="sm">
-              {error === "Analytics service not configured"
+              {errorMessage === "Analytics service not configured"
                 ? "Analytics service is not configured yet. Check back after your first orders."
-                : `Could not load analytics: ${error}`}
+                : `Could not load analytics: ${errorMessage}`}
             </Text>
           </Div>
         ) : (
@@ -72,7 +63,7 @@ export default function Page() {
         )
       }
       renderTopProducts={() =>
-        data.topProducts && data.topProducts.length > 0 ? (
+        data?.topProducts && data.topProducts.length > 0 ? (
           <SellerTopProducts products={data.topProducts} formatRevenue={(v) => rupees(v)} />
         ) : null
       }

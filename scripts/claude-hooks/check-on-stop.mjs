@@ -329,6 +329,9 @@ const checks = [
   // ── P-1: feature-flag discipline (strict-zero) ───────────────────────────
   { label: "audit-feature-flags",   cmd: "node", args: ["scripts/audit-feature-flags.mjs"],   cwd: ROOT },
   { label: "audit-direct-fetch-ui", cmd: "node", args: ["scripts/audit-direct-fetch-ui.mjs"], cwd: ROOT },
+  // ── Error-handling discipline: no `catch {}` (no binding) or `.catch(console.error)` ─
+  { label: "audit-empty-catch",   cmd: "node", args: ["scripts/audit-empty-catch.mjs"],   cwd: ROOT, env: { STRICT: "1" } },
+  { label: "audit-console-catch", cmd: "node", args: ["scripts/audit-console-catch.mjs"], cwd: ROOT, env: { STRICT: "1" } },
 ];
 
 // Baseline violation counts — strict-zero. All three audits verified clean ✓
@@ -345,10 +348,12 @@ for (const check of checks) {
     failures.push({ label: check.label, output: `script not found: ${check.args[0]}` });
     continue;
   }
+  const spawnEnv = check.env ? { ...process.env, ...check.env } : process.env;
   const result = spawnSync(check.cmd, check.args, {
     cwd: check.cwd,
     encoding: "utf8",
     shell: false,
+    env: spawnEnv,
   });
   if (result.status === 0) continue;
 

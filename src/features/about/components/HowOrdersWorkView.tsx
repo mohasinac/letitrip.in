@@ -103,9 +103,9 @@ export async function HowOrdersWorkView() {
       label: t("s1Label"),
       desc: t("s1Desc"),
       color:
-        "bg-slate-50 border-slate-200 dark:bg-slate-800/60 dark:border-slate-700",
+        "bg-slate-50 border-slate-200 bg-[var(--appkit-color-surface-input)] border-[var(--appkit-color-border)]",
       badge:
-        "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300",
+        "bg-[var(--appkit-color-border)] text-[var(--appkit-color-text-muted)]",
       icon: "🕐",
     },
     {
@@ -191,10 +191,10 @@ export async function HowOrdersWorkView() {
     {
       emoji: "🕐",
       circleClass:
-        "bg-slate-100 dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-500",
+        "bg-[var(--appkit-color-border-subtle)] border-2 border-[var(--appkit-color-border)]",
       badge: t("s1Label"),
       badgeClass:
-        "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300",
+        "bg-[var(--appkit-color-border-subtle)] text-[var(--appkit-color-text-muted)]",
     },
     {
       emoji: "✅",

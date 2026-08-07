@@ -45,8 +45,9 @@ function extractStoragePath(url: string): string | null {
     }
 
     return null;
-  } catch {
-    return null;
+  } catch (_err) {
+    void normalizeError(_err);
+    return null; // URL constructor throws for non-URL strings — return null to caller
   }
 }
 

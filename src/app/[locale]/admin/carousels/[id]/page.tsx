@@ -62,7 +62,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
         <Row className="mb-2" gap="sm">
           <Link
             href={String(ROUTES.ADMIN.CAROUSELS)}
-            className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300"
+            className="text-sm text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text-muted)]"
           >
             ← Carousels
           </Link>
@@ -87,7 +87,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
             className={[
               "rounded-lg px-4 py-2 text-sm font-medium",
               atMax
-                ? "cursor-not-allowed bg-zinc-200 text-zinc-400 dark:bg-slate-700 dark:text-zinc-500"
+                ? "cursor-not-allowed bg-zinc-200 text-zinc-400 bg-[var(--appkit-color-border)] text-[var(--appkit-color-text)]0"
                 : "bg-[var(--appkit-color-primary)] text-white hover:opacity-90",
             ].join(" ")}
             aria-disabled={atMax}
@@ -112,7 +112,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
                   <Th className="text-right" padding="md" color="muted" weight="medium">Edit</Th>
                 </Tr>
               </Thead>
-              <Tbody className="divide-y divide-zinc-100 dark:divide-slate-700">
+              <Tbody className="divide-y divide-zinc-100 divide-[var(--appkit-color-border)]">
                 {slides.map((slide, idx) => (
                   <Tr key={slide.id} className="bg-[var(--appkit-color-surface)] hover:bg-[var(--appkit-color-bg)] dark:bg-[var(--appkit-color-surface-elevated)] dark:hover:bg-[var(--appkit-color-surface-elevated)]">
                     <Td padding="md" color="muted">{idx + 1}</Td>

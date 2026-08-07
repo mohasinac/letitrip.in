@@ -43,14 +43,14 @@ export const EVENT_META = {
 } as const;
 
 export const EVENT_TYPE_BADGE: Record<string, string> = {
-  sale: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-  offer: "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300",
-  poll: "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
-  survey: "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300",
-  feedback: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
-  raffle: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200",
-  spin_wheel: "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
-  lottery: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+  sale: "bg-success-surface text-success",
+  offer: "bg-primary-100 text-primary-700",
+  poll: "bg-[var(--appkit-color-primary-50)] text-[var(--appkit-color-primary-600)]",
+  survey: "bg-primary-100 text-primary-700",
+  feedback: "bg-warning-surface text-warning",
+  raffle: "bg-warning-surface text-warning",
+  spin_wheel: "bg-error-surface text-error",
+  lottery: "bg-[var(--appkit-color-primary-50)] text-[var(--appkit-color-primary-700)]",
 } as const;
 
 export const EVENT_STATUS_BADGE: Record<string, string> = {
@@ -62,7 +62,7 @@ export const EVENT_STATUS_BADGE: Record<string, string> = {
 } as const;
 
 export const EVENT_BADGE_FALLBACK =
-  "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300";
+  "bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text-muted)]";
 
 export const EVENT_TYPE = {
   POLL: "poll",

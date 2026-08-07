@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 
 import type { ReactNode } from "react";
 import { useMemo, useCallback, useState } from "react";
@@ -152,7 +153,8 @@ export default function LayoutShellClient({
       void queryClient.invalidateQueries({ queryKey: ["notifications"] });
       showToast("Signed out successfully", "info");
       router.push(String(ROUTES.AUTH.LOGIN));
-    } catch {
+    } catch (_err) {
+      void normalizeError(_err);
       showToast("Signed out", "info");
       router.push(String(ROUTES.AUTH.LOGIN));
     }

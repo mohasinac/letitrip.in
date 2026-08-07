@@ -29,7 +29,8 @@ function loadPrefs(): DevPrefs {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     return raw ? { ...DEFAULT_PREFS, ...JSON.parse(raw) } : DEFAULT_PREFS;
-  } catch {
+  } catch (_err) {
+    void normalizeError(_err);
     return DEFAULT_PREFS;
   }
 }
@@ -185,7 +186,7 @@ export default function Page() {
     setPrefs(next);
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {}
+    } catch (_err) { void normalizeError(_err); }
   }, [prefs]);
 
   return (

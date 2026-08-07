@@ -11,6 +11,8 @@ import {
   bidRepository,
   addressesRepository,
   savedPaymentMethodsRepository,
+  normalizeError,
+  serverLogger,
 } from "@mohasinac/appkit";
 import { sendNotification } from "@mohasinac/appkit/server";
 import { getAdminAuth } from "@mohasinac/appkit/server";
@@ -72,8 +74,9 @@ export const POST = withProviders(
       // 1. Disable Firebase Auth login
       try {
         await getAdminAuth().updateUser(uid, { disabled: true });
-      } catch {
-        // non-fatal — user may not have Auth record
+      } catch (err) {
+        void normalizeError(err);
+        serverLogger.warn("hard-ban: Auth disable failed (user may lack Auth record)", { uid, error: err instanceof Error ? err.message : String(err) });
       }
 
       // 2. Mark banned on Firestore doc
@@ -88,7 +91,10 @@ export const POST = withProviders(
       try {
         const sessions = await sessionRepository.findActiveByUser(uid);
         await Promise.all(sessions.map((s) => sessionRepository.delete(s.id)));
-      } catch { /* non-fatal */ }
+      } catch (err) {
+        void normalizeError(err);
+        serverLogger.warn("hard-ban: session cleanup failed (non-fatal)", { uid, error: err instanceof Error ? err.message : String(err) });
+      }
 
       // 4. Cascade to store if seller
       if (target.role === "seller") {
@@ -101,7 +107,10 @@ export const POST = withProviders(
               products.map((p) => productRepository.update(p.id, { status: "archived" } as any)),
             );
           }
-        } catch { /* non-fatal */ }
+        } catch (err) {
+          void normalizeError(err);
+          serverLogger.warn("hard-ban: store/product cascade failed (non-fatal)", { uid, error: err instanceof Error ? err.message : String(err) });
+        }
       }
 
       // 5. Cancel active bids
@@ -109,21 +118,30 @@ export const POST = withProviders(
         const bids = await bidRepository.findBy("bidderId", uid);
         const activeBids = bids.filter((b) => b.status === "active");
         await Promise.all(activeBids.map((b) => bidRepository.update(b.id, { status: "cancelled" } as any)));
-      } catch { /* non-fatal */ }
+      } catch (err) {
+        void normalizeError(err);
+        serverLogger.warn("hard-ban: bid cancellation failed (non-fatal)", { uid, error: err instanceof Error ? err.message : String(err) });
+      }
 
       // 6. Cascade address ban + cross-account cluster ban
       try {
         const banData = { banReason: `User hard-banned: ${body!.reason}`, bannedBy: user!.uid };
         await addressesRepository.banAllForOwner("user", uid, banData);
         await cascadeAddressClusterBan(uid, banData);
-      } catch { /* non-fatal */ }
+      } catch (err) {
+        void normalizeError(err);
+        serverLogger.warn("hard-ban: address cluster ban failed (non-fatal)", { uid, error: err instanceof Error ? err.message : String(err) });
+      }
 
       // 7. Cascade payment method ban + cross-account cluster ban
       try {
         const banData = { banReason: `User hard-banned: ${body!.reason}`, bannedBy: user!.uid };
         await savedPaymentMethodsRepository.banAllForUser(uid, banData);
         await cascadePaymentClusterBan(uid, banData);
-      } catch { /* non-fatal */ }
+      } catch (err) {
+        void normalizeError(err);
+        serverLogger.warn("hard-ban: payment method cluster ban failed (non-fatal)", { uid, error: err instanceof Error ? err.message : String(err) });
+      }
 
       // 8. Notify user
       try {
@@ -136,7 +154,10 @@ export const POST = withProviders(
           relatedId: uid,
           relatedType: "user",
         });
-      } catch { /* non-fatal */ }
+      } catch (err) {
+        void normalizeError(err);
+        serverLogger.warn("hard-ban: user notification failed (non-fatal)", { uid, error: err instanceof Error ? err.message : String(err) });
+      }
 
       return successResponse({ uid }, "User hard-banned");
     },

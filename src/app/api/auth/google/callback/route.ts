@@ -387,8 +387,8 @@ export async function GET(request: NextRequest) {
           status: RTDBPayloadStatus.ERROR,
           error: ERROR_MESSAGES.AUTH.SIGN_IN_FAILED,
         });
-      } catch {
-        // ignore secondary failure
+      } catch (_err) {
+        void normalizeError(_err); // ignore secondary failure — primary error already handled and redirected
       }
     }
     return NextResponse.redirect(new URL("/auth/close?error=unexpected", origin));

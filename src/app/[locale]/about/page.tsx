@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import type { Metadata } from "next";
 import { AboutView } from "@mohasinac/appkit";
 import { siteSettingsRepository } from "@mohasinac/appkit";
@@ -21,7 +22,8 @@ export default async function Page() {
   try {
     const settings = await siteSettingsRepository.getSingleton();
     aboutContent = (settings as any).aboutContent ?? {};
-  } catch {
+  } catch (_err) {
+    void normalizeError(_err);
     // Firestore unavailable — use i18n defaults
   }
 

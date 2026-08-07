@@ -6,6 +6,7 @@ import {
   errorResponse,
   BlogPostStatusValues,
 } from "@mohasinac/appkit";
+import { safeFireAndForget } from "@mohasinac/appkit/server";
 
 function toSerializable(doc: any) {
   return {
@@ -24,7 +25,7 @@ export const GET = withProviders(
       if (!post || post.status !== BlogPostStatusValues.PUBLISHED) {
         return errorResponse("Blog post not found", 404);
       }
-      blogRepository.incrementViews(post.id).catch(console.error);
+      safeFireAndForget(blogRepository.incrementViews(post.id), "blog: incrementViews");
       const related = await blogRepository
         .findRelated(post.category, post.id, 3)
         .catch(() => []);

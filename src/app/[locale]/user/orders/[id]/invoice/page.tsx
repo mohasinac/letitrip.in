@@ -25,7 +25,7 @@ function renderInvoiceActionBar(id: string) {
     >
       <Link
         href={String(ROUTES.USER.ORDER_DETAIL(id))}
-        className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+        className="text-sm text-[var(--appkit-color-text-muted)] hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
       >
         ← Back to order
       </Link>
@@ -41,17 +41,17 @@ function renderInvoiceHeader(order: OrderData, orderDate: string) {
     <Row justify="between" align="start" className="mb-8 print:mb-6">
       <Div>
         <Heading level={2} className="print:text-black" size="2xl" weight="bold">LetItRip</Heading>
-        <Text variant="secondary" className="mt-0.5 print:text-gray-500" size="xs">letitrip.in</Text>
+        <Text variant="secondary" className="mt-0.5 print:text-[var(--appkit-color-text-muted)]" size="xs">letitrip.in</Text>
       </Div>
       <Div className="text-right">
         <Text className="print:text-black" color="primary" size="lg" weight="semibold">
           Invoice
         </Text>
-        <Text variant="secondary" className="mt-0.5 print:text-gray-500" size="xs">
+        <Text variant="secondary" className="mt-0.5 print:text-[var(--appkit-color-text-muted)]" size="xs">
           #{order.id.slice(-8).toUpperCase()}
         </Text>
         {orderDate && (
-          <Text variant="secondary" className="print:text-gray-500" size="xs">{orderDate}</Text>
+          <Text variant="secondary" className="print:text-[var(--appkit-color-text-muted)]" size="xs">{orderDate}</Text>
         )}
       </Div>
     </Row>
@@ -61,7 +61,7 @@ function renderInvoiceHeader(order: OrderData, orderDate: string) {
 function renderInvoiceAddress(a: NonNullable<OrderData["address"]>) {
   return (
     <Stack gap="xs" className="mb-6">
-      <Text className="tracking-wider print:text-gray-500" color="faint" size="xs" weight="semibold" transform="uppercase">
+      <Text className="tracking-wider print:text-[var(--appkit-color-text-muted)]" color="faint" size="xs" weight="semibold" transform="uppercase">
         Delivered to
       </Text>
       <Text className="print:text-black" color="primary" size="sm">{a.line1}</Text>
@@ -72,7 +72,7 @@ function renderInvoiceAddress(a: NonNullable<OrderData["address"]>) {
         {[a.city, a.state, a.postalCode].filter(Boolean).join(", ")}
       </Text>
       {a.country && (
-        <Text variant="secondary" className="print:text-gray-500" size="sm">{a.country}</Text>
+        <Text variant="secondary" className="print:text-[var(--appkit-color-text-muted)]" size="sm">{a.country}</Text>
       )}
     </Stack>
   );
@@ -87,7 +87,7 @@ function renderInvoiceItemsTable(order: OrderData) {
             <Th
               key={h}
               className={[
-                "py-2 text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-400 print:text-gray-500",
+                "py-2 text-xs font-semibold uppercase tracking-wider text-[var(--appkit-color-text-faint)] print:text-[var(--appkit-color-text-muted)]",
                 i === 0 ? "text-left" : i === 1 ? "text-center" : "text-right",
               ].join(" ")}
             >
@@ -103,7 +103,7 @@ function renderInvoiceItemsTable(order: OrderData) {
               <Td className="print:text-black" padding="sm" color="primary">
                 {item.title}
                 {item.attributes && Object.keys(item.attributes).length > 0 && (
-                  <Span size="xs" className="ml-1.5 print:text-gray-500" color="faint">
+                  <Span size="xs" className="ml-1.5 print:text-[var(--appkit-color-text-muted)]" color="faint">
                     ({Object.entries(item.attributes).map(([k, v]) => `${k}: ${v}`).join(", ")})
                   </Span>
                 )}

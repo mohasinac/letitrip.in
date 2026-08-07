@@ -11,6 +11,7 @@ import {
   Input,
   Row,
   Select,
+  Skeleton,
   Text,
   ACTIONS,
 } from "@mohasinac/appkit/client";
@@ -23,7 +24,7 @@ import { useUrlTable } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { getSublistingCategories, deleteSublistingCategory } from "@/lib/api/store-client";
 
-import { Stack } from "@mohasinac/appkit";
+import { Stack, normalizeError } from "@mohasinac/appkit";
 interface CategoryRow {
   id: string;
   name: string;
@@ -48,6 +49,7 @@ export default function Page() {
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const sort = table.get("sort") || "name";
@@ -55,6 +57,7 @@ export default function Page() {
 
   const load = useCallback(() => {
     setLoading(true);
+    setLoadError(null);
     const params = new URLSearchParams({
       page: String(page),
       pageSize: String(PAGE_SIZE),
@@ -76,7 +79,9 @@ export default function Page() {
           })),
         );
       })
-      .catch(console.error)
+      .catch((err: unknown) => {
+        setLoadError(err instanceof Error ? err.message : "Could not load categories");
+      })
       .finally(() => setLoading(false));
   }, [page, sort]);
 
@@ -90,7 +95,8 @@ export default function Page() {
     try {
       await deleteSublistingCategory(API_ROUTES.STORE.SUBLISTING_CATEGORY_BY_ID(id));
       load();
-    } catch {
+    } catch (_err) {
+      void normalizeError(_err);
       // eslint-disable-next-line no-alert
       alert("Failed to delete. You may only delete categories you created.");
     } finally {
@@ -108,7 +114,7 @@ export default function Page() {
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
-  return renderPage({ filtered, loading, search, setSearch, sort, total, totalPages, page, table, deletingId, handleDelete });
+  return renderPage({ filtered, loading, loadError, search, setSearch, sort, total, totalPages, page, table, deletingId, handleDelete });
 }
 
 function renderCategoryRow(
@@ -147,10 +153,11 @@ function renderCategoryRow(
 }
 
 function renderPage({
-  filtered, loading, search, setSearch, sort, total, totalPages, page, table, deletingId, handleDelete,
+  filtered, loading, loadError, search, setSearch, sort, total, totalPages, page, table, deletingId, handleDelete,
 }: {
   filtered: CategoryRow[];
   loading: boolean;
+  loadError: string | null;
   search: string;
   setSearch: (v: string) => void;
   sort: string;
@@ -182,12 +189,16 @@ function renderPage({
         <Select value={sort} onChange={(e) => table.set("sort", e.target.value)} aria-label="Sort categories" options={SORT_OPTIONS} />
       </Row>
 
+      {loadError && !loading && (
+        <Div className="mb-4 border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)]" rounded="lg" padding="md">
+          <Text size="sm" className="text-[var(--appkit-color-error)]">Could not load categories: {loadError}</Text>
+        </Div>
+      )}
+
       {loading ? (
-        <Row align="center" justify="center" padding="y-4xl">
-          <Text variant="secondary" size="sm">
-            Loading…
-          </Text>
-        </Row>
+        <Stack gap="md" padding="y-xl">
+          {[0, 1, 2].map((i) => <Skeleton key={i} className="h-16 rounded-xl" />)}
+        </Stack>
       ) : filtered.length === 0 ? (
         <Stack justify="center" className="border border-dashed border-[var(--appkit-color-border)] text-center" padding="y-4xl" align="center" rounded="2xl">
           <Text className="mb-2" size="3xl">🏷️</Text>

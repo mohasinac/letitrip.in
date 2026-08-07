@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { REVIEW_FIELDS, SIEVE_OP, createReview, errorResponse, parseJsonBody, reviewRepository, sieveFilter, sortBy, successResponse } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, userRepository } from "@mohasinac/appkit";
-import { isSoftBanned } from "@mohasinac/appkit/server";
+import { isSoftBanned, serverLogger } from "@mohasinac/appkit/server";
+import { normalizeError } from "@mohasinac/appkit";
 
 function param(url: URL, key: string): string | null {
   return url.searchParams.get(key);
@@ -158,7 +159,9 @@ export async function GET(request: Request): Promise<NextResponse> {
       "public, max-age=120, s-maxage=300, stale-while-revalidate=60",
     );
     return response;
-  } catch {
+  } catch (err) {
+    void normalizeError(err);
+    serverLogger.error("reviews/[id] GET: unhandled error", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json(
       { success: false, error: "Failed to fetch reviews" },
       { status: 500 },

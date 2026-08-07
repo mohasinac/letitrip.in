@@ -185,7 +185,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                 </Button>
                 <Link
                   href={String(ROUTES.USER.ORDER_DETAIL(id))}
-                  className="rounded-xl border border-zinc-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors"
+                  className="rounded-xl border border-[var(--appkit-color-border)] px-4 py-2 text-sm font-medium text-[var(--appkit-color-text-muted)] hover:bg-zinc-50 hover:bg-[var(--appkit-color-surface-elevated)] transition-colors"
                 >
                   Cancel
                 </Link>

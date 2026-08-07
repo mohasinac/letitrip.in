@@ -15,6 +15,7 @@
  */
 
 import type { NextRequest } from "next/server";
+import { normalizeError } from "@mohasinac/appkit";
 
 /** Read the __session cookie value off a NextRequest. Returns null when absent. */
 export function readEdgeSessionCookie(request: NextRequest): string | null {
@@ -35,7 +36,8 @@ export function decodeEdgeSessionRole(cookie: string | null): string | null {
     const json = atob(b64);
     const payload = JSON.parse(json) as { role?: string };
     return payload.role ?? null;
-  } catch {
-    return null;
+  } catch (_err) {
+    void normalizeError(_err);
+    return null; // invalid JWT payload or base64 — Edge runtime cannot use Admin SDK to verify
   }
 }

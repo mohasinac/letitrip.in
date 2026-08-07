@@ -1,13 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Div, DynamicBgDiv, ROUTES, SellerTopProducts, Span, StoreDashboardView, useStoreDashboard } from "@mohasinac/appkit/client";
+import { useQuery } from "@tanstack/react-query";
+import { Div, DynamicBgDiv, ROUTES, SellerTopProducts, Span, StoreDashboardView, apiClient, useStoreDashboard } from "@mohasinac/appkit/client";
 const __O = {
   hidden: "overflow-hidden",
 } as const;
 import { TrendingUp, ShoppingBag, Clock, Package, Plus, BarChart2, Wallet, Store, Star } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
-import { getStoreAnalytics } from "@/lib/api/store-client";
 
 import { Row } from "@mohasinac/appkit";
 // Brand gradient mirrors the SiteLogo wordmark — using CSS var tokens
@@ -80,14 +79,12 @@ function rupees(paise: number) {
 
 export default function Page() {
   const { stats, isLoading } = useStoreDashboard();
-  const [topProducts, setTopProducts] = useState<TopProduct[]>([]);
-
-  useEffect(() => {
-    getStoreAnalytics(API_ROUTES.STORE.ANALYTICS)
-      .then((r) => r.json())
-      .then((json) => { if (json?.data?.topProducts) setTopProducts(json.data.topProducts); })
-      .catch(console.error);
-  }, []);
+  const { data: analyticsData } = useQuery<{ topProducts?: TopProduct[] }>({
+    queryKey: ["store-analytics-top-products"],
+    queryFn: () => apiClient.get<{ topProducts?: TopProduct[] }>(API_ROUTES.STORE.ANALYTICS),
+    staleTime: 60_000,
+  });
+  const topProducts = analyticsData?.topProducts ?? [];
 
   return (
     <StoreDashboardView

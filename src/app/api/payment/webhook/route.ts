@@ -10,9 +10,9 @@ import type { JsonValue } from "@mohasinac/appkit";
  * Verifies the webhook signature and processes relevant events.
  *
  * Events handled:
- *   payment.captured  â€” Payment captured successfully
- *   payment.failed    â€” Payment failed
- *   order.paid        â€” Order fully paid
+ *   payment.captured  â€" Payment captured successfully
+ *   payment.failed    â€" Payment failed
+ *   order.paid        â€" Order fully paid
  *
  * Razorpay sends a `x-razorpay-signature` header with each webhook request.
  * RAZORPAY_WEBHOOK_SECRET must be configured and match the secret in the
@@ -28,7 +28,7 @@ import { serverLogger } from "@mohasinac/appkit";
 import { getAdminRealtimeDb } from "@mohasinac/appkit";
 import { RTDB_PATHS } from "@mohasinac/appkit";
 
-// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€ Helpers â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 interface RazorpayPaymentEntity {
   id?: string;
@@ -68,9 +68,10 @@ async function __POST__g(request: NextRequest) {
     let isValid = false;
     try {
       isValid = await verifyWebhookSignature(rawBody, signature);
-    } catch {
+    } catch (_err) {
+      void normalizeError(_err);
       serverLogger.warn(
-        "Razorpay webhook: RAZORPAY_WEBHOOK_SECRET not configured â€” skipping signature check in dev",
+        "Razorpay webhook: RAZORPAY_WEBHOOK_SECRET not configured — skipping signature check in dev",
       );
       // In development without a secret, allow through (remove in production)
       if (process.env.NODE_ENV === "production") {
@@ -88,8 +89,9 @@ async function __POST__g(request: NextRequest) {
     let event: { event: string; payload: Record<string, JsonValue> };
     try {
       event = JSON.parse(rawBody);
-    } catch {
-      throw new ValidationError(ERROR_MESSAGES.VALIDATION.INVALID_JSON);
+    } catch (_err) {
+      void normalizeError(_err);
+      throw new ValidationError(ERROR_MESSAGES.VALIDATION.INVALID_JSON); // malformed webhook payload
     }
 
     serverLogger.info(`Razorpay webhook event: ${event.event}`);
@@ -97,7 +99,7 @@ async function __POST__g(request: NextRequest) {
     // Handle events
     switch (event.event) {
       case "payment.captured": {
-        // Payment was captured â€” orders should already be confirmed via /verify.
+        // Payment was captured â€" orders should already be confirmed via /verify.
         // Signal the RTDB node as a fallback in case the client lost connectivity.
         const payment = (
           event.payload as { payment?: { entity?: RazorpayPaymentEntity } }
@@ -141,7 +143,7 @@ async function __POST__g(request: NextRequest) {
 
       case "order.paid": {
         serverLogger.info(
-          `order.paid: razorpay order fully paid â€” ${JSON.stringify(event.payload)}`,
+          `order.paid: razorpay order fully paid â€" ${JSON.stringify(event.payload)}`,
         );
         break;
       }

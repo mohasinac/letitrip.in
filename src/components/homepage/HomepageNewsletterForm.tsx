@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 
 import { useCallback, useState } from "react";
 import { z } from "zod";
@@ -51,7 +52,8 @@ export function HomepageNewsletterForm() {
       }
       try {
         await subscribeMutation.mutateAsync(parsed.data);
-      } catch {
+      } catch (_err) {
+        void normalizeError(_err);
         const message = "Could not subscribe right now. Please try again.";
         setFieldError("email", message);
         showToast(message, "error");

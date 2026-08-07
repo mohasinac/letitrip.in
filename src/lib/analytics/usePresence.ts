@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+import { normalizeError } from "@mohasinac/appkit";
 import { usePathname } from "next/navigation";
 import {
   ref,
@@ -40,8 +41,9 @@ export function usePresence(uid: string | null) {
     if (!clientIdRef.current) {
       try {
         clientIdRef.current = getOrCreateClientId();
-      } catch {
-        return; // sessionStorage blocked (private mode edge case)
+      } catch (_err) {
+        void normalizeError(_err);
+        return; // sessionStorage blocked (private browsing mode or iframe sandbox)
       }
     }
     const clientId = clientIdRef.current;
@@ -63,8 +65,8 @@ export function usePresence(uid: string | null) {
           await onDisconnect(presenceRef).remove();
           disconnectArmedRef.current = true;
         }
-      } catch {
-        // network offline / RTDB unavailable — silent
+      } catch (_err) {
+        void normalizeError(_err); // network offline / RTDB unavailable — presence update is best-effort
       }
     })();
 
@@ -79,8 +81,8 @@ export function usePresence(uid: string | null) {
           `analytics/pageviews/${date}/${encodedPath}`,
         );
         await runTransaction(pvRef, (current) => (current ?? 0) + 1);
-      } catch {
-        // best-effort
+      } catch (_err) {
+        void normalizeError(_err); // network offline / RTDB unavailable — page view counter is best-effort
       }
     })();
   }, [pathname, uid]);

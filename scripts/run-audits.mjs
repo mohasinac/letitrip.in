@@ -134,8 +134,12 @@ const AUDITS = [
   // Strict-zero: blocks every known audit suppression/escape-hatch comment marker.
   // Fix root causes instead of suppressing audits with inline markers.
   { name: "no-suppression-comments",       script: "scripts/audit-no-suppression-comments.mjs" },
-];
+  // Error-handling audits: catch {} (no binding) and .catch(console.error/warn) in server code.
+  // Report mode — pre-existing catch{} violations being fixed separately.
+  { name: "empty-catch",                   script: "scripts/audit-empty-catch.mjs" },
+  { name: "console-catch",                 script: "scripts/audit-console-catch.mjs" },
 
+];
 function parseArgs(argv) {
   const args = argv.slice(2);
   const flags = { all: false, list: false, fix: false, failFast: true };
@@ -178,7 +182,8 @@ function runAudit(audit, { fix, passthrough }) {
   } else {
     cmd = process.execPath;
     args = [audit.script, ...extra];
-    opts = { cwd: ROOT, stdio: "inherit" };
+    const env = audit.env ? { ...process.env, ...audit.env } : process.env;
+    opts = { cwd: ROOT, stdio: "inherit", env };
   }
 
   const t0 = Date.now();

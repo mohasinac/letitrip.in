@@ -3,6 +3,7 @@
  * (layout / overview / participate / leaderboard).
  */
 
+import { normalizeError } from "@mohasinac/appkit";
 import type { FirestoreValue } from "@mohasinac/appkit";
 
 import { LOCALE_CONFIG } from "@/constants";
@@ -26,7 +27,8 @@ export function formatEventDate(value: unknown): string {
       LOCALE_CONFIG.DEFAULT_LOCALE,
       { dateStyle: "medium" },
     );
-  } catch {
+  } catch (_err) {
+    void normalizeError(_err);
     return String(value);
   }
 }
@@ -36,7 +38,8 @@ export function toIsoOrUndefined(value: unknown): string | undefined {
   if (typeof value === "string") return value;
   try {
     return new Date(value as string | number | Date).toISOString();
-  } catch {
+  } catch (_err) {
+    void normalizeError(_err);
     return undefined;
   }
 }

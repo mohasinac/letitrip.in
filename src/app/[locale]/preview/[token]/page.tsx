@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { notFound } from "next/navigation";
 import type { JsonValue } from "@mohasinac/appkit";
 import type { Metadata } from "next";
@@ -45,7 +46,8 @@ async function loadPreview(token: string): Promise<PreviewDoc | null> {
     const expiresAt = data.expiresAt?.toDate?.() ?? new Date(0);
     if (expiresAt.getTime() < Date.now()) return null;
     return data;
-  } catch {
+  } catch (_err) {
+    void normalizeError(_err);
     return null;
   }
 }

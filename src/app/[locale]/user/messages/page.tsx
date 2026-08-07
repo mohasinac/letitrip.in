@@ -36,8 +36,8 @@ interface UserMessagesPageProps {
 
 const PAGE_CONTAINER = "w-full max-w-6xl mx-auto h-full min-h-[600px]";
 const ITEM_BASE =
-  "w-full rounded-lg border border-zinc-200 dark:border-zinc-800 p-3 text-left transition-colors";
-const ITEM_IDLE = "bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800";
+  "w-full rounded-lg border border-[var(--appkit-color-border-subtle)] p-3 text-left transition-colors";
+const ITEM_IDLE = "bg-[var(--appkit-color-surface)] hover:bg-[var(--appkit-color-surface)]";
 const ITEM_ACTIVE = "bg-primary/10 border-primary";
 const UNREAD_DOT =
   "inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-error px-1.5 text-xs font-semibold text-white";
@@ -46,9 +46,9 @@ const MESSAGE_LIST_CLASS =
 const BUBBLE_MINE =
   "self-end rounded-2xl rounded-br-sm bg-primary px-3 py-2 text-sm text-white max-w-[80%] whitespace-pre-wrap";
 const BUBBLE_THEIRS =
-  "self-start rounded-2xl rounded-bl-sm bg-zinc-100 dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 max-w-[80%] whitespace-pre-wrap";
+  "self-start rounded-2xl rounded-bl-sm bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] max-w-[80%] whitespace-pre-wrap";
 const INPUT_ROW =
-  "flex items-end gap-2 border-t border-zinc-200 dark:border-zinc-800 pt-3";
+  "flex items-end gap-2 border-t border-[var(--appkit-color-border-subtle)] pt-3";
 
 function relativeTime(d: Date | string): string {
   const t = d instanceof Date ? d.getTime() : new Date(d).getTime();
@@ -163,7 +163,7 @@ function MessageInput({ disabled, onSend, placeholder, sendLabel }: MessageInput
         placeholder={placeholder}
         rows={2}
         disabled={disabled || submitting}
-        className="flex-1 resize-none rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+        className="flex-1 resize-none rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm focus:border-primary focus:outline-none"
       />
       <Button rounded="lg" 
         type="button"

@@ -17,7 +17,7 @@ type SpinPrize = { id: string; label: string; weight: number; isActive: boolean;
 
 // Shared className for the two info-row tiles rendered in the post-submit
 // confirmation panel (leaderboard link + event-home link).
-const CLS_PARTICIPATE_INFO_ROW = "rounded-xl border border-zinc-200 dark:border-zinc-700 px-4 py-3 flex items-center justify-between gap-3";
+const CLS_PARTICIPATE_INFO_ROW = "rounded-xl border border-[var(--appkit-color-border)] px-4 py-3 flex items-center justify-between gap-3";
 
 type FormFieldType = "text" | "textarea" | "email" | "phone" | "number" | "select" | "multiselect" | "checkbox" | "radio" | "date" | "rating" | "file";
 
@@ -285,7 +285,7 @@ function validateField(field: SurveyFormField, value: unknown): string | null {
     if (v?.pattern) {
       try {
         if (!new RegExp(v.pattern).test(value)) return `Value does not match the required format.`;
-      } catch { /* invalid pattern — skip */ }
+      } catch (_err) { void normalizeError(_err); /* invalid pattern — skip */ }
     }
   }
   if (typeof value === "number" || (typeof value === "string" && field.type === "number")) {

@@ -26,6 +26,7 @@
  */
 
 import { withProviders } from "@/providers.config";
+import { normalizeError } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
 import {
   ALLOWED_TYPES_LABEL,
@@ -69,8 +70,9 @@ export const POST = withProviders(createRouteHandler({
     let body: SignRequestBody;
     try {
       body = (await request.json()) as SignRequestBody;
-    } catch {
-      return errorResponse("Invalid JSON body", 400);
+    } catch (_err) {
+      void normalizeError(_err);
+      return errorResponse("Invalid JSON body", 400); // malformed request body
     }
 
     const contentType = typeof body.contentType === "string" ? body.contentType : "";

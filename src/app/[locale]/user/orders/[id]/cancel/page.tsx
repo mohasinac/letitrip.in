@@ -93,7 +93,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
               rows={4}
               maxLength={500}
               placeholder="Tell us why you are cancelling this order…"
-              className="w-full rounded-lg border border-zinc-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+              className="w-full rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
             />
             <Text size="xs" color="faint" align="end">{reason.length}/500</Text>
           </Stack>
@@ -110,7 +110,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
             </Button>
             <Link
               href={String(ROUTES.USER.ORDER_DETAIL(id))}
-              className="rounded-xl border border-zinc-300 dark:border-slate-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-slate-800 transition-colors"
+              className="rounded-xl border border-[var(--appkit-color-border)] px-4 py-2 text-sm font-medium text-[var(--appkit-color-text-muted)] hover:bg-zinc-50 hover:bg-[var(--appkit-color-surface-elevated)] transition-colors"
             >
               Keep Order
             </Link>

@@ -12,7 +12,7 @@ import { ShareEventButton } from "./ShareEventButton";
 const __O = {
   hidden: "overflow-hidden",
 } as const;
-const CLS_LABEL = "font-medium text-zinc-700 dark:text-zinc-300";
+const CLS_LABEL = "font-medium text-[var(--appkit-color-text-muted)]";
 
 interface Props {
   title: string;

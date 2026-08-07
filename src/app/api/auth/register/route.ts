@@ -28,6 +28,7 @@ import { ValidationError } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
+import { callFirebaseIdentityToolkit } from "@mohasinac/appkit/server";
 import { z } from "zod";
 import { serverLogger } from "@mohasinac/appkit";
 import { sendVerificationEmailWithLink } from "@mohasinac/appkit";
@@ -117,20 +118,18 @@ export async function POST(request: NextRequest) {
     // Create custom token for the user
     const customToken = await auth.createCustomToken(userRecord.uid);
 
-    // Exchange custom token for a real ID token via Firebase REST API
-    // createSessionCookie requires an ID token, NOT a custom token
+    // Exchange custom token for a real ID token via Firebase Identity Toolkit REST API.
+    // createSessionCookie requires an ID token, NOT a custom token.
     const apiKey =
       process.env.FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
     if (!apiKey) {
       throw new ValidationError(ERROR_MESSAGES.AUTH.API_KEY_NOT_CONFIGURED);
     }
-    const signInUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${apiKey}`;
-    const signInResponse = await fetch(signInUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: customToken, returnSecureToken: true }),
-    });
-    const signInData = await signInResponse.json();
+    const signInData = await callFirebaseIdentityToolkit<{ idToken?: string }>(
+      "signInWithCustomToken",
+      { token: customToken, returnSecureToken: true },
+      apiKey,
+    );
     if (!signInData.idToken) {
       throw new ValidationError(ERROR_MESSAGES.AUTH.TOKEN_EXCHANGE_FAILED);
     }

@@ -5,6 +5,8 @@ import {
   successResponse,
   errorResponse,
   userRepository,
+  normalizeError,
+  serverLogger,
 } from "@mohasinac/appkit";
 import { sendNotification } from "@mohasinac/appkit/server";
 import type { BannedAction } from "@mohasinac/appkit/server";
@@ -65,7 +67,10 @@ export const POST = withProviders(
           relatedId: uid,
           relatedType: "user",
         });
-      } catch { /* non-fatal */ }
+      } catch (err) {
+        void normalizeError(err);
+        serverLogger.warn("soft-ban: user notification failed (non-fatal)", { uid, action: body!.action, error: err instanceof Error ? err.message : String(err) });
+      }
 
       return successResponse({ uid, action: body!.action }, "Soft ban applied");
     },

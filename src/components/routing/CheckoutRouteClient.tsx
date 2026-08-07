@@ -120,8 +120,8 @@ type CheckoutStep = "address" | "otp-consent" | "otp" | "payment" | "processing"
 
 // --- Shared class strings ----------------------------------------------------
 
-const STEP_CARD_CLS = "rounded-xl border border-zinc-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900";
-const STEP_SUBLABEL_CLS = "text-sm text-zinc-500 dark:text-zinc-400";
+const STEP_CARD_CLS = "rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-6";
+const STEP_SUBLABEL_CLS = "text-sm text-[var(--appkit-color-text-muted)]";
 const CLS_APPLIED_COUPON_ROW = "rounded-lg bg-success-surface border border-success px-3 py-2";
 const PRIMARY_BTN_CLS = "w-full rounded-lg bg-[var(--appkit-color-primary)] px-4 py-3 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50";
 
@@ -210,7 +210,7 @@ function renderAddressStep({
           <Button
             type="button"
             onClick={() => setAddAddressDrawerOpen(true)}
-            className="bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
+            className="bg-zinc-900 text-white hover:bg-zinc-800 bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text)]"
           >
             + Add new address
           </Button>
@@ -706,7 +706,8 @@ export function CheckoutRouteClient({
         setCouponCode("");
         showToast(`Coupon "${data.data.code}" applied! You saved ₹${(data.data.discountAmount / 100).toFixed(2)}.`, "success");
       }
-    } catch {
+    } catch (_err) {
+      void normalizeError(_err);
       setCouponError("Failed to apply coupon. Please try again.");
     } finally {
       setIsCouponLoading(false);
@@ -718,7 +719,7 @@ export function CheckoutRouteClient({
       setLocalCoupons((prev) => (prev ?? effectiveCoupons).filter((c) => c.code !== code));
       try {
         await removeCartCoupon(code);
-      } catch { /* best-effort */ }
+      } catch (_err) { void normalizeError(_err); /* best-effort */ }
       showToast("Coupon removed.", "info");
     },
     [effectiveCoupons, showToast],

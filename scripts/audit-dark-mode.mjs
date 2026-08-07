@@ -21,6 +21,18 @@
  * 9. bg-black / bg-zinc-900 without dark:bg-* (black surface unreadable in light mode if
  *    it should adapt, but commonly intentional — reported only in --strict)
  *
+ * REGRESSION PREVENTION — HARDCODED_DARK_SURFACE (strict-zero)
+ * ------------------------------------------------------------
+ * 10. dark:{bg|text|border|ring|divide|shadow}-{zinc|slate|neutral|gray}-N
+ *     These were migrated to CSS-variable equivalents (2026-08-06 theme system
+ *     overhaul). Any new occurrence is a regression. Strict-zero — no baseline
+ *     drift, no suppression markers. Fix by using the CSS variable equivalent
+ *     from the standard translation table.
+ *
+ *     Excluded paths (CSS vars unsupported architecturally — file-level, NOT markers):
+ *       - appkit/src/_internal/server/**  (Satori OG image renderer)
+ *       - appkit/src/features/email/**    (email clients ignore CSS vars)
+ *
  * EXCEPTIONS (not flagged)
  * ------------------------
  * - Lines that are pure comments
@@ -62,6 +74,16 @@ const SCAN_DIRS = [
 ];
 
 const SKIP_DIRS = new Set(["node_modules", ".next", "dist", "__tests__", "scripts"]);
+
+// Paths excluded from the HARDCODED_DARK_SURFACE check (CSS vars architecturally unsupported)
+const HARDCODED_DARK_SURFACE_SKIP_PATHS = [
+  join(ROOT, "appkit", "src", "_internal", "server"),
+  join(ROOT, "appkit", "src", "features", "email"),
+];
+
+// Strict-zero regression check: dark:{bg|text|border|ring|divide|shadow|from|via|to}-{zinc|slate|neutral|gray}-N
+// Any new occurrence after the 2026-08-06 migration is a regression. No suppression markers.
+const HARDCODED_DARK_SURFACE = /\bdark:(?:bg|text|border|ring|divide|shadow|from|via|to)-(?:zinc|slate|neutral|gray)-\d+\b/;
 const EXTENSIONS = new Set([".tsx", ".ts"]);
 
 // Patterns to detect — [regex for the problematic class, description]
@@ -254,6 +276,21 @@ function scan() {
             }
           }
         }
+
+        // HARDCODED_DARK_SURFACE — strict-zero regression check (2026-08-06)
+        // Excludes OG image and email directories at file-path level (not per-line markers).
+        const skipForHardcoded = HARDCODED_DARK_SURFACE_SKIP_PATHS.some(p => file.startsWith(p));
+        if (!skipForHardcoded) {
+          const hds = line.match(HARDCODED_DARK_SURFACE);
+          if (hds) {
+            violations.push({
+              file: relative(ROOT, file),
+              line: i + 1,
+              match: hds[0],
+              type: "hardcoded-dark-surface",
+            });
+          }
+        }
       }
     }
   }
@@ -262,6 +299,10 @@ function scan() {
 }
 
 const violations = scan();
+
+// HARDCODED_DARK_SURFACE is always strict-zero regardless of --strict flag or baseline.
+const hardcodedViolations = violations.filter(v => v.type === "hardcoded-dark-surface");
+const otherViolations = violations.filter(v => v.type !== "hardcoded-dark-surface");
 
 if (violations.length === 0) {
   console.log("audit-dark-mode: 0 violations ✓");
@@ -275,6 +316,7 @@ if (verbose || violations.length > threshold) {
     inverted: { label: "INVERTED — dark mode text darker than light mode", items: [] },
     "orphan-dark-text": { label: "ORPHAN — dark:text-* without base text-*", items: [] },
     "orphan-dark-bg": { label: "ORPHAN — dark:bg-* without base bg-*", items: [] },
+    "hardcoded-dark-surface": { label: "HARDCODED-DARK-SURFACE — dark:bg|text|border-zinc|slate|neutral|gray (strict-zero; use CSS var)", items: [] },
   };
   for (const v of violations) {
     (groups[v.type]?.items ?? []).push(v);
@@ -291,10 +333,15 @@ if (verbose || violations.length > threshold) {
   console.log();
 }
 
-if (violations.length === 0) {
+if (hardcodedViolations.length === 0 && otherViolations.length === 0) {
   console.log("audit-dark-mode: clean ✓");
   process.exit(0);
 }
-console.log(`audit-dark-mode: ${violations.length} violation(s).`);
+if (hardcodedViolations.length > 0) {
+  console.log(`audit-dark-mode: ${hardcodedViolations.length} HARDCODED_DARK_SURFACE violation(s) — strict-zero; replace with CSS variable equivalent.`);
+}
+if (otherViolations.length > threshold) {
+  console.log(`audit-dark-mode: ${otherViolations.length} other violation(s).`);
+}
 if (!verbose) console.log("  Run with --verbose to see them.");
 process.exit(1);

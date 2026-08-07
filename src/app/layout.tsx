@@ -35,8 +35,8 @@ const playfair = Playfair_Display({
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#3570fc" },
-    { media: "(prefers-color-scheme: dark)", color: "#e91e8c" },
+    { media: "(prefers-color-scheme: light)", color: "#dc2626" }, // crimson-warrior primary
+    { media: "(prefers-color-scheme: dark)",  color: "#7c3aed" }, // shadow-abyss primary
   ],
   width: "device-width",
   initialScale: 1,
@@ -122,7 +122,7 @@ export default async function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`min-h-full bg-zinc-50 dark:bg-slate-950 ${poppins.variable} ${inter.variable} ${cormorant.variable} ${playfair.variable}`}
+      className={`min-h-full bg-[var(--appkit-color-bg)] ${poppins.variable} ${inter.variable} ${cormorant.variable} ${playfair.variable}`}
     >
       <head>
         {/* Preconnect to external origins used by fonts + analytics.
@@ -146,8 +146,7 @@ export default async function RootLayout({
         <script
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
-            __html: `try{var m=document.cookie.match(/(?:^|;\\s*)theme=(dark|light)/);var t=(m&&m[1])||localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.classList.toggle('dark',t==='dark');document.documentElement.setAttribute('data-theme',t);}catch(e){
- void normalizeError(e);}`,
+            __html: `try{var p=localStorage.getItem('appkit:theme-mode');var isDark=p==='dark'||(p!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',isDark);var tid=localStorage.getItem('appkit:theme-id')||(isDark?'default-dark':'default-light');document.documentElement.setAttribute('data-theme',tid);}catch(e){}`,
           }}
         />
         <script

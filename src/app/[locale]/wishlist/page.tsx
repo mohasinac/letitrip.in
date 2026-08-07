@@ -1,4 +1,5 @@
 "use client";
+import { normalizeError } from "@mohasinac/appkit";
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import {
   sortBy,
@@ -88,7 +89,8 @@ export default function WishlistPage() {
       try {
         await removeFromWishlistAction(productId);
         void wl.refetch?.();
-      } catch {
+      } catch (_err) {
+        void normalizeError(_err);
         showToast("Could not remove from wishlist. Please try again.", "error");
       }
     });
@@ -108,7 +110,8 @@ export default function WishlistPage() {
       clearSelection();
       void wl.refetch?.();
       showToast(`${ids.length} item${ids.length !== 1 ? "s" : ""} removed.`, "info");
-    } catch {
+    } catch (_err) {
+      void normalizeError(_err);
       showToast("Could not remove items. Please try again.", "error");
     } finally {
       setIsBulkRemoving(false);
@@ -142,7 +145,8 @@ export default function WishlistPage() {
       clearSelection();
       void wl.refetch?.();
       showToast(`Wishlist cleared (${count} item${count !== 1 ? "s" : ""}).`, "info");
-    } catch {
+    } catch (_err) {
+      void normalizeError(_err);
       showToast("Could not clear wishlist. Please try again.", "error");
     } finally {
       setIsBulkRemoving(false);
@@ -175,7 +179,8 @@ export default function WishlistPage() {
           );
           wl.refetch?.();
         }
-      } catch {
+      } catch (_err) {
+        void normalizeError(_err);
         // Best-effort — don't surface errors
       }
     })();

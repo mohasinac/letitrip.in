@@ -131,7 +131,11 @@ module.exports = defineTailwindConfig({
           950: "var(--appkit-color-secondary-950)",
         },
         cobalt: {
-          // Cobalt Blue — former primary, used for links & nav accents
+          // Static Beyblade design reference — cobalt blue frame color.
+          // NOT wired to CSS variables. Use `primary` for brand-adaptive colors.
+          // This scale exists so appkit internal components can reference the exact
+          // cobalt hue (e.g. cobalt-night theme surfaces) without coupling to the
+          // active theme's --appkit-color-primary CSS variable.
           DEFAULT: "#3570fc",
           50: "#eef5ff",
           100: "#d9e8ff",
@@ -146,7 +150,8 @@ module.exports = defineTailwindConfig({
           950: "#111e58",
         },
         accent: {
-          // Metallic Steel — silver edges (Beyblade frame)
+          // Static metallic steel reference — Beyblade silver edge / frame accents.
+          // NOT wired to CSS variables. Use semantic tokens for adaptive styling.
           DEFAULT: "#8393b2",
           50: "#f5f7fa",
           100: "#eaeef4",

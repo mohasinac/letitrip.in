@@ -15,7 +15,7 @@ import {
   isListingTypeEnabled,
   enabledListingTypes,
 } from "@mohasinac/appkit";
-import { getSiteSettingsGlobal } from "@mohasinac/appkit/server";
+import { getSiteSettingsSafe } from "@mohasinac/appkit/server";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
 import {
@@ -248,12 +248,7 @@ async function _GET(request: Request): Promise<NextResponse> {
   // results immediately. For no-filter calls, post-filter excludes disabled
   // types from the response so the public listing pages stay clean.
   const requestedListingType = param(url, PRODUCT_FIELDS.LISTING_TYPE);
-  let siteSettings: Awaited<ReturnType<typeof getSiteSettingsGlobal>> | null = null;
-  try {
-    siteSettings = await getSiteSettingsGlobal();
-  } catch {
-    siteSettings = null;
-  }
+  const siteSettings = await getSiteSettingsSafe();
   if (
     requestedListingType &&
     siteSettings &&

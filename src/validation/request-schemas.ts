@@ -10,6 +10,7 @@
  */
 
 import { z } from "zod";
+import { normalizeError } from "@mohasinac/appkit";
 import { getDefaultCurrency } from "@mohasinac/appkit";
 
 // ============================================
@@ -45,8 +46,9 @@ export const mediaUrlSchema = z
         return APPROVED_MEDIA_DOMAINS.some(
           (domain) => hostname === domain || hostname.endsWith(`.${domain}`),
         );
-      } catch {
-        return false;
+      } catch (_err) {
+        void normalizeError(_err);
+        return false; // URL constructor throws for invalid URL strings
       }
     },
     { message: "Image or video URL must be hosted on an approved CDN domain" },

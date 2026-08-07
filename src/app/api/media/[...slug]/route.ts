@@ -2,26 +2,23 @@ import { normalizeError } from "@mohasinac/appkit";
 /**
  * Media CDN Proxy — I7
  *
- * GET /media/<storage path...>
+ * GET /media/<shortId or storage path...>
  *
- * Serves bytes from Firebase Cloud Storage with an on-the-fly watermark.
+ * Resolution order:
+ *  1. Single-segment slug → Firestore `mediaAssets/{slug}` lookup (new short-ID system).
+ *     The shortId is an SEO-friendly slug (e.g. "product-image-charizard-1-20260805")
+ *     that maps to the actual Firebase Storage path stored in the mediaAssets collection.
+ *  2. Multi-segment slug OR no Firestore match → treat slug as a raw storage path
+ *     (backward compatibility for old /media/tmp/... or /media/media/... URLs).
  *
- * Why a proxy?
- *  - Firebase Storage rules stay private (no `allUsers` read) — credentials
- *    never leave the server.
- *  - Watermark is applied at the edge, configurable from Admin → Site Settings.
- *  - Responses carry long `Cache-Control: public, immutable` so Vercel CDN
- *    handles the heavy lifting and the route is only hit on cache misses.
- *
- * Runtime: Node.js — `sharp` requires the libvips native binding which is
- * unavailable on Edge.
- *
- * URL convention: every Firestore image field stores `/media/<storage path>`.
- * Raw `firebasestorage.googleapis.com` URLs are never written to Firestore.
+ * Benefits of the short-ID layer:
+ *  - Storage structure is private (paths never appear in URLs).
+ *  - Files can be moved (tmp/ → media/) without breaking existing URLs.
+ *  - SEO-friendly, human-readable URLs from the filename context.
  */
 import "@/providers.config";
 import { NextResponse } from "next/server";
-import { ERROR_MESSAGES, getAdminStorage, serverLogger } from "@mohasinac/appkit";
+import { ERROR_MESSAGES, getAdminStorage, serverLogger, mediaAssetsRepository } from "@mohasinac/appkit";
 import {
   CACHE_CONTROL_IMMUTABLE,
   IMAGE_MIME_PREFIX,
@@ -51,7 +48,33 @@ export async function GET(
   { params }: { params: Promise<{ slug: string[] }> },
 ): Promise<Response> {
   const { slug } = await params;
-  const storagePath = slugToStoragePath(slug);
+
+  // Resolve the storage path:
+  // - Single-segment slug → try Firestore shortId lookup first (new system).
+  // - Multi-segment slug → treat as raw storage path (legacy /media/tmp/... URLs).
+  let storagePath: string | null = null;
+
+  if (slug.length === 1) {
+    const shortId = slug[0];
+    try {
+      const asset = await mediaAssetsRepository.findById(shortId);
+      if (asset) {
+        storagePath = asset.storagePath;
+      }
+    } catch (lookupErr) {
+      void normalizeError(lookupErr);
+      serverLogger.warn("media-proxy: mediaAssets lookup failed, falling back to raw path", {
+        shortId,
+        error: lookupErr instanceof Error ? lookupErr.message : String(lookupErr),
+      });
+    }
+  }
+
+  // Fall back to treating slug as a raw storage path (backward compat)
+  if (!storagePath) {
+    storagePath = slugToStoragePath(slug);
+  }
+
   if (!storagePath) {
     return new NextResponse(ERROR_MESSAGES.MEDIA.NOT_FOUND, { status: 404 });
   }

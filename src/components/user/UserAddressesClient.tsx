@@ -186,7 +186,7 @@ export function UserAddressesClient() {
       )}
 
       {addresses.length === 0 && (
-        <Text className="text-neutral-500 dark:text-neutral-400" size="sm">
+        <Text className="text-[var(--appkit-color-text-muted)]" size="sm">
           You have no saved addresses yet.
         </Text>
       )}
@@ -234,7 +234,7 @@ export function UserAddressesClient() {
         onClick={() => router.push(String(ROUTES.USER.ADDRESSES_ADD))}
         variant="outline"
         paddingX="md" paddingY="md" textSize="sm" weight="medium"
-        className="mt-2 border border-dashed border-neutral-300 dark:border-[var(--appkit-color-border)] text-neutral-500 dark:text-[var(--appkit-color-text-muted)] transition hover:border-neutral-400 dark:hover:border-[var(--appkit-color-border-subtle)] hover:text-neutral-700 dark:hover:text-[var(--appkit-color-text)]"
+        className="mt-2 border border-dashed border-neutral-300 dark:border-[var(--appkit-color-border)] text-[var(--appkit-color-text-muted)] dark:text-[var(--appkit-color-text-muted)] transition hover:border-neutral-400 dark:hover:border-[var(--appkit-color-border-subtle)] hover:text-neutral-700 dark:hover:text-[var(--appkit-color-text)]"
       >
         + Add Address
       </Button>

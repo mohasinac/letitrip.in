@@ -10,7 +10,7 @@
  */
 
 import { z } from "zod";
-import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit";
+import { requireAuthUser, requireRoleUser, normalizeError } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,
@@ -410,7 +410,7 @@ export async function shipOrderAction(
     
       const rawAddr = (order as any).shippingAddress ?? "";
       let parsedAddr: Record<string, string> = {};
-      try { parsedAddr = JSON.parse(rawAddr); } catch { parsedAddr = { address: rawAddr }; }
+      try { parsedAddr = JSON.parse(rawAddr); } catch (_err) { void normalizeError(_err); parsedAddr = { address: rawAddr }; } // non-JSON address string — wrap in object
     
       const orderDate = (resolveDate((order as any).createdAt) ?? new Date()).toISOString().slice(0, 19);
       const srOrderResponse = await shiprocketCreateOrder(token, {

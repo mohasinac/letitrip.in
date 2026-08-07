@@ -1,3 +1,4 @@
+import { normalizeError } from "@mohasinac/appkit";
 import { readFile } from "fs/promises";
 import path from "path";
 import { buildDefaultOgImage, DEFAULT_OG_SIZE } from "@mohasinac/appkit/server";
@@ -15,7 +16,8 @@ export default async function OpengraphImage() {
       path.join(process.cwd(), "public/favicon/android-chrome-512x512.png"),
     );
     logoUrl = `data:image/png;base64,${logoData.toString("base64")}`;
-  } catch {
+  } catch (_err) {
+    void normalizeError(_err);
     // fallback to emoji icon if logo file is unavailable
   }
 

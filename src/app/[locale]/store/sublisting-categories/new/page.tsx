@@ -7,7 +7,7 @@ import { Heading, ROUTES, Row, Text } from "@mohasinac/appkit";
 import { Div, Button, Form, Label, Input, Textarea, useApiMutation, apiClient } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
-const LBL_CLS = "block text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-1";
+const LBL_CLS = "block text-sm font-medium text-[var(--appkit-color-text-muted)] mb-1";
 
 export default function Page() {
   const router = useRouter();
@@ -63,7 +63,7 @@ export default function Page() {
             required
             maxLength={120}
             placeholder="e.g. Base Set Charizard 108/120"
-            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
+            className="w-full rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-2.5 text-sm text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
           />
         </>
 
@@ -77,7 +77,7 @@ export default function Page() {
             onChange={(e) => setItemCode(e.target.value)}
             maxLength={40}
             placeholder="e.g. PSA 10, 108/120, WOTC, STH"
-            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
+            className="w-full rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-2.5 text-sm text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
           />
           <Text className="mt-1" color="faint" size="xs">
             Grade, card number, set code, or series. Optional but helps buyers find matches.
@@ -94,7 +94,7 @@ export default function Page() {
             maxLength={500}
             rows={3}
             placeholder="Brief description shown on the public category page…"
-            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)] resize-none"
+            className="w-full rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-2.5 text-sm text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)] resize-none"
           />
         </>
 
