@@ -1,9 +1,11 @@
 # LetItRip — Patch Rollout Roadmap
-> Maintained by: Claude (PM role) | CEO: Mohasin | Last updated: 2026-08-04
+> Maintained by: Claude (PM role) | CEO: Mohasin | Last updated: 2026-08-08
 > Update this file after each patch ships. Tick the [x] when live in production.
 >
 > **Principle:** Features first, 3rd-party integrations last.
-> **Shipping:** Seller manually enters carrier name + tracking ID + optional tracking URL for all patches until P-13.
+> **Shipping:** Manual only, permanently — Shiprocket was deleted from the codebase
+> 2026-08-08 (see P-14, below), not deferred. Seller always enters carrier name +
+> tracking ID + optional tracking URL, for every patch, indefinitely.
 
 ---
 
@@ -18,12 +20,19 @@ P-5  [x] Auctions (bid, settle, winner pays via cash/UPI)  ← LIVE 2026-08-04
 P-6  [ ] Pre-orders
 P-7  [ ] Seller Payouts (manual UPI — admin records transfer)
 P-8  [ ] GST — tax calculation, invoice GST breakup, product HSN code + rate field
-P-9  [ ] COD — Cash on Delivery with deposit + COD fee + GST-compliant invoice
+P-9  [~] COD — Cash on Delivery. Handling fee (max(₹200, 10%)) LIVE 2026-08-08 as part of
+              P-9b; deposit-percent pattern + GST-compliant invoice still open.
+P-9b [x] EMI — Installment financing, manual-first provider architecture, art/stickers
+              listing types  ← LIVE 2026-08-08 (appkit 3.3.1, not on the original roadmap
+              — see new section below)
 P-10 [ ] Prize Draws + Spin Wheel
 P-11 [ ] Chat / Messaging
 P-12 [ ] Scammer Registry + Trust Score
-P-13 [ ] Razorpay Online Payment (integration — end phase)
-P-14 [ ] Shiprocket Auto-ship (integration, very last)
+P-13 [ ] Razorpay Online Payment — kept in code (RazorpayProvider), disabled by default
+              via siteSettings.payment.razorpayEnabled since 2026-08-08; still needs live
+              keys + sandbox test to flip on
+P-14 [x] Shiprocket Auto-ship — REMOVED 2026-08-08, not integrated. Decision reversed:
+              manual shipping (ManualShippingProvider) is now permanent, see note above.
 P-15 [ ] Analytics HTTPS Function (Firebase aggregation)
 P-16 [ ] Tour System (full steps — admin, seller, customer)
 P-17 [ ] Bundles — bundle listing type CRUD, stock sync, buyer catalogue view
@@ -58,6 +67,14 @@ Examples:
 
 **Benefit:** Feature branches can accumulate commits, fail CI, be rebased and force-pushed freely — zero risk of accidental deployment or npm publish.
 
+> **2026-08-08 update — practice diverged from this policy, intentionally.** P-9b
+> (EMI) was developed and deployed directly on `main`, skipping the `patch/p{n}` /
+> PR / CI-gate flow above, per explicit instruction. Going forward: **work stays on
+> `main`** — no new `patch/p{n}` branches — verify with `npm run check` before every
+> commit, and deploy (Firebase + Vercel) only after that gate is green. This
+> supersedes rules 2 and 4 above for all future patches; rules 1, 3, 5, 6, 7 (CI
+> still runs, deploys and publishes are still explicit/manual) remain in effect.
+
 ---
 
 ## GitHub Actions — Feature Toggle (One-Click Deployment)
@@ -87,8 +104,9 @@ on:
           - CHAT
           - SCAM_REGISTRY
           - RAZORPAY
-          - SHIPROCKET
           - ANALYTICS_FUNCTION
+          # SHIPROCKET removed 2026-08-08 — Shiprocket deleted from the codebase,
+          # not just disabled; there is nothing left for this option to toggle.
       enabled:
         description: "Enable or disable?"
         required: true
@@ -727,9 +745,17 @@ BUYER         │                 │                 │                     �
 **Branch:** `patch/p9-cod`  
 **Target window:** W27–W30  
 **Risk:** MEDIUM  
-**Status:** [ ] Not started  
+**Status:** [~] Partially live — see note  
 **Feature flag:** `FEATURE_COD=true`  
 **Dependency:** P-8 must be live (COD invoices must be GST-compliant)
+
+> **2026-08-08 update:** the COD handling fee shipped ahead of this patch's original
+> schedule, as part of P-9b (EMI), and landed with a **different formula** than planned
+> below — actual: `max(₹200, subtotal × 10%)` (`OrderDocument.codHandlingFee`,
+> `appkit/src/_internal/shared/fees/calculator.ts`), not the flat ₹49 + 18% GST sketched
+> in the sequence diagram and business logic below. The deposit-percent pattern and the
+> GST-compliant invoice line-item work described below are still not built — P-8 (GST)
+> is still `[ ]`. Treat the diagram below as the original plan, now partially superseded.
 
 #### Sequence Diagram
 
@@ -814,6 +840,93 @@ BUYER       APP             FIRESTORE       SELLER          DELIVERY AGENT
 - [ ] GST on COD fee at 18% verified in invoice PDF
 - [ ] Smoke: COD checkout → deposit amount correct → invoice shows all breakdowns
 - [ ] Legal: confirm deposit collection + COD fee + GST on fee are compliant
+
+---
+
+### P-9b — EMI (Installment Financing) + Manual-First Provider Architecture + Art/Stickers
+
+**Branch:** none — shipped directly on `main`, deployed 2026-08-08 per explicit
+instruction (this patch predates the branch-per-patch convention above; going forward,
+work continues directly on `main`, deploying after each verified change rather than
+opening `patch/p{n}` branches)  
+**Target window:** N/A — not on the original roadmap, added 2026-08-08  
+**Risk:** MEDIUM (financial math + payout timing)  
+**Status:** [x] LIVE — 2026-08-08 (appkit 3.3.0 → 3.3.1, Vercel prod, Firestore
+indexes/rules, Firebase Functions all deployed)  
+**Feature flag:** `siteSettings.emi.enabled` (site-wide) + `StoreDocument.emiEnabled`
+(per-seller opt-in) — both must be true, in addition to the ₹10,000 per-seller-checkout
+subtotal threshold  
+**Dependency:** none — built on the new manual-first `IPaymentProvider`/
+`IShippingProvider` abstract-class architecture shipped in the same commit (Shiprocket
+removed entirely; Razorpay kept, disabled by default)
+
+#### What shipped in this patch
+
+- **Provider architecture:** `IPaymentProvider`/`IShippingProvider` converted from plain
+  interfaces to abstract classes. `ManualPaymentProvider` + `ManualShippingProvider` are
+  now the defaults. `RazorpayProvider` stays fully implemented, gated behind
+  `siteSettings.payment.razorpayEnabled` (default `false`). Shiprocket — code, schema
+  fields, webhook route, and seed data — deleted outright, not disabled.
+- **EMI engine:** eligibility + schedule math (`appkit/src/_internal/shared/features/emi/schedule.ts`),
+  `OrderDocument` installment fields, checkout tenure picker, per-installment manual
+  proof-of-payment collection (`PATCH /api/store/orders/[id]/emi-installment`), a
+  shipment gate (`assertEmiShippable` — blocks `customShipOrder` on an unpaid EMI order
+  unless every item has `product.allowShipBeforeEmiComplete`), per-installment payout
+  holds (`autoPayoutEligibility.ts` skips `emiEnabled && !emiComplete` orders), and a
+  scheduled Firebase Function (`emiInstallmentReminder`, `asia-south1`) that nudges
+  buyers ahead of each due date and flips overdue installments.
+- **Shared fee calculator:** `appkit/src/_internal/shared/fees/calculator.ts` — COD
+  handling fee (`max(₹200, subtotal × 10%)`) plus the platform-commission math that was
+  previously duplicated across checkout, refunds, and the payout jobs.
+- **New listing types:** `art` and `stickers` — registered through the listing-type
+  plugin registry (`pluginFor()`), shared optional print-meta block (size, material,
+  finish, edition size), admin + seller list/edit pages, public routes.
+- **Auth/RBAC verification pass** (Rule #4/#2 — re-verified this session, not assumed):
+  fixed a double-session-creation bug in `useRegister()`, a Google-OAuth popup that hung
+  forever if the user closed it manually, a secret (password-reset link) that was being
+  logged server-side, an `audit-inline-role-check.mjs` regex blind spot that let ~24
+  inline `user!.role === "x"` compares slip past the audit undetected, and 6 store
+  product API routes that were byte-identical copies of an unrelated barcode-scan stub.
+- **EMI seller opt-in toggle** (closed same-day, appkit 3.3.1): `StoreDocument.emiEnabled`
+  originally had no writer anywhere in the codebase — EMI's backend was fully live but
+  unreachable by any seller. Fixed via `PATCH /api/store/payout-settings` + a Toggle in
+  `SellerPayoutSettingsView` (Preferences step).
+
+#### Sequence Diagram
+
+See **[asciiDiagrams.md § O5b — EMI (installment financing) sequence](asciiDiagrams.md#o5b--emi-installment-financing-sequence-2026-08-08)**
+for the full buyer→checkout→order→reminder→seller→shipment-gate→payout flow, and
+**[§ O5 — Shipping provider architecture](asciiDiagrams.md#o5--shipping-provider-architecture-manual-first-2026-08-08)**
+for the manual-shipping replacement of the old Shiprocket auto-create flow.
+
+#### Use Cases Added
+
+- **UC-B-EMI1:** Buyer checking out with a per-seller subtotal over ₹10,000, from a
+  seller who has EMI enabled, sees a tenure picker (2–6 months) with computed token
+  amount and monthly installment.
+- **UC-B-EMI2:** Buyer pays each installment manually (UPI/bank transfer + proof upload)
+  ahead of its due date; gets a reminder 3 days out, and an overdue notice if missed.
+- **UC-S-EMI1:** Seller opts their store into EMI from Payout Settings.
+- **UC-S-EMI2:** Seller marks an installment paid after verifying the buyer's transfer.
+- **UC-S-EMI3:** Seller cannot ship an EMI order until every installment is paid, unless
+  they've flagged the specific product `allowShipBeforeEmiComplete`.
+- **UC-SYS-EMI1:** Scheduled Function reminds buyers of upcoming/overdue installments
+  and flips overdue installments' status automatically.
+- **UC-SYS-EMI2:** Payout jobs hold an EMI order's payout until `emiComplete`, then
+  release per the shared fee calculator's platform/seller surcharge split.
+
+#### Implementation TODO (remaining, not yet done)
+
+- [ ] Admin-facing `⑮ EMI` settings tab in `AdminSiteSettingsView` — `siteSettings.emi`
+      is seeded with defaults and fully read by checkout + the reminder job, but has
+      **no editor UI yet**; today the only way to tune tenure options, token %, billing
+      day, or surcharge split is a direct Firestore edit. See
+      [asciiDiagrams.md's flagged gap](asciiDiagrams.md#admin--site-settings--va8--13-groups)
+      under "Site Settings" TAB list.
+- [ ] `pw-emi.spec.ts` E2E: checkout with EMI → mark installment paid → early-ship block
+      → flip `allowShipBeforeEmiComplete` → ship succeeds.
+- [ ] Manual browser walkthrough of the full EMI lifecycle (seed → checkout → mark paid
+      → ship gate → payout) — not yet performed this session.
 
 ---
 
@@ -1078,9 +1191,15 @@ REPORTER        APP             FIRESTORE          ADMIN           PUBLIC
 **Branch:** `patch/p13-razorpay`  
 **Target window:** W49–W52  
 **Risk:** MEDIUM  
-**Status:** [ ] Not started  
-**Feature flag:** `FEATURE_RAZORPAY=true`  
+**Status:** [ ] Not started (code scaffolding done early, as part of P-9b)  
+**Feature flag:** `siteSettings.payment.razorpayEnabled` (was `FEATURE_RAZORPAY` — the flag
+moved into `siteSettings.payment` when the provider architecture was rebuilt 2026-08-08)  
 **Dependency:** P-12 stable (platform mature enough for live payment integration)
+
+> **2026-08-08 update:** `RazorpayProvider` now `extends` the abstract `IPaymentProvider`
+> base class (`appkit/src/providers/payment-razorpay/`) and is fully registrable — the
+> plumbing below is real code, not aspirational. It's just off by default behind the
+> flag above; flipping it on and running the pre-flip checklist is still the open work.
 
 #### Sequence Diagram
 
@@ -1154,15 +1273,29 @@ BUYER        APP (Next.js)       RAZORPAY         FIRESTORE       SELLER
 
 ---
 
-### P-14 — Shiprocket Auto-ship (Integration)
-**Branch:** `patch/p14-shiprocket`  
-**Target window:** W53–W56  
-**Risk:** MEDIUM-HIGH  
-**Status:** [ ] Not started  
-**Feature flag:** `FEATURE_SHIPROCKET=true`  
-**Dependency:** P-13 stable (Razorpay must be live — payments confirmed before auto-shipment)
+### P-14 — Shiprocket Auto-ship — REMOVED 2026-08-08
 
-#### Sequence Diagram
+**Branch:** N/A — decision reversed, not implemented on a branch  
+**Target window:** N/A  
+**Risk:** N/A  
+**Status:** [x] REMOVED — decision reversed 2026-08-08, will not ship  
+**Feature flag:** N/A — `FEATURE_SHIPROCKET` never existed as a real flag; deleted from
+the GitHub Actions feature-toggle option list too  
+**Dependency:** N/A
+
+> **Decision reversed 2026-08-08.** The platform commits to manual-only shipping
+> permanently (see the header note at the top of this document). Every line of
+> Shiprocket code, every `shiprocket*` field on `OrderDocument`/`UserDocument`, the
+> `/api/webhooks/shiprocket` route, and the Shiprocket branch of `/api/store/shipping`
+> were deleted outright — not feature-flagged off. `ManualShippingProvider`
+> (`appkit/src/providers/shipping-manual/`) is the sole `IShippingProvider`
+> implementation, built on an abstract base class so a *different* carrier integration
+> remains a future drop-in if ever revisited — but Shiprocket specifically will not
+> return. See [asciiDiagrams.md § O5](asciiDiagrams.md#o5--shipping-provider-architecture-manual-first-2026-08-08)
+> for the current manual-ship sequence. The diagram below is preserved for historical
+> record only — none of the code paths it describes exist anymore.
+
+#### Sequence Diagram (historical — code no longer exists)
 
 ```
 SELLER        APP              SHIPROCKET API     FIRESTORE       BUYER
@@ -1412,20 +1545,29 @@ P-5    W11–15 Auctions                           HIGH     FEATURE_AUCTIONS    
 P-6    W16–18 Pre-orders                         MED      FEATURE_PREORDERS       patch/p6-preorders
 P-7    W19–22 Seller Payouts (manual UPI)        MED      FEATURE_PAYOUTS         patch/p7-payouts
 P-8    W23–26 GST (tax calc, invoice, HSN)       MED      FEATURE_GST             patch/p8-gst
-P-9    W27–30 COD (deposit + fee + GST invoice)  MED      FEATURE_COD             patch/p9-cod
+P-9    W27–30 COD (deposit + GST invoice)        MED      FEATURE_COD             patch/p9-cod
+P-9b   —      EMI + manual providers + art/       MED      siteSettings.emi.enabled main (2026-08-08)
+              stickers — LIVE 2026-08-08,          + StoreDocument.emiEnabled
+              not on original schedule
 P-10   W31–36 Prize Draws + Spin Wheel           HIGH     FEATURE_PRIZE_DRAWS     patch/p10-prize-draws
 P-11   W37–42 Chat / Messaging                   MED      FEATURE_CHAT            patch/p11-chat
 P-12   W43–48 Scammer Registry                   MED      FEATURE_SCAM_REGISTRY   patch/p12-scam
-P-13   W49–52 Razorpay (integration)             MED      FEATURE_RAZORPAY        patch/p13-razorpay
-P-14   W53–56 Shiprocket (integration)           MED-HIGH FEATURE_SHIPROCKET      patch/p14-shiprocket
+P-13   W49–52 Razorpay (integration)             MED      siteSettings.payment.   patch/p13-razorpay
+                                                            razorpayEnabled
+P-14   —      Shiprocket — REMOVED 2026-08-08    N/A      N/A                     N/A
 P-15   TBD    Analytics HTTPS Function           MED-HIGH FEATURE_ANALYTICS_FN    patch/p15-analytics
 P-16   Post P3 Tour System (full steps)          LOW      —                       patch/p16-tour
 P-17   Post P1  Bundles listing type             MED      FEATURE_BUNDLES         patch/p17-bundles
 ──────────────────────────────────────────────────────────────────────────────────────────────
-GST NOTE:  P-8 must ship before P-9 (COD). Invoices must be GST-compliant before enabling COD.
-COD NOTE:  Deposit (existing %) + flat COD fee (₹X, configurable) + GST on COD fee.
-RAZORPAY:  End phase — platform is mature by P-13, integration risk is contained.
-SHIPROCKET: Very last — manual tracking works for all patches up to P-14.
+GST NOTE:  P-8 must ship before P-9 (COD, deposit + GST invoice). The COD *handling fee*
+           (max(₹200, 10%)) shipped early with P-9b and does not need GST — see P-9 note.
+EMI NOTE (P-9b): shipped ahead of schedule, directly on main. Backend/checkout/reminder/
+           shipment-gate all live; admin ⑮ EMI settings tab still not built (Firestore-
+           edit only for now) — see asciiDiagrams.md's flagged gap.
+RAZORPAY:  Provider code + abstract-class architecture landed early with P-9b, disabled
+           by default. Flipping it on for real traffic is still the open P-13 work.
+SHIPROCKET: Cancelled outright 2026-08-08 — manual shipping (ManualShippingProvider) is
+           now the permanent, only shipping path for every patch, indefinitely.
 BUNDLES:   Can develop in parallel with P-2/P-3; no payment integration dependency.
 ```
 
@@ -1448,9 +1590,10 @@ Before flipping any feature flag in production:
 | # | Question | Owner | Status |
 |---|---|---|---|
 | Q1 | Razorpay X account for P-12 payouts — approved? | CEO | Open |
-| Q2 | Legal clearance for prize draws (P-9) in India | CEO + Legal | Open |
-| Q3 | Shiprocket account + sandbox credentials (P-13) | CEO | Open |
+| Q2 | Legal clearance for prize draws (P-10) in India | CEO + Legal | Open |
+| Q3 | ~~Shiprocket account + sandbox credentials~~ — moot, Shiprocket removed 2026-08-08 | CEO | Closed (N/A) |
 | Q4 | COD delivery zones / which pincodes to enable? | CEO | Open |
 | Q5 | Chat rate limiting budget (RTDB read/write cost) | Eng | Open |
-| Q6 | Load testing timing for P-14 analytics function | Eng | Open |
+| Q6 | Load testing timing for P-15 analytics function | Eng | Open |
 | Q7 | Vercel Token + Project ID for GitHub Actions | CEO / Eng | Open |
+| Q8 | EMI: is a ₹10,000 per-seller-checkout threshold + 2–6 month tenure the right buyer-facing terms, or should this be reviewed against NBFC/BNPL regulatory guidance before wider promotion? | CEO + Legal | Open |

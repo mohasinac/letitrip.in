@@ -6,7 +6,7 @@
 
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import { userRepository, createApiHandler, successResponse } from "@mohasinac/appkit";
+import { userRepository, storeRepository, createApiHandler, successResponse } from "@mohasinac/appkit";
 import type { SellerPayoutDetails } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 
@@ -29,6 +29,7 @@ function sanitisePayoutDetails(details: SellerPayoutDetails | undefined): Omit<
 const upiSchema = z.object({
   method: z.literal("upi"),
   upiId: z.string().min(3, "Invalid UPI ID").max(50),
+  emiEnabled: z.boolean().optional(),
 });
 
 const bankSchema = z.object({
@@ -38,6 +39,7 @@ const bankSchema = z.object({
   ifscCode: z.string().regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code"),
   bankName: z.string().min(2).max(80),
   accountType: z.enum(["savings", "current"]),
+  emiEnabled: z.boolean().optional(),
 });
 
 const updatePayoutSchema = z.discriminatedUnion("method", [upiSchema, bankSchema]);
@@ -49,10 +51,12 @@ export const GET = withProviders(createApiHandler({
   roles: [...ROLES_STORE_WRITE],
     permission: "store:api:write",
   handler: async ({ user }) => {
+    const store = await storeRepository.findByOwnerId(user!.uid);
     return successResponse({
       payoutDetails: sanitisePayoutDetails(
         user!.payoutDetails as SellerPayoutDetails | undefined,
       ),
+      emiEnabled: store?.emiEnabled ?? false,
     });
   },
 }));
@@ -92,8 +96,18 @@ export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)[
 
     await userRepository.update(user!.uid, { payoutDetails: details });
 
+    let emiEnabled = false;
+    const store = await storeRepository.findByOwnerId(user!.uid);
+    if (store) {
+      if (data.emiEnabled !== undefined) {
+        await storeRepository.updateStore(store.storeSlug, { emiEnabled: data.emiEnabled });
+      }
+      emiEnabled = data.emiEnabled ?? store.emiEnabled ?? false;
+    }
+
     return successResponse({
       payoutDetails: sanitisePayoutDetails(details),
+      emiEnabled,
     }, "Payout details updated successfully.");
   },
 }));

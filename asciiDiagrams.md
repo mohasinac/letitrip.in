@@ -3324,15 +3324,17 @@ SideDrawer (3+ fields → SideDrawer rule):
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  TAB ⑧ Integrations & Keys                          [Save Integrations]     │
 │    Razorpay Key ID [masked input]   Razorpay Secret [masked input]          │
-│    Shiprocket API Key [masked]      Shiprocket Secret [masked]              │
+│    (Razorpay disabled by default — flip payment.razorpayEnabled to use)     │
 │    SMTP Host/Port/User/Password/From [masked inputs]                         │
 │    Google Analytics ID [input]   FB Pixel ID [input]   GTM [input]          │
 │    Google Maps API Key [masked]   Google Place ID [input]                   │
 │    Instagram/Facebook/TikTok/DeviantArt credentials [masked]               │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  TAB ⑨ Shipping Defaults                                [Save Shipping]     │
-│    Free shipping threshold ₹ [input]   COD enabled [tog]   COD fee ₹ [input]│
-│    Default carrier [sel]   Max delivery radius km [input]                   │
+│    Free shipping threshold ₹ [input]   COD enabled [tog]                    │
+│    COD handling fee: max(₹200, 10% of subtotal) — computed, not editable    │
+│    Shipping is manual-only (seller enters carrier + tracking) — no carrier  │
+│    integration config here                                                  │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  TAB ⑩ Auction Config                                   [Save Auctions]     │
 │    Min bid increment ₹ [input]   Auto-extend window (mins) [input]          │
@@ -3354,6 +3356,16 @@ SideDrawer (3+ fields → SideDrawer rule):
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
+> ⚠️ **Gap (2026-08-08):** `siteSettings.emi` (enabled/minOrderValueInPaise/tenureOptions/
+> tokenPercent/billingDay/surchargePercentPerMonth/surchargeSellerSharePercent —
+> `appkit/src/features/admin/schemas/firestore.ts`) is seeded with defaults and read by
+> checkout + the reminder job, but has **no admin editor tab yet** — there is no `⑮ EMI`
+> group in `AdminSiteSettingsView.tsx` (highest existing group is `⑭ Notifications`).
+> Today the only way to change these values is a direct Firestore edit. Track as a
+> follow-up: add the TAB ⑮ EMI group mocked up in the original plan
+> (`if-total-sum-from-reactive-quilt.md` Phase 3) before EMI can be tuned without
+> redeploying seed data.
+
 ---
 
 ## Admin > Feature Flags ✅ (VA17 — enhanced: 3 accordion groups: Platform Features / Listing Types / Category Types)
@@ -3372,7 +3384,6 @@ SideDrawer (3+ fields → SideDrawer rule):
 │  reviews            [tog ✓]   [____100__]                                   │
 │  socialFeed         [tog ✗]   [_______0_] (disabled — flag off)             │
 │  googleReviews      [tog ✓]   [____100__]                                   │
-│  shiprocket         [tog ✗]   [_______0_] (disabled — flag off)             │
 │  smsVerification    [tog ✗]   [_______0_] (disabled — flag off)             │
 │  seedPanel          [tog ✓]   [____100__]                                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
@@ -3898,49 +3909,122 @@ Note: Sellers can only set status to "processing" or "shipped"
 (server enforces this in PATCH handler)
 ```
 
-### O5 — Shiprocket auto-create on PATCH (S11, 2026-05-11)
+### O5 — Shipping provider architecture: manual-first (2026-08-08)
+
+> **REMOVED, not disabled.** The 2026-05-11 Shiprocket auto-create flow below no
+> longer exists in the codebase — `appkit/src/providers/shipping-shiprocket/**`,
+> the `/api/webhooks/shiprocket` route, `ShippingMethodValues.shiprocket`, and every
+> `shiprocket*` field on `OrderDocument` were deleted outright. `ManualShippingProvider`
+> (`appkit/src/providers/shipping-manual/`) is now the **only** `IShippingProvider`
+> implementation; `IShippingProvider`/`IPaymentProvider` are abstract classes so a
+> future carrier is a drop-in `extends`, not a rewrite. Razorpay is kept in code as
+> `RazorpayProvider` but disabled by default (`siteSettings.payment.razorpayEnabled`);
+> `ManualPaymentProvider` is the default `IPaymentProvider`.
 
 ```
-PATCH /api/store/orders/[id]   body: { status:"shipped", shiprocketPackage:{…} }
-────────────────────────────────────────────────────────────────────────────────
+PATCH /api/store/orders/[id]   body: { status:"shipped", trackingNumber, shippingCarrier, trackingUrl? }
+──────────────────────────────────────────────────────────────────────────────────────────────────────
 
-  status === "shipped"
-   AND no { trackingNumber, shippingCarrier, trackingUrl } in body
-   AND userDoc.shippingConfig.method === "shiprocket"
-                ↓
-  ┌────────────────────────────────────────────────────────────────────────┐
-  │ require body.shiprocketPackage = {weight,length,breadth,height,        │
-  │                                   courierId?}                          │
-  │   missing  → 409 { code: "SHIPROCKET_PACKAGE_REQUIRED" }                │
-  └────────────────────────────────────────────────────────────────────────┘
-                ↓
-  shipOrderAction(id, { method:"shiprocket", packageWeight, …, courierId? })
+  customShipOrder(userId, role, orderId, input)
+  (appkit/src/features/seller/actions/seller-actions.ts)
         │
-        ├─ requireRoleUser(["seller","admin"]) + STRICT rate limit
-        ├─ guard shippingConfig.isConfigured + method + pickup verified +
-        │  isShiprocketTokenExpired(expiry) === false
-        ├─ guard order.status === CONFIRMED
-        ├─ shiprocketCreateOrder(token, payloadFromOrder)
-        ├─ shiprocketGenerateAWB(token, { shipment_id, courier_id? })
-        ├─ shiprocketGeneratePickup(token, { shipment_id:[id] })
+        ├─ requireOwnerOrAdmin(order.storeId)
+        ├─ guard order.status === CONFIRMED  (not already SHIPPED/DELIVERED)
+        ├─ assertEmiShippable(order)  ── EMI shipment gate, see O5b below
+        │     throws ValidationError if the order is EMI-financed, not yet
+        │     paid off, and any item lacks allowShipBeforeEmiComplete
         └─ orderRepository.update(id, {
               status: SHIPPED,
-              shippingMethod: SHIPROCKET,
-              trackingUrl: buildShiprocketTrackingUrl(awb),
-              shiprocketOrderId, shiprocketShipmentId, shiprocketAWB,
-              shiprocketStatus: SHIPROCKET_STATUS_PICKUP_SCHEDULED,
-              shiprocketUpdatedAt, shippingDate,
+              shippingMethod: "custom",
+              shippingCarrier, trackingNumber, trackingUrl,
+              shippingDate: now,
               payoutStatus: "eligible",
            })
                 ↓
-  any throw → 400 { code:"SHIPROCKET_FAILED", message }
-  success   → 200 { …updatedOrder, shiprocket: { awb, trackingUrl, pickupScheduledDate } }
+  any throw → 400 { message }
+  success   → 200 { orderId, method: "custom" }
 
-Manual override:
-  If body includes any of trackingNumber / shippingCarrier / trackingUrl,
-  the PATCH writes them as-is and never calls Shiprocket — useful for
-  correcting a bad pickup without reconfiguring the seller's method.
+No external API call, no webhook, no auto-create — the seller always types the
+carrier name + tracking number themselves. This is the only ship path; nothing
+else may write status:"shipped" directly to orderRepository.
 ```
+
+### O5b — EMI (installment financing) sequence (2026-08-08)
+
+> Schema: `emiEnabled`, `emiTenureMonths`, `emiTokenAmount`, `emiInstallments[]`
+> `{ index, dueDate, amount, status: pending|paid|overdue, paidAt?, reminderSentAt? }`,
+> `emiRemainingBalance`, `emiComplete` on `OrderDocument`. Pure schedule math lives in
+> `appkit/src/_internal/shared/features/emi/schedule.ts` (`checkEmiEligibility` +
+> `computeEmiSchedule`) — no I/O, shared by checkout and the seller UI.
+
+```
+BUYER          CHECKOUT (per-seller group)      ORDER DOC              SELLER/ADMIN         FIREBASE FN
+  │                     │                            │                       │                    │
+  │ subtotal > ₹10k for │                            │                       │                    │
+  │ this seller         │                            │                       │                    │
+  │                     │ checkEmiEligibility(        │                      │                    │
+  │                     │   subtotal, store.emiEnabled,│                     │                    │
+  │                     │   siteSettings.emi) ────────│                      │                    │
+  │                     │  eligible only if site-wide  │                      │                    │
+  │                     │  AND seller opt-in AND       │                      │                    │
+  │                     │  subtotal > minOrderValue    │                      │                    │
+  │<─ show tenure picker│                            │                       │                    │
+  │  (2–6 months)       │                            │                       │                    │
+  │ pick tenure ───────>│ computeEmiSchedule(          │                      │                    │
+  │                     │   subtotal, tenureMonths,    │                      │                    │
+  │                     │   siteSettings.emi) ──────>  │                      │                    │
+  │                     │  tokenAmount = subtotal ×     │                      │                    │
+  │                     │    tokenPercent%              │                      │                    │
+  │                     │  surcharge split platform/    │                      │                    │
+  │                     │    seller per config           │                      │                    │
+  │                     │  N equal installments,         │                      │                    │
+  │                     │    due billingDay of each      │                      │                    │
+  │                     │    month starting NEXT month   │                      │                    │
+  │ pay token amount ──>│ createCheckoutOrderAction ───>│ emiEnabled:true       │                    │
+  │  (manual UPI/bank)  │                            │  emiInstallments:[...] │                    │
+  │                     │                            │  emiComplete:false     │                    │
+  │                     │                            │  status: CONFIRMED     │                    │
+  │                     │                            │                       │                    │
+  │ ... time passes, installment due date approaches ...                     │                    │
+  │                     │                            │                       │  scheduled sweep   │
+  │                     │                            │<── getActiveEmiOrders()───────────────────│
+  │                     │                            │                       │  emiInstallmentReminder
+  │<─ sendNotification("emi_installment_due_soon") ───────────────────────────────────────────────│
+  │  (or "_overdue" + installment flipped to status:"overdue" if past due)   │                    │
+  │                     │                            │                       │                    │
+  │ pays installment     │                            │                       │                    │
+  │ (manual UTR + proof) │                            │                       │                    │
+  │ ───────────────────────────────────────────────────────────────────────>│                    │
+  │                     │                            │                       │ verifies proof,    │
+  │                     │                            │                       │ PATCH .../emi-installment
+  │                     │                            │<── markEmiInstallmentPaid ───│              │
+  │                     │                            │  installment.status="paid"  │              │
+  │                     │                            │  emiRemainingBalance -= amt │              │
+  │                     │                            │  emiComplete = true only    │              │
+  │                     │                            │   when every installment    │              │
+  │                     │                            │   is paid                   │              │
+  │                     │                            │                       │                    │
+  │                     │                            │       seller attempts to ship the order    │
+  │                     │                            │<────────────────── customShipOrder ────────│
+  │                     │                            │  assertEmiShippable(order):                │
+  │                     │                            │   emiComplete === true  → ship allowed      │
+  │                     │                            │   OR every item in the order has            │
+  │                     │                            │     product.allowShipBeforeEmiComplete      │
+  │                     │                            │   otherwise → 400, ship blocked             │
+  │                     │                            │                       │                    │
+  │                     │                            │  payout is held per-order until emiComplete │
+  │                     │                            │  (autoPayoutEligibility.ts skips orders      │
+  │                     │                            │   where emiEnabled && !emiComplete)          │
+```
+
+**Fixed (2026-08-08, same pass):** `StoreDocument.emiEnabled` — the seller-side opt-in
+gate `checkEmiEligibility` reads — originally had no writer anywhere in the codebase
+(EMI's backend/checkout/reminder/shipment-gate logic shipped, but no seller could ever
+turn it on). Closed by wiring `emiEnabled` through `PATCH /api/store/payout-settings`
+(`src/app/api/store/payout-settings/route.ts` — added to both branches of the
+discriminated-union Zod schema, written via `storeRepository.updateStore`) and adding
+the Toggle shown in [Store > Payout Settings](#store--payout-settings--c7--2026-05-10)
+above (`SellerPayoutSettingsView.tsx`, Preferences step). Published as appkit 3.3.1.
 
 ---
 
@@ -4113,20 +4197,18 @@ API: GET/PATCH /api/store/shipping
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  Shipping Configuration           [Configured ✅] or [Not configured ⚠]     │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Shipping Method                                                             │
+│  Shipping Method — manual only (ManualShippingProvider, 2026-08-08)         │
 │  (•) Custom / Manual    Set a fixed shipping fee and carrier name           │
-│  ( ) Shiprocket         Automated shipping — label generation + tracking    │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Custom Shipping Details (shown if Custom selected)                          │
+│  Custom Shipping Details                                                     │
 │  Carrier Name     [e.g. India Post, DTDC, Delhivery]                        │
 │  Shipping Price ₹ [0 for free shipping]                                     │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  Shiprocket Account (shown if Shiprocket selected)                           │
-│  Email    [your@email.com]                                                   │
-│  Password [•••••••• — only to re-authenticate]                              │
-│  Pickup Address [StoreAddressSelectorCreate — optional]                     │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+> Shiprocket was deleted entirely 2026-08-08 (not just disabled) — see [O5 below](#o5--shipping-provider-architecture-manual-first-2026-08-08).
+> No carrier-integration fields remain anywhere in this view; `customShipOrder`
+> (`appkit/src/features/seller/actions/seller-actions.ts`) is the only ship path.
 
 ---
 
@@ -4155,6 +4237,10 @@ API: GET/PATCH /api/store/payout-settings
 │  IFSC Code            [SBIN0001234]                                         │
 │  Bank Name            [State Bank of India]                                 │
 │  Account Type         (•) Savings  ( ) Current                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  EMI Financing (2026-08-08 — offered to buyers only when site-wide EMI is   │
+│  also enabled AND this seller's checkout subtotal exceeds the threshold)    │
+│  Offer EMI on eligible orders [tog]  → StoreDocument.emiEnabled             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
