@@ -26,7 +26,7 @@
  */
 
 import { withProviders } from "@/providers.config";
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError, withRetry } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
 import {
   ALLOWED_TYPES_LABEL,
@@ -139,12 +139,17 @@ export const POST = withProviders(createRouteHandler({
     const bucket = storage.bucket();
     const fileRef = bucket.file(storagePath);
 
-    const [uploadUrl] = await fileRef.getSignedUrl({
-      version: "v4",
-      action: "write",
-      contentType,
-      expires: Date.now() + SIGNED_URL_TTL_MS,
-    });
+    let uploadUrl: string;
+    try {
+      [uploadUrl] = await withRetry(
+        () => fileRef.getSignedUrl({ version: "v4", action: "write", contentType, expires: Date.now() + SIGNED_URL_TTL_MS }),
+        2, 300,
+      );
+    } catch (err) {
+      void normalizeError(err);
+      serverLogger.error("media/sign: GCS getSignedUrl failed", { uid: user!.uid, path: storagePath, error: err instanceof Error ? err.message : String(err) });
+      return errorResponse("Storage service temporarily unavailable. Please try again.", 503);
+    }
 
     serverLogger.info("Media upload URL signed", {
       uid: user!.uid,

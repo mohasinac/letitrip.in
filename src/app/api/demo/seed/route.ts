@@ -1180,7 +1180,7 @@ export async function POST(request: NextRequest) {
     } else if (action === "clear") {
       // Purge ALL Firestore collections. Firebase Auth users + preserved collections are kept.
       // Always processes every known collection regardless of the `collections` request param.
-      const CLEAR_PRESERVE = new Set<CollectionName>(["siteSettings", "homepageSections", "faqs"]);
+      const CLEAR_PRESERVE = new Set<CollectionName>(["siteSettings", "homepageSections", "faqs", "users"]);
       const allCollections = Object.keys(COLLECTION_MAP) as CollectionName[];
       for (const collectionName of allCollections) {
         emit({ type: "progress", collection: collectionName, status: "running", done: progressDone, total });
@@ -1211,7 +1211,7 @@ export async function POST(request: NextRequest) {
           emit({ type: "progress", collection: collectionName, status: "error", error: err instanceof Error ? err.message : "Unknown error", done: ++progressDone, total });
         }
       }
-      emit({ type: "done", success: true, message: `Cleared all Firestore data. Preserved: site settings, homepage sections, FAQs + all Auth logins. Purged ${totalDeleted} collections, ${totalErrors} errors.`, totals: { deleted: totalDeleted, skipped: 0, errors: totalErrors } });
+      emit({ type: "done", success: true, message: `Cleared all Firestore data. Preserved: site settings, homepage sections, FAQs + all user accounts. Purged ${totalDeleted} collections, ${totalErrors} errors.`, totals: { deleted: totalDeleted, skipped: 0, errors: totalErrors } });
     } else {
       emit({ type: "done", success: false, message: "Invalid action" });
     }

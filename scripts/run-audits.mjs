@@ -136,8 +136,8 @@ const AUDITS = [
   { name: "no-suppression-comments",       script: "scripts/audit-no-suppression-comments.mjs" },
   // Error-handling audits: catch {} (no binding) and .catch(console.error/warn) in server code.
   // Report mode — pre-existing catch{} violations being fixed separately.
-  { name: "empty-catch",                   script: "scripts/audit-empty-catch.mjs" },
-  { name: "console-catch",                 script: "scripts/audit-console-catch.mjs" },
+  { name: "empty-catch",                   script: "scripts/audit-empty-catch.mjs",   env: { STRICT: "1" } },
+  { name: "console-catch",                 script: "scripts/audit-console-catch.mjs", env: { STRICT: "1" } },
 
 ];
 function parseArgs(argv) {
