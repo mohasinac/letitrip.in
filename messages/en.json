@@ -3015,6 +3015,7 @@
     "formTagsPlaceholder": "e.g. electronics, gadgets, sale",
     "formFeatured": "Featured",
     "formIsPromoted": "Is Promoted",
+    "formAllowShipBeforeEmiComplete": "Ship before EMI is fully paid",
     "formIsAuction": "Is Auction",
     "formStartingBid": "Starting Bid (₹)",
     "formAuctionEndDate": "Auction End Date",

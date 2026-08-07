@@ -6,6 +6,8 @@ import {
   productRepository,
   storeRepository,
   userRepository,
+  isAdminUser,
+  isEmployeeUser,
 } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 import { USER_ROLE } from "@/constants/api-roles";
@@ -25,11 +27,11 @@ export const GET = withProviders(
       const product = await productRepository.findByBarcodeId(barcode);
       if (!product) return errorResponse(NOT_FOUND_MSG, 404);
 
-      if (user!.role === "admin") {
+      if (isAdminUser(user)) {
         return successResponse(product);
       }
 
-      if (user!.role === "employee") {
+      if (isEmployeeUser(user)) {
         const userDoc = (await userRepository.findById(user!.uid)) as { storeId?: string } | null;
         if (!userDoc?.storeId || product.storeId !== userDoc.storeId)
           return errorResponse(NOT_FOUND_MSG, 404);

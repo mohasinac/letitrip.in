@@ -1,9 +1,9 @@
 /**
  * Tests for POST /api/store/orders/[id]/ship
  * Requires ROLES_STORE_WRITE + store:api:write.
- * Thin proxy to shipOrderAction(orderId, body).
- * shipOrderAction throws → 400 with error message.
- * Non-Error thrown → generic error message.
+ * Thin proxy to shipOrderAction(orderId, body) — shipOrderAction returns an
+ * ActionResult ({ ok: true, data } | { ok: false, error, code }) via wrapAction,
+ * it never rejects. The route unwraps `.ok` and never trusts a throw.
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
@@ -50,34 +50,34 @@ const makeRequest = (body: unknown) =>
     body: JSON.stringify(body),
   });
 
-const mockShipResult = {
+const mockShipData = {
   orderId: "order-1-20260601-a1b2c3",
   trackingNumber: "123456789",
-  carrier: "Shiprocket",
+  carrier: "DTDC",
   status: "SHIPPED",
 };
 
 beforeEach(() => {
   vi.clearAllMocks();
   _user = { uid: "seller-uid", role: "seller" };
-  mockShipOrderAction.mockResolvedValue(mockShipResult);
+  mockShipOrderAction.mockResolvedValue({ ok: true, data: mockShipData });
 });
 
 describe("POST /api/store/orders/[id]/ship", () => {
   it("unauthenticated → 401", async () => {
     _user = null;
-    const res = await POST(makeRequest({ method: "shiprocket" }) as never, params as never);
+    const res = await POST(makeRequest({ method: "custom" }) as never, params as never);
     expect(res.status).toBe(401);
   });
 
   it("buyer → 403 (not in ROLES_STORE_WRITE)", async () => {
     _user = { uid: "buyer-uid", role: "user" };
-    const res = await POST(makeRequest({ method: "shiprocket" }) as never, params as never);
+    const res = await POST(makeRequest({ method: "custom" }) as never, params as never);
     expect(res.status).toBe(403);
   });
 
   it("delegates to shipOrderAction with orderId from params", async () => {
-    await POST(makeRequest({ method: "shiprocket" }) as never, params as never);
+    await POST(makeRequest({ method: "custom" }) as never, params as never);
     expect(mockShipOrderAction).toHaveBeenCalledWith(
       "order-1-20260601-a1b2c3",
       expect.anything(),
@@ -85,32 +85,32 @@ describe("POST /api/store/orders/[id]/ship", () => {
   });
 
   it("passes body to shipOrderAction", async () => {
-    const body = { method: "manual", trackingNumber: "ABC123", carrier: "DTDC" };
+    const body = { method: "custom", trackingNumber: "ABC123", shippingCarrier: "DTDC", trackingUrl: "https://track.example/ABC123" };
     await POST(makeRequest(body) as never, params as never);
     expect(mockShipOrderAction).toHaveBeenCalledWith(
       "order-1-20260601-a1b2c3",
-      expect.objectContaining({ method: "manual", trackingNumber: "ABC123" }),
+      expect.objectContaining({ method: "custom", trackingNumber: "ABC123" }),
     );
   });
 
   it("success → 200 with ship result", async () => {
-    const res = await POST(makeRequest({ method: "shiprocket" }) as never, params as never);
+    const res = await POST(makeRequest({ method: "custom" }) as never, params as never);
     expect(res.status).toBe(200);
     const json = await res.clone().json() as { data: { trackingNumber: string } };
     expect(json.data.trackingNumber).toBe("123456789");
   });
 
-  it("shipOrderAction throws Error → 400 with error message", async () => {
-    mockShipOrderAction.mockRejectedValue(new Error("Order already shipped"));
-    const res = await POST(makeRequest({ method: "shiprocket" }) as never, params as never);
+  it("shipOrderAction returns ok:false → 400 with error message", async () => {
+    mockShipOrderAction.mockResolvedValue({ ok: false, error: "Order already shipped" });
+    const res = await POST(makeRequest({ method: "custom" }) as never, params as never);
     expect(res.status).toBe(400);
     const json = await res.clone().json() as { error: string };
     expect(json.error).toBe("Order already shipped");
   });
 
-  it("shipOrderAction throws non-Error → 400 with generic message", async () => {
-    mockShipOrderAction.mockRejectedValue("something went wrong");
-    const res = await POST(makeRequest({ method: "shiprocket" }) as never, params as never);
+  it("shipOrderAction returns ok:false with no error message → 400 with generic message", async () => {
+    mockShipOrderAction.mockResolvedValue({ ok: false });
+    const res = await POST(makeRequest({ method: "custom" }) as never, params as never);
     expect(res.status).toBe(400);
     const json = await res.clone().json() as { error: string };
     expect(json.error).toBe("Failed to ship order");

@@ -50,8 +50,9 @@ vi.mock("@mohasinac/appkit", () => ({
     assignWorker: mockOrderAssignWorker,
   },
   userRepository: { findById: mockUserFindById },
+  isSellerUser: (u: { role?: string } | null | undefined) => u?.role === "seller",
+  assertEmiShippable: vi.fn().mockResolvedValue(undefined),
   OrderStatusValues: { CANCELLED: "cancelled", PROCESSING: "processing", SHIPPED: "shipped" },
-  ShippingMethodValues: { SHIPROCKET: "shiprocket" },
   normalizeError: vi.fn(),
   successResponse: (data: unknown, _msg?: string) =>
     new Response(JSON.stringify({ ok: true, data }), { status: 200 }),

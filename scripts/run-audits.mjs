@@ -58,6 +58,7 @@ const AUDITS = [
   { name: "registry-constants",              script: "scripts/audit-route-nav-field-constants.mjs" },
   { name: "schema-base-fields",             script: "scripts/audit-schema-base-fields.mjs" },
   { name: "listing-type-imports",           script: "scripts/audit-listing-type-imports.mjs" },
+  { name: "listing-type-registry-usage",    script: "scripts/audit-listing-type-registry-usage.mjs" },
   { name: "per-type-data-pattern",          script: "scripts/audit-per-type-data-pattern.mjs" },
   { name: "spinner-defaults",                script: "scripts/audit-spinner-defaults.mjs" },
   { name: "silent-fetch-catch",              script: "scripts/audit-silent-fetch-catch.mjs" },

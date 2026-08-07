@@ -5,42 +5,53 @@ import {
   errorResponse,
   productRepository,
   storeRepository,
-  userRepository,
+  isAdminUser,
+  isEmployeeUser,
 } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 import { USER_ROLE } from "@/constants/api-roles";
 
-const NOT_FOUND_MSG = "No product found for this barcode";
+const ERR_PRODUCT_NOT_FOUND = "Product not found";
+const ERR_FORBIDDEN = "You do not own this listing";
 
-export const GET = withProviders(
+const ROLES = [...ROLES_STORE_WRITE, USER_ROLE.EMPLOYEE];
+
+async function loadScopedProduct(
+  user: { uid: string },
+  isPrivileged: boolean,
+  id: string,
+) {
+  const product = await productRepository.findById(id);
+  if (!product) return null;
+  if (isPrivileged) return product;
+  const store = await storeRepository.findByOwnerId(user.uid);
+  if (!store || product.storeId !== store.id) return null;
+  return product;
+}
+
+export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
-    roles: [...ROLES_STORE_WRITE, USER_ROLE.EMPLOYEE],
+    roles: ROLES,
     permission: "store:api:write",
-    handler: async ({ request, user }) => {
-      const url = new URL(request.url);
-      const barcode = url.searchParams.get("barcode")?.trim();
-      if (!barcode) return errorResponse("barcode param required", 400);
+    handler: async ({ params, user }) => {
+      const id = (params as { id: string }).id;
+      const privileged = isAdminUser(user) || isEmployeeUser(user);
 
-      const product = await productRepository.findByBarcodeId(barcode);
-      if (!product) return errorResponse(NOT_FOUND_MSG, 404);
-
-      if (user!.role === "admin") {
-        return successResponse(product);
+      const child = await loadScopedProduct(user!, privileged, id);
+      if (!child) return errorResponse(ERR_PRODUCT_NOT_FOUND, 404);
+      if (!child.groupId) return errorResponse(ERR_FORBIDDEN, 403);
+      if (child.isGroupParent) {
+        return errorResponse("The group parent must dissolve the group instead of leaving it", 400);
       }
 
-      if (user!.role === "employee") {
-        const userDoc = (await userRepository.findById(user!.uid)) as { storeId?: string } | null;
-        if (!userDoc?.storeId || product.storeId !== userDoc.storeId)
-          return errorResponse(NOT_FOUND_MSG, 404);
-        return successResponse(product);
-      }
+      // groupParentSlug === the parent's id (product ids are pure slugs).
+      const parent = child.groupParentSlug
+        ? await productRepository.findById(child.groupParentSlug)
+        : null;
 
-      const store = await storeRepository.findByOwnerId(user!.uid);
-      if (!store || product.storeId !== store.id)
-        return errorResponse(NOT_FOUND_MSG, 404);
-
-      return successResponse(product);
+      await productRepository.leaveGroup(child, parent);
+      return successResponse({ id, left: true });
     },
   }),
 );

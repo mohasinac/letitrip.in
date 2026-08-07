@@ -6,12 +6,20 @@ import {
   productRepository,
   storeRepository,
   userRepository,
+  isAdminUser,
+  isEmployeeUser,
 } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 import { USER_ROLE } from "@/constants/api-roles";
 
 const NOT_FOUND_MSG = "No product found for this barcode";
 
+// NOTE: despite the route name ("codes"), this currently implements a
+// barcode-scan lookup identical to /api/store/products/scan — it has no
+// active UI caller (unlike the sibling group/duplicate routes fixed
+// alongside this one), so the intended "codes" behavior (digital-code
+// listing management?) couldn't be reverse-engineered from a client
+// contract. Left functionally as-is; only the role check was fixed.
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -25,11 +33,11 @@ export const GET = withProviders(
       const product = await productRepository.findByBarcodeId(barcode);
       if (!product) return errorResponse(NOT_FOUND_MSG, 404);
 
-      if (user!.role === "admin") {
+      if (isAdminUser(user)) {
         return successResponse(product);
       }
 
-      if (user!.role === "employee") {
+      if (isEmployeeUser(user)) {
         const userDoc = (await userRepository.findById(user!.uid)) as { storeId?: string } | null;
         if (!userDoc?.storeId || product.storeId !== userDoc.storeId)
           return errorResponse(NOT_FOUND_MSG, 404);

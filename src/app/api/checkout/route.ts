@@ -17,7 +17,9 @@ import { createCheckoutOrderAction } from "@mohasinac/appkit";
 
 const checkoutSchema = z.object({
   addressId: z.string().min(1, "addressId is required"),
-  paymentMethod: z.enum(["cod", "online", "upi_manual"]).default("cod"),
+  paymentMethod: z.enum(["cod", "online", "upi_manual", "emi"]).default("cod"),
+  /** Required when paymentMethod === "emi" — validated further by createCheckoutOrderAction. */
+  emiTenureMonths: z.number().int().min(2).max(6).optional(),
   notes: z.string().max(500).optional(),
   excludedProductIds: z.array(z.string()).optional(),
 });
@@ -26,7 +28,7 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
   auth: true,
   schema: checkoutSchema,
   handler: async ({ user, body }) => {
-    const { addressId, paymentMethod, notes, excludedProductIds } = body!;
+    const { addressId, paymentMethod, emiTenureMonths, notes, excludedProductIds } = body!;
     const result = await createCheckoutOrderAction({
       userId: user!.uid,
       userName:
@@ -36,6 +38,7 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
       userEmail: user!.email ?? "",
       addressId,
       paymentMethod,
+      emiTenureMonths,
       notes,
       excludedProductIds,
     });

@@ -19,6 +19,7 @@ import {
   useToast,
   isAuctionListing,
   isPreOrderListing,
+  normalizeListingType,
   useAuthGate,
   ACTION_ID,
   ACTIONS,
@@ -47,6 +48,10 @@ const TYPE_OPTIONS = [
   { value: "auction",  label: "Auction" },
   { value: "preorder", label: "Pre-Order" },
 ];
+
+// "Standard" (and any other type) filter option buckets everything that
+// isn't the two time-limited types with their own dedicated dropdown value.
+const TIME_LIMITED_TYPES = new Set(["auction", "pre-order"]);
 
 interface WishlistFilters {
   type: string;
@@ -208,7 +213,7 @@ export default function WishlistPage() {
         const p = item.product;
         if (applied.type === "auction") return isAuctionListing(p);
         if (applied.type === "preorder") return isPreOrderListing(p);
-        return !isAuctionListing(p) && !isPreOrderListing(p);
+        return !TIME_LIMITED_TYPES.has(normalizeListingType(p));
       });
     }
 

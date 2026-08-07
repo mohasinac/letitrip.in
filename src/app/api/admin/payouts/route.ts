@@ -79,7 +79,7 @@ const __GET__g = withProviders(createRouteHandler({
         pageSize: "1",
       }),
       payoutRepository.list({
-        filters: sieveFilter(PAYOUT_FIELDS.STATUS, SIEVE_OP.EQ, PayoutStatusValues.COMPLETED),
+        filters: sieveFilter(PAYOUT_FIELDS.STATUS, SIEVE_OP.EQ, PayoutStatusValues.PAID),
         sorts: sortBy(COMMON_FIELDS.CREATED_AT, "ASC"),
         page: "1",
         pageSize: "1",

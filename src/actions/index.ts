@@ -121,7 +121,6 @@ export {
   sellerDeleteProductAction,
   shipOrderAction,
   updateSellerShippingAction,
-  verifyShiprocketPickupOtpAction,
 } from "./seller.actions";
 
 // Category mutations (admin only)

@@ -93,7 +93,7 @@ const __GET__g = withProviders(createRouteHandler({
         page: String(page),
         pageSize: String(pageSize),
       }),
-      payoutRepository.findByStoreAndStatus(storeId, PayoutStatusValues.COMPLETED),
+      payoutRepository.findByStoreAndStatus(storeId, PayoutStatusValues.PAID),
       payoutRepository.findByStoreAndStatus(storeId, PayoutStatusValues.PENDING),
       payoutRepository.findByStoreAndStatus(storeId, PayoutStatusValues.PROCESSING),
       computeSellerEarnings(storeId),

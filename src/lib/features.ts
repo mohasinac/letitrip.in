@@ -18,7 +18,6 @@ export const FEATURE_FLAGS = [
   "COD",
   "COUPONS",
   "PAYOUTS",
-  "SHIPROCKET",
   "ANALYTICS_FUNCTION",
   "GST",
   "MOCK_PAYMENT",

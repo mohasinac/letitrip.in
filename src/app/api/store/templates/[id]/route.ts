@@ -1,6 +1,6 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
+import { createRouteHandler, successResponse, ApiErrors, isSellerUser } from "@mohasinac/appkit";
 import { productTemplateRepository, storeRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_READ, ROLES_STORE_WRITE } from "@/constants";
 
@@ -45,7 +45,7 @@ export const PUT = withProviders(
       const existing = await productTemplateRepository.findById(id);
       if (!existing) return ApiErrors.notFound(MSG_TEMPLATE_NOT_FOUND);
 
-      if (user!.role === "seller") {
+      if (isSellerUser(user)) {
         const store = await storeRepository.findByOwnerId(user!.uid);
         if (!store || existing.storeId !== store.id) {
           return ApiErrors.forbidden("You can only edit your own templates");
@@ -70,7 +70,7 @@ export const DELETE = withProviders(
       const existing = await productTemplateRepository.findById(id);
       if (!existing) return ApiErrors.notFound(MSG_TEMPLATE_NOT_FOUND);
 
-      if (user!.role === "seller") {
+      if (isSellerUser(user)) {
         const store = await storeRepository.findByOwnerId(user!.uid);
         if (!store || existing.storeId !== store.id) {
           return ApiErrors.forbidden("You can only delete your own templates");

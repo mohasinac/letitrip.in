@@ -7,6 +7,7 @@ import {
   ApiErrors,
   categoriesRepository,
   storeRepository,
+  isSellerUser,
 } from "@mohasinac/appkit";
 import { ROLES_STORE_READ, ROLES_STORE_WRITE } from "@/constants";
 
@@ -46,7 +47,7 @@ export const PUT = withProviders(createRouteHandler<(typeof updateSchema)["_outp
       return ApiErrors.notFound(MSG_SUBLISTING_CAT_NOT_FOUND);
     }
 
-    if (user!.role === "seller") {
+    if (isSellerUser(user)) {
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store || existing.createdBy !== store.id) {
         return ApiErrors.forbidden("You can only edit categories you created");
@@ -79,7 +80,7 @@ export const DELETE = withProviders(createRouteHandler({
       return ApiErrors.notFound(MSG_SUBLISTING_CAT_NOT_FOUND);
     }
 
-    if (user!.role === "seller") {
+    if (isSellerUser(user)) {
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store || existing.createdBy !== store.id) {
         return ApiErrors.forbidden("You can only delete categories you created");

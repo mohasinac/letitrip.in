@@ -331,6 +331,8 @@
 | AdminAllEventEntriesView | View | All event entries listing |
 | AdminReviewsView | View | Reviews management |
 | AdminPayoutsView | View | Payouts management |
+| AdminArtView | View | Art print listings management (EMI/art-stickers session) |
+| AdminStickersView | View | Sticker listings management (EMI/art-stickers session) |
 | AdminSectionsView | View | Homepage sections management |
 | AdminCarouselView | View | Carousel management |
 | AdminCarouselEditorView | View | Carousel editor |
@@ -590,6 +592,8 @@
 | SellerClassifiedView | View | Classified ads management |
 | SellerDigitalCodesView | View | Digital codes management |
 | SellerLiveView | View | Live streaming management |
+| SellerArtView | View | Art print listings management (EMI/art-stickers session) |
+| SellerStickersView | View | Sticker listings management (EMI/art-stickers session) |
 | SellerGoogleReviewsView | View | Google reviews integration |
 | PrintCenterView | View | Label/document printing |
 | SellerSidebar, SellerStatCard | Component | Dashboard navigation/stats |
@@ -1068,6 +1072,8 @@
 | Orders | cancelOrderAction | buyer+ | Cancel pending order |
 | Orders | requestReturnAction | buyer+ | Request return |
 | Orders | updateOrderStatusAction | seller+ | Update order status |
+| Orders | shipOrderAction | seller+ | Manual ship (carrier + tracking); gated by assertEmiShippable for EMI orders |
+| EMI | markEmiInstallmentPaidAction | seller+ | Record collection of one EMI installment |
 | Payouts | requestPayoutAction | seller | Request seller payout |
 | Pre-Orders | reservePreOrderAction | buyer+ | Reserve pre-order |
 | Products | publishProductAction | seller+ | Publish product listing |
@@ -1152,6 +1158,7 @@
 | `/api/store/orders` | GET | List store orders |
 | `/api/store/orders/[id]` | GET, PUT | Order management |
 | `/api/store/orders/[id]/ship` | POST | Ship order |
+| `/api/store/orders/[id]/emi-installment` | PATCH | Mark one EMI installment paid (EMI/art-stickers session) |
 | `/api/store/coupons` | GET, POST | Store coupons |
 | `/api/store/coupons/[id]` | GET, PUT, DELETE | Coupon CRUD |
 | `/api/store/storefront` | GET, PUT | Storefront settings |

@@ -1,90 +1,29 @@
 /**
  * Seller Shipping Configuration API
  *
- * GET  /api/seller/shipping  â€” Read current shipping config (token redacted)
- * PATCH /api/seller/shipping â€” Update shipping config:
- *   - Custom method: save fixed price + carrier name
- *   - Shiprocket method: authenticate with Shiprocket credentials, save token,
- *     and optionally register a pickup address (which triggers OTP to seller's phone)
+ * GET   /api/store/shipping — Read current shipping config
+ * PATCH /api/store/shipping — Save custom carrier price + pickup address.
+ *   Manual shipping only — no carrier API, no credentials, no OTP step.
  */
 
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import { userRepository } from "@mohasinac/appkit";
-import { ValidationError } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
+import { userRepository, addressesRepository } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit";
 import { createApiHandler } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
-import {
-  shiprocketAuthenticate,
-  shiprocketAddPickupLocation,
-  SHIPROCKET_TOKEN_TTL_MS,
-} from "@mohasinac/appkit";
 import type { SellerShippingConfig } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 // --- Schemas ----------------------------------------------------------------
 
-const pickupAddressSchema = z.object({
-  locationName: z.string().min(2).max(40),
-  name: z.string().min(2).max(100),
-  email: z.string().email(),
-  phone: z.string().min(10).max(15),
-  address: z.string().min(5).max(200),
-  address2: z.string().max(200).optional().or(z.literal("")),
-  city: z.string().min(2).max(80),
-  state: z.string().min(2).max(80),
-  pincode: z.string().regex(/^\d{6}$/, "Pincode must be 6 digits"),
-  country: z.string().default("India"),
+const updateShippingSchema = z.object({
+  customShippingPrice: z.number().min(0),
+  customCarrierName: z.string().min(1).max(80),
+  /** ID into the unified `addresses` collection (ownerType="store") — see StoreAddressSelectorCreate. */
+  pickupAddressId: z.string().min(1).optional(),
 });
-
-const updateShippingSchema = z.discriminatedUnion("method", [
-  z.object({
-    method: z.literal("custom"),
-    customShippingPrice: z.number().min(0),
-    customCarrierName: z.string().min(1).max(80),
-  }),
-  z.object({
-    method: z.literal("shiprocket"),
-    /** Present only on initial connect / token refresh */
-    shiprocketCredentials: z
-      .object({
-        email: z.string().email(),
-        password: z.string().min(1),
-      })
-      .optional(),
-    /** If provided, we register this address in Shiprocket (triggers OTP) */
-    pickupAddress: pickupAddressSchema.optional(),
-  }),
-]);
-
-// --- Helper: strip server-only fields before sending to client ---------------
-
-function sanitiseConfig(config: SellerShippingConfig | undefined): Omit<
-  SellerShippingConfig,
-  "shiprocketToken" | "shiprocketTokenExpiry"
-> & {
-  shiprocketTokenExpiry?: string;
-  isTokenValid?: boolean;
-} {
-  if (!config) {
-    return {
-      method: "custom",
-      isConfigured: false,
-      isTokenValid: false,
-    };
-  }
-  const { shiprocketToken, shiprocketTokenExpiry, ...rest } = config;
-  return {
-    ...rest,
-    shiprocketTokenExpiry: shiprocketTokenExpiry?.toISOString(),
-    isTokenValid: shiprocketToken
-      ? new Date() < new Date(shiprocketTokenExpiry ?? 0)
-      : false,
-  };
-}
 
 // --- GET ---------------------------------------------------------------------
 
@@ -93,8 +32,9 @@ export const GET = withProviders(createApiHandler({
   roles: [...ROLES_STORE_WRITE],
     permission: "store:api:write",
   handler: async ({ user }) => {
+    const config = user!.shippingConfig as SellerShippingConfig | undefined;
     return successResponse({
-      shippingConfig: sanitiseConfig(user!.shippingConfig as SellerShippingConfig | undefined),
+      shippingConfig: config ?? { method: "custom", isConfigured: false },
     });
   },
 }));
@@ -109,123 +49,46 @@ export const PATCH = withProviders(createApiHandler<(typeof updateShippingSchema
     schema: updateShippingSchema,
     handler: async ({ user, body }) => {
       const data = body!;
-      let config: SellerShippingConfig;
-      let otpPending = false;
-      let newPickupLocationId: number | undefined;
-
-      if (data.method === "custom") {
-        config = {
-          method: "custom",
-          customShippingPrice: data.customShippingPrice,
-          customCarrierName: data.customCarrierName,
-          isConfigured: true,
-        };
-      } else {
-        // -- Shiprocket method --------------------------------------------------
-        const existing = user!.shippingConfig as SellerShippingConfig | undefined;
-        let token = existing?.shiprocketToken;
-        let tokenExpiry = existing?.shiprocketTokenExpiry;
-        const existingEmail = existing?.shiprocketEmail;
-
-        // Re-authenticate if credentials supplied or token is missing/expired
-        if (
-          data.shiprocketCredentials ||
-          !token ||
-          (tokenExpiry && new Date() >= new Date(tokenExpiry))
-        ) {
-          if (!data.shiprocketCredentials) {
-            throw new ValidationError(
-              ERROR_MESSAGES.SHIPPING.PROVIDER_CREDS_REQUIRED,
-            );
-          }
-
-          serverLogger.info("Authenticating with Shiprocket", {
-            uid: user!.uid,
-            email: data.shiprocketCredentials.email,
-          });
-
-          const authResult = await shiprocketAuthenticate({
-            email: data.shiprocketCredentials.email,
-            password: data.shiprocketCredentials.password,
-          }).catch((err: Error) => {
-            throw new ValidationError(
-              `${ERROR_MESSAGES.SHIPPING.PROVIDER_AUTH_FAILED}: ${err.message}`,
-            );
-          });
-
-          token = authResult.token;
-          tokenExpiry = new Date(Date.now() + SHIPROCKET_TOKEN_TTL_MS);
-          tokenExpiry = new Date(tokenExpiry);
+      let pickupAddress: SellerShippingConfig["pickupAddress"];
+      if (data.pickupAddressId) {
+        const addr = await addressesRepository.findById(data.pickupAddressId);
+        if (!addr || addr.ownerType !== "store") {
+          return errorResponse("Pickup address not found", 404);
         }
-
-        const shiprocketEmail =
-          data.shiprocketCredentials?.email ?? existingEmail ?? "";
-
-        config = {
-          method: "shiprocket",
-          shiprocketEmail,
-          shiprocketToken: token,
-          shiprocketTokenExpiry: tokenExpiry,
-          pickupAddress: existing?.pickupAddress,
-          isConfigured: Boolean(existing?.pickupAddress?.isVerified),
+        pickupAddress = {
+          locationName: addr.label,
+          name: addr.fullName,
+          phone: addr.phone,
+          email: user!.email ?? "",
+          address: addr.addressLine1,
+          address2: addr.addressLine2,
+          city: addr.city,
+          state: addr.state,
+          pincode: addr.postalCode,
+          country: addr.country,
+          isVerified: true,
         };
-
-        // Register new pickup address â†’ triggers OTP
-        if (data.pickupAddress && token) {
-          serverLogger.info("Registering Shiprocket pickup address", {
-            uid: user!.uid,
-            location: data.pickupAddress.locationName,
-          });
-
-          const pickupResult = await shiprocketAddPickupLocation(token, {
-            pickup_location: data.pickupAddress.locationName,
-            name: data.pickupAddress.name,
-            email: data.pickupAddress.email,
-            phone: data.pickupAddress.phone,
-            address: data.pickupAddress.address,
-            address_2: data.pickupAddress.address2 ?? "",
-            city: data.pickupAddress.city,
-            state: data.pickupAddress.state,
-            country: data.pickupAddress.country || "India",
-            pin_code: data.pickupAddress.pincode,
-          }).catch((err: Error) => {
-            throw new ValidationError(
-              `${ERROR_MESSAGES.SHIPPING.PICKUP_ADD_FAILED}: ${err.message}`,
-            );
-          });
-
-          newPickupLocationId = pickupResult.address?.pickup_location_id;
-          otpPending = true;
-
-          config.pickupAddress = {
-            ...data.pickupAddress,
-            isVerified: false,
-            shiprocketAddressId: newPickupLocationId,
-          };
-          config.isConfigured = false; // Not yet verified
-        }
       }
 
-      await userRepository.update(user!.uid, { shippingConfig: config });
+      const config: SellerShippingConfig = {
+        method: "custom",
+        customShippingPrice: data.customShippingPrice,
+        customCarrierName: data.customCarrierName,
+        isConfigured: true,
+        ...(pickupAddress ? { pickupAddress } : {}),
+      };
 
-      const message = otpPending
-        ? SUCCESS_MESSAGES.SHIPPING.PICKUP_OTP_SENT
-        : SUCCESS_MESSAGES.SHIPPING.UPDATED;
+      await userRepository.update(user!.uid, { shippingConfig: config });
 
       serverLogger.info("Seller shipping config updated", {
         uid: user!.uid,
         method: config.method,
         isConfigured: config.isConfigured,
-        otpPending,
       });
 
       return successResponse(
-        {
-          shippingConfig: sanitiseConfig(config),
-          otpPending,
-          pickupLocationId: newPickupLocationId,
-        },
-        message,
+        { shippingConfig: config },
+        SUCCESS_MESSAGES.SHIPPING.UPDATED,
       );
     },
   },

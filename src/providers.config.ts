@@ -13,6 +13,7 @@
  */
 
 import { normalizeError } from "@mohasinac/appkit";
+import type { IPaymentProvider } from "@mohasinac/appkit";
 
 let initPromise: Promise<void> | null = null;
 
@@ -98,34 +99,38 @@ export function initProviders(): Promise<void> {
     });
     const { siteSettingsRepository } = await import("@mohasinac/appkit/repositories/site-settings");
 
-    // Track H — provider resolution. Read the mock flags once at boot. The
-    // resolver throws on production+mock to make the misconfiguration loud.
+    // Track H — provider resolution. Read the mock flag + payment-method
+    // toggles once at boot. The resolver throws on production+mock to make
+    // the misconfiguration loud. Shipping has no mock/toggle: manual
+    // shipping is the only provider, always registered.
     const bootSettings = await siteSettingsRepository.getSingleton().catch(() => null);
     const useMockPayment = bootSettings?.featureFlags?.useMockPayment === true;
-    const useMockShipping = bootSettings?.featureFlags?.useMockShipping === true;
     if (useMockPayment && process.env.NODE_ENV === "production") {
       throw new Error(
         "[providers] siteSettings.featureFlags.useMockPayment is TRUE in production. " +
           "The mock payment provider must never run in production.",
       );
     }
-    if (useMockShipping && process.env.NODE_ENV === "production") {
-      throw new Error(
-        "[providers] siteSettings.featureFlags.useMockShipping is TRUE in production. " +
-          "The mock shipping provider must never run in production.",
-      );
-    }
 
-    const paymentProvider = useMockPayment
-      ? await import("@mohasinac/appkit/server").then(
-          (m) => new m.MockRazorpayProvider(),
-        )
-      : undefined; // real Razorpay path resolves credentials per-call (legacy createRazorpayOrder)
-    const shippingProvider = useMockShipping
-      ? await import("@mohasinac/appkit/server").then(
-          (m) => new m.MockShiprocketProvider(),
-        )
-      : undefined;
+    const razorpayEnabled = bootSettings?.payment?.razorpayEnabled === true;
+    const { ManualPaymentProvider, ManualShippingProvider } = await import("@mohasinac/appkit/server");
+
+    let paymentProvider: IPaymentProvider;
+    if (useMockPayment) {
+      const { MockRazorpayProvider } = await import("@mohasinac/appkit/server");
+      paymentProvider = new MockRazorpayProvider();
+    } else if (razorpayEnabled) {
+      const { RazorpayProvider, resolveKeys } = await import("@mohasinac/appkit/server");
+      const keys = await resolveKeys();
+      paymentProvider = new RazorpayProvider({
+        keyId: keys.razorpayKeyId,
+        keySecret: keys.razorpayKeySecret,
+        webhookSecret: keys.razorpayWebhookSecret,
+      });
+    } else {
+      paymentProvider = new ManualPaymentProvider();
+    }
+    const shippingProvider = new ManualShippingProvider();
 
     registerProviders({
       db: firebaseDbProvider,
@@ -151,13 +156,11 @@ export function initProviders(): Promise<void> {
           return resolved.isAdmin;
         },
       },
-      // Track H — mock providers are registered when the corresponding
-      // featureFlag is on (and NODE_ENV !== "production"). When the flag is
-      // off, the slot stays empty and the existing real-provider path (via
-      // appkit's resolveKeys + createRazorpayOrder / shiprocketAuthenticate)
-      // remains in effect — full provider-registry migration is deferred.
-      ...(paymentProvider ? { payment: paymentProvider } : {}),
-      ...(shippingProvider ? { shipping: shippingProvider } : {}),
+      // payment/shipping are always populated — manual by default, Razorpay
+      // when siteSettings.payment.razorpayEnabled is true, mock Razorpay
+      // when siteSettings.featureFlags.useMockPayment is true (non-prod only).
+      payment: paymentProvider,
+      shipping: shippingProvider,
     });
   })();
   return initPromise;

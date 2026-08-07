@@ -1,47 +1,47 @@
+import { z } from "zod";
 import { withProviders } from "@/providers.config";
-import { createApiHandler, successResponse, ApiErrors, orderRepository, storeRepository, type JsonValue } from "@mohasinac/appkit";
+import {
+  createRouteHandler,
+  successResponse,
+  errorResponse,
+  orderRepository,
+  storeRepository,
+  isSellerUser,
+} from "@mohasinac/appkit";
+import { mediaUrlSchema } from "@/validation/request-schemas";
 import { ROLES_STORE_WRITE } from "@/constants";
+import { USER_ROLE } from "@/constants/api-roles";
 
-const BULK_MAX = 50;
+const ROLES = [...ROLES_STORE_WRITE, USER_ROLE.EMPLOYEE];
 
-export const PATCH = withProviders(createApiHandler({
-  roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
-  handler: async ({ request, user }) => {
-    const store = await storeRepository.findByOwnerId(user!.uid);
-    if (!store) return ApiErrors.forbidden("No store found for this account");
+const shippingProofSchema = z.object({
+  shippingProofUrl: mediaUrlSchema,
+  shippingProofMimeType: z.string().min(1),
+});
 
-    const body = await request.json() as {
-      orderIds?: JsonValue;
-      physicalLocation?: JsonValue;
-    };
+export const PATCH = withProviders(
+  createRouteHandler<z.infer<typeof shippingProofSchema>>({
+    auth: true,
+    roles: ROLES,
+    schema: shippingProofSchema,
+    handler: async ({ user, body, params }) => {
+      const id = (params as { id: string }).id;
+      const order = await orderRepository.findById(id);
+      if (!order) return errorResponse("Order not found", 404);
 
-    if (!Array.isArray(body.orderIds) || body.orderIds.length === 0) {
-      return ApiErrors.badRequest("orderIds must be a non-empty array");
-    }
-    if (body.orderIds.length > BULK_MAX) {
-      return ApiErrors.badRequest(`Maximum ${BULK_MAX} orders per request`);
-    }
-    const loc = body.physicalLocation as { zone?: JsonValue; shelf?: JsonValue; bin?: JsonValue } | undefined;
-    if (!loc || typeof loc.zone !== "string" || typeof loc.shelf !== "string" || typeof loc.bin !== "string") {
-      return ApiErrors.badRequest("physicalLocation must have zone, shelf, and bin strings");
-    }
-    const physicalLocation = { zone: loc.zone, shelf: loc.shelf, bin: loc.bin };
-
-    const orderIds = body.orderIds as string[];
-
-    // Verify ownership â€” reject batch on any mismatch
-    const orders = await Promise.all(orderIds.map((id) => orderRepository.findById(id)));
-    for (const [i, o] of orders.entries()) {
-      if (!o || o.storeId !== store.id) {
-        return ApiErrors.forbidden(`Order ${orderIds[i]} does not belong to your store`);
+      if (isSellerUser(user)) {
+        const store = await storeRepository.findByOwnerId(user!.uid);
+        if (!store || order.storeId !== store.id) return errorResponse("Order not found", 404);
       }
-    }
 
-    await Promise.all(
-      orderIds.map((id) => orderRepository.update(id, { physicalLocation } as never)),
-    );
+      await orderRepository.update(id, {
+        shippingProofUrl: body!.shippingProofUrl,
+        shippingProofMimeType: body!.shippingProofMimeType,
+        shippingProofUploadedAt: new Date(),
+        shippingProofUploadedBy: user!.uid,
+      } as never);
 
-    return successResponse({ updated: orderIds.length });
-  },
-}));
+      return successResponse({ id, shippingProofUrl: body!.shippingProofUrl });
+    },
+  }),
+);

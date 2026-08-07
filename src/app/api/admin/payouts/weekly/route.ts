@@ -7,7 +7,7 @@ import {
 /**
  * POST /api/admin/payouts/weekly
  *
- * Admin-manual trigger â€” processes weekly payouts for Shiprocket orders.
+ * Admin-manual trigger â€” processes weekly payouts for delivered orders.
  * The scheduled version of this logic runs automatically every Saturday
  * at 05:00 UTC via the `weeklyPayoutEligibility` Firebase Function.
  * Use this endpoint for on-demand admin-initiated runs only.
@@ -15,7 +15,6 @@ import {
  * Logic:
  *   1. Find all orders where:
  *        status       === 'delivered'
- *        shippingMethod === 'shiprocket'
  *        payoutStatus === 'eligible'
  *   2. Group by sellerId
  *   3. For each seller:
@@ -34,8 +33,10 @@ import {
   orderRepository,
   payoutRepository,
   storeRepository,
+  siteSettingsRepository,
   sortBy,
   COMMON_FIELDS,
+  computePayoutDeduction,
 } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 
@@ -44,8 +45,6 @@ import { serverLogger } from "@mohasinac/appkit";
 import type { OrderDocument } from "@mohasinac/appkit";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 
-const PLATFORM_COMMISSION_RATE = 0.05; // 5 %
-
 // --- Route --------------------------------------------------------------------
 
 const __POST__g = withProviders(createRouteHandler({
@@ -53,18 +52,20 @@ const __POST__g = withProviders(createRouteHandler({
   roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:payouts:write",
   handler: async () => {
+    const siteSettings = await siteSettingsRepository.getSingleton();
+    const commissions = siteSettings.commissions;
     const eligibleOrders = await orderRepository.listAll({
       filters:
-        "payoutStatus==eligible,shippingMethod==shiprocket,status==delivered",
+        "payoutStatus==eligible,status==delivered",
       sorts: sortBy(COMMON_FIELDS.CREATED_AT),
       page: "1",
       pageSize: "5000",
     });
-    const shiprocketDelivered = eligibleOrders.items as (OrderDocument & {
+    const eligibleDelivered = eligibleOrders.items as (OrderDocument & {
       id: string;
     })[];
 
-    if (shiprocketDelivered.length === 0) {
+    if (eligibleDelivered.length === 0) {
       return successResponse({
         payoutsCreated: 0,
         ordersProcessed: 0,
@@ -74,8 +75,8 @@ const __POST__g = withProviders(createRouteHandler({
     }
 
     // -- 2. Group by storeId -----------------------------------------------
-    const byStore = shiprocketDelivered.reduce<
-      Map<string, typeof shiprocketDelivered>
+    const byStore = eligibleDelivered.reduce<
+      Map<string, typeof eligibleDelivered>
     >((map, order) => {
       const id = order.storeId ?? "";
       if (!id) return map;
@@ -115,9 +116,7 @@ const __POST__g = withProviders(createRouteHandler({
       }
 
       const grossAmount = orders.reduce((s, o) => s + (o.totalPrice ?? 0), 0);
-      const platformFee =
-        Math.round(grossAmount * PLATFORM_COMMISSION_RATE * 100) / 100;
-      const netAmount = Math.round((grossAmount - platformFee) * 100) / 100;
+      const { platformFee, gatewayFee, gstOnFee, netAmount } = computePayoutDeduction(grossAmount, commissions);
 
       const payoutData = {
         storeId,
@@ -127,7 +126,11 @@ const __POST__g = withProviders(createRouteHandler({
         amount: netAmount,
         grossAmount,
         platformFee,
-        platformFeeRate: PLATFORM_COMMISSION_RATE,
+        platformFeeRate: commissions.platformFeePercent / 100,
+        gatewayFee,
+        gatewayFeeRate: (commissions.gatewayFeePercent ?? 0) / 100,
+        gstAmount: gstOnFee,
+        gstRate: commissions.gstPercent / 100,
         currency: "INR",
         status: PAYOUT_FIELDS.STATUS_VALUES.PENDING,
         paymentMethod:
@@ -150,7 +153,7 @@ const __POST__g = withProviders(createRouteHandler({
                 bankName: seller.payoutDetails.bankAccount.bankName,
               }
             : undefined,
-        notes: `Automated weekly payout â€” ${orders.length} Shiprocket delivered order(s)`,
+        notes: `Automated weekly payout â€” ${orders.length} delivered order(s)`,
         requestedAt: new Date(),
       };
 
@@ -188,13 +191,13 @@ const __POST__g = withProviders(createRouteHandler({
 
     serverLogger.info("Weekly payout batch complete", {
       payoutsCreated: payoutSummaries.length,
-      ordersProcessed: shiprocketDelivered.length,
+      ordersProcessed: eligibleDelivered.length,
     });
 
     return successResponse(
       {
         payoutsCreated: payoutSummaries.length,
-        ordersProcessed: shiprocketDelivered.length,
+        ordersProcessed: eligibleDelivered.length,
         sellers: payoutSummaries,
       },
       SUCCESS_MESSAGES.PAYOUT.WEEKLY_PROCESSED,

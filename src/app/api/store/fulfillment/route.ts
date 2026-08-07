@@ -6,6 +6,8 @@ import {
   orderRepository,
   storeRepository,
   userRepository,
+  isAdminUser,
+  isEmployeeUser,
 } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 import { USER_ROLE } from "@/constants/api-roles";
@@ -21,11 +23,11 @@ export const GET = withProviders(
 
       let storeId: string;
 
-      if (user!.role === "admin") {
+      if (isAdminUser(user)) {
         const sid = url.searchParams.get("storeId");
         if (!sid) return errorResponse("storeId required for admin", 400);
         storeId = sid;
-      } else if (user!.role === "employee") {
+      } else if (isEmployeeUser(user)) {
         const userDoc = (await userRepository.findById(user!.uid)) as { storeId?: string } | null;
         if (!userDoc?.storeId)
           return errorResponse("Employee is not affiliated with a store", 403);

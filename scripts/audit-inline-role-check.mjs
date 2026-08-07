@@ -42,7 +42,10 @@ function walk(dir, out = []) {
   return out;
 }
 
-const PATTERN = /\b(?:user|session|profile|currentUser|me)\??\.role\s*(?:===|!==|==|!=)\s*["'](?:admin|user|seller|moderator|employee|buyer)["']/;
+// [?!]? covers both optional chaining (`user?.role`) and TypeScript's
+// non-null assertion (`user!.role`) — the latter was previously unmatched,
+// letting 20 inline role-string compares slip through undetected.
+const PATTERN = /\b(?:user|session|profile|currentUser|me)[?!]?\.role\s*(?:===|!==|==|!=)\s*["'](?:admin|user|seller|moderator|employee|buyer)["']/;
 
 const violations = [];
 for (const root of SCAN) {

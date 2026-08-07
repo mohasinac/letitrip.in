@@ -177,6 +177,8 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.CLASSIFIED),      "Classified",      "admin:products:read"),
       adminItem(String(ROUTES.ADMIN.DIGITAL_CODES),   "Digital Codes",   "admin:products:read"),
       adminItem(String(ROUTES.ADMIN.LIVE),            "Live Items",      "admin:products:read"),
+      adminItem(String(ROUTES.ADMIN.ART),             "Art",             "admin:products:read"),
+      adminItem(String(ROUTES.ADMIN.STICKERS),        "Stickers",        "admin:products:read"),
       adminItem(String(ROUTES.ADMIN.ORDERS),          "Orders",          "admin:orders:read"),
       adminItem(String(ROUTES.ADMIN.FULFILLMENT),     "Fulfillment",     "admin:orders:read"),
       adminItem(String(ROUTES.ADMIN.RETURN_REQUESTS), "Returns",         "admin:returns:read"),
@@ -202,6 +204,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.DEALS),                 "Deals",         "admin:deals:read"),
       adminItem(String(ROUTES.ADMIN.FEATURED),              "Featured",      "admin:featured:read"),
       adminItem(String(ROUTES.ADMIN.COUPONS), "Coupons", "admin:coupons:read"),
+      adminItem(String(ROUTES.ADMIN.PRINT_CENTER), "Print Center", "admin:products:read"),
       // Hidden until feature patch ships: Bundles, Prize Draws (P10).
     ],
   },
@@ -234,6 +237,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     items: [
       adminItem(String(ROUTES.ADMIN.EVENTS),            "Events",       "admin:events:read"),
       adminItem(String(ROUTES.ADMIN.ALL_EVENT_ENTRIES), "All Entries",  "admin:events:read"),
+      adminItem(String(ROUTES.ADMIN.LOTTERIES),         "Lotteries",    "admin:events:read"),
     ],
   },
   {
@@ -303,6 +307,8 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
     title: "Listings",
     items: [
       { href: String(ROUTES.STORE.PRODUCTS), label: "Products" },
+      { href: String(ROUTES.STORE.ART),      label: "Art"      },
+      { href: String(ROUTES.STORE.STICKERS), label: "Stickers" },
       // Disabled until feature patches: Auctions(P5), Pre-Orders(P6), Prize Draws(P10),
       // Bundles, Classifieds, Digital Codes, Live Items, Offers, Sub-listing Groups,
       // Feature Badges, Templates, Listing Templates, Grouped Listings.
@@ -364,6 +370,8 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
       { href: String(ROUTES.USER.CLAIMED_COUPONS),  label: "My Coupons" },
       { href: String(ROUTES.USER.EVENTS),           label: "My Events"  },
       { href: String(ROUTES.USER.BIDS),             label: "My Bids"    },
+      { href: String(ROUTES.USER.OFFERS),           label: "My Offers"  },
+      { href: String(ROUTES.USER.HISTORY),          label: "Recently Viewed" },
       // Hidden until feature patch ships: Returns, Pre-Orders (P6), Digital Codes, Prize Draws (P10).
     ],
   },

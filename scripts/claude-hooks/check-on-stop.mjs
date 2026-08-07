@@ -137,6 +137,12 @@ const checks = [
     cwd: ROOT,
   },
   {
+    label: "audit-listing-type-registry-usage",
+    cmd: "node",
+    args: ["scripts/audit-listing-type-registry-usage.mjs"],
+    cwd: ROOT,
+  },
+  {
     label: "audit-per-type-data-pattern",
     cmd: "node",
     args: ["scripts/audit-per-type-data-pattern.mjs"],

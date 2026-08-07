@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import type { JsonValue } from "@mohasinac/appkit";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
-import { Heading, Main, MediaImage, Nav, ROUTES, Row, Span, Stack, Text, categoriesRepository, isAuctionListing, isPreOrderListing } from "@mohasinac/appkit";
+import { Heading, Main, MediaImage, Nav, ROUTES, Row, Span, Stack, Text, categoriesRepository, isAuctionListing, isPreOrderListing, normalizeListingType, pluginFor } from "@mohasinac/appkit";
+import type { ListingType } from "@mohasinac/appkit";
 import { Div } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants";
 
@@ -129,16 +130,10 @@ export default async function SublistingCategoryPage({ params }: Props) {
                   ? l.mainImage
                   : null;
               // SB1-G Phase 4 — canonical predicates over listingType only.
-              const lAsLT = l as {
-                listingType?: "standard" | "auction" | "pre-order" | "prize-draw";
-              };
+              const lAsLT = l as { listingType?: ListingType };
               const isAuction = isAuctionListing(lAsLT);
               const isPreOrder = isPreOrderListing(lAsLT);
-              const href = isAuction
-                ? String(ROUTES.PUBLIC.AUCTION_DETAIL(listingSlug))
-                : isPreOrder
-                  ? String(ROUTES.PUBLIC.PRE_ORDER_DETAIL(listingSlug))
-                  : String(ROUTES.PUBLIC.PRODUCT_DETAIL(listingSlug));
+              const href = pluginFor(normalizeListingType(lAsLT)).detailRoute(listingSlug);
               const condition = typeof l.condition === "string" ? l.condition : null;
 
               return (

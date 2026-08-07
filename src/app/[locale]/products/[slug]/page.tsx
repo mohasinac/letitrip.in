@@ -6,6 +6,7 @@ import {
   loadProductFeaturesForStore,
 } from "@mohasinac/appkit";
 import { getProductForDetail } from "@mohasinac/appkit";
+import { getSiteSettingsGlobal } from "@mohasinac/appkit/server";
 import { MakeOfferButton, ProductDetailActions } from "@mohasinac/appkit/client";
 import { submitProductOffer } from "./actions";
 import { generateProductMetadata } from "@/constants";
@@ -34,6 +35,8 @@ export default async function Page({ params }: Props) {
   const productFeatures = await loadProductFeaturesForStore(
     product?.storeId ?? null,
   ).catch(() => []);
+  const siteSettings = await getSiteSettingsGlobal().catch(() => null);
+  const codEnabled = siteSettings?.payment?.codEnabled === true;
 
   const ldProduct = product
     ? productJsonLd({
@@ -76,6 +79,7 @@ export default async function Page({ params }: Props) {
         slug={slug}
         initialProduct={product}
         productFeatures={productFeatures}
+        codEnabled={codEnabled}
         renderOfferAction={({ productId, price, minOfferPercent }) => (
           <MakeOfferButton
             productId={productId}

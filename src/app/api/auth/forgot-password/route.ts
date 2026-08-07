@@ -37,7 +37,9 @@ export const POST = withProviders(createRouteHandler<
     const auth = getAuth(getAdminApp());
     try {
       const resetLink = await auth.generatePasswordResetLink(body!.email);
-      serverLogger.info("Password reset link generated", { resetLink });
+      // Never log the link itself — it embeds the oobCode, a single-use
+      // secret that resets the account password without further verification.
+      serverLogger.info("Password reset link generated");
       await sendPasswordResetEmailWithLink(body!.email, resetLink);
     } catch (error: any) {
       if (error.code === "auth/user-not-found") {

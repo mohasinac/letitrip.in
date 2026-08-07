@@ -37,8 +37,10 @@ import {
   ACTIONS,
   LoginRequiredModal,
   useBottomActions,
+  pluginFor,
+  detectListingTypeFromSlug,
 } from "@mohasinac/appkit/client";
-import type { CartItem } from "@mohasinac/appkit/client";
+import type { CartItem, ListingType } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 
 import { Row, Stack, normalizeError } from "@mohasinac/appkit";
@@ -59,7 +61,7 @@ interface ServerCartItem {
   /** Display name for the store header — purely UI. */
   storeName?: string;
   /** Canonical listing-kind snapshot from CartItemDocument (SB1-G Phase 4). */
-  listingType?: "standard" | "auction" | "pre-order" | "prize-draw";
+  listingType?: ListingType;
   /** When true the item cannot be removed or have its quantity changed (won auction / accepted offer). */
   locked?: boolean;
   /** True when item was added from an accepted Make-an-Offer. */
@@ -72,7 +74,7 @@ interface ServerCartItem {
 /** Local helper — derives the per-item `listingType` snapshot used by cart UI rendering. */
 type CartItemWithListingType = CartItem & {
   itemId?: string;
-  listingType?: "standard" | "auction" | "pre-order" | "prize-draw";
+  listingType?: ListingType;
   locked?: boolean;
   isOffer?: boolean;
   offerId?: string;
@@ -128,17 +130,8 @@ const ERROR_TEXT_CLASS = "text-[var(--appkit-color-error)]";
 // ---------------------------------------------------------------------------
 
 /** Derive the product detail URL from the canonical listingType (with slug-prefix fallback). */
-function getProductHref(
-  productId: string,
-  listingType?: "standard" | "auction" | "pre-order" | "prize-draw",
-): string {
-  if (listingType === "auction" || productId.startsWith("auction-")) {
-    return String(ROUTES.PUBLIC.AUCTION_DETAIL(productId));
-  }
-  if (listingType === "pre-order" || productId.startsWith("preorder-")) {
-    return String(ROUTES.PUBLIC.PRE_ORDER_DETAIL(productId));
-  }
-  return String(ROUTES.PUBLIC.PRODUCT_DETAIL(productId));
+function getProductHref(productId: string, listingType?: ListingType): string {
+  return pluginFor(listingType ?? detectListingTypeFromSlug(productId)).detailRoute(productId);
 }
 
 // Cart groups are keyed by storeId (canonical store identifier = store slug);
@@ -198,11 +191,7 @@ function guestItemsToCartItems(
     productId: item.productId,
     quantity: item.quantity,
     // Guest carts don't carry a listingType snapshot — derive from slug prefix.
-    listingType: item.productId.startsWith("auction-")
-      ? "auction"
-      : item.productId.startsWith("preorder-")
-        ? "pre-order"
-        : "standard",
+    listingType: detectListingTypeFromSlug(item.productId),
     meta: {
       productId: item.productId,
       title: item.productTitle ?? item.productId,

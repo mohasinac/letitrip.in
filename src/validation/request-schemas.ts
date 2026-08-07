@@ -158,7 +158,7 @@ const productBaseSchema = z.object({
   seoKeywords: z.array(z.string().min(1).max(50)).max(10).optional(),
   // SB1-G Phase 4 — canonical discriminator (booleans removed).
   listingType: z
-    .enum(["standard", "auction", "pre-order", "prize-draw", "bundle", "classified", "digital-code", "live"])
+    .enum(["standard", "auction", "pre-order", "prize-draw", "bundle", "classified", "digital-code", "live", "art", "stickers"])
     .optional(),
   auctionEndDate: dateStringSchema.optional(),
   startingBid: z.number().positive().optional(),
@@ -176,6 +176,15 @@ const productBaseSchema = z.object({
     .enum(["upcoming", "in_production", "ready_to_ship"])
     .optional(),
   preOrderCancellable: z.boolean().optional(),
+  allowShipBeforeEmiComplete: z.boolean().optional(),
+  printMeta: z
+    .object({
+      size: z.string().max(80).optional(),
+      material: z.string().max(80).optional(),
+      finish: z.string().max(80).optional(),
+      editionSize: z.number().int().positive().optional(),
+    })
+    .optional(),
 });
 
 export const productCreateSchema = productBaseSchema
@@ -344,6 +353,8 @@ export const siteSettingsUpdateSchema = z
         minimumTransactionFee: z.number().min(0),
         gatewayFeePercent: z.number().min(0).max(100),
         codDepositPercent: z.number().min(0).max(100),
+        codHandlingFeeMinInPaise: z.number().min(0),
+        codHandlingFeePercent: z.number().min(0).max(100),
         sellerShippingFixed: z.number().min(0),
         platformShippingPercent: z.number().min(0).max(100),
         platformShippingFixedMin: z.number().min(0),

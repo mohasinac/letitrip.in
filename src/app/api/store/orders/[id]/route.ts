@@ -1,47 +1,117 @@
+import { z } from "zod";
 import { withProviders } from "@/providers.config";
-import { createApiHandler, successResponse, ApiErrors, orderRepository, storeRepository, type JsonValue } from "@mohasinac/appkit";
+import {
+  createRouteHandler,
+  successResponse,
+  errorResponse,
+  orderRepository,
+  storeRepository,
+  isSellerUser,
+  assertEmiShippable,
+  type JsonValue,
+} from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
+import { USER_ROLE } from "@/constants/api-roles";
 
-const BULK_MAX = 50;
+const ROLES = [...ROLES_STORE_WRITE, USER_ROLE.EMPLOYEE];
 
-export const PATCH = withProviders(createApiHandler({
-  roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
-  handler: async ({ request, user }) => {
-    const store = await storeRepository.findByOwnerId(user!.uid);
-    if (!store) return ApiErrors.forbidden("No store found for this account");
+const ERR_ORDER_NOT_FOUND = "Order not found";
 
-    const body = await request.json() as {
-      orderIds?: JsonValue;
-      physicalLocation?: JsonValue;
-    };
+const SELLER_ALLOWED_STATUSES = new Set(["processing", "shipped"]);
 
-    if (!Array.isArray(body.orderIds) || body.orderIds.length === 0) {
-      return ApiErrors.badRequest("orderIds must be a non-empty array");
-    }
-    if (body.orderIds.length > BULK_MAX) {
-      return ApiErrors.badRequest(`Maximum ${BULK_MAX} orders per request`);
-    }
-    const loc = body.physicalLocation as { zone?: JsonValue; shelf?: JsonValue; bin?: JsonValue } | undefined;
-    if (!loc || typeof loc.zone !== "string" || typeof loc.shelf !== "string" || typeof loc.bin !== "string") {
-      return ApiErrors.badRequest("physicalLocation must have zone, shelf, and bin strings");
-    }
-    const physicalLocation = { zone: loc.zone, shelf: loc.shelf, bin: loc.bin };
+const patchOrderSchema = z.object({
+  status: z.enum(["processing", "shipped", "delivered", "cancelled"]).optional(),
+  trackingNumber: z.string().optional(),
+  shippingCarrier: z.string().optional(),
+  trackingUrl: z.string().optional(),
+  cancellationReason: z.string().optional(),
+  markPicked: z.boolean().optional(),
+  markPacked: z.boolean().optional(),
+  assignedWorkerId: z.string().optional(),
+});
 
-    const orderIds = body.orderIds as string[];
+/**
+ * Loads the order and enforces store scope in one step. Sellers may only
+ * touch their own store's orders; admin/employee see all. A missing order
+ * OR a scope mismatch both return 404 (not 403) to avoid leaking order
+ * existence to a seller probing another store's IDs.
+ */
+async function loadScopedOrder(
+  user: { uid: string; role?: string },
+  id: string,
+): Promise<Awaited<ReturnType<typeof orderRepository.findById>> | null> {
+  const order = await orderRepository.findById(id);
+  if (!order) return null;
+  if (!isSellerUser(user)) return order;
+  const store = await storeRepository.findByOwnerId(user.uid);
+  if (!store || order.storeId !== store.id) return null;
+  return order;
+}
 
-    // Verify ownership â€” reject batch on any mismatch
-    const orders = await Promise.all(orderIds.map((id) => orderRepository.findById(id)));
-    for (const [i, o] of orders.entries()) {
-      if (!o || o.storeId !== store.id) {
-        return ApiErrors.forbidden(`Order ${orderIds[i]} does not belong to your store`);
+export const GET = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: ROLES,
+    handler: async ({ user, params }) => {
+      const id = (params as { id: string }).id;
+      const order = await loadScopedOrder(user!, id);
+      if (!order) return errorResponse(ERR_ORDER_NOT_FOUND, 404);
+      return successResponse(order);
+    },
+  }),
+);
+
+export const PATCH = withProviders(
+  createRouteHandler<z.infer<typeof patchOrderSchema>>({
+    auth: true,
+    roles: ROLES,
+    schema: patchOrderSchema,
+    handler: async ({ user, body, params }) => {
+      const id = (params as { id: string }).id;
+      const order = await loadScopedOrder(user!, id);
+      if (!order) return errorResponse(ERR_ORDER_NOT_FOUND, 404);
+
+      const data = body!;
+      const isSeller = isSellerUser(user);
+
+      if (data.markPicked) {
+        await orderRepository.markPicked(id);
+        return successResponse({ id, markedPicked: true });
       }
-    }
+      if (data.markPacked) {
+        await orderRepository.markPacked(id);
+        return successResponse({ id, markedPacked: true });
+      }
+      if (data.assignedWorkerId) {
+        await orderRepository.assignWorker(id, data.assignedWorkerId);
+        return successResponse({ id, assignedWorkerId: data.assignedWorkerId });
+      }
 
-    await Promise.all(
-      orderIds.map((id) => orderRepository.update(id, { physicalLocation } as never)),
-    );
+      if (!data.status) return errorResponse("status is required", 400);
 
-    return successResponse({ updated: orderIds.length });
-  },
-}));
+      if (isSeller && !SELLER_ALLOWED_STATUSES.has(data.status)) {
+        return errorResponse("Sellers may only set status to processing or shipped", 403);
+      }
+
+      if (data.status === "cancelled") {
+        await orderRepository.cancelOrder(id, data.cancellationReason ?? "Cancelled by seller");
+        return successResponse({ id, status: "cancelled" });
+      }
+
+      const additionalData: Record<string, JsonValue> = {};
+      if (data.trackingNumber) additionalData.trackingNumber = data.trackingNumber;
+      if (data.shippingCarrier) additionalData.shippingCarrier = data.shippingCarrier;
+      if (data.trackingUrl) additionalData.trackingUrl = data.trackingUrl;
+
+      if (data.status === "shipped" && !data.trackingNumber) {
+        return errorResponse("trackingNumber is required to mark an order as shipped", 400);
+      }
+      if (data.status === "shipped") {
+        await assertEmiShippable(order);
+      }
+
+      await orderRepository.updateStatus(id, data.status, additionalData);
+      return successResponse({ id, status: data.status, ...additionalData });
+    },
+  }),
+);

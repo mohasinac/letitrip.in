@@ -1,9 +1,12 @@
 /**
  * Tests for POST /api/admin/payouts/weekly
  * Requires ROLES_ADMIN_ONLY + admin:payouts:write.
- * Queries all eligible orders (payoutStatus=eligible, shiprocket, status=delivered).
+ * Queries all eligible orders (payoutStatus=eligible, status=delivered).
  * Groups by storeId; creates one payout per store.
- * Net amount = grossAmount - 5% platform fee.
+ * Net amount computed via the shared computePayoutDeduction calculator
+ * (platform fee + gateway fee + GST on platform fee) — same formula the
+ * scheduled weeklyPayoutEligibility Firebase Function uses, so a manual
+ * admin trigger produces an identical payout for the same order.
  * Updates each order to payoutStatus=requested.
  * Stores not found → skipped (no error).
  * Sellers not found → skipped.
@@ -19,12 +22,14 @@ const {
   mockStoreRepository,
   mockUserFindById,
   mockPayoutCreate,
+  mockGetSingleton,
 } = vi.hoisted(() => ({
   mockOrderListAll: vi.fn(),
   mockOrderUpdate: vi.fn(),
   mockStoreRepository: { findById: vi.fn() },
   mockUserFindById: vi.fn(),
   mockPayoutCreate: vi.fn(),
+  mockGetSingleton: vi.fn(),
 }));
 
 vi.mock("@/providers.config", () => ({ withProviders: (fn: unknown) => fn }));
@@ -38,6 +43,14 @@ vi.mock("@mohasinac/appkit", () => ({
   storeRepository: { findById: mockStoreRepository.findById },
   userRepository: { findById: mockUserFindById },
   payoutRepository: { create: mockPayoutCreate },
+  siteSettingsRepository: { getSingleton: mockGetSingleton },
+  computePayoutDeduction: (grossAmount: number, commissions: { platformFeePercent: number; gstPercent: number; gatewayFeePercent?: number }) => {
+    const platformFee = Math.round(grossAmount * (commissions.platformFeePercent / 100));
+    const gatewayFee = Math.round(grossAmount * ((commissions.gatewayFeePercent ?? 0) / 100));
+    const gstOnFee = Math.round(platformFee * (commissions.gstPercent / 100));
+    const netAmount = Math.max(0, grossAmount - platformFee - gatewayFee - gstOnFee);
+    return { platformFee, gatewayFee, gstOnFee, totalDeduction: platformFee + gatewayFee + gstOnFee, netAmount };
+  },
   sortBy: (field: string) => `-${field}`,
   COMMON_FIELDS: { CREATED_AT: "createdAt" },
   SUCCESS_MESSAGES: { PAYOUT: { WEEKLY_PROCESSED: "Weekly payouts processed" } },
@@ -83,6 +96,9 @@ beforeEach(() => {
   mockUserFindById.mockResolvedValue(mockSeller);
   mockPayoutCreate.mockResolvedValue({ id: "payout-1" });
   mockOrderUpdate.mockResolvedValue(undefined);
+  mockGetSingleton.mockResolvedValue({
+    commissions: { platformFeePercent: 5, gstPercent: 18, gatewayFeePercent: 2, minimumTransactionFee: 0 },
+  });
 });
 
 describe("POST /api/admin/payouts/weekly", () => {
@@ -125,17 +141,23 @@ describe("POST /api/admin/payouts/weekly", () => {
     expect(mockPayoutCreate).toHaveBeenCalledTimes(2);
   });
 
-  it("net amount = gross - 5% platform fee (rounded)", async () => {
-    // orders: 100000 + 50000 = 150000 gross, 5% = 7500 fee, net = 142500
+  it("net amount = gross - platform fee - gateway fee - GST on platform fee", async () => {
+    // orders: 100000 + 50000 = 150000 gross
+    // platformFee = 5% = 7500, gatewayFee = 2% = 3000, gstOnFee = 18% of 7500 = 1350
+    // net = 150000 - 7500 - 3000 - 1350 = 138150
     await POST(makeReq() as never);
     const payoutArg = mockPayoutCreate.mock.calls[0][0] as {
       amount: number;
       grossAmount: number;
       platformFee: number;
+      gatewayFee: number;
+      gstAmount: number;
     };
     expect(payoutArg.grossAmount).toBe(150000);
     expect(payoutArg.platformFee).toBe(7500);
-    expect(payoutArg.amount).toBe(142500);
+    expect(payoutArg.gatewayFee).toBe(3000);
+    expect(payoutArg.gstAmount).toBe(1350);
+    expect(payoutArg.amount).toBe(138150);
   });
 
   it("payout includes all order IDs for that store", async () => {

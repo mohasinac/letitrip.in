@@ -1,16 +1,15 @@
 "use server";
 
 /**
- * Seller Server Actions ï¿½ thin entrypoint
+ * Seller Server Actions — thin entrypoint
  *
- * Auth + rate-limit + validation ? delegates to appkit seller domain functions.
- * Shiprocket-specific shipping (updateSellerShipping, verifyShiprocketPickupOtp,
- * and the shiprocket branch of shipOrder) remain here because they depend on
- * @/lib/shiprocket/client which is a permanent letitrip-only dependency.
+ * Auth + rate-limit + validation, delegates to appkit seller domain functions.
+ * Shipping is manual-only: sellers enter a carrier name + tracking number
+ * directly, no carrier API integration.
  */
 
 import { z } from "zod";
-import { requireAuthUser, requireRoleUser, normalizeError } from "@mohasinac/appkit";
+import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
 import {
   rateLimitByIdentifier,
@@ -37,6 +36,7 @@ import {
   sellerUpdateProduct,
   sellerDeleteProduct,
   customShipOrder,
+  markEmiInstallmentPaid,
   type BecomeSellerResult,
   type CreateStoreInput,
   type UpdateStoreInput,
@@ -50,23 +50,8 @@ import {
   productCreateSchema,
   productUpdateSchema,
 } from "@/validation/request-schemas";
-import {
-  shiprocketAuthenticate,
-  shiprocketAddPickupLocation,
-  shiprocketVerifyPickupOTP,
-  shiprocketCreateOrder,
-  shiprocketGenerateAWB,
-  shiprocketGeneratePickup,
-  isShiprocketTokenExpired,
-  SHIPROCKET_TOKEN_TTL_MS,
-  buildShiprocketTrackingUrl,
-  SHIPROCKET_STATUS_PICKUP_SCHEDULED,
-} from "@mohasinac/appkit";
-import { resolveDate } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
-import { NotFoundError } from "@mohasinac/appkit";
-import { orderRepository, productRepository } from "@mohasinac/appkit";
-import { OrderStatusValues, ShippingMethodValues } from "@mohasinac/appkit";
+import { productRepository } from "@mohasinac/appkit";
 import type { StoreDocument } from "@mohasinac/appkit";
 import type { OrderDocument } from "@mohasinac/appkit";
 import type { CouponDocument } from "@mohasinac/appkit";
@@ -348,136 +333,62 @@ export async function sellerDeleteProductAction(id: string): Promise<void> {
 
 // --- Ship Order ---------------------------------------------------------------
 
-const customShipSchema = z.object({
+const shipOrderSchema = z.object({
   method: z.literal("custom"),
   shippingCarrier: z.string().min(1),
   trackingNumber: z.string().min(1),
   trackingUrl: z.string().url(),
 });
 
-const shiprocketShipSchema = z.object({
-  method: z.literal("shiprocket"),
-  packageWeight: z.number().positive().max(500),
-  packageLength: z.number().positive().max(200),
-  packageBreadth: z.number().positive().max(200),
-  packageHeight: z.number().positive().max(200),
-  courierId: z.number().optional(),
-});
-
-const shipOrderSchema = z.discriminatedUnion("method", [customShipSchema, shiprocketShipSchema]);
-
 export async function shipOrderAction(
   orderId: string,
   input: z.infer<typeof shipOrderSchema>,
-): Promise<ActionResult<{ orderId: string; method: string; awb?: string; trackingUrl?: string; pickupScheduledDate?: string }>> {
+): Promise<ActionResult<{ orderId: string; method: string }>> {
   return wrapAction(async () => {
     const user = await requireRoleUser(["seller", "admin"]);
       const rl = await rateLimitByIdentifier(`ship-order:${user.uid}`, RateLimitPresets.STRICT);
       if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
       const parsed = shipOrderSchema.safeParse(input);
       if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
-    
+
       const data = parsed.data;
-    
-      if (data.method === "custom") {
-        return customShipOrder(user.uid, user.role ?? "seller", orderId, {
-          shippingCarrier: data.shippingCarrier,
-          trackingNumber: data.trackingNumber,
-          trackingUrl: data.trackingUrl,
-        });
-      }
-    
-      // -- Shiprocket branch --
-      const userDoc = await userRepository.findById(user.uid);
-      if (!userDoc) throw new AuthorizationError("User not found");
-    
-      const order = await orderRepository.findById(orderId);
-      if (!order) throw new NotFoundError("Order not found");
-      if (!isAdminUser(user) && (order as any).sellerId !== user.uid)
-        throw new AuthorizationError("You do not own this order");
-      if (order.status === OrderStatusValues.SHIPPED || order.status === OrderStatusValues.DELIVERED)
-        throw new ValidationError("Order is already shipped");
-      if (order.status !== OrderStatusValues.CONFIRMED)
-        throw new ValidationError("Order must be confirmed before shipping");
-    
-      const shippingConfig = (userDoc as any).shippingConfig;
-      if (!shippingConfig?.isConfigured) throw new ValidationError("Shipping is not configured");
-      if (shippingConfig.method !== "shiprocket") throw new ValidationError("Shipping method mismatch");
-      if (!shippingConfig.pickupAddress?.isVerified) throw new ValidationError("Pickup address not verified");
-      const token = shippingConfig.shiprocketToken;
-      if (!token || isShiprocketTokenExpired(shippingConfig.shiprocketTokenExpiry))
-        throw new ValidationError("Shiprocket token is missing or expired. Please reconnect.");
-    
-      const rawAddr = (order as any).shippingAddress ?? "";
-      let parsedAddr: Record<string, string> = {};
-      try { parsedAddr = JSON.parse(rawAddr); } catch (_err) { void normalizeError(_err); parsedAddr = { address: rawAddr }; } // non-JSON address string — wrap in object
-    
-      const orderDate = (resolveDate((order as any).createdAt) ?? new Date()).toISOString().slice(0, 19);
-      const srOrderResponse = await shiprocketCreateOrder(token, {
-        order_id: orderId,
-        order_date: orderDate,
-        pickup_location: shippingConfig.pickupAddress.locationName,
-        billing_customer_name: parsedAddr["name"] ?? (order as any).userName ?? "",
-        billing_last_name: "",
-        billing_address: parsedAddr["address"] ?? parsedAddr["line1"] ?? rawAddr,
-        billing_city: parsedAddr["city"] ?? "",
-        billing_pincode: parsedAddr["pincode"] ?? parsedAddr["zip"] ?? "",
-        billing_state: parsedAddr["state"] ?? "",
-        billing_country: "India",
-        billing_email: parsedAddr["email"] ?? (order as any).userEmail ?? "",
-        billing_phone: parsedAddr["phone"] ?? "",
-        shipping_is_billing: true,
-        shipping_customer_name: parsedAddr["name"] ?? (order as any).userName ?? "",
-        shipping_last_name: "",
-        shipping_address: parsedAddr["address"] ?? parsedAddr["line1"] ?? rawAddr,
-        shipping_city: parsedAddr["city"] ?? "",
-        shipping_pincode: parsedAddr["pincode"] ?? parsedAddr["zip"] ?? "",
-        shipping_country: "India",
-        shipping_state: parsedAddr["state"] ?? "",
-        shipping_phone: parsedAddr["phone"] ?? "",
-        order_items: [{ name: (order as any).productTitle, sku: (order as any).productId, units: (order as any).quantity, selling_price: (order as any).unitPrice }],
-        payment_method: ((order as any).paymentMethod === "cod" ? "COD" : "Prepaid") as "COD" | "Prepaid",
-        sub_total: (order as any).totalPrice,
-        length: data.packageLength,
-        breadth: data.packageBreadth,
-        height: data.packageHeight,
-        weight: data.packageWeight,
+      return customShipOrder(user.uid, user.role ?? "seller", orderId, {
+        shippingCarrier: data.shippingCarrier,
+        trackingNumber: data.trackingNumber,
+        trackingUrl: data.trackingUrl,
       });
-    
-      if (!srOrderResponse.order_id || !srOrderResponse.shipment_id)
-        throw new ValidationError("Failed to create Shiprocket order");
-    
-      const awbResponse = await shiprocketGenerateAWB(token, {
-        shipment_id: srOrderResponse.shipment_id,
-        courier_id: data.courierId,
-      });
-      const awb = awbResponse.awb_code;
-      if (!awb) throw new ValidationError("Failed to assign AWB");
-    
-      const pickupResponse = await shiprocketGeneratePickup(token, {
-        shipment_id: [srOrderResponse.shipment_id],
-      });
-    
-      const trackingUrl = buildShiprocketTrackingUrl(awb);
-      await orderRepository.update(orderId, {
-        status: OrderStatusValues.SHIPPED,
-        shippingMethod: ShippingMethodValues.SHIPROCKET,
-        trackingUrl,
-        shiprocketOrderId: srOrderResponse.order_id,
-        shiprocketShipmentId: srOrderResponse.shipment_id,
-        shiprocketAWB: awb,
-        shiprocketStatus: SHIPROCKET_STATUS_PICKUP_SCHEDULED,
-        shiprocketUpdatedAt: new Date(),
-        shippingDate: new Date(),
-        payoutStatus: "eligible",
-      } as any);
-    
-      serverLogger.info("shipOrderAction (shiprocket)", { orderId, uid: user.uid, awb });
-      return { orderId, method: "shiprocket", awb, trackingUrl, pickupScheduledDate: pickupResponse.pickup_scheduled_date };
   });
 }
 
-// --- Update Seller Shipping (shiprocket ï¿½ stays in letitrip) ------------------
+// --- Mark EMI Installment Paid -------------------------------------------------
+
+const markEmiInstallmentPaidSchema = z.object({
+  installmentIndex: z.number().int().min(1),
+  transactionId: z.string().min(1).optional(),
+  proofUrl: z.string().min(1).optional(),
+});
+
+export async function markEmiInstallmentPaidAction(
+  orderId: string,
+  input: z.infer<typeof markEmiInstallmentPaidSchema>,
+): Promise<ActionResult<OrderDocument>> {
+  return wrapAction(async () => {
+    const user = await requireRoleUser(["seller", "admin"]);
+    const rl = await rateLimitByIdentifier(`mark-emi-installment-paid:${user.uid}`, RateLimitPresets.STRICT);
+    if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+    const parsed = markEmiInstallmentPaidSchema.safeParse(input);
+    if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+
+    const data = parsed.data;
+    return markEmiInstallmentPaid(user.uid, user.role ?? "seller", orderId, {
+      installmentIndex: data.installmentIndex,
+      transactionId: data.transactionId,
+      proofUrl: data.proofUrl,
+    });
+  });
+}
+
+// --- Update Seller Shipping ---------------------------------------------------
 
 const pickupAddressSchema = z.object({
   locationName: z.string().min(2).max(40),
@@ -492,18 +403,12 @@ const pickupAddressSchema = z.object({
   country: z.string().default("India"),
 });
 
-const updateShippingSchema = z.discriminatedUnion("method", [
-  z.object({
-    method: z.literal("custom"),
-    customShippingPrice: z.number().min(0),
-    customCarrierName: z.string().min(1).max(80),
-  }),
-  z.object({
-    method: z.literal("shiprocket"),
-    shiprocketCredentials: z.object({ email: z.string().email(), password: z.string().min(1) }).optional(),
-    pickupAddress: pickupAddressSchema.optional(),
-  }),
-]);
+const updateShippingSchema = z.object({
+  method: z.literal("custom"),
+  customShippingPrice: z.number().min(0),
+  customCarrierName: z.string().min(1).max(80),
+  pickupAddress: pickupAddressSchema.optional(),
+});
 
 export async function updateSellerShippingAction(
   input: z.infer<typeof updateShippingSchema>,
@@ -514,99 +419,22 @@ export async function updateSellerShippingAction(
       if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
       const parsed = updateShippingSchema.safeParse(input);
       if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
-    
-      const userDoc = await userRepository.findById(user.uid);
-      if (!userDoc) throw new AuthorizationError("User not found");
-    
+
       const data = parsed.data;
-      let config: any;
-      let otpPending = false;
-      let newPickupLocationId: number | undefined;
-    
-      if (data.method === "custom") {
-        config = { method: "custom", customShippingPrice: data.customShippingPrice, customCarrierName: data.customCarrierName, isConfigured: true };
-      } else {
-        const existing = (userDoc as any).shippingConfig;
-        let token = existing?.shiprocketToken;
-        let tokenExpiry = existing?.shiprocketTokenExpiry;
-        const existingEmail = existing?.shiprocketEmail;
-    
-        if (data.shiprocketCredentials || !token || (tokenExpiry && new Date() >= new Date(tokenExpiry))) {
-          if (!data.shiprocketCredentials) throw new ValidationError("Shiprocket credentials are required to reconnect");
-          const authResult = await shiprocketAuthenticate({ email: data.shiprocketCredentials.email, password: data.shiprocketCredentials.password })
-            .catch((err: Error) => { throw new ValidationError(`Shiprocket auth failed: ${err.message}`); });
-          token = authResult.token;
-          tokenExpiry = new Date(Date.now() + SHIPROCKET_TOKEN_TTL_MS);
-        }
-    
-        const shiprocketEmail = data.shiprocketCredentials?.email ?? existingEmail ?? "";
-        config = { method: "shiprocket", shiprocketEmail, shiprocketToken: token, shiprocketTokenExpiry: tokenExpiry, pickupAddress: existing?.pickupAddress, isConfigured: Boolean(existing?.pickupAddress?.isVerified) };
-    
-        if (data.pickupAddress && token) {
-          const pickupResult = await shiprocketAddPickupLocation(token, {
-            pickup_location: data.pickupAddress.locationName,
-            name: data.pickupAddress.name,
-            email: data.pickupAddress.email,
-            phone: data.pickupAddress.phone,
-            address: data.pickupAddress.address,
-            address_2: data.pickupAddress.address2 ?? "",
-            city: data.pickupAddress.city,
-            state: data.pickupAddress.state,
-            country: data.pickupAddress.country || "India",
-            pin_code: data.pickupAddress.pincode,
-          }).catch((err: Error) => { throw new ValidationError(`Failed to add pickup address: ${err.message}`); });
-    
-          newPickupLocationId = pickupResult.address?.pickup_location_id;
-          otpPending = true;
-          config.pickupAddress = { ...data.pickupAddress, isVerified: false, shiprocketAddressId: newPickupLocationId };
-          config.isConfigured = false;
-        }
-      }
-    
-      await userRepository.update(user.uid, { shippingConfig: config } as any);
-      serverLogger.info("updateSellerShippingAction", { uid: user.uid, method: config.method, otpPending });
-    
-      const { shiprocketToken: _t, shiprocketTokenExpiry: _e, ...safeConfig } = config;
-      return { shippingConfig: { ...safeConfig, isTokenValid: Boolean(config.shiprocketToken && !isShiprocketTokenExpired(config.shiprocketTokenExpiry)) }, otpPending, pickupLocationId: newPickupLocationId };
-  });
-}
-
-// --- Verify Shiprocket Pickup OTP (stays in letitrip) -------------------------
-
-export async function verifyShiprocketPickupOtpAction(
-  input: { otp: number; pickupLocationId: number },
-): Promise<ActionResult<{ message: string }>> {
-  return wrapAction(async () => {
-    const user = await requireRoleUser(["seller", "admin"]);
-      const rl = await rateLimitByIdentifier(`verify-pickup-otp:${user.uid}`, RateLimitPresets.STRICT);
-      if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-    
-      const parsed = z.object({ otp: z.number().int().min(100000).max(999999), pickupLocationId: z.number().int().positive() }).safeParse(input);
-      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
-    
-      const userDoc = await userRepository.findById(user.uid);
-      if (!userDoc) throw new AuthorizationError("User not found");
-    
-      const config = (userDoc as any).shippingConfig;
-      if (!config || config.method !== "shiprocket") throw new ValidationError("Shiprocket shipping is not configured");
-      if (!config.shiprocketToken) throw new ValidationError("Shiprocket token is missing. Please reconnect.");
-    
-      const result = await shiprocketVerifyPickupOTP(config.shiprocketToken, {
-        otp: parsed.data.otp,
-        pickup_location_id: parsed.data.pickupLocationId,
-      }).catch((err: Error) => { throw new ValidationError(`Pickup verification failed: ${err.message}`); });
-    
-      if (!result.success) throw new ValidationError(result.message || "Pickup OTP verification failed");
-    
-      const updatedConfig = {
-        ...config,
-        pickupAddress: config.pickupAddress ? { ...config.pickupAddress, isVerified: true, shiprocketAddressId: parsed.data.pickupLocationId } : undefined,
+      const config = {
+        method: "custom" as const,
+        customShippingPrice: data.customShippingPrice,
+        customCarrierName: data.customCarrierName,
         isConfigured: true,
+        ...(data.pickupAddress
+          ? { pickupAddress: { ...data.pickupAddress, isVerified: true } }
+          : {}),
       };
-    
-      await userRepository.update(user.uid, { shippingConfig: updatedConfig } as any);
-      serverLogger.info("verifyShiprocketPickupOtpAction", { uid: user.uid });
-      return { message: result.message || "Pickup address verified successfully" };
+
+      await userRepository.update(user.uid, { shippingConfig: config } as any);
+      serverLogger.info("updateSellerShippingAction", { uid: user.uid, method: config.method });
+
+      return { shippingConfig: config };
   });
 }
 

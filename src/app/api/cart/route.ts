@@ -84,16 +84,8 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
     const listingType = normalizeListingType(product);
     const rule = getListingRule(listingType);
     if (!rule.cartEligible) {
-      const hint =
-        listingType === "auction"
-          ? "Place a bid on the auction page instead."
-          : listingType === "classified"
-            ? 'Use "Contact Seller" to arrange a meetup.'
-            : listingType === "live"
-              ? "Jurisdiction check required â€” buy from the listing page."
-              : "This listing type cannot be added to the cart.";
       return ApiErrors.badRequest(
-        `Listings of type "${listingType}" cannot be added to the cart. ${hint}`,
+        `Listings of type "${listingType}" cannot be added to the cart. ${rule.cartIneligibleHint}`,
       );
     }
 

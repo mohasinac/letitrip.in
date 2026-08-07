@@ -13,6 +13,8 @@ import {
   savedPaymentMethodsRepository,
   normalizeError,
   serverLogger,
+  isAdminUser,
+  isSellerUser,
 } from "@mohasinac/appkit";
 import { sendNotification } from "@mohasinac/appkit/server";
 import { getAdminAuth } from "@mohasinac/appkit/server";
@@ -69,7 +71,7 @@ export const POST = withProviders(
 
       const target = await userRepository.findById(uid);
       if (!target) return errorResponse("User not found", 404);
-      if (target.role === "admin") return errorResponse("Cannot ban an admin", 400);
+      if (isAdminUser(target)) return errorResponse("Cannot ban an admin", 400);
 
       // 1. Disable Firebase Auth login
       try {
@@ -97,7 +99,7 @@ export const POST = withProviders(
       }
 
       // 4. Cascade to store if seller
-      if (target.role === "seller") {
+      if (isSellerUser(target)) {
         try {
           const store = await storeRepository.findByOwnerId(uid);
           if (store) {
