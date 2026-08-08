@@ -24,7 +24,7 @@ import { createSessionCookie } from "@mohasinac/appkit";
 import { sessionRepository, userRepository } from "@mohasinac/appkit";
 import { handleApiError } from "@mohasinac/appkit";
 import { errorResponse } from "@mohasinac/appkit";
-import { ValidationError } from "@mohasinac/appkit";
+import { ValidationError, AuthenticationError } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
@@ -129,9 +129,15 @@ export async function POST(request: NextRequest) {
       "signInWithCustomToken",
       { token: customToken, returnSecureToken: true },
       apiKey,
-    );
+    ).catch((err: unknown) => {
+      serverLogger.error("Token exchange failed after registration", {
+        error: err instanceof Error ? err.message : String(err),
+        email,
+      });
+      throw new AuthenticationError(ERROR_MESSAGES.AUTH.TOKEN_EXCHANGE_FAILED);
+    });
     if (!signInData.idToken) {
-      throw new ValidationError(ERROR_MESSAGES.AUTH.TOKEN_EXCHANGE_FAILED);
+      throw new AuthenticationError(ERROR_MESSAGES.AUTH.TOKEN_EXCHANGE_FAILED);
     }
 
     // Create session cookie

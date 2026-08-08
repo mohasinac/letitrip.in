@@ -23,6 +23,7 @@ export const PATCH = withProviders(
   createRouteHandler<z.infer<typeof shippingProofSchema>>({
     auth: true,
     roles: ROLES,
+    permission: "store:api:write",
     schema: shippingProofSchema,
     handler: async ({ user, body, params }) => {
       const id = (params as { id: string }).id;

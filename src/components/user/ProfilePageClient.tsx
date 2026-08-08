@@ -1,16 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import type { JsonValue } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit";
+import type { ImageCropData } from "@mohasinac/appkit";
 
 import { Link } from "@/i18n/navigation";
-import { useProfile, useUpdateProfile, useToast, useAuth, ROUTES, ImageUpload, useMediaUpload, Div, Button, Form, Label, Input, Textarea, MediaImage, Toggle } from "@mohasinac/appkit/client";
+import {
+  useProfile,
+  useUpdateProfile,
+  useToast,
+  useAuth,
+  ROUTES,
+  AvatarUpload,
+  Div,
+  Button,
+  Form,
+  FieldInput,
+  FieldTextarea,
+  MediaImage,
+  Toggle,
+  updateProfileSchema,
+  applyZodIssues,
+} from "@mohasinac/appkit/client";
+import type { UseFormShellStateResult } from "@mohasinac/appkit/client";
 import { Heading, Row, Stack, Text } from "@mohasinac/appkit";
+
 const __O = {
   hidden: "overflow-hidden",
 } as const;
-
-const LABEL_CLS = "block text-sm font-medium text-[var(--appkit-color-text-muted)]";
 
 interface ProfilePageClientProps {
   standalone?: boolean;
@@ -98,135 +115,16 @@ function renderProfileViewMode({
   );
 }
 
-function renderProfileEditForm({
-  displayName, setDisplayName,
-  phoneNumber, setPhoneNumber,
-  photoURL, setPhotoURL,
-  bio, setBio,
-  isPublic, setIsPublic,
-  isPending,
-  handleSave,
-  onCancel,
-  upload,
-  user,
-}: {
-  displayName: string; setDisplayName: (v: string) => void;
-  phoneNumber: string; setPhoneNumber: (v: string) => void;
-  photoURL: string; setPhotoURL: (v: string) => void;
-  bio: string; setBio: (v: string) => void;
-  isPublic: boolean; setIsPublic: React.Dispatch<React.SetStateAction<boolean>>;
-  isPending: boolean;
-  handleSave: (e: React.FormEvent) => Promise<void>;
-  onCancel: () => void;
-  upload: (file: File, folder?: string, isPublic?: boolean, context?: Record<string, JsonValue>) => Promise<string>;
-  user: { displayName?: string | null; email?: string | null } | null | undefined;
-}) {
-  return (
-    <Div surface="card" padding="lg">
-    <Form
-      onSubmit={handleSave} spacing="md">
-      <Heading level={2} size="base" weight="semibold" color="primary">Edit Profile</Heading>
-      <Stack gap="xs">
-        <Label className={LABEL_CLS}>Display Name</Label>
-        <Input
-          type="text"
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
-          placeholder="Your full name"
-          className="w-full rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
-        />
-      </Stack>
-      <Stack gap="xs">
-        <Label className={LABEL_CLS}>Phone Number</Label>
-        <Input
-          type="tel"
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          placeholder="+91 xxxxx xxxxx"
-          className="w-full rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
-        />
-      </Stack>
-      <ImageUpload
-        label="Profile Photo"
-        currentImage={photoURL}
-        captureSource="both"
-        enableCrop
-        onUpload={(file) => {
-          const parts = (user?.displayName ?? user?.email ?? "user").split(" ");
-          return upload(file, "avatars", true, {
-            type: "user-avatar",
-            firstName: parts[0] ?? "user",
-            lastName: parts[1] ?? "",
-          });
-        }}
-        onChange={(url) => setPhotoURL(url)}
-      />
-      <Stack gap="xs">
-        <Label className={LABEL_CLS}>
-          Bio <Text as="span" weight="normal" color="faint">(max 500 chars)</Text>
-        </Label>
-        <Textarea
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-          maxLength={500}
-          rows={3}
-          placeholder="Tell buyers a little about yourself…"
-          className="w-full rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-        />
-        <Text size="xs" align="end" color="faint">{bio.length}/500</Text>
-      </Stack>
-      <Row padding="inline" align="center" justify="between" rounded="lg" border="default">
-        <>
-          <Text size="sm" weight="medium" color="primary">Public profile</Text>
-          <Text className="mt-0.5" color="muted" size="xs">
-            When on, your profile is visible to other LetItRip users
-          </Text>
-        </>
-        <Toggle
-          checked={isPublic}
-          onChange={(v) => setIsPublic(v)}
-          size="md"
-          aria-label="Public profile"
-        />
-      </Row>
-      <Row gap="3" padding="t-2xs">
-        <Button rounded="xl"
-          type="button"
-          variant="outline"
-          onClick={onCancel}
-          disabled={isPending}
-          paddingX="md" paddingY="sm" textSize="sm" weight="medium"
-          className="disabled:opacity-60 transition-colors"
-        >
-          Cancel
-        </Button>
-        <Button rounded="xl"
-          type="submit"
-          variant="primary"
-          disabled={isPending}
-          paddingX="md" paddingY="sm" textSize="sm" weight="semibold"
-          className="disabled:opacity-60 transition-colors"
-        >
-          {isPending ? "Saving…" : "Save Changes"}
-        </Button>
-      </Row>
-    </Form>
-    </Div>
-  );
-}
-
 export function ProfilePageClient({ standalone = true }: ProfilePageClientProps) {
   const { user } = useAuth();
   const { showToast } = useToast();
   const { data: profile, isLoading } = useProfile({ enabled: !!user });
-  const { upload } = useMediaUpload();
   const [editing, setEditing] = useState(false);
 
-  const [displayName, setDisplayName]   = useState("");
-  const [phoneNumber, setPhoneNumber]   = useState("");
-  const [photoURL, setPhotoURL]         = useState("");
-  const [bio, setBio]                   = useState("");
-  const [isPublic, setIsPublic]         = useState(true);
+  const [displayName, setDisplayName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [bio, setBio] = useState("");
+  const [isPublic, setIsPublic] = useState(true);
 
   const update = useUpdateProfile({
     onSuccess: () => {
@@ -238,24 +136,69 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
     },
   });
 
+  const avatarUpdate = useUpdateProfile({
+    onSuccess: () => showToast("Avatar updated", "success"),
+    onError: (err) => showToast(err.message ?? "Failed to update avatar.", "error"),
+  });
+
   const handleEdit = () => {
     const resolvedName = profile?.displayName || user?.displayName || "";
     setDisplayName(resolvedName);
     setPhoneNumber(profile?.phoneNumber ?? "");
-    setPhotoURL(profile?.photoURL ?? "");
     setBio((profile as any)?.publicProfile?.bio ?? "");
     setIsPublic((profile as any)?.publicProfile?.isPublic ?? true);
     setEditing(true);
   };
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await update.mutateAsync({
-      displayName: displayName.trim() || undefined,
-      phoneNumber: phoneNumber.trim() || undefined,
-      photoURL: photoURL.trim() || undefined,
-      bio: bio.trim(),
-      profileIsPublic: isPublic,
+  const handleSaveProfile = async ({
+    setFieldError,
+    clearErrors,
+    validate,
+  }: Pick<UseFormShellStateResult, "setFieldError" | "clearErrors" | "validate">) => {
+    clearErrors();
+    const parsed = validate<{
+      displayName?: string;
+      phoneNumber?: string;
+      bio?: string;
+      profileIsPublic?: boolean;
+    }>({ displayName, phoneNumber, bio, profileIsPublic: isPublic });
+    if (!parsed) return;
+    try {
+      await update.mutateAsync({
+        displayName: parsed.displayName?.trim() || undefined,
+        phoneNumber: parsed.phoneNumber?.trim() || undefined,
+        bio: parsed.bio?.trim() ?? "",
+        profileIsPublic: parsed.profileIsPublic,
+      });
+    } catch (err) {
+      void normalizeError(err);
+      // Toast is already shown by useUpdateProfile's onError above — this
+      // only adds inline field errors when the server returns Zod issues
+      // (e.g. a field that passed client validation but failed a
+      // server-only check). apiClient throws ApiClientError, which — like
+      // ApiError — carries `.issues` when the failure was a validation
+      // error, so this check doesn't need isApiError.
+      const issues = (err as { issues?: { path?: (string | number)[]; message: string }[] })?.issues;
+      if (issues?.length) {
+        applyZodIssues(
+          issues.map((i) => ({ path: i.path ?? [], message: i.message })),
+          setFieldError,
+        );
+      }
+    }
+  };
+
+  const handleAvatarUploadSuccess = async (photoURL: string, cropData: ImageCropData) => {
+    // photoURL is explicitly "" when the user removes their avatar — send it
+    // as-is (never coerce to undefined) so the server's z.literal("") clear
+    // path actually fires instead of the field being dropped from the body.
+    await avatarUpdate.mutateAsync({
+      photoURL,
+      avatarMetadata: {
+        url: cropData.url,
+        position: cropData.position,
+        zoom: cropData.zoom,
+      },
     });
   };
 
@@ -273,15 +216,103 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
   const avatarLetter = (resolvedName || profile.email || "?")[0].toUpperCase();
   const profileBio = (profile as any)?.publicProfile?.bio ?? "";
   const profileIsPublic = (profile as any)?.publicProfile?.isPublic ?? true;
+  const avatarMetadata = (profile as any)?.avatarMetadata ?? null;
 
   return (
     <Stack className="w-full" gap="lg">
       {standalone && (
         <Heading level={1} size="2xl" weight="bold" color="primary">My Profile</Heading>
       )}
-      {!editing
-        ? renderProfileViewMode({ profile, resolvedName, namePlaceholder, avatarLetter, profileBio, profileIsPublic, handleEdit })
-        : renderProfileEditForm({ displayName, setDisplayName, phoneNumber, setPhoneNumber, photoURL, setPhotoURL, bio, setBio, isPublic, setIsPublic, isPending: update.isPending, handleSave, onCancel: () => setEditing(false), upload, user })}
+      {!editing ? (
+        renderProfileViewMode({ profile, resolvedName, namePlaceholder, avatarLetter, profileBio, profileIsPublic, handleEdit })
+      ) : (
+        <Stack gap="lg">
+          <Div surface="card" padding="lg">
+            <AvatarUpload
+              currentPhotoURL={profile.photoURL}
+              currentCropData={avatarMetadata}
+              userId={user!.uid}
+              displayName={resolvedName}
+              onUploadSuccess={handleAvatarUploadSuccess}
+            />
+          </Div>
+          <Div surface="card" padding="lg">
+            <Form
+              schema={updateProfileSchema}
+              spacing="md"
+              onSubmit={async (e) => e.preventDefault()}
+            >
+              {({ setFieldError, clearErrors, validate }) => (
+                <>
+                  <Heading level={2} size="base" weight="semibold" color="primary">Edit Profile</Heading>
+                  <FieldInput
+                    name="displayName"
+                    label="Display Name"
+                    value={displayName}
+                    onChange={setDisplayName}
+                    placeholder="Your full name"
+                  />
+                  <FieldInput
+                    name="phoneNumber"
+                    label="Phone Number"
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={setPhoneNumber}
+                    placeholder="+91 xxxxx xxxxx"
+                  />
+                  <FieldTextarea
+                    name="bio"
+                    label="Bio"
+                    hint="max 500 chars"
+                    value={bio}
+                    onChange={setBio}
+                    maxLength={500}
+                    rows={3}
+                    showCharCount
+                    placeholder="Tell buyers a little about yourself…"
+                  />
+                  <Row padding="inline" align="center" justify="between" rounded="lg" border="default">
+                    <>
+                      <Text size="sm" weight="medium" color="primary">Public profile</Text>
+                      <Text className="mt-0.5" color="muted" size="xs">
+                        When on, your profile is visible to other LetItRip users
+                      </Text>
+                    </>
+                    <Toggle
+                      checked={isPublic}
+                      onChange={(v) => setIsPublic(v)}
+                      size="md"
+                      aria-label="Public profile"
+                    />
+                  </Row>
+                  <Row gap="3" padding="t-2xs">
+                    <Button rounded="xl"
+                      type="button"
+                      variant="outline"
+                      onClick={() => setEditing(false)}
+                      disabled={update.isPending}
+                      paddingX="md" paddingY="sm" textSize="sm" weight="medium"
+                      className="disabled:opacity-60 transition-colors"
+                    >
+                      Cancel
+                    </Button>
+                    <Button rounded="xl"
+                      type="button"
+                      variant="primary"
+                      disabled={update.isPending}
+                      paddingX="md" paddingY="sm" textSize="sm" weight="semibold"
+                      className="disabled:opacity-60 transition-colors"
+                      onClick={() => void handleSaveProfile({ setFieldError, clearErrors, validate })}
+                    >
+                      {update.isPending ? "Saving…" : "Save Changes"}
+                    </Button>
+                  </Row>
+                </>
+              )}
+            </Form>
+          </Div>
+        </Stack>
+      )}
     </Stack>
   );
 }

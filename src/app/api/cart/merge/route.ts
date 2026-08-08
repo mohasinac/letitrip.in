@@ -35,11 +35,19 @@ export const POST = withProviders(createRouteHandler<(typeof mergeCartSchema)["_
   handler: async ({ user, body }) => {
     const { items } = body!;
 
-    // Merge each guest item â€” skip products that are unavailable, continue on others
+    // Merge each guest item â€” skip products that are unavailable, continue on others.
+    // Product lookups are independent reads across (up to 50) distinct product
+    // docs, so they're batched in parallel; addItem writes stay sequential
+    // because they all read-modify-write the same single cart document.
     let cart = await cartRepository.getOrCreate(user!.uid);
 
-    for (const item of items) {
-      const product = await productRepository.findById(item.productId);
+    const products = await Promise.all(
+      items.map((item) => productRepository.findById(item.productId)),
+    );
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const product = products[i];
       if (!product || product.status !== ProductStatusValues.PUBLISHED) continue;
       if (product.availableQuantity < 1) continue;
 

@@ -1,54 +1,27 @@
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  productRepository,
-  storeRepository,
-  userRepository,
-  isAdminUser,
-  isEmployeeUser,
-} from "@mohasinac/appkit";
+import { createRouteHandler, errorResponse } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 import { USER_ROLE } from "@/constants/api-roles";
 
-const NOT_FOUND_MSG = "No product found for this barcode";
-
-// NOTE: despite the route name ("codes"), this currently implements a
-// barcode-scan lookup identical to /api/store/products/scan — it has no
-// active UI caller (unlike the sibling group/duplicate routes fixed
-// alongside this one), so the intended "codes" behavior (digital-code
-// listing management?) couldn't be reverse-engineered from a client
-// contract. Left functionally as-is; only the role check was fixed.
+// NOTE: despite the route name ("codes"), this previously duplicated the
+// barcode-scan lookup from /api/store/products/scan/route.ts verbatim — it
+// silently returned barcode-scan results mislabeled as "digital codes"
+// rather than doing anything with the actual digital-code pool for this
+// listing type. There is no existing schema/repository for storing or
+// redeeming per-product digital codes (appkit/src/features/digital-codes/
+// only has public browse/listing UI, no reveal backend) — inventing that
+// data model here would be an unreviewed design decision, so this route
+// honestly reports "not implemented" instead of returning wrong data.
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE, USER_ROLE.EMPLOYEE],
     permission: "store:api:write",
-    handler: async ({ request, user }) => {
-      const url = new URL(request.url);
-      const barcode = url.searchParams.get("barcode")?.trim();
-      if (!barcode) return errorResponse("barcode param required", 400);
-
-      const product = await productRepository.findByBarcodeId(barcode);
-      if (!product) return errorResponse(NOT_FOUND_MSG, 404);
-
-      if (isAdminUser(user)) {
-        return successResponse(product);
-      }
-
-      if (isEmployeeUser(user)) {
-        const userDoc = (await userRepository.findById(user!.uid)) as { storeId?: string } | null;
-        if (!userDoc?.storeId || product.storeId !== userDoc.storeId)
-          return errorResponse(NOT_FOUND_MSG, 404);
-        return successResponse(product);
-      }
-
-      const store = await storeRepository.findByOwnerId(user!.uid);
-      if (!store || product.storeId !== store.id)
-        return errorResponse(NOT_FOUND_MSG, 404);
-
-      return successResponse(product);
+    handler: async () => {
+      return errorResponse(
+        "Digital code management is not implemented yet.",
+        501,
+      );
     },
   }),
 );

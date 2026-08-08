@@ -21,6 +21,7 @@ export const PATCH = withProviders(
   createRouteHandler<z.infer<typeof assignSchema>>({
     auth: true,
     roles: ROLES,
+    permission: "store:api:write",
     schema: assignSchema,
     handler: async ({ user, body, params }) => {
       const id = (params as { id: string }).id;

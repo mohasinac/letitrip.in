@@ -96,8 +96,19 @@ const __POST__g = withProviders(createRouteHandler({
     }[] = [];
 
     // -- 3. Create one payout per store/seller -----------------------------
-    for (const [storeId, orders] of byStore.entries()) {
-      const store = await storeRepository.findById(storeId);
+    // Store + seller lookups per entry are independent — prefetch them all in
+    // parallel instead of two sequential findById calls per store, which
+    // risked the cron's timeout as the seller count grows.
+    const storeEntries = Array.from(byStore.entries());
+    const resolvedEntries = await Promise.all(
+      storeEntries.map(async ([storeId, orders]) => {
+        const store = await storeRepository.findById(storeId);
+        const seller = store ? await userRepository.findById(store.ownerId) : null;
+        return { storeId, orders, store, seller };
+      }),
+    );
+
+    for (const { storeId, orders, store, seller } of resolvedEntries) {
       if (!store) {
         serverLogger.warn("Weekly payout: store not found, skipping", {
           storeId,
@@ -106,7 +117,6 @@ const __POST__g = withProviders(createRouteHandler({
         continue;
       }
       const sellerId = store.ownerId;
-      const seller = await userRepository.findById(sellerId);
       if (!seller) {
         serverLogger.warn("Weekly payout: seller not found, skipping", {
           sellerId,

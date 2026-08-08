@@ -65,6 +65,7 @@ export const PATCH = withProviders(
   createRouteHandler<z.infer<typeof patchOrderSchema>>({
     auth: true,
     roles: ROLES,
+    permission: "store:api:write",
     schema: patchOrderSchema,
     handler: async ({ user, body, params }) => {
       const id = (params as { id: string }).id;
@@ -108,6 +109,11 @@ export const PATCH = withProviders(
       }
       if (data.status === "shipped") {
         await assertEmiShippable(order);
+        // Mirror customShipOrder's side effects (seller-actions.ts) so an
+        // order shipped through this direct-status path also becomes
+        // payout-eligible — previously only the POST /ship path set these.
+        additionalData.shippingDate = new Date().toISOString();
+        additionalData.payoutStatus = "eligible";
       }
 
       await orderRepository.updateStatus(id, data.status, additionalData);

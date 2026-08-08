@@ -63,7 +63,11 @@ export default async function Layout({ children, params }: Props) {
     }
   }
   const seedPanelEnabled = siteSettings?.featureFlags?.seedPanel ?? true;
-  const siteLogoUrl = siteSettings?.logo?.url || "/logo.svg";
+  // No fallback here (unlike generateMetadata's favicon use above) — TitleBarLayout
+  // treats an empty siteLogoUrl as "no admin logo configured" and renders the
+  // desktop center nav slot instead. Falling back to "/logo.svg" would always be
+  // truthy, permanently hiding that nav slot and duplicating the wordmark.
+  const siteLogoUrl = siteSettings?.logo?.url || "";
   // siteSettings.theme drives the registry-aware <ThemeProvider> mounted
   // inside LayoutShellClient (built-ins + admin records + default ids).
   const siteSettingsTheme = siteSettings?.theme;

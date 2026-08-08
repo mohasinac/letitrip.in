@@ -332,10 +332,11 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
   {
     title: "Store",
     items: [
-      { href: String(ROUTES.STORE.STOREFRONT), label: "Storefront" },
-      { href: String(ROUTES.STORE.SHIPPING),   label: "Shipping"   },
-      { href: String(ROUTES.STORE.ADDRESSES),  label: "Addresses"  },
-      { href: String(ROUTES.STORE.COUPONS),    label: "Coupons"    },
+      { href: String(ROUTES.STORE.STOREFRONT),    label: "Storefront"    },
+      { href: String(ROUTES.STORE.SHIPPING),      label: "Shipping"      },
+      { href: String(ROUTES.STORE.ADDRESSES),     label: "Addresses"     },
+      { href: String(ROUTES.STORE.COUPONS),       label: "Coupons"       },
+      { href: String(ROUTES.STORE.PRINT_CENTER),  label: "Print Center"  },
     ],
   },
   {

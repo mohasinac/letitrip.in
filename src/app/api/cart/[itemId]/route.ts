@@ -1,58 +1,54 @@
+/**
+ * Cart Item API Routes
+ *
+ * PATCH  /api/cart/[itemId]  — Update a cart line's quantity (auth required)
+ * DELETE /api/cart/[itemId]  — Remove a cart line (auth required)
+ *
+ * `itemId` is `CartItem.itemId` (see cartRepository.updateItem/removeItem),
+ * not the productId — matches what CartRouteClient sends via
+ * `item.itemId ?? item.id`.
+ */
+import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
-  productRepository,
-  ProductStatusValues,
   successResponse,
   createRouteHandler,
+  cartRepository,
 } from "@mohasinac/appkit";
-import { withProviders } from "@/providers.config";
 
-const validateSchema = z.object({
-  productIds: z.array(z.string().min(1)).min(1).max(50),
+const updateCartItemSchema = z.object({
+  quantity: z.number().int().min(1, "quantity must be at least 1").max(99),
 });
 
-export const POST = withProviders(
-  createRouteHandler<(typeof validateSchema)["_output"]>({
-    auth: false,
-    schema: validateSchema,
-    handler: async ({ body }) => {
-      const { productIds } = body!;
-
-      const results = await Promise.allSettled(
-        productIds.map((id) => productRepository.findById(id)),
-      );
-
-      /** Truly unpublished â€” remove from cart AND wishlist. */
-      const stale: string[] = [];
-      /**
-       * Temporarily unavailable (sold/OOS/no stock) â€” keep in wishlist,
-       * move from cart to wishlist so the user doesn't lose track.
-       */
-      const moveable: string[] = [];
-
-      productIds.forEach((productId, i) => {
-        const result = results[i];
-        if (result.status === "rejected" || result.value === null) {
-          stale.push(productId);
-          return;
-        }
-        const { status, availableQuantity, isSold } = result.value;
-
-        if (
-          status === ProductStatusValues.ARCHIVED ||
-          status === ProductStatusValues.DRAFT ||
-          status === ProductStatusValues.IN_REVIEW
-        ) {
-          stale.push(productId);
-        } else if (
-          isSold ||
-          (availableQuantity !== undefined && availableQuantity <= 0)
-        ) {
-          moveable.push(productId);
-        }
+export const PATCH = withProviders(
+  createRouteHandler<(typeof updateCartItemSchema)["_output"]>({
+    auth: true,
+    schema: updateCartItemSchema,
+    handler: async ({ user, body, params }) => {
+      const itemId = (params as { itemId: string }).itemId;
+      const cart = await cartRepository.updateItem(user!.uid, itemId, {
+        quantity: body!.quantity,
       });
+      return successResponse({
+        cart,
+        itemCount: cartRepository.getItemCount(cart),
+        subtotal: cartRepository.getSubtotal(cart),
+      });
+    },
+  }),
+);
 
-      return successResponse({ stale, moveable });
+export const DELETE = withProviders(
+  createRouteHandler({
+    auth: true,
+    handler: async ({ user, params }) => {
+      const itemId = (params as { itemId: string }).itemId;
+      const cart = await cartRepository.removeItem(user!.uid, itemId);
+      return successResponse({
+        cart,
+        itemCount: cartRepository.getItemCount(cart),
+        subtotal: cartRepository.getSubtotal(cart),
+      });
     },
   }),
 );

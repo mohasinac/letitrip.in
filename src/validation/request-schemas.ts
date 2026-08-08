@@ -138,7 +138,11 @@ const productBaseSchema = z.object({
   price: z.number().positive().max(10000000),
   originalPrice: z.number().positive().max(10000000).optional(),
   currency: z.string().length(3).default(getDefaultCurrency()),
-  stockQuantity: z.number().int().nonnegative(),
+  // Optional here — required only for listing types whose wizard step actually
+  // renders a stock field (see STOCK_QUANTITY_REQUIRED_LISTING_TYPES below).
+  // Auction/pre-order/prize-draw/digital-code listings have no stock input,
+  // so making this unconditionally required made those 4 types un-publishable.
+  stockQuantity: z.number().int().nonnegative().optional(),
   mainImage: urlSchema,
   images: z.array(urlSchema).max(5).optional(),
   video: videoSchema.optional(),
@@ -187,7 +191,20 @@ const productBaseSchema = z.object({
     .optional(),
 });
 
+// Listing types whose wizard step renders a stock-quantity field — kept in
+// sync with `showsStockQuantity` in appkit/src/_internal/shared/listing-types/*/config.ts.
+const STOCK_QUANTITY_REQUIRED_LISTING_TYPES = new Set([
+  "standard",
+  "art",
+  "stickers",
+  "classified",
+  "live",
+]);
+
 export const productCreateSchema = productBaseSchema
+  .extend({
+    status: z.enum(["draft", "published"]).optional(),
+  })
   .refine(
     (data) =>
       data.listingType !== "auction" ||
@@ -198,6 +215,13 @@ export const productCreateSchema = productBaseSchema
     (data) =>
       !data.auctionEndDate || new Date(data.auctionEndDate as string) > new Date(),
     { message: "Auction end date must be in the future" },
+  )
+  .refine(
+    (data) =>
+      !data.listingType ||
+      !STOCK_QUANTITY_REQUIRED_LISTING_TYPES.has(data.listingType) ||
+      data.stockQuantity !== undefined,
+    { message: "Stock quantity is required for this listing type", path: ["stockQuantity"] },
   );
 
 export const productUpdateSchema = productBaseSchema.partial().extend({

@@ -15,6 +15,7 @@ import type { JsonValue, JsonArray } from "@mohasinac/appkit";
 import { Link } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import {
+  Alert,
   Button,
   CartItemRow,
   CartSummary,
@@ -213,7 +214,7 @@ export function CartRouteClient() {
   const { requireAuth, modalOpen, modalMessage, closeModal } = useAuthGate();
 
   const guest = useGuestCart();
-  const { data: serverCart, isLoading: serverLoading, refetch } =
+  const { data: serverCart, isLoading: serverLoading, isError: serverCartError, refetch } =
     useCartQuery<ServerCartResponse>({
       endpoint: "/api/cart",
       queryKey: ["cart"],
@@ -677,6 +678,22 @@ export function CartRouteClient() {
       void normalizeError(err);
       showToast(err instanceof Error ? err.message : "Failed to select all items", "error");
     }
+  }
+
+  // A failed /api/cart fetch previously fell straight through to cartItems
+  // defaulting to [] → "Your cart is empty", which is indistinguishable from
+  // an actually-empty cart. Surface the failure instead.
+  if (isAuthenticated && serverCartError) {
+    return (
+      <Stack gap="md" className="w-full max-w-2xl">
+        <Alert variant="error">
+          We couldn't load your cart. Please check your connection and try again.
+        </Alert>
+        <Button type="button" variant="outline" onClick={() => void refetch()}>
+          Try again
+        </Button>
+      </Stack>
+    );
   }
 
   return (

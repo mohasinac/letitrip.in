@@ -1162,8 +1162,7 @@
 | `/api/store/coupons` | GET, POST | Store coupons |
 | `/api/store/coupons/[id]` | GET, PUT, DELETE | Coupon CRUD |
 | `/api/store/storefront` | GET, PUT | Storefront settings |
-| `/api/store/shipping` | GET, PUT | Shipping settings |
-| `/api/store/shipping/verify-pickup` | POST | Pickup verification |
+| `/api/store/shipping` | GET, PUT | Shipping settings (manual carrier/pickup only — Shiprocket removed) |
 | `/api/store/payout-settings` | GET, PUT | Payout config |
 | `/api/store/payouts` | GET | Payout history |
 | `/api/store/payouts/request` | POST | Request payout |
@@ -1173,7 +1172,7 @@
 | `/api/store/addresses` | GET, POST | Store addresses |
 | `/api/store/addresses/[id]` | GET, PUT, DELETE | Address CRUD |
 | `/api/store/slug/check` | GET | Slug availability |
-| `/api/store/products/[id]/codes` | GET, POST | Digital code pool |
+| `/api/store/products/[id]/codes` | GET | 501 — digital-code reveal not implemented (was mistakenly a barcode-scan duplicate, now honest) |
 | `/api/store/templates` | GET, POST | Product templates |
 | `/api/store/templates/[id]` | GET, PUT, DELETE | Template CRUD |
 | `/api/store/features` | GET, POST | Store features |
@@ -1458,11 +1457,11 @@ All pages are thin shims delegating to appkit `_internal/server/features/*/` hel
 
 | Domain | Count | Examples |
 |--------|-------|---------|
-| Admin | ~94 | /admin/products, /admin/orders, /admin/users, /admin/categories, /admin/blog, /admin/reviews, /admin/coupons, /admin/carousel, /admin/sections, /admin/events, /admin/payouts, /admin/team, /admin/support, /admin/scammers |
-| Store | ~73 | /store/products, /store/orders, /store/coupons, /store/analytics, /store/payouts, /store/reviews, /store/templates, /store/features, /store/shipping |
+| Admin | ~97 | /admin/products, /admin/orders, /admin/users, /admin/categories, /admin/blog, /admin/reviews, /admin/coupons, /admin/carousel, /admin/sections, /admin/events, /admin/payouts, /admin/team, /admin/support, /admin/scammers, /admin/art, /admin/stickers, /admin/addresses |
+| Store | ~75 | /store/products, /store/orders, /store/coupons, /store/analytics, /store/payouts, /store/reviews, /store/templates, /store/features, /store/shipping, /store/art, /store/stickers, /store/print-center |
 | User | ~29 | /user/orders, /user/profile, /user/wishlist, /user/addresses, /user/history, /user/conversations, /user/notifications |
 | Public | ~105 | /products/[id], /categories, /blog, /events, /auctions, /stores, /about, /contact, /faqs, /seller, /cart, /checkout |
-| **Total** | **~301** | |
+| **Total** | **~306** | |
 
 ### RSC + thin client-wrapper pattern (applied 2026-06-24)
 
