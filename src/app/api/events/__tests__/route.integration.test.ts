@@ -24,7 +24,6 @@ describe.skipIf(!BASE)("GET /api/events — integration (real Firestore)", () =>
   });
 
   it("defaults to active events", async () => {
-    const res = await fetch(`${BASE}/api/events&pageSize=10`);
     // 400 is possible if the URL is malformed — accept both 200 and test the active default on clean URL
     const cleanRes = await fetch(`${BASE}/api/events?pageSize=10`);
     expect(cleanRes.status).toBe(200);

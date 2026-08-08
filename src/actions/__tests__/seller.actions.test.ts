@@ -44,7 +44,6 @@ vi.mock("@mohasinac/appkit/server", () => ({
 }));
 
 vi.mock("@mohasinac/appkit", async () => {
-  const { z } = await import("zod");
   return {
     requireAuthUser: mockRequireAuthUser,
     requireRoleUser: mockRequireRoleUser,

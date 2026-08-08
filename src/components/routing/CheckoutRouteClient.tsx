@@ -1,6 +1,6 @@
 "use client";
-import { normalizeError, type JsonArray } from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
+import { normalizeError, checkEmiEligibility, computeEmiSchedule, type JsonArray } from "@mohasinac/appkit";
+import type { JsonValue, EmiSettings } from "@mohasinac/appkit";
 
 import { useCallback, useState, useEffect, useMemo } from "react";
 import {
@@ -9,6 +9,7 @@ import {
   CheckoutAddressStep,
   CheckoutView,
   Div,
+  FieldSelect,
   Heading,
   Input,
   Row,
@@ -16,6 +17,7 @@ import {
   Span,
   Stack,
   Text,
+  TextLink,
   useAddresses,
   useAuth,
   useAuthGate,
@@ -124,6 +126,82 @@ const STEP_CARD_CLS = "rounded-xl border border-[var(--appkit-color-border)] bg-
 const STEP_SUBLABEL_CLS = "text-sm text-[var(--appkit-color-text-muted)]";
 const CLS_APPLIED_COUPON_ROW = "rounded-lg bg-success-surface border border-success px-3 py-2";
 const PRIMARY_BTN_CLS = "w-full rounded-lg bg-[var(--appkit-color-primary)] px-4 py-3 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50";
+
+/** EMI amounts from computeEmiSchedule are in paise — format as INR rupees. */
+function formatEmiRupees(paise: number): string {
+  return (paise / 100).toLocaleString("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
+}
+
+const ORDER_PLACEMENT_FAILED_MSG = "Order placement failed";
+const ORDER_FAILED_RETRY_MSG = "Order failed. Please retry.";
+
+/** Encapsulates EMI tenure selection, eligibility, schedule preview, and order placement. */
+function useEmiCheckout({
+  emiSettings,
+  showEmi,
+  subtotal,
+  cartIsEmpty,
+  selectedAddress,
+  router,
+  showToast,
+  setStep,
+  setActionError,
+  setIsProcessingPayment,
+}: {
+  emiSettings: EmiSettings | null;
+  showEmi: boolean;
+  subtotal: number;
+  cartIsEmpty: boolean;
+  selectedAddress: Address | null;
+  router: ReturnType<typeof useRouter>;
+  showToast: ReturnType<typeof useToast>["showToast"];
+  setStep: (step: CheckoutStep) => void;
+  setActionError: (msg: string) => void;
+  setIsProcessingPayment: (v: boolean) => void;
+}) {
+  const [emiTenure, setEmiTenure] = useState<number>(emiSettings?.tenureOptions?.[0] ?? 3);
+  const emiEligible = useMemo(
+    () => (emiSettings ? checkEmiEligibility(subtotal, true, emiSettings).eligible : false),
+    [emiSettings, subtotal],
+  );
+  const emiVisible = showEmi && !!emiSettings && emiEligible && !cartIsEmpty;
+  const emiSchedule = useMemo(
+    () => (emiVisible && emiSettings ? computeEmiSchedule(subtotal, emiTenure, emiSettings) : null),
+    [emiVisible, emiSettings, subtotal, emiTenure],
+  );
+
+  const handlePlaceEmiOrder = useCallback(async () => {
+    if (!selectedAddress) return;
+    setIsProcessingPayment(true);
+    setActionError("");
+    setStep("processing");
+    try {
+      const res = await createCheckoutOrder({
+        addressId: selectedAddress.id,
+        paymentMethod: "emi",
+        emiTenureMonths: emiTenure,
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error ?? ORDER_PLACEMENT_FAILED_MSG);
+      }
+      const emiData = await res.json().catch(() => ({}));
+      const firstEmiOrderId = (emiData?.data?.orderIds as string[] | undefined)?.[0];
+      showToast("Order placed successfully! Your EMI schedule is confirmed.", "success");
+      router.push(firstEmiOrderId ? `${String(ROUTES.USER.CHECKOUT_SUCCESS)}?orderId=${firstEmiOrderId}` : String(ROUTES.USER.CHECKOUT_SUCCESS));
+    } catch (err) {
+      void normalizeError(err);
+      const msg = err instanceof Error ? err.message : ORDER_FAILED_RETRY_MSG;
+      setActionError(msg);
+      showToast(msg, "error");
+      setStep("payment");
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  }, [selectedAddress, emiTenure, router, showToast, setStep, setActionError, setIsProcessingPayment]);
+
+  return { emiTenure, setEmiTenure, emiVisible, emiSchedule, handlePlaceEmiOrder };
+}
 
 // --- Sub-renderers -----------------------------------------------------------
 
@@ -369,9 +447,15 @@ function renderPaymentStep({
   showCashOption,
   showRazorpay,
   showCod,
+  emiVisible,
+  emiSettings,
+  emiTenure,
+  setEmiTenure,
+  emiSchedule,
   handlePayOnline,
   handlePlaceCodOrder,
   handlePlaceCashOrder,
+  handlePlaceEmiOrder,
   handleAdminBypass,
 }: {
   step: CheckoutStep;
@@ -382,9 +466,15 @@ function renderPaymentStep({
   showCashOption: boolean;
   showRazorpay: boolean;
   showCod: boolean;
+  emiVisible: boolean;
+  emiSettings: EmiSettings | null;
+  emiTenure: number;
+  setEmiTenure: (v: number) => void;
+  emiSchedule: ReturnType<typeof computeEmiSchedule> | null;
   handlePayOnline: () => Promise<void>;
   handlePlaceCodOrder: () => Promise<void>;
   handlePlaceCashOrder: () => Promise<void>;
+  handlePlaceEmiOrder: () => Promise<void>;
   handleAdminBypass: () => Promise<void>;
 }) {
   return (
@@ -433,6 +523,37 @@ function renderPaymentStep({
             >
               {CK.PAYMENT_COD_BTN}
             </Button>
+          )}
+          {emiVisible && emiSettings && (
+            <Div className={`${__P.p3} border border-[var(--appkit-color-primary-200)] dark:border-[var(--appkit-color-primary-800)]`} surface="subtle" rounded="lg">
+              <Text className="mb-2" weight="semibold">{CK.PAYMENT_EMI_BTN}</Text>
+              <FieldSelect
+                name="emiTenure"
+                label={CK.EMI_TENURE_LABEL}
+                value={String(emiTenure)}
+                onChange={(v) => setEmiTenure(Number(v))}
+                options={emiSettings.tenureOptions.map((m) => ({
+                  value: String(m),
+                  label: `${m} months`,
+                }))}
+              />
+              {emiSchedule && (
+                <Text className="mt-2" size="sm" color="muted">
+                  {CK.EMI_TOKEN_LABEL}: {formatEmiRupees(emiSchedule.tokenAmount)} · {formatEmiRupees(emiSchedule.installments[0]?.amount ?? 0)} {CK.EMI_INSTALLMENT_LABEL}
+                </Text>
+              )}
+              <Button
+                type="button"
+                onClick={handlePlaceEmiOrder}
+                disabled={isProcessingPayment || cartIsEmpty}
+                className={`mt-3 ${PRIMARY_BTN_CLS}`}
+              >
+                {CK.PAYMENT_EMI_BTN}
+              </Button>
+              <TextLink href={String(ROUTES.PUBLIC.HOW_EMI_WORKS)} className="mt-2 inline-block" size="xs" variant="muted">
+                {CK.EMI_LEARN_MORE}
+              </TextLink>
+            </Div>
           )}
           {adminBypassEnabled && (
             <Div className={`mt-1 border border-warning/30 ${__P.p3}`} surface="warning-surface" rounded="lg">
@@ -605,12 +726,16 @@ export function CheckoutRouteClient({
   showRazorpay = false,
   showCod = false,
   showCoupons = false,
+  showEmi = false,
+  emiSettings = null,
 }: {
   adminBypassEnabled?: boolean;
   showCashOption?: boolean;
   showRazorpay?: boolean;
   showCod?: boolean;
   showCoupons?: boolean;
+  showEmi?: boolean;
+  emiSettings?: EmiSettings | null;
 }) {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -671,6 +796,19 @@ export function CheckoutRouteClient({
   const subtotal = cartData?.subtotal ?? 0;
   const effectiveTotal = Math.max(0, subtotal - totalDiscount);
   const cartIsEmpty = (cartData?.cart?.items?.length ?? 0) === 0;
+
+  const { emiTenure, setEmiTenure, emiVisible, emiSchedule, handlePlaceEmiOrder } = useEmiCheckout({
+    emiSettings,
+    showEmi,
+    subtotal,
+    cartIsEmpty,
+    selectedAddress,
+    router,
+    showToast,
+    setStep,
+    setActionError,
+    setIsProcessingPayment,
+  });
 
   const handleSelectAddress = useCallback(
     (_addressId: string, address: Address) => {
@@ -863,7 +1001,7 @@ export function CheckoutRouteClient({
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(
-          (err as { error?: string }).error ?? "Order placement failed",
+          (err as { error?: string }).error ?? ORDER_PLACEMENT_FAILED_MSG,
         );
       }
       const codData = await res.json().catch(() => ({}));
@@ -872,7 +1010,7 @@ export function CheckoutRouteClient({
       router.push(firstCodOrderId ? `${String(ROUTES.USER.CHECKOUT_SUCCESS)}?orderId=${firstCodOrderId}` : String(ROUTES.USER.CHECKOUT_SUCCESS));
     } catch (err) {
       void normalizeError(err);
-      const msg = err instanceof Error ? err.message : "Order failed. Please retry.";
+      const msg = err instanceof Error ? err.message : ORDER_FAILED_RETRY_MSG;
       setActionError(msg);
       showToast(msg, "error");
       setStep("payment");
@@ -894,7 +1032,7 @@ export function CheckoutRouteClient({
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(
-          (err as { error?: string }).error ?? "Order placement failed",
+          (err as { error?: string }).error ?? ORDER_PLACEMENT_FAILED_MSG,
         );
       }
       const cashData = await res.json().catch(() => ({}));
@@ -906,7 +1044,7 @@ export function CheckoutRouteClient({
       }
     } catch (err) {
       void normalizeError(err);
-      const msg = err instanceof Error ? err.message : "Order failed. Please retry.";
+      const msg = err instanceof Error ? err.message : ORDER_FAILED_RETRY_MSG;
       setActionError(msg);
       showToast(msg, "error");
       setStep("payment");
@@ -1036,7 +1174,7 @@ export function CheckoutRouteClient({
           return (
             <Stack gap="lg">
               {showCoupons && renderCouponSection({ couponCode, setCouponCode, couponError, isCouponLoading, effectiveCoupons, handleApplyCoupon, handleRemoveCoupon })}
-              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showRazorpay, showCod, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handleAdminBypass })}
+              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showRazorpay, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
             </Stack>
           );
         }}

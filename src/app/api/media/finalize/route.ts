@@ -43,7 +43,6 @@ import { formatFileSize } from "@mohasinac/appkit";
 import { mediaAssetsRepository } from "@mohasinac/appkit";
 
 const TMP_PREFIX = "tmp/";
-const SIGNED_READ_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days, matches legacy upload route
 const HEAD_BYTES = 4096; // file-type matches well within 4 KB for every supported format
 const CLEANUP_LABEL = "media finalize: cleanup invalid upload";
 

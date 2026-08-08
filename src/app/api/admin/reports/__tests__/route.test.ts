@@ -57,7 +57,6 @@ const mockReports = [
   { id: "report-2", type: "spam", status: "pending", reporterId: "user-2" },
 ];
 
-const listParams = {};
 const detailParams = { params: Promise.resolve({ id: "report-1" }) };
 
 const makeListReq = () => new Request("http://localhost/api/admin/reports");

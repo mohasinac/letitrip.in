@@ -16,7 +16,7 @@ export const PATCH = withProviders(
   createRouteHandler({
     roles: ROLES_ADMIN_MOD,
     permission: "orders:manage",
-    handler: async ({ request, params }) => {
+    handler: async ({ params }) => {
       const { id } = params as { id: string };
 
       const result = await adminVerifyPaymentAction(id);

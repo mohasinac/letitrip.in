@@ -37,6 +37,7 @@ export default async function Page({ params }: Props) {
   ).catch(() => []);
   const siteSettings = await getSiteSettingsGlobal().catch(() => null);
   const codEnabled = siteSettings?.payment?.codEnabled === true;
+  const emiEnabled = siteSettings?.emi?.enabled === true;
 
   const ldProduct = product
     ? productJsonLd({
@@ -80,6 +81,7 @@ export default async function Page({ params }: Props) {
         initialProduct={product}
         productFeatures={productFeatures}
         codEnabled={codEnabled}
+        emiEnabled={emiEnabled}
         renderOfferAction={({ productId, price, minOfferPercent }) => (
           <MakeOfferButton
             productId={productId}

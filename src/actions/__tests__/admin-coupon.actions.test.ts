@@ -150,7 +150,7 @@ describe("adminCreateCouponAction", () => {
 
   it("no percentage >100% cap in Zod schema (domain handles cap)", async () => {
     // 150% should not fail schema validation (domain handles the business rule)
-    const result = await adminCreateCouponAction({
+    await adminCreateCouponAction({
       ...makeValidCreateInput(),
       type: "percentage",
       discountConfig: { value: 150, minPurchase: 0 },

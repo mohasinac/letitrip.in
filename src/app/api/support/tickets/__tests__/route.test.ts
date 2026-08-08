@@ -175,7 +175,7 @@ describe("POST /api/support/tickets", () => {
 
   it("soft-ban check skipped for unban_request category", async () => {
     mockIsSoftBanned.mockReturnValue(true);
-    const res = await POST(makePostReq({
+    await POST(makePostReq({
       category: "unban_request",
       subject: "Please unban me",
       description: "I should not be banned, this was a mistake.",
@@ -305,7 +305,7 @@ describe("POST /api/support/tickets", () => {
 
   it("existing category ticket but NOT waiting_on_user → allowed", async () => {
     mockSupportGetActiveCategoryTicket.mockResolvedValue({ id: "cat-ticket", status: "open" });
-    const res = await POST(makePostReq(validBody) as never);
+    await POST(makePostReq(validBody) as never);
     // "open" status is not "waiting_on_user" — should proceed
     expect(mockSupportCreateTicket).toHaveBeenCalled();
   });

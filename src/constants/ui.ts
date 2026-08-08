@@ -1490,6 +1490,12 @@ export const UI_LABELS = {
     PAYMENT_SUBLABEL: "Step 3 of 3 — Payment",
     PAYMENT_ONLINE_BTN: "Pay Online (Razorpay)",
     PAYMENT_COD_BTN: STR_COD,
+    // EMI
+    PAYMENT_EMI_BTN: "Pay in EMI",
+    EMI_TENURE_LABEL: "Choose tenure",
+    EMI_LEARN_MORE: "How does EMI work?",
+    EMI_TOKEN_LABEL: "Pay now (token)",
+    EMI_INSTALLMENT_LABEL: "then per month",
     // Admin bypass
     ADMIN_BYPASS_PANEL_LABEL: "Admin Test Mode",
     ADMIN_BYPASS_CONSENT_BTN: "Skip Verification — Admin Bypass",
