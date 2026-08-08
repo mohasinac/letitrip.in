@@ -6,7 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { getAdminUser } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
-import { ADMIN_USER_DETAIL_TABS, type AdminUserDetailTabId } from "@/constants/dashboard-tabs";
+import { ADMIN_USER_DETAIL_TABS, type AdminUserDetailTabId } from "@/constants";
 
 export default function Page() {
   const params = useParams<{ id: string }>();

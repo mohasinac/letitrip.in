@@ -10,8 +10,7 @@ import {
   assertEmiShippable,
   type JsonValue,
 } from "@mohasinac/appkit";
-import { ROLES_STORE_WRITE } from "@/constants";
-import { USER_ROLE } from "@/constants/api-roles";
+import { ROLES_STORE_WRITE, USER_ROLE } from "@/constants";
 
 const ROLES = [...ROLES_STORE_WRITE, USER_ROLE.EMPLOYEE];
 

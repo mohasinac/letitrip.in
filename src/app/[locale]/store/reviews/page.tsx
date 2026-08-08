@@ -7,7 +7,7 @@ import { Heading, Stack, Text, Row, Div } from "@mohasinac/appkit";
 import { Button } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { getUserReviewsByRole } from "@/lib/api/user-client";
-import { STORE_REVIEWS_ROLE_TABS, type StoreReviewsRoleTabId } from "@/constants/dashboard-tabs";
+import { STORE_REVIEWS_ROLE_TABS, type StoreReviewsRoleTabId } from "@/constants";
 
 interface ReviewItem {
   id: string;

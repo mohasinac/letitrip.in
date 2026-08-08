@@ -49,16 +49,7 @@ vi.mock("@mohasinac/appkit", () => ({
   checkoutOffer: mockCheckoutOffer,
 }));
 
-import {
-  makeOfferAction,
-  respondToOfferAction,
-  acceptCounterOfferAction,
-  counterOfferByBuyerAction,
-  withdrawOfferAction,
-  listBuyerOffersAction,
-  listSellerOffersAction,
-  checkoutOfferAction,
-} from "../offer.actions";
+import { makeOfferAction, respondToOfferAction, counterOfferByBuyerAction, withdrawOfferAction, listBuyerOffersAction, listSellerOffersAction, checkoutOfferAction } from "../offer.actions";
 
 function makeUser(overrides: Record<string, unknown> = {}) {
   return { uid: "user-buyer-1", email: "buyer@test.com", ...overrides };

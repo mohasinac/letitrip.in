@@ -3,7 +3,7 @@ import { Stack, normalizeError } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
-import { useSession, useToast, ROUTES, Checkbox, RadioItem, Div, Button, Label, Textarea, Text } from "@mohasinac/appkit/client";
+import { useSession, useToast, ROUTES, Checkbox, RadioItem, Div, Button, Textarea, Text } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { submitEventEntry } from "@/lib/api/events-client";
 

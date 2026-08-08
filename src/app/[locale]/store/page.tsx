@@ -1,6 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { Div, DynamicBgDiv, ROUTES, SellerTopProducts, Span, StoreDashboardView, apiClient, useStoreDashboard } from "@mohasinac/appkit/client";
+import { Div, DynamicBgDiv, ROUTES, SellerTopProducts, StoreDashboardView, apiClient, useStoreDashboard } from "@mohasinac/appkit/client";
 const __O = {
   hidden: "overflow-hidden",
 } as const;

@@ -5,7 +5,7 @@ import {
   createRouteHandler,
   successResponse,
 } from "@mohasinac/appkit";
-import { ROLES_AUTHENTICATED } from "@/constants/api-roles";
+import { ROLES_AUTHENTICATED } from "@/constants";
 
 const MAX_PAGE_SIZE = 50;
 

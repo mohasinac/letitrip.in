@@ -1,7 +1,6 @@
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, errorResponse } from "@mohasinac/appkit";
-import { ROLES_STORE_WRITE } from "@/constants";
-import { USER_ROLE } from "@/constants/api-roles";
+import { ROLES_STORE_WRITE, USER_ROLE } from "@/constants";
 
 // NOTE: despite the route name ("codes"), this previously duplicated the
 // barcode-scan lookup from /api/store/products/scan/route.ts verbatim — it

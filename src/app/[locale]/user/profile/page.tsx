@@ -1,4 +1,4 @@
-import { Div } from "@mohasinac/appkit/client";
+
 import { ProfilePageClient, ProfileActivityPanel } from "@/components";
 
 import { Stack } from "@mohasinac/appkit";

@@ -7,7 +7,7 @@ import {
   THEMED_TEXT_PRIMARY,
   THEMED_TEXT_SECONDARY,
 } from "@/constants";
-import { Heading, Text, Caption, Grid, Section, Container, Stack, Card, Row, Div, TextLink } from "@mohasinac/appkit/ui";
+import { Heading, Text, Caption, Grid, Section, Container, Stack, Card, Row, TextLink } from "@mohasinac/appkit/ui";
 import { getTranslations } from "next-intl/server";
 import { ShoppingBag, Truck, MapPin, CheckCircle2 } from "lucide-react";
 

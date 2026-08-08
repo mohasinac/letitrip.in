@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { normalizeError } from "@mohasinac/appkit";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import {
   ref,
   set,
@@ -74,7 +74,7 @@ export function usePresence(uid: string | null) {
     void (async () => {
       try {
         const encodedPath = pathname.replace(/\//g, "|") || "|root";
-        // eslint-disable-next-line lir/no-raw-date
+         
         const date = new Date().toISOString().split("T")[0];
         const pvRef = ref(
           realtimeDb,

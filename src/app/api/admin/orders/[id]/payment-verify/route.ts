@@ -10,7 +10,7 @@
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, successResponse, errorResponse } from "@mohasinac/appkit";
 import { adminVerifyPaymentAction } from "@mohasinac/appkit/server";
-import { ROLES_ADMIN_MOD } from "@/constants/api-roles";
+import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const PATCH = withProviders(
   createRouteHandler({

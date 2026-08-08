@@ -37,7 +37,7 @@ const {
 }));
 
 vi.mock("@/providers.config", () => ({ withProviders: (fn: unknown) => fn }));
-vi.mock("@/constants", () => ({ ROLES_STORE_WRITE: ["seller", "admin"] }));
+vi.mock("@/constants", () => ({ ROLES_STORE_WRITE: ["seller", "admin"], USER_ROLE: { EMPLOYEE: "employee" } }));
 
 vi.mock("@mohasinac/appkit/server", () => ({ getAdminDb: mockGetAdminDb }));
 

@@ -42,7 +42,7 @@ vi.mock("@mohasinac/appkit", () => ({
 }));
 
 // Import z to use the same schema validation behaviour
-import { z } from "zod";
+
 import { POST } from "../route";
 
 const params = { params: Promise.resolve({ id: "order-2-20260601-x1y2z3" }) };

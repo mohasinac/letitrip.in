@@ -1,4 +1,4 @@
-import { normalizeError } from "@mohasinac/appkit";
+
 import "@mohasinac/appkit/styles";
 import "@/styles/globals.compiled.css";
 import { Poppins, Inter, Cormorant_Garamond, Playfair_Display } from "next/font/google";

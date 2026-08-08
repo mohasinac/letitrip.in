@@ -74,7 +74,7 @@ vi.mock("@mohasinac/appkit", () => {
 });
 
 import { GET, POST } from "../route";
-import { wishlistRepository, productRepository, WishlistFullError } from "@mohasinac/appkit";
+import { wishlistRepository, productRepository } from "@mohasinac/appkit";
 
 const mockGetWishlistItems = wishlistRepository.getWishlistItems as ReturnType<typeof vi.fn>;
 const mockAddItem = wishlistRepository.addItem as ReturnType<typeof vi.fn>;

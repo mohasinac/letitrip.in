@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useToast, Button } from "@mohasinac/appkit/client";
-import { Div, Row, Span } from "@mohasinac/appkit/ui";
+import { Row, Span } from "@mohasinac/appkit/ui";
 interface ShareButtonsProps {
   title: string;
 }

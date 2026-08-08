@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { detectConflict } from "../coupon-conflict";
 
-type Coupon = Parameters<typeof detectConflict>[1];
 type AppliedCoupon = { code: string; scope: "admin" | "seller"; storeId?: string; combineWithSellerCoupons?: boolean };
 
 function applied(overrides: Partial<AppliedCoupon>): AppliedCoupon {

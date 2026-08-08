@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Div, Row, Stack, Text, Toggle } from "@mohasinac/appkit/ui";
+import { Row, Stack, Text, Toggle } from "@mohasinac/appkit/ui";
 const FONT_KEY = "font-style";
 
 export function FontToggleClient() {

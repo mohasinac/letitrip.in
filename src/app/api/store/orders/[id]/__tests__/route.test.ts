@@ -35,8 +35,7 @@ const {
 }));
 
 vi.mock("@/providers.config", () => ({ withProviders: (fn: unknown) => fn }));
-vi.mock("@/constants", () => ({ ROLES_STORE_WRITE: ["seller", "admin"] }));
-vi.mock("@/constants/api-roles", () => ({ USER_ROLE: { EMPLOYEE: "employee" } }));
+vi.mock("@/constants", () => ({ ROLES_STORE_WRITE: ["seller", "admin"], USER_ROLE: { EMPLOYEE: "employee" } }));
 vi.mock("@/actions/seller.actions", () => ({ shipOrderAction: mockShipOrderAction }));
 
 vi.mock("@mohasinac/appkit", () => ({

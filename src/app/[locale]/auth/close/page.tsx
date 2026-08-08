@@ -2,7 +2,7 @@
 import { normalizeError } from "@mohasinac/appkit";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Button, Div, Row, Stack, Text } from "@mohasinac/appkit/ui";
+import { Button, Row, Stack, Text } from "@mohasinac/appkit/ui";
 const __P = {
   p6: "p-6",
 } as const;

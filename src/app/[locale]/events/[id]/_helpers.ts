@@ -7,13 +7,7 @@ import { normalizeError } from "@mohasinac/appkit";
 import type { FirestoreValue } from "@mohasinac/appkit";
 
 import { LOCALE_CONFIG } from "@/constants";
-import {
-  EVENT_BADGE_FALLBACK,
-  EVENT_META,
-  EVENT_STATUS,
-  EVENT_STATUS_BADGE,
-  EVENT_TYPE_BADGE,
-} from "./_constants";
+import { EVENT_BADGE_FALLBACK, EVENT_META, EVENT_STATUS_BADGE, EVENT_TYPE_BADGE } from "./_constants";
 
 type RawEvent = {
   status?: FirestoreValue;
@@ -43,7 +37,6 @@ export function toIsoOrUndefined(value: unknown): string | undefined {
     return undefined;
   }
 }
-
  
 export function eventIsActive(event: RawEvent, now: number = Date.now()): boolean {
   const status = typeof event.status === "string" ? event.status : "";

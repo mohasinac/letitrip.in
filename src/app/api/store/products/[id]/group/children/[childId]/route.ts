@@ -9,7 +9,7 @@ import {
   isEmployeeUser,
 } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
-import { USER_ROLE } from "@/constants/api-roles";
+import { USER_ROLE } from "@/constants";
 
 const ERR_PRODUCT_NOT_FOUND = "Product not found";
 const ERR_FORBIDDEN = "You do not own this listing";

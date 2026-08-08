@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { AdminAnalyticsView, Div, Label, Input } from "@mohasinac/appkit/client";
+import { AdminAnalyticsView, Label, Input } from "@mohasinac/appkit/client";
 import { AdminLiveOverviewCard } from "./analytics/AdminLiveOverviewCard";
 
 import { Row } from "@mohasinac/appkit";

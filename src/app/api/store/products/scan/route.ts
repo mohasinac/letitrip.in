@@ -10,7 +10,7 @@ import {
   isEmployeeUser,
 } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
-import { USER_ROLE } from "@/constants/api-roles";
+import { USER_ROLE } from "@/constants";
 
 const NOT_FOUND_MSG = "No product found for this barcode";
 
