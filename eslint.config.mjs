@@ -465,6 +465,23 @@ export default tseslint.config(
     },
   },
   {
+    // Primitive-definition files: Button/IconButton/Toggle/HotspotMarker ARE
+    // the <button> implementation the variant-catalogue rule tells every
+    // OTHER file to use instead of a raw <button>. Converting their own root
+    // element to <Button>/<IconButton> would be circular. This mirrors the
+    // "primitive source directories own the underlying markup" carve-out
+    // already documented in CLAUDE.md Root Cause #21 for className/style.
+    files: [
+      "appkit/src/ui/components/Button.tsx",
+      "appkit/src/ui/components/IconButton.tsx",
+      "appkit/src/ui/components/Toggle.tsx",
+      "appkit/src/ui/components/HotspotMarker.tsx",
+    ],
+    rules: {
+      "no-restricted-syntax": "off",
+    },
+  },
+  {
     // __mocks__: test doubles follow different conventions; date + var patterns
     // are intentional testing artifacts.
     files: ["src/__mocks__/**"],

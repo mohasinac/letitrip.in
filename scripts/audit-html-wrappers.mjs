@@ -95,6 +95,29 @@ const RULES = [
     fix: "Pick a catalogue gradient slot (brand, brand-tri, accent, page-header, section-warm, section-cool, section-mesh, accent-banner, promotion, spotlight, glass, card-*) and surface it through the primitive's variant prop",
     baselineDrift: true,
   },
+  {
+    // Spacing/font-size scale is now theme-editable via `--appkit-space-*` /
+    // `--appkit-text-*` (2026-08 theme-system spacing/font phase) and the
+    // `padding`/`paddingX`/`paddingY`/`gap` props already resolve through
+    // those vars (surface-tokens.ts). A raw named Tailwind step class
+    // (`gap-3`, `p-4`, `px-6`, `text-sm`, …) bakes a fixed value into the
+    // className string instead, bypassing per-theme overrides. Baseline-drift
+    // while the consumer sweep is in flight — current count locks today;
+    // only regressions block. Arbitrary-value classes already referencing
+    // `var(--appkit-space-*)`/`var(--appkit-text-*)` are NOT flagged.
+    id: "RAW_SPACING_UTILITY",
+    re: /\b(?:gap|p|px|py|pt|pb)-(?:0\.5|1\.5|2\.5|3\.5|[0-9]+)\b/,
+    message: "Raw Tailwind spacing utility bypasses theme tokens. Use the padding/paddingX/paddingY/gap prop (resolves through --appkit-space-*) instead of a literal gap-N/p-N/px-N/py-N/pt-N/pb-N className",
+    fix: "Pick the matching padding/gap preset key on Stack/Row/Grid/Section/Card/Div, or a arbitrary-value class referencing var(--appkit-space-N) if no preset fits",
+    baselineDrift: true,
+  },
+  {
+    id: "RAW_TEXT_SIZE_UTILITY",
+    re: /\btext-(?:2xs|xs|sm|base|lg|xl|2xl|3xl|4xl|5xl)\b/,
+    message: "Raw Tailwind text-size utility bypasses theme tokens. Use the size/smSize/mdSize/lgSize/xlSize prop on <Text>/<Heading>/<Span> (resolves through --appkit-text-*) instead of a literal text-N className",
+    fix: "Pick the matching size prop on <Text>/<Heading>/<Span>, or text-[length:var(--appkit-text-N)] if no primitive is in play",
+    baselineDrift: true,
+  },
   // RAW_MEDIA_URL is covered by `audit-firestore-storage-urls.mjs` (strict-zero).
   // RAW_BUTTON is owned by `audit-typography.mjs` (RAW_BUTTON rule there).
   // RAW_INPUT/SELECT/TEXTAREA/FORM are owned by `audit-raw-form-input.mjs`.
@@ -281,6 +304,15 @@ const BASELINES = {
   RAW_LABEL: 0,
   RAW_ANCHOR: 0,
   RAW_MEDIA_EMBED: 0,
+  // RAW_SPACING_UTILITY / RAW_TEXT_SIZE_UTILITY baselines = current count of
+  // raw named Tailwind spacing/text-size step classNames across src/ +
+  // appkit/src/, locked 2026-08-09 when --appkit-space-*/--appkit-text-*
+  // became theme-editable (padding/gap/size props already resolve through
+  // them). Drive each to 0 in the consumer sweep — the audit lets you
+  // tighten the number every time the count drops; a fresh scan any time
+  // shows exactly which files still need conversion.
+  RAW_SPACING_UTILITY: 645,
+  RAW_TEXT_SIZE_UTILITY: 174,
 };
 
 const hardBlocking = violations.filter((v) => !v.baselineDrift);
