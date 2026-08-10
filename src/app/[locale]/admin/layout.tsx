@@ -8,6 +8,7 @@ import { isAdminUser, isEmployeeUser } from "@mohasinac/appkit";
 import { ADMIN_NAV_GROUPS } from "@/constants";
 import { ROUTES } from "@/constants";
 import { getFlag } from "@/lib/features";
+import { AdminCommandPaletteMount } from "./AdminCommandPaletteMount";
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const user = await getServerSessionUser();
@@ -77,6 +78,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
   return (
     <DashboardLayoutClient variant="admin" groups={groups} permissions={permissions}>
+      <AdminCommandPaletteMount groups={groups.map((g) => ({ title: g.title, items: g.items.map((item) => ({ href: item.href, label: item.label })) }))} />
       <Suspense>{children}</Suspense>
     </DashboardLayoutClient>
   );

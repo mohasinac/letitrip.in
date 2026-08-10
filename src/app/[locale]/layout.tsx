@@ -71,6 +71,9 @@ export default async function Layout({ children, params }: Props) {
   // siteSettings.theme drives the registry-aware <ThemeProvider> mounted
   // inside LayoutShellClient (built-ins + admin records + default ids).
   const siteSettingsTheme = siteSettings?.theme;
+  // siteSettings.background drives AppLayoutShell's lightBackground/darkBackground
+  // props (BackgroundRenderer) — admin-configured via Site Settings → Appearance.
+  const siteSettingsBackground = siteSettings?.background;
 
   // P-1: feature flags control which public nav items are visible.
   const navFeatureFlags = {
@@ -100,7 +103,7 @@ export default async function Layout({ children, params }: Props) {
             <BottomActionsProvider>
               <DashboardNavProvider>
                 <LayoutClient>
-                  <LayoutShellClient seedPanelEnabled={seedPanelEnabled} siteLogoUrl={siteLogoUrl} siteSettingsTheme={siteSettingsTheme} navFeatureFlags={navFeatureFlags}><Suspense>{children}</Suspense></LayoutShellClient>
+                  <LayoutShellClient seedPanelEnabled={seedPanelEnabled} siteLogoUrl={siteLogoUrl} siteSettingsTheme={siteSettingsTheme} siteSettingsBackground={siteSettingsBackground} navFeatureFlags={navFeatureFlags}><Suspense>{children}</Suspense></LayoutShellClient>
                 </LayoutClient>
               </DashboardNavProvider>
             </BottomActionsProvider>

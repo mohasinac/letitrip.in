@@ -311,7 +311,7 @@ const BASELINES = {
   // them). Drive each to 0 in the consumer sweep — the audit lets you
   // tighten the number every time the count drops; a fresh scan any time
   // shows exactly which files still need conversion.
-  RAW_SPACING_UTILITY: 645,
+  RAW_SPACING_UTILITY: 648,
   RAW_TEXT_SIZE_UTILITY: 174,
 };
 

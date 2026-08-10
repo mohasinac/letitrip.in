@@ -110,6 +110,16 @@ const RULES = [
       "Inline color / backgroundColor / borderColor in style={{ … }} (use a primitive `color` / `surface` / `tone` variant; add `// audit-inline-style-ok: <reason>` for legitimate dynamic colour pickers)",
     regex: /style\s*=\s*\{\{[^}]*\b(?:color|backgroundColor|borderColor)\s*:/,
   },
+  {
+    // 2026-08-09 theme-system background phase: every background (page shell,
+    // dashboard sidebar, homepage Section) now goes through `<BackgroundRenderer>`
+    // or `<Section background={…}>` — a raw `style={{ backgroundImage: … }}`
+    // bypasses the admin-configurable background + overlay system entirely.
+    id: "RAW_BACKGROUND_IMAGE",
+    label:
+      "Inline backgroundImage in style={{ … }} (use <Section background={{ type: \"image\", value }}> or <BackgroundRenderer>; add `// audit-inline-style-ok: <reason>` for legitimate one-off cases)",
+    regex: /style\s*=\s*\{\{[^}]*\bbackgroundImage\s*:/,
+  },
 ];
 
 function walkFiles(dir) {

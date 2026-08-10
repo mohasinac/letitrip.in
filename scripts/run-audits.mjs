@@ -38,6 +38,7 @@ const AUDITS = [
   { name: "hex-tokens",                      script: "scripts/audit-hex-tokens.mjs", supportsFix: true },
   { name: "config-factories",                script: "scripts/audit-config-factories.mjs" },
   { name: "html-wrappers",                   script: "scripts/audit-html-wrappers.mjs" },
+  { name: "bulk-action-registry",            script: "scripts/audit-bulk-action-registry.mjs" },
   { name: "code-quality",                    script: "scripts/audit-code-quality.mjs" },
   { name: "bom",                             script: "scripts/audit-bom.mjs" },
   { name: "suspense-boundaries",             script: "scripts/audit-suspense-boundaries.mjs" },

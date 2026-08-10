@@ -104,6 +104,7 @@ export default function LayoutShellClient({
   seedPanelEnabled = true,
   siteLogoUrl,
   siteSettingsTheme,
+  siteSettingsBackground,
   navFeatureFlags,
 }: {
   children: ReactNode;
@@ -115,6 +116,11 @@ export default function LayoutShellClient({
    * built-ins and the active default is picked by user mode.
    */
   siteSettingsTheme?: SiteSettingsThemeInput;
+  /** Live `siteSettings.background` document — passed through to `AppLayoutShell`'s `lightBackground`/`darkBackground` props. */
+  siteSettingsBackground?: {
+    light?: { type: "color" | "image" | "gradient" | "video"; value: string; overlay?: { enabled?: boolean; color?: string; opacity?: number } };
+    dark?: { type: "color" | "image" | "gradient" | "video"; value: string; overlay?: { enabled?: boolean; color?: string; opacity?: number } };
+  };
   /** P-1 feature flags — controls which public nav items are rendered. */
   navFeatureFlags?: {
     auctions?: boolean;
@@ -310,6 +316,8 @@ export default function LayoutShellClient({
       }}
       footer={footer}
       contentClassName={isDashboard ? "w-full" : undefined}
+      {...(siteSettingsBackground?.light?.value ? { lightBackground: siteSettingsBackground.light } : {})}
+      {...(siteSettingsBackground?.dark?.value ? { darkBackground: siteSettingsBackground.dark } : {})}
       searchSlotRenderer={(onClose) => (
         <Div border="default" className="border-b" surface="default">
           <Row paddingX="x-page" className="mx-auto w-full max-w-screen-xl" padding="y-xs" align="center" gap="sm">
