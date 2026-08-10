@@ -37,7 +37,7 @@
   "extensions.autoCheckUpdates": false,
 
   // Disable breadcrumbs
-  "breadcrumbs.enabled": false,
+  "breadcrumbs.enabled": true,
 
   // Reduce git operations
   "git.autorefresh": false,
