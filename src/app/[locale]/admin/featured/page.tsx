@@ -10,6 +10,8 @@ import {
   DataListingView,
   ADMIN_ENDPOINTS,
   sortBy,
+  ADMIN_BULK_ACTIONS,
+  ROW_ACTION_META,
 } from "@mohasinac/appkit/client";
 import type {
   AdminListingScaffoldRow,
@@ -69,19 +71,19 @@ export default function Page() {
       label: "+ Add Product",
       onClick: () => router.push(String(ROUTES.ADMIN.PRODUCTS_NEW)),
     },
-    buildBulkActions: (selection): BulkActionItem[] => [
-      {
-        id: "remove-featured",
-        label: "Remove from Featured",
-        variant: "danger",
+    // Rule #7: bulk-action array sourced from the ADMIN_BULK_ACTIONS preset.
+    buildBulkActions: (selection): BulkActionItem[] =>
+      ADMIN_BULK_ACTIONS.featured.map((id) => ({
+        id,
+        label: `${ROW_ACTION_META[id].label} from Featured`,
+        variant: "danger" as const,
         onClick: async () => {
           await Promise.all(
-            selection.selectedIds.map((id) => removeFromFeaturedMutation.mutateAsync(id)),
+            selection.selectedIds.map((sid) => removeFromFeaturedMutation.mutateAsync(sid)),
           );
           selection.clearSelection();
         },
-      },
-    ],
+      })),
   };
 
   return <DataListingView config={config} />;

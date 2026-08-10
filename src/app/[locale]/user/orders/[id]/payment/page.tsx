@@ -103,7 +103,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
     return (
       <Stack className={CONTAINER_CLS} gap="md">
         <Text color="muted" size="sm">This order does not require manual payment upload.</Text>
-        <Link href={String(ROUTES.USER.ORDER_DETAIL(id))} className="text-sm font-medium text-primary hover:underline">
+        <Link href={String(ROUTES.USER.ORDER_DETAIL(id))} className="text-[length:var(--appkit-text-sm)] font-medium text-primary hover:underline">
           ← Back to order
         </Link>
       </Stack>
@@ -116,7 +116,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
         <Stack padding="md" className="border border-success/20" surface="success-surface" gap="3" rounded="xl">
           <Text className="text-success" size="sm" weight="medium">Payment already verified for this order.</Text>
         </Stack>
-        <Link href={String(ROUTES.USER.ORDER_DETAIL(id))} className="text-sm font-medium text-primary hover:underline">
+        <Link href={String(ROUTES.USER.ORDER_DETAIL(id))} className="text-[length:var(--appkit-text-sm)] font-medium text-primary hover:underline">
           ← Back to order
         </Link>
       </Stack>
@@ -185,7 +185,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                 </Button>
                 <Link
                   href={String(ROUTES.USER.ORDER_DETAIL(id))}
-                  className="rounded-xl border border-[var(--appkit-color-border)] px-4 py-2 text-sm font-medium text-[var(--appkit-color-text-muted)] hover:bg-zinc-50 hover:bg-[var(--appkit-color-surface-elevated)] transition-colors"
+                  className="rounded-xl border border-[var(--appkit-color-border)] px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-medium text-[var(--appkit-color-text-muted)] hover:bg-zinc-50 hover:bg-[var(--appkit-color-surface-elevated)] transition-colors"
                 >
                   Cancel
                 </Link>

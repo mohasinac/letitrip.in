@@ -3,8 +3,8 @@ import { Stack } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
 const __P = {
-  p4: "p-4",
-  p6: "p-6",
+  p4: "p-[var(--appkit-space-4)]",
+  p6: "p-[var(--appkit-space-6)]",
 } as const;
 
 export default function Page() {

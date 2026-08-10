@@ -25,7 +25,7 @@ function renderInvoiceActionBar(id: string) {
     >
       <Link
         href={String(ROUTES.USER.ORDER_DETAIL(id))}
-        className="text-sm text-[var(--appkit-color-text-muted)] hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+        className="text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text-muted)] hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
       >
         ← Back to order
       </Link>
@@ -87,7 +87,7 @@ function renderInvoiceItemsTable(order: OrderData) {
             <Th
               key={h}
               className={[
-                "py-2 text-xs font-semibold uppercase tracking-wider text-[var(--appkit-color-text-faint)] print:text-[var(--appkit-color-text-muted)]",
+                "py-[var(--appkit-space-2)] text-[length:var(--appkit-text-xs)] font-semibold uppercase tracking-wider text-[var(--appkit-color-text-faint)] print:text-[var(--appkit-color-text-muted)]",
                 i === 0 ? "text-left" : i === 1 ? "text-center" : "text-right",
               ].join(" ")}
             >

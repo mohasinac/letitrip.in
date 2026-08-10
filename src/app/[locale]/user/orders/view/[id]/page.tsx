@@ -23,7 +23,7 @@ import {
 } from "@mohasinac/appkit";
 import { getOrderDigitalCode } from "@/lib/api/user-client";
 
-const CLS_BUNDLE_BADGE = "inline-flex items-center rounded-full bg-fuchsia-100 dark:bg-fuchsia-900/30 px-2 py-0.5 text-[10px] font-semibold text-fuchsia-700 dark:text-fuchsia-300";
+const CLS_BUNDLE_BADGE = "inline-flex items-center rounded-full bg-fuchsia-100 dark:bg-fuchsia-900/30 px-[var(--appkit-space-2)] py-[var(--appkit-space-0-5)] text-[10px] font-semibold text-fuchsia-700 dark:text-fuchsia-300";
 
 const STATUS_COLORS: Record<string, string> = {
   pending:          "bg-warning-surface text-warning",
@@ -164,7 +164,7 @@ function renderBack() {
   return (
     <Link
       href={String(ROUTES.USER.ORDERS)}
-      className="inline-flex items-center gap-1.5 text-sm text-[var(--appkit-color-text-muted)] hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors mb-2"
+      className="inline-flex items-center gap-[var(--appkit-space-1-5)] text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text-muted)] hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors mb-2"
     >
       ← My Orders
     </Link>

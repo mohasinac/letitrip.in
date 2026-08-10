@@ -40,7 +40,7 @@ import {
 import { Link } from "@/i18n/navigation";
 
 const __P = {
-  p5: "p-5",
+  p5: "p-[var(--appkit-space-5)]",
 } as const;
 
 const __O = {
@@ -72,7 +72,7 @@ function StatCard({ label, value, href }: { label: string; value: string | numbe
   return (
     <Link
       href={href}
-      className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3 shadow-sm hover:border-[var(--appkit-color-primary)] hover:shadow-md transition-colors"
+      className="rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-4)] py-[var(--appkit-space-3)] shadow-sm hover:border-[var(--appkit-color-primary)] hover:shadow-md transition-colors"
     >
       <Div textSize="2xl" textWeight="bold" className="text-[var(--appkit-color-text)] leading-tight">{value}</Div>
       <Div textSize="xs" className="text-[var(--appkit-color-text-muted)] mt-0.5">{label}</Div>
@@ -144,7 +144,7 @@ export default function Page() {
                 onClick={() => fileRef.current?.click()}
                 disabled={uploading}
                 aria-label="Change profile photo"
-                className="group relative h-16 w-16 flex-shrink-0 overflow-hidden ring-2 ring-[var(--appkit-color-border)] p-0 min-h-0 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
+                className="group relative h-16 w-16 flex-shrink-0 overflow-hidden ring-2 ring-[var(--appkit-color-border)] p-[var(--appkit-space-0)] min-h-0 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
               >
                 {user.photoURL ? (
                   // eslint-disable-next-line lir/no-raw-media-elements, @next/next/no-img-element
@@ -156,7 +156,7 @@ export default function Page() {
                 ) : (
                   <DynamicBgDiv
                     background={BRAND_GRAD}
-                    className="h-full w-full flex items-center justify-center text-white font-bold text-xl"
+                    className="h-full w-full flex items-center justify-center text-white font-bold text-[length:var(--appkit-text-xl)]"
                   >
                     {(user.displayName ?? user.email ?? "U")[0].toUpperCase()}
                   </DynamicBgDiv>
@@ -187,7 +187,7 @@ export default function Page() {
                 )}
                 <Link
                   href={String(ROUTES.USER.PROFILE)}
-                  className="text-xs font-medium text-[var(--appkit-color-primary)] hover:underline"
+                  className="text-[length:var(--appkit-text-xs)] font-medium text-[var(--appkit-color-primary)] hover:underline"
                 >
                   View / edit profile →
                 </Link>
@@ -210,7 +210,7 @@ export default function Page() {
             <Link
               key={label}
               href={String(href)}
-              className="group flex items-center gap-3 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3.5 text-sm font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
+              className="group flex items-center gap-[var(--appkit-space-3)] rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-4)] py-[var(--appkit-space-3-5)] text-[length:var(--appkit-text-sm)] font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
             >
               <DynamicBgDiv
                 background={BRAND_GRAD}
@@ -232,7 +232,7 @@ export default function Page() {
               </Span>
               <Link
                 href={String(ROUTES.USER.ORDERS)}
-                className="text-xs text-[var(--appkit-color-primary)] hover:underline"
+                className="text-[length:var(--appkit-text-xs)] text-[var(--appkit-color-primary)] hover:underline"
               >
                 View all →
               </Link>

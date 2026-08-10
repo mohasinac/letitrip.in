@@ -21,8 +21,8 @@ function fmt(paise: number, currency = "INR"): string {
 
 export const revalidate = 300;
 
-const CLS_AUCTION_PILL = "rounded-full bg-warning-surface text-warning px-1.5 py-0.5 text-[10px] font-semibold";
-const CLS_PREORDER_PILL = "rounded-full bg-indigo-100 dark:bg-indigo-900/30 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-700 dark:text-indigo-300";
+const CLS_AUCTION_PILL = "rounded-full bg-warning-surface text-warning px-[var(--appkit-space-1-5)] py-[var(--appkit-space-0-5)] text-[10px] font-semibold";
+const CLS_PREORDER_PILL = "rounded-full bg-indigo-100 dark:bg-indigo-900/30 px-[var(--appkit-space-1-5)] py-[var(--appkit-space-0-5)] text-[10px] font-semibold text-indigo-700 dark:text-indigo-300";
 
 interface Props {
   params: Promise<{ slug: string; locale: string }>;
@@ -110,7 +110,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
             </Text>
             <Link
               href={String(ROUTES.PUBLIC.PRODUCTS)}
-              className="mt-5 rounded-lg bg-[var(--appkit-color-primary)] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+              className="mt-5 rounded-lg bg-[var(--appkit-color-primary)] px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-semibold text-white hover:opacity-90 transition-opacity"
             >
               Browse all products
             </Link>

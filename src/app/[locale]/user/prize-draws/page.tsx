@@ -132,7 +132,7 @@ export default function UserPrizeDrawsPage() {
           <Text variant="secondary">You haven&apos;t entered any prize draws yet.</Text>
           <Link
             href={String(ROUTES.PUBLIC.PRIZE_DRAWS)}
-            className="mt-3 inline-block text-sm text-[var(--appkit-color-primary)] hover:underline"
+            className="mt-3 inline-block text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-primary)] hover:underline"
           >
             Browse prize draws
           </Link>
@@ -160,7 +160,7 @@ export default function UserPrizeDrawsPage() {
                   <Stack className="min-w-0" gap="xs">
                     <Link
                       href={String(ROUTES.USER.ORDER_DETAIL(order.id))}
-                      className="text-sm font-semibold text-[var(--appkit-color-text)] hover:underline"
+                      className="text-[length:var(--appkit-text-sm)] font-semibold text-[var(--appkit-color-text)] hover:underline"
                     >
                       Order #{order.id}
                     </Link>
@@ -175,7 +175,7 @@ export default function UserPrizeDrawsPage() {
                     <Row key={idx} justify="between">
                       <Link
                         href={String(ROUTES.PUBLIC.PRIZE_DRAW_DETAIL(item.productId))}
-                        className="text-sm text-[var(--appkit-color-text)] hover:underline line-clamp-1"
+                        className="text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text)] hover:underline line-clamp-1"
                       >
                         {item.productTitle}
                         {item.quantity > 1 ? ` — ${item.quantity} entries` : " — 1 entry"}

@@ -139,7 +139,7 @@ export default function UserPreOrdersPage() {
           <Text variant="secondary">You haven&apos;t placed any pre-orders yet.</Text>
           <Link
             href={String(ROUTES.PUBLIC.PRE_ORDERS)}
-            className="mt-3 inline-block text-sm text-[var(--appkit-color-primary)] hover:underline"
+            className="mt-3 inline-block text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-primary)] hover:underline"
           >
             Browse pre-orders
           </Link>
@@ -167,7 +167,7 @@ export default function UserPreOrdersPage() {
                   <Stack className="min-w-0" gap="xs">
                     <Link
                       href={String(ROUTES.USER.ORDER_DETAIL(order.id))}
-                      className="text-sm font-semibold text-[var(--appkit-color-text)] hover:underline"
+                      className="text-[length:var(--appkit-text-sm)] font-semibold text-[var(--appkit-color-text)] hover:underline"
                     >
                       Order #{order.id}
                     </Link>

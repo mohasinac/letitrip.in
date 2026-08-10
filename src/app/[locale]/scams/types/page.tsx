@@ -152,7 +152,7 @@ export default function Page() {
                 <Text variant="secondary" size="sm">·</Text>
                 <Text variant="secondary" size="sm">{SCAM_CATEGORIES.length} categories</Text>
                 <Text variant="secondary" size="sm">·</Text>
-                <Link href={registryHref} className="text-sm text-[color:var(--appkit-color-primary,theme(colors.blue.600))] hover:underline">View verified scammer profiles →</Link>
+                <Link href={registryHref} className="text-[length:var(--appkit-text-sm)] text-[color:var(--appkit-color-primary,theme(colors.blue.600))] hover:underline">View verified scammer profiles →</Link>
               </Row>
             </Stack>
           </Container>

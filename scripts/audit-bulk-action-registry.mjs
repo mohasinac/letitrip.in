@@ -55,12 +55,13 @@ for (const dir of SCAN_DIRS) {
   }
 }
 
-// Baseline = current count of files with a hand-built bulk-action array and
-// no registry preset reference, locked 2026-08-09 after AdminCouponsView.tsx
-// was fixed (the reference conversion pattern). 25 other admin/seller list
-// views still hand-build their bulk-action arrays — drive this to 0 in the
-// consumer sweep; rerun this script any time to see exactly which remain.
-const BASELINE = 25;
+// Strict-zero, locked 2026-08-11. All 25 admin/seller/consumer views that
+// hand-built their bulk-action arrays were converted to the registry
+// preset pattern the same day the rule was added (2 new ROW_ACTION_IDs —
+// MANAGE added to the stores/users presets, REMOVE added for the
+// deals/featured curation-list actions — were needed along the way; see
+// action-defs.ts). Any new hand-built bulk-action array is a regression.
+const BASELINE = 0;
 
 if (violations.length <= BASELINE) {
   console.log(`audit-bulk-action-registry: clean ✓ (${violations.length}/${BASELINE})`);

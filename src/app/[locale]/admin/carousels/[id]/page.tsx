@@ -25,7 +25,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
           <Row className="mb-6" gap="sm">
             <Link
               href={String(ROUTES.ADMIN.CAROUSELS)}
-              className="text-sm text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text)]"
+              className="text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text)]"
             >
               ← Carousels
             </Link>
@@ -62,7 +62,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
         <Row className="mb-2" gap="sm">
           <Link
             href={String(ROUTES.ADMIN.CAROUSELS)}
-            className="text-sm text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text-muted)]"
+            className="text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text-muted)]"
           >
             ← Carousels
           </Link>
@@ -85,7 +85,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
           <Link
             href={atMax ? "#" : String(ROUTES.ADMIN.CAROUSEL_NEW)}
             className={[
-              "rounded-lg px-4 py-2 text-sm font-medium",
+              "rounded-lg px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-medium",
               atMax
                 ? "cursor-not-allowed bg-zinc-200 text-zinc-400 bg-[var(--appkit-color-border)] text-[var(--appkit-color-text)]0"
                 : "bg-[var(--appkit-color-primary)] text-white hover:opacity-90",

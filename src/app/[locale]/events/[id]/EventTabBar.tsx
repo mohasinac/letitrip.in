@@ -15,7 +15,7 @@ export function EventTabBar({ tabs }: Props) {
   return (
     <div
       role="tablist"
-      className="flex gap-2 border-b border-[var(--appkit-color-border)] overflow-x-auto"
+      className="flex gap-[var(--appkit-space-2)] border-b border-[var(--appkit-color-border)] overflow-x-auto"
     >
       {tabs.map((tab) => {
         const isActive =
@@ -30,7 +30,7 @@ export function EventTabBar({ tabs }: Props) {
             role="tab"
             aria-selected={isActive}
             scroll={false}
-            className={`px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 -mb-px transition-colors ${
+            className={`px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-medium whitespace-nowrap border-b-2 -mb-px transition-colors ${
  isActive
  ? "border-primary text-primary"
  : "border-transparent text-[var(--appkit-color-text-muted)] hover:text-zinc-800 hover:text-[var(--appkit-color-text-muted)]"

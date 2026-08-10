@@ -37,7 +37,7 @@ export function FooterNewsletterSlot() {
   return (
     <Form
       onSubmit={(e) => e.preventDefault()}
-      className="flex flex-col gap-2 w-full"
+      className="flex flex-col gap-[var(--appkit-space-2)] w-full"
     >
       <Text size="xs" weight="medium" color="muted">
         Get deals &amp; drops in your inbox

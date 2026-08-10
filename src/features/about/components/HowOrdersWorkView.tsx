@@ -6,9 +6,9 @@ import { getTranslations } from "next-intl/server";
 import { PackageSearch, MapPinned, FileText, XCircle } from "lucide-react";
 
 const __P = {
-  p4: "p-4",
-  p5: "p-5",
-  p8: "p-8",
+  p4: "p-[var(--appkit-space-4)]",
+  p5: "p-[var(--appkit-space-5)]",
+  p8: "p-[var(--appkit-space-8)]",
 } as const;
 
 const page = { container: PAGE_CONTAINER };

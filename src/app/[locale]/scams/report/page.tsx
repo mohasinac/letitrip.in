@@ -12,7 +12,7 @@ import { API_ROUTES } from "@/constants";
 const LOGIN_HREF =
   `${String(ROUTES.AUTH.LOGIN)}?redirect=${encodeURIComponent("/scams/report")}` as const;
 
-const CLS_INPUT = "w-full rounded-lg border border-[color:var(--appkit-color-border,theme(colors.zinc.200))] bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[color:var(--appkit-color-primary,theme(colors.blue.500))]/40";
+const CLS_INPUT = "w-full rounded-lg border border-[color:var(--appkit-color-border,theme(colors.zinc.200))] bg-transparent px-[var(--appkit-space-3)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] outline-none focus:ring-2 focus:ring-[color:var(--appkit-color-primary,theme(colors.blue.500))]/40";
 
 const PLATFORM_OPTIONS = Object.entries(SCAM_PLATFORM_LABELS).map(([value, label]) => ({
   value,
@@ -85,7 +85,7 @@ function TagInput({
             }
           }}
           placeholder={placeholder}
-          className="flex-1 rounded-lg border border-[color:var(--appkit-color-border,theme(colors.zinc.200))] bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[color:var(--appkit-color-primary,theme(colors.blue.500))]/40"
+          className="flex-1 rounded-lg border border-[color:var(--appkit-color-border,theme(colors.zinc.200))] bg-transparent px-[var(--appkit-space-3)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] outline-none focus:ring-2 focus:ring-[color:var(--appkit-color-primary,theme(colors.blue.500))]/40"
         />
         <Button
           type="button"
@@ -185,7 +185,7 @@ function WhatHappenedSection({
             <Label htmlFor="description" size="sm" weight="medium">
               What exactly happened? <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
             </Label>
-            <Textarea id="description" required minLength={100} rows={6} value={form.description} onChange={(e) => field("description")(e.target.value)} placeholder="Describe exactly what happened — dates, amounts promised, what you received, any communication details…" className="w-full resize-y rounded-lg border border-[color:var(--appkit-color-border,theme(colors.zinc.200))] bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[color:var(--appkit-color-primary,theme(colors.blue.500))]/40" />
+            <Textarea id="description" required minLength={100} rows={6} value={form.description} onChange={(e) => field("description")(e.target.value)} placeholder="Describe exactly what happened — dates, amounts promised, what you received, any communication details…" className="w-full resize-y rounded-lg border border-[color:var(--appkit-color-border,theme(colors.zinc.200))] bg-transparent px-[var(--appkit-space-3)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] outline-none focus:ring-2 focus:ring-[color:var(--appkit-color-primary,theme(colors.blue.500))]/40" />
             <Text variant="secondary" size="xs" align="end">{form.description.length} / 5000 chars (min 100)</Text>
           </Stack>
         </Stack>
@@ -308,7 +308,7 @@ function ScamReportForm({ userId }: { userId: string }) {
     <Div className="mx-auto max-w-2xl">
       <Link
         href={String(ROUTES.PUBLIC.SCAMS)}
-        className="mb-6 inline-flex items-center gap-1.5 text-sm text-[color:var(--appkit-color-text-muted,theme(colors.zinc.500))] hover:text-[color:var(--appkit-color-text,theme(colors.zinc.700))]"
+        className="mb-6 inline-flex items-center gap-[var(--appkit-space-1-5)] text-[length:var(--appkit-text-sm)] text-[color:var(--appkit-color-text-muted,theme(colors.zinc.500))] hover:text-[color:var(--appkit-color-text,theme(colors.zinc.700))]"
       >
         <ChevronLeft className="h-4 w-4" /> Back to Scam Registry
       </Link>

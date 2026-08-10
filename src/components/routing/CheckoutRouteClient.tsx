@@ -46,8 +46,8 @@ import { applyCartCoupon, removeCartCoupon } from "@/lib/api/cart-client";
 import { applyCheckoutBypass } from "@/lib/api/admin-client";
 
 const __P = {
-  p3: "p-3",
-  p6: "p-6",
+  p3: "p-[var(--appkit-space-3)]",
+  p6: "p-[var(--appkit-space-6)]",
 } as const;
 
 const CK = UI_LABELS.CHECKOUT;
@@ -122,10 +122,10 @@ type CheckoutStep = "address" | "otp-consent" | "otp" | "payment" | "processing"
 
 // --- Shared class strings ----------------------------------------------------
 
-const STEP_CARD_CLS = "rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-6";
-const STEP_SUBLABEL_CLS = "text-sm text-[var(--appkit-color-text-muted)]";
-const CLS_APPLIED_COUPON_ROW = "rounded-lg bg-success-surface border border-success px-3 py-2";
-const PRIMARY_BTN_CLS = "w-full rounded-lg bg-[var(--appkit-color-primary)] px-4 py-3 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50";
+const STEP_CARD_CLS = "rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-[var(--appkit-space-6)]";
+const STEP_SUBLABEL_CLS = "text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text-muted)]";
+const CLS_APPLIED_COUPON_ROW = "rounded-lg bg-success-surface border border-success px-[var(--appkit-space-3)] py-[var(--appkit-space-2)]";
+const PRIMARY_BTN_CLS = "w-full rounded-lg bg-[var(--appkit-color-primary)] px-[var(--appkit-space-4)] py-[var(--appkit-space-3)] text-[length:var(--appkit-text-sm)] font-semibold text-white hover:opacity-90 disabled:opacity-50";
 
 /** EMI amounts from computeEmiSchedule are in paise — format as INR rupees. */
 function formatEmiRupees(paise: number): string {
@@ -411,7 +411,7 @@ function renderOtpStep({
           placeholder={CK.OTP_PLACEHOLDER}
           value={otpCode}
           onChange={(e) => setOtpCode(e.target.value)}
-          className="tracking-widest text-center text-xl"
+          className="tracking-widest text-center text-[length:var(--appkit-text-xl)]"
         />
         {otpError && (
           <Text className="text-error" size="sm">{otpError}</Text>
@@ -630,7 +630,7 @@ function renderCouponSection({
           value={couponCode}
           onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
           onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
-          className="h-9 text-sm flex-1"
+          className="h-9 text-[length:var(--appkit-text-sm)] flex-1"
         />
         <Button
           type="button"

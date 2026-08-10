@@ -17,7 +17,7 @@ type SpinPrize = { id: string; label: string; weight: number; isActive: boolean;
 
 // Shared className for the two info-row tiles rendered in the post-submit
 // confirmation panel (leaderboard link + event-home link).
-const CLS_PARTICIPATE_INFO_ROW = "rounded-xl border border-[var(--appkit-color-border)] px-4 py-3 flex items-center justify-between gap-3";
+const CLS_PARTICIPATE_INFO_ROW = "rounded-xl border border-[var(--appkit-color-border)] px-[var(--appkit-space-4)] py-[var(--appkit-space-3)] flex items-center justify-between gap-[var(--appkit-space-3)]";
 
 type FormFieldType = "text" | "textarea" | "email" | "phone" | "number" | "select" | "multiselect" | "checkbox" | "radio" | "date" | "rating" | "file";
 
@@ -87,7 +87,7 @@ function renderLoginRequired() {
       </Text>
       <Link
         href={String(ROUTES.AUTH.LOGIN)}
-        className="inline-block rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary/90"
+        className="inline-block rounded-xl bg-primary px-[var(--appkit-space-6)] py-[var(--appkit-space-2-5)] text-[length:var(--appkit-text-sm)] font-semibold text-white hover:bg-primary/90"
       >
         Log In
       </Link>
@@ -251,7 +251,7 @@ function renderSuccessState({
           </Div>
           <Link
             href={String(ROUTES.PUBLIC.EVENT_LEADERBOARD?.(eventId) ?? ROUTES.PUBLIC.EVENT_DETAIL(eventId))}
-            className="text-sm font-semibold text-primary hover:underline shrink-0"
+            className="text-[length:var(--appkit-text-sm)] font-semibold text-primary hover:underline shrink-0"
           >
             View leaderboard →
           </Link>
@@ -263,7 +263,7 @@ function renderSuccessState({
         </Text>
         <Link
           href={String(ROUTES.PUBLIC.EVENT_DETAIL(eventId))}
-          className="text-sm font-semibold text-primary hover:underline shrink-0"
+          className="text-[length:var(--appkit-text-sm)] font-semibold text-primary hover:underline shrink-0"
         >
           Event home →
         </Link>
@@ -622,7 +622,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
             </Text>
             <Link
               href={String(ROUTES.PUBLIC.EVENT_LEADERBOARD?.(event.id) ?? ROUTES.PUBLIC.EVENT_DETAIL(event.id))}
-              className="text-sm font-semibold text-primary hover:underline shrink-0"
+              className="text-[length:var(--appkit-text-sm)] font-semibold text-primary hover:underline shrink-0"
             >
               View leaderboard →
             </Link>

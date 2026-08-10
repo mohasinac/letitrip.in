@@ -38,17 +38,17 @@ const TYPE_LABEL: Record<GuestHistoryItem["productType"], string> = {
 };
 
 const TAB_BTN_BASE =
-  "rounded-full px-4 py-1.5 text-sm font-medium transition-colors";
+  "rounded-full px-[var(--appkit-space-4)] py-[var(--appkit-space-1-5)] text-[length:var(--appkit-text-sm)] font-medium transition-colors";
 const TAB_BTN_ACTIVE = "bg-primary text-white";
 const TAB_BTN_IDLE =
   "bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text-muted)] hover:bg-zinc-200 bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text-muted)] dark:hover:bg-slate-700";
 
 const CARD =
-  "rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-3 shadow-sm";
+  "rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-[var(--appkit-space-3)] shadow-sm";
 const TYPE_CHIP =
-  "rounded-full bg-[var(--appkit-color-border-subtle)] px-2 py-0.5 capitalize text-[var(--appkit-color-text-muted)]";
+  "rounded-full bg-[var(--appkit-color-border-subtle)] px-[var(--appkit-space-2)] py-[var(--appkit-space-0-5)] capitalize text-[var(--appkit-color-text-muted)]";
 const REMOVE_BTN =
-  "shrink-0 rounded-full p-2 text-[var(--appkit-color-text-muted)] hover:bg-error-surface hover:text-error";
+  "shrink-0 rounded-full p-[var(--appkit-space-2)] text-[var(--appkit-color-text-muted)] hover:bg-error-surface hover:text-error";
 
 function relativeTime(iso: string): string {
   const t = new Date(iso).getTime();
@@ -94,7 +94,7 @@ function HistoryRow({ item, onRemove }: HistoryRowProps) {
       <Div className="min-w-0 flex-1">
         <Link
           href={href}
-          className="block line-clamp-1 text-sm font-semibold text-[var(--appkit-color-text)] hover:underline"
+          className="block line-clamp-1 text-[length:var(--appkit-text-sm)] font-semibold text-[var(--appkit-color-text)] hover:underline"
         >
           {title}
         </Link>

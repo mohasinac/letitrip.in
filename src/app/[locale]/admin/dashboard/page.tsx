@@ -8,7 +8,7 @@ import { fetchAdminResource, getCheckoutBypassStatus, setFeatureFlags } from "@/
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const __P = {
-  p5: "p-5",
+  p5: "p-[var(--appkit-space-5)]",
 } as const;
 
 
@@ -89,7 +89,7 @@ function StatCard({ label, value, href }: { label: string; value: number | null;
   return (
     <Link
       href={href}
-      className="flex flex-col gap-1 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3.5 shadow-sm hover:border-[var(--appkit-color-primary)] transition-colors"
+      className="flex flex-col gap-[var(--appkit-space-1)] rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-4)] py-[var(--appkit-space-3-5)] shadow-sm hover:border-[var(--appkit-color-primary)] transition-colors"
     >
       <Span size="xs" className="text-[var(--appkit-color-text-muted)]">{label}</Span>
       <Span weight="bold" className="text-[var(--appkit-color-text)]" size="2xl">
@@ -217,7 +217,7 @@ export default function Page() {
               <Link
                 key={label}
                 href={String(href)}
-                className="group flex items-center gap-3 rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-3.5 text-sm font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
+                className="group flex items-center gap-[var(--appkit-space-3)] rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-4)] py-[var(--appkit-space-3-5)] text-[length:var(--appkit-text-sm)] font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
               >
                 <DynamicBgDiv
                   background={BRAND_GRAD}
@@ -270,7 +270,7 @@ export default function Page() {
               </>
               <Link
                 href={ROUTES.DEMO.SEED}
-                className="flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-lg bg-[var(--appkit-color-border-subtle)] text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-primary)] hover:text-white transition-colors"
+                className="flex-shrink-0 text-[length:var(--appkit-text-xs)] font-medium px-[var(--appkit-space-3)] py-[var(--appkit-space-1-5)] rounded-lg bg-[var(--appkit-color-border-subtle)] text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-primary)] hover:text-white transition-colors"
               >
                 Open Seed Panel →
               </Link>
@@ -283,11 +283,11 @@ export default function Page() {
           <Div className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden}`} rounded="xl">
             <Row className="border-b border-[var(--appkit-color-border-subtle)]" padding="md" align="center" justify="between">
               <Text className="text-[var(--appkit-color-text)]" size="sm" weight="semibold">Recent Orders</Text>
-              <Link href={String(ROUTES.ADMIN.ORDERS)} className="text-xs text-[var(--appkit-color-primary)] hover:underline">View all →</Link>
+              <Link href={String(ROUTES.ADMIN.ORDERS)} className="text-[length:var(--appkit-text-xs)] text-[var(--appkit-color-primary)] hover:underline">View all →</Link>
             </Row>
             <Div className="divide-y divide-[var(--appkit-color-border-subtle)]">
               {recentOrders.map((order) => (
-                <Link key={order.id} href={`${String(ROUTES.ADMIN.ORDERS)}/${order.id}`} className="flex items-center justify-between px-4 py-2.5 hover:bg-[var(--appkit-color-surface-hover)] transition-colors">
+                <Link key={order.id} href={`${String(ROUTES.ADMIN.ORDERS)}/${order.id}`} className="flex items-center justify-between px-[var(--appkit-space-4)] py-[var(--appkit-space-2-5)] hover:bg-[var(--appkit-color-surface-hover)] transition-colors">
                   <Text className="font-mono text-[var(--appkit-color-text-muted)]" size="xs">{order.id}</Text>
                   <Row align="center" gap="3">
                     <Text className="text-[var(--appkit-color-text-muted)]" size="xs">{order.status}</Text>

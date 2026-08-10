@@ -8,7 +8,7 @@ import { cancelOrderAction } from "@/actions/order.actions";
 import { Heading, Span, Text } from "@mohasinac/appkit";
 
 const __P = {
-  p5: "p-5",
+  p5: "p-[var(--appkit-space-5)]",
 } as const;
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
@@ -71,7 +71,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
           </Text>
           <Link
             href={String(ROUTES.USER.ORDER_DETAIL(id))}
-            className="inline-block text-sm font-medium text-primary hover:underline"
+            className="inline-block text-[length:var(--appkit-text-sm)] font-medium text-primary hover:underline"
           >
             ← Back to order
           </Link>
@@ -93,7 +93,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
               rows={4}
               maxLength={500}
               placeholder="Tell us why you are cancelling this order…"
-              className="w-full rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+              className="w-full rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-3)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
             />
             <Text size="xs" color="faint" align="end">{reason.length}/500</Text>
           </Stack>
@@ -110,7 +110,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
             </Button>
             <Link
               href={String(ROUTES.USER.ORDER_DETAIL(id))}
-              className="rounded-xl border border-[var(--appkit-color-border)] px-4 py-2 text-sm font-medium text-[var(--appkit-color-text-muted)] hover:bg-zinc-50 hover:bg-[var(--appkit-color-surface-elevated)] transition-colors"
+              className="rounded-xl border border-[var(--appkit-color-border)] px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-medium text-[var(--appkit-color-text-muted)] hover:bg-zinc-50 hover:bg-[var(--appkit-color-surface-elevated)] transition-colors"
             >
               Keep Order
             </Link>

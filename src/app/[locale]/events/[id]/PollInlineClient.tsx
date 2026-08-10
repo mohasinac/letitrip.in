@@ -46,7 +46,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
         </Text>
         <Link
           href={String(ROUTES.AUTH.LOGIN)}
-          className="inline-block rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-600"
+          className="inline-block rounded-xl bg-primary px-[var(--appkit-space-5)] py-[var(--appkit-space-2-5)] text-[length:var(--appkit-text-sm)] font-semibold text-white hover:bg-primary-600"
         >
           Log In to Vote
         </Link>
@@ -144,7 +144,7 @@ export function PollInlineClient({ eventId, pollConfig, isActive }: Props) {
           onChange={(e) => setComment(e.target.value)}
           placeholder="Add a comment (optional)"
           rows={2}
-          className="w-full rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm text-[var(--appkit-color-text-muted)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-3)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text-muted)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary"
         />
       )}
       {error && <Text className="text-error" size="sm">{error}</Text>}

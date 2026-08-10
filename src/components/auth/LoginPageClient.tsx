@@ -51,7 +51,7 @@ export function LoginPageClient() {
       renderForgotPasswordLink={() => (
         <Link
           href={String(ROUTES.AUTH.FORGOT_PASSWORD)}
-          className="text-sm text-primary hover:text-primary/80 transition-colors"
+          className="text-[length:var(--appkit-text-sm)] text-primary hover:text-primary/80 transition-colors"
         >
           Forgot password?
         </Link>

@@ -2,7 +2,7 @@
 import { Button, Div, Form, Input, SearchView, Text } from "@mohasinac/appkit/client";
 
 const __P = {
-  p6: "p-6",
+  p6: "p-[var(--appkit-space-6)]",
 } as const;
 
 type Props = { locale: string; query: string };

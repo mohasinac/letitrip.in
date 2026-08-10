@@ -8,7 +8,7 @@ import { Heading, ROUTES, Row, Text } from "@mohasinac/appkit";
 import { Div, Button, Form, Label, Input, Textarea, useApiMutation, apiClient } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
-const LBL_CLS = "block text-sm font-medium text-[var(--appkit-color-text-muted)] mb-1";
+const LBL_CLS = "block text-[length:var(--appkit-text-sm)] font-medium text-[var(--appkit-color-text-muted)] mb-1";
 
 export default function Page() {
   const router = useRouter();
@@ -88,7 +88,7 @@ export default function Page() {
             onChange={(e) => setName(e.target.value)}
             required
             maxLength={120}
-            className="w-full rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-2.5 text-sm text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
+            className="w-full rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-4)] py-[var(--appkit-space-2-5)] text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
           />
         </>
 
@@ -102,7 +102,7 @@ export default function Page() {
             onChange={(e) => setItemCode(e.target.value)}
             maxLength={40}
             placeholder="e.g. PSA 10, 108/120"
-            className="w-full rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-2.5 text-sm text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
+            className="w-full rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-4)] py-[var(--appkit-space-2-5)] text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
           />
         </>
 
@@ -115,7 +115,7 @@ export default function Page() {
             onChange={(e) => setDescription(e.target.value)}
             maxLength={500}
             rows={3}
-            className="w-full rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-4 py-2.5 text-sm text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)] resize-none"
+            className="w-full rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-4)] py-[var(--appkit-space-2-5)] text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)] resize-none"
           />
         </>
 
@@ -139,7 +139,7 @@ export default function Page() {
             type="button"
             variant="outline"
             onClick={() => router.back()}
-            className="px-5 py-2.5 text-sm font-medium"
+            className="px-[var(--appkit-space-5)] py-[var(--appkit-space-2-5)] text-[length:var(--appkit-text-sm)] font-medium"
           >
             Cancel
           </Button>

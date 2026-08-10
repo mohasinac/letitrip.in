@@ -11,7 +11,7 @@ export const metadata: Metadata = _gm({
 
 export const revalidate = 3600;
 
-const H2 = "mb-3 text-xl font-semibold";
+const H2 = "mb-3 text-[length:var(--appkit-text-xl)] font-semibold";
 
 export default function Page() {
   return (

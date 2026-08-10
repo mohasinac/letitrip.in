@@ -70,7 +70,7 @@ export default function Page() {
             <select
               value={status}
               onChange={(e) => table.set("status", e.target.value)}
-              className="rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-1.5 text-sm text-[var(--appkit-color-text)]"
+              className="rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-3)] py-[var(--appkit-space-1-5)] text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text)]"
               aria-label="Filter by order status"
             >
               {STATUS_OPTIONS.map((o) => (

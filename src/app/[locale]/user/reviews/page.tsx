@@ -18,7 +18,7 @@ import { FieldSelect, ListingToolbar } from "@mohasinac/appkit/ui";
 import { getUserReviews } from "@/lib/api/user-client";
 
 const __P = {
-  p5: "p-5",
+  p5: "p-[var(--appkit-space-5)]",
 } as const;
 
 interface ReviewItem {
@@ -39,7 +39,7 @@ interface ReviewItem {
 const STAR_LABELS: Record<number, string> = { 1: "Terrible", 2: "Poor", 3: "Average", 4: "Good", 5: "Excellent" };
 const CLS_STAR_ON = "text-star";
 const CLS_STAR_OFF = "text-[var(--appkit-color-text-faint)]";
-const CLS_REPLY_BADGE = "rounded-full bg-info-surface text-info px-2 py-0.5 text-xs font-medium";
+const CLS_REPLY_BADGE = "rounded-full bg-info-surface text-info px-[var(--appkit-space-2)] py-[var(--appkit-space-0-5)] text-[length:var(--appkit-text-xs)] font-medium";
 
 const SORT_OPTIONS = [
   { value: sortBy("createdAt", "DESC"), label: "Newest" },
@@ -187,7 +187,7 @@ export default function UserReviewsPage() {
                 padding="md" gap="3">
                 <Row justify="between" wrap align="start" gap="3">
                   <Stack className="min-w-0" gap="xs">
-                    <Link href={productHref} className="text-sm font-semibold text-[var(--appkit-color-text)] hover:underline line-clamp-1">
+                    <Link href={productHref} className="text-[length:var(--appkit-text-sm)] font-semibold text-[var(--appkit-color-text)] hover:underline line-clamp-1">
                       {review.productTitle}
                     </Link>
                     {review.storeName && (

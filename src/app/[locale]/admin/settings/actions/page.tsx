@@ -3,7 +3,7 @@ import { ActionPermissionsManager, Div, Heading, Text } from "@mohasinac/appkit/
 import { updateActionConfigAction } from "@/actions/admin-settings.actions";
 
 const __P = {
-  p6: "p-6",
+  p6: "p-[var(--appkit-space-6)]",
 } as const;
 
 export default async function Page() {

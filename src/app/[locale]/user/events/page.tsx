@@ -154,7 +154,7 @@ export default function UserEventsPage() {
           <Text variant="secondary">You haven&apos;t entered any events yet.</Text>
           <Link
             href={String(ROUTES.PUBLIC.EVENTS)}
-            className="mt-3 inline-block text-sm text-[var(--appkit-color-primary)] hover:underline"
+            className="mt-3 inline-block text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-primary)] hover:underline"
           >
             Browse events
           </Link>
@@ -182,7 +182,7 @@ export default function UserEventsPage() {
                     {event ? (
                       <Link
                         href={String(ROUTES.PUBLIC.EVENT_DETAIL(entry.eventId))}
-                        className="text-sm font-semibold text-[var(--appkit-color-text)] hover:underline line-clamp-1"
+                        className="text-[length:var(--appkit-text-sm)] font-semibold text-[var(--appkit-color-text)] hover:underline line-clamp-1"
                       >
                         {event.title}
                       </Link>

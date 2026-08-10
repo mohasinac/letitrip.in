@@ -20,7 +20,7 @@ import { TICKET_CATEGORIES, type TicketCategory } from "@/constants";
 import { createSupportTicket } from "@/lib/api/support-client";
 
 const __P = {
-  p5: "p-5",
+  p5: "p-[var(--appkit-space-5)]",
 } as const;
 
 const MIN_SUBJECT = 3;
@@ -81,7 +81,7 @@ export default function NewSupportTicketPage() {
       <Div>
         <Link
           href={String(ROUTES.USER.SUPPORT)}
-          className="text-xs text-[var(--appkit-color-primary)] hover:underline"
+          className="text-[length:var(--appkit-text-xs)] text-[var(--appkit-color-primary)] hover:underline"
         >
           ← All tickets
         </Link>
@@ -137,7 +137,7 @@ export default function NewSupportTicketPage() {
             rows={8}
             placeholder="What happened, when, and what would you like us to do? Include screenshots in a follow-up reply if helpful."
             maxLength={5000}
-            className="w-full rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm"
+            className="w-full rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-3)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)]"
           />
           <Text variant="secondary" size="xs" align="end">
             {description.trim().length}/5000 — at least {MIN_DESCRIPTION} characters

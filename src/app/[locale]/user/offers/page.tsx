@@ -7,7 +7,7 @@ import {
 } from "@/actions/offer.actions";
 
 const __P = {
-  p4: "p-4",
+  p4: "p-[var(--appkit-space-4)]",
 } as const;
 
 async function handleAcceptCounter(offerId: string): Promise<void> {

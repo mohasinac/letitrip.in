@@ -78,14 +78,14 @@ export default async function Page() {
                 <Text variant="secondary" size="sm">·</Text>
                 <Link
                   href={String(ROUTES.PUBLIC.SCAM_TYPES)}
-                  className="text-sm text-[color:var(--appkit-color-primary,theme(colors.blue.600))] hover:underline"
+                  className="text-[length:var(--appkit-text-sm)] text-[color:var(--appkit-color-primary,theme(colors.blue.600))] hover:underline"
                 >
                   View all scam types →
                 </Link>
                 <Text variant="secondary" size="sm">·</Text>
                 <Link
                   href={scamsHref}
-                  className="text-sm text-[color:var(--appkit-color-primary,theme(colors.blue.600))] hover:underline"
+                  className="text-[length:var(--appkit-text-sm)] text-[color:var(--appkit-color-primary,theme(colors.blue.600))] hover:underline"
                 >
                   Search the registry →
                 </Link>

@@ -20,7 +20,7 @@ import { API_ROUTES } from "@/constants";
 import { getOrderDigitalCode, getUserOrders } from "@/lib/api/user-client";
 
 const __P = {
-  p4: "p-4",
+  p4: "p-[var(--appkit-space-4)]",
 } as const;
 
 const SORT_OPTIONS = [
@@ -65,7 +65,7 @@ function CodeRevealRow({ item, orderId }: { item: OrderItem; orderId: string }) 
         <Stack gap="none" className="">
           <Link
             href={String(ROUTES.PUBLIC.DIGITAL_CODE_DETAIL(item.productId))}
-            className="text-sm font-semibold text-[var(--appkit-color-text)] hover:underline line-clamp-1"
+            className="text-[length:var(--appkit-text-sm)] font-semibold text-[var(--appkit-color-text)] hover:underline line-clamp-1"
           >
             {item.productTitle}
           </Link>
@@ -73,7 +73,7 @@ function CodeRevealRow({ item, orderId }: { item: OrderItem; orderId: string }) 
         </Stack>
         <Link
           href={String(ROUTES.USER.ORDER_DETAIL(orderId))}
-          className="text-xs text-[var(--appkit-color-primary)] hover:underline shrink-0"
+          className="text-[length:var(--appkit-text-xs)] text-[var(--appkit-color-primary)] hover:underline shrink-0"
         >
           View order
         </Link>
@@ -155,7 +155,7 @@ export default function UserDigitalCodesPage() {
           <Text variant="secondary">You haven&apos;t purchased any digital codes yet.</Text>
           <Link
             href={String(ROUTES.PUBLIC.DIGITAL_CODES)}
-            className="mt-3 inline-block text-sm text-[var(--appkit-color-primary)] hover:underline"
+            className="mt-3 inline-block text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-primary)] hover:underline"
           >
             Browse digital codes
           </Link>

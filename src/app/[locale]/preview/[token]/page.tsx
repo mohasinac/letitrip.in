@@ -6,7 +6,7 @@ import { Container, Div, Section, Text } from "@mohasinac/appkit";
 import { getAdminDb } from "@mohasinac/appkit/server";
 
 const __P = {
-  p4: "p-4",
+  p4: "p-[var(--appkit-space-4)]",
 } as const;
 
 

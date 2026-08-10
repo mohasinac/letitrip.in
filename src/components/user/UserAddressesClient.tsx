@@ -29,7 +29,7 @@ interface AddressWithBan extends AddressCardAddress {
 }
 
 const __P = {
-  p4: "p-4",
+  p4: "p-[var(--appkit-space-4)]",
 } as const;
 
 export function UserAddressesClient() {
@@ -124,7 +124,7 @@ export function UserAddressesClient() {
         <Heading level={1} size="xl" weight="bold" color="primary">My Addresses</Heading>
         <Link
           href={String(ROUTES.USER.ADDRESSES_ADD)}
-          className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600"
+          className="rounded-xl bg-primary px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-semibold text-white hover:bg-primary-600"
         >
           + Add Address
         </Link>
@@ -177,7 +177,7 @@ export function UserAddressesClient() {
               type="button"
               variant="outline"
               onClick={() => setConfirmDeleteId(null)}
-              className="px-4 py-2 text-sm font-medium transition-colors"
+              className="px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-medium transition-colors"
             >
               Cancel
             </Button>
@@ -220,7 +220,7 @@ export function UserAddressesClient() {
                   variant="outline"
                   size="sm"
                   onClick={() => { setUnbanAddressId(addr.id); setUnbanNote(""); }}
-                  className="text-xs"
+                  className="text-[length:var(--appkit-text-xs)]"
                 >
                   Request Unban
                 </Button>

@@ -32,7 +32,7 @@ import { removeFromWishlistAction, addWishlistItemToCartAction } from "@/actions
 import { validateWishlist } from "@/lib/api/user-client";
 
 const __P = {
-  p4: "p-4",
+  p4: "p-[var(--appkit-space-4)]",
 } as const;
 
 const SORT_OPTIONS = [
@@ -285,8 +285,8 @@ export default function WishlistPage() {
     <>
     <ListingLayout
       headerSlot={renderWishlistHeader({ isLoading, wl, selectedIds, isBulkRemoving, isBulkAddingToCart, handleRemoveSelected, handleAddSelectedToCart, clearSelection, handleRemoveAll })}
-      searchSlot={<Input placeholder="Search wishlist…" value={search} onChange={(e) => setSearch(e.target.value)} className="h-9 text-sm" />}
-      sortSlot={<Select options={SORT_OPTIONS} value={sort} onValueChange={setSort} className="h-9 text-sm min-w-[160px]" />}
+      searchSlot={<Input placeholder="Search wishlist…" value={search} onChange={(e) => setSearch(e.target.value)} className="h-9 text-[length:var(--appkit-text-sm)]" />}
+      sortSlot={<Select options={SORT_OPTIONS} value={sort} onValueChange={setSort} className="h-9 text-[length:var(--appkit-text-sm)] min-w-[160px]" />}
       filterContent={renderWishlistFilterContent({ pending, setPending })}
       filterActiveCount={activeFilterCount}
       onFilterApply={handleApply}
@@ -368,7 +368,7 @@ function renderWishlistFilterContent({
               type="button"
               onClick={() => setPending((p) => ({ ...p, type: opt.value }))}
               variant={pending.type === opt.value ? "primary" : "ghost"}
-              className="w-full justify-start text-sm"
+              className="w-full justify-start text-[length:var(--appkit-text-sm)]"
             >
               {opt.label}
             </Button>
@@ -378,9 +378,9 @@ function renderWishlistFilterContent({
       <Div border="default" className="border-t" padding="t-md">
         <Text className="mb-2 tracking-wide" color="muted" size="xs" weight="semibold" transform="uppercase">Price range (₹)</Text>
         <Row gap="sm">
-          <Input type="number" placeholder="Min" min={0} value={pending.minPrice} onChange={(e) => setPending((p) => ({ ...p, minPrice: e.target.value }))} className="h-8 text-sm" />
+          <Input type="number" placeholder="Min" min={0} value={pending.minPrice} onChange={(e) => setPending((p) => ({ ...p, minPrice: e.target.value }))} className="h-8 text-[length:var(--appkit-text-sm)]" />
           <Span layout="flex" color="faint">–</Span>
-          <Input type="number" placeholder="Max" min={0} value={pending.maxPrice} onChange={(e) => setPending((p) => ({ ...p, maxPrice: e.target.value }))} className="h-8 text-sm" />
+          <Input type="number" placeholder="Max" min={0} value={pending.maxPrice} onChange={(e) => setPending((p) => ({ ...p, maxPrice: e.target.value }))} className="h-8 text-[length:var(--appkit-text-sm)]" />
         </Row>
       </Div>
     </Stack>

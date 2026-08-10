@@ -19,7 +19,7 @@ import {
 import { getSupportTicket, getSupportTicketMessages } from "@/lib/api/support-client";
 
 const __P = {
-  p5: "p-5",
+  p5: "p-[var(--appkit-space-5)]",
 } as const;
 
 interface TicketMessage {
@@ -113,7 +113,7 @@ export default function TicketDetailPage({ params }: PageProps) {
     return (
       <Div padding="y-6xl" className="text-center">
         <Text variant="secondary">Ticket not found.</Text>
-        <Link href={String(ROUTES.USER.SUPPORT)} className="mt-3 inline-block text-sm text-[var(--appkit-color-primary)] hover:underline">
+        <Link href={String(ROUTES.USER.SUPPORT)} className="mt-3 inline-block text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-primary)] hover:underline">
           ← Back to all tickets
         </Link>
       </Div>
@@ -128,7 +128,7 @@ export default function TicketDetailPage({ params }: PageProps) {
       <Div>
         <Link
           href={String(ROUTES.USER.SUPPORT)}
-          className="text-xs text-[var(--appkit-color-primary)] hover:underline"
+          className="text-[length:var(--appkit-text-xs)] text-[var(--appkit-color-primary)] hover:underline"
         >
           ← All tickets
         </Link>
@@ -212,7 +212,7 @@ export default function TicketDetailPage({ params }: PageProps) {
             rows={5}
             placeholder="Type your reply…"
             maxLength={5000}
-            className="w-full rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-3 py-2 text-sm"
+            className="w-full rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-3)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)]"
           />
           <Row gap="sm">
             <Button

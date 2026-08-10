@@ -5,7 +5,7 @@ import type { NavPermissionsGroup as NavGroup } from "@mohasinac/appkit/client";
 import { updateNavConfigAction } from "@/actions/admin-settings.actions";
 
 const __P = {
-  p6: "p-6",
+  p6: "p-[var(--appkit-space-6)]",
 } as const;
 
 const MAIN_NAV_GROUP: NavGroup = {

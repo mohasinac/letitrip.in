@@ -107,7 +107,7 @@ function renderAccountTab({
           </Div>
           <Link
             href={String(ROUTES.USER.PROFILE)}
-            className="shrink-0 text-xs font-medium text-[var(--appkit-color-primary)] hover:underline"
+            className="shrink-0 text-[length:var(--appkit-text-xs)] font-medium text-[var(--appkit-color-primary)] hover:underline"
           >
             Edit profile →
           </Link>

@@ -35,7 +35,7 @@ export function AdminAnalyticsClient() {
               value={startDate}
               max={endDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="rounded-lg border border-zinc-300 bg-white px-2.5 py-1.5 text-sm text-[var(--appkit-color-text)] border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text)]"
+              className="rounded-lg border border-zinc-300 bg-white px-[var(--appkit-space-2-5)] py-[var(--appkit-space-1-5)] text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text)] border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text)]"
             />
           </Label>
           <Label layout="flex" gap="md" color="muted" size="sm">
@@ -46,7 +46,7 @@ export function AdminAnalyticsClient() {
               min={startDate}
               max={today()}
               onChange={(e) => setEndDate(e.target.value)}
-              className="rounded-lg border border-zinc-300 bg-white px-2.5 py-1.5 text-sm text-[var(--appkit-color-text)] border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text)]"
+              className="rounded-lg border border-zinc-300 bg-white px-[var(--appkit-space-2-5)] py-[var(--appkit-space-1-5)] text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text)] border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text)]"
             />
           </Label>
         </Row>

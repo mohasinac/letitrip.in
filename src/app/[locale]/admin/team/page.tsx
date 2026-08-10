@@ -10,8 +10,8 @@ export default function AdminTeamPage() {
         title="Team"
         subtitle="Manage employee accounts and permissions"
         themeConfig={{
-          titleClass: "text-2xl font-bold text-[var(--appkit-color-text)]",
-          subtitleClass: "text-sm text-[var(--appkit-color-text-muted)]",
+          titleClass: "text-[length:var(--appkit-text-2xl)] font-bold text-[var(--appkit-color-text)]",
+          subtitleClass: "text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text-muted)]",
           spacingClass: "space-y-1",
         }}
       />

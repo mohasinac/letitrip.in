@@ -113,7 +113,10 @@ const RULES = [
   },
   {
     id: "RAW_TEXT_SIZE_UTILITY",
-    re: /\btext-(?:2xs|xs|sm|base|lg|xl|2xl|3xl|4xl|5xl)\b/,
+    // Negative lookbehind excludes matches inside `--appkit-text-sm` (the
+    // themed CSS var name itself contains the literal substring "text-sm" —
+    // without the lookbehind the audit would flag its own fix).
+    re: /(?<!-)\btext-(?:2xs|xs|sm|base|lg|xl|2xl|3xl|4xl|5xl)\b/,
     message: "Raw Tailwind text-size utility bypasses theme tokens. Use the size/smSize/mdSize/lgSize/xlSize prop on <Text>/<Heading>/<Span> (resolves through --appkit-text-*) instead of a literal text-N className",
     fix: "Pick the matching size prop on <Text>/<Heading>/<Span>, or text-[length:var(--appkit-text-N)] if no primitive is in play",
     baselineDrift: true,
@@ -304,15 +307,15 @@ const BASELINES = {
   RAW_LABEL: 0,
   RAW_ANCHOR: 0,
   RAW_MEDIA_EMBED: 0,
-  // RAW_SPACING_UTILITY / RAW_TEXT_SIZE_UTILITY baselines = current count of
-  // raw named Tailwind spacing/text-size step classNames across src/ +
-  // appkit/src/, locked 2026-08-09 when --appkit-space-*/--appkit-text-*
-  // became theme-editable (padding/gap/size props already resolve through
-  // them). Drive each to 0 in the consumer sweep — the audit lets you
-  // tighten the number every time the count drops; a fresh scan any time
-  // shows exactly which files still need conversion.
-  RAW_SPACING_UTILITY: 648,
-  RAW_TEXT_SIZE_UTILITY: 174,
+  // RAW_SPACING_UTILITY / RAW_TEXT_SIZE_UTILITY — strict-zero, locked
+  // 2026-08-11. The full consumer sweep (a codemod converting every raw
+  // gap-N/p-N/px-N/py-N/pt-N/pb-N/text-N className into the arbitrary-value
+  // var equivalent, 1009 + 406 replacements across 311 files) landed the
+  // same day the rule was added. Any new raw spacing/text-size utility is a
+  // regression — use the padding/gap/size prop, or a var(--appkit-space-N)/
+  // var(--appkit-text-N) arbitrary value if no primitive is in play.
+  RAW_SPACING_UTILITY: 0,
+  RAW_TEXT_SIZE_UTILITY: 0,
 };
 
 const hardBlocking = violations.filter((v) => !v.baselineDrift);

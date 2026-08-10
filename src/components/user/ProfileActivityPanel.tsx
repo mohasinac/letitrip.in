@@ -13,7 +13,7 @@ import { Row, apiClient } from "@mohasinac/appkit";
 import { Link } from "@/i18n/navigation";
 
 const __P = {
-  p5: "p-5",
+  p5: "p-[var(--appkit-space-5)]",
 } as const;
 
 interface BidLite {
@@ -50,7 +50,7 @@ function SectionCard({ title, viewAllHref, children }: { title: string; viewAllH
     <Div className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`} rounded="xl" shadow="sm">
       <Row className="mb-3" align="center" justify="between">
         <Text className="text-[var(--appkit-color-text)]" size="sm" weight="semibold">{title}</Text>
-        <Link href={viewAllHref} className="text-xs text-[var(--appkit-color-primary)] hover:underline">View all →</Link>
+        <Link href={viewAllHref} className="text-[length:var(--appkit-text-xs)] text-[var(--appkit-color-primary)] hover:underline">View all →</Link>
       </Row>
       {children}
     </Div>
@@ -110,7 +110,7 @@ export function ProfileActivityPanel() {
                 <Link
                   key={o.id}
                   href={String(ROUTES.USER.ORDER_DETAIL(o.id))}
-                  className="block rounded-md border border-[var(--appkit-color-border)] px-3 py-2 hover:border-[var(--appkit-color-primary)] transition-colors"
+                  className="block rounded-md border border-[var(--appkit-color-border)] px-[var(--appkit-space-3)] py-[var(--appkit-space-2)] hover:border-[var(--appkit-color-primary)] transition-colors"
                 >
                   <Text className="text-[var(--appkit-color-text)] truncate" size="xs" weight="medium">{o.id}</Text>
                   <Text className="text-[11px] text-[var(--appkit-color-text-muted)]">

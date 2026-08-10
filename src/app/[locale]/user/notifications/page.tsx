@@ -24,7 +24,7 @@ import {
 } from "@/lib/api/user-client";
 
 const __P = {
-  p4: "p-4",
+  p4: "p-[var(--appkit-space-4)]",
 } as const;
 
 interface NotifItem {
@@ -113,7 +113,7 @@ function NotifCard({
         {notif.actionUrl && notif.actionLabel && (
           <Link
             href={notif.actionUrl}
-            className="text-xs font-medium text-primary hover:underline"
+            className="text-[length:var(--appkit-text-xs)] font-medium text-primary hover:underline"
           >
             {notif.actionLabel}
           </Link>
@@ -124,7 +124,7 @@ function NotifCard({
             variant="outline"
             size="sm"
             onClick={() => onMarkRead(notif.id)}
-            className="text-xs"
+            className="text-[length:var(--appkit-text-xs)]"
           >
             Mark read
           </Button>
@@ -134,7 +134,7 @@ function NotifCard({
           type="button"
           variant="ghost"
           onClick={() => onDelete(notif.id)}
-          className="text-xs text-error hover:opacity-80 transition-colors ml-auto"
+          className="text-[length:var(--appkit-text-xs)] text-error hover:opacity-80 transition-colors ml-auto"
         >
           Delete
         </Button>

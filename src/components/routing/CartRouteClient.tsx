@@ -97,7 +97,7 @@ const LISTING_TYPE_SEARCH_KEYWORDS: Record<string, string[]> = {
   "prize-draw": ["raffle", "prize-draw", "prize draw", "prize"],
 };
 
-const EMPTY_STATE_CLASS = "py-6 text-center text-sm text-[var(--appkit-color-text-muted)]";
+const EMPTY_STATE_CLASS = "py-[var(--appkit-space-6)] text-center text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text-muted)]";
 const ERROR_TEXT_CLASS = "text-[var(--appkit-color-error)]";
 
 // ---------------------------------------------------------------------------
@@ -697,7 +697,7 @@ export function CartRouteClient() {
                   type="button"
                   variant="ghost"
                   onClick={() => { setActiveTab(key); setSearchQuery(""); }}
-                  className={["flex-1 rounded-lg px-3 py-1.5 font-medium transition-colors", activeTab === key ? "bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text)] shadow-sm" : "text-[var(--appkit-color-text-muted)] hover:text-zinc-700 hover:text-[var(--appkit-color-text-muted)]"].join(" ")}
+                  className={["flex-1 rounded-lg px-[var(--appkit-space-3)] py-[var(--appkit-space-1-5)] font-medium transition-colors", activeTab === key ? "bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text)] shadow-sm" : "text-[var(--appkit-color-text-muted)] hover:text-zinc-700 hover:text-[var(--appkit-color-text-muted)]"].join(" ")}
                 >
                   {label}{count > 0 && <Text as="span" className="ml-1.5 opacity-60" size="xs">({count})</Text>}
                 </Button>
@@ -708,9 +708,9 @@ export function CartRouteClient() {
             {/* ── Search + clear ── */}
             {!isEmpty && cartItems.length > 1 && (
               <Div className="relative">
-                <Input type="search" placeholder="Search by name, store, price or type (auction, raffle…)" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full text-sm pr-8" />
+                <Input type="search" placeholder="Search by name, store, price or type (auction, raffle…)" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full text-[length:var(--appkit-text-sm)] pr-8" />
                 {searchQuery && (
-                  <Button type="button" variant="ghost" aria-label="Clear search" onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text-muted)] text-base leading-none">×</Button>
+                  <Button type="button" variant="ghost" aria-label="Clear search" onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text-muted)] text-[length:var(--appkit-text-base)] leading-none">×</Button>
                 )}
               </Div>
             )}
@@ -729,11 +729,11 @@ export function CartRouteClient() {
                   </Row>
                 )}
                 {effectiveSelected && effectiveSelected.size > 0 && (
-                  <Button type="button" variant="ghost" onClick={() => { void handleRemoveSelectedItems(); }} disabled={isRemoving} className={`text-sm ${ERROR_TEXT_CLASS} hover:underline underline-offset-2 disabled:opacity-50`}>
+                  <Button type="button" variant="ghost" onClick={() => { void handleRemoveSelectedItems(); }} disabled={isRemoving} className={`text-[length:var(--appkit-text-sm)] ${ERROR_TEXT_CLASS} hover:underline underline-offset-2 disabled:opacity-50`}>
                     {isRemoving ? "Removing…" : `Remove selected (${effectiveSelected.size})`}
                   </Button>
                 )}
-                <Button type="button" variant="ghost" onClick={() => { void handleRemoveAll(); }} disabled={isRemoving} className={`ml-auto text-sm ${ERROR_TEXT_CLASS} hover:underline underline-offset-2 disabled:opacity-50`}>
+                <Button type="button" variant="ghost" onClick={() => { void handleRemoveAll(); }} disabled={isRemoving} className={`ml-auto text-[length:var(--appkit-text-sm)] ${ERROR_TEXT_CLASS} hover:underline underline-offset-2 disabled:opacity-50`}>
                   {isRemoving ? "Clearing…" : "Remove all"}
                 </Button>
               </Row>
@@ -957,7 +957,7 @@ function CartTabItems({ cartBucket, oosItems, filteredCartItems, filteredOos, se
         <Div>
           <Row className="mb-3" align="center" justify="between">
             <Text className="tracking-wide text-[var(--appkit-color-error)]" size="xs" weight="semibold" transform="uppercase">Unavailable ({oosItems.length})</Text>
-            <Link href={String(ROUTES.USER.WISHLIST)} className="text-xs text-primary-600 dark:text-primary-400 hover:underline underline-offset-2">View wishlist →</Link>
+            <Link href={String(ROUTES.USER.WISHLIST)} className="text-[length:var(--appkit-text-xs)] text-primary-600 dark:text-primary-400 hover:underline underline-offset-2">View wishlist →</Link>
           </Row>
           <Stack gap="3">
             {sellerGroupsOos.map((group) => (
@@ -1049,7 +1049,7 @@ function SellerGroupSection({
           {group.sellerSlug ? (
             <Link
               href={String(ROUTES.PUBLIC.STORE_DETAIL(group.sellerSlug))}
-              className="text-xs font-semibold uppercase tracking-wide text-[var(--appkit-color-text-muted)] hover:underline underline-offset-2"
+              className="text-[length:var(--appkit-text-xs)] font-semibold uppercase tracking-wide text-[var(--appkit-color-text-muted)] hover:underline underline-offset-2"
             >
               {group.sellerName}
             </Link>
@@ -1103,7 +1103,7 @@ function SellerGroupSection({
                     type="button"
                     variant="ghost"
                     onClick={() => onMoveToWishlist(iid, item.productId)}
-                    className="mt-1 text-xs text-primary-600 dark:text-primary-400 hover:underline underline-offset-2"
+                    className="mt-1 text-[length:var(--appkit-text-xs)] text-primary-600 dark:text-primary-400 hover:underline underline-offset-2"
                   >
                     Save to wishlist
                   </Button>

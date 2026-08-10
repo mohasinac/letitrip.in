@@ -19,7 +19,7 @@ import { TICKET_STATUSES } from "@/constants";
 import { getSupportTickets } from "@/lib/api/support-client";
 
 const __P = {
-  p5: "p-5",
+  p5: "p-[var(--appkit-space-5)]",
 } as const;
 
 interface TicketItem {
@@ -105,7 +105,7 @@ export default function UserSupportPage() {
         </Div>
         <Link
           href={ROUTES.USER.SUPPORT_NEW}
-          className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-600"
+          className="rounded-xl bg-primary px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-semibold text-white hover:bg-primary-600"
         >
           + New ticket
         </Link>
@@ -148,7 +148,7 @@ export default function UserSupportPage() {
           <Text variant="secondary">
             {status ? `No ${status.replace("_", " ")} tickets.` : "You haven't opened any support tickets yet."}
           </Text>
-          <Link href={ROUTES.USER.SUPPORT_NEW} className="mt-3 inline-block text-sm text-[var(--appkit-color-primary)] hover:underline">
+          <Link href={ROUTES.USER.SUPPORT_NEW} className="mt-3 inline-block text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-primary)] hover:underline">
             Open your first ticket →
           </Link>
         </Div>
@@ -158,7 +158,7 @@ export default function UserSupportPage() {
             <Link
               key={t.id}
               href={String(ROUTES.USER.SUPPORT_TICKET(t.id))}
-              className="block rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-5 shadow-sm hover:border-[var(--appkit-color-primary)] transition-colors"
+              className="block rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-[var(--appkit-space-5)] shadow-sm hover:border-[var(--appkit-color-primary)] transition-colors"
             >
               <Row justify="between" align="start" gap="3">
                 <Div className="min-w-0">
