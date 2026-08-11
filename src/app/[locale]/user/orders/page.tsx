@@ -8,9 +8,14 @@ import {
   ROUTES,
   Div,
   Stack,
+  Button,
+  ACTIONS,
 } from "@mohasinac/appkit/client";
 import { ListingToolbar } from "@mohasinac/appkit/ui";
-import { useRouter } from "@/i18n/navigation";
+import { useRouter, Link } from "@/i18n/navigation";
+
+const CANCELLABLE_STATUSES = new Set(["pending", "confirmed", "processing"]);
+const TRACKABLE_STATUSES = new Set(["shipped"]);
 
 const SORT_OPTIONS = [
   { value: sortBy("createdAt", "DESC"),   label: "Newest first" },
@@ -88,6 +93,24 @@ export default function Page() {
               router.push(String(ROUTES.USER.ORDER_DETAIL(order.id)))
             }
             emptyLabel="You haven't placed any orders yet."
+            renderActions={(order) => (
+              <>
+                {TRACKABLE_STATUSES.has(order.orderStatus) && (
+                  <Button asChild variant="ghost" size="sm">
+                    <Link href={ROUTES.USER.ORDER_TRACK(order.id)}>
+                      {ACTIONS.USER["track-order"].label}
+                    </Link>
+                  </Button>
+                )}
+                {CANCELLABLE_STATUSES.has(order.orderStatus) && (
+                  <Button asChild variant="ghost" size="sm">
+                    <Link href={ROUTES.USER.ORDER_CANCEL(order.id)}>
+                      {ACTIONS.USER["cancel-order"].label}
+                    </Link>
+                  </Button>
+                )}
+              </>
+            )}
           />
         </Stack>
       )}

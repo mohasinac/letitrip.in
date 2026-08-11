@@ -39,6 +39,7 @@ const AUDITS = [
   { name: "config-factories",                script: "scripts/audit-config-factories.mjs" },
   { name: "html-wrappers",                   script: "scripts/audit-html-wrappers.mjs" },
   { name: "bulk-action-registry",            script: "scripts/audit-bulk-action-registry.mjs" },
+  { name: "listing-quick-filters",           script: "scripts/audit-listing-quick-filters.mjs" },
   { name: "code-quality",                    script: "scripts/audit-code-quality.mjs" },
   { name: "bom",                             script: "scripts/audit-bom.mjs" },
   { name: "suspense-boundaries",             script: "scripts/audit-suspense-boundaries.mjs" },

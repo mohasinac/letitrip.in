@@ -208,7 +208,7 @@ When implementing a feature, fix, or refactoring:
 | Need | Use |
 |---|---|
 | Compact single-step form (login, address, contact) | [`<Form>`](appkit/src/ui/components/Form.tsx) — wraps `<form>` + mounts `FormShellContext.Provider` automatically |
-| Wizard / multi-step with auto-save + publish | [`<FormShell steps={…}>`](appkit/src/ui/forms/FormShell.tsx) |
+| Wizard / multi-step with auto-save + publish | [`<FormShell>`](appkit/src/features/shell/FormShell.tsx) (drawer chrome) + [`<StepForm>`](appkit/src/features/shell/StepForm.tsx) (step engine) — state/context comes from [`FormShellProvider`/`useFormShellState`](appkit/src/ui/forms/FormShell.tsx), which `<Form>` also consumes |
 | Text input | [`<FieldInput name="…" label="…">`](appkit/src/ui/forms/FieldInput.tsx) |
 | Single-select | [`<FieldSelect>`](appkit/src/ui/forms/FieldSelect.tsx) for ≤5 options; [`<PaginatedSelect>`](appkit/src/ui/components/PaginatedSelect.tsx) for >5 |
 | Multi-line text | [`<FieldTextarea>`](appkit/src/ui/forms/FieldTextarea.tsx) |
@@ -1043,8 +1043,8 @@ The merge order in `functions/src/index.ts` is `mergeFunctionRegistries(APPKIT_F
 > Track D — every form ships with a Zod schema. There is no manual validation mode.
 
 **Components**:
-- `<FormShell schema={zodSchema} ...>` for multi-step / split-preview forms.
-- `useFormShellState(zodSchema)` for caller-owned layouts.
+- `<FormShell>` (`appkit/src/features/shell/FormShell.tsx`) + `<StepForm schema={zodSchema} ...>` (`appkit/src/features/shell/StepForm.tsx`) for multi-step / split-preview wizards.
+- `useFormShellState(zodSchema)` (`appkit/src/ui/forms/FormShell.tsx`) for caller-owned layouts — also the state/context provider `<Form>` and the wizard both consume internally.
 - `<QuickFormDrawer schema={zodSchema} fields={...}>` for compact 1–3 field inline edits.
 
 **Inputs**: `<FieldInput>`, `<FieldSelect>`, `<FieldTextarea>`, `<PaginatedSelect>` (any selection > 5 options). Raw `<form onSubmit>`, `<input>`, `<select>`, `<textarea>` are blocked by `audit-raw-form-input`. `react-hook-form` is installed for transitive consumers but is not the appkit authoring path.

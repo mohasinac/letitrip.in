@@ -65,7 +65,9 @@
 
 | Export | Type | Props/Signature | Purpose |
 |--------|------|-----------------|---------|
-| Section | Component | children, surface, padding, rounded, border, shadow | Semantic `<section>` for thematically grouped content |
+| Section | Component | children, surface, padding, rounded, border, shadow, tone, background (SectionBackgroundConfig) | Semantic `<section>` for thematically grouped content; `background` renders a scoped color/gradient/image layer behind children |
+| sectionBackgroundStyle | Function | (bg: SectionBackgroundConfig) => React.CSSProperties | Resolves a SectionBackgroundConfig to inline style; reused by FilterDrawer/ListingFilterDrawer/SidebarLayout for their own `background` prop |
+| SectionBackgroundConfig | Type | { type: "color"\|"gradient"\|"image", value, overlay? } | Scoped (non-viewport-fixed) background shape shared by Section/FilterDrawer/ListingFilterDrawer/SidebarLayout |
 | Article | Component | children, surface, padding, rounded, border, shadow | Semantic `<article>` for self-contained compositions |
 | Main | Component | children, surface, padding, rounded, border, shadow | Semantic `<main>` wrapping primary page content |
 | Aside | Component | children, surface, padding, rounded, border, shadow | Semantic `<aside>` for supplementary content |
@@ -237,7 +239,7 @@
 | SummaryCard.tsx | SummaryCard | Component | Summary/overview card |
 | FlowDiagram.tsx | FlowDiagram | Component | Flow/step diagram |
 | BaseListingCard.tsx | BaseListingCard, BaseListingCard.Checkbox | Component | Base card for marketplace listings with selection support |
-| FormShell.tsx | FormShell | Component | Form wrapper with Zod schema, validateOnChange, splitPreview |
+| ../forms/FormShell.tsx | FormShellProvider, useFormShell, useFormShellState, applyZodIssues | Component/Hook | Form-state provider + context consumed by `<Form>` and the wizard's `<StepForm>` — NOT the wizard chrome itself (see `features/shell/FormShell.tsx` below) |
 | FormGroup.tsx | FormGroup | Component | Logical form field group |
 | FormField.tsx | FormField | Component | Individual form field |
 | FormActionBar.tsx | FormActionBar | Component | Form submit/cancel action bar |
@@ -627,7 +629,7 @@
 | classified | ClassifiedListView, ClassifiedIndexListing, ClassifiedFilters | View/Filter | Classifieds listing and filtering |
 | digital-codes | DigitalCodesListView, DigitalCodesIndexListing, DigitalCodeFilters | View/Filter | Digital codes listing and filtering |
 | live | LiveItemsListView, LiveItemsIndexListing, LiveItemFilters | View/Filter | Live items listing and filtering |
-| orders | OrderCard, OrdersList, MarketplaceOrderCard | Component | Order display components |
+| orders | OrderCard, OrdersList, MarketplaceOrderCard | Component | Order display components; both accept `renderActions?: (order) => ReactNode` — per-card quick-action slot (e.g. buyer Track/Cancel links) rendered in the card footer, click-stop-propagated so it doesn't trigger the card's own onClick |
 | orders | OrderFilters, OrderSiblingPayments | Component | Order filtering, sibling payments |
 | orders | RefundHistoryTable, RefundRequestView | Component | Refund components |
 | pre-orders | MarketplacePreorderCard, PreOrderFilters | Component | Pre-order card and filtering |
@@ -638,6 +640,9 @@
 | reviews | ReviewCard, ReviewsList, ReviewFilters | Component | Reviews display |
 | reviews | ReviewSummary, ViewReviewModal | Component | Review summary and modal |
 | reviews | ReviewsIndexListing | Listing | Reviews index/search |
+| shell | FormShell, StepForm, StepFormActions | Component | `appkit/src/features/shell/` — the real multi-step wizard chrome + step engine (see Rule #9 table in CLAUDE.md); state comes from `ui/forms/FormShell.tsx`'s `FormShellProvider` |
+| shell | QuickFormDrawer | Component | `appkit/src/features/shell/QuickFormDrawer.tsx` — compact 1–3 field inline-edit drawer, schema required |
+| shell | CommandPalette, useCommandPaletteHotkey, CommandPaletteGroup | Component/Hook/Type | `appkit/src/features/shell/CommandPalette.tsx` — ⌘K/Ctrl+K search-and-jump modal over a flat group/item list; mounted in admin via consumer's `AdminCommandPaletteMount.tsx` |
 | search | Search | Component | Search input with suggestions |
 | search | SearchFiltersRow, SearchResultsSection | Component | Search UI |
 | search | SearchView | View | Full search page |
