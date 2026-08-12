@@ -1712,7 +1712,6 @@ export const UI_LABELS = {
     STEP_3_TITLE: "Start Selling",
     STEP_3_TEXT:
       "Receive orders, ship products, and get paid directly to your account.",
-    TESTIMONIALS_TITLE: "What Our Sellers Say",
     FAQ_TITLE: "Seller FAQs",
     FAQ_1_Q: "How much does it cost to sell?",
     FAQ_1_A:

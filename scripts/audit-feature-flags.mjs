@@ -12,6 +12,11 @@
  *      early (404/405) when the flag is off.
  *   2. No FEATURE_* env var is read via process.env directly in .tsx/.ts files
  *      outside src/lib/features.ts — all reads must go through getFlag().
+ *   3. Dashboard `layout.tsx` files under a route segment matching a known
+ *      gated feature must call requireFeatureFlag(...) — catches a page-level
+ *      guard being skipped the same way route guards are caught by Check 1
+ *      (e.g. the original admin-dashboard Payouts-card bug: nav hid the link,
+ *      but direct navigation still hit the guarded API unconditionally).
  *
  * Suppression: `// audit-feature-flag-ok: <reason>` on the same line.
  *
@@ -69,6 +74,23 @@ const GUARDED_ROUTES = [
   { dir: "src/app/api/scams",                flag: "FEATURE_SCAM_REGISTRY" },
   // BUNDLES (P-17)
   { dir: "src/app/api/admin/bundles",        flag: "FEATURE_BUNDLES" },
+];
+
+// ─── Rule 3: gated dashboard page segments must have a page-level guard ──────
+// Format: { dir: "relative/path/to/[locale]/section", flag: "FEATURE_NAME" }
+// The layout.tsx at that path (or a layout.tsx in an ancestor up to and
+// excluding the shared admin/store/user root layout) must call
+// requireFeatureFlag(...). Mirrors GUARDED_ROUTES but for pages, not APIs.
+const GUARDED_PAGES = [
+  { dir: "src/app/[locale]/admin/coupons",   flag: "FEATURE_COUPONS" },
+  { dir: "src/app/[locale]/admin/blog",      flag: "FEATURE_BLOG" },
+  { dir: "src/app/[locale]/admin/scammers",  flag: "FEATURE_SCAM_REGISTRY" },
+  { dir: "src/app/[locale]/admin/payouts",   flag: "FEATURE_PAYOUTS" },
+  { dir: "src/app/[locale]/admin/bundles",   flag: "FEATURE_BUNDLES" },
+  { dir: "src/app/[locale]/store/coupons",   flag: "FEATURE_COUPONS" },
+  { dir: "src/app/[locale]/store/payouts",   flag: "FEATURE_PAYOUTS" },
+  { dir: "src/app/[locale]/user/coupons",    flag: "FEATURE_COUPONS" },
+  { dir: "src/app/[locale]/user/bids",       flag: "FEATURE_AUCTIONS" },
 ];
 
 function walkTs(dir) {
@@ -139,6 +161,20 @@ for (const { dir, flag } of GUARDED_ROUTES) {
         detail: `Route under disabled-feature path must call withFeatureGuard("${flag.replace("FEATURE_", "")}") or getFlag(...) — returns 404 when flag is off`,
       });
     }
+  }
+}
+
+// ─── Check 3: gated page segments must have a layout.tsx flag guard ──────────
+for (const { dir, flag } of GUARDED_PAGES) {
+  if (!dirExists(dir)) continue; // page doesn't exist yet — skip
+  const layoutPath = join(ROOT, dir, "layout.tsx");
+  if (!fileContains(layoutPath, "requireFeatureFlag(")) {
+    violations.push({
+      rule: "MISSING_PAGE_GUARD",
+      file: `${dir}/layout.tsx`,
+      line: 1,
+      detail: `Gated page segment must have a layout.tsx calling requireFeatureFlag("${flag.replace("FEATURE_", "")}")`,
+    });
   }
 }
 

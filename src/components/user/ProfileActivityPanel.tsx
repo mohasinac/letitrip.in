@@ -11,6 +11,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { Row, apiClient } from "@mohasinac/appkit";
 import { Link } from "@/i18n/navigation";
+import { API_ROUTES } from "@/constants";
 
 const __P = {
   p5: "p-[var(--appkit-space-5)]",
@@ -65,7 +66,7 @@ export function ProfileActivityPanel() {
   const { data: bidsData } = useQuery<{ bids: BidLite[]; total: number }>({
     queryKey: ["user-bids", "profile-activity"],
     // eslint-disable-next-line lir/no-apiclient-outside-services -- queryFn IS the service boundary here
-    queryFn: () => apiClient.get<{ bids: BidLite[]; total: number }>("/api/user/bids?limit=5"),
+    queryFn: () => apiClient.get<{ bids: BidLite[]; total: number }>(`${API_ROUTES.USER.BIDS}?limit=5`),
     enabled: !!user,
     staleTime: 60_000,
   });
@@ -74,7 +75,7 @@ export function ProfileActivityPanel() {
     queryFn: () =>
       // eslint-disable-next-line lir/no-apiclient-outside-services -- queryFn IS the service boundary here
       apiClient
-        .get<{ reviews: ReviewLite[]; total: number }>("/api/user/reviews?limit=5")
+        .get<{ reviews: ReviewLite[]; total: number }>(`${API_ROUTES.USER.REVIEWS}?limit=5`)
         .catch(() => ({ reviews: [], total: 0 })),
     enabled: !!user,
     staleTime: 60_000,
