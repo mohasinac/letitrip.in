@@ -1,10 +1,11 @@
 "use client";
 import { Row, Stack, normalizeError } from "@mohasinac/appkit";
-import { AdminDashboardView, ROUTES, Span, Text, Div, Grid, Toggle, useToast, DynamicBgDiv } from "@mohasinac/appkit/client";
+import { AdminDashboardView, ROUTES, Span, Text, Div, Grid, Toggle, useToast, DynamicBgDiv, useFeatureFlags } from "@mohasinac/appkit/client";
 import { ADMIN_CHECKOUT_BYPASS_FLAG_KEY } from "@mohasinac/appkit";
 import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { fetchAdminResource, getCheckoutBypassStatus, setFeatureFlags } from "@/lib/api/admin-client";
+import { API_ROUTES } from "@/constants";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const __P = {
@@ -72,9 +73,11 @@ const QUICK_ACTIONS = [
 
 interface DashboardStats {
   pendingOrders: number;
-  pendingPayouts: number;
+  // null when the owning feature flag is off — the card is hidden entirely
+  // in that case (see renderAlerts below), this is just the resting value.
+  pendingPayouts: number | null;
   pendingReviews: number;
-  activeCoupons: number;
+  activeCoupons: number | null;
 }
 
 interface RecentOrder {
@@ -101,6 +104,7 @@ function StatCard({ label, value, href }: { label: string; value: number | null;
 
 export default function Page() {
   const { showToast } = useToast();
+  const { flags, isLoading: flagsLoading } = useFeatureFlags();
   const [prefs, setPrefs] = useState<DevPrefs>(DEFAULT_PREFS);
   const [adminBypassEnabled, setAdminBypassEnabled] = useState(false);
   const [bypassLoading, setBypassLoading] = useState(false);
@@ -132,23 +136,44 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    const fetchJson = async (url: string, label: string) => {
-      const data = await fetchAdminResource(url).catch((err: unknown) => { throw err instanceof Error ? err : new Error(`${label} failed`); });
-      return data;
+    // Wait for the flag snapshot before deciding what to fetch — Payouts and
+    // Coupons are both feature-guarded server-side (404 when off); calling
+    // them unconditionally is exactly the bug this rewrite fixes.
+    if (flagsLoading) return;
+
+    const fetchJson = async <T,>(url: string, label: string): Promise<T> => {
+      return fetchAdminResource<T>(url).catch((err: unknown) => { throw err instanceof Error ? err : new Error(`${label} failed`); });
     };
 
-    Promise.all([
-      fetchJson("/api/admin/orders?status=PENDING&pageSize=1", "orders"),
-      fetchJson("/api/admin/payouts?status=PENDING&pageSize=1", "payouts"),
-      fetchJson("/api/admin/reviews?status=pending&pageSize=1", "reviews"),
-      fetchJson("/api/admin/coupons?validity.isActive=true&pageSize=1", "coupons"),
-    ])
+    // Two response-shape conventions coexist in the admin API: orders/payouts
+    // nest their totals under meta/summary; reviews/coupons return a flat
+    // {items,total} shape. Type each call to match its route exactly instead
+    // of guessing one shape for all four (the original bug here).
+    const ordersPromise = fetchJson<{ data?: { orders?: RecentOrder[]; meta?: { total?: number } } }>(
+      `${API_ROUTES.ADMIN.ORDERS}?filters=status==PENDING&pageSize=1`, "orders",
+    );
+    const reviewsPromise = fetchJson<{ data?: { total?: number } }>(
+      `${API_ROUTES.ADMIN.REVIEWS}?filters=status==pending&pageSize=1`, "reviews",
+    );
+    const payoutsPromise = flags.PAYOUTS
+      ? fetchJson<{ data?: { summary?: { pending?: number } } }>(`${API_ROUTES.ADMIN.PAYOUTS}?pageSize=1`, "payouts")
+      : Promise.resolve(null);
+    const couponsPromise = flags.COUPONS
+      ? fetchJson<{ data?: { total?: number } }>(
+          `${API_ROUTES.ADMIN.COUPONS}?filters=validity.isActive==true&pageSize=1`, "coupons",
+        )
+      : Promise.resolve(null);
+
+    Promise.all([ordersPromise, payoutsPromise, reviewsPromise, couponsPromise])
       .then(([orders, payouts, reviews, coupons]) => {
         setStats({
-          pendingOrders: orders?.data?.total ?? orders?.data?.items?.length ?? 0,
-          pendingPayouts: payouts?.data?.total ?? payouts?.data?.items?.length ?? 0,
-          pendingReviews: reviews?.data?.total ?? reviews?.data?.items?.length ?? 0,
-          activeCoupons: coupons?.data?.total ?? coupons?.data?.items?.length ?? 0,
+          pendingOrders: orders?.data?.meta?.total ?? 0,
+          // The payouts route already computes a full status breakdown
+          // server-side regardless of filters — read it directly rather
+          // than re-deriving "pending" from a filtered list call.
+          pendingPayouts: payouts?.data?.summary?.pending ?? null,
+          pendingReviews: reviews?.data?.total ?? 0,
+          activeCoupons: coupons?.data?.total ?? null,
         });
       })
       .catch((err) => {
@@ -157,15 +182,15 @@ export default function Page() {
         showToast(msg, "error");
       });
 
-    fetchJson("/api/admin/orders?sort=-createdAt&pageSize=5", "recent orders")
+    fetchJson<{ data?: { orders?: RecentOrder[] } }>(`${API_ROUTES.ADMIN.ORDERS}?sorts=-createdAt&pageSize=5`, "recent orders")
       .then((data) => {
-        if (data?.data?.items) setRecentOrders(data.data.items as RecentOrder[]);
+        if (data?.data?.orders) setRecentOrders(data.data.orders);
       })
       .catch((err) => {
         const msg = err instanceof Error ? err.message : "Couldn't load recent orders.";
         setLoadError((prev) => prev ?? msg);
       });
-  }, [showToast]);
+  }, [showToast, flagsLoading, flags.PAYOUTS, flags.COUPONS]);
 
   const toggleAdminBypass = useCallback(async (next: boolean) => {
     setBypassLoading(true);
@@ -204,9 +229,13 @@ export default function Page() {
           )}
           <Grid cols={2} gap="3" className="sm:grid-cols-4">
             <StatCard label="Pending Orders" value={stats?.pendingOrders ?? null} href={String(ROUTES.ADMIN.ORDERS)} />
-            <StatCard label="Pending Payouts" value={stats?.pendingPayouts ?? null} href={String(ROUTES.ADMIN.PAYOUTS)} />
+            {flags.PAYOUTS && (
+              <StatCard label="Pending Payouts" value={stats?.pendingPayouts ?? null} href={String(ROUTES.ADMIN.PAYOUTS)} />
+            )}
             <StatCard label="Pending Reviews" value={stats?.pendingReviews ?? null} href={String(ROUTES.ADMIN.REVIEWS)} />
-            <StatCard label="Active Coupons" value={stats?.activeCoupons ?? null} href={String(ROUTES.ADMIN.COUPONS)} />
+            {flags.COUPONS && (
+              <StatCard label="Active Coupons" value={stats?.activeCoupons ?? null} href={String(ROUTES.ADMIN.COUPONS)} />
+            )}
           </Grid>
         </Stack>
       )}

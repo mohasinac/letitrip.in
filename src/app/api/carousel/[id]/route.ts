@@ -1,7 +1,9 @@
 import { withProviders } from "@/providers.config";
 import {
-  carouselGET,
-  carouselPOST,
+  carouselItemGET,
+  carouselItemPATCH,
+  carouselItemDELETE,
 } from "@mohasinac/appkit";
-export const GET = withProviders(carouselGET);
-export const POST = withProviders(carouselPOST);
+export const GET = withProviders(carouselItemGET);
+export const PATCH = withProviders(carouselItemPATCH);
+export const DELETE = withProviders(carouselItemDELETE);

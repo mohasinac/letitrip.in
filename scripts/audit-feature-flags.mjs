@@ -55,6 +55,7 @@ const GUARDED_ROUTES = [
   // COUPONS (P-2)
   { dir: "src/app/api/admin/coupons",        flag: "FEATURE_COUPONS" },
   { dir: "src/app/api/store/coupons",        flag: "FEATURE_COUPONS" },
+  { dir: "src/app/api/user/coupons",         flag: "FEATURE_COUPONS" },
   // PAYOUTS (P-7)
   { dir: "src/app/api/admin/payouts",        flag: "FEATURE_PAYOUTS" },
   { dir: "src/app/api/store/payouts",        flag: "FEATURE_PAYOUTS" },
@@ -66,6 +67,8 @@ const GUARDED_ROUTES = [
   // SCAM_REGISTRY (P-12)
   { dir: "src/app/api/admin/scammers",       flag: "FEATURE_SCAM_REGISTRY" },
   { dir: "src/app/api/scams",                flag: "FEATURE_SCAM_REGISTRY" },
+  // BUNDLES (P-17)
+  { dir: "src/app/api/admin/bundles",        flag: "FEATURE_BUNDLES" },
 ];
 
 function walkTs(dir) {

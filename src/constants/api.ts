@@ -102,6 +102,7 @@ const USER_LETITRIP = {
   ORDER_BY_ID: API_ENDPOINTS.ACCOUNT.ORDER_BY_ID,
   WISHLIST: API_ENDPOINTS.ACCOUNT.WISHLIST,
   WISHLIST_ITEM: (productId: string) => `/api/user/wishlist/${productId}`,
+  WISHLIST_VALIDATE: API_ENDPOINTS.ACCOUNT.WISHLIST_VALIDATE,
   NOTIFICATIONS: "/api/user/notifications",
   NOTIFICATION_BY_ID: (id: string) => `/api/user/notifications/${id}`,
   NOTIFICATIONS_READ_ALL: "/api/user/notifications/read-all",
@@ -109,9 +110,16 @@ const USER_LETITRIP = {
   CHANGE_PASSWORD: API_ENDPOINTS.ACCOUNT.CHANGE_PASSWORD,
   OFFERS: "/api/user/offers",
   EVENTS: "/api/user/events",
+  REVIEWS: API_ENDPOINTS.ACCOUNT.REVIEWS,
+  BIDS: API_ENDPOINTS.ACCOUNT.BIDS,
+  EXPORT: API_ENDPOINTS.ACCOUNT.EXPORT,
+  COUPONS: API_ENDPOINTS.ACCOUNT.COUPONS,
+  COUPON_BY_ID: API_ENDPOINTS.ACCOUNT.COUPON_BY_ID,
 } as const;
 
 export const API_ROUTES = {
+  CONFIG: API_ENDPOINTS.CONFIG,
+  CART: API_ENDPOINTS.CART,
   AUTH: {
     LOGOUT: API_ENDPOINTS.AUTH.LOGOUT,
   },
@@ -141,6 +149,13 @@ export const API_ROUTES = {
   },
   SCAMS: {
     REPORTS: "/api/scams/reports",
+  },
+  // letitrip-only public item-request feature — no appkit equivalent (precedent:
+  // ADMIN_LETITRIP.ITEM_REQUESTS above is the admin-side counterpart, also consumer-only).
+  ITEM_REQUESTS: {
+    LIST: "/api/item-requests",
+    BY_ID: (id: string) => `/api/item-requests/${id}`,
+    REPLIES: (id: string) => `/api/item-requests/${id}/replies`,
   },
   // SB1-K — bundles + prize draws
   BUNDLES: {

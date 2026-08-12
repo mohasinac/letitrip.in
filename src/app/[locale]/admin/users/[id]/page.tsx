@@ -6,7 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { getAdminUser } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
-import { ADMIN_USER_DETAIL_TABS, type AdminUserDetailTabId } from "@/constants";
+import { ADMIN_USER_DETAIL_TABS, API_ROUTES, type AdminUserDetailTabId } from "@/constants";
 
 export default function Page() {
   const params = useParams<{ id: string }>();
@@ -14,7 +14,7 @@ export default function Page() {
   const [tab, setTab] = useState<AdminUserDetailTabId>("overview");
   const [user, setUser] = useState<Record<string, JsonValue> | null>(null);
   useEffect(() => {
-    getAdminUser(`/api/admin/users/${id}`)
+    getAdminUser(API_ROUTES.ADMIN.USER_BY_ID(id))
       .then((r) => r.json())
       .then((j) => setUser(j?.data ?? null))
       .catch(() => setUser(null));

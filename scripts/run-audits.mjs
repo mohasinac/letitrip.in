@@ -69,6 +69,7 @@ const AUDITS = [
   { name: "seed-external-urls",              script: "scripts/audit-seed-external-urls.mjs" },
   { name: "raw-form-input",                  script: "scripts/audit-raw-form-input.mjs" },
   { name: "sticky-offsets",                  script: "scripts/audit-sticky-offsets.mjs" },
+  { name: "bottom-offset",                   script: "scripts/audit-bottom-offset.mjs" },
   { name: "firebase-alias",                  script: "scripts/audit-firebase-alias.mjs" },
   { name: "semantic-colors",                 script: "scripts/audit-semantic-colors.mjs" },
   // Verifies the built-in TS theme presets stay aligned with the matching
@@ -132,6 +133,8 @@ const AUDITS = [
   { name: "unnecessary-use-client",         script: "scripts/audit-unnecessary-use-client.mjs" },
   // P-1: feature-flag discipline — all FEATURE_* reads via getFlag(), route guards present
   { name: "feature-flags",                  script: "scripts/audit-feature-flags.mjs" },
+  { name: "duplicate-routes",               script: "scripts/audit-duplicate-routes.mjs" },
+  { name: "hardcoded-api-routes",           script: "scripts/audit-hardcoded-api-routes.mjs" },
   // P-1: no raw fetch() in UI components — use server actions or src/lib/api/ wrappers
   { name: "direct-fetch-ui",               script: "scripts/audit-direct-fetch-ui.mjs" },
   // Strict-zero: blocks every known audit suppression/escape-hatch comment marker.

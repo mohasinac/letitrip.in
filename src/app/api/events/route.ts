@@ -59,7 +59,7 @@ async function _GET(request: Request): Promise<NextResponse> {
     });
   } catch (err) {
     void normalizeError(err);
-    logError("events", "listingProcessor upstream failed â€” falling back to local repo", err);
+    logError("events", "listingProcessor upstream failed — falling back to local repo", err);
     upstream = null;
   }
 
@@ -98,6 +98,8 @@ async function _GET(request: Request): Promise<NextResponse> {
   return response;
 }
 
+// rbac-public: public endpoint — no authentication required
 const __GET__g = withProviders(_GET);
 
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("EVENTS", __GET__g);

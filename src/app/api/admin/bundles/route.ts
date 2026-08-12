@@ -9,6 +9,7 @@ import {
   sortBy,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
+import { withFeatureGuard } from "@/lib/features";
 
 /**
  * Admin bundles API — S-SBUNI-4 2026-05-13.
@@ -33,7 +34,7 @@ function slugify(input: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-export const GET = withProviders(
+const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
@@ -101,7 +102,7 @@ export const GET = withProviders(
   }),
 );
 
-export const POST = withProviders(
+const __POST__g = withProviders(
   createRouteHandler<(typeof bundleCreateSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
@@ -159,3 +160,6 @@ export const POST = withProviders(
     },
   }),
 );
+
+export const GET = withFeatureGuard("BUNDLES", __GET__g);
+export const POST = withFeatureGuard("BUNDLES", __POST__g);

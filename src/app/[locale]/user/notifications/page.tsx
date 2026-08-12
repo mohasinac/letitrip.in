@@ -22,6 +22,7 @@ import {
   markAllUserNotificationsRead,
   deleteUserNotification,
 } from "@/lib/api/user-client";
+import { API_ROUTES } from "@/constants";
 
 const __P = {
   p4: "p-[var(--appkit-space-4)]",
@@ -156,7 +157,7 @@ export default function NotificationsPage() {
   const { data, isLoading } = useQuery<NotifResponse>({
     queryKey: ["user-notifications"],
     queryFn: () =>
-      getUserNotifications("/api/user/notifications?pageSize=100")
+      getUserNotifications(`${API_ROUTES.USER.NOTIFICATIONS}?pageSize=100`)
         .then((r) => r.json())
         .then((r) => r.data),
     enabled: !sessionLoading && !!user,
@@ -174,14 +175,14 @@ export default function NotificationsPage() {
 
   const { mutate: markRead } = useApiMutation({
     mutationFn: (id: string) =>
-      markUserNotificationRead(`/api/user/notifications/${id}`),
+      markUserNotificationRead(API_ROUTES.USER.NOTIFICATION_BY_ID(id)),
     onSuccess: invalidateNotifications,
     onError: () => showToast("Could not mark notification as read.", "error"),
   });
 
   const { mutate: markAllRead, isPending: markingAll } = useApiMutation({
     mutationFn: () =>
-      markAllUserNotificationsRead("/api/user/notifications/read-all"),
+      markAllUserNotificationsRead(API_ROUTES.USER.NOTIFICATIONS_READ_ALL),
     onSuccess: () => {
       invalidateNotifications();
       showToast("All notifications marked as read.", "success");
@@ -191,7 +192,7 @@ export default function NotificationsPage() {
 
   const { mutate: deleteNotif } = useApiMutation({
     mutationFn: (id: string) =>
-      deleteUserNotification(`/api/user/notifications/${id}`),
+      deleteUserNotification(API_ROUTES.USER.NOTIFICATION_BY_ID(id)),
     onSuccess: () => {
       invalidateNotifications();
       showToast("Notification deleted.", "info");

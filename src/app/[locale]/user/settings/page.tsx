@@ -168,7 +168,7 @@ function renderPrivacyTab() {
           Download a copy of your account data including your profile, addresses, and order history.
         </Text>
         <Div>
-          <Button variant="outline" size="sm" onClick={() => window.open("/api/user/export", "_blank")}>
+          <Button variant="outline" size="sm" onClick={() => window.open(API_ROUTES.USER.EXPORT, "_blank")}>
             Download My Data
           </Button>
         </Div>

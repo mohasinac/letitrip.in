@@ -1,22 +1,38 @@
 /**
- * GET /api/user/conversations â€” list the authenticated buyer's conversations.
+ * GET /api/user/conversations/[id] — read a single conversation.
+ *
+ * Auth delegated to `resolveConversationRole` so all conversation routes
+ * share one set of rules.
  */
 import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
   successResponse,
-  listConversationsForBuyer,
+  errorResponse,
+  getConversation,
+  ERROR_MESSAGES,
 } from "@mohasinac/appkit";
+import { resolveConversationRole } from "@/lib/conversations/authorise";
 
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
-    handler: async ({ user }) => {
-      const items = await listConversationsForBuyer(user!.uid);
-      return successResponse({ items, total: items.length });
+    handler: async ({ user, params }) => {
+      const id = (params as { id: string }).id;
+      const conv = await getConversation(id);
+      if (!conv)
+        return errorResponse(ERROR_MESSAGES.CONVERSATIONS.NOT_FOUND, 404);
+
+      const resolution = await resolveConversationRole(user!, conv);
+      if (!resolution)
+        return errorResponse(ERROR_MESSAGES.CONVERSATIONS.NOT_FOUND, 404);
+
+      return successResponse(conv);
     },
   }),
 );
 
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("CHAT", __GET__g);

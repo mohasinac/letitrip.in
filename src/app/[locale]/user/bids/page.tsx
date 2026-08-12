@@ -6,6 +6,7 @@ import { FieldSelect, ListingToolbar } from "@mohasinac/appkit/ui";
 import type { BidDocument } from "@mohasinac/appkit";
 import { Link } from "@/i18n/navigation";
 import { getUserBids } from "@/lib/api/user-client";
+import { API_ROUTES } from "@/constants";
 
 const SORT_OPTIONS = [
   { value: sortBy("bidTime", "DESC"), label: "Newest first" },
@@ -32,7 +33,7 @@ export default function UserBidsPage() {
   const { data, isLoading } = useQuery<{ bids: BidDocument[]; total: number }>({
     queryKey: ["user-bids"],
     queryFn: () =>
-      getUserBids("/api/user/bids?limit=100")
+      getUserBids(`${API_ROUTES.USER.BIDS}?limit=100`)
         .then((r) => r.json())
         .then((r) => r.data),
     enabled: !sessionLoading && !!user,

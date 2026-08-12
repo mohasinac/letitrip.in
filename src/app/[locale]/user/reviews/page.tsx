@@ -16,6 +16,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { FieldSelect, ListingToolbar } from "@mohasinac/appkit/ui";
 import { getUserReviews } from "@/lib/api/user-client";
+import { API_ROUTES } from "@/constants";
 
 const __P = {
   p5: "p-[var(--appkit-space-5)]",
@@ -89,7 +90,7 @@ export default function UserReviewsPage() {
 
   const { data, isLoading } = useQuery<{ reviews: ReviewItem[]; total: number }>({
     queryKey: ["user-reviews", user?.uid],
-    queryFn: () => getUserReviews("/api/user/reviews").then((r) => r.json()).then((r) => r.data),
+    queryFn: () => getUserReviews(API_ROUTES.USER.REVIEWS).then((r) => r.json()).then((r) => r.data),
     enabled: !sessionLoading && !!user,
     staleTime: 30_000,
   });

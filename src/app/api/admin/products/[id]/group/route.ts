@@ -1,113 +1,58 @@
 import { withProviders } from "@/providers.config";
-import type { JsonValue } from "@mohasinac/appkit";
-/**
- * Admin Products API Route
- * GET  /api/admin/products â€” Delegated to @mohasinac/feat-admin
- * POST /api/admin/products â€” Create a new product (admin, local)
- */
+import { createApiHandler, ApiErrors, successResponse } from "@mohasinac/appkit";
+import { productRepository, isAuctionListing } from "@mohasinac/appkit";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 
+const MSG_PRODUCT_NOT_FOUND = "Product not found.";
 
-import { createApiHandler } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { productRepository } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-import {
-  finalizeStagedMediaUrl,
-  finalizeStagedMediaField,
-  finalizeStagedMediaArray,
-} from "@mohasinac/appkit";
-import {
-  validateRequestBody,
-  formatZodErrors,
-  productCreateSchema,
-} from "@/validation/request-schemas";
-import { ROLES_ADMIN_MOD } from "@/constants";
+/** POST — start a group (admin, no ownership check) */
+// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
+export const POST = withProviders(createApiHandler({
+  roles: [...ROLES_ADMIN_ONLY],
+  permission: "admin:products:write",
+  handler: async ({ params }) => {
+    const productId = (params as { id: string }).id;
+    const product = await productRepository.findById(productId);
+    if (!product) return ApiErrors.notFound(MSG_PRODUCT_NOT_FOUND);
+    if (isAuctionListing(product)) return ApiErrors.badRequest("Auctions cannot be in groups");
+    if (product.groupId) return ApiErrors.badRequest("Product is already in a group");
 
-/**
- * GET /api/admin/products
- */
-export const GET = withProviders(createApiHandler({
-  roles: [...ROLES_ADMIN_MOD],
-  permission: "admin:products:read",
-  handler: async ({ request }) => {
-    const url = new URL(request.url);
-    const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
-    const pageSize = Math.min(
-      50,
-      Math.max(1, Number(url.searchParams.get("pageSize")) || 50),
-    );
-    const filters = url.searchParams.get("filters") ?? undefined;
-    const sorts =
-      url.searchParams.get("sorts") ??
-      url.searchParams.get("sort") ??
-      "-createdAt";
-    const result = await productRepository.list({
-      filters,
-      sorts,
-      page,
-      pageSize,
-    });
-    return successResponse({
-      items: result.items,
-      total: result.total,
-      page: result.page,
-      pageSize: result.pageSize,
-      totalPages: result.totalPages,
-      hasMore: result.hasMore,
-    });
+    const slug = product.slug ?? product.id;
+    await productRepository.startGroup(product.id, slug);
+    return successResponse({ groupId: slug }, "Group started");
   },
 }));
 
-/**
- * POST /api/admin/products
- *
- * Create a new product as admin (can set any status, sellerId etc.)
- */
-export const POST = withProviders(createApiHandler({
-  auth: true,
-  roles: [...ROLES_ADMIN_MOD],
+/** PATCH — update groupTitle (admin) */
+// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
+export const PATCH = withProviders(createApiHandler({
+  roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:products:write",
-    handler: async ({ request, user: _user }) => {
-    const body = await request.json();
-    const validation = validateRequestBody(productCreateSchema, body);
+  handler: async ({ request, params }) => {
+    const productId = (params as { id: string }).id;
+    const product = await productRepository.findById(productId);
+    if (!product) return ApiErrors.notFound(MSG_PRODUCT_NOT_FOUND);
+    if (!product.isGroupParent) return ApiErrors.badRequest("Product is not a group parent");
 
-    if (!validation.success) {
-      return errorResponse(
-        ERROR_MESSAGES.VALIDATION.FAILED,
-        400,
-        formatZodErrors(validation.errors),
-      );
-    }
+    const body = await request.json() as { groupTitle?: string };
+    await productRepository.updateGroupTitle(product.id, body.groupTitle ?? "");
+    return successResponse({ groupTitle: body.groupTitle }, "Group title updated");
+  },
+}));
 
-    const data = validation.data as Record<string, JsonValue> & {
-      mainImage?: string;
-      images?: string[];
-      video?: { url?: string; thumbnailUrl?: string };
-    };
-    if (typeof data.mainImage === "string" && data.mainImage) {
-      data.mainImage = await finalizeStagedMediaUrl(data.mainImage);
-    }
-    if (Array.isArray(data.images) && data.images.length > 0) {
-      data.images = await finalizeStagedMediaArray(data.images);
-    }
-    if (data.video?.url) {
-      data.video = {
-        ...data.video,
-        url: await finalizeStagedMediaUrl(data.video.url),
-        thumbnailUrl: await finalizeStagedMediaField(data.video.thumbnailUrl),
-      };
-    }
+/** DELETE — dissolve the group (admin) */
+// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
+export const DELETE = withProviders(createApiHandler({
+  roles: [...ROLES_ADMIN_ONLY],
+  permission: "admin:products:delete",
+  handler: async ({ params }) => {
+    const productId = (params as { id: string }).id;
+    const product = await productRepository.findById(productId);
+    if (!product) return ApiErrors.notFound(MSG_PRODUCT_NOT_FOUND);
+    if (!product.isGroupParent) return ApiErrors.badRequest("Product is not a group parent");
+    if (!product.groupId) return ApiErrors.badRequest("No groupId on product");
 
-    const product = await productRepository.create({
-      ...data,
-      storeId: body.storeId,
-      storeName: body.storeName || "Admin",
-    } as any);
-
-    serverLogger.info("Admin created product", { productId: product.id });
-
-    return successResponse(product, SUCCESS_MESSAGES.PRODUCT.CREATED, 201);
+    await productRepository.dissolveGroup(product.groupId);
+    return successResponse({}, "Group dissolved");
   },
 }));

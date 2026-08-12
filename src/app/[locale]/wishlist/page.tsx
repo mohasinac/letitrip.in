@@ -30,6 +30,7 @@ import type { EnrichedWishlistItem } from "@mohasinac/appkit/client";
 import { Span } from "@mohasinac/appkit/ui";
 import { removeFromWishlistAction, addWishlistItemToCartAction } from "@/actions/wishlist.actions";
 import { validateWishlist } from "@/lib/api/user-client";
+import { API_ROUTES } from "@/constants";
 
 const __P = {
   p4: "p-[var(--appkit-space-4)]",
@@ -173,7 +174,7 @@ export default function WishlistPage() {
 
     void (async () => {
       try {
-        const res = await validateWishlist("/api/user/wishlist/validate", {});
+        const res = await validateWishlist(API_ROUTES.USER.WISHLIST_VALIDATE, {});
         if (!res.ok) return;
         const data = (await res.json()) as { data: { removedCount: number } };
         const { removedCount } = data.data;

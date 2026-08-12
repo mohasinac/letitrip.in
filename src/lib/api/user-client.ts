@@ -1,6 +1,8 @@
 // NOT "use client" — typed REST wrappers for user account routes.
 // Imported from "use client" components; audit-direct-fetch-ui ignores /lib/api/.
 
+import { API_ENDPOINTS } from "@mohasinac/appkit";
+
 import type { JsonBody } from "./types";
 
 const JSON_HEADERS = { "Content-Type": "application/json" } as const;
@@ -68,7 +70,7 @@ export function deleteUserNotification(url: string): Promise<Response> {
 // ── Addresses ─────────────────────────────────────────────────────────────────
 
 export function requestAddressUnban(id: string, note: string): Promise<Response> {
-  return fetch(`/api/user/addresses/${id}`, {
+  return fetch(API_ENDPOINTS.ACCOUNT.ADDRESS_BY_ID(id), {
     method: "PUT",
     headers: JSON_HEADERS,
     credentials: CREDS,
@@ -83,7 +85,7 @@ export function getUserReviews(url: string): Promise<Response> {
 }
 
 export function getUserReviewsByRole(role: "buyer" | "seller"): Promise<Response> {
-  return fetch(`/api/user/reviews?reviewerRole=${role}`, { credentials: CREDS });
+  return fetch(`${API_ENDPOINTS.ACCOUNT.REVIEWS}?reviewerRole=${role}`, { credentials: CREDS });
 }
 
 // ── Wishlist validation ────────────────────────────────────────────────────────

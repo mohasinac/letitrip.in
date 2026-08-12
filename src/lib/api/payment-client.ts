@@ -1,6 +1,8 @@
 // NOT "use client" — typed REST wrappers for payment routes.
 // Imported from "use client" components; audit-direct-fetch-ui ignores /lib/api/.
 
+import { API_ENDPOINTS } from "@mohasinac/appkit";
+
 const JSON_HEADERS = { "Content-Type": "application/json" } as const;
 const CREDS = "include" as const;
 
@@ -20,7 +22,7 @@ export async function attachPaymentProof(
   orderId: string,
   body: AttachProofBody,
 ): Promise<AttachProofResult> {
-  const res = await fetch(`/api/orders/${orderId}/payment-proof`, {
+  const res = await fetch(API_ENDPOINTS.ORDERS.PAYMENT_PROOF(orderId), {
     method: "POST",
     headers: JSON_HEADERS,
     credentials: CREDS,
@@ -31,7 +33,7 @@ export async function attachPaymentProof(
 }
 
 export async function createCheckoutOrder(body: unknown): Promise<Response> {
-  return fetch("/api/checkout", {
+  return fetch(API_ENDPOINTS.CHECKOUT.PLACE_ORDER, {
     method: "POST",
     headers: JSON_HEADERS,
     credentials: CREDS,
@@ -42,7 +44,7 @@ export async function createCheckoutOrder(body: unknown): Promise<Response> {
 // ── Razorpay ─────────────────────────────────────────────────────────────────
 
 export async function createRazorpayOrder(amount: number): Promise<Response> {
-  return fetch("/api/payment/create-order", {
+  return fetch(API_ENDPOINTS.PAYMENT.CREATE_ORDER, {
     method: "POST",
     headers: JSON_HEADERS,
     credentials: CREDS,
@@ -58,7 +60,7 @@ export interface RazorpayVerifyBody {
 }
 
 export async function verifyRazorpayPayment(body: RazorpayVerifyBody): Promise<Response> {
-  return fetch("/api/payment/verify", {
+  return fetch(API_ENDPOINTS.PAYMENT.VERIFY, {
     method: "POST",
     headers: JSON_HEADERS,
     credentials: CREDS,

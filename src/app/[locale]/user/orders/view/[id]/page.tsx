@@ -22,6 +22,7 @@ import {
   type BundleOrderGroup,
 } from "@mohasinac/appkit";
 import { getOrderDigitalCode } from "@/lib/api/user-client";
+import { API_ROUTES } from "@/constants";
 
 const CLS_BUNDLE_BADGE = "inline-flex items-center rounded-full bg-fuchsia-100 dark:bg-fuchsia-900/30 px-[var(--appkit-space-2)] py-[var(--appkit-space-0-5)] text-[10px] font-semibold text-fuchsia-700 dark:text-fuchsia-300";
 
@@ -46,7 +47,7 @@ function paise(n: number, currency = "INR") {
 const CODE_REVEAL_STATUSES = new Set(["confirmed", "processing", "delivered"]);
 
 async function fetchOrderCode(orderId: string): Promise<RevealedCode> {
-  const res = await getOrderDigitalCode(`/api/orders/${orderId}/code`);
+  const res = await getOrderDigitalCode(API_ROUTES.ORDERS.CODE(orderId));
   const body = await res.json();
   if (!res.ok) throw new Error(body?.error ?? "Could not retrieve code");
   return body.data as RevealedCode;
@@ -316,7 +317,7 @@ function renderOrderActions(order: NonNullable<OrderData>, canTrack: boolean, ca
 export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { order, isLoading } = useOrder(id, {
-    endpoint: `/api/user/orders/${id}`,
+    endpoint: API_ROUTES.USER.ORDER_BY_ID(id),
   });
 
   const canCancel = order?.orderStatus === "pending" || order?.orderStatus === "confirmed";

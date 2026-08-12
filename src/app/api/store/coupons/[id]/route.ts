@@ -1,94 +1,146 @@
 import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
-import { couponsRepository, storeRepository } from "@mohasinac/appkit";
-import { sortBy, COUPON_FIELDS } from "@mohasinac/appkit";
-import { ROLES_STORE_READ, ROLES_STORE_WRITE } from "@/constants";
+import {
+  createRouteHandler,
+  successResponse,
+  errorResponse,
+  couponsRepository,
+  storeRepository,
+} from "@mohasinac/appkit";
+import { ROLES_STORE_WRITE } from "@/constants";
 
-const DEFAULT_SORTS = sortBy(COUPON_FIELDS.CREATED_AT);
+const MSG_COUPON_NOT_FOUND = "Coupon not found.";
 
-const createCouponSchema = z.object({
-  code: z.string().min(2).max(30).transform((v) => v.toUpperCase().replace(/\s+/g, "")),
-  type: z.enum(["percentage", "fixed", "free_shipping"]),
-  value: z.number().min(0).default(0),
-  minPurchase: z.number().min(0).optional(),
-  maxDiscount: z.number().min(0).optional(),
-  totalLimit: z.number().min(0).default(0),
-  perUserLimit: z.number().min(0).default(0),
-  startDate: z.string().min(1),
-  endDate: z.string().min(1),
-  isActive: z.boolean().default(true),
-  applicableProducts: z.array(z.string()).optional(),
-  applicableCategories: z.array(z.string()).optional(),
+const updateCouponSchema = z.object({
+  name: z.string().min(1).optional(),
+  description: z.string().optional(),
+  discount: z
+    .object({
+      value: z.number().min(0),
+      maxDiscount: z.number().optional(),
+      minPurchase: z.number().optional(),
+    })
+    .optional(),
+  usage: z
+    .object({
+      totalLimit: z.number().optional(),
+      perUserLimit: z.number().optional(),
+    })
+    .optional(),
+  validity: z
+    .object({
+      startDate: z
+        .string()
+        .transform((v) => new Date(v))
+        .optional(),
+      endDate: z
+        .string()
+        .optional()
+        .transform((v) => (v ? new Date(v) : undefined)),
+      isActive: z.boolean().optional(),
+    })
+    .optional(),
+  restrictions: z
+    .object({
+      applicableProducts: z.array(z.string()).optional(),
+      applicableCategories: z.array(z.string()).optional(),
+      firstTimeUserOnly: z.boolean().optional(),
+      combineWithSellerCoupons: z.boolean().optional(),
+    })
+    .optional(),
+  action: z.enum(["activate", "deactivate"]).optional(),
 });
 
-const __GET__g = withProviders(createRouteHandler({
-  auth: true,
-  roles: [...ROLES_STORE_READ],
-  permission: "store:api:write",
-  handler: async ({ request, user }) => {
-    const url = new URL(request.url);
-    const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
-    const pageSize = Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize")) || 100));
-    const sorts = url.searchParams.get("sorts") ?? url.searchParams.get("sort") ?? DEFAULT_SORTS;
-    const filters = url.searchParams.get("filters") ?? undefined;
+const __GET__g = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
+    handler: async ({ user, params }) => {
+      const id = (params as { id: string }).id;
+      const coupon = await couponsRepository.findById(id);
+      if (!coupon) return errorResponse(MSG_COUPON_NOT_FOUND, 404);
+      if (user!.role !== "admin") {
+        const store = await storeRepository.findByOwnerId(user!.uid);
+        if (!store || coupon.storeId !== store.id) {
+          return errorResponse(MSG_COUPON_NOT_FOUND, 404);
+        }
+      }
+      return successResponse(coupon);
+    },
+  }),
+);
 
-    const store = await storeRepository.findByOwnerId(user!.uid);
-    if (!store) return ApiErrors.forbidden("No store found for this account");
+const __PATCH__g = withProviders(
+  createRouteHandler<(typeof updateCouponSchema)["_output"]>({
+    auth: true,
+    roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
+    schema: updateCouponSchema,
+    handler: async ({ user, body, params }) => {
+      const id = (params as { id: string }).id;
+      const existing = await couponsRepository.findById(id);
+      if (!existing) return errorResponse(MSG_COUPON_NOT_FOUND, 404);
+      if (user!.role !== "admin") {
+        const store = await storeRepository.findByOwnerId(user!.uid);
+        if (!store || existing.storeId !== store.id) {
+          return errorResponse(MSG_COUPON_NOT_FOUND, 404);
+        }
+      }
+      const { action, validity, restrictions, ...updateData } = body!;
 
-    const storeFilter = `storeId==${store.id}`;
-    const combined = filters ? `${storeFilter},${filters}` : storeFilter;
+      // Guard: percentage coupons cannot have discount.value > 100
+      if (updateData.discount?.value !== undefined && existing.type === "percentage" && updateData.discount.value > 100) {
+        return errorResponse("Percentage discount cannot exceed 100%", 422);
+      }
 
-    const result = await couponsRepository.list({ filters: combined, sorts, page, pageSize });
-    return successResponse({ coupons: result.items, total: result.total });
-  },
-}));
+      if (action === "deactivate") {
+        await couponsRepository.deactivateCoupon(id);
+        return successResponse(null, "Coupon deactivated");
+      }
+      if (action === "activate") {
+        await couponsRepository.reactivateCoupon(id);
+        return successResponse(null, "Coupon activated");
+      }
+      const mergedRestrictions = restrictions
+        ? { ...existing.restrictions, ...restrictions }
+        : undefined;
+      const updated = await couponsRepository.update(id, {
+        ...updateData,
+        ...(validity ? { validity } : {}),
+        ...(mergedRestrictions ? { restrictions: mergedRestrictions } : {}),
+        updatedAt: new Date(),
+      } as any);
+      return successResponse(updated, "Coupon updated");
+    },
+  }),
+);
 
-const __POST__g = withProviders(createRouteHandler<(typeof createCouponSchema)["_output"]>({
-  auth: true,
-  roles: [...ROLES_STORE_WRITE],
-  permission: "store:api:write",
-  schema: createCouponSchema,
-  handler: async ({ body, user }) => {
-    const store = await storeRepository.findByOwnerId(user!.uid);
-    if (!store) return ApiErrors.forbidden("No store found for this account");
+const __DELETE__g = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: [...ROLES_STORE_WRITE],
+    permission: "store:api:write",
+    handler: async ({ user, params }) => {
+      const id = (params as { id: string }).id;
+      const existing = await couponsRepository.findById(id);
+      if (!existing) return errorResponse(MSG_COUPON_NOT_FOUND, 404);
+      if (user!.role !== "admin") {
+        const store = await storeRepository.findByOwnerId(user!.uid);
+        if (!store || existing.storeId !== store.id) {
+          return errorResponse(MSG_COUPON_NOT_FOUND, 404);
+        }
+      }
+      await couponsRepository.delete(id);
+      return successResponse(null, "Coupon deleted");
+    },
+  }),
+);
 
-    const { code, type, value, minPurchase, maxDiscount, totalLimit, perUserLimit, startDate, endDate, isActive, applicableProducts, applicableCategories } = body!;
-
-    if (type === "percentage" && value > 100) {
-      return ApiErrors.badRequest("Percentage discount cannot exceed 100%");
-    }
-
-    const discountValue = type === "fixed" ? Math.round(value * 100) : value;
-    const minPurchasePaise = minPurchase ? Math.round(minPurchase * 100) : undefined;
-    const maxDiscountPaise = maxDiscount ? Math.round(maxDiscount * 100) : undefined;
-
-    const existing = await couponsRepository.getCouponByCode(code);
-    if (existing) return ApiErrors.badRequest("A coupon with this code already exists");
-
-    const coupon = await couponsRepository.create({
-      code,
-      name: code,
-      description: "",
-      type,
-      scope: "seller",
-      storeId: store.id,
-      createdBy: user!.uid,
-      discount: { value: discountValue, ...(minPurchasePaise !== undefined && { minPurchase: minPurchasePaise }), ...(maxDiscountPaise !== undefined && { maxDiscount: maxDiscountPaise }) },
-      usage: { totalLimit, perUserLimit, currentUsage: 0 },
-      validity: { startDate: new Date(startDate), endDate: new Date(endDate), isActive },
-      restrictions: {
-        firstTimeUserOnly: false,
-        combineWithSellerCoupons: false,
-        ...(applicableProducts && applicableProducts.length > 0 && { applicableProducts }),
-        ...(applicableCategories && applicableCategories.length > 0 && { applicableCategories }),
-      },
-    } as Parameters<typeof couponsRepository.create>[0]);
-
-    return successResponse(coupon, "Coupon created");
-  },
-}));
-
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("COUPONS", __GET__g);
-export const POST = withFeatureGuard("COUPONS", __POST__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const PATCH = withFeatureGuard("COUPONS", __PATCH__g);
+// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
+export const DELETE = withFeatureGuard("COUPONS", __DELETE__g);

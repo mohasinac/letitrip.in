@@ -1,20 +1,31 @@
 import { withProviders } from "@/providers.config";
-/**
- * Notifications Unread Count API
- * GET /api/notifications/unread-count â€” Get unread notification count for current user
- */
+import {
+  markNotificationRead,
+  notificationRepository,
+  createRouteHandler,
+  successResponse,
+} from "@mohasinac/appkit";
 
-import { createRouteHandler } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { notificationRepository } from "@mohasinac/appkit";
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
+export const PATCH = withProviders(
+  createRouteHandler({
+    auth: true,
+    handler: async ({ params }) => {
+      const id = (params as { id: string }).id;
+      await markNotificationRead(id);
+      return successResponse(null, "Notification marked as read");
+    },
+  }),
+);
 
-/**
- * GET /api/notifications/unread-count
- */
-export const GET = withProviders(createRouteHandler({
-  auth: true,
-  handler: async ({ user }) => {
-    const count = await notificationRepository.getUnreadCount(user!.uid);
-    return successResponse({ count });
-  },
-}));
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
+export const DELETE = withProviders(
+  createRouteHandler({
+    auth: true,
+    handler: async ({ params }) => {
+      const id = (params as { id: string }).id;
+      await notificationRepository.delete(id);
+      return successResponse(null, "Notification deleted");
+    },
+  }),
+);

@@ -8,6 +8,7 @@ import {
   bundleUpdateSchema,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
+import { withFeatureGuard } from "@/lib/features";
 
 /**
  * Admin bundle [id] route — S-SBUNI-4 2026-05-13.
@@ -27,7 +28,7 @@ async function loadBundleOrFail(id: string) {
   return bundle;
 }
 
-export const GET = withProviders(
+const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
@@ -42,7 +43,7 @@ export const GET = withProviders(
   }),
 );
 
-export const PUT = withProviders(
+const __PUT__g = withProviders(
   createRouteHandler<(typeof bundleUpdateSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
@@ -62,7 +63,7 @@ export const PUT = withProviders(
   }),
 );
 
-export const DELETE = withProviders(
+const __DELETE__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
@@ -79,3 +80,7 @@ export const DELETE = withProviders(
     },
   }),
 );
+
+export const GET = withFeatureGuard("BUNDLES", __GET__g);
+export const PUT = withFeatureGuard("BUNDLES", __PUT__g);
+export const DELETE = withFeatureGuard("BUNDLES", __DELETE__g);

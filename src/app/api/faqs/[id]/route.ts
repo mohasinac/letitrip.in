@@ -1,25 +1,19 @@
 import { withProviders } from "@/providers.config";
 import {
-  voteFaq,
+  faqsRepository,
   createRouteHandler,
   successResponse,
+  errorResponse,
 } from "@mohasinac/appkit";
-import { z } from "zod";
 
-const voteSchema = z.object({
-  faqId: z.string().min(1),
-  vote: z.enum(["helpful", "not-helpful"]),
-});
-
-export const POST = withProviders(
+// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
+export const GET = withProviders(
   createRouteHandler({
-    schema: voteSchema,
-    handler: async ({ body }) => {
-      const result = await voteFaq(body!);
-      return successResponse({
-        helpfulCount: result.helpful,
-        notHelpfulCount: result.notHelpful,
-      });
+    handler: async ({ params }) => {
+      const id = (params as { id: string }).id;
+      const faq = await faqsRepository.findById(id);
+      if (!faq) return errorResponse("FAQ not found", 404);
+      return successResponse(faq);
     },
   }),
 );

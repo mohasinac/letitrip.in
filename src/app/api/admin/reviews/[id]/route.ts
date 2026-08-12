@@ -1,57 +1,66 @@
 import { withProviders } from "@/providers.config";
-/**
- * Admin Reviews API Route
- * GET /api/admin/reviews
- */
-import { createApiHandler } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { buildSieveFilters } from "@mohasinac/appkit";
-import { piiBlindIndex } from "@mohasinac/appkit";
+import { z } from "zod";
 import {
-  REVIEW_FIELDS,
-  ROLES_ADMIN_MOD,
-} from "@/constants";
-import { reviewRepository } from "@mohasinac/appkit";
+  createRouteHandler,
+  successResponse,
+  errorResponse,
+  reviewRepository,
+} from "@mohasinac/appkit";
+import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
-export const GET = withProviders(createApiHandler({
-  roles: [...ROLES_ADMIN_MOD],
-  permission: "admin:reviews:read",
-  handler: async ({ request }) => {
-    const url = new URL(request.url);
-    const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
-    const pageSize = Math.min(
-      50,
-      Math.max(1, Number(url.searchParams.get("pageSize")) || 50),
-    );
-    const filters = url.searchParams.get("filters") ?? undefined;
-    const sorts =
-      url.searchParams.get("sorts") ??
-      url.searchParams.get("sort") ??
-      "-createdAt";
-    const q = url.searchParams.get("q")?.trim() || "";
+const MSG_REVIEW_NOT_FOUND = "Review not found.";
 
-    const qFilter = q
-      ? `${REVIEW_FIELDS.USER_NAME_INDEX}==${piiBlindIndex(q)}`
-      : undefined;
-    const effectiveFilters =
-      buildSieveFilters(["", filters], ["", qFilter]) || undefined;
+const updateReviewSchema = z.object({
+  status: z.enum(["pending", "approved", "rejected"]).optional(),
+  featured: z.boolean().optional(),
+  adminReply: z.string().optional(),
+  rejectionReason: z.string().optional(),
+});
 
-    // Avoid forcing extra composite indices for exact blind-index lookups.
-    const effectiveSorts = q ? undefined : sorts;
+export const GET = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: [...ROLES_ADMIN_MOD],
+    permission: "admin:reviews:read",
+    handler: async ({ params }) => {
+      const id = (params as { id: string }).id;
+      const review = await reviewRepository.findById(id);
+      if (!review) return errorResponse(MSG_REVIEW_NOT_FOUND, 404);
+      return successResponse(review);
+    },
+  }),
+);
 
-    const result = await reviewRepository.listAll({
-      filters: effectiveFilters,
-      sorts: effectiveSorts,
-      page,
-      pageSize,
-    });
-    return successResponse({
-      items: result.items,
-      total: result.total,
-      page: result.page,
-      pageSize: result.pageSize,
-      totalPages: result.totalPages,
-      hasMore: result.hasMore,
-    });
-  },
-}));
+export const PATCH = withProviders(
+  createRouteHandler<(typeof updateReviewSchema)["_output"]>({
+    auth: true,
+    roles: [...ROLES_ADMIN_MOD],
+    permission: "admin:reviews:write",
+    schema: updateReviewSchema,
+    handler: async ({ body, params }) => {
+      const id = (params as { id: string }).id;
+      const existing = await reviewRepository.findById(id);
+      if (!existing) return errorResponse(MSG_REVIEW_NOT_FOUND, 404);
+      const updated = await reviewRepository.update(id, {
+        ...body,
+        updatedAt: new Date(),
+      } as any);
+      return successResponse(updated, "Review updated");
+    },
+  }),
+);
+
+export const DELETE = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: [...ROLES_ADMIN_ONLY],
+    permission: "admin:reviews:delete",
+    handler: async ({ params }) => {
+      const id = (params as { id: string }).id;
+      const existing = await reviewRepository.findById(id);
+      if (!existing) return errorResponse(MSG_REVIEW_NOT_FOUND, 404);
+      await reviewRepository.delete(id);
+      return successResponse(null, "Review deleted");
+    },
+  }),
+);

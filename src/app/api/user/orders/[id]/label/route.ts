@@ -1,59 +1,41 @@
 import { withProviders } from "@/providers.config";
 import {
-  orderRepository,
-  successResponse,
   createRouteHandler,
-  getSearchParams,
-  getStringParam,
-  serverLogger,
-  type OrderStatus,
-  OrderStatusValues,
-  orderDocumentToOrder,
-  sortBy,
-  ORDER_FIELDS,
+  ApiErrors,
+  orderRepository,
 } from "@mohasinac/appkit";
+import { ROLES_AUTHENTICATED } from "@/constants";
 
-const VALID_STATUSES: OrderStatus[] = [
-  OrderStatusValues.PENDING,
-  OrderStatusValues.CONFIRMED,
-  OrderStatusValues.SHIPPED,
-  OrderStatusValues.DELIVERED,
-  OrderStatusValues.CANCELLED,
-  OrderStatusValues.RETURNED,
-];
-
+/**
+ * Shipping label PDF — returned by the shipping provider (Shiprocket) once an
+ * order has a tracking number. Falls back to a plain summary if no label URL.
+ */
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    handler: async ({ user, request }) => {
-      const searchParams = getSearchParams(request);
-      const statusParam = getStringParam(searchParams, "status");
-      const pageParam = getStringParam(searchParams, "page") ?? "1";
-      const perPageParam = getStringParam(searchParams, "perPage") ?? "12";
-
-      const filters =
-        statusParam && VALID_STATUSES.includes(statusParam as OrderStatus)
-          ? `status==${statusParam}`
-          : undefined;
-
-      const result = await orderRepository.listForUser(user!.uid, {
-        filters,
-        sorts: sortBy(ORDER_FIELDS.ORDER_DATE),
-        page: pageParam,
-        pageSize: perPageParam,
-      });
-
-      serverLogger.info("Orders listed", {
-        userId: user!.uid,
-        count: result.total,
-      });
-
-      return successResponse({
-        items: result.items.map(orderDocumentToOrder),
-        total: result.total,
-        page: result.page,
-        perPage: result.pageSize,
-        totalPages: result.totalPages,
+    roles: [...ROLES_AUTHENTICATED],
+    permission: "user:api:access",
+    handler: async ({ user, params }) => {
+      const id = (params as { id: string }).id;
+      const order = await orderRepository.findById(id);
+      if (!order) return ApiErrors.notFound("Not found");
+      if (order.userId !== user!.uid && !["admin", "moderator", "seller"].includes(user!.role ?? "")) {
+        return ApiErrors.forbidden("Not authorised");
+      }
+      const labelUrl = (order as { shippingLabelUrl?: string }).shippingLabelUrl;
+      if (labelUrl) {
+        const res = await fetch(labelUrl);
+        return new Response(res.body, {
+          status: res.status,
+          headers: {
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename="label-${id}.pdf"`,
+          },
+        });
+      }
+      return new Response(`No shipping label yet for ${id}.`, {
+        status: 404,
+        headers: { "Content-Type": "text/plain" },
       });
     },
   }),

@@ -64,9 +64,9 @@ async function _GET(request: Request): Promise<NextResponse> {
     const safe = validateSieveFilters(std.filters, SAFE_STORE_FILTER_FIELDS);
     if (safe) userParts.push(safe);
   }
-  // listingProcessor doesn't apply baseQuery guards â€” include them in the full filter string.
+  // listingProcessor doesn't apply baseQuery guards — include them in the full filter string.
   const filtersForFunction = ["status==active", "isPublic==true", ...userParts].join(",");
-  // listStores() adds status==active + isPublic==true as Firestore .where() â€” don't duplicate.
+  // listStores() adds status==active + isPublic==true as Firestore .where() — don't duplicate.
   const filtersForRepo = userParts.join(",");
 
   let items: unknown[];
@@ -86,7 +86,7 @@ async function _GET(request: Request): Promise<NextResponse> {
     });
   } catch (err) {
     void normalizeError(err);
-    logError("stores", "listingProcessor upstream failed â€” falling back to local repo", err);
+    logError("stores", "listingProcessor upstream failed — falling back to local repo", err);
     upstream = null;
   }
 
@@ -122,4 +122,5 @@ async function _GET(request: Request): Promise<NextResponse> {
   return response;
 }
 
+// rbac-public: public endpoint — no authentication required
 export const GET = withProviders(_GET);

@@ -7,6 +7,7 @@ import {
   productRepository,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY } from "@/constants";
+import { withFeatureGuard } from "@/lib/features";
 
 function isProductAvailable(p: { status?: string; isSold?: boolean; availableQuantity?: number } | null): boolean {
   if (!p) return false;
@@ -15,7 +16,7 @@ function isProductAvailable(p: { status?: string; isSold?: boolean; availableQua
   return p.status === "published";
 }
 
-export const POST = withProviders(
+const __POST__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
@@ -46,3 +47,5 @@ export const POST = withProviders(
     },
   }),
 );
+
+export const POST = withFeatureGuard("BUNDLES", __POST__g);

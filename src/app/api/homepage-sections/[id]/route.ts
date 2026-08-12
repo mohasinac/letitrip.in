@@ -1,25 +1,22 @@
-import { withProviders } from "@/providers.config";
-import {
-  homepageGET,
-  homepageSectionsRepository,
-  createRouteHandler,
-  successResponse,
-} from "@mohasinac/appkit";
-import { ROLES_ADMIN_ONLY } from "@/constants";
+import { initProviders } from "@/providers.config";
 
-export const GET = withProviders(homepageGET);
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
+export async function GET(...args: Parameters<typeof import("@mohasinac/appkit").homepageSectionItemGET>) {
+  await initProviders();
+  const { homepageSectionItemGET } = await import("@mohasinac/appkit");
+  return homepageSectionItemGET(...args);
+}
 
-export const POST = withProviders(
-  createRouteHandler({
-    auth: true,
-    roles: [...ROLES_ADMIN_ONLY],
-    handler: async ({ request }) => {
-      const body = await request.json();
-      const section = await homepageSectionsRepository.create({
-        ...body,
-        createdAt: new Date(),
-      });
-      return successResponse(section, "Homepage section created", 201);
-    },
-  }),
-);
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
+export async function PATCH(...args: Parameters<typeof import("@mohasinac/appkit").homepageSectionItemPATCH>) {
+  await initProviders();
+  const { homepageSectionItemPATCH } = await import("@mohasinac/appkit");
+  return homepageSectionItemPATCH(...args);
+}
+
+// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
+export async function DELETE(...args: Parameters<typeof import("@mohasinac/appkit").homepageSectionItemDELETE>) {
+  await initProviders();
+  const { homepageSectionItemDELETE } = await import("@mohasinac/appkit");
+  return homepageSectionItemDELETE(...args);
+}

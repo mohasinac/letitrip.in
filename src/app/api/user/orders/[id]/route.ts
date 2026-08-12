@@ -1,60 +1,21 @@
 import { withProviders } from "@/providers.config";
 import {
-  orderRepository,
-  successResponse,
+  getOrderByIdForUser,
   createRouteHandler,
-  getSearchParams,
-  getStringParam,
-  serverLogger,
-  type OrderStatus,
-  OrderStatusValues,
+  successResponse,
+  errorResponse,
   orderDocumentToOrder,
-  sortBy,
-  ORDER_FIELDS,
 } from "@mohasinac/appkit";
 
-const VALID_STATUSES: OrderStatus[] = [
-  OrderStatusValues.PENDING,
-  OrderStatusValues.CONFIRMED,
-  OrderStatusValues.SHIPPED,
-  OrderStatusValues.DELIVERED,
-  OrderStatusValues.CANCELLED,
-  OrderStatusValues.RETURNED,
-];
-
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    handler: async ({ user, request }) => {
-      const searchParams = getSearchParams(request);
-      const statusParam = getStringParam(searchParams, "status");
-      const pageParam = getStringParam(searchParams, "page") ?? "1";
-      const perPageParam = getStringParam(searchParams, "perPage") ?? "12";
-
-      const filters =
-        statusParam && VALID_STATUSES.includes(statusParam as OrderStatus)
-          ? `status==${statusParam}`
-          : undefined;
-
-      const result = await orderRepository.listForUser(user!.uid, {
-        filters,
-        sorts: sortBy(ORDER_FIELDS.ORDER_DATE),
-        page: pageParam,
-        pageSize: perPageParam,
-      });
-
-      serverLogger.info("Orders listed", {
-        userId: user!.uid,
-        count: result.total,
-      });
-
-      return successResponse({
-        items: result.items.map(orderDocumentToOrder),
-        total: result.total,
-        page: result.page,
-        perPage: result.pageSize,
-        totalPages: result.totalPages,
-      });
+    handler: async ({ user, params }) => {
+      const orderId = (params as { id: string }).id;
+      const doc = await getOrderByIdForUser(user!.uid, orderId);
+      if (!doc) return errorResponse("Order not found", 404);
+      return successResponse(orderDocumentToOrder(doc));
     },
   }),
 );

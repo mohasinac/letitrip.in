@@ -1,5 +1,6 @@
 "use client";
 
+import { API_ROUTES } from "@/constants/api";
 import { deleteCartItem, updateCartItemQty, validateCart, persistCartSelection, addToWishlist } from "@/lib/api/cart-client";
 
 const CLS_CHECKOUT_BTN = "w-full bg-zinc-900 text-white hover:bg-zinc-800 bg-[var(--appkit-color-surface)] dark:text-zinc-900 dark:hover:bg-zinc-200";
@@ -190,7 +191,7 @@ export function CartRouteClient() {
   const guest = useGuestCart();
   const { data: serverCart, isLoading: serverLoading, isError: serverCartError, refetch } =
     useCartQuery<ServerCartResponse>({
-      endpoint: "/api/cart",
+      endpoint: API_ROUTES.CART.GET,
       queryKey: ["cart"],
       enabled: !!user?.uid,
     });

@@ -4,6 +4,7 @@ import { AdminAnalyticsView, Label, Input } from "@mohasinac/appkit/client";
 import { AdminLiveOverviewCard } from "./analytics/AdminLiveOverviewCard";
 
 import { Row } from "@mohasinac/appkit";
+import { API_ROUTES } from "@/constants";
 function today() {
   // eslint-disable-next-line lir/no-raw-date
   return new Date().toISOString().slice(0, 10);
@@ -19,7 +20,7 @@ export function AdminAnalyticsClient() {
   const [startDate, setStartDate] = useState(daysAgo(30));
   const [endDate, setEndDate] = useState(today());
 
-  const endpoint = `/api/admin/analytics?startDate=${startDate}&endDate=${endDate}`;
+  const endpoint = `${API_ROUTES.ADMIN.ANALYTICS}?startDate=${startDate}&endDate=${endDate}`;
 
   return (
     <>
@@ -35,7 +36,7 @@ export function AdminAnalyticsClient() {
               value={startDate}
               max={endDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="rounded-lg border border-zinc-300 bg-white px-[var(--appkit-space-2-5)] py-[var(--appkit-space-1-5)] text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text)] border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text)]"
+              className="rounded-lg border px-[var(--appkit-space-2-5)] py-[var(--appkit-space-1-5)] text-[length:var(--appkit-text-sm)] border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text)]"
             />
           </Label>
           <Label layout="flex" gap="md" color="muted" size="sm">
@@ -46,7 +47,7 @@ export function AdminAnalyticsClient() {
               min={startDate}
               max={today()}
               onChange={(e) => setEndDate(e.target.value)}
-              className="rounded-lg border border-zinc-300 bg-white px-[var(--appkit-space-2-5)] py-[var(--appkit-space-1-5)] text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text)] border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text)]"
+              className="rounded-lg border px-[var(--appkit-space-2-5)] py-[var(--appkit-space-1-5)] text-[length:var(--appkit-text-sm)] border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text)]"
             />
           </Label>
         </Row>

@@ -2,6 +2,7 @@
 import { use } from "react";
 import { Link } from "@/i18n/navigation";
 import { useOrder, ROUTES, Div, Row, Span, Stack, Table, Thead, Tbody, Tr, Th, Td, Text, Heading, Button } from "@mohasinac/appkit/client";
+import { API_ROUTES } from "@/constants";
 
 function paise(n: number, currency = "INR") {
   return new Intl.NumberFormat("en-IN", {
@@ -168,7 +169,7 @@ function renderInvoiceTotals(order: OrderData) {
 
 export default function InvoicePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { order, isLoading } = useOrder(id, { endpoint: `/api/user/orders/${id}` });
+  const { order, isLoading } = useOrder(id, { endpoint: API_ROUTES.USER.ORDER_BY_ID(id) });
 
   if (isLoading) {
     return (

@@ -29,7 +29,7 @@ const SORT_OPTIONS = [
 ];
 
 async function fetchOrderCode(orderId: string): Promise<RevealedCode> {
-  const res = await getOrderDigitalCode(`/api/orders/${orderId}/code`);
+  const res = await getOrderDigitalCode(API_ROUTES.ORDERS.CODE(orderId));
   const body = await res.json();
   if (!res.ok) throw new Error(body?.error ?? "Could not retrieve code");
   return body.data as RevealedCode;

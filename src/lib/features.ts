@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { NextResponse } from "next/server";
+import { notFound } from "next/navigation";
 
 /**
  * All feature flags. Each maps to a FEATURE_<NAME>=true/false env var.
@@ -57,11 +58,24 @@ export function anyFlagEnabled(...names: FeatureFlag[]): boolean {
  */
  
 export function withFeatureGuard(flag: FeatureFlag, handler: (...args: any[]) => any) {
-   
+
   return (...args: any[]) => {
     if (!getFlag(flag)) {
       return NextResponse.json({ error: "Not Found" }, { status: 404 });
     }
     return handler(...args);
   };
+}
+
+/**
+ * Call in a Server Component layout for a flag-gated route segment — 404s the
+ * whole segment when the flag is off, mirroring withFeatureGuard's API-route
+ * behavior at the page level. Use alongside (not instead of) any RBAC check:
+ *   requireFeatureFlag("COUPONS");
+ *   return <ExistingRbacLayout>{children}</ExistingRbacLayout>;
+ */
+export function requireFeatureFlag(flag: FeatureFlag): void {
+  if (!getFlag(flag)) {
+    notFound();
+  }
 }

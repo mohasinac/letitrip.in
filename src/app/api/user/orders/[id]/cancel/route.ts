@@ -1,60 +1,24 @@
 import { withProviders } from "@/providers.config";
+import { z } from "zod";
 import {
-  orderRepository,
-  successResponse,
+  cancelOrderForUser,
   createRouteHandler,
-  getSearchParams,
-  getStringParam,
-  serverLogger,
-  type OrderStatus,
-  OrderStatusValues,
-  orderDocumentToOrder,
-  sortBy,
-  ORDER_FIELDS,
+  successResponse,
 } from "@mohasinac/appkit";
 
-const VALID_STATUSES: OrderStatus[] = [
-  OrderStatusValues.PENDING,
-  OrderStatusValues.CONFIRMED,
-  OrderStatusValues.SHIPPED,
-  OrderStatusValues.DELIVERED,
-  OrderStatusValues.CANCELLED,
-  OrderStatusValues.RETURNED,
-];
+const cancelSchema = z.object({
+  reason: z.string().min(1).max(500).default("Cancelled by user"),
+});
 
-export const GET = withProviders(
-  createRouteHandler({
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
+export const POST = withProviders(
+  createRouteHandler<(typeof cancelSchema)["_output"]>({
     auth: true,
-    handler: async ({ user, request }) => {
-      const searchParams = getSearchParams(request);
-      const statusParam = getStringParam(searchParams, "status");
-      const pageParam = getStringParam(searchParams, "page") ?? "1";
-      const perPageParam = getStringParam(searchParams, "perPage") ?? "12";
-
-      const filters =
-        statusParam && VALID_STATUSES.includes(statusParam as OrderStatus)
-          ? `status==${statusParam}`
-          : undefined;
-
-      const result = await orderRepository.listForUser(user!.uid, {
-        filters,
-        sorts: sortBy(ORDER_FIELDS.ORDER_DATE),
-        page: pageParam,
-        pageSize: perPageParam,
-      });
-
-      serverLogger.info("Orders listed", {
-        userId: user!.uid,
-        count: result.total,
-      });
-
-      return successResponse({
-        items: result.items.map(orderDocumentToOrder),
-        total: result.total,
-        page: result.page,
-        perPage: result.pageSize,
-        totalPages: result.totalPages,
-      });
+    schema: cancelSchema,
+    handler: async ({ user, body, params }) => {
+      const orderId = (params as { id: string }).id;
+      await cancelOrderForUser(user!.uid, orderId, body!.reason);
+      return successResponse(null, "Order cancelled");
     },
   }),
 );

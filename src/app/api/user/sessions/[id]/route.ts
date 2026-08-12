@@ -1,24 +1,18 @@
 import { withProviders } from "@/providers.config";
-/**
- * User Sessions API - My Sessions
- * GET /api/user/sessions - Get my active sessions
- * DELETE /api/user/sessions/[id] - Revoke my session
- *
- * Allows users to view and manage their own sessions.
- */
+import {
+  revokeSession,
+  createRouteHandler,
+  successResponse,
+} from "@mohasinac/appkit";
 
-import { sessionRepository } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
-
-/**
- * Get current user's sessions
- */
-export const GET = withProviders(createRouteHandler({
-  auth: true,
-  handler: async ({ user }) => {
-    const sessions = await sessionRepository.findAllByUser(user!.uid, 20);
-    const activeCount = await sessionRepository.countActiveByUser(user!.uid);
-    return successResponse({ sessions, activeCount, total: sessions.length });
-  },
-}));
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
+export const DELETE = withProviders(
+  createRouteHandler({
+    auth: true,
+    handler: async ({ user, params }) => {
+      const sessionId = (params as { id: string }).id;
+      await revokeSession(sessionId, user!.uid);
+      return successResponse(null, "Session revoked");
+    },
+  }),
+);

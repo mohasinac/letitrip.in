@@ -36,7 +36,7 @@ import {
   sendConsentOtpAction,
   verifyConsentOtpAction,
 } from "@/actions/checkout.actions";
-import { UI_LABELS } from "@/constants";
+import { API_ROUTES, UI_LABELS } from "@/constants";
 import {
   createCheckoutOrder,
   createRazorpayOrder,
@@ -747,7 +747,7 @@ export function CheckoutRouteClient({
   });
 
   const { data: cartData } = useCartQuery<ServerCartResponse>({
-    endpoint: "/api/cart",
+    endpoint: API_ROUTES.CART.GET,
     queryKey: ["cart", user?.uid],
     enabled: !!user?.uid,
   });

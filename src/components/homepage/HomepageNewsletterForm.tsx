@@ -65,7 +65,7 @@ export function HomepageNewsletterForm() {
   return (
     <Form
       onSubmit={(e) => e.preventDefault()}
-      className="mx-auto flex w-full max-w-xl flex-col gap-[var(--appkit-space-1)]"
+      className="flex w-full max-w-xl flex-col gap-[var(--appkit-space-1)]"
     >
       {({ setFieldError, clearErrors }) => (
         <>

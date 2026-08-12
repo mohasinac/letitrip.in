@@ -2,15 +2,55 @@ import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
   successResponse,
+  errorResponse,
   notificationRepository,
 } from "@mohasinac/appkit";
 
-export const POST = withProviders(
+const MSG_NOTIFICATION_NOT_FOUND = "Notification not found.";
+
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
+export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    handler: async ({ user }) => {
-      const count = await notificationRepository.markAllAsRead(user!.uid);
-      return successResponse({ count }, `${count} notifications marked as read`);
+    handler: async ({ user, params }) => {
+      const id = (params as { id: string }).id;
+      const notification = await notificationRepository.findById(id);
+      if (!notification || notification.userId !== user!.uid) {
+        return errorResponse(MSG_NOTIFICATION_NOT_FOUND, 404);
+      }
+      return successResponse(notification);
+    },
+  }),
+);
+
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
+export const PATCH = withProviders(
+  createRouteHandler({
+    auth: true,
+    handler: async ({ user, params }) => {
+      const id = (params as { id: string }).id;
+      const notification = await notificationRepository.findById(id);
+      if (!notification || notification.userId !== user!.uid) {
+        return errorResponse(MSG_NOTIFICATION_NOT_FOUND, 404);
+      }
+      const updated = await notificationRepository.markAsRead(id);
+      return successResponse(updated, "Notification marked as read");
+    },
+  }),
+);
+
+// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
+export const DELETE = withProviders(
+  createRouteHandler({
+    auth: true,
+    handler: async ({ user, params }) => {
+      const id = (params as { id: string }).id;
+      const notification = await notificationRepository.findById(id);
+      if (!notification || notification.userId !== user!.uid) {
+        return errorResponse(MSG_NOTIFICATION_NOT_FOUND, 404);
+      }
+      await notificationRepository.delete(id);
+      return successResponse(null, "Notification deleted");
     },
   }),
 );
