@@ -3,6 +3,9 @@ import {
   createRouteHandler,
   successResponse,
   errorResponse,
+  isAdminUser,
+  isEmployeeUser,
+  isModeratorUser,
   supportRepository,
 } from "@mohasinac/appkit";
 
@@ -17,9 +20,9 @@ export const GET = withProviders(
 
       const isOwner = ticket.userId === user!.uid;
       const isStaff =
-        user!.role === "admin" ||
-        user!.role === "employee" ||
-        user!.role === "moderator";
+        isAdminUser(user) ||
+        isEmployeeUser(user) ||
+        isModeratorUser(user);
       if (!isOwner && !isStaff) return errorResponse("Forbidden", 403);
 
       return successResponse(ticket);

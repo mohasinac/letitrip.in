@@ -15,6 +15,7 @@ import {
   createRouteHandler,
   successResponse,
   errorResponse,
+  isAdminUser,
   orderRepository,
   storeRepository,
 } from "@mohasinac/appkit";
@@ -45,7 +46,7 @@ export const POST = withProviders(
       const order = await orderRepository.findById(id);
       if (!order) return errorResponse("Order not found", 404);
 
-      if (user!.role !== "admin") {
+      if (!isAdminUser(user)) {
         const store = await storeRepository.findByOwnerId(user!.uid);
         if (!store || order.storeId !== store.id)
           return errorResponse("Order not found", 404);

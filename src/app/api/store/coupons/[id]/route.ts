@@ -5,6 +5,7 @@ import {
   createRouteHandler,
   successResponse,
   errorResponse,
+  isAdminUser,
   couponsRepository,
   storeRepository,
 } from "@mohasinac/appkit";
@@ -61,7 +62,7 @@ const __GET__g = withProviders(
       const id = (params as { id: string }).id;
       const coupon = await couponsRepository.findById(id);
       if (!coupon) return errorResponse(MSG_COUPON_NOT_FOUND, 404);
-      if (user!.role !== "admin") {
+      if (!isAdminUser(user)) {
         const store = await storeRepository.findByOwnerId(user!.uid);
         if (!store || coupon.storeId !== store.id) {
           return errorResponse(MSG_COUPON_NOT_FOUND, 404);
@@ -82,7 +83,7 @@ const __PATCH__g = withProviders(
       const id = (params as { id: string }).id;
       const existing = await couponsRepository.findById(id);
       if (!existing) return errorResponse(MSG_COUPON_NOT_FOUND, 404);
-      if (user!.role !== "admin") {
+      if (!isAdminUser(user)) {
         const store = await storeRepository.findByOwnerId(user!.uid);
         if (!store || existing.storeId !== store.id) {
           return errorResponse(MSG_COUPON_NOT_FOUND, 404);
@@ -126,7 +127,7 @@ const __DELETE__g = withProviders(
       const id = (params as { id: string }).id;
       const existing = await couponsRepository.findById(id);
       if (!existing) return errorResponse(MSG_COUPON_NOT_FOUND, 404);
-      if (user!.role !== "admin") {
+      if (!isAdminUser(user)) {
         const store = await storeRepository.findByOwnerId(user!.uid);
         if (!store || existing.storeId !== store.id) {
           return errorResponse(MSG_COUPON_NOT_FOUND, 404);

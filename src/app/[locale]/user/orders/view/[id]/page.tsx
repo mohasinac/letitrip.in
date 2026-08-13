@@ -1,5 +1,5 @@
 "use client";
-import { use } from "react";
+import { use, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import {
   useOrder,
@@ -19,6 +19,8 @@ import {
 import {
   groupOrderItemsByBundle,
   BUNDLE_COPY,
+  useProduct,
+  PrizeRevealModal,
   type BundleOrderGroup,
 } from "@mohasinac/appkit";
 import { getOrderDigitalCode } from "@/lib/api/user-client";
@@ -54,6 +56,7 @@ async function fetchOrderCode(orderId: string): Promise<RevealedCode> {
 }
 
 type OrderItemT = {
+  productId: string;
   listingType?: string;
   prizeRevealStatus?: string;
   prizeRevealDeadline?: string | number | null;
@@ -71,7 +74,7 @@ type OrderItemT = {
 
 type OrderGroup = BundleOrderGroup<OrderItemT>;
 
-function renderItemRow(item: OrderItemT, key: string | number) {
+function renderItemRow(item: OrderItemT, key: string | number, onOpenReveal?: () => void) {
   const isPrizeDraw = item.listingType === "prize-draw";
   const revealStatus = item.prizeRevealStatus;
   const revealDeadline = item.prizeRevealDeadline
@@ -100,9 +103,15 @@ function renderItemRow(item: OrderItemT, key: string | number) {
                 Prize revealed{item.revealedItemNumber != null ? ` (#${item.revealedItemNumber})` : ""}
               </Span>
             ) : revealStatus === "open" ? (
-              <Span className={CLS_BUNDLE_BADGE}>
-                Reveal pending
-              </Span>
+              onOpenReveal ? (
+                <Button variant="primary" size="sm" onClick={onOpenReveal}>
+                  Reveal my prize
+                </Button>
+              ) : (
+                <Span className={CLS_BUNDLE_BADGE}>
+                  Reveal pending
+                </Span>
+              )
             ) : revealStatus === "pending" ? (
               <Span layout="inline-flex" color="warning" surface="warning-surface" weight="semibold" className="text-[10px]" rounded="full" padding="pill-xs">
                 Awaiting reveal window
@@ -130,9 +139,14 @@ function renderItemRow(item: OrderItemT, key: string | number) {
   );
 }
 
-function renderOrderGroup(g: OrderGroup, gi: number) {
+function renderOrderGroup(g: OrderGroup, gi: number, onOpenReveal?: (productId: string) => void) {
   if (g.kind === "single") {
-    return renderItemRow(g.item, gi);
+    const item = g.item;
+    return renderItemRow(
+      item,
+      gi,
+      item.listingType === "prize-draw" ? () => onOpenReveal?.(item.productId) : undefined,
+    );
   }
   // SB-UNI-5 2026-05-13 — bundle group: header + nested member rows.
   const headerLine = g.items[0].item;
@@ -150,7 +164,11 @@ function renderOrderGroup(g: OrderGroup, gi: number) {
       </Row>
       <Stack gap="sm">
         {g.items.map(({ item, index }) =>
-          renderItemRow(item, `bundle-${gi}-${index}`),
+          renderItemRow(
+            item,
+            `bundle-${gi}-${index}`,
+            item.listingType === "prize-draw" ? () => onOpenReveal?.(item.productId) : undefined,
+          ),
         )}
       </Stack>
     </Div>
@@ -203,7 +221,7 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
   );
 }
 
-function renderOrderItems(order: NonNullable<OrderData>) {
+function renderOrderItems(order: NonNullable<OrderData>, onOpenReveal?: (productId: string) => void) {
   if (!order.items?.length) return null;
   const groups = groupOrderItemsByBundle<OrderItemT>(order.items as OrderItemT[]);
   const hasDigitalCode = order.items.some((i: any) => i.listingType === "digital-code");
@@ -215,7 +233,7 @@ function renderOrderItems(order: NonNullable<OrderData>) {
           Items ({order.items.length})
         </Text>
         <Stack gap="md">
-          {groups.map((g, gi) => renderOrderGroup(g as OrderGroup, gi))}
+          {groups.map((g, gi) => renderOrderGroup(g as OrderGroup, gi, onOpenReveal))}
         </Stack>
       </Div>
       {hasDigitalCode && canReveal && (
@@ -323,17 +341,36 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   const canCancel = order?.orderStatus === "pending" || order?.orderStatus === "confirmed";
   const canTrack  = !!order?.trackingNumber;
 
+  const [revealProductId, setRevealProductId] = useState<string | null>(null);
+  // Reveal-mode prize draws (SB4-H/SB8-C) — fetch the public (spoiler-free)
+  // product doc for the collage once the buyer opens the reveal modal.
+  const { product: revealProduct } = useProduct(revealProductId ?? "", {
+    enabled: !!revealProductId,
+  });
+
   return (
-    <OrderDetailView
-      labels={{ title: order ? `Order #${order.id.slice(-8).toUpperCase()}` : "Order Details" }}
-      isLoading={isLoading}
-      isNotFound={!isLoading && !order}
-      renderBack={renderBack}
-      renderHeader={() => order ? renderOrderHeader(order) : null}
-      renderItems={() => order ? renderOrderItems(order) : null}
-      renderAddress={() => order ? renderOrderAddress(order) : null}
-      renderPayment={() => order ? renderOrderPayment(order) : null}
-      renderActions={() => order ? renderOrderActions(order, canTrack, canCancel) : null}
-    />
+    <>
+      <OrderDetailView
+        labels={{ title: order ? `Order #${order.id.slice(-8).toUpperCase()}` : "Order Details" }}
+        isLoading={isLoading}
+        isNotFound={!isLoading && !order}
+        renderBack={renderBack}
+        renderHeader={() => order ? renderOrderHeader(order) : null}
+        renderItems={() => order ? renderOrderItems(order, setRevealProductId) : null}
+        renderAddress={() => order ? renderOrderAddress(order) : null}
+        renderPayment={() => order ? renderOrderPayment(order) : null}
+        renderActions={() => order ? renderOrderActions(order, canTrack, canCancel) : null}
+      />
+      {order && revealProductId && (
+        <PrizeRevealModal
+          open={!!revealProductId}
+          onClose={() => setRevealProductId(null)}
+          items={(revealProduct as { prizeDrawItems?: any[] } | undefined)?.prizeDrawItems ?? []}
+          orderId={order.id}
+          productId={revealProductId}
+          initialPrizeWon={order.prizeWon}
+        />
+      )}
+    </>
   );
 }

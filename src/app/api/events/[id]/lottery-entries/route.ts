@@ -2,6 +2,8 @@ import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
+  isAdminUser,
+  isModeratorUser,
   sortBy,
   successResponse,
 } from "@mohasinac/appkit";
@@ -21,7 +23,7 @@ const __GET__g = withProviders(
         pageSize: Math.min(Number(sp.get("pageSize") ?? 20), 50),
       };
 
-      const isAdmin = user!.role === "admin" || user!.role === "moderator";
+      const isAdmin = isAdminUser(user) || isModeratorUser(user);
       const result = isAdmin
         ? await getLotteryEntriesForAdmin("event", id, model)
         : await getLotteryEntriesForUser(user!.uid, model);

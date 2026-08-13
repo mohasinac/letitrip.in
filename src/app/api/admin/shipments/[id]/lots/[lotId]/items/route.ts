@@ -27,7 +27,7 @@ export const GET = withProviders(
       const { lotId } = params as { id: string; lotId: string };
       const searchParams = getSearchParams(request);
       const page = getNumberParam(searchParams, "page", 1, { min: 1 });
-      const pageSize = getNumberParam(searchParams, "pageSize", 50, { min: 1, max: 100 });
+      const pageSize = getNumberParam(searchParams, "pageSize", 50, { min: 1, max: 50 });
       const sorts = getStringParam(searchParams, "sorts");
 
       const result = await shipmentItemsRepository.listByLot(lotId, {

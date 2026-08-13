@@ -404,6 +404,9 @@ Traditional dev server with webpack HMR + file watchers. Uses ~3.5 GB. Best for 
 | Digital-code listing (SB-UNI-F) | `digitalcode-` | `digitalcode-steam-cyberpunk-2077` |
 | Live-item listing (SB-UNI-F) | `live-` | `live-axolotl-leucistic-juvenile` |
 | Catalog product (SB-UNI-L) | `catalog-` | `catalog-pokemon-charizard-base-set-4-102` |
+| Procurement shipment | `shipment-` | `shipment-acme-toys-20260811-a1b2c3` |
+
+**Semantic generator ID, no slug prefix** (Firestore auto-ID): shipment lots (`shipmentLots`) and shipment items (`shipmentItems`) — FK-linked children of a shipment via `shipmentId`/`lotId`, never referenced by human-readable slug.
 
 **Pure slugs** (`id === slug`, no timestamp/random): products, stores, categories, brands, blog, events, FAQs, sections, nav items, carousel slides, user profiles, coupons, sub-listings, scammer profiles, wishlists, history, product features.
 

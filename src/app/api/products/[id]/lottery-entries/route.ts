@@ -1,6 +1,9 @@
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
+  isAdminUser,
+  isModeratorUser,
+  isSellerUser,
   sortBy,
   successResponse,
 } from "@mohasinac/appkit";
@@ -21,9 +24,9 @@ export const GET = withProviders(
       };
 
       const isStaff =
-        user!.role === "admin" ||
-        user!.role === "moderator" ||
-        user!.role === "seller";
+        isAdminUser(user) ||
+        isModeratorUser(user) ||
+        isSellerUser(user);
       const result = isStaff
         ? await getLotteryEntriesForAdmin("product", id, model)
         : await getLotteryEntriesForUser(user!.uid, model);

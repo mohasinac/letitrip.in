@@ -4,6 +4,9 @@ import {
   createRouteHandler,
   successResponse,
   errorResponse,
+  isAdminUser,
+  isEmployeeUser,
+  isModeratorUser,
   supportRepository,
 } from "@mohasinac/appkit";
 
@@ -24,9 +27,9 @@ export const POST = withProviders(
 
       const isOwner = ticket.userId === user!.uid;
       const isStaff =
-        user!.role === "admin" ||
-        user!.role === "employee" ||
-        user!.role === "moderator";
+        isAdminUser(user) ||
+        isEmployeeUser(user) ||
+        isModeratorUser(user);
 
       if (!isOwner && !isStaff) return errorResponse("Forbidden", 403);
       if (ticket.status === "closed") return errorResponse("This ticket is closed", 400);

@@ -196,6 +196,13 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     ],
   },
   {
+    title: "Procurement",
+    items: [
+      adminItem(String(ROUTES.ADMIN.SHIPMENTS), "Shipments", "admin:shipments:read"),
+      adminItem(String(ROUTES.ADMIN.SHIPMENTS_PROJECTIONS), "Projections", "admin:shipments:read"),
+    ],
+  },
+  {
     title: "Catalog",
     items: [
       adminItem(String(ROUTES.ADMIN.CATEGORIES),            "Categories",    "admin:categories:read"),

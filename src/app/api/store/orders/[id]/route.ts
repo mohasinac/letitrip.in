@@ -26,6 +26,8 @@ const patchOrderSchema = z.object({
   cancellationReason: z.string().optional(),
   markPicked: z.boolean().optional(),
   markPacked: z.boolean().optional(),
+  markCodCollected: z.boolean().optional(),
+  codCollectionNote: z.string().optional(),
   assignedWorkerId: z.string().optional(),
 });
 
@@ -81,6 +83,13 @@ export const PATCH = withProviders(
       if (data.markPacked) {
         await orderRepository.markPacked(id);
         return successResponse({ id, markedPacked: true });
+      }
+      if (data.markCodCollected) {
+        if (order.paymentMethod !== "cod") {
+          return errorResponse("Only COD orders can be marked as collected", 400);
+        }
+        const updated = await orderRepository.markCodCollected(id, user!.uid, data.codCollectionNote);
+        return successResponse({ id, paymentRecord: updated.paymentRecord });
       }
       if (data.assignedWorkerId) {
         await orderRepository.assignWorker(id, data.assignedWorkerId);
