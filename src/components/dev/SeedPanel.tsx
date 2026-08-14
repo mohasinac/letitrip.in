@@ -1682,6 +1682,35 @@ const COLLECTION_META: Record<SeedCollectionName, CollectionMeta> = {
       { name: "updatedAt",               type: "timestamp" },
     ],
   },
+  catalogueItems: {
+    label: "Personal Catalogue",
+    icon: "🖼️",
+    group: "transactional",
+    description: "Every user's personal photo inventory (public by default). Reuses ProductDraftFields (title/images/price/condition/categorySlugs/brandSlug) so listing it — directly for sellers, or via admin approval for buyers — is a near-literal field copy onto a real product.",
+    slugPattern: "mycatalog-{owner}-{item}-{yyyymmdd}-{rand6}",
+    mediaFields: ["images", "mainImage"],
+    mediaSlugPatterns: [
+      { type: "catalogue-image", pattern: "catalogue-image-{item}-{n}.{ext}", example: "catalogue-image-vintage-hotwheels-1.webp" },
+    ],
+    seededItems: ["6 items across not_listed/pending_admin_approval/listed/rejected, mixed public/private"],
+    pendingItems: [],
+    uiPath: "/user/catalogue",
+    fields: [
+      { name: "ownerId",              type: "ref",       filterable: true, indexed: true },
+      { name: "ownerRole",            type: "enum",      filterable: true },
+      { name: "title",                type: "string",    searchable: true },
+      { name: "images",               type: "array" },
+      { name: "price",                type: "number",    note: "paise — estimated resale price" },
+      { name: "visibility",           type: "enum",      filterable: true, indexed: true },
+      { name: "lastImageUpdateAt",    type: "timestamp", indexed: true, note: "freshness gate — 30 days" },
+      { name: "staleReminderSentAt",  type: "timestamp" },
+      { name: "listingStatus",        type: "enum",      filterable: true, indexed: true },
+      { name: "rejectionReason",      type: "string" },
+      { name: "linkedProductId",      type: "ref" },
+      { name: "createdAt",            type: "timestamp", sortable: true, indexed: true },
+      { name: "updatedAt",            type: "timestamp" },
+    ],
+  },
 };
 
 // ─── Group labels ─────────────────────────────────────────────────────────────

@@ -200,6 +200,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     items: [
       adminItem(String(ROUTES.ADMIN.SHIPMENTS), "Shipments", "admin:shipments:read"),
       adminItem(String(ROUTES.ADMIN.SHIPMENTS_PROJECTIONS), "Projections", "admin:shipments:read"),
+      adminItem(String(ROUTES.ADMIN.CATALOGUE_APPROVALS), "Catalogue Approvals", "admin:catalogue:read"),
     ],
   },
   {
@@ -381,6 +382,7 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
       { href: String(ROUTES.USER.BIDS),             label: "My Bids"    },
       { href: String(ROUTES.USER.OFFERS),           label: "My Offers"  },
       { href: String(ROUTES.USER.HISTORY),          label: "Recently Viewed" },
+      { href: String(ROUTES.USER.CATALOGUE),        label: "My Catalogue" },
       // Hidden until feature patch ships: Returns, Pre-Orders (P6), Digital Codes, Prize Draws (P10).
     ],
   },

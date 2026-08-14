@@ -7,6 +7,6 @@ export default async function Page({
 }: {
   params: Promise<{ userId: string; tab: string }>;
 }) {
-  const { userId } = await params;
-  return <PublicProfileView userId={userId} />;
+  const { userId, tab } = await params;
+  return <PublicProfileView userId={userId} tab={tab} />;
 }

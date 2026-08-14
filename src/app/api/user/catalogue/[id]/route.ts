@@ -17,14 +17,21 @@ import {
  * wishlist/history route pattern.
  */
 
+const ERR_NOT_FOUND = "Catalogue item not found";
+
+async function loadOwnedItem(id: string, uid: string) {
+  const item = await catalogueRepository.findById(id);
+  if (!item || item.ownerId !== uid) return null;
+  return item;
+}
+
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
-      const item = await catalogueRepository.findById(id);
-      if (!item) return errorResponse("Catalogue item not found", 404);
-      if (item.ownerId !== user!.uid) return errorResponse("Catalogue item not found", 404);
+      const item = await loadOwnedItem(id, user!.uid);
+      if (!item) return errorResponse(ERR_NOT_FOUND, 404);
       return successResponse(item);
     },
   }),
@@ -36,9 +43,8 @@ export const PATCH = withProviders(
     schema: updateCatalogueItemSchema,
     handler: async ({ user, params, body }) => {
       const id = (params as { id: string }).id;
-      const item = await catalogueRepository.findById(id);
-      if (!item) return errorResponse("Catalogue item not found", 404);
-      if (item.ownerId !== user!.uid) return errorResponse("Catalogue item not found", 404);
+      const item = await loadOwnedItem(id, user!.uid);
+      if (!item) return errorResponse(ERR_NOT_FOUND, 404);
       const updated = await catalogueRepository.update(id, body! as never);
       return successResponse(updated, "Catalogue item updated");
     },
@@ -50,9 +56,8 @@ export const DELETE = withProviders(
     auth: true,
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
-      const item = await catalogueRepository.findById(id);
-      if (!item) return errorResponse("Catalogue item not found", 404);
-      if (item.ownerId !== user!.uid) return errorResponse("Catalogue item not found", 404);
+      const item = await loadOwnedItem(id, user!.uid);
+      if (!item) return errorResponse(ERR_NOT_FOUND, 404);
       if (item.linkedProductId) {
         return errorResponse("Cannot delete a catalogue item that is already listed", 409);
       }

@@ -405,6 +405,7 @@ Traditional dev server with webpack HMR + file watchers. Uses ~3.5 GB. Best for 
 | Live-item listing (SB-UNI-F) | `live-` | `live-axolotl-leucistic-juvenile` |
 | Catalog product (SB-UNI-L) | `catalog-` | `catalog-pokemon-charizard-base-set-4-102` |
 | Procurement shipment | `shipment-` | `shipment-acme-toys-20260811-a1b2c3` |
+| Personal catalogue item | `mycatalog-` | `mycatalog-user-mohsin-c-vintage-hotwheels-20260811-x1y2z3` — deliberately distinct from the unrelated `catalog-` prefix (SB-UNI-L master-catalog) |
 
 **Semantic generator ID, no slug prefix** (Firestore auto-ID): shipment lots (`shipmentLots`) and shipment items (`shipmentItems`) — FK-linked children of a shipment via `shipmentId`/`lotId`, never referenced by human-readable slug.
 
@@ -443,6 +444,7 @@ All media files use SEO slugs via `generateMediaFilename(ctx)` in `appkit/src/ut
 | `event-image` | `event-image-{event}-{n}-{YYYYMMDD}.{ext}` | `event-image-pokemon-tournament-june-1-20260508.jpg` |
 | `event-winner-image` | `event-winner-image-{event}-{winner}-{YYYYMMDD}.{ext}` | `event-winner-image-tournament-june-ravi-kumar-20260508.jpg` |
 | `carousel-image` | `carousel-image-{slide}-{YYYYMMDD}.{ext}` | `carousel-image-hero-homepage-20260508.jpg` |
+| `catalogue-image` | `catalogue-image-{item}-{n}.{ext}` | `catalogue-image-vintage-hotwheels-1.webp` |
 | `invoice` | `invoice-{orderId}-{YYYYMMDD}.pdf` | `invoice-order-3-20260508-a1b2c3-20260508.pdf` |
 | `payout-doc` | `payout-doc-{seller}-{YYYYMMDD}.pdf` | `payout-doc-mistys-water-cards-20260508.pdf` |
 

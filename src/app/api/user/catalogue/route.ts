@@ -4,6 +4,7 @@ import {
   successResponse,
   catalogueRepository,
   createCatalogueItemSchema,
+  isSellerUser,
 } from "@mohasinac/appkit";
 
 /**
@@ -31,7 +32,7 @@ export const POST = withProviders(
       const item = await catalogueRepository.create({
         ...body!,
         ownerId: user!.uid,
-        ownerRole: user!.role === "seller" ? "seller" : "user",
+        ownerRole: isSellerUser(user) ? "seller" : "user",
       } as never);
       return successResponse(item, "Catalogue item created");
     },

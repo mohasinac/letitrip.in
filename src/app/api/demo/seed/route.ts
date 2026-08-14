@@ -56,6 +56,7 @@ import {
   shipmentsSeedData,
   shipmentLotsSeedData,
   shipmentItemsSeedData,
+  catalogueSeedData,
   notificationsSeedData,
   blogPostsSeedData,
   carouselsSeedData,
@@ -99,7 +100,7 @@ import { CATEGORIES_COLLECTION } from "@mohasinac/appkit";
 // SB-UNI-C â€” BRANDS_COLLECTION dropped; brands live in CATEGORIES_COLLECTION with categoryType:"brand".
 import { NOTIFICATIONS_COLLECTION } from "@mohasinac/appkit";
 import { PAYOUT_COLLECTION } from "@mohasinac/appkit";
-import { SHIPMENT_COLLECTION, SHIPMENT_LOT_COLLECTION, SHIPMENT_ITEM_COLLECTION } from "@mohasinac/appkit";
+import { SHIPMENT_COLLECTION, SHIPMENT_LOT_COLLECTION, SHIPMENT_ITEM_COLLECTION, CATALOGUE_COLLECTION } from "@mohasinac/appkit";
 import { BLOG_POSTS_COLLECTION } from "@mohasinac/appkit";
 import { EVENTS_COLLECTION, EVENT_ENTRIES_COLLECTION } from "@mohasinac/appkit";
 import { LOTTERY_ENTRIES_COLLECTION } from "@mohasinac/appkit";
@@ -167,7 +168,8 @@ type CollectionName =
   | "adminNotifications"
   | "shipments"
   | "shipmentLots"
-  | "shipmentItems";
+  | "shipmentItems"
+  | "catalogueItems";
 
 interface SeedRequest {
   action: "load" | "delete" | "clear";
@@ -205,6 +207,7 @@ const COLLECTION_MAP: Record<CollectionName, string> = {
   shipments: SHIPMENT_COLLECTION,
   shipmentLots: SHIPMENT_LOT_COLLECTION,
   shipmentItems: SHIPMENT_ITEM_COLLECTION,
+  catalogueItems: CATALOGUE_COLLECTION,
   blogPosts: BLOG_POSTS_COLLECTION,
   events: EVENTS_COLLECTION,
   eventEntries: EVENT_ENTRIES_COLLECTION,
@@ -279,6 +282,7 @@ const SEED_DATA_MAP: Record<CollectionName, any[]> = {
   shipments: shipmentsSeedData,
   shipmentLots: shipmentLotsSeedData,
   shipmentItems: shipmentItemsSeedData,
+  catalogueItems: catalogueSeedData,
   blogPosts: blogPostsSeedData,
   events: eventsSeedData,
   eventEntries: eventEntriesSeedData,
