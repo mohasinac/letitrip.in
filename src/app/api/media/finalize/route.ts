@@ -40,7 +40,7 @@ import { getAdminStorage as getStorage } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 import { formatFileSize } from "@mohasinac/appkit";
-import { mediaAssetsRepository } from "@mohasinac/appkit";
+import { mediaAssetsRepository, deriveContextTypeFromFilename } from "@mohasinac/appkit";
 
 const TMP_PREFIX = "tmp/";
 const HEAD_BYTES = 4096; // file-type matches well within 4 KB for every supported format
@@ -210,6 +210,7 @@ export const POST = withProviders(createRouteHandler({
         size,
         isPublic,
         status: "staged", // file is still in tmp/; moved to media/ when form saves
+        contextType: deriveContextTypeFromFilename(filename),
       });
       shortId = asset.id;
     } catch (assetErr) {

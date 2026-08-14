@@ -23,9 +23,9 @@ export function isSameOriginRscRequest({
   sameOrigin,
   url: { pathname },
 }: RuntimeRequestContext): boolean {
-  // audit-hardcoded-api-routes-ok: generic path-prefix check, not an endpoint reference
   return (
     sameOrigin &&
+    // audit-hardcoded-api-routes-ok: generic path-prefix check, not an endpoint reference
     !pathname.startsWith("/api/") &&
     request?.headers.get("RSC") === "1"
   );
@@ -36,9 +36,9 @@ export function isSameOriginHtmlRequest({
   sameOrigin,
   url: { pathname },
 }: RuntimeRequestContext): boolean {
-  // audit-hardcoded-api-routes-ok: generic path-prefix check, not an endpoint reference
   return (
     sameOrigin &&
+    // audit-hardcoded-api-routes-ok: generic path-prefix check, not an endpoint reference
     !pathname.startsWith("/api/") &&
     request?.headers.get("Content-Type")?.includes("text/html") === true
   );

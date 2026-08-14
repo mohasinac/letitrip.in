@@ -24,7 +24,7 @@ import {
   IMAGE_MIME_PREFIX,
   SVG_MIME,
   applyWatermark,
-  loadWatermarkConfig,
+  resolveWatermarkConfig,
 } from "../_watermark";
 
 export const runtime = "nodejs";
@@ -53,6 +53,8 @@ export async function GET(
   // - Single-segment slug → try Firestore shortId lookup first (new system).
   // - Multi-segment slug → treat as raw storage path (legacy /media/tmp/... URLs).
   let storagePath: string | null = null;
+  let uploadedBy: string | undefined;
+  let contextType: string | undefined;
 
   if (slug.length === 1) {
     const shortId = slug[0];
@@ -60,6 +62,8 @@ export async function GET(
       const asset = await mediaAssetsRepository.findById(shortId);
       if (asset) {
         storagePath = asset.storagePath;
+        uploadedBy = asset.uploadedBy;
+        contextType = asset.contextType;
       }
     } catch (lookupErr) {
       void normalizeError(lookupErr);
@@ -120,7 +124,7 @@ export async function GET(
 
     let body: Buffer = originalBuffer;
     try {
-      const config = await loadWatermarkConfig();
+      const config = await resolveWatermarkConfig(uploadedBy, contextType);
       body = await applyWatermark(originalBuffer, config, storagePath);
     } catch (err) {
       void normalizeError(err);

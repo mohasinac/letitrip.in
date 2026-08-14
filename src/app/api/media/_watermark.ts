@@ -5,7 +5,7 @@ import { normalizeError } from "@mohasinac/appkit";
  */
 import "@/providers.config";
 import sharp from "sharp";
-import { getAdminStorage, serverLogger, siteSettingsRepository } from "@mohasinac/appkit";
+import { getAdminStorage, serverLogger, siteSettingsRepository, userRepository } from "@mohasinac/appkit";
 
 export const DAY_SECONDS = 60 * 60 * 24;
 export const WEEK_SECONDS = DAY_SECONDS * 7;
@@ -54,7 +54,10 @@ export async function loadWatermarkConfig(): Promise<WatermarkConfig> {
       text:
         typeof wm.text === "string" && wm.text.trim()
           ? wm.text.trim()
-          : DEFAULT_WATERMARK.text,
+          // Config-driven fallback — was previously a hardcoded "letitrip.in"
+          // literal (Root Cause #21). Falls back to siteName only when the
+          // admin has never configured a watermark at all.
+          : settings?.siteName?.trim() || DEFAULT_WATERMARK.text,
       imageUrl: typeof wm.imageUrl === "string" ? wm.imageUrl : "",
       size: clampPercent(wm.size, DEFAULT_WATERMARK.size),
       opacity: clampPercent(wm.opacity, DEFAULT_WATERMARK.opacity),
@@ -69,6 +72,52 @@ export async function loadWatermarkConfig(): Promise<WatermarkConfig> {
     );
     return DEFAULT_WATERMARK;
   }
+}
+
+const CATALOGUE_CONTEXT_TYPE = "catalogue-image";
+const CATALOGUE_WATERMARK_SIZE_PCT = 16;
+const CATALOGUE_WATERMARK_OPACITY_PCT = 25;
+const DISPLAY_NAME_CACHE_TTL_MS = 60_000;
+const displayNameCache = new Map<string, { value: string; expiresAt: number }>();
+
+async function resolveDisplayName(uid: string): Promise<string> {
+  const cached = displayNameCache.get(uid);
+  if (cached && cached.expiresAt > Date.now()) return cached.value;
+  try {
+    const user = await userRepository.findById(uid);
+    const value = user?.displayName?.trim() || "LetItRip user";
+    displayNameCache.set(uid, { value, expiresAt: Date.now() + DISPLAY_NAME_CACHE_TTL_MS });
+    return value;
+  } catch (err) {
+    void normalizeError(err);
+    return "LetItRip user";
+  }
+}
+
+/**
+ * Feature B — personal catalogue images carry the owner's identity rather
+ * than the generic site watermark, smaller and centered. Every other
+ * context falls back to {@link loadWatermarkConfig} unchanged.
+ */
+export async function resolveWatermarkConfig(
+  uploaderUid?: string,
+  contextType?: string,
+): Promise<WatermarkConfig> {
+  if (contextType !== CATALOGUE_CONTEXT_TYPE || !uploaderUid) {
+    return loadWatermarkConfig();
+  }
+  const [displayName, settings] = await Promise.all([
+    resolveDisplayName(uploaderUid),
+    siteSettingsRepository.getSingleton().catch(() => null),
+  ]);
+  const siteName = settings?.siteName?.trim() || DEFAULT_WATERMARK.text;
+  return {
+    type: "text",
+    text: `${displayName} · ${siteName}`,
+    imageUrl: "",
+    size: CATALOGUE_WATERMARK_SIZE_PCT,
+    opacity: CATALOGUE_WATERMARK_OPACITY_PCT,
+  };
 }
 
 export function watermarkUrlToStoragePath(url: string): string | null {
