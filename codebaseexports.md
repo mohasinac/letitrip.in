@@ -899,6 +899,7 @@
 | ShipmentLotsRepository | shipmentLots | listByShipment, createLot, updateLot, listForProjections (Sieve) | Feature A per-lot CRUD; `listForProjections` is the real paginated Projections query |
 | ShipmentItemsRepository | shipmentItems | listByLot, createItem, bulkCreate, updateItem, unlink, hasLinkedItemsInLot | Feature A per-item CRUD; `bulkCreate` writes ≤500 rows in one Firestore WriteBatch |
 | CatalogueRepository | catalogueItems | listByOwner, listPublicByOwner, listPendingApproval (Sieve), listStale | Feature B personal-catalogue CRUD; `update` auto-stamps `lastImageUpdateAt` whenever `images` changes |
+| JobsRepository (`jobsRepository`) | jobs | markProcessing, markDone, markFailed, getStaleFinishedRefs | Async job primitive (2026-08-15) — pure auto-ID docs, `getStaleFinishedRefs(ttlDays=30)` feeds the `cleanupRtdbEvents` TTL sweep |
 
 ---
 
@@ -1083,12 +1084,15 @@
 | Cart | removeFromCartAction | buyer+ | Remove from cart |
 | Cart | clearCartAction | buyer+ | Clear entire cart |
 | Cart | mergeGuestCartAction | buyer+ | Merge guest cart |
+| Checkout | createCheckoutOrderAction | buyer+ | COD/UPI/EMI/admin-bypass order placement. `outOfStockPolicy` param (2026-08-15, default `"skip_items"`) decides cancel-whole-order vs. ship-available-items-only when the transaction finds a shortfall |
+| Checkout | verifyAndPlaceRazorpayOrderAction | buyer+ | Razorpay-paid order placement after signature + amount verification. Same `outOfStockPolicy` param (default `"cancel_order"`); `skip_items` triggers an automatic partial refund via `processRefundAction` since payment was already captured for the full cart |
 | Classified | startClassifiedConversationAction | buyer+ | Initiate seller contact |
 | Digital Code | claimCodeAction | buyer+ | Reveal purchased code |
 | Events | registerEventAction | any authed | Register for event |
 | Events | cancelRegistrationAction | any authed | Cancel registration |
 | History | trackProductViewAction | buyer+ | Track product view |
 | History | mergeGuestHistoryAction | buyer+ | Merge guest history |
+| Jobs | enqueueJob (`appkit/src/features/jobs/actions/enqueue-job.ts`) | server-only (called from route handlers) | Async job primitive (2026-08-15) — the ONLY thing a Vercel route may do to start heavy work: writes a `jobs/{jobId}` doc + mints a `bulkJobId`-scoped custom token, returns `{jobId, customToken}` immediately. All actual processing runs in the `onJobCreated` Firebase Function (§20 Firebase Jobs). |
 | Orders | createOrderAction | buyer+ | Create order |
 | Orders | cancelOrderAction | buyer+ | Cancel pending order |
 | Orders | requestReturnAction | buyer+ | Request return |
@@ -1131,6 +1135,10 @@
 | `/api/admin/products/[id]` | GET, PUT, DELETE | Product CRUD |
 | `/api/admin/users` | GET, POST | List/create users |
 | `/api/admin/users/[uid]` | GET, PUT, DELETE | User CRUD |
+| `/api/admin/users/[uid]/hard-ban` | POST | Enqueues the `hardBanCascade` job (2026-08-15 — was inline, now async via the jobs primitive) and returns `{jobId, customToken}`; synchronous guards (self-ban, target-exists, admin-target) still run in the route |
+| `/api/admin/users/bulk` | POST | Bulk suspend/restore/delete (2026-08-15) — bounded `Promise.all`, `BULK_MAX=50`; suspend and delete both soft-disable, no cascade, no real data deletion |
+| `/api/admin/notifications/bulk` | POST | Bulk mark-read/delete (2026-08-15) — same bounded pattern |
+| `/api/admin/sessions` | GET | Active/expired session list; per-uid Firebase Auth enrichment fixed from a sequential loop to `Promise.all` (2026-08-15) |
 | `/api/admin/stores` | GET, POST | List/create stores |
 | `/api/admin/stores/[uid]` | GET, PUT, DELETE | Store CRUD |
 | `/api/admin/orders` | GET, POST | List/create orders |
@@ -1161,6 +1169,7 @@
 | `/api/admin/events/[id]/trigger-raffle` | POST | Manual raffle trigger |
 | `/api/admin/payouts` | GET, POST | List/manage payouts |
 | `/api/admin/payouts/[id]` | GET, PUT, DELETE | Payout CRUD |
+| `/api/admin/payouts/weekly` | POST | Admin-manual trigger for the weekly payout sweep. Enqueues the `payoutsWeekly` job (2026-08-15 — was ~150 lines of inline grouping/creation logic duplicating the scheduled twin; now a thin wrapper around the same `runWeeklyPayoutEligibility` the `weeklyPayoutEligibility` scheduled Function uses) and returns `{jobId, customToken}` |
 | `/api/admin/bundles` | GET, POST | List/create bundles |
 | `/api/admin/bundles/[id]` | GET, PUT, DELETE | Bundle CRUD |
 | `/api/admin/bundles/[id]/rebuild` | POST | Rebuild bundle |
@@ -1369,6 +1378,9 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 | HistoryDocument | history | history/schemas/ |
 | ScammerDocument | scammers | scams/schemas/firestore.ts |
 | SupportTicketDocument | supportTickets | support/schemas/firestore.ts |
+| JobDocument | jobs | jobs/schemas/firestore.ts — async job primitive (2026-08-15); `jobType`/`status`/`payload`/`result`/`error` |
+
+**2026-08-15**: `OrderDocument` gained `outOfStockPolicy?: "cancel_order" \| "skip_items"`, `droppedItems?: {productId, productTitle, requestedQty, availableQty}[]`, and `refundPending?: boolean` (orders/schemas/firestore.ts). New `OutOfStockPolicyValues` const alongside the existing `PaymentMethodValues`/`OrderStatusValues` pattern.
 
 ---
 
@@ -1688,7 +1700,7 @@ All functions deploy to region `asia-south1`. HTTPS functions require `LETITRIP_
 | bundleStockSync | daily 10:05 IST | Flip bundle isSold when any item runs OOS |
 | catalogueImageStalenessReminder | daily 07:00 IST | Feature B — remind catalogue owners whose photos near the 30-day freshness cutoff |
 
-### Firestore Triggers (18 functions)
+### Firestore Triggers (19 functions)
 
 | Function | Trigger | Purpose |
 |----------|---------|---------|
@@ -1710,6 +1722,7 @@ All functions deploy to region `asia-south1`. HTTPS functions require `LETITRIP_
 | onShipmentHeaderWrite | documentWritten `procurementShipments/{shipmentId}` | Feature A — recompute allocation when customs/shipping/labor/status fields change |
 | onShipmentDeleted | documentWritten `procurementShipments/{shipmentId}` | Feature A — cascade-delete a shipment's lots + items in batches of 500 |
 | onCatalogueSubmittedForApproval | documentUpdated `catalogueItems/{itemId}` | Feature B — notify admins when `listingStatus` transitions to `pending_admin_approval` |
+| onJobCreated | documentCreated `jobs/{jobId}` (300s timeout, 512MiB) | Async job primitive (2026-08-15) — dispatches by `job.jobType` through `JOB_RUNNERS`, pings `bulk_events/{jobId}` RTDB on completion. The single Function that does all heavy async admin work Vercel routes can't (payout batches, ban cascades) — see `enqueueJob()` below. |
 
 ### HTTPS Callables (7 functions, server-to-server)
 

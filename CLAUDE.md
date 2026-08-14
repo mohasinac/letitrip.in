@@ -1027,6 +1027,35 @@ The merge order in `functions/src/index.ts` is `mergeFunctionRegistries(APPKIT_F
 
 ---
 
+## Async Job Primitive (2026-08-15)
+
+> The pattern for any admin action that would exceed the Vercel Hobby 10s sync-function ceiling (Rule #6). **Vercel routes never do heavy work — they enqueue a job and return.** All actual processing runs inside a Firebase Function. See `asciiDiagrams.md` → "Async Job Primitive" for the full flow diagram.
+
+**Collection**: `jobs` (pure Firestore auto-ID, see slug table above). `appkit/src/features/jobs/schemas/firestore.ts` — `JobDocument { jobType, status, payload, requestedBy, result?, error?, startedAt?, finishedAt? }`, `JobStatusValues` (`pending`/`processing`/`done`/`failed`).
+
+**A route's entire job-related responsibility**:
+
+```ts
+const { jobId, customToken } = await enqueueJob({
+  jobType: "myJobType",
+  payload: { /* jobType-specific */ },
+  requestedBy: user!.uid,
+});
+return successResponse({ jobId, customToken }, "Job started");
+```
+
+`enqueueJob()` (`appkit/src/features/jobs/actions/enqueue-job.ts`) writes the `jobs/{jobId}` doc, best-effort-seeds `bulk_events/{jobId}` in RTDB, and mints a custom token carrying `{ bulkJobId: jobId }` (must match this exact claim name — it's what `appkit/firebase/base/database.rules.json`'s `bulk_events` rule checks). Nothing else. It never runs the job.
+
+**All real work runs in `onJobCreated`** (`appkit/src/_internal/server/functions/firestore.ts`, `documentCreated` trigger on `jobs/{jobId}`, `timeoutSeconds: 300`, `memory: "512MiB"`) — dispatches by `job.jobType` through the `JOB_RUNNERS` registry (`appkit/src/_internal/server/jobs/core/jobRunners.ts`), marks the job doc `processing`→`done`/`failed`, and best-effort pings `bulk_events/{jobId}` with a `BulkActionResult`-shaped payload on completion. Add a new job type by registering a `JobRunner` (`(payload, ctx) => Promise<JobRunResult>`) in `JOB_RUNNERS` — never add a second dispatch point.
+
+**Client side** — reuse `useBulkEvent({ rtdbPath: RTDB_PATHS.BULK_EVENTS })` (`appkit/src/features/events/hooks/useBulkEvent.ts`): `subscribe(jobId, customToken)` after the enqueue call resolves, watch `status` for `"success"`/`"failed"`/`"timeout"`, read `result.summary` for the toast. Don't build a new job-status hook — this one already exists and is the intended consumer.
+
+**Current job types**: `payoutsWeekly` (wraps the scheduled `runWeeklyPayoutEligibility` — the manual-trigger route and the cron share one implementation, never two), `hardBanCascade` (the 8-stage user hard-ban cascade, extracted verbatim off the Vercel route it used to block).
+
+**Not every bulk/heavy action needs this.** A bounded `Promise.all` over ≤50 rows (see `src/app/api/store/products/bulk-location/route.ts`, `src/app/api/admin/users/bulk/route.ts`) is fine as a plain synchronous route — reach for the job primitive only when the work is genuinely unbounded or already timing out.
+
+---
+
 ## Provider Resolution (Payment + Shipping)
 
 > Track H, revised in the manual-first refactor (2026-08) — `IPaymentProvider` / `IShippingProvider` are abstract base classes (not interfaces), so every implementation `extends` one shared contract. Manual is the default and only shipping provider; manual is the default payment provider, with Razorpay available but disabled by default. Shiprocket has been removed entirely — no code, schema fields, or seed data reference it.

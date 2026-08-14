@@ -172,6 +172,11 @@
 | `catalogue/[id]/approve/route.ts` | POST | Feature B — creates the product under `store-letitrip-official` |
 | `catalogue/[id]/reject/route.ts` | POST | Feature B — records a rejection reason |
 | `orders/[id]/payment-verify/route.ts` | PATCH | Feature C — admin manual-payment verification; writes `order.paymentRecord` |
+| `users/[uid]/hard-ban/route.ts` | POST | Enqueues the `hardBanCascade` job (2026-08-15) via `enqueueJob()` — returns `{jobId, customToken}` immediately; the 8-stage cascade now runs in the `onJobCreated` Firebase Function, not inline |
+| `users/bulk/route.ts` | POST | Bulk suspend/restore/delete (2026-08-15) — `{action, ids}`, `BULK_MAX=50`, bounded `Promise.all`; suspend/delete both soft-disable only |
+| `notifications/bulk/route.ts` | POST | Bulk mark-read/delete (2026-08-15) — same bounded `Promise.all` shape |
+| `payouts/weekly/route.ts` | POST | Enqueues the `payoutsWeekly` job (2026-08-15) — was ~150 lines of inline duplicate-of-the-scheduled-Function logic, now a thin `enqueueJob()` call |
+| `sessions/route.ts` | GET | Per-uid Firebase Auth enrichment fixed from a sequential `for` loop to `Promise.all` (2026-08-15 — Rule #6 N+1) |
 
 ---
 

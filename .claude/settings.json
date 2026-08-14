@@ -52,7 +52,8 @@
       "Bash(echo \"exit=$?\")",
       "Bash(node scripts/audit-gitignore.mjs)",
       "Read(//c/Users/mohsi/.claude/**)",
-      "Bash(git status *)"
+      "Bash(git status *)",
+      "Read(//tmp/**)"
     ],
     "additionalDirectories": [
       "d:\\proj\\letitrip.in\\src\\app\\api\\store\\reviews\\[id]",

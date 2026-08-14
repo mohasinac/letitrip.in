@@ -12095,3 +12095,132 @@ catalogueImageStalenessReminder   (scheduled, daily 07:00 IST)
 onCatalogueSubmittedForApproval   (documentUpdated, catalogueItems/{itemId})
   → notify every admin when listingStatus transitions to pending_admin_approval
 ```
+
+---
+
+## Async Job Primitive — Firestore doc → Firebase Function → RTDB ping (2026-08-15)
+
+> Origin question: "can RTDB + Firebase Functions turn some of our routes/bulk actions
+> into fire-and-forget work?" **User correction mid-design: "jobs are firebase functions
+> not vercel jobs"** — the diagram below encodes that constraint directly: everything left
+> of the vertical divider is Vercel (fast, bounded by the Hobby 10s ceiling); everything
+> right of it is Firebase Functions (slow work allowed, `timeoutSeconds: 300`).
+
+```
+ VERCEL (10s ceiling, Rule #6)          |  FIRESTORE                  |  FIREBASE FUNCTIONS (no ceiling)
+ ───────────────────────────────────────┼──────────────────────────────┼───────────────────────────────────
+                                         |                              |
+ Admin clicks "Run weekly payout" /     |                              |
+ "Hard-ban user" in the dashboard        |                              |
+        |                               |                              |
+        v                               |                              |
+ POST /api/admin/payouts/weekly         |                              |
+ POST /api/admin/users/[uid]/hard-ban   |                              |
+        |                               |                              |
+        v                               |                              |
+ (cheap synchronous guards only —       |                              |
+  self-ban / target-exists / etc.,      |                              |
+  single Firestore reads, <1s)          |                              |
+        |                               |                              |
+        v                               |                              |
+ enqueueJob({ jobType, payload,   ------+--> jobs/{jobId}               |
+   requestedBy })                       |    { status: "pending",       |
+        |                               |      jobType, payload,        |
+        |    (best-effort, swallowed    |      requestedBy }            |
+        |     on failure — job doc is   |         |                     |
+        |     the source of truth)      |         | documentCreated     |
+        +----> bulk_events/{jobId}      |         | trigger             |
+        |      { status: "pending" }    |         v                     |
+        |  (RTDB)                       |    ============================
+        |                               |    onJobCreated Function
+ mint customToken                       |    (300s timeout, 512MiB)
+   { bulkJobId: jobId }                 |         |
+        |                               |         v
+        v                               |    JOB_RUNNERS[job.jobType](payload, ctx)
+ return { jobId, customToken }          |      - payoutsWeekly  -> runWeeklyPayoutEligibility
+   (route returns in ms — no polling,   |        (same fn the SCHEDULED twin calls;
+    no waiting on Vercel)               |         the route doesn't duplicate the logic)
+        |                               |      - hardBanCascade -> runHardBanCascade
+        |                               |        (8-stage cascade extracted verbatim
+        |                               |         from the old inline route body)
+        v                               |         |
+ CLIENT (browser)                       |         v
+        |                               |    jobsRepository.markDone(jobId, result)
+ useBulkEvent({ rtdbPath:               |    jobsRepository.markFailed(jobId, error)
+   RTDB_PATHS.BULK_EVENTS })            |         |
+   .subscribe(jobId, customToken)       |         v  (best-effort, own try/catch,
+        |                               |             never masks the real result)
+        | signInWithCustomToken   <-----+---- bulk_events/{jobId}
+        | (browser, RTDB app)           |     { status: "success" | "failed",
+        |                               |       action, summary, succeeded[],
+        v                               |       skipped[], failed[], data? }
+   onValue() fires -> status flips      |
+   pending -> success | failed          |
+        |                               |
+        v                               |
+   toast + queryClient.invalidateQueries|
+```
+
+**Reused, not reinvented**: `RTDB_PATHS.BULK_EVENTS`, the `bulk_events/{jobId}` security
+rule (`appkit/firebase/base/database.rules.json`, claim `auth.token.bulkJobId == $jobId`),
+`useBulkEvent`, and `useBulkAction` all existed before this session — built for exactly this
+shape, wired to nothing. The only new pieces: the `jobs` Firestore collection + repository,
+`enqueueJob()`, `JOB_RUNNERS` + `onJobCreated`, and the two route migrations.
+
+**30-day TTL sweep** (`cleanupRtdbEvents` scheduled Function, extended not duplicated):
+`jobs` docs with `status` in `{done, failed}` older than 30 days get pruned via
+`jobsRepository.getStaleFinishedRefs()`; `bulk_events/{jobId}` RTDB nodes are swept at 15
+minutes, per the rule file's original comment.
+
+---
+
+## Checkout out-of-stock policy (2026-08-15)
+
+> Root cause fixed: COD/UPI/EMI checkout silently skipped unavailable items; Razorpay
+> checkout always cancelled the whole order on any shortfall — two independent, buyer-
+> invisible behaviors that happened to diverge because the stock-bucketing logic was
+> hand-rolled twice. `bucketCartItemsByStock()` is now the single implementation both
+> paths call.
+
+```
+                    Buyer picks outOfStockPolicy at checkout
+                    (FieldSelect, above the payment buttons)
+                         "cancel_order"  or  "skip_items"
+                                    |
+                 ┌──────────────────┴──────────────────┐
+                 v                                      v
+      createCheckoutOrderAction              verifyAndPlaceRazorpayOrderAction
+      (COD / UPI / EMI / admin-bypass)        (Razorpay — payment ALREADY captured
+                 |                              for the full cart before this runs)
+                 v                                      v
+      bucketCartItemsByStock(cart, productById, decrements)   <- SAME function, both paths
+                 |                                      |
+        ┌────────┴────────┐                    ┌────────┴────────┐
+        v                 v                     v                 v
+  unavailable == 0   unavailable > 0      unavailable == 0   unavailable > 0
+        |                 |                     |                 |
+        v                 v                     v                 v
+   place order      policy == cancel?      place order      policy == cancel?
+                       |        |                              |        |
+                     yes        no                            yes       no
+                       |        |                              |        |
+                       v        v                              v        v
+                 throw before  place order              throw, same    place order for
+                 any tx.update  for available            as always     available items only,
+                 (atomic —      items only,               (today's                |
+                 zero writes    droppedItems               only prior              v
+                 land)          on each order              behavior)      refundDroppedItemsForRazorpayCheckout()
+                                                                            processRefundAction(amount = sum of
+                                                                              dropped items' price, method:
+                                                                              "razorpay", razorpayPaymentId)
+                                                                                    |
+                                                                          ┌─────────┴─────────┐
+                                                                          v                    v
+                                                                     refund OK          refund THREW
+                                                                          |                    |
+                                                                          v                    v
+                                                                    (nothing else       order.refundPending = true
+                                                                     to do)             + admin notification fan-out
+                                                                                        (Rule #8 — surfaced, never
+                                                                                         silently dropped)
+```
