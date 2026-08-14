@@ -210,34 +210,33 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — P-1 post-deploy groups P/Q/R/S/U (2026-07-31): logo fix, analytics, bundles guard
+### ✅ LAST COMPLETED — S-PROC-shipments-verify (2026-08-14): P-18/19/20 verification + bug-fixes + publish + full deploy
 
 **Done this session:**
-- **Group P (logo)**: `layout.tsx:66` — `siteSettings?.logo?.url || "/logo.svg"` fallback so SVG wordmark always shows. Commits `8ef3b0daa`.
-- **Group S (analytics)**: `getCategoryForDetail` + `getProductForDetail` fire-and-forget `incrementViewCount`; `AdminLiveOverviewCard` RTDB presence + pageview panel in `AdminAnalyticsView`; `AdminTopProductsTable` viewCount column; `viewCount` field on `AnalyticsTopProduct` type + `adminAnalytics` job. Appkit `3.2.2`.
-- **Group U (bundles)**: `featureFlags.listingTypes.bundle: false` in site-settings seed; `bundle?: boolean` on `SiteSettingsDocument`; `bundle: true` in defaults; `/admin/bundles/layout.tsx` feature guard.
-- **Seed preservation**: removed `viewCount: 0` from categories + products seeds so analytics survive reseed. Appkit `3.2.3`.
-- **Firebase**: rules + indexes + storage + all 40+ functions deployed (2026-07-31).
-- **Vercel**: `vercel --prod` → live at https://letitrip.in (appkit 3.2.3). Commits `bc320dd50`, `8ef3b0daa`, `ab519c4bf`.
+- Closed every item S-PROC-shipments (prior session) flagged as deferred: `codebaseexports.md` fully updated, admin catalogue access fixed (admins have no personal store → lists under `store-letitrip-official`), 3 new Playwright suites written — **48/48 passing**.
+- 7 real bugs found + fixed during verification (see `newchange.md` S-PROC-shipments-verify entry for full detail): tsconfig test-file leak, seed `photoURL` blocking every non-admin login, shipment-item "unlink" Zod-silently-drops-field no-op, `shipmentLots` projections composite index field order (Firestore wants sort-field-before-`!=`-field), `CheckoutRouteClient` missing `outOfStockPolicy` prop, `enqueueJob` public-barrel-from-`_internal/` audit violation, hardcoded support email in `hardBanCascade.ts`.
+- Windows-specific finding: `node_modules/@mohasinac/appkit` is a real file copy on this machine, not a live symlink — appkit rebuilds need `rm -rf node_modules/@mohasinac/appkit && npm install` to propagate. Saved to memory.
+- **Published appkit 3.5.1** to npm; consumer upgraded `file:appkit` → `^3.5.1`; `appkit/src/**` removed from `tsconfig.json`.
+- **Firebase**: rules/indexes/storage/database + all functions (incl. 5 new shipment/catalogue triggers) deployed.
+- **Vercel**: 2 failed attempts (`SIGKILL`, build-machine OOM, ~45min each) before `vercel --prod --force` (skip build cache) succeeded in 3 minutes. Verified live at https://letitrip.in.
 
 ---
 
-### ✅ PREVIOUS LAST — S-W6-3-extras (2026-05-23): ROLES_AUTHENTICATED + RAW_P_TAG/RAW_EM baseline tightens
+### ✅ PREVIOUS LAST — S-PROC-shipments (2026-08-12): Procurement Shipments + Personal Catalogue + Payment Detail Parity (P-18/19/20)
 
-**Done this session:**
-- **New `ROLES_AUTHENTICATED` constant** in api-roles.ts (4-role tuple: `user + seller + moderator + admin`) — caught the 6 outlier routes that W6-3's 1-3-role sweep missed. Commit `ebab85b71`.
-- **audit-typography baselines** RAW_P_TAG (3→0) and RAW_EM (2→0) tightened to floor. Commit `3bdc136aa`.
+**Done this session:** Three top-level Firestore collections for shipments (`procurementShipments`/`shipmentLots`/`shipmentItems`, 3-Function landed-cost cascade); `CatalogueItemDocument` personal-catalogue collection (30-day photo-freshness gate, per-owner watermark, admin-approval path for buyers); additive `OrderDocument.paymentRecord` unifying manual/Razorpay/COD payment detail. Full detail in `crud-tracker.md`'s S-PROC-shipments entry. Flagged as deferred at session end (later closed by S-PROC-shipments-verify above): `codebaseexports.md` not updated, no Playwright suites written.
 
 ---
 
-### ⏳ CURRENT — P-1 is LIVE. Awaiting next directive from CEO.
+### ⏳ CURRENT — P-1 through P-20 are LIVE. Awaiting next directive from CEO.
 
-**P-1 status:** Deployed and live at https://letitrip.in (2026-07-31). All Firebase rules/indexes/functions current. appkit 3.2.3 on npm.
+**Status:** Deployed and live at https://letitrip.in (2026-08-14). All Firebase rules/indexes/functions current. appkit 3.5.1 on npm. See `patches-roadmap.md`'s Patch Status Overview for the full P-1…P-20 ledger.
 
 **Immediate follow-up options** (pull when explicitly prioritised by CEO):
-- **Browser smoke on prod** — sign in → add to cart → checkout (cash/UPI) → seller marks shipped → admin verifies payment. Validates P-1 happy path end-to-end on real Firebase.
-- **P-2 Coupons** — branch `patch/p2-coupons`. Guard coupon field at checkout + API routes. See roadmap for full checklist.
-- **Seed real content** — swap YGO demo data for actual LetItRip collectibles via `/demo/seed` + admin panel before first real users arrive.
+- **`verifyAndPlaceRazorpayOrderAction` refactor** — 496 significant lines (pre-existing, flagged not fixed this session — payment-critical, needs a dedicated session, not a rushed extraction).
+- **128 pre-existing suppression-comment markers** — unrelated to P-18/19/20, still block a fully-clean `npm run check`.
+- **P-18 actual-vs-projected reconciliation** — once a shipment-linked pre-order product sells through, feed the real sale price back into the shipment's profit numbers.
+- **P-6 Pre-orders / P-7 Seller Payouts / P-8 GST** — next unstarted patches in `patches-roadmap.md`'s original sequence.
 
 ---
 
@@ -245,14 +244,14 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **Browser smoke + real content seed** | Validate P-1 happy path end-to-end on prod Firebase; seed real collectibles content. | Do before real users arrive. |
-| 2 | **P-2 Coupons** (`patch/p2-coupons`) | Add `FEATURE_COUPONS` guard to checkout UI + all coupon API routes; E2E spec. | First revenue-protective feature after MVP. |
-| 3 | **P-3 Blog** (`patch/p3-blog`) | Confirm `FEATURE_BLOG` guard; write 3+ real posts in admin before enabling. | Low risk, high SEO value. |
+| 1 | **P-6 Pre-orders** | Next unstarted patch in the original roadmap sequence. | See `patches-roadmap.md`. |
+| 2 | **P-7 Seller Payouts (manual UPI)** | Admin records transfer, no 3rd-party integration. | Revenue-critical for sellers. |
+| 3 | **P-8 GST** | Tax calc, invoice GST breakup, product HSN field. | Blocks P-9's deposit+GST-invoice half. |
 | – | **Tier SB-UNI Phase 3–9** *(pull individually)* | SB-UNI-Q (per-type detail/list views) · R (per-type forms + seller flow) · T (search facets). | Pull when prioritised. |
 | – | **S-polish-pass** | 10-phase listing quality polish. Plan: `~/.claude/plans/plan-to-find-and-polished-aho.md`. | After SB-UNI-Phase2. |
 
 **Post-beta backlog** (not in S1–S11; pull only when explicitly scheduled):
-AK1–3 (DI refactor) · AP1–16 (GoF patterns) · LP1–3 (custom ESLint rules) · Tier DX 38 tasks (`docs.letitrip.in` portal) · EMG1 → Tier PAY (EMI/installments) · EMG4 → Tier CHAT (live chat) · EMG2/EMG3 (loyalty + gift cards holding bay)
+AK1–3 (DI refactor) · AP1–16 (GoF patterns) · LP1–3 (custom ESLint rules) · Tier DX 38 tasks (`docs.letitrip.in` portal) · EMG2/EMG3 (loyalty + gift cards holding bay) · `beta-tracker.md`'s BC→SCALE tiers (not yet started)
 
 ---
 

@@ -11873,3 +11873,225 @@ ROUTES.STORE.PRINT_CENTER    /store/print-center
 ROUTES.STORE.INVENTORY_PRINT /store/inventory/print   (?type=product|order&ids=...&autoprint=1)
 ROUTES.ADMIN.PRINT_CENTER    /admin/print-center
 ```
+
+## Tier P-18/P-19/P-20 — Procurement Shipments + Personal Catalogue + Payment Detail Parity (2026-08-14)
+
+### Admin > Shipments List ✅
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Procurement Shipments                              [+ New Shipment]         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ [Search shipment #...]  [Status ▾]  [Sort: Newest ▾]        ⊞ ▤ ☰           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ☐ | Shipment #   | Supplier      | Status    | Lots | Landed Cost | Profit  │
+│ ☐ | SH-2026-0004 | Tokyo Toys Co │ planning  |  3   | ₹1,20,000   | 🔄 recalc│
+│ ☐ | SH-2026-0003 | Vintage Vault │ received  |  2   | ₹85,400     | +₹22,100│
+│ ☐ | SH-2026-0002 | Beyblade Arena| completed |  1   | ₹41,000     | +₹9,800 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Bulk: [Mark Received] [Delete]                    Page 1 of 1  [< 25 >]     │
+└─────────────────────────────────────────────────────────────────────────────┘
+Row actions: View/Edit · Mark Received · Delete (confirmation required, 409 if
+any item is still linked to a product — unlink first)
+"🔄 recalc" badge shows whenever totalsComputedAt < updatedAt (Function cascade
+hasn't caught up yet) — never a blocking spinner, list stays interactive.
+```
+
+### Admin > Shipment Editor ✅
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Edit Shipment SH-2026-0004                          [Save] [Delete]         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Shipment # [SH-2026-0004]   Supplier [Tokyo Toys Co___]  Status [planning ▾]│
+│ Tracking # [___________]   Carrier [_______]   ETA [2026-09-01]            │
+│ Customs Total (₹) [1000.00]   Shipping Total (₹) [500.00]                  │
+│ Labor Hours Spent [4]        Notes [___________________________]           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Lots (≤10)                                              [+ Add Lot]         │
+│ ┌───────────────────────────────────────────────────────────────────────┐  │
+│ │ Lot A · 4.2kg · ₹5,000 purchase          [Manage Items →] [Edit] [✕]  │  │
+│ │ Lot B · 2.8kg · ₹3,200 purchase          [Manage Items →] [Edit] [✕]  │  │
+│ └───────────────────────────────────────────────────────────────────────┘  │
+│ Each lot: name, weight(g), purchase cost, images[] (MediaUploadList),      │
+│ remainder item count + estimated value (the "everything else" lump)        │
+└─────────────────────────────────────────────────────────────────────────────┘
+409 SHIPMENT_NUMBER_TAKEN on duplicate shipmentNumber → inline field error via
+setFieldError("shipmentNumber", ...), not a banner.
+```
+
+### Admin > Lot Items (bulk import) ✅
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Lot A — Items                          [+ Add Item]  [Bulk Import]          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Title              | Qty | Price    | Self-Use | Linked Product | Actions   │
+│ Charizard PSA9     |  1  | ₹5,000   |    No    | —              | Edit ✕    │
+│ Vintage Hot Wheels |  3  | ₹800     |    No    | product-hw-... | Edit ✕    │
+│ Display Case       |  1  | —        |   Yes    | —              | Edit ✕    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                    Page 1 of 1  [< 25 >]     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Bulk Import drawer:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Paste rows: "title, quantity, price, isForSelfUse" — one per line (≤500)   │
+│ ┌───────────────────────────────────────────────────────────────────────┐  │
+│ │ Charizard PSA9, 1, 500000, false                                      │  │
+│ │ Vintage Hot Wheels, 3, 80000, false                                   │  │
+│ └───────────────────────────────────────────────────────────────────────┘  │
+│                                          [Parse & Preview] [Import All]     │
+│ Preview table shows every parsed row before commit; a single Firestore     │
+│ WriteBatch writes the whole import (no chunking — 500 = the batch limit).  │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Admin > Projections ✅
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Projections                                    Sort: [Highest profit ▾]     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Lot           | Items | Landed Cost | Proj. Revenue | Proj. Profit |         │
+│ Vault Lot 02  |  120  | ₹41,000     | ₹63,100       | +₹22,100     | [Link] │
+│ Arena Lot 01  |   38  | ₹18,400     | ₹28,000       | +₹9,600      | [Link] │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                    Page 1 of 1  [< 25 >]     │
+└─────────────────────────────────────────────────────────────────────────────┘
+Real Sieve-paginated query over shipmentLots (filters shipmentStatus != cancelled),
+never an in-memory flatten. "Link" opens a picker scoped to that lot's unlinked,
+resale-eligible main items → "Create pre-order link" writes the product +
+back-reference both ways.
+```
+
+### User/Admin > My Catalogue ✅
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ My Catalogue                                        [+ Add Item]            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ [🌐 Public]  Vintage Funko Set              not_listed    [List] [Edit] [✕]│
+│ [🔒 Private] Signed Baseball                 not_listed    [List] [Edit] [✕]│
+│ [🌐 Public]  1st Ed Charizard                pending_admin_approval        │
+│ [🌐 Public]  Gundam RX-78-2                  listed → view product         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                    Page 1 of 1  [< 25 >]     │
+└─────────────────────────────────────────────────────────────────────────────┘
+[List] button label depends on role:
+  seller/admin → "List" (direct, own store / consignment store, immediate)
+  buyer (user) → "Request to sell" (submits to admin approval queue)
+Blocked with a re-upload prompt if lastImageUpdateAt is 30+ days old — the
+freshness deadline itself is never client-writable (server-stamped only).
+```
+
+### Admin > Catalogue Approvals ✅
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Catalogue Approvals                                                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ Item                | Owner        | Submitted     | Actions                │
+│ 1st Ed Charizard    | user-ravi-k  | 2026-08-12    | [Approve] [Reject]     │
+├─────────────────────────────────────────────────────────────────────────────┤
+└─────────────────────────────────────────────────────────────────────────────┘
+Approve → createProductFromCatalogueItem(item, "store-letitrip-official"),
+item.listingStatus="listed". Reject requires a reason (confirmation config,
+same pattern as every other destructive/decision action in the CTA registry).
+```
+
+### Public > Profile Catalogue Tab ✅
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Ravi Kumar                                          [Catalogue] [Reviews]   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  ┌────────┐  ┌────────┐  ┌────────┐                                        │
+│  │ [img]  │  │ [img]  │  │ [img]  │   ← only visibility:"public" items     │
+│  │ Item A │  │ Item B │  │ Item C │      (owner's private items never      │
+│  └────────┘  └────────┘  └────────┘      appear here)                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+Route: /profile/[userId]/[tab] — reuses the existing public-profile route,
+"catalogue" is a new tab, not a parallel route. Images serve with a smaller,
+per-owner watermark (owner's name + site URL) via contextType="catalogue-image".
+```
+
+### Data model — Shipments (3 collections, Function-cascade totals)
+
+```
+procurementShipments/{id}          shipmentLots/{id}                shipmentItems/{id}
+├─ shipmentNumber (unique)         ├─ shipmentId (FK)                ├─ shipmentId (FK, denorm.)
+├─ status, supplierName, etaDate   ├─ shipmentStatus (denorm.)       ├─ lotId (FK)
+├─ customsTotalPaise ──┐           ├─ lotName, weightGrams,          ├─ title, quantity
+├─ shippingTotalPaise ─┤ split     │   purchaseCostPaise             ├─ isForSelfUse
+├─ laborHoursSpent     │ by        ├─ images[]                       ├─ price (paise, projected
+├─ totals (persisted,  │ value/    ├─ remainderItemCount?,           │   sale price)
+│   never recomputed   │ weight    │   remainderEstimatedValuePaise? ├─ linkedProductId?/
+│   on read)           │ across    ├─ itemCount, mainItemsProjected  │   Slug?/ListingType?
+└─ totalsComputedAt ───┘ sibling   │   RevenuePaise (Function #1)    │   (nullable — unlink
+   ≤10 lots per shipment  lots     ├─ customsAllocatedPaise,         │    writes null, not
+                                    │   shippingAllocatedPaise,       │    undefined, since
+                                    │   totalLandedCostPaise,         │    Firestore writes
+                                    │   projectedProfitPaise          │    strip undefined)
+                                    │   (Function #2)                 └─ ≤500 items per lotId
+                                    └─ ≤10 lots per shipment              (Firestore batch cap)
+
+ShipmentItem and CatalogueItemDocument both extend
+  Partial<Pick<ProductDocument, "title"|"mainImage"|"images"|"condition"|
+                                 "categorySlugs"|"brandSlug"|"price">>
+  = ProductDraftFields — defined once, imported by both — so the eventual
+  product-creation call in each feature is a near-literal field spread.
+```
+
+### Data model — Personal Catalogue
+
+```
+CatalogueItemDocument  "mycatalog-{ownerSlug}-{itemSlug}-{yyyymmdd}-{rand6}"
+├─ ownerId, ownerRole: "user" | "seller" | "admin"  (snapshot at creation)
+├─ title, description, images[], mainImage?, condition?, price? (ProductDraftFields)
+├─ visibility: "public" | "private"     (public by default)
+├─ lastImageUpdateAt   ← repository-stamped on every images[] change; NOT a
+│                          client-writable field (Zod schema excludes it)
+├─ listingStatus:
+│    not_listed ──(seller/admin "List")──────────► listed (own store /
+│        │                                          consignment store)
+│        └──(buyer "Request to sell")──► pending_admin_approval
+│                    │ admin approves            │ admin rejects
+│                    ▼                            ▼
+│                 listed (consignment store)   rejected (+ reason)
+└─ linkedProductId?, linkedProductSlug?    (mirrors Feature A's link pattern)
+
+Freshness gate (assertCatalogueImagesFresh, both "List" and "Request to sell"):
+  now - lastImageUpdateAt > 30 days → 400, prompt re-upload
+```
+
+### Repository surfaces
+
+```
+shipmentsRepository        create() [409 on dup shipmentNumber] · findByShipmentNumber()
+                            · hasLinkedItems() [delete-guard query]
+shipmentLotsRepository     listForProjections() [Sieve, shipmentStatus != cancelled]
+shipmentItemsRepository    bulkCreate() [single WriteBatch, ≤500] · unlink() [writes null]
+catalogueRepository        stampImageUpdate() on images[] writes · listPublicByOwner()
+                            · listPendingApproval()
+```
+
+### Firebase Function cascade
+
+```
+onShipmentItemWrite        (documentWritten, shipmentItems/{itemId})
+  → recompute the owning lot's itemCount + mainItemsProjectedRevenuePaise
+
+onShipmentLotWrite         (documentWritten, shipmentLots/{lotId})
+onShipmentHeaderWrite      (documentWritten, procurementShipments/{shipmentId})
+  → recompute cross-lot customs/shipping allocation + persisted shipment totals
+
+onShipmentDeleted          (documentWritten, procurementShipments/{shipmentId})
+  → cascade-delete the shipment's lots + items in batches of 500
+
+catalogueImageStalenessReminder   (scheduled, daily 07:00 IST)
+  → remind owners whose photos are nearing the 30-day freshness cutoff
+
+onCatalogueSubmittedForApproval   (documentUpdated, catalogueItems/{itemId})
+  → notify every admin when listingStatus transitions to pending_admin_approval
+```

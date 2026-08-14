@@ -159,6 +159,19 @@
 | `store-addresses/route.ts` | GET | All store addresses — auth: admin/moderator; optional storeId param → specific subcollection or collectionGroup("addresses"); returns id, storeId, label, city, state, pincode, isPickupLocation, createdAt (LL17) |
 | `features/route.ts` | GET/POST | productFeatures admin CRUD (FI3) — GET filters by scope/storeId/isActive; POST admin-only zod-validated create |
 | `features/[id]/route.ts` | GET/PUT/DELETE | productFeatures item — DELETE returns 409 when feature is referenced by any product (FI3) |
+| `shipments/route.ts` | GET/POST | Feature A — list/create procurement shipments; 409 on duplicate `shipmentNumber` |
+| `shipments/[id]/route.ts` | GET/PATCH/DELETE | Feature A — shipment header; DELETE 409s while any item is still linked |
+| `shipments/[id]/lots/route.ts` | GET/POST | Feature A — list/create lots (≤10 per shipment) |
+| `shipments/[id]/lots/[lotId]/route.ts` | GET/PATCH/DELETE | Feature A — single lot header + remainder fields |
+| `shipments/[id]/lots/[lotId]/items/route.ts` | GET/POST | Feature A — paginated item list / single item create |
+| `shipments/[id]/lots/[lotId]/items/bulk/route.ts` | POST | Feature A — bulk paste-import, ≤500 rows, single `WriteBatch` |
+| `shipments/[id]/lots/[lotId]/items/[itemId]/route.ts` | PATCH/DELETE | Feature A — edit/delete/unlink a single item (`linkedProductId: null` clears the link) |
+| `shipments/[id]/lots/[lotId]/items/[itemId]/link/route.ts` | POST | Feature A — link a main item to a new/existing pre-order product |
+| `shipments/projections/route.ts` | GET | Feature A — real paginated `shipmentLots` query, sortable by profit/revenue/newest |
+| `catalogue/route.ts` | GET | Feature B — admin approval queue (`listingStatus === "pending_admin_approval"`) |
+| `catalogue/[id]/approve/route.ts` | POST | Feature B — creates the product under `store-letitrip-official` |
+| `catalogue/[id]/reject/route.ts` | POST | Feature B — records a rejection reason |
+| `orders/[id]/payment-verify/route.ts` | PATCH | Feature C — admin manual-payment verification; writes `order.paymentRecord` |
 
 ---
 
@@ -180,6 +193,20 @@
 | `features/[id]/route.ts` | GET/PUT/DELETE | Seller feature item — 403 when feature isn't owned by the authenticated seller's store (FI4) |
 | `profile/route.ts` | PUT | Change store slug — validates format, checks availability, batch-migrates document ID (O1 S4) |
 | `slug/check/route.ts` | GET | Check if a store slug is available — returns `{ available, reason }` (O1 S4) |
+| `orders/[id]/route.ts` | PATCH | Feature C addition — `{ markCodCollected, codCollectionNote }` writes `paymentRecord` (method:"cod"); 400 if `paymentMethod !== "cod"` |
+
+---
+
+## User Catalogue API Routes — `src/app/api/user/catalogue/` (Feature B)
+
+| Route file | Method | Purpose |
+|-----------|--------|---------|
+| `route.ts` | GET/POST | List own catalogue items / create (any authed user/seller/admin) |
+| `[id]/route.ts` | GET/PATCH/DELETE | Single item CRUD, ownership-checked; PATCH re-stamps `lastImageUpdateAt` only when `images` is part of the patch |
+| `[id]/list/route.ts` | POST | Direct list — seller → own store, admin → `store-letitrip-official` (no personal store) |
+| `[id]/submit/route.ts` | POST | Buyer "Request to sell" — flips `listingStatus` to `pending_admin_approval` |
+
+Public: `src/app/api/catalogue/[ownerSlug]/route.ts` — GET, `visibility:"public"` items only, no auth.
 
 ---
 

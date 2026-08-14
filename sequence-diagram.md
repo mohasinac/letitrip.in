@@ -1108,3 +1108,121 @@ BUYER                  │                              │                    �
   │                    │                              │<── bundle stock ───│  recalculates
   │                    │                              │    synced          │  bundle availability
 ```
+
+## P-18 — Procurement Shipments
+**Flag:** none — `admin:shipments:read`/`:write` RBAC only · **Dependency:** none
+
+```
+ADMIN         AdminShipmentLotItemsView    POST .../items/bulk    shipmentItems        onShipmentItemWrite    shipmentLots doc
+  │  pastes "name,qty,price" ×N     │                              (single Firestore    (Firestore trigger,   (itemCount +
+  │  rows (N ≤ 500)                 │                              batch write —         fires once per        revenue updated
+  │─────────────────────────────────>│  parses + Zod-validates     no chunking, since     write in the batch)   a few seconds
+  │  confirms                        │  client-side, shows preview  500 = Firestore's                          after import;
+  │──────────────────────────────────>│  POST bulk payload ────────>│  batched .set() ────>│  reads current  ───>│  UI shows
+  │                                  │◄── 200, items created ───────┤                      │  lot state)          "recalculating…"
+  │◄── list refreshes, totals show  │                                                                             meanwhile)
+  │    "recalculating…" until        │
+  │    totalsComputedAt catches up   │
+
+ADMIN         onShipmentLotWrite / onShipmentHeaderWrite (Firestore trigger)      shipmentLots (all siblings)     procurementShipments doc
+  │  (fired by the bulk-import   │                                                │                                │
+  │   write above, OR by editing  │  queries every lot where shipmentId == X      │                                │
+  │   customs/shipping/labor on   │  (bounded ≤10) → allocateShipmentCosts()      │                                │
+  │   the shipment header)        │  (customs by purchaseCost share, shipping     │                                │
+  │                               │  by weight share, remainder corrected onto    │                                │
+  │                               │  the last lot so sums reconcile exactly)      │                                │
+  │                               │───────────────────────────────────────────────>│  batch-writes each lot's       │
+  │                               │                                                │  customsAllocatedPaise/        │
+  │                               │                                                │  shippingAllocatedPaise/       │
+  │                               │                                                │  totalLandedCostPaise/         │
+  │                               │                                                │  projectedProfitPaise          │
+  │                               │────────────────────────────────────────────────────────────────────────────────>│  writes persisted
+  │                               │                                                                                 │  `totals` +
+  │◄── reopens shipment days later — totals are read straight from the doc, no recompute ──────────────────────────┤  totalsComputedAt
+
+ADMIN         AdminShipmentProjectionsView       shipmentLotsRepository.listForProjections     shipmentItemsRepository.link
+  │  opens Projections tab   │                                                                  │
+  │──────────────────────────>│  real paginated Sieve query: shipmentStatus != cancelled,       │
+  │                          │  sorted by projectedProfitPaise/projectedRevenuePaise/createdAt   │
+  │                          │  (composite index: sort field FIRST, then the != field —          │
+  │                          │   the reverse of the intuitive filter-then-sort order)            │
+  │                          │◄──────────────────────────────────────────────────────────────────┤
+  │  picks a main item,      │                                                                   │
+  │  "Create pre-order link" │──────────────────────────────────────────────────────────────────>│  creates/links product,
+  │◄── product created, sourceShipmentId/LotId/ItemId written back onto it ─────────────────────┤  preOrderDeliveryDate
+                                                                                                    from shipment.etaDate
+
+ADMIN         DELETE /api/admin/shipments/[id]        shipmentsRepository.delete       onShipmentDeleted (Firestore trigger)
+  │  deletes a shipment  │                                                              │
+  │───────────────────────>│  cheap bounded query: any shipmentItems.linkedProductId    │
+  │                       │  still set for this shipmentId? → 409 if yes (unlink first) │
+  │                       │  else: delete the shipment doc itself (fast, Rule #6) ──────>│  cascade-deletes the
+  │◄── 200 or 409 ─────────┤                                                             │  shipment's lots + items
+  │                       │                                                             │  in batches of 500
+```
+
+## P-19 — Personal Catalogue
+**Flag:** none — any authenticated user/seller/admin; approval queue gated by `admin:catalogue:*` · **Dependency:** none
+
+```
+BUYER          /api/user/catalogue         catalogueRepository        /api/user/catalogue/[id]/submit    onCatalogueSubmittedForApproval
+  │  creates item     │                          │                          │                                    │
+  │  (public by        │  stamps lastImageUpdateAt=now,                    │                                    │
+  │  default) ─────────>│  listingStatus="not_listed" ───────────────────>│                                    │
+  │◄── 200 ────────────┤                                                   │                                    │
+  │  "Request to sell" │                                                   │                                    │
+  │─────────────────────────────────────────────────────────────────────────>│  assertCatalogueImagesFresh()      │
+  │                                                                          │  (30-day gate — 400 if stale)      │
+  │                                                                          │  listingStatus=                    │
+  │                                                                          │  "pending_admin_approval" ─────────>│  (Firestore trigger)
+  │◄── 200 ─────────────────────────────────────────────────────────────────┤                                     │  notifies every admin
+
+ADMIN          /api/admin/catalogue        approveCatalogueListingAction / rejectCatalogueListingAction
+  │  reviews queue  │                                                        │
+  │─────────────────>│  createProductFromCatalogueItem(item,                │
+  │  approves        │    storeId="store-letitrip-official") ───────────────>│  product created,
+  │──────────────────────────────────────────────────────────────────────────>│  sourceCatalogueItemId/
+  │◄── 200, productId ──────────────────────────────────────────────────────┤  OwnerId written back,
+                                                                                listingStatus="listed"
+
+SELLER / ADMIN   /api/user/catalogue/[id]/list         list-from-catalogue.ts
+  │  "List" (direct,   │                                                    │
+  │  no approval step) │  seller → storeRepository.findByOwnerId(uid)      │
+  │─────────────────────>│  admin  → no personal store, so uses            │
+  │                     │  CONSIGNMENT_STORE_ID = "store-letitrip-official" │
+  │                     │  either way → createProductFromCatalogueItem() ──>│  product created under
+  │◄── 200, productId ──┤                                                   │  the resolved storeId
+
+Watermark resolution (at every /api/media/[...slug] serve — not upload time):
+  contextType === "catalogue-image" (derived from the filename prefix at
+  finalize time, via a new optional MediaAssetDocument.contextType field)
+    → per-owner watermark: owner's displayName + site URL, smaller size
+  else
+    → siteSettings.watermark, falling back to siteSettings.branding.siteName
+      (no longer a hardcoded "letitrip.in" literal)
+```
+
+## P-20 — Payment Detail Parity
+**Flag:** none — additive `OrderDocument.paymentRecord` field, always on · **Dependency:** none
+
+```
+Manual path                                    Razorpay path                                COD path
+──────────                                     ─────────────                                ────────
+ADMIN verifies proof                           BUYER completes Razorpay checkout            SELLER/ADMIN marks cash collected
+  │                                               │                                            │
+  │ adminVerifyPaymentAction()                    │ verifyAndPlaceRazorpayOrderAction()        │ PATCH /api/store/orders/[id]
+  │  writes order.paymentRecord = {               │  writes order.paymentRecord = {            │   { markCodCollected: true }
+  │    method: "manual",                          │    method: "razorpay",                     │  400 if paymentMethod != "cod"
+  │    verificationMethod:                        │    verificationMethod: "webhook",           │  else:
+  │      "manual_review",                         │    gatewayRef: { orderId,                  │   orderRepository
+  │    transactionId, verifiedBy,                 │      paymentId, signature },                │    .markCodCollected()
+  │    amountPaise }                              │    amountPaise }                            │   writes the same
+  │  (idempotent — re-verifying                   │                                             │   paymentRecord shape
+  │   an already-paid order is a no-op)            │                                             │   (method: "cod")
+  ▼                                               ▼                                             ▼
+                        Every order — regardless of path — now carries the same
+                        paymentRecord shape. <OrderPaymentSummary> reads it directly;
+                        for orders created before this patch (no paymentRecord field),
+                        it falls back to the legacy paymentProofUrl/paymentTransactionId
+                        fields so old orders keep rendering correctly.
+```

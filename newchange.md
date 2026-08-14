@@ -41,6 +41,88 @@
 
 ---
 
+### S-PROC-shipments-verify — Verification, bug-fix, publish + deploy follow-up (2026-08-14)
+
+**Follow-up to S-PROC-shipments (Procurement Shipments / Personal Catalogue / Payment
+Detail Parity — P-18/P-19/P-20). Closes every item that session flagged as deferred,
+then publishes appkit and deploys to production per explicit instruction.**
+
+**Phase A — Closed the deferred items:**
+- `codebaseexports.md` fully updated: API routes, Zod schemas, seed data, page shims,
+  route map, Firebase Jobs sections for all three features.
+- Admin catalogue access fixed — `CatalogueOwnerRole` extended to include `"admin"`;
+  `listFromCatalogueAction` special-cases admin (no personal store) to list under
+  `store-letitrip-official`, same path as buyer-approval; extracted a shared
+  `createProductFromCatalogueItem()` helper so seller/admin/buyer-approval don't each
+  hand-roll product creation.
+- Wrote and ran `pw-shipments.spec.ts` / `pw-catalogue.spec.ts` / `pw-payment-parity.spec.ts`
+  — **48/48 passing** on iphone-13/laptop-14/monitor-30 against a live seeded dev server.
+
+**Phase B — Real bugs found during verification (Rule #4 — verified each before fixing):**
+1. `tsconfig.json` was missing `appkit/src/**/__tests__/**` in `exclude` — appkit's own
+   Vitest test files were leaking into `next build`'s typecheck and failing the build
+   on unrelated `vi`/mock-type errors.
+2. Demo-seed route rejected `seedExtMedia()`'s relative `/api/media/ext?url=...`
+   `photoURL` values when creating Firebase Auth users (`auth/invalid-photo-url`) —
+   this silently blocked **every non-admin seeded account** from logging in
+   platform-wide (only the admin seed user happens to use a raw absolute URL). Fixed by
+   only passing `photoURL` to Auth when it's an absolute `http(s)` URL — the Firestore
+   doc remains the real source of truth for display.
+3. `updateShipmentItemSchema` never declared `linkedProductId`/`Slug`/`ListingType` —
+   Zod silently strips unknown keys, so the "unlink" PATCH action was a complete no-op
+   (200 OK, nothing changed). Added a `listingTypeSchema` enum + `.nullable().optional()`
+   fields; also fixed `ShipmentItemsRepository.unlink()` to write `null` (Firestore
+   writes strip `undefined` before they land, so `undefined` never actually clears a
+   field).
+4. `shipmentLots` Projections composite index had fields in the wrong order — for a
+   `!=` filter combined with `orderBy` on a different field, Firestore requires the
+   **sort field first**, then the inequality field (the reverse of the intuitive
+   filter-then-sort convention used everywhere else in this codebase). Confirmed by
+   decoding the `create_composite=` URL from the actual error.
+5. `CheckoutRouteClient.tsx` had two call sites (EMI checkout, Razorpay verify) missing
+   the newly-required `outOfStockPolicy` prop — unrelated pre-existing gap from
+   concurrent EMI work, closed only to unblock a clean `tsc --noEmit`.
+6. `enqueueJob` was re-exported from `_internal/server/jobs/actions/` through the
+   public `server.ts` barrel — failed `audit-appkit-reexports`. Moved the file to
+   `features/jobs/actions/enqueue-job.ts` (a real public-API location, not `_internal/`).
+7. Hardcoded `support@letitrip.in` inside `appkit/_internal/server/jobs/core/hardBanCascade.ts`
+   failed `audit-ssr-in-appkit` (brand strings inside `_internal/` must be
+   consumer-overridable) — routed through `siteSettingsRepository.getSingleton().contact.email`.
+
+**Phase C — Windows-specific environment finding** (cost most of a debugging session):
+`node_modules/@mohasinac/appkit` materializes as a **real file copy** on this machine
+when installed via `file:appkit`, not a live symlink — despite the lockfile correctly
+showing `"resolved": "file:appkit"`. appkit rebuilds (`npm run build`) silently never
+propagated into the running dev server until `rm -rf node_modules/@mohasinac/appkit &&
+npm install` was run. A stale `tsconfig.tsbuildinfo` / `.next/cache/.tsbuildinfo` can
+compound the same symptom even after the appkit copy is resynced. Saved to
+`~/.claude/projects/.../memory/project_windows_appkit_symlink_gotcha.md` for future
+sessions — CLAUDE.md's dev-workflow docs assume a live symlink, which does not hold here.
+
+**Phase D — Publish + deploy** (explicitly requested by the user):
+- appkit published to npm twice this session: **3.5.0** (initial, bundled all the Phase
+  B fixes), then **3.5.1** (the `hardBanCascade` audit fix, found only after the first
+  publish during the `deploy.mjs` pre-flight run).
+- Consumer upgraded `"@mohasinac/appkit": "file:appkit"` → `"^3.5.1"`; `appkit/src/**`
+  removed from `tsconfig.json` `include` per the publish-mode rule; lockfile deleted +
+  reinstalled to resolve from the npm registry.
+- Firebase fully deployed: rules, indexes (including 4 corrected `shipmentLots`
+  projection indexes), storage, database, and all Functions (including the 5 new
+  shipment/catalogue triggers: `onShipmentItemWrite`, `onShipmentLotWrite`,
+  `onShipmentHeaderWrite`, `onShipmentDeleted`, `onCatalogueSubmittedForApproval`).
+- Vercel production deploy failed **twice** with `SIGKILL` (build-machine OOM, ~45 min
+  each attempt) before a third attempt with `--force` (skip the restored build cache,
+  which appears to have been the actual culprit) succeeded in 3 minutes. Verified live:
+  `https://letitrip.in` returns 200, `/api/admin/shipments` and `/api/user/catalogue`
+  both return 401-unauthenticated (not 404), confirming the new routes shipped.
+
+**Left untouched, flagged not hidden:** `verifyAndPlaceRazorpayOrderAction` at 496
+significant lines (already 477 before this session — a real refactor, not a quick fix,
+deliberately not attempted under time pressure on a payment-critical function) and 128
+pre-existing suppression-comment markers unrelated to any of the three features.
+
+---
+
 ### S-patch-p2-p5-merge — Patch P-2→P-5 tests + sequential merge to main (2026-08-04)
 
 **19 commits merged to main · `npm run check` exits 0 · appkit 3.2.5 unchanged · Firebase Functions deployed · Vercel deployed · feature flags COUPONS/BLOG/EVENTS/AUCTIONS enabled**

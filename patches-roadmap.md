@@ -1,5 +1,5 @@
 # LetItRip — Patch Rollout Roadmap
-> Maintained by: Claude (PM role) | CEO: Mohasin | Last updated: 2026-08-08
+> Maintained by: Claude (PM role) | CEO: Mohasin | Last updated: 2026-08-14
 > Update this file after each patch ships. Tick the [x] when live in production.
 >
 > **Principle:** Features first, 3rd-party integrations last.
@@ -36,6 +36,9 @@ P-14 [x] Shiprocket Auto-ship — REMOVED 2026-08-08, not integrated. Decision r
 P-15 [ ] Analytics HTTPS Function (Firebase aggregation)
 P-16 [ ] Tour System (full steps — admin, seller, customer)
 P-17 [ ] Bundles — bundle listing type CRUD, stock sync, buyer catalogue view
+P-18 [x] Procurement Shipments (admin-only profit tracking) ← LIVE 2026-08-14
+P-19 [x] Personal Catalogue (buyer/seller → listing pipeline)  ← LIVE 2026-08-14
+P-20 [x] Payment Detail Parity (manual/Razorpay/COD unified paymentRecord)  ← LIVE 2026-08-14
 ```
 
 ---
@@ -1532,6 +1535,174 @@ ADMIN TOUR (8 steps):
 
 ---
 
+### P-18 — Procurement Shipments (Admin-Only Profit Tracking)
+
+**Branch:** none — shipped directly on `main`, deployed 2026-08-14
+**Target window:** N/A — not on the original roadmap, added 2026-08-14
+**Risk:** LOW (admin-only, no buyer-facing surface, no payment/checkout coupling)
+**Status:** [x] LIVE — 2026-08-14 (appkit 3.5.1, Vercel prod, Firestore
+indexes/rules, Firebase Functions all deployed)
+**Feature flag:** none — gated entirely by `admin:shipments:read`/`admin:shipments:write`
+RBAC permissions (not in any EmployeeGroup preset, so no seller/employee can reach it)
+**Dependency:** none
+
+#### What shipped
+
+- Three top-level Firestore collections — `procurementShipments` / `shipmentLots` /
+  `shipmentItems` — replacing an initially-planned embedded-array model, rejected
+  mid-session once real scale was known (a lot can hold up to ~500 items, a shipment up
+  to ~10 lots).
+- Landed-cost allocation (customs split by declared value, shipping split by weight)
+  computed by a 3-Function Firestore-trigger cascade (`onShipmentItemWrite` →
+  `onShipmentLotWrite` / `onShipmentHeaderWrite` → persisted `totals`/`totalsComputedAt`
+  on the shipment doc), never recomputed inline on read.
+- Bulk paste-import capped at 500 rows — Firestore's native batched-write limit — writes
+  a lot's main items in a single `WriteBatch`.
+- Manual, per-item "Create pre-order link" (never automatic) — prefills
+  `preOrderDeliveryDate` from the shipment's ETA, writes `sourceShipmentId`/
+  `sourceShipmentLotId`/`sourceShipmentItemId` back onto the created/linked product.
+- Real paginated Projections list (Sieve query over `shipmentLots`, denormalized
+  `shipmentStatus`), not an in-memory flatten.
+- Site Settings "⑮ Procurement" tab — hourly labor rate + max hours/day feeds shipment
+  labor cost + estimated processing days.
+
+#### Sequence Diagram
+
+See **[sequence-diagram.md § P-18 — Procurement Shipments](sequence-diagram.md#p-18--procurement-shipments)**
+for the bulk-import → cascade → projections flow.
+
+#### Use Cases Added
+
+- **UC-A-SHIP1:** Admin creates a shipment header (supplier, customs total, shipping
+  total, labor hours), adds up to 10 lots, and bulk-pastes up to 500 items per lot.
+- **UC-A-SHIP2:** Admin re-opens a shipment days later and sees the same landed-cost /
+  projected-profit numbers instantly — nothing recomputes on read.
+- **UC-A-SHIP3:** Admin links a main item to a new or existing pre-order product from
+  the Projections list; the product carries the shipment/lot/item back-reference.
+- **UC-A-SHIP4:** Admin cannot delete a shipment while any of its items are still
+  linked to a product (409 guard) until explicitly unlinked.
+
+#### Implementation TODO (remaining, not yet done)
+
+- [ ] Actual-vs-projected reconciliation once a linked pre-order product sells through
+- [ ] Seller-role access (explicitly admin-only per original ask)
+- [ ] Multi-currency (INR-only by design this patch)
+
+---
+
+### P-19 — Personal Catalogue (Buyer/Seller → Listing Pipeline)
+
+**Branch:** none — shipped directly on `main`, deployed 2026-08-14
+**Target window:** N/A — not on the original roadmap, added 2026-08-14
+**Risk:** LOW-MEDIUM (touches the shared media/watermark pipeline; no payment coupling)
+**Status:** [x] LIVE — 2026-08-14 (appkit 3.5.1, Vercel prod, Firestore
+indexes/rules, Firebase Functions all deployed)
+**Feature flag:** none — any authenticated user/seller/admin can use it; the admin
+approval queue is gated by `admin:catalogue:read`/`admin:catalogue:write`
+**Dependency:** none
+
+#### What shipped
+
+- `CatalogueItemDocument` (collection `catalogueItems`, `mycatalog-` slug prefix) reuses
+  the same `ProductDraftFields` shape as P-18's `ShipmentItem`, so eventual
+  product-creation is a near-literal field spread rather than a hand-remap.
+- Two listing paths: sellers and admins list **directly** (`listFromCatalogueAction`) —
+  sellers under their own store, admins (who have no personal store) under the platform
+  consignment store `store-letitrip-official`; buyers **request** listing
+  (`submitCatalogueItemForApprovalAction`) and an admin approves/rejects
+  (`approveCatalogueListingAction`/`rejectCatalogueListingAction`), also landing under
+  `store-letitrip-official`. All three paths share one `createProductFromCatalogueItem()`
+  helper.
+- 30-day photo-freshness gate (`assertCatalogueImagesFresh`) blocks listing until fresh
+  photos are uploaded — checked once against the repository-stamped `lastImageUpdateAt`,
+  not re-derived per image at read time. The freshness deadline is not client-writable
+  (Zod schema deliberately excludes it) — the only legitimate way to clear the gate is a
+  real `images[]` patch.
+- Per-owner watermark at serve time (`resolveWatermarkConfig` in `_watermark.ts`, keyed
+  off a new `MediaAssetDocument.contextType` derived from the filename prefix at
+  finalize time) — no new upload-route parameter needed, since watermarking already
+  happens per-request at `/api/media/[...slug]`, not at upload time.
+- Public catalogue reuses the *existing* `/profile/[userId]/[tab]` route (a "catalogue"
+  tab was added to `PublicProfileView`) rather than a parallel `/u/[slug]/catalogue`
+  route.
+- Two new Firebase Functions: `catalogueImageStalenessReminder` (daily sweep, nudges
+  owners before the 30-day gate hits) and `onCatalogueSubmittedForApproval` (Firestore
+  trigger → admin inbox notification on submission).
+
+#### Sequence Diagram
+
+See **[sequence-diagram.md § P-19 — Personal Catalogue](sequence-diagram.md#p-19--personal-catalogue)**
+for the three listing paths and the freshness-gate check.
+
+#### Use Cases Added
+
+- **UC-B-CAT1:** Buyer photographs an owned item, adds it to their public-by-default
+  personal catalogue, and later requests admin approval to sell it.
+- **UC-B-CAT2:** Admin reviews the approval queue and approves/rejects with a reason;
+  an approved item becomes a real product under the platform consignment store.
+- **UC-S-CAT1:** Seller lists a catalogue item directly under their own store — no
+  admin step.
+- **UC-A-CAT1:** Admin (who has no personal store) lists a catalogue item directly —
+  same consignment-store path as buyer approval.
+- **UC-SYS-CAT1:** A catalogue item whose photos are 30+ days old is blocked from
+  listing until re-photographed; the client cannot spoof the freshness deadline.
+
+#### Implementation TODO (remaining, not yet done)
+
+- [ ] Seller payout/consignment-fee logic for admin-approved buyer listings (currently
+  tracked via `sourceCatalogueOwnerId` on the product but not yet paid out against)
+
+---
+
+### P-20 — Payment Detail Parity (Manual / Razorpay / COD)
+
+**Branch:** none — shipped directly on `main`, deployed 2026-08-14
+**Target window:** N/A — not on the original roadmap, added 2026-08-14
+**Risk:** LOW (additive field only; every existing payment write-path left in place)
+**Status:** [x] LIVE — 2026-08-14 (appkit 3.5.1, Vercel prod, Firestore
+indexes/rules, Firebase Functions all deployed)
+**Feature flag:** none — additive to `OrderDocument`, always on
+**Dependency:** none
+
+#### What shipped
+
+- Additive `OrderDocument.paymentRecord` — same shape (`method`, `verificationMethod`,
+  `transactionId`, `verifiedBy`, `amountPaise`, `gatewayRef?`) regardless of whether the
+  buyer paid manually, via Razorpay, or COD. Existing legacy fields
+  (`paymentProofUrl`/`paymentTransactionId`/etc.) are left untouched, not migrated.
+- Wired into `adminVerifyPaymentAction` (manual, `verificationMethod: "manual_review"`),
+  `verifyAndPlaceRazorpayOrderAction` (Razorpay, `verificationMethod: "webhook"`,
+  `gatewayRef` populated), and a new `orderRepository.markCodCollected()` exposed via a
+  `markCodCollected` flag on the existing store-order `PATCH` route (mirrors
+  `markPicked`/`markPacked`; rejects with 400 on a non-COD order).
+- Shared `<OrderPaymentSummary>` component with a legacy-field fallback so orders
+  created before this patch keep rendering a sensible Payment section.
+- `AdminOrderEditorView`'s bespoke payment-verification UI (has its own "Approve" action
+  beyond a read-only summary) was deliberately left untouched — only the underlying
+  write now also populates `paymentRecord`.
+
+#### Sequence Diagram
+
+See **[sequence-diagram.md § P-20 — Payment Detail Parity](sequence-diagram.md#p-20--payment-detail-parity)**.
+
+#### Use Cases Added
+
+- **UC-A-PAY1:** Admin manually verifies a cash/UPI payment; the order's
+  `paymentRecord` is populated and re-verifying is idempotent (no duplicate write).
+- **UC-SYS-PAY1:** A Razorpay webhook verification writes the same `paymentRecord`
+  shape with the gateway's order/payment/signature IDs preserved for audit.
+- **UC-S-PAY1:** Seller/admin marks a COD order's cash as collected; rejected with 400
+  if attempted on a non-COD order.
+- **UC-A-PAY2:** Admin opens a pre-patch order (no `paymentRecord`) and still sees a
+  correct Payment summary via the legacy-field fallback.
+
+#### Implementation TODO (remaining, not yet done)
+
+- [ ] Feed `paymentRecord` into P-18's Procurement Shipments profit numbers once
+  actual-vs-projected reconciliation (P-18's own remaining TODO) is built
+
+---
+
 ## Rollout Timeline Summary
 
 ```
@@ -1558,6 +1729,15 @@ P-14   —      Shiprocket — REMOVED 2026-08-08    N/A      N/A               
 P-15   TBD    Analytics HTTPS Function           MED-HIGH FEATURE_ANALYTICS_FN    patch/p15-analytics
 P-16   Post P3 Tour System (full steps)          LOW      —                       patch/p16-tour
 P-17   Post P1  Bundles listing type             MED      FEATURE_BUNDLES         patch/p17-bundles
+P-18   —      Procurement Shipments — LIVE       LOW      admin:shipments:*       main (2026-08-14)
+              2026-08-14, not on original           RBAC only
+              schedule
+P-19   —      Personal Catalogue — LIVE          LOW-MED  admin:catalogue:*       main (2026-08-14)
+              2026-08-14, not on original           RBAC (approval queue only)
+              schedule
+P-20   —      Payment Detail Parity — LIVE       LOW      none — additive field   main (2026-08-14)
+              2026-08-14, not on original
+              schedule
 ──────────────────────────────────────────────────────────────────────────────────────────────
 GST NOTE:  P-8 must ship before P-9 (COD, deposit + GST invoice). The COD *handling fee*
            (max(₹200, 10%)) shipped early with P-9b and does not need GST — see P-9 note.
