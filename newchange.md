@@ -41,6 +41,231 @@
 
 ---
 
+### S-beyblade-relaunch — Carousel loop fix, theme retint, CTA contrast, Beyblade-minimal reseed, publish/deploy (2026-08-15)
+
+**Started from a user bug/UX report, not a planned tracker item: carousels stop instead of
+looping, the theme "looks red," buttons/CTAs don't look clickable, and a request to wipe the
+database down to a minimal Beyblade-focused catalog with generic (non-franchise) site branding.**
+
+**Part A — Carousel infinite-loop bug:**
+- `appkit/src/ui/components/HorizontalScroller.tsx` grid mode (`rows > 1`) had zero wraparound
+  logic — the circular clone-slot/teleport technique that already worked for `rows === 1` was
+  never extended to grid mode, and the caller (`SectionCarousel.tsx`) hard-coded
+  `loop={rows === 1}`, disabling looping outright whenever an admin configured a multi-row section.
+- `CustomCardsSection`'s row layout passed raw JSX `children` to `HorizontalScroller` instead of
+  `items`+`renderItem`; the component's loop machinery only activates in items-mode, so its
+  explicit `loop` prop was silently a no-op.
+- Fix: hoisted `gridCols`/`gridCardsPerSlide`/`gridSlideCount` to component scope, added a
+  parallel `gridLoopActive`/`handleGridScrollLoop`/initial-scroll effect mirroring the existing
+  single-item implementation (prepend 1 clone slide, append 1 clone slide, teleport across a full
+  cycle at the boundary), flipped `SectionCarousel.tsx`'s `loop` prop to unconditional `true`, and
+  converted `CustomCardsSection` to items-mode.
+
+**Part B — Root-caused the "red theme" complaint:**
+- It was **not** the appkit token defaults — those are cobalt-blue+lime (light) / hot-pink (dark)
+  and have been since the very first `tokens.css` commit (verified via full appkit + pre-appkit
+  git history, no bluish-green predecessor ever existed either, contrary to the user's initial
+  recollection).
+- The actual source: `siteSettings.theme` seed records in `appkit/src/seed/site-settings-seed-data.ts`
+  — an admin-configurable custom theme named **"Crimson Warrior"** (`primary: #dc2626`) was the
+  seeded `defaultLightThemeId`, and **"Shadow Abyss"** (`primary: #7c3aed`, violet) the seeded
+  `defaultDarkThemeId`. These are applied at runtime by `<ThemeProvider registry={...}>`,
+  completely independent of appkit's own token defaults — the user's hunch ("maybe the live site
+  is getting this from some seed data") was correct.
+- Retinted both records to a shared teal(`#0d9488`/`#14b8a6`)+cobalt-blue identity — renamed
+  "Teal Tide"/"Teal Depths" — reusing the teal scale already in `tokens.css` (previously
+  badge-only) and the cobalt scale from the existing `cobalt-night` preset, rather than inventing
+  new hex values. Kept the `id` fields (`crimson-warrior`/`shadow-abyss`) unchanged so
+  `defaultLightThemeId`/`defaultDarkThemeId` and no other reference needed to move. Left
+  `error`/`warning`/`success`/`info` untouched (destructive-action red stays red, standard
+  convention, not requested). Updated the two hardcoded `themeColor` meta-tag hex duplicates in
+  `src/app/layout.tsx` in lockstep (Rule #3).
+
+**Part C — CTA/toolbar contrast:**
+- `Button.style.css`: only `primary`/`danger`/`warning` variants were filled; `secondary` was
+  border-only, `outline` and `ghost` were near-fully-transparent in both themes. Added tinted
+  backgrounds (light-mode `primary-50`/`primary-100` for secondary, `color-mix()` tints for
+  outline/ghost; dark-mode `color-mix()` of `--appkit-color-secondary`) so all three read as
+  distinct buttons at rest, not just on hover.
+- `ListingToolbar.tsx`: 5 call sites fell back to a hardcoded `theme(colors.violet.600)` Tailwind
+  arbitrary-value fallback for `--appkit-color-primary` — violet matched neither the old nor new
+  brand palette. Simplified to `var(--appkit-color-primary)` (always defined at runtime, fallback
+  was dead weight).
+- `BulkActionBar.style.css` dark mode had a leftover hardcoded hot-pink `rgba(233,30,140,…)`
+  (the *old* appkit dark-mode primary, from before some earlier session's palette change) baked
+  directly into the count-pill/border styling instead of referencing the theme variable — switched
+  to `color-mix(in srgb, var(--appkit-color-primary) N%, transparent)` so it tracks whichever
+  theme is actually active.
+
+**Part D — Database wipe + minimal Beyblade reseed (explicit user confirmation before the
+destructive step, after showing the `--dry-run` summary: 2,635 Firestore docs / 20 Auth users /
+49 Cloud Functions on the live `letitrip-in-app` project):**
+- `npm run firebase reset --yes` → full wipe (Firestore, Auth, Storage, Functions, deny-all
+  rules/empty indexes deployed as part of the reset itself).
+- `npm run firebase generate` + `deploy --only indexes` hit a real bug, not eventual consistency
+  as first suspected: `appkit/firebase/base/firestore.indexes.json` had a genuine duplicate
+  composite-index entry for `events` (`type ASC, status ASC, startsAt DESC`, defined twice — once
+  expanded-style mid-file, once compact-style at the file tail, clearly a copy-paste artifact from
+  an earlier session). Confirmed via an exact-JSON dedup scan across all 519 entries before
+  concluding it was a real bug rather than retrying blindly. Removed the duplicate, redeployed
+  clean (518 indexes, all reached READY after ~waiting — see index-wait tooling note below).
+- Category tree trimmed to `category-spinning-tops` + 4 generation leaves — added
+  `category-beyblade-original` as a new 4th generation (Original/Plastic Generation, 1999–2003)
+  alongside the pre-existing `category-beyblade-metal`(MFB)/`-burst`/`-x`, per the user's explicit
+  "4 gen: original, MFB, burst, X, each a separate category." Brands trimmed to `brand-beyblade`+
+  `brand-takara-tomy`; stores to `store-letitrip-official`+`store-beyblade-arena`; addresses
+  trimmed to match (1 store pickup address per surviving store + 3 buyer addresses). 11 new
+  Beyblade products/auctions/pre-orders written across all 4 generations
+  (`products-standard-seed-data.ts` rewritten, `-auctions-`/`-preorders-` trimmed to 2/1 new
+  entries); the other 6 listing-type seed files (prize-draws/classifieds/digital-codes/live-items/
+  art/stickers) emptied to stub arrays so the `products` collection stays Beyblade-only rather
+  than getting padded back out by the "load everything" concatenation in the seed API route.
+  `users`/`homepageSections`/`blogPosts`/`siteSettings` preserved per explicit instruction.
+- Site branding genericized: `site-settings-seed-data.ts`'s non-theme fields (motto, SEO
+  title/description/keywords, `ogImage`, `features[]`, announcement bar, ad-inventory creative
+  copy) were, surprisingly, **Yu-Gi-Oh!-specific** before this session — not generic as CLAUDE.md's
+  own doc implied — rewritten to generic "collectibles marketplace" language. A follow-up visual
+  verification pass (see below) caught two more homepage-section copy spots still naming deleted
+  franchises/brands: the hero `description` field ("Pokémon, Yu-Gi-Oh!, Hot Wheels, Gundam,
+  Beyblade, Funko Pop…") and the "Top Collectibles Brands" subtitle ("Bandai, Hasbro, Takara-Tomy,
+  Mattel, Konami, Funko, Good Smile…") — both genericized. A third spot, the "Complete Your Exodia
+  Set" promo banner (dead CTA links to `?q=exodia` and a non-existent blog post, since Exodia
+  products no longer exist), was retargeted to "Complete Your Beyblade Collection" linking to
+  `?q=beyblade` and the real `beyblade-x-vs-burst-comparison` blog post instead of removed as a
+  section (kept the homepage structure intact per instruction, fixed only the dead content).
+  Left a handful of deeper `filterByBrand: "brand-konami"`-style product-row sections alone since
+  those gracefully render `null` when their filter matches zero products (not visibly broken,
+  unlike the banner).
+- `src/constants/seo.server.ts`'s consumer-side default SEO description also mentioned specific
+  franchises ("Pokémon TCG, Hot Wheels, anime figures, Beyblades") — genericized to match.
+
+**Part E — Two real infra bugs surfaced and fixed along the way (both flagged rather than
+worked around silently):**
+1. The duplicate `events` index entry above — the actual root cause of a string of "index already
+   exists" 409s during the first several index-deploy attempts; initially misdiagnosed as
+   Firestore eventual-consistency lag (a documented prior pitfall in this project) before an exact
+   JSON-dedup scan across the full indexes file proved it was a genuine duplicate definition.
+2. The consumer's `package.json` was pinned to the **published npm** appkit version (`^3.5.2`),
+   not `file:./appkit` as CLAUDE.md's local-dev default assumes — so none of this session's
+   appkit-side source edits (loop fix, theme retint, CSS contrast fixes, seed data) were reaching
+   the running dev server at all. First caught this via Playwright verification: colors and
+   product data still showed pre-fix values after a full rebuild+restart. Root cause: `grep`-ing
+   the linked `node_modules/@mohasinac/appkit/dist` showed the old theme names — switched to
+   `file:./appkit` locally to verify the actual fixes, then republished to npm (see Part F) and
+   switched back to the registry pin for the real deploy. A secondary related bug: after the very
+   first (still-stale-appkit) seed call wrote old Yu-Gi-Oh! products into the freshly-emptied
+   `products` collection, a second (now-correct) seed call only *upserted* the new 8 Beyblade
+   products on top without removing the stale ones (`action:"load"` is additive by design) —
+   caught via a follow-up screenshot still showing old product titles; fixed with an
+   `action:"clear"` purge (preserves `users`/`homepageSections`/`siteSettings`/`faqs`) before the
+   final clean `action:"load"`.
+3. (Tooling note, not fixed this session — flagged for whoever touches indices next)
+   `scripts/wait-for-indexes.mjs` queries a single hard-coded collection group
+   (`collectionGroups/sessions/indexes`) under the mistaken comment "the listing endpoint returns
+   all indexes globally" — it does not; that call only returns indexes for the `sessions`
+   collection specifically, so the script always reports `total=0 CREATING=0` regardless of true
+   state. The correct global-listing endpoint is the wildcard
+   `collectionGroups/-/indexes` (and it rejects any `pageSize` param other than 0/omitted — a
+   separate quirk). Worked around ad hoc this session with a one-off polling script; the shared
+   helper itself is still broken for future sessions.
+
+**Part F — Verification + publish + deploy:**
+- No project run-skill existed for driving the app in a browser; used `playwright` (already
+  installed for the existing Playwright QA suites) directly via an ad hoc script rather than
+  authoring a new project skill for a one-off check.
+- Confirmed via screenshots: light-mode `--appkit-color-primary` = `#0d9488`, dark-mode =
+  `#14b8a6` (both teal, no red/purple remaining); the "Shop by Category"/"Top Collectibles Brands"
+  carousels visibly repeat their 1-category/2-brand set via clone slots with both arrows active
+  (confirms the loop fix); all 4 Beyblade generations render on `/products` with correct
+  category/brand/store tags and INR pricing; hero and footer copy read generically.
+- `npm run check` exits 0 except one pre-existing `audit-no-suppression-comments` failure (128
+  markers spread across `src/app/api/**` route files this session never touched — confirmed via
+  `git status` before starting, per Rule #4).
+- Published **appkit 3.5.3** to npm (workflow: commit appkit source → bump version → build →
+  `npm publish` → bump consumer pin `^3.5.2`→`^3.5.3` → delete lockfile → reinstall → `tsc --noEmit`
+  clean in both repos → commit consumer). `node scripts/deploy.mjs` full pre-flight + Vercel
+  production deploy succeeded, live + aliased at `https://www.letitrip.in`.
+- **Process note**: `crud-tracker.md`/`newchange.md`/`prompt.md`/`asciiDiagrams.md`/
+  `codebaseexports.md`/`CLAUDE.md`/`src/index.md`/`appkit/index.md` were all concurrently dirty
+  from another active session throughout this one (bulk-action UI wiring, P-18/19/20 docs work) —
+  every commit this session made staged only the files this session actually intended to touch,
+  never the other session's in-progress content.
+
+---
+
+### S-jobs-checkout-policy — Async job primitive + checkout out-of-stock policy + publish/deploy (2026-08-15)
+
+**Started from an open-ended question: "can we use RTDB + Firebase Functions to make some
+of our routes/bulk actions fire-and-forget?" plus a concrete feature ask: a checkout flag
+for what to do when an item goes out of stock.**
+
+**Phase A — Async job primitive (`jobs` Firestore collection):**
+- Research first: most "100s of bulk actions" turned out to be client-side fan-out of N
+  single-document HTTP requests, not server-side N+1 loops — inefficient but not a
+  Rule #6 timeout risk. The real violations were narrow: `admin/payouts/weekly`
+  (sequential per-seller loop, ~150 duplicated lines of the scheduled-twin's logic),
+  `admin/users/[uid]/hard-ban` (unbounded nested cascade loops), `admin/sessions` GET
+  (sequential per-uid Auth lookup).
+- Found existing-but-unwired scaffolding that matched the ask exactly: `RTDB_PATHS.BULK_EVENTS`
+  + a fully-specified `bulk_events/{jobId}` security rule in `database.rules.json` (custom-token
+  claim `bulkJobId`) + a client `useBulkEvent` hook + a `useBulkAction` mutation hook — all
+  built, all unused. Built the missing server half instead of reinventing: `jobs/{jobId}`
+  doc → `onJobCreated` Firestore-`documentCreated` Function (300s timeout, 512MiB) → `JOB_RUNNERS`
+  dispatch by `jobType` → best-effort RTDB ping on completion (same try/catch-swallow style as
+  the existing `pingConversationRtdb`).
+- **User correction mid-session: "jobs are firebase functions not vercel jobs"** — hardened the
+  design so Vercel routes never do anything but write the job doc and return; `enqueueJob()` is
+  the only touchpoint a route gets.
+- Migrated `payouts/weekly` and `hard-ban` onto the primitive; fixed `sessions` GET with a plain
+  `Promise.all` (no job needed — synchronous read the client needs back immediately).
+- Wired the two dormant bulk-action stubs (`AdminUsersView` suspend/restore/delete,
+  `AdminNotificationsView` mark-read/delete) to real bounded `/bulk` endpoints via `useBulkAction`
+  — closed a gap that predated this session (registry entries existed, handlers didn't).
+
+**Phase B — Checkout out-of-stock policy:**
+- Root cause: COD/UPI/EMI checkout already silently skipped out-of-stock items; Razorpay
+  checkout always hard-cancelled the whole order on first shortfall — two independent,
+  undocumented, buyer-invisible behaviors with no relationship to each other.
+- Added `outOfStockPolicy: "cancel_order" | "skip_items"` buyer choice at checkout (`FieldSelect`,
+  Rule #9). Extracted the bucketing logic both payment paths needed into one shared
+  `bucketCartItemsByStock()` so the divergence can't reappear.
+- Razorpay's `skip_items` case needed new logic entirely: payment is captured for the full cart
+  *before* the stock check runs, so dropping items post-payment now triggers an automatic partial
+  refund via the existing `processRefundAction`. On refund failure: `order.refundPending = true` +
+  admin notification fan-out, never silently dropped (Rule #8).
+
+**Phase C — Quality gate closures (all found via `npm run check`, not assumed):**
+- `verifyAndPlaceRazorpayOrderAction` had grown to 496 significant lines against
+  `audit-code-quality`'s 450-line `LARGE_COMPONENT` threshold — extracted the refund block into
+  `refundDroppedItemsForRazorpayCheckout`.
+- `Record<string, unknown>` → `Record<string, JsonValue>` across the new jobs files
+  (`audit-unknown-leakage`); added `JOB_FIELDS` constants (`audit-route-nav-field-constants`).
+- **128 vestigial `// rbac-scope-enforced-in-handler:` / `// rbac-public:` comment lines across
+  74 route files**, blocking `audit-no-suppression-comments`. Verified first (Rule #4): the
+  underlying `audit-route-rbac.mjs` was relaxed at some point to a file-level pattern check and
+  no longer reads these markers at all — they were dead comments, not live config. Bulk-removed
+  with a one-off script, re-verified `audit-route-rbac` still passes unchanged. `npm run check`
+  now exits 0.
+
+**Phase D — Publish + deploy (explicitly requested):** appkit committed + bumped to **3.5.2**,
+published to npm; consumer pin `^3.5.1` → `^3.5.2`, lockfile regenerated and verified resolving
+from the registry (not `file:`); pushed to `origin/main`; `node scripts/deploy.mjs` full
+pre-flight + Vercel production deploy succeeded — live at `https://www.letitrip.in`.
+
+**Process note (not a code change, but worth recording):** partway through, two background
+implementation agents were interrupted by a session-limit error and silently lost their
+"in-progress" status — resuming them and then separately auditing the repo directly (`git log`,
+`git status`, targeted greps) revealed the actual work was already substantially done and even
+committed. Lesson: after any agent interruption, verify actual repo state before re-deriving or
+re-planning — don't trust a "failed" status label at face value.
+
+Separately, mid-session the working tree picked up a large *concurrent, unrelated* change from
+what looked like another active session (a "Teal Tide" theme color swap plus ~6,200 deleted lines
+across appkit seed-data files). Flagged to the user before committing/deploying rather than
+silently including or silently discarding it; user explicitly confirmed inclusion.
+
+---
+
 ### S-PROC-shipments-verify — Verification, bug-fix, publish + deploy follow-up (2026-08-14)
 
 **Follow-up to S-PROC-shipments (Procurement Shipments / Personal Catalogue / Payment

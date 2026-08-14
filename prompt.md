@@ -210,33 +210,37 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 > Keep exactly **2 LAST** entries, **1 CURRENT**, and a short **NEXT** list. Update on every commit. Older history lives in `newchange.md`.
 
-### ✅ LAST COMPLETED — S-PROC-shipments-verify (2026-08-14): P-18/19/20 verification + bug-fixes + publish + full deploy
+### ✅ LAST COMPLETED — S-beyblade-relaunch (2026-08-15): carousel loop fix + teal theme retint + CTA contrast + Beyblade-minimal reseed + publish/deploy
 
-**Done this session:**
-- Closed every item S-PROC-shipments (prior session) flagged as deferred: `codebaseexports.md` fully updated, admin catalogue access fixed (admins have no personal store → lists under `store-letitrip-official`), 3 new Playwright suites written — **48/48 passing**.
-- 7 real bugs found + fixed during verification (see `newchange.md` S-PROC-shipments-verify entry for full detail): tsconfig test-file leak, seed `photoURL` blocking every non-admin login, shipment-item "unlink" Zod-silently-drops-field no-op, `shipmentLots` projections composite index field order (Firestore wants sort-field-before-`!=`-field), `CheckoutRouteClient` missing `outOfStockPolicy` prop, `enqueueJob` public-barrel-from-`_internal/` audit violation, hardcoded support email in `hardBanCascade.ts`.
-- Windows-specific finding: `node_modules/@mohasinac/appkit` is a real file copy on this machine, not a live symlink — appkit rebuilds need `rm -rf node_modules/@mohasinac/appkit && npm install` to propagate. Saved to memory.
-- **Published appkit 3.5.1** to npm; consumer upgraded `file:appkit` → `^3.5.1`; `appkit/src/**` removed from `tsconfig.json`.
-- **Firebase**: rules/indexes/storage/database + all functions (incl. 5 new shipment/catalogue triggers) deployed.
-- **Vercel**: 2 failed attempts (`SIGKILL`, build-machine OOM, ~45min each) before `vercel --prod --force` (skip build cache) succeeded in 3 minutes. Verified live at https://letitrip.in.
-
----
-
-### ✅ PREVIOUS LAST — S-PROC-shipments (2026-08-12): Procurement Shipments + Personal Catalogue + Payment Detail Parity (P-18/19/20)
-
-**Done this session:** Three top-level Firestore collections for shipments (`procurementShipments`/`shipmentLots`/`shipmentItems`, 3-Function landed-cost cascade); `CatalogueItemDocument` personal-catalogue collection (30-day photo-freshness gate, per-owner watermark, admin-approval path for buyers); additive `OrderDocument.paymentRecord` unifying manual/Razorpay/COD payment detail. Full detail in `crud-tracker.md`'s S-PROC-shipments entry. Flagged as deferred at session end (later closed by S-PROC-shipments-verify above): `codebaseexports.md` not updated, no Playwright suites written.
+**Done this session (user bug/UX report, not a planned tracker item):**
+- **Carousel loop fix**: `HorizontalScroller.tsx` grid mode (`rows>1`) never looped (no clone-slot logic existed for that path, and `SectionCarousel.tsx` hard-disabled `loop` whenever `rows>1`); `CustomCardsSection` passed raw `children` instead of `items`+`renderItem` so its `loop` prop was inert. Both fixed — grid mode now uses the same clone-slot/teleport technique as the working single-row case.
+- **Root-caused "red theme"**: not appkit's own token defaults (blue+lime/hot-pink, never red) but `siteSettings.theme` seed records literally named "Crimson Warrior"/"Shadow Abyss" — the *default selected* admin-configurable theme. Retinted both to teal+cobalt-blue ("Teal Tide"/"Teal Depths"), kept `id`s stable so the default-theme pointers didn't need touching.
+- **CTA/toolbar contrast**: `Button.style.css` secondary/outline/ghost variants got visible tinted fills instead of near-transparent/border-only; fixed a hardcoded violet CSS fallback in `ListingToolbar.tsx` and a leftover hot-pink hardcode in `BulkActionBar.style.css` dark mode.
+- **Full destructive DB reset + minimal Beyblade reseed** (explicit confirmation on the dry-run summary first): category tree trimmed to spinning-tops + 4 generations (added `category-beyblade-original`), brands/stores/addresses trimmed to match, 11 new Beyblade products/auctions/pre-orders, other 6 listing-type seed files emptied, non-theme site copy genericized (was surprisingly Yu-Gi-Oh!-specific, not generic).
+- **Two real infra bugs found + fixed**: a genuine duplicate `events` composite-index entry in `firestore.indexes.json` (misdiagnosed at first as eventual-consistency lag) was blocking index deploy; the consumer was pinned to the *published npm* appkit version instead of `file:./appkit`, so this session's appkit-side fixes weren't reaching the running app until caught via Playwright screenshot verification.
+- Verified via an ad hoc Playwright script (no project run-skill existed for this app): teal colors confirmed in both themes, carousel clone-slot repeat confirmed visually, all 4 Beyblade generations render correctly, generic branding confirmed. `npm run check` exits 0 (one pre-existing, unrelated suppression-marker audit failure not touched this session).
+- **Published appkit 3.5.3** to npm; consumer pin `^3.5.2`→`^3.5.3`, lockfile regenerated + verified resolving from the registry.
+- **Vercel**: `node scripts/deploy.mjs` full pre-flight + prod deploy succeeded — live at https://www.letitrip.in.
+- Full narrative: `newchange.md` → `S-beyblade-relaunch`. Technical detail: `crud-tracker.md`'s "Last updated" line.
 
 ---
 
-### ⏳ CURRENT — P-1 through P-20 are LIVE. Awaiting next directive from CEO.
+### ✅ PREVIOUS LAST — S-jobs-checkout-policy (2026-08-15): async job primitive + checkout out-of-stock policy + publish/deploy
 
-**Status:** Deployed and live at https://letitrip.in (2026-08-14). All Firebase rules/indexes/functions current. appkit 3.5.1 on npm. See `patches-roadmap.md`'s Patch Status Overview for the full P-1…P-20 ledger.
+**Done this session:** New `jobs` Firestore collection + `onJobCreated` Function (`JOB_RUNNERS` dispatch), reusing pre-existing-but-unwired `bulk_events` RTDB scaffolding; `admin/payouts/weekly` + `admin/users/[uid]/hard-ban` migrated onto it; two dormant bulk-action stubs wired to real endpoints. Checkout `outOfStockPolicy: "cancel_order" | "skip_items"` buyer choice with a shared `bucketCartItemsByStock()` fixing a COD-vs-Razorpay divergence; Razorpay's skip-items path auto-refunds via `processRefundAction`. Removed 128 vestigial RBAC dead-comment markers. Published appkit 3.5.2; Vercel deploy succeeded. Full detail in `crud-tracker.md`'s S-jobs-checkout-policy entry.
 
-**Immediate follow-up options** (pull when explicitly prioritised by CEO):
-- **`verifyAndPlaceRazorpayOrderAction` refactor** — 496 significant lines (pre-existing, flagged not fixed this session — payment-critical, needs a dedicated session, not a rushed extraction).
-- **128 pre-existing suppression-comment markers** — unrelated to P-18/19/20, still block a fully-clean `npm run check`.
-- **P-18 actual-vs-projected reconciliation** — once a shipment-linked pre-order product sells through, feed the real sale price back into the shipment's profit numbers.
-- **P-6 Pre-orders / P-7 Seller Payouts / P-8 GST** — next unstarted patches in `patches-roadmap.md`'s original sequence.
+---
+
+### ⏳ CURRENT — appkit 3.5.3 + Beyblade-minimal catalog LIVE. Awaiting next directive.
+
+**Status:** Deployed and live at https://www.letitrip.in (2026-08-15). Firestore was fully reset this session — all prior YGO/multi-franchise seed data is gone, replaced with a minimal Beyblade-only catalog (4 generations, 2 brands, 2 stores). Firebase indexes/rules were freshly regenerated + redeployed as part of the reset (518 indexes, confirmed READY). Functions were deleted by the reset and NOT redeployed this session (`npm run firebase deploy --only functions` still pending — no Functions currently live, e.g. `onJobCreated` from the prior session is gone too). appkit 3.5.3 on npm.
+
+**Immediate follow-up options** (pull when explicitly prioritised):
+- **Redeploy Firebase Functions** — the reset deleted all 49 previously-deployed Functions (including `onJobCreated` from S-jobs-checkout-policy); `npm run firebase deploy --only functions` has not been run since. Anything depending on Functions (async jobs, scheduled sweeps, triggers) is currently inert in prod.
+- **Fix `scripts/wait-for-indexes.mjs`** — queries a single hard-coded collection group (`sessions`) under a stale comment claiming it returns all indexes globally; it doesn't. Correct endpoint is the `-` wildcard with no `pageSize` param. Worked around ad hoc this session; the shared script itself is still broken.
+- **Browser smoke — jobs + checkout policy** (carried over, now stale-er) — S-jobs-checkout-policy's features were never smoke-tested against live prod, and the DB reset since then means they'd need re-testing against the new minimal seed anyway.
+- **P-18 actual-vs-projected reconciliation** — carried over from an earlier session, still open.
+- **P-6 Pre-orders / P-7 Seller Payouts / P-8 GST** — next unstarted patches in `patches-roadmap.md`'s original sequence (re-verify that file's checklist is current before pulling).
 
 ---
 
@@ -244,9 +248,12 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **P-6 Pre-orders** | Next unstarted patch in the original roadmap sequence. | See `patches-roadmap.md`. |
-| 2 | **P-7 Seller Payouts (manual UPI)** | Admin records transfer, no 3rd-party integration. | Revenue-critical for sellers. |
-| 3 | **P-8 GST** | Tax calc, invoice GST breakup, product HSN field. | Blocks P-9's deposit+GST-invoice half. |
+| 1 | **Redeploy Firebase Functions** | `npm run firebase deploy --only functions` — all 49 Functions were deleted by this session's reset and never redeployed. | Prod currently has zero live Functions; anything trigger/schedule-based is inert. |
+| 2 | **Fix `wait-for-indexes.mjs`** | Correct the collection-group query to the `-` wildcard endpoint. | Currently always reports false "all settled" — a latent trap for the next index deploy. |
+| 3 | **Browser smoke — jobs + checkout policy** | Validate the async-job primitive and out-of-stock policy end-to-end against live prod, against the new minimal seed data. | Shipped but unverified even before this session's reset; now also needs re-seeding awareness. |
+| 4 | **P-6 Pre-orders** | Next unstarted patch in the original roadmap sequence. | See `patches-roadmap.md`. |
+| 5 | **P-7 Seller Payouts (manual UPI)** | Admin records transfer, no 3rd-party integration. | Revenue-critical for sellers. |
+| 6 | **P-8 GST** | Tax calc, invoice GST breakup, product HSN field. | Blocks P-9's deposit+GST-invoice half. |
 | – | **Tier SB-UNI Phase 3–9** *(pull individually)* | SB-UNI-Q (per-type detail/list views) · R (per-type forms + seller flow) · T (search facets). | Pull when prioritised. |
 | – | **S-polish-pass** | 10-phase listing quality polish. Plan: `~/.claude/plans/plan-to-find-and-polished-aho.md`. | After SB-UNI-Phase2. |
 
