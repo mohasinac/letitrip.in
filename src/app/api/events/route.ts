@@ -98,8 +98,6 @@ async function _GET(request: Request): Promise<NextResponse> {
   return response;
 }
 
-// rbac-public: public endpoint — no authentication required
 const __GET__g = withProviders(_GET);
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("EVENTS", __GET__g);

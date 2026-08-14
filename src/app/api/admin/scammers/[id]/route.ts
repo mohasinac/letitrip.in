@@ -77,9 +77,6 @@ const __DELETE__g = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("SCAM_REGISTRY", __GET__g);
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const PATCH = withFeatureGuard("SCAM_REGISTRY", __PATCH__g);
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const DELETE = withFeatureGuard("SCAM_REGISTRY", __DELETE__g);

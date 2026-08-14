@@ -24,7 +24,6 @@ const placeBidSchema = z.object({
   autoMaxBid: z.number().positive().optional(),
 });
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 const __GET__g = withProviders(
   createRouteHandler({
     handler: async ({ request }) => {
@@ -41,7 +40,6 @@ const __GET__g = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 const __POST__g = withProviders(
   createRouteHandler<(typeof placeBidSchema)["_output"]>({
     auth: true,
@@ -69,7 +67,5 @@ const __POST__g = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("AUCTIONS", __GET__g);
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const POST = withFeatureGuard("AUCTIONS", __POST__g);

@@ -15,7 +15,6 @@ const updateStatusSchema = z.object({
   status: z.enum(Object.values(EVENT_FIELDS.STATUS_VALUES) as [string, ...string[]]),
 });
 
-// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
 const __PATCH__g = withProviders(
   createRouteHandler<(typeof updateStatusSchema)["_output"]>({
     auth: true,
@@ -30,5 +29,4 @@ const __PATCH__g = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const PATCH = withFeatureGuard("EVENTS", __PATCH__g);

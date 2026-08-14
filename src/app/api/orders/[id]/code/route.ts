@@ -31,7 +31,6 @@ import {
 
 const ALLOWED_STATUSES = new Set(["confirmed", "processing", "delivered"]);
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

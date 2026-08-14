@@ -71,9 +71,6 @@ const __DELETE__g = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("EVENTS", __GET__g);
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const PATCH = withFeatureGuard("EVENTS", __PATCH__g);
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const DELETE = withFeatureGuard("EVENTS", __DELETE__g);

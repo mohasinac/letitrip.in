@@ -4,7 +4,6 @@ import { productRepository, isAuctionListing } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 /** POST /api/admin/products/[id]/group/children — add child (admin, no ownership check) */
-// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
 export const POST = withProviders(createApiHandler({
   roles: [...ROLES_ADMIN_ONLY],
   permission: "admin:products:write",

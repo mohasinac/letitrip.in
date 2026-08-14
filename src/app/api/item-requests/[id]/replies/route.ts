@@ -17,7 +17,6 @@ function stripPii(input: string): string {
     .replace(/(?:upi:\/\/|@)[\w.-]+@[\w.-]+/g, "[UPI removed]");
 }
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

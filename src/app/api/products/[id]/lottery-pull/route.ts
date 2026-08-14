@@ -7,7 +7,6 @@ import {
 } from "@mohasinac/appkit";
 import { applyRateLimit, RateLimitPresets, submitLotteryPullAction } from "@mohasinac/appkit/server";
 
-// rbac-scope-enforced-in-handler: any authenticated user may submit a lottery pull; soft-ban check inside
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

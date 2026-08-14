@@ -41,5 +41,4 @@ async function _POST(req: Request, { params }: { params: Promise<{ id: string }>
 
 const __POST__p = withProviders(_POST);
 
-// rbac-scope-enforced-in-handler: attachPaymentProofAction verifies buyer owns the order
 export const POST = __POST__p;

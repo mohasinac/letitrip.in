@@ -47,7 +47,6 @@ function generateToken(): string {
  * Stores a short-lived draft for in-tab preview (UX4 follow-up / TS13).
  * Used by FormShell PreviewPane's "Open in new tab" action.
  */
-// rbac-scope-enforced-in-handler: per-verb auth enforced within handler
 export const POST = withProviders(
   createApiHandler({
     roles: [...ROLES_ANY_STAFF],
@@ -85,7 +84,6 @@ export const POST = withProviders(
  * Returns the draft if still valid; otherwise 404 / 410.
  * No role gate — token is the capability.
  */
-// rbac-scope-enforced-in-handler: per-verb auth enforced within handler
 export const GET = withProviders(
   createApiHandler({
     handler: async ({ request }) => {

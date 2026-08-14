@@ -8,7 +8,6 @@ import {
   getNumberParam,
 } from "@mohasinac/appkit";
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 const __GET__g = withProviders(
   createRouteHandler({
     handler: async ({ request, params }) => {
@@ -23,5 +22,4 @@ const __GET__g = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("AUCTIONS", __GET__g);

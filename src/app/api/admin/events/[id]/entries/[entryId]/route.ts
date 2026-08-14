@@ -14,7 +14,6 @@ const reviewEntrySchema = z.object({
   points: z.number().optional(),
 });
 
-// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
 const __PATCH__g = withProviders(
   createRouteHandler<(typeof reviewEntrySchema)["_output"]>({
     auth: true,
@@ -35,5 +34,4 @@ const __PATCH__g = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const PATCH = withFeatureGuard("EVENTS", __PATCH__g);

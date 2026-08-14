@@ -87,7 +87,6 @@ interface RevealPoolExhaustedResponse {
   reason: "pool_exhausted";
 }
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(
   createRouteHandler<(typeof revealSchema)["_output"]>({
     auth: true,

@@ -11,7 +11,6 @@ import { notificationRepository } from "@mohasinac/appkit";
 /**
  * GET /api/notifications/unread-count
  */
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {

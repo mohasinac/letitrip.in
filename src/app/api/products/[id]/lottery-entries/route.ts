@@ -9,7 +9,6 @@ import {
 } from "@mohasinac/appkit";
 import { getLotteryEntriesForAdmin, getLotteryEntriesForUser } from "@mohasinac/appkit/server";
 
-// rbac-scope-enforced-in-handler: admin + store owner see all entries; user sees own only
 export const GET = withProviders(
   createRouteHandler({
     auth: true,

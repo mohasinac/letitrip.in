@@ -101,9 +101,6 @@ const __DELETE__g = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("COUPONS", __GET__g);
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const PATCH = withFeatureGuard("COUPONS", __PATCH__g);
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const DELETE = withFeatureGuard("COUPONS", __DELETE__g);

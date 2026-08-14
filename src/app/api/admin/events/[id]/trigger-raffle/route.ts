@@ -28,5 +28,4 @@ const __POST__g = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const POST = withFeatureGuard("EVENTS", __POST__g);

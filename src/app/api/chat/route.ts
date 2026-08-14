@@ -33,7 +33,6 @@ const CHAT_DISABLED_RESPONSE = () =>
  * GET /api/chat
  * Returns all chat rooms the authenticated user is participating in.
  */
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 const __GET__g = withProviders(createApiHandler({
   auth: true,
   handler: async ({ user }) => {
@@ -48,7 +47,6 @@ const __GET__g = withProviders(createApiHandler({
  * Creates a chat room for a buyer↔seller conversation on an order.
  * Idempotent — returns the existing room if it already exists.
  */
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 const __POST__g = withProviders(createApiHandler<(typeof createRoomSchema)["_output"]>({
   auth: true,
   schema: createRoomSchema,
@@ -113,7 +111,5 @@ const __POST__g = withProviders(createApiHandler<(typeof createRoomSchema)["_out
   },
 }));
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("CHAT", __GET__g);
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const POST = withFeatureGuard("CHAT", __POST__g);

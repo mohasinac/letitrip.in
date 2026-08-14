@@ -6,7 +6,6 @@ import {
   successResponse,
 } from "@mohasinac/appkit";
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
@@ -18,7 +17,6 @@ export const PATCH = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const DELETE = withProviders(
   createRouteHandler({
     auth: true,

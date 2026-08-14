@@ -111,8 +111,6 @@ async function _GET(
   return response;
 }
 
-// rbac-scope-enforced-in-handler: per-verb auth enforced within handler
 const __GET__g = withProviders(_GET);
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("AUCTIONS", __GET__g);

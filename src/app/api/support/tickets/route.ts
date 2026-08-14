@@ -35,7 +35,6 @@ const createSchema = z.object({
   orderId: z.string().optional(),
 });
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -50,7 +49,6 @@ export const GET = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(
   createRouteHandler<(typeof createSchema)["_output"]>({
     auth: true,

@@ -18,7 +18,6 @@ import { requireRoleFromRequest } from "@/lib/firebase/auth-server";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
-// rbac-scope-enforced-in-handler: admin role enforced via createApiHandler
 const __GET__g = withProviders(async function GET(
   request: Request,
   context: RouteContext,
@@ -74,5 +73,4 @@ const __GET__g = withProviders(async function GET(
   }));
 });
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("EVENTS", __GET__g);

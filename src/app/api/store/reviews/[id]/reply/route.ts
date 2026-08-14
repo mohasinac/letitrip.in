@@ -18,7 +18,6 @@ const replySchema = z.object({
   reply: z.string().min(1).max(1000),
 });
 
-// rbac-scope-enforced-in-handler: seller role enforced via createApiHandler
 export const POST = withProviders(createApiHandler<{ reply: string }>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],

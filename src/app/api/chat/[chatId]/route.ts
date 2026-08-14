@@ -7,7 +7,6 @@ import {
   errorResponse,
 } from "@mohasinac/appkit";
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
@@ -23,7 +22,6 @@ const __GET__g = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 const __DELETE__g = withProviders(
   createRouteHandler({
     auth: true,
@@ -35,7 +33,5 @@ const __DELETE__g = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const GET = withFeatureGuard("CHAT", __GET__g);
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const DELETE = withFeatureGuard("CHAT", __DELETE__g);

@@ -35,7 +35,6 @@ const bodySchema = z.object({
   proofDocumentMimeType: z.string().optional(),
 });
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(
   createRouteHandler<(typeof bodySchema)["_output"]>({
     auth: true,

@@ -15,7 +15,6 @@ const schema = z.object({
   newStatus: z.enum(["open", "in_progress", "waiting_on_user", "resolved", "closed"]).optional(),
 });
 
-// rbac-scope-enforced-in-handler: auth and ownership enforced within handler
 export const POST = withProviders(
   createRouteHandler<(typeof schema)["_output"]>({
     auth: true,

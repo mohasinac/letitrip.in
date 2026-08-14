@@ -71,7 +71,6 @@ Rules:
 // POST handler
 // ---------------------------------------------------------------------------
 
-// rbac-scope-enforced-in-handler: requireAuthFromRequest or own verification
 export const POST = withProviders(createApiHandler<(typeof chatSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],

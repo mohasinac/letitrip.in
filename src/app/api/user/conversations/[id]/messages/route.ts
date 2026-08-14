@@ -27,7 +27,6 @@ const sendSchema = z.object({
   body: z.string().min(1).max(MESSAGE_MAX_LENGTH),
 });
 
-// rbac-scope-enforced-in-handler: createRouteHandler with auth:true — any authenticated user
 const __POST__g = withProviders(
   createRouteHandler<(typeof sendSchema)["_output"]>({
     auth: true,
@@ -60,5 +59,4 @@ const __POST__g = withProviders(
   }),
 );
 
-// rbac-scope-enforced-in-handler: feature-guarded — returns 404 when FEATURE_* disabled
 export const POST = withFeatureGuard("CHAT", __POST__g);
