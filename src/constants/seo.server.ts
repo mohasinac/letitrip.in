@@ -35,7 +35,7 @@ export const LETITRIP_SEO: SeoConfig = createSeoConfig({
   siteUrl: SITE_URL,
   defaultTitle: "LetItRip — India's Collectibles Marketplace",
   defaultDescription:
-    "Buy, sell & auction Pokémon TCG, Hot Wheels, anime figures, Beyblades and more. India's largest collectibles marketplace.",
+    "Buy, sell & auction action figures, trading cards, spinning tops, model kits and more. India's largest collectibles marketplace.",
   defaultImage: `${SITE_URL}/media/site-og-image`,
   twitterHandle: "@letitrip",
   locale: "en_IN",
