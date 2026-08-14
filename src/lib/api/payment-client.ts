@@ -57,6 +57,7 @@ export interface RazorpayVerifyBody {
   razorpay_payment_id: string;
   razorpay_signature: string;
   addressId: string;
+  outOfStockPolicy: "cancel_order" | "skip_items";
 }
 
 export async function verifyRazorpayPayment(body: RazorpayVerifyBody): Promise<Response> {

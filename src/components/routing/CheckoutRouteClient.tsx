@@ -1,6 +1,6 @@
 "use client";
 import { normalizeError, checkEmiEligibility, computeEmiSchedule, type JsonArray } from "@mohasinac/appkit";
-import type { JsonValue, EmiSettings } from "@mohasinac/appkit";
+import type { JsonValue, EmiSettings, OutOfStockPolicy } from "@mohasinac/appkit";
 
 import { useCallback, useState, useEffect, useMemo } from "react";
 import {
@@ -135,6 +135,27 @@ function formatEmiRupees(paise: number): string {
 const ORDER_PLACEMENT_FAILED_MSG = "Order placement failed";
 const ORDER_FAILED_RETRY_MSG = "Order failed. Please retry.";
 
+interface UnavailableCheckoutItem {
+  productId: string;
+  productTitle: string;
+  requestedQty: number;
+  availableQty: number;
+}
+
+/** Toast copy for items dropped by the "skip_items" out-of-stock policy. */
+function unavailableItemsToastMsg(items: UnavailableCheckoutItem[]): string {
+  return items.length === 1
+    ? `"${items[0].productTitle}" became unavailable and was not included in your order.`
+    : `${items.length} items became unavailable and were not included in your order.`;
+}
+
+/** Reads `data.unavailableItems` off a parsed checkout/verify response body, if present. */
+function readUnavailableItems(payload: unknown): UnavailableCheckoutItem[] | undefined {
+  const items = (payload as { data?: { unavailableItems?: UnavailableCheckoutItem[] } } | undefined)
+    ?.data?.unavailableItems;
+  return items && items.length > 0 ? items : undefined;
+}
+
 /** Encapsulates EMI tenure selection, eligibility, schedule preview, and order placement. */
 function useEmiCheckout({
   emiSettings,
@@ -142,6 +163,7 @@ function useEmiCheckout({
   subtotal,
   cartIsEmpty,
   selectedAddress,
+  outOfStockPolicy,
   router,
   showToast,
   setStep,
@@ -153,6 +175,7 @@ function useEmiCheckout({
   subtotal: number;
   cartIsEmpty: boolean;
   selectedAddress: Address | null;
+  outOfStockPolicy: OutOfStockPolicy;
   router: ReturnType<typeof useRouter>;
   showToast: ReturnType<typeof useToast>["showToast"];
   setStep: (step: CheckoutStep) => void;
@@ -180,6 +203,7 @@ function useEmiCheckout({
         addressId: selectedAddress.id,
         paymentMethod: "emi",
         emiTenureMonths: emiTenure,
+        outOfStockPolicy,
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -187,6 +211,10 @@ function useEmiCheckout({
       }
       const emiData = await res.json().catch(() => ({}));
       const firstEmiOrderId = (emiData?.data?.orderIds as string[] | undefined)?.[0];
+      const unavailableItems = readUnavailableItems(emiData);
+      if (unavailableItems) {
+        showToast(unavailableItemsToastMsg(unavailableItems), "info");
+      }
       showToast("Order placed successfully! Your EMI schedule is confirmed.", "success");
       router.push(firstEmiOrderId ? `${String(ROUTES.USER.CHECKOUT_SUCCESS)}?orderId=${firstEmiOrderId}` : String(ROUTES.USER.CHECKOUT_SUCCESS));
     } catch (err) {
@@ -198,7 +226,7 @@ function useEmiCheckout({
     } finally {
       setIsProcessingPayment(false);
     }
-  }, [selectedAddress, emiTenure, router, showToast, setStep, setActionError, setIsProcessingPayment]);
+  }, [selectedAddress, emiTenure, outOfStockPolicy, router, showToast, setStep, setActionError, setIsProcessingPayment]);
 
   return { emiTenure, setEmiTenure, emiVisible, emiSchedule, handlePlaceEmiOrder };
 }
@@ -803,6 +831,9 @@ export function CheckoutRouteClient({
     subtotal,
     cartIsEmpty,
     selectedAddress,
+    // Matches /api/checkout's own default when the field is omitted — no UI
+    // selector for this exists yet, so the client mirrors the server default.
+    outOfStockPolicy: "skip_items",
     router,
     showToast,
     setStep,
@@ -966,6 +997,10 @@ export function CheckoutRouteClient({
         razorpay_payment_id: rzpResponse.razorpay_payment_id,
         razorpay_signature: rzpResponse.razorpay_signature,
         addressId: selectedAddress.id,
+        // Matches /api/payment/verify's own default when the field is
+        // omitted — no UI selector for this exists yet, so the client
+        // mirrors the server default (this path's historical-only behavior).
+        outOfStockPolicy: "cancel_order",
       });
       if (!verifyRes.ok) {
         const err = await verifyRes.json().catch(() => ({}));

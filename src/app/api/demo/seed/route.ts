@@ -836,8 +836,14 @@ export async function POST(request: NextRequest) {
                 if (
                   photoURL &&
                   typeof photoURL === "string" &&
-                  photoURL.trim() !== ""
+                  /^https?:\/\//.test(photoURL)
                 ) {
+                  // Firebase Auth's photoURL must be an absolute http(s) URL —
+                  // seedExtMedia() deliberately returns a relative
+                  // /api/media/ext?url=... proxy path for Firestore storage,
+                  // which Auth rejects (auth/invalid-photo-url). The Firestore
+                  // user doc (written below) is the actual source of truth
+                  // for display; the Auth record's photoURL is best-effort.
                   authUserData.photoURL = photoURL;
                 }
 

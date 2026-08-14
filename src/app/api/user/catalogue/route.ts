@@ -4,8 +4,16 @@ import {
   successResponse,
   catalogueRepository,
   createCatalogueItemSchema,
+  isAdminUser,
   isSellerUser,
 } from "@mohasinac/appkit";
+import type { CatalogueOwnerRole } from "@mohasinac/appkit";
+
+function resolveOwnerRole(user: { role?: string }): CatalogueOwnerRole {
+  if (isAdminUser(user)) return "admin";
+  if (isSellerUser(user)) return "seller";
+  return "user";
+}
 
 /**
  * Personal Catalogue (Feature B) — owner's own items.
@@ -32,7 +40,7 @@ export const POST = withProviders(
       const item = await catalogueRepository.create({
         ...body!,
         ownerId: user!.uid,
-        ownerRole: isSellerUser(user) ? "seller" : "user",
+        ownerRole: resolveOwnerRole(user!),
       } as never);
       return successResponse(item, "Catalogue item created");
     },

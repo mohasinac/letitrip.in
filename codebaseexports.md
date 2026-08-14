@@ -632,6 +632,9 @@
 | orders | OrderCard, OrdersList, MarketplaceOrderCard | Component | Order display components; both accept `renderActions?: (order) => ReactNode` — per-card quick-action slot (e.g. buyer Track/Cancel links) rendered in the card footer, click-stop-propagated so it doesn't trigger the card's own onClick |
 | orders | OrderFilters, OrderSiblingPayments | Component | Order filtering, sibling payments |
 | orders | RefundHistoryTable, RefundRequestView | Component | Refund components |
+| orders | OrderPaymentSummary | Component | `appkit/src/features/orders/components/OrderPaymentSummary.tsx` — reads `order.paymentRecord` (Feature C), falls back to legacy `paymentMethod`/`paymentId`/`paymentProofUrl` fields for pre-migration orders |
+| shipments | AdminShipmentsView, AdminShipmentEditorView, AdminShipmentLotItemsView, AdminShipmentProjectionsView, ShipmentItemLinkModal | View/Component | `appkit/src/features/shipments/components/` — Feature A (Procurement Shipments, admin-only): list/editor/lot-items(+bulk-import)/projections + the shared "Create pre-order link" modal |
+| catalogue | UserCatalogueView, CatalogueItemEditorView, PublicCatalogueView, AdminCatalogueApprovalsView | View | `appkit/src/features/catalogue/components/` — Feature B (Personal Catalogue): owner's own list, item editor, public read-only grid (mounted as the "Catalogue" tab on `/profile/[userId]/[tab]`), admin approval queue |
 | pre-orders | MarketplacePreorderCard, PreOrderFilters | Component | Pre-order card and filtering |
 | pre-orders | PreOrdersListView, PreOrdersIndexListing | View | Pre-orders listing |
 | pre-orders | PreOrderDetailPageView | Page | Pre-order detail page |
@@ -892,6 +895,10 @@
 | ProductTemplateRepository | productTemplates | findByStore | Listing templates |
 | ProductFeaturesRepository | productFeatures | search, listByStore | Product features |
 | UnitOfWork | — | transaction wrapper | Atomic multi-collection operations |
+| ShipmentsRepository | procurementShipments | findByShipmentNumber, list (Sieve) | Feature A shipment header CRUD; `create`/`update`/`delete` enforce uniqueness + linked-item delete guard |
+| ShipmentLotsRepository | shipmentLots | listByShipment, createLot, updateLot, listForProjections (Sieve) | Feature A per-lot CRUD; `listForProjections` is the real paginated Projections query |
+| ShipmentItemsRepository | shipmentItems | listByLot, createItem, bulkCreate, updateItem, unlink, hasLinkedItemsInLot | Feature A per-item CRUD; `bulkCreate` writes ≤500 rows in one Firestore WriteBatch |
+| CatalogueRepository | catalogueItems | listByOwner, listPublicByOwner, listPendingApproval (Sieve), listStale | Feature B personal-catalogue CRUD; `update` auto-stamps `lastImageUpdateAt` whenever `images` changes |
 
 ---
 
@@ -1025,6 +1032,15 @@
 | useBecomeSeller | Mutation | Register as seller |
 | useBottomActions | Actions[] | Bottom action bar items |
 
+### Shipments Hooks (Feature A) — `appkit/src/features/shipments/hooks/useShipments.ts`
+
+| Hook | Returns | Purpose |
+|------|---------|---------|
+| useShipments(params) | { shipments, meta, isLoading, error, refetch } | Paginated shipment list |
+| useShipment(shipmentId) | { shipment, lots, isLoading, error, refetchShipment, refetchLots } | One shipment + its ≤10 lots |
+| useShipmentItems(shipmentId, lotId, params) | { items, meta, isLoading, error, refetch } | Paginated items within one lot |
+| useShipmentProjections(params) | { lots, meta, isLoading, error, refetch } | Real paginated Projections query over `shipmentLots` |
+
 ### Other Hooks
 
 | Hook | Returns | Purpose |
@@ -1078,6 +1094,8 @@
 | Orders | requestReturnAction | buyer+ | Request return |
 | Orders | updateOrderStatusAction | seller+ | Update order status |
 | Orders | shipOrderAction | seller+ | Manual ship (carrier + tracking); gated by assertEmiShippable for EMI orders |
+| Orders | attachPaymentProofAction | buyer (owner) | Feature C — buyer attaches cash/UPI proof (`paymentProofUrl`/`paymentTransactionId`) |
+| Orders | adminVerifyPaymentAction | admin/mod | Feature C — confirms manual payment; sets `paymentStatus:"paid"` + `paymentRecord` (method:"manual", verificationMethod:"manual_review") |
 | EMI | markEmiInstallmentPaidAction | seller+ | Record collection of one EMI installment |
 | Payouts | requestPayoutAction | seller | Request seller payout |
 | Pre-Orders | reservePreOrderAction | buyer+ | Reserve pre-order |
@@ -1096,6 +1114,10 @@
 | Wishlist | addToWishlistAction | buyer+ | Add to wishlist |
 | Wishlist | removeFromWishlistAction | buyer+ | Remove from wishlist |
 | Wishlist | mergeGuestWishlistAction | buyer+ | Merge guest wishlist |
+| Catalogue | listFromCatalogueAction | seller/admin | Feature B — direct-lists a catalogue item (seller: own store; admin: `store-letitrip-official`, since admins have no personal seller store) |
+| Catalogue | submitCatalogueItemForApprovalAction | any authed | Feature B — buyer "Request to sell"; flips `listingStatus` to `pending_admin_approval` |
+| Catalogue | approveCatalogueListingAction | admin | Feature B — creates the product under `store-letitrip-official`, marks the catalogue item listed |
+| Catalogue | rejectCatalogueListingAction | admin | Feature B — records a rejection reason, flips `listingStatus` to `rejected` |
 
 ---
 
@@ -1153,6 +1175,19 @@
 | `/api/admin/newsletter/[id]` | GET, PUT, DELETE | Newsletter CRUD |
 | `/api/admin/contact-submissions` | GET | Contact submissions |
 | `/api/admin/contact-submissions/[id]` | GET, DELETE | Submission CRUD |
+| `/api/admin/shipments` | GET, POST | Feature A — list/create procurement shipments (409 on duplicate `shipmentNumber`) |
+| `/api/admin/shipments/[id]` | GET, PATCH, DELETE | Feature A — shipment header CRUD; PATCH of customs/shipping/labor fields re-triggers the `onShipmentLotWrite` cascade; DELETE 409s while any item is still `linkedProductId` |
+| `/api/admin/shipments/[id]/lots` | GET, POST | Feature A — list/create lots (≤10 per shipment) |
+| `/api/admin/shipments/[id]/lots/[lotId]` | GET, PATCH, DELETE | Feature A — single lot header + remainder-count/value fields |
+| `/api/admin/shipments/[id]/lots/[lotId]/items` | GET, POST | Feature A — paginated item list / single item create |
+| `/api/admin/shipments/[id]/lots/[lotId]/items/bulk` | POST | Feature A — bulk paste-import, ≤500 rows, single Firestore `WriteBatch` |
+| `/api/admin/shipments/[id]/lots/[lotId]/items/[itemId]` | PATCH, DELETE | Feature A — edit/delete/unlink a single item |
+| `/api/admin/shipments/[id]/lots/[lotId]/items/[itemId]/link` | POST | Feature A — link a main item to an existing or newly-created pre-order product |
+| `/api/admin/shipments/projections` | GET | Feature A — real paginated `shipmentLots` query, sortable by `projectedProfitPaise`/`projectedRevenuePaise`/`createdAt` |
+| `/api/admin/catalogue` | GET | Feature B — admin approval queue (`listingStatus === "pending_admin_approval"`) |
+| `/api/admin/catalogue/[id]/approve` | POST | Feature B — creates the product under `store-letitrip-official`, flips item to `listed` |
+| `/api/admin/catalogue/[id]/reject` | POST | Feature B — records a rejection reason, flips item to `rejected` |
+| `/api/admin/orders/[id]/payment-verify` | PATCH | Feature C — admin manual-payment verification; writes `paymentRecord` (method:"manual", verificationMethod:"manual_review") |
 | + ~50 more | — | Moderation, RBAC, notifications, team, support tickets, etc. |
 
 ### Store Routes (~55 endpoints)
@@ -1161,7 +1196,7 @@
 |-------|---------|---------|
 | `/api/store/products` | GET, POST | List/create store products |
 | `/api/store/orders` | GET | List store orders |
-| `/api/store/orders/[id]` | GET, PUT | Order management |
+| `/api/store/orders/[id]` | GET, PUT, PATCH | Order management; PATCH `{ markCodCollected, codCollectionNote }` — Feature C, writes `paymentRecord` (method:"cod"), 400 if `paymentMethod !== "cod"` |
 | `/api/store/orders/[id]/ship` | POST | Ship order |
 | `/api/store/orders/[id]/emi-installment` | PATCH | Mark one EMI installment paid (EMI/art-stickers session) |
 | `/api/store/coupons` | GET, POST | Store coupons |
@@ -1207,6 +1242,10 @@
 | `/api/user/conversations/[id]` | GET, PUT | Conversation CRUD |
 | `/api/user/conversations/[id]/read` | POST | Mark as read |
 | `/api/user/conversations/[id]/messages` | GET, POST | Messages |
+| `/api/user/catalogue` | GET, POST | Feature B — list own catalogue items / create (any authed user/seller/admin); `ownerRole` resolved server-side via `isAdminUser`/`isSellerUser` |
+| `/api/user/catalogue/[id]` | GET, PATCH, DELETE | Feature B — single item CRUD, ownership-checked; PATCH re-stamps `lastImageUpdateAt` only when `images` is part of the patch |
+| `/api/user/catalogue/[id]/list` | POST | Feature B — direct list; seller → own store, admin → `store-letitrip-official` (no personal store) |
+| `/api/user/catalogue/[id]/submit` | POST | Feature B — buyer "Request to sell", flips `listingStatus` to `pending_admin_approval` |
 | + ~16 more | — | Become seller, reviews, events, offers, etc. |
 
 ### Public Routes (~110 endpoints)
@@ -1221,6 +1260,7 @@
 | `/api/stores/[storeSlug]` | GET | Store details |
 | `/api/stores/[storeSlug]/products` | GET | Store products |
 | `/api/stores/[storeSlug]/reviews` | GET | Store reviews |
+| `/api/catalogue/[ownerSlug]` | GET | Feature B — public catalogue items for one owner (`visibility:"public"` only, no auth) |
 | `/api/blog` | GET | List blog posts |
 | `/api/blog/[slug]` | GET | Blog post details |
 | `/api/reviews` | GET | List reviews |
@@ -1391,6 +1431,7 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 | auth | firestore.ts, index.ts | Authentication request/response schemas |
 | blog | firestore.ts, index.ts | Blog post document schemas |
 | cart | firestore.ts, index.ts | Shopping cart document schemas |
+| catalogue | firestore.ts, validation.ts, index.ts | Feature B — `CatalogueItemDocument` + create/update Zod schemas |
 | categories | firestore.ts, index.ts | Product category document schemas |
 | checkout | firestore.ts, index.ts | Checkout flow request schemas |
 | events | firestore.ts, index.ts | Event document schemas |
@@ -1403,6 +1444,7 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 | reviews | firestore.ts, index.ts | Review document schemas |
 | scams | firestore.ts, index.ts | Scam report document schemas |
 | seller | firestore.ts, index.ts | Seller (store) document schemas |
+| shipments | firestore.ts, validation.ts, index.ts | Feature A — `ShipmentDocument`/`ShipmentLot`/`ShipmentItem` + bulk-import Zod schema (≤500 rows) |
 | store-extensions | firestore.ts, index.ts, rbac.ts | Store feature schemas & RBAC rules |
 | stores | firestore.ts, index.ts | Store document schemas |
 | support | firestore.ts, index.ts | Support ticket document schemas |
@@ -1451,6 +1493,10 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 | product-features-seed-data.ts | productFeatures | Dynamic feature flags |
 | offers-seed-data.ts | offers | Promotion offers |
 | store-extensions-seed-data.ts | storeExtensions + 11 sub-collections | Store feature extensions |
+| shipments-seed-data.ts | procurementShipments | Feature A — sample shipments across statuses |
+| shipment-lots-seed-data.ts | shipmentLots | Feature A — lots per shipment (incl. one remainder-only lot) |
+| shipment-items-seed-data.ts | shipmentItems | Feature A — main items per lot (self-use + pre-linked examples), totals pre-computed via `allocateShipmentCosts()` at seed-build time |
+| catalogue-seed-data.ts | catalogueItems | Feature B — 6 items spanning every `listingStatus` value |
 | manifest.ts | — | Seed manifest index (metadata only) |
 | runner.ts | — | Seed execution orchestrator |
 
@@ -1462,11 +1508,11 @@ All pages are thin shims delegating to appkit `_internal/server/features/*/` hel
 
 | Domain | Count | Examples |
 |--------|-------|---------|
-| Admin | ~97 | /admin/products, /admin/orders, /admin/users, /admin/categories, /admin/blog, /admin/reviews, /admin/coupons, /admin/carousel, /admin/sections, /admin/events, /admin/payouts, /admin/team, /admin/support, /admin/scammers, /admin/art, /admin/stickers, /admin/addresses |
+| Admin | ~104 | /admin/products, /admin/orders, /admin/users, /admin/categories, /admin/blog, /admin/reviews, /admin/coupons, /admin/carousel, /admin/sections, /admin/events, /admin/payouts, /admin/team, /admin/support, /admin/scammers, /admin/art, /admin/stickers, /admin/addresses, /admin/shipments (+ new/[id]/edit/[id]/lots/[lotId]/items/projections — Feature A), /admin/catalogue-approvals (Feature B) |
 | Store | ~75 | /store/products, /store/orders, /store/coupons, /store/analytics, /store/payouts, /store/reviews, /store/templates, /store/features, /store/shipping, /store/art, /store/stickers, /store/print-center |
-| User | ~29 | /user/orders, /user/profile, /user/wishlist, /user/addresses, /user/history, /user/conversations, /user/notifications |
-| Public | ~105 | /products/[id], /categories, /blog, /events, /auctions, /stores, /about, /contact, /faqs, /seller, /cart, /checkout |
-| **Total** | **~306** | |
+| User | ~32 | /user/orders, /user/profile, /user/wishlist, /user/addresses, /user/history, /user/conversations, /user/notifications, /user/catalogue (+ new/[id]/edit — Feature B) |
+| Public | ~107 | /products/[id], /categories, /blog, /events, /auctions, /stores, /about, /contact, /faqs, /seller, /cart, /checkout, /profile/[userId]/[tab] (Feature B public catalogue tab) |
+| **Total** | **~318** | |
 
 ### RSC + thin client-wrapper pattern (applied 2026-06-24)
 
@@ -1595,10 +1641,10 @@ Route constants defined in `appkit/src/next/routing/route-map.ts` via the `ROUTE
 
 | Namespace | Examples | Purpose |
 |-----------|---------|---------|
-| ROUTES.PUBLIC | PRODUCTS, PRODUCT(id), AUCTIONS, STORES, STORE(slug), BLOG, EVENTS, FAQS, CART, CHECKOUT, SEARCH | Public page routes |
-| ROUTES.ADMIN | DASHBOARD, PRODUCTS, ORDERS, USERS, STORES, CATEGORIES, BRANDS, BLOG, EVENTS, PAYOUTS, SETTINGS | Admin dashboard routes |
+| ROUTES.PUBLIC | PRODUCTS, PRODUCT(id), AUCTIONS, STORES, STORE(slug), BLOG, EVENTS, FAQS, CART, CHECKOUT, SEARCH, PROFILE(userId) — `/profile/[userId]`, tabbed via `/profile/[userId]/[tab]`; Feature B renders `PublicCatalogueView` at `tab === "catalogue"` | Public page routes |
+| ROUTES.ADMIN | DASHBOARD, PRODUCTS, ORDERS, USERS, STORES, CATEGORIES, BRANDS, BLOG, EVENTS, PAYOUTS, SETTINGS, SHIPMENTS / SHIPMENTS_NEW / SHIPMENTS_EDIT(id) / SHIPMENT_LOT_ITEMS(id, lotId) / SHIPMENTS_PROJECTIONS (Feature A), CATALOGUE_APPROVALS (Feature B) | Admin dashboard routes |
 | ROUTES.STORE | DASHBOARD, PRODUCTS, ORDERS, COUPONS, ANALYTICS, PAYOUTS, REVIEWS, SHIPPING, TEMPLATES | Store dashboard routes |
-| ROUTES.USER | ORDERS, ORDER_DETAIL(id), PROFILE, WISHLIST, ADDRESSES, HISTORY, NOTIFICATIONS, CONVERSATIONS | User dashboard routes |
+| ROUTES.USER | ORDERS, ORDER_DETAIL(id), PROFILE, WISHLIST, ADDRESSES, HISTORY, NOTIFICATIONS, CONVERSATIONS, CATALOGUE / CATALOGUE_NEW / CATALOGUE_EDIT(id) (Feature B) | User dashboard routes |
 | ROUTES.AUTH | LOGIN, REGISTER, FORGOT_PASSWORD, RESET_PASSWORD, VERIFY_EMAIL | Auth routes |
 
 ---
@@ -1608,14 +1654,14 @@ Route constants defined in `appkit/src/next/routing/route-map.ts` via the `ROUTE
 Firebase Functions are declared once in the appkit registry (single source of truth) and bound from [functions/src/index.ts](functions/src/index.ts). Consumer extensions live in [functions/src/consumer-functions.ts](functions/src/consumer-functions.ts) (empty by default).
 
 Registry sources:
-- [appkit/src/_internal/server/functions/scheduled.ts](appkit/src/_internal/server/functions/scheduled.ts) — `SCHEDULED_FUNCTIONS` (21 entries)
-- [appkit/src/_internal/server/functions/firestore.ts](appkit/src/_internal/server/functions/firestore.ts) — `FIRESTORE_TRIGGER_FUNCTIONS` (13 entries)
+- [appkit/src/_internal/server/functions/scheduled.ts](appkit/src/_internal/server/functions/scheduled.ts) — `SCHEDULED_FUNCTIONS` (22 entries)
+- [appkit/src/_internal/server/functions/firestore.ts](appkit/src/_internal/server/functions/firestore.ts) — `FIRESTORE_TRIGGER_FUNCTIONS` (18 entries)
 - [appkit/src/_internal/server/functions/https.ts](appkit/src/_internal/server/functions/https.ts) — `HTTPS_FUNCTIONS` (7 entries)
 - Aggregated in [appkit/src/_internal/server/functions/manifest.ts](appkit/src/_internal/server/functions/manifest.ts) as `APPKIT_FUNCTIONS`
 
 All functions deploy to region `asia-south1`. HTTPS functions require `LETITRIP_INTERNAL_SECRET` env var (enforced by `audit-functions-registry-completeness.mjs`).
 
-### Scheduled (21 functions)
+### Scheduled (22 functions)
 
 | Function | Cron | Purpose |
 |----------|------|---------|
@@ -1640,8 +1686,9 @@ All functions deploy to region `asia-south1`. HTTPS functions require `LETITRIP_
 | prizeRevealExpiry | every 6 hours UTC | Auto-refund unrevealed prize-draw entries past deadline |
 | prizeRevealReminder | daily 10:00 IST | Nudge prize-draw buyers <24h to deadline |
 | bundleStockSync | daily 10:05 IST | Flip bundle isSold when any item runs OOS |
+| catalogueImageStalenessReminder | daily 07:00 IST | Feature B — remind catalogue owners whose photos near the 30-day freshness cutoff |
 
-### Firestore Triggers (13 functions)
+### Firestore Triggers (18 functions)
 
 | Function | Trigger | Purpose |
 |----------|---------|---------|
@@ -1658,6 +1705,11 @@ All functions deploy to region `asia-south1`. HTTPS functions require `LETITRIP_
 | onUserBanChange | documentUpdated `users/{uid}` | Append ban-history audit entries |
 | onScamReportCreate | documentCreated `scammerProfiles/{scammerId}` | Notify reporter + scam-read employees |
 | onScamReportUpdate | documentUpdated `scammerProfiles/{scammerId}` | Notify reporter on verified/rejected flip |
+| onShipmentItemWrite | documentWritten `shipmentItems/{itemId}` | Feature A — recompute lot `itemCount` + `mainItemsProjectedRevenuePaise` |
+| onShipmentLotWrite | documentWritten `shipmentLots/{lotId}` | Feature A — recompute cross-lot customs/shipping allocation + shipment totals |
+| onShipmentHeaderWrite | documentWritten `procurementShipments/{shipmentId}` | Feature A — recompute allocation when customs/shipping/labor/status fields change |
+| onShipmentDeleted | documentWritten `procurementShipments/{shipmentId}` | Feature A — cascade-delete a shipment's lots + items in batches of 500 |
+| onCatalogueSubmittedForApproval | documentUpdated `catalogueItems/{itemId}` | Feature B — notify admins when `listingStatus` transitions to `pending_admin_approval` |
 
 ### HTTPS Callables (7 functions, server-to-server)
 

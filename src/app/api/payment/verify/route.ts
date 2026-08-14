@@ -22,6 +22,13 @@ const verifySchema = z.object({
   razorpay_signature: z.string().min(1),
   addressId: z.string().min(1),
   notes: z.string().max(500).optional(),
+  /**
+   * Buyer's choice for what to do when a cart item is unavailable at
+   * checkout time. Defaults to "cancel_order" (not "skip_items") — matches
+   * this path's historical (only) behavior for any old client that omits
+   * the field.
+   */
+  outOfStockPolicy: z.enum(["cancel_order", "skip_items"]).default("cancel_order"),
 });
 
 const __POST__g = withProviders(createRouteHandler<(typeof verifySchema)["_output"]>({
@@ -34,6 +41,7 @@ const __POST__g = withProviders(createRouteHandler<(typeof verifySchema)["_outpu
       razorpay_signature,
       addressId,
       notes,
+      outOfStockPolicy,
     } = body!;
     const result = await verifyAndPlaceRazorpayOrderAction({
       userId: user!.uid,
@@ -47,6 +55,7 @@ const __POST__g = withProviders(createRouteHandler<(typeof verifySchema)["_outpu
       razorpay_signature,
       addressId,
       notes,
+      outOfStockPolicy,
     });
     return successResponse(result, SUCCESS_MESSAGES.CHECKOUT.PAYMENT_RECEIVED);
   },

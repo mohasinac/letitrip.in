@@ -66,29 +66,35 @@ export const GET = withProviders(createRouteHandler({
       };
     });
 
-    // Enrich sessions with Firebase Auth user details
+    // Enrich sessions with Firebase Auth user details — parallelized (was a
+    // sequential await-per-uid loop, a Rule #6 N+1 timeout risk as the
+    // distinct-user count in the session list grows).
     const auth = getAdminAuth();
+    const uniqueUids = Array.from(userIds);
+    const userRecords = await Promise.all(
+      uniqueUids.map((uid) =>
+        auth.getUser(uid).catch((error: unknown) => {
+          void normalizeError(error);
+          serverLogger.warn(`Failed to fetch user ${uid}`, { error });
+          return null;
+        }),
+      ),
+    );
     const userMap = new Map<string, any>();
-    for (const uid of Array.from(userIds)) {
-      try {
-        const userRecord = await auth.getUser(uid);
-        userMap.set(uid, {
-          uid: userRecord.uid,
-          email: userRecord.email || null,
-          displayName: userRecord.displayName || null,
-          role: userRecord.customClaims?.role || "user",
-        });
-      } catch (error) {
-        void normalizeError(error);
-        serverLogger.warn(`Failed to fetch user ${uid}`, { error });
-        userMap.set(uid, {
-          uid,
-          email: null,
-          displayName: "Unknown User",
-          role: "user",
-        });
-      }
-    }
+    uniqueUids.forEach((uid, i) => {
+      const userRecord = userRecords[i];
+      userMap.set(
+        uid,
+        userRecord
+          ? {
+              uid: userRecord.uid,
+              email: userRecord.email || null,
+              displayName: userRecord.displayName || null,
+              role: userRecord.customClaims?.role || "user",
+            }
+          : { uid, email: null, displayName: "Unknown User", role: "user" },
+      );
+    });
 
     sessions.forEach((session) => {
       session.user = userMap.get(session.userId) || null;

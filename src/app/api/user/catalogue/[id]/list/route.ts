@@ -1,7 +1,7 @@
 import { withProviders } from "@/providers.config";
 import { createApiHandler as createRouteHandler, successResponse, errorResponse, listFromCatalogueAction } from "@mohasinac/appkit";
 
-/** POST /api/user/catalogue/[id]/list — seller path, direct listing under their own store. */
+/** POST /api/user/catalogue/[id]/list — direct listing, no approval queue. Sellers list under their own store; admins (who have no personal seller store) list under the platform's consignment store. */
 export const POST = withProviders(
   createRouteHandler({
     auth: true,

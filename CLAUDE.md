@@ -417,7 +417,7 @@ Traditional dev server with webpack HMR + file watchers. Uses ~3.5 GB. Best for 
 - reviews → `review-{productName}-{userFirstName}-{YYYYMMDD}`
 - payouts → `payout-{sellerName}-{YYYYMMDD}-{rand6}`
 
-**True Firestore auto-IDs** (no prefix, no slug): carts, eventEntries, notifications, sessions.
+**True Firestore auto-IDs** (no prefix, no slug): carts, eventEntries, notifications, sessions, jobs.
 
 ---
 

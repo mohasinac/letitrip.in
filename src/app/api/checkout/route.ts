@@ -22,13 +22,15 @@ const checkoutSchema = z.object({
   emiTenureMonths: z.number().int().min(2).max(6).optional(),
   notes: z.string().max(500).optional(),
   excludedProductIds: z.array(z.string()).optional(),
+  /** Buyer's choice for what to do when a cart item is unavailable at checkout time. */
+  outOfStockPolicy: z.enum(["cancel_order", "skip_items"]).default("skip_items"),
 });
 
 export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_output"]>({
   auth: true,
   schema: checkoutSchema,
   handler: async ({ user, body }) => {
-    const { addressId, paymentMethod, emiTenureMonths, notes, excludedProductIds } = body!;
+    const { addressId, paymentMethod, emiTenureMonths, notes, excludedProductIds, outOfStockPolicy } = body!;
     const result = await createCheckoutOrderAction({
       userId: user!.uid,
       userName:
@@ -41,6 +43,7 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
       emiTenureMonths,
       notes,
       excludedProductIds,
+      outOfStockPolicy,
     });
     return successResponse(result, SUCCESS_MESSAGES.CHECKOUT.ORDER_PLACED);
   },
