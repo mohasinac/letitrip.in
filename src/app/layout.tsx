@@ -35,8 +35,8 @@ const playfair = Playfair_Display({
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#dc2626" }, // crimson-warrior primary
-    { media: "(prefers-color-scheme: dark)",  color: "#7c3aed" }, // shadow-abyss primary
+    { media: "(prefers-color-scheme: light)", color: "#0d9488" }, // crimson-warrior (Teal Tide) primary
+    { media: "(prefers-color-scheme: dark)",  color: "#14b8a6" }, // shadow-abyss (Teal Depths) primary
   ],
   width: "device-width",
   initialScale: 1,
