@@ -212,6 +212,23 @@ const RULES = [
     fix: "Replace with the matching appkit primitive — bytes flow through the /api/media proxy",
     baselineDrift: true,
   },
+  {
+    // A hardcoded Tailwind background utility (bg-white, bg-zinc-50, ...) and
+    // a theme-driven bg-[var(--appkit-color-*)] utility on the SAME element
+    // both set background-color unconditionally — whichever one Tailwind
+    // emits later in the generated stylesheet wins, independent of source
+    // order, so the element can silently stay pinned to the hardcoded colour
+    // regardless of the active theme. Root Cause: the navbar/titlebar theme-
+    // not-updating bug (2026-08-15) traced to exactly this pattern. Does NOT
+    // flag a hardcoded base state paired with a `hover:`/`dark:`/`focus:`-
+    // prefixed var utility — that's a legitimate state-conditional override,
+    // not a same-state conflict.
+    id: "CONFLICTING_BG_UTILITY",
+    re: /(?=.*(?:^|\s)bg-(?:white|black|[a-z]+-\d+)(?:\/\d+)?(?=\s|"|`))(?=.*(?:^|\s)bg-\[var\(--appkit-color-)/,
+    message: "Hardcoded bg-{color} utility co-occurs with a theme-driven bg-[var(--appkit-color-*)] utility on the same element — one silently wins regardless of theme. Keep only the theme-driven class (or scope the hardcoded one behind hover:/dark:/focus: if it's a deliberate state override).",
+    fix: "Remove the hardcoded bg-{color} utility, keeping only bg-[var(--appkit-color-*)] — or prefix it with hover:/dark:/focus: if the two are meant to represent different states",
+    baselineDrift: true,
+  },
 ];
 
 function walk(dir, files = []) {
@@ -316,6 +333,13 @@ const BASELINES = {
   // var(--appkit-text-N) arbitrary value if no primitive is in play.
   RAW_SPACING_UTILITY: 0,
   RAW_TEXT_SIZE_UTILITY: 0,
+  // CONFLICTING_BG_UTILITY — added 2026-08-15 with the theme/navbar FOUC fix.
+  // The 6 concrete instances this bug caused (Navbar, TitleBar, AdminFeaturesView,
+  // BaseListingCard, ProductGrid, ListingToolbar) are already fixed; this baseline
+  // covers the remaining pre-existing `bg-zinc-*` co-occurrences (Toggle,
+  // FooterLayout, BottomActions, tokens/index.ts, NavPermissionsManager,
+  // ActionPermissionsManager, Slider, MediaSlider) not yet swept. Drive to 0.
+  CONFLICTING_BG_UTILITY: 3,
 };
 
 const hardBlocking = violations.filter((v) => !v.baselineDrift);

@@ -1,20 +1,32 @@
 #!/usr/bin/env node
 /**
- * audit-theme-drift.mjs — Verify the built-in TS theme presets
- *                         (`default-light`, `default-dark`) stay aligned
- *                         with the matching CSS blocks in `tokens.css`.
+ * audit-theme-drift.mjs — Verify every theme preset TS file
+ *                         (`default-light`, `default-dark`, `cobalt-night`,
+ *                         `sunset`) stays aligned with its matching CSS
+ *                         block in `tokens.css`, AND that the CSS selector
+ *                         for each theme actually exists at all.
  *
- * The runtime ThemeProvider applies the TS preset by writing each
- * `tokens[name]` value as `--name` on `<html>`. For first-paint (before JS
- * hydration) the same values must already live in `:root` (for light) and
- * `[data-theme="dark"]` (for dark) so the page does not flicker during
- * hydration.
+ * The runtime ThemeProvider applies a theme record by writing each
+ * `tokens[name]` value as `--name` on `<html data-theme={theme.id}>`. For
+ * first-paint (before JS hydration) the same values must already live in
+ * `:root` (light default) or `[data-theme="{id}"]` (every other theme,
+ * keyed by the theme's real `id` — NOT its `mode`) so the page does not
+ * flicker/flash-wrong-colour during hydration.
+ *
+ * A prior bug had the dark-theme CSS block selector as `[data-theme="dark"]`
+ * — the theme's `mode`, not its `id` (`"default-dark"`) — which made that
+ * whole block permanently unreachable (dead CSS) and caused a light-token
+ * flash on every dark-mode page load. The SELECTOR_EXISTS check below exists
+ * specifically so that class of bug can never regress silently again: it
+ * fails loudly if any registered theme id has no matching CSS selector at
+ * all, independent of whether the token values inside would have matched.
  *
  * This audit parses both sources and reports any mismatch (missing key,
- * different value, or stray key). Strict-zero — any drift blocks.
+ * different value, stray key, or missing selector). Strict-zero — any drift
+ * blocks.
  *
- * It does NOT inspect admin-authored themes; those are validated at write
- * time by the Site Settings server action.
+ * It does NOT inspect admin-authored (non-template) themes; those are
+ * validated at write time by the Site Settings server action.
  */
 
 import { readFileSync } from "fs";
@@ -24,48 +36,55 @@ import { dirname, join, relative } from "path";
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(SCRIPT_DIR, "..");
 const APPKIT_SRC = join(ROOT, "appkit", "src");
+const THEMES_DIR = join(APPKIT_SRC, "tokens", "themes");
 
 const TOKENS_CSS = join(APPKIT_SRC, "tokens", "tokens.css");
-const DEFAULT_LIGHT_TS = join(APPKIT_SRC, "tokens", "themes", "default-light.ts");
-const DEFAULT_DARK_TS = join(APPKIT_SRC, "tokens", "themes", "default-dark.ts");
+
+/**
+ * Every theme this audit checks. `cssSelector: null` means the theme is the
+ * default first-paint state and lives in a bare `:root { ... }` block
+ * instead of an attribute selector.
+ */
+const THEMES = [
+  { label: "default-light", id: "default-light", cssSelector: null, tsFile: "default-light.ts", tsExport: "DEFAULT_LIGHT_THEME" },
+  { label: "default-dark", id: "default-dark", cssSelector: "default-dark", tsFile: "default-dark.ts", tsExport: "DEFAULT_DARK_THEME" },
+  { label: "cobalt-night", id: "cobalt-night", cssSelector: "cobalt-night", tsFile: "cobalt-night.ts", tsExport: "COBALT_NIGHT_THEME" },
+  { label: "sunset", id: "sunset", cssSelector: "sunset", tsFile: "sunset.ts", tsExport: "SUNSET_THEME" },
+];
 
 function rel(p) {
   return relative(ROOT, p).replace(/\\/g, "/");
 }
 
-/** Parse `:root { ... }` and `[data-theme="..."] { ... }` blocks out of tokens.css. */
-function parseCssBlocks(source) {
-  const blocks = { root: {}, dark: {} };
-  const ROOT_RX = /:root\s*\{([\s\S]*?)\}/g;
-  const DARK_RX = /\[data-theme="dark"\]\s*\{([\s\S]*?)\}/g;
-
-  const harvest = (rx, target) => {
-    let match;
-    while ((match = rx.exec(source))) {
-      const body = match[1];
-      const lines = body.split(/\n|;/);
-      for (const raw of lines) {
-        const trimmed = raw.trim();
-        if (!trimmed || trimmed.startsWith("/*")) continue;
-        const m = trimmed.match(/^(--[a-zA-Z0-9-]+)\s*:\s*(.+?)\s*(?:\/\*.*\*\/)?$/);
-        if (!m) continue;
-        const name = m[1].slice(2); // strip leading --
-        const value = m[2].replace(/\s+/g, " ").trim();
-        target[name] = value;
-      }
+/** Extract the body of a `:root { ... }` or `[data-theme="id"] { ... }` block, or null if absent. */
+function extractBlock(source, selector) {
+  const rx = selector
+    ? new RegExp(`\\[data-theme="${selector}"\\]\\s*\\{([\\s\\S]*?)\\}`, "g")
+    : /:root\s*\{([\s\S]*?)\}/g;
+  const target = {};
+  let found = false;
+  let match;
+  while ((match = rx.exec(source))) {
+    found = true;
+    const body = match[1];
+    const lines = body.split(/\n|;/);
+    for (const raw of lines) {
+      const trimmed = raw.trim();
+      if (!trimmed || trimmed.startsWith("/*")) continue;
+      const m = trimmed.match(/^(--[a-zA-Z0-9-]+)\s*:\s*(.+?)\s*(?:\/\*.*\*\/)?$/);
+      if (!m) continue;
+      const name = m[1].slice(2); // strip leading --
+      const value = m[2].replace(/\s+/g, " ").trim();
+      target[name] = value;
     }
-  };
-
-  harvest(ROOT_RX, blocks.root);
-  harvest(DARK_RX, blocks.dark);
-  return blocks;
+  }
+  return { found, tokens: target };
 }
 
 /**
- * Parse the `tokens` object literal out of a default-{light,dark}.ts file.
- * We rely on the file structure being a single export with `tokens: { ... }`
- * holding `"key": "value"` pairs. The values may contain commas, so we capture
- * the string literal contents specifically.
+ * Parse the `tokens: { ... }` object literal out of a theme TS file. Relies
+ * on the file structure being a single export with `tokens: { ... }` holding
+ * `"key": "value"` pairs.
  */
 function parseTsTokens(source) {
   const blockMatch = source.match(/tokens:\s*\{([\s\S]*?)\n\s*\},\s*\n\s*gradients:/);
@@ -81,12 +100,32 @@ function parseTsTokens(source) {
 }
 
 function normaliseValue(value) {
-  // Strip trailing semicolons and collapse whitespace so CSS / TS strings compare cleanly.
   return value
     .replace(/;\s*$/, "")
     .replace(/\s*,\s*/g, ", ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+// Auxiliary `appkit-color-*` tokens that exist in `:root` (extended palette,
+// social-brand colours, light-only helpers) without a required TS-preset
+// counterpart. Exempt from MISSING_IN_TS so every theme file doesn't have to
+// carry the entire extended palette — only the two default presets own it.
+function isExemptColorKey(key, label) {
+  if (/^appkit-color-(?:zinc|slate|emerald|amber|rose|sky|purple|teal|green|cobalt|accent|primary|secondary)-(?:\d+)$/.test(key)) {
+    return true;
+  }
+  if (/^appkit-color-(?:instagram|facebook|tiktok|deviantart|whatsapp|youtube)$/.test(key)) return true;
+  if (key === "appkit-color-error-hover") return true;
+  if (key === "appkit-color-text-on-dark") return true;
+  if (key === "appkit-color-text-on-primary" && label !== "default-light") return true;
+  if (key === "appkit-color-error-title" || key === "appkit-color-error-text") return true;
+  // Theme templates (cobalt-night, sunset) deliberately only override the
+  // subset of colours their CSS block redefines — everything else inherits
+  // from the base mode's default theme, same as default-dark does against
+  // :root. Only the two default presets are required to be exhaustive.
+  if (label !== "default-light" && label !== "default-dark") return true;
+  return false;
 }
 
 function diff(label, cssTokens, tsTokens) {
@@ -114,23 +153,10 @@ function diff(label, cssTokens, tsTokens) {
     }
   }
 
-  // Flag CSS-only colour tokens that TS does not declare (excluding the
-  // extended Tailwind palette ramps and ungovernedscalars — TS presets only
-  // own the semantic surface). Anything starting with `--appkit-color-` that
-  // is not in TS is a candidate drift unless it's a ramp.
   for (const key of cssKeys) {
     if (!key.startsWith("appkit-color-")) continue;
     if (tsKeys.has(key)) continue;
-    if (/^appkit-color-(?:zinc|slate|emerald|amber|rose|sky|purple|teal|green|cobalt|accent|primary|secondary)-(?:\d+)$/.test(key)) {
-      continue;
-    }
-    if (/^appkit-color-(?:instagram|facebook|tiktok|deviantart|whatsapp|youtube)$/.test(key)) {
-      continue;
-    }
-    if (key === "appkit-color-error-hover") continue; // light-only auxiliary
-    if (key === "appkit-color-text-on-dark") continue; // light-only auxiliary
-    if (key === "appkit-color-text-on-primary" && label === "default-dark") continue;
-    if (key === "appkit-color-error-title" || key === "appkit-color-error-text") continue;
+    if (isExemptColorKey(key, label)) continue;
     issues.push({
       type: "MISSING_IN_TS",
       token: key,
@@ -142,40 +168,38 @@ function diff(label, cssTokens, tsTokens) {
 }
 
 const cssSource = readFileSync(TOKENS_CSS, "utf-8");
-const lightTsSource = readFileSync(DEFAULT_LIGHT_TS, "utf-8");
-const darkTsSource = readFileSync(DEFAULT_DARK_TS, "utf-8");
-
-const { root: cssLight, dark: cssDark } = parseCssBlocks(cssSource);
-const lightTsTokens = parseTsTokens(lightTsSource);
-const darkTsTokens = parseTsTokens(darkTsSource);
-
 const failures = [];
 
-if (!lightTsTokens) {
-  failures.push({
-    file: rel(DEFAULT_LIGHT_TS),
-    detail: "Could not parse `tokens: {...}` block in default-light.ts",
-  });
-}
-if (!darkTsTokens) {
-  failures.push({
-    file: rel(DEFAULT_DARK_TS),
-    detail: "Could not parse `tokens: {...}` block in default-dark.ts",
-  });
-}
-
-if (lightTsTokens) {
-  for (const issue of diff("default-light", cssLight, lightTsTokens)) {
-    failures.push({
-      file: rel(DEFAULT_LIGHT_TS) + " ↔ " + rel(TOKENS_CSS),
-      detail: `[${issue.type} ${issue.token}] ${issue.detail}`,
-    });
+for (const theme of THEMES) {
+  const tsPath = join(THEMES_DIR, theme.tsFile);
+  let tsSource;
+  try {
+    tsSource = readFileSync(tsPath, "utf-8");
+  } catch (_err) {
+    failures.push({ file: rel(tsPath), detail: `Theme file not found for "${theme.label}".` });
+    continue;
   }
-}
-if (darkTsTokens) {
-  for (const issue of diff("default-dark", cssDark, darkTsTokens)) {
+
+  const { found, tokens: cssTokens } = extractBlock(cssSource, theme.cssSelector);
+  if (!found) {
+    const selectorDesc = theme.cssSelector ? `[data-theme="${theme.cssSelector}"]` : ":root";
     failures.push({
-      file: rel(DEFAULT_DARK_TS) + " ↔ " + rel(TOKENS_CSS),
+      file: rel(TOKENS_CSS),
+      detail: `SELECTOR_EXISTS: no ${selectorDesc} block found for theme id "${theme.id}" (${theme.tsExport} in ${theme.tsFile}). ` +
+        `ThemeProvider sets data-theme to the theme's id at runtime — a missing/mismatched selector here means this theme's CSS never applies before hydration (dead CSS).`,
+    });
+    continue;
+  }
+
+  const tsTokens = parseTsTokens(tsSource);
+  if (!tsTokens) {
+    failures.push({ file: rel(tsPath), detail: `Could not parse \`tokens: {...}\` block in ${theme.tsFile}` });
+    continue;
+  }
+
+  for (const issue of diff(theme.label, cssTokens, tsTokens)) {
+    failures.push({
+      file: `${rel(tsPath)} ↔ ${rel(TOKENS_CSS)}`,
       detail: `[${issue.type} ${issue.token}] ${issue.detail}`,
     });
   }
@@ -193,7 +217,8 @@ for (const f of failures) {
   console.error();
 }
 console.error(
-  "Drift between the TS theme presets and tokens.css will cause hydration flicker. " +
+  "Drift between a theme's TS preset and its tokens.css block will cause hydration flicker, " +
+    "and a missing CSS selector means the theme never applies before hydration at all. " +
     "Either update the TS preset to match the CSS block, or update tokens.css to match the TS preset.",
 );
 process.exit(1);

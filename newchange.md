@@ -41,6 +41,74 @@
 
 ---
 
+### S-shared-audits — Regression audits for the S-shared-bughunt bug classes (2026-08-15)
+
+**Direct follow-up to S-shared-bughunt below, same session: "can we add audits to avoid such
+future issues."** Of the 35 bugs found in that pass, 6 were systemic patterns worth a mechanical
+static check rather than one-off logic errors best guarded by a regression test. Built all 6
+(user confirmed "all 6 recommended" via AskUserQuestion), wired into `appkit/package.json`
+`check:audits`:
+
+- **Widened `audit-use-client.mjs`** to catch `React.useId()`-style namespace-qualified hook
+  calls, not just destructured `import { useId } from "react"`. This exact gap caused 3 of the
+  35 bugs. Running it immediately found a 4th, previously-undetected instance: `Input.tsx`
+  (SHARED-BUG-36).
+- **New `audit-dynamic-tailwind-arbitrary.mjs`** — flags template-literal interpolation inside
+  Tailwind's arbitrary-value bracket syntax. Matches CLAUDE.md Root Cause #3, which existed as
+  prose guidance but had no dedicated script; hit twice in one bug-hunt session.
+- **New `audit-surface-props-completeness.mjs`** — for any component whose props `extends
+  SurfaceProps`, verifies every field is wired into `buildSurfaceClasses()`. Correctly excludes
+  fields a component deliberately redeclares with its own narrower type in the child interface
+  (e.g. `Card`'s `padding?: CardPadding` intentionally bypasses the shared `PADDING_MAP`). Found
+  3 more incomplete components beyond the 12 already fixed: `Card`, `Div`, `Form`
+  (SHARED-BUG-41).
+- **New `audit-touch-handler-completeness.mjs`** — any `touchstart`/`touchmove`/`touchend`
+  handler must have a `touchcancel` counterpart. This one was the biggest surprise: it found that
+  the `useLongPress()` fix from earlier the same session (SHARED-BUG-14) had never actually been
+  *adopted* by a single real consumer. 10 card components implementing the "card-selection
+  canonical pattern" (`DataTable`, `MarketplaceAuctionCard`, `BlogFeaturedCard`, `EventCard`,
+  `MarketplaceOrderCard`, `MarketplacePreorderCard`, `MarketplaceBundleCard`,
+  `MarketplacePrizeDrawCard`, `CouponCard`, `InteractiveStoreCard`) destructure the hook's
+  individual handlers but never wired `onTouchCancel` — the hook offered the fix, nothing used
+  it. Fixed all 10 (SHARED-BUG-37). The same audit also found 3 components with independent,
+  genuine drag-state leaks needing their own `touchcancel` handler — `BeforeAfterCard` (leaked
+  window-level listeners forever), `MediaLightbox` (pinch/swipe state corruption), `ImageCropModal`
+  (stuck `isDragging`) — SHARED-BUG-38/39/40. And correctly identified 5 false positives (native
+  `<input type="range">` sliders that own their own drag state, single-shot outside-tap
+  detection, a stateless position-follows-touch slider) — suppressed with reasoned
+  `// audit-touch-handler-ok:` markers rather than papered over.
+- **New `audit-field-primitive-contract.mjs`** — codifies the two `ui/forms/Field*.tsx` bugs
+  from earlier the same session (never forward `error=` to the wrapped primitive; always call
+  `clearFieldError` on change) as a permanent check across all five `Field*` files.
+- **New `audit-innerhtml-sanitization.mjs`** — flags any non-literal `.innerHTML =` assignment
+  outside an explicit allowlist (currently just `RichTextEditor.tsx` and `RichText.tsx`, both
+  already confirmed to sanitize). Codifies the `RichTextEditor` sanitization fix.
+
+**Process note — writing an audit surfaced real bugs the manual review missed.** Every one of the
+6 scripts found at least one genuine instance beyond what the exhaustive manual bug-hunt already
+caught (`Input.tsx`, `Card`/`Div`/`Form`, and — most significantly — the entire practical impact
+of the `useLongPress` touchcancel fix, which without this audit would have shipped as a hook-level
+fix with zero real-world effect). Total: 6 more confirmed bugs (SHARED-BUG-36 through -41),
+itemized in `crud-tracker.md` Tier 0.
+
+**A note on scope discipline mid-session:** while fixing the touch-handler findings, discovered
+~38 unrelated modified files (and 1 deleted file) already sitting uncommitted in the appkit
+working tree — theme retint follow-ups, sidebar/layout adjustments, a `DashboardScaffold.tsx`
+removal, homepage section tweaks, seed data — none of which this session had touched, several of
+which overlapped the exact files being edited for the touchcancel fixes. Paused and asked before
+committing anything rather than assuming; user confirmed it was their own in-progress work and to
+commit it together. Landed in one appkit commit alongside the 6 new audits and their fixes.
+
+**Verification:** `tsc --noEmit` clean, `npm run check:audits` (now 26 scripts, up from 21) exits
+0, `eslint` on every new/changed file 0 errors (fixed one unused-import error introduced while
+widening `audit-use-client.mjs`, plus one pre-existing unused-import error in the same file found
+in passing). New regression test for the highest-value new find
+(`BeforeAfterCard` window-listener leak); the 10 card-component `onTouchCancel` wiring fixes are
+mechanical one-line additions already covered by the `useLongPress.ts` hook-level test from
+`S-shared-bughunt`, not independently re-tested per file.
+
+---
+
 ### S-shared-bughunt — Exhaustive bug sweep across appkit shared components/utils/hooks, publish/deploy (2026-08-15)
 
 **Started from a user request, not a planned tracker item: "go through our shared components and

@@ -10,7 +10,7 @@ import {
   COMMON_FIELDS,
   BRAND_FIELDS,
 } from "@mohasinac/appkit";
-import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
+import { ROLES_ANY_STAFF, ROLES_STORE_WRITE } from "@/constants";
 
 const DEFAULT_SORTS = [sortBy(COMMON_FIELDS.ORDER, "ASC"), sortBy(BRAND_FIELDS.NAME, "ASC")].join(",");
 
@@ -38,8 +38,12 @@ const createBrandSchema = z.object({
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:brands:read",
+    // Sellers browse the same taxonomy admins do when picking/creating a
+    // brand inline on the product form — ROLES_ANY_STAFF = admin+mod+seller.
+    // No `permission` gate: getServerPermissions() only resolves fine-grained
+    // permissions for role "employee", so keeping it here would 403 every
+    // moderator/seller regardless of roles[] (neither is "admin" or "employee").
+    roles: [...ROLES_ANY_STAFF],
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
@@ -71,8 +75,9 @@ export const GET = withProviders(
 export const POST = withProviders(
   createRouteHandler<(typeof createBrandSchema)["_output"]>({
     auth: true,
-    roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:brands:write",
+    // Sellers can create brands inline from the product form — same
+    // reasoning as GET above (ROLES_STORE_WRITE = seller+admin).
+    roles: [...ROLES_STORE_WRITE],
     schema: createBrandSchema,
     handler: async ({ body }) => {
       const slug = body!.slug || `brand-${slugify(body!.name)}`;
