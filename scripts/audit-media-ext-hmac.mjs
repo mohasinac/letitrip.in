@@ -36,6 +36,7 @@ const SKIP_DIRS = new Set([
   "coverage",
   ".git",
   "appkit",
+  ".claude",
 ]);
 
 function walk(dir, files = []) {

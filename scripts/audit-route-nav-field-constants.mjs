@@ -41,6 +41,7 @@ const SKIP_DIRS = new Set([
   "coverage",
   "playwright-report",
   "test-results",
+  ".claude",
 ]);
 
 function walk(absDir, files = []) {
