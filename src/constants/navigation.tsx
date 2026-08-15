@@ -414,7 +414,9 @@ const SELLING_GROUP_TITLE = "Selling";
 const STORE_DASHBOARD_LABEL = "Store Dashboard";
 const BECOME_SELLER_LABEL = "Open a Store";
 
-export function getUserNavGroups(isSeller: boolean): UserNavGroup[] {
+const ACCOUNT_GROUP_TITLE = "Account";
+
+export function getUserNavGroups(isSeller: boolean, userId?: string): UserNavGroup[] {
   // NOTE: the `confirm` field is added on the appkit `UserNavItem` interface but
   // ships with the next appkit publish; cast keeps tsc happy against the
   // currently-installed dist which doesn't expose it yet.
@@ -427,7 +429,17 @@ export function getUserNavGroups(isSeller: boolean): UserNavGroup[] {
         },
       } as UserNavItem)
     : { href: String(ROUTES.USER.BECOME_SELLER), label: BECOME_SELLER_LABEL };
-  return USER_NAV_GROUPS.map((group) =>
-    group.title === SELLING_GROUP_TITLE ? { ...group, items: [sellingItem] } : group,
-  );
+  return USER_NAV_GROUPS.map((group) => {
+    if (group.title === SELLING_GROUP_TITLE) return { ...group, items: [sellingItem] };
+    if (group.title === ACCOUNT_GROUP_TITLE && userId) {
+      return {
+        ...group,
+        items: [
+          ...group.items,
+          { href: String(ROUTES.PUBLIC.PROFILE(userId)), label: "View Public Profile" },
+        ],
+      };
+    }
+    return group;
+  });
 }

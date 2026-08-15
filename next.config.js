@@ -23,6 +23,19 @@ module.exports = withNextIntl(
       NEXT_PUBLIC_COMMIT_SHA: COMMIT_SHA,
       NEXT_PUBLIC_BUILD_TIME: BUILD_TIME,
     },
+    // Firestore docs, seed data, and resolveMediaUrl() all emit the bare
+    // `/media/<slug>` form as the canonical media URL, but the only actual
+    // handler is `src/app/api/media/[...slug]/route.ts` at `/api/media/<slug>`.
+    // Without this rewrite every image on the site 404s at the router level
+    // (invisible to try/catch — the browser just renders a broken-image icon).
+    async rewrites() {
+      return [
+        {
+          source: "/media/:path*",
+          destination: "/api/media/:path*",
+        },
+      ];
+    },
     cacheMaxMemorySize: 0,
     // Turbopack (used by `next build`) does not respect webpack's config.resolve.alias.
     // Without this, appkit/node_modules/firebase and root node_modules/firebase are two

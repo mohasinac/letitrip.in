@@ -33,6 +33,7 @@ const AUDITS = [
   { name: "appkit", kind: "npm-prefix", prefix: "./appkit", script: "check:audits" },
 
   // root-side
+  { name: "a11y",                            script: "scripts/audit-a11y.mjs" },
   { name: "ssr-in-appkit",                   script: "scripts/audit-ssr-in-appkit.mjs" },
   { name: "og-coverage",                     script: "appkit/scripts/verify-og-coverage.mjs" },
   { name: "hex-tokens",                      script: "scripts/audit-hex-tokens.mjs", supportsFix: true },

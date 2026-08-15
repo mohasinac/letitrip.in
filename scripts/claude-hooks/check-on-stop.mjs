@@ -260,6 +260,16 @@ const checks = [
     cwd: ROOT,
   },
   {
+    // WCAG contrast check across every built-in theme's text/background
+    // token pairings — catches the class of bug where a theme ships with
+    // technically-valid-but-illegible color pairs (e.g. low-contrast footer
+    // links).
+    label: "audit-a11y",
+    cmd: "node",
+    args: ["scripts/audit-a11y.mjs"],
+    cwd: ROOT,
+  },
+  {
     // Icon+label nav pattern: align="end"/"center" on a flex-1 label span
     // right after a shrink-0 icon span visually separates them.
     label: "audit-icon-label-split",
