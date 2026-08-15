@@ -78,6 +78,21 @@ const AUDITS = [
   // flicker because the runtime ThemeProvider writes the TS preset over the
   // CSS block on hydration.
   { name: "theme-drift",                     script: "scripts/audit-theme-drift.mjs" },
+  // Icon+label nav pattern: align="end"/"center" on a flex-1 label span
+  // right after a shrink-0 icon span visually separates them. Strict-zero.
+  { name: "icon-label-split",                script: "scripts/audit-icon-label-split.mjs" },
+  // A `.split(",").map(...).filter(Boolean)` chain rebuilding a form
+  // field's array value from a comma string — use <TagInput>/
+  // <PaginatedSelect multiple> instead. Strict-zero.
+  { name: "comma-hack-multiselect",          script: "scripts/audit-comma-hack-multiselect.mjs" },
+  // REPORT MODE (STRICT=1 to fail) — `roles` containing a non-admin/
+  // non-employee role alongside a `permission` field is a guaranteed-403
+  // dead combo (getServerPermissions only resolves permissions for
+  // "employee"). 151 pre-existing hits found 2026-08-15; too large a fix
+  // to land in the same session that discovered it — reported every run
+  // so it can't be forgotten, not blocking until someone signs up to burn
+  // the list down.
+  { name: "permission-role-mismatch",        script: "scripts/audit-permission-role-mismatch.mjs" },
   // Strict-zero parity between ERROR_CODES / HTTP_ERROR_CODES enum values
   // and `messages/en.json` errors.codes.* keys. UNKNOWN is the only allowed
   // JSON-only key (fallback sentinel used by error-display-map).

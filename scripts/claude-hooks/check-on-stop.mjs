@@ -260,6 +260,23 @@ const checks = [
     cwd: ROOT,
   },
   {
+    // Icon+label nav pattern: align="end"/"center" on a flex-1 label span
+    // right after a shrink-0 icon span visually separates them.
+    label: "audit-icon-label-split",
+    cmd: "node",
+    args: ["scripts/audit-icon-label-split.mjs"],
+    cwd: ROOT,
+  },
+  {
+    // A `.split(",").map(...).filter(Boolean)` chain rebuilding a form
+    // field's array value from a comma string — use <TagInput>/
+    // <PaginatedSelect multiple> instead.
+    label: "audit-comma-hack-multiselect",
+    cmd: "node",
+    args: ["scripts/audit-comma-hack-multiselect.mjs"],
+    cwd: ROOT,
+  },
+  {
     // Strict-zero parity between ERROR_CODES / HTTP_ERROR_CODES enum values
     // and `messages/en.json` errors.codes.* keys.
     label: "audit-error-display-i18n",
