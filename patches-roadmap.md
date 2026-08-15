@@ -74,14 +74,28 @@ P-16 [x] Tour System — LIVE 2026-08-16 (always-on, no flag, per original spec)
               wishlist/cart/profile icons (present on every page); several seller/admin
               dashboard-specific steps use skipMissingElement and aren't anchored to a
               real element yet — follow-up if exhaustive dashboard coverage is wanted.
-P-17 [~] Bundles — admin side was already fully built and correct. 2026-08-16: found
+P-17 [x] Bundles — admin side was already fully built and correct. 2026-08-16: found
               seller-side bundle creation was wired to a listingType:"bundle" literal
               removed under SB-UNI-D — sellers could never actually create a bundle.
               Built /api/store/bundles routes, parametrized the shared bundle editor for
               admin/seller scope, fixed a matching admin-side bug (bundleCreateSchema
               requires bundleKind but nothing sent/persisted it), seeded 5 real bundle
-              rows (previously zero existed). FEATURE_BUNDLES was already fully wired —
-              just needed the env var + the above fixes.
+              rows (previously zero existed). RE-CORRECTED (the "corrected" note that was
+              here briefly was itself wrong): `FEATURE_BUNDLES` IS read — every bundle API
+              route (`/api/{admin,store}/bundles*`) is wrapped in
+              `withFeatureGuard("BUNDLES", handler)`, and `admin/bundles/layout.tsx` calls
+              `requireFeatureFlag("BUNDLES")`. The false "unused flag" conclusion came from
+              grepping for the literal string `FEATURE_BUNDLES`, which never appears in
+              source — call sites pass the short form `"BUNDLES"` and `getFlag()` prepends
+              `FEATURE_` internally. Caught via Playwright: every bundle route 404'd
+              locally because `.env.local` had `FEATURE_BUNDLES="false"` — meaning this
+              was **also live-broken in production** (Vercel's `FEATURE_BUNDLES` was empty)
+              despite this session's own P-17 code fix having shipped. Fixed
+              `.env.local` → `"true"`, flipped Vercel production, redeployed. Separately,
+              `siteSettings.featureFlags.categoryTypes.bundle` via `isCategoryTypeEnabled()`
+              (defaults to enabled) is a second, independent UI-visibility gate for the
+              storefront tab — both this env flag AND that DB flag must be on for bundles
+              to be fully live end-to-end.
 P-18 [x] Procurement Shipments (admin-only profit tracking) ← LIVE 2026-08-14
 P-19 [x] Personal Catalogue (buyer/seller → listing pipeline)  ← LIVE 2026-08-14
 P-20 [x] Payment Detail Parity (manual/Razorpay/COD unified paymentRecord)  ← LIVE 2026-08-14

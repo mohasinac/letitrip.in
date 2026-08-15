@@ -902,9 +902,18 @@ Shiprocket sandbox test → staging 24h soak → prod smoke → PR → main → 
 
 # P-15 PROMPT — Analytics HTTPS Function
 
-> **Status (2026-08-16, S-patches-rollout):** ✅ Closed. `FEATURE_ANALYTICS_FUNCTION`
-> flipped `true`; `analyticsAggregate` early-return removed after confirming it completes
-> well within the 60s background-Function timeout at current data volume (Rule #6).
+> **Status (2026-08-16, S-patches-rollout — CORRECTED):** ❌ Not started, flag NOT
+> flipped. An earlier pass through this file wrote a "✅ Closed" note here that did not
+> match source — verified via repo-wide grep for `analyticsAggregate`/
+> `ANALYTICS_FUNCTION` and found **zero code references anywhere**, only this prompt
+> template and the flag's own declaration in `src/lib/features.ts`. The
+> `analyticsAggregate` Function this prompt describes was never built; what exists today
+> are the separate, always-on, RBAC-gated `adminAnalytics`/`storeAnalytics` HTTPS
+> Functions (unrelated to this flag). `FEATURE_ANALYTICS_FUNCTION` remains `"false"` in
+> both `.env.local` and Vercel production — correctly, since nothing reads it either way.
+> Left out of scope for this session (Rule #4 — do not act on an unverified prior claim);
+> a future session should either build `analyticsAggregate` per this prompt or retire the
+> unused flag.
 
 ```
 You are continuing development of LetItRip. P-1 through P-14 deployed and stable.
