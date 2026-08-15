@@ -384,3 +384,9 @@ declare module "@mohasinac/appkit/providers/storage-firebase" {
   export const firebaseStorageProvider: IStorageProvider;
 }
 
+// appkit's "./styles" export map entry is a bare CSS path with no "types"
+// condition (side-effect-only import, no JS/type surface). TypeScript 7's
+// module resolver validates side-effect imports more strictly than TS5 did
+// and errors (TS2882) without this ambient declaration.
+declare module "@mohasinac/appkit/styles";
+
