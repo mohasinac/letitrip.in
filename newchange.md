@@ -41,6 +41,80 @@
 
 ---
 
+### S-shared-bughunt — Exhaustive bug sweep across appkit shared components/utils/hooks, publish/deploy (2026-08-15)
+
+**Started from a user request, not a planned tracker item: "go through our shared components and
+utils and identify bugs and solve them all." Scoped with the user up front (AskUserQuestion) to
+all three tiers — `appkit/src/ui/components/` + `ui/forms/` (119 files), `appkit/src/utils/` (27
+files), `appkit/src/react/hooks/` + `contexts/` + `core/hooks/` + `_internal/client/` providers
+(34 files) — exhaustive file-by-file, with a regression test required for every confirmed fix.
+Full plan and Pass-1 findings recorded at the time in
+`we-have-lots-of-gentle-lollipop.md` (Claude plan file).**
+
+**Method:** five parallel research passes (background agents, read-only) covered every file
+across all three tiers; each returned only findings meeting a strict bar — reproducible from
+source with concrete input→wrong-output, verified against CURRENT source (not stale bug
+descriptions), and the reviewed file's own logic rather than caller misuse. All ~180 files were
+read. 35 confirmed, provable bugs were found and fixed (2 of them documentation-only fixes where
+the "bug" was a doc/behavior mismatch but real consumers already depended on the current runtime
+behavior — see SHARED-BUG-21 and SHARED-BUG-31 in `crud-tracker.md`). See `crud-tracker.md` →
+Tier 0 → `SHARED-BUG-01` through `SHARED-BUG-35` for the itemized list with file/root-cause/fix
+per bug; not duplicated here.
+
+**Headline findings:**
+- **Critical, already live in production**: `generateMediaFilename()`/`validateMediaFilename()`
+  in `id-generators.ts` had been rejecting ~22 of 27 real upload contexts since the validator
+  shipped (W1-51, 2026-05-23) — `/api/media/sign` was 500ing for product/review/auction/preorder/
+  store/brand/blog/event/category/user/carousel/rich-text uploads this whole time. Fixed by
+  rewriting the validator's regex to match the generators' actual output shape.
+- `HorizontalScroller`'s `loop` mode has been silently broken on the homepage (`BrandsSection`,
+  `CustomCardsSection`) since it never resolves `perView`.
+- `<Button asChild>` completely bypassed `action.confirmation` destructive-action dialogs — a
+  direct Rule #7 violation, structural (the asChild branch was an early return before the
+  confirmation JSX in the function).
+- `RichTextEditor` had zero HTML sanitization on any path (stored XSS via previously-saved
+  content, unsanitized paste) — added a dependency-free allowlist sanitizer.
+- `useBulkSelection`'s "select all" header checkbox lied after pagination (cardinality-only
+  comparison instead of actual Set membership) — could also make `toggleAll()` clear a selection
+  instead of selecting the new page.
+- Two files (`Iframe.tsx` sandbox default, `SlottedListingView.tsx` `manageSearch`/`manageSort`)
+  were investigated for a behavioral fix but real consumers were found depending on the current
+  (differently-documented) behavior — fixed the documentation instead of introducing a regression.
+- One low-confidence finding (a `touched`-gating dead-code path shared by `FieldInput`/
+  `FieldTextarea`/`FieldSelect`/`FieldCheckbox`/`ColorPickerField`) was left alone — intended
+  behavior was ambiguous and not worth guessing.
+- `functions/src/utils/businessDay.ts` vs. `appkit/src/utils/business-day.ts` drift was flagged
+  in the original plan as worth a cross-check but not independently re-verified this session —
+  carried forward as an open item, not fixed.
+
+**Testing:** every confirmed-and-fixed bug got a dedicated regression test (the repo had
+near-zero coverage across all three tiers going in — 3/112 component files, 0/27 util files,
+6/29 hook files tested). ~35 new test files/additions landed in `appkit/src/utils/__tests__/`
+(new directory), `appkit/src/ui/components/__tests__/`, `appkit/src/ui/forms/__tests__/` (new
+directory), and `appkit/src/react/hooks/__tests__/`. One test caught a bug in the fix itself
+during authoring (`UnsavedChangesModal`'s re-entrancy fix initially wrapped the resolver in an
+extra closure layer, which the functional-updater `setState` form didn't need — the new test
+failed immediately and pointed at the exact line). Also fixed one unrelated, pre-existing STALE
+test (`new-primitives.test.tsx` → `StickyToolbar` → "composes header+nav offset") discovered
+incidentally while touching the same file — asserted a hardcoded `+44px` string against a source
+that had since moved to a CSS-token-based formula.
+
+**Verification:** `npx tsc --noEmit` (appkit) clean. `npm run check:audits` (appkit, ~20 scripts)
+clean. `eslint` on every changed/added file: 0 errors (pre-existing primitive-internal className
+warnings only, expected per the Three-Layer Style System — these ARE the primitive source files).
+Full `vitest run` (appkit): 367 failures across 38 files both before and after this session's
+changes — confirmed via `git stash` (temporarily removing every change from this session and
+re-running) that the failure set is byte-for-byte the same either way, i.e. entirely pre-existing
+and unrelated (a `triggerEventRaffle`/jobs-core cluster). Not investigated further — outside this
+session's scope.
+
+**Not investigated this session:** `appkit/src/_internal/shared/` (config/schema/business-rule
+modules — outside the "components/hooks/utils" scope as originally framed by the user)
+and `functions/src/` (Cloud Functions — the `businessDay.ts` drift check above is the only
+cross-reference made into that tree).
+
+---
+
 ### S-beyblade-relaunch — Carousel loop fix, theme retint, CTA contrast, Beyblade-minimal reseed, publish/deploy (2026-08-15)
 
 **Started from a user bug/UX report, not a planned tracker item: carousels stop instead of
