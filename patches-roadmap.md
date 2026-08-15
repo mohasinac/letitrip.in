@@ -51,9 +51,13 @@ P-11 [x] Chat / Messaging — LIVE 2026-08-16 (FEATURE_CHAT=true locally). Backe
               Payouts/Messages could never be shown even when flagged on).
 P-12 [~] Scammer Registry + Trust Score — write paths (report submission, admin
               publish) already correctly gated behind FEATURE_SCAM_REGISTRY; verified
-              2026-08-16, no changes needed there. Trust-score badge on seller profile
-              pages is a real, still-open gap (no lookup-by-identifier function or
-              component exists yet).
+              2026-08-16, no changes needed there. Trust-score badge shipped same day:
+              getSellerTrustStatus(storeId) (scam-actions.ts) resolves the store owner's
+              phone/email against admin-VERIFIED scammer profiles only, and
+              <SellerTrustBadge> renders on StoreHeader — but the badge itself is wired
+              behind the same FEATURE_SCAM_REGISTRY flag (scamRegistryEnabled prop,
+              threaded through all 11 store tab layouts), so it renders nowhere until
+              that flag clears legal review, same as the registry it reads from.
 P-13 [ ] Razorpay Online Payment — kept in code (RazorpayProvider), disabled by default
               via siteSettings.payment.razorpayEnabled since 2026-08-08. Verified
               2026-08-16: routes are correctly dual-gated (FEATURE_RAZORPAY env +
