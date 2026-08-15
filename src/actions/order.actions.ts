@@ -16,6 +16,7 @@ import {
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
 import {
   cancelOrderForUser,
+  cancelOrderItemsForUser,
   listOrdersForUser,
   getOrderByIdForUser,
 } from "@mohasinac/appkit";
@@ -25,11 +26,13 @@ import type { OrderDocument } from "@mohasinac/appkit";
 const cancelSchema = z.object({
   id: z.string().min(1),
   reason: z.string().min(1).max(500).default("Cancelled by user"),
+  itemIds: z.array(z.string().min(1)).optional(),
 });
 
 export async function cancelOrderAction(
   id: string,
   reason = "Cancelled by user",
+  itemIds?: string[],
 ): Promise<void> {
   const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(
@@ -39,8 +42,17 @@ export async function cancelOrderAction(
   if (!rl.success)
     throw new AuthorizationError("Too many requests. Please slow down.");
 
-  const parsed = cancelSchema.safeParse({ id, reason });
+  const parsed = cancelSchema.safeParse({ id, reason, itemIds });
   if (!parsed.success) throw new ValidationError("Invalid input");
+
+  if (parsed.data.itemIds?.length) {
+    return cancelOrderItemsForUser(
+      user.uid,
+      parsed.data.id,
+      parsed.data.itemIds,
+      parsed.data.reason,
+    );
+  }
 
   return cancelOrderForUser(user.uid, parsed.data.id, parsed.data.reason);
 }

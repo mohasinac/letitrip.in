@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import { withFeatureGuard } from "@/lib/features";
 /**
  * Prize Draw Reveal API (SB4-H, SB8-C)
  *
@@ -87,7 +88,7 @@ interface RevealPoolExhaustedResponse {
   reason: "pool_exhausted";
 }
 
-export const POST = withProviders(
+const __POST__g = withProviders(
   createRouteHandler<(typeof revealSchema)["_output"]>({
     auth: true,
     schema: revealSchema,
@@ -283,3 +284,5 @@ export const POST = withProviders(
     },
   }),
 );
+
+export const POST = withFeatureGuard("PRIZE_DRAWS", __POST__g);

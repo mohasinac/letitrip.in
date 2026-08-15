@@ -21,9 +21,11 @@
   "dependencies": {
     "@mohasinac/appkit": "file:../appkit",
     "firebase-admin": "^13.6.1",
-    "firebase-functions": "^6.3.2"
+    "firebase-functions": "^6.3.2",
+    "pdfkit": "^0.15.0"
   },
   "devDependencies": {
+    "@types/pdfkit": "^0.13.4",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "algoliasearch": "^5.49.0",

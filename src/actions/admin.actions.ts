@@ -13,6 +13,7 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 
 import { z } from "zod";
 import { requireRoleUser } from "@mohasinac/appkit";
+import { getFlag } from "@/lib/features";
 import {
   revokeSession as revokeSessionDomain,
   revokeUserSessions as revokeUserSessionsDomain,
@@ -331,7 +332,12 @@ export async function adminCreateProductAction(
       if (!validation.success) {
         throw new ValidationError("Invalid product data");
       }
-    
+
+      // P-10 — prize-draw listings require legal sign-off before going live.
+      if (validation.data.listingType === "prize-draw" && !getFlag("PRIZE_DRAWS")) {
+        throw new AuthorizationError("Prize draw listings are not currently enabled.");
+      }
+
       return adminCreateProductDomain(admin, {
         ...validation.data,
         sellerId: (input as any).sellerId || admin.uid,

@@ -10,6 +10,7 @@ export default function StoreLayout({ children }: { children: ReactNode }) {
   const prizeDrawsOn = getFlag("PRIZE_DRAWS");
   const couponsOn = getFlag("COUPONS");
   const payoutsOn = getFlag("PAYOUTS");
+  const chatOn = getFlag("CHAT");
 
   // P-1: filter disabled-feature nav items from the store sidebar.
   const groups = (STORE_NAV_GROUPS as StoreNavGroup[]).map((group) => {
@@ -28,9 +29,13 @@ export default function StoreLayout({ children }: { children: ReactNode }) {
       case "Orders & Reviews":
         return {
           ...group,
-          items: group.items.filter((item) => item.label !== "Bids" || auctionsOn),
+          items: group.items.filter((item) => {
+            if (item.label === "Bids") return auctionsOn;
+            if (item.label === "Messages") return chatOn;
+            return true;
+          }),
         };
-      case "Finance":
+      case "Analytics":
         return {
           ...group,
           items: group.items.filter((item) => {

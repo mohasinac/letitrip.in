@@ -326,16 +326,17 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
   {
     title: "Orders & Reviews",
     items: [
-      { href: String(ROUTES.STORE.ORDERS),  label: "Orders"  },
-      { href: String(ROUTES.STORE.REVIEWS), label: "Reviews" },
-      { href: String(ROUTES.STORE.BIDS),    label: "Bids"    },
+      { href: String(ROUTES.STORE.ORDERS),   label: "Orders"   },
+      { href: String(ROUTES.STORE.MESSAGES), label: "Messages" },
+      { href: String(ROUTES.STORE.REVIEWS),  label: "Reviews"  },
+      { href: String(ROUTES.STORE.BIDS),     label: "Bids"     },
     ],
   },
   {
     title: "Analytics",
     items: [
       { href: String(ROUTES.STORE.ANALYTICS), label: "Analytics" },
-      // Payouts hidden until FEATURE_PAYOUTS (P7).
+      { href: String(ROUTES.STORE.PAYOUTS),   label: "Payouts"   },
     ],
   },
   {
@@ -367,7 +368,7 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
       { href: String(ROUTES.USER.PROFILE),       label: "My Profile"    },
       { href: String(ROUTES.USER.SETTINGS),      label: "Settings"      },
       { href: String(ROUTES.USER.NOTIFICATIONS), label: "Notifications" },
-      // Messages: hidden P-1 (FEATURE_CHAT=false) — re-add when FEATURE_CHAT enabled
+      { href: String(ROUTES.USER.MESSAGES),      label: "Messages"      },
     ],
   },
   {

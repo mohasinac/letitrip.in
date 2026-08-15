@@ -17,6 +17,7 @@ import {
 } from "@mohasinac/appkit";
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
 import { isAdminUser } from "@mohasinac/appkit";
+import { getFlag } from "@/lib/features";
 import {
   becomeSeller,
   createStore,
@@ -211,6 +212,12 @@ export async function createSellerProductAction(input: unknown): Promise<void> {
   if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
   const parsed = productCreateSchema.safeParse(input);
   if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+
+  // P-10 — prize-draw listings require legal sign-off before going live;
+  // this gate applies to admin too (no bypass), unlike the capability checks below.
+  if ((parsed.data as Record<string, JsonValue>).listingType === "prize-draw" && !getFlag("PRIZE_DRAWS")) {
+    throw new AuthorizationError("Prize draw listings are not currently enabled.");
+  }
 
   // Capability gate — admin bypasses
   if (!isAdminUser(user)) {

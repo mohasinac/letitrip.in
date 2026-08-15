@@ -20,18 +20,29 @@ const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
 });
 const { access_token } = await tokenRes.json();
 
+// The `collectionGroups/{collectionId}/indexes` REST endpoint is scoped to a single
+// collection group — it does NOT return indexes globally despite the old comment here
+// claiming otherwise. Enumerate every collection group actually declared in the
+// generated firestore.indexes.json (source of truth for what was just deployed) and
+// poll each one, aggregating counts across all of them.
+const indexesJson = require(resolve(process.cwd(), "firestore.indexes.json"));
+const collectionGroups = [...new Set(indexesJson.indexes.map((i) => i.collectionGroup))];
+
 async function poll() {
-  // Use any collection group — the listing endpoint returns all indexes globally.
-  const url = `https://firestore.googleapis.com/v1/projects/${sa.project_id}/databases/(default)/collectionGroups/sessions/indexes?pageSize=300`;
-  const r = await fetch(url, { headers: { Authorization: `Bearer ${access_token}` } });
-  const j = await r.json();
-  const indexes = j.indexes || [];
   const counts = { READY: 0, CREATING: 0, NEEDS_REPAIR: 0, other: 0 };
-  for (const i of indexes) {
-    if (counts[i.state] !== undefined) counts[i.state]++;
-    else counts.other++;
+  let total = 0;
+  for (const group of collectionGroups) {
+    const url = `https://firestore.googleapis.com/v1/projects/${sa.project_id}/databases/(default)/collectionGroups/${group}/indexes?pageSize=300`;
+    const r = await fetch(url, { headers: { Authorization: `Bearer ${access_token}` } });
+    const j = await r.json();
+    const indexes = j.indexes || [];
+    total += indexes.length;
+    for (const i of indexes) {
+      if (counts[i.state] !== undefined) counts[i.state]++;
+      else counts.other++;
+    }
   }
-  return { total: indexes.length, ...counts };
+  return { total, ...counts };
 }
 
 const start = Date.now();

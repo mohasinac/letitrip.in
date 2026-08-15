@@ -9,7 +9,7 @@ import type { UserNavGroup } from "@mohasinac/appkit/client";
 interface UserLayoutClientProps {
   children: ReactNode;
   /** Feature flags forwarded from the server layout. */
-  flags: { eventsOn: boolean; auctionsOn: boolean };
+  flags: { eventsOn: boolean; auctionsOn: boolean; chatOn: boolean };
 }
 
 export function UserLayoutClient({ children, flags }: UserLayoutClientProps) {
@@ -19,6 +19,12 @@ export function UserLayoutClient({ children, flags }: UserLayoutClientProps) {
     () => {
       const all = getUserNavGroups(isSeller);
       return all.map((group): UserNavGroup => {
+        if (group.title === "Account") {
+          return {
+            ...group,
+            items: group.items.filter((item) => item.label !== "Messages" || flags.chatOn),
+          };
+        }
         if (group.title !== "Shopping") return group;
         return {
           ...group,
@@ -30,7 +36,7 @@ export function UserLayoutClient({ children, flags }: UserLayoutClientProps) {
         };
       }).filter((group) => group.items.length > 0);
     },
-    [isSeller, flags.eventsOn, flags.auctionsOn],
+    [isSeller, flags.eventsOn, flags.auctionsOn, flags.chatOn],
   );
 
   return (

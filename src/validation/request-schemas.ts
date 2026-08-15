@@ -181,6 +181,8 @@ const productBaseSchema = z.object({
     .optional(),
   preOrderCancellable: z.boolean().optional(),
   allowShipBeforeEmiComplete: z.boolean().optional(),
+  gstRate: z.union([z.literal(0), z.literal(5), z.literal(12), z.literal(18), z.literal(28)]).optional(),
+  hsnCode: z.string().max(20).optional(),
   printMeta: z
     .object({
       size: z.string().max(80).optional(),

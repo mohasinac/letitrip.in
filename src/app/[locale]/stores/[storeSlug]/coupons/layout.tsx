@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { StoreDetailLayoutView } from "@mohasinac/appkit";
+import { getFlag } from "@/lib/features";
 
 type Props = {
   children: ReactNode;
@@ -9,7 +10,7 @@ type Props = {
 export default async function Layout({ children, params }: Props) {
   const { storeSlug } = (await params) as { storeSlug: string };
   return (
-    <StoreDetailLayoutView storeSlug={storeSlug} activeTab="coupons">
+    <StoreDetailLayoutView storeSlug={storeSlug} activeTab="coupons" scamRegistryEnabled={getFlag("SCAM_REGISTRY")}>
       {children}
     </StoreDetailLayoutView>
   );

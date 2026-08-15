@@ -1,6 +1,6 @@
 "use client";
-import { normalizeError, checkEmiEligibility, computeEmiSchedule, type JsonArray } from "@mohasinac/appkit";
-import type { JsonValue, EmiSettings, OutOfStockPolicy } from "@mohasinac/appkit";
+import { normalizeError, checkEmiEligibility, computeEmiSchedule, computeCodHandlingFee, type JsonArray } from "@mohasinac/appkit";
+import type { JsonValue, EmiSettings, OutOfStockPolicy, CodHandlingFeeRates } from "@mohasinac/appkit";
 
 import { useCallback, useState, useEffect, useMemo } from "react";
 import {
@@ -480,6 +480,10 @@ function renderPaymentStep({
   emiTenure,
   setEmiTenure,
   emiSchedule,
+  outOfStockPolicy,
+  setOutOfStockPolicy,
+  codSettings,
+  subtotal,
   handlePayOnline,
   handlePlaceCodOrder,
   handlePlaceCashOrder,
@@ -499,6 +503,10 @@ function renderPaymentStep({
   emiTenure: number;
   setEmiTenure: (v: number) => void;
   emiSchedule: ReturnType<typeof computeEmiSchedule> | null;
+  outOfStockPolicy: OutOfStockPolicy;
+  setOutOfStockPolicy: (v: OutOfStockPolicy) => void;
+  codSettings: (CodHandlingFeeRates & { codDepositPercent?: number }) | null;
+  subtotal: number;
   handlePayOnline: () => Promise<void>;
   handlePlaceCodOrder: () => Promise<void>;
   handlePlaceCashOrder: () => Promise<void>;
@@ -522,6 +530,16 @@ function renderPaymentStep({
           {actionError && (
             <Text className="text-error" size="sm">{actionError}</Text>
           )}
+          <FieldSelect
+            name="outOfStockPolicy"
+            label={CK.OUT_OF_STOCK_POLICY_LABEL}
+            value={outOfStockPolicy}
+            onChange={(v) => setOutOfStockPolicy(v as OutOfStockPolicy)}
+            options={[
+              { value: "skip_items", label: CK.OUT_OF_STOCK_POLICY_SKIP_ITEMS },
+              { value: "cancel_order", label: CK.OUT_OF_STOCK_POLICY_CANCEL_ORDER },
+            ]}
+          />
           {showCashOption && (
             <Button
               type="button"
@@ -543,14 +561,27 @@ function renderPaymentStep({
             </Button>
           )}
           {showCod && (
-            <Button
-              type="button"
-              onClick={handlePlaceCodOrder}
-              disabled={isProcessingPayment || cartIsEmpty}
-              className="w-full border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] dark:bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-bg)] dark:hover:bg-[var(--appkit-color-surface-elevated)]"
-            >
-              {CK.PAYMENT_COD_BTN}
-            </Button>
+            <Div>
+              {codSettings && subtotal > 0 && (() => {
+                const codHandlingFee = computeCodHandlingFee(subtotal, codSettings);
+                const depositAmount = Math.round(subtotal * ((codSettings.codDepositPercent ?? 0) / 100));
+                const payNow = depositAmount + codHandlingFee;
+                const payOnDelivery = Math.max(0, subtotal - depositAmount);
+                return (
+                  <Text className="mb-2" size="sm" color="muted">
+                    {CK.COD_HANDLING_FEE_LABEL}: {formatEmiRupees(codHandlingFee)} · {CK.COD_PAY_NOW_LABEL}: {formatEmiRupees(payNow)} · {CK.COD_PAY_ON_DELIVERY_LABEL}: {formatEmiRupees(payOnDelivery)}
+                  </Text>
+                );
+              })()}
+              <Button
+                type="button"
+                onClick={handlePlaceCodOrder}
+                disabled={isProcessingPayment || cartIsEmpty}
+                className="w-full border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] dark:bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-bg)] dark:hover:bg-[var(--appkit-color-surface-elevated)]"
+              >
+                {CK.PAYMENT_COD_BTN}
+              </Button>
+            </Div>
           )}
           {emiVisible && emiSettings && (
             <Div className={`${__P.p3} border border-[var(--appkit-color-primary-200)] dark:border-[var(--appkit-color-primary-800)]`} surface="subtle" rounded="lg">
@@ -756,6 +787,7 @@ export function CheckoutRouteClient({
   showCoupons = false,
   showEmi = false,
   emiSettings = null,
+  codSettings = null,
 }: {
   adminBypassEnabled?: boolean;
   showCashOption?: boolean;
@@ -764,6 +796,7 @@ export function CheckoutRouteClient({
   showCoupons?: boolean;
   showEmi?: boolean;
   emiSettings?: EmiSettings | null;
+  codSettings?: CodHandlingFeeRates & { codDepositPercent?: number } | null;
 }) {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -810,6 +843,7 @@ export function CheckoutRouteClient({
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [outOfStockPolicy, setOutOfStockPolicy] = useState<OutOfStockPolicy>("skip_items");
 
   // --- Coupon state ---
   const searchParams = useSearchParams();
@@ -831,9 +865,7 @@ export function CheckoutRouteClient({
     subtotal,
     cartIsEmpty,
     selectedAddress,
-    // Matches /api/checkout's own default when the field is omitted — no UI
-    // selector for this exists yet, so the client mirrors the server default.
-    outOfStockPolicy: "skip_items",
+    outOfStockPolicy,
     router,
     showToast,
     setStep,
@@ -997,10 +1029,7 @@ export function CheckoutRouteClient({
         razorpay_payment_id: rzpResponse.razorpay_payment_id,
         razorpay_signature: rzpResponse.razorpay_signature,
         addressId: selectedAddress.id,
-        // Matches /api/payment/verify's own default when the field is
-        // omitted — no UI selector for this exists yet, so the client
-        // mirrors the server default (this path's historical-only behavior).
-        outOfStockPolicy: "cancel_order",
+        outOfStockPolicy,
       });
       if (!verifyRes.ok) {
         const err = await verifyRes.json().catch(() => ({}));
@@ -1021,7 +1050,7 @@ export function CheckoutRouteClient({
     } finally {
       setIsProcessingPayment(false);
     }
-  }, [selectedAddress, user, subtotal, router, showToast]);
+  }, [selectedAddress, user, subtotal, router, showToast, outOfStockPolicy]);
 
   const handlePlaceCodOrder = useCallback(async () => {
     if (!selectedAddress) return;
@@ -1032,6 +1061,7 @@ export function CheckoutRouteClient({
       const res = await createCheckoutOrder({
         addressId: selectedAddress.id,
         paymentMethod: "cod",
+        outOfStockPolicy,
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -1052,7 +1082,7 @@ export function CheckoutRouteClient({
     } finally {
       setIsProcessingPayment(false);
     }
-  }, [selectedAddress, router, showToast]);
+  }, [selectedAddress, router, showToast, outOfStockPolicy]);
 
   const handlePlaceCashOrder = useCallback(async () => {
     if (!selectedAddress) return;
@@ -1063,6 +1093,7 @@ export function CheckoutRouteClient({
       const res = await createCheckoutOrder({
         addressId: selectedAddress.id,
         paymentMethod: "cash",
+        outOfStockPolicy,
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -1086,7 +1117,7 @@ export function CheckoutRouteClient({
     } finally {
       setIsProcessingPayment(false);
     }
-  }, [selectedAddress, router, showToast]);
+  }, [selectedAddress, router, showToast, outOfStockPolicy]);
 
   const handleAdminBypass = useCallback(async () => {
     if (!selectedAddress) return;
@@ -1209,7 +1240,7 @@ export function CheckoutRouteClient({
           return (
             <Stack gap="lg">
               {showCoupons && renderCouponSection({ couponCode, setCouponCode, couponError, isCouponLoading, effectiveCoupons, handleApplyCoupon, handleRemoveCoupon })}
-              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showRazorpay, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
+              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showRazorpay, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
             </Stack>
           );
         }}

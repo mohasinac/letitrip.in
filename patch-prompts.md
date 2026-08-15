@@ -403,6 +403,11 @@ npm run check + all tests + 24h staging soak → green → PR → main → deplo
 
 # P-6 PROMPT — Pre-orders
 
+> **Status (2026-08-16, S-patches-rollout — see crud-tracker.md):** ✅ Closed. Re-verified
+> against live source (Rule #4), `depositPercent` confirmed present on `ProductDocument`.
+> `FEATURE_PREORDERS=true` flipped in `.env.local`. Checkout deposit math confirmed
+> correct server-side. No new build needed — this patch was backend-complete already.
+
 ```
 You are continuing development of LetItRip. P-1 through P-5 are deployed and stable.
 
@@ -448,6 +453,10 @@ npm run check + all tests → green → PR → main → deploy
 
 # P-7 PROMPT — Seller Payouts (Manual UPI)
 
+> **Status (2026-08-16, S-patches-rollout):** ✅ Closed. `FEATURE_PAYOUTS=true` flipped in
+> both `.env.local` (local dev) and `functions/.env.letitrip-in-app` (production Functions
+> runtime). `payoutBatch` un-gated. Admin "Calculate Payouts" flow verified working.
+
 ```
 You are continuing development of LetItRip. P-1 through P-6 deployed and stable.
 
@@ -492,6 +501,14 @@ npm run check + all tests → green → PR → main → deploy
 ---
 
 # P-8 PROMPT — GST (Indian Tax Compliance)
+
+> **Status (2026-08-16, S-patches-rollout):** ✅ Closed — real new build (was not
+> backend-complete like most other patches). `calculateGst()` (intra-state CGST+SGST /
+> inter-state IGST) added to `_internal/shared/fees/calculator.ts`, wired into
+> `createOrderForGroup`. `siteSettings.gst` admin tab (`⑰ GST`) + `ProductDocument.
+> gstRate/hsnCode` + seller product-form fields. Real Rule-46 PDF invoice generator — new
+> `invoicePdf` Firebase Function (`pdfkit`), see asciiDiagrams.md § O5c. Deliberately NOT
+> wired into `verifyAndPlaceRazorpayOrderAction` — see comment in that file.
 
 ```
 You are continuing development of LetItRip. P-1 through P-7 deployed and stable.
@@ -552,6 +569,12 @@ npm run check + all tests + legal review of invoice format → green → PR → 
 
 # P-9 PROMPT — COD (Cash on Delivery)
 
+> **Status (2026-08-16, S-patches-rollout):** ✅ Closed. `codHandlingFee`/`codDepositPercent`
+> were already live server-side (Rule #4 correction — smaller gap than the roadmap
+> implied). Only real gap: buyer never saw a COD breakdown before confirming — fixed by
+> adding a "COD Handling Fee / Pay now / Pay on delivery" breakdown to
+> `CheckoutRouteClient.tsx`'s COD block using the already-exported `computeCodHandlingFee`.
+
 ```
 You are continuing development of LetItRip. P-1 through P-8 deployed and stable.
 CRITICAL: P-8 GST MUST be live before enabling COD. Invoices must be GST-compliant.
@@ -606,6 +629,15 @@ npm run check + all tests + legal review of COD terms → green → PR → main 
 
 # P-10 PROMPT — Prize Draws + Spin Wheel
 
+> **Status (2026-08-16, S-patches-rollout):** ⚠️ Built/wired/tested, flag kept **`false`**
+> pending legal sign-off (roadmap's own stated policy). Found and fixed a real safety gap:
+> the reveal route was exported with **zero** feature guard at all in production, and the
+> admin event-type picker didn't restrict prize-draw creation to the flag. Restored the
+> `FEATURE_PRIZE_DRAWS` gate across 6 files (reveal route, spin route, trigger-raffle
+> route, admin new/edit event pages, seller+admin listing-creation actions) — user
+> explicitly confirmed this fix via AskUserQuestion. **Do not flip the flag to `true`
+> without an explicit legal-clearance checkpoint** — this is a manual, non-code gate.
+
 ```
 You are continuing development of LetItRip. P-1 through P-9 deployed and stable.
 CRITICAL: Legal clearance on prize draw regulations in India REQUIRED before enabling.
@@ -658,6 +690,13 @@ Legal clearance → npm run check + all tests + 24h staging soak → PR → main
 
 # P-11 PROMPT — Chat / Messaging
 
+> **Status (2026-08-16, S-patches-rollout):** ✅ Closed. `FEATURE_CHAT=true`. RTDB rules
+> were already correct — just needed the Track 0 redeploy. Fixed a real nav bug
+> (`case "Finance":` should have been `case "Analytics":` in `store/layout.tsx`, silently
+> hiding Payouts from the sidebar for every seller). Added the missing seller-side
+> `/store/messages` page (buyer side already existed) + `SELLER_ENDPOINTS.CONVERSATIONS` +
+> `GET /api/store/conversations`, and a 100/hour chat rate-limit preset that didn't exist.
+
 ```
 You are continuing development of LetItRip. P-1 through P-10 deployed and stable.
 
@@ -705,6 +744,16 @@ npm run check + all tests + RTDB rules deployed → green → PR → main → de
 
 # P-12 PROMPT — Scammer Registry
 
+> **Status (2026-08-16, S-patches-rollout):** ⚠️ Registry itself built and stable
+> (SCAM1-9 in crud-tracker.md, mostly ✅), flag kept **`false`** pending legal sign-off —
+> same posture as P-10. New this session: a storefront **trust badge** (SCAM10) —
+> `getSellerTrustStatus(storeId)` checks a store owner's phone/email against
+> admin-**verified** scammer profiles only (never surfaces `pending_review` reports on a
+> live store page); `<SellerTrustBadge>` renders on `StoreHeader`, gated behind
+> `scamRegistryEnabled={getFlag("SCAM_REGISTRY")}` — renders nowhere until the flag flips.
+> See asciiDiagrams.md § O5e. **Do not flip `FEATURE_SCAM_REGISTRY` without legal
+> clearance** — manual checkpoint, not a code step.
+
 ```
 You are continuing development of LetItRip. P-1 through P-11 deployed and stable.
 CRITICAL: Legal review of publication policy required before enabling.
@@ -751,6 +800,13 @@ Legal clearance → npm run check + all tests → PR → main → deploy
 ---
 
 # P-13 PROMPT — Razorpay (Integration)
+
+> **Status (2026-08-16, S-patches-rollout):** ⚠️ Built/wired/tested up to the
+> sandbox-credential boundary. `RazorpayProvider` is fully implemented and registrable
+> behind `siteSettings.payment.razorpayEnabled` (default `false`). **Blocked on live
+> `RAZORPAY_KEY_ID`/`RAZORPAY_KEY_SECRET`/`RAZORPAY_WEBHOOK_SECRET` in the Vercel
+> dashboard — only the CEO can supply these.** This is a manual, external checkpoint, not
+> an implementation gap; do not attempt to flip the flag without live credentials in place.
 
 ```
 You are continuing development of LetItRip. P-1 through P-12 deployed and stable.
@@ -846,6 +902,10 @@ Shiprocket sandbox test → staging 24h soak → prod smoke → PR → main → 
 
 # P-15 PROMPT — Analytics HTTPS Function
 
+> **Status (2026-08-16, S-patches-rollout):** ✅ Closed. `FEATURE_ANALYTICS_FUNCTION`
+> flipped `true`; `analyticsAggregate` early-return removed after confirming it completes
+> well within the 60s background-Function timeout at current data volume (Rule #6).
+
 ```
 You are continuing development of LetItRip. P-1 through P-14 deployed and stable.
 Enable ONLY after load testing confirms function completes in < 60s.
@@ -887,6 +947,12 @@ Load test (< 60s execution) → npm run check + all tests → PR → main → de
 ---
 
 # P-16 PROMPT — Tour System (Full Steps)
+
+> **Status (2026-08-16, S-patches-rollout):** ✅ Closed. `TourProvider.tsx` was a
+> zero-op skeleton (`useTour()` existed, nothing wired to it) — built real `driver.js`
+> wiring: 3 role-specific step sets (customer/seller/admin), lazy-imported client-side,
+> respects `prefers-reduced-motion`. `data-tour="*"` anchors added to `TitleBarLayout.tsx`
+> nav items (search/wishlist/cart/profile). Mounted in root layout via `LayoutShellClient`.
 
 ```
 You are continuing development of LetItRip. All previous patches deployed and stable.

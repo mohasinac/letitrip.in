@@ -3,13 +3,39 @@ import { Row, Stack, normalizeError } from "@mohasinac/appkit";
 import { useState, use } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
-import { useToast, useOrder, ROUTES, Div, Button, Label, Textarea, Form } from "@mohasinac/appkit/client";
+import {
+  useToast,
+  useOrder,
+  ROUTES,
+  Div,
+  Button,
+  Checkbox,
+  FieldTextarea,
+  Form,
+  ACTIONS,
+} from "@mohasinac/appkit/client";
 import { cancelOrderAction } from "@/actions/order.actions";
 import { Heading, Span, Text } from "@mohasinac/appkit";
 
 const __P = {
   p5: "p-[var(--appkit-space-5)]",
 } as const;
+
+// Mirrors ORDER_CANCELLABLE_STATUSES (appkit/src/_internal/shared/features/orders/config.ts),
+// the value cancelOrderForUser/cancelOrderItemsForUser actually enforce server-side.
+const CANCELLABLE_STATUSES = ["pending", "confirmed"];
+
+function toggleItemSelection(
+  current: Set<string> | null,
+  allIds: string[],
+  productId: string,
+  checked: boolean,
+): Set<string> {
+  const next = new Set(current ?? allIds);
+  if (checked) next.add(productId);
+  else next.delete(productId);
+  return next;
+}
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -18,17 +44,31 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const { order, isLoading } = useOrder(id);
   const [reason, setReason] = useState("");
   const [isPending, setIsPending] = useState(false);
+  const [selectedItemIds, setSelectedItemIds] = useState<Set<string> | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (!reason.trim()) {
       showToast("Please provide a reason for cancellation.", "error");
       return;
     }
+    const activeItems = (order?.items ?? []).filter((i) => i.cancelledQuantity == null);
+    const selected = selectedItemIds ?? new Set(activeItems.map((i) => i.productId));
+    if (selected.size === 0) {
+      showToast("Select at least one item to cancel.", "error");
+      return;
+    }
+    const isWholeOrder = selected.size === activeItems.length;
     try {
       setIsPending(true);
-      await cancelOrderAction(id, reason.trim());
-      showToast("Order cancelled successfully.", "success");
+      await cancelOrderAction(
+        id,
+        reason.trim(),
+        isWholeOrder ? undefined : [...selected],
+      );
+      showToast(
+        isWholeOrder ? "Order cancelled successfully." : "Selected items cancelled successfully.",
+        "success",
+      );
       router.push(String(ROUTES.USER.ORDER_DETAIL(id)));
     } catch (err) {
       void normalizeError(err);
@@ -55,7 +95,8 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
     );
   }
 
-  const cancellable = ["pending", "processing"].includes(order.orderStatus);
+  const cancellable = CANCELLABLE_STATUSES.includes(order.orderStatus);
+  const activeItems = order.items.filter((i) => i.cancelledQuantity == null);
 
   return (
     <Stack className="w-full max-w-lg" gap="lg">
@@ -78,31 +119,53 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
         </Stack>
       ) : (
         <Form
-          onSubmit={handleSubmit} rounded="xl" padding="lg" surface="default" border="default" spacing="md">
-          <Stack gap="xs">
-            <Label
-              htmlFor="reason"
-              className="block" color="primary" size="sm" weight="medium"
-            >
-              Reason for cancellation <Text as="span" className="text-error">*</Text>
-            </Label>
-            <Textarea
-              id="reason"
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              rows={4}
-              maxLength={500}
-              placeholder="Tell us why you are cancelling this order…"
-              className="w-full rounded-lg border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-3)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-            />
-            <Text size="xs" color="faint" align="end">{reason.length}/500</Text>
-          </Stack>
+          onSubmit={(e) => e.preventDefault()} rounded="xl" padding="lg" surface="default" border="default" spacing="md">
+          {activeItems.length > 1 && (
+            <Stack gap="xs">
+              <Text size="sm" weight="medium" color="primary">Items to cancel</Text>
+              <Text size="xs" color="muted">
+                Leave all items checked to cancel the whole order, or uncheck items you want to keep.
+              </Text>
+              <Stack gap="xs" className="mt-1">
+                {activeItems.map((item) => {
+                  const checked = selectedItemIds ? selectedItemIds.has(item.productId) : true;
+                  const activeIds = activeItems.map((i) => i.productId);
+                  return (
+                    <Checkbox
+                      key={item.productId}
+                      label={`${item.title} (x${item.quantity})`}
+                      checked={checked}
+                      onChange={(e) =>
+                        setSelectedItemIds(
+                          toggleItemSelection(selectedItemIds, activeIds, item.productId, e.target.checked),
+                        )
+                      }
+                    />
+                  );
+                })}
+              </Stack>
+            </Stack>
+          )}
 
-          <Row gap="3" >
-            <Button rounded="xl"
-              type="submit"
-              variant="danger"
+          <FieldTextarea
+            name="reason"
+            label="Reason for cancellation"
+            required
+            value={reason}
+            onChange={setReason}
+            rows={4}
+            maxLength={500}
+            showCharCount
+            placeholder="Tell us why you are cancelling this order…"
+          />
+
+          <Row gap="3">
+            <Button
+              action={ACTIONS.USER["cancel-order-items"]}
+              type="button"
               disabled={isPending}
+              onClick={handleSubmit}
+              rounded="xl"
               paddingX="md" paddingY="sm" textSize="sm" weight="semibold"
               className="disabled:opacity-60 transition-colors"
             >

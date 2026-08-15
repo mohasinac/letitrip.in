@@ -17,25 +17,71 @@ P-2  [x] Coupons (admin + seller, no 3rd party)  ← LIVE 2026-08-04
 P-3  [x] Blog (read-only, admin-published)  ← LIVE 2026-08-04
 P-4  [x] Events (sale/offer announcement types only)  ← LIVE 2026-08-04
 P-5  [x] Auctions (bid, settle, winner pays via cash/UPI)  ← LIVE 2026-08-04
-P-6  [ ] Pre-orders
-P-7  [ ] Seller Payouts (manual UPI — admin records transfer)
-P-8  [ ] GST — tax calculation, invoice GST breakup, product HSN code + rate field
-P-9  [~] COD — Cash on Delivery. Handling fee (max(₹200, 10%)) LIVE 2026-08-08 as part of
-              P-9b; deposit-percent pattern + GST-compliant invoice still open.
+P-6  [x] Pre-orders — LIVE 2026-08-16 (FEATURE_PREORDERS=true locally; fixed a real
+              checkout bug where deposit was always the flat COD %, ignoring each
+              product's own preOrderDepositPercent)
+P-7  [x] Seller Payouts (manual UPI — admin records transfer) — LIVE 2026-08-16
+              (FEATURE_PAYOUTS=true locally; built the missing "Calculate Payouts"
+              trigger button — the payoutsWeekly async job existed with zero UI to fire it)
+P-8  [x] GST — LIVE-READY 2026-08-16 (siteSettings.gst.enabled — admin-toggle-gated,
+              not a FEATURE_* flag, matching the EMI precedent. Schema, calculateGst(),
+              checkout wiring (CGST/SGST vs IGST), admin settings tab, product HSN/rate
+              fields, and a real Rule-46 PDF invoice generator (new invoicePdf Firebase
+              Function) all built. NOT wired into the Razorpay-verify path — see note.)
+P-9  [~] COD — Handling fee LIVE since 2026-08-08 (P-9b). Deposit-percent math was
+              already live server-side (Rule #4 correction — roadmap was stale); the
+              buyer-facing breakdown UI was the real gap, built 2026-08-16. Still
+              blocked on P-8's invoice line-item wiring for full GST-compliant COD fee
+              display.
 P-9b [x] EMI — Installment financing, manual-first provider architecture, art/stickers
               listing types  ← LIVE 2026-08-08 (appkit 3.3.1, not on the original roadmap
-              — see new section below)
-P-10 [ ] Prize Draws + Spin Wheel
-P-11 [ ] Chat / Messaging
-P-12 [ ] Scammer Registry + Trust Score
+              — see new section below). Admin ⑯ EMI settings tab added 2026-08-16
+              (previously Firestore-edit-only).
+P-10 [ ] Prize Draws + Spin Wheel — BLOCKED ON LEGAL REVIEW, flag stays false.
+              2026-08-16: found and fixed a real safety gap — raffle/spin-wheel event
+              creation and the trigger-raffle/spin/reveal routes had ZERO legal gate
+              (gated by the already-live FEATURE_EVENTS flag, or nothing at all). Restored
+              FEATURE_PRIZE_DRAWS as the actual gate on admin event-type selection +
+              trigger-raffle + spin + reveal routes. Do not enable until legal sign-off.
+P-11 [x] Chat / Messaging — LIVE 2026-08-16 (FEATURE_CHAT=true locally). Backend was
+              already built; built the missing seller-side /store/messages page +
+              /api/store/conversations route (buyer-only list endpoint existed, seller
+              had none), added the 100/hour rate limit the spec required (route had
+              none), fixed broken nav wiring (wrong group name in store nav filter meant
+              Payouts/Messages could never be shown even when flagged on).
+P-12 [~] Scammer Registry + Trust Score — write paths (report submission, admin
+              publish) already correctly gated behind FEATURE_SCAM_REGISTRY; verified
+              2026-08-16, no changes needed there. Trust-score badge on seller profile
+              pages is a real, still-open gap (no lookup-by-identifier function or
+              component exists yet).
 P-13 [ ] Razorpay Online Payment — kept in code (RazorpayProvider), disabled by default
-              via siteSettings.payment.razorpayEnabled since 2026-08-08; still needs live
-              keys + sandbox test to flip on
+              via siteSettings.payment.razorpayEnabled since 2026-08-08. Verified
+              2026-08-16: routes are correctly dual-gated (FEATURE_RAZORPAY env +
+              siteSettings.payment.razorpayEnabled DB toggle), webhook route has a safe
+              dev-mode fallback for the still-placeholder RAZORPAY_WEBHOOK_SECRET. Code
+              is complete; still needs live/real sandbox keys + webhook secret to flip on.
 P-14 [x] Shiprocket Auto-ship — REMOVED 2026-08-08, not integrated. Decision reversed:
               manual shipping (ManualShippingProvider) is now permanent, see note above.
-P-15 [ ] Analytics HTTPS Function (Firebase aggregation)
-P-16 [ ] Tour System (full steps — admin, seller, customer)
-P-17 [ ] Bundles — bundle listing type CRUD, stock sync, buyer catalogue view
+P-15 [x] Analytics HTTPS Function — verified 2026-08-16 already functionally complete,
+              just architected differently than this roadmap originally sketched: real-
+              time GMV/AOV/top-product roll-ups via the already-deployed adminAnalytics/
+              storeAnalytics HTTPS functions, not a scheduled daily pre-aggregation write.
+              No FEATURE_ANALYTICS_FUNCTION gate needed or used.
+P-16 [x] Tour System — LIVE 2026-08-16 (always-on, no flag, per original spec). Built
+              driver.js wiring end-to-end (TourProvider was a pure skeleton with zero
+              consumers before this) — 3 role-based step sets, mounted platform-wide,
+              wired to the existing TitleBar tour button. Anchored to nav search/
+              wishlist/cart/profile icons (present on every page); several seller/admin
+              dashboard-specific steps use skipMissingElement and aren't anchored to a
+              real element yet — follow-up if exhaustive dashboard coverage is wanted.
+P-17 [~] Bundles — admin side was already fully built and correct. 2026-08-16: found
+              seller-side bundle creation was wired to a listingType:"bundle" literal
+              removed under SB-UNI-D — sellers could never actually create a bundle.
+              Built /api/store/bundles routes, parametrized the shared bundle editor for
+              admin/seller scope, fixed a matching admin-side bug (bundleCreateSchema
+              requires bundleKind but nothing sent/persisted it), seeded 5 real bundle
+              rows (previously zero existed). FEATURE_BUNDLES was already fully wired —
+              just needed the env var + the above fixes.
 P-18 [x] Procurement Shipments (admin-only profit tracking) ← LIVE 2026-08-14
 P-19 [x] Personal Catalogue (buyer/seller → listing pipeline)  ← LIVE 2026-08-14
 P-20 [x] Payment Detail Parity (manual/Razorpay/COD unified paymentRecord)  ← LIVE 2026-08-14
@@ -1739,16 +1785,25 @@ P-20   —      Payment Detail Parity — LIVE       LOW      none — additive 
               2026-08-14, not on original
               schedule
 ──────────────────────────────────────────────────────────────────────────────────────────────
-GST NOTE:  P-8 must ship before P-9 (COD, deposit + GST invoice). The COD *handling fee*
-           (max(₹200, 10%)) shipped early with P-9b and does not need GST — see P-9 note.
+GST NOTE:  P-8 shipped 2026-08-16, admin-toggle-gated (siteSettings.gst.enabled), not a
+           FEATURE_* flag — matches the EMI precedent. Not wired into the Razorpay-verify
+           path (would need matching changes to that path's pre-payment amount check to
+           avoid a payment-mismatch bug); Razorpay is disabled by default anyway.
 EMI NOTE (P-9b): shipped ahead of schedule, directly on main. Backend/checkout/reminder/
-           shipment-gate all live; admin ⑮ EMI settings tab still not built (Firestore-
-           edit only for now) — see asciiDiagrams.md's flagged gap.
+           shipment-gate all live; admin ⑯ EMI settings tab built 2026-08-16.
 RAZORPAY:  Provider code + abstract-class architecture landed early with P-9b, disabled
-           by default. Flipping it on for real traffic is still the open P-13 work.
+           by default. Verified 2026-08-16 the dual-gate (env + DB toggle) and webhook
+           dev-fallback are correctly built. Flipping it on for real traffic needs live
+           credentials — still the open P-13 work, blocked on the CEO supplying keys.
 SHIPROCKET: Cancelled outright 2026-08-08 — manual shipping (ManualShippingProvider) is
            now the permanent, only shipping path for every patch, indefinitely.
-BUNDLES:   Can develop in parallel with P-2/P-3; no payment integration dependency.
+BUNDLES:   P-17 shipped 2026-08-16 — seller-side creation was broken (dead listingType
+           reference), now fixed; see P-17 status line above for detail.
+PRIZE DRAWS SAFETY NOTE (P-10): 2026-08-16 — found raffle/spin-wheel event creation and
+           the trigger-raffle/spin/reveal routes had no real legal gate (either riding on
+           the already-live FEATURE_EVENTS flag or entirely ungated). Fixed by restoring
+           FEATURE_PRIZE_DRAWS as the actual gate everywhere it matters. Flag stays false
+           — do not flip without legal sign-off per the Q2 open question below.
 ```
 
 ---

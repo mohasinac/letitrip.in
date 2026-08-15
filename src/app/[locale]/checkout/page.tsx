@@ -71,6 +71,7 @@ export default async function Page() {
         showCoupons={showCoupons}
         showEmi={showEmi}
         emiSettings={emiSettings}
+        codSettings={settings?.commissions ?? null}
       />
     </Suspense>
   );

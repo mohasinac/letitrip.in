@@ -20,6 +20,9 @@ import {
   pingConversationRtdb,
   MESSAGE_MAX_LENGTH,
   ERROR_MESSAGES,
+  rateLimitByIdentifier,
+  RateLimitPresets,
+  AuthorizationError,
 } from "@mohasinac/appkit";
 import { resolveConversationRole } from "@/lib/conversations/authorise";
 
@@ -32,6 +35,9 @@ const __POST__g = withProviders(
     auth: true,
     schema: sendSchema,
     handler: async ({ user, body, params }) => {
+      const rl = await rateLimitByIdentifier(`chat:send:${user!.uid}`, RateLimitPresets.CHAT);
+      if (!rl.success) throw new AuthorizationError("Too many messages. Please slow down.");
+
       const id = (params as { id: string }).id;
       const conv = await getConversation(id);
       if (!conv)

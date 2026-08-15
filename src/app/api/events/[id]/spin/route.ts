@@ -29,4 +29,4 @@ const __POST__g = withProviders(
   }),
 );
 
-export const POST = withFeatureGuard("EVENTS", __POST__g);
+export const POST = withFeatureGuard("PRIZE_DRAWS", __POST__g);

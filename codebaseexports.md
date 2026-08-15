@@ -654,6 +654,7 @@
 | wishlist | WishlistCapWatcher | Watcher | Wishlist capacity monitor |
 | scams | ScamRegistryView, ScamProfileView | View | Scam registry |
 | scams | ScamAwarenessModal | Modal | Scam awareness warning |
+| scams | SellerTrustBadge | Badge | Verified-scammer lookup badge on store pages (P-12); reads `getSellerTrustStatus()`; named to avoid colliding with the unrelated homepage `TrustBadge` type |
 | contact | ContactForm, ContactInfoSidebar, ContactPageView | Component | Contact page |
 | whatsapp-bot | WhatsAppChatButton, SellerWhatsAppSettingsView | Component | WhatsApp integration |
 | loyalty | CoinsBadge, CoinsDisplay | Display | Loyalty coins display |
@@ -1204,6 +1205,8 @@
 | Route | Methods | Purpose |
 |-------|---------|---------|
 | `/api/store/products` | GET, POST | List/create store products |
+| `/api/store/bundles` | GET, POST | P-17 fix — seller-scoped bundle create/list, reuses `bundleCreateSchema` verbatim from the admin route; the seller UI previously called a dead `listingType:"bundle"` product endpoint that could never succeed |
+| `/api/store/bundles/[id]` | GET, PUT, DELETE | P-17 fix — seller-scoped bundle CRUD, `storeId`-owner-checked |
 | `/api/store/orders` | GET | List store orders |
 | `/api/store/orders/[id]` | GET, PUT, PATCH | Order management; PATCH `{ markCodCollected, codCollectionNote }` — Feature C, writes `paymentRecord` (method:"cod"), 400 if `paymentMethod !== "cod"` |
 | `/api/store/orders/[id]/ship` | POST | Ship order |
@@ -1221,6 +1224,7 @@
 | `/api/store/addresses` | GET, POST | Store addresses |
 | `/api/store/addresses/[id]` | GET, PUT, DELETE | Address CRUD |
 | `/api/store/slug/check` | GET | Slug availability |
+| `/api/store/conversations` | GET | P-11 fix — seller-scoped conversation list; `useConversations` hook parametrized with `{endpoint, unreadField}` to reuse the same hook on the new `/store/messages` page as the existing buyer page |
 | `/api/store/products/[id]/codes` | GET | 501 — digital-code reveal not implemented (was mistakenly a barcode-scan duplicate, now honest) |
 | `/api/store/templates` | GET, POST | Product templates |
 | `/api/store/templates/[id]` | GET, PUT, DELETE | Template CRUD |
@@ -1235,7 +1239,7 @@
 | `/api/user/profile` | GET, PUT | User profile |
 | `/api/user/orders` | GET | User orders |
 | `/api/user/orders/[id]` | GET | Order details |
-| `/api/user/orders/[id]/cancel` | POST | Cancel order |
+| `/api/user/orders/[id]/cancel` | POST | Cancel order (full) or, with optional `itemIds: string[]` in the body, cancel selected line items only — marks `refundPending: true`, no auto-refund, falls through to full-order cancel when every item ends up selected |
 | `/api/user/addresses` | GET, POST | User addresses |
 | `/api/user/addresses/[id]` | GET, PUT, DELETE | Address CRUD |
 | `/api/user/wishlist` | GET, POST | Wishlist |
@@ -1521,7 +1525,7 @@ All pages are thin shims delegating to appkit `_internal/server/features/*/` hel
 | Domain | Count | Examples |
 |--------|-------|---------|
 | Admin | ~104 | /admin/products, /admin/orders, /admin/users, /admin/categories, /admin/blog, /admin/reviews, /admin/coupons, /admin/carousel, /admin/sections, /admin/events, /admin/payouts, /admin/team, /admin/support, /admin/scammers, /admin/art, /admin/stickers, /admin/addresses, /admin/shipments (+ new/[id]/edit/[id]/lots/[lotId]/items/projections — Feature A), /admin/catalogue-approvals (Feature B) |
-| Store | ~75 | /store/products, /store/orders, /store/coupons, /store/analytics, /store/payouts, /store/reviews, /store/templates, /store/features, /store/shipping, /store/art, /store/stickers, /store/print-center |
+| Store | ~76 | /store/products, /store/orders, /store/coupons, /store/analytics, /store/payouts, /store/reviews, /store/templates, /store/features, /store/shipping, /store/art, /store/stickers, /store/print-center, /store/messages (P-11 fix), /store/bundles/new + [id]/edit (P-17 fix, was wired to a dead endpoint) |
 | User | ~32 | /user/orders, /user/profile, /user/wishlist, /user/addresses, /user/history, /user/conversations, /user/notifications, /user/catalogue (+ new/[id]/edit — Feature B) |
 | Public | ~107 | /products/[id], /categories, /blog, /events, /auctions, /stores, /about, /contact, /faqs, /seller, /cart, /checkout, /profile/[userId]/[tab] (Feature B public catalogue tab) |
 | **Total** | **~318** | |
@@ -1724,7 +1728,7 @@ All functions deploy to region `asia-south1`. HTTPS functions require `LETITRIP_
 | onCatalogueSubmittedForApproval | documentUpdated `catalogueItems/{itemId}` | Feature B — notify admins when `listingStatus` transitions to `pending_admin_approval` |
 | onJobCreated | documentCreated `jobs/{jobId}` (300s timeout, 512MiB) | Async job primitive (2026-08-15) — dispatches by `job.jobType` through `JOB_RUNNERS`, pings `bulk_events/{jobId}` RTDB on completion. The single Function that does all heavy async admin work Vercel routes can't (payout batches, ban cascades) — see `enqueueJob()` below. |
 
-### HTTPS Callables (7 functions, server-to-server)
+### HTTPS Callables (8 functions, server-to-server)
 
 | Function | Memory | Purpose |
 |----------|--------|---------|
@@ -1734,7 +1738,8 @@ All functions deploy to region `asia-south1`. HTTPS functions require `LETITRIP_
 | listingProcessor | 256 MiB | Sieve query processor (auctions / pre-orders / prize-draws) |
 | triggerEventRaffle | 256 MiB | Admin-triggered raffle draw (crypto.randomInt) |
 | assignSpinPrize | 256 MiB | Weighted random spin-wheel + coupon issuance |
-| gateway | 512 MiB | Multiplexed endpoint dispatching on `input.action` to all 6 above |
+| invoicePdf | 256 MiB | P-8 — Rule-46-compliant GST invoice PDF generator (`pdfkit`); called from `/api/user/orders/[id]/invoice` over HTTPS with `x-internal-secret`, imports repositories via `@mohasinac/appkit/jobs` (not `/server`) to avoid the OG-rendering bundling trap |
+| gateway | 512 MiB | Multiplexed endpoint dispatching on `input.action` to all 7 above |
 
 ---
 

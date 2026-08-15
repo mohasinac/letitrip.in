@@ -3356,15 +3356,12 @@ SideDrawer (3+ fields → SideDrawer rule):
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-> ⚠️ **Gap (2026-08-08):** `siteSettings.emi` (enabled/minOrderValueInPaise/tenureOptions/
-> tokenPercent/billingDay/surchargePercentPerMonth/surchargeSellerSharePercent —
-> `appkit/src/features/admin/schemas/firestore.ts`) is seeded with defaults and read by
-> checkout + the reminder job, but has **no admin editor tab yet** — there is no `⑮ EMI`
-> group in `AdminSiteSettingsView.tsx` (highest existing group is `⑭ Notifications`).
-> Today the only way to change these values is a direct Firestore edit. Track as a
-> follow-up: add the TAB ⑮ EMI group mocked up in the original plan
-> (`if-total-sum-from-reactive-quilt.md` Phase 3) before EMI can be tuned without
-> redeploying seed data.
+> ✅ **Closed (2026-08-16, S-patches-rollout):** `siteSettings.emi` now has an admin editor
+> — `⑯ EMI` tab in `AdminSiteSettingsView.tsx` (Toggle for `enabled`, number inputs for
+> `minOrderValueInPaise`/`tokenPercent`/`billingDay`/`surchargePercentPerMonth`/
+> `surchargeSellerSharePercent`, comma-separated input parsed to `tenureOptions: number[]`
+> on save), following the same `useSave("EMI", …)` mutation pattern as the `⑮ Procurement`
+> tab. `⑰ GST` (P-8) added alongside it the same session — see § P-8 GST below.
 
 ---
 
@@ -4025,6 +4022,109 @@ turn it on). Closed by wiring `emiEnabled` through `PATCH /api/store/payout-sett
 discriminated-union Zod schema, written via `storeRepository.updateStore`) and adding
 the Toggle shown in [Store > Payout Settings](#store--payout-settings--c7--2026-05-10)
 above (`SellerPayoutSettingsView.tsx`, Preferences step). Published as appkit 3.3.1.
+
+---
+
+### O5c — P-8 GST sequence (2026-08-16, S-patches-rollout)
+
+> Schema: `ProductDocument.gstRate?: 0|5|12|18|28`, `hsnCode?`; `OrderDocument.taxableAmount/
+> gstAmount/cgst/sgst/igst` (paise); `siteSettings.gst: {enabled, gstin, legalName, address}`
+> (`⑰ GST` admin tab). Pure math in `_internal/shared/fees/calculator.ts::calculateGst()`
+> — intra-state → cgst+sgst (igst=0); inter-state → igst (cgst=sgst=0).
+
+```
+CHECKOUT (createOrderForGroup)              ORDER DOC                 INVOICE (on-demand)
+      │                                           │                          │
+      │ resolveStoreState(storeId) ── addressesRepository.listByOwner("store", storeId)
+      │ buyerState = shipping address state       │                          │
+      │                                           │                          │
+      │ intraState = buyerState === storeState    │                          │
+      │ calculateGst(product.gstRate,              │                         │
+      │   intraState, taxableAmountPaise) ────────>│ taxableAmount/gstAmount/│
+      │                                           │  cgst/sgst/igst written │
+      │                                           │  alongside orderTotal   │
+      │                                           │                          │
+      │  (verifyAndPlaceRazorpayOrderAction deliberately NOT wired to GST — │
+      │   left as-is with an explanatory comment; Razorpay capture already  │
+      │   happens against the pre-GST total server-side, see actions.ts)    │
+      │                                           │                          │
+      │                                           │  GET /api/user/orders/[id]/invoice
+      │                                           │       │                  │
+      │                                           │       POST invoicePdf ──>│
+      │                                           │       (x-internal-secret,│
+      │                                           │        @mohasinac/appkit/jobs)
+      │                                           │       Rule-46 PDF: GSTIN,│
+      │                                           │       HSN, taxable amt,  │
+      │                                           │       CGST/SGST/IGST     │
+      │                                           │       breakup, COD fee   │
+      │                                           │<── { pdfBase64 } ────────│
+      │                                           │  plaintext fallback only │
+      │                                           │  if the Function URL/    │
+      │                                           │  secret env vars unset   │
+```
+
+---
+
+### O5d — P-17 Bundles: seller-create fix (2026-08-16, S-patches-rollout)
+
+> Bundles are a `categoryType:"bundle"` row on `categories` (SB-UNI-D), never a
+> `ProductDocument.listingType` — that literal was removed. The seller-side create page
+> called `createSellerProductAction({ listingType: "bundle" })`, a value the `ListingType`
+> union no longer contains, so it could never have worked. Admin-side CRUD was already
+> correct; this was seller-only.
+
+```
+BEFORE (broken):  SellerBundlesView ──> createSellerProductAction({listingType:"bundle"})
+                      → 400, "bundle" not a valid ListingType. No route ever backed it.
+
+AFTER (fixed):    /store/bundles/new ──> POST /api/store/bundles (NEW route)
+                      │  validates against bundleCreateSchema — same Zod schema the
+                      │  admin route already uses, imported verbatim
+                      │  categoriesRepository.createWithId(..., {categoryType:"bundle",
+                      │    createdByStoreId: storeId, bundleKind, ...})
+                      └─ bundleKind now actually persisted — was silently dropped even
+                         on the ADMIN path (bundleCreateSchema requires it; neither the
+                         admin editor nor the admin POST route ever sent/wrote it —
+                         a real pre-existing bug found and fixed alongside this).
+```
+
+---
+
+### O5e — P-12 Trust badge on storefront (2026-08-16, S-patches-rollout)
+
+> Only ever reflects admin-**verified** scammer profiles — `pending_review` reports never
+> reach this component, so a live storefront's reputation can't be damaged by an
+> unverified accusation. Gated behind `scamRegistryEnabled` (⇐ `FEATURE_SCAM_REGISTRY`,
+> still `false` pending legal sign-off per SCAM2/SCAM5 — see crud-tracker.md SCAM10).
+
+```
+STORE PAGE (any /stores/[storeSlug]/* tab)
+      │
+      │ layout.tsx: scamRegistryEnabled={getFlag("SCAM_REGISTRY")}
+      │        │
+      │        ▼
+      │ StoreDetailLayoutView ── Promise.all([
+      │   siteSettingsRepository.findById("global"),
+      │   scamRegistryEnabled && storeId
+      │     ? getSellerTrustStatus(storeId)   ← only fires when the flag is on
+      │     : undefined
+      │ ])
+      │        │
+      │        ▼
+      │ getSellerTrustStatus(storeId):
+      │   storeRepository.findById(storeId) → owner = ownerId
+      │   userRepository.findById(ownerId)  → owner.phoneNumber / owner.email
+      │      (PII decrypted transparently by BaseRepository.findById)
+      │   scammerRepository.findByContactField("phones"|"emails", value)
+      │      .filter(s => s.status === "verified")   ← the safety filter
+      │   → { status: "clear" | "flagged", matchedProfileSlugs[] }
+      │        │
+      │        ▼
+      │ <StoreHeader trust={trust}> ── {trust && <SellerTrustBadge trust={trust}/>}
+      │   "clear"   → Badge variant="success"  "✓ Verified Safe"
+      │   "flagged" → Badge variant="danger"   "⚠ Flagged in Scam Registry"
+      │                 → <TextLink href="/scams/[slug]">  (first matched profile)
+```
 
 ---
 

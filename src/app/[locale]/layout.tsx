@@ -11,6 +11,7 @@ import {
   LayoutClient,
   SessionProvider,
   ToastProvider,
+  TourProvider,
   WishlistCapWatcher,
   ZodSetup,
 } from "@mohasinac/appkit/client";
@@ -103,7 +104,9 @@ export default async function Layout({ children, params }: Props) {
             <BottomActionsProvider>
               <DashboardNavProvider>
                 <LayoutClient>
-                  <LayoutShellClient seedPanelEnabled={seedPanelEnabled} siteLogoUrl={siteLogoUrl} siteSettingsTheme={siteSettingsTheme} siteSettingsBackground={siteSettingsBackground} navFeatureFlags={navFeatureFlags}><Suspense>{children}</Suspense></LayoutShellClient>
+                  <TourProvider>
+                    <LayoutShellClient seedPanelEnabled={seedPanelEnabled} siteLogoUrl={siteLogoUrl} siteSettingsTheme={siteSettingsTheme} siteSettingsBackground={siteSettingsBackground} navFeatureFlags={navFeatureFlags}><Suspense>{children}</Suspense></LayoutShellClient>
+                  </TourProvider>
                 </LayoutClient>
               </DashboardNavProvider>
             </BottomActionsProvider>

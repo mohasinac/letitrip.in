@@ -1,27 +1,5 @@
-import { ROUTES } from "@mohasinac/appkit";
-import type { SellerProductDraft } from "@mohasinac/appkit";
-import { createSellerProductAction } from "@/actions/seller.actions";
-import { redirect } from "@/i18n/navigation";
-import { StoreCreateProductShell } from "@/components";
+import { StoreBundleNewClient } from "./store-bundle-new-client";
 
 export default function Page() {
-  async function handleSave(draft: SellerProductDraft) {
-    "use server";
-    // Auto-save: create as draft but do NOT redirect — user is still editing.
-    await createSellerProductAction({ ...draft, listingType: "bundle", status: "draft" });
-  }
-
-  async function handlePublish(draft: SellerProductDraft) {
-    "use server";
-    await createSellerProductAction({ ...draft, listingType: "bundle", status: "published" });
-    redirect(String(ROUTES.STORE.BUNDLES));
-  }
-
-  return (
-    <StoreCreateProductShell
-      listingType="bundle"
-      onSave={handleSave}
-      onPublish={handlePublish}
-    />
-  );
+  return <StoreBundleNewClient />;
 }

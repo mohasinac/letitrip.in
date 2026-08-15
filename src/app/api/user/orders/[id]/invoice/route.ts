@@ -9,9 +9,11 @@ import { ROLES_AUTHENTICATED } from "@/constants";
 /**
  * Invoice PDF endpoint — returns a server-rendered PDF for the order.
  * Heavy PDF generation belongs in a Firebase Function (Hobby 10s ceiling);
- * this route delegates by streaming from the function URL. For unsigned dev
- * environments where the function isn't deployed, we return a plaintext
- * invoice summary so the download flow still works end-to-end.
+ * this route delegates to the `invoicePdf` Function (functions/src/invoice-pdf.ts),
+ * which returns { pdfBase64 } JSON (the shared bindHttps adapter only supports
+ * JSON responses). For unsigned dev environments where the function isn't
+ * deployed / configured, we return a plaintext invoice summary so the
+ * download flow still works end-to-end.
  */
 export const GET = withProviders(
   createRouteHandler({
@@ -26,17 +28,22 @@ export const GET = withProviders(
         return ApiErrors.forbidden("Not your order");
       }
       const fnUrl = process.env.NEXT_PUBLIC_INVOICE_PDF_FUNCTION_URL;
-      if (fnUrl) {
-        const res = await fetch(`${fnUrl}?orderId=${encodeURIComponent(id)}`, {
-          headers: { Accept: "application/pdf" },
+      const secret = process.env.LETITRIP_INTERNAL_SECRET;
+      if (fnUrl && secret) {
+        const res = await fetch(fnUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-internal-secret": secret },
+          body: JSON.stringify({ orderId: id }),
         });
-        return new Response(res.body, {
-          status: res.status,
-          headers: {
-            "Content-Type": "application/pdf",
-            "Content-Disposition": `attachment; filename="invoice-${id}.pdf"`,
-          },
-        });
+        if (res.ok) {
+          const { pdfBase64 } = (await res.json()) as { pdfBase64: string };
+          return new Response(Buffer.from(pdfBase64, "base64"), {
+            headers: {
+              "Content-Type": "application/pdf",
+              "Content-Disposition": `attachment; filename="invoice-${id}.pdf"`,
+            },
+          });
+        }
       }
       const fallback = [
         `Invoice ${id}`,

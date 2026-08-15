@@ -12,6 +12,23 @@
  * throws on any collision without an explicit `overrides` field.
  */
 
+import { defineFunction } from "@mohasinac/appkit/jobs";
 import type { FunctionDefinition } from "@mohasinac/appkit/jobs";
+import { invoicePdfHandler } from "./invoice-pdf";
 
-export const CONSUMER_FUNCTIONS: readonly FunctionDefinition[] = [];
+export const CONSUMER_FUNCTIONS: readonly FunctionDefinition[] = [
+  defineFunction({
+    name: "invoicePdf",
+    description: "P-8 GST — Rule-46-compliant order invoice PDF generator.",
+    trigger: { kind: "https" },
+    handler: invoicePdfHandler,
+    options: {
+      region: "asia-south1",
+      timeoutSeconds: 30,
+      memory: "256MiB",
+      maxInstances: 10,
+      cors: false,
+      secretEnvVar: "LETITRIP_INTERNAL_SECRET",
+    },
+  }),
+] as unknown as readonly FunctionDefinition[];
