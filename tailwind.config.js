@@ -7,6 +7,25 @@
 const { defineTailwindConfig } = require("@mohasinac/appkit/configs");
 
 module.exports = defineTailwindConfig({
+  // `important: true` (2026-08-16): compensates for the same Turbopack CSS
+  // chunk-splitting bug documented at length in globals.css above the manual
+  // `.hidden`/`.block`/`.flex` !important overrides — `next build`'s
+  // production optimizer splits the compiled stylesheet across multiple CSS
+  // chunk files, and Tailwind's `@layer base` (Preflight) vs `@layer
+  // utilities` ordering guarantee only holds *within* a chunk, not across
+  // chunks. Confirmed 2026-08-16: even a plain, already-generated,
+  // already-served utility like `.px-3{padding-inline:var(--appkit-space-3)}`
+  // computed as 0px on a live element because Preflight's `padding: 0` base
+  // reset landed in a chunk that loaded after it. This is not scoped to a
+  // handful of classnames the way the display-toggle fix was — every
+  // spacing/sizing utility that Preflight also resets is at risk — so instead
+  // of hand-enumerating overrides, this makes Tailwind emit `!important` on
+  // every utility it generates (matching what the manual overrides do by
+  // hand), which is immune to chunk load order the same way. Utilities still
+  // cascade normally against each other (equal !important weight, tie-broken
+  // by generation order), only their fight against Preflight/base is
+  // affected.
+  important: true,
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",

@@ -29,6 +29,18 @@
    <html>, also used directly below by `.dark *:focus-visible` etc.). */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Tailwind v4 disables its own automatic content auto-detection once a legacy
+   config is bridged in via `@config` (v3's `content` array above is NOT used
+   for scanning in v4 — @config only bridges theme.extend/plugins/darkMode).
+   Without an explicit positive `@source` here, v4 falls back to nothing, so
+   this file's own utility classes only get generated when literally spelled
+   out via `@source inline(...)` below. This was confirmed 2026-08-16: EVERY
+   bracket-arbitrary-value class in `src/**` (e.g. `min-w-[200px]`,
+   `px-[var(--appkit-space-4)]`) was silently absent from the compiled output
+   — not a Turbopack chunking/cascade issue like the display-toggle bug below,
+   but classes never being generated in the first place. */
+@source "../../src";
+
 /* appkit pre-compiles and ships its OWN Tailwind utilities (dist/tailwind-utilities.css, imported
    via @mohasinac/appkit/styles in layout.tsx) — this build must never scan appkit/src itself, same
    as v3's tailwind.config.js `content` array (above) never included an appkit glob. */
@@ -53,15 +65,73 @@
    cascade/specificity conflicts. This is the direct v4 replacement for the old JS `safelist` array
    (tailwind.config.js) — v4's `@config` compat bridge does not support `safelist` at all.
    Every class below is copied 1:1 from the removed safelist array — do not drop any of them. */
-@source inline("hidden block flex lg:block lg:flex lg:hidden md:block md:flex md:hidden xl:flex xl:hidden xl:block sm:flex sm:hidden sm:block");
-@source inline("sm:grid-cols-2 sm:grid-cols-3 sm:grid-cols-4 md:grid-cols-2 md:grid-cols-3 md:grid-cols-4 lg:grid-cols-2 lg:grid-cols-3 lg:grid-cols-4 lg:grid-cols-5 lg:grid-cols-6 xl:grid-cols-2 xl:grid-cols-3 xl:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-2 2xl:grid-cols-3 2xl:grid-cols-4 2xl:grid-cols-5 2xl:grid-cols-6");
-@source inline("lg:col-span-2 lg:col-span-3 lg:col-span-4 lg:col-span-8 xl:col-span-3 xl:col-span-9");
-@source inline("sm:flex-row md:flex-row lg:flex-row");
+/* Brace-expansion (not a flat enumerated string) is required here, not just for
+   brevity: it's how Tailwind v4's engine recognizes these as variant-scoped
+   forms of the SAME base utility, which matters for generation completeness.
+   Superset-safe: a few extra unused breakpoint combinations beyond the
+   original v3 safelist's exact list cost a handful of bytes of dead CSS,
+   which is a fine trade for guaranteed generation. */
+@source inline("{,sm:,md:,lg:,xl:}{hidden,block,flex}");
+@source inline("{sm:,md:,lg:,xl:,2xl:}grid-cols-{2,3,4,5,6}");
+@source inline("{lg:,xl:}col-span-{2,3,4,8,9}");
+@source inline("{sm:,md:,lg:}flex-row");
 @source inline("lg:w-80 lg:w-96 lg:gap-8");
 @source inline("sm:items-center sm:justify-between lg:justify-start");
 @source inline("bg-white bg-zinc-50 bg-zinc-100 bg-zinc-800 text-zinc-900 text-zinc-100 text-zinc-50 dark:text-zinc-100 dark:text-zinc-50 border-zinc-200");
 @source inline("dark:bg-slate-800 dark:bg-slate-900 dark:bg-slate-950 dark:bg-slate-950/90 dark:border-slate-700 dark:border-slate-800 dark:border-slate-800/80");
 @source inline("bg-white/90 border-zinc-200/80");
+
+/* Compensating fix for a Turbopack CSS-chunking bug (Next.js 16.3, found
+   2026-08-16 during the Tailwind v3->v4 migration) — NOT a Tailwind or
+   `@source` authoring issue. `next build`'s production optimizer splits the
+   compiled stylesheet across multiple CSS chunk files, each independently
+   containing whichever subset of utility classes the routes/components in
+   that chunk actually use. Tailwind's cascade-safety model assumes ONE
+   ordered stylesheet (base utilities before their responsive-variant
+   overrides); once split, that guarantee only holds *within* a chunk — the
+   LAST-loaded chunk's rules win overall regardless of position inside any
+   individual file. Concretely: some chunk re-declares a bare `.flex{}` with
+   no accompanying `.lg\:hidden{}`, loads after the chunk that correctly
+   pairs them, and silently wins at desktop widths — e.g. a
+   `className="flex lg:hidden"` mobile-only nav row stayed visible at
+   1440px, rendering simultaneously with its `hidden lg:flex` desktop
+   counterpart. Next's `experimental.cssChunking: false` would force a
+   single file, but is webpack-only — Turbopack rejects it outright. Rather
+   than touch every `hidden`/`flex`/`block` classname across appkit's
+   layout components (dozens of call sites, easy to miss one), `!important`
+   here makes these specific rules win regardless of which chunk they land
+   in or what order chunks load — narrowly scoped to the display toggles
+   that actually broke, not a blanket escape hatch. Ordered mobile-first
+   (sm before md before lg before xl) so within this block itself, the
+   largest matching breakpoint still correctly wins over smaller ones.
+   Deliberately NOT wrapped in `@layer` — per the CSS cascade spec,
+   un-layered `!important` outranks layered `!important` (layers invert
+   priority for the important tier), which is exactly what's needed to
+   unconditionally beat whichever Tailwind `@layer utilities` chunk the
+   competing rule landed in. */
+.hidden { display: none !important; }
+.block { display: block !important; }
+.flex { display: flex !important; }
+@media (min-width: 40rem) {
+  .sm\:hidden { display: none !important; }
+  .sm\:block { display: block !important; }
+  .sm\:flex { display: flex !important; }
+}
+@media (min-width: 48rem) {
+  .md\:hidden { display: none !important; }
+  .md\:block { display: block !important; }
+  .md\:flex { display: flex !important; }
+}
+@media (min-width: 64rem) {
+  .lg\:hidden { display: none !important; }
+  .lg\:block { display: block !important; }
+  .lg\:flex { display: flex !important; }
+}
+@media (min-width: 80rem) {
+  .xl\:hidden { display: none !important; }
+  .xl\:block { display: block !important; }
+  .xl\:flex { display: flex !important; }
+}
 
 @layer base {
   html {
