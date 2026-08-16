@@ -79,9 +79,9 @@ export const GET = withProviders(createApiHandler({
       responseData = {
         ...publicFields,
         contact: {
-          email: settings.contact.email,
-          phone: settings.contact.phone,
-          whatsappNumber: settings.contact.whatsappNumber,
+          email: settings.contact?.email ?? "",
+          phone: settings.contact?.phone ?? "",
+          whatsappNumber: settings.contact?.whatsappNumber ?? "",
         },
         razorpayKeyId: razorpayKeyIdPublic,
       };

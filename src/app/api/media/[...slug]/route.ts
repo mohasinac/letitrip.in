@@ -79,8 +79,23 @@ export async function GET(
     storagePath = slugToStoragePath(slug);
   }
 
+  // Cache-Control: no-store on every not-found/error response below — a
+  // slug can legitimately 404 for a brief window right after upload (the
+  // mediaAssets doc write and the tmp/ file write both need to land before
+  // this route can resolve it) and then become valid moments later once the
+  // form save promotes it. Without an explicit no-store here, Vercel's edge
+  // was observed caching that transient 404 indefinitely (confirmed via
+  // production headers: Age: 2258, X-Vercel-Cache: HIT, well past the
+  // moment the same slug started resolving successfully via a direct
+  // /api/media/<slug> request) — permanently breaking the image even though
+  // the underlying file and Firestore record both existed. 2026-08-16.
+  const NOT_FOUND_HEADERS = { "Cache-Control": "no-store" };
+
   if (!storagePath) {
-    return new NextResponse(ERROR_MESSAGES.MEDIA.NOT_FOUND, { status: 404 });
+    return new NextResponse(ERROR_MESSAGES.MEDIA.NOT_FOUND, {
+      status: 404,
+      headers: NOT_FOUND_HEADERS,
+    });
   }
 
   try {
@@ -88,7 +103,10 @@ export async function GET(
     const file = bucket.file(storagePath);
     const [exists] = await file.exists();
     if (!exists) {
-      return new NextResponse(ERROR_MESSAGES.MEDIA.NOT_FOUND, { status: 404 });
+      return new NextResponse(ERROR_MESSAGES.MEDIA.NOT_FOUND, {
+        status: 404,
+        headers: NOT_FOUND_HEADERS,
+      });
     }
 
     const [meta] = await file.getMetadata();
@@ -104,7 +122,10 @@ export async function GET(
         storagePath,
         size: declaredSize,
       });
-      return new NextResponse(ERROR_MESSAGES.MEDIA.PROXY_FAILED, { status: 413 });
+      return new NextResponse(ERROR_MESSAGES.MEDIA.PROXY_FAILED, {
+        status: 413,
+        headers: NOT_FOUND_HEADERS,
+      });
     }
     const [originalBuffer] = await file.download();
 
@@ -147,6 +168,9 @@ export async function GET(
       storagePath,
       error: err instanceof Error ? err.message : String(err),
     });
-    return new NextResponse(ERROR_MESSAGES.MEDIA.PROXY_FAILED, { status: 500 });
+    return new NextResponse(ERROR_MESSAGES.MEDIA.PROXY_FAILED, {
+      status: 500,
+      headers: NOT_FOUND_HEADERS,
+    });
   }
 }
