@@ -12,13 +12,19 @@ import { AdminCommandPaletteMount } from "./AdminCommandPaletteMount";
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const user = await getServerSessionUser();
+  console.error("[ADMIN-DIAG] user:", user ? JSON.stringify({ uid: user.uid, role: user.role, disabled: user.disabled }) : "null");
   if (!user) redirect(String(ROUTES.AUTH.LOGIN));
-  if (!isAdminUser(user) && !isEmployeeUser(user)) redirect("/unauthorized");
+  const adminCheck = isAdminUser(user);
+  const employeeCheck = isEmployeeUser(user);
+  console.error("[ADMIN-DIAG] isAdminUser:", adminCheck, "isEmployeeUser:", employeeCheck);
+  if (!adminCheck && !employeeCheck) redirect("/unauthorized");
 
   const resolved = await getServerPermissions(user.uid);
+  console.error("[ADMIN-DIAG] resolved:", JSON.stringify(resolved));
 
   // employees must have at least dashboard:view; admin passes unconditionally
   if (!resolved.isAdmin && !resolved.permissions.includes("admin:dashboard:view")) {
+    console.error("[ADMIN-DIAG] REDIRECTING to unauthorized from permission check");
     redirect("/unauthorized");
   }
 
