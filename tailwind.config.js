@@ -1,4 +1,9 @@
 /** @type {import('tailwindcss').Config} */
+// NOTE (Tailwind v4 migration, 2026-08-16): the JS `safelist` array that used to
+// live here moved to src/app/globals.css as a `@source inline("...")` directive
+// — v4's `@config` compat bridge does not support `safelist` at all (silently
+// ignored), so keeping it here would be dead code. See globals.css for the
+// exact same class list, now the single source of truth for that mechanism.
 const { defineTailwindConfig } = require("@mohasinac/appkit/configs");
 
 module.exports = defineTailwindConfig({
@@ -10,91 +15,6 @@ module.exports = defineTailwindConfig({
     "./src/features/**/*.{js,ts,jsx,tsx,mdx}",
     // appkit pre-compiles its own Tailwind utilities into dist/tailwind-utilities.css
     // (imported via @mohasinac/appkit/styles). No host-side scan needed.
-  ],
-  safelist: [
-    // Critical responsive display utilities used by AppLayoutShell (NavbarLayout + TitleBarLayout)
-    // These classes live only in appkit source — the host content scan never sees them, so JIT
-    // won't emit them. Safelisting guarantees the host build always generates them.
-    "hidden",
-    "block",
-    "flex",
-    "lg:block",
-    "lg:flex",
-    "lg:hidden",
-    "md:block",
-    "md:flex",
-    "md:hidden",
-    "xl:flex",
-    "xl:hidden",
-    "xl:block",
-    "sm:flex",
-    "sm:hidden",
-    "sm:block",
-    // Responsive grid column utilities used by appkit listing components
-    // (EventsIndexListing, BlogIndexListing, AuctionsIndexListing, StoresIndexListing,
-    // ReviewsIndexListing, CouponsIndexListing, CategoriesIndexListing, homepage sections).
-    // These live only in appkit source — host JIT must emit them to avoid cascade conflicts.
-    "sm:grid-cols-2",
-    "sm:grid-cols-3",
-    "sm:grid-cols-4",
-    "md:grid-cols-2",
-    "md:grid-cols-3",
-    "md:grid-cols-4",
-    "lg:grid-cols-2",
-    "lg:grid-cols-3",
-    "lg:grid-cols-4",
-    "lg:grid-cols-5",
-    "lg:grid-cols-6",
-    "xl:grid-cols-2",
-    "xl:grid-cols-3",
-    "xl:grid-cols-4",
-    "xl:grid-cols-5",
-    "2xl:grid-cols-2",
-    "2xl:grid-cols-3",
-    "2xl:grid-cols-4",
-    "2xl:grid-cols-5",
-    "2xl:grid-cols-6",
-    // Responsive col-span utilities used by homepage sections and detail layouts
-    "lg:col-span-2",
-    "lg:col-span-3",
-    "lg:col-span-4",
-    "lg:col-span-8",
-    "xl:col-span-3",
-    "xl:col-span-9",
-    // Responsive flex direction used by appkit layout and homepage components
-    "sm:flex-row",
-    "md:flex-row",
-    "lg:flex-row",
-    // Responsive sizing/gap used by appkit CheckoutView (2-col main + sidebar)
-    "lg:w-80",
-    "lg:w-96",
-    "lg:gap-8",
-    // Responsive align/justify used by appkit listing and card components
-    "sm:items-center",
-    "sm:justify-between",
-    "lg:justify-start",
-    // Zinc neutrals (light mode)
-    "bg-white",
-    "bg-zinc-50",
-    "bg-zinc-100",
-    "bg-zinc-800",
-    "text-zinc-900",
-    "text-zinc-100",
-    "text-zinc-50",
-    "dark:text-zinc-100",
-    "dark:text-zinc-50",
-    "border-zinc-200",
-    // Slate neutrals (dark mode — navy-tinted)
-    "dark:bg-slate-800",
-    "dark:bg-slate-900",
-    "dark:bg-slate-950",
-    "dark:bg-slate-950/90",
-    "dark:border-slate-700",
-    "dark:border-slate-800",
-    "dark:border-slate-800/80",
-    // Opacity-modifier variants used by titleBarBg / navbarBg tokens
-    "bg-white/90",
-    "border-zinc-200/80",
   ],
   theme: {
     extend: {

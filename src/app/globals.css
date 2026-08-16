@@ -1,7 +1,11 @@
 /* Consumer Theme Overrides
    Note: appkit styles are imported from layout.tsx as a JS import to avoid PostCSS/Turbopack
    "Unknown AST node type 0" — @import of pre-compiled CSS through the PostCSS pipeline breaks
-   when Turbopack inlines it before tailwindcss/autoprefixer run.
+   when Turbopack inlines it before tailwindcss/autoprefixer run. This file itself is compiled by
+   a STANDALONE `tailwindcss` CLI run (package.json build:css/watch:css), not by Next's own
+   PostCSS/Turbopack pipeline, so that Root Cause is not in play for the @config/@import lines below
+   — only the *output* (src/styles/globals.compiled.css) ever passes through Next/Turbopack, as
+   plain already-compiled CSS with no @tailwind/@import/@theme syntax left in it.
    --appkit-color-primary/secondary are provided by tokens.css (imported via @mohasinac/appkit/styles
    in layout.tsx). ThemeProvider overrides them with inline style.setProperty at runtime. */
 :root {
@@ -11,9 +15,53 @@
   --glow-strong: color-mix(in srgb, var(--appkit-color-primary) 18%, transparent);
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind v4 migration (2026-08-16).
+   @config keeps content/theme.extend/plugins/darkMode from tailwind.config.js working exactly
+   as they did under v3 (defineTailwindConfig factory, unchanged) — see that file for what it
+   contains. `@import "tailwindcss";` (full, incl. preflight) is correct here — unlike appkit's
+   own tailwind-input.css, THIS app is the host that supplies the browser reset. */
+@config "../../tailwind.config.js";
+
+@import "tailwindcss";
+
+/* v3 `darkMode: "class"` equivalent — dark: variant applies when a `.dark` class is present on
+   the element itself or an ancestor (matches ThemeProvider's convention of toggling `.dark` on
+   <html>, also used directly below by `.dark *:focus-visible` etc.). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* appkit pre-compiles and ships its OWN Tailwind utilities (dist/tailwind-utilities.css, imported
+   via @mohasinac/appkit/styles in layout.tsx) — this build must never scan appkit/src itself, same
+   as v3's tailwind.config.js `content` array (above) never included an appkit glob. */
+@source not "../../appkit";
+
+@theme {
+  /* Tailwind v4 changed the bare `ring` utility's default width from 3px to 1px and its default
+     color from blue-500 to currentColor. Confirmed via repo-wide grep (2026-08-16) that no bare
+     `ring` class (without a numeric suffix) is used anywhere in appkit/src or this app's src —
+     this is a zero-cost safety net pinning v3 behavior, not a fix for an observed regression. */
+  --default-ring-width: 3px;
+  --default-ring-color: var(--color-blue-500);
+}
+
+/* Critical responsive display/grid/flex utilities + dark-mode neutral colors used by AppLayoutShell
+   (NavbarLayout + TitleBarLayout), appkit listing components (EventsIndexListing, BlogIndexListing,
+   AuctionsIndexListing, StoresIndexListing, ReviewsIndexListing, CouponsIndexListing,
+   CategoriesIndexListing, homepage sections), and CheckoutView's 2-col layout.
+   These classes live only in appkit SOURCE — this app's own content scan never sees them (excluded
+   above via @source not), so without this directive the JIT engine would never emit them, and this
+   app's own compiled CSS layer would be missing rules appkit's dist output also defines, causing
+   cascade/specificity conflicts. This is the direct v4 replacement for the old JS `safelist` array
+   (tailwind.config.js) — v4's `@config` compat bridge does not support `safelist` at all.
+   Every class below is copied 1:1 from the removed safelist array — do not drop any of them. */
+@source inline("hidden block flex lg:block lg:flex lg:hidden md:block md:flex md:hidden xl:flex xl:hidden xl:block sm:flex sm:hidden sm:block");
+@source inline("sm:grid-cols-2 sm:grid-cols-3 sm:grid-cols-4 md:grid-cols-2 md:grid-cols-3 md:grid-cols-4 lg:grid-cols-2 lg:grid-cols-3 lg:grid-cols-4 lg:grid-cols-5 lg:grid-cols-6 xl:grid-cols-2 xl:grid-cols-3 xl:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-2 2xl:grid-cols-3 2xl:grid-cols-4 2xl:grid-cols-5 2xl:grid-cols-6");
+@source inline("lg:col-span-2 lg:col-span-3 lg:col-span-4 lg:col-span-8 xl:col-span-3 xl:col-span-9");
+@source inline("sm:flex-row md:flex-row lg:flex-row");
+@source inline("lg:w-80 lg:w-96 lg:gap-8");
+@source inline("sm:items-center sm:justify-between lg:justify-start");
+@source inline("bg-white bg-zinc-50 bg-zinc-100 bg-zinc-800 text-zinc-900 text-zinc-100 text-zinc-50 dark:text-zinc-100 dark:text-zinc-50 border-zinc-200");
+@source inline("dark:bg-slate-800 dark:bg-slate-900 dark:bg-slate-950 dark:bg-slate-950/90 dark:border-slate-700 dark:border-slate-800 dark:border-slate-800/80");
+@source inline("bg-white/90 border-zinc-200/80");
 
 @layer base {
   html {

@@ -32,8 +32,10 @@
  *   const { defineTailwindConfig } = require("@mohasinac/appkit/configs");
  *   module.exports = defineTailwindConfig({
  *     content: ["./src/**\/*.{ts,tsx}", "./src/**\/*.{js,jsx}"],
- *     safelist: [ ...existing safelist entries... ],
  *   });
+ *   // Tailwind v4 (2026-08-16 migration): `safelist` is no longer a supported
+ *   // config key — put safelisted classes in the CSS entry point instead via
+ *   // `@source inline("...")`. See src/app/globals.css.
  *
  * eslint.config.mjs:
  *   // ADDITIVE — keep all existing rules; spread the appkit base at the start
@@ -74,8 +76,8 @@ const CHECKS = [
       "const { defineTailwindConfig } = require(\"@mohasinac/appkit/configs\");",
       "module.exports = defineTailwindConfig({",
       "  content: [\"./src/**/*.{ts,tsx,js,jsx}\"],",
-      "  safelist: [ ...existing safelist entries... ],",
       "});",
+      "// Tailwind v4: put safelisted classes in globals.css via @source inline(\"...\")",
     ],
   },
   {
