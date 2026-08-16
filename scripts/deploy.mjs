@@ -208,9 +208,13 @@ if (CHECK_ONLY) {
 
 // ─── DEPLOY ──────────────────────────────────────────────────────────────────
 section("Deploying to Vercel production …");
-console.log("  Running: vercel --prod\n");
+console.log("  Running: vercel --prod --archive=tgz\n");
 
-const deploy = spawnSync("vercel", ["--prod"], {
+// --archive=tgz: the project now exceeds Vercel's 15,000-file direct-upload
+// limit (16,637 files as of this deploy) — Vercel's own error message
+// points at this flag, which bundles the upload into a single tarball
+// instead of individual file requests.
+const deploy = spawnSync("vercel", ["--prod", "--archive=tgz"], {
   cwd: ROOT,
   stdio: "inherit",
   shell: true,
