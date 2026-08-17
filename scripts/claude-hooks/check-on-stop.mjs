@@ -270,6 +270,16 @@ const checks = [
     cwd: ROOT,
   },
   {
+    // Composite-index coverage for server-side job/function/action queries —
+    // the blind spot audit-listing-indices.mjs's own doc comment names
+    // ("server jobs / fan-out NOT scanned"). Catches FAILED_PRECONDITION
+    // crashes in Cloud Functions and server actions before they ship.
+    label: "audit-functions-query-indices",
+    cmd: "node",
+    args: ["scripts/audit-functions-query-indices.mjs"],
+    cwd: ROOT,
+  },
+  {
     // Icon+label nav pattern: align="end"/"center" on a flex-1 label span
     // right after a shrink-0 icon span visually separates them.
     label: "audit-icon-label-split",

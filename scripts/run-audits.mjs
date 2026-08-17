@@ -36,6 +36,7 @@ const AUDITS = [
   { name: "a11y",                            script: "scripts/audit-a11y.mjs" },
   { name: "color-pair-function",             script: "scripts/audit-color-pair-function.mjs" },
   { name: "ssr-in-appkit",                   script: "scripts/audit-ssr-in-appkit.mjs" },
+  { name: "functions-query-indices",         script: "scripts/audit-functions-query-indices.mjs" },
   { name: "og-coverage",                     script: "appkit/scripts/verify-og-coverage.mjs" },
   { name: "hex-tokens",                      script: "scripts/audit-hex-tokens.mjs", supportsFix: true },
   { name: "config-factories",                script: "scripts/audit-config-factories.mjs" },
