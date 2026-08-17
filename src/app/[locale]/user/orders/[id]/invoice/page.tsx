@@ -1,7 +1,7 @@
 "use client";
 import { use } from "react";
 import { Link } from "@/i18n/navigation";
-import { useOrder, ROUTES, Div, Row, Span, Stack, Table, Thead, Tbody, Tr, Th, Td, Text, Heading, Button } from "@mohasinac/appkit/client";
+import { useOrder, ROUTES, Div, Row, Span, Stack, Table, Thead, Tbody, Tr, Th, Td, Text, Heading, Button, StickyToolbar } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
 function paise(n: number, currency = "INR") {
@@ -18,22 +18,19 @@ type OrderData = NonNullable<ReturnType<typeof useOrder>["order"]>;
 
 function renderInvoiceActionBar(id: string) {
   return (
-    <Row border="default" 
-      justify="between"
-      align="center"
-      gap="md"
-      className="print:hidden sticky top-[var(--header-height,0px)] z-[var(--appkit-z-dropdown)] border-b" surface="default" paddingY="y-sm" paddingX="x-lg"
-    >
-      <Link
-        href={String(ROUTES.USER.ORDER_DETAIL(id))}
-        className="text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text-muted)] hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-      >
-        ← Back to order
-      </Link>
-      <Button size="sm" onClick={() => window.print()}>
-        Print / Save as PDF
-      </Button>
-    </Row>
+    <StickyToolbar offset="header" tone="default" border padding="md" z="above-toolbar" className="print:hidden">
+      <Row justify="between" align="center" gap="md">
+        <Link
+          href={String(ROUTES.USER.ORDER_DETAIL(id))}
+          className="text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text-muted)] hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+        >
+          ← Back to order
+        </Link>
+        <Button size="sm" onClick={() => window.print()}>
+          Print / Save as PDF
+        </Button>
+      </Row>
+    </StickyToolbar>
   );
 }
 

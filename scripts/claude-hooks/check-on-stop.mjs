@@ -280,6 +280,16 @@ const checks = [
     cwd: ROOT,
   },
   {
+    // Hand-rolled `sticky ... top-[...]` className outside StickyToolbar.tsx
+    // itself — blocks a regression back to the 34-site duplication this
+    // session consolidated into one primitive (with a mobile-dismiss control
+    // hand-rolled copies never had).
+    label: "audit-raw-sticky-toolbar",
+    cmd: "node",
+    args: ["scripts/audit-raw-sticky-toolbar.mjs"],
+    cwd: ROOT,
+  },
+  {
     // Icon+label nav pattern: align="end"/"center" on a flex-1 label span
     // right after a shrink-0 icon span visually separates them.
     label: "audit-icon-label-split",
