@@ -32,9 +32,18 @@ async function poll() {
   const counts = { READY: 0, CREATING: 0, NEEDS_REPAIR: 0, other: 0 };
   let total = 0;
   for (const group of collectionGroups) {
-    const url = `https://firestore.googleapis.com/v1/projects/${sa.project_id}/databases/(default)/collectionGroups/${group}/indexes?pageSize=300`;
+    // No `pageSize` param — this API version rejects any value other than 0
+    // ("Invalid page size. Only 0 is supported"), and that error response has
+    // no `indexes` key, so `j.indexes || []` was silently reading it as "zero
+    // indexes" on every single poll instead of surfacing the failure. Found
+    // 2026-08-17 debugging a reset that looked "settled" with 35k+ real index
+    // rows still CREATING.
+    const url = `https://firestore.googleapis.com/v1/projects/${sa.project_id}/databases/(default)/collectionGroups/${group}/indexes`;
     const r = await fetch(url, { headers: { Authorization: `Bearer ${access_token}` } });
     const j = await r.json();
+    if (j.error) {
+      throw new Error(`Index poll failed for collection group "${group}": ${j.error.message}`);
+    }
     const indexes = j.indexes || [];
     total += indexes.length;
     for (const i of indexes) {
