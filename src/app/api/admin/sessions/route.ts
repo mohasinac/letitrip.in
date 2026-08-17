@@ -32,11 +32,18 @@ export const GET = withProviders(createRouteHandler({
       min: 1,
       max: 1000,
     });
+    const filters = getStringParam(searchParams, "filters") || "";
+    const sorts = getStringParam(searchParams, "sorts") || "";
+    const isActiveMatch = filters.match(/isActive==(true|false)/);
+    const isActive = isActiveMatch ? isActiveMatch[1] === "true" : undefined;
+    const sortAscending = /(^|,)lastActivity(,|$)/.test(sorts) && !sorts.includes("-lastActivity");
 
     const { sessions: rawSessions, stats } =
       await sessionRepository.findAllForAdmin({
         userId: userId || undefined,
         limit,
+        isActive,
+        sortAscending,
       });
 
     const userIds = new Set<string>();

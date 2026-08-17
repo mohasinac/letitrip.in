@@ -9,10 +9,10 @@ import { getUserBids } from "@/lib/api/user-client";
 import { API_ROUTES } from "@/constants";
 
 const SORT_OPTIONS = [
-  { value: sortBy("bidTime", "DESC"), label: "Newest first" },
-  { value: "bidTime",  label: "Oldest first" },
-  { value: sortBy("amount", "DESC"),  label: "Highest bid" },
-  { value: "amount",   label: "Lowest bid" },
+  { value: sortBy("bidDate", "DESC"), label: "Newest first" },
+  { value: "bidDate",  label: "Oldest first" },
+  { value: sortBy("bidAmount", "DESC"),  label: "Highest bid" },
+  { value: "bidAmount",   label: "Lowest bid" },
 ];
 
 const STATUS_OPTIONS = [
@@ -25,10 +25,10 @@ const STATUS_OPTIONS = [
 
 export default function UserBidsPage() {
   const { user, loading: sessionLoading } = useSession();
-  const table = useUrlTable({ defaults: { pageSize: "20", sort: "-bidTime" } });
+  const table = useUrlTable({ defaults: { pageSize: "20", sort: "-bidDate" } });
   const search = table.get("q") ?? "";
   const status = table.get("status") ?? "";
-  const sort = table.get("sort") ?? "-bidTime";
+  const sort = table.get("sort") ?? "-bidDate";
 
   const { data, isLoading } = useQuery<{ bids: BidDocument[]; total: number }>({
     queryKey: ["user-bids"],
@@ -48,11 +48,11 @@ export default function UserBidsPage() {
       .filter((b: any) => (q ? (b.productId ?? "").toLowerCase().includes(q) : true));
     return [...filtered].sort((a: any, b: any) => {
       switch (sort) {
-        case "bidTime":  return +new Date(a.bidTime) - +new Date(b.bidTime);
-        case "-amount":  return (b.amount ?? 0) - (a.amount ?? 0);
-        case "amount":   return (a.amount ?? 0) - (b.amount ?? 0);
-        case "-bidTime":
-        default:         return +new Date(b.bidTime) - +new Date(a.bidTime);
+        case "bidDate":     return +new Date(a.bidDate) - +new Date(b.bidDate);
+        case "-bidAmount":  return (b.bidAmount ?? 0) - (a.bidAmount ?? 0);
+        case "bidAmount":   return (a.bidAmount ?? 0) - (b.bidAmount ?? 0);
+        case "-bidDate":
+        default:            return +new Date(b.bidDate) - +new Date(a.bidDate);
       }
     });
   }, [data, search, status, sort]);

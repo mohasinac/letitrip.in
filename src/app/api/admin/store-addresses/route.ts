@@ -18,6 +18,7 @@ export const GET = withProviders(
         1000,
       );
       const storeId = url.searchParams.get("storeId");
+      const sorts = url.searchParams.get("sorts") ?? "";
 
       const items = storeId
         ? await addressesRepository.listByOwner("store", storeId)
@@ -36,6 +37,15 @@ export const GET = withProviders(
             ? addr.createdAt.toISOString()
             : (addr.createdAt as unknown as string) ?? null,
       }));
+
+      // Low-cardinality collection (~35 store addresses target) — sort in
+      // memory rather than provisioning Firestore composite indexes for it.
+      if (sorts.includes("city")) {
+        mapped.sort((a, b) => a.city.localeCompare(b.city));
+      } else if (sorts.includes("storeId")) {
+        const desc = sorts.startsWith("-");
+        mapped.sort((a, b) => (desc ? b.storeId.localeCompare(a.storeId) : a.storeId.localeCompare(b.storeId)));
+      }
 
       return successResponse({ items: mapped, total: mapped.length });
     },
