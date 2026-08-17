@@ -292,18 +292,6 @@ export default function Page() {
               enabled={adminBypassEnabled}
               onChange={toggleAdminBypass}
             />
-            <Row align="center" justify="between" gap="md" padding="y-sm">
-              <>
-                <Text size="sm" weight="medium" color="primary">Seed Data</Text>
-                <Text className="mt-0.5" color="muted" size="xs">Load or reset Firestore seed collections</Text>
-              </>
-              <Link
-                href={ROUTES.DEMO.SEED}
-                className="flex-shrink-0 text-[length:var(--appkit-text-xs)] font-medium px-[var(--appkit-space-3)] py-[var(--appkit-space-1-5)] rounded-lg bg-[var(--appkit-color-border-subtle)] text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-primary)] hover:text-white transition-colors"
-              >
-                Open Seed Panel →
-              </Link>
-            </Row>
           </Div>
         </Stack>
       )}

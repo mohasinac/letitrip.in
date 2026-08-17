@@ -103,14 +103,12 @@ const SEARCH_ROUTE_MAP: Record<SearchResourceType, string> = {
 
 export default function LayoutShellClient({
   children,
-  seedPanelEnabled = true,
   siteLogoUrl,
   siteSettingsTheme,
   siteSettingsBackground,
   navFeatureFlags,
 }: {
   children: ReactNode;
-  seedPanelEnabled?: boolean;
   siteLogoUrl?: string;
   /**
    * Live `siteSettings.theme` document. Drives the registry-aware
@@ -199,15 +197,10 @@ export default function LayoutShellClient({
       },
       {
         title: "Support",
-        items: [
-          ...SIDEBAR_SUPPORT_LINKS,
-          ...(seedPanelEnabled && isAdminUser(user as { role?: import("@mohasinac/appkit").UserRole } | undefined)
-            ? [{ href: String(ROUTES.DEMO.SEED), label: "Seed & Docs", icon: "🌱" }]
-            : []),
-        ],
+        items: SIDEBAR_SUPPORT_LINKS,
       },
     ],
-    [navItems, seedPanelEnabled, user],
+    [navItems],
   );
 
   // Locale switcher for sidebar

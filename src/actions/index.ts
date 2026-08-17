@@ -398,10 +398,3 @@ export {
 } from "./refund.actions";
 export type { PartialRefundInput } from "./refund.actions";
 
-// Demo seed (admin only, dev environment)
-export { demoSeedAction } from "./demo-seed.actions";
-export type {
-  SeedCollectionName,
-  SeedOperationResult,
-} from "./demo-seed.types";
-

@@ -10,7 +10,6 @@ export { VerifyEmailPageClient } from "./auth/VerifyEmailPageClient";
 // DevToolbar + isMockRazorpayEnabled + isMockShiprocketEnabled deleted in
 // Track H. Mock provider selection now lives server-side via
 // siteSettings.featureFlags.useMockPayment / useMockShipping.
-export { SeedPanel } from "./dev/SeedPanel";
 export { AfterHeroAdSlot, AfterFeaturedProductsAdSlot, AfterReviewsAdSlot, AfterFAQAdSlot } from "./homepage/AdSlots";
 export { HomepageNewsletterForm } from "./homepage/HomepageNewsletterForm";
 export { FooterNewsletterSlot } from "./layout/FooterNewsletterSlot";

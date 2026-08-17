@@ -54,7 +54,7 @@ export default async function Layout({ children, params }: Props) {
   const reqHeaders = await headers();
   const rawPath = reqHeaders.get("x-invoke-path") ?? reqHeaders.get("x-pathname") ?? "";
   if (rawPath) {
-    const TIER2 = ["/admin", "/store", "/user", "/checkout", "/demo"];
+    const TIER2 = ["/admin", "/store", "/user", "/checkout"];
     const localePath = rawPath.replace(new RegExp(`^/${locale}`), "") || "/";
     if (!TIER2.some((t) => localePath.startsWith(t))) {
       const disabledRoutes = await getDisabledRoutes();
@@ -63,7 +63,6 @@ export default async function Layout({ children, params }: Props) {
       }
     }
   }
-  const seedPanelEnabled = siteSettings?.featureFlags?.seedPanel ?? true;
   // No fallback here (unlike generateMetadata's favicon use above) — TitleBarLayout
   // treats an empty siteLogoUrl as "no admin logo configured" and renders the
   // desktop center nav slot instead. Falling back to "/logo.svg" would always be
@@ -105,7 +104,7 @@ export default async function Layout({ children, params }: Props) {
               <DashboardNavProvider>
                 <LayoutClient>
                   <TourProvider>
-                    <LayoutShellClient seedPanelEnabled={seedPanelEnabled} siteLogoUrl={siteLogoUrl} siteSettingsTheme={siteSettingsTheme} siteSettingsBackground={siteSettingsBackground} navFeatureFlags={navFeatureFlags}><Suspense>{children}</Suspense></LayoutShellClient>
+                    <LayoutShellClient siteLogoUrl={siteLogoUrl} siteSettingsTheme={siteSettingsTheme} siteSettingsBackground={siteSettingsBackground} navFeatureFlags={navFeatureFlags}><Suspense>{children}</Suspense></LayoutShellClient>
                   </TourProvider>
                 </LayoutClient>
               </DashboardNavProvider>
