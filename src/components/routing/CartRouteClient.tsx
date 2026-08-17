@@ -110,10 +110,24 @@ function getProductHref(productId: string, listingType?: ListingType): string {
   return pluginFor(listingType ?? detectListingTypeFromSlug(productId)).detailRoute(productId);
 }
 
+/**
+ * Server-side addItemToCart/mergeGuestCart now always resolve a real
+ * storeName from the store document (appkit cart-actions.ts), so this path
+ * should rarely fire — kept as defense-in-depth for cart items added before
+ * that fix. Humanizes the slug (`store-pokemon-palace` -> `Pokemon Palace`)
+ * instead of showing the raw, uppercased-by-CSS slug to the buyer.
+ */
+function humanizeStoreSlug(slug: string): string {
+  return slug
+    .replace(/^store-/, "")
+    .split("-")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 // Cart groups are keyed by storeId (canonical store identifier = store slug);
-// sellerName on SellerGroup is display-only. The legacy "Marketplace Seller"
-// placeholder is intentionally absent — when storeName is missing we fall back
-// to storeId, which is itself the human-readable store slug (e.g. `store-pokemon-palace`).
+// sellerName on SellerGroup is display-only.
 function groupBySeller(items: CartItemWithListingType[]): SellerGroup[] {
   const map = new Map<string, SellerGroup>();
   for (const item of items) {
@@ -121,7 +135,7 @@ function groupBySeller(items: CartItemWithListingType[]): SellerGroup[] {
     const sid = (meta.storeId as string | undefined) ?? "unknown";
     const sname =
       (item.meta.attributes?.storeName as string | undefined) ||
-      sid;
+      (sid !== "unknown" ? humanizeStoreSlug(sid) : sid);
     // storeId IS the store slug (memory: project_store_identity) — link target.
     const sslug = sid !== "unknown" ? sid : undefined;
     if (!map.has(sid)) {

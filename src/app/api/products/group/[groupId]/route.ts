@@ -22,7 +22,10 @@ interface RouteContext {
 async function _GET(_request: Request, context: RouteContext): Promise<NextResponse> {
   const { groupId } = await context.params;
   if (!groupId) {
-    return NextResponse.json({ success: false, error: "groupId is required" }, { status: 400 });
+    return NextResponse.json(
+      { success: false, error: "groupId is required" },
+      { status: 400, headers: { "Cache-Control": "no-store" } },
+    );
   }
 
   try {
@@ -41,7 +44,7 @@ async function _GET(_request: Request, context: RouteContext): Promise<NextRespo
     logError("products", "GET /api/products/group/[groupId] failed", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch group listings" },
-      { status: 500 },
+      { status: 500, headers: { "Cache-Control": "no-store" } },
     );
   }
 }

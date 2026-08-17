@@ -69,7 +69,17 @@ export default function middleware(request: NextRequest): NextResponse {
 }
 
 export const config = {
+  // `media` must be excluded alongside `api`/`_next`/`_vercel` — `/media/<slug>`
+  // is rewritten to `/api/media/:path*` by next.config.js's rewrites(), but
+  // that rewrite only runs AFTER this middleware. Without the exclusion here,
+  // every `/media/<slug>` request (extensionless by design — the short-ID
+  // scheme intentionally hides the real file extension, so the `.*\\..*`
+  // dotted-path exclusion never catches it either) got locale-prefixed to
+  // `/en/media/<slug>` by next-intl BEFORE the media rewrite ever applied,
+  // which 404'd against the app router instead of reaching the media proxy —
+  // every image on the site was affected. Confirmed via x-middleware-rewrite
+  // response header showing the unwanted /en/ prefix. 2026-08-17.
   matcher: [
-    "/((?!api|_next|_vercel|.*\\..*).*)",
+    "/((?!api|media|_next|_vercel|.*\\..*).*)",
   ],
 };

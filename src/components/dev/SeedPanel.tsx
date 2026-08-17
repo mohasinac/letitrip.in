@@ -2631,7 +2631,7 @@ export function SeedPanel() {
   useEffect(() => { setPage(1); }, [searchQuery, filterGroup, filterStatus, sortBy]);
 
   return (
-    <Section color="inverse" surface="muted" className="min-h-screen text-[var(--appkit-color-text)]">
+    <Section color="inverse" surface="muted" className="min-h-screen">
       {renderSeedPanelToolbar({ selectedCollections, setSelectedCollections, isFiltered, filteredCollections, isRunning, fetchStatus, isLoadingStatus, searchQuery, setSearchQuery, sortBy, setSortBy, dryRun, setDryRun, fullSeed, setFullSeed, run, filterGroup, setFilterGroup, filterStatus, setFilterStatus, clearAll, removeP1, resetP1, clearConfirm, setClearConfirm, seedTemplates, showAllCollections, setShowAllCollections })}
 
       <Container size="2xl">

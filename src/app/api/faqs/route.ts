@@ -143,10 +143,10 @@ export const GET = withProviders(createRouteHandler({
         ...faq.answer,
         text: interpolateVariables(faq.answer.text, {
           companyName: siteSettings.siteName,
-          supportEmail: siteSettings.contact.email,
-          supportPhone: siteSettings.contact.phone,
+          supportEmail: siteSettings.contact?.email,
+          supportPhone: siteSettings.contact?.phone,
           websiteUrl: `https://${siteSettings.siteName}`,
-          companyAddress: siteSettings.contact.address,
+          companyAddress: siteSettings.contact?.address,
         }),
       },
     }));

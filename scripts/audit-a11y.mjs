@@ -39,9 +39,18 @@ const PAIRS = [
   // 3:1 (WCAG AA large-text/UI-component threshold), not 4.5 — this pairing is
   // button/badge label text, which renders bold at typical CTA sizes. Holding
   // it to full normal-text AA would mean darkening the brand primary-500
-  // cobalt-blue token itself, a project-wide visual-identity change with far
-  // more blast radius than a contrast audit should unilaterally force through.
+  // token itself, a project-wide visual-identity change with far more blast
+  // radius than a contrast audit should unilaterally force through.
   ["appkit-color-text-on-primary", "appkit-color-primary", 3.0, "on-primary text on primary-colored buttons/badges"],
+
+  // Status-surface pairings — every entry `getSurfaceTextPair()`
+  // (appkit/src/tokens/color-pairs.ts) can produce, so the "colors as a
+  // function" pairing map is validated exhaustively, not just the base
+  // text/bg triad above.
+  ["appkit-color-success", "appkit-color-success-surface", 4.5, "success text on success-surface (getSurfaceTextPair)"],
+  ["appkit-color-error", "appkit-color-error-surface", 4.5, "error text on danger-surface (getSurfaceTextPair)"],
+  ["appkit-color-warning", "appkit-color-warning-surface", 4.5, "warning text on warning-surface (getSurfaceTextPair)"],
+  ["appkit-color-info", "appkit-color-info-surface", 4.5, "info text on info-surface (getSurfaceTextPair)"],
 ];
 
 function hexToRgb(hex) {
