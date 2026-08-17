@@ -49,6 +49,7 @@
 - **Architecture**
   - [Store Identity Model (ARCH2/ARCH5/ARCH8)](#architecture--store-identity-arch2arch5arch8--storeid-migration)
   - [SEO & Lighthouse (SEO1–SEO7)](#architecture--seo--lighthouse-seo1seo7--session-82)
+  - [PII Encryption vs Display Masking (2026-08-17)](#architecture--pii-encryption-vs-display-masking-2026-08-17)
 - **Admin Area**
   - [Layout Shell](#admin--layout-shell)
   - [Dashboard](#admin--dashboard-)
@@ -241,8 +242,13 @@ Normal mode — Mobile layout (two rows):
 ┌─────────────────────────────────────────────────────────────────┐
 │  [🔍 Search…                                         [🔍]]      │  ← full-width search row
 ├───────────────────────────────────────────────────────────────  │
-│  [⚙ Filters (N)]  [Sort: … ▾]  [⊞/≡]  [↺]  {extra}           │  ← controls row
-└─────────────────────────────────────────────────────────────────┘
+│  [⚙ Filters (N)]  [Sort: … ▾]  [⊞/≡]  [↺]  {extra}           │  ← controls row —
+│  [Show sold]  [Free shipping]                                   │    flex-wrap (fixed
+└─────────────────────────────────────────────────────────────────┘    2026-08-17; row had
+                                                                          no wrap → controls
+                                                                          overflowed/clipped
+                                                                          at narrow (390px)
+                                                                          viewports)
 
 Normal mode — Desktop layout (single row):
 ┌─────────────────────────────────────────────────────────────────┐
@@ -1718,7 +1724,7 @@ Row ⋮ menu:
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  Code          Name          Type          Discount   Uses      Status   ⋮  │
 │  ────────────────────────────────────────────────────────────────────────── │
-│  WELCOME10     Welcome 10%   percentage    10%        234/∞     Active   ⋮  │
+│  YUGI10     Welcome 10%   percentage    10%        234/∞     Active   ⋮  │
 │  FREESHIP999   Free Shipping free_shipping —          89/500    Active   ⋮  │
 │  POKEMON25     Pokémon 25%   percentage    25%        12/100    Active   ⋮  │
 │  VIP2026       VIP 2026      fixed         ₹500       500/500   Exhausted⋮  │
@@ -6284,6 +6290,24 @@ On submit → router.push(ROUTE_MAP[type] + "?q=" + encodeURIComponent(query))
 
 All listing index components read ?q= from useUrlTable on mount (SR3).
 FAQs: static RSC — no toolbar, ?q= silently accepted but not filtered.
+
+Typeahead suggestions (as-you-type, before submit):
+  useNavSuggestions(query, selectedType) → GET /api/search/suggestions?q=X&type=Y
+
+  ⚠ FIXED 2026-08-17: the endpoint only understands SINGULAR type values
+  (product/category/blog/event) — it has no dedicated suggestion category
+  for the other 10 SearchResourceType values. useNavSuggestions previously
+  forwarded the selected dropdown value VERBATIM ("products", the search
+  bar's own default), which matched none of the endpoint's singular checks
+  → suggestions came back empty on virtually every default-state search.
+  Client now maps through SUGGESTION_TYPE_PARAM_MAP before sending `type`:
+    products   → product
+    categories → category
+    blog       → blog        (already singular — coincidentally worked before)
+    events     → event
+    (everything else: auctions, stores, brands, pre-orders, …) → omit `type`
+      entirely, endpoint falls back to its unfiltered "all" set rather
+      than returning zero results.
 ```
 
 ---
@@ -6311,9 +6335,9 @@ FAQs: static RSC — no toolbar, ?q= silently accepted but not filtered.
 │  OUT OF STOCK (1)                                                            │
 │  🖼 [Hot Wheels RLC ↗]   [OUT OF STOCK]  Qty: 1  [🗑]  ← gray + badge     │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  Coupon: [WELCOME10    ] [Apply]                                             │
+│  Coupon: [YUGI10    ] [Apply]                                             │
 │  Subtotal:  ₹7,097                                                           │
-│  Discount:  -₹710 (WELCOME10 10%)                                           │
+│  Discount:  -₹710 (YUGI10 10%)                                           │
 │  Shipping:  ₹50                                                              │
 │  Total:     ₹6,437                                                           │
 │  [Proceed to Checkout →]  (disabled if ALL items are out-of-stock)           │
@@ -9840,7 +9864,7 @@ Routes:    ROUTES.USER.ORDERS (back), ROUTES.USER.ORDER_TRACK(id), ROUTES.USER.O
 │  renderPayment  —  Payment Summary                                           │
 │    Subtotal              ₹1,000                                              │
 │    Shipping              Free                                                │
-│    Discount (WELCOME10)  −₹100                                               │
+│    Discount (YUGI10)  −₹100                                               │
 │    Tax                   ₹90                                                 │
 │    ─────────────────────────────                                             │
 │    Total                 ₹990                                                │
@@ -12507,3 +12531,109 @@ two cleanup entry points never call each other — they only agree on what
 mid-session (a concurrent session was actively restructuring `appkit/src/seed/`)
 without touching the filter or cleanup code at all — only the seed-cli import paths
 changed.
+
+---
+
+## Architecture > PII Encryption vs Display Masking (2026-08-17)
+
+```
+INCIDENT: appkit 3.8.0 shipped a change that made Vercel's production
+build (Turbopack) fail on EVERY page:
+
+  FATAL: An unexpected Turbopack error occurred:
+  Failed to write app endpoint /[locale]/page
+  Caused by:
+  - the chunking context (unknown) does not support external modules
+    (request: node:module)
+
+ROOT CAUSE — a static import, not a barrel-export mistake:
+
+  appkit/src/security/pii-encrypt.ts
+  ┌────────────────────────────────────────────────────────────────┐
+  │ import { createRequire } from "node:module";   ← STATIC import │
+  │ const nodeRequire = createRequire(import.meta.url);            │
+  │ function nodeCrypto() { return nodeRequire("crypto"); }        │
+  └────────────────────────────────────────────────────────────────┘
+
+  Turbopack resolves a module's FULL static import graph before any
+  tree-shaking / dead-code-elimination pass runs. If pii-encrypt.ts is
+  reachable AT ALL from a page's client bundle — even via a barrel that
+  re-exports some OTHER, genuinely-unused symbol from the same file —
+  Turbopack still has to statically resolve `node:module` for the
+  browser target and hard-fails immediately. It does not matter whether
+  any consumer actually imports the poisoned symbol.
+
+  Attempt #1 (3.8.1) — WRONG: moved pii-encrypt.ts's exports from
+  index.ts to server.ts only.
+    ┌─────────────┐        ┌──────────────────┐        ┌───────────────┐
+    │  index.ts   │──────▶ │ security/index.ts │──────▶ │ pii-encrypt.ts │
+    │ (universal) │ still  │  (ONE shared      │ still  │ node:module   │
+    │  needs      │ imports│   barrel file)     │ exports│ import        │
+    │  redactPii  │        │                    │        │               │
+    └─────────────┘        └──────────────────┘        └───────────────┘
+    STILL FAILED — security/index.ts (the intermediate barrel) itself
+    still had `export {...} from "./pii-encrypt"` at module scope, and
+    index.ts still imported OTHER things from that same barrel file
+    (redactPii, rbac, rate-limit, csp) — so Turbopack still parsed
+    pii-encrypt.ts's node:module import when resolving security/index.ts,
+    regardless of which specific symbols index.ts asked for.
+
+  Attempt #2 (3.8.2) — CORRECT: fixed at the actual source.
+    1. pii-encrypt.ts: nodeCrypto() reverted to a BARE runtime call —
+       `require("crypto")` — no top-level Node-builtin import at all.
+       A bare `require` reference inside a function body is a runtime
+       identifier lookup, invisible to static graph construction.
+    2. The one environment that genuinely lacks an ambient `require`
+       (appkit/scripts/seed-cli.mjs — a standalone pure-ESM script) now
+       sets `globalThis.require` itself, via its own pre-existing
+       `createRequire(import.meta.url)`, before dynamically importing
+       @mohasinac/appkit. Next.js's own server bundle (webpack/Turbopack)
+       already provides an ambient `require` — no change needed there.
+    3. Split pii-mask.ts out of pii-encrypt.ts for the 6 functions that
+       are genuinely crypto-free AND genuinely needed client-side.
+
+FILE SPLIT — which symbols need `crypto`, which don't:
+
+  pii-encrypt.ts (server.ts ONLY — has the require("crypto") call)
+  ┌────────────────────────────────────────────────────────────────┐
+  │ encryptValue / decryptValue / hmacBlindIndex                    │
+  │ encryptPiiFields / decryptPiiFields / encryptPii / decryptPii   │
+  │ piiBlindIndex / addPiiIndices / getPiiConfigError                │
+  │ encrypt|decryptShippingAddress / encrypt|decryptPayoutDetails   │
+  │ encrypt|decryptShippingConfig / encrypt|decryptPayoutBankAccount│
+  └────────────────────────────────────────────────────────────────┘
+       consumers: *.repository.ts files only (server-only by nature)
+
+  pii-mask.ts (index.ts UNIVERSAL — zero runtime dependencies)
+  ┌────────────────────────────────────────────────────────────────┐
+  │ ENC_PREFIX, HMAC_PREFIX (string constants)                       │
+  │ isPiiEncrypted (prefix check, no crypto)                         │
+  │ maskName / maskEmail (pure string slicing)                       │
+  │ maskPublicReview / maskPublicBid / maskPublicEventEntry          │
+  │ maskOfferForSeller                                                │
+  └────────────────────────────────────────────────────────────────┘
+       consumers: ReviewModal.tsx, ReviewDetailShell.tsx,
+                  ReviewsList.tsx — all "use client" — display a masked
+                  reviewer name ("J*** D***") without ever seeing the
+                  plaintext or the encryption machinery.
+
+RULE GOING FORWARD (CLAUDE.md Root Cause Pattern #24):
+  Any appkit file with a top-level `import ... from "node:X"` (or any
+  other Node-only builtin) may NEVER be reachable — even indirectly
+  through a shared barrel — from index.ts or client.ts. If a file mixes
+  Node-only code with genuinely client-safe code, split the file; don't
+  just move which barrel re-exports the mixed file, because the barrel
+  itself becomes the poisoned link.
+
+VERIFICATION METHOD that actually catches this (grepping dist/index.js
+for the function NAME is not enough — the false positive that wasted a
+whole publish cycle):
+  grep -rn "\"node:module\"\|'node:module'" appkit/dist/
+    → any hit outside a comment means index.js (or anything it
+      transitively imports) is reachable from a client bundle.
+  Then confirm with a REAL local build against the actual published
+  tarball (not a `file:` symlink — the symlink can mask the exact
+  dist/ contents Vercel will actually install):
+    rm -rf node_modules/@mohasinac/appkit && npm install
+    NODE_OPTIONS='--max-old-space-size=4096' npm run build
+```

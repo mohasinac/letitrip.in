@@ -1442,6 +1442,28 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 | action-response.ts | ActionResponse, success, error | Server action response wrapper |
 | animation.helper.ts | Animation constants & helpers | Animation token utilities |
 
+### `appkit/src/security/` (server.ts + index.ts split — see note below)
+
+| File | Key Exports | Purpose | Barrel |
+|------|-------------|---------|--------|
+| pii-encrypt.ts | encryptValue, decryptValue, hmacBlindIndex, encryptPiiFields, decryptPiiFields, encryptPii, decryptPii, piiBlindIndex, addPiiIndices, getPiiConfigError, encrypt/decryptShippingAddress, encrypt/decryptPayoutDetails, encrypt/decryptShippingConfig, encrypt/decryptPayoutBankAccount | AES-256-GCM + HMAC-SHA256 PII encryption (Node `crypto`) | `server.ts` only |
+| pii-mask.ts *(new, 3.8.2)* | ENC_PREFIX, HMAC_PREFIX, isPiiEncrypted, maskName, maskEmail, maskPublicReview, maskPublicBid, maskPublicEventEntry, maskOfferForSeller | Crypto-free display-masking helpers (pure string ops) | `index.ts` (universal) + `server.ts` |
+| pii-redact.ts | redactPii, safeDisplayName, safeDisplayEmail, maskIp | Log/error redaction | `index.ts` + `server.ts` |
+| authorization.ts | requireAuth, requireRole, requireOwnership, canChangeRole, getRoleLevel | RBAC guard functions | `index.ts` + `server.ts` |
+| rate-limit.ts | rateLimit, applyRateLimit, RateLimitPresets | Request rate limiting | `index.ts` + `server.ts` |
+| rbac.ts | DEFAULT_ROLES, resolvePermissions, hasPermission, Can, createRbacHook | Permission resolution | `index.ts` + `server.ts` |
+| settings-encryption.ts | encryptSecret, decryptSecret, maskSecret | Site-settings API-key encryption (no Node builtin) | `index.ts` + `server.ts` |
+
+> **pii-encrypt.ts / pii-mask.ts split (2026-08-17, appkit 3.8.2):** `pii-encrypt.ts` calls Node's
+> `crypto` via a bare, non-static `require("crypto")` inside a function body — deliberately not a
+> top-level `import`, because Turbopack resolves a module's full static import graph before any
+> tree-shaking pass and hard-fails the browser build on any unresolvable Node builtin, even for a
+> symbol nothing client-side actually uses. The 6 display-masking helpers (`maskName` etc.) are
+> genuinely needed client-side (`ReviewModal`/`ReviewDetailShell`/`ReviewsList`, all `"use client"`)
+> and have zero crypto dependency, so they live in the separate `pii-mask.ts` file instead — see
+> `asciiDiagrams.md` → "Architecture > PII Encryption vs Display Masking" for the full incident
+> writeup, and CLAUDE.md Root Cause Pattern #24.
+
 ---
 
 ## 13. Registries
