@@ -27,12 +27,14 @@ export const GET = withProviders(
       const today = new Date().toISOString().slice(0, 10);
       const startDate = url.searchParams.get("startDate") ?? today;
       const endDate = url.searchParams.get("endDate") ?? today;
-      const entityTypeParam = url.searchParams.get("entityType") ?? undefined;
-      if (entityTypeParam && !isEntityType(entityTypeParam)) {
-        return errorResponse("Invalid entityType", 400);
+      const entityTypeParam = url.searchParams.get("entityType");
+      let entityType: PageViewEntityType | undefined;
+      if (entityTypeParam) {
+        if (!isEntityType(entityTypeParam)) return errorResponse("Invalid entityType", 400);
+        entityType = entityTypeParam;
       }
 
-      const rows = await pageViewsRepository.listInRange(startDate, endDate, entityTypeParam);
+      const rows = await pageViewsRepository.listInRange(startDate, endDate, entityType);
 
       const byEntity = new Map<string, { entityType: string; entityId: string; url: string; count: number }>();
       const byUrl = new Map<string, { url: string; count: number }>();

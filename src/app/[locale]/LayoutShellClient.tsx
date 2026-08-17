@@ -146,7 +146,7 @@ export default function LayoutShellClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [scamModalDismissed, setScamModalDismissed] = useState(false);
   const tourRole = isAdminUser(user) ? "admin" : isSellerUser(user) ? "seller" : "buyer";
-  const handleTourStart = useCallback(() => startTour(tourRole), [startTour, tourRole]);
+  const handleTourStart = useCallback(() => startTour(tourRole, pathname), [startTour, tourRole, pathname]);
 
   const searchLabels = SEARCH_LABELS;
   const listingTypeFlags = useListingTypeFlags();
