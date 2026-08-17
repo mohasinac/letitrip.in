@@ -115,23 +115,26 @@ async function writeOutcomeAndClose(
   return NextResponse.redirect(closeUrl.toString());
 }
 
-/** Validate state param and RTDB event node. Returns eventId or redirects. */
+/** Validate state param and RTDB event node. Returns eventId (+ linkUid, when this
+ * event was initiated as an account-link request by an already-logged-in user) or redirects. */
 async function validateStateAndEvent(
   state: string,
   origin: string,
-): Promise<{ eventId: string } | NextResponse> {
+): Promise<{ eventId: string; linkUid?: string } | NextResponse> {
   if (!UUID_REGEX.test(state)) {
     serverLogger.warn("Google callback: invalid state param");
     return NextResponse.redirect(new URL("/auth/close?error=invalid_state", origin));
   }
   const eventId = state;
   const db = getAdminRealtimeDb();
+  let linkUid: string | undefined;
   try {
     const snap = await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).get();
     if (!snap.exists() || snap.val()?.status !== RTDBPayloadStatus.PENDING) {
       serverLogger.warn("Google callback: event not found or not pending", { eventId });
       return NextResponse.redirect(new URL("/auth/close?error=event_expired", origin));
     }
+    linkUid = (snap.val() as { linkUid?: string } | null)?.linkUid;
   } catch (rtdbReadErr) {
     void normalizeError(rtdbReadErr);
     serverLogger.warn(
@@ -139,7 +142,7 @@ async function validateStateAndEvent(
       { eventId, rtdbReadErr },
     );
   }
-  return { eventId };
+  return { eventId, linkUid };
 }
 
 /** Exchange auth code for a verified Google ID-token payload. */
@@ -220,10 +223,66 @@ async function ensureFirestoreProfile(
       photoURL: picture ?? null,
       emailVerified: !!email_verified,
       role: userRole,
+      googleLinked: true,
+      googleLinkedEmail: email,
     });
     return { userRole, isNewUser: true };
   }
+  if (!existingProfile.googleLinked) {
+    await userRepository.update(firebaseUid, { googleLinked: true, googleLinkedEmail: email } as any);
+  }
   return { userRole: (existingProfile.role as UserRole) ?? SCHEMA_DEFAULTS.USER_ROLE, isNewUser };
+}
+
+/** Link a Google account to an already-logged-in user's Firestore profile.
+ * No new Firebase Auth user is created and no session cookie changes â€” the
+ * caller is already signed in. Rejects if the Google email is already tied
+ * to a DIFFERENT Firebase Auth account (can't link two separate accounts). */
+async function linkGoogleAccount(
+  linkUid: string,
+  email: string,
+  eventId: string,
+  origin: string,
+): Promise<NextResponse> {
+  const adminAuth = getAdminAuth();
+  try {
+    const existingAuthUser = await adminAuth.getUserByEmail(email);
+    if (existingAuthUser.uid !== linkUid) {
+      return writeOutcomeAndClose(
+        eventId,
+        { status: RTDBPayloadStatus.ERROR, error: "This Google account is already linked to a different LetItRip account." },
+        origin,
+      );
+    }
+  } catch (lookupErr: any) {
+    if (lookupErr.code !== "auth/user-not-found") throw lookupErr;
+    // No Firebase Auth user owns this email yet â€” fine, we're only recording the link on the Firestore side.
+  }
+
+  const linkedProfile = await userRepository.findById(linkUid);
+  if (!linkedProfile) {
+    return writeOutcomeAndClose(
+      eventId,
+      { status: RTDBPayloadStatus.ERROR, error: "Account not found." },
+      origin,
+    );
+  }
+
+  await userRepository.update(linkUid, { googleLinked: true, googleLinkedEmail: email } as any);
+
+  await writeOutcomeAndClose(
+    eventId,
+    {
+      status: RTDBPayloadStatus.SUCCESS,
+      isNewUser: false,
+      uid: linkUid,
+      role: (linkedProfile.role as UserRole) ?? SCHEMA_DEFAULTS.USER_ROLE,
+    },
+    origin,
+  );
+
+  serverLogger.info("Google account linked", { uid: linkUid, eventId });
+  return NextResponse.redirect(new URL("/auth/close", origin).toString());
 }
 
 /** Exchange custom token for Firebase ID token via Identity Toolkit. */
@@ -305,7 +364,7 @@ export async function GET(request: NextRequest) {
 
     const stateResult = await validateStateAndEvent(state, origin);
     if (stateResult instanceof NextResponse) return stateResult;
-    const { eventId } = stateResult;
+    const { eventId, linkUid } = stateResult;
 
     if (oauthError || !code) {
       serverLogger.info("Google callback: user cancelled or OAuth error", { eventId, oauthError });
@@ -342,6 +401,10 @@ export async function GET(request: NextRequest) {
     }
 
     const { email, name, picture, email_verified } = googlePayload;
+
+    if (linkUid) {
+      return linkGoogleAccount(linkUid, email, eventId, origin);
+    }
 
     const { firebaseUid, isNewUser: newFromAuth } = await resolveFirebaseUser(email, name, picture, email_verified);
     const { userRole, isNewUser } = await ensureFirestoreProfile(

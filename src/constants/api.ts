@@ -126,7 +126,6 @@ export const API_ROUTES = {
   NEWSLETTER: {
     SUBSCRIBE: API_ENDPOINTS.HOMEPAGE.NEWSLETTER_SUBSCRIBE,
   },
-  DEMO: API_ENDPOINTS.DEMO,
   ADS: {
     BY_SLOT: (slotId: string) => `/api/ads?slot=${encodeURIComponent(slotId)}`,
   },

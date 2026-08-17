@@ -19,6 +19,11 @@ import { withProviders } from "@/providers.config";
  * Used as Step 1 of every OAuth popup flow (Google, Apple) and as a base for
  * the payment event bridge.
  *
+ * Optional body: { mode: "link" } â€” issued by an already-logged-in user who
+ * wants to connect their Google account without switching sessions. Requires
+ * a valid session cookie; the resolved uid is stamped onto the RTDB event
+ * node as `linkUid` so /api/auth/google/callback can branch into link mode.
+ *
  * Returns:
  *   { eventId: string, customToken: string, expiresAt: number }
  */
@@ -31,6 +36,8 @@ import { serverLogger } from "@mohasinac/appkit";
 import { RTDB_PATHS } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { RTDBPayloadStatus } from "@mohasinac/appkit";
+import { parseJsonBody } from "@mohasinac/appkit";
+import { getServerSessionUser } from "@/lib/firebase/auth-server";
 
 /** RTDB node TTL communicated to the client (2 min hard timeout on the useAuthEvent hook). */
 const EVENT_TTL_MS = 2 * 60 * 1000;
@@ -39,6 +46,15 @@ export const POST = withProviders(createRouteHandler({
   handler: async ({ request }) => {
     const rl = await applyRateLimit(request, RateLimitPresets.AUTH);
     if (!rl.success) return errorResponse("Too many requests", 429);
+
+    const body = await parseJsonBody<{ mode?: string }>(request, { allowEmpty: true });
+    let linkUid: string | undefined;
+    if (body?.mode === "link") {
+      const sessionUser = await getServerSessionUser();
+      if (!sessionUser) return errorResponse("You must be signed in to link an account.", 401);
+      linkUid = sessionUser.uid;
+    }
+
     const eventId = randomUUID();
     const db = getAdminRealtimeDb();
     let rtdbEnabled = true;
@@ -46,6 +62,7 @@ export const POST = withProviders(createRouteHandler({
       await db.ref(`${RTDB_PATHS.AUTH_EVENTS}/${eventId}`).set({
         status: RTDBPayloadStatus.PENDING,
         createdAt: Date.now(),
+        ...(linkUid ? { linkUid } : {}),
       });
     } catch (rtdbErr) {
       void normalizeError(rtdbErr);

@@ -7,6 +7,8 @@ import {
   ACTIONS,
   useChangePassword,
   useChangeEmail,
+  useLinkGoogleAccount,
+  useProfile,
   useToast,
   Div,
   DynamicBgDiv,
@@ -17,6 +19,7 @@ import {
   Button,
   Form,
   NotificationPreferencesPanel,
+  LinkedAccountsSection,
 } from "@mohasinac/appkit/client";
 import { TabStrip, Accordion, PaginatedSelect } from "@mohasinac/appkit/ui";
 import type { AsyncPage, PaginatedSelectOption } from "@mohasinac/appkit/ui";
@@ -75,6 +78,10 @@ function renderAccountTab({
   setConfirmPassword,
   handlePasswordSubmit,
   changePassword,
+  googleLinked,
+  googleLinkedEmail,
+  onLinkGoogle,
+  isLinkingGoogle,
 }: {
   user: ReturnType<typeof useAuth>["user"];
   newEmail: string;
@@ -91,6 +98,10 @@ function renderAccountTab({
   setConfirmPassword: (v: string) => void;
   handlePasswordSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   changePassword: ReturnType<typeof useChangePassword>;
+  googleLinked?: boolean;
+  googleLinkedEmail?: string | null;
+  onLinkGoogle: () => void;
+  isLinkingGoogle: boolean;
 }) {
   return (
     <Stack gap="lg">
@@ -134,6 +145,15 @@ function renderAccountTab({
             </Form>
           </Stack>
         </Accordion>
+      </SectionCard>
+
+      <SectionCard>
+        <LinkedAccountsSection
+          googleLinked={googleLinked}
+          googleLinkedEmail={googleLinkedEmail}
+          onLinkGoogle={onLinkGoogle}
+          isLinking={isLinkingGoogle}
+        />
       </SectionCard>
 
       <SectionCard>
@@ -254,6 +274,17 @@ export default function Page() {
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>("account");
 
+  const { data: profile, refetch: refetchProfile } = useProfile({ enabled: !!user });
+  const linkGoogle = useLinkGoogleAccount({
+    onSuccess: () => {
+      showToast("Google account connected.", "success");
+      void refetchProfile();
+    },
+    onError: (err) => {
+      showToast(err instanceof Error ? err.message : "Failed to connect Google account.", "error");
+    },
+  });
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -319,7 +350,13 @@ export default function Page() {
         />
       </Div>
 
-      {activeTab === "account" && renderAccountTab({ user, newEmail, setNewEmail, emailPassword, setEmailPassword, handleEmailSubmit, changeEmail, currentPassword, setCurrentPassword, newPassword, setNewPassword, confirmPassword, setConfirmPassword, handlePasswordSubmit, changePassword })}
+      {activeTab === "account" && renderAccountTab({
+        user, newEmail, setNewEmail, emailPassword, setEmailPassword, handleEmailSubmit, changeEmail,
+        currentPassword, setCurrentPassword, newPassword, setNewPassword, confirmPassword, setConfirmPassword,
+        handlePasswordSubmit, changePassword,
+        googleLinked: profile?.googleLinked, googleLinkedEmail: profile?.googleLinkedEmail,
+        onLinkGoogle: () => linkGoogle.mutate(), isLinkingGoogle: linkGoogle.isLoading,
+      })}
       {activeTab === "notifications" && (
         <NotificationPreferencesPanel
           fetchUrl={API_ROUTES.USER.NOTIFICATION_PREFERENCES}
