@@ -12421,6 +12421,68 @@ action) and `GET /api/admin/tester-feedback/report` (`testerChecklistResponseRep
 layer, no RTDB ping. The collection is small (testers × cases), so a full scan per
 admin page-load is cheap and always current.
 
+**Feedback export — same Markdown, two entry points, one shared method**
+(2026-08-17). Added after the user asked for tester feedback to be "easier
+for you to read it and be able to fix those issues" — the report is written
+so a future dev or Claude session can read it directly, with no live
+Firestore query and no admin-UI walkthrough required.
+
+```
+ ENTRY POINT A: CLI (offline / Claude session)  |  ENTRY POINT B: Admin UI
+ ────────────────────────────────────────────────┼──────────────────────────────
+                                                  |
+ node appkit/scripts/                            |  Admin clicks "Download Report"
+   export-tester-feedback.mjs                    |  on /admin/tester-feedback
+   (npm run tester:export-feedback)               |    (AdminTesterFeedbackView)
+        |                                        |         |
+        v  getAdminDb() direct                    |         v
+   Query testerChecklistItems (catalog)           |  GET /api/admin/tester-feedback/export
+   Query testerChecklistResponses (all answers)   |    roles: ADMIN_MOD
+        |                                        |    permission: admin:tester-feedback:read
+        v  mirrors the exact grouping/formatting  |         |
+   logic of getMarkdownReport() below --          |         v
+   kept in sync by hand, not shared code           |  testerChecklistResponseRepository
+   (Node CLI vs. appkit repository method           |    .getMarkdownReport(SITE_ORIGIN)
+   invoked from a Next.js route runtime)            |         |
+        |                                        |         v  (same joins + grouping
+        v                                        |             as the CLI script)
+   writes ./tester-feedback-report.md            |  Response: text/markdown
+   (repo root, gitignored)                        |    Content-Disposition: attachment;
+                                                  |    filename="tester-feedback-report-
+                                                  |    <date>.md"
+                                                  |         |
+                                                  |         v
+                                                  |  browser downloads the file
+                                                  |
+ ═══════════════════ both produce identical structure ═══════════════════
+                                                  |
+  # Tester Feedback Report                       |
+  Generated <ISO ts> — N issue(s) across M        |
+  answered case(s), plus P note(s) on passing     |
+  cases.                                          |
+  ---                                             |
+  ## Issues ("No" answers) — fix these            |
+  ### <groupLabel> › <pageLabel>                  |
+  - [ ] **<case label>**                          |
+    - Tester: <displayName>                       |
+    - Comment: <comment>                           |
+    - Screenshot: [view](<absolute URL>)            |
+    - Test this: <href>                             |
+    - Status: new | reviewed                        |
+  ---                                             |
+  ## Notes on passing cases ("Yes" w/ a comment)   |
+  ### <groupLabel> › <pageLabel>                  |
+  - **<case label>** (works)                      |
+    - Tester / Comment / Screenshot                 |
+```
+
+Both entry points call `testerChecklistItemRepository.list()` +
+`testerChecklistResponseRepository`'s Firestore collection scan, join in
+memory (`Map<checklistItemId, item>`), then group by `groupLabel`/`pageLabel`
+before rendering. Neither entry point touches `getCoverageReport()` (that
+method backs the Report tab's chart/stats, a different shape — counts, not
+per-response detail).
+
 ---
 
 ## Tester QA Program — sandbox lifecycle: seed -> visibility filter -> cleanup (2026-08-17)

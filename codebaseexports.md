@@ -501,6 +501,7 @@
 | AdminTesterFeedbackReportView | View | Report tab — stat row + `TesterFeedbackChart` |
 | AdminTesterFeedbackIssuesView | View | Main Issues tab — every `answer:"no"` response with comment/screenshot |
 | AdminTesterFeedbackListView | View | All Submissions tab — `DataListingView` + Mark Reviewed row action |
+| AdminTesterFeedbackView "Download Report" button | Button | `ACTIONS.ADMIN["export-tester-feedback"]` — downloads the Markdown report via `GET /api/admin/tester-feedback/export` (2026-08-17) |
 
 ### Homepage (`appkit/src/features/homepage/components/`)
 
@@ -916,7 +917,7 @@
 | CatalogueRepository | catalogueItems | listByOwner, listPublicByOwner, listPendingApproval (Sieve), listStale | Feature B personal-catalogue CRUD; `update` auto-stamps `lastImageUpdateAt` whenever `images` changes |
 | JobsRepository (`jobsRepository`) | jobs | markProcessing, markDone, markFailed, getStaleFinishedRefs | Async job primitive (2026-08-15) — pure auto-ID docs, `getStaleFinishedRefs(ttlDays=30)` feeds the `cleanupRtdbEvents` TTL sweep |
 | TesterChecklistItemRepository (`testerChecklistItemRepository`) | testerChecklistItems | createItem, update, listActive, list (Sieve) | Tester QA program (2026-08-17) — admin-managed test-case catalog, mirrors FAQs |
-| TesterChecklistResponseRepository (`testerChecklistResponseRepository`) | testerChecklistResponses | upsertResponse, listForTester, list (Sieve), markReviewed, getCoverageReport | Tester QA program — one doc per (tester, case), deterministic ID `${testerId}__${checklistItemId}`; `getCoverageReport()` powers the admin Report + Main Issues tabs |
+| TesterChecklistResponseRepository (`testerChecklistResponseRepository`) | testerChecklistResponses | upsertResponse, listForTester, list (Sieve), markReviewed, getCoverageReport, getMarkdownReport | Tester QA program — one doc per (tester, case), deterministic ID `${testerId}__${checklistItemId}`; `getCoverageReport()` powers the admin Report + Main Issues tabs; `getMarkdownReport(siteOrigin)` (2026-08-17) dumps every answered case as Markdown — Issues ("No") + Notes on passing cases ("Yes" with a comment), grouped by feature area, for a human or a future Claude session to read directly and go fix |
 
 ---
 
@@ -1178,6 +1179,7 @@
 | `/api/admin/tester-feedback` | GET | Flat filterable list of every tester's checklist responses (All Submissions tab) |
 | `/api/admin/tester-feedback/[id]` | PATCH | Mark a tester response reviewed |
 | `/api/admin/tester-feedback/report` | GET | Coverage report — per-item yes/no counts + flat "no"-answer issues list (Report + Main Issues tabs) |
+| `/api/admin/tester-feedback/export` | GET | Downloads every answered checklist response as a Markdown file (`Content-Disposition: attachment`), grouped by feature area, joined against the checklist catalog for readable labels — `TesterChecklistResponseRepository.getMarkdownReport()`, same output as `npm run tester:export-feedback` (2026-08-17) |
 | `/api/admin/coupons` | GET, POST | List/create coupons |
 | `/api/admin/coupons/[id]` | GET, PUT, DELETE | Coupon CRUD |
 | `/api/admin/carousel` | GET, POST | List/create carousel slides |

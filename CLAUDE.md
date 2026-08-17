@@ -1074,6 +1074,8 @@ return successResponse({ jobId, customToken }, "Job started");
 
 **Known gap**: `npm run check` does not run an actual `next build`, so it cannot catch Turbopack-level bundling regressions (e.g. a `node:module`-importing file becoming reachable from a client chunk). If touching anything in this tier's import chain, also run a real `npm run build` before calling a change done.
 
+**Feedback export — one Markdown report, two consumers.** `TesterChecklistResponseRepository.getMarkdownReport(siteOrigin)` (2026-08-17) is the single source of the export shape: it joins every answered response against the `testerChecklistItems` catalog for readable labels, then groups into an **Issues** section (every `"no"` answer — checkbox list with tester name, comment, screenshot link, deep link, review status) and a **Notes on passing cases** section (every `"yes"` that still left a comment — usually styling/readability feedback). `node appkit/scripts/export-tester-feedback.mjs` (`npm run tester:export-feedback`) mirrors this exact logic as a standalone CLI, writing `tester-feedback-report.md` at the repo root (gitignored) for a human or a future Claude session to `Read` directly — no live Firestore query needed. `GET /api/admin/tester-feedback/export` streams the same Markdown as a download via the "Download Report" button on `AdminTesterFeedbackView` (`ACTIONS.ADMIN["export-tester-feedback"]`). **When changing the report shape, update both** — the CLI script and `getMarkdownReport()` must stay in sync; there is no single shared implementation between the two runtimes (Node CLI vs. an appkit repository method invoked from a Next.js route).
+
 ---
 
 ## Provider Resolution (Payment + Shipping)

@@ -182,6 +182,7 @@
 | `tester-feedback/route.ts` | GET | Flat list of every tester's checklist responses (2026-08-17) |
 | `tester-feedback/[id]/route.ts` | PATCH | Mark a tester response reviewed (2026-08-17) |
 | `tester-feedback/report/route.ts` | GET | Coverage report — per-item yes/no counts + "no"-answer issues list (2026-08-17) |
+| `tester-feedback/export/route.ts` | GET | Downloads `TesterChecklistResponseRepository.getMarkdownReport()` as a Markdown file (`Content-Disposition: attachment; filename="tester-feedback-report-<date>.md"`) — same content as `npm run tester:export-feedback`; wired to the "Download Report" button on `AdminTesterFeedbackView` (2026-08-17) |
 
 ---
 
