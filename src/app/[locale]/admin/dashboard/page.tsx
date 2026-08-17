@@ -1,6 +1,6 @@
 "use client";
 import { Row, Stack, normalizeError } from "@mohasinac/appkit";
-import { AdminDashboardView, ROUTES, Span, Text, Div, Grid, Toggle, useToast, DynamicBgDiv, useFeatureFlags } from "@mohasinac/appkit/client";
+import { AdminDashboardView, ROUTES, Span, Text, Div, Grid, Toggle, useToast, DynamicBgDiv, useFeatureFlags, CollapsibleSection, useCollapsedSections } from "@mohasinac/appkit/client";
 import { ADMIN_CHECKOUT_BYPASS_FLAG_KEY } from "@mohasinac/appkit";
 import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -82,9 +82,16 @@ function StatCard({ label, value, href }: { label: string; value: number | null;
   );
 }
 
+const DASHBOARD_SECTION_IDS = [
+  "admin-dashboard:stats",
+  "admin-dashboard:quick-actions",
+  "admin-dashboard:recent-orders",
+];
+
 export default function Page() {
   const { showToast } = useToast();
   const { flags, isLoading: flagsLoading } = useFeatureFlags();
+  const { isCollapsed, toggle } = useCollapsedSections({ sectionIds: DASHBOARD_SECTION_IDS });
   const [adminBypassEnabled, setAdminBypassEnabled] = useState(false);
   const [bypassLoading, setBypassLoading] = useState(false);
   const bypassFetched = useRef(false);
@@ -194,70 +201,85 @@ export default function Page() {
               </Text>
             </Div>
           )}
-          <Grid cols={2} gap="3" className="sm:grid-cols-4">
-            <StatCard label="Pending Orders" value={stats?.pendingOrders ?? null} href={String(ROUTES.ADMIN.ORDERS)} />
-            {flags.PAYOUTS && (
-              <StatCard label="Pending Payouts" value={stats?.pendingPayouts ?? null} href={String(ROUTES.ADMIN.PAYOUTS)} />
-            )}
-            <StatCard label="Pending Reviews" value={stats?.pendingReviews ?? null} href={String(ROUTES.ADMIN.REVIEWS)} />
-            {flags.COUPONS && (
-              <StatCard label="Active Coupons" value={stats?.activeCoupons ?? null} href={String(ROUTES.ADMIN.COUPONS)} />
-            )}
-          </Grid>
+          <CollapsibleSection
+            title="Stats"
+            isCollapsed={isCollapsed("admin-dashboard:stats")}
+            onToggle={() => toggle("admin-dashboard:stats")}
+          >
+            <Grid cols={2} gap="3" className="sm:grid-cols-4">
+              <StatCard label="Pending Orders" value={stats?.pendingOrders ?? null} href={String(ROUTES.ADMIN.ORDERS)} />
+              {flags.PAYOUTS && (
+                <StatCard label="Pending Payouts" value={stats?.pendingPayouts ?? null} href={String(ROUTES.ADMIN.PAYOUTS)} />
+              )}
+              <StatCard label="Pending Reviews" value={stats?.pendingReviews ?? null} href={String(ROUTES.ADMIN.REVIEWS)} />
+              {flags.COUPONS && (
+                <StatCard label="Active Coupons" value={stats?.activeCoupons ?? null} href={String(ROUTES.ADMIN.COUPONS)} />
+              )}
+            </Grid>
+          </CollapsibleSection>
         </Stack>
       )}
       renderQuickActions={() => (
-        <Stack gap="xl">
-          <Grid cols={2} gap="3" className="sm:grid-cols-4">
-            {QUICK_ACTIONS.map(({ label, href, Icon }) => (
-              <Link
-                key={label}
-                href={String(href)}
-                className="group flex items-center gap-[var(--appkit-space-3)] rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-4)] py-[var(--appkit-space-3-5)] text-[length:var(--appkit-text-sm)] font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
-              >
-                <DynamicBgDiv
-                  background={BRAND_GRAD}
-                  className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-md"
+        <CollapsibleSection
+          title="Quick Actions"
+          isCollapsed={isCollapsed("admin-dashboard:quick-actions")}
+          onToggle={() => toggle("admin-dashboard:quick-actions")}
+        >
+          <Stack gap="xl">
+            <Grid cols={2} gap="3" className="sm:grid-cols-4">
+              {QUICK_ACTIONS.map(({ label, href, Icon }) => (
+                <Link
+                  key={label}
+                  href={String(href)}
+                  className="group flex items-center gap-[var(--appkit-space-3)] rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-4)] py-[var(--appkit-space-3-5)] text-[length:var(--appkit-text-sm)] font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
                 >
-                  <Icon className="w-3.5 h-3.5 text-white" />
-                </DynamicBgDiv>
-                {label}
-              </Link>
-            ))}
-          </Grid>
+                  <DynamicBgDiv
+                    background={BRAND_GRAD}
+                    className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-md"
+                  >
+                    <Icon className="w-3.5 h-3.5 text-white" />
+                  </DynamicBgDiv>
+                  {label}
+                </Link>
+              ))}
+            </Grid>
 
-          <Div className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`} rounded="xl">
-            <Row className="mb-4" align="center" gap="sm">
-              <Text size="sm" weight="semibold">Dev Settings</Text>
-              {adminBypassEnabled && (
-                <Span size="xs" weight="medium" surface="subtle" padding="pill-sm" rounded="full" className="text-warning">
-                  Bypass active
-                </Span>
-              )}
-            </Row>
-            <ToggleRow
-              label="Admin Checkout Bypass"
-              description={
-                bypassLoading
-                  ? "Saving…"
-                  : adminBypassEnabled
-                    ? "Bypass active — OTP + payment skipped for admin orders (server-enforced)"
-                    : "Allow admins to skip OTP and payment at checkout (for testing)"
-              }
-              enabled={adminBypassEnabled}
-              onChange={toggleAdminBypass}
-            />
-          </Div>
-        </Stack>
+            <Div className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`} rounded="xl">
+              <Row className="mb-4" align="center" gap="sm">
+                <Text size="sm" weight="semibold">Dev Settings</Text>
+                {adminBypassEnabled && (
+                  <Span size="xs" weight="medium" surface="subtle" padding="pill-sm" rounded="full" className="text-warning">
+                    Bypass active
+                  </Span>
+                )}
+              </Row>
+              <ToggleRow
+                label="Admin Checkout Bypass"
+                description={
+                  bypassLoading
+                    ? "Saving…"
+                    : adminBypassEnabled
+                      ? "Bypass active — OTP + payment skipped for admin orders (server-enforced)"
+                      : "Allow admins to skip OTP and payment at checkout (for testing)"
+                }
+                enabled={adminBypassEnabled}
+                onChange={toggleAdminBypass}
+              />
+            </Div>
+          </Stack>
+        </CollapsibleSection>
       )}
       renderRecentActivity={() =>
         recentOrders.length > 0 ? (
-          <Div className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__O.hidden}`} rounded="xl">
-            <Row className="border-b border-[var(--appkit-color-border-subtle)]" padding="md" align="center" justify="between">
-              <Text className="text-[var(--appkit-color-text)]" size="sm" weight="semibold">Recent Orders</Text>
+          <CollapsibleSection
+            title="Recent Orders"
+            isCollapsed={isCollapsed("admin-dashboard:recent-orders")}
+            onToggle={() => toggle("admin-dashboard:recent-orders")}
+            renderHeaderExtra={() => (
               <Link href={String(ROUTES.ADMIN.ORDERS)} className="text-[length:var(--appkit-text-xs)] text-[var(--appkit-color-primary)] hover:underline">View all →</Link>
-            </Row>
-            <Div className="divide-y divide-[var(--appkit-color-border-subtle)]">
+            )}
+          >
+            <Div className={`-mx-[var(--appkit-space-4)] -mt-[var(--appkit-space-4)] divide-y divide-[var(--appkit-color-border-subtle)] ${__O.hidden}`}>
               {recentOrders.map((order) => (
                 <Link key={order.id} href={`${String(ROUTES.ADMIN.ORDERS)}/${order.id}`} className="flex items-center justify-between px-[var(--appkit-space-4)] py-[var(--appkit-space-2-5)] hover:bg-[var(--appkit-color-surface-hover)] transition-colors">
                   <Text className="font-mono text-[var(--appkit-color-text-muted)]" size="xs">{order.id}</Text>
@@ -270,7 +292,7 @@ export default function Page() {
                 </Link>
               ))}
             </Div>
-          </Div>
+          </CollapsibleSection>
         ) : null
       }
     />

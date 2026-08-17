@@ -18,8 +18,10 @@ export const GET = withProviders(createApiHandler({
       phoneNumber: user!.phoneNumber,
       phoneVerified: user!.phoneVerified,
       storeId: user!.storeId,
+      isTester: user!.isTester ?? false,
       googleLinked: user!.googleLinked ?? false,
       googleLinkedEmail: user!.googleLinkedEmail ?? null,
+      uiPreferences: user!.uiPreferences ?? {},
       role: user!.role,
       disabled: user!.disabled,
       avatarMetadata: user!.avatarMetadata,
@@ -65,13 +67,18 @@ const updateProfileSchema = z.object({
   bio: z.string().max(500).optional(),
   profileIsPublic: z.boolean().optional(),
   acknowledgeScamAwareness: z.boolean().optional(),
+  uiPreferences: z
+    .object({
+      collapsedSections: z.array(z.string()).optional(),
+    })
+    .optional(),
 });
 
 export const PATCH = withProviders(createApiHandler<(typeof updateProfileSchema)["_output"]>({
   auth: true,
   schema: updateProfileSchema,
   handler: async ({ user, body }) => {
-    const { bio, profileIsPublic, acknowledgeScamAwareness, ...coreFields } = body!;
+    const { bio, profileIsPublic, acknowledgeScamAwareness, uiPreferences, ...coreFields } = body!;
 
     // Update core fields (auto-resets verification flags when email/phone changes)
     const updatedUser = await userRepository.updateProfileWithVerificationReset(
@@ -93,6 +100,14 @@ export const PATCH = withProviders(createApiHandler<(typeof updateProfileSchema)
           ...(bio !== undefined ? { bio } : {}),
           ...(profileIsPublic !== undefined ? { isPublic: profileIsPublic } : {}),
         },
+      } as any);
+    }
+
+    // Client sends the full merged collapsedSections list (its own page's
+    // entries plus every other page's untouched entries) — write it as-is.
+    if (uiPreferences?.collapsedSections !== undefined) {
+      await userRepository.update(user!.uid, {
+        uiPreferences: { collapsedSections: uiPreferences.collapsedSections },
       } as any);
     }
 
