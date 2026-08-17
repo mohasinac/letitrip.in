@@ -17,7 +17,7 @@ export function UserLayoutClient({ children, flags }: UserLayoutClientProps) {
   const isSeller = isSellerUser(user) || isAdminUser(user);
   const groups = useMemo(
     () => {
-      const all = getUserNavGroups(isSeller, user?.uid);
+      const all = getUserNavGroups(isSeller, user?.uid, Boolean(user?.isTester));
       return all.map((group): UserNavGroup => {
         if (group.title === "Account") {
           return {
@@ -36,7 +36,7 @@ export function UserLayoutClient({ children, flags }: UserLayoutClientProps) {
         };
       }).filter((group) => group.items.length > 0);
     },
-    [isSeller, user?.uid, flags.eventsOn, flags.auctionsOn, flags.chatOn],
+    [isSeller, user?.uid, user?.isTester, flags.eventsOn, flags.auctionsOn, flags.chatOn],
   );
 
   return (

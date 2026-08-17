@@ -31,6 +31,7 @@ const updateUserSchema = z.object({
   role: z.enum(["user", "seller", "admin", "moderator"]).optional(),
   isDisabled: z.boolean().optional(),
   emailVerified: z.boolean().optional(),
+  isTester: z.boolean().optional(),
   adminNotes: z.string().optional(),
   // ST-2 additions — admin can now edit identity fields that aren't self-serviceable
   displayName: z.string().min(1).max(200).optional(),

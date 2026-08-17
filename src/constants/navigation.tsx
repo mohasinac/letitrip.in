@@ -225,6 +225,8 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.MEDIA),   "Media",   "admin:media:read"),
       adminItem(String(ROUTES.ADMIN.BLOG),    "Blog",    "admin:blog:read"),
       adminItem(String(ROUTES.ADMIN.BIDS),    "Bids",    "admin:bids:read"),
+      adminItem(String(ROUTES.ADMIN.TESTER_CHECKLIST), "Tester Checklist", "admin:tester-checklist:read"),
+      adminItem(String(ROUTES.ADMIN.TESTER_FEEDBACK),  "Tester Feedback",  "admin:tester-feedback:read"),
     ],
   },
   {
@@ -426,7 +428,9 @@ const BECOME_SELLER_LABEL = "Open a Store";
 
 const ACCOUNT_GROUP_TITLE = "Account";
 
-export function getUserNavGroups(isSeller: boolean, userId?: string): UserNavGroup[] {
+const HELP_GROUP_TITLE = "Help";
+
+export function getUserNavGroups(isSeller: boolean, userId?: string, isTester?: boolean): UserNavGroup[] {
   // NOTE: the `confirm` field is added on the appkit `UserNavItem` interface but
   // ships with the next appkit publish; cast keeps tsc happy against the
   // currently-installed dist which doesn't expose it yet.
@@ -447,6 +451,15 @@ export function getUserNavGroups(isSeller: boolean, userId?: string): UserNavGro
         items: [
           ...group.items,
           { href: String(ROUTES.PUBLIC.PROFILE(userId)), label: "View Public Profile" },
+        ],
+      };
+    }
+    if (group.title === HELP_GROUP_TITLE && isTester) {
+      return {
+        ...group,
+        items: [
+          { href: String(ROUTES.USER.TESTER_HUB), label: "Tester Hub" },
+          ...group.items,
         ],
       };
     }

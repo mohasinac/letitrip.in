@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getStoreBySlug, productFeaturesRepository } from "@mohasinac/appkit";
 import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants";
+import { getServerSessionUser } from "@/lib/firebase/auth-server";
 
 type Props = {
   children: ReactNode;
@@ -27,8 +28,9 @@ export async function generateMetadata({ params }: { params: Promise<{ storeSlug
 
 export default async function Layout({ children, params }: Props) {
   const { storeSlug } = await params;
+  const viewer = await getServerSessionUser().catch(() => null);
   const [store, platformFeatures] = await Promise.all([
-    getStoreBySlug(storeSlug).catch(() => null),
+    getStoreBySlug(storeSlug, viewer).catch(() => null),
     productFeaturesRepository.listPlatform().catch(() => []),
   ]);
   if (!store) notFound();

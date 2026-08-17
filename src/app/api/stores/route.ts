@@ -4,8 +4,10 @@ import {
   storeRepository,
   parseListingParams,
 } from "@mohasinac/appkit";
+import { filterTestDataForViewer } from "@mohasinac/appkit/server";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
+import { getServerSessionUser } from "@/lib/firebase/auth-server";
 import {
   callListingProcessor,
   type ListingProcessorResponse,
@@ -75,6 +77,8 @@ async function _GET(request: Request): Promise<NextResponse> {
   let totalPages: number;
   let hasMore: boolean;
 
+  const viewer = await getServerSessionUser().catch(() => null);
+
   let upstream: ListingProcessorResponse | null = null;
   try {
     upstream = await callListingProcessor("stores", {
@@ -91,7 +95,7 @@ async function _GET(request: Request): Promise<NextResponse> {
   }
 
   if (upstream) {
-    items = (upstream.items as Array<Record<string, JsonValue>>).map(toPublicStore);
+    items = filterTestDataForViewer(upstream.items as Array<Record<string, JsonValue>>, viewer).map(toPublicStore);
     total = upstream.total;
     resultPage = upstream.page;
     totalPages = upstream.totalPages;
@@ -99,7 +103,7 @@ async function _GET(request: Request): Promise<NextResponse> {
   } else {
     try {
       const result = await storeRepository.listStores({ filters: filtersForRepo, sorts, page, pageSize });
-      items = (result.items as unknown as Array<Record<string, JsonValue>>).map(toPublicStore);
+      items = filterTestDataForViewer(result.items as unknown as Array<Record<string, JsonValue>>, viewer).map(toPublicStore);
       total = result.total;
       resultPage = result.page;
       totalPages = result.totalPages;
