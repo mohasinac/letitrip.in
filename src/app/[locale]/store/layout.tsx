@@ -1,10 +1,13 @@
 import { Suspense, type ReactNode } from "react";
 import { DashboardLayoutClient, RoleGuard } from "@mohasinac/appkit/client";
 import type { StoreNavGroup } from "@mohasinac/appkit/client";
-import { STORE_NAV_GROUPS } from "@/constants";
+import { isAdminUser } from "@mohasinac/appkit";
+import { STORE_NAV_GROUPS, ROUTES } from "@/constants";
 import { getFlag } from "@/lib/features";
+import { getServerSessionUser } from "@/lib/firebase/auth-server";
 
-export default function StoreLayout({ children }: { children: ReactNode }) {
+export default async function StoreLayout({ children }: { children: ReactNode }) {
+  const user = await getServerSessionUser();
   const auctionsOn = getFlag("AUCTIONS");
   const preOrdersOn = getFlag("PREORDERS");
   const prizeDrawsOn = getFlag("PRIZE_DRAWS");
@@ -55,7 +58,14 @@ export default function StoreLayout({ children }: { children: ReactNode }) {
 
   return (
     <RoleGuard role={["seller", "admin"]}>
-      <DashboardLayoutClient variant="store" groups={groups}>
+      <DashboardLayoutClient
+        variant="store"
+        groups={groups}
+        crossNav={{
+          profileHref: String(ROUTES.USER.PROFILE),
+          adminHref: user && isAdminUser(user) ? String(ROUTES.ADMIN.DASHBOARD) : undefined,
+        }}
+      >
         <Suspense>{children}</Suspense>
       </DashboardLayoutClient>
     </RoleGuard>

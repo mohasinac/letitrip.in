@@ -77,7 +77,15 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     .filter((group) => group.items.length > 0);
 
   return (
-    <DashboardLayoutClient variant="admin" groups={groups} permissions={permissions}>
+    <DashboardLayoutClient
+      variant="admin"
+      groups={groups}
+      permissions={permissions}
+      crossNav={{
+        profileHref: String(ROUTES.USER.PROFILE),
+        storeHref: user.storeId ? String(ROUTES.STORE.DASHBOARD) : undefined,
+      }}
+    >
       <AdminCommandPaletteMount groups={groups.map((g) => ({ title: g.title, items: g.items.map((item) => ({ href: item.href, label: item.label })) }))} />
       <Suspense>{children}</Suspense>
     </DashboardLayoutClient>

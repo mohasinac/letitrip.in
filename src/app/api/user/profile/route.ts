@@ -17,6 +17,7 @@ export const GET = withProviders(createApiHandler({
       photoURL: user!.photoURL,
       phoneNumber: user!.phoneNumber,
       phoneVerified: user!.phoneVerified,
+      storeId: user!.storeId,
       role: user!.role,
       disabled: user!.disabled,
       avatarMetadata: user!.avatarMetadata,

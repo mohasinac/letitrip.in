@@ -3,7 +3,7 @@
 import { Suspense, useMemo, type ReactNode } from "react";
 import { DashboardLayoutClient, useSession } from "@mohasinac/appkit/client";
 import { isAdminUser, isSellerUser } from "@mohasinac/appkit";
-import { getUserNavGroups } from "@/constants";
+import { getUserNavGroups, ROUTES } from "@/constants";
 import type { UserNavGroup } from "@mohasinac/appkit/client";
 
 interface UserLayoutClientProps {
@@ -40,7 +40,7 @@ export function UserLayoutClient({ children, flags }: UserLayoutClientProps) {
   );
 
   return (
-    <DashboardLayoutClient variant="user" groups={groups}>
+    <DashboardLayoutClient variant="user" groups={groups} crossNav={{ profileHref: String(ROUTES.USER.PROFILE) }}>
       <Suspense>{children}</Suspense>
     </DashboardLayoutClient>
   );
