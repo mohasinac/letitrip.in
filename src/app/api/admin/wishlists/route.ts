@@ -4,6 +4,8 @@ import {
   createRouteHandler,
   successResponse,
   WISHLIST_MAX,
+  WISHLIST_FIELDS,
+  sortBy,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
@@ -19,9 +21,14 @@ export const GET = withProviders(
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const limit = Math.min(Number(url.searchParams.get("limit") ?? "200"), 500);
+      const sorts = url.searchParams.get("sorts") ?? sortBy(WISHLIST_FIELDS.UPDATED_AT);
       const summaries = await wishlistRepository.findAllSummaries();
       const sorted = summaries
-        .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+        .sort((a, b) =>
+          sorts.includes("itemCount")
+            ? (sorts.startsWith("-") ? b.itemCount - a.itemCount : a.itemCount - b.itemCount)
+            : b.updatedAt.getTime() - a.updatedAt.getTime(),
+        )
         .slice(0, limit)
         .map((s) => ({
           id: `wishlist-${s.userId}`,

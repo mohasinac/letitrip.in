@@ -40,12 +40,13 @@
     "index:generate": "node ./appkit/scripts/get-index.js",
     "firebase": "node scripts/firebase.mjs",
     "tester:purge-sandbox": "node appkit/scripts/purge-tester-sandbox.mjs",
+    "tester:export-feedback": "node appkit/scripts/export-tester-feedback.mjs",
     "storage:cors": "gsutil cors set appkit/firebase/base/storage-cors.json gs://$FIREBASE_STORAGE_BUCKET",
     "stress-test": "node scripts/stress-test.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "@mohasinac/appkit": "file:./appkit",
+    "@mohasinac/appkit": "^3.8.0",
     "@mohasinac/sievejs": "^1.0.0",
     "@tanstack/react-query": "^5.90.21",
     "@upstash/ratelimit": "^2.0.8",
