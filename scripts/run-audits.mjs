@@ -38,6 +38,7 @@ const AUDITS = [
   { name: "ssr-in-appkit",                   script: "scripts/audit-ssr-in-appkit.mjs" },
   { name: "functions-query-indices",         script: "scripts/audit-functions-query-indices.mjs" },
   { name: "raw-sticky-toolbar",              script: "scripts/audit-raw-sticky-toolbar.mjs" },
+  { name: "no-demo-seed-route",              script: "scripts/audit-no-demo-seed-route.mjs" },
   { name: "responsive-wrap",                 script: "scripts/audit-responsive-wrap.mjs" },
   { name: "og-coverage",                     script: "appkit/scripts/verify-og-coverage.mjs" },
   { name: "hex-tokens",                      script: "scripts/audit-hex-tokens.mjs", supportsFix: true },

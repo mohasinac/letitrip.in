@@ -290,6 +290,14 @@ const checks = [
     cwd: ROOT,
   },
   {
+    // Blocks the deleted seed panel (SeedPanel component + /api/demo/seed
+    // route, Phase 4) from silently coming back.
+    label: "audit-no-demo-seed-route",
+    cmd: "node",
+    args: ["scripts/audit-no-demo-seed-route.mjs"],
+    cwd: ROOT,
+  },
+  {
     // Icon+label nav pattern: align="end"/"center" on a flex-1 label span
     // right after a shrink-0 icon span visually separates them.
     label: "audit-icon-label-split",
