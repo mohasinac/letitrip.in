@@ -12,12 +12,12 @@ test.describe("Auctions — P5", () => {
 
   test("auction detail page renders with heading and price", async ({ page }) => {
     const listRes = await page.request.get(
-      `${BASE_URL}/api/products?listingType=auction&status=active&pageSize=1`,
+      `${BASE_URL}/api/products?listingType=auction&status=published&pageSize=1`,
     );
     expect(listRes.status(), "Auctions API must be available").toBe(200);
     const body = await listRes.json() as { data: { items: { id: string }[] } };
     const firstId = body.data?.items?.[0]?.id;
-    expect(firstId, "At least one active auction must exist in seed data").toBeTruthy();
+    expect(firstId, "At least one published auction must exist in seed data").toBeTruthy();
 
     await gotoAndWait(page, `/auctions/${firstId}`);
     await expect(page.getByRole("main").first()).toBeVisible();
@@ -62,12 +62,12 @@ test.describe("Auctions — P5", () => {
 
   test("GET /api/bids/[id] returns bids array for a live auction", async ({ page }) => {
     const listRes = await page.request.get(
-      `${BASE_URL}/api/products?listingType=auction&status=active&pageSize=1`,
+      `${BASE_URL}/api/products?listingType=auction&status=published&pageSize=1`,
     );
     expect(listRes.status(), "Auctions API must be available").toBe(200);
     const body = await listRes.json() as { data: { items: { id: string }[] } };
     const auctionId = body.data?.items?.[0]?.id;
-    expect(auctionId, "At least one active auction must exist in seed data").toBeTruthy();
+    expect(auctionId, "At least one published auction must exist in seed data").toBeTruthy();
 
     const bidsRes = await page.request.get(`${BASE_URL}/api/bids/${auctionId}?pageSize=5`);
     expect(bidsRes.status()).toBe(200);
@@ -79,12 +79,12 @@ test.describe("Auctions — P5", () => {
   test("bid below starting price returns 422", async ({ page }) => {
     await loginAsAdmin(page);
     const listRes = await page.request.get(
-      `${BASE_URL}/api/products?listingType=auction&status=active&pageSize=1`,
+      `${BASE_URL}/api/products?listingType=auction&status=published&pageSize=1`,
     );
     expect(listRes.status(), "Auctions API must be available").toBe(200);
     const body = await listRes.json() as { data: { items: { id: string }[] } };
     const auctionId = body.data?.items?.[0]?.id;
-    expect(auctionId, "At least one active auction must exist in seed data").toBeTruthy();
+    expect(auctionId, "At least one published auction must exist in seed data").toBeTruthy();
 
     const res = await page.request.post(`${BASE_URL}/api/bids`, {
       data: { productId: auctionId, amount: 1 },

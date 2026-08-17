@@ -23,12 +23,12 @@ test.describe("Admin — Coupons (/admin/coupons)", () => {
     await expect(page.getByRole("heading").first()).toBeVisible({ timeout: 10000 });
   });
 
-  test("seeded coupon WELCOME10 exists in the list", async ({ page }) => {
+  test("seeded coupon YUGI10 exists in the list", async ({ page }) => {
     const res = await page.request.get(`${BASE_URL}/api/admin/coupons`);
     expect(res.status(), "Coupons API must be available").toBe(200);
     const body = await res.json() as { data?: { items?: { code: string }[] } };
     const codes = body.data?.items?.map((c) => c.code) ?? [];
-    expect(codes, "WELCOME10 must be present in seeded coupons").toContain("WELCOME10");
+    expect(codes, "YUGI10 must be present in seeded coupons").toContain("YUGI10");
   });
 
   test("admin can create a coupon via API", async ({ page }) => {
@@ -58,7 +58,7 @@ test.describe("Admin — Coupons (/admin/coupons)", () => {
     }
   });
 
-  test("duplicate coupon code WELCOME10 → 409", async ({ page }) => {
+  test("duplicate coupon code YUGI10 → 409", async ({ page }) => {
     const checkRes = await page.request.get(`${BASE_URL}/api/admin/coupons`);
     expect(checkRes.status(), "Coupons API must be available").toBe(200);
 
@@ -68,7 +68,7 @@ test.describe("Admin — Coupons (/admin/coupons)", () => {
     const res = await page.request.post(`${BASE_URL}/api/admin/coupons`, {
       headers: { Cookie: cookieHeader, "Content-Type": "application/json" },
       data: {
-        code: "WELCOME10",
+        code: "YUGI10",
         name: "Duplicate Test",
         type: "percentage",
         discount: { value: 5, minPurchase: 0 },
@@ -141,7 +141,7 @@ test.describe("Feature flag guard — COUPONS API", () => {
 
   test("POST /api/user/coupons/claim without auth → 401", async ({ page }) => {
     const res = await page.request.post(`${BASE_URL}/api/user/coupons/claim`, {
-      data: { couponCode: "WELCOME10", source: "manual" },
+      data: { couponCode: "YUGI10", source: "manual" },
     });
     expect([401, 403, 404]).toContain(res.status());
   });
