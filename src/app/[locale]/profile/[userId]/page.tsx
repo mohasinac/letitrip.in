@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { PublicProfileView, getPublicUserProfile } from "@mohasinac/appkit";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 import type { Metadata } from "next";
 import { generateProfileMetadata } from "@/constants";
 
@@ -27,5 +28,10 @@ export default async function Page({ params }: Props) {
   if (!user) notFound();
   // Private profile — return 404 so no link crawlers or direct URL visitors can access it
   if ((user.publicProfile as any)?.isPublic === false) notFound();
-  return <PublicProfileView userId={userId} />;
+  return (
+    <>
+      <PageViewTracker entityType="user-profile" entityId={userId} url={`/profile/${userId}`} />
+      <PublicProfileView userId={userId} />
+    </>
+  );
 }

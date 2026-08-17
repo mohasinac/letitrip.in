@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { CategoryDetailPageView, getCategoryBySlug } from "@mohasinac/appkit";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 import type { Metadata } from "next";
 import { notFound, redirect } from "@/i18n/navigation";
 
@@ -103,6 +104,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <Suspense>
+      <PageViewTracker entityType="category" entityId={slug} url={`/categories/${slug}`} />
       <CategoryDetailPageView slug={slug} />
     </Suspense>
   );

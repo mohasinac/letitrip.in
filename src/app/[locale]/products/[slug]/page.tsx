@@ -7,7 +7,7 @@ import {
 } from "@mohasinac/appkit";
 import { getProductForDetail } from "@mohasinac/appkit";
 import { getSiteSettingsGlobal } from "@mohasinac/appkit/server";
-import { MakeOfferButton, ProductDetailActions } from "@mohasinac/appkit/client";
+import { MakeOfferButton, ProductDetailActions, PageViewTracker } from "@mohasinac/appkit/client";
 import { submitProductOffer } from "./actions";
 import { generateProductMetadata } from "@/constants";
 
@@ -64,6 +64,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <>
+      <PageViewTracker entityType="product" entityId={slug} url={`/products/${slug}`} />
       {ldProduct && (
         <script
           type="application/ld+json"

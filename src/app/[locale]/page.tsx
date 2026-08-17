@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MarketplaceHomepageView } from "@mohasinac/appkit";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 import { HomepageNewsletterForm } from "@/components";
 import {
   AfterHeroAdSlot,
@@ -22,15 +23,18 @@ export const revalidate = 120;
 
 export default async function Page() {
   return (
-    <MarketplaceHomepageView
-      onBannerDismiss={dismissBannerAction}
-      newsletterFormSlot={<HomepageNewsletterForm />}
-      adSlots={{
-        afterHero: <AfterHeroAdSlot />,
-        afterFeaturedProducts: <AfterFeaturedProductsAdSlot />,
-        afterReviews: <AfterReviewsAdSlot />,
-        afterFAQ: <AfterFAQAdSlot />,
-      }}
-    />
+    <>
+      <PageViewTracker entityType="homepage" entityId="homepage" url="/" />
+      <MarketplaceHomepageView
+        onBannerDismiss={dismissBannerAction}
+        newsletterFormSlot={<HomepageNewsletterForm />}
+        adSlots={{
+          afterHero: <AfterHeroAdSlot />,
+          afterFeaturedProducts: <AfterFeaturedProductsAdSlot />,
+          afterReviews: <AfterReviewsAdSlot />,
+          afterFAQ: <AfterFAQAdSlot />,
+        }}
+      />
+    </>
   );
 }
