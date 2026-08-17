@@ -6,7 +6,7 @@ import { withProviders } from "@/providers.config";
 import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { buildSieveFilters } from "@mohasinac/appkit";
-import { piiBlindIndex } from "@mohasinac/appkit";
+import { piiBlindIndex } from "@mohasinac/appkit/server";
 import {
   REVIEW_FIELDS,
   ROLES_ADMIN_MOD,

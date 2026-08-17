@@ -11,11 +11,11 @@ import { withProviders } from "@/providers.config";
 import {
   storeRepository,
   productRepository,
-  decryptPii,
   createRouteHandler,
   successResponse,
   errorResponse,
 } from "@mohasinac/appkit";
+import { decryptPii } from "@mohasinac/appkit/server";
 import type { ProductCreateInput } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 

@@ -13,7 +13,7 @@ import {
 } from "@mohasinac/appkit";
 import { buildSieveFilters } from "@mohasinac/appkit";
 import { userRepository } from "@mohasinac/appkit";
-import { piiBlindIndex } from "@mohasinac/appkit";
+import { piiBlindIndex } from "@mohasinac/appkit/server";
 import { serverLogger } from "@mohasinac/appkit";
 import { USER_FIELDS } from "@mohasinac/appkit";
 import { sortBy } from "@mohasinac/appkit";

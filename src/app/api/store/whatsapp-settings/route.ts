@@ -11,12 +11,11 @@ import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
   storeRepository,
-  encryptPii,
-
   createRouteHandler,
   successResponse,
   errorResponse,
 } from "@mohasinac/appkit";
+import { encryptPii } from "@mohasinac/appkit/server";
 import type { StoreDocument } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 

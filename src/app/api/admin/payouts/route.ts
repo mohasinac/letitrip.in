@@ -15,7 +15,7 @@ import {
 } from "@mohasinac/appkit";
 import { buildSieveFilters } from "@mohasinac/appkit";
 import { payoutRepository } from "@mohasinac/appkit";
-import { piiBlindIndex } from "@mohasinac/appkit";
+import { piiBlindIndex } from "@mohasinac/appkit/server";
 import { serverLogger } from "@mohasinac/appkit";
 import { PAYOUT_FIELDS, sortBy, sieveFilter, SIEVE_OP, PayoutStatusValues, COMMON_FIELDS } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";

@@ -10,13 +10,12 @@ import { withProviders } from "@/providers.config";
 import {
   storeRepository,
   productRepository,
-  decryptPii,
   createRouteHandler,
   successResponse,
   errorResponse,
   isStandardListing,
 } from "@mohasinac/appkit";
-import { syncProductsToCatalog } from "@mohasinac/appkit/server";
+import { syncProductsToCatalog, decryptPii } from "@mohasinac/appkit/server";
 import type { CatalogSyncProduct } from "@mohasinac/appkit/server";
 import { ROLES_STORE_WRITE } from "@/constants";
 
