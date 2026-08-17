@@ -38,7 +38,7 @@ export default async function StoreLayout({ children }: { children: ReactNode })
             return true;
           }),
         };
-      case "Analytics":
+      case "Finance":
         return {
           ...group,
           items: group.items.filter((item) => {

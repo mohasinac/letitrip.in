@@ -192,7 +192,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     title: "Finance",
     items: [
       adminItem(String(ROUTES.ADMIN.ANALYTICS), "Analytics", "admin:analytics:view"),
-      // Payouts hidden until FEATURE_PAYOUTS (P7).
+      adminItem(String(ROUTES.ADMIN.PAYOUTS), "Payouts", "admin:payouts:read"),
     ],
   },
   {
@@ -214,7 +214,8 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.FEATURED),              "Featured",      "admin:featured:read"),
       adminItem(String(ROUTES.ADMIN.COUPONS), "Coupons", "admin:coupons:read"),
       adminItem(String(ROUTES.ADMIN.PRINT_CENTER), "Print Center", "admin:products:read"),
-      // Hidden until feature patch ships: Bundles, Prize Draws (P10).
+      adminItem(String(ROUTES.ADMIN.BUNDLES), "Bundles", "admin:categories:read"),
+      adminItem(String(ROUTES.ADMIN.PRIZE_DRAWS), "Prize Draws", "admin:products:read"),
     ],
   },
   {
@@ -260,7 +261,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.ADDRESS_CLUSTERS),      "Address Clusters",   "admin:addresses:read"),
       adminItem(String(ROUTES.ADMIN.PAYMENT_METHODS),       "Payment Methods",    "admin:addresses:read"),
       adminItem(String(ROUTES.ADMIN.PAYMENT_METHODS_CLUSTERS), "Payment Clusters", "admin:addresses:read"),
-      // Scam Registry hidden until FEATURE_SCAM_REGISTRY (P12).
+      adminItem(String(ROUTES.ADMIN.SCAMMERS), "Scam Registry", "admin:scammers:read"),
     ],
   },
   {
@@ -302,9 +303,10 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
 // Store dashboard sidebar
 // ---------------------------------------------------------------------------
 
-// P-1: Seller nav trimmed to MVP scope. Re-add disabled items when their
-// feature patch ships: Auctions→P5, Pre-Orders→P6, Payouts→P7, Coupons→P2,
-// Prize Draws→P10, Bundles→when enabled, Fulfilment→P-14 (Shiprocket).
+// P-1: Seller nav trimmed to MVP scope. Auctions, Pre-Orders, Payouts,
+// Coupons, and Prize Draws are all wired now. Bundles stays excluded (not
+// in MVP scope). Fulfilment/Shiprocket was removed from the codebase
+// entirely (manual shipping is the only provider) — not a gap.
 export const STORE_NAV_GROUPS: StoreNavGroup[] = [
   {
     title: "Overview",
@@ -315,12 +317,17 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
   {
     title: "Listings",
     items: [
-      { href: String(ROUTES.STORE.PRODUCTS), label: "Products" },
-      { href: String(ROUTES.STORE.ART),      label: "Art"      },
-      { href: String(ROUTES.STORE.STICKERS), label: "Stickers" },
-      // Disabled until feature patches: Auctions(P5), Pre-Orders(P6), Prize Draws(P10),
-      // Bundles, Classifieds, Digital Codes, Live Items, Offers, Sub-listing Groups,
-      // Feature Badges, Templates, Listing Templates, Grouped Listings.
+      { href: String(ROUTES.STORE.PRODUCTS),    label: "Products"    },
+      { href: String(ROUTES.STORE.ART),         label: "Art"         },
+      { href: String(ROUTES.STORE.STICKERS),    label: "Stickers"    },
+      { href: String(ROUTES.STORE.AUCTIONS),    label: "Auctions"    },
+      { href: String(ROUTES.STORE.PRE_ORDERS),  label: "Pre-Orders"  },
+      { href: String(ROUTES.STORE.PRIZE_DRAWS), label: "Prize Draws" },
+      // Bundles intentionally excluded — not in MVP scope (P-1).
+      // Still not wired: Classifieds, Digital Codes, Live Items, Offers,
+      // Sub-listing Groups, Feature Badges, Templates, Listing Templates,
+      // Grouped Listings — none of these are referenced by store/layout.tsx's
+      // flag filter, unlike Auctions/Pre-Orders/Prize Draws above.
     ],
   },
   {
@@ -333,7 +340,7 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
     ],
   },
   {
-    title: "Analytics",
+    title: "Finance",
     items: [
       { href: String(ROUTES.STORE.ANALYTICS), label: "Analytics" },
       { href: String(ROUTES.STORE.PAYOUTS),   label: "Payouts"   },
@@ -384,7 +391,10 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
       { href: String(ROUTES.USER.OFFERS),           label: "My Offers"  },
       { href: String(ROUTES.USER.HISTORY),          label: "Recently Viewed" },
       { href: String(ROUTES.USER.CATALOGUE),        label: "My Catalogue" },
-      // Hidden until feature patch ships: Returns, Pre-Orders (P6), Digital Codes, Prize Draws (P10).
+      { href: String(ROUTES.USER.RETURNS),          label: "My Returns" },
+      { href: String(ROUTES.USER.PRE_ORDERS),       label: "My Pre-Orders" },
+      { href: String(ROUTES.USER.DIGITAL_CODES),    label: "My Digital Codes" },
+      { href: String(ROUTES.USER.PRIZE_DRAWS),      label: "My Prize Draws" },
     ],
   },
   {
