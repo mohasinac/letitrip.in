@@ -99,27 +99,15 @@ export function initProviders(): Promise<void> {
     });
     const { siteSettingsRepository } = await import("@mohasinac/appkit/repositories/site-settings");
 
-    // Track H — provider resolution. Read the mock flag + payment-method
-    // toggles once at boot. The resolver throws on production+mock to make
-    // the misconfiguration loud. Shipping has no mock/toggle: manual
-    // shipping is the only provider, always registered.
+    // Provider resolution — read payment-method toggles once at boot.
+    // Shipping has no toggle: manual shipping is the only provider, always
+    // registered.
     const bootSettings = await siteSettingsRepository.getSingleton().catch(() => null);
-    const useMockPayment = bootSettings?.featureFlags?.useMockPayment === true;
-    if (useMockPayment && process.env.NODE_ENV === "production") {
-      throw new Error(
-        "[providers] siteSettings.featureFlags.useMockPayment is TRUE in production. " +
-          "The mock payment provider must never run in production.",
-      );
-    }
-
     const razorpayEnabled = bootSettings?.payment?.razorpayEnabled === true;
     const { ManualPaymentProvider, ManualShippingProvider } = await import("@mohasinac/appkit/server");
 
     let paymentProvider: IPaymentProvider;
-    if (useMockPayment) {
-      const { MockRazorpayProvider } = await import("@mohasinac/appkit/server");
-      paymentProvider = new MockRazorpayProvider();
-    } else if (razorpayEnabled) {
+    if (razorpayEnabled) {
       const { RazorpayProvider, resolveKeys } = await import("@mohasinac/appkit/server");
       const keys = await resolveKeys();
       paymentProvider = new RazorpayProvider({
@@ -157,8 +145,7 @@ export function initProviders(): Promise<void> {
         },
       },
       // payment/shipping are always populated — manual by default, Razorpay
-      // when siteSettings.payment.razorpayEnabled is true, mock Razorpay
-      // when siteSettings.featureFlags.useMockPayment is true (non-prod only).
+      // when siteSettings.payment.razorpayEnabled is true.
       payment: paymentProvider,
       shipping: shippingProvider,
     });

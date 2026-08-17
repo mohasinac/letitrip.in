@@ -23,7 +23,6 @@ on:
           - FEATURE_PAYOUTS
           - FEATURE_ANALYTICS_FUNCTION
           - FEATURE_GST
-          - FEATURE_MOCK_PAYMENT
           - FEATURE_BUNDLES
       enabled:
         description: Set to true to enable, false to disable

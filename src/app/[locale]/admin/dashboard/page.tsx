@@ -16,26 +16,6 @@ const __P = {
 const __O = {
   hidden: "overflow-hidden",
 } as const;
-const STORAGE_KEY = "letitrip_dev_prefs";
-
-interface DevPrefs {
-  mockRazorpay: boolean;
-  mockShiprocket: boolean;
-}
-
-const DEFAULT_PREFS: DevPrefs = { mockRazorpay: false, mockShiprocket: false };
-
-function loadPrefs(): DevPrefs {
-  if (typeof window === "undefined") return DEFAULT_PREFS;
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    return raw ? { ...DEFAULT_PREFS, ...JSON.parse(raw) } : DEFAULT_PREFS;
-  } catch (_err) {
-    void normalizeError(_err);
-    return DEFAULT_PREFS;
-  }
-}
-
 function ToggleRow({
   label,
   description,
@@ -105,17 +85,12 @@ function StatCard({ label, value, href }: { label: string; value: number | null;
 export default function Page() {
   const { showToast } = useToast();
   const { flags, isLoading: flagsLoading } = useFeatureFlags();
-  const [prefs, setPrefs] = useState<DevPrefs>(DEFAULT_PREFS);
   const [adminBypassEnabled, setAdminBypassEnabled] = useState(false);
   const [bypassLoading, setBypassLoading] = useState(false);
   const bypassFetched = useRef(false);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setPrefs(loadPrefs());
-  }, []);
 
   useEffect(() => {
     if (bypassFetched.current) return;
@@ -206,14 +181,6 @@ export default function Page() {
     }
   }, [showToast]);
 
-  const update = useCallback((patch: Partial<DevPrefs>) => {
-    const next = { ...prefs, ...patch };
-    setPrefs(next);
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch (_err) { void normalizeError(_err); }
-  }, [prefs]);
-
   return (
     <AdminDashboardView
       labels={{ title: "Admin Dashboard" }}
@@ -262,24 +229,12 @@ export default function Page() {
           <Div className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`} rounded="xl">
             <Row className="mb-4" align="center" gap="sm">
               <Text size="sm" weight="semibold">Dev Settings</Text>
-              {(prefs.mockRazorpay || prefs.mockShiprocket || adminBypassEnabled) && (
+              {adminBypassEnabled && (
                 <Span size="xs" weight="medium" surface="subtle" padding="pill-sm" rounded="full" className="text-warning">
-                  Mock active
+                  Bypass active
                 </Span>
               )}
             </Row>
-            <ToggleRow
-              label="Mock Razorpay"
-              description={prefs.mockRazorpay ? "Routing to /api/dev/mock-razorpay" : "Use mock instead of live Razorpay keys"}
-              enabled={prefs.mockRazorpay}
-              onChange={(v) => update({ mockRazorpay: v })}
-            />
-            <ToggleRow
-              label="Mock Shiprocket"
-              description={prefs.mockShiprocket ? "Routing to /api/dev/mock-shiprocket" : "Use mock for shipping flows"}
-              enabled={prefs.mockShiprocket}
-              onChange={(v) => update({ mockShiprocket: v })}
-            />
             <ToggleRow
               label="Admin Checkout Bypass"
               description={

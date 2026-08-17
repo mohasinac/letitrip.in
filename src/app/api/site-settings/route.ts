@@ -32,6 +32,7 @@ import {
 import { createApiHandler } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { invalidateIntegrationKeysCache } from "@mohasinac/appkit";
+import { enqueueJob } from "@mohasinac/appkit/server";
 
 /**
  * GET /api/site-settings
@@ -130,12 +131,34 @@ export const PATCH = withProviders(createRouteHandler<
   roles: [...ROLES_ADMIN_ONLY],
   schema: siteSettingsUpdateSchema,
   handler: async ({ user, body }) => {
+    // Read the pre-update flag so we can detect an off->on transition below —
+    // updateSingleton() merges, so body!.featureFlags?.smsVerification alone
+    // can't tell us whether this PATCH actually flipped the flag.
+    const previousSettings = await siteSettingsRepository.getSingleton().catch(() => null);
+    const wasSmsVerificationOn = previousSettings?.featureFlags?.smsVerification === true;
+
     // Update settings in repository (singleton pattern)
     const updatedSettings = await siteSettingsRepository.updateSingleton(body!);
 
     // Invalidate the integration-keys in-process cache so Razorpay/Resend/etc.
     // pick up rotated credentials on the very next request.
     invalidateIntegrationKeysCache();
+
+    // Re-enabling SMS verification after a period of being off means every
+    // previously-verified user's phoneVerified flag reflects a verification
+    // that happened under different rules (or none, if it was off when they
+    // signed up) — reset everyone + clear rate-limit state via the async job
+    // primitive (bulk fan-out over the users collection, unbounded).
+    const isSmsVerificationOnNow = updatedSettings.featureFlags?.smsVerification === true;
+    if (!wasSmsVerificationOn && isSmsVerificationOnNow) {
+      await enqueueJob({
+        jobType: "resetOtpVerification",
+        payload: {},
+        requestedBy: user!.uid,
+      }).catch((err) => {
+        serverLogger.error("Failed to enqueue resetOtpVerification job", err);
+      });
+    }
 
     // Audit log â€” record which admin changed what fields
     serverLogger.info(ERROR_MESSAGES.API.SITE_SETTINGS_AUDIT_LOG, {

@@ -117,7 +117,6 @@ const AUDITS = [
   { name: "functions-registry-completeness", script: "scripts/audit-functions-registry-completeness.mjs" },
   { name: "payment-provider-import",         script: "scripts/audit-payment-provider-import.mjs" },
   { name: "shipping-provider-import",        script: "scripts/audit-shipping-provider-import.mjs" },
-  { name: "mock-flag-production",            script: "scripts/audit-mock-flag-production.mjs" },
   { name: "orphan-dev-routes",               script: "scripts/audit-orphan-dev-routes.mjs" },
   { name: "checkout-bypass",                 script: "scripts/audit-checkout-bypass.mjs" },
   { name: "auth-rate-limit",                 script: "scripts/audit-auth-rate-limit.mjs" },

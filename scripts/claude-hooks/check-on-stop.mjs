@@ -352,7 +352,6 @@ const checks = [
   { label: "audit-functions-registry-completeness", cmd: "node", args: ["scripts/audit-functions-registry-completeness.mjs"], cwd: ROOT },
   { label: "audit-payment-provider-import", cmd: "node", args: ["scripts/audit-payment-provider-import.mjs"], cwd: ROOT },
   { label: "audit-shipping-provider-import", cmd: "node", args: ["scripts/audit-shipping-provider-import.mjs"], cwd: ROOT },
-  { label: "audit-mock-flag-production", cmd: "node", args: ["scripts/audit-mock-flag-production.mjs"], cwd: ROOT },
   { label: "audit-orphan-dev-routes", cmd: "node", args: ["scripts/audit-orphan-dev-routes.mjs"], cwd: ROOT },
   { label: "audit-checkout-bypass", cmd: "node", args: ["scripts/audit-checkout-bypass.mjs"], cwd: ROOT },
   { label: "audit-auth-rate-limit", cmd: "node", args: ["scripts/audit-auth-rate-limit.mjs"], cwd: ROOT },

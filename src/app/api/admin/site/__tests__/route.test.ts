@@ -58,7 +58,6 @@ import { GET, PUT } from "../route";
 
 const mockSettings = {
   branding: { siteName: "LetItRip", logoUrl: "" },
-  featureFlags: { useMockPayment: false },
   integrations: { razorpayKeyId: "rzp_test_abc", razorpayKeySecret: "secret123" },
 };
 

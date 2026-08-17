@@ -21,7 +21,6 @@ export const FEATURE_FLAGS = [
   "PAYOUTS",
   "ANALYTICS_FUNCTION",
   "GST",
-  "MOCK_PAYMENT",
   "BUNDLES",
 ] as const;
 

@@ -8,8 +8,9 @@ export { RegisterPageClient } from "./auth/RegisterPageClient";
 export { ResetPasswordPageClient } from "./auth/ResetPasswordPageClient";
 export { VerifyEmailPageClient } from "./auth/VerifyEmailPageClient";
 // DevToolbar + isMockRazorpayEnabled + isMockShiprocketEnabled deleted in
-// Track H. Mock provider selection now lives server-side via
-// siteSettings.featureFlags.useMockPayment / useMockShipping.
+// Track H. The in-process mock Razorpay provider itself was later removed
+// entirely — Razorpay test-mode keys are the only way to exercise the
+// payment flow outside manual/COD locally.
 export { AfterHeroAdSlot, AfterFeaturedProductsAdSlot, AfterReviewsAdSlot, AfterFAQAdSlot } from "./homepage/AdSlots";
 export { HomepageNewsletterForm } from "./homepage/HomepageNewsletterForm";
 export { FooterNewsletterSlot } from "./layout/FooterNewsletterSlot";

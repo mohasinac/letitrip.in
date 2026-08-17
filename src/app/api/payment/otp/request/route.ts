@@ -18,6 +18,7 @@ import { ApiError } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { smsCounterRepository } from "@mohasinac/appkit";
+import { siteSettingsRepository } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 
 /** Return today's date string (YYYY-MM-DD) in IST (UTC+5:30). */
@@ -30,6 +31,15 @@ function getTodayIST(): string {
 const __POST__g = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
+    // 0. Admin-controlled kill switch — when smsVerification is off, skip the
+    // gate entirely regardless of any per-user phoneVerified state. Toggling
+    // it back on resets all users' phoneVerified + clears rate-limit state
+    // via the resetOtpVerification job (see PATCH /api/site-settings).
+    const settings = await siteSettingsRepository.getSingleton();
+    if (settings.featureFlags?.smsVerification !== true) {
+      return successResponse({ allowed: false, count: 0 }, "SMS verification is currently disabled.");
+    }
+
     // 1. Per-user 15-minute cooldown â€” checked via Firestore so it persists across
     //    devices and server restarts (in-memory rate limiting is insufficient here).
     const cooldown = await smsCounterRepository.checkAndSetUserCooldown(
