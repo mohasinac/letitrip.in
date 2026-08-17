@@ -177,6 +177,22 @@
 | `notifications/bulk/route.ts` | POST | Bulk mark-read/delete (2026-08-15) — same bounded `Promise.all` shape |
 | `payouts/weekly/route.ts` | POST | Enqueues the `payoutsWeekly` job (2026-08-15) — was ~150 lines of inline duplicate-of-the-scheduled-Function logic, now a thin `enqueueJob()` call |
 | `sessions/route.ts` | GET | Per-uid Firebase Auth enrichment fixed from a sequential `for` loop to `Promise.all` (2026-08-15 — Rule #6 N+1) |
+| `tester-checklist-items/route.ts` | GET/POST | Tester QA checklist catalog list/create (2026-08-17) |
+| `tester-checklist-items/[id]/route.ts` | GET/PUT/PATCH/DELETE | Tester checklist item CRUD (2026-08-17) |
+| `tester-feedback/route.ts` | GET | Flat list of every tester's checklist responses (2026-08-17) |
+| `tester-feedback/[id]/route.ts` | PATCH | Mark a tester response reviewed (2026-08-17) |
+| `tester-feedback/report/route.ts` | GET | Coverage report — per-item yes/no counts + "no"-answer issues list (2026-08-17) |
+
+---
+
+## Tester QA Program Routes — `src/app/api/user/tester-checklist/` (2026-08-17)
+
+| Route file | Method | Purpose |
+|-----------|--------|---------|
+| `route.ts` | GET | Active checklist items joined with the current tester's own responses (Tester Hub hydration); 403 if `user.isTester !== true` |
+| `[checklistItemId]/route.ts` | PUT | Upserts `{ answer?, comment?, screenshotUrl? }` for the current tester + item — deterministic-ID upsert, the persistence mechanism behind reload-safe checklist state |
+
+Pages: `/user/tester` (Tester Hub), `/admin/tester-checklist` (catalog CRUD), `/admin/tester-feedback` (Report/Issues/Submissions). All three are thin shims delegating to the `TesterHubView`/`AdminTesterChecklistView`/`AdminTesterFeedbackView` appkit exports — see `appkit/index.md`.
 
 ---
 

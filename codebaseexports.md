@@ -327,6 +327,8 @@
 | AdminBlogEditorView | View | Blog post editor |
 | AdminFaqsView | View | FAQs management |
 | AdminFaqEditorView | View | FAQ editor |
+| AdminTesterChecklistView | View | Tester QA checklist catalog management (mirrors FAQs) |
+| AdminTesterChecklistItemEditorView | View | Tester checklist test-case create/edit form |
 | AdminEventsView | View | Events management |
 | AdminEventEditorView | View | Event editor |
 | AdminEventEntriesView | View | Event entries management |
@@ -487,6 +489,18 @@
 | RelatedFAQs | List | Related FAQs section |
 | ContactCTA | Button | Contact CTA |
 | FAQPageContent | Page | FAQ page content |
+
+### Tester (`appkit/src/features/tester/components/`)
+
+| Export | Type | Purpose |
+|--------|------|---------|
+| TesterHubView | View | `/user/tester` — searchable, grouped-accordion QA checklist; Yes/No per case, inline comment + screenshot |
+| TesterChecklistStepRow | Component | One checklist step row — Yes/No button pair + expandable note/screenshot form |
+| TesterFeedbackChart | Component | Recharts bar chart of pass/fail per group, dynamically imported (SSR disabled) — mirrors `AdminAnalyticsCharts.tsx`'s pattern |
+| AdminTesterFeedbackView | View | `/admin/tester-feedback` — Report / Main Issues / All Submissions tabs |
+| AdminTesterFeedbackReportView | View | Report tab — stat row + `TesterFeedbackChart` |
+| AdminTesterFeedbackIssuesView | View | Main Issues tab — every `answer:"no"` response with comment/screenshot |
+| AdminTesterFeedbackListView | View | All Submissions tab — `DataListingView` + Mark Reviewed row action |
 
 ### Homepage (`appkit/src/features/homepage/components/`)
 
@@ -901,6 +915,8 @@
 | ShipmentItemsRepository | shipmentItems | listByLot, createItem, bulkCreate, updateItem, unlink, hasLinkedItemsInLot | Feature A per-item CRUD; `bulkCreate` writes ≤500 rows in one Firestore WriteBatch |
 | CatalogueRepository | catalogueItems | listByOwner, listPublicByOwner, listPendingApproval (Sieve), listStale | Feature B personal-catalogue CRUD; `update` auto-stamps `lastImageUpdateAt` whenever `images` changes |
 | JobsRepository (`jobsRepository`) | jobs | markProcessing, markDone, markFailed, getStaleFinishedRefs | Async job primitive (2026-08-15) — pure auto-ID docs, `getStaleFinishedRefs(ttlDays=30)` feeds the `cleanupRtdbEvents` TTL sweep |
+| TesterChecklistItemRepository (`testerChecklistItemRepository`) | testerChecklistItems | createItem, update, listActive, list (Sieve) | Tester QA program (2026-08-17) — admin-managed test-case catalog, mirrors FAQs |
+| TesterChecklistResponseRepository (`testerChecklistResponseRepository`) | testerChecklistResponses | upsertResponse, listForTester, list (Sieve), markReviewed, getCoverageReport | Tester QA program — one doc per (tester, case), deterministic ID `${testerId}__${checklistItemId}`; `getCoverageReport()` powers the admin Report + Main Issues tabs |
 
 ---
 
@@ -1157,6 +1173,11 @@
 | `/api/admin/bids/[id]` | GET, PUT, DELETE | Bid CRUD |
 | `/api/admin/faqs` | GET, POST | List/create FAQs |
 | `/api/admin/faqs/[id]` | GET, PUT, DELETE | FAQ CRUD |
+| `/api/admin/tester-checklist-items` | GET, POST | List/create tester QA checklist test cases |
+| `/api/admin/tester-checklist-items/[id]` | GET, PUT, PATCH, DELETE | Tester checklist item CRUD |
+| `/api/admin/tester-feedback` | GET | Flat filterable list of every tester's checklist responses (All Submissions tab) |
+| `/api/admin/tester-feedback/[id]` | PATCH | Mark a tester response reviewed |
+| `/api/admin/tester-feedback/report` | GET | Coverage report — per-item yes/no counts + flat "no"-answer issues list (Report + Main Issues tabs) |
 | `/api/admin/coupons` | GET, POST | List/create coupons |
 | `/api/admin/coupons/[id]` | GET, PUT, DELETE | Coupon CRUD |
 | `/api/admin/carousel` | GET, POST | List/create carousel slides |
@@ -1259,6 +1280,8 @@
 | `/api/user/catalogue/[id]` | GET, PATCH, DELETE | Feature B — single item CRUD, ownership-checked; PATCH re-stamps `lastImageUpdateAt` only when `images` is part of the patch |
 | `/api/user/catalogue/[id]/list` | POST | Feature B — direct list; seller → own store, admin → `store-letitrip-official` (no personal store) |
 | `/api/user/catalogue/[id]/submit` | POST | Feature B — buyer "Request to sell", flips `listingStatus` to `pending_admin_approval` |
+| `/api/user/tester-checklist` | GET | Active checklist items joined with the current tester's own responses (Tester Hub hydration); 403 if `user.isTester !== true` |
+| `/api/user/tester-checklist/[checklistItemId]` | PUT | Upserts `{ answer?, comment?, screenshotUrl? }` for the current tester + item (deterministic-ID upsert — the persistence mechanism behind the Tester Hub) |
 | + ~16 more | — | Become seller, reviews, events, offers, etc. |
 
 ### Public Routes (~110 endpoints)
@@ -1383,6 +1406,10 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 | ScammerDocument | scammers | scams/schemas/firestore.ts |
 | SupportTicketDocument | supportTickets | support/schemas/firestore.ts |
 | JobDocument | jobs | jobs/schemas/firestore.ts — async job primitive (2026-08-15); `jobType`/`status`/`payload`/`result`/`error` |
+| TesterChecklistItemDocument | testerChecklistItems | tester/schemas/firestore.ts — admin-managed QA test-case catalog (2026-08-17); `groupKey`/`pageKey`/`label`/`href`/`order`/`isActive`/`searchTokens` |
+| TesterChecklistResponseDocument | testerChecklistResponses | tester/schemas/firestore.ts — one doc per (tester, case), deterministic ID `${testerId}__${checklistItemId}`; `answer: "yes"\|"no"\|null`, `comment?`, `screenshotUrl?`, `status: "new"\|"reviewed"` |
+
+**2026-08-17**: `isTester?: boolean` added to `UserDocument` (account/schemas/firestore.ts) — orthogonal to `role`, unlocks the Tester Hub + auto-approves the user's store. `isTestData?: boolean` + `testDataExpiresAt?: Date` added to `StoreDocument`, `CategoryDocument`, `ProductDocument`, `BlogPostDocument`, `EventDocument` for the tester sandbox (swept by `testerSandboxCleanup`).
 
 **2026-08-15**: `OrderDocument` gained `outOfStockPolicy?: "cancel_order" \| "skip_items"`, `droppedItems?: {productId, productTitle, requestedQty, availableQty}[]`, and `refundPending?: boolean` (orders/schemas/firestore.ts). New `OutOfStockPolicyValues` const alongside the existing `PaymentMethodValues`/`OrderStatusValues` pattern.
 
@@ -1465,6 +1492,7 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 | stores | firestore.ts, index.ts | Store document schemas |
 | support | firestore.ts, index.ts | Support ticket document schemas |
 | wishlist | index.ts | Wishlist document schemas |
+| tester | firestore.ts, index.ts | Tester QA program (2026-08-17) — `TesterChecklistItemDocument` (catalog) + `TesterChecklistResponseDocument` (per-tester answers) |
 
 ---
 
@@ -1508,6 +1536,8 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 | support-tickets-seed-data.ts | supportTickets | Support ticket examples |
 | product-features-seed-data.ts | productFeatures | Dynamic feature flags |
 | offers-seed-data.ts | offers | Promotion offers |
+| features/tester/seed-data/tester-checklist-seed-data.ts | testerChecklistItems | ~55 default tester QA test cases (admins add more via `/admin/tester-checklist`); deliberately isolated outside `appkit/src/seed/` |
+| features/tester/seed-data/{stores,categories,products,blog,events}-tester-seed-data.ts | stores, categories, products, blogPosts, events | Shared 7-day auto-expiring tester sandbox — 1 store, 3 plain categories + 1 brand + 1 bundle, 4 products (standard×2/auction/pre-order), 1 blog post, 1 spin-wheel+raffle event; every doc tagged `isTestData: true` + `testDataExpiresAt` (recomputed on each seed run) |
 | store-extensions-seed-data.ts | storeExtensions + 11 sub-collections | Store feature extensions |
 | shipments-seed-data.ts | procurementShipments | Feature A — sample shipments across statuses |
 | shipment-lots-seed-data.ts | shipmentLots | Feature A — lots per shipment (incl. one remainder-only lot) |
@@ -1524,11 +1554,11 @@ All pages are thin shims delegating to appkit `_internal/server/features/*/` hel
 
 | Domain | Count | Examples |
 |--------|-------|---------|
-| Admin | ~104 | /admin/products, /admin/orders, /admin/users, /admin/categories, /admin/blog, /admin/reviews, /admin/coupons, /admin/carousel, /admin/sections, /admin/events, /admin/payouts, /admin/team, /admin/support, /admin/scammers, /admin/art, /admin/stickers, /admin/addresses, /admin/shipments (+ new/[id]/edit/[id]/lots/[lotId]/items/projections — Feature A), /admin/catalogue-approvals (Feature B) |
+| Admin | ~106 | /admin/products, /admin/orders, /admin/users, /admin/categories, /admin/blog, /admin/reviews, /admin/coupons, /admin/carousel, /admin/sections, /admin/events, /admin/payouts, /admin/team, /admin/support, /admin/scammers, /admin/art, /admin/stickers, /admin/addresses, /admin/shipments (+ new/[id]/edit/[id]/lots/[lotId]/items/projections — Feature A), /admin/catalogue-approvals (Feature B), /admin/tester-checklist, /admin/tester-feedback (2026-08-17) |
 | Store | ~76 | /store/products, /store/orders, /store/coupons, /store/analytics, /store/payouts, /store/reviews, /store/templates, /store/features, /store/shipping, /store/art, /store/stickers, /store/print-center, /store/messages (P-11 fix), /store/bundles/new + [id]/edit (P-17 fix, was wired to a dead endpoint) |
-| User | ~32 | /user/orders, /user/profile, /user/wishlist, /user/addresses, /user/history, /user/conversations, /user/notifications, /user/catalogue (+ new/[id]/edit — Feature B) |
+| User | ~33 | /user/orders, /user/profile, /user/wishlist, /user/addresses, /user/history, /user/conversations, /user/notifications, /user/catalogue (+ new/[id]/edit — Feature B), /user/tester (2026-08-17) |
 | Public | ~107 | /products/[id], /categories, /blog, /events, /auctions, /stores, /about, /contact, /faqs, /seller, /cart, /checkout, /profile/[userId]/[tab] (Feature B public catalogue tab) |
-| **Total** | **~318** | |
+| **Total** | **~322** | |
 
 ### RSC + thin client-wrapper pattern (applied 2026-06-24)
 
@@ -1658,9 +1688,9 @@ Route constants defined in `appkit/src/next/routing/route-map.ts` via the `ROUTE
 | Namespace | Examples | Purpose |
 |-----------|---------|---------|
 | ROUTES.PUBLIC | PRODUCTS, PRODUCT(id), AUCTIONS, STORES, STORE(slug), BLOG, EVENTS, FAQS, CART, CHECKOUT, SEARCH, PROFILE(userId) — `/profile/[userId]`, tabbed via `/profile/[userId]/[tab]`; Feature B renders `PublicCatalogueView` at `tab === "catalogue"` | Public page routes |
-| ROUTES.ADMIN | DASHBOARD, PRODUCTS, ORDERS, USERS, STORES, CATEGORIES, BRANDS, BLOG, EVENTS, PAYOUTS, SETTINGS, SHIPMENTS / SHIPMENTS_NEW / SHIPMENTS_EDIT(id) / SHIPMENT_LOT_ITEMS(id, lotId) / SHIPMENTS_PROJECTIONS (Feature A), CATALOGUE_APPROVALS (Feature B) | Admin dashboard routes |
+| ROUTES.ADMIN | DASHBOARD, PRODUCTS, ORDERS, USERS, STORES, CATEGORIES, BRANDS, BLOG, EVENTS, PAYOUTS, SETTINGS, SHIPMENTS / SHIPMENTS_NEW / SHIPMENTS_EDIT(id) / SHIPMENT_LOT_ITEMS(id, lotId) / SHIPMENTS_PROJECTIONS (Feature A), CATALOGUE_APPROVALS (Feature B), TESTER_CHECKLIST / TESTER_FEEDBACK (2026-08-17) | Admin dashboard routes |
 | ROUTES.STORE | DASHBOARD, PRODUCTS, ORDERS, COUPONS, ANALYTICS, PAYOUTS, REVIEWS, SHIPPING, TEMPLATES | Store dashboard routes |
-| ROUTES.USER | ORDERS, ORDER_DETAIL(id), PROFILE, WISHLIST, ADDRESSES, HISTORY, NOTIFICATIONS, CONVERSATIONS, CATALOGUE / CATALOGUE_NEW / CATALOGUE_EDIT(id) (Feature B) | User dashboard routes |
+| ROUTES.USER | ORDERS, ORDER_DETAIL(id), PROFILE, WISHLIST, ADDRESSES, HISTORY, NOTIFICATIONS, CONVERSATIONS, CATALOGUE / CATALOGUE_NEW / CATALOGUE_EDIT(id) (Feature B), TESTER_HUB (2026-08-17) | User dashboard routes |
 | ROUTES.AUTH | LOGIN, REGISTER, FORGOT_PASSWORD, RESET_PASSWORD, VERIFY_EMAIL | Auth routes |
 
 ---
@@ -1670,7 +1700,7 @@ Route constants defined in `appkit/src/next/routing/route-map.ts` via the `ROUTE
 Firebase Functions are declared once in the appkit registry (single source of truth) and bound from [functions/src/index.ts](functions/src/index.ts). Consumer extensions live in [functions/src/consumer-functions.ts](functions/src/consumer-functions.ts) (empty by default).
 
 Registry sources:
-- [appkit/src/_internal/server/functions/scheduled.ts](appkit/src/_internal/server/functions/scheduled.ts) — `SCHEDULED_FUNCTIONS` (22 entries)
+- [appkit/src/_internal/server/functions/scheduled.ts](appkit/src/_internal/server/functions/scheduled.ts) — `SCHEDULED_FUNCTIONS` (23 entries, incl. `testerSandboxCleanup` — daily 05:00 UTC, deletes expired tester QA sandbox data, cascading into bids on deleted test auctions)
 - [appkit/src/_internal/server/functions/firestore.ts](appkit/src/_internal/server/functions/firestore.ts) — `FIRESTORE_TRIGGER_FUNCTIONS` (18 entries)
 - [appkit/src/_internal/server/functions/https.ts](appkit/src/_internal/server/functions/https.ts) — `HTTPS_FUNCTIONS` (7 entries)
 - Aggregated in [appkit/src/_internal/server/functions/manifest.ts](appkit/src/_internal/server/functions/manifest.ts) as `APPKIT_FUNCTIONS`

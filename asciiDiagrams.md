@@ -12324,3 +12324,186 @@ minutes, per the rule file's original comment.
                                                                                         (Rule #8 — surfaced, never
                                                                                          silently dropped)
 ```
+
+---
+
+## Tester QA Program — checklist answer persistence (2026-08-17)
+
+> Origin: tester needed a checklist that "saves automatically" and survives a page
+> reload, per-case, without a submit button. The trick is a **deterministic doc ID** —
+> `${testerId}__${checklistItemId}` — so every Yes/No click or note-save is a
+> `set({ merge: true })` upsert, never a duplicate-creating `add()`. Reloading the page
+> just re-fetches the tester's own docs and re-hydrates every answer exactly as left.
+
+```
+ BROWSER (Tester Hub)                    |  NEXT.JS API ROUTE                |  FIRESTORE
+ ─────────────────────────────────────────┼────────────────────────────────────┼───────────────────────────────
+                                          |                                    |
+ GET /api/user/tester-checklist -------->|  testerChecklistItemRepository    |
+   (page mount)                          |    .listActive()          ------->|  testerChecklistItems
+                                          |  testerChecklistResponseRepository|    where isActive==true
+                                          |    .listForTester(uid)    ------->|  testerChecklistResponses
+                                          |                                    |    where testerId==uid
+                                          |  merge: items + responseByItemId  |
+                                          |<-----------------------------------|
+        <-------------------------------- { items: [...answer/comment/       |
+        render grouped accordion            screenshotUrl per item] }        |
+        (groupKey -> pageKey -> steps)    |                                    |
+                                          |                                    |
+ Tester clicks "Yes" / "No"               |                                    |
+        |                                |                                    |
+        v  (optimistic UI update)         |                                    |
+ PUT /api/user/tester-checklist/          |                                    |
+   [checklistItemId]  { answer } ------->|  if (user.isTester !== true)      |
+                                          |    -> 403 (no `roles` array can   |
+                                          |       express this — isTester    |
+                                          |       isn't a role string)       |
+                                          |  testerChecklistResponseRepository|
+                                          |    .upsertResponse({              |
+                                          |      testerId, checklistItemId,   |
+                                          |      answer, groupKey, pageKey }) |
+                                          |         |                        |
+                                          |         v                        |
+                                          |    id = `${testerId}__${itemId}` |
+                                          |    existing = findById(id)       |
+                                          |    existing ? update(id, patch)  |
+                                          |             : createWithId(id, {…}) ---> testerChecklistResponses/{id}
+                                          |    status reset to "new"          |    (upsert — never a duplicate)
+        <-------------------------------- 200 { response }                   |
+                                          |                                    |
+ Tester expands "Add note", types         |                                    |
+ a comment, uploads a screenshot          |                                    |
+   (MediaUploadField -> useMediaUpload -- |-> /api/media/sign -> PUT GCS      |
+    -> /api/media/finalize)               |-> /api/media/finalize             |
+        |                                |                                    |
+        v                                |                                    |
+ PUT .../[checklistItemId]                |                                    |
+   { comment, screenshotUrl } ---------->|  upsertResponse (same doc,        |
+                                          |    merge — answer untouched)  --->|  testerChecklistResponses/{id}
+        <-------------------------------- 200 { response }                   |
+                                          |                                    |
+ [reload page] -----------------------> |  GET .../tester-checklist          |
+        <-------------------------------- same answer/comment/screenshotUrl  |
+        every step re-hydrated exactly    |    come back — nothing lost       |
+        as left                          |                                    |
+```
+
+**Admin side reads the same collection, never the tester's live session**:
+`GET /api/admin/tester-feedback` (flat `DataListingView` list, Mark Reviewed row
+action) and `GET /api/admin/tester-feedback/report` (`testerChecklistResponseRepository
+.getCoverageReport()` — single collection scan, groups by `checklistItemId` into
+`yesCount`/`noCount`/`totalAnswered`, plus the flat `issues[]` array of every
+`answer === "no"` doc) both read `testerChecklistResponses` directly — no caching
+layer, no RTDB ping. The collection is small (testers × cases), so a full scan per
+admin page-load is cheap and always current.
+
+---
+
+## Tester QA Program — sandbox lifecycle: seed -> visibility filter -> cleanup (2026-08-17)
+
+> Origin: the sandbox data must look and behave like real inventory to the tester
+> (real store, real checkout, real bidding) while staying invisible to every other
+> visitor and self-destructing after 7 days. Three independent mechanisms cooperate —
+> none of them talk to each other directly, each just honors the same two fields
+> (`isTestData`, `testDataExpiresAt`) written once at seed time.
+
+```
+ SEED (existing seed-cli, no new route)     |  FIRESTORE                    |  PUBLIC READ PATH
+ ─────────────────────────────────────────────┼────────────────────────────────┼─────────────────────────────────
+                                             |                                |
+ npx appkit-seed load                       |                                |
+   (SEED_DATA_MAP now includes              |                                |
+    storesTesterSeedData,                   |                                |
+    categoriesTesterSeedData,               |                                |
+    productsTesterSeedData,                 |                                |
+    blogTesterSeedData,                     |                                |
+    eventsTesterSeedData — merged           |                                |
+    alongside every other collection's      |                                |
+    existing seed array)                    |                                |
+        |                                   |                                |
+        v  every -tester- literal carries    |                                |
+    isTestData: true                        |                                |
+    testDataExpiresAt: now + 7d  -------->  |  stores/store-tester-sandbox  |
+    (recomputed fresh each seed run —       |  categories/category-tester-* |
+     re-seeding refreshes the expiry)       |  products/product-tester-*    |
+                                             |  blogPosts/blog-tester-*      |
+                                             |  events/event-tester-sandbox  |
+                                             |    status: ACTIVE, isPublic:  |
+                                             |    true  <- fully public docs,|
+                                             |    same code paths as real    |
+                                             |    inventory                  |
+                                             |                                |
+                                             |                                |  GET /api/stores (anon or buyer)
+                                             |  storeRepository.listStores() |         |
+                                             |    (unfiltered — status/      |<--------+
+                                             |     isPublic only)            |         v
+                                             |<-------------------------------|  filterTestDataForViewer(items, viewer)
+                                             |                                |    viewer.isTester || isAdminUser(viewer)
+                                             |                                |      ? items unchanged
+                                             |                                |      : items.filter(i => i.isTestData !== true)
+                                             |                                |         |
+                                             |                                |         v
+                                             |                                |  non-tester response: test store
+                                             |                                |    silently absent from the list
+                                             |                                |  tester/admin response: test store
+                                             |                                |    included, fully clickable
+                                             |                                |
+                                             |                                |  (same filterSingleTestData() gate on
+                                             |                                |   getStoreBySlug / getStoreProducts /
+                                             |                                |   getStoreAuctions — direct-URL visits
+                                             |                                |   to the test store 404 for non-testers)
+                                             |                                |
+                                             |                                |  NOTE: not a Firestore `where` clause —
+                                             |                                |  isTestData is a new optional field, so
+                                             |                                |  `where("isTestData","!=",true)` would
+                                             |                                |  silently exclude every pre-existing doc
+                                             |                                |  that never got the field at all. Filter
+                                             |                                |  runs post-fetch, in application code.
+                                             |                                |
+ ── 7 days later (or on demand) ──          |                                |
+                                             |                                |
+ SCHEDULED: testerSandboxCleanup            |                                |
+   (Firebase Function, daily 05:00 UTC)     |                                |
+        |                                   |                                |
+        v  cutoff = new Date()               |                                |
+ for each of [categories, stores,           |                                |
+   products, blogPosts, events]:            |                                |
+   getTestDataRefs(db, coll, cutoff) ------>|  where isTestData==true       |
+                                             |    and testDataExpiresAt<=now |
+        |                                   |<-------------------------------|
+        v  collect deleted products' ids     |                                |
+ for productId chunks of <=30               |                                |
+   (Firestore `in` cap):                    |                                |
+   bids where productId in [...] ---------->|  bids referencing a deleted   |
+                                             |    test auction — cascade-    |
+                                             |<-------------------------------|    deleted too (bids hold only a
+        |                                   |                                |     live productId FK, no snapshot —
+        v                                   |                                |     orphans would be meaningless)
+ batchDelete(allRefs)  ------------------->|  all matched docs deleted     |
+                                             |                                |
+                                             |  orders / reviews / wishlists |
+                                             |  / history that reference a   |
+                                             |  since-deleted test product   |
+                                             |  are left untouched — each    |
+                                             |  denormalizes the fields it   |
+                                             |  displays (productTitle,      |
+                                             |  price, image), so only the   |
+                                             |  "view product" link 404s     |
+                                             |                                |
+ MANUAL (on demand, same core logic):       |                                |
+ node appkit/scripts/                       |                                |
+   purge-tester-sandbox.mjs                 |                                |
+   == runTesterSandboxCleanup(ctx,          |                                |
+        { force: true })                    |                                |
+   cutoff = null -> every isTestData doc,   |                                |
+   regardless of testDataExpiresAt -------->|  same 5-collection + bids     |
+                                             |    cascade sweep, immediate   |
+```
+
+**Why three mechanisms, one contract**: the seed step, the visibility filter, and the
+two cleanup entry points never call each other — they only agree on what
+`isTestData`/`testDataExpiresAt` mean. That's what let the seed fixtures move out of
+`appkit/src/seed/` into an isolated `appkit/src/features/tester/seed-data/` folder
+mid-session (a concurrent session was actively restructuring `appkit/src/seed/`)
+without touching the filter or cleanup code at all — only the seed-cli import paths
+changed.

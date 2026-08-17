@@ -406,6 +406,7 @@ Traditional dev server with webpack HMR + file watchers. Uses ~3.5 GB. Best for 
 | Catalog product (SB-UNI-L) | `catalog-` | `catalog-pokemon-charizard-base-set-4-102` |
 | Procurement shipment | `shipment-` | `shipment-acme-toys-20260811-a1b2c3` |
 | Personal catalogue item | `mycatalog-` | `mycatalog-user-mohsin-c-vintage-hotwheels-20260811-x1y2z3` — deliberately distinct from the unrelated `catalog-` prefix (SB-UNI-L master-catalog) |
+| Tester QA checklist item | `checklist-` | `checklist-buying-checkout-payment-proof-upload` — admin-managed test-case catalog (Tier QA, 2026-08-17) |
 
 **Semantic generator ID, no slug prefix** (Firestore auto-ID): shipment lots (`shipmentLots`) and shipment items (`shipmentItems`) — FK-linked children of a shipment via `shipmentId`/`lotId`, never referenced by human-readable slug.
 
@@ -1053,6 +1054,24 @@ return successResponse({ jobId, customToken }, "Job started");
 **Current job types**: `payoutsWeekly` (wraps the scheduled `runWeeklyPayoutEligibility` — the manual-trigger route and the cron share one implementation, never two), `hardBanCascade` (the 8-stage user hard-ban cascade, extracted verbatim off the Vercel route it used to block).
 
 **Not every bulk/heavy action needs this.** A bounded `Promise.all` over ≤50 rows (see `src/app/api/store/products/bulk-location/route.ts`, `src/app/api/admin/users/bulk/route.ts`) is fine as a plain synchronous route — reach for the job primitive only when the work is genuinely unbounded or already timing out.
+
+---
+
+## Tester QA Program (Tier QA, 2026-08-17)
+
+> Dedicated human testers work through a persistent, admin-managed checklist against a shared, disposable test sandbox. Full plan: `C:\Users\mohsi\.claude\plans\give-me-a-tester-optimized-ocean.md`.
+
+**Role model**: a tester's `role` stays `"seller"` — every existing seller-gated dashboard/API/payout/analytics check works unmodified. A separate `isTester?: boolean` on `UserDocument`/`SessionUser` (orthogonal to `role`, not a role-string comparison, so `audit-inline-role-check.mjs` doesn't apply) unlocks the Tester Hub and auto-approves the tester's store (`becomeSeller`/`createStore` in `appkit/src/features/seller/actions/seller-actions.ts` branch **both** `UserDocument.storeStatus` and `StoreDocument.status`/`isPublic` — they are two distinct fields; only flipping the user-doc one leaves the store invisible, since public-visibility checks gate on `StoreDocument.status`).
+
+**Checklist catalog vs. responses — two collections, not one**: `testerChecklistItems` is the admin-authored catalog of test cases (CRUD via `/admin/tester-checklist`, direct clone of the FAQ admin feature). `testerChecklistResponses` is one doc per `(tester, case)`, upserted by a **deterministic doc ID** — `` `${testerId}__${checklistItemId}` `` — via `set({merge:true})`, never a duplicate-creating `add()`. This is what makes Yes/No answers + comments + screenshots survive a page reload.
+
+**Test-data tagging** — any collection that can hold shared, disposable tester-sandbox data (`categories`, `stores`, `products`, `blogPosts`, `events`) carries two new optional fields: `isTestData?: boolean` and `testDataExpiresAt?: Date`. Seed fixtures live in `appkit/src/features/tester/seed-data/` (deliberately **not** `appkit/src/seed/`) and are merged into the existing seed-cli automatically — no separate admin trigger. `testDataExpiresAt` is recomputed fresh on every seed run, so re-seeding refreshes the expiry.
+
+**Visibility — application-layer filter, not a Firestore query clause.** `filterTestDataForViewer()`/`filterSingleTestData()` (`@mohasinac/appkit/server`, defined in `appkit/src/_internal/server/features/tester/visibility.ts`) strip `isTestData:true` items post-fetch unless the viewer is a tester or admin. **Never** add `where("isTestData", "!=", true)` to a query — Firestore inequality filters silently exclude every document that doesn't have the field set at all, which is every pre-existing real document (the field is new and optional). Applied today to the store listing/detail read paths (`store-query-actions.ts`, `/api/stores`); category/blog/event listing routes need the identical one-line treatment when touched next.
+
+**Cleanup — scheduled + manual, one shared core.** `testerSandboxCleanup` (Firebase Function, daily) and `node appkit/scripts/purge-tester-sandbox.mjs` (`npm run tester:purge-sandbox`, immediate force-purge) both call `runTesterSandboxCleanup(ctx, { force })` — never duplicate this logic. It cascades into `bids` referencing a deleted test product (bids hold only a live `productId` FK, no snapshot — an orphaned bid is meaningless). It deliberately leaves `orders`/`reviews`/`wishlists`/`history` untouched even when they reference a deleted test product, because all four denormalize the fields they display (title/price/image) — only the "view product" link 404s, which is acceptable for disposable test data.
+
+**Known gap**: `npm run check` does not run an actual `next build`, so it cannot catch Turbopack-level bundling regressions (e.g. a `node:module`-importing file becoming reachable from a client chunk). If touching anything in this tier's import chain, also run a real `npm run build` before calling a change done.
 
 ---
 
