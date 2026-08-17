@@ -5,6 +5,7 @@
 // Uses .next/cache/ for incremental rebuilds — second build is ~15-30s.
 // To rebuild after code changes: Ctrl+C → npm run dev
 import { execSync, spawn, spawnSync } from "child_process";
+import { readFileSync } from "fs";
 import os from "os";
 import path from "path";
 import { performance } from "perf_hooks";
@@ -30,6 +31,32 @@ if (!process.env.DEV_SKIP_MEM_CHECK) {
     process.exit(1);
   }
   console.log(`[dev-light] Memory check passed: ${freeGb.toFixed(2)} GB free.`);
+}
+
+// ── appkit local-dev pin guard ───────────────────────────────────────────────
+// A prior "publish appkit" session can leave package.json pinned to the npm
+// registry ("^X.Y.Z") instead of "file:./appkit". When that happens, every
+// local edit under appkit/src/ is silently invisible to `npm run dev`/tsc/
+// Tailwind — npm keeps re-resolving the old published tarball instead of the
+// working tree. This bit a full session's worth of appkit-side fixes before
+// anyone noticed (2026-08-17). Fail loudly instead of building against stale
+// code — see CLAUDE.md "Appkit Local Dev vs Publish Rules".
+{
+  const pkg = JSON.parse(readFileSync(path.join(ROOT, "package.json"), "utf8"));
+  const appkitSpec = pkg.dependencies?.["@mohasinac/appkit"];
+  if (appkitSpec && !appkitSpec.startsWith("file:")) {
+    console.error(
+      `\n[dev-light] Aborting: package.json pins "@mohasinac/appkit": "${appkitSpec}" ` +
+        `(npm registry), not "file:./appkit".\n` +
+        `           Local dev must build against the working tree in appkit/src/, or\n` +
+        `           every appkit-side edit this session will be silently invisible.\n` +
+        `           Fix: set "@mohasinac/appkit": "file:./appkit" in package.json, add\n` +
+        `           appkit/src/**/*.{ts,tsx} to tsconfig.json's include[], delete\n` +
+        `           package-lock.json, and run npm install. Set DEV_SKIP_APPKIT_PIN_CHECK=1\n` +
+        `           to bypass (e.g. intentionally testing against a published version).\n`,
+    );
+    if (!process.env.DEV_SKIP_APPKIT_PIN_CHECK) process.exit(1);
+  }
 }
 
 // ── Build helpers ────────────────────────────────────────────────────────────
