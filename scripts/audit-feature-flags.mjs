@@ -17,6 +17,14 @@
  *      guard being skipped the same way route guards are caught by Check 1
  *      (e.g. the original admin-dashboard Payouts-card bug: nav hid the link,
  *      but direct navigation still hit the guarded API unconditionally).
+ *   4. Env-var/schema parity: every FEATURE_* declared in .env.example must
+ *      exist in FEATURE_FLAGS (src/lib/features.ts), and vice versa — catches
+ *      an orphaned env var whose gated feature was deleted (found and fixed
+ *      2026-08-17: FEATURE_SHIPROCKET/FEATURE_MOCK_PAYMENT survived their own
+ *      feature removals in .env.example/vitest.config.ts/the GitHub Actions
+ *      feature-toggle workflow, invisible until someone happened to grep for
+ *      them) as well as the opposite mistake — a new FEATURE_FLAGS entry with
+ *      no corresponding .env.example line for developers to discover.
  *
  * Suppression: `// audit-feature-flag-ok: <reason>` on the same line.
  *
@@ -175,6 +183,52 @@ for (const { dir, flag } of GUARDED_PAGES) {
       line: 1,
       detail: `Gated page segment must have a layout.tsx calling requireFeatureFlag("${flag.replace("FEATURE_", "")}")`,
     });
+  }
+}
+
+// ─── Check 4: FEATURE_FLAGS (code) <-> .env.example parity ───────────────────
+{
+  const featuresSrc = readFileSync(join(ROOT, "src", "lib", "features.ts"), "utf8");
+  const arrayMatch = featuresSrc.match(/export const FEATURE_FLAGS = \[([\s\S]*?)\] as const;/);
+  const codeFlags = new Set(
+    arrayMatch
+      ? [...arrayMatch[1].matchAll(/"([A-Z_]+)"/g)].map((m) => m[1])
+      : [],
+  );
+
+  const envExamplePath = join(ROOT, ".env.example");
+  let envFlags = new Set();
+  try {
+    const envSrc = readFileSync(envExamplePath, "utf8");
+    envFlags = new Set(
+      [...envSrc.matchAll(/^FEATURE_([A-Z_]+)=/gm)].map((m) => m[1]),
+    );
+  } catch {
+    // .env.example not present (e.g. a checkout that never copied it) —
+    // nothing to reconcile against.
+  }
+
+  if (envFlags.size > 0) {
+    for (const flag of envFlags) {
+      if (!codeFlags.has(flag)) {
+        violations.push({
+          rule: "ORPHANED_ENV_FLAG",
+          file: ".env.example",
+          line: 1,
+          detail: `FEATURE_${flag} is declared but has no entry in FEATURE_FLAGS (src/lib/features.ts) — the feature it gated was likely removed. Delete the env var (here, .env.local, vitest.config.ts, .github/workflows/feature-toggle.yml).`,
+        });
+      }
+    }
+    for (const flag of codeFlags) {
+      if (!envFlags.has(flag)) {
+        violations.push({
+          rule: "MISSING_ENV_EXAMPLE_ENTRY",
+          file: "src/lib/features.ts",
+          line: 1,
+          detail: `FEATURE_FLAGS includes "${flag}" but .env.example has no FEATURE_${flag}= line — add one so developers can discover and set it.`,
+        });
+      }
+    }
   }
 }
 

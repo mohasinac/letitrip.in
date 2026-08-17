@@ -19,7 +19,6 @@ on:
           - FEATURE_RAZORPAY
           - FEATURE_COD
           - FEATURE_COUPONS
-          - FEATURE_SHIPROCKET
           - FEATURE_PAYOUTS
           - FEATURE_ANALYTICS_FUNCTION
           - FEATURE_GST
