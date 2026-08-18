@@ -41,6 +41,142 @@
 
 ---
 
+### S-user-sidebar-crossnav — User dashboard missing admin/store cross-nav links (2026-08-19)
+
+User report: an account that is admin (or owns a store) could see the other role's dashboard
+link when browsing `/admin` or `/store`, but not when browsing their own `/user` dashboard —
+"as admin and store owner i can see the other roles links but as a user, i cannot see the admin
+or store links in my navigation." Root cause: `DashboardLayoutClient`'s `crossNav` footer
+(`Go to my Store` / `Back to Admin` / `My Profile`) is populated per-layout — `admin/layout.tsx`
+passes `storeHref` when `user.storeId` is set, `store/layout.tsx` passes `adminHref` when
+`isAdminUser(user)`, but `user/UserLayoutClient.tsx` only ever passed `profileHref`, so an
+admin/seller account viewing their own `/user` dashboard never got the cross-nav links at all.
+Fix: `UserLayoutClient.tsx` now also passes `storeHref` (when `user.storeId` is set) and
+`adminHref` (when `isAdminUser(user)`), matching the pattern already used by the other two
+dashboard layouts. `npm run check` — 0 errors (486 pre-existing unrelated warnings). This is a consumer-only fix
+(`src/app/[locale]/user/UserLayoutClient.tsx`) — no appkit source touched, so no publish is
+needed for it to take effect. Not deployed to Vercel per explicit user instruction.
+
+---
+
+### S-rsc-crash-appkit4 — RSC function-prop crash fix, dashboard parity, payouts panel, FAQ/tabs consolidation, appkit 4.0.0 release (2026-08-19)
+
+**Started from a user bug report** ("lots of pages 500 error especially admin navigation") that
+named "missing index" as the suspected cause. Investigation found two *separate* bugs conflated
+under one symptom, plus the user explicitly called this out mid-session ("no no missing index and
+teh something went wrongs are different errors") — correctly, as it turned out:
+
+- **"Missing index" 500s** — traced to `firebase-reset.mjs` (run via commit `6354739a8` the same
+  morning) deploying an *empty* `firestore.indexes.json` as its "clean slate" step, with the real
+  397-index set never explicitly redeployed after. By the time this session checked, live
+  Firestore already showed 397/397 indexes settled (0 `CREATING`) — the emergency had self-resolved
+  before investigation started. Extended `audit-listing-indices.mjs` (method-name-agnostic
+  repository-call scanning, now also scans `appkit/src/_internal` + the whole consumer `src/`
+  tree) and `audit-functions-query-indices.mjs` (added consumer `src/app` to scan scope) anyway,
+  found 0 new gaps, made both strict-zero, and made `audit-listing-indices.mjs`
+  auto-regenerate `firestore-route-field-usage.md` (was hand-written; now tool output only).
+- **"Something went wrong" crashes — the real, 100%-reproducible bug.** Live Vercel log for a
+  reproduced `/admin/categories` crash: `Error: Functions cannot be passed directly to Client
+  Components`. `getRowHref={(row) => ...}` was being constructed inline in 5 Server Component
+  `page.tsx` files and passed to Client Components — illegal in RSC regardless of whether the
+  function was actually used downstream (3 of the 5 turned out to discard it entirely — dead
+  code that still crashed the page). A live-log-guided sweep during the fix found 2 *more*
+  crash sites via a different prop name (`getEditHref` on `/admin/bundles`, `/store/bundles`) that
+  the original grep missed. Fix: retyped the one shared prop
+  (`DataTable`/`DataListingView`'s `getRowHref`) to `rowHrefTemplate: string | ((row) => string)`
+  — Server Components must use the string-template form; only already-`"use client"` callers may
+  still pass a function for genuine per-row branching (`SellerProductsView`'s auction/pre-order/
+  product public-link switch). New permanent audit,
+  `scripts/audit-server-client-function-props.mjs` (resolves each JSX-tag's defining file back to
+  its own `"use client"` status to avoid false positives like `ProductDetailPageView`, which is
+  itself a Server Component legitimately receiving render-prop functions from another Server
+  Component) — registered in both `run-audits.mjs` and the Stop hook.
+- **Dashboard parity** — `CollapsibleSection`/`useCollapsedSections` wired into `store/page.tsx`
+  and the user profile page (previously admin-dashboard-only). Sidebar nav accordions were
+  already consistent across all three portals — no change needed there.
+- **Mobile-optimized listings** — new `useDataViewMode` hook (mirrors `useCollapsedSections`'s
+  persist pattern): below 768px, `useAdminListing` now defaults to `AdminViewCards`'s "list" mode
+  (one full-width card per row) instead of the raw table; the user's own explicit choice, once
+  made, persists via `uiPreferences.dataViewMode` on the profile doc and wins over the viewport
+  default on every subsequent visit. `/api/user/profile`'s PATCH handler now merges
+  `uiPreferences` sub-keys instead of replacing the whole map — a real bug that would have made
+  this preference clobber (or be clobbered by) `collapsedSections`.
+- **Seller payouts** — real detail `SideDrawer` (status/progress stepper, transaction ID, amount,
+  expected-by date computed from `requestedAt` + a 7-day cycle constant, order IDs, a
+  `sellerReminderFlag` toggle) replacing the previous empty row-action menu (props were declared
+  but never passed from the Server Component page). Bulk-select checkboxes, previously inert
+  (`buildBulkActions` was never set), now drive a real "Export Selected" CSV action. New
+  ownership-scoped `/api/store/payouts/[id]` route (GET+PATCH) backs the reminder toggle.
+- **Footer dark-theme bug** — `FooterLayout.tsx` had raw `bg-zinc-50`/`text-zinc-800`/
+  `border-zinc-200` classes sitting alongside the correct `var(--appkit-color-*)` token classes in
+  the same `className` strings; whichever won Tailwind's cascade pinned the footer to light mode
+  regardless of the active theme. Removed the raw duplicates.
+- **FAQ/tabs polish** — bottom-border dividers on `RelatedFAQs` and the homepage `FAQSection`
+  (previously a boxed-card style inconsistent with the dedicated `/faqs` page's
+  `FAQAccordion`); 10 more FAQs flagged `showOnHomepage: true` (6 → 16) and the homepage FAQ
+  section's `displayCount` raised to match. Consolidated 6 independently hand-rolled tab-strip
+  implementations (`CategoryDetailTabs`, `BrandDetailTabs`, `DetailPageTabs`, `TabStrip`,
+  `FAQAccordion`'s `FAQCategoryTabs`, `FAQSection`'s homepage category tabs) onto the one shared
+  `Tabs`/`TabsList`/`TabsTrigger` primitive, which already had a mobile dropdown-collapse-past-5
+  behavior (shipped 2026-08-17) that none of the other five had. Extended `TabsTrigger` with an
+  optional `badge` prop (folds into the collapsed dropdown's option label as `"Label (count)"`)
+  so the two count-bearing consumers didn't regress. `TabStrip`/`useVisibleItems` had zero
+  remaining consumers after the migration — deleted outright (source, styles, barrel exports)
+  rather than left as unused public API surface.
+- **Test coverage** — added 3 targeted regression tests rather than attempting the full 32-commit
+  historical sweep the plan originally scoped: the `/media` proxy-matcher exclusion (the exact
+  2026-08-17 "broken images site-wide" bug shape), the `dev-light.mjs` appkit-pin guard (extracted
+  to a pure `scripts/lib/check-appkit-pin.mjs` specifically so it's unit-testable — this exact
+  drift class recurred *during this session*, see below), and the `Tabs` dropdown-collapse +
+  badge-folding behavior.
+- **A live environment-drift incident, mid-investigation.** An early research pass found
+  `package-lock.json` and `package.json`'s appkit pin drift from committed `^3.9.0` to
+  `^3.9.1`(npm registry, not `file:./appkit`) *while the agent was reading files* — flagged to the
+  user directly rather than assumed away; user confirmed nothing should have been running
+  concurrently, so this was logged as unexplained but the working tree was clean by the time
+  implementation started. Separately, this session's own `npm install` cycles repeatedly resolved
+  a *stale* local appkit copy despite rebuilding `dist/` — `install-links=true` in `.npmrc`
+  appears to cache the local `file:` pack by package name+version, not by content; only bumping
+  the version number (to the planned 4.0.0) reliably busted it. Documented as a real gotcha for
+  the next session doing rapid local appkit iteration.
+
+**Release sequence executed in full:** Firebase rules/storage/RTDB/functions redeployed (the
+`--only` flag needs `npm run firebase deploy -- --only <targets>` — bare `--only` is swallowed by
+npm itself, not forwarded to the script); `npm run check` clean (0 errors; fixed several
+regressions the work surfaced along the way — a `DataViewMode`/`AdminViewCards` view-prop type
+gap, an invalid `gap="2xs"` token, two raw `overflow-*`/`rounded-xl` classes caught by
+`audit-variant-prop-coverage`, an empty `catch {}`, and two missing barrel exports —
+`Tabs`/`TabsTrigger` were never exported from `client.ts` at all, and only partially from
+`index.ts`, despite `Tabs.tsx` predating this session); appkit committed and published to npm as
+**4.0.0** (major, per explicit user request); consumer repinned from `file:./appkit` to
+`^4.0.0`, `tsconfig.json` reverted to npm-registry mode; site version bumped to **5.2.0**; full
+Vercel production deploy via `node scripts/deploy.mjs`, aliased to `www.letitrip.in`.
+
+**Post-release housekeeping (same session, follow-up ask):** synced Vercel production env vars
+against `.env.local` — added the one real gap (`FIREBASE_FUNCTION_LISTING_URL`, confirmed against
+the actual deployed Cloud Run URL, used by `listing-processor.ts`/`firebase-gateway.ts`) and
+removed 3 stale entries left over from already-deleted features/migrations
+(`FEATURE_MOCK_PAYMENT`, `FEATURE_SHIPROCKET`, `FIREBASE_INTERNAL_SECRET` — the last one is
+explicitly checked-for-absence by `audit-env-alignment.mjs`, which only covers `.env.local`, not
+Vercel, so this drift was invisible to the existing audit). Seeded the 7 tester-checklist items
+missing from production Firestore (72 → 79, now matching the seed file exactly); the 5 other
+tester-relevant collections (`categories`/`stores`/`products`/`blogPosts`/`events`) were already
+in sync. Per-user `isTester` flag was **not** set for any account — no specific user was named;
+that step still needs a user identifier and goes through the existing admin action path.
+
+**Verification:** `npm run check` exits 0 (tsc both repos + all audits + eslint, 486 pre-existing
+unrelated warnings, 0 errors). Test suite run separately (`npm run test`, not part of `check`):
+124 pre-existing failures across 45 files, confirmed via `git log`/`git diff` to be completely
+unrelated to every file this session touched (stale `vi.mock()` fixtures missing exports like
+`normalizeError`/`rateLimitByIdentifier` that the mocked route handlers now call) — not fixed,
+out of scope, flagged here so a future session doesn't re-discover them from scratch. Manual
+verification of the actual admin-portal crash fix in a real authenticated browser session is
+still owed by the user — everything this session could check from the CLI (tsc, audits, a
+reproduced-then-fixed live log trace, an unauthenticated curl smoke pass confirming no 500s) is
+green.
+
+---
+
 ### S-shared-audits — Regression audits for the S-shared-bughunt bug classes (2026-08-15)
 
 **Direct follow-up to S-shared-bughunt below, same session: "can we add audits to avoid such

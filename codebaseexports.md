@@ -213,7 +213,7 @@
 | Tooltip.tsx | Tooltip | Component | Hover tooltip |
 | Avatar.tsx | Avatar | Component | User avatar with fallback |
 | Accordion.tsx | Accordion, AccordionItem | Component | Expandable accordion panels |
-| Tabs.tsx | Tabs | Component | Tab navigation |
+| Tabs.tsx | Tabs, TabsList, TabsTrigger (badge/label props), TabsContent | Component | Tab navigation — TabsList collapses to a colored dropdown past 5 triggers; canonical primitive for every tab strip in the app (2026-08-19: absorbed CategoryDetailTabs/BrandDetailTabs/DetailPageTabs/TabStrip/FAQCategoryTabs/homepage FAQ tabs) |
 | Pagination.tsx | Pagination | Component | Page navigation controls |
 | Dropdown.tsx | Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSeparator | Component | Composite dropdown/menu system with keyboard support |
 | Skeleton.tsx | Skeleton | Component | Loading skeleton placeholder |
@@ -258,7 +258,6 @@
 | RowActionMenu.tsx | RowActionMenu | Component | Row-level action dropdown |
 | SortDropdown.tsx | SortDropdown | Component | Sort column/direction dropdown |
 | SectionTabs.tsx | SectionTabs | Component | Section tab navigation |
-| TabStrip.tsx | TabStrip | Component | Horizontal tab strip |
 | StepperNav.tsx | StepperNav | Component | Multi-step navigation |
 | HorizontalScroller.tsx | HorizontalScroller | Component | Horizontal scroll container with arrows |
 | ListingLayout.tsx | ListingLayout | Component | Listing page layout shell |
@@ -584,7 +583,7 @@
 | SellerBidsView | View | Seller auction bids |
 | SellerCouponsView, SellerCouponEditorView | View | Seller coupons |
 | SellerReviewsView | View | Seller reviews |
-| SellerPayoutsView | View | Seller payouts history |
+| SellerPayoutsView | View | Seller payouts history — row "View Details" opens a self-contained SideDrawer (status/progress, transaction ID, expected date, `sellerReminderFlag` toggle); bulk-select drives a working "Export Selected" CSV action (`ACTIONS.STORE["export-payout"]`) |
 | SellerPayoutStats, SellerPayoutHistoryTable | Component | Payout statistics |
 | SellerPayoutSettingsView | View | Payout configuration |
 | SellerPayoutRequestView | View | Payout withdrawal form |
@@ -1247,6 +1246,7 @@
 | `/api/store/shipping` | GET, PUT | Shipping settings (manual carrier/pickup only — Shiprocket removed) |
 | `/api/store/payout-settings` | GET, PUT | Payout config |
 | `/api/store/payouts` | GET | Payout history |
+| `/api/store/payouts/[id]` | GET, PATCH | Single payout (ownership-scoped) — PATCH accepts only `sellerReminderFlag`; every other field is admin-managed via `/api/admin/payouts/[id]` |
 | `/api/store/payouts/request` | POST | Request payout |
 | `/api/store/reviews` | GET | Store reviews |
 | `/api/store/reviews/[id]/reply` | POST | Reply to review |
@@ -1410,7 +1410,7 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 | BidDocument | bids | auctions/schemas/firestore.ts |
 | NotificationDocument | notifications | account/schemas/firestore.ts |
 | SessionDocument | sessions | auth/schemas/firestore.ts |
-| PayoutDocument | payouts | seller/schemas/firestore.ts |
+| PayoutDocument | payouts | payments/schemas/firestore.ts (has `transactionId?`, `sellerReminderFlag?` — added 2026-08-19; path corrected, was previously listed as seller/schemas/firestore.ts) |
 | AddressDocument | addresses | addresses/schemas/firestore.ts |
 | ConversationDocument | conversations | messages/schemas/firestore.ts |
 | CarouselSlideDocument | carouselSlides | homepage/schemas/firestore.ts |
@@ -1857,6 +1857,8 @@ Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 | Script | State | What it catches |
 |--------|-------|-----------------|
 | audit-ssr-in-appkit.mjs | drift | Route-shim thresholds (`page.tsx` ≤ 30 lines) + sidecar files + brand strings inside `_internal/` |
+| audit-server-client-function-props.mjs | strict-0 | Server Component `page.tsx` passing an inline function prop to a component whose defining file is `"use client"` — RSC forbids this; caused the 2026-08-19 "Something went wrong" crashes (root-cause #25) |
+| audit-functions-query-indices.mjs | strict-0 | Raw `.collection().where()` chains (server jobs/functions + consumer `src/app`) missing a matching composite index |
 | audit-hex-tokens.mjs | strict-0 (`--fix`) | Hardcoded hex colors outside `tokens.css` |
 | audit-config-factories.mjs | strict-0 | Config factory pattern compliance |
 | audit-html-wrappers.mjs | drift | Raw `<div>` / `<span>` wrappers + `RAW_GRADIENT_UTILITY` token misuse |

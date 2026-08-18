@@ -205,6 +205,7 @@ Pages: `/user/tester` (Tester Hub), `/admin/tester-checklist` (catalog CRUD), `/
 |-----------|--------|---------|
 | `orders/[id]/route.ts` | GET/PATCH | Seller-scoped order detail + status/tracking update — uses `storeRepository.findByOwnerId(uid)` + `productRepository.findByStore(storeId)` for auth (ARCH refactor Session 81) |
 | `payouts/route.ts` | GET | Seller payout list + stats — now filters by `storeId` (was `sellerId`); uses `findByStoreAndStatus` (ARCH refactor Session 81) |
+| `payouts/[id]/route.ts` | GET/PATCH | Single payout, ownership-scoped via `storeRepository.findByOwnerId(uid)` — PATCH accepts only `sellerReminderFlag`, backs the seller payout detail SideDrawer (2026-08-19) |
 | `offers/route.ts` | GET/POST | Seller offers — filters by `storeId`/`storeName` (was `sellerId`/`sellerName`) (ARCH refactor Session 81) |
 | `coupons/route.ts` | GET/POST | Seller coupon list + create — scoped to store |
 | `coupons/[id]/route.ts` | GET/PATCH/DELETE | Seller coupon detail + mutations — seller-scoped with admin override; enforces percentage ≤ 100 (CU refactor Session 78) |

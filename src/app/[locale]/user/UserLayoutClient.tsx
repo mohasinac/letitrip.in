@@ -14,7 +14,8 @@ interface UserLayoutClientProps {
 
 export function UserLayoutClient({ children, flags }: UserLayoutClientProps) {
   const { user } = useSession();
-  const isSeller = isSellerUser(user) || isAdminUser(user);
+  const isAdmin = isAdminUser(user);
+  const isSeller = isSellerUser(user) || isAdmin;
   const groups = useMemo(
     () => {
       const all = getUserNavGroups(isSeller, user?.uid, Boolean(user?.isTester));
@@ -40,7 +41,15 @@ export function UserLayoutClient({ children, flags }: UserLayoutClientProps) {
   );
 
   return (
-    <DashboardLayoutClient variant="user" groups={groups} crossNav={{ profileHref: String(ROUTES.USER.PROFILE) }}>
+    <DashboardLayoutClient
+      variant="user"
+      groups={groups}
+      crossNav={{
+        profileHref: String(ROUTES.USER.PROFILE),
+        storeHref: user?.storeId ? String(ROUTES.STORE.DASHBOARD) : undefined,
+        adminHref: isAdmin ? String(ROUTES.ADMIN.DASHBOARD) : undefined,
+      }}
+    >
       <Suspense>{children}</Suspense>
     </DashboardLayoutClient>
   );
