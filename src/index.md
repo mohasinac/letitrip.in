@@ -188,14 +188,16 @@
 
 ---
 
-## Tester QA Program Routes — `src/app/api/user/tester-checklist/` (2026-08-17, admin bypass added 2026-08-19)
+## Tester QA Program Routes — `src/app/api/user/tester-checklist/` (2026-08-17, `canTestAdmin` admin-only tier added 2026-08-19)
 
 | Route file | Method | Purpose |
 |-----------|--------|---------|
-| `route.ts` | GET | Active checklist items joined with the current tester's own responses (Tester Hub hydration); 403 unless `user.isTester === true` or `isAdminUser(user)` |
-| `[checklistItemId]/route.ts` | PUT | Upserts `{ answer?, comment?, screenshotUrl? }` for the current tester + item — deterministic-ID upsert, the persistence mechanism behind reload-safe checklist state; same admin bypass as above |
+| `route.ts` | GET | Active checklist items joined with the current tester's own responses (Tester Hub hydration). Resolves the caller's live `UserDocument` (`userRepository.findById` — NOT the JWT-derived `RouteUser`, since `isTester`/`canTestAdmin` are never session-cookie claims); 403 unless `profile.isTester` or `isEffectiveAdminUser(profile)`. Filters out `adminOnly: true` items unless `isEffectiveAdminUser(profile)`. |
+| `[checklistItemId]/route.ts` | PUT | Upserts `{ answer?, comment?, screenshotUrl? }` for the current tester + item — deterministic-ID upsert, the persistence mechanism behind reload-safe checklist state. Same live-profile access check as above; also 404s (not 403, to avoid leaking existence) if the item is `adminOnly` and the caller isn't `isEffectiveAdminUser`. |
 
 Pages: `/user/tester` (Tester Hub), `/admin/tester-checklist` (catalog CRUD), `/admin/tester-feedback` (Report/Issues/Submissions). All three are thin shims delegating to the `TesterHubView`/`AdminTesterChecklistView`/`AdminTesterFeedbackView` appkit exports — see `appkit/index.md`. Admin sidebar nav (`ADMIN_NAV_GROUPS` in `navigation.tsx`) groups the last two under a dedicated **"Testing"** section (Test Cases / Results / Tester Hub), split out of "Content" (2026-08-19).
+
+**`canTestAdmin` (2026-08-19)** — a second, orthogonal flag on top of `isTester` (set via the "Can Test Admin Areas" toggle in `/admin/users`, hidden unless "Is Tester" is on). A tester with both flags gets: (a) the `adminOnly` checklist groups in the Tester Hub, (b) an "Admin Dashboard (Testing)" link injected into their user-sidebar Help group (`getUserNavGroups` in `navigation.tsx`, 4th param), and (c) **real read/write `/admin/**` access** — the same `isEffectiveAdminUser()` bypass appkit's `createRouteHandler` and `makeAdminSectionLayout` already grant real admins, resolved via one live Firestore read only on the path that would otherwise reject (see appkit's `codebaseexports.md` RBAC note for the chokepoint mechanics). `src/app/api/admin/users/[uid]/route.ts`'s `updateUserSchema` carries the matching `canTestAdmin: z.boolean().optional()`.
 
 ---
 
