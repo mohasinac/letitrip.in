@@ -1226,3 +1226,119 @@ ADMIN verifies proof                           BUYER completes Razorpay checkout
                         it falls back to the legacy paymentProofUrl/paymentTransactionId
                         fields so old orders keep rendering correctly.
 ```
+
+## P-21 — Manual Payment Proof Window, Fraud Review & OTP-Gated Checkout
+**Flag:** none — additive `OrderDocument`/`UserDocument` fields, always on for `upi_manual`/`cash`/`emi` orders · **Dependency:** none (reuses `consent-otp.ts` primitives, `hardBanCascade`, and the P-20 `paymentRecord` shape)
+
+```
+Checkout — value-OTP gate (skipped for COD) evaluated against the WHOLE cart total,
+before per-seller order splitting:
+
+BUYER            CheckoutRouteClient          createCheckoutOrderAction        checkoutValueOtps (Firestore)
+  │  proceeds to    │                              │                                  │
+  │  place order    │                              │                                  │
+  │────────────────>│ cartTotal >= otpCheckoutThreshold (siteSettings.payment,         │
+  │                 │  default ₹5,000) AND paymentMethod != "cod"?                    │
+  │                 │  yes → useValueOtpCheckout() opens CheckoutOtpModal              │
+  │                 │  sendCheckoutValueOtpAction() ─────────────────────────────────>│ hash+store OTP,
+  │                 │<────────────────────────────────────────────────────────────────│ rate-limited
+  │  enters code    │                              │                                  │
+  │────────────────>│ verifyCheckoutValueOtpAction() ────────────────────────────────>│ isCheckoutValueOtpVerified
+  │                 │<────────────────────────────────────────────────────────────────│ = true
+  │                 │ retries createCheckoutOrderAction() — gate now passes           │
+
+Order creation (per seller, manual/cash/EMI methods only):
+  │                 │──────────────────────────────>│ resolveDisplayedUpiId(storeId, siteContactUpi):
+  │                 │                                │   seller has UPI configured → owner's payoutDetails.upiId
+  │                 │                                │   else → siteSettings.contact.upiVpa (site fallback)
+  │                 │                                │ order.displayedUpiId = resolved value (stamped once,
+  │                 │                                │   server-side — not client-suppliable)
+  │                 │                                │ order.paymentDeadline = now + 15 min (PAYMENT_WINDOW_MINUTES)
+  │<── order created, paymentDeadline, displayedUpiId ┤
+
+BUYER              /user/orders/[id]/payment          attachPaymentProofAction         orders/{id}
+  │  sees countdown  │                                     │                                │
+  │  vs paymentDeadline; UPI id = order.displayedUpiId     │                                │
+  │  uploads proof, types "UPI ID paid from",              │                                │
+  │  checks "I have paid" + "no fraud/tricks" agreement    │                                │
+  │──────────────────>│ POST /api/orders/[id]/payment-proof│                                │
+  │                   │────────────────────────────────────>│ reject 400 if agreement        │
+  │                   │                                     │  checkbox not true (server-     │
+  │                   │                                     │  validated, not just client UI) │
+  │                   │                                     │ paymentUpiMismatch =            │
+  │                   │                                     │  normalizeUpi(buyerReportedUpi) │
+  │                   │                                     │  != normalizeUpi(displayedUpi)  │
+  │                   │                                     │ buyerMarkedPaid,                │
+  │                   │                                     │  buyerFraudAgreementAccepted ──>│ stamped on order
+  │                   │                                     │ notifyAdminsOfPaymentProof() ───┤ fire-and-forget,
+  │                   │                                     │  sendWhatsAppBusinessMessage()  │ non-fatal on failure
+  │                   │                                     │  to every whatsappAdminNotifyNumbers,
+  │                   │                                     │  buildPaymentProofReviewMessage() — order
+  │                   │                                     │  summary + direct admin review link
+  │  (buyer/seller can also tap "Share for review" — opens a
+  │   pre-filled wa.me link to the first configured admin number,
+  │   no API credentials needed, works even if the automated push
+  │   didn't land — same buildStatusNotificationURL()/
+  │   buildGroupShareLink() deep-link builders as elsewhere)
+
+ADMIN / MODERATOR    AdminOrderEditorView          orders/{id} actions
+  │  reviews proof, picks ONE of three:                │
+  │                                                     │
+  ├─ Approve ──────────> adminVerifyPaymentAction() ───>│ paymentStatus=paid, status=processing,
+  │                                                     │  paymentRecord{method:"manual",
+  │                                                     │  verificationMethod:"manual_review"}
+  │                                                     │  (idempotent — re-approving is a no-op)
+  │                                                     │
+  ├─ Request re-upload ─> adminRequestProofReuploadAction(note) ─>│ clears proof/mark-paid/agreement/
+  │  (order stays open,                                │  UPI fields, paymentDeadline extended
+  │   no penalty)                                       │  +15 min FROM NOW, paymentReviewOutcome=
+  │                                                     │  "reupload_requested" — buyer resubmits
+  │                                                     │  via the same /payment page
+  │                                                     │
+  └─ Reject as Fraudulent ─> adminRejectPaymentAsFraudAction(note) [confirmation-gated, Rule #7] ─>│
+                             │  order.cancellationReason="payment_fraud_rejected"
+                             │  restoreStockForOrder() — item(s) return to public pool
+                             │  paymentReviewOutcome="rejected_fraud"
+                             │  enqueueJob({jobType:"hardBanCascade", payload:{..., expiresAt: now+7d}})
+                             ▼
+                        onJobCreated (Firestore trigger) → runHardBanCascadeJob
+                             │  stage 2: UserDocument.isDisabled=true,
+                             │    hardBanExpiresAt = now+7d, hardBanFraudOrderId=orderId
+                             │  stages 6-7: address/payment-cluster linked accounts
+                             │    inherit the SAME 7-day expiresAt (not permanent)
+                             │  stage 8: notification copy branches "suspended for 7 days,
+                             │    auto-restored on {date}" vs. the permanent-ban wording
+
+Scheduled sweeps (Firebase Functions, all reuse restoreStockForOrder()/hardBanCascade
+patterns rather than reinventing cancellation or ban logic):
+
+paymentWindowTimeout (every 5 min)                    pendingOrderTimeout (24h, COD-only now)
+  │ orderRepository.getExpiredPaymentDeadlines():         │ unchanged for COD orders (no paymentDeadline);
+  │  status=pending, paymentStatus=pending,                │ now SKIPS any order with paymentDeadline set
+  │  paymentDeadline<=now, no paymentProofUrl yet           │ (that's paymentWindowTimeout's domain) and
+  │ TRANSACTION per order (re-checks "still no proof"       │ ALSO now calls restoreStockForOrder() —
+  │  against the write — a race with a late upload loses    │ closing a pre-existing gap where the 24h
+  │  the race safely):                                      │ sweep never restocked either
+  │  cancel, cancellationReason="payment_window_expired",
+  │  restoreStockForOrder() (bundle-aware, mirrors
+  │  buildStockUpdatePayload's decrement logic in reverse)
+
+paymentReviewAutoApprove (every 15 min)               hardBanReinstatement (every 15 min)
+  │ orderRepository.getUnreviewedProofPastDeadline(2h):    │ userRepository.getExpiredHardBans():
+  │  proof uploaded, paymentReviewOutcome still null,       │  isDisabled=true, hardBanExpiresAt<=now
+  │  > 2h old → same effect as adminVerifyPaymentAction     │ re-enable Firebase Auth login, clear
+  │  PLUS autoApproved=true, autoApprovedAt=now             │  isDisabled, stamp hardBanReinstatedAt
+  │  notifies buyer+seller, mentions the dispute option     │ (narrow scope — does NOT un-suspend the
+  │                                                          │  store or reverse other cascade-bans;
+  BUYER / SELLER / ADMIN                                     │  those need separate admin/appeal action)
+  │  "Auto-approved (unreviewed)" badge shown
+  │  "Raise a dispute" ──> raiseOrderDisputeAction(reason)
+  │    only valid when order.autoApproved===true —
+  │    a manually-reviewed order uses the existing
+  │    return/refund flow instead. Sets disputeRaised,
+  │    disputeStatus="open"; does not itself reverse
+  │    payment/order status — surfaces on the admin
+  │    orders list (disputeStatus:"open" filter) for
+  │    manual investigation.
+```
+

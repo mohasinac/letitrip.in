@@ -1104,6 +1104,8 @@
 | Cart | mergeGuestCartAction | buyer+ | Merge guest cart |
 | Checkout | createCheckoutOrderAction | buyer+ | COD/UPI/EMI/admin-bypass order placement. `outOfStockPolicy` param (2026-08-15, default `"skip_items"`) decides cancel-whole-order vs. ship-available-items-only when the transaction finds a shortfall |
 | Checkout | verifyAndPlaceRazorpayOrderAction | buyer+ | Razorpay-paid order placement after signature + amount verification. Same `outOfStockPolicy` param (default `"cancel_order"`); `skip_items` triggers an automatic partial refund via `processRefundAction` since payment was already captured for the full cart |
+| Checkout | sendCheckoutValueOtpAction (`appkit/src/features/checkout/actions/checkout-value-otp-actions.ts`) | buyer+ | Tier PP (2026-08-18) — sends an OTP against the `checkoutValueOtps` namespace when cart total ≥ `siteSettings.payment.otpCheckoutThreshold` (default ₹5,000) and `paymentMethod != "cod"`; evaluated against the whole cart total before per-seller order splitting |
+| Checkout | verifyCheckoutValueOtpAction (same file) | buyer+ | Tier PP — verifies the code; `createCheckoutOrderAction` re-checks `isCheckoutValueOtpVerified()` before placing a high-value non-COD order |
 | Classified | startClassifiedConversationAction | buyer+ | Initiate seller contact |
 | Digital Code | claimCodeAction | buyer+ | Reveal purchased code |
 | Events | registerEventAction | any authed | Register for event |
@@ -1116,8 +1118,11 @@
 | Orders | requestReturnAction | buyer+ | Request return |
 | Orders | updateOrderStatusAction | seller+ | Update order status |
 | Orders | shipOrderAction | seller+ | Manual ship (carrier + tracking); gated by assertEmiShippable for EMI orders |
-| Orders | attachPaymentProofAction | buyer (owner) | Feature C — buyer attaches cash/UPI proof (`paymentProofUrl`/`paymentTransactionId`) |
+| Orders | attachPaymentProofAction | buyer (owner) | Feature C, extended Tier PP (2026-08-18) — buyer attaches cash/UPI proof; now also takes `buyerReportedUpiId`, `buyerMarkedPaid`, `buyerFraudAgreementAccepted` (server-validated — 400 if the agreement checkbox is false), computes `paymentUpiMismatch` against `order.displayedUpiId`, and fires `notifyAdminsOfPaymentProof()` (fan-out WhatsApp push, non-fatal) |
 | Orders | adminVerifyPaymentAction | admin/mod | Feature C — confirms manual payment; sets `paymentStatus:"paid"` + `paymentRecord` (method:"manual", verificationMethod:"manual_review") |
+| Orders | adminRequestProofReuploadAction (Tier PP, 2026-08-18) | admin/mod | Clears proof/mark-paid/agreement/UPI fields so the buyer can cleanly resubmit; extends `order.paymentDeadline` by 15 more minutes from now; sets `paymentReviewOutcome:"reupload_requested"` |
+| Orders | adminRejectPaymentAsFraudAction (Tier PP, 2026-08-18) | admin/mod | Cancels the order (`cancellationReason:"payment_fraud_rejected"`), calls `restoreStockForOrder()`, sets `paymentReviewOutcome:"rejected_fraud"`, enqueues `hardBanCascade` with `expiresAt: now+7d` (temporary hard ban, not permanent) |
+| Orders | raiseOrderDisputeAction (Tier PP, 2026-08-18) | buyer/seller/admin | Only valid when `order.autoApproved===true`; sets `disputeRaised`/`disputeStatus:"open"` for manual admin investigation, does not itself reverse payment/order status |
 | EMI | markEmiInstallmentPaidAction | seller+ | Record collection of one EMI installment |
 | Payouts | requestPayoutAction | seller | Request seller payout |
 | Pre-Orders | reservePreOrderAction | buyer+ | Reserve pre-order |
@@ -1162,6 +1167,8 @@
 | `/api/admin/orders` | GET, POST | List/create orders |
 | `/api/admin/orders/[id]` | GET, PUT, DELETE | Order CRUD |
 | `/api/admin/orders/[id]/refund` | POST | Order refund |
+| `/api/admin/orders/[id]/payment-reupload` | PATCH | Tier PP (2026-08-18) — `adminRequestProofReuploadAction`; order stays open, `paymentDeadline` extended +15 min |
+| `/api/admin/orders/[id]/payment-reject-fraud` | PATCH | Tier PP (2026-08-18) — `adminRejectPaymentAsFraudAction`; cancels order, restores stock, enqueues `hardBanCascade` (7-day expiry). `kind:"danger"`, confirmation-gated per Rule #7 |
 | `/api/admin/categories` | GET, POST | List/create categories |
 | `/api/admin/categories/[id]` | GET, PUT, DELETE | Category CRUD |
 | `/api/admin/brands` | GET, POST | List/create brands |
@@ -1323,6 +1330,11 @@
 | `/api/checkout/preflight` | POST | Checkout validation |
 | `/api/checkout` | POST | Place order |
 | `/api/payment/verify` | POST | Payment verification |
+| `/api/orders/[id]/payment-proof` | POST | Buyer proof upload (`attachPaymentProofAction`); extended Tier PP (2026-08-18) with `buyerReportedUpiId`/`buyerMarkedPaid`/`buyerFraudAgreementAccepted` |
+| `/api/orders/[id]/dispute` | POST | Tier PP (2026-08-18) — `raiseOrderDisputeAction`, buyer/seller/admin, only valid on `autoApproved` orders |
+| `/api/orders/[id]/code` | GET | Digital-code order reveal |
+| `/api/orders/[id]/invoice` | GET | Order invoice PDF |
+| `/api/orders/[id]/refund` | POST | Buyer-initiated refund request |
 | `/api/search` | GET | Product search |
 | `/api/carousel` | GET | Carousel slides |
 | `/api/homepage-sections` | GET | Homepage sections |
@@ -1374,6 +1386,7 @@
 | products/listing-tabs.ts | LISTING_TABS, SELLER_LISTING_TABS | Product listing type tabs |
 | products/sieve.ts | Sieve query builders | Filter/sort helpers |
 | scams/scam-types.ts | SCAM_TYPES, SCAM_CATEGORIES (27 types, 6 categories) | Scam pattern data |
+| orders/payment-window.ts | PAYMENT_WINDOW_MINUTES (15), PAYMENT_WINDOW_MS, PAYMENT_WINDOW_EXPIRED_REASON, PAYMENT_FRAUD_REJECTED_REASON | Tier PP (2026-08-18) — shared by checkout order creation, buyer countdown UI, and the `paymentWindowTimeout` sweep so they never drift |
 
 ---
 
@@ -1412,6 +1425,8 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 | TesterChecklistResponseDocument | testerChecklistResponses | tester/schemas/firestore.ts — one doc per (tester, case), deterministic ID `${testerId}__${checklistItemId}`; `answer: "yes"\|"no"\|null`, `comment?`, `screenshotUrl?`, `status: "new"\|"reviewed"` |
 
 **2026-08-17**: `isTester?: boolean` added to `UserDocument` (account/schemas/firestore.ts) — orthogonal to `role`, unlocks the Tester Hub + auto-approves the user's store. `isTestData?: boolean` + `testDataExpiresAt?: Date` added to `StoreDocument`, `CategoryDocument`, `ProductDocument`, `BlogPostDocument`, `EventDocument` for the tester sandbox (swept by `testerSandboxCleanup`).
+
+**2026-08-18 (Tier PP)**: `OrderDocument` (orders/schemas/firestore.ts) gains — `paymentDeadline?: Date` (15-min window, `upi_manual`/`cash`/`emi` only), `displayedUpiId?: string` (server-resolved once at order creation), `buyerReportedUpiId?: string`, `paymentUpiMismatch?: boolean`, `buyerMarkedPaid?: boolean` + `buyerMarkedPaidAt?: Date`, `buyerFraudAgreementAccepted?: boolean` + `buyerFraudAgreementAcceptedAt?: Date`, `paymentReviewOutcome?: "approved"\|"reupload_requested"\|"rejected_fraud"`, `paymentReviewNote?/paymentReviewedBy?/paymentReviewedAt?`, `stockRestored?: boolean` + `stockRestoredAt?: Date`, `autoApproved?: boolean` + `autoApprovedAt?: Date`, `disputeRaised?/disputeRaisedBy?/disputeRaisedAt?/disputeReason?`, `disputeStatus?: "open"\|"resolved"`; new `cancellationReason` values `"payment_window_expired"` / `"payment_fraud_rejected"`. `OrderDocumentItem` gains `bundleCategorySlug?`/`bundleProductIds?`. `UserDocument` (auth/schemas/firestore.ts) gains `isDisabled?: boolean`, `hardBanExpiresAt?: Date | null` (null/absent = permanent), `hardBanFraudOrderId?: string`, `hardBanReinstatedAt?: Date`. `SiteSettingsDocument.payment` (admin/schemas/firestore.ts) gains `otpCheckoutThreshold?: number` (default ₹5,000). `NotificationType` union gains `"payment_review"`.
 
 **2026-08-15**: `OrderDocument` gained `outOfStockPolicy?: "cancel_order" \| "skip_items"`, `droppedItems?: {productId, productTitle, requestedQty, availableQty}[]`, and `refundPending?: boolean` (orders/schemas/firestore.ts). New `OutOfStockPolicyValues` const alongside the existing `PaymentMethodValues`/`OrderStatusValues` pattern.
 
@@ -1724,19 +1739,22 @@ Route constants defined in `appkit/src/next/routing/route-map.ts` via the `ROUTE
 Firebase Functions are declared once in the appkit registry (single source of truth) and bound from [functions/src/index.ts](functions/src/index.ts). Consumer extensions live in [functions/src/consumer-functions.ts](functions/src/consumer-functions.ts) (empty by default).
 
 Registry sources:
-- [appkit/src/_internal/server/functions/scheduled.ts](appkit/src/_internal/server/functions/scheduled.ts) — `SCHEDULED_FUNCTIONS` (23 entries, incl. `testerSandboxCleanup` — daily 05:00 UTC, deletes expired tester QA sandbox data, cascading into bids on deleted test auctions)
+- [appkit/src/_internal/server/functions/scheduled.ts](appkit/src/_internal/server/functions/scheduled.ts) — `SCHEDULED_FUNCTIONS` (26 entries, incl. `testerSandboxCleanup` — daily 05:00 UTC, deletes expired tester QA sandbox data, cascading into bids on deleted test auctions; 3 new Tier PP entries 2026-08-18, see below)
 - [appkit/src/_internal/server/functions/firestore.ts](appkit/src/_internal/server/functions/firestore.ts) — `FIRESTORE_TRIGGER_FUNCTIONS` (18 entries)
 - [appkit/src/_internal/server/functions/https.ts](appkit/src/_internal/server/functions/https.ts) — `HTTPS_FUNCTIONS` (7 entries)
 - Aggregated in [appkit/src/_internal/server/functions/manifest.ts](appkit/src/_internal/server/functions/manifest.ts) as `APPKIT_FUNCTIONS`
 
 All functions deploy to region `asia-south1`. HTTPS functions require `LETITRIP_INTERNAL_SECRET` env var (enforced by `audit-functions-registry-completeness.mjs`).
 
-### Scheduled (22 functions)
+### Scheduled (25 functions)
 
 | Function | Cron | Purpose |
 |----------|------|---------|
 | auctionSettlement | every 15 minutes (UTC) | Settle expired auctions + notify winners |
-| pendingOrderTimeout | every 2 hours | Cancel pending orders past timeout |
+| pendingOrderTimeout | every 2 hours | Cancel pending COD orders past timeout (skips any order with `paymentDeadline` set — that's `paymentWindowTimeout`'s domain — and now calls `restoreStockForOrder()`, Tier PP 2026-08-18) |
+| paymentWindowTimeout | every 5 minutes | Tier PP (2026-08-18) — transactionally cancel manual/cash/EMI orders whose 15-min `paymentDeadline` passed with no proof uploaded; `restoreStockForOrder()` |
+| hardBanReinstatement | every 15 minutes | Tier PP (2026-08-18) — re-enable Firebase Auth login + clear `isDisabled` for accounts whose `hardBanExpiresAt` has passed (narrow scope — doesn't reverse store suspension or linked-account bans) |
+| paymentReviewAutoApprove | every 15 minutes | Tier PP (2026-08-18) — 2-hour safety net: auto-confirms an unreviewed manual-payment proof, same effect as `adminVerifyPaymentAction` plus `autoApproved`/`autoApprovedAt` |
 | couponExpiry | daily 00:05 UTC | Mark coupons inactive past endDate |
 | offerExpiry | daily 00:15 UTC | Mark offers inactive past endDate |
 | productStatsSync | daily 01:00 UTC | Recompute aggregated product stats |
@@ -1858,6 +1876,7 @@ Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 | audit-env-alignment.mjs | strict-0 | `.env.local` consistency with `.env.example` |
 | audit-sieve-constants.mjs | strict-0 | Same as appkit's `sieve-constants-views` for consumer sources |
 | audit-money-units.mjs | strict-0 | No `*Paise`/`InPaise` identifiers or paise-scale `*100`/`/100` arithmetic — money is stored/displayed as decimal rupees everywhere except the Razorpay boundary |
+| audit-raw-money-math.mjs | **report-only, not wired into `run-audits.mjs`** | New (Tier PP, 2026-08-18) — flags ad-hoc `Math.round(x*100)/100` / raw rupee arithmetic that bypasses the canonical rounding helper. 30 pre-existing violations at authoring time; deliberately left unwired pending a dedicated cleanup pass, not run as part of `npm run check` |
 | audit-toast-coverage.mjs | drift | User-facing handlers carry toast feedback or `// toast-intentionally-silent` marker |
 | audit-auth-gate-derivation.mjs | strict-0 | Login gates don't derive from UX-affordance flags |
 | audit-route-nav-field-constants.mjs | strict-0 | Route / nav / field-name constants honored (no raw string literals) |

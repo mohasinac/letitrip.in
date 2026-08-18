@@ -70,7 +70,7 @@
 | `carousel.actions.ts` | `getCarouselSlides`, `createSlide`, `updateSlide`, `deleteSlide` | Carousel CRUD |
 | `category.actions.ts` | `getCategories`, `getCategoryBySlug`, `getCategoryTree` | Category reads |
 | `cart.actions.ts` | `getCart`, `addToCart`, `removeFromCart`, `updateCartItem` | Cart mutations |
-| `checkout.actions.ts` | `initiateCheckout`, `confirmOrder` | Checkout flow |
+| `checkout.actions.ts` | `initiateCheckout`, `confirmOrder`, `sendCheckoutValueOtpAction`, `verifyCheckoutValueOtpAction` | Checkout flow. Tier PP (2026-08-18): value-OTP send/verify wrappers around `appkit/src/features/checkout/actions/checkout-value-otp-actions.ts`, gated at ≥`siteSettings.payment.otpCheckoutThreshold` (default ₹5,000), skipped for COD |
 | `order.actions.ts` | `getOrders`, `getOrderById`, `updateOrderStatus` | Order reads + status |
 | `address.actions.ts` | `getAddresses`, `createAddress`, `updateAddress`, `deleteAddress` | Address CRUD |
 | `store.actions.ts` | `getStores`, `getStoreBySlug`, `createStore`, `updateStore` | Store reads/mutations |
@@ -105,7 +105,7 @@
 | Name | File | What it does |
 |------|------|-------------|
 | `CartRouteClient` | `routing/CartRouteClient.tsx` | Client-side cart drawer/page wrapper |
-| `CheckoutRouteClient` | `routing/CheckoutRouteClient.tsx` | Checkout page client wrapper |
+| `CheckoutRouteClient` | `routing/CheckoutRouteClient.tsx` | Checkout page client wrapper. Tier PP (2026-08-18) added a `"value-otp"` state-machine step; `useValueOtpCheckout()` + `useAdminBypassCheckout()` extracted as top-level hooks (mirroring the existing `useEmiCheckout` pattern) to keep the component under the `audit-code-quality.mjs` LARGE_COMPONENT line threshold |
 | `CheckoutSuccessRouteClient` | `routing/CheckoutSuccessRouteClient.tsx` | Post-checkout success client wrapper |
 | `RoutePlaceholderView` | `routing/RoutePlaceholderView.tsx` | Placeholder for unbuilt pages |
 
@@ -172,6 +172,8 @@
 | `catalogue/[id]/approve/route.ts` | POST | Feature B — creates the product under `store-letitrip-official` |
 | `catalogue/[id]/reject/route.ts` | POST | Feature B — records a rejection reason |
 | `orders/[id]/payment-verify/route.ts` | PATCH | Feature C — admin manual-payment verification; writes `order.paymentRecord` |
+| `orders/[id]/payment-reupload/route.ts` | PATCH | Tier PP (2026-08-18) — `adminRequestProofReuploadAction`; clears proof fields, extends `paymentDeadline` +15 min |
+| `orders/[id]/payment-reject-fraud/route.ts` | PATCH | Tier PP (2026-08-18) — `adminRejectPaymentAsFraudAction`; cancels order, restores stock, enqueues `hardBanCascade` (7-day expiry). `kind:"danger"`, confirmation-gated (Rule #7) |
 | `users/[uid]/hard-ban/route.ts` | POST | Enqueues the `hardBanCascade` job (2026-08-15) via `enqueueJob()` — returns `{jobId, customToken}` immediately; the 8-stage cascade now runs in the `onJobCreated` Firebase Function, not inline |
 | `users/bulk/route.ts` | POST | Bulk suspend/restore/delete (2026-08-15) — `{action, ids}`, `BULK_MAX=50`, bounded `Promise.all`; suspend/delete both soft-disable only |
 | `notifications/bulk/route.ts` | POST | Bulk mark-read/delete (2026-08-15) — same bounded `Promise.all` shape |
@@ -229,6 +231,17 @@ Pages: `/user/tester` (Tester Hub), `/admin/tester-checklist` (catalog CRUD), `/
 | `[id]/submit/route.ts` | POST | Buyer "Request to sell" — flips `listingStatus` to `pending_admin_approval` |
 
 Public: `src/app/api/catalogue/[ownerSlug]/route.ts` — GET, `visibility:"public"` items only, no auth.
+
+---
+
+## Order Payment & Dispute API Routes — `src/app/api/orders/[id]/` (Tier PP, 2026-08-18)
+
+| Route file | Method | Purpose |
+|-----------|--------|---------|
+| `payment-proof/route.ts` | POST | Buyer proof upload (`attachPaymentProofAction`); extended with `buyerReportedUpiId`/`buyerMarkedPaid`/`buyerFraudAgreementAccepted` (server-validated) — computes `paymentUpiMismatch`, fires `notifyAdminsOfPaymentProof()` WhatsApp fan-out (non-fatal) |
+| `dispute/route.ts` | POST | `raiseOrderDisputeAction` — buyer/seller/admin; only valid when `order.autoApproved===true` |
+
+Buyer payment page: `src/app/[locale]/user/orders/[id]/payment/page.tsx` — countdown vs `order.paymentDeadline`, `order.displayedUpiId` (server-resolved, seller UPI with site-default fallback), mark-paid + no-fraud agreement checkboxes, "Share for review" `wa.me` deep link. Dispute UI lives on `src/app/[locale]/user/orders/view/[id]/page.tsx` via the `raiseOrderDispute()` wrapper in `src/lib/api/payment-client.ts` (never a raw `fetch()` — `audit-direct-fetch-ui` exempts `/lib/api/`).
 
 ---
 
