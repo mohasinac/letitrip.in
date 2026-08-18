@@ -6,7 +6,7 @@ export const metadata = { title: "Bundles — Admin" };
 export default function Page() {
   return (
     <AdminBundlesView
-      getEditHref={(row) => String(ROUTES.ADMIN.BUNDLES_EDIT(row.id))}
+      editHrefTemplate={String(ROUTES.ADMIN.BUNDLES_EDIT("{id}"))}
       newHref={String(ROUTES.ADMIN.BUNDLES_NEW)}
     />
   );

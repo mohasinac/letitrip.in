@@ -169,6 +169,12 @@ const AUDITS = [
   // boundary files — flags reintroduced *Paise/InPaise identifiers and
   // paise-scale *100/÷100 arithmetic. See CLAUDE.md's paise->rupees migration.
   { name: "money-units",                   script: "scripts/audit-money-units.mjs" },
+  // Strict-zero. Flags a Server Component page.tsx passing an inline function
+  // as a JSX prop to a component whose defining file is a Client Component
+  // ("use client") — React Server Components cannot serialize function
+  // values across that boundary. Invisible to tsc; caused the 2026-08-18
+  // "Something went wrong" prod crashes (getRowHref on 7 admin/store pages).
+  { name: "server-client-function-props",  script: "scripts/audit-server-client-function-props.mjs" },
 
 ];
 function parseArgs(argv) {

@@ -70,6 +70,7 @@ const updateProfileSchema = z.object({
   uiPreferences: z
     .object({
       collapsedSections: z.array(z.string()).optional(),
+      dataViewMode: z.enum(["table", "grid", "list"]).optional(),
     })
     .optional(),
 });
@@ -103,11 +104,23 @@ export const PATCH = withProviders(createApiHandler<(typeof updateProfileSchema)
       } as any);
     }
 
-    // Client sends the full merged collapsedSections list (its own page's
-    // entries plus every other page's untouched entries) — write it as-is.
-    if (uiPreferences?.collapsedSections !== undefined) {
+    // uiPreferences is a single map field — Firestore's .update() replaces
+    // the whole map on a nested-object write, so every sub-key must be
+    // merged against the current value here (not just the key this request
+    // is changing) or a dataViewMode write would silently wipe out
+    // collapsedSections and vice versa.
+    if (uiPreferences?.collapsedSections !== undefined || uiPreferences?.dataViewMode !== undefined) {
+      const existing = (user!.uiPreferences as Record<string, JsonValue>) ?? {};
       await userRepository.update(user!.uid, {
-        uiPreferences: { collapsedSections: uiPreferences.collapsedSections },
+        uiPreferences: {
+          ...existing,
+          ...(uiPreferences.collapsedSections !== undefined
+            ? { collapsedSections: uiPreferences.collapsedSections }
+            : {}),
+          ...(uiPreferences.dataViewMode !== undefined
+            ? { dataViewMode: uiPreferences.dataViewMode }
+            : {}),
+        },
       } as any);
     }
 

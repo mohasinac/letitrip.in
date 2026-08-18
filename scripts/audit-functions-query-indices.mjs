@@ -47,6 +47,10 @@ const INDEXES_PATH = join(ROOT, "appkit", "firebase", "base", "firestore.indexes
 const SCAN_DIRS = [
   join(ROOT, "appkit", "src", "_internal", "server"),
   join(ROOT, "functions", "src"),
+  // Consumer app tree — catches any page.tsx/route.ts that bypasses the
+  // repository layer with a raw Firestore chain (audit-listing-indices.mjs
+  // covers repository-method call sites; this covers what's left).
+  join(ROOT, "src", "app"),
 ];
 
 const RANGE_OPS = new Set(["<", "<=", ">", ">=", "!="]);

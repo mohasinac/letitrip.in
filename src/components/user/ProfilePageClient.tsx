@@ -12,6 +12,7 @@ import {
   useAuth,
   ROUTES,
   AvatarUpload,
+  CollapsibleSection,
   Div,
   Button,
   Form,
@@ -21,6 +22,7 @@ import {
   Toggle,
   updateProfileSchema,
   applyZodIssues,
+  useCollapsedSections,
 } from "@mohasinac/appkit/client";
 import type { UseFormShellStateResult } from "@mohasinac/appkit/client";
 import { Heading, Row, Stack, Text } from "@mohasinac/appkit";
@@ -120,6 +122,7 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
   const { showToast } = useToast();
   const { data: profile, isLoading } = useProfile({ enabled: !!user });
   const [editing, setEditing] = useState(false);
+  const { isCollapsed, toggle } = useCollapsedSections({ sectionIds: ["user-profile:details"] });
 
   const [displayName, setDisplayName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -223,6 +226,11 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
       {standalone && (
         <Heading level={1} size="2xl" weight="bold" color="primary">My Profile</Heading>
       )}
+      <CollapsibleSection
+        title="Profile Details"
+        isCollapsed={isCollapsed("user-profile:details")}
+        onToggle={() => toggle("user-profile:details")}
+      >
       {!editing ? (
         renderProfileViewMode({ profile, resolvedName, namePlaceholder, avatarLetter, profileBio, profileIsPublic, handleEdit })
       ) : (
@@ -313,6 +321,7 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
           </Div>
         </Stack>
       )}
+      </CollapsibleSection>
     </Stack>
   );
 }

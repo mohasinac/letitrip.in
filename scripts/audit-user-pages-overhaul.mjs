@@ -78,9 +78,12 @@ check(
 );
 
 check(
-  "Cohort 1 · Settings page uses TabStrip + Accordion (no inline tab buttons)",
+  // TabStrip was consolidated into the shared Tabs/TabsList/TabsTrigger
+  // primitive (2026-08-18, Phase 6c tab consolidation) — same "structured
+  // tab component, no inline buttons" intent, different primitive.
+  "Cohort 1 · Settings page uses Tabs + Accordion (no inline tab buttons)",
   join(ROOT, "src/app/[locale]/user/settings/page.tsx"),
-  "TabStrip",
+  "TabsList",
   "Accordion",
 );
 // Negative check — old inline tab class must be gone.

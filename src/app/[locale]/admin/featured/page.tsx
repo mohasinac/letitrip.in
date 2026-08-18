@@ -66,7 +66,7 @@ export default function Page() {
     getTotal: (response, mappedRows) =>
       typeof response.total === "number" ? response.total : mappedRows.length,
     buildFilters: () => "featured==true",
-    getRowHref: (row) => String(ROUTES.ADMIN.PRODUCTS_EDIT(row.id)),
+    rowHrefTemplate: String(ROUTES.ADMIN.PRODUCTS_EDIT("{id}")),
     primaryAction: {
       label: "+ Add Product",
       onClick: () => router.push(String(ROUTES.ADMIN.PRODUCTS_NEW)),

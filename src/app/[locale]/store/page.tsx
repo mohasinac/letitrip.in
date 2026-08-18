@@ -1,6 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { Div, DynamicBgDiv, ROUTES, SellerTopProducts, StoreDashboardView, apiClient, useStoreDashboard } from "@mohasinac/appkit/client";
+import { CollapsibleSection, Div, DynamicBgDiv, ROUTES, SellerTopProducts, StoreDashboardView, apiClient, useCollapsedSections, useStoreDashboard } from "@mohasinac/appkit/client";
 const __O = {
   hidden: "overflow-hidden",
 } as const;
@@ -77,8 +77,15 @@ function rupees(paise: number) {
   return `₹${(paise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`;
 }
 
+const DASHBOARD_SECTION_IDS = [
+  "store-dashboard:stats",
+  "store-dashboard:quick-actions",
+  "store-dashboard:top-products",
+];
+
 export default function Page() {
   const { stats, isLoading } = useStoreDashboard();
+  const { isCollapsed, toggle } = useCollapsedSections({ sectionIds: DASHBOARD_SECTION_IDS });
   const { data: analyticsData } = useQuery<{ topProducts?: TopProduct[] }>({
     queryKey: ["store-analytics-top-products"],
     queryFn: () => apiClient.get<{ topProducts?: TopProduct[] }>(API_ROUTES.STORE.ANALYTICS),
@@ -91,77 +98,95 @@ export default function Page() {
       labels={{ title: "Store Dashboard" }}
       isLoading={isLoading}
       renderStats={(busy) => (
-        <Div layout="grid" gap="4" className="grid-cols-2 sm:grid-cols-3">
-          <StatCard
-            label="Total Revenue"
-            value={stats ? `${stats.currency} ${stats.totalRevenue.toLocaleString()}` : "—"}
-            isLoading={busy}
-            gradient={GREEN_GRAD}
-            Icon={TrendingUp}
-          />
-          <StatCard
-            label="Total Orders"
-            value={stats?.totalOrders ?? "—"}
-            isLoading={busy}
-            gradient={BRAND_GRAD}
-            Icon={ShoppingBag}
-          />
-          <StatCard
-            label="Pending Orders"
-            value={stats?.pendingOrders ?? "—"}
-            isLoading={busy}
-            gradient={AMBER_GRAD}
-            Icon={Clock}
-          />
-          <StatCard
-            label="Active Listings"
-            value={stats?.activeListings ?? "—"}
-            isLoading={busy}
-            gradient={BLUE_GRAD}
-            Icon={Package}
-          />
-          <StatCard
-            label="Pending Payouts"
-            value={stats ? `${stats.currency} ${stats.pendingPayouts.toLocaleString()}` : "—"}
-            isLoading={busy}
-            gradient={GOLD_GRAD}
-            Icon={Wallet}
-          />
-          <StatCard
-            label="Avg. Rating"
-            value={stats?.averageRating != null ? `${stats.averageRating} ★` : "—"}
-            isLoading={busy}
-            gradient={GREEN_GRAD}
-            Icon={Star}
-          />
-        </Div>
+        <CollapsibleSection
+          title="Stats"
+          isCollapsed={isCollapsed("store-dashboard:stats")}
+          onToggle={() => toggle("store-dashboard:stats")}
+        >
+          <Div layout="grid" gap="4" className="grid-cols-2 sm:grid-cols-3">
+            <StatCard
+              label="Total Revenue"
+              value={stats ? `${stats.currency} ${stats.totalRevenue.toLocaleString()}` : "—"}
+              isLoading={busy}
+              gradient={GREEN_GRAD}
+              Icon={TrendingUp}
+            />
+            <StatCard
+              label="Total Orders"
+              value={stats?.totalOrders ?? "—"}
+              isLoading={busy}
+              gradient={BRAND_GRAD}
+              Icon={ShoppingBag}
+            />
+            <StatCard
+              label="Pending Orders"
+              value={stats?.pendingOrders ?? "—"}
+              isLoading={busy}
+              gradient={AMBER_GRAD}
+              Icon={Clock}
+            />
+            <StatCard
+              label="Active Listings"
+              value={stats?.activeListings ?? "—"}
+              isLoading={busy}
+              gradient={BLUE_GRAD}
+              Icon={Package}
+            />
+            <StatCard
+              label="Pending Payouts"
+              value={stats ? `${stats.currency} ${stats.pendingPayouts.toLocaleString()}` : "—"}
+              isLoading={busy}
+              gradient={GOLD_GRAD}
+              Icon={Wallet}
+            />
+            <StatCard
+              label="Avg. Rating"
+              value={stats?.averageRating != null ? `${stats.averageRating} ★` : "—"}
+              isLoading={busy}
+              gradient={GREEN_GRAD}
+              Icon={Star}
+            />
+          </Div>
+        </CollapsibleSection>
       )}
       renderQuickActions={() => (
-        <Div layout="grid" gap="3" className="grid-cols-2 sm:grid-cols-3">
-          {QUICK_ACTIONS.map(({ label, href, Icon }) => (
-            <Link
-              key={label}
-              href={String(href)}
-              className="group flex items-center gap-[var(--appkit-space-3)] rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-4)] py-[var(--appkit-space-3-5)] text-[length:var(--appkit-text-sm)] font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
-            >
-              <DynamicBgDiv
-                background={BRAND_GRAD}
-                className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-md"
+        <CollapsibleSection
+          title="Quick Actions"
+          isCollapsed={isCollapsed("store-dashboard:quick-actions")}
+          onToggle={() => toggle("store-dashboard:quick-actions")}
+        >
+          <Div layout="grid" gap="3" className="grid-cols-2 sm:grid-cols-3">
+            {QUICK_ACTIONS.map(({ label, href, Icon }) => (
+              <Link
+                key={label}
+                href={String(href)}
+                className="group flex items-center gap-[var(--appkit-space-3)] rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-4)] py-[var(--appkit-space-3-5)] text-[length:var(--appkit-text-sm)] font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
               >
-                <Icon className="w-3.5 h-3.5 text-white" />
-              </DynamicBgDiv>
-              {label}
-            </Link>
-          ))}
-        </Div>
+                <DynamicBgDiv
+                  background={BRAND_GRAD}
+                  className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-md"
+                >
+                  <Icon className="w-3.5 h-3.5 text-white" />
+                </DynamicBgDiv>
+                {label}
+              </Link>
+            ))}
+          </Div>
+        </CollapsibleSection>
       )}
       renderTopProducts={() =>
         topProducts.length > 0 ? (
-          <SellerTopProducts
-            products={topProducts}
-            formatRevenue={rupees}
-            labels={{ title: "Top Products (30d)" }}
-          />
+          <CollapsibleSection
+            title="Top Products (30d)"
+            isCollapsed={isCollapsed("store-dashboard:top-products")}
+            onToggle={() => toggle("store-dashboard:top-products")}
+          >
+            <SellerTopProducts
+              products={topProducts}
+              formatRevenue={rupees}
+              labels={{ title: "Top Products (30d)" }}
+            />
+          </CollapsibleSection>
         ) : null
       }
     />

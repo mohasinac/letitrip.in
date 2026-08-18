@@ -21,7 +21,7 @@ import {
   NotificationPreferencesPanel,
   LinkedAccountsSection,
 } from "@mohasinac/appkit/client";
-import { TabStrip, Accordion, PaginatedSelect } from "@mohasinac/appkit/ui";
+import { Tabs, TabsList, TabsTrigger, Accordion, PaginatedSelect } from "@mohasinac/appkit/ui";
 import type { AsyncPage, PaginatedSelectOption } from "@mohasinac/appkit/ui";
 import { SUPPORTED_LANGUAGES, LANGUAGES_PAGE_SIZE } from "@/constants";
 import { FontToggleClient } from "@/components";
@@ -343,11 +343,13 @@ export default function Page() {
       <Text className="text-[var(--appkit-color-text)] mb-6" size="xl" weight="bold">Settings</Text>
 
       <Div className="mb-6">
-        <TabStrip
-          tabs={(Object.keys(TAB_LABELS) as Tab[]).map((key) => ({ key, label: TAB_LABELS[key] }))}
-          activeKey={activeTab}
-          onChange={(key: string) => setActiveTab(key as Tab)}
-        />
+        <Tabs value={activeTab} onChange={(key) => setActiveTab(key as Tab)}>
+          <TabsList>
+            {(Object.keys(TAB_LABELS) as Tab[]).map((key) => (
+              <TabsTrigger key={key} value={key}>{TAB_LABELS[key]}</TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
       </Div>
 
       {activeTab === "account" && renderAccountTab({

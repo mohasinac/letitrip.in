@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Code, Container, Divider, Heading, Row, Section, Span, Stack, TabStrip, Text } from "@mohasinac/appkit/client";
+import { Button, Code, Container, Divider, Heading, Row, Section, Span, Stack, Tabs, TabsList, TabsTrigger, Text } from "@mohasinac/appkit/client";
 import type { JsonValue } from "@mohasinac/appkit";
 import { Link } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
@@ -34,11 +34,13 @@ export default function Page() {
             </Text>
           </Stack>
           <Divider />
-          <TabStrip
-            tabs={ADMIN_USER_DETAIL_TABS.map((t) => ({ key: t.id, label: t.label }))}
-            activeKey={tab}
-            onChange={(k: string) => setTab(k as AdminUserDetailTabId)}
-          />
+          <Tabs value={tab} onChange={(k: string) => setTab(k as AdminUserDetailTabId)}>
+            <TabsList>
+              {ADMIN_USER_DETAIL_TABS.map((t) => (
+                <TabsTrigger key={t.id} value={t.id}>{t.label}</TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
           {tab === "overview" && user && (
             <Stack textSize="sm" gap="sm">
               <Text>

@@ -4,10 +4,12 @@ import {
   useAuth,
   useOrders,
   ROUTES,
+  CollapsibleSection,
   Div,
   Stack,
   Text,
   Heading,
+  useCollapsedSections,
 } from "@mohasinac/appkit/client";
 import { Row, apiClient } from "@mohasinac/appkit";
 import { Link } from "@/i18n/navigation";
@@ -58,8 +60,11 @@ function SectionCard({ title, viewAllHref, children }: { title: string; viewAllH
   );
 }
 
+const SECTION_IDS = ["user-profile:stats", "user-profile:activity"];
+
 export function ProfileActivityPanel() {
   const { user } = useAuth();
+  const { isCollapsed, toggle } = useCollapsedSections({ sectionIds: SECTION_IDS });
   const { orders: recentOrders } = useOrders({ page: 1, perPage: 5 });
   const { orders: allOrders } = useOrders({ page: 1, perPage: 100 });
 
@@ -92,6 +97,11 @@ export function ProfileActivityPanel() {
     <Stack gap="lg">
       <Heading level={2} className="text-[var(--appkit-color-text)]" size="lg" weight="semibold">Your activity</Heading>
 
+      <CollapsibleSection
+        title="Activity Stats"
+        isCollapsed={isCollapsed("user-profile:stats")}
+        onToggle={() => toggle("user-profile:stats")}
+      >
       {/* eslint-disable-next-line lir/no-hardcoded-grid-cols -- fixed 4-stat strip; FLUID_GRID token oversizes */}
       <Div layout="grid" gap="3" className="grid-cols-2 md:grid-cols-4">
         <StatPill label="Lifetime orders" value={totalOrders} />
@@ -99,7 +109,13 @@ export function ProfileActivityPanel() {
         <StatPill label="Bids placed" value={bidsData?.total ?? 0} />
         <StatPill label="Member since" value={memberSince ? new Date(memberSince).getFullYear() : "—"} />
       </Div>
+      </CollapsibleSection>
 
+      <CollapsibleSection
+        title="Recent Activity"
+        isCollapsed={isCollapsed("user-profile:activity")}
+        onToggle={() => toggle("user-profile:activity")}
+      >
       {/* eslint-disable-next-line lir/no-hardcoded-grid-cols, lir/require-xl-breakpoints -- 3-panel activity row stays 3-wide above lg */}
       <Div layout="grid" gap="4" className="grid-cols-1 lg:grid-cols-3">
         <SectionCard title="Recent orders" viewAllHref={String(ROUTES.USER.ORDERS)}>
@@ -155,6 +171,7 @@ export function ProfileActivityPanel() {
           )}
         </SectionCard>
       </Div>
+      </CollapsibleSection>
     </Stack>
   );
 }

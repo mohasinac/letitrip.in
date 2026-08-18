@@ -9,6 +9,7 @@ import { readFileSync } from "fs";
 import os from "os";
 import path from "path";
 import { performance } from "perf_hooks";
+import { checkAppkitPin } from "./lib/check-appkit-pin.mjs";
 
 const ROOT = process.cwd();
 
@@ -41,12 +42,16 @@ if (!process.env.DEV_SKIP_MEM_CHECK) {
 // working tree. This bit a full session's worth of appkit-side fixes before
 // anyone noticed (2026-08-17). Fail loudly instead of building against stale
 // code — see CLAUDE.md "Appkit Local Dev vs Publish Rules".
+//
+// checkAppkitPin lives in a side-effect-free module (./lib/check-appkit-pin.mjs)
+// specifically so it can be unit-tested without executing this script's
+// memory guard / build pipeline as an import side effect.
 {
   const pkg = JSON.parse(readFileSync(path.join(ROOT, "package.json"), "utf8"));
-  const appkitSpec = pkg.dependencies?.["@mohasinac/appkit"];
-  if (appkitSpec && !appkitSpec.startsWith("file:")) {
+  const badSpec = checkAppkitPin(pkg);
+  if (badSpec) {
     console.error(
-      `\n[dev-light] Aborting: package.json pins "@mohasinac/appkit": "${appkitSpec}" ` +
+      `\n[dev-light] Aborting: package.json pins "@mohasinac/appkit": "${badSpec}" ` +
         `(npm registry), not "file:./appkit".\n` +
         `           Local dev must build against the working tree in appkit/src/, or\n` +
         `           every appkit-side edit this session will be silently invisible.\n` +
