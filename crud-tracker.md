@@ -2,7 +2,16 @@
 
 > **Single working tracker.** Lane A/B split wound down 2026-05-12 (single-lane model now).
 >
-> **Last updated:** 2026-08-19 — **S-tester-admin-parity**: Test-case links now visible to both
+> **Last updated:** 2026-08-19 — **S-404-sweep**: Follow-up to the events 404 fix — swept the
+> codebase for the same two 404-bug shapes (slug/id lookup mismatch; `where("id"=="...")` against a
+> field that's never persisted). Found + fixed one more: `src/app/api/admin/payouts/[id]/route.ts`
+> GET always 404'd (broken Sieve filter, same root cause as the two events admin routes fixed
+> earlier). Fixed to `payoutRepository.findById(id)`; updated its test (was mocking the broken
+> `.list()` call and asserting the bug as intended behavior). Everything else the sweep checked —
+> grouped listings, sub-listings, brands, scammer profiles, reviews, orders, bids, notifications,
+> sessions — confirmed already safe. `npm run check:types:app` clean; not published/deployed.
+>
+> **Prior, 2026-08-19 — S-tester-admin-parity**: Test-case links now visible to both
 > testers and admins in the user profile dashboard (`TesterHubView`'s access guard is now
 > `isTester || isAdminUser`, same widening applied to `getUserNavGroups`'s Help-group injection
 > and both `/api/user/tester-checklist*` routes); admin dashboard nav gets a dedicated "Testing"

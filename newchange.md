@@ -41,6 +41,50 @@
 
 ---
 
+### S-tester-sandbox-expansion — Tester checklist grown ~55 → ~308 cases, sandbox gains orders + bids seed data (2026-08-19)
+
+Follow-up to `S-tester-admin-parity` below. The tester checklist catalog was expanded far
+past the initial +17 cases — deep sweeps added edge-case coverage for checkout (multi-seller
+split, GST breakdown, EMI, out-of-stock policies, mobile/back-navigation), wishlist (guest→login
+merge, idempotent re-add, 20-item cap, cross-listing-type, stale price), cart (guest merge, price
+revalidation, empty state), history (FIFO 50-cap, guest merge), and user dashboard navigation
+(every sidebar link resolves). Some cases now carry `adminOnly: true`, paired with the
+`canTestAdmin` admin-testing feature documented below.
+
+New tester-sandbox seed data: `orders-tester-seed-data.ts` (13 orders, one per `OrderStatus` +
+non-standard types — auction win, bundle, prize-draw win/loss), `bids-tester-seed-data.ts` (1
+winning bid pairing with the auction-win order), plus expansions to `events-tester-seed-data.ts`,
+`products-tester-seed-data.ts`, and a new `coupons-tester-seed-data.ts`. `src/seed/manifest.ts`
+and `appkit/scripts/seed-cli.mjs` updated to wire the new collections through.
+
+`npm run check` exits 0 after this sync. Not published/deployed — appkit 4.1.0 (already on npm
+from a prior session's own publish) is the pin in use; no further publish/deploy performed here.
+
+---
+
+### S-404-sweep — Admin payouts GET 404 (same broken Sieve-filter pattern as the events fix) (2026-08-19)
+
+Direct follow-up to `S-user-sidebar-crossnav`'s events 404 fix, same session: user asked to sweep
+for more 404-causing bugs of the same shape. A codebase-wide sweep for (a) slug/id lookup
+mismatches and (b) the `where("id"=="...")`-on-a-never-persisted-field anti-pattern found one more
+confirmed, live bug: `src/app/api/admin/payouts/[id]/route.ts` GET queried
+`payoutRepository.list({ filters: sieveFilter("id", SIEVE_OP.EQ, id) })` — identical bug shape to
+the two events admin routes fixed earlier this session. `id` is never written into a payout
+document's stored data (`PayoutCreateInput` omits it; `create()` uses `.doc(id).set()` where `id`
+is the Firestore doc ID, not a data field), so this filter always returned zero results — the
+route always 404'd. The file's own docstring and the existing unit test both explicitly documented
+this as the *intended* behavior ("leverages the same query path as the list endpoint"), which is
+exactly why it went unnoticed — the test mocked `payoutRepository.list` directly and never
+exercised the real Firestore `where` clause. Fixed to `payoutRepository.findById(id)`, matching the
+already-correct sibling `src/app/api/store/payouts/[id]/route.ts`. Updated
+`__tests__/route.test.ts` to mock `findById` instead of `list` (13 tests, all passing). Everything
+else the sweep checked — grouped listings, sub-listings, brands, scammer profiles, reviews, orders,
+bids, notifications, sessions — was already safe (id===slug enforced at creation, or no live route
+links by anything other than the real doc ID). `npm run check:types:app` clean (0 errors); targeted
+lint on both changed files clean. Not published/deployed per explicit user instruction.
+
+---
+
 ### S-tester-admin-parity — Tester Hub + Testing nav accessible to admins, checklist search by route, new test cases (2026-08-19)
 
 User report: test-case links should be visible to both testers and admins in the user profile

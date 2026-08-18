@@ -1,22 +1,24 @@
 /**
  * Tests for GET / PATCH /api/admin/payouts/[id]
  *
- * GET: ROLES_ADMIN_MOD — uses payoutRepository.list() with sieveFilter (NOT findById!)
- *      → payouts.items[0] is the payout; if undefined → 404
+ * GET: ROLES_ADMIN_MOD — uses payoutRepository.findById(id) → if null → 404
  * PATCH: ROLES_ADMIN_MOD — adminUpdatePayout(user.uid, id, body) → returns { id, ...body }
  *
- * BUSINESS NOTE: GET goes through the list() API to leverage sieve filtering, not findById().
- * This means the "not found" path triggers when items[0] is undefined (empty list).
+ * The GET handler previously queried via payoutRepository.list() + a
+ * sieveFilter("id","==",id), which always returned an empty list — Firestore
+ * documents never have a literal "id" field written into their stored data
+ * (it's synthesized from the doc ID at read time). That always-404 bug is
+ * fixed by using findById() directly, same as the sibling store-scoped route.
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 let _user: { uid: string; role: string } | null = null;
 
 const {
-  mockPayoutList,
+  mockPayoutFindById,
   mockAdminUpdatePayout,
 } = vi.hoisted(() => ({
-  mockPayoutList: vi.fn(),
+  mockPayoutFindById: vi.fn(),
   mockAdminUpdatePayout: vi.fn(),
 }));
 
@@ -34,10 +36,8 @@ vi.mock("@/constants", () => ({
 }));
 
 vi.mock("@mohasinac/appkit", () => ({
-  payoutRepository: { list: mockPayoutList },
+  payoutRepository: { findById: mockPayoutFindById },
   adminUpdatePayout: mockAdminUpdatePayout,
-  sieveFilter: (field: string, _op: string, value: string) => ({ field, value }),
-  SIEVE_OP: { EQ: "==" },
   successResponse: (data: unknown, msg?: string) =>
     new Response(JSON.stringify({ ok: true, data, message: msg }), { status: 200 }),
   errorResponse: (msg: string, status: number) =>
@@ -87,7 +87,7 @@ const mockPayout = {
 beforeEach(() => {
   vi.clearAllMocks();
   _user = { uid: "admin-uid", role: "admin" };
-  mockPayoutList.mockResolvedValue({ items: [mockPayout] });
+  mockPayoutFindById.mockResolvedValue(mockPayout);
   mockAdminUpdatePayout.mockResolvedValue(undefined);
 });
 
@@ -110,19 +110,17 @@ describe("GET /api/admin/payouts/[id]", () => {
     expect(res.status).toBe(200);
   });
 
-  it("payout not found (empty list) → 404", async () => {
-    mockPayoutList.mockResolvedValue({ items: [] });
+  it("payout not found (null) → 404", async () => {
+    mockPayoutFindById.mockResolvedValue(null);
     const res = await GET(makeRequest("GET") as never, params as never);
     expect(res.status).toBe(404);
     const json = await res.clone().json() as { error: string };
     expect(json.error).toContain("not found");
   });
 
-  it("uses list() with sieve filter (not findById)", async () => {
+  it("calls findById with the route id", async () => {
     await GET(makeRequest("GET") as never, params as never);
-    expect(mockPayoutList).toHaveBeenCalledWith(
-      expect.objectContaining({ page: "1", pageSize: "1" }),
-    );
+    expect(mockPayoutFindById).toHaveBeenCalledWith("payout-pokemon-palace-20260601-a1b2c3");
   });
 
   it("found payout → 200 with payout data", async () => {

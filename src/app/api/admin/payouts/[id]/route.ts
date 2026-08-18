@@ -7,15 +7,13 @@ import {
   errorResponse,
   payoutRepository,
   adminUpdatePayout,
-  sieveFilter,
-  SIEVE_OP,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 /**
  * Admin Single Payout API
  *
- * GET   /api/admin/payouts/[id] — Fetch one payout via list() + sieve filter (leverages the same query path as the list endpoint).
+ * GET   /api/admin/payouts/[id] — Fetch one payout by ID.
  * PATCH /api/admin/payouts/[id] — Update payout status (pending/processing/paid/failed) + transaction reference via adminUpdatePayout.
  *
  * Status literals here match `payoutRepository`'s actual stored values
@@ -36,12 +34,7 @@ const __GET__g = withProviders(
     permission: "admin:payouts:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
-      const payouts = await payoutRepository.list({
-        filters: sieveFilter("id", SIEVE_OP.EQ, id),
-        page: "1",
-        pageSize: "1",
-      });
-      const payout = payouts.items[0];
+      const payout = await payoutRepository.findById(id);
       if (!payout) return errorResponse("Payout not found", 404);
       return successResponse(payout);
     },
