@@ -12699,3 +12699,96 @@ whole publish cycle):
     rm -rf node_modules/@mohasinac/appkit && npm install
     NODE_OPTIONS='--max-old-space-size=4096' npm run build
 ```
+
+---
+
+## Manual Payment Proof — 15-min window, two-tier review, auto-approve, fraud ban (2026-08-18)
+
+> Tier PP. Closes the gap where manual-payment orders (upi_manual/cash/emi)
+> sat in `pending`/`pending` indefinitely with no deadline, no restock on
+> timeout, a single one-shot admin "verify" action, and no fraud
+> consequence. Also adds a whole-checkout-total OTP gate for orders ≥
+> `siteSettings.payment.otpCheckoutThreshold` (skipped for COD).
+
+```
+BUYER                    ORDER LIFECYCLE                    ADMIN
+  |                            |                                |
+  | checkout (upi_manual/      |                                |
+  |  cash/emi, non-COD, total  |                                |
+  |  >= otpCheckoutThreshold)  |                                |
+  |--- email OTP gate -------->|  (checkout-value-otp.ts —      |
+  |<-- verify code -------------  separate namespace from        |
+  |                            |  shipping-consent OTP)          |
+  |                            |                                |
+  | place order -------------->|  paymentDeadline = now+15min    |
+  |                            |  displayedUpiId resolved        |
+  |                            |  (seller payoutDetails.upiId,   |
+  |                            |   site UPI if unset/admin store)|
+  |                            |  stock decremented (as before)  |
+  |                            |                                |
+  |   [15-min countdown on the payment page]                     |
+  |                            |                                |
+  |--- upload proof ---------->|  paymentProofUrl set             |
+  |    + buyerMarkedPaid       |  paymentUpiMismatch computed     |
+  |    + fraud agreement       |  (buyerReportedUpiId vs          |
+  |    + buyerReportedUpiId    |   displayedUpiId)                |
+  |                            |------ WhatsApp push ----------->| (fast-review,
+  |                            |                                |  fire-and-forget)
+  |                            |                                |
+  |         [no proof by deadline]                               |
+  |<-- order cancelled, ------ paymentWindowTimeout (every 5min) |
+  |    stock restored          |  restoreStockForOrder()          |
+  |                            |                                |
+  |                            |            [proof submitted] -->| reviews within 2h
+  |                            |                                |
+  |                            |                    +----------------------+
+  |                            |                    | Approve | Reupload | Reject-Fraud |
+  |                            |                    +----+--------+----------+
+  |                            |                         |        |          |
+  |<-- paid, processing -------|<------------------------+        |          |
+  |                            |                                  |          |
+  |<-- proof cleared, ---------|<---------------------------------+          |
+  |    +15min deadline         |  (honest mistake tier)                      |
+  |                            |                                             |
+  |<-- order cancelled, -------|<--------------------------------------------+
+  |    stock restored,         |  restoreStockForOrder() +
+  |    account suspended       |  enqueueJob(hardBanCascade, {expiresAt: +7d})
+  |    7 days                  |
+  |                            |
+  |         [no admin action within 2h of proof submission]
+  |                            |
+  |<-- auto-approved ----------|  paymentReviewAutoApprove (every 15min)
+  |    (badge shown)           |  same effect as Approve + autoApproved:true
+  |                            |
+  |--- raise dispute --------->|  disputeStatus:"open" ------> admins notified
+  |    (only if autoApproved)  |
+
+HARD-BAN RESOLUTION (7-day temporary, distinct from the existing
+permanent-only manual admin hard-ban):
+  hardBanCascade (extended, not forked) --expiresAt--> hardBanExpiresAt set
+       |
+       v (15 min later, once expiresAt passes)
+  hardBanReinstatement sweep --> Auth re-enabled, isDisabled cleared,
+                                  hardBanReinstatedAt stamped.
+                                  Store stays suspended, bids stay
+                                  cancelled, cluster bans stay banned —
+                                  those need separate admin/appeal action.
+```
+
+**Reused, not reinvented**: the OTP crypto primitives (`generateOtpCode()`,
+`hashOtp()`) come straight from the existing `consent-otp.ts` (shipping
+consent) — the new `checkout-value-otp.ts` only adds a distinct Firestore
+namespace and copy, not new cryptography. `restoreStockForOrder()` is one
+shared helper called from three places (the 15-min sweep, the 24h COD
+sweep, and the fraud-reject action) rather than three copies of stock-
+restoration logic. The temporary 7-day ban extends the existing
+`hardBanCascade` job with an optional `expiresAt` field rather than forking
+a parallel cascade — all 8 stages (Auth disable, session revoke, store
+suspend, bid cancel, address/payment cluster ban, notify) are identical
+regardless of ban duration; only the terminal state and notification copy
+branch on it. The WhatsApp admin push reuses `sendWhatsAppBusinessMessage`
+and the `whatsappAdminNotifyNumbers` config already wired for purchase
+announcements in `onOrderCreate.ts` — only the message template
+(`buildPaymentProofReviewMessage`) is new.
+
+---

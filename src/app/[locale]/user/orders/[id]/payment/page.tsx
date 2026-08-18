@@ -219,7 +219,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
           )}`}
           tone="brand"
           underline="hover"
-          className="text-[length:var(--appkit-text-xs)]"
+          size="xs"
         >
           Share this order for faster review on WhatsApp →
         </Anchor>

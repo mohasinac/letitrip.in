@@ -19,4 +19,5 @@ export const NAV_ICON_COLORS = {
   reviews: "text-warning",
   bundles: "text-success",
   prizeDraws: "text-[var(--appkit-color-secondary)]",
+  artStickers: "text-error",
 } as const;

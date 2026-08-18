@@ -23,9 +23,11 @@ import {
   BUNDLE_COPY,
   useProduct,
   PrizeRevealModal,
+  normalizeError,
   type BundleOrderGroup,
 } from "@mohasinac/appkit";
 import { getOrderDigitalCode } from "@/lib/api/user-client";
+import { raiseOrderDispute } from "@/lib/api/payment-client";
 import { API_ROUTES } from "@/constants";
 
 const CLS_BUNDLE_BADGE = "inline-flex items-center rounded-full bg-fuchsia-100 dark:bg-fuchsia-900/30 px-[var(--appkit-space-2)] py-[var(--appkit-space-0-5)] text-[10px] font-semibold text-fuchsia-700 dark:text-fuchsia-300";
@@ -352,17 +354,12 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
     if (!order || !disputeReason.trim()) return;
     setIsSubmittingDispute(true);
     try {
-      const res = await fetch(API_ROUTES.ORDERS.DISPUTE(order.id), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ reason: disputeReason }),
-      });
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(json?.error ?? "Failed to raise dispute.");
+      const result = await raiseOrderDispute(order.id, disputeReason);
+      if (!result.ok) throw new Error(result.error ?? "Failed to raise dispute.");
       showToast("Dispute raised — our team will review this order.", "success");
       setDisputeOpen(false);
     } catch (err) {
+      void normalizeError(err);
       showToast(err instanceof Error ? err.message : "Failed to raise dispute.", "error");
     } finally {
       setIsSubmittingDispute(false);

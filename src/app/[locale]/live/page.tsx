@@ -1,32 +1,22 @@
-import { Suspense } from "react";
+import { redirect } from "@/i18n/navigation";
 import type { Metadata } from "next";
-import { LiveItemsListView } from "@mohasinac/appkit";
-import { generateMetadata as _gm } from "@/constants";
 
-export const metadata: Metadata = _gm({
-  title: "Live — LetItRip",
-  description:
-    "Find live animals and exotic pets on LetItRip — reptiles, fish, invertebrates and more from verified sellers. Delivery or pickup available.",
-  path: "/live",
-  keywords: [
-    "buy live animals india",
-    "exotic pets marketplace india",
-    "reptiles for sale india",
-    "live fish invertebrates india",
-  ],
-});
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
-export const revalidate = 120;
-
+// Live-item listings folded into the consolidated generic Products tab
+// (Workstream 1b) — standard + classified + digital-code + live now live on
+// one page with an in-page type filter. This route stays only to redirect
+// old links/bookmarks.
 export default async function Page({
   searchParams,
 }: {
   searchParams?: Promise<Record<string, string | string[]>>;
 }) {
-  const resolvedSearchParams = await searchParams;
-  return (
-    <Suspense>
-      <LiveItemsListView searchParams={resolvedSearchParams} />
-    </Suspense>
-  );
+  const params = (await searchParams) ?? {};
+  const q = Array.isArray(params.q) ? params.q[0] : params.q;
+  const query = new URLSearchParams({ listingType: "live" });
+  if (q) query.set("q", q);
+  redirect(`/products?${query.toString()}`);
 }

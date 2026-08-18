@@ -35,6 +35,25 @@ export async function attachPaymentProof(
   return { ok: res.ok, ...json };
 }
 
+export interface RaiseDisputeResult {
+  ok: boolean;
+  error?: string;
+}
+
+export async function raiseOrderDispute(
+  orderId: string,
+  reason: string,
+): Promise<RaiseDisputeResult> {
+  const res = await fetch(API_ENDPOINTS.ORDERS.DISPUTE(orderId), {
+    method: "POST",
+    headers: JSON_HEADERS,
+    credentials: CREDS,
+    body: JSON.stringify({ reason }),
+  });
+  const json = await res.json().catch(() => ({})) as Omit<RaiseDisputeResult, "ok">;
+  return { ok: res.ok, ...json };
+}
+
 export async function createCheckoutOrder(body: unknown): Promise<Response> {
   return fetch(API_ENDPOINTS.CHECKOUT.PLACE_ORDER, {
     method: "POST",

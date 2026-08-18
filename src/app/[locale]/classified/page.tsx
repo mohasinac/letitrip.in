@@ -1,32 +1,22 @@
-import { Suspense } from "react";
+import { redirect } from "@/i18n/navigation";
 import type { Metadata } from "next";
-import { ClassifiedListView } from "@mohasinac/appkit";
-import { generateMetadata as _gm } from "@/constants";
 
-export const metadata: Metadata = _gm({
-  title: "Classifieds — LetItRip",
-  description:
-    "Browse second-hand and C2C collectible listings on LetItRip — Pokémon cards, action figures, diecast vehicles, vintage rare and more. Negotiate directly with sellers.",
-  path: "/classified",
-  keywords: [
-    "collectibles classifieds india",
-    "second hand pokemon cards",
-    "buy sell action figures india",
-    "vintage collectibles marketplace",
-  ],
-});
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
-export const revalidate = 120;
-
+// Classified listings folded into the consolidated generic Products tab
+// (Workstream 1b) — standard + classified + digital-code + live now live on
+// one page with an in-page type filter. This route stays only to redirect
+// old links/bookmarks.
 export default async function Page({
   searchParams,
 }: {
   searchParams?: Promise<Record<string, string | string[]>>;
 }) {
-  const resolvedSearchParams = await searchParams;
-  return (
-    <Suspense>
-      <ClassifiedListView searchParams={resolvedSearchParams} />
-    </Suspense>
-  );
+  const params = (await searchParams) ?? {};
+  const q = Array.isArray(params.q) ? params.q[0] : params.q;
+  const query = new URLSearchParams({ listingType: "classified" });
+  if (q) query.set("q", q);
+  redirect(`/products?${query.toString()}`);
 }

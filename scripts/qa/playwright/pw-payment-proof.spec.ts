@@ -48,3 +48,57 @@ test.describe("Payment Proof Upload — UC-B8, UC-A2", () => {
     expect([401, 403]).toContain(res.status());
   });
 });
+
+test.describe("Tier PP — 15-min payment window, two-tier review, OTP gate", () => {
+  test("payment-proof submission without the fraud agreement checkbox is rejected", async ({ page }) => {
+    await loginAsBuyer(page);
+    const orderId = await fetchFirstId(page, "/api/user/orders?status=pending&pageSize=1");
+    expect(orderId, "At least one pending order must be seeded for the buyer").toBeTruthy();
+
+    const cookies = await page.context().cookies([BASE_URL]);
+    const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
+    const res = await page.request.post(`${BASE_URL}/api/orders/${orderId}/payment-proof`, {
+      headers: { Cookie: cookieHeader, "Content-Type": "application/json" },
+      data: { proofUrl: "/media/proof-test.jpg", buyerFraudAgreementAccepted: false },
+    });
+    expect(res.status()).toBe(400);
+    const body = await res.json() as { code?: string };
+    expect(body.code).toBe("AGREEMENT_NOT_ACCEPTED");
+  });
+
+  test("admin payment-reupload route rejects a request with no reason", async ({ page }) => {
+    await loginAsAdmin(page);
+    const orderId = await fetchFirstId(page, "/api/admin/orders?pageSize=1");
+    expect(orderId, "At least one order must be seeded").toBeTruthy();
+
+    const cookies = await page.context().cookies([BASE_URL]);
+    const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
+    const res = await page.request.patch(`${BASE_URL}/api/admin/orders/${orderId}/payment-reupload`, {
+      headers: { Cookie: cookieHeader, "Content-Type": "application/json" },
+      data: { note: "" },
+    });
+    expect(res.status()).toBe(400);
+  });
+
+  test("admin payment-reject-fraud route requires admin/moderator auth", async ({ page }) => {
+    const res = await page.request.patch(`${BASE_URL}/api/admin/orders/nonexistent/payment-reject-fraud`, {
+      headers: { "Content-Type": "application/json" },
+      data: { note: "test" },
+    });
+    expect([401, 403]).toContain(res.status());
+  });
+
+  test("dispute route rejects a missing reason", async ({ page }) => {
+    await loginAsBuyer(page);
+    const orderId = await fetchFirstId(page, "/api/user/orders?pageSize=1");
+    expect(orderId, "At least one order must be seeded").toBeTruthy();
+
+    const cookies = await page.context().cookies([BASE_URL]);
+    const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join("; ");
+    const res = await page.request.post(`${BASE_URL}/api/orders/${orderId}/dispute`, {
+      headers: { Cookie: cookieHeader, "Content-Type": "application/json" },
+      data: { reason: "" },
+    });
+    expect(res.status()).toBe(400);
+  });
+});

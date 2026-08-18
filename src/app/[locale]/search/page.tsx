@@ -15,6 +15,7 @@ const ROUTE_MAP: Record<SearchResourceType, string> = {
   classified:      "/classified",
   "digital-codes": "/digital-codes",
   live:            "/live",
+  art:             "/art",
   stores:          "/stores",
   categories:      "/categories",
   brands:          "/brands",

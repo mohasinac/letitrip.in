@@ -1,5 +1,5 @@
 "use client";
-import { normalizeError, checkEmiEligibility, computeEmiSchedule, computeCodHandlingFee, type JsonArray } from "@mohasinac/appkit";
+import { normalizeError, checkEmiEligibility, computeEmiSchedule, computeCodHandlingFee, useSiteSettings, type JsonArray } from "@mohasinac/appkit";
 import type { JsonValue, EmiSettings, OutOfStockPolicy, CodHandlingFeeRates } from "@mohasinac/appkit";
 
 import { useCallback, useState, useEffect, useMemo } from "react";
@@ -24,7 +24,6 @@ import {
   useBottomActions,
   useCartQuery,
   useCreateAddress,
-  useSiteSettings,
   useToast,
   ROUTES,
   ACTION_ID,
@@ -36,6 +35,8 @@ import { useSearchParams } from "next/navigation";
 import {
   sendConsentOtpAction,
   verifyConsentOtpAction,
+  sendCheckoutValueOtpAction,
+  verifyCheckoutValueOtpAction,
 } from "@/actions/checkout.actions";
 import { API_ROUTES, UI_LABELS } from "@/constants";
 import {
@@ -170,6 +171,7 @@ function useEmiCheckout({
   setStep,
   setActionError,
   setIsProcessingPayment,
+  ensureValueOtpGate,
 }: {
   emiSettings: EmiSettings | null;
   showEmi: boolean;
@@ -182,6 +184,7 @@ function useEmiCheckout({
   setStep: (step: CheckoutStep) => void;
   setActionError: (msg: string) => void;
   setIsProcessingPayment: (v: boolean) => void;
+  ensureValueOtpGate: (method: "razorpay" | "cash" | "emi") => boolean;
 }) {
   const [emiTenure, setEmiTenure] = useState<number>(emiSettings?.tenureOptions?.[0] ?? 3);
   const emiEligible = useMemo(
@@ -196,6 +199,7 @@ function useEmiCheckout({
 
   const handlePlaceEmiOrder = useCallback(async () => {
     if (!selectedAddress) return;
+    if (!ensureValueOtpGate("emi")) return;
     setIsProcessingPayment(true);
     setActionError("");
     setStep("processing");
@@ -227,7 +231,7 @@ function useEmiCheckout({
     } finally {
       setIsProcessingPayment(false);
     }
-  }, [selectedAddress, emiTenure, outOfStockPolicy, router, showToast, setStep, setActionError, setIsProcessingPayment]);
+  }, [selectedAddress, emiTenure, outOfStockPolicy, router, showToast, setStep, setActionError, setIsProcessingPayment, ensureValueOtpGate]);
 
   return { emiTenure, setEmiTenure, emiVisible, emiSchedule, handlePlaceEmiOrder };
 }
@@ -461,6 +465,73 @@ function renderOtpStep({
           textSize="sm" className="w-full text-[var(--appkit-color-text-muted)] underline"
         >
           {isSendingOtp ? CK.OTP_RESENDING_BTN : CK.OTP_RESEND_BTN}
+        </Button>
+      </Stack>
+    </Div>
+  );
+}
+
+function renderValueOtpStep({
+  maskedEmail,
+  otpCode,
+  setOtpCode,
+  otpError,
+  isVerifying,
+  isSending,
+  handleVerify,
+  handleResend,
+}: {
+  maskedEmail: string;
+  otpCode: string;
+  setOtpCode: (v: string) => void;
+  otpError: string;
+  isVerifying: boolean;
+  isSending: boolean;
+  handleVerify: () => Promise<void>;
+  handleResend: () => Promise<void>;
+}) {
+  return (
+    <Div className={STEP_CARD_CLS}>
+      <Heading level={2} className="mb-1" color="primary" size="lg" weight="semibold">
+        Verify this order
+      </Heading>
+      <Text className={STEP_SUBLABEL_CLS}>
+        High-value orders need a quick verification step
+      </Text>
+      <Text className="mb-4" color="muted" size="sm">
+        We sent a 6-digit code to{" "}
+        <Span weight="medium" color="primary">{maskedEmail || "your registered email"}</Span>.{" "}
+        Enter it below to continue.
+      </Text>
+      <Stack gap="md">
+        <Input
+          type="text"
+          inputMode="numeric"
+          maxLength={6}
+          placeholder="6-digit code"
+          value={otpCode}
+          onChange={(e) => setOtpCode(e.target.value)}
+          className="tracking-widest text-center text-[length:var(--appkit-text-xl)]"
+        />
+        {otpError && (
+          <Text className="text-error" size="sm">{otpError}</Text>
+        )}
+        <Button
+          type="button"
+          onClick={handleVerify}
+          disabled={isVerifying || otpCode.length < 6}
+          className={PRIMARY_BTN_CLS}
+        >
+          {isVerifying ? "Verifying…" : "Verify & continue"}
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={handleResend}
+          disabled={isSending}
+          textSize="sm" className="w-full text-[var(--appkit-color-text-muted)] underline"
+        >
+          {isSending ? "Resending…" : "Resend code"}
         </Button>
       </Stack>
     </Div>
@@ -778,6 +849,156 @@ function renderOrderSummary({
   );
 }
 
+/**
+ * Tier PP — high-value checkout OTP gate (distinct purpose from the
+ * shipping-consent OTP above). Extracted into its own hook (mirroring
+ * `useEmiCheckout`) so `CheckoutRouteClient` itself stays under the
+ * LARGE_COMPONENT audit threshold.
+ */
+function useValueOtpCheckout({
+  subtotal,
+  showToast,
+  setStep,
+  setActionError,
+}: {
+  subtotal: number;
+  showToast: ReturnType<typeof useToast>["showToast"];
+  setStep: (step: CheckoutStep) => void;
+  setActionError: (msg: string) => void;
+}) {
+  const { data: siteSettings } = useSiteSettings<{ payment?: { otpCheckoutThreshold?: number } }>();
+  const [valueOtpVerified, setValueOtpVerified] = useState(false);
+  const [valueOtpMaskedEmail, setValueOtpMaskedEmail] = useState("");
+  const [valueOtpCode, setValueOtpCode] = useState("");
+  const [valueOtpError, setValueOtpError] = useState("");
+  const [isSendingValueOtp, setIsSendingValueOtp] = useState(false);
+  const [isVerifyingValueOtp, setIsVerifyingValueOtp] = useState(false);
+
+  // Whole-checkout-total threshold, skipped for COD (evaluated per-payment-
+  // method at call sites via ensureValueOtpGate, not here).
+  const otpThreshold = siteSettings?.payment?.otpCheckoutThreshold;
+  const requiresValueOtp =
+    typeof otpThreshold === "number" && otpThreshold > 0 && subtotal >= otpThreshold;
+
+  const handleSendValueOtp = useCallback(async () => {
+    setIsSendingValueOtp(true);
+    setActionError("");
+    try {
+      const result = await sendCheckoutValueOtpAction();
+      if (!result.ok) {
+        setActionError(result.error);
+        showToast(result.error, "error");
+        return;
+      }
+      setValueOtpMaskedEmail(result.data.maskedEmail);
+      showToast("Verification code sent.", "success");
+    } catch (err) {
+      void normalizeError(err);
+      const msg = err instanceof Error ? err.message : "Failed to send verification code";
+      setActionError(msg);
+      showToast(msg, "error");
+    } finally {
+      setIsSendingValueOtp(false);
+    }
+  }, [showToast, setActionError]);
+
+  const handleVerifyValueOtp = useCallback(async () => {
+    if (!valueOtpCode) return;
+    setIsVerifyingValueOtp(true);
+    setValueOtpError("");
+    try {
+      await verifyCheckoutValueOtpAction(valueOtpCode);
+      setValueOtpVerified(true);
+      showToast("Order verified.", "success");
+      setStep("payment");
+    } catch (err) {
+      void normalizeError(err);
+      const msg = err instanceof Error ? err.message : "Invalid code. Please check and try again.";
+      setValueOtpError(msg);
+      showToast(msg, "error");
+    } finally {
+      setIsVerifyingValueOtp(false);
+    }
+  }, [valueOtpCode, showToast, setStep]);
+
+  /**
+   * Returns true when it's safe to proceed with placing the order for the
+   * given payment method. When the gate applies and hasn't been satisfied
+   * yet, sends the OTP, switches to the "value-otp" step, and returns false
+   * so the caller aborts — `handleVerifyValueOtp` above resumes to "payment"
+   * once verified, and the buyer just clicks the payment button again.
+   */
+  const ensureValueOtpGate = useCallback(
+    (_method: "razorpay" | "cash" | "emi"): boolean => {
+      if (!requiresValueOtp || valueOtpVerified) return true;
+      setStep("value-otp");
+      void handleSendValueOtp();
+      return false;
+    },
+    [requiresValueOtp, valueOtpVerified, setStep, handleSendValueOtp],
+  );
+
+  return {
+    valueOtpVerified,
+    valueOtpMaskedEmail,
+    valueOtpCode,
+    setValueOtpCode,
+    valueOtpError,
+    isSendingValueOtp,
+    isVerifyingValueOtp,
+    handleSendValueOtp,
+    handleVerifyValueOtp,
+    ensureValueOtpGate,
+  };
+}
+
+/** Admin checkout-bypass handler — extracted so `CheckoutRouteClient` itself stays under the LARGE_COMPONENT audit threshold. */
+function useAdminBypassCheckout({
+  selectedAddress,
+  router,
+  showToast,
+  step,
+  setStep,
+  setActionError,
+  setIsProcessingPayment,
+}: {
+  selectedAddress: Address | null;
+  router: ReturnType<typeof useRouter>;
+  showToast: ReturnType<typeof useToast>["showToast"];
+  step: CheckoutStep;
+  setStep: (step: CheckoutStep) => void;
+  setActionError: (msg: string) => void;
+  setIsProcessingPayment: (v: boolean) => void;
+}) {
+  return useCallback(async () => {
+    if (!selectedAddress) return;
+    setIsProcessingPayment(true);
+    setActionError("");
+    setStep("processing");
+    try {
+      const res = await applyCheckoutBypass({ addressId: selectedAddress.id });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(
+          (err as { error?: string }).error ?? "Admin bypass failed",
+        );
+      }
+      const data = await res.json().catch(() => ({}));
+      const firstOrderId = (data?.data?.orderIds as string[] | undefined)?.[0];
+      showToast(CK.ADMIN_BYPASS_TOAST, "success");
+      router.push(firstOrderId ? `${String(ROUTES.USER.CHECKOUT_SUCCESS)}?orderId=${firstOrderId}` : String(ROUTES.USER.CHECKOUT_SUCCESS));
+    } catch (err) {
+      void normalizeError(err);
+      const msg = err instanceof Error ? err.message : "Admin bypass failed. Please retry.";
+      setActionError(msg);
+      showToast(msg, "error");
+      setStep(step === "processing" ? "payment" : step);
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  }, [selectedAddress, router, showToast, step, setStep, setActionError, setIsProcessingPayment]);
+}
+
 // --- Component ---------------------------------------------------------------
 
 export function CheckoutRouteClient({
@@ -860,6 +1081,18 @@ export function CheckoutRouteClient({
   const effectiveTotal = Math.max(0, subtotal - totalDiscount);
   const cartIsEmpty = (cartData?.cart?.items?.length ?? 0) === 0;
 
+  const {
+    valueOtpMaskedEmail,
+    valueOtpCode,
+    setValueOtpCode,
+    valueOtpError,
+    isSendingValueOtp,
+    isVerifyingValueOtp,
+    handleSendValueOtp,
+    handleVerifyValueOtp,
+    ensureValueOtpGate,
+  } = useValueOtpCheckout({ subtotal, showToast, setStep, setActionError });
+
   const { emiTenure, setEmiTenure, emiVisible, emiSchedule, handlePlaceEmiOrder } = useEmiCheckout({
     emiSettings,
     showEmi,
@@ -872,6 +1105,7 @@ export function CheckoutRouteClient({
     setStep,
     setActionError,
     setIsProcessingPayment,
+    ensureValueOtpGate,
   });
 
   const handleSelectAddress = useCallback(
@@ -985,6 +1219,7 @@ export function CheckoutRouteClient({
 
   const handlePayOnline = useCallback(async () => {
     if (!selectedAddress || !user) return;
+    if (!ensureValueOtpGate("razorpay")) return;
     setIsProcessingPayment(true);
     setActionError("");
     setStep("processing");
@@ -1051,7 +1286,7 @@ export function CheckoutRouteClient({
     } finally {
       setIsProcessingPayment(false);
     }
-  }, [selectedAddress, user, subtotal, router, showToast, outOfStockPolicy]);
+  }, [selectedAddress, user, subtotal, router, showToast, outOfStockPolicy, ensureValueOtpGate]);
 
   const handlePlaceCodOrder = useCallback(async () => {
     if (!selectedAddress) return;
@@ -1087,6 +1322,7 @@ export function CheckoutRouteClient({
 
   const handlePlaceCashOrder = useCallback(async () => {
     if (!selectedAddress) return;
+    if (!ensureValueOtpGate("cash")) return;
     setIsProcessingPayment(true);
     setActionError("");
     setStep("processing");
@@ -1118,42 +1354,24 @@ export function CheckoutRouteClient({
     } finally {
       setIsProcessingPayment(false);
     }
-  }, [selectedAddress, router, showToast, outOfStockPolicy]);
+  }, [selectedAddress, router, showToast, outOfStockPolicy, ensureValueOtpGate]);
 
-  const handleAdminBypass = useCallback(async () => {
-    if (!selectedAddress) return;
-    setIsProcessingPayment(true);
-    setActionError("");
-    setStep("processing");
-    try {
-      const res = await applyCheckoutBypass({ addressId: selectedAddress.id });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(
-          (err as { error?: string }).error ?? "Admin bypass failed",
-        );
-      }
-      const data = await res.json().catch(() => ({}));
-      const firstOrderId = (data?.data?.orderIds as string[] | undefined)?.[0];
-      showToast(CK.ADMIN_BYPASS_TOAST, "success");
-      router.push(firstOrderId ? `${String(ROUTES.USER.CHECKOUT_SUCCESS)}?orderId=${firstOrderId}` : String(ROUTES.USER.CHECKOUT_SUCCESS));
-    } catch (err) {
-      void normalizeError(err);
-      const msg = err instanceof Error ? err.message : "Admin bypass failed. Please retry.";
-      setActionError(msg);
-      showToast(msg, "error");
-      setStep(step === "processing" ? "payment" : step);
-    } finally {
-      setIsProcessingPayment(false);
-    }
-  }, [selectedAddress, router, showToast, step]);
+  const handleAdminBypass = useAdminBypassCheckout({
+    selectedAddress,
+    router,
+    showToast,
+    step,
+    setStep,
+    setActionError,
+    setIsProcessingPayment,
+  });
 
   // --- Render -----------------------------------------------------------------
 
   const stepIndex =
     step === "address"
       ? 0
-      : step === "otp-consent" || step === "otp"
+      : step === "otp-consent" || step === "otp" || step === "value-otp"
         ? 1
         : 2;
 
@@ -1193,6 +1411,16 @@ export function CheckoutRouteClient({
         grow: true,
       }];
     }
+    if (step === "value-otp") {
+      return [{
+        id: ACTION_ID.VERIFY_OTP,
+        label: isVerifyingValueOtp ? "Verifying…" : "Verify & continue",
+        variant: "primary" as const,
+        disabled: isVerifyingValueOtp || valueOtpCode.length < 6,
+        onClick: () => requireAuth(ACTION_ID.VERIFY_OTP, handleVerifyValueOtp),
+        grow: true,
+      }];
+    }
     if (step === "processing") return [];
     return [{
       id: ACTION_ID.PAY_ONLINE,
@@ -1202,7 +1430,7 @@ export function CheckoutRouteClient({
       onClick: handlePayOnline,
       grow: true,
     }];
-  }, [step, selectedAddress, addressesLoading, handleAdvanceToVerification, isSendingOtp, isProcessingPayment, handleSendOtp, isVerifyingOtp, otpCode.length, handleVerifyOtp, cartIsEmpty, handlePayOnline]);
+  }, [step, selectedAddress, addressesLoading, handleAdvanceToVerification, isSendingOtp, isProcessingPayment, handleSendOtp, isVerifyingOtp, otpCode.length, handleVerifyOtp, isVerifyingValueOtp, valueOtpCode.length, handleVerifyValueOtp, cartIsEmpty, handlePayOnline]);
 
   useBottomActions(
     bottomActions.length > 0
@@ -1237,6 +1465,18 @@ export function CheckoutRouteClient({
           }
           if (step === "otp") {
             return renderOtpStep({ maskedEmail, otpCode, setOtpCode, otpError, isVerifyingOtp, isSendingOtp, handleVerifyOtp, handleSendOtp });
+          }
+          if (step === "value-otp") {
+            return renderValueOtpStep({
+              maskedEmail: valueOtpMaskedEmail,
+              otpCode: valueOtpCode,
+              setOtpCode: setValueOtpCode,
+              otpError: valueOtpError,
+              isVerifying: isVerifyingValueOtp,
+              isSending: isSendingValueOtp,
+              handleVerify: handleVerifyValueOtp,
+              handleResend: handleSendValueOtp,
+            });
           }
           return (
             <Stack gap="lg">

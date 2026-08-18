@@ -28,6 +28,7 @@ import {
   ShieldAlert,
   Package2,
   Gift,
+  Palette,
 } from "lucide-react";
 import type {
   AdminNavGroup,
@@ -69,6 +70,7 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   { key: "preOrders",  href: String(ROUTES.PUBLIC.PRE_ORDERS),    icon: <CalendarCheck className={`${iconSm} ${navIcons.preOrders}`} /> },
   { key: "bundles",    href: String(ROUTES.PUBLIC.BUNDLES),       icon: <Package2     className={`${iconSm} ${navIcons.bundles}`}    /> },
   { key: "prizeDraws", href: String(ROUTES.PUBLIC.PRIZE_DRAWS),   icon: <Gift         className={`${iconSm} ${navIcons.prizeDraws}`} /> },
+  { key: "artStickers", href: String(ROUTES.PUBLIC.ART),          icon: <Palette      className={`${iconSm} ${navIcons.artStickers}`} /> },
   { key: "categories", href: String(ROUTES.PUBLIC.CATEGORIES),    icon: <LayoutGrid   className={`${iconSm} ${navIcons.categories}`} /> },
   { key: "stores",     href: String(ROUTES.PUBLIC.STORES),        icon: <Store        className={`${iconSm} ${navIcons.stores}`}     /> },
   { key: "events",     href: String(ROUTES.PUBLIC.EVENTS),        icon: <CalendarDays className={`${iconSm} ${navIcons.events}`}     /> },
@@ -101,6 +103,7 @@ export const FOOTER_LINK_GROUPS = [
       { label: "Pre-Orders",  href: String(ROUTES.PUBLIC.PRE_ORDERS)  },
       { label: "Bundles",     href: String(ROUTES.PUBLIC.BUNDLES)     },
       { label: "Prize Draws", href: String(ROUTES.PUBLIC.PRIZE_DRAWS) },
+      { label: "Art & Stickers", href: String(ROUTES.PUBLIC.ART)      },
       { label: "Promotions",  href: String(ROUTES.PUBLIC.PROMOTIONS)  },
       { label: "Stores",      href: String(ROUTES.PUBLIC.STORES)      },
       { label: "Categories",  href: String(ROUTES.PUBLIC.CATEGORIES)  },

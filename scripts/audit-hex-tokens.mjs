@@ -121,6 +121,7 @@ const EXEMPT_PATH_PATTERNS = [
   /^appkit\/src\/features\/email\/primitives\.tsx$/,
   /^appkit\/src\/features\/contact\/email\.tsx$/,
   /^appkit\/src\/features\/auth\/consent-otp\.ts$/,
+  /^appkit\/src\/features\/checkout\/actions\/checkout-value-otp-actions\.ts$/,
   // Firestore seed data documents — color strings are document field values, not CSS.
   /^appkit\/src\/seed\/categories-seed-data\.ts$/,
   /^appkit\/src\/seed\/site-settings-seed-data\.ts$/,
