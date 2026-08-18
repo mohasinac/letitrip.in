@@ -33,7 +33,7 @@ export const POST = withProviders(
           ? {
               orderId: id,
               type: isFull ? "full" : "partial",
-              amountInPaise: body!.amount,
+              amount: body!.amount,
               reason: body!.reason,
               refundedBy: user!.uid,
               confirmIrrevocable: true,
@@ -43,7 +43,7 @@ export const POST = withProviders(
           : {
               orderId: id,
               type: isFull ? "full" : "partial",
-              amountInPaise: body!.amount,
+              amount: body!.amount,
               reason: body!.reason,
               refundedBy: user!.uid,
               confirmIrrevocable: true,

@@ -202,10 +202,10 @@ describe("GET /api/products — filter building", () => {
     expect(call.filters).toContain("listingType");
   });
 
-  it("?minPrice=100 → converts to paise (100 * 100 = 10000)", async () => {
+  it("?minPrice=100 → passed through as decimal rupees", async () => {
     await GET(makeReq({ minPrice: "100" }) as never);
     const call = mockCallListingProcessor.mock.calls[0][1] as { filters: string };
-    expect(call.filters).toContain("10000");
+    expect(call.filters).toContain("100");
   });
 
   it("?inStock=true → stockQuantity filter added", async () => {

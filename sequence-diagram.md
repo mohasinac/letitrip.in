@@ -1132,10 +1132,10 @@ ADMIN         onShipmentLotWrite / onShipmentHeaderWrite (Firestore trigger)    
   │                               │  by weight share, remainder corrected onto    │                                │
   │                               │  the last lot so sums reconcile exactly)      │                                │
   │                               │───────────────────────────────────────────────>│  batch-writes each lot's       │
-  │                               │                                                │  customsAllocatedPaise/        │
-  │                               │                                                │  shippingAllocatedPaise/       │
-  │                               │                                                │  totalLandedCostPaise/         │
-  │                               │                                                │  projectedProfitPaise          │
+  │                               │                                                │  customsAllocated/             │
+  │                               │                                                │  shippingAllocated/            │
+  │                               │                                                │  totalLandedCost/              │
+  │                               │                                                │  projectedProfit (decimal ₹)   │
   │                               │────────────────────────────────────────────────────────────────────────────────>│  writes persisted
   │                               │                                                                                 │  `totals` +
   │◄── reopens shipment days later — totals are read straight from the doc, no recompute ──────────────────────────┤  totalsComputedAt
@@ -1143,7 +1143,7 @@ ADMIN         onShipmentLotWrite / onShipmentHeaderWrite (Firestore trigger)    
 ADMIN         AdminShipmentProjectionsView       shipmentLotsRepository.listForProjections     shipmentItemsRepository.link
   │  opens Projections tab   │                                                                  │
   │──────────────────────────>│  real paginated Sieve query: shipmentStatus != cancelled,       │
-  │                          │  sorted by projectedProfitPaise/projectedRevenuePaise/createdAt   │
+  │                          │  sorted by projectedProfit/projectedRevenue/createdAt (decimal ₹) │
   │                          │  (composite index: sort field FIRST, then the != field —          │
   │                          │   the reverse of the intuitive filter-then-sort order)            │
   │                          │◄──────────────────────────────────────────────────────────────────┤
@@ -1216,7 +1216,7 @@ ADMIN verifies proof                           BUYER completes Razorpay checkout
   │    verificationMethod:                        │    verificationMethod: "webhook",           │  else:
   │      "manual_review",                         │    gatewayRef: { orderId,                  │   orderRepository
   │    transactionId, verifiedBy,                 │      paymentId, signature },                │    .markCodCollected()
-  │    amountPaise }                              │    amountPaise }                            │   writes the same
+  │    amount (decimal ₹) }                       │    amount (decimal ₹) }                     │   writes the same
   │  (idempotent — re-verifying                   │                                             │   paymentRecord shape
   │   an already-paid order is a no-op)            │                                             │   (method: "cod")
   ▼                                               ▼                                             ▼

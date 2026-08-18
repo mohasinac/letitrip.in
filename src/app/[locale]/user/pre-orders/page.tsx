@@ -41,12 +41,12 @@ interface OrderDoc {
   totalAmount: number;
 }
 
-function paise(amount: number) {
+function formatAmount(amount: number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
     maximumFractionDigits: 0,
-  }).format(amount / 100);
+  }).format(amount);
 }
 
 const STATUS_VARIANT: Record<string, "active" | "pending" | "danger" | "info" | "admin"> = {
@@ -185,7 +185,7 @@ export default function UserPreOrdersPage() {
                         {item.quantity > 1 ? ` ×${item.quantity}` : ""}
                       </Text>
                       <Text className="text-[var(--appkit-color-text)]" size="sm" weight="medium">
-                        {paise(item.price * item.quantity)}
+                        {formatAmount(item.price * item.quantity)}
                       </Text>
                     </Row>
                   ))}

@@ -104,14 +104,14 @@ function buildFilters(url: URL, rawFilters: string | null): string {
   // See the _GET handler below for how q is threaded through.
 
   // RangeFilter UI sends values in rupees (maxBound=500000 = â‚¹5 lakh, step=500).
-  // Firestore stores price in paise (1 INR = 100 paise) so multiply by 100.
+  // Firestore stores price in decimal rupees natively — no unit conversion needed.
   const minPriceRs = param(url, TABLE_KEYS.MIN_PRICE);
   if (minPriceRs !== null && !Number.isNaN(Number(minPriceRs))) {
-    parts.push(sieveFilter(PRODUCT_FIELDS.PRICE, SIEVE_OP.GTE, String(Math.round(Number(minPriceRs) * 100))));
+    parts.push(sieveFilter(PRODUCT_FIELDS.PRICE, SIEVE_OP.GTE, String(Number(minPriceRs))));
   }
   const maxPriceRs = param(url, TABLE_KEYS.MAX_PRICE);
   if (maxPriceRs !== null && !Number.isNaN(Number(maxPriceRs))) {
-    parts.push(sieveFilter(PRODUCT_FIELDS.PRICE, SIEVE_OP.LTE, String(Math.round(Number(maxPriceRs) * 100))));
+    parts.push(sieveFilter(PRODUCT_FIELDS.PRICE, SIEVE_OP.LTE, String(Number(maxPriceRs))));
   }
 
   // NOTE: 'inStock' (stockQuantity>0) is intentionally NOT included here.
@@ -134,14 +134,14 @@ function buildFilters(url: URL, rawFilters: string | null): string {
   const isPromoted = param(url, "isPromoted");
   if (isPromoted === "true") parts.push(sieveFilter(PRODUCT_FIELDS.IS_PROMOTED, SIEVE_OP.EQ, true));
 
-  // Same paise conversion as minPrice/maxPrice â€” AuctionFilters sends rupees.
+  // Same unit as minPrice/maxPrice â€” AuctionFilters sends rupees, stored natively.
   const minBidRs = param(url, TABLE_KEYS.MIN_BID);
   if (minBidRs !== null && !Number.isNaN(Number(minBidRs))) {
-    parts.push(sieveFilter(PRODUCT_FIELDS.CURRENT_BID, SIEVE_OP.GTE, String(Math.round(Number(minBidRs) * 100))));
+    parts.push(sieveFilter(PRODUCT_FIELDS.CURRENT_BID, SIEVE_OP.GTE, String(Number(minBidRs))));
   }
   const maxBidRs = param(url, TABLE_KEYS.MAX_BID);
   if (maxBidRs !== null && !Number.isNaN(Number(maxBidRs))) {
-    parts.push(sieveFilter(PRODUCT_FIELDS.CURRENT_BID, SIEVE_OP.LTE, String(Math.round(Number(maxBidRs) * 100))));
+    parts.push(sieveFilter(PRODUCT_FIELDS.CURRENT_BID, SIEVE_OP.LTE, String(Number(maxBidRs))));
   }
 
   // NOTE: dateFrom/dateTo are intentionally NOT included here.

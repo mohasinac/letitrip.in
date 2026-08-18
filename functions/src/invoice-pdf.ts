@@ -30,8 +30,8 @@ export interface InvoicePdfOutput {
   pdfBase64: string;
 }
 
-function formatRupees(paise: number | undefined): string {
-  return `Rs ${((paise ?? 0) / 100).toFixed(2)}`;
+function formatRupees(amount: number | undefined): string {
+  return `Rs ${(amount ?? 0).toFixed(2)}`;
 }
 
 function buildPdfBuffer(order: OrderDocument, gst: { gstin: string; legalName: string; address: string } | null): Promise<Buffer> {

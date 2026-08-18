@@ -47,7 +47,7 @@ const TABS: { key: Tab; label: string }[] = [
 function formatDiscount(c: ClaimedCouponDocument): string {
   const d = c.couponSnapshot.discount;
   if (c.couponSnapshot.type === "percentage") return `${d.value}% off`;
-  if (c.couponSnapshot.type === "fixed") return `₹${(d.value / 100).toFixed(0)} off`;
+  if (c.couponSnapshot.type === "fixed") return `₹${d.value.toFixed(0)} off`;
   if (c.couponSnapshot.type === "free_shipping") return "Free shipping";
   return `${d.value}`;
 }

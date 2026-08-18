@@ -24,7 +24,7 @@ import { ROLES_STORE_WRITE } from "@/constants";
 
 const bodySchema = z.object({
   type: z.enum(["full", "partial"]),
-  amountInPaise: z.number().int().positive(),
+  amount: z.number().int().positive(),
   reason: z.string().min(3),
   itemIds: z.array(z.string()).optional(),
   confirmIrrevocable: z.literal(true),
@@ -58,7 +58,7 @@ export const POST = withProviders(
           ? {
               orderId: id,
               type: b.type,
-              amountInPaise: b.amountInPaise,
+              amount: b.amount,
               reason: b.reason,
               ...(b.itemIds ? { itemIds: b.itemIds } : {}),
               confirmIrrevocable: true as const,
@@ -69,7 +69,7 @@ export const POST = withProviders(
           : {
               orderId: id,
               type: b.type,
-              amountInPaise: b.amountInPaise,
+              amount: b.amount,
               reason: b.reason,
               ...(b.itemIds ? { itemIds: b.itemIds } : {}),
               confirmIrrevocable: true as const,

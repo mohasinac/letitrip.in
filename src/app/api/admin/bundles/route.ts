@@ -78,9 +78,9 @@ const __GET__g = withProviders(
       const sortKey = sortDesc ? sorts.slice(1) : sorts;
       items = [...items].sort((a, b) => {
         let va: string | number, vb: string | number;
-        if (sortKey === "bundlePriceInPaise" || sortKey === "price") {
-          va = a.bundlePriceInPaise ?? 0;
-          vb = b.bundlePriceInPaise ?? 0;
+        if (sortKey === "bundlePrice" || sortKey === "price") {
+          va = a.bundlePrice ?? 0;
+          vb = b.bundlePrice ?? 0;
         } else if (sortKey === "createdAt") {
           va = String(a.createdAt ?? "");
           vb = String(b.createdAt ?? "");
@@ -126,7 +126,7 @@ const __POST__g = withProviders(
         description: body.description,
         categoryType: "bundle",
         bundleKind: body.bundleKind,
-        bundlePriceInPaise: body.bundlePriceInPaise,
+        bundlePrice: body.bundlePrice,
         bundleQueryRule: body.bundleQueryRule,
         bundleProductIds: body.bundleProductIds,
         bundleStockStatus: "in_stock",

@@ -165,6 +165,10 @@ const AUDITS = [
   // Report mode — pre-existing catch{} violations being fixed separately.
   { name: "empty-catch",                   script: "scripts/audit-empty-catch.mjs",   env: { STRICT: "1" } },
   { name: "console-catch",                 script: "scripts/audit-console-catch.mjs", env: { STRICT: "1" } },
+  // Money is stored as decimal rupees everywhere except the two Razorpay
+  // boundary files — flags reintroduced *Paise/InPaise identifiers and
+  // paise-scale *100/÷100 arithmetic. See CLAUDE.md's paise->rupees migration.
+  { name: "money-units",                   script: "scripts/audit-money-units.mjs" },
 
 ];
 function parseArgs(argv) {

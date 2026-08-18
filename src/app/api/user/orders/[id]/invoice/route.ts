@@ -48,7 +48,7 @@ export const GET = withProviders(
       const fallback = [
         `Invoice ${id}`,
         `Buyer: ${order.userId}`,
-        `Total: Rs ${((order.totalPrice ?? 0) / 100).toFixed(2)}`,
+        `Total: Rs ${(order.totalPrice ?? 0).toFixed(2)}`,
         `Status: ${order.status}`,
         `Created: ${new Date(order.orderDate ?? Date.now()).toLocaleString()}`,
       ].join("\n");

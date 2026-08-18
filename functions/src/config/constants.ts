@@ -61,6 +61,9 @@ export const SCHEDULES = {
   /**
    * Auth event cleanup — every 5 minutes.
    * Removes stale RTDB auth_events nodes (older than 3 min) from abandoned popup sessions.
+   * Also the cadence for `paymentWindowTimeout` (Tier PP) — a 15-minute
+   * buyer payment deadline needs tighter polling than the 2-hourly COD
+   * sweep above; 5 min bounds the overshoot past the deadline to ~5 min.
    */
   EVERY_5_MIN: "every 5 minutes",
 

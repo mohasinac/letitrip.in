@@ -71,8 +71,8 @@ export default function Page() {
           <Row color="muted" textSize="sm" gap="md">
             {doc.category ? <Text>Category: {doc.category}</Text> : null}
             {doc.brand ? <Text>Brand: {doc.brand}</Text> : null}
-            {doc.maxBudgetInPaise ? (
-              <Text>Budget ≤ Rs {(doc.maxBudgetInPaise / 100).toLocaleString("en-IN")}</Text>
+            {doc.maxBudget ? (
+              <Text>Budget ≤ Rs {doc.maxBudget.toLocaleString("en-IN")}</Text>
             ) : null}
           </Row>
           <Divider />

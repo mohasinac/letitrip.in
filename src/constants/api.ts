@@ -169,6 +169,8 @@ export const API_ROUTES = {
   ORDERS: {
     // SB-UNI-N — reveal a digital code for a confirmed order
     CODE: (id: string) => `/api/orders/${id}/code`,
+    // Tier PP — raise a dispute on an auto-approved order
+    DISPUTE: (id: string) => `/api/orders/${id}/dispute`,
   },
   LOTTERY: {
     PULL: (id: string) => `/api/events/${id}/lottery-pull`,

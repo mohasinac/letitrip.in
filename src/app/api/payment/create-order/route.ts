@@ -20,6 +20,7 @@ import { successResponse, ApiErrors } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { getDefaultCurrency } from "@mohasinac/appkit";
+import { isCheckoutValueOtpVerified } from "@mohasinac/appkit/server";
 
 const createOrderSchema = z.object({
   currency: z.string().default(getDefaultCurrency()),
@@ -68,7 +69,7 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
           `"${item.productTitle}" is no longer available. Please remove it from your cart.`,
         );
       }
-      // Bundle cart-lines lock their price at add-time (bundlePriceInPaise) â€” honour it.
+      // Bundle cart-lines lock their price at add-time (bundlePrice) — honour it.
       const unitPriceRs = item.bundleCategorySlug && item.bundleProductIds?.length
         ? item.price
         : product.price;
@@ -77,6 +78,19 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
 
     // --- Platform fee + GST (same as verifyAndPlaceRazorpayOrderAction) ---
     const siteSettings = await siteSettingsRepository.getSingleton();
+
+    // Tier PP — OTP gate for high-value checkouts. Must run here, BEFORE the
+    // Razorpay order is created and payment captured — verifying inside
+    // verifyAndPlaceRazorpayOrderAction (post-payment) would mean charging
+    // the card without ever collecting the OTP.
+    const otpThreshold = siteSettings?.payment?.otpCheckoutThreshold;
+    if (typeof otpThreshold === "number" && otpThreshold > 0 && subtotalRs >= otpThreshold) {
+      const verified = await isCheckoutValueOtpVerified(uid);
+      if (!verified) {
+        throw ApiErrors.forbidden("CHECKOUT_VALUE_OTP_REQUIRED");
+      }
+    }
+
     const platformFeePercent = siteSettings?.commissions?.platformFeePercent ?? 5;
     const gstPercent = siteSettings?.commissions?.gstPercent ?? 18;
     const minimumTransactionFee = Math.max(0, siteSettings?.commissions?.minimumTransactionFee ?? 0);

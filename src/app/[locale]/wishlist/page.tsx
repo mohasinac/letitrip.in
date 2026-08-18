@@ -219,8 +219,8 @@ export default function WishlistPage() {
     }
 
     // Price range
-    const minP = applied.minPrice ? Number(applied.minPrice) * 100 : null;
-    const maxP = applied.maxPrice ? Number(applied.maxPrice) * 100 : null;
+    const minP = applied.minPrice ? Number(applied.minPrice) : null;
+    const maxP = applied.maxPrice ? Number(applied.maxPrice) : null;
     if (minP !== null || maxP !== null) {
       result = result.filter((item) => {
         const price = item.product?.price ?? item.productPrice ?? 0;

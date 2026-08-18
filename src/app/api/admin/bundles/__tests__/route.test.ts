@@ -5,7 +5,7 @@
  * GET: ROLES_ADMIN_MOD, permission: admin:categories:read
  *   - uses categoriesRepository.listByType("bundle") — loads up to MAX_LIST_LIMIT (200)
  *   - in-memory filter: q (name/slug), isActive, bundleStockStatus
- *   - in-memory sort: bundlePriceInPaise, name, createdAt; prefix "-" = descending
+ *   - in-memory sort: bundlePrice, name, createdAt; prefix "-" = descending
  *   - paginated: pageSize [1,50] default 25; returns { items, total }
  *
  * POST: ROLES_ADMIN_MOD, permission: admin:categories:write
@@ -89,7 +89,7 @@ const makeBundle = (overrides: Record<string, unknown> = {}) => ({
   categoryType: "bundle",
   isActive: true,
   bundleStockStatus: "in_stock",
-  bundlePriceInPaise: 50000,
+  bundlePrice: 50000,
   createdAt: new Date("2026-05-01T00:00:00Z"),
   ...overrides,
 });
@@ -206,7 +206,7 @@ describe("POST /api/admin/bundles", () => {
   const validBody = {
     name: "Pokemon Starter Bundle",
     slug: "pokemon-starter",
-    bundlePriceInPaise: 50000,
+    bundlePrice: 50000,
     bundleProductIds: ["product-pikachu", "product-bulbasaur"],
   };
 

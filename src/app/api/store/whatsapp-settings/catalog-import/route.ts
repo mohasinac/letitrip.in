@@ -116,10 +116,10 @@ export const POST = withProviders(
         }
 
         // Parse price — Meta returns "<amount> <currency>" e.g. "450.00 INR"
-        let priceInPaise = 0;
+        let price = 0;
         if (item.price) {
           const priceStr = item.price.replace(/[^0-9.]/g, "");
-          priceInPaise = Math.round((parseFloat(priceStr) || 0) * 100);
+          price = Math.round((parseFloat(priceStr) || 0) * 100) / 100;
         }
 
         const productInput: ProductCreateInput = {
@@ -128,7 +128,7 @@ export const POST = withProviders(
           slug: "",
           listingType: "standard",
           status: "draft",
-          price: priceInPaise,
+          price,
           currency: "INR",
           mainImage: item.image_url ?? "",
           images: [],

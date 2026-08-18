@@ -38,12 +38,12 @@ interface OrderDoc {
   items: OrderItem[];
 }
 
-function paise(amount: number) {
+function formatAmount(amount: number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
     maximumFractionDigits: 0,
-  }).format(amount / 100);
+  }).format(amount);
 }
 
 const STATUS_VARIANT: Record<string, "active" | "pending" | "danger" | "info" | "admin"> = {
@@ -181,7 +181,7 @@ export default function UserPrizeDrawsPage() {
                         {item.quantity > 1 ? ` — ${item.quantity} entries` : " — 1 entry"}
                       </Link>
                       <Text className="text-[var(--appkit-color-text)] shrink-0 ml-2" size="sm" weight="medium">
-                        {paise(item.price * item.quantity)}
+                        {formatAmount(item.price * item.quantity)}
                       </Text>
                     </Row>
                   ))}

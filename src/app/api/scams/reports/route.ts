@@ -53,9 +53,9 @@ const __POST__g = withProviders(
       // Full enforcement (querying Firestore for pending count) is deferred.
       // For now we validate fields and create the document.
 
-      const amountLostPaise =
+      const amountLostRupees =
         amountLost !== undefined && amountLost > 0
-          ? Math.round(amountLost * 100)
+          ? Math.round(amountLost * 100) / 100
           : undefined;
 
       const scammer = await scammerRepository.create({
@@ -68,7 +68,7 @@ const __POST__g = withProviders(
         scamPlatform:
           scamPlatform as Parameters<typeof scammerRepository.create>[0]["scamPlatform"],
         description,
-        ...(amountLostPaise !== undefined && { amountLost: amountLostPaise }),
+        ...(amountLostRupees !== undefined && { amountLost: amountLostRupees }),
         ...(itemInvolved && itemInvolved.trim() && { itemInvolved: itemInvolved.trim() }),
         evidence: [],
         reportedBy: user!.uid,

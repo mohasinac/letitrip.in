@@ -1433,7 +1433,7 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 | id-generators.ts | generateId, generateSlug, generateTrackingId, generateMediaFilename | ID/slug generation |
 | listing-params.ts | parseListingParams, buildListingUrl | Product listing URL builders |
 | media-field.ts | MediaField, compressImage | Media field validation |
-| number.formatter.ts | formatCurrency, formatNumber, parseNumber | Number formatting (₹ support) |
+| number.formatter.ts | formatCurrency, formatNumber, parseNumber, roundRupees | Number formatting (₹ support); roundRupees(amount) rounds decimal-rupee math to 2dp |
 | object.helper.ts | deepMerge, pick, omit, mapValues | Object utilities |
 | pagination.helper.ts | calculatePages, getPageRange, paginate | Pagination math |
 | schema-ui.ts | getFieldLabel, getErrorMessage | Schema metadata extraction |
@@ -1857,6 +1857,7 @@ Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 | audit-inline-styles.mjs | strict-0 | `style={{ color }}` / `backgroundColor` / `borderColor` outside primitives + `RAW_JUSTIFY_ON_ROW` etc. |
 | audit-env-alignment.mjs | strict-0 | `.env.local` consistency with `.env.example` |
 | audit-sieve-constants.mjs | strict-0 | Same as appkit's `sieve-constants-views` for consumer sources |
+| audit-money-units.mjs | strict-0 | No `*Paise`/`InPaise` identifiers or paise-scale `*100`/`/100` arithmetic — money is stored/displayed as decimal rupees everywhere except the Razorpay boundary |
 | audit-toast-coverage.mjs | drift | User-facing handlers carry toast feedback or `// toast-intentionally-silent` marker |
 | audit-auth-gate-derivation.mjs | strict-0 | Login gates don't derive from UX-affordance flags |
 | audit-route-nav-field-constants.mjs | strict-0 | Route / nav / field-name constants honored (no raw string literals) |

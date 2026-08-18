@@ -18,6 +18,8 @@ import {
   sendCheckoutConsentOtp,
   verifyCheckoutConsentOtp,
   grantCheckoutConsentViaSms,
+  sendCheckoutValueOtp,
+  verifyCheckoutValueOtp,
 } from "@mohasinac/appkit";
 import { userRepository } from "@mohasinac/appkit";
 import { CONSENT_OTP_VERIFY_RATE_LIMIT } from "@mohasinac/appkit";
@@ -88,5 +90,41 @@ export async function grantCheckoutConsentViaSmsAction(
   const userPhone = profile?.phoneNumber ?? user.phoneNumber ?? undefined;
 
   return grantCheckoutConsentViaSms(user.uid, userPhone, parsed.data.addressId);
+}
+
+// --- Tier PP: high-value checkout OTP (distinct purpose from consent OTP above) ---
+
+const valueOtpVerifySchema = z.object({
+  code: z.string().length(6).regex(/^\d{6}$/, "Must be 6 digits"),
+});
+
+export async function sendCheckoutValueOtpAction(): Promise<
+  ActionResult<{ maskedEmail: string }>
+> {
+  return wrapAction(async () => {
+    const user = await requireAuthUser();
+    const email = user.email;
+    if (!email) {
+      throw new ValidationError("Account email is required to send a verification code.");
+    }
+    return sendCheckoutValueOtp(user.uid, email);
+  });
+}
+
+export async function verifyCheckoutValueOtpAction(code: string): Promise<void> {
+  const user = await requireAuthUser();
+
+  const rl = await rateLimitByIdentifier(
+    `checkout:value-otp:verify:${user.uid}`,
+    CONSENT_OTP_VERIFY_RATE_LIMIT,
+  );
+  if (!rl.success) {
+    throw new AuthorizationError("Too many attempts. Please slow down.");
+  }
+
+  const parsed = valueOtpVerifySchema.safeParse({ code });
+  if (!parsed.success) throw new ValidationError("Invalid input");
+
+  return verifyCheckoutValueOtp(user.uid, parsed.data.code);
 }
 

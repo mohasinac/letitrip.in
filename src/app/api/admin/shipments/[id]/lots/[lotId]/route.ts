@@ -14,7 +14,7 @@ import { ROLES_ADMIN_ONLY } from "@/constants";
  *
  * GET    /api/admin/shipments/[id]/lots/[lotId]
  * PATCH  /api/admin/shipments/[id]/lots/[lotId] — header + remainder fields;
- *        writing weightGrams/purchaseCostPaise/remainder* re-triggers the
+ *        writing weightGrams/purchaseCost/remainder* re-triggers the
  *        allocation cascade on the parent shipment.
  * DELETE /api/admin/shipments/[id]/lots/[lotId] — 409 if any of its items
  *        is still linked to a product.

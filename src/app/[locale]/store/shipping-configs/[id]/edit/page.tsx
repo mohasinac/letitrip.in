@@ -78,7 +78,7 @@ export default function Page() {
                 { value: "custom", label: "Custom" },
               ]}
             />
-            <Input type="number" label="Flat rate (paise)" value={String(f.flatRateInPaise ?? 0)} onChange={(e) => setForm({ ...form, flatRateInPaise: Number(e.target.value) || 0 })} />
+            <Input type="number" label="Flat rate (₹)" value={String(f.flatRate ?? 0)} onChange={(e) => setForm({ ...form, flatRate: Number(e.target.value) || 0 })} />
             <Input type="number" label="Estimated days" value={String(f.estimatedDays ?? 0)} onChange={(e) => setForm({ ...form, estimatedDays: Number(e.target.value) || 0 })} />
             <Row gap="md">
               <Toggle checked={!!f.isDefault} onChange={(v) => setForm({ ...form, isDefault: v })} label="Default" />

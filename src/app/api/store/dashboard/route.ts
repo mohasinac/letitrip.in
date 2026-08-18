@@ -85,7 +85,7 @@ export const GET = withProviders(
       const revenueOrders = (ordersResult.items as any[]).filter(
         (o) => o.status !== "CANCELLED" && o.status !== "REFUNDED",
       );
-      const totalRevenuePaise = revenueOrders.reduce(
+      const totalRevenue = revenueOrders.reduce(
         (sum: number, o: any) => sum + (Number(o.totalAmount ?? o.totalPrice ?? 0) || 0),
         0,
       );
@@ -93,15 +93,15 @@ export const GET = withProviders(
       // Average rating from pre-computed aggregate (no limit, full store history)
       const averageRating = ratingAggregate.count > 0 ? ratingAggregate.avgRating : undefined;
 
-      // Pending payouts total (paise)
-      const pendingPayoutsPaise = (pendingPayouts as any[]).reduce(
+      // Pending payouts total, decimal rupees
+      const pendingPayoutsTotal = (pendingPayouts as any[]).reduce(
         (sum: number, p: any) => sum + (Number(p.amount ?? 0) || 0),
         0,
       );
 
       return successResponse({
-        totalRevenue: Math.round(totalRevenuePaise / 100), // paise → rupees
-        pendingPayouts: Math.round(pendingPayoutsPaise / 100),
+        totalRevenue: Math.round(totalRevenue * 100) / 100,
+        pendingPayouts: Math.round(pendingPayoutsTotal * 100) / 100,
         activeListings,
         totalOrders: ordersResult.total,
         pendingOrders: pendingOrdersResult.total,

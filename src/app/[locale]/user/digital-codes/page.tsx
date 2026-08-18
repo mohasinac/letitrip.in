@@ -50,12 +50,12 @@ interface OrderDoc {
   items: OrderItem[];
 }
 
-function paise(amount: number) {
+function formatAmount(amount: number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
     maximumFractionDigits: 0,
-  }).format(amount / 100);
+  }).format(amount);
 }
 
 function CodeRevealRow({ item, orderId }: { item: OrderItem; orderId: string }) {
@@ -69,7 +69,7 @@ function CodeRevealRow({ item, orderId }: { item: OrderItem; orderId: string }) 
           >
             {item.productTitle}
           </Link>
-          <Text variant="secondary" size="xs">{paise(item.price)}</Text>
+          <Text variant="secondary" size="xs">{formatAmount(item.price)}</Text>
         </Stack>
         <Link
           href={String(ROUTES.USER.ORDER_DETAIL(orderId))}

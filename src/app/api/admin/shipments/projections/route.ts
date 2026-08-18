@@ -30,7 +30,7 @@ export const GET = withProviders(
       const searchParams = getSearchParams(request);
       const page = getNumberParam(searchParams, "page", 1, { min: 1 });
       const pageSize = getNumberParam(searchParams, "pageSize", 25, { min: 1, max: 50 });
-      const sorts = getStringParam(searchParams, "sorts") || sortBy("projectedProfitPaise");
+      const sorts = getStringParam(searchParams, "sorts") || sortBy("projectedProfit");
       const userFilters = getStringParam(searchParams, "filters");
 
       const filters = sieveAnd(

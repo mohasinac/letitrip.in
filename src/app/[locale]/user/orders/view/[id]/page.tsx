@@ -3,6 +3,7 @@ import { use, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import {
   useOrder,
+  useToast,
   OrderDetailView,
   CodeRevealPanel,
   type RevealedCode,
@@ -14,6 +15,7 @@ import {
   Row,
   Stack,
   Button,
+  Textarea,
   MediaImage,
 } from "@mohasinac/appkit/client";
 import {
@@ -334,12 +336,38 @@ function renderOrderActions(order: NonNullable<OrderData>, canTrack: boolean, ca
 
 export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const { showToast } = useToast();
   const { order, isLoading } = useOrder(id, {
     endpoint: API_ROUTES.USER.ORDER_BY_ID(id),
   });
 
   const canCancel = order?.orderStatus === "pending" || order?.orderStatus === "confirmed";
   const canTrack  = !!order?.trackingNumber;
+
+  const [disputeOpen, setDisputeOpen] = useState(false);
+  const [disputeReason, setDisputeReason] = useState("");
+  const [isSubmittingDispute, setIsSubmittingDispute] = useState(false);
+
+  const handleRaiseDispute = async () => {
+    if (!order || !disputeReason.trim()) return;
+    setIsSubmittingDispute(true);
+    try {
+      const res = await fetch(API_ROUTES.ORDERS.DISPUTE(order.id), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ reason: disputeReason }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json?.error ?? "Failed to raise dispute.");
+      showToast("Dispute raised — our team will review this order.", "success");
+      setDisputeOpen(false);
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Failed to raise dispute.", "error");
+    } finally {
+      setIsSubmittingDispute(false);
+    }
+  };
 
   const [revealProductId, setRevealProductId] = useState<string | null>(null);
   // Reveal-mode prize draws (SB4-H/SB8-C) — fetch the public (spoiler-free)
@@ -361,6 +389,55 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         renderPayment={() => order ? renderOrderPayment(order) : null}
         renderActions={() => order ? renderOrderActions(order, canTrack, canCancel) : null}
       />
+      {order?.autoApproved && (
+        <Div surface="card" padding="md" className="mt-4">
+          <Row justify="between" align="center" wrap gap="3">
+            <Div>
+              <Span layout="inline-flex" color="warning" surface="warning-surface" weight="semibold" className="text-[10px]" rounded="full" padding="pill-xs">
+                Payment auto-confirmed
+              </Span>
+              <Text className="mt-1" color="muted" size="xs">
+                Nobody manually reviewed this payment within 2 hours, so it was auto-confirmed. If something looks wrong, you can raise a dispute.
+              </Text>
+            </Div>
+            {order.disputeStatus === "open" ? (
+              <Span layout="inline-flex" color="info" surface="info-surface" weight="semibold" className="text-[10px]" rounded="full" padding="pill-xs">
+                Dispute under review
+              </Span>
+            ) : (
+              !disputeOpen && (
+                <Button variant="outline" size="sm" onClick={() => setDisputeOpen(true)}>
+                  Raise a dispute
+                </Button>
+              )
+            )}
+          </Row>
+          {disputeOpen && order.disputeStatus !== "open" && (
+            <Stack gap="sm" className="mt-3">
+              <Textarea
+                value={disputeReason}
+                onChange={(e) => setDisputeReason(e.target.value)}
+                rows={3}
+                placeholder="Explain what looks wrong about this order/payment…"
+              />
+              <Row gap="sm">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleRaiseDispute}
+                  isLoading={isSubmittingDispute}
+                  disabled={isSubmittingDispute || !disputeReason.trim()}
+                >
+                  Submit dispute
+                </Button>
+                <Button variant="secondary" size="sm" onClick={() => setDisputeOpen(false)}>
+                  Cancel
+                </Button>
+              </Row>
+            </Stack>
+          )}
+        </Div>
+      )}
       {order && revealProductId && (
         <PrizeRevealModal
           open={!!revealProductId}

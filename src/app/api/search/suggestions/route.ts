@@ -132,7 +132,7 @@ export const GET = withProviders(
           objectID: p.id,
           type: "product" as const,
           title: p.title ?? p.name ?? "Product",
-          subtitle: typeof p.price === "number" ? `â‚¹${(p.price / 100).toLocaleString("en-IN")}` : undefined,
+          subtitle: typeof p.price === "number" ? `â‚¹${p.price.toLocaleString("en-IN")}` : undefined,
           url: String(ROUTES.PUBLIC.PRODUCT_DETAIL?.(p.slug ?? p.id) ?? `/products/${p.slug ?? p.id}`),
         })),
         ...((categories.items ?? []) as Array<{ id: string; slug: string; name: string }>).map((c) => ({

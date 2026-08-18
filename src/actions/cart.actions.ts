@@ -168,13 +168,13 @@ export async function mergeGuestCartAction(
 export async function updateCartItemShippingAction(
   itemId: string,
   providerId: string,
-  feeInPaise: number,
+  fee: number,
 ): Promise<ActionResult<CartDocument>> {
   return wrapAction(async () => {
     const user = await requireAuthUser();
       const rl = await rateLimitByIdentifier(`cart:shipping:${user.uid}`, RateLimitPresets.API);
       if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-      return updateCartItemShipping(user.uid, itemId, providerId, feeInPaise) as Promise<CartDocument>;
+      return updateCartItemShipping(user.uid, itemId, providerId, fee) as Promise<CartDocument>;
   });
 }
 

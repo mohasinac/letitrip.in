@@ -25,7 +25,7 @@ export default function Page() {
     description: "",
     category: "",
     brand: "",
-    maxBudgetInPaise: 0,
+    maxBudget: 0,
   });
   const [saving, setSaving] = useState(false);
 
@@ -83,10 +83,10 @@ export default function Page() {
             </Row>
             <Input
               type="number"
-              label="Max budget (paise)"
-              value={String(form.maxBudgetInPaise)}
+              label="Max budget (₹)"
+              value={String(form.maxBudget)}
               onChange={(e) =>
-                setForm({ ...form, maxBudgetInPaise: Number(e.target.value) || 0 })
+                setForm({ ...form, maxBudget: Number(e.target.value) || 0 })
               }
             />
           </Stack>

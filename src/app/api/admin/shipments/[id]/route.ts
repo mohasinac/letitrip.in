@@ -13,7 +13,7 @@ import { ROLES_ADMIN_ONLY } from "@/constants";
  *
  * GET    /api/admin/shipments/[id]
  * PATCH  /api/admin/shipments/[id] â€” header fields only. Writing
- *        customsTotalPaise/shippingTotalPaise/laborHoursSpent here is what
+ *        customsTotal/shippingTotal/laborHoursSpent here is what
  *        re-triggers the Firestore Function allocation cascade.
  * DELETE /api/admin/shipments/[id] â€” 409 if any item is still linked to a
  *        product; the lots/items cascade-delete is handled by the

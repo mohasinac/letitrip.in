@@ -25,9 +25,9 @@ export default function Page() {
   const [form, setForm] = useState({
     label: "",
     method: "flat",
-    flatRateInPaise: 0,
-    pricePerKgInPaise: 0,
-    freeAbovePaise: 0,
+    flatRate: 0,
+    pricePerKg: 0,
+    freeAbove: 0,
     estimatedDays: 5,
     isDefault: false,
     isActive: true,
@@ -77,30 +77,30 @@ export default function Page() {
             {form.method === "flat" && (
               <Input
                 type="number"
-                label="Flat rate (paise)"
-                value={String(form.flatRateInPaise)}
+                label="Flat rate (₹)"
+                value={String(form.flatRate)}
                 onChange={(e) =>
-                  setForm({ ...form, flatRateInPaise: Number(e.target.value) || 0 })
+                  setForm({ ...form, flatRate: Number(e.target.value) || 0 })
                 }
               />
             )}
             {form.method === "weight" && (
               <Input
                 type="number"
-                label="Price per kg (paise)"
-                value={String(form.pricePerKgInPaise)}
+                label="Price per kg (₹)"
+                value={String(form.pricePerKg)}
                 onChange={(e) =>
-                  setForm({ ...form, pricePerKgInPaise: Number(e.target.value) || 0 })
+                  setForm({ ...form, pricePerKg: Number(e.target.value) || 0 })
                 }
               />
             )}
             {form.method === "free" && (
               <Input
                 type="number"
-                label="Free above (paise)"
-                value={String(form.freeAbovePaise)}
+                label="Free above (₹)"
+                value={String(form.freeAbove)}
                 onChange={(e) =>
-                  setForm({ ...form, freeAbovePaise: Number(e.target.value) || 0 })
+                  setForm({ ...form, freeAbove: Number(e.target.value) || 0 })
                 }
               />
             )}

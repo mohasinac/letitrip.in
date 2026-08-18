@@ -286,7 +286,7 @@ export default function Page() {
                   <Row align="center" gap="3">
                     <Text className="text-[var(--appkit-color-text-muted)]" size="xs">{order.status}</Text>
                     <Text className="text-[var(--appkit-color-text)]" size="xs" weight="semibold">
-                      ₹{((order.totalAmount ?? 0) / 100).toLocaleString("en-IN")}
+                      ₹{(order.totalAmount ?? 0).toLocaleString("en-IN")}
                     </Text>
                   </Row>
                 </Link>

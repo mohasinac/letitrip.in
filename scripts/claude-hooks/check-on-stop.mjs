@@ -22,6 +22,7 @@
  *   - scripts/audit-dashboard-padding.mjs       (double px-4/py-* padding on dashboard pages that DashboardLayoutClient already covers)
  *   - scripts/audit-root-cause.mjs             (in-memory fallbacks, // HACK/WORKAROUND/Fallback comments, deferred TODOs in production code)
  *   - scripts/audit-gitignore.mjs             (unanchored .gitignore patterns that silently exclude nested source files)
+ *   - scripts/audit-money-units.mjs           (reintroduced *Paise/InPaise identifiers or paise-scale */÷100 arithmetic)
  *
  * Baseline-drift audits: audit-ssr-in-appkit, audit-html-wrappers, audit-code-quality block
  * only when the violation count EXCEEDS the recorded baseline (regressions only).
@@ -392,6 +393,8 @@ const checks = [
   // ── Error-handling discipline: no `catch {}` (no binding) or `.catch(console.error)` ─
   { label: "audit-empty-catch",   cmd: "node", args: ["scripts/audit-empty-catch.mjs"],   cwd: ROOT, env: { STRICT: "1" } },
   { label: "audit-console-catch", cmd: "node", args: ["scripts/audit-console-catch.mjs"], cwd: ROOT, env: { STRICT: "1" } },
+  // ── Money is decimal rupees everywhere except the two Razorpay boundary files ─
+  { label: "audit-money-units", cmd: "node", args: ["scripts/audit-money-units.mjs"], cwd: ROOT },
 ];
 
 // Baseline violation counts — strict-zero. All three audits verified clean ✓

@@ -1313,7 +1313,7 @@ STEP BODY  (scrollable, only current step visible at a time):
                Preview: [thumbnail 160×90  "Charizard ETB Unboxing"]
 
 ── STEP 3: Pricing & Stock ───────────────────────────────────────────────────────────
-  Price *          [₹ 4499]   (paise: 449900 stored)
+  Price *          [₹ 4499]   (4499.00 stored, decimal rupees)
   Original price   [₹ 5000]   → SALE badge shown if price < originalPrice
   Stock qty *      [12]
   Available qty    [12]  (auto-computed, = stockQty initially)
@@ -3228,8 +3228,8 @@ SideDrawer (3+ fields → SideDrawer rule):
   ├──────────────────────────────────────────────────────────────┤
   │  Order ID      [order-3-20260508-a1b2c3___________________]  │
   │  Refund ID     [refund_Abcd1234____________________________]  │
-  │  Refunded amt  [₹ paise integer e.g. 50000]                  │
-  │  Deducted amt  [₹ paise — default = refunded × 0.95]         │
+  │  Refunded amt  [₹ decimal rupees e.g. 500.00]                │
+  │  Deducted amt  [₹ decimal rupees — default = refunded × 0.95]│
   │  Reason        [Free text________________________________]    │
   ├──────────────────────────────────────────────────────────────┤
   │                              [Cancel]  [Apply deduction]      │
@@ -3240,7 +3240,7 @@ SideDrawer (3+ fields → SideDrawer rule):
 
   Automatic deduction (fire-and-forget from processRefundAction):
     On refund approval → applyRefundDeductionAction(storeId, orderId, refundId,
-      refundedAmountInPaise, platformFeeRate?) called in refund server action.
+      refundedAmount, platformFeeRate?) called in refund server action.
     deductedAmount = refundedAmount × (1 − platformFeeRate)  [platform keeps fee share]
     No-op if no pending payout found for that storeId / orderId.
 ```
@@ -3364,7 +3364,7 @@ SideDrawer (3+ fields → SideDrawer rule):
 
 > ✅ **Closed (2026-08-16, S-patches-rollout):** `siteSettings.emi` now has an admin editor
 > — `⑯ EMI` tab in `AdminSiteSettingsView.tsx` (Toggle for `enabled`, number inputs for
-> `minOrderValueInPaise`/`tokenPercent`/`billingDay`/`surchargePercentPerMonth`/
+> `minOrderValue`/`tokenPercent`/`billingDay`/`surchargePercentPerMonth`/
 > `surchargeSellerSharePercent`, comma-separated input parsed to `tenureOptions: number[]`
 > on save), following the same `useSave("EMI", …)` mutation pattern as the `⑮ Procurement`
 > tab. `⑰ GST` (P-8) added alongside it the same session — see § P-8 GST below.
@@ -4034,7 +4034,7 @@ above (`SellerPayoutSettingsView.tsx`, Preferences step). Published as appkit 3.
 ### O5c — P-8 GST sequence (2026-08-16, S-patches-rollout)
 
 > Schema: `ProductDocument.gstRate?: 0|5|12|18|28`, `hsnCode?`; `OrderDocument.taxableAmount/
-> gstAmount/cgst/sgst/igst` (paise); `siteSettings.gst: {enabled, gstin, legalName, address}`
+> gstAmount/cgst/sgst/igst` (decimal rupees); `siteSettings.gst: {enabled, gstin, legalName, address}`
 > (`⑰ GST` admin tab). Pure math in `_internal/shared/fees/calculator.ts::calculateGst()`
 > — intra-state → cgst+sgst (igst=0); inter-state → igst (cgst=sgst=0).
 
@@ -4046,7 +4046,7 @@ CHECKOUT (createOrderForGroup)              ORDER DOC                 INVOICE (o
       │                                           │                          │
       │ intraState = buyerState === storeState    │                          │
       │ calculateGst(product.gstRate,              │                         │
-      │   intraState, taxableAmountPaise) ────────>│ taxableAmount/gstAmount/│
+      │   intraState, taxableAmount) ─────────────>│ taxableAmount/gstAmount/│
       │                                           │  cgst/sgst/igst written │
       │                                           │  alongside orderTotal   │
       │                                           │                          │
@@ -4189,7 +4189,7 @@ API (edit):   GET + PATCH /api/store/coupons/[id]
 │  [Cancel]                  [Save]       │
 └─────────────────────────────────────────┘
 
-Paise conversion on save: fixed type value × 100, minPurchase × 100
+Stored as decimal rupees on save (roundRupees, 2dp) — no paise conversion; type="percentage" value stays 0-100
 ```
 
 ---
@@ -4715,7 +4715,7 @@ FILTER DRAWER (opens when [⚙ Filters] is clicked):
 │  Min ₹  ┌───────┐    Max ₹  ┌───────┐                                       │
 │         │       │           │       │                                       │
 │         └───────┘           └───────┘                                       │
-│  (values in ₹; converted to paise internally for API)                        │
+│  (values in ₹; passed through as decimal rupees to the API)                  │
 │                                                                              │
 │  [Clear All Filters]              [Apply Filters]                            │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -6953,8 +6953,8 @@ SideDrawer — Update order-3-20260508-a1b2c3
 │ Carrier  [dropdown: Delhivery ▼]                                │
 │          (Delhivery/BlueDart/DTDC/Ekart/India Post/Other)       │
 │ ─────────────────────────────────────────────────────────────── │
-│ Refund Amount (paise)   ← shown when status=REFUNDED or         │
-│ [149900               ]   RETURN_REQUESTED                      │
+│ Refund Amount (₹)       ← shown when status=REFUNDED or         │
+│ [1499.00              ]   RETURN_REQUESTED                      │
 │ ─────────────────────────────────────────────────────────────── │
 │ Notes (optional)                                                │
 │ ┌──────────────────────────────┐                                │
@@ -8631,7 +8631,7 @@ ScammerDocument
   scamType            ScamType (27 values)
   scamPlatform        ScamPlatform (11 values)
   description         reporter's primary narrative (max 2000 chars)
-  amountLost?         INR paise (optional)
+  amountLost?         INR rupees, whole number (optional)
   itemInvolved?       "Charizard PSA 9" (optional)
   evidence[]          /media/ proxy URLs only
   reportedBy          uid of first reporter
@@ -10563,8 +10563,8 @@ escape hatch for repos that need it.
                 │    images[], video?, price,    │
                 │    quantity, isSold            │  ← markItemSold txn flips this
                 │ }                              │
-                │ bundlePrice (paise)            │
-                │ bundleOriginalTotal (paise)    │  ← Σ(items[].price × qty)
+                │ bundlePrice (decimal ₹)        │
+                │ bundleOriginalTotal (decimal ₹)│  ← Σ(items[].price × qty)
                 │ partOfBundleProductIds[]: ─────┼──► duplicated bundleItems[].productId
                 │   (auto-derived on create)     │      for index-friendly array-contains
                 │ isFeatured?, isPromoted?       │
@@ -11169,7 +11169,7 @@ AFTER (1 collection × 4 categoryType values + theme-group)
         │              │              │              │
     "category"    "sublisting"     "brand"       "bundle"
         │              │              │              │
-        │              ├ itemCode    ├ brandWebsite │ bundlePriceInPaise
+        │              ├ itemCode    ├ brandWebsite │ bundlePrice (₹)
         │              │              ├ brandCountry │ bundleQueryRule
         │              │              ├ brandFounded │   (static | dynamic)
         │              │              └ brandBanner  │ bundleStockStatus
@@ -11576,7 +11576,7 @@ Indices -> Functions -> Vercel  (each independent, indices first because
                 ├────────────────────────────────────┤
                 │ id, name, slug (bundle-...)        │
                 │ categoryType: "bundle" ◄───────────┼── discriminator
-                │ bundlePriceInPaise: number         │   (locked checkout price)
+                │ bundlePrice: number (decimal ₹)    │   (locked checkout price)
                 │ bundleQueryRule:                   │
                 │   | { type:"static",               │
                 │       productIds[3..16] }          │   ← BundleItemsPicker writes here
@@ -11626,7 +11626,7 @@ Indices -> Functions -> Vercel  (each independent, indices first because
                                               ──► categoriesRepository
                                                     .createWithId(id,
                                                       { categoryType:"bundle",
-                                                        bundlePriceInPaise,
+                                                        bundlePrice,
                                                         bundleQueryRule,
                                                         bundleProductIds,
                                                         ... })
@@ -11645,7 +11645,7 @@ Indices -> Functions -> Vercel  (each independent, indices first because
   CartItemDocument                                 OrderItem
   ───────────────────────────────────              ──────────────────────────
   productId        = bundle.id                     (mirror of cart fields when
-  price            = bundlePriceInPaise              order is created)
+  price            = bundlePrice (decimal ₹)         order is created)
   listingType      = "standard"                    bundleCategorySlug?
   bundleCategorySlug?: string                      bundleProductIds?
   bundleProductIds?: string[]   ← snapshot
@@ -11751,7 +11751,7 @@ Already-refunded state (alreadyRefunded=true):
 └─────────────────────────────────────────────────────────────────────────────┘
 
 Props:
-  orderTotal: number        (paise — displayed via formatCurrency)
+  orderTotal: number        (decimal ₹ — displayed via formatCurrency)
   onSubmit: (reason) => Promise<void>
   isLoading?: boolean
   isNonRefundable?: boolean
@@ -11796,8 +11796,8 @@ Component: appkit/src/features/cart/components/ShippingPicker.tsx
 Copy:      REFUND_COPY.shipping (noOptions, freeLabel, etaFormat)
 
 Rendered in cart item / checkout step — buyer selects their shipping provider.
-Provider fee calculated client-side (resolveProviderFee): flatInPaise + percentOfOrder,
-  freeAboveInPaise threshold, minInPaise floor.
+Provider fee calculated client-side (resolveProviderFee): flat (decimal ₹) + percentOfOrder,
+  freeAbove threshold (decimal ₹), min floor (decimal ₹).
 
 No providers (empty):
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -11816,19 +11816,19 @@ With providers:
 └─────────────────────────────────────────────────────────────────────────────┘
 
 Interaction:
-  Click provider → handleSelect → resolveProviderFee(provider, subtotalInPaise)
-               → onPickProvider(providerId, feeInPaise) → caller persists to CartItem
+  Click provider → handleSelect → resolveProviderFee(provider, subtotal)
+               → onPickProvider(providerId, fee) → caller persists to CartItem
   Loading state: all buttons disabled while pending=true or isLoading=true
 
 Props:
   providers: ShippingProviderConfig[]          (from store.shippingConfig.providers[])
   selectedProviderId?: string                  (from CartItemDocument.chosenShippingProviderId)
-  subtotalInPaise?: number                     (for freeAbove + percent-of-order calc)
-  onPickProvider: (id, feeInPaise) => void | Promise<void>
+  subtotal?: number                            (decimal ₹ — for freeAbove + percent-of-order calc)
+  onPickProvider: (id, fee) => void | Promise<void>
   isLoading?: boolean
 Fee resolution: resolveProviderFee(p, subtotal):
-  if freeAboveInPaise defined and subtotal >= threshold → 0
-  else flat + ceil(percent/100 × subtotal), clamped to minInPaise
+  if freeAbove defined and subtotal >= threshold → 0
+  else flat + ceil(percent/100 × subtotal), clamped to min (decimal ₹)
 ```
 
 ---
@@ -12146,17 +12146,17 @@ per-owner watermark (owner's name + site URL) via contextType="catalogue-image".
 procurementShipments/{id}          shipmentLots/{id}                shipmentItems/{id}
 ├─ shipmentNumber (unique)         ├─ shipmentId (FK)                ├─ shipmentId (FK, denorm.)
 ├─ status, supplierName, etaDate   ├─ shipmentStatus (denorm.)       ├─ lotId (FK)
-├─ customsTotalPaise ──┐           ├─ lotName, weightGrams,          ├─ title, quantity
-├─ shippingTotalPaise ─┤ split     │   purchaseCostPaise             ├─ isForSelfUse
-├─ laborHoursSpent     │ by        ├─ images[]                       ├─ price (paise, projected
-├─ totals (persisted,  │ value/    ├─ remainderItemCount?,           │   sale price)
-│   never recomputed   │ weight    │   remainderEstimatedValuePaise? ├─ linkedProductId?/
-│   on read)           │ across    ├─ itemCount, mainItemsProjected  │   Slug?/ListingType?
-└─ totalsComputedAt ───┘ sibling   │   RevenuePaise (Function #1)    │   (nullable — unlink
-   ≤10 lots per shipment  lots     ├─ customsAllocatedPaise,         │    writes null, not
-                                    │   shippingAllocatedPaise,       │    undefined, since
-                                    │   totalLandedCostPaise,         │    Firestore writes
-                                    │   projectedProfitPaise          │    strip undefined)
+├─ customsTotal (₹) ────┐          ├─ lotName, weightGrams,          ├─ title, quantity
+├─ shippingTotal (₹) ───┤ split    │   purchaseCost (₹)              ├─ isForSelfUse
+├─ laborHoursSpent      │ by       ├─ images[]                       ├─ price (decimal ₹,
+├─ totals (persisted,   │ value/   ├─ remainderItemCount?,           │   projected sale price)
+│   never recomputed    │ weight   │   remainderEstimatedValue? (₹)  ├─ linkedProductId?/
+│   on read)            │ across   ├─ itemCount, mainItemsProjected  │   Slug?/ListingType?
+└─ totalsComputedAt ────┘ sibling  │   Revenue (₹, Function #1)      │   (nullable — unlink
+   ≤10 lots per shipment  lots     ├─ customsAllocated (₹),          │    writes null, not
+                                    │   shippingAllocated (₹),        │    undefined, since
+                                    │   totalLandedCost (₹),          │    Firestore writes
+                                    │   projectedProfit (₹)           │    strip undefined)
                                     │   (Function #2)                 └─ ≤500 items per lotId
                                     └─ ≤10 lots per shipment              (Firestore batch cap)
 
@@ -12204,7 +12204,7 @@ catalogueRepository        stampImageUpdate() on images[] writes · listPublicBy
 
 ```
 onShipmentItemWrite        (documentWritten, shipmentItems/{itemId})
-  → recompute the owning lot's itemCount + mainItemsProjectedRevenuePaise
+  → recompute the owning lot's itemCount + mainItemsProjectedRevenue (decimal ₹)
 
 onShipmentLotWrite         (documentWritten, shipmentLots/{lotId})
 onShipmentHeaderWrite      (documentWritten, procurementShipments/{shipmentId})

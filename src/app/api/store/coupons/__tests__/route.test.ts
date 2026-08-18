@@ -181,10 +181,10 @@ describe("POST /api/store/coupons", () => {
     );
   });
 
-  it("fixed-amount value converted to paise (multiplied by 100)", async () => {
+  it("fixed-amount value stored as decimal rupees (no paise conversion)", async () => {
     await POST(makePostReq({ ...validCouponBody, type: "fixed", value: 50 }) as never);
     expect(mockCouponsCreate).toHaveBeenCalledWith(
-      expect.objectContaining({ discount: expect.objectContaining({ value: 5000 }) }),
+      expect.objectContaining({ discount: expect.objectContaining({ value: 50 }) }),
     );
   });
 

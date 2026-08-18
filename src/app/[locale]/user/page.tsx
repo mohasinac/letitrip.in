@@ -80,9 +80,8 @@ function StatCard({ label, value, href }: { label: string; value: string | numbe
   );
 }
 
-function formatINR(paise: number): string {
-  const rupees = Math.round(paise / 100);
-  return `₹${rupees.toLocaleString("en-IN")}`;
+function formatINR(amount: number): string {
+  return `₹${amount.toLocaleString("en-IN")}`;
 }
 
 export default function Page() {
@@ -121,7 +120,7 @@ export default function Page() {
   }
 
   const totalOrders = allOrdersForStats.length;
-  const totalSpentPaise = allOrdersForStats.reduce(
+  const totalSpent = allOrdersForStats.reduce(
     (acc: number, o: any) => acc + (typeof o?.totalAmount === "number" ? o.totalAmount : 0),
     0,
   );
@@ -196,7 +195,7 @@ export default function Page() {
 
             <Div layout="grid" gap="3" className="grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
               <StatCard label="Orders"        value={totalOrders}                   href={String(ROUTES.USER.ORDERS)} />
-              <StatCard label="Total spent"   value={formatINR(totalSpentPaise)}    href={String(ROUTES.USER.ORDERS)} />
+              <StatCard label="Total spent"   value={formatINR(totalSpent)}    href={String(ROUTES.USER.ORDERS)} />
               <StatCard label="Wishlist"      value={wishlistCount ?? 0}            href={String(ROUTES.USER.WISHLIST)} />
               <StatCard label="Unread alerts" value={unreadCount ?? 0}              href={String(ROUTES.USER.NOTIFICATIONS)} />
               <StatCard label="Support"       value={"Open"}                         href={String(ROUTES.USER.SUPPORT)} />

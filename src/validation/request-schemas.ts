@@ -378,7 +378,7 @@ export const siteSettingsUpdateSchema = z
         minimumTransactionFee: z.number().min(0),
         gatewayFeePercent: z.number().min(0).max(100),
         codDepositPercent: z.number().min(0).max(100),
-        codHandlingFeeMinInPaise: z.number().min(0),
+        codHandlingFeeMin: z.number().min(0),
         codHandlingFeePercent: z.number().min(0).max(100),
         sellerShippingFixed: z.number().min(0),
         platformShippingPercent: z.number().min(0).max(100),

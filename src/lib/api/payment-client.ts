@@ -10,6 +10,9 @@ export interface AttachProofBody {
   proofUrl: string;
   transactionId?: string;
   mimeType?: string;
+  buyerMarkedPaid?: boolean;
+  buyerFraudAgreementAccepted: boolean;
+  buyerReportedUpiId?: string;
 }
 
 export interface AttachProofResult {

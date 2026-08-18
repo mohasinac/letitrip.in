@@ -60,9 +60,9 @@ const __POST__g = withProviders(createRouteHandler<(typeof createCouponSchema)["
       return ApiErrors.badRequest("Percentage discount cannot exceed 100%");
     }
 
-    const discountValue = type === "fixed" ? Math.round(value * 100) : value;
-    const minPurchasePaise = minPurchase ? Math.round(minPurchase * 100) : undefined;
-    const maxDiscountPaise = maxDiscount ? Math.round(maxDiscount * 100) : undefined;
+    const discountValue = type === "fixed" ? Math.round(value * 100) / 100 : value;
+    const minPurchaseRupees = minPurchase ? Math.round(minPurchase * 100) / 100 : undefined;
+    const maxDiscountRupees = maxDiscount ? Math.round(maxDiscount * 100) / 100 : undefined;
 
     const existing = await couponsRepository.getCouponByCode(code);
     if (existing) return ApiErrors.badRequest("A coupon with this code already exists");
@@ -75,7 +75,7 @@ const __POST__g = withProviders(createRouteHandler<(typeof createCouponSchema)["
       scope: "seller",
       storeId: store.id,
       createdBy: user!.uid,
-      discount: { value: discountValue, ...(minPurchasePaise !== undefined && { minPurchase: minPurchasePaise }), ...(maxDiscountPaise !== undefined && { maxDiscount: maxDiscountPaise }) },
+      discount: { value: discountValue, ...(minPurchaseRupees !== undefined && { minPurchase: minPurchaseRupees }), ...(maxDiscountRupees !== undefined && { maxDiscount: maxDiscountRupees }) },
       usage: { totalLimit, perUserLimit, currentUsage: 0 },
       validity: { startDate: new Date(startDate), endDate: new Date(endDate), isActive },
       restrictions: {

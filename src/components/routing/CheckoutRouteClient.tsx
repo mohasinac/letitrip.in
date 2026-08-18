@@ -24,6 +24,7 @@ import {
   useBottomActions,
   useCartQuery,
   useCreateAddress,
+  useSiteSettings,
   useToast,
   ROUTES,
   ACTION_ID,
@@ -118,7 +119,7 @@ interface ServerCartResponse {
   itemCount: number;
 }
 
-type CheckoutStep = "address" | "otp-consent" | "otp" | "payment" | "processing";
+type CheckoutStep = "address" | "otp-consent" | "otp" | "value-otp" | "payment" | "processing";
 
 // --- Shared class strings ----------------------------------------------------
 
@@ -127,9 +128,9 @@ const STEP_SUBLABEL_CLS = "text-[length:var(--appkit-text-sm)] text-[var(--appki
 const CLS_APPLIED_COUPON_ROW = "rounded-lg bg-success-surface border border-success px-[var(--appkit-space-3)] py-[var(--appkit-space-2)]";
 const PRIMARY_BTN_CLS = "w-full rounded-lg bg-[var(--appkit-color-primary)] px-[var(--appkit-space-4)] py-[var(--appkit-space-3)] text-[length:var(--appkit-text-sm)] font-semibold text-white hover:opacity-90 disabled:opacity-50";
 
-/** EMI amounts from computeEmiSchedule are in paise — format as INR rupees. */
-function formatEmiRupees(paise: number): string {
-  return (paise / 100).toLocaleString("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
+/** EMI amounts from computeEmiSchedule are decimal rupees — format as INR. */
+function formatEmiRupees(amount: number): string {
+  return amount.toLocaleString("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
 }
 
 const ORDER_PLACEMENT_FAILED_MSG = "Order placement failed";
@@ -564,7 +565,7 @@ function renderPaymentStep({
             <Div>
               {codSettings && subtotal > 0 && (() => {
                 const codHandlingFee = computeCodHandlingFee(subtotal, codSettings);
-                const depositAmount = Math.round(subtotal * ((codSettings.codDepositPercent ?? 0) / 100));
+                const depositAmount = Math.round(subtotal * ((codSettings.codDepositPercent ?? 0) / 100) * 100) / 100;
                 const payNow = depositAmount + codHandlingFee;
                 const payOnDelivery = Math.max(0, subtotal - depositAmount);
                 return (
@@ -667,7 +668,7 @@ function renderCouponSection({
               <Div>
                 <Text className="text-success" size="sm" weight="medium">{c.code}</Text>
                 <Text className="text-success" size="xs">
-                  −₹{(c.discountAmount / 100).toFixed(2)} off
+                  −₹{c.discountAmount.toFixed(2)} off
                 </Text>
               </Div>
               <Button
@@ -753,7 +754,7 @@ function renderOrderSummary({
       {totalDiscount > 0 && (
         <Row textSize="sm" className="text-success mb-1" align="center" justify="between">
           <Text>Coupon discount</Text>
-          <Text>−₹{(totalDiscount / 100).toFixed(2)}</Text>
+          <Text>−₹{totalDiscount.toFixed(2)}</Text>
         </Row>
       )}
       <Row border="default" className="border-t" padding="t-sm" align="center" justify="between">
@@ -905,7 +906,7 @@ export function CheckoutRouteClient({
       if (data.data) {
         setLocalCoupons((prev) => [...(prev ?? effectiveCoupons).filter((c) => c.code !== data.data!.code), data.data!]);
         setCouponCode("");
-        showToast(`Coupon "${data.data.code}" applied! You saved ₹${(data.data.discountAmount / 100).toFixed(2)}.`, "success");
+        showToast(`Coupon "${data.data.code}" applied! You saved ₹${data.data.discountAmount.toFixed(2)}.`, "success");
       }
     } catch (_err) {
       void normalizeError(_err);

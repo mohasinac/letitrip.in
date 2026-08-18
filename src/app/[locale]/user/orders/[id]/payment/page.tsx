@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
 import {
@@ -10,6 +10,7 @@ import {
   ROUTES,
   Form,
   FieldInput,
+  FieldCheckbox,
   Button,
   Div,
   Row,
@@ -18,14 +19,22 @@ import {
   Text,
   Span,
 } from "@mohasinac/appkit/client";
-import { normalizeError, useSiteSettings, MediaUploadField } from "@mohasinac/appkit";
+import {
+  normalizeError,
+  MediaUploadField,
+  Anchor,
+  useSiteSettings,
+  buildPaymentProofReviewMessage,
+} from "@mohasinac/appkit";
 import { attachPaymentProof } from "@/lib/api/payment-client";
 
 const CONTAINER_CLS = "w-full max-w-lg";
 
-interface SiteSettingsPayment {
-  contact?: { upiVpa?: string };
-  payment?: { upiManualEnabled?: boolean };
+function formatCountdown(msRemaining: number): string {
+  const totalSeconds = Math.max(0, Math.floor(msRemaining / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
@@ -34,13 +43,27 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const { showToast } = useToast();
   const { order, isLoading } = useOrder(id);
   const { upload } = useMediaUpload();
-  const { data: settings } = useSiteSettings<SiteSettingsPayment>();
+  const { data: settings } = useSiteSettings<{ contact?: { whatsappNumber?: string } }>();
 
   const [proofUrl, setProofUrl] = useState("");
   const [transactionId, setTransactionId] = useState("");
+  const [buyerReportedUpiId, setBuyerReportedUpiId] = useState("");
+  const [buyerMarkedPaid, setBuyerMarkedPaid] = useState(false);
+  const [fraudAgreementAccepted, setFraudAgreementAccepted] = useState(false);
   const [isPending, setIsPending] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
 
-  const upiVpa = settings?.contact?.upiVpa ?? "";
+  const displayedUpiId = (order as any)?.displayedUpiId ?? "";
+  const paymentDeadline = (order as any)?.paymentDeadline
+    ? new Date((order as any).paymentDeadline as string | Date).getTime()
+    : null;
+  const windowExpired = paymentDeadline != null && now >= paymentDeadline;
+
+  useEffect(() => {
+    if (paymentDeadline == null) return;
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, [paymentDeadline]);
 
   const handleUpload = async (file: File): Promise<string> => {
     const displayName = (order as any)?.buyerName ?? (order as any)?.userId ?? "buyer";
@@ -57,11 +80,18 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       showToast("Please upload your payment screenshot.", "error");
       return;
     }
+    if (!fraudAgreementAccepted) {
+      showToast("Please confirm this payment is genuine before submitting.", "error");
+      return;
+    }
     setIsPending(true);
     try {
       const result = await attachPaymentProof(id, {
         proofUrl,
         transactionId: transactionId.trim() || undefined,
+        buyerMarkedPaid,
+        buyerFraudAgreementAccepted: fraudAgreementAccepted,
+        buyerReportedUpiId: buyerReportedUpiId.trim() || undefined,
       });
       if (!result.ok) {
         if (result.code === "PROOF_ALREADY_ATTACHED") {
@@ -69,9 +99,14 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
           router.push(String(ROUTES.USER.ORDER_DETAIL(id)));
           return;
         }
+        if (result.code === "PAYMENT_WINDOW_EXPIRED") {
+          showToast("The 15-minute payment window for this order has expired.", "error");
+          router.push(String(ROUTES.USER.ORDER_DETAIL(id)));
+          return;
+        }
         throw new Error(result.error ?? "Failed to submit payment proof.");
       }
-      showToast("Proof submitted. We'll verify within 24 hours.", "success");
+      showToast("Proof submitted. We'll verify within 2 hours, or your order auto-confirms.", "success");
       router.push(String(ROUTES.USER.ORDER_DETAIL(id)));
     } catch (err) {
       void normalizeError(err);
@@ -98,6 +133,8 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const pm = (order as any)?.paymentMethod ?? "";
   const isCashOrUpi = pm === "cash" || pm === "upi_manual";
   const alreadyPaid = (order as any)?.paymentStatus === "paid";
+  const cancellationReason = (order as any)?.cancellationReason;
+  const orderStatus = (order as any)?.status;
 
   if (!isCashOrUpi) {
     return (
@@ -123,19 +160,79 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
     );
   }
 
+  if (orderStatus === "cancelled" && cancellationReason === "payment_window_expired") {
+    return (
+      <Stack className={CONTAINER_CLS} gap="md">
+        <Stack padding="md" className="border border-error/20" surface="danger-surface" gap="3" rounded="xl">
+          <Text className="text-error" size="sm" weight="medium">
+            This order was cancelled because the 15-minute payment window expired without proof. The item has been returned to stock.
+          </Text>
+        </Stack>
+        <Link href={String(ROUTES.USER.ORDER_DETAIL(id))} className="text-[length:var(--appkit-text-sm)] font-medium text-primary hover:underline">
+          ← Back to order
+        </Link>
+      </Stack>
+    );
+  }
+
+  if (windowExpired) {
+    return (
+      <Stack className={CONTAINER_CLS} gap="md">
+        <Stack padding="md" className="border border-warning/20" surface="warning-surface" gap="3" rounded="xl">
+          <Text className="text-warning" size="sm" weight="medium">
+            Your 15-minute payment window has expired. This order will be cancelled shortly and the item returned to stock.
+          </Text>
+        </Stack>
+        <Link href={String(ROUTES.USER.ORDER_DETAIL(id))} className="text-[length:var(--appkit-text-sm)] font-medium text-primary hover:underline">
+          ← Back to order
+        </Link>
+      </Stack>
+    );
+  }
+
   return (
     <Stack className={CONTAINER_CLS} gap="lg">
       <Heading level={1} size="2xl" weight="bold" color="primary">Complete Payment</Heading>
       <Text className="mt-1" color="muted" size="sm">Order #{id}</Text>
 
+      {paymentDeadline != null && (
+        <Stack padding="md" className="border border-warning/20" surface="warning-surface" gap="xs" rounded="xl">
+          <Text size="sm" weight="semibold" className="text-warning">
+            Time remaining: {formatCountdown(paymentDeadline - now)}
+          </Text>
+          <Text size="xs" color="muted">
+            Pay and upload proof before the window closes, or the item returns to stock and your order is cancelled.
+          </Text>
+        </Stack>
+      )}
+
+      {settings?.contact?.whatsappNumber && (order as any)?.productTitle && (
+        <Anchor
+          href={`https://wa.me/${settings.contact.whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(
+            buildPaymentProofReviewMessage({
+              orderId: id,
+              buyerName: (order as any)?.userName ?? "buyer",
+              productTitle: (order as any).productTitle,
+              totalAmount: (order as any)?.totalPrice ?? 0,
+              reviewUrl: typeof window !== "undefined" ? window.location.href : "",
+            }),
+          )}`}
+          tone="brand"
+          underline="hover"
+          className="text-[length:var(--appkit-text-xs)]"
+        >
+          Share this order for faster review on WhatsApp →
+        </Anchor>
+      )}
+
       {/* UPI instructions */}
       <Stack padding="md" className="border border-primary/20" surface="default" gap="3" rounded="xl">
         <Text size="sm" weight="semibold" color="primary">Step 1 — Transfer payment via UPI</Text>
-        {upiVpa ? (
+        {displayedUpiId ? (
           <>
             <Text size="sm" color="muted">Open any UPI app (GPay, PhonePe, Paytm) and pay to:</Text>
             <Div surface="inset" border="default" rounded="lg" padding="inline" className="select-all">
-              <Span size="lg" weight="bold" color="primary">{upiVpa}</Span>
+              <Span size="lg" weight="bold" color="primary">{displayedUpiId}</Span>
             </Div>
             <Text size="xs" color="faint">Note the UTR / transaction reference — you'll enter it below.</Text>
           </>
@@ -170,11 +267,31 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
                 placeholder="e.g. 123456789012"
                 hint="Enter the 12-digit UTR number shown in your UPI app."
               />
+              <FieldInput
+                name="buyerReportedUpiId"
+                label="UPI ID you paid from (optional)"
+                value={buyerReportedUpiId}
+                onChange={(value: string) => setBuyerReportedUpiId(value)}
+                placeholder="e.g. yourname@upi"
+                hint="Shown in your UPI app's payment confirmation — helps us verify faster."
+              />
+              <FieldCheckbox
+                name="buyerMarkedPaid"
+                label="I confirm I have already made this payment"
+                checked={buyerMarkedPaid}
+                onChange={setBuyerMarkedPaid}
+              />
+              <FieldCheckbox
+                name="buyerFraudAgreementAccepted"
+                label="I confirm this payment is genuine — I will not attempt fraudulent chargebacks or submit fake proof"
+                checked={fraudAgreementAccepted}
+                onChange={setFraudAgreementAccepted}
+              />
               <Row gap="3">
                 <Button
                   type="button"
                   variant="primary"
-                  disabled={isPending || !proofUrl}
+                  disabled={isPending || !proofUrl || !fraudAgreementAccepted}
                   onClick={handleSubmit}
                   paddingX="md"
                   paddingY="sm"

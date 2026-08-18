@@ -29,16 +29,14 @@ function toDraftFromCoupon(coupon: CouponData): Partial<CouponEditorDraft> {
   const discount = coupon.discount ?? {};
   const usage = coupon.usage ?? {};
   const validity = coupon.validity ?? {};
-  const value = typeof discount.value === "number"
-    ? coupon.type === "fixed" ? String(discount.value / 100) : String(discount.value)
-    : "";
+  const value = typeof discount.value === "number" ? String(discount.value) : "";
   const restrictions = coupon.restrictions ?? {};
   return {
     code: coupon.code,
     type: coupon.type ?? "percentage",
     value,
-    minPurchase: discount.minPurchase ? String(discount.minPurchase / 100) : "",
-    maxDiscount: discount.maxDiscount ? String(discount.maxDiscount / 100) : "",
+    minPurchase: discount.minPurchase ? String(discount.minPurchase) : "",
+    maxDiscount: discount.maxDiscount ? String(discount.maxDiscount) : "",
     totalLimit: String(usage.totalLimit ?? 0),
     perUserLimit: String(usage.perUserLimit ?? 0),
     startDate: toDateString(validity.startDate as string | { _seconds?: number }),
@@ -81,8 +79,8 @@ export default function Page() {
       },
       discount: {
         value: draft.type !== "free_shipping" ? Number(draft.value) || 0 : 0,
-        ...(draft.minPurchase ? { minPurchase: Math.round(Number(draft.minPurchase) * 100) } : {}),
-        ...(draft.maxDiscount ? { maxDiscount: Math.round(Number(draft.maxDiscount) * 100) } : {}),
+        ...(draft.minPurchase ? { minPurchase: Math.round(Number(draft.minPurchase) * 100) / 100 } : {}),
+        ...(draft.maxDiscount ? { maxDiscount: Math.round(Number(draft.maxDiscount) * 100) / 100 } : {}),
       },
       restrictions: {
         applicableProducts: draft.applicableProducts ?? [],
