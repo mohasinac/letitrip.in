@@ -41,6 +41,45 @@
 
 ---
 
+### S-tester-admin-parity — Tester Hub + Testing nav accessible to admins, checklist search by route, new test cases (2026-08-19)
+
+User report: test-case links should be visible to both testers and admins in the user profile
+dashboard, an admin-facing "results" (Tester Feedback) link should live under a dedicated
+"Testing" section in the admin dashboard, and admin accounts should be treated as testers.
+Follow-up: the Tester Hub checklist search should also match by route, and missing test cases
+for this session's shipped features needed adding + seeding.
+
+Root cause: `isTester` gating was applied literally everywhere (`TesterHubView`'s access guard,
+`getUserNavGroups`'s Help-group injection, both `/api/user/tester-checklist*` routes) with no
+admin bypass — `appkit/src/_internal/server/features/tester/visibility.ts`'s sandbox-data filter
+already ORed `isAdminUser`, but the UI/API access-gate checks never did.
+
+Fix (all via widened checks, not a per-admin Firestore flag, so it applies to every admin
+account automatically):
+- `TesterHubView.tsx` — access guard is now `!user?.isTester && !isAdminUser(user)`; `matchesQuery`
+  now also matches `item.href` so search finds cases by route, not just title.
+- `UserLayoutClient.tsx` — passes `Boolean(user?.isTester) || isAdmin` into `getUserNavGroups`, so
+  the "Tester Hub" link in the user dashboard's Help group shows for admins too.
+- `src/app/api/user/tester-checklist/route.ts` + `[checklistItemId]/route.ts` — both now allow
+  `isAdminUser(user)` alongside `user.isTester === true`.
+- `src/constants/navigation.tsx` — new dedicated admin "Testing" nav group (Test Cases, Results,
+  Tester Hub), split out of the "Content" group where Tester Checklist/Feedback previously lived.
+- `appkit/src/features/tester/seed-data/tester-checklist-seed-data.ts` — added 17 new checklist
+  cases covering this session's shipped features: dashboard collapsible sections (admin/store/
+  user), mobile table/card view + persisted view-mode preference, seller payouts detail panel +
+  reminder toggle, footer dark-mode, FAQ bottom-border dividers + tabs-mobile-dropdown, and the
+  Tester Hub itself (load/search/save + admin access). Seeded directly into Firestore via a
+  one-off additive script (bypassing the published npm `@mohasinac/appkit`, since appkit publish
+  is on hold this session — mirrors `TesterChecklistItemRepository`'s id/searchTokens convention
+  exactly, additive `set({merge:true})` only, no destructive re-seed).
+
+Not done (explicit hold in effect): appkit was not rebuilt/republished, so these seed-data source
+changes only exist in Firestore (via the one-off script) and in git source — they will also ship
+correctly whenever appkit's next publish happens, since `tester-checklist-seed-data.ts` itself is
+now updated to match.
+
+---
+
 ### S-user-sidebar-crossnav — User dashboard missing admin/store cross-nav links (2026-08-19)
 
 User report: an account that is admin (or owns a store) could see the other role's dashboard

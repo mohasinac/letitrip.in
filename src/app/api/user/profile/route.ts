@@ -19,6 +19,7 @@ export const GET = withProviders(createApiHandler({
       phoneVerified: user!.phoneVerified,
       storeId: user!.storeId,
       isTester: user!.isTester ?? false,
+      canTestAdmin: user!.canTestAdmin ?? false,
       googleLinked: user!.googleLinked ?? false,
       googleLinkedEmail: user!.googleLinkedEmail ?? null,
       uiPreferences: user!.uiPreferences ?? {},

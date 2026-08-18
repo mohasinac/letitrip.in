@@ -20,6 +20,7 @@ const updateChecklistItemSchema = z.object({
   href: z.string().max(300).optional(),
   order: z.number().int().min(0).optional(),
   isActive: z.boolean().optional(),
+  adminOnly: z.boolean().optional(),
 });
 
 export const GET = withProviders(

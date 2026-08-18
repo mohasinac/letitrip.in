@@ -94,6 +94,8 @@ export const getServerSessionUser = cache(
         sessionId: sessionId ?? undefined,
         phoneVerified: profile.phoneVerified,
         storeId: profile.storeId,
+        isTester: profile.isTester,
+        canTestAdmin: profile.canTestAdmin,
         avatarMetadata: profile.avatarMetadata ?? null,
         publicProfile: profile.publicProfile
           ? {

@@ -228,8 +228,14 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.MEDIA),   "Media",   "admin:media:read"),
       adminItem(String(ROUTES.ADMIN.BLOG),    "Blog",    "admin:blog:read"),
       adminItem(String(ROUTES.ADMIN.BIDS),    "Bids",    "admin:bids:read"),
-      adminItem(String(ROUTES.ADMIN.TESTER_CHECKLIST), "Tester Checklist", "admin:tester-checklist:read"),
-      adminItem(String(ROUTES.ADMIN.TESTER_FEEDBACK),  "Tester Feedback",  "admin:tester-feedback:read"),
+    ],
+  },
+  {
+    title: "Testing",
+    items: [
+      adminItem(String(ROUTES.ADMIN.TESTER_CHECKLIST), "Test Cases",     "admin:tester-checklist:read"),
+      adminItem(String(ROUTES.ADMIN.TESTER_FEEDBACK),  "Results",        "admin:tester-feedback:read"),
+      adminItem(String(ROUTES.USER.TESTER_HUB),        "Tester Hub",     "admin:tester-checklist:read"),
     ],
   },
   {
@@ -433,7 +439,12 @@ const ACCOUNT_GROUP_TITLE = "Account";
 
 const HELP_GROUP_TITLE = "Help";
 
-export function getUserNavGroups(isSeller: boolean, userId?: string, isTester?: boolean): UserNavGroup[] {
+export function getUserNavGroups(
+  isSeller: boolean,
+  userId?: string,
+  isTester?: boolean,
+  canTestAdmin?: boolean,
+): UserNavGroup[] {
   // NOTE: the `confirm` field is added on the appkit `UserNavItem` interface but
   // ships with the next appkit publish; cast keeps tsc happy against the
   // currently-installed dist which doesn't expose it yet.
@@ -458,12 +469,18 @@ export function getUserNavGroups(isSeller: boolean, userId?: string, isTester?: 
       };
     }
     if (group.title === HELP_GROUP_TITLE && isTester) {
+      const testerItems: UserNavItem[] = [
+        { href: String(ROUTES.USER.TESTER_HUB), label: "Tester Hub" },
+      ];
+      if (canTestAdmin) {
+        testerItems.push({
+          href: String(ROUTES.ADMIN.DASHBOARD),
+          label: "Admin Dashboard (Testing)",
+        });
+      }
       return {
         ...group,
-        items: [
-          { href: String(ROUTES.USER.TESTER_HUB), label: "Tester Hub" },
-          ...group.items,
-        ],
+        items: [...testerItems, ...group.items],
       };
     }
     return group;

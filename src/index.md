@@ -188,14 +188,14 @@
 
 ---
 
-## Tester QA Program Routes — `src/app/api/user/tester-checklist/` (2026-08-17)
+## Tester QA Program Routes — `src/app/api/user/tester-checklist/` (2026-08-17, admin bypass added 2026-08-19)
 
 | Route file | Method | Purpose |
 |-----------|--------|---------|
-| `route.ts` | GET | Active checklist items joined with the current tester's own responses (Tester Hub hydration); 403 if `user.isTester !== true` |
-| `[checklistItemId]/route.ts` | PUT | Upserts `{ answer?, comment?, screenshotUrl? }` for the current tester + item — deterministic-ID upsert, the persistence mechanism behind reload-safe checklist state |
+| `route.ts` | GET | Active checklist items joined with the current tester's own responses (Tester Hub hydration); 403 unless `user.isTester === true` or `isAdminUser(user)` |
+| `[checklistItemId]/route.ts` | PUT | Upserts `{ answer?, comment?, screenshotUrl? }` for the current tester + item — deterministic-ID upsert, the persistence mechanism behind reload-safe checklist state; same admin bypass as above |
 
-Pages: `/user/tester` (Tester Hub), `/admin/tester-checklist` (catalog CRUD), `/admin/tester-feedback` (Report/Issues/Submissions). All three are thin shims delegating to the `TesterHubView`/`AdminTesterChecklistView`/`AdminTesterFeedbackView` appkit exports — see `appkit/index.md`.
+Pages: `/user/tester` (Tester Hub), `/admin/tester-checklist` (catalog CRUD), `/admin/tester-feedback` (Report/Issues/Submissions). All three are thin shims delegating to the `TesterHubView`/`AdminTesterChecklistView`/`AdminTesterFeedbackView` appkit exports — see `appkit/index.md`. Admin sidebar nav (`ADMIN_NAV_GROUPS` in `navigation.tsx`) groups the last two under a dedicated **"Testing"** section (Test Cases / Results / Tester Hub), split out of "Content" (2026-08-19).
 
 ---
 

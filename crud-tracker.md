@@ -2,7 +2,18 @@
 
 > **Single working tracker.** Lane A/B split wound down 2026-05-12 (single-lane model now).
 >
-> **Last updated:** 2026-08-19 — **S-user-sidebar-crossnav**: User reported that an admin/seller
+> **Last updated:** 2026-08-19 — **S-tester-admin-parity**: Test-case links now visible to both
+> testers and admins in the user profile dashboard (`TesterHubView`'s access guard is now
+> `isTester || isAdminUser`, same widening applied to `getUserNavGroups`'s Help-group injection
+> and both `/api/user/tester-checklist*` routes); admin dashboard nav gets a dedicated "Testing"
+> section (Test Cases / Results / Tester Hub) split out of "Content"; Tester Hub search now
+> matches by route as well as title; +17 new checklist test cases seeded directly to Firestore
+> covering this session's shipped features (dashboard collapsible sections, mobile table/card
+> view, seller payouts panel, footer dark-mode, FAQ borders/tabs-dropdown). appkit publish still
+> on hold, so the seed additions were written straight to Firestore via a one-off script rather
+> than through the (currently unpublishable) `appkit-seed` CLI. `npm run check` exits 0.
+>
+> **Prior, 2026-08-19 — S-user-sidebar-crossnav**: User reported that an admin/seller
 > account could see the *other* role's dashboard link when browsing `/admin` or `/store`, but not
 > when browsing their own `/user` dashboard. Root cause: `DashboardLayoutClient`'s `crossNav`
 > footer is populated per-layout — `admin/layout.tsx` passes `storeHref` when `user.storeId` is

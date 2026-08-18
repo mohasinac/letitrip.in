@@ -277,7 +277,7 @@
 
 | Export | Type | Purpose |
 |--------|------|---------|
-| UserSidebar | Component | Account navigation sidebar |
+| UserSidebar | Component | Account navigation sidebar. 2026-08-19: inline search box via `useSidebarSearch` (shared with Admin/Seller sidebars) |
 | AddressCard, AddressBook | Component | Display and manage user addresses |
 | AddressForm | Component | Form for creating/editing addresses |
 | AddressSelectorCreate | Component | Address selector with create option |
@@ -368,7 +368,7 @@
 | AdminCopilotView | View | AI Copilot admin interface |
 | DemoSeedView | View | Demo data seeding |
 | QuickActionsPanel | Component | Quick actions panel |
-| AdminSidebar, AdminTopBar | Component | Admin sidebar and top bar |
+| AdminSidebar, AdminTopBar | Component | Admin sidebar and top bar. 2026-08-19: AdminSidebar gets inline search via `useSidebarSearch` |
 | AdminFilterBar, AdminPageHeader | Component | Filter bar and page header |
 | DrawerFormFooter | Component | Form footer in drawer |
 | CategoryQuickCreateForm, BrandQuickCreateForm | Form | Quick create forms |
@@ -488,12 +488,13 @@
 | RelatedFAQs | List | Related FAQs section |
 | ContactCTA | Button | Contact CTA |
 | FAQPageContent | Page | FAQ page content |
+| FAQSearchableList | Component | 2026-08-19 — searchable FAQ list extracted from `FAQPageView` for reuse (category filter + free-text search over question/answer) |
 
 ### Tester (`appkit/src/features/tester/components/`)
 
 | Export | Type | Purpose |
 |--------|------|---------|
-| TesterHubView | View | `/user/tester` — searchable, grouped-accordion QA checklist; Yes/No per case, inline comment + screenshot |
+| TesterHubView | View | `/user/tester` — searchable (title or route) grouped-accordion QA checklist; Yes/No per case, inline comment + screenshot. Access gate is `isTester \|\| isAdminUser` (2026-08-19), so admins see the same hub as flagged testers |
 | TesterChecklistStepRow | Component | One checklist step row — Yes/No button pair + expandable note/screenshot form |
 | TesterFeedbackChart | Component | Recharts bar chart of pass/fail per group, dynamically imported (SSR disabled) — mirrors `AdminAnalyticsCharts.tsx`'s pattern |
 | AdminTesterFeedbackView | View | `/admin/tester-feedback` — Report / Main Issues / All Submissions tabs |
@@ -612,7 +613,7 @@
 | SellerStickersView | View | Sticker listings management (EMI/art-stickers session) |
 | SellerGoogleReviewsView | View | Google reviews integration |
 | PrintCenterView | View | Label/document printing |
-| SellerSidebar, SellerStatCard | Component | Dashboard navigation/stats |
+| SellerSidebar, SellerStatCard | Component | Dashboard navigation/stats. 2026-08-19: SellerSidebar gets inline search via `useSidebarSearch` |
 | CategoryInlineSelect, BrandInlineSelect | Select | Inline entity pickers |
 | SellersListView | View | Public sellers directory |
 
@@ -1289,7 +1290,7 @@
 | `/api/user/catalogue/[id]` | GET, PATCH, DELETE | Feature B — single item CRUD, ownership-checked; PATCH re-stamps `lastImageUpdateAt` only when `images` is part of the patch |
 | `/api/user/catalogue/[id]/list` | POST | Feature B — direct list; seller → own store, admin → `store-letitrip-official` (no personal store) |
 | `/api/user/catalogue/[id]/submit` | POST | Feature B — buyer "Request to sell", flips `listingStatus` to `pending_admin_approval` |
-| `/api/user/tester-checklist` | GET | Active checklist items joined with the current tester's own responses (Tester Hub hydration); 403 if `user.isTester !== true` |
+| `/api/user/tester-checklist` | GET | Active checklist items joined with the current tester's own responses (Tester Hub hydration); 403 unless `user.isTester === true` or `isAdminUser(user)` (2026-08-19) |
 | `/api/user/tester-checklist/[checklistItemId]` | PUT | Upserts `{ answer?, comment?, screenshotUrl? }` for the current tester + item (deterministic-ID upsert — the persistence mechanism behind the Tester Hub) |
 | + ~16 more | — | Become seller, reviews, events, offers, etc. |
 
@@ -1425,6 +1426,8 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 | TesterChecklistResponseDocument | testerChecklistResponses | tester/schemas/firestore.ts — one doc per (tester, case), deterministic ID `${testerId}__${checklistItemId}`; `answer: "yes"\|"no"\|null`, `comment?`, `screenshotUrl?`, `status: "new"\|"reviewed"` |
 
 **2026-08-17**: `isTester?: boolean` added to `UserDocument` (account/schemas/firestore.ts) — orthogonal to `role`, unlocks the Tester Hub + auto-approves the user's store. `isTestData?: boolean` + `testDataExpiresAt?: Date` added to `StoreDocument`, `CategoryDocument`, `ProductDocument`, `BlogPostDocument`, `EventDocument` for the tester sandbox (swept by `testerSandboxCleanup`).
+
+**2026-08-19**: `canTestAdmin?: boolean` added to `UserDocument` (auth/schemas/firestore.ts) — orthogonal to `isTester`, unlocks admin-only checklist items in the Tester Hub AND real `/admin/**` RBAC access without changing `role`; meaningless unless `isTester` is also true. Separately, real `isAdminUser(user)` accounts now bypass the `isTester` gate outright (not via this flag) in `TesterHubView`, `getUserNavGroups`, and both `/api/user/tester-checklist*` routes — an admin never needs `isTester`/`canTestAdmin` set to reach the Tester Hub. `EVENT_FIELDS.SLUG` added to `events/schemas/firestore.ts`; `getPublicEventById`/`getEventLeaderboard`/`enterEvent` (events/actions/event-actions.ts) now resolve by `findByIdOrSlug` so public event URLs can link by slug.
 
 **2026-08-18 (Tier PP)**: `OrderDocument` (orders/schemas/firestore.ts) gains — `paymentDeadline?: Date` (15-min window, `upi_manual`/`cash`/`emi` only), `displayedUpiId?: string` (server-resolved once at order creation), `buyerReportedUpiId?: string`, `paymentUpiMismatch?: boolean`, `buyerMarkedPaid?: boolean` + `buyerMarkedPaidAt?: Date`, `buyerFraudAgreementAccepted?: boolean` + `buyerFraudAgreementAcceptedAt?: Date`, `paymentReviewOutcome?: "approved"\|"reupload_requested"\|"rejected_fraud"`, `paymentReviewNote?/paymentReviewedBy?/paymentReviewedAt?`, `stockRestored?: boolean` + `stockRestoredAt?: Date`, `autoApproved?: boolean` + `autoApprovedAt?: Date`, `disputeRaised?/disputeRaisedBy?/disputeRaisedAt?/disputeReason?`, `disputeStatus?: "open"\|"resolved"`; new `cancellationReason` values `"payment_window_expired"` / `"payment_fraud_rejected"`. `OrderDocumentItem` gains `bundleCategorySlug?`/`bundleProductIds?`. `UserDocument` (auth/schemas/firestore.ts) gains `isDisabled?: boolean`, `hardBanExpiresAt?: Date | null` (null/absent = permanent), `hardBanFraudOrderId?: string`, `hardBanReinstatedAt?: Date`. `SiteSettingsDocument.payment` (admin/schemas/firestore.ts) gains `otpCheckoutThreshold?: number` (default ₹5,000). `NotificationType` union gains `"payment_review"`.
 
@@ -1575,7 +1578,7 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 | support-tickets-seed-data.ts | supportTickets | Support ticket examples |
 | product-features-seed-data.ts | productFeatures | Dynamic feature flags |
 | offers-seed-data.ts | offers | Promotion offers |
-| features/tester/seed-data/tester-checklist-seed-data.ts | testerChecklistItems | ~55 default tester QA test cases (admins add more via `/admin/tester-checklist`); deliberately isolated outside `appkit/src/seed/` |
+| features/tester/seed-data/tester-checklist-seed-data.ts | testerChecklistItems | ~72 default tester QA test cases (admins add more via `/admin/tester-checklist`); deliberately isolated outside `appkit/src/seed/`. 2026-08-19: +17 cases covering dashboard collapsible sections, mobile table/card view, seller payouts detail panel, footer dark-mode, FAQ borders/tabs-dropdown, and the Tester Hub itself |
 | features/tester/seed-data/{stores,categories,products,blog,events}-tester-seed-data.ts | stores, categories, products, blogPosts, events | Shared 7-day auto-expiring tester sandbox — 1 store, 3 plain categories + 1 brand + 1 bundle, 4 products (standard×2/auction/pre-order), 1 blog post, 1 spin-wheel+raffle event; every doc tagged `isTestData: true` + `testDataExpiresAt` (recomputed on each seed run) |
 | store-extensions-seed-data.ts | storeExtensions + 11 sub-collections | Store feature extensions |
 | shipments-seed-data.ts | procurementShipments | Feature A — sample shipments across statuses |

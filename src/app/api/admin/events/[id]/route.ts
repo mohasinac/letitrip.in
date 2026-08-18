@@ -8,11 +8,10 @@ import {
 import { z } from "zod";
 import {
   eventRepository,
+  adminGetEventById,
   createRouteHandler,
   successResponse,
   errorResponse,
-  sieveFilter,
-  SIEVE_OP,
 } from "@mohasinac/appkit";
 
 const updateEventSchema = z.object({
@@ -30,8 +29,7 @@ const __GET__g = withProviders(
     permission: "admin:events:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
-      const events = await eventRepository.list({ filters: sieveFilter(EVENT_FIELDS.ID, SIEVE_OP.EQ, id), page: "1", pageSize: "1" });
-      const event = events.items[0];
+      const event = await adminGetEventById(id);
       if (!event) return errorResponse("Event not found", 404);
       return successResponse(event);
     },

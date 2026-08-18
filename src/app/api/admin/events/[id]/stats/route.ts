@@ -1,7 +1,6 @@
 import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
-  EVENT_FIELDS,
   ROLES_ADMIN_MOD,
 } from "@/constants";
 import {
@@ -21,8 +20,7 @@ const __GET__g = withProviders(
     permission: "admin:events:read",
     handler: async ({ params }) => {
       const eventId = (params as { id: string }).id;
-      const events = await eventRepository.list({ filters: sieveFilter(EVENT_FIELDS.ID, SIEVE_OP.EQ, eventId), page: "1", pageSize: "1" });
-      const event = events.items[0];
+      const event = await eventRepository.findById(eventId);
       if (!event) return errorResponse("Event not found", 404);
 
       const [totalEntries, approvedEntries, flaggedEntries] = await Promise.all([

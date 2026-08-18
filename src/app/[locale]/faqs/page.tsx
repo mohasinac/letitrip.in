@@ -14,13 +14,13 @@ export const metadata: Metadata = _gm({
 export const revalidate = 3600;
 
 export default async function Page() {
-  const rawFaqs = await listPublicFaqs(undefined, 50).catch(() => []);
-  const faqs = rawFaqs.map((faq) => ({
+  const rawFaqs = await listPublicFaqs(undefined, 200).catch(() => []);
+  const ldFaqs = rawFaqs.map((faq) => ({
     question: faq.question,
     answer: typeof faq.answer === "string" ? faq.answer : faq.answer.text,
   }));
 
-  const ldFaq = faqs.length > 0 ? faqJsonLd(faqs) : null;
+  const ldFaq = ldFaqs.length > 0 ? faqJsonLd(ldFaqs) : null;
 
   return (
     <>
@@ -30,7 +30,7 @@ export default async function Page() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(ldFaq) }}
         />
       )}
-      <FAQPageView />
+      <FAQPageView faqs={rawFaqs} />
     </>
   );
 }

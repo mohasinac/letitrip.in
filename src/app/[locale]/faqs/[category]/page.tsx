@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { FAQPageView } from "@mohasinac/appkit";
+import { listPublicFaqs } from "@mohasinac/appkit/server";
 import { generateMetadata as _gm } from "@/constants";
 
 export const revalidate = 3600;
@@ -18,5 +19,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { category } = await params;
-  return <FAQPageView category={category} />;
+  const faqs = await listPublicFaqs(undefined, 200).catch(() => []);
+  return <FAQPageView category={category} faqs={faqs} />;
 }
