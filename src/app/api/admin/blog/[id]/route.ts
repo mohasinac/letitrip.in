@@ -12,11 +12,14 @@ import {
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
+// url/thumbnailUrl are relative /media/{shortId} proxy paths from the upload
+// pipeline (POST /api/media/finalize), not absolute URLs — z.string().url()
+// rejects those, matching the plain z.string() pattern products use.
 const mediaFieldSchema = z.object({
-  url: z.string().url(),
+  url: z.string().min(1),
   type: z.enum(["image", "video", "file"]),
   alt: z.string().optional(),
-  thumbnailUrl: z.string().url().optional(),
+  thumbnailUrl: z.string().min(1).optional(),
 });
 
 const updateBlogPostSchema = z.object({
@@ -31,6 +34,7 @@ const updateBlogPostSchema = z.object({
   coverImage: mediaFieldSchema.nullable().optional(),
   contentImages: z.array(mediaFieldSchema).max(10).optional(),
   additionalImages: z.array(mediaFieldSchema).max(5).optional(),
+  youtubeId: z.string().max(20).optional(),
   readTimeMinutes: z.number().int().min(1).optional(),
   publishedAt: z.string().optional(),
   metaTitle: z.string().optional(),

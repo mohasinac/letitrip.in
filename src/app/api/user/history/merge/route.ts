@@ -17,7 +17,7 @@ const mergeSchema = z.object({
     .array(
       z.object({
         productId: z.string().min(1),
-        productType: z.enum(["product", "auction", "preorder"]),
+        productType: z.enum(["product", "auction", "preorder", "prize-draw"]),
         viewedAt: z.string().optional(),
         productSnapshot: z
           .object({

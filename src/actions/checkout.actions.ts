@@ -15,84 +15,12 @@ import {
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
 import { z } from "zod";
 import {
-  sendCheckoutConsentOtp,
-  verifyCheckoutConsentOtp,
-  grantCheckoutConsentViaSms,
   sendCheckoutValueOtp,
   verifyCheckoutValueOtp,
 } from "@mohasinac/appkit";
-import { userRepository } from "@mohasinac/appkit";
-import { CONSENT_OTP_VERIFY_RATE_LIMIT } from "@mohasinac/appkit";
+import { CHECKOUT_VALUE_OTP_VERIFY_RATE_LIMIT } from "@mohasinac/appkit";
 
-// --- Schemas ------------------------------------------------------------------
-
-const sendSchema = z.object({
-  addressId: z.string().min(1),
-});
-
-const verifySchema = z.object({
-  addressId: z.string().min(1),
-  code: z
-    .string()
-    .length(6)
-    .regex(/^\d{6}$/, "Must be 6 digits"),
-});
-
-// --- Actions ------------------------------------------------------------------
-
-export async function sendConsentOtpAction(
-  addressId: string,
-): Promise<ActionResult<{ maskedEmail: string }>> {
-  return wrapAction(async () => {
-    const user = await requireAuthUser();
-    
-      const parsed = sendSchema.safeParse({ addressId });
-      if (!parsed.success) throw new ValidationError("Invalid input");
-    
-      const email = user.email;
-      if (!email)
-        throw new ValidationError(
-          "Account email is required to send a consent OTP.",
-        );
-    
-      return sendCheckoutConsentOtp(user.uid, email, parsed.data.addressId);
-  });
-}
-
-export async function verifyConsentOtpAction(
-  addressId: string,
-  code: string,
-): Promise<void> {
-  const user = await requireAuthUser();
-
-  const rl = await rateLimitByIdentifier(
-    `consent:otp:verify:${user.uid}`,
-    CONSENT_OTP_VERIFY_RATE_LIMIT,
-  );
-  if (!rl.success)
-    throw new AuthorizationError("Too many attempts. Please slow down.");
-
-  const parsed = verifySchema.safeParse({ addressId, code });
-  if (!parsed.success) throw new ValidationError("Invalid input");
-
-  return verifyCheckoutConsentOtp(user.uid, parsed.data.addressId, parsed.data.code);
-}
-
-export async function grantCheckoutConsentViaSmsAction(
-  addressId: string,
-): Promise<void> {
-  const user = await requireAuthUser();
-
-  const parsed = sendSchema.safeParse({ addressId });
-  if (!parsed.success) throw new ValidationError("Invalid input");
-
-  const profile = await userRepository.findById(user.uid);
-  const userPhone = profile?.phoneNumber ?? user.phoneNumber ?? undefined;
-
-  return grantCheckoutConsentViaSms(user.uid, userPhone, parsed.data.addressId);
-}
-
-// --- Tier PP: high-value checkout OTP (distinct purpose from consent OTP above) ---
+// --- Tier PP: high-value checkout OTP ---
 
 const valueOtpVerifySchema = z.object({
   code: z.string().length(6).regex(/^\d{6}$/, "Must be 6 digits"),
@@ -116,7 +44,7 @@ export async function verifyCheckoutValueOtpAction(code: string): Promise<void> 
 
   const rl = await rateLimitByIdentifier(
     `checkout:value-otp:verify:${user.uid}`,
-    CONSENT_OTP_VERIFY_RATE_LIMIT,
+    CHECKOUT_VALUE_OTP_VERIFY_RATE_LIMIT,
   );
   if (!rl.success) {
     throw new AuthorizationError("Too many attempts. Please slow down.");

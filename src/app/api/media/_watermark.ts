@@ -11,8 +11,9 @@ import { getAdminStorage, serverLogger, siteSettingsRepository, userRepository }
 import {
   resolveEffectiveWatermark,
   DEFAULT_WATERMARK_TEXT,
+  DEFAULT_MARKER_ASSET_PATH,
 } from "@/lib/watermark/resolve-effective-watermark";
-import type { WatermarkConfig } from "@/lib/watermark/resolve-effective-watermark";
+import type { WatermarkConfig, WatermarkPosition } from "@/lib/watermark/resolve-effective-watermark";
 
 export const DAY_SECONDS = 60 * 60 * 24;
 export const WEEK_SECONDS = DAY_SECONDS * 7;
@@ -103,6 +104,9 @@ export async function resolveWatermarkConfig(
     imageUrl: "",
     size: CATALOGUE_WATERMARK_SIZE_PCT,
     opacity: CATALOGUE_WATERMARK_OPACITY_PCT,
+    position: "center",
+    offsetX: 0,
+    offsetY: 0,
   };
 }
 
@@ -136,13 +140,6 @@ export function buildTextWatermarkSvg(
 }
 
 /**
- * Loads the raw bytes for an image watermark. `/media/<slug>` paths are
- * admin-uploaded overrides fetched via Storage Admin (unchanged behaviour).
- * Any other root-relative path (e.g. the bundled marker's `/logo.svg`) is a
- * static asset shipped under `public/` and is read straight off disk — no
- * Storage round-trip needed for the default brand mark.
- */
-/**
  * Retints the bundled marker SVG's `#logo-gradient` stops to match the live
  * site theme's `--appkit-gradient-logo` (0% / 55% / 100%) instead of the
  * hardcoded blue→pink baked into the file on disk. Only ever applied to the
@@ -160,6 +157,13 @@ function rethemeMarkerSvg(svg: string, stops: readonly [string, string, string])
   );
 }
 
+/**
+ * Loads the raw bytes for an image watermark. `/media/<slug>` paths are
+ * admin-uploaded overrides fetched via Storage Admin (unchanged behaviour).
+ * Any other root-relative path (e.g. the bundled marker's `/logo.svg`) is a
+ * static asset shipped under `public/` and is read straight off disk — no
+ * Storage round-trip needed for the default brand mark.
+ */
 async function loadWatermarkImageBuffer(
   imageUrl: string,
   selfStoragePath: string,
@@ -220,6 +224,40 @@ async function applyPngOpacity(buffer: Buffer, opacityPct: number): Promise<Buff
     .toBuffer();
 }
 
+type SharpGravity = "northwest" | "northeast" | "southwest" | "southeast" | "center";
+
+const GRAVITY_BY_POSITION: Record<Exclude<WatermarkPosition, "custom">, SharpGravity> = {
+  "top-left": "northwest",
+  "top-right": "northeast",
+  "bottom-left": "southwest",
+  "bottom-right": "southeast",
+  center: "center",
+};
+
+/**
+ * The 4-corner/center presets map straight to sharp's built-in `gravity`.
+ * `"custom"` instead computes explicit `top`/`left` pixel coordinates —
+ * `offsetX`/`offsetY` are a %-of-canvas nudge from the exact center,
+ * clamped so the overlay can't be pushed off-canvas.
+ */
+function resolveCompositePlacement(
+  config: Pick<WatermarkConfig, "position" | "offsetX" | "offsetY">,
+  canvasWidth: number,
+  canvasHeight: number,
+  overlayWidth: number,
+  overlayHeight: number,
+): { gravity: SharpGravity } | { top: number; left: number } {
+  if (config.position !== "custom") {
+    return { gravity: GRAVITY_BY_POSITION[config.position] };
+  }
+  const rawLeft = canvasWidth / 2 + (config.offsetX / 100) * canvasWidth - overlayWidth / 2;
+  const rawTop = canvasHeight / 2 + (config.offsetY / 100) * canvasHeight - overlayHeight / 2;
+  return {
+    left: Math.round(Math.max(0, Math.min(canvasWidth - overlayWidth, rawLeft))),
+    top: Math.round(Math.max(0, Math.min(canvasHeight - overlayHeight, rawTop))),
+  };
+}
+
 export async function applyWatermark(
   source: Buffer,
   config: WatermarkConfig,
@@ -230,6 +268,7 @@ export async function applyWatermark(
   const image = sharp(source);
   const meta = await image.metadata();
   const targetWidth = meta.width ?? 800;
+  const targetHeight = meta.height ?? 800;
 
   if (config.type === "image") {
     const wmBuffer = await loadWatermarkImageBuffer(
@@ -244,14 +283,26 @@ export async function applyWatermark(
         .png()
         .toBuffer();
       const withOpacity = await applyPngOpacity(resized, config.opacity);
-      return image.composite([{ input: withOpacity, gravity: "center", blend: "over" }]).toBuffer();
+      const overlayMeta = await sharp(withOpacity).metadata();
+      const placement = resolveCompositePlacement(
+        config,
+        targetWidth,
+        targetHeight,
+        overlayMeta.width ?? wmTargetWidth,
+        overlayMeta.height ?? wmTargetWidth,
+      );
+      return image.composite([{ input: withOpacity, blend: "over", ...placement }]).toBuffer();
     }
     // Image tier unavailable (e.g. an admin-uploaded override was deleted from
     // Storage) — degrade to the text watermark rather than skip it entirely.
     const overlay = buildTextWatermarkSvg(DEFAULT_WATERMARK_TEXT, targetWidth, config.size, config.opacity);
-    return image.composite([{ input: overlay, gravity: "center", blend: "over" }]).toBuffer();
+    const overlayMeta = await sharp(overlay).metadata();
+    const placement = resolveCompositePlacement(config, targetWidth, targetHeight, overlayMeta.width ?? 0, overlayMeta.height ?? 0);
+    return image.composite([{ input: overlay, blend: "over", ...placement }]).toBuffer();
   }
 
   const overlay = buildTextWatermarkSvg(config.text, targetWidth, config.size, config.opacity);
-  return image.composite([{ input: overlay, gravity: "center", blend: "over" }]).toBuffer();
+  const overlayMeta = await sharp(overlay).metadata();
+  const placement = resolveCompositePlacement(config, targetWidth, targetHeight, overlayMeta.width ?? 0, overlayMeta.height ?? 0);
+  return image.composite([{ input: overlay, blend: "over", ...placement }]).toBuffer();
 }

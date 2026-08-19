@@ -60,8 +60,6 @@ type OrderItemT = {
   productId: string;
   listingType?: string;
   prizeRevealStatus?: string;
-  prizeRevealDeadline?: string | number | null;
-  revealedItemNumber?: number | null;
   image?: string;
   title: string;
   attributes?: Record<string, string>;
@@ -75,12 +73,14 @@ type OrderItemT = {
 
 type OrderGroup = BundleOrderGroup<OrderItemT>;
 
-function renderItemRow(item: OrderItemT, key: string | number, onOpenReveal?: () => void) {
+function renderItemRow(
+  item: OrderItemT,
+  key: string | number,
+  onOpenReveal?: () => void,
+  prizeWonItemNumber?: number,
+) {
   const isPrizeDraw = item.listingType === "prize-draw";
   const revealStatus = item.prizeRevealStatus;
-  const revealDeadline = item.prizeRevealDeadline
-    ? new Date(item.prizeRevealDeadline as string | number)
-    : null;
   return (
     <Row key={key} gap="3" align="start">
       {item.image && (
@@ -101,31 +101,16 @@ function renderItemRow(item: OrderItemT, key: string | number, onOpenReveal?: ()
           <Row gap="sm" className="mt-1" wrap>
             {revealStatus === "revealed" ? (
               <Span layout="inline-flex" color="success" surface="success-surface" weight="semibold" className="text-[10px]" rounded="full" padding="pill-xs">
-                Prize revealed{item.revealedItemNumber != null ? ` (#${item.revealedItemNumber})` : ""}
+                Prize revealed{prizeWonItemNumber != null ? ` (#${prizeWonItemNumber})` : ""}
               </Span>
-            ) : revealStatus === "open" ? (
-              onOpenReveal ? (
-                <Button variant="primary" size="sm" onClick={onOpenReveal}>
-                  Reveal my prize
-                </Button>
-              ) : (
-                <Span className={CLS_BUNDLE_BADGE}>
-                  Reveal pending
-                </Span>
-              )
-            ) : revealStatus === "pending" ? (
-              <Span layout="inline-flex" color="warning" surface="warning-surface" weight="semibold" className="text-[10px]" rounded="full" padding="pill-xs">
-                Awaiting reveal window
-              </Span>
+            ) : onOpenReveal ? (
+              <Button variant="primary" size="sm" onClick={onOpenReveal}>
+                View my prize
+              </Button>
             ) : (
-              <Span layout="inline-flex" weight="semibold" className="text-[10px]" rounded="full" padding="pill-xs" surface="subtle" color="primary">
-                Reveal closed
+              <Span className={CLS_BUNDLE_BADGE}>
+                Reveal pending
               </Span>
-            )}
-            {revealDeadline && revealStatus !== "revealed" && (
-              <Text variant="secondary" className="text-[10px]">
-                by {revealDeadline.toLocaleDateString("en-IN", { month: "short", day: "numeric" })}
-              </Text>
             )}
           </Row>
         )}
@@ -140,13 +125,19 @@ function renderItemRow(item: OrderItemT, key: string | number, onOpenReveal?: ()
   );
 }
 
-function renderOrderGroup(g: OrderGroup, gi: number, onOpenReveal?: (productId: string) => void) {
+function renderOrderGroup(
+  g: OrderGroup,
+  gi: number,
+  onOpenReveal?: (productId: string) => void,
+  prizeWonItemNumber?: number,
+) {
   if (g.kind === "single") {
     const item = g.item;
     return renderItemRow(
       item,
       gi,
       item.listingType === "prize-draw" ? () => onOpenReveal?.(item.productId) : undefined,
+      prizeWonItemNumber,
     );
   }
   // SB-UNI-5 2026-05-13 — bundle group: header + nested member rows.
@@ -169,6 +160,7 @@ function renderOrderGroup(g: OrderGroup, gi: number, onOpenReveal?: (productId: 
             item,
             `bundle-${gi}-${index}`,
             item.listingType === "prize-draw" ? () => onOpenReveal?.(item.productId) : undefined,
+            prizeWonItemNumber,
           ),
         )}
       </Stack>
@@ -234,7 +226,9 @@ function renderOrderItems(order: NonNullable<OrderData>, onOpenReveal?: (product
           Items ({order.items.length})
         </Text>
         <Stack gap="md">
-          {groups.map((g, gi) => renderOrderGroup(g as OrderGroup, gi, onOpenReveal))}
+          {groups.map((g, gi) =>
+            renderOrderGroup(g as OrderGroup, gi, onOpenReveal, order.prizeWon?.itemNumber),
+          )}
         </Stack>
       </Div>
       {hasDigitalCode && canReveal && (
@@ -437,9 +431,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           open={!!revealProductId}
           onClose={() => setRevealProductId(null)}
           items={(revealProduct as { prizeDrawItems?: any[] } | undefined)?.prizeDrawItems ?? []}
-          orderId={order.id}
-          productId={revealProductId}
           initialPrizeWon={order.prizeWon}
+          revealMode={order.prizeRevealMode}
         />
       )}
     </>

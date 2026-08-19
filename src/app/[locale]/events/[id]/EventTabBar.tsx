@@ -30,6 +30,7 @@ export function EventTabBar({ tabs }: Props) {
             role="tab"
             aria-selected={isActive}
             scroll={false}
+            prefetch={tab.value !== EVENT_TAB.LEADERBOARD}
             className={`px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-medium whitespace-nowrap border-b-2 -mb-px transition-colors ${
  isActive
  ? "border-primary text-primary"

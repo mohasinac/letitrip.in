@@ -6,7 +6,7 @@ import {
   sortBy,
   useSession,
   useUrlTable,
-  ROUTES,
+  pluginFor,
   Div,
   Heading,
   Span,
@@ -14,6 +14,7 @@ import {
   Stack,
   Row,
 } from "@mohasinac/appkit/client";
+import type { ListingType } from "@mohasinac/appkit/client";
 import { FieldSelect, ListingToolbar } from "@mohasinac/appkit/ui";
 import { getUserReviews } from "@/lib/api/user-client";
 import { API_ROUTES } from "@/constants";
@@ -26,6 +27,7 @@ interface ReviewItem {
   id: string;
   productId: string;
   productTitle: string;
+  listingType?: ListingType;
   storeId?: string;
   storeName?: string;
   rating: number;
@@ -180,7 +182,7 @@ export default function UserReviewsPage() {
               ? new Date(review.createdAt).toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" })
               : "";
             const statusColor = STATUS_COLORS[review.status] ?? "bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text-muted)]";
-            const productHref = String(ROUTES.PUBLIC.PRODUCT_DETAIL(review.productId));
+            const productHref = pluginFor(review.listingType ?? "standard").detailRoute(review.productId);
             return (
               <Stack
                 key={review.id}

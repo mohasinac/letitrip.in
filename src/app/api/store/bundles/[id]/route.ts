@@ -8,6 +8,7 @@ import {
   serverLogger,
   bundleUpdateSchema,
 } from "@mohasinac/appkit";
+import { resolveBundleOriginalTotal } from "@mohasinac/appkit/server";
 import { ROLES_STORE_WRITE } from "@/constants";
 import { withFeatureGuard } from "@/lib/features";
 
@@ -59,7 +60,11 @@ const __PUT__g = withProviders(
       const bundle = await loadOwnedBundleOrFail(id, store.id);
       if (!bundle) return ApiErrors.notFound(MSG_BUNDLE_NOT_FOUND);
 
-      await categoriesRepository.update(id, body as never);
+      const updateBody = body?.bundleProductIds
+        ? { ...body, bundleOriginalTotal: await resolveBundleOriginalTotal(body.bundleProductIds) }
+        : body;
+
+      await categoriesRepository.update(id, updateBody as never);
       serverLogger.info("Seller bundle updated", { id, storeId: store.id, by: user?.uid });
       const updated = await categoriesRepository.findById(id);
       return successResponse(updated, "Bundle updated");

@@ -1,12 +1,11 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError, pluginFor } from "@mohasinac/appkit";
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import {
   sortBy,
   useWishlistWithGuest,
   useSession,
   InteractiveProductCard,
-  ROUTES,
   ListingLayout,
   Input,
   Select,
@@ -455,7 +454,7 @@ function renderWishlistItems({
         return (
           <InteractiveProductCard
             key={item.id}
-            href={String(ROUTES.PUBLIC.PRODUCT_DETAIL(slug))}
+            href={pluginFor(item.product?.listingType ?? "standard").detailRoute(slug)}
             isWishlisted
             onToggleWishlist={user?.uid ? handleToggleWishlist : undefined}
             // Always pass onSelect so the hover-fade checkbox is reachable;

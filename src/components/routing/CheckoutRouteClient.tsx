@@ -35,8 +35,6 @@ import { ACTIONS } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import {
-  sendConsentOtpAction,
-  verifyConsentOtpAction,
   sendCheckoutValueOtpAction,
   verifyCheckoutValueOtpAction,
 } from "@/actions/checkout.actions";
@@ -123,7 +121,7 @@ interface ServerCartResponse {
   itemCount: number;
 }
 
-type CheckoutStep = "address" | "otp-consent" | "otp" | "value-otp" | "payment" | "processing";
+type CheckoutStep = "address" | "value-otp" | "payment" | "processing";
 
 // --- Shared class strings ----------------------------------------------------
 
@@ -345,135 +343,6 @@ function renderAddressStep({
         </Div>
       )}
     />
-  );
-}
-
-function renderOtpConsentStep({
-  userEmail,
-  isSendingOtp,
-  isProcessingPayment,
-  adminBypassEnabled,
-  handleSendOtp,
-  handleAdminBypass,
-}: {
-  userEmail: string;
-  isSendingOtp: boolean;
-  isProcessingPayment: boolean;
-  adminBypassEnabled: boolean;
-  handleSendOtp: () => Promise<void>;
-  handleAdminBypass: () => Promise<void>;
-}) {
-  const maskedDisplay = userEmail
-    ? `${userEmail[0]}***@${userEmail.split("@")[1] ?? ""}`
-    : "your registered email";
-  return (
-    <Div className={STEP_CARD_CLS}>
-      <Heading level={2} className="mb-1" color="primary" size="lg" weight="semibold">
-        {CK.OTP_CONSENT_HEADING}
-      </Heading>
-      <Text className={STEP_SUBLABEL_CLS}>
-        {CK.OTP_CONSENT_SUBLABEL}
-      </Text>
-      <Text className="mb-5" color="muted" size="sm">
-        {CK.OTP_CONSENT_BODY_PREFIX}{" "}
-        <Span weight="medium" color="primary">{maskedDisplay}</Span>.
-      </Text>
-      <Stack gap="md">
-        <Button
-          type="button"
-          onClick={handleSendOtp}
-          disabled={isSendingOtp}
-          className={PRIMARY_BTN_CLS}
-        >
-          {isSendingOtp ? CK.OTP_SENDING_BTN : CK.OTP_SEND_BTN}
-        </Button>
-        {adminBypassEnabled && (
-          <Div className={`border border-warning/30 ${__P.p3}`} surface="warning-surface" rounded="lg">
-            <Text className="mb-1 text-warning tracking-wide" size="xs" weight="semibold" transform="uppercase">
-              {CK.ADMIN_BYPASS_PANEL_LABEL}
-            </Text>
-            <Text className="mb-2 text-warning" size="xs">
-              {CK.ADMIN_BYPASS_CONSENT_DESC}
-            </Text>
-            <Button
-              type="button"
-              onClick={handleAdminBypass}
-              disabled={isProcessingPayment}
-              textSize="sm" className="w-full border border-warning/40 bg-[var(--appkit-color-warning-surface)] text-warning hover:opacity-80"
-            >
-              {CK.ADMIN_BYPASS_CONSENT_BTN}
-            </Button>
-          </Div>
-        )}
-      </Stack>
-    </Div>
-  );
-}
-
-function renderOtpStep({
-  maskedEmail,
-  otpCode,
-  setOtpCode,
-  otpError,
-  isVerifyingOtp,
-  isSendingOtp,
-  handleVerifyOtp,
-  handleSendOtp,
-}: {
-  maskedEmail: string;
-  otpCode: string;
-  setOtpCode: (v: string) => void;
-  otpError: string;
-  isVerifyingOtp: boolean;
-  isSendingOtp: boolean;
-  handleVerifyOtp: () => Promise<void>;
-  handleSendOtp: () => Promise<void>;
-}) {
-  return (
-    <Div className={STEP_CARD_CLS}>
-      <Heading level={2} className="mb-1" color="primary" size="lg" weight="semibold">
-        {CK.OTP_ENTRY_HEADING}
-      </Heading>
-      <Text className={STEP_SUBLABEL_CLS}>
-        {CK.OTP_ENTRY_SUBLABEL}
-      </Text>
-      <Text className="mb-4" color="muted" size="sm">
-        {CK.OTP_ENTRY_BODY_PREFIX}{" "}
-        <Span weight="medium" color="primary">{maskedEmail}</Span>.{" "}
-        {CK.OTP_ENTRY_BODY_SUFFIX}
-      </Text>
-      <Stack gap="md">
-        <Input
-          type="text"
-          inputMode="numeric"
-          maxLength={6}
-          placeholder={CK.OTP_PLACEHOLDER}
-          value={otpCode}
-          onChange={(e) => setOtpCode(e.target.value)}
-          className="tracking-widest text-center text-[length:var(--appkit-text-xl)]"
-        />
-        {otpError && (
-          <Text className="text-error" size="sm">{otpError}</Text>
-        )}
-        <Button
-          type="button"
-          onClick={handleVerifyOtp}
-          disabled={isVerifyingOtp || otpCode.length < 6}
-          className={PRIMARY_BTN_CLS}
-        >
-          {isVerifyingOtp ? CK.OTP_VERIFYING_BTN : CK.OTP_VERIFY_BTN}
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={handleSendOtp}
-          disabled={isSendingOtp}
-          textSize="sm" className="w-full text-[var(--appkit-color-text-muted)] underline"
-        >
-          {isSendingOtp ? CK.OTP_RESENDING_BTN : CK.OTP_RESEND_BTN}
-        </Button>
-      </Stack>
-    </Div>
   );
 }
 
@@ -857,7 +726,7 @@ function renderOrderSummary({
   step,
   addressesLoading,
   actionError,
-  handleAdvanceToVerification,
+  handleAdvanceToPayment,
 }: {
   selectedAddress: Address | null;
   formattedSubtotal: string;
@@ -866,7 +735,7 @@ function renderOrderSummary({
   step: CheckoutStep;
   addressesLoading: boolean;
   actionError: string;
-  handleAdvanceToVerification: () => void;
+  handleAdvanceToPayment: () => void;
 }) {
   return (
     <Div surface="card" padding="sm">
@@ -903,7 +772,7 @@ function renderOrderSummary({
       {step === "address" && (
         <Button
           type="button"
-          onClick={handleAdvanceToVerification}
+          onClick={handleAdvanceToPayment}
           disabled={!selectedAddress || addressesLoading}
           className="mt-4 w-full bg-[var(--appkit-color-text)] text-[var(--appkit-color-bg)] hover:bg-[var(--appkit-color-text)] dark:bg-[var(--appkit-color-bg)] dark:text-[var(--appkit-color-text)]"
         >
@@ -1259,12 +1128,7 @@ export function CheckoutRouteClient({
     },
     [createAddress],
   );
-  const [maskedEmail, setMaskedEmail] = useState("");
-  const [otpCode, setOtpCode] = useState("");
-  const [otpError, setOtpError] = useState("");
   const [actionError, setActionError] = useState("");
-  const [isSendingOtp, setIsSendingOtp] = useState(false);
-  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [outOfStockPolicy, setOutOfStockPolicy] = useState<OutOfStockPolicy>("skip_items");
   const [whatsappNotifyAddon, setWhatsappNotifyAddon] = useState(false);
@@ -1330,10 +1194,10 @@ export function CheckoutRouteClient({
     [],
   );
 
-  const handleAdvanceToVerification = useCallback(() => {
+  const handleAdvanceToPayment = useCallback(() => {
     if (!selectedAddress) return;
     setActionError("");
-    setStep("otp-consent");
+    setStep("payment");
   }, [selectedAddress]);
 
   const handleApplyCoupon = useCallback(async () => {
@@ -1389,49 +1253,6 @@ export function CheckoutRouteClient({
     return () => clearTimeout(t);
   }, [user?.uid, searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleSendOtp = useCallback(async () => {
-    if (!selectedAddress) return;
-    setIsSendingOtp(true);
-    setActionError("");
-    try {
-      const result = await sendConsentOtpAction(selectedAddress.id);
-      if (!result.ok) {
-        const msg = result.error;
-        setActionError(msg);
-        showToast(msg, "error");
-        return;
-      }
-      setMaskedEmail(result.data.maskedEmail);
-      setStep("otp");
-      showToast(CK.OTP_SENT_TOAST, "success");
-    } catch (err) {
-      void normalizeError(err);
-      const msg = err instanceof Error ? err.message : "Failed to send OTP";
-      setActionError(msg);
-      showToast(msg, "error");
-    } finally {
-      setIsSendingOtp(false);
-    }
-  }, [selectedAddress, showToast]);
-
-  const handleVerifyOtp = useCallback(async () => {
-    if (!selectedAddress || !otpCode) return;
-    setIsVerifyingOtp(true);
-    setOtpError("");
-    try {
-      await verifyConsentOtpAction(selectedAddress.id, otpCode);
-      setStep("payment");
-      showToast(CK.OTP_VERIFIED_TOAST, "success");
-    } catch (err) {
-      void normalizeError(err);
-      const msg = err instanceof Error ? err.message : CK.OTP_ERROR_DEFAULT;
-      setOtpError(msg);
-      showToast(msg, "error");
-    } finally {
-      setIsVerifyingOtp(false);
-    }
-  }, [selectedAddress, otpCode, showToast]);
-
   const { handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder } = usePaymentHandlers({
     selectedAddress,
     user,
@@ -1458,12 +1279,7 @@ export function CheckoutRouteClient({
 
   // --- Render -----------------------------------------------------------------
 
-  const stepIndex =
-    step === "address"
-      ? 0
-      : step === "otp-consent" || step === "otp" || step === "value-otp"
-        ? 1
-        : 2;
+  const stepIndex = step === "address" ? 0 : 1;
 
   const fmtOpts: Intl.NumberFormatOptions = { style: "currency", currency: "INR", minimumFractionDigits: 2, maximumFractionDigits: 2 };
   const formattedSubtotal = subtotal.toLocaleString("en-IN", fmtOpts);
@@ -1477,27 +1293,7 @@ export function CheckoutRouteClient({
         label: CK.ADDRESS_CONTINUE_BTN,
         variant: "primary" as const,
         disabled: !selectedAddress || addressesLoading,
-        onClick: handleAdvanceToVerification,
-        grow: true,
-      }];
-    }
-    if (step === "otp-consent") {
-      return [{
-        id: ACTION_ID.SEND_OTP,
-        label: isSendingOtp ? CK.OTP_SENDING_BTN : CK.OTP_SEND_BTN,
-        variant: "primary" as const,
-        disabled: isSendingOtp || isProcessingPayment,
-        onClick: () => requireAuth(ACTION_ID.SEND_OTP, handleSendOtp),
-        grow: true,
-      }];
-    }
-    if (step === "otp") {
-      return [{
-        id: ACTION_ID.VERIFY_OTP,
-        label: isVerifyingOtp ? CK.OTP_VERIFYING_BTN : CK.OTP_VERIFY_BTN,
-        variant: "primary" as const,
-        disabled: isVerifyingOtp || otpCode.length < 6,
-        onClick: () => requireAuth(ACTION_ID.VERIFY_OTP, handleVerifyOtp),
+        onClick: handleAdvanceToPayment,
         grow: true,
       }];
     }
@@ -1520,7 +1316,7 @@ export function CheckoutRouteClient({
       onClick: handlePayOnline,
       grow: true,
     }];
-  }, [step, selectedAddress, addressesLoading, handleAdvanceToVerification, isSendingOtp, isProcessingPayment, handleSendOtp, isVerifyingOtp, otpCode.length, handleVerifyOtp, isVerifyingValueOtp, valueOtpCode.length, handleVerifyValueOtp, cartIsEmpty, handlePayOnline]);
+  }, [step, selectedAddress, addressesLoading, handleAdvanceToPayment, isProcessingPayment, isVerifyingValueOtp, valueOtpCode.length, handleVerifyValueOtp, cartIsEmpty, handlePayOnline]);
 
   useBottomActions(
     bottomActions.length > 0
@@ -1543,18 +1339,12 @@ export function CheckoutRouteClient({
       {renderAddressDrawer({ addAddressDrawerOpen, setAddAddressDrawerOpen, handleAddressFormSubmit, isCreatingAddress })}
       <CheckoutView
         labels={{ title: CK.TITLE }}
-        totalSteps={3}
+        totalSteps={2}
         activeStep={stepIndex}
         renderStepIndicator={(activeStep, totalSteps) => renderStepIndicator(activeStep, totalSteps)}
         renderStep={() => {
           if (step === "address") {
             return renderAddressStep({ addresses: addresses ?? [], selectedAddress, handleSelectAddress, setAddAddressDrawerOpen });
-          }
-          if (step === "otp-consent") {
-            return renderOtpConsentStep({ userEmail: user?.email ?? "", isSendingOtp, isProcessingPayment, adminBypassEnabled, handleSendOtp, handleAdminBypass });
-          }
-          if (step === "otp") {
-            return renderOtpStep({ maskedEmail, otpCode, setOtpCode, otpError, isVerifyingOtp, isSendingOtp, handleVerifyOtp, handleSendOtp });
           }
           if (step === "value-otp") {
             return renderValueOtpStep({
@@ -1575,7 +1365,7 @@ export function CheckoutRouteClient({
             </Stack>
           );
         }}
-        renderOrderSummary={() => renderOrderSummary({ selectedAddress, formattedSubtotal, formattedTotal, totalDiscount, step, addressesLoading, actionError, handleAdvanceToVerification })}
+        renderOrderSummary={() => renderOrderSummary({ selectedAddress, formattedSubtotal, formattedTotal, totalDiscount, step, addressesLoading, actionError, handleAdvanceToPayment })}
       />
     </Div>
   );

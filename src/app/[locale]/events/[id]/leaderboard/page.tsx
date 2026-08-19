@@ -4,7 +4,7 @@ import { Div, Heading, Row, Stack, Text } from "@mohasinac/appkit/ui";
 import { EVENT_LABELS, EVENT_META } from "../_constants";
 import { getEventCached, getLeaderboardCached } from "../_data";
 
-export const revalidate = 60;
+export const revalidate = 0;
 
 type RouteParams = { locale: string; id: string };
 type Props = { params: Promise<RouteParams> };

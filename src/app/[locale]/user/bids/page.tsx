@@ -1,5 +1,4 @@
 "use client";
-import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AuctionBidsTable, Div, Heading, ROUTES, Span, Stack, Text, sortBy, useSession, useUrlTable } from "@mohasinac/appkit/client";
 import { FieldSelect, ListingToolbar } from "@mohasinac/appkit/ui";
@@ -23,40 +22,35 @@ const STATUS_OPTIONS = [
   { value: "cancelled", label: "Cancelled" },
 ];
 
+interface UserBidsResponse {
+  bids: BidDocument[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
 export default function UserBidsPage() {
   const { user, loading: sessionLoading } = useSession();
   const table = useUrlTable({ defaults: { pageSize: "20", sort: "-bidDate" } });
-  const search = table.get("q") ?? "";
+  const page = table.getNumber("page", 1);
   const status = table.get("status") ?? "";
   const sort = table.get("sort") ?? "-bidDate";
 
-  const { data, isLoading } = useQuery<{ bids: BidDocument[]; total: number }>({
-    queryKey: ["user-bids"],
-    queryFn: () =>
-      getUserBids(`${API_ROUTES.USER.BIDS}?limit=100`)
+  const { data, isLoading } = useQuery<UserBidsResponse>({
+    queryKey: ["user-bids", page, status, sort],
+    queryFn: () => {
+      const qs = new URLSearchParams({ page: String(page), pageSize: "20", sort });
+      if (status) qs.set("status", status);
+      return getUserBids(`${API_ROUTES.USER.BIDS}?${qs.toString()}`)
         .then((r) => r.json())
-        .then((r) => r.data),
+        .then((r) => r.data);
+    },
     enabled: !sessionLoading && !!user,
     staleTime: 30_000,
   });
 
-  const bids = useMemo(() => {
-    const all = data?.bids ?? [];
-    const q = search.trim().toLowerCase();
-    const filtered = all
-      .filter((b: any) => (status ? b.status === status : true))
-      .filter((b: any) => (q ? (b.productId ?? "").toLowerCase().includes(q) : true));
-    return [...filtered].sort((a: any, b: any) => {
-      switch (sort) {
-        case "bidDate":     return +new Date(a.bidDate) - +new Date(b.bidDate);
-        case "-bidAmount":  return (b.bidAmount ?? 0) - (a.bidAmount ?? 0);
-        case "bidAmount":   return (a.bidAmount ?? 0) - (b.bidAmount ?? 0);
-        case "-bidDate":
-        default:            return +new Date(b.bidDate) - +new Date(a.bidDate);
-      }
-    });
-  }, [data, search, status, sort]);
-
+  const bids = data?.bids ?? [];
   const loading = sessionLoading || isLoading;
   const filterCount = status ? 1 : 0;
 
@@ -74,15 +68,12 @@ export default function UserBidsPage() {
       </Div>
 
       <ListingToolbar
-        searchValue={search}
-        searchPlaceholder="Search by auction id…"
-        onSearchChange={(v) => table.set("q", v)}
         sortValue={sort}
         sortOptions={SORT_OPTIONS}
         onSortChange={(v) => table.set("sort", v)}
         hideViewToggle
         filterCount={filterCount}
-        hasActiveState={filterCount > 0 || !!search}
+        hasActiveState={filterCount > 0}
         onResetAll={() => table.clear()}
       />
 
@@ -99,7 +90,7 @@ export default function UserBidsPage() {
       {loading ? (
         <Stack gap="md">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Stack padding="5" 
+            <Stack padding="5"
               key={i}
               className="animate-pulse border border-[var(--appkit-color-border)]" gap="3" rounded="xl"
             >
@@ -112,6 +103,9 @@ export default function UserBidsPage() {
         <AuctionBidsTable
           bids={bids}
           portal="buyer"
+          totalPages={data?.totalPages ?? 1}
+          currentPage={page}
+          onPageChange={(p) => table.setPage(p)}
           emptyLabel={
             <Span>
               You haven&apos;t placed any bids yet.{" "}

@@ -27,11 +27,14 @@ import { ROLES_ADMIN_MOD } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(COMMON_FIELDS.CREATED_AT);
 
+// url/thumbnailUrl are relative /media/{shortId} proxy paths from the upload
+// pipeline (POST /api/media/finalize), not absolute URLs — z.string().url()
+// rejects those, matching the plain z.string() pattern products use.
 const mediaFieldSchema = z.object({
-  url: z.string().url(),
+  url: z.string().min(1),
   type: z.enum(["image", "video", "file"]),
   alt: z.string().optional(),
-  thumbnailUrl: z.string().url().optional(),
+  thumbnailUrl: z.string().min(1).optional(),
 });
 
 const createBlogPostSchema = z.object({
@@ -46,6 +49,7 @@ const createBlogPostSchema = z.object({
   coverImage: mediaFieldSchema.nullable().optional(),
   contentImages: z.array(mediaFieldSchema).max(10).optional().default([]),
   additionalImages: z.array(mediaFieldSchema).max(5).optional().default([]),
+  youtubeId: z.string().max(20).optional(),
   authorId: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
   authorName: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
   authorAvatar: z.string().optional(),

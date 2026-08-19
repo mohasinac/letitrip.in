@@ -201,13 +201,6 @@ export { updateCategoryAction, deleteCategoryAction } from "./category.actions";
 // Order mutations (auth required)
 export { cancelOrderAction } from "./order.actions";
 
-// Checkout consent OTP + SMS grant (auth required)
-export {
-  sendConsentOtpAction,
-  verifyConsentOtpAction,
-  grantCheckoutConsentViaSmsAction,
-} from "./checkout.actions";
-
 // --- Read Actions (2-hop: Hook â†’ Action â†’ Repository) ------------------------
 
 // Product reads (public)

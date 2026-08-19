@@ -35,6 +35,7 @@ const TYPE_LABEL: Record<GuestHistoryItem["productType"], string> = {
   product: "Product",
   auction: "Auction",
   preorder: "Pre-order",
+  "prize-draw": "Prize draw",
 };
 
 const TAB_BTN_BASE =
@@ -68,6 +69,8 @@ function detailHref(item: GuestHistoryItem): string {
     return String(ROUTES.PUBLIC.AUCTION_DETAIL(item.productId));
   if (item.productType === "preorder")
     return String(ROUTES.PUBLIC.PRE_ORDER_DETAIL(item.productId));
+  if (item.productType === "prize-draw")
+    return String(ROUTES.PUBLIC.PRIZE_DRAW_DETAIL(item.productId));
   return String(ROUTES.PUBLIC.PRODUCT_DETAIL(item.productId));
 }
 
@@ -135,7 +138,15 @@ export default function UserHistoryPage() {
   // HISTORY_MAX (50) items, so the full set always fits in one fetch. No Firestore
   // pagination or server-side ?type= param needed. (PL6-B exception rule.)
   const filtered = useMemo(
-    () => (filter === "all" ? items : items.filter((i) => i.productType === filter)),
+    () =>
+      filter === "all"
+        ? items
+        : items.filter((i) =>
+            // "Product" tab also covers prize-draw items — no dedicated tab for them.
+            filter === "product"
+              ? i.productType === "product" || i.productType === "prize-draw"
+              : i.productType === filter,
+          ),
     [items, filter],
   );
 

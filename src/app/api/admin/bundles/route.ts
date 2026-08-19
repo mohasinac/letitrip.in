@@ -8,6 +8,7 @@ import {
   bundleCreateSchema,
   sortBy,
 } from "@mohasinac/appkit";
+import { resolveBundleOriginalTotal } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_MOD } from "@/constants";
 import { withFeatureGuard } from "@/lib/features";
 
@@ -118,6 +119,8 @@ const __POST__g = withProviders(
         return ApiErrors.badRequest(`Bundle already exists: ${id}`);
       }
 
+      const bundleOriginalTotal = await resolveBundleOriginalTotal(body.bundleProductIds);
+
       await categoriesRepository.createWithId(id, {
         name: body.name,
         slug,
@@ -127,6 +130,7 @@ const __POST__g = withProviders(
         bundlePrice: body.bundlePrice,
         bundleQueryRule: body.bundleQueryRule,
         bundleProductIds: body.bundleProductIds,
+        bundleOriginalTotal,
         bundleStockStatus: "in_stock",
         display: body.display,
         isActive: body.isActive ?? true,

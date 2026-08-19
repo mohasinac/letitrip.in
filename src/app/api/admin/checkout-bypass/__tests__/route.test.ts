@@ -9,8 +9,7 @@
  *       Guards:
  *         1. Must be admin (role check in createRouteHandler)
  *         2. siteSettings.featureFlags.adminCheckoutBypass === true → else ApiErrors.forbidden(403)
- *       Calls: grantAdminCheckoutBypass(adminUid, addressId, adminUid)
- *              createCheckoutOrderAction({ userId, userName, userEmail, addressId,
+ *       Calls: createCheckoutOrderAction({ userId, userName, userEmail, addressId,
  *                paymentMethod: "admin_bypass", adminBypass: true, adminBypassBy: adminUid, ... })
  *       Returns result of createCheckoutOrderAction.
  *
@@ -23,20 +22,14 @@ let _user: { uid: string; role: string; displayName?: string; email?: string } |
 
 const {
   mockGetSingleton,
-  mockGrantAdminCheckoutBypass,
   mockCreateCheckoutOrderAction,
 } = vi.hoisted(() => ({
   mockGetSingleton: vi.fn(),
-  mockGrantAdminCheckoutBypass: vi.fn(),
   mockCreateCheckoutOrderAction: vi.fn(),
 }));
 
 vi.mock("@/providers.config", () => ({ withProviders: (fn: unknown) => fn }));
 vi.mock("@/constants", () => ({ ROLES_ADMIN_ONLY: ["admin"] }));
-
-vi.mock("@mohasinac/appkit/server", () => ({
-  grantAdminCheckoutBypass: mockGrantAdminCheckoutBypass,
-}));
 
 vi.mock("@mohasinac/appkit", () => ({
   siteSettingsRepository: { getSingleton: mockGetSingleton },
@@ -98,7 +91,6 @@ beforeEach(() => {
   mockGetSingleton.mockResolvedValue({
     featureFlags: { adminCheckoutBypass: true },
   });
-  mockGrantAdminCheckoutBypass.mockResolvedValue(undefined);
   mockCreateCheckoutOrderAction.mockResolvedValue(orderResult);
 });
 
@@ -171,11 +163,6 @@ describe("POST /api/admin/checkout-bypass", () => {
     expect(res.status).toBe(403);
     const json = await res.clone().json() as { error: string };
     expect(json.error).toContain("not enabled");
-  });
-
-  it("calls grantAdminCheckoutBypass with (adminUid, addressId, adminUid)", async () => {
-    await POST(makeRequest("POST", { addressId: "user-addr-main" }) as never);
-    expect(mockGrantAdminCheckoutBypass).toHaveBeenCalledWith("admin-uid", "user-addr-main", "admin-uid");
   });
 
   it("calls createCheckoutOrderAction with adminBypass: true and paymentMethod: admin_bypass", async () => {

@@ -9,7 +9,6 @@ import {
   PaymentMethodValues,
   serverLogger,
 } from "@mohasinac/appkit";
-import { grantAdminCheckoutBypass } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 /**
@@ -67,9 +66,6 @@ export const POST = withProviders(
         reason,
         addressId,
       });
-
-      // Pre-verify consent so createCheckoutOrderAction's transaction passes.
-      await grantAdminCheckoutBypass(adminUid, addressId, adminUid);
 
       const result = await createCheckoutOrderAction({
         userId: adminUid,

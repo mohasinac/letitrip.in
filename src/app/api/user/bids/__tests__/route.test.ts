@@ -1,20 +1,34 @@
+/**
+ * Tests for GET /api/user/bids
+ *
+ * Business logic (rewritten to Sieve pagination — see bidRepository.list()):
+ * - page: min 1, default 1
+ * - pageSize: min 1, max 50, default 50
+ * - sort: accepts "sort" param; default "-bidDate" (newest first)
+ * - status: optional, adds a second AND'd filter clause
+ * - always scoped to the requesting user via a userId== filter
+ * - returns { bids, total, page, pageSize, totalPages, hasMore }
+ */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 let _user: { uid: string; role: string } | null = null;
 
-const { mockFindByUserPaginated } = vi.hoisted(() => ({
-  mockFindByUserPaginated: vi.fn(),
+const { mockBidList } = vi.hoisted(() => ({
+  mockBidList: vi.fn(),
 }));
 
 vi.mock("@/providers.config", () => ({ withProviders: (fn: unknown) => fn }));
+vi.mock("@/lib/features", () => ({ withFeatureGuard: (_name: string, fn: unknown) => fn }));
+vi.mock("@/constants", () => ({ ROLES_AUTHENTICATED: ["user", "seller", "admin"] }));
 
 vi.mock("@mohasinac/appkit", () => ({
-  bidRepository: { findByUserPaginated: mockFindByUserPaginated },
+  bidRepository: { list: mockBidList },
   successResponse: (data: unknown) =>
     new Response(JSON.stringify({ ok: true, data }), { status: 200 }),
   createRouteHandler: (opts: {
     auth?: boolean;
-    handler: (ctx: { user?: unknown; request: Request }) => Promise<Response>;
+    roles?: readonly string[];
+    handler: (ctx: { user?: { uid: string; role: string }; request: Request }) => Promise<Response>;
   }) => {
     return async (request: Request) => {
       if (opts.auth && !_user) {
@@ -23,6 +37,11 @@ vi.mock("@mohasinac/appkit", () => ({
       return opts.handler({ user: _user ?? undefined, request });
     };
   },
+  sieveFilter: (field: string, op: string, value: unknown) => `${field}${op}${value}`,
+  sieveAnd: (...clauses: (string | null | undefined | false)[]) => clauses.filter(Boolean).join(","),
+  sortBy: (field: string, dir: "ASC" | "DESC" = "DESC") => `${dir === "DESC" ? "-" : ""}${field}`,
+  SIEVE_OP: { EQ: "==" },
+  BID_FIELDS: { USER_ID: "userId", STATUS: "status", BID_DATE: "bidDate" },
 }));
 
 import { GET } from "../route";
@@ -33,13 +52,19 @@ function makeReq(params: Record<string, string> = {}): Request {
   return new Request(url.toString(), { method: "GET" });
 }
 
+const mockResult = {
+  items: [{ id: "bid-1", bidAmount: 5000, status: "active" }],
+  total: 1,
+  page: 1,
+  pageSize: 50,
+  totalPages: 1,
+  hasMore: false,
+};
+
 beforeEach(() => {
   vi.clearAllMocks();
   _user = { uid: "bidder-uid", role: "user" };
-  mockFindByUserPaginated.mockResolvedValue({
-    items: [{ id: "bid-1", amount: 5000, status: "active" }],
-    hasMore: false,
-  });
+  mockBidList.mockResolvedValue(mockResult);
 });
 
 describe("GET /api/user/bids", () => {
@@ -49,34 +74,63 @@ describe("GET /api/user/bids", () => {
     expect(res.status).toBe(401);
   });
 
-  it("delegates to bidRepository.findByUserPaginated with uid", async () => {
+  it("scopes the query to the requesting user's uid", async () => {
     await GET(makeReq() as never);
-    expect(mockFindByUserPaginated).toHaveBeenCalledWith("bidder-uid", expect.any(Number));
+    const call = mockBidList.mock.calls[0][0] as { filters: string };
+    expect(call.filters).toBe("userId==bidder-uid");
   });
 
-  it("pageSize capped at 25", async () => {
+  it("adds a status filter when provided", async () => {
+    await GET(makeReq({ status: "outbid" }) as never);
+    const call = mockBidList.mock.calls[0][0] as { filters: string };
+    expect(call.filters).toBe("userId==bidder-uid,status==outbid");
+  });
+
+  it("defaults to newest-first (-bidDate)", async () => {
+    await GET(makeReq() as never);
+    const call = mockBidList.mock.calls[0][0] as { sorts: string };
+    expect(call.sorts).toBe("-bidDate");
+  });
+
+  it("'sort' param overrides the default sort", async () => {
+    await GET(makeReq({ sort: "bidDate" }) as never);
+    const call = mockBidList.mock.calls[0][0] as { sorts: string };
+    expect(call.sorts).toBe("bidDate");
+  });
+
+  it("pageSize capped at 50", async () => {
     await GET(makeReq({ pageSize: "100" }) as never);
-    const call = mockFindByUserPaginated.mock.calls[0];
-    expect(call[1]).toBeLessThanOrEqual(25);
-  });
-
-  it("returns only own bids (repository scoped by uid)", async () => {
-    const res = await GET(makeReq() as never);
-    expect(res.status).toBe(200);
-    const json = await res.clone().json() as { data: { bids: unknown[]; total: number } };
-    expect(json.data.bids).toHaveLength(1);
-  });
-
-  it("includes hasMore in response", async () => {
-    mockFindByUserPaginated.mockResolvedValue({ items: [], hasMore: true });
-    const res = await GET(makeReq() as never);
-    const json = await res.clone().json() as { data: { hasMore: boolean } };
-    expect(json.data.hasMore).toBe(true);
+    const call = mockBidList.mock.calls[0][0] as { pageSize: number };
+    expect(call.pageSize).toBeLessThanOrEqual(50);
   });
 
   it("pageSize >= 1 (never below 1)", async () => {
     await GET(makeReq({ pageSize: "0" }) as never);
-    const call = mockFindByUserPaginated.mock.calls[0];
-    expect(call[1]).toBeGreaterThanOrEqual(1);
+    const call = mockBidList.mock.calls[0][0] as { pageSize: number };
+    expect(call.pageSize).toBeGreaterThanOrEqual(1);
+  });
+
+  it("page < 1 → clamped to 1", async () => {
+    await GET(makeReq({ page: "0" }) as never);
+    const call = mockBidList.mock.calls[0][0] as { page: number };
+    expect(call.page).toBe(1);
+  });
+
+  it("page param forwarded to list()", async () => {
+    await GET(makeReq({ page: "3" }) as never);
+    const call = mockBidList.mock.calls[0][0] as { page: number };
+    expect(call.page).toBe(3);
+  });
+
+  it("returns { bids, total, page, pageSize, totalPages, hasMore }", async () => {
+    const res = await GET(makeReq() as never);
+    expect(res.status).toBe(200);
+    const json = await res.clone().json() as {
+      data: { bids: unknown[]; total: number; page: number; totalPages: number; hasMore: boolean };
+    };
+    expect(json.data.bids).toHaveLength(1);
+    expect(json.data.total).toBe(1);
+    expect(json.data.page).toBe(1);
+    expect(json.data.hasMore).toBe(false);
   });
 });

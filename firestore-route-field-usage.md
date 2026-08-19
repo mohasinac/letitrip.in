@@ -58,7 +58,7 @@ Scanned 52 views/call-sites (DataListingView configs + repository call sites acr
 | `appkit/src/features/seller/components/SellerPreOrdersView.tsx` | products | listingType== | title,preOrderDeliveryDate |
 | `appkit/src/features/seller/components/SellerPrizeDrawsView.tsx` | products | listingType== | title,prizeRevealWindowEnd |
 | `appkit/src/features/seller/components/SellerStickersView.tsx` | products | listingType== | title |
-| `appkit/src/_internal/server/features/checkout/actions.ts:1222` | users | role== | — |
+| `appkit/src/_internal/server/features/checkout/actions.ts:1216` | users | role== | — |
 | `appkit/src/_internal/server/features/lottery/data.ts:31` | events | — | -startsAt |
 | `appkit/src/_internal/server/jobs/core/adminAnalytics.ts:41` | orders | createdAt>= | -createdAt |
 | `appkit/src/_internal/server/jobs/core/adminAnalytics.ts:69` | products | status== | — |

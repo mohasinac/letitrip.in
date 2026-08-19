@@ -7,6 +7,7 @@ import {
   serverLogger,
   bundleUpdateSchema,
 } from "@mohasinac/appkit";
+import { resolveBundleOriginalTotal } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 import { withFeatureGuard } from "@/lib/features";
 
@@ -53,7 +54,11 @@ const __PUT__g = withProviders(
       const bundle = await loadBundleOrFail(id);
       if (!bundle) return ApiErrors.notFound(MSG_BUNDLE_NOT_FOUND);
 
-      await categoriesRepository.update(id, body as never);
+      const updateBody = body?.bundleProductIds
+        ? { ...body, bundleOriginalTotal: await resolveBundleOriginalTotal(body.bundleProductIds) }
+        : body;
+
+      await categoriesRepository.update(id, updateBody as never);
       serverLogger.info("Admin bundle updated", { id, by: user?.uid });
       const updated = await categoriesRepository.findById(id);
       return successResponse(updated, "Bundle updated");

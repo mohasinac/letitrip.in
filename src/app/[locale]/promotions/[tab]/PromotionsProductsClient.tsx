@@ -5,11 +5,11 @@ import {
   Div,
   Stack,
   AdSlot,
-  ROUTES,
+  pluginFor,
   type AdSlotId,
 } from "@mohasinac/appkit/client";
 
-type Product = { id: string; slug?: string; [key: string]: unknown };
+type Product = { id: string; slug?: string; listingType?: string; [key: string]: unknown };
 type Props = {
   title: string;
   subtitle: string;
@@ -30,8 +30,8 @@ export function PromotionsProductsClient({ title, subtitle, products, adSlotId }
               <InteractiveProductCard
                 key={product.id}
                 product={product as never}
-                href={String(
-                  ROUTES.PUBLIC.PRODUCT_DETAIL((product as any).slug ?? product.id),
+                href={pluginFor((product.listingType as never) ?? "standard").detailRoute(
+                  product.slug ?? product.id,
                 )}
               />
             ))}

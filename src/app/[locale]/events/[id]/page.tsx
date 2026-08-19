@@ -1,16 +1,11 @@
-import Image from "next/image";
-import type { JsonValue } from "@mohasinac/appkit";
 import { notFound } from "next/navigation";
-import { Div, Heading, RichText, Stack } from "@mohasinac/appkit/ui";
+import { Heading, RichText, Stack } from "@mohasinac/appkit/ui";
+import { EventOfferCard, RelatedEventsCarousel, getRelatedEvents } from "@mohasinac/appkit";
 import { EVENT_LABELS } from "./_constants";
 import { eventIsActive } from "./_helpers";
 import { getEventCached } from "./_data";
 import { PollInlineClient } from "./PollInlineClient";
 
-
-const __O = {
-  hidden: "overflow-hidden",
-} as const;
 type Props = {
   params: Promise<{ locale: string; id: string }>;
 };
@@ -22,6 +17,12 @@ type PollConfig = {
   requireLogin?: boolean;
 };
 
+type OfferConfig = {
+  couponId: string;
+  displayCode: string;
+  bannerText?: string;
+};
+
 export default async function Page({ params }: Props) {
   const { id } = await params;
   const event = await getEventCached(id);
@@ -31,29 +32,23 @@ export default async function Page({ params }: Props) {
     typeof event.description === "string" ? event.description : "";
   const isActive = eventIsActive(event);
   const pollConfig = (event as { pollConfig?: PollConfig }).pollConfig;
-  const ev = event as unknown as Record<string, JsonValue>;
-  const images: string[] = Array.isArray(ev.images)
-    ? (ev.images as unknown[]).filter((u): u is string => typeof u === "string")
+  const offerConfig = (event as { offerConfig?: OfferConfig }).offerConfig;
+
+  const tags = Array.isArray(event.tags) ? event.tags : [];
+  const relatedEvents = tags.length > 0
+    ? await getRelatedEvents(tags, event.id).catch(() => [])
     : [];
 
   return (
     <Stack gap="lg">
       {description ? <RichText html={description} /> : null}
-      {images.length > 0 && (
-        <Div layout="grid" gap="3" className="grid-cols-2 sm:grid-cols-3">
-          {images.map((src, i) => (
-            <Div key={i} className={`aspect-video ${__O.hidden}`} rounded="xl" surface="muted" border="default">
-              <Image
-                src={src}
-                alt={`Event image ${i + 1}`}
-                width={400}
-                height={225}
-                className="h-full w-full object-cover"
-              />
-            </Div>
-          ))}
-        </Div>
-      )}
+      {event.type === "offer" && offerConfig?.displayCode ? (
+        <EventOfferCard
+          couponCode={offerConfig.displayCode}
+          offerDescription={offerConfig.bannerText}
+          title={event.title ?? "Exclusive offer"}
+        />
+      ) : null}
       {pollConfig?.options?.length ? (
         <Stack gap="3">
           <Heading
@@ -67,6 +62,17 @@ export default async function Page({ params }: Props) {
           />
         </Stack>
       ) : null}
+      {relatedEvents.length > 0 && (
+        <RelatedEventsCarousel
+          items={relatedEvents.map((e) => ({
+            id: e.id,
+            slug: e.slug,
+            title: e.title,
+            coverImage: e.coverImage ?? null,
+            coverImageUrl: e.coverImageUrl,
+          }))}
+        />
+      )}
     </Stack>
   );
 }

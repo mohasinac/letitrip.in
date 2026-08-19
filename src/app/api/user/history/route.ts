@@ -16,7 +16,7 @@ import { z } from "zod";
 
 const trackSchema = z.object({
   productId: z.string().min(1),
-  productType: z.enum(["product", "auction", "preorder"]),
+  productType: z.enum(["product", "auction", "preorder", "prize-draw"]),
   snapshot: z
     .object({
       title: z.string().optional(),

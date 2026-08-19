@@ -61,6 +61,13 @@ export function statusBadgeClass(eventStatus: string | undefined): string {
   return badgeClass(EVENT_STATUS_BADGE, eventStatus);
 }
 
+export function resolveEventCoverImage(event: Record<string, unknown>): string | undefined {
+  if (typeof event.coverImageUrl === "string" && event.coverImageUrl) return event.coverImageUrl;
+  const coverImage = event.coverImage as { url?: unknown } | null | undefined;
+  const nestedUrl = coverImage?.url;
+  return typeof nestedUrl === "string" && nestedUrl ? nestedUrl : undefined;
+}
+
 export function stripHtmlAndTrim(raw: string): string {
   return raw
     .replace(/<[^>]*>/g, " ")

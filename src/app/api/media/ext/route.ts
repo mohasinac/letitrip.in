@@ -26,6 +26,36 @@ export const dynamic = "force-dynamic";
 
 const MAX_BODY_BYTES = 10 * 1024 * 1024; // 10 MB
 
+// A single upstream fetch attempt with no retry made thumbnails flaky —
+// picsum.photos (and other 3rd-party hosts) occasionally hiccup (slow
+// response, transient 5xx, momentary DNS blip), and every concurrent gallery
+// thumbnail hits a distinct seeded URL with no shared cache to fall back on.
+// One retry with a short backoff absorbs that transient class of failure.
+// Budget: 2 attempts x 4s + 1 backoff stay comfortably under the Vercel
+// Hobby 10s sync-function ceiling (Rule #6).
+const FETCH_TIMEOUT_MS = 4000;
+const RETRY_BACKOFF_MS = 300;
+const MAX_ATTEMPTS = 2;
+
+async function fetchUpstreamWithRetry(rawUrl: string): Promise<globalThis.Response> {
+  let lastErr: unknown;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const res = await fetch(rawUrl, {
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+        headers: { "User-Agent": "letitrip-media-proxy/1.0" },
+      });
+      if (res.ok || attempt === MAX_ATTEMPTS) return res;
+      lastErr = new Error(`Upstream returned ${res.status}`);
+    } catch (err) {
+      lastErr = err;
+      if (attempt === MAX_ATTEMPTS) throw err;
+    }
+    await new Promise((r) => setTimeout(r, RETRY_BACKOFF_MS));
+  }
+  throw lastErr;
+}
+
 // RFC-1918 + loopback + GCP metadata SSRF guard
 const BLOCKED_HOSTNAMES = new Set([
   "localhost",
@@ -96,10 +126,7 @@ export async function GET(request: NextRequest): Promise<Response> {
 
   let fetchRes: globalThis.Response;
   try {
-    fetchRes = await fetch(rawUrl, {
-      signal: AbortSignal.timeout(8000),
-      headers: { "User-Agent": "letitrip-media-proxy/1.0" },
-    });
+    fetchRes = await fetchUpstreamWithRetry(rawUrl);
   } catch (err) {
     void normalizeError(err);
     serverLogger.warn("media-ext: fetch failed", {

@@ -233,7 +233,7 @@
 | ViewToggle.tsx | ViewToggle | Component | Grid/list view toggle |
 | ResponsiveView.tsx | ResponsiveView | Component | Responsive breakpoint-aware container |
 | ImageGallery.tsx | ImageGallery | Component | Image gallery with lightbox |
-| ImageLightbox.tsx | ImageLightbox | Component | Fullscreen image viewer |
+| ImageLightbox.tsx | ImageLightbox | Component | Fullscreen image/video viewer — `LightboxImage.kind?: "image" \| "video"` (+ `poster?`) renders a native `<video controls>` slide, zoom/rotate transform still applies |
 | BackgroundRenderer.tsx | BackgroundRenderer | Component | Background image/video/gradient renderer |
 | DashboardStatsCard.tsx | DashboardStatsCard | Component | Dashboard metric card |
 | StatsGrid.tsx | StatsGrid | Component | Grid of stat cards |
@@ -327,7 +327,7 @@
 | AdminBlogEditorView | View | Blog post editor |
 | AdminFaqsView | View | FAQs management |
 | AdminFaqEditorView | View | FAQ editor |
-| AdminTesterChecklistView | View | Tester QA checklist catalog management (mirrors FAQs) |
+| AdminTesterChecklistView | View | Tester QA checklist catalog management (mirrors FAQs). Defaults the Status filter to Active (bug-confirmed/reopened-away cases stay hidden unless explicitly filtered); "Reopen as New Test Case" row action on bug-confirmed rows (2026-08-19) |
 | AdminTesterChecklistItemEditorView | View | Tester checklist test-case create/edit form |
 | AdminEventsView | View | Events management |
 | AdminEventEditorView | View | Event editor |
@@ -410,7 +410,7 @@
 | BlogFilters | Filter | Blog filtering |
 | BlogFeaturedCard | Card | Featured blog post card |
 | BlogPostForm | Form | Blog post editor form |
-| BlogPostView | View | Single blog post view |
+| BlogPostView | View | Single blog post view — renders 3 related-posts sections (same category, tag overlap, same author) via `useBlogPost()`'s `related`/`relatedByTags`/`relatedByAuthor` (2026-08-19) |
 
 ### Cart & Checkout (`appkit/src/features/cart/components/`)
 
@@ -430,7 +430,7 @@
 
 | Export | Type | Purpose |
 |--------|------|---------|
-| CategoryCard, CategoryGrid | Grid | Category grid display |
+| CategoryCard, CategoryGrid | Grid | Category grid display — `CategoryCard`'s item count now reads the (2026-08-19-backfilled) `metrics.productCount` field correctly; both are reused by `CategoryDetailPageView`/`BrandDetailPageView`'s new "Related Categories"/"Related Brands" sections (root-sibling / other-active-brand lookups) |
 | CategoryTree | Tree | Hierarchical category tree |
 | BreadcrumbTrail | Navigation | Category breadcrumbs |
 | CategoryFilters, CategorySortSelect | Filter | Category filtering |
@@ -442,10 +442,11 @@
 | CategoriesIndexListing | Listing | Categories index/search |
 | ConcernCard, ConcernGrid | Component | Concern category display |
 | BundleBuyNowCta | Button | Bundle direct checkout CTA |
+| BundleDetailView | View | Public bundle detail page — contents collage + numbered list, discount badge (`computeBundleDiscount`) when `bundleOriginalTotal` is set |
 | BundleDynamicRuleEditor | Form | Bundle dynamic rule editor |
 | BundleCollage | Display | Bundle products collage |
 | BundleItemsPicker | Picker | Multi-select bundle items picker |
-| CategoryBundlesListing | Listing | Bundles in category |
+| CategoryBundlesListing | Listing | Bundles in category (cards via `MarketplaceBundleCard`, discount-aware) |
 | CategoryStoresListing | Listing | Stores in category |
 
 ### Events (`appkit/src/features/events/components/`)
@@ -463,6 +464,7 @@
 | EventFormDrawer | Drawer | Event form drawer |
 | EventBanner | Banner | Event banner |
 | EventPollWidget | Widget | Event poll widget |
+| RelatedEventsCarousel | Carousel | Related-events carousel — other active events sharing ≥1 tag with the current one (`getRelatedEvents()` server action); used on `/events/[id]`'s Overview tab (2026-08-19) |
 | EventRafflesSection | Section | Raffles section in event |
 | EventRaffleWinnerView | View | Raffle winner announcement |
 | SpinWheelView | View | Spin wheel game |
@@ -503,8 +505,9 @@
 | AdminTesterFeedbackView | View | `/admin/tester-feedback` — Report / Main Issues / All Submissions tabs |
 | AdminTesterFeedbackReportView | View | Report tab — stat row + `TesterFeedbackChart` |
 | AdminTesterFeedbackIssuesView | View | Main Issues tab — every `answer:"no"` response with comment/screenshot |
-| AdminTesterFeedbackListView | View | All Submissions tab — `DataListingView` + Mark Reviewed row action |
+| AdminTesterFeedbackListView | View | All Submissions tab — `DataListingView` + Mark Reviewed + Mark as Bug row actions |
 | AdminTesterFeedbackView "Download Report" button | Button | `ACTIONS.ADMIN["export-tester-feedback"]` — downloads the Markdown report via `GET /api/admin/tester-feedback/export` (2026-08-17) |
+| BugHunterLeaderboardView | Component | Public — render-prop leaderboard listing testers ranked by confirmed-bug count (2026-08-19), mirrors `EventLeaderboard`'s shape. Mounted at `/bug-hunters` |
 
 ### Homepage (`appkit/src/features/homepage/components/`)
 
@@ -552,11 +555,11 @@
 | ProductForm | Form | Product editor form |
 | ProductInfo | Component | Product information display |
 | ProductTabs, ProductTabsShell | Tabs | Product detail tabs |
-| ProductGalleryClient | Gallery | Product image gallery |
+| ProductGalleryClient | Gallery | Product image + video gallery — `video?: ProductGalleryVideo` renders a trailing slide (poster + play badge), opens in `ImageLightbox` theater mode with a native `<video controls>` (zoom/rotate still apply) |
 | BidHistory | Component | Auction bid history |
 | PlaceBidForm | Form | Place bid form |
 | MakeOfferForm, MakeOfferButton | Component | Make offer components |
-| RelatedProducts, RelatedProductsCarousel | Component | Related products |
+| RelatedProducts, RelatedProductsCarousel | Component | Related products — `ProductDetailPageView` now renders up to 4 carousels (same category — fixed off the deprecated `category` field 2026-08-19, same brand, tag overlap, same store) via `RelatedProductsCarousel`, each independently fetched |
 | CustomFieldsEditor, CustomSectionsEditor, CustomSectionTabContent | Editor | Custom fields/sections |
 | NonRefundableConsentModal | Modal | Non-refundable product consent |
 | PrizeDrawItemsEditor | Editor | Prize draw items editor |
@@ -669,7 +672,7 @@
 | wishlist | WishlistCard, WishlistPage, WishlistView | View | Wishlist page |
 | wishlist | WishlistToggleButton | Button | Add to wishlist button |
 | wishlist | WishlistCapWatcher | Watcher | Wishlist capacity monitor |
-| scams | ScamRegistryView, ScamProfileView | View | Scam registry |
+| scams | ScamRegistryView, ScamProfileView | View | Scam registry — `ScamProfileView` now takes `similarScamReports?` (other verified profiles sharing scamType, distinct from the pre-existing explicit `relatedScammerIds`-based "Related Profiles"); `getScammerProfilePageData()` returns both (2026-08-19) |
 | scams | ScamAwarenessModal | Modal | Scam awareness warning |
 | scams | SellerTrustBadge | Badge | Verified-scammer lookup badge on store pages (P-12); reads `getSellerTrustStatus()`; named to avoid colliding with the unrelated homepage `TrustBadge` type |
 | contact | ContactForm, ContactInfoSidebar, ContactPageView | Component | Contact page |
@@ -694,6 +697,11 @@
 | blog | getBlogPostById | cache(id) | Fetch blog post by ID |
 | brands | getBrandForDetail | cache(slugOrId) | Fetch brand details |
 | brands | getBrandCategoryForDetail | cache(slugOrId) | Fetch brand category |
+| bundles | getBundleForDetail | cache(slug) | Fetch bundle (categoryType:"bundle" row) by slug |
+| bundles | listBundleMembers | cache(bundle) | Resolve bundle's member `ProductDocument[]` — falls back to `bundleQueryRule.productIds` when `bundleProductIds` mirror is empty |
+| bundles | resolveBundleMemberIds | sync(bundle) | Pure id-resolution helper backing `listBundleMembers` |
+| bundles | resolveBundleOriginalTotal | async(productIds[]) | Sum member product prices for the discount "before" total; `undefined` if any member fails to resolve |
+| bundles | listFeaturedBundles | cache(limit?) | Active bundles for homepage placement |
 | cart | getCartForUser | cache(userId) | Fetch user's cart |
 | events | getEventForDetail | cache(slugOrId) | Fetch event details |
 | history | getHistoryForUser | cache(userId) | Fetch user view history |
@@ -721,6 +729,7 @@
 | auctions | assertAuctionActive, assertBidAmount, assertNotAuctionOwner, computeMinBid, shouldAutoExtend | Auction business logic |
 | blog | assertBlogPostExists, computeReadTime | Blog validation |
 | brands | assertBrandExists, assertBrandSlugUnique | Brand validation |
+| bundles | computeBundleDiscount | Pure `(bundlePrice, bundleOriginalTotal) → { originalTotal, savings, percent } \| null` — null when there's no real discount (missing total, or bundle priced at/above the member sum) |
 | cart | assertCartCapacity, upsertCartItem, mergeGuestItems | Cart business logic |
 | events | assertEventActive, isEventAcceptingRegistrations | Event validation |
 | orders | assertOrderOwnership, assertOrderCancellable | Order validation |
@@ -920,8 +929,8 @@
 | ShipmentItemsRepository | shipmentItems | listByLot, createItem, bulkCreate, updateItem, unlink, hasLinkedItemsInLot | Feature A per-item CRUD; `bulkCreate` writes ≤500 rows in one Firestore WriteBatch |
 | CatalogueRepository | catalogueItems | listByOwner, listPublicByOwner, listPendingApproval (Sieve), listStale | Feature B personal-catalogue CRUD; `update` auto-stamps `lastImageUpdateAt` whenever `images` changes |
 | JobsRepository (`jobsRepository`) | jobs | markProcessing, markDone, markFailed, getStaleFinishedRefs | Async job primitive (2026-08-15) — pure auto-ID docs, `getStaleFinishedRefs(ttlDays=30)` feeds the `cleanupRtdbEvents` TTL sweep |
-| TesterChecklistItemRepository (`testerChecklistItemRepository`) | testerChecklistItems | createItem, update, listActive, list (Sieve) | Tester QA program (2026-08-17) — admin-managed test-case catalog, mirrors FAQs |
-| TesterChecklistResponseRepository (`testerChecklistResponseRepository`) | testerChecklistResponses | upsertResponse, listForTester, list (Sieve), markReviewed, getCoverageReport, getMarkdownReport | Tester QA program — one doc per (tester, case), deterministic ID `${testerId}__${checklistItemId}`; `getCoverageReport()` powers the admin Report + Main Issues tabs; `getMarkdownReport(siteOrigin)` (2026-08-17) dumps every answered case as Markdown — Issues ("No") + Notes on passing cases ("Yes" with a comment), grouped by feature area, for a human or a future Claude session to read directly and go fix |
+| TesterChecklistItemRepository (`testerChecklistItemRepository`) | testerChecklistItems | createItem, update, listActive, list (Sieve), confirmBug, reopenAsNewVersion, getBugHunterLeaderboard | Tester QA program (2026-08-17) — admin-managed test-case catalog, mirrors FAQs. Bug-hunter rewards (2026-08-19): `confirmBug(id, hunterId, hunterName)` credits the reporting tester and sets `isActive:false`; `reopenAsNewVersion(oldId)` clones a disabled, bug-confirmed item into a new active `version+1` doc (id `{old.id}-v{n}`) for retest, leaving the old doc disabled with its credit intact; `getBugHunterLeaderboard(limit)` single-query in-memory aggregation of `bugConfirmed==true` docs by `bugHunterId`, mirrors `EventEntryRepository.getLeaderboard()` |
+| TesterChecklistResponseRepository (`testerChecklistResponseRepository`) | testerChecklistResponses | upsertResponse, listForTester, list (Sieve), markReviewed, getCoverageReport, getMarkdownReport | Tester QA program — one doc per (tester, case), deterministic ID `${testerId}__${checklistItemId}`; `getCoverageReport()` powers the admin Report + Main Issues tabs (2026-08-19: `issues[]` now also carries `bugConfirmed`/`bugHunterId`/`bugHunterName`/`supersededByItemId` denormalized from the catalog item); `getMarkdownReport(siteOrigin)` (2026-08-17) dumps every answered case as Markdown — Issues ("No") + Notes on passing cases ("Yes" with a comment), grouped by feature area, for a human or a future Claude session to read directly and go fix |
 
 ---
 
@@ -1187,9 +1196,11 @@
 | `/api/admin/faqs/[id]` | GET, PUT, PATCH, DELETE | FAQ CRUD — 2026-08-19: schema fixed to accept `tags`/`order`/`priority`/`isPinned`/`showOnHomepage`/`showInFooter` (was silently dropping all 6); `answer`/`slug` now correctly transformed to `{text,format}`/`"seo.slug"` on update to match create (previously wrote wrong shapes) |
 | `/api/admin/tester-checklist-items` | GET, POST | List/create tester QA checklist test cases |
 | `/api/admin/tester-checklist-items/[id]` | GET, PUT, PATCH, DELETE | Tester checklist item CRUD |
+| `/api/admin/tester-checklist-items/[id]/reopen` | POST | Bug-hunter rewards (2026-08-19) — `ROLES_ADMIN_ONLY`. Reopens a bug-confirmed, disabled case as a new active `version+1` item for retest via `testerChecklistItemRepository.reopenAsNewVersion()`; 400 if not bug-confirmed, 409 if already reopened |
 | `/api/admin/tester-feedback` | GET | Flat filterable list of every tester's checklist responses (All Submissions tab) |
 | `/api/admin/tester-feedback/[id]` | PATCH | Mark a tester response reviewed |
-| `/api/admin/tester-feedback/report` | GET | Coverage report — per-item yes/no counts + flat "no"-answer issues list (Report + Main Issues tabs) |
+| `/api/admin/tester-feedback/[id]/confirm-bug` | POST | Bug-hunter rewards (2026-08-19) — `ROLES_ADMIN_ONLY`. Confirms a "No" response as a real bug via `testerChecklistItemRepository.confirmBug()`: credits the reporting tester as `bugHunterId`/`bugHunterName` on the checklist item and sets `isActive:false` (disabling the case for all other testers); also marks the response reviewed. 400 if the response isn't a "No", 409 if the item is already bug-confirmed |
+| `/api/admin/tester-feedback/report` | GET | Coverage report — per-item yes/no counts + flat "no"-answer issues list (Report + Main Issues tabs); issues now also carry `bugConfirmed`/`bugHunterId`/`bugHunterName`/`supersededByItemId` (2026-08-19) |
 | `/api/admin/tester-feedback/export` | GET | Downloads every answered checklist response as a Markdown file (`Content-Disposition: attachment`), grouped by feature area, joined against the checklist catalog for readable labels — `TesterChecklistResponseRepository.getMarkdownReport()`, same output as `npm run tester:export-feedback` (2026-08-17) |
 | `/api/admin/coupons` | GET, POST | List/create coupons |
 | `/api/admin/coupons/[id]` | GET, PATCH, DELETE | Coupon CRUD — 2026-08-19: PATCH previously never called `couponsRepository.update()` at all (only activate/deactivate worked); every other edit (name/description/discount/usage/restrictions/validity dates) silently no-op'd while returning a 200 that echoed the submission as if saved. Now persists correctly, with `validity`/`restrictions` merged (not replaced wholesale) against the existing document |
@@ -1432,7 +1443,8 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 | ScammerDocument | scammers | scams/schemas/firestore.ts |
 | SupportTicketDocument | supportTickets | support/schemas/firestore.ts |
 | JobDocument | jobs | jobs/schemas/firestore.ts — async job primitive (2026-08-15); `jobType`/`status`/`payload`/`result`/`error` |
-| TesterChecklistItemDocument | testerChecklistItems | tester/schemas/firestore.ts — admin-managed QA test-case catalog (2026-08-17); `groupKey`/`pageKey`/`label`/`href`/`order`/`isActive`/`searchTokens`/`adminOnly?: boolean` (2026-08-19 — gates admin-area cases to `canTestAdmin` testers/admins) |
+| TesterChecklistItemDocument | testerChecklistItems | tester/schemas/firestore.ts — admin-managed QA test-case catalog (2026-08-17); `groupKey`/`pageKey`/`label`/`href`/`order`/`isActive`/`searchTokens`/`adminOnly?: boolean` (2026-08-19 — gates admin-area cases to `canTestAdmin` testers/admins). Bug-hunter rewards (2026-08-19): `bugConfirmed?/bugHunterId?/bugHunterName?/bugConfirmedAt?` (set once by `confirmBug()`, permanent — never touched by reopen) + `version?/previousVersionId?/supersededByItemId?` (retest lifecycle via `reopenAsNewVersion()`) |
+| BugHunterLeaderboardEntry | — | tester/schemas/firestore.ts — `{rank, hunterId, hunterName, bugCount}`, returned by `getBugHunterLeaderboard()` (2026-08-19) |
 | TesterChecklistResponseDocument | testerChecklistResponses | tester/schemas/firestore.ts — one doc per (tester, case), deterministic ID `${testerId}__${checklistItemId}`; `answer: "yes"\|"no"\|null`, `comment?`, `screenshotUrl?`, `status: "new"\|"reviewed"` |
 
 **2026-08-17**: `isTester?: boolean` added to `UserDocument` (account/schemas/firestore.ts) — orthogonal to `role`, unlocks the Tester Hub + auto-approves the user's store. `isTestData?: boolean` + `testDataExpiresAt?: Date` added to `StoreDocument`, `CategoryDocument`, `ProductDocument`, `BlogPostDocument`, `EventDocument` for the tester sandbox (swept by `testerSandboxCleanup`).
@@ -1440,6 +1452,8 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 **2026-08-19**: `canTestAdmin?: boolean` added to `UserDocument` (auth/schemas/firestore.ts) — orthogonal to `isTester`, unlocks admin-only checklist items in the Tester Hub AND real `/admin/**` RBAC access without changing `role`; meaningless unless `isTester` is also true. Separately, real `isAdminUser(user)` accounts now bypass the `isTester` gate outright (not via this flag) in `TesterHubView`, `getUserNavGroups`, and both `/api/user/tester-checklist*` routes — an admin never needs `isTester`/`canTestAdmin` set to reach the Tester Hub. `EVENT_FIELDS.SLUG` added to `events/schemas/firestore.ts`; `getPublicEventById`/`getEventLeaderboard`/`enterEvent` (events/actions/event-actions.ts) now resolve by `findByIdOrSlug` so public event URLs can link by slug.
 
 **2026-08-19 (follow-up — RBAC mechanism for `canTestAdmin`)**: `isEffectiveAdminUser(input)` added to `features/auth/role-predicates.ts`, exported from both `index.ts` and `client.ts` alongside `isAdminUser`/`isSellerUser`/etc. — `isAdminUser(input) || Boolean(input?.isTester && input?.canTestAdmin)`. This is the actual bypass used at the two RBAC chokepoints: `next/api/routeHandler.ts` (`createRouteHandler`) — when the plain JWT-role check fails and `"admin"` is in `effectiveRoles`, one live `userRepository.findById(uid)` lookup resolves `isTester`/`canTestAdmin` (never present in session-cookie claims — only `role` is) and, on success, merges them onto the in-memory `RouteUser` before calling the handler; the `options.permission` bypass (`!isAdminUser(user)`) was changed to `!isEffectiveAdminUser(user)` using the same enriched user — and `_internal/server/features/auth/permissions.ts` (`makeAdminSectionLayout`) — `if (user.role === "admin")` became `if (isEffectiveAdminUser(user))`, and `GetUser`'s return shape widened to include `isTester?`/`canTestAdmin?`. `src/lib/firebase/auth-server.ts`'s `getServerSessionUser()` (the RSC `SessionUser` builder every `makeAdminSectionLayout` call uses as `getUser`) now returns `isTester`/`canTestAdmin` — previously omitted even though it already did a live Firestore read. Bug fixed alongside: `src/app/api/user/tester-checklist/route.ts` (GET) and `.../[checklistItemId]/route.ts` (PUT) previously read `user!.isTester` off the JWT-derived `RouteUser`, which is never populated (only `role` is baked into session-cookie claims) — real testers were silently 403ing. Both routes now do their own live `userRepository.findById(user!.uid)` lookup and filter out `adminOnly: true` checklist items unless `isEffectiveAdminUser(profile)`. New seed exports from `features/tester/seed-data/` (all re-exported via `seed/index.ts` and merged in `appkit/scripts/seed-cli.mjs`): `couponsTesterSeedData` (3 disposable coupons — perUserLimit:1, pre-expired, seller-scope), `bidsTesterSeedData` (1 winning bid on a dedicated already-ended `auction-tester-sandbox-won`, kept separate from the still-biddable `auction-tester-sandbox-1`), `ordersTesterSeedData` (14 orders — one per `OrderStatus` value plus auction-win/bundle/prize-draw-win/prize-draw-lose order types, plus a 5-item "order-tester-sandbox-multi-item" fixture added 2026-08-19 to exercise the My Orders / dashboard Recent Orders item-summary + "+N more" badge UI). `products-prize-draws-seed-data.ts` / `products-classifieds-seed-data.ts` / `products-digital-codes-seed-data.ts` (`appkit/src/seed/`) — previously empty stubs never wired into `seed-cli.mjs`'s write path — now each hold one real Beyblade-themed listing and are merged into `SEED_DATA_MAP.products` in `seed-cli.mjs` (`products-live-items-seed-data.ts` deliberately stays empty — `listingType:"live"` is animal/plant-specific, inapplicable to this catalog). `orders-seed-data.ts`'s `statuses` rotation gained `"confirmed"`/`"returned"` (previously only 7 of 9 `OrderStatus` values were ever seeded). Admin UI: `AdminUserEditorView` gained a "Can Test Admin Areas" toggle under "Is Tester" (hidden unless Is Tester is on); the checklist item editor (`AdminTesterChecklistItemEditorView`) gained an "Admin-only" toggle; `src/app/api/admin/tester-checklist-items/route.ts` + `[id]/route.ts` Zod schemas gained `adminOnly`. Navigation: `getUserNavGroups` (`src/constants/navigation.tsx`) gained a 4th `canTestAdmin` param — when true, injects an "Admin Dashboard (Testing)" link into the Help nav group alongside the existing `isTester`-gated "Tester Hub" link.
+
+**2026-08-19 (bug-hunter rewards + public leaderboard)**: Admin can now confirm a tester-reported "No" answer as a real bug from the existing `/admin/tester-feedback` → Main Issues tab (`AdminTesterFeedbackIssuesView`) or the All Submissions tab (`AdminTesterFeedbackListView`) — `POST /api/admin/tester-feedback/[id]/confirm-bug` credits the reporting tester (`bugHunterId`/`bugHunterName` on the checklist item) and disables the case (`isActive:false`) for every other tester. Once the underlying bug is fixed, `POST /api/admin/tester-checklist-items/[id]/reopen` (row action on `AdminTesterChecklistView`, also surfaced next to the confirmed badge in the Issues tab) clones the disabled item into a new active `version+1` doc for retest — the old doc stays disabled forever with its credit intact, so `getBugHunterLeaderboard()`'s tally never changes retroactively. `AdminTesterChecklistView`'s Status filter now defaults to "Active" (via a new `filterDefaults` option on `useAdminListing`/`AdminListingConfig`, `appkit/src/features/admin/hooks/useAdminListing.ts`) so bug-confirmed/reopened-away cases don't clutter the catalog by default; a new "Bug status" filter chip surfaces them on demand. New public route `ROUTES.PUBLIC.BUG_HUNTERS = "/bug-hunters"` (`src/app/[locale]/bug-hunters/page.tsx`, footer-linked under "Support") renders `BugHunterLeaderboardView` fed by the new server action `getBugHunterLeaderboard(limit?)` (`appkit/src/features/tester/actions/leaderboard-actions.ts`). New action-registry entries `ACTIONS.ADMIN["confirm-bug"]` / `ACTIONS.ADMIN["reopen-checklist-item"]` and endpoints `ADMIN_ENDPOINTS.TESTER_FEEDBACK_CONFIRM_BUG(id)` / `TESTER_CHECKLIST_ITEM_REOPEN(id)`. **Seed-data follow-up (same day)**: `tester-checklist-seed-data.ts` gained a new "Bug Hunter Rewards" page under the `admin` group (`confirm-bug`, `confirm-bug-idempotent`, `reopen-case`, `catalog-default-active-filter` — all `adminOnly:true`) and a new "Bug Hunters Leaderboard" page under `public-pages` (`leaderboard-loads`, `leaderboard-empty-state`, `leaderboard-footer-link`), plus a standalone demo fixture pair added directly to `rawTesterChecklistItems` (outside `group()`, since `bugConfirmed`/`bugHunterId`/`version`/`previousVersionId`/`supersededByItemId` aren't part of `CaseInput`): `checklist-admin-bug-hunter-rewards-demo-fixture` (v1, disabled, `bugConfirmed:true`, credited to seeded tester `user-tester-qa` / "Mock User 18") and `checklist-admin-bug-hunter-rewards-demo-fixture-v2` (v2, active, `previousVersionId` pointing back to v1) — so a fresh reseed shows a working example of the confirm→disable→reopen lifecycle and a non-empty `/bug-hunters` leaderboard without needing a live tester to exercise the flow first. Catalog total: 345 → 354 items. Reseeded via `npx appkit-seed load --collections testerChecklistItems` (354/354 confirmed via `status`).
 
 **2026-08-19 (user dashboard public-profile access + order-row summary)**: Three new "View public profile" entry points, all linking to `ROUTES.PUBLIC.PROFILE(uid)`: the `/user` dashboard header (next to "View / edit profile →"), a "My Public Profile" tile prepended to the dashboard's quick-links `NAV_LINKS` grid, and a "View Public Profile" link on `/user/profile` (`ProfilePageClient.tsx`, next to "Manage Addresses"). Order rows (`appkit/src/features/orders/components/OrdersList.tsx`'s `OrderCard` — already showed item thumbnails/title/qty + a "+N more" badge, order id was already de-emphasized) gained an explicit "View Details" CTA via a new `ACTIONS.USER["view-order"]` entry (`action-registry.ts`, label "View Details", `kind: "ghost"`) — wired into both `/user/orders`' `renderActions` and the dashboard's Recent Orders widget, which previously passed neither `onOrderClick` nor `renderActions` (rows were non-interactive there). **Bug found + fixed while testing this**: `couponsTesterSeedData`/`bidsTesterSeedData`/`ordersTesterSeedData` (Tester QA sandbox fixtures, `features/tester/seed-data/`) were re-exported from `seed/index.ts` but never from the top-level `appkit/src/index.ts` barrel — unlike their siblings `storesTesterSeedData`/`categoriesTesterSeedData`/`productsTesterSeedData`/`blogTesterSeedData`/`eventsTesterSeedData`, which were. Since `seed-cli.mjs` destructures all seed data from one `import("@mohasinac/appkit")`, this meant the tester-sandbox orders/bids/coupons fixtures had silently never been written to Firestore on any prior `load` (`ordersTesterSeedData` always resolved `undefined` → `[]` in `orders: [...ordersSeedData, ...ordersTesterSeedData]`). Fixed by adding the 3 missing `export { X } from "./seed/index"` lines to `index.ts`. Confirmed via `npx appkit-seed status`: before the fix, `orders` reported seed=50 (only the main catalog); after, seed=64 (50 + all 14 tester fixtures), matching `db` post-reseed. New tester checklist cases (`tester-checklist-seed-data.ts`): `own-public-profile-quick-links` (account-auth → profile-settings) and a new `my-orders` page (buying group) with `orders-item-summary`, `orders-view-details-button`, `dashboard-recent-orders-linked`.
 
@@ -1595,7 +1609,7 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 | support-tickets-seed-data.ts | supportTickets | Support ticket examples |
 | product-features-seed-data.ts | productFeatures | Dynamic feature flags |
 | offers-seed-data.ts | offers | Promotion offers |
-| features/tester/seed-data/tester-checklist-seed-data.ts | testerChecklistItems | ~308 default tester QA test cases (admins add more via `/admin/tester-checklist`); deliberately isolated outside `appkit/src/seed/`. 2026-08-19: expanded from ~55 to ~308 across two passes — dashboard collapsible sections, mobile table/card view, seller payouts detail panel, footer dark-mode, FAQ borders/tabs-dropdown, the Tester Hub itself, then a much deeper sweep of checkout/wishlist/cart/history/dashboard-nav edge cases. Some cases carry `adminOnly: true` (only visible to admins/`canTestAdmin` testers). |
+| features/tester/seed-data/tester-checklist-seed-data.ts | testerChecklistItems | 354 default tester QA test cases (admins add more via `/admin/tester-checklist`); deliberately isolated outside `appkit/src/seed/`. 2026-08-19: expanded from ~55 to ~308 across two passes — dashboard collapsible sections, mobile table/card view, seller payouts detail panel, footer dark-mode, FAQ borders/tabs-dropdown, the Tester Hub itself, then a much deeper sweep of checkout/wishlist/cart/history/dashboard-nav edge cases. 308 → 354 (same day, bug-hunter rewards follow-up): new "Bug Hunter Rewards" (admin) and "Bug Hunters Leaderboard" (public-pages) pages, plus a demo fixture pair exercising `bugConfirmed`/`version`/`previousVersionId`/`supersededByItemId` directly (outside `group()`). Some cases carry `adminOnly: true` (only visible to admins/`canTestAdmin` testers). |
 | features/tester/seed-data/{stores,categories,products,blog,events}-tester-seed-data.ts | stores, categories, products, blogPosts, events | Shared 7-day auto-expiring tester sandbox — 1 store, 3 plain categories + 1 brand + 1 bundle, 4 products (standard×2/auction/pre-order), 1 blog post, 1 spin-wheel+raffle event; every doc tagged `isTestData: true` + `testDataExpiresAt` (recomputed on each seed run) |
 | store-extensions-seed-data.ts | storeExtensions + 11 sub-collections | Store feature extensions |
 | shipments-seed-data.ts | procurementShipments | Feature A — sample shipments across statuses |
@@ -1794,7 +1808,7 @@ All functions deploy to region `asia-south1`. HTTPS functions require `LETITRIP_
 | prizeRevealClose | every 5 minutes | Flip prize-draw reveals open→closed |
 | prizeRevealExpiry | every 6 hours UTC | Auto-refund unrevealed prize-draw entries past deadline |
 | prizeRevealReminder | daily 10:00 IST | Nudge prize-draw buyers <24h to deadline |
-| bundleStockSync | daily 10:05 IST | Flip bundle isSold when any item runs OOS |
+| bundleStockSync | daily 10:05 IST | Flip bundle isSold when any item runs OOS; also refreshes `bundleOriginalTotal` (sum of member prices) so the discount badge stays accurate as member prices change |
 | catalogueImageStalenessReminder | daily 07:00 IST | Feature B — remind catalogue owners whose photos near the 30-day freshness cutoff |
 
 ### Firestore Triggers (19 functions)

@@ -6,7 +6,7 @@ import { Div, Stack } from "@mohasinac/appkit/ui";
 import { ROUTES } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants";
 import { EVENT_LABELS, EVENT_META, EVENT_TAB } from "./_constants";
-import { eventIsActive, metaDescriptionFromEvent } from "./_helpers";
+import { eventIsActive, metaDescriptionFromEvent, resolveEventCoverImage } from "./_helpers";
 import { getEventCached, getLeaderboardCached } from "./_data";
 import { EventHeader } from "./EventHeader";
 import { EventTabBar } from "./EventTabBar";
@@ -25,13 +25,7 @@ export async function generateMetadata({
   const event = await getEventCached(id);
   if (!event) return { title: EVENT_META.NOT_FOUND_TITLE };
 
-  const e = event as unknown as Record<string, JsonValue>;
-  const coverImage =
-    typeof e.imageUrl === "string"
-      ? e.imageUrl
-      : typeof e.bannerImage === "string"
-        ? e.bannerImage
-        : undefined;
+  const coverImage = resolveEventCoverImage(event as unknown as Record<string, JsonValue>);
 
   return _gm({
     title: `${event.title} ${EVENT_META.TITLE_SUFFIX}`,
@@ -53,13 +47,7 @@ export default async function Layout({ children, params }: Props) {
   ]);
   if (!event) notFound();
 
-  const e = event as unknown as Record<string, JsonValue>;
-  const coverImage =
-    typeof e.imageUrl === "string"
-      ? e.imageUrl
-      : typeof e.bannerImage === "string"
-        ? e.bannerImage
-        : null;
+  const coverImage = resolveEventCoverImage(event as unknown as Record<string, JsonValue>) ?? null;
 
   const eventType = (event.type as string | undefined) ?? "";
   const eventStatus = (event.status as string | undefined) ?? "";

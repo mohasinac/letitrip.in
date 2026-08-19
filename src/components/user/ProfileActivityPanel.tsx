@@ -22,10 +22,10 @@ const __P = {
 
 interface BidLite {
   id: string;
-  amount: number;
+  bidAmount: number;
   status?: string;
   productId?: string;
-  bidTime?: string | number;
+  bidDate?: string | number;
 }
 interface ReviewLite {
   id: string;
@@ -67,7 +67,7 @@ export function ProfileActivityPanel() {
   const { data: bidsData } = useQuery<{ bids: BidLite[]; total: number }>({
     queryKey: ["user-bids", "profile-activity"],
     // eslint-disable-next-line lir/no-apiclient-outside-services -- queryFn IS the service boundary here
-    queryFn: () => apiClient.get<{ bids: BidLite[]; total: number }>(`${API_ROUTES.USER.BIDS}?limit=5`),
+    queryFn: () => apiClient.get<{ bids: BidLite[]; total: number }>(`${API_ROUTES.USER.BIDS}?pageSize=5&sort=-bidDate`),
     enabled: !!user,
     staleTime: 60_000,
   });
@@ -144,7 +144,7 @@ export function ProfileActivityPanel() {
                 <Div key={b.id} className="border border-[var(--appkit-color-border)]" padding="inlineSm" rounded="md">
                   <Text className="text-[var(--appkit-color-text)] truncate" size="xs" weight="medium">{b.productId ?? "Auction"}</Text>
                   <Text className="text-[11px] text-[var(--appkit-color-text-muted)]">
-                    {formatCurrency(b.amount)} · {b.status ?? "active"}
+                    {formatCurrency(b.bidAmount)} · {b.status ?? "active"}
                   </Text>
                 </Div>
               ))}

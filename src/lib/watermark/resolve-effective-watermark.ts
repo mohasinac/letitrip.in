@@ -16,6 +16,23 @@
 /** Root-relative path to the bundled icon mark shipped in `public/`. */
 export const DEFAULT_MARKER_ASSET_PATH = "/logo.svg";
 
+/**
+ * The 4 corners + center are fixed anchors (map straight to sharp's 9-point
+ * `gravity` on the server, and to CSS corner insets client-side). `"custom"`
+ * switches to `offsetX`/`offsetY` — a %-based nudge measured from the exact
+ * center of the image, positive = right/down, negative = left/up.
+ */
+export type WatermarkPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right" | "center" | "custom";
+
+export const WATERMARK_POSITION_VALUES: readonly WatermarkPosition[] = [
+  "top-left",
+  "top-right",
+  "bottom-left",
+  "bottom-right",
+  "center",
+  "custom",
+];
+
 export interface WatermarkConfig {
   type: "text" | "image";
   text: string;
@@ -24,6 +41,12 @@ export interface WatermarkConfig {
   size: number;
   /** % opacity — 0 fully transparent, 100 fully opaque. */
   opacity: number;
+  /** Anchor preset. Default `"center"` — see {@link WatermarkPosition}. */
+  position: WatermarkPosition;
+  /** `position === "custom"` only: % of image width, from center. +right / -left. */
+  offsetX: number;
+  /** `position === "custom"` only: % of image height, from center. +down / -up. */
+  offsetY: number;
   /**
    * Hex stops `[from, mid, to]` matching the active default-light theme's
    * `--appkit-gradient-logo` (0% / 55% / 100%), used to retheme the bundled
@@ -36,9 +59,25 @@ export interface WatermarkConfig {
 
 export const DEFAULT_WATERMARK_TEXT = "letitrip.in";
 // Deliberately subtle — a watermark that's easy to spot defeats the point of
-// a "carefully-hidden" provenance mark. See CLAUDE.md Root Cause sweep notes.
-const DEFAULT_SIZE = 8;
-const DEFAULT_OPACITY = 12;
+// a "carefully-hidden" provenance mark.
+const DEFAULT_SIZE = 10;
+const DEFAULT_OPACITY = 10;
+const DEFAULT_POSITION: WatermarkPosition = "center";
+const DEFAULT_OFFSET = 0;
+/** Custom offset is a nudge, not a teleport — bounded so the watermark can't
+ * be dragged fully off-canvas. */
+const MAX_OFFSET_PCT = 45;
+
+function clampOffset(n: unknown, fallback: number): number {
+  if (typeof n !== "number" || !Number.isFinite(n)) return fallback;
+  return Math.max(-MAX_OFFSET_PCT, Math.min(MAX_OFFSET_PCT, n));
+}
+
+function resolvePosition(n: unknown): WatermarkPosition {
+  return typeof n === "string" && (WATERMARK_POSITION_VALUES as readonly string[]).includes(n)
+    ? (n as WatermarkPosition)
+    : DEFAULT_POSITION;
+}
 
 /** default-light's `appkit-color-primary-700/500` + `secondary-400` — used
  * only if `settings.theme` has no matching record (should be rare). */
@@ -61,6 +100,9 @@ export interface WatermarkResolverSettings {
     imageUrl?: string;
     size?: number;
     opacity?: number;
+    position?: string;
+    offsetX?: number;
+    offsetY?: number;
   };
   logo?: { url?: string };
   siteName?: string;
@@ -100,10 +142,13 @@ export function resolveEffectiveWatermark(
   const wm = settings?.watermark;
   const size = clampPercent(wm?.size, DEFAULT_SIZE);
   const opacity = clampPercent(wm?.opacity, DEFAULT_OPACITY);
+  const position = resolvePosition(wm?.position);
+  const offsetX = position === "custom" ? clampOffset(wm?.offsetX, DEFAULT_OFFSET) : DEFAULT_OFFSET;
+  const offsetY = position === "custom" ? clampOffset(wm?.offsetY, DEFAULT_OFFSET) : DEFAULT_OFFSET;
 
   // Tier 1 — explicit admin override.
   if (wm?.type === "image" && typeof wm.imageUrl === "string" && wm.imageUrl.trim()) {
-    return { type: "image", text: "", imageUrl: wm.imageUrl.trim(), size, opacity };
+    return { type: "image", text: "", imageUrl: wm.imageUrl.trim(), size, opacity, position, offsetX, offsetY };
   }
 
   // Tier 2 — bundled icon mark, retinted to the active theme's logo gradient.
@@ -114,13 +159,16 @@ export function resolveEffectiveWatermark(
       imageUrl: DEFAULT_MARKER_ASSET_PATH,
       size,
       opacity,
+      position,
+      offsetX,
+      offsetY,
       themeGradientStops: resolveThemeGradientStops(settings),
     };
   }
 
   // Tier 3 — admin-configured wordmark image.
   if (settings?.logo?.url?.trim()) {
-    return { type: "image", text: "", imageUrl: settings.logo.url.trim(), size, opacity };
+    return { type: "image", text: "", imageUrl: settings.logo.url.trim(), size, opacity, position, offsetX, offsetY };
   }
 
   // Tier 4 — plain text.
@@ -128,5 +176,5 @@ export function resolveEffectiveWatermark(
     (typeof wm?.text === "string" && wm.text.trim()) ||
     settings?.siteName?.trim() ||
     DEFAULT_WATERMARK_TEXT;
-  return { type: "text", text, imageUrl: "", size, opacity };
+  return { type: "text", text, imageUrl: "", size, opacity, position, offsetX, offsetY };
 }

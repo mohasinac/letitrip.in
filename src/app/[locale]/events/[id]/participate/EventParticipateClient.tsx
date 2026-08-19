@@ -6,7 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { Button, Checkbox, Div, Heading, Input, RadioGroup, RichText, Row, Select, Span, Text, Textarea } from "@mohasinac/appkit/ui";
 import { Label } from "@mohasinac/appkit/client";
 import { EventParticipateView, useSession, useToast, ROUTES } from "@mohasinac/appkit/client";
-import { SpinWheelView } from "@mohasinac/appkit";
+import { SpinWheelView, EventRaffleEntryForm } from "@mohasinac/appkit";
 import { LotteryPullForm } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { spinEventWheel, submitEventEntry } from "@/lib/api/events-client";
@@ -60,6 +60,9 @@ export interface ParticipateEventInput {
   spinPrizes?: SpinPrize[];
   spinWindowStart?: string | null;
   spinWindowEnd?: string | null;
+  raffleType?: "open_raffle" | "top_n_scorers" | "top_n_participants" | "spin_wheel";
+  raffleTopN?: number;
+  rafflePrize?: string;
   lotteryConfig?: {
     totalSlots: number;
     maxPullsPerUser: number;
@@ -494,6 +497,44 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
           eventId={event.id}
           totalSlots={event.lotteryConfig?.totalSlots ?? 0}
           maxPullsPerUser={event.lotteryConfig?.maxPullsPerUser ?? 1}
+        />
+      </>
+    );
+  }
+
+  // Raffle events get their own prize-hero entry form
+  if (event.type === "raffle") {
+    return (
+      <>
+        {!embedded && renderEventInfoBlock(event)}
+        <EventRaffleEntryForm
+          eventId={event.id}
+          prizeLabel={event.rafflePrize}
+          raffleType={event.raffleType}
+          topN={event.raffleTopN}
+          userEntryCount={submissionCount}
+          submitted={isSubmitted}
+          onSubmit={async (message) => {
+            setError(null);
+            try {
+              const res = await submitEventEntry(
+                API_ROUTES.EVENTS.ENTRIES(event.id),
+                { formResponses: message ? { message } : {} },
+              );
+              if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error((data as Record<string, string>).error ?? "Failed to submit entry");
+              }
+              setIsSubmitted(true);
+              setSubmissionCount((c) => c + 1);
+              showToast("You're entered in the raffle!", "success");
+            } catch (err) {
+              void normalizeError(err);
+              const msg = err instanceof Error ? err.message : "Something went wrong";
+              setError(msg);
+              showToast(msg, "error");
+            }
+          }}
         />
       </>
     );

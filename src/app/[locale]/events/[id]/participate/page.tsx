@@ -56,6 +56,11 @@ export default async function Page({ params }: Props) {
   const spinPrizes = Array.isArray(ev.spinPrizes) ? (ev.spinPrizes as SpinPrize[]) : [];
   const spinWindowStart = typeof ev.spinWindowStart === "string" ? ev.spinWindowStart : null;
   const spinWindowEnd = typeof ev.spinWindowEnd === "string" ? ev.spinWindowEnd : null;
+  const raffleType = typeof ev.raffleType === "string"
+    ? (ev.raffleType as "open_raffle" | "top_n_scorers" | "top_n_participants" | "spin_wheel")
+    : undefined;
+  const raffleTopN = typeof ev.raffleTopN === "number" ? ev.raffleTopN : undefined;
+  const rafflePrize = typeof ev.rafflePrize === "string" ? ev.rafflePrize : undefined;
 
   return (
     <EventParticipateClient
@@ -72,6 +77,9 @@ export default async function Page({ params }: Props) {
         spinPrizes,
         spinWindowStart,
         spinWindowEnd,
+        raffleType,
+        raffleTopN,
+        rafflePrize,
       }}
       hasLeaderboard={hasLeaderboard}
       embedded
