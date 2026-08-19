@@ -5,13 +5,13 @@
  * ROLES_ADMIN_MOD + permission: admin:dashboard:view
  *
  * Parallel fetches: userRepository (count, countActive, countNewSince, countDisabled, countByRole),
- *                   productRepository (count), orderRepository (count, findPending, findByStatus)
+ *                   productRepository (count), orderRepository (count, findPending)
  *                   reviewRepository (findPending)
  * All sub-calls use .catch(() => default) — individual failures don't crash the endpoint.
  *
- * Revenue: sum of totalPrice on all delivered orders.
- * BUSINESS NOTE: uses findByStatus("delivered") which could be a large unbounded fetch
- *                on production data — test captures this behavior.
+ * Revenue: read from the pre-computed analyticsRollupRepository.getDashboardRollup()
+ * doc (written daily by the revenueRollup scheduled Function) rather than scanning
+ * every delivered order per request — see appkit/src/_internal/server/jobs/core/revenueRollup.ts.
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
@@ -26,8 +26,8 @@ const {
   mockProductCount,
   mockOrderCount,
   mockOrderFindPending,
-  mockOrderFindByStatus,
   mockReviewFindPending,
+  mockGetDashboardRollup,
 } = vi.hoisted(() => ({
   mockUserCount: vi.fn(),
   mockUserCountActive: vi.fn(),
@@ -37,8 +37,8 @@ const {
   mockProductCount: vi.fn(),
   mockOrderCount: vi.fn(),
   mockOrderFindPending: vi.fn(),
-  mockOrderFindByStatus: vi.fn(),
   mockReviewFindPending: vi.fn(),
+  mockGetDashboardRollup: vi.fn(),
 }));
 
 vi.mock("@/providers.config", () => ({ withProviders: (fn: unknown) => fn }));
@@ -56,9 +56,9 @@ vi.mock("@mohasinac/appkit", () => ({
   orderRepository: {
     count: mockOrderCount,
     findPending: mockOrderFindPending,
-    findByStatus: mockOrderFindByStatus,
   },
   reviewRepository: { findPending: mockReviewFindPending },
+  analyticsRollupRepository: { getDashboardRollup: mockGetDashboardRollup },
   // The source imports createApiHandler but aliases it as createRouteHandler
   createApiHandler: (opts: {
     auth?: boolean;
@@ -90,12 +90,8 @@ beforeEach(() => {
   mockProductCount.mockResolvedValue(70);
   mockOrderCount.mockResolvedValue(10);
   mockOrderFindPending.mockResolvedValue([{}, {}, {}]); // 3 pending
-  mockOrderFindByStatus.mockResolvedValue([
-    { totalPrice: 100000 },
-    { totalPrice: 250000 },
-    { totalPrice: 50000 },
-  ]);
   mockReviewFindPending.mockResolvedValue([{}, {}]); // 2 pending reviews
+  mockGetDashboardRollup.mockResolvedValue({ totalRevenue: 400000, deliveredOrderCount: 3, computedAt: new Date() });
 });
 
 describe("GET /api/admin/dashboard", () => {
@@ -150,16 +146,15 @@ describe("GET /api/admin/dashboard", () => {
     expect(json.data.reviews.pending).toBe(2);
   });
 
-  it("sums totalPrice across all delivered orders for revenue", async () => {
+  it("returns revenue.total from the pre-computed dashboard rollup", async () => {
     const res = await GET(new Request("http://localhost/api/admin/dashboard") as never);
     const json = await res.clone().json() as { data: { revenue: { total: number } } };
-    // 100000 + 250000 + 50000 = 400000
     expect(json.data.revenue.total).toBe(400000);
   });
 
-  it("fetches delivered orders via findByStatus('delivered')", async () => {
+  it("reads revenue via analyticsRollupRepository.getDashboardRollup()", async () => {
     await GET(new Request("http://localhost/api/admin/dashboard") as never);
-    expect(mockOrderFindByStatus).toHaveBeenCalledWith("delivered");
+    expect(mockGetDashboardRollup).toHaveBeenCalled();
   });
 
   it("countByRole called with 'admin'", async () => {
@@ -179,18 +174,18 @@ describe("GET /api/admin/dashboard", () => {
     expect(json.data.products.total).toBe(0);
   });
 
-  it("no delivered orders → revenue.total = 0", async () => {
-    mockOrderFindByStatus.mockResolvedValue([]);
+  it("no rollup doc yet → revenue.total = 0", async () => {
+    mockGetDashboardRollup.mockResolvedValue(null);
     const res = await GET(new Request("http://localhost/api/admin/dashboard") as never);
     const json = await res.clone().json() as { data: { revenue: { total: number } } };
     expect(json.data.revenue.total).toBe(0);
   });
 
-  it("order missing totalPrice → treated as 0 in revenue sum", async () => {
-    mockOrderFindByStatus.mockResolvedValue([{ totalPrice: 50000 }, {}]);
+  it("rollup read failure → revenue.total defaults to 0", async () => {
+    mockGetDashboardRollup.mockRejectedValue(new Error("DB error"));
     const res = await GET(new Request("http://localhost/api/admin/dashboard") as never);
     const json = await res.clone().json() as { data: { revenue: { total: number } } };
-    expect(json.data.revenue.total).toBe(50000);
+    expect(json.data.revenue.total).toBe(0);
   });
 
   it("newThisMonth mirrors 'new' count (same value)", async () => {

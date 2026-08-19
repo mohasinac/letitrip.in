@@ -1,8 +1,13 @@
 "use client";
-import { Row, Stack, normalizeError } from "@mohasinac/appkit";
+import { Row, Stack, normalizeError, DASHBOARD_QUICK_ACTIONS, DASHBOARD_QUICK_ACTION_META, type DashboardQuickActionId } from "@mohasinac/appkit";
 import { AdminDashboardView, ROUTES, Span, Text, Div, Grid, Toggle, useToast, DynamicBgDiv, useFeatureFlags, CollapsibleSection, useCollapsedSections } from "@mohasinac/appkit/client";
 import { ADMIN_CHECKOUT_BYPASS_FLAG_KEY } from "@mohasinac/appkit";
-import { Users, Tag, Star, Ticket, HelpCircle, Settings, Layout, Layers } from "lucide-react";
+import {
+  Plus, UserPlus, Store, Tag, Calendar, FileText, Settings,
+  ShoppingBag, Banknote, BarChart, LifeBuoy, ShieldAlert, BookOpen,
+  Users, Star, HelpCircle, Layout, Layers,
+  type LucideIcon,
+} from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { fetchAdminResource, getCheckoutBypassStatus, setFeatureFlags } from "@/lib/api/admin-client";
 import { API_ROUTES } from "@/constants";
@@ -40,16 +45,47 @@ function ToggleRow({
 
 const BRAND_GRAD = "linear-gradient(135deg,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)";
 
-const QUICK_ACTIONS = [
-  { label: "Users",         href: ROUTES.ADMIN.USERS,       Icon: Users },
-  { label: "Categories",    href: ROUTES.ADMIN.CATEGORIES,  Icon: Tag },
-  { label: "Reviews",       href: ROUTES.ADMIN.REVIEWS,     Icon: Star },
-  { label: "Coupons",       href: ROUTES.ADMIN.COUPONS,     Icon: Ticket },
-  { label: "FAQs",          href: ROUTES.ADMIN.FAQS,        Icon: HelpCircle },
-  { label: "Site Settings", href: ROUTES.ADMIN.SITE,        Icon: Settings },
-  { label: "Carousel",      href: ROUTES.ADMIN.CAROUSEL,    Icon: Layout },
-  { label: "Sections",      href: ROUTES.ADMIN.SECTIONS,    Icon: Layers },
-];
+// Data-driven off DASHBOARD_QUICK_ACTIONS.admin / DASHBOARD_QUICK_ACTION_META
+// (appkit/src/features/products/constants/action-defs.ts) — the single source
+// of quick-action labels/icons/RBAC metadata. This page only owns the
+// href + icon-component resolution, since those are Next.js/lucide specifics
+// the shared config can't hold directly.
+const ADMIN_QUICK_ACTION_ICONS: Record<string, LucideIcon> = {
+  Plus, UserPlus, Store, Tag, Calendar, FileText, Settings,
+  ShoppingBag, Banknote, BarChart, LifeBuoy, ShieldAlert, BookOpen,
+  Users, Star, HelpCircle, Layout, Layers,
+};
+const ADMIN_QUICK_ACTION_HREFS: Partial<Record<DashboardQuickActionId, string>> = {
+  "dqa-admin-add-product": String(ROUTES.ADMIN.PRODUCTS_NEW),
+  "dqa-admin-add-user": String(ROUTES.ADMIN.USERS),
+  "dqa-admin-add-store": String(ROUTES.ADMIN.STORES),
+  "dqa-admin-add-coupon": String(ROUTES.ADMIN.COUPONS),
+  "dqa-admin-add-event": String(ROUTES.ADMIN.EVENTS),
+  "dqa-admin-add-blog": String(ROUTES.ADMIN.BLOG),
+  "dqa-admin-settings": String(ROUTES.ADMIN.SITE),
+  "dqa-admin-stores": String(ROUTES.ADMIN.STORES),
+  "dqa-admin-orders": String(ROUTES.ADMIN.ORDERS),
+  "dqa-admin-payouts": String(ROUTES.ADMIN.PAYOUTS),
+  "dqa-admin-analytics": String(ROUTES.ADMIN.ANALYTICS),
+  "dqa-admin-events": String(ROUTES.ADMIN.EVENTS),
+  "dqa-admin-support": String(ROUTES.ADMIN.SUPPORT_TICKETS),
+  "dqa-admin-moderation": String(ROUTES.ADMIN.MODERATION),
+  "dqa-admin-integration-guides": String(ROUTES.ADMIN.INTEGRATION_GUIDES),
+  "dqa-admin-users": String(ROUTES.ADMIN.USERS),
+  "dqa-admin-categories": String(ROUTES.ADMIN.CATEGORIES),
+  "dqa-admin-reviews": String(ROUTES.ADMIN.REVIEWS),
+  "dqa-admin-faqs": String(ROUTES.ADMIN.FAQS),
+  "dqa-admin-carousel": String(ROUTES.ADMIN.CAROUSEL),
+  "dqa-admin-sections": String(ROUTES.ADMIN.SECTIONS),
+};
+const QUICK_ACTIONS = DASHBOARD_QUICK_ACTIONS.admin
+  .map((id) => {
+    const meta = DASHBOARD_QUICK_ACTION_META[id];
+    const href = ADMIN_QUICK_ACTION_HREFS[id];
+    const Icon = meta.iconName ? ADMIN_QUICK_ACTION_ICONS[meta.iconName] : undefined;
+    return href && Icon ? { label: meta.label, href, Icon } : null;
+  })
+  .filter((a): a is { label: string; href: string; Icon: LucideIcon } => a !== null);
 
 interface DashboardStats {
   pendingOrders: number;

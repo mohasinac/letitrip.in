@@ -29,6 +29,13 @@ const verifySchema = z.object({
    * the field.
    */
   outOfStockPolicy: z.enum(["cancel_order", "skip_items"]).default("cancel_order"),
+  /** Buyer opted into the ₹10 WhatsApp order-updates addon — must match the value sent to /api/payment/create-order. */
+  whatsappNotifyAddon: z.boolean().optional().default(false),
+  /** Buyer opted into gift wrap — must match the value sent to /api/payment/create-order. */
+  giftWrapAddon: z.boolean().optional().default(false),
+  giftWrapMessage: z.string().max(500).optional(),
+  /** Buyer opted into shipment protection — must match the value sent to /api/payment/create-order. */
+  shipmentProtectionAddon: z.boolean().optional().default(false),
 });
 
 const __POST__g = withProviders(createRouteHandler<(typeof verifySchema)["_output"]>({
@@ -42,6 +49,10 @@ const __POST__g = withProviders(createRouteHandler<(typeof verifySchema)["_outpu
       addressId,
       notes,
       outOfStockPolicy,
+      whatsappNotifyAddon,
+      giftWrapAddon,
+      giftWrapMessage,
+      shipmentProtectionAddon,
     } = body!;
     const result = await verifyAndPlaceRazorpayOrderAction({
       userId: user!.uid,
@@ -56,6 +67,10 @@ const __POST__g = withProviders(createRouteHandler<(typeof verifySchema)["_outpu
       addressId,
       notes,
       outOfStockPolicy,
+      whatsappNotifyAddon,
+      giftWrapAddon,
+      giftWrapMessage,
+      shipmentProtectionAddon,
     });
     return successResponse(result, SUCCESS_MESSAGES.CHECKOUT.PAYMENT_RECEIVED);
   },

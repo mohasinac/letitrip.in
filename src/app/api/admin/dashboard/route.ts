@@ -11,13 +11,13 @@ import {
   productRepository,
   orderRepository,
   reviewRepository,
+  analyticsRollupRepository,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
-  permission: "admin:dashboard:view",
   handler: async () => {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
@@ -43,12 +43,12 @@ export const GET = withProviders(createRouteHandler({
       reviewRepository.findPending().then((r) => r.length).catch(() => 0),
     ]);
 
-    // Sum revenue from delivered orders (capped fetch — avoids scanning full collection for large datasets)
-    const deliveredOrders = await orderRepository.findByStatus("delivered").catch(() => []);
-    const totalRevenue = deliveredOrders.reduce(
-      (sum, order) => sum + (Number((order as any).totalPrice ?? 0) || 0),
-      0,
-    );
+    // Revenue is pre-computed daily by the `revenueRollup` scheduled Firebase
+    // Function into analytics/dashboardRollup — a single-doc read here
+    // instead of scanning every delivered order on every dashboard load
+    // (CLAUDE.md Rule #6). Falls back to 0 until the first rollup run.
+    const rollup = await analyticsRollupRepository.getDashboardRollup().catch(() => null);
+    const totalRevenue = rollup?.totalRevenue ?? 0;
 
     return successResponse({
       users: {

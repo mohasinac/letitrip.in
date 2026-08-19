@@ -1,53 +1,26 @@
 import { withProviders } from "@/providers.config";
-import type { JsonValue } from "@mohasinac/appkit";
-import { createRouteHandler, newsletterRepository, sortBy, COMMON_FIELDS } from "@mohasinac/appkit";
+import { createRouteHandler, successResponse } from "@mohasinac/appkit";
+import { enqueueJob } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
-function escape(value: unknown): string {
-  const s = String(value ?? "");
-  return s.includes(",") || s.includes('"') || s.includes("\n")
- ? `"${s.replace(/"/g, '""')}"`
-    : s;
-}
-
-function csvRow(cols: unknown[]): string {
-  return cols.map(escape).join(",");
-}
-
+/**
+ * Enqueues an async `newsletterExport` job instead of building the CSV
+ * in-process (CLAUDE.md Rule #6 — a full unbounded subscriber scan risks the
+ * Vercel Hobby 10s sync timeout as the list grows). The client subscribes to
+ * the job via `useBulkEvent` and reads the finished CSV off
+ * `result.data.csv` — see `AdminNewsletterView.tsx`.
+ */
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:newsletter:read",
-    handler: async () => {
-      const result = await newsletterRepository.list({
-        sorts: sortBy(COMMON_FIELDS.CREATED_AT),
-        page: "1",
-        pageSize: "10000",
+    handler: async ({ user }) => {
+      const { jobId, customToken } = await enqueueJob({
+        jobType: "newsletterExport",
+        payload: {},
+        requestedBy: user!.uid,
       });
-
-      const header = csvRow(["id", "email", "status", "source", "subscribedAt", "createdAt"]);
-
-      const dataRows = (result.data as unknown as Record<string, JsonValue>[]).map((s) =>
-        csvRow([
-          s["id"],
-          s["email"] ?? "",
-          s["status"] ?? "",
-          s["source"] ?? "",
-          s["subscribedAt"] ?? "",
-          s["createdAt"] ?? "",
-        ]),
-      );
-
-      const csv = [header, ...dataRows].join("\r\n");
-      const date = new Date().toISOString().slice(0, 10);
-
-      return new Response(csv, {
-        headers: {
-          "Content-Type": "text/csv; charset=utf-8",
-          "Content-Disposition": `attachment; filename="newsletter-subscribers-${date}.csv"`,
-        },
-      }) as unknown as ReturnType<typeof Response.json>;
+      return successResponse({ jobId, customToken }, "Export started");
     },
   }),
 );

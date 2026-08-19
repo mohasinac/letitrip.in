@@ -65,16 +65,26 @@ export async function createCheckoutOrder(body: unknown): Promise<Response> {
 
 // ── Razorpay ─────────────────────────────────────────────────────────────────
 
-export async function createRazorpayOrder(amount: number): Promise<Response> {
+export interface CheckoutAddonSelections {
+  whatsappNotifyAddon?: boolean;
+  giftWrapAddon?: boolean;
+  giftWrapMessage?: string;
+  shipmentProtectionAddon?: boolean;
+}
+
+export async function createRazorpayOrder(
+  amount: number,
+  addons?: CheckoutAddonSelections,
+): Promise<Response> {
   return fetch(API_ENDPOINTS.PAYMENT.CREATE_ORDER, {
     method: "POST",
     headers: JSON_HEADERS,
     credentials: CREDS,
-    body: JSON.stringify({ amount }),
+    body: JSON.stringify({ amount, ...addons }),
   });
 }
 
-export interface RazorpayVerifyBody {
+export interface RazorpayVerifyBody extends CheckoutAddonSelections {
   razorpay_order_id: string;
   razorpay_payment_id: string;
   razorpay_signature: string;

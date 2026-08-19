@@ -1,6 +1,6 @@
 "use client";
 import { normalizeError, checkEmiEligibility, computeEmiSchedule, computeCodHandlingFee, useSiteSettings, type JsonArray } from "@mohasinac/appkit";
-import type { JsonValue, EmiSettings, OutOfStockPolicy, CodHandlingFeeRates } from "@mohasinac/appkit";
+import type { JsonValue, EmiSettings, OutOfStockPolicy, CodHandlingFeeRates, WhatsAppNotifyFeeRates, GiftWrapFeeRates, ShipmentProtectionFeeRates } from "@mohasinac/appkit";
 
 import { useCallback, useState, useEffect, useMemo } from "react";
 import {
@@ -9,7 +9,9 @@ import {
   CheckoutAddressStep,
   CheckoutView,
   Div,
+  FieldCheckbox,
   FieldSelect,
+  FieldTextarea,
   Heading,
   Input,
   Row,
@@ -43,6 +45,7 @@ import {
   createCheckoutOrder,
   createRazorpayOrder,
   verifyRazorpayPayment,
+  type CheckoutAddonSelections,
 } from "@/lib/api/payment-client";
 import { applyCartCoupon, removeCartCoupon } from "@/lib/api/cart-client";
 import { applyCheckoutBypass } from "@/lib/api/admin-client";
@@ -166,6 +169,7 @@ function useEmiCheckout({
   cartIsEmpty,
   selectedAddress,
   outOfStockPolicy,
+  addons,
   router,
   showToast,
   setStep,
@@ -179,6 +183,7 @@ function useEmiCheckout({
   cartIsEmpty: boolean;
   selectedAddress: Address | null;
   outOfStockPolicy: OutOfStockPolicy;
+  addons: CheckoutAddonSelections;
   router: ReturnType<typeof useRouter>;
   showToast: ReturnType<typeof useToast>["showToast"];
   setStep: (step: CheckoutStep) => void;
@@ -209,6 +214,7 @@ function useEmiCheckout({
         paymentMethod: "emi",
         emiTenureMonths: emiTenure,
         outOfStockPolicy,
+        ...addons,
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -231,7 +237,7 @@ function useEmiCheckout({
     } finally {
       setIsProcessingPayment(false);
     }
-  }, [selectedAddress, emiTenure, outOfStockPolicy, router, showToast, setStep, setActionError, setIsProcessingPayment, ensureValueOtpGate]);
+  }, [selectedAddress, emiTenure, outOfStockPolicy, addons, router, showToast, setStep, setActionError, setIsProcessingPayment, ensureValueOtpGate]);
 
   return { emiTenure, setEmiTenure, emiVisible, emiSchedule, handlePlaceEmiOrder };
 }
@@ -556,6 +562,14 @@ function renderPaymentStep({
   setOutOfStockPolicy,
   codSettings,
   subtotal,
+  whatsappNotifyAddon,
+  setWhatsappNotifyAddon,
+  giftWrapAddon,
+  setGiftWrapAddon,
+  giftWrapMessage,
+  setGiftWrapMessage,
+  shipmentProtectionAddon,
+  setShipmentProtectionAddon,
   handlePayOnline,
   handlePlaceCodOrder,
   handlePlaceCashOrder,
@@ -577,8 +591,16 @@ function renderPaymentStep({
   emiSchedule: ReturnType<typeof computeEmiSchedule> | null;
   outOfStockPolicy: OutOfStockPolicy;
   setOutOfStockPolicy: (v: OutOfStockPolicy) => void;
-  codSettings: (CodHandlingFeeRates & { codDepositPercent?: number }) | null;
+  codSettings: (CodHandlingFeeRates & WhatsAppNotifyFeeRates & GiftWrapFeeRates & ShipmentProtectionFeeRates & { codDepositPercent?: number }) | null;
   subtotal: number;
+  whatsappNotifyAddon: boolean;
+  setWhatsappNotifyAddon: (v: boolean) => void;
+  giftWrapAddon: boolean;
+  setGiftWrapAddon: (v: boolean) => void;
+  giftWrapMessage: string;
+  setGiftWrapMessage: (v: string) => void;
+  shipmentProtectionAddon: boolean;
+  setShipmentProtectionAddon: (v: boolean) => void;
   handlePayOnline: () => Promise<void>;
   handlePlaceCodOrder: () => Promise<void>;
   handlePlaceCashOrder: () => Promise<void>;
@@ -612,6 +634,52 @@ function renderPaymentStep({
               { value: "cancel_order", label: CK.OUT_OF_STOCK_POLICY_CANCEL_ORDER },
             ]}
           />
+          {codSettings?.whatsappNotifyFeeEnabled && (
+            <FieldCheckbox
+              name="whatsappNotifyAddon"
+              label={`Get WhatsApp order updates (+${formatEmiRupees(codSettings.whatsappNotifyFee ?? 10)})`}
+              hint="Receive order status updates on WhatsApp for this order."
+              checked={whatsappNotifyAddon}
+              onChange={setWhatsappNotifyAddon}
+            />
+          )}
+          {codSettings?.giftWrapFeeEnabled && (
+            <Stack gap="xs">
+              <FieldCheckbox
+                name="giftWrapAddon"
+                label={`Add gift wrap (+${formatEmiRupees(codSettings.giftWrapFee ?? 49)})`}
+                hint="We'll wrap this order and include your message with the package."
+                checked={giftWrapAddon}
+                onChange={setGiftWrapAddon}
+              />
+              {giftWrapAddon && (
+                <FieldTextarea
+                  name="giftWrapMessage"
+                  label="Gift message (optional)"
+                  value={giftWrapMessage}
+                  onChange={(v) => setGiftWrapMessage(v.slice(0, 500))}
+                  rows={2}
+                  maxLength={500}
+                  showCharCount
+                  placeholder="Add a note for the recipient…"
+                />
+              )}
+            </Stack>
+          )}
+          {codSettings?.shipmentProtectionFeeEnabled && subtotal > 0 && (
+            <FieldCheckbox
+              name="shipmentProtectionAddon"
+              label={`Add shipment protection (+${formatEmiRupees(
+                Math.max(
+                  codSettings.shipmentProtectionFeeMin ?? 30,
+                  Math.round(subtotal * ((codSettings.shipmentProtectionFeePercent ?? 2) / 100) * 100) / 100,
+                ),
+              )})`}
+              hint="Covers this order against loss or damage in transit."
+              checked={shipmentProtectionAddon}
+              onChange={setShipmentProtectionAddon}
+            />
+          )}
           {showCashOption && (
             <Button
               type="button"
@@ -999,6 +1067,139 @@ function useAdminBypassCheckout({
   }, [selectedAddress, router, showToast, step, setStep, setActionError, setIsProcessingPayment]);
 }
 
+/** Extracted so `CheckoutRouteClient` itself stays under the LARGE_COMPONENT audit threshold. */
+function usePaymentHandlers({
+  selectedAddress,
+  user,
+  subtotal,
+  outOfStockPolicy,
+  addons,
+  router,
+  showToast,
+  setStep,
+  setActionError,
+  setIsProcessingPayment,
+  ensureValueOtpGate,
+}: {
+  selectedAddress: Address | null;
+  user: ReturnType<typeof useAuth>["user"];
+  subtotal: number;
+  outOfStockPolicy: OutOfStockPolicy;
+  addons: CheckoutAddonSelections;
+  router: ReturnType<typeof useRouter>;
+  showToast: ReturnType<typeof useToast>["showToast"];
+  setStep: (step: CheckoutStep) => void;
+  setActionError: (msg: string) => void;
+  setIsProcessingPayment: (v: boolean) => void;
+  ensureValueOtpGate: (method: "razorpay" | "cash" | "emi") => boolean;
+}) {
+  const handlePayOnline = useCallback(async () => {
+    if (!selectedAddress || !user) return;
+    if (!ensureValueOtpGate("razorpay")) return;
+    setIsProcessingPayment(true);
+    setActionError("");
+    setStep("processing");
+    try {
+      const createRes = await createRazorpayOrder(subtotal, addons);
+      if (!createRes.ok) {
+        const err = await createRes.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error ?? "Failed to create order");
+      }
+      const createData = (await createRes.json()) as { data: { razorpayOrderId: string; amount: number; currency: string; keyId: string } };
+      const { razorpayOrderId, amount, currency, keyId } = createData.data;
+      const loaded = await loadRazorpayScript();
+      if (!loaded) throw new Error("Failed to load payment gateway");
+      const rzpResponse = await openRazorpayModal({
+        keyId, razorpayOrderId, amount, currency,
+        name: process.env.NEXT_PUBLIC_SITE_NAME ?? "LetItRip",
+        prefill: { email: user.email ?? undefined, name: (user as unknown as Record<string, JsonValue>).displayName as string | undefined },
+      });
+      const verifyRes = await verifyRazorpayPayment({
+        razorpay_order_id: rzpResponse.razorpay_order_id,
+        razorpay_payment_id: rzpResponse.razorpay_payment_id,
+        razorpay_signature: rzpResponse.razorpay_signature,
+        addressId: selectedAddress.id,
+        outOfStockPolicy,
+        ...addons,
+      });
+      if (!verifyRes.ok) {
+        const err = await verifyRes.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error ?? "Payment verification failed");
+      }
+      const verifyData = await verifyRes.json().catch(() => ({}));
+      const firstOrderId = (verifyData?.data?.orderIds as string[] | undefined)?.[0];
+      showToast("Payment successful! Your order has been placed.", "success");
+      router.push(firstOrderId ? `${String(ROUTES.USER.CHECKOUT_SUCCESS)}?orderId=${firstOrderId}` : String(ROUTES.USER.CHECKOUT_SUCCESS));
+    } catch (err) {
+      void normalizeError(err);
+      const msg = err instanceof Error ? err.message : "Payment failed. Please retry.";
+      setActionError(msg);
+      showToast(msg, "error");
+      setStep("payment");
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  }, [selectedAddress, user, subtotal, router, showToast, outOfStockPolicy, addons, ensureValueOtpGate]);
+
+  const handlePlaceCodOrder = useCallback(async () => {
+    if (!selectedAddress) return;
+    setIsProcessingPayment(true);
+    setActionError("");
+    setStep("processing");
+    try {
+      const res = await createCheckoutOrder({ addressId: selectedAddress.id, paymentMethod: "cod", outOfStockPolicy, ...addons });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error ?? ORDER_PLACEMENT_FAILED_MSG);
+      }
+      const codData = await res.json().catch(() => ({}));
+      const firstCodOrderId = (codData?.data?.orderIds as string[] | undefined)?.[0];
+      showToast("Order placed successfully! Cash on delivery confirmed.", "success");
+      router.push(firstCodOrderId ? `${String(ROUTES.USER.CHECKOUT_SUCCESS)}?orderId=${firstCodOrderId}` : String(ROUTES.USER.CHECKOUT_SUCCESS));
+    } catch (err) {
+      void normalizeError(err);
+      const msg = err instanceof Error ? err.message : ORDER_FAILED_RETRY_MSG;
+      setActionError(msg);
+      showToast(msg, "error");
+      setStep("payment");
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  }, [selectedAddress, router, showToast, outOfStockPolicy, addons]);
+
+  const handlePlaceCashOrder = useCallback(async () => {
+    if (!selectedAddress) return;
+    if (!ensureValueOtpGate("cash")) return;
+    setIsProcessingPayment(true);
+    setActionError("");
+    setStep("processing");
+    try {
+      const res = await createCheckoutOrder({ addressId: selectedAddress.id, paymentMethod: "cash", outOfStockPolicy, ...addons });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error ?? ORDER_PLACEMENT_FAILED_MSG);
+      }
+      const cashData = await res.json().catch(() => ({}));
+      const firstOrderId = (cashData?.data?.orderIds as string[] | undefined)?.[0];
+      if (firstOrderId) {
+        router.push(String(ROUTES.USER.ORDER_PAYMENT(firstOrderId)));
+      } else {
+        router.push(String(ROUTES.USER.CHECKOUT_SUCCESS));
+      }
+    } catch (err) {
+      void normalizeError(err);
+      const msg = err instanceof Error ? err.message : ORDER_FAILED_RETRY_MSG;
+      setActionError(msg);
+      showToast(msg, "error");
+      setStep("payment");
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  }, [selectedAddress, router, showToast, outOfStockPolicy, addons, ensureValueOtpGate]);
+
+  return { handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder };
+}
+
 // --- Component ---------------------------------------------------------------
 
 export function CheckoutRouteClient({
@@ -1018,7 +1219,7 @@ export function CheckoutRouteClient({
   showCoupons?: boolean;
   showEmi?: boolean;
   emiSettings?: EmiSettings | null;
-  codSettings?: CodHandlingFeeRates & { codDepositPercent?: number } | null;
+  codSettings?: CodHandlingFeeRates & WhatsAppNotifyFeeRates & GiftWrapFeeRates & ShipmentProtectionFeeRates & { codDepositPercent?: number } | null;
 }) {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -1066,6 +1267,19 @@ export function CheckoutRouteClient({
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [outOfStockPolicy, setOutOfStockPolicy] = useState<OutOfStockPolicy>("skip_items");
+  const [whatsappNotifyAddon, setWhatsappNotifyAddon] = useState(false);
+  const [giftWrapAddon, setGiftWrapAddon] = useState(false);
+  const [giftWrapMessage, setGiftWrapMessage] = useState("");
+  const [shipmentProtectionAddon, setShipmentProtectionAddon] = useState(false);
+  const addons: CheckoutAddonSelections = useMemo(
+    () => ({
+      whatsappNotifyAddon,
+      giftWrapAddon,
+      giftWrapMessage: giftWrapAddon ? giftWrapMessage : undefined,
+      shipmentProtectionAddon,
+    }),
+    [whatsappNotifyAddon, giftWrapAddon, giftWrapMessage, shipmentProtectionAddon],
+  );
 
   // --- Coupon state ---
   const searchParams = useSearchParams();
@@ -1100,6 +1314,7 @@ export function CheckoutRouteClient({
     cartIsEmpty,
     selectedAddress,
     outOfStockPolicy,
+    addons,
     router,
     showToast,
     setStep,
@@ -1217,144 +1432,19 @@ export function CheckoutRouteClient({
     }
   }, [selectedAddress, otpCode, showToast]);
 
-  const handlePayOnline = useCallback(async () => {
-    if (!selectedAddress || !user) return;
-    if (!ensureValueOtpGate("razorpay")) return;
-    setIsProcessingPayment(true);
-    setActionError("");
-    setStep("processing");
-    try {
-      // 1. Create Razorpay order on server
-      const createRes = await createRazorpayOrder(subtotal);
-      if (!createRes.ok) {
-        const err = await createRes.json().catch(() => ({}));
-        throw new Error(
-          (err as { error?: string }).error ?? "Failed to create order",
-        );
-      }
-      const createData = (await createRes.json()) as {
-        data: {
-          razorpayOrderId: string;
-          amount: number;
-          currency: string;
-          keyId: string;
-        };
-      };
-      const { razorpayOrderId, amount, currency, keyId } = createData.data;
-
-      // 2. Load Razorpay SDK
-      const loaded = await loadRazorpayScript();
-      if (!loaded) throw new Error("Failed to load payment gateway");
-
-      // 3. Open Razorpay modal
-      const rzpResponse = await openRazorpayModal({
-        keyId,
-        razorpayOrderId,
-        amount,
-        currency,
-        name: process.env.NEXT_PUBLIC_SITE_NAME ?? "LetItRip",
-        prefill: {
-          email: user.email ?? undefined,
-          name: (user as unknown as Record<string, JsonValue>).displayName as string | undefined,
-        },
-      });
-
-      // 4. Verify payment and place orders
-      const verifyRes = await verifyRazorpayPayment({
-        razorpay_order_id: rzpResponse.razorpay_order_id,
-        razorpay_payment_id: rzpResponse.razorpay_payment_id,
-        razorpay_signature: rzpResponse.razorpay_signature,
-        addressId: selectedAddress.id,
-        outOfStockPolicy,
-      });
-      if (!verifyRes.ok) {
-        const err = await verifyRes.json().catch(() => ({}));
-        throw new Error(
-          (err as { error?: string }).error ?? "Payment verification failed",
-        );
-      }
-      const verifyData = await verifyRes.json().catch(() => ({}));
-      const firstOrderId = (verifyData?.data?.orderIds as string[] | undefined)?.[0];
-      showToast("Payment successful! Your order has been placed.", "success");
-      router.push(firstOrderId ? `${String(ROUTES.USER.CHECKOUT_SUCCESS)}?orderId=${firstOrderId}` : String(ROUTES.USER.CHECKOUT_SUCCESS));
-    } catch (err) {
-      void normalizeError(err);
-      const msg = err instanceof Error ? err.message : "Payment failed. Please retry.";
-      setActionError(msg);
-      showToast(msg, "error");
-      setStep("payment");
-    } finally {
-      setIsProcessingPayment(false);
-    }
-  }, [selectedAddress, user, subtotal, router, showToast, outOfStockPolicy, ensureValueOtpGate]);
-
-  const handlePlaceCodOrder = useCallback(async () => {
-    if (!selectedAddress) return;
-    setIsProcessingPayment(true);
-    setActionError("");
-    setStep("processing");
-    try {
-      const res = await createCheckoutOrder({
-        addressId: selectedAddress.id,
-        paymentMethod: "cod",
-        outOfStockPolicy,
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(
-          (err as { error?: string }).error ?? ORDER_PLACEMENT_FAILED_MSG,
-        );
-      }
-      const codData = await res.json().catch(() => ({}));
-      const firstCodOrderId = (codData?.data?.orderIds as string[] | undefined)?.[0];
-      showToast("Order placed successfully! Cash on delivery confirmed.", "success");
-      router.push(firstCodOrderId ? `${String(ROUTES.USER.CHECKOUT_SUCCESS)}?orderId=${firstCodOrderId}` : String(ROUTES.USER.CHECKOUT_SUCCESS));
-    } catch (err) {
-      void normalizeError(err);
-      const msg = err instanceof Error ? err.message : ORDER_FAILED_RETRY_MSG;
-      setActionError(msg);
-      showToast(msg, "error");
-      setStep("payment");
-    } finally {
-      setIsProcessingPayment(false);
-    }
-  }, [selectedAddress, router, showToast, outOfStockPolicy]);
-
-  const handlePlaceCashOrder = useCallback(async () => {
-    if (!selectedAddress) return;
-    if (!ensureValueOtpGate("cash")) return;
-    setIsProcessingPayment(true);
-    setActionError("");
-    setStep("processing");
-    try {
-      const res = await createCheckoutOrder({
-        addressId: selectedAddress.id,
-        paymentMethod: "cash",
-        outOfStockPolicy,
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(
-          (err as { error?: string }).error ?? ORDER_PLACEMENT_FAILED_MSG,
-        );
-      }
-      const cashData = await res.json().catch(() => ({}));
-      const firstOrderId = (cashData?.data?.orderIds as string[] | undefined)?.[0];
-      if (firstOrderId) {
-        router.push(String(ROUTES.USER.ORDER_PAYMENT(firstOrderId)));
-      } else {
-        router.push(String(ROUTES.USER.CHECKOUT_SUCCESS));
-      }
-    } catch (err) {
-      void normalizeError(err);
-      const msg = err instanceof Error ? err.message : ORDER_FAILED_RETRY_MSG;
-      setActionError(msg);
-      showToast(msg, "error");
-      setStep("payment");
-    } finally {
-      setIsProcessingPayment(false);
-    }
-  }, [selectedAddress, router, showToast, outOfStockPolicy, ensureValueOtpGate]);
+  const { handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder } = usePaymentHandlers({
+    selectedAddress,
+    user,
+    subtotal,
+    outOfStockPolicy,
+    addons,
+    router,
+    showToast,
+    setStep,
+    setActionError,
+    setIsProcessingPayment,
+    ensureValueOtpGate,
+  });
 
   const handleAdminBypass = useAdminBypassCheckout({
     selectedAddress,
@@ -1481,7 +1571,7 @@ export function CheckoutRouteClient({
           return (
             <Stack gap="lg">
               {showCoupons && renderCouponSection({ couponCode, setCouponCode, couponError, isCouponLoading, effectiveCoupons, handleApplyCoupon, handleRemoveCoupon })}
-              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showRazorpay, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
+              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showRazorpay, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, whatsappNotifyAddon, setWhatsappNotifyAddon, giftWrapAddon, setGiftWrapAddon, giftWrapMessage, setGiftWrapMessage, shipmentProtectionAddon, setShipmentProtectionAddon, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
             </Stack>
           );
         }}

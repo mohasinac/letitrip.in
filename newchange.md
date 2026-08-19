@@ -41,6 +41,80 @@
 
 ---
 
+### S-addons-followup — Gift wrap + shipment protection addons, Firebase Functions migrations, admin toggle/dashboard/back-to-top polish, integration guides viewer (2026-08-19)
+
+Follow-up session after the WhatsApp order-updates addon shipped. Scope, per user request: find more addon candidates, find more Firebase Functions migration candidates, keep Firebase/Vercel usage within free-tier budget, add admin toggles for missed config, add dashboard quick-links, fix the back-to-top "gone forever" bug, and add an in-site integration-guides viewer — then publish appkit + deploy.
+
+**New addons (built, following the WhatsApp addon's exact pattern)**: Gift Wrap (flat ₹49 fee + optional buyer message, surfaced on the seller order-detail drawer) and Shipment Protection (2% of subtotal, ₹30 floor — mirrors the COD handling fee shape). Both admin-toggleable in Site Settings → Fees, wired through all 3 checkout paths (COD/cash/EMI, Razorpay create-order, Razorpay verify). 4 other candidates (COD insurance, auction buyer's premium, priority fulfilment, prize-draw extra entries) were documented as a backlog, not built — see CLAUDE.md's addon-candidate research if resurrected later.
+
+**Firebase Functions migrations**: `newsletterExport` (async job, was a synchronous unbounded CSV build) and `revenueRollup` (new daily scheduled Function pre-computing admin-dashboard revenue into `analytics/dashboardRollup`, replacing an unbounded `findByStatus("delivered")` scan on every dashboard load). `media/crop` + `media/trim` → Firebase Function migration was evaluated and explicitly deferred (native `sharp` binary, higher deploy risk) — see CLAUDE.md's Firebase budget section.
+
+**Firebase/Vercel budget**: confirmed via Firebase's own docs that Cloud Functions invocation quota isn't at risk; the real cost driver is Cloud Scheduler's 3-free-jobs limit (app runs 27 scheduled functions, ~$2.40/month, pre-existing not newly added). User chose to accept this small cost over a riskier consolidation refactor. New CLAUDE.md section: "Firebase Functions & Firestore Budget (Blaze Free Tier)".
+
+**Admin toggle gaps closed**: `commissions.codDepositPercent`/`sellerShippingFixed`/`platformShippingPercent`/`platformShippingFixedMin`, `payment.otpCheckoutThreshold`, per-channel notification-type allowlists (`notificationChannels.{email,whatsapp}.types`), and a new generic "Feature Flags" admin tab wiring the previously-dead `FEATURE_FLAG_META` scaffold (extended from 8 to 12 entries) plus `adminCheckoutBypass` and per-listing-type/per-category-type toggles — all were previously Firestore-console-only.
+
+**Dashboard quick-links**: wired all 3 dashboard home pages (admin/store/user) to the previously-unused `DASHBOARD_QUICK_ACTION_META`/`DASHBOARD_QUICK_ACTIONS` config (`appkit/src/features/products/constants/action-defs.ts`) instead of ad hoc hardcoded arrays, extending it with the nav gaps found (Stores/Orders/Payouts/Analytics/Events/Support/Moderation for admin; Auctions/Shipping/Messages/WhatsApp/Reviews for seller). User dashboard's existing 16-item nav was already comprehensive — just appended the 3 missing links (Recently Viewed, My Catalogue, My Coupons) rather than forcing it through the sparser shared config.
+
+**Back-to-top bug fixed**: `appkit/src/features/layout/BackToTop.tsx` was persisting its dismiss state to `sessionStorage` with no route-based reset; since the component lives in the persistent `AppLayoutShell` (never remounts on client-side nav), one click hid it for the entire tab session. Fixed by dropping the storage persistence and resetting `dismissed` on every `usePathname()` change. See CLAUDE.md Recurrent Root Cause Pattern #41.
+
+**Integration guides viewer (new)**: `docs/integration-guides/*.md` (WhatsApp Business, Razorpay, Meta Catalog setup guides) rendered at `/admin/integration-guides` via a new `marked` dependency + the existing `<RichTextRenderer>` primitive. Nav entry added in the same commit.
+
+**Files touched** (representative, not exhaustive): `appkit/src/_internal/shared/fees/calculator.ts` (2 new fee functions), `appkit/src/_internal/server/features/checkout/actions.ts`, `appkit/src/features/admin/schemas/firestore.ts`, `appkit/src/features/admin/components/AdminSiteSettingsView.tsx`, `appkit/src/features/products/constants/action-defs.ts`, `appkit/src/_internal/server/jobs/core/{newsletterExport,revenueRollup}.ts` (+ tests), `appkit/src/features/admin/repository/analytics-rollup.repository.ts` (new), `src/components/routing/CheckoutRouteClient.tsx`, `src/app/[locale]/{admin/dashboard,store,user}/page.tsx`, `src/app/[locale]/admin/integration-guides/{layout,page}.tsx` (new).
+
+---
+
+### S-audit-baseline-zero — Drove all audit baselines and violations to zero; permission-role-mismatch now blocking (2026-08-19)
+
+Two audit categories had non-zero counts:
+
+**1. `CONFLICTING_BG_UTILITY: 3` in `audit-html-wrappers.mjs`**
+
+Three files had a hardcoded `bg-zinc-*` or `bg-neutral-*` co-occurring on the same line with a
+`bg-[var(--appkit-color-*)]` token — whichever class appeared last in source order silently won,
+breaking theming. Fixed:
+
+- `src/app/[locale]/admin/carousels/[id]/page.tsx:76` — removed `bg-zinc-200 text-zinc-400`,
+  also fixed a trailing `]0` typo on the disabled-button text token → `text-[var(--appkit-color-text-muted)]`
+- `src/components/routing/CartRouteClient.tsx:6` — replaced `bg-zinc-900 text-white hover:bg-zinc-800`
+  + stale `dark:` overrides with theme tokens (`bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text)]`)
+- `appkit/src/features/admin/components/AdminAdsView.tsx:407` — removed `bg-neutral-900 text-white`
+  conflicting with `bg-[var(--appkit-color-surface)]`
+
+`CONFLICTING_BG_UTILITY` baseline set from 3 → 0 in `scripts/audit-html-wrappers.mjs`.
+
+**2. `permission-role-mismatch`: 182 guaranteed-403 violations → 0, now blocking**
+
+`createRouteHandler` calls with `roles` containing `moderator`, `seller`, or `user` alongside a
+`permission:` field silently 403 all non-admin users — `getServerPermissions()` only resolves a
+non-empty permissions array for `employee`; every other role always gets `permissions: []`.
+
+182 `permission: "..."` lines removed across 135 API route files (`src/app/api/admin/**`,
+`src/app/api/store/**`, `src/app/api/user/**`). No `roles:`, handler body, schema, or auth field was
+changed — the roles gate is correct and intentional; the dead permission gate was the bug.
+
+`scripts/run-audits.mjs` entry updated: REPORT MODE → `env: { STRICT: "1" }` so any new
+route reintroducing the pattern immediately blocks `npm run check`.
+
+**3. `LARGE_COMPONENT` in `audit-code-quality`: `CheckoutRouteClient` 453 → extracted**
+
+Uncommitted WhatsApp-notify-addon WIP changes added ~24 net significant lines to
+`CheckoutRouteClient` in `src/components/routing/CheckoutRouteClient.tsx`, pushing it from 429 to
+453 significant lines (threshold 450). Also fixed two TypeScript build errors the same WIP changes
+introduced:
+- `orderWhatsappAddonPaid` missing from `SendNotificationInput` interface in
+  `appkit/src/features/admin/actions/notification-actions.ts`
+- `whatsappTemplates?: Record<string,string>` added to `SiteSettingsCredentials` schema but not
+  handled in `mergeEncryptedCredentials()` in `site-settings.repository.ts`
+
+Extraction fix: `handlePayOnline`, `handlePlaceCodOrder`, `handlePlaceCashOrder` (`useCallback`s,
+~130 lines) lifted out of `CheckoutRouteClient` into a new `usePaymentHandlers` helper function
+immediately preceding the component (same file, same pattern as `useEmiCheckout` / `useValueOtpCheckout`).
+Component body replaced with a single 14-line `usePaymentHandlers({ ... })` call.
+
+`npm run check:audits` exits 0; all three audits show `clean ✓`.
+
+---
+
 ### S-cache-invalidation-trigger-drift — Fixed React Query cache-key mismatches behind "edits don't show up" reports; broadened into a Firestore-trigger shadow-type sweep that found a live WhatsApp-announcement bug; published appkit 4.1.3 and deployed (2026-08-19)
 
 Started from a user report that edits to user profile, homepage sections, and images "still show

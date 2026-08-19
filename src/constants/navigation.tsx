@@ -253,6 +253,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.FAQS),                "FAQs",               "admin:faqs:read"),
       adminItem(String(ROUTES.ADMIN.NEWSLETTER),          "Newsletter",         "admin:newsletter:read"),
       adminItem(String(ROUTES.ADMIN.CONTACT),             "Contact",            "admin:contact:read"),
+      adminItem(String(ROUTES.ADMIN.INTEGRATION_GUIDES),  "Integration Guides", "admin:site:read"),
     ],
   },
   {

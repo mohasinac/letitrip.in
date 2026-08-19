@@ -36,6 +36,9 @@ import {
   Gavel,
   Store,
   Camera,
+  Archive,
+  History,
+  Ticket,
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 
@@ -60,6 +63,9 @@ const NAV_LINKS = [
   { label: "Events",            href: ROUTES.USER.EVENTS,         Icon: CalendarDays },
   { label: "Reviews",           href: ROUTES.USER.REVIEWS,        Icon: Star },
   { label: "Returns & Refunds", href: ROUTES.USER.RETURNS,        Icon: Undo2 },
+  { label: "Recently Viewed",   href: ROUTES.USER.HISTORY,        Icon: History },
+  { label: "My Catalogue",      href: ROUTES.USER.CATALOGUE,      Icon: Archive },
+  { label: "My Coupons",        href: ROUTES.USER.CLAIMED_COUPONS, Icon: Ticket },
   { label: "Addresses",         href: ROUTES.USER.ADDRESSES,      Icon: MapPin },
   { label: "Messages",          href: ROUTES.USER.MESSAGES,       Icon: MessageCircle },
   { label: "Notifications",     href: ROUTES.USER.NOTIFICATIONS,  Icon: Bell },

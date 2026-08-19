@@ -14,7 +14,7 @@ import { withProviders } from "@/providers.config";
  */
 
 import { z } from "zod";
-import { createRazorpayOrder, rupeesToPaise } from "@mohasinac/appkit";
+import { createRazorpayOrder, rupeesToPaise, computeWhatsAppNotifyFee, computeGiftWrapFee, computeShipmentProtectionFee } from "@mohasinac/appkit";
 import { siteSettingsRepository, unitOfWork, productRepository } from "@mohasinac/appkit";
 import { successResponse, ApiErrors } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
@@ -25,6 +25,12 @@ import { isCheckoutValueOtpVerified } from "@mohasinac/appkit/server";
 const createOrderSchema = z.object({
   currency: z.string().default(getDefaultCurrency()),
   receipt: z.string().optional(),
+  /** Buyer opted into the ₹10 WhatsApp order-updates addon. Unchecked by default. */
+  whatsappNotifyAddon: z.boolean().optional().default(false),
+  /** Buyer opted into gift wrap. Unchecked by default. */
+  giftWrapAddon: z.boolean().optional().default(false),
+  /** Buyer opted into shipment protection. Unchecked by default. */
+  shipmentProtectionAddon: z.boolean().optional().default(false),
 });
 
 const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_output"]>({
@@ -34,7 +40,7 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
     const keyId = process.env.RAZORPAY_KEY_ID;
     if (!keyId) throw ApiErrors.internalError("Razorpay is not configured on this server");
 
-    const { currency, receipt } = body!;
+    const { currency, receipt, whatsappNotifyAddon, giftWrapAddon, shipmentProtectionAddon } = body!;
     const uid = user!.uid;
 
     // --- Server-side amount computation from live cart + current product prices ---
@@ -97,8 +103,12 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
 
     const platformFee = Math.round(subtotalRs * (platformFeePercent / 100) * 100) / 100;
     const gstOnFee = Math.round(platformFee * (gstPercent / 100) * 100) / 100;
-    const rawTotal = subtotalRs + platformFee + gstOnFee;
-    const totalAmount = Math.max(rawTotal, subtotalRs + minimumTransactionFee);
+    const whatsappNotifyFee = computeWhatsAppNotifyFee(whatsappNotifyAddon, siteSettings?.commissions ?? {});
+    const giftWrapFee = computeGiftWrapFee(giftWrapAddon, siteSettings?.commissions ?? {});
+    const shipmentProtectionFee = computeShipmentProtectionFee(subtotalRs, shipmentProtectionAddon, siteSettings?.commissions ?? {});
+    const addonFees = whatsappNotifyFee + giftWrapFee + shipmentProtectionFee;
+    const rawTotal = subtotalRs + platformFee + gstOnFee + addonFees;
+    const totalAmount = Math.max(rawTotal, subtotalRs + minimumTransactionFee + addonFees);
 
     const amountInPaise = rupeesToPaise(totalAmount);
 
@@ -120,6 +130,9 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
       keyId,
       platformFee,
       gstOnFee,
+      whatsappNotifyFee,
+      giftWrapFee,
+      shipmentProtectionFee,
       baseAmount: subtotalRs,
     });
   },

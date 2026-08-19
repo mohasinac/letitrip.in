@@ -4,11 +4,15 @@ import { CollapsibleSection, Div, DynamicBgDiv, ROUTES, SellerTopProducts, Store
 const __O = {
   hidden: "overflow-hidden",
 } as const;
-import { TrendingUp, ShoppingBag, Clock, Package, Plus, BarChart2, Wallet, Store, Star } from "lucide-react";
+import {
+  TrendingUp, ShoppingBag, Clock, Package, Plus, BarChart, Wallet, Store, Star,
+  Tag, Gavel, Banknote, Truck, MessageCircle, Phone, Settings,
+  type LucideIcon,
+} from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
 
-import { Row } from "@mohasinac/appkit";
+import { Row, DASHBOARD_QUICK_ACTIONS, DASHBOARD_QUICK_ACTION_META, type DashboardQuickActionId } from "@mohasinac/appkit";
 // Brand gradient mirrors the SiteLogo wordmark — using CSS var tokens
 const BRAND_GRAD = "linear-gradient(135deg,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)";
 const BLUE_GRAD  = "linear-gradient(135deg,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 100%)";
@@ -16,14 +20,35 @@ const GREEN_GRAD = "linear-gradient(135deg,var(--appkit-color-cobalt) 0%,var(--a
 const AMBER_GRAD = "linear-gradient(135deg,var(--appkit-color-amber-500) 0%,var(--appkit-color-amber-600) 100%)";
 const GOLD_GRAD  = "linear-gradient(135deg,var(--appkit-color-amber-600) 0%,var(--appkit-color-secondary-400) 100%)";
 
-const QUICK_ACTIONS = [
-  { label: "Add Product",    href: ROUTES.STORE.PRODUCTS_NEW,  Icon: Plus },
-  { label: "My Products",   href: ROUTES.STORE.PRODUCTS,       Icon: Package },
-  { label: "Orders",         href: ROUTES.STORE.ORDERS,         Icon: ShoppingBag },
-  { label: "Analytics",      href: ROUTES.STORE.ANALYTICS,      Icon: BarChart2 },
-  { label: "Payouts",        href: ROUTES.STORE.PAYOUTS,        Icon: Wallet },
-  { label: "My Storefront",  href: ROUTES.STORE.STOREFRONT,     Icon: Store },
-];
+// Data-driven off DASHBOARD_QUICK_ACTIONS.seller / DASHBOARD_QUICK_ACTION_META
+// (appkit/src/features/products/constants/action-defs.ts) — single source of
+// quick-action labels/icons/RBAC metadata; this page only resolves hrefs + icons.
+const SELLER_QUICK_ACTION_ICONS: Record<string, LucideIcon> = {
+  Plus, Package, ShoppingBag, Tag, Gavel, Banknote, Truck, MessageCircle, Phone, Star, Store, Settings, BarChart,
+};
+const SELLER_QUICK_ACTION_HREFS: Partial<Record<DashboardQuickActionId, string>> = {
+  "dqa-seller-add-product": String(ROUTES.STORE.PRODUCTS_NEW),
+  "dqa-seller-products": String(ROUTES.STORE.PRODUCTS),
+  "dqa-seller-view-orders": String(ROUTES.STORE.ORDERS),
+  "dqa-seller-analytics": String(ROUTES.STORE.ANALYTICS),
+  "dqa-seller-add-coupon": String(ROUTES.STORE.COUPONS_NEW),
+  "dqa-seller-auctions": String(ROUTES.STORE.AUCTIONS),
+  "dqa-seller-payout-request": String(ROUTES.STORE.PAYOUTS),
+  "dqa-seller-shipping": String(ROUTES.STORE.SHIPPING),
+  "dqa-seller-messages": String(ROUTES.STORE.MESSAGES),
+  "dqa-seller-whatsapp": String(ROUTES.STORE.WHATSAPP),
+  "dqa-seller-reviews": String(ROUTES.STORE.REVIEWS),
+  "dqa-seller-storefront": String(ROUTES.STORE.STOREFRONT),
+  "dqa-seller-settings": String(ROUTES.STORE.STOREFRONT),
+};
+const QUICK_ACTIONS = DASHBOARD_QUICK_ACTIONS.seller
+  .map((id) => {
+    const meta = DASHBOARD_QUICK_ACTION_META[id];
+    const href = SELLER_QUICK_ACTION_HREFS[id];
+    const Icon = meta.iconName ? SELLER_QUICK_ACTION_ICONS[meta.iconName] : undefined;
+    return href && Icon ? { label: meta.label, href, Icon } : null;
+  })
+  .filter((a): a is { label: string; href: string; Icon: LucideIcon } => a !== null);
 
 function StatCard({
   label,

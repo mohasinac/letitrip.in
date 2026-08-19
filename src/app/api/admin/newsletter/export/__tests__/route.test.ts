@@ -2,26 +2,24 @@
  * Tests for GET /api/admin/newsletter/export
  *
  * Roles: ROLES_ADMIN_MOD
- * Returns CSV with headers: id, email, status, source, subscribedAt, createdAt
- * Content-Type: text/csv; charset=utf-8
- * Content-Disposition: attachment; filename="newsletter-subscribers-{date}.csv"
- * Values with commas/quotes escaped per CSV rules
+ * Enqueues an async `newsletterExport` job (Async Job Primitive) instead of
+ * building the CSV in-process — CSV-building logic itself is now covered by
+ * appkit/src/_internal/server/jobs/core/__tests__/newsletterExport.test.ts.
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 let _user: { uid: string; role: string } | null = null;
 
-const { mockList } = vi.hoisted(() => ({
-  mockList: vi.fn(),
+const { mockEnqueueJob } = vi.hoisted(() => ({
+  mockEnqueueJob: vi.fn(),
 }));
 
 vi.mock("@/providers.config", () => ({ withProviders: (fn: unknown) => fn }));
 vi.mock("@/constants", () => ({ ROLES_ADMIN_MOD: ["admin", "moderator"] }));
 
 vi.mock("@mohasinac/appkit", () => ({
-  newsletterRepository: { list: mockList },
-  sortBy: (field: string) => field,
-  COMMON_FIELDS: { CREATED_AT: "createdAt" },
+  successResponse: (data: unknown, message?: string) =>
+    new Response(JSON.stringify({ ok: true, data, message }), { status: 200 }),
   createRouteHandler: (opts: {
     auth?: boolean;
     roles?: readonly string[];
@@ -38,31 +36,16 @@ vi.mock("@mohasinac/appkit", () => ({
   },
 }));
 
-import { GET } from "../route";
+vi.mock("@mohasinac/appkit/server", () => ({
+  enqueueJob: mockEnqueueJob,
+}));
 
-const mockData = [
-  {
-    id: "sub-001",
-    email: "ravi@example.com",
-    status: "active",
-    source: "homepage",
-    subscribedAt: "2026-01-01T00:00:00Z",
-    createdAt: "2026-01-01T00:00:00Z",
-  },
-  {
-    id: "sub-002",
-    email: "alice,bob@example.com", // has comma — must be escaped
-    status: "unsubscribed",
-    source: "checkout",
-    subscribedAt: "2026-02-01T00:00:00Z",
-    createdAt: "2026-02-01T00:00:00Z",
-  },
-];
+import { GET } from "../route";
 
 beforeEach(() => {
   vi.clearAllMocks();
   _user = { uid: "admin-uid", role: "admin" };
-  mockList.mockResolvedValue({ data: mockData });
+  mockEnqueueJob.mockResolvedValue({ jobId: "job-1", customToken: "token-1" });
 });
 
 describe("GET /api/admin/newsletter/export", () => {
@@ -84,51 +67,16 @@ describe("GET /api/admin/newsletter/export", () => {
     expect(res.status).toBe(200);
   });
 
-  it("Content-Type is text/csv", async () => {
-    const res = await GET(new Request("http://localhost/api/admin/newsletter/export") as never);
-    expect(res.headers.get("Content-Type")).toContain("text/csv");
-  });
-
-  it("Content-Disposition contains 'attachment' and filename", async () => {
-    const res = await GET(new Request("http://localhost/api/admin/newsletter/export") as never);
-    const cd = res.headers.get("Content-Disposition") ?? "";
-    expect(cd).toContain("attachment");
-    expect(cd).toContain("newsletter-subscribers-");
-    expect(cd).toContain(".csv");
-  });
-
-  it("response body starts with CSV header row", async () => {
-    const res = await GET(new Request("http://localhost/api/admin/newsletter/export") as never);
-    const text = await res.text();
-    const firstLine = text.split("\r\n")[0];
-    expect(firstLine).toBe("id,email,status,source,subscribedAt,createdAt");
-  });
-
-  it("data rows include subscriber data", async () => {
-    const res = await GET(new Request("http://localhost/api/admin/newsletter/export") as never);
-    const text = await res.text();
-    expect(text).toContain("sub-001");
-    expect(text).toContain("ravi@example.com");
-  });
-
-  it("email with comma is wrapped in double quotes in output", async () => {
-    const res = await GET(new Request("http://localhost/api/admin/newsletter/export") as never);
-    const text = await res.text();
-    expect(text).toContain('"alice,bob@example.com"');
-  });
-
-  it("calls list with pageSize 10000 to export all records", async () => {
+  it("enqueues a newsletterExport job requested by the admin", async () => {
     await GET(new Request("http://localhost/api/admin/newsletter/export") as never);
-    expect(mockList).toHaveBeenCalledWith(
-      expect.objectContaining({ pageSize: "10000" }),
+    expect(mockEnqueueJob).toHaveBeenCalledWith(
+      expect.objectContaining({ jobType: "newsletterExport", requestedBy: "admin-uid" }),
     );
   });
 
-  it("empty subscriber list → only header row", async () => {
-    mockList.mockResolvedValue({ data: [] });
+  it("returns jobId + customToken from the enqueue result", async () => {
     const res = await GET(new Request("http://localhost/api/admin/newsletter/export") as never);
-    const text = await res.text();
-    const lines = text.split("\r\n").filter(Boolean);
-    expect(lines).toHaveLength(1); // header only
+    const body = await res.json();
+    expect(body.data).toEqual({ jobId: "job-1", customToken: "token-1" });
   });
 });
