@@ -1,5 +1,6 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 import {
   createRouteHandler,
   successResponse,
@@ -30,6 +31,9 @@ export const PUT = withProviders(
     schema: siteGroupSchema,
     handler: async ({ body }) => {
       const updated = await siteSettingsRepository.updateSingleton(body! as any);
+      // Homepage is ISR-cached (revalidate=120) and reads siteSettings directly
+      // in the Server Component — bust it now instead of waiting up to 2min.
+      revalidatePath("/");
       return successResponse(updated, "Settings saved");
     },
   }),

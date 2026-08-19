@@ -78,6 +78,8 @@ export const GET = withProviders(createRouteHandler({
       role: u.role,
       emailVerified: u.emailVerified,
       disabled: u.disabled,
+      [USER_FIELDS.IS_TESTER]: Boolean(u.isTester),
+      [USER_FIELDS.CAN_TEST_ADMIN]: Boolean(u.canTestAdmin),
       createdAt:
         u.createdAt instanceof Date
           ? u.createdAt.toISOString()

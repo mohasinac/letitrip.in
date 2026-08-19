@@ -6,6 +6,7 @@ import { withProviders } from "@/providers.config";
  * DELETE /api/admin/sections/[id] — Delete a section
  */
 
+import { revalidatePath } from "next/cache";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 import { successResponse, errorResponse } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
@@ -73,6 +74,9 @@ export const PATCH = withProviders(
           return errorResponse(ERROR_MESSAGES.SECTION.NOT_FOUND, 404);
         }
 
+        // Homepage is ISR-cached (revalidate=120) — bust it instead of waiting.
+        revalidatePath("/");
+
         return successResponse(section);
       } catch (error) {
         void normalizeError(error);
@@ -115,6 +119,9 @@ export const DELETE = withProviders(
           id,
           deletedBy: user?.uid,
         });
+
+        // Homepage is ISR-cached (revalidate=120) — bust it instead of waiting.
+        revalidatePath("/");
 
         return successResponse({ success: true });
       } catch (error) {

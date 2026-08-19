@@ -281,7 +281,7 @@ export default function Page() {
           >
             <Div className={`-mx-[var(--appkit-space-4)] -mt-[var(--appkit-space-4)] divide-y divide-[var(--appkit-color-border-subtle)] ${__O.hidden}`}>
               {recentOrders.map((order) => (
-                <Link key={order.id} href={`${String(ROUTES.ADMIN.ORDERS)}/${order.id}`} className="flex items-center justify-between px-[var(--appkit-space-4)] py-[var(--appkit-space-2-5)] hover:bg-[var(--appkit-color-surface-hover)] transition-colors">
+                <Link key={order.id} href={String(ROUTES.ADMIN.ORDER_DETAIL(order.id))} className="flex items-center justify-between px-[var(--appkit-space-4)] py-[var(--appkit-space-2-5)] hover:bg-[var(--appkit-color-surface-hover)] transition-colors">
                   <Text className="font-mono text-[var(--appkit-color-text-muted)]" size="xs">{order.id}</Text>
                   <Row align="center" gap="3">
                     <Text className="text-[var(--appkit-color-text-muted)]" size="xs">{order.status}</Text>

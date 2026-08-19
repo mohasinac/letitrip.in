@@ -27,6 +27,7 @@
  *   - scripts/audit-select-wrapper-classname.mjs (Select className sizing token instead of wrapperClassName)
  *   - scripts/audit-listing-filter-parity.mjs (SSR/client default-filter divergence on public listing pages, Root Cause #30)
  *   - scripts/audit-nav-page-wiring.mjs       (dead admin/store/user nav links — nav entry with no page.tsx, Root Cause #29)
+ *   - scripts/audit-route-nav-field-constants.mjs (hardcoded routes, inline nav arrays, raw field strings, and static ROUTES.* hand-concatenated with a dynamic segment instead of a parametrized *_DETAIL route)
  *
  * Baseline-drift audits: audit-ssr-in-appkit, audit-html-wrappers, audit-code-quality block
  * only when the violation count EXCEEDS the recorded baseline (regressions only).
@@ -410,6 +411,10 @@ const checks = [
   { label: "audit-listing-filter-parity", cmd: "node", args: ["scripts/audit-listing-filter-parity.mjs"], cwd: ROOT },
   // ── Dead admin/store/user nav links — nav entry with no page.tsx behind it (Root Cause #29) ─
   { label: "audit-nav-page-wiring", cmd: "node", args: ["scripts/audit-nav-page-wiring.mjs"], cwd: ROOT },
+  // ── Hardcoded routes, inline nav arrays, raw field strings, and static ROUTES.*
+  //    concatenated with a dynamic segment instead of a parametrized *_DETAIL route
+  //    (the admin dashboard "Recent Orders" 404, 2026-08-19) ─
+  { label: "audit-route-nav-field-constants", cmd: "node", args: ["scripts/audit-route-nav-field-constants.mjs"], cwd: ROOT },
 ];
 
 // Baseline violation counts — strict-zero. All three audits verified clean ✓

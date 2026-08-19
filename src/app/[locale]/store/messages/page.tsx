@@ -277,7 +277,7 @@ export default function StoreMessagesPage() {
                     conversation={c}
                     active={activeId === c.id}
                     onSelect={() => setActiveId(c.id)}
-                    mobileHref={`/store/messages/${c.id}`}
+                    mobileHref={`${String(ROUTES.STORE.MESSAGES)}?c=${c.id}`}
                   />
                 ))}
               </Stack>

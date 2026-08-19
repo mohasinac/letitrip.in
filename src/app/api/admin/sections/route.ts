@@ -5,6 +5,7 @@ import { withProviders } from "@/providers.config";
  * POST /api/admin/sections — Create a new section
  */
 
+import { revalidatePath } from "next/cache";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 import { successResponse, errorResponse } from "@mohasinac/appkit";
 import {
@@ -158,6 +159,10 @@ export const POST = withProviders(
         type: section.type,
         createdBy: user?.uid,
       });
+
+      // Homepage is ISR-cached (revalidate=120) and reads sections directly
+      // in the Server Component — bust it now instead of waiting up to 2min.
+      revalidatePath("/");
 
       return successResponse(section, SUCCESS_MESSAGES.SECTION.CREATED, 201);
     },

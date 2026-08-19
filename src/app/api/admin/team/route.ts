@@ -65,6 +65,8 @@ export const GET = withProviders(
         permissionGroup: u.permissionGroup,
         permissions: u.permissions ?? [],
         disabled: u.disabled,
+        [USER_FIELDS.IS_TESTER]: Boolean(u.isTester),
+        [USER_FIELDS.CAN_TEST_ADMIN]: Boolean(u.canTestAdmin),
         createdAt:
           u.createdAt instanceof Date
             ? u.createdAt.toISOString()

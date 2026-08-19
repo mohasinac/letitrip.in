@@ -15,10 +15,24 @@
  *        calls must use the corresponding `*_FIELDS` constant from
  *        `appkit/src/constants/field-names.ts`.
  *
+ *   R4 — A static (string-valued) `ROUTES.SECTION.KEY` list/index route hand-
+ *        concatenated with a dynamic segment (`${ROUTES.ADMIN.ORDERS}/${id}`
+ *        or `ROUTES.ADMIN.ORDERS + "/" + id`) instead of calling a
+ *        parametrized detail-route function (`ROUTES.ADMIN.ORDER_DETAIL(id)`).
+ *        This is the exact bug class that broke the admin dashboard's
+ *        "Recent Orders" links (2026-08-19): the widget built
+ *        `${ROUTES.ADMIN.ORDERS}/${order.id}` → `/admin/orders/{id}`, but the
+ *        real detail page only exists at `/admin/orders/{id}/view`
+ *        (`ROUTES.ADMIN.ORDER_DETAIL`). Hand-concatenation silently drifts
+ *        from the real page path the moment the detail route gains an extra
+ *        segment (`/view`, `/edit`, etc.) — always call the dedicated
+ *        function-valued route entry instead.
+ *
  * Suppression markers (per-line, with reason in the same line/block):
  *   // audit-route-ok          — legit hardcoded route string (e.g. external redirect target)
  *   // audit-nav-ok            — legit inline nav array (e.g. test fixture)
  *   // audit-field-name-ok     — dynamic field path constructed at runtime
+ *   // audit-route-concat-ok   — genuinely no parametrized route exists to call instead
  *
  * Exits 0 on clean, 1 on any violation.
  */
@@ -325,12 +339,81 @@ function checkR2(file, content, violations) {
 }
 
 // ---------------------------------------------------------------------------
+// R4 — ROUTES.SECTION.KEY (static route) concatenated with a dynamic segment.
+// ---------------------------------------------------------------------------
+//
+// Parse `appkit/src/next/routing/route-map.ts` into { section: { key: "string" | "function" } }.
+// Only string-valued keys can be victims of this bug — a function-valued key
+// (already parametrized, e.g. ORDER_DETAIL: (id) => ...) is the correct
+// pattern and is never flagged.
+
+const ROUTE_MAP_FILE = join(ROOT, "appkit", "src", "next", "routing", "route-map.ts");
+
+function parseRouteMapTypes(source) {
+  const routeMap = {};
+  const sectionRe = /(\w+):\s*\{([\s\S]*?)\n  \},/g;
+  let sectionMatch;
+  while ((sectionMatch = sectionRe.exec(source)) !== null) {
+    const [, sectionName, body] = sectionMatch;
+    const section = routeMap[sectionName] ?? (routeMap[sectionName] = {});
+    const stringKeyRe = /(\w+):\s*"([^"]+)"/g;
+    let km;
+    while ((km = stringKeyRe.exec(body)) !== null) {
+      section[km[1]] = "string";
+    }
+    const fnKeyRe = /(\w+):\s*\([^)]*\)\s*=>/g;
+    while ((km = fnKeyRe.exec(body)) !== null) {
+      section[km[1]] = "function";
+    }
+  }
+  return routeMap;
+}
+
+// `${ROUTES.SECTION.KEY}/${...}` or `${String(ROUTES.SECTION.KEY)}/${...}`
+const R4_TEMPLATE_RE = /\$\{\s*(?:String\(\s*)?ROUTES\.(\w+)\.(\w+)\s*\)?\s*\}\/\$\{/g;
+// `ROUTES.SECTION.KEY + "/" + ...` or `String(ROUTES.SECTION.KEY) + "/" + ...`
+const R4_CONCAT_RE = /(?:String\(\s*)?ROUTES\.(\w+)\.(\w+)\s*\)?\s*\+\s*["'`]\/["'`]\s*\+/g;
+
+function checkR4(file, content, routeTypeMap, violations) {
+  const normFile = norm(file);
+  if (normFile.includes("/appkit/src/next/routing/")) return; // the source of truth itself
+  const lines = content.split("\n");
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.includes("// audit-route-concat-ok")) continue;
+
+    const findInLine = (re) => {
+      re.lastIndex = 0;
+      let mm;
+      while ((mm = re.exec(line)) !== null) {
+        const [, section, key] = mm;
+        if (routeTypeMap[section]?.[key] !== "string") continue;
+        violations.push({
+          rule: "R4",
+          file: norm(rel(file)),
+          line: i + 1,
+          message: `ROUTES.${section}.${key} (static route) concatenated with a dynamic segment — call a parametrized ROUTES.${section}.*_DETAIL(id)-style route instead of hand-building the URL`,
+        });
+      }
+    };
+    findInLine(R4_TEMPLATE_RE);
+    findInLine(R4_CONCAT_RE);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
 const corpus = parseFieldNameCorpus();
 if (corpus.size === 0) {
   console.error("[audit-route-nav-field-constants] FATAL: empty field-name corpus — parsing failed");
+  process.exit(2);
+}
+
+const routeTypeMap = parseRouteMapTypes(readFileSync(ROUTE_MAP_FILE, "utf8"));
+if (Object.keys(routeTypeMap).length === 0) {
+  console.error("[audit-route-nav-field-constants] FATAL: empty route-map — parsing failed");
   process.exit(2);
 }
 
@@ -353,6 +436,7 @@ for (const file of allFiles) {
   checkR3(file, content, corpus, violations);
   checkR1(file, content, violations);
   checkR2(file, content, violations);
+  checkR4(file, content, routeTypeMap, violations);
 }
 
 // ---------------------------------------------------------------------------
@@ -367,7 +451,7 @@ if (violations.length === 0) {
 }
 
 // Group by rule, then by file.
-const byRule = { R1: [], R2: [], R3: [] };
+const byRule = { R1: [], R2: [], R3: [], R4: [] };
 for (const v of violations) byRule[v.rule].push(v);
 
 console.error("\n[audit-route-nav-field-constants] VIOLATIONS\n");
@@ -376,9 +460,10 @@ const titles = {
   R1: "R1 — hardcoded route literals (use ROUTES.*)",
   R2: "R2 — inline nav-group arrays in layouts (use @/constants/navigation)",
   R3: "R3 — raw Firestore field strings (use *_FIELDS constants)",
+  R4: "R4 — static ROUTES.* concatenated with a dynamic segment (use a parametrized *_DETAIL route)",
 };
 
-for (const rule of ["R1", "R2", "R3"]) {
+for (const rule of ["R1", "R2", "R3", "R4"]) {
   const list = byRule[rule];
   if (list.length === 0) continue;
   console.error(`\n${titles[rule]} — ${list.length} violation(s):`);
@@ -397,10 +482,10 @@ for (const rule of ["R1", "R2", "R3"]) {
 }
 
 console.error(
-  `\nTotal: ${violations.length} violation(s) — R1=${byRule.R1.length}, R2=${byRule.R2.length}, R3=${byRule.R3.length}.`,
+  `\nTotal: ${violations.length} violation(s) — R1=${byRule.R1.length}, R2=${byRule.R2.length}, R3=${byRule.R3.length}, R4=${byRule.R4.length}.`,
 );
 console.error(
-  "Suppression markers: // audit-route-ok | // audit-nav-ok | // audit-field-name-ok (add a reason).\n",
+  "Suppression markers: // audit-route-ok | // audit-nav-ok | // audit-field-name-ok | // audit-route-concat-ok (add a reason).\n",
 );
 
 process.exit(1);

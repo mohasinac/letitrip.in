@@ -1936,6 +1936,8 @@ Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 | audit-select-wrapper-classname.mjs | strict-0 | `<Select className="...">` sizing/flex utilities silently ignored — the real flex child is the wrapper div; use `wrapperClassName` instead |
 | audit-tester-checklist-hrefs.mjs | strict-0 | Every `href` in tester checklist seed data resolves to a real route — catches route renames/relocations silently 404-ing the tester's "Go test this →" button |
 | audit-media-filename-generators.mjs (appkit) | strict-0 | `MEDIA_FILENAME_PATTERNS` validator regex table stays in sync with `generateMediaFilename()`'s dispatcher — drift causes `/api/media/sign` to 500 in production (W1-51 bug class) |
+| audit-filter-tab-enums.mjs | strict-0 | Every `ADMIN_*_TABS`/`SELLER_*_TABS` filter-chip `id` matches a real value its target Firestore field can hold — a mismatch silently returns zero rows forever (root-cause #33) |
+| audit-function-trigger-shadow-types.mjs | strict-0 | A Firestore-trigger handler's local shadow type (e.g. `NewOrder`) has no field name that doesn't exist on the real document type — caught the 2026-08-19 onOrderCreate bug (every WhatsApp purchase announcement read "A customer" / "₹0") |
 
 ### ESLint mirror rules (`scripts/eslint-rules/index.mjs`)
 

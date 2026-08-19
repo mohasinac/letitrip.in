@@ -198,6 +198,18 @@ const AUDITS = [
   // returns zero rows forever. Found live in 8+ places in one sweep
   // (2026-08-19); see CLAUDE.md's Recurrent Root Cause Patterns.
   { name: "filter-tab-enums",              script: "scripts/audit-filter-tab-enums.mjs" },
+  // Strict-zero. A Firestore-trigger handler's local shadow type (e.g.
+  // `NewOrder`) with a field name that doesn't exist on the real document —
+  // every read of that field is `undefined` at runtime. Caught the
+  // 2026-08-19 onOrderCreate bug (WhatsApp announcements always read "A
+  // customer" / "₹0") after the fact; this audit prevents a recurrence.
+  { name: "function-trigger-shadow-types",  script: "scripts/audit-function-trigger-shadow-types.mjs" },
+  // Strict-zero. A field accepted by an admin PATCH schema but missing from
+  // the sibling LIST endpoint's hand-rolled serializer — the write succeeds
+  // but list-backed editors reseed from a stale/default value and silently
+  // overwrite real data on the next save. Found live in users (isTester/
+  // canTestAdmin) and stores (isVerified/isFeatured/capabilities) 2026-08-19.
+  { name: "list-serializer-parity",         script: "scripts/audit-list-serializer-parity.mjs" },
 
 ];
 function parseArgs(argv) {

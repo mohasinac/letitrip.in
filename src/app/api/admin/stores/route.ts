@@ -71,6 +71,11 @@ export const GET = withProviders(createRouteHandler({
       bio: store.bio,
       location: store.location,
       stats: store.stats ?? null,
+      [STORE_FIELDS.ADMIN_NOTES]: store.adminNotes,
+      [STORE_FIELDS.IS_FEATURED]: Boolean(store.isFeatured),
+      [STORE_FIELDS.IS_VERIFIED]: Boolean(store.isVerified),
+      [STORE_FIELDS.SUSPENSION_REASON]: store.suspensionReason,
+      [STORE_FIELDS.CAPABILITIES]: store.capabilities ?? [],
       createdAt: store.createdAt,
       updatedAt: store.updatedAt,
     }));

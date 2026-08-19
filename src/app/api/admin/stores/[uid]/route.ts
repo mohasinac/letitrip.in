@@ -14,11 +14,11 @@ import {
 
 const updateStoreSchema = z.object({
   storeStatus: z.enum(Object.values(STORE_FIELDS.STATUS_VALUES) as [string, ...string[]]).optional(),
-  adminNotes: z.string().optional(),
-  isFeatured: z.boolean().optional(),
-  isVerified: z.boolean().optional(),
-  suspensionReason: z.string().optional(),
-  capabilities: z.array(z.string()).optional(),
+  [STORE_FIELDS.ADMIN_NOTES]: z.string().optional(),
+  [STORE_FIELDS.IS_FEATURED]: z.boolean().optional(),
+  [STORE_FIELDS.IS_VERIFIED]: z.boolean().optional(),
+  [STORE_FIELDS.SUSPENSION_REASON]: z.string().optional(),
+  [STORE_FIELDS.CAPABILITIES]: z.array(z.string()).optional(),
 });
 
 export const GET = withProviders(
@@ -47,12 +47,13 @@ export const PATCH = withProviders(
       if (!store) return errorResponse("Store not found", 404);
 
       const update: Record<string, JsonValue> = {};
-      if (body!.storeStatus !== undefined) update.status = body!.storeStatus;
-      if (body!.adminNotes !== undefined) update.adminNotes = body!.adminNotes;
-      if (body!.isFeatured !== undefined) update.isFeatured = body!.isFeatured;
-      if (body!.isVerified !== undefined) update.isVerified = body!.isVerified;
-      if (body!.suspensionReason !== undefined) update.suspensionReason = body!.suspensionReason;
-      if (body!.capabilities !== undefined) update.capabilities = body!.capabilities;
+      const { adminNotes, isFeatured, isVerified, suspensionReason, capabilities } = body!;
+      if (body!.storeStatus !== undefined) update[STORE_FIELDS.STATUS] = body!.storeStatus;
+      if (adminNotes !== undefined) update[STORE_FIELDS.ADMIN_NOTES] = adminNotes;
+      if (isFeatured !== undefined) update[STORE_FIELDS.IS_FEATURED] = isFeatured;
+      if (isVerified !== undefined) update[STORE_FIELDS.IS_VERIFIED] = isVerified;
+      if (suspensionReason !== undefined) update[STORE_FIELDS.SUSPENSION_REASON] = suspensionReason;
+      if (capabilities !== undefined) update[STORE_FIELDS.CAPABILITIES] = capabilities;
 
       if (Object.keys(update).length > 0) {
         await storeRepository.update(storeId, update as any);

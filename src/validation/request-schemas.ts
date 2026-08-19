@@ -181,6 +181,8 @@ const productBaseSchema = z.object({
     .optional(),
   preOrderCancellable: z.boolean().optional(),
   allowShipBeforeEmiComplete: z.boolean().optional(),
+  allowOffers: z.boolean().optional(),
+  minOfferPercent: z.number().min(0).max(100).optional(),
   gstRate: z.union([z.literal(0), z.literal(5), z.literal(12), z.literal(18), z.literal(28)]).optional(),
   hsnCode: z.string().max(20).optional(),
   printMeta: z

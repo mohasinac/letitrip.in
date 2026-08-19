@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { faqJsonLd, siteSettingsRepository } from "@mohasinac/appkit";
+import { faqJsonLd, normalizeError, siteSettingsRepository } from "@mohasinac/appkit";
 import type { FAQCategory, FAQCategoryItem } from "@mohasinac/appkit";
 import { listPublicFaqs } from "@mohasinac/appkit/server";
 import { getTranslations } from "next-intl/server";
@@ -51,7 +51,8 @@ export default async function Page() {
   try {
     const settings = await siteSettingsRepository.getSingleton();
     contact = { email: settings.contact?.email ?? "", phone: settings.contact?.phone ?? "" };
-  } catch {
+  } catch (err) {
+    void normalizeError(err);
     // Firestore unavailable — FAQPageClient still renders with empty contact info.
   }
 

@@ -11,7 +11,7 @@ import {
   Button,
   ACTIONS,
 } from "@mohasinac/appkit/client";
-import { ListingToolbar } from "@mohasinac/appkit/ui";
+import { ListingToolbar, PaginatedSelect } from "@mohasinac/appkit/ui";
 import { useRouter, Link } from "@/i18n/navigation";
 
 const CANCELLABLE_STATUSES = new Set(["pending", "confirmed", "processing"]);
@@ -25,7 +25,6 @@ const SORT_OPTIONS = [
 ];
 
 const STATUS_OPTIONS = [
-  { value: "",                  label: "All statuses" },
   { value: "pending",           label: "Pending" },
   { value: "processing",        label: "Processing" },
   { value: "shipped",           label: "Shipped" },
@@ -71,17 +70,14 @@ export default function Page() {
             onResetAll={() => table.clear()}
           />
           <Div>
-            {/* eslint-disable-next-line lir/no-raw-html-elements -- short status filter; <Select> wrapper drops this UX */}
-            <select
-              value={status}
-              onChange={(e) => table.set("status", e.target.value)}
-              className="rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-3)] py-[var(--appkit-space-1-5)] text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text)]"
-              aria-label="Filter by order status"
-            >
-              {STATUS_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
+            <PaginatedSelect
+              value={status || null}
+              onChange={(v) => table.set("status", v ?? "")}
+              options={STATUS_OPTIONS}
+              placeholder="All statuses"
+              ariaLabel="Filter by order status"
+              className="min-w-[180px]"
+            />
           </Div>
           <OrdersList
             orders={orders}
