@@ -17,10 +17,12 @@
 - [🛑 Rule #7 — All CTAs Must Use the Action Registry](#-rule-7--all-ctas-must-use-the-action-registry)
 - [🛑 Rule #8 — Never Defer Work](#-rule-8--never-defer-work)
 - [🛑 Rule #9 — Forms & Inputs Must Use Appkit Primitives](#-rule-9--forms--inputs-must-use-appkit-primitives)
+- [🛑 Rule #10 — Never Run Dev Server or Deploy Without Explicit Request](#-rule-10--never-run-dev-server-or-deploy-without-explicit-request)
 - [Project Summary](#project-summary)
 - [Key Files to Read Before Any Session](#key-files-to-read-before-any-session)
 - [Seed Data Reference](#seed-data-reference)
 - [Slug Prefix System](#slug-prefix-system-enforced-everywhere)
+- [ID Generators Reference](#id-generators-reference)
 - [Media Filename Slug Patterns](#media-filename-slug-patterns)
 - [Appkit Patterns](#appkit-patterns-re-read-before-writing-any-component)
 - [Seed API Reference](#seed-api-reference)
@@ -156,7 +158,7 @@ This project deploys to Vercel **Hobby** with **Fluid Compute enabled** (1 vCPU 
 5. **Caching**: every public GET should set `Cache-Control: public, max-age=…, s-maxage=…, stale-while-revalidate=…` so the Hobby compute quota survives traffic. Cold-start prevention is **disabled** on this project, so every uncached miss is a real cold start.
 6. **Logging**: don't `console.log` per-row inside loops — Hobby's log buffer drops at ~4 KB/s. Aggregate before logging.
 
-**Verification**: run `npm run dev` and watch the `[dev-next] Vercel Hobby parity ON — memory=2048 MB …` banner — that confirms the caps are wired. To debug a specific route under the prod cap, hit it locally; the same 10 s / 2048 MB ceiling is in effect.
+**Verification** (only when the user asks to run/verify locally — see [Rule #10](#-rule-10--never-run-dev-server-or-deploy-without-explicit-request)): `npm run dev` prints a `[dev-next] Vercel Hobby parity ON — memory=2048 MB …` banner confirming the caps are wired. To debug a specific route under the prod cap, hit it locally; the same 10 s / 2048 MB ceiling is in effect.
 
 ---
 
@@ -260,6 +262,19 @@ import { loginSchema } from "../schemas";
 
 ---
 
+## 🛑 RULE #10 — NEVER RUN DEV SERVER OR DEPLOY WITHOUT EXPLICIT REQUEST
+
+**Never run `npm run dev`, `npm run dev:hot`, `vercel --prod`, `node scripts/deploy.mjs`, `npm publish` (in `appkit/`), or any Firebase deploy command (`npm run firebase deploy*`) unless the user explicitly asks for that specific action in that specific message.**
+
+1. **Verification does not require a running server.** Prefer `npx tsc --noEmit`, `npm run check` / `npm run check:audits` / `npm run check:lint`, and reading the source to confirm a change is correct. If a change genuinely can only be verified by seeing it render (a UI/CSS change), say so explicitly and ask before starting the dev server — don't start it preemptively "just in case."
+2. **Seed/data work never needs a dev server or a deploy.** `npx appkit-seed load/delete/status` talks directly to Firestore via firebase-admin — it does not need `npm run dev` running, and it has no relationship to Vercel deployment at all. Don't start the dev server as a side effect of seed work, and don't suggest deploying after a seed-data change (seed data lives in Firestore and `appkit/dist`, not in a Vercel build).
+3. **This overrides the "Default" framing in [Dev Workflow](#dev-workflow) below.** That section describes the dev server as a recommended default workflow *for the user's own use* — it is not standing permission for the assistant to launch it autonomously.
+4. **This does not relax [Appkit Publish & Deploy Rules](#appkit-publish--deploy-rules) below — it tightens it.** Publishing appkit to npm and deploying to Vercel already required an explicit ask; this rule makes explicit that the same applies to `npm run dev`/`dev:hot`, which had previously been treated as a low-stakes default anyone could run anytime.
+
+**Why:** Long-running dev-server processes and deploys are exactly the kind of action that should never be taken as a side effect of an unrelated task — they consume the user's compute/quota, can collide with a dev server or deploy the user already has running in another terminal, and (for Vercel) push changes to production. If a task's completion genuinely can't be confirmed without one of these, stop and ask first rather than running it "to be safe."
+
+---
+
 ## Project Summary
 
 **LetItRip** — India's largest collectibles marketplace. Monorepo:
@@ -275,9 +290,11 @@ import { loginSchema } from "../schemas";
 
 ## Dev Workflow
 
+> 🛑 See [Rule #10](#-rule-10--never-run-dev-server-or-deploy-without-explicit-request) — this section describes commands for the **user's own use**, not standing permission for the assistant to launch a dev server. Don't run either command below unless explicitly asked in that message.
+
 | Command | Memory | Feedback loop | Best for |
 |---------|--------|---------------|----------|
-| `npm run dev` | ~500 MB | Rebuild ~15-45s | **Default.** Server logic, Claude sessions, low-RAM machines |
+| `npm run dev` | ~500 MB | Rebuild ~15-45s | Server logic, low-RAM machines |
 | `npm run dev:hot` | ~3.5 GB | Hot-reload <1s | UI iteration, CSS tweaks, live preview |
 
 ### `npm run dev` — Build-and-Serve (default)
@@ -421,6 +438,22 @@ Traditional dev server with webpack HMR + file watchers. Uses ~3.5 GB. Best for 
 - payouts → `payout-{sellerName}-{YYYYMMDD}-{rand6}`
 
 **True Firestore auto-IDs** (no prefix, no slug): carts, eventEntries, notifications, sessions, jobs.
+
+---
+
+## ID Generators Reference
+
+> All runtime (production) ID generation lives in one file: [`appkit/src/utils/id-generators.ts`](appkit/src/utils/id-generators.ts). Every generator follows the same contract — accepts a typed input object with an optional `customId?: string`; when `customId` is non-empty it's returned as-is (lets callers bring their own ID without duplicating generator logic), otherwise the function slugifies the relevant fields per the [Slug Prefix System](#slug-prefix-system-enforced-everywhere) above.
+
+**Full catalog** (all exported from the same file): `generateCategoryId`, `generateUserId`, `generateProductId`, `generateAuctionId`, `generatePreOrderId`, `generateReviewId`, `generateOrderId`, `generateFAQId`, `generateChecklistItemId`, `generateCouponId`, `generateCarouselId`, `generateHomepageSectionId`, `generateBidId`, `generateBlogPostId`, `generatePayoutId`, `generateShipmentId`, `generateCatalogueItemId`, `generateOfferId`, `generateBarcodeFromId`, `generateQRCodeData`, plus the media-filename family (`generateMediaFilename`, `generateCroppedImageFilename`, `generateTrimmedVideoFilename`, `validateMediaFilename`, `deriveContextTypeFromFilename` — see [Media Filename Slug Patterns](#media-filename-slug-patterns) below).
+
+**Random suffixes use real crypto randomness, on purpose**: `generateRandomString(length)` (module-private helper, used by `generateOrderId`/`generateBidId`/`generatePayoutId`/etc. for their `{rand6}` suffix) calls `globalThis.crypto.getRandomValues()` — genuinely non-deterministic, which is **correct** for production: a real order/bid/payout is created exactly once and just needs a collision-safe suffix, never regenerated.
+
+### 🛑 Seed data must NEVER reuse this random-suffix pattern directly
+
+**Why this is its own callout (root-caused 2026-08-19, see Root Cause Pattern #25 below):** `appkit/src/seed/orders-seed-data.ts` used to have its own *local* `generateOrderId` helper (same name, unrelated to the canonical one above) that called `Math.random()` for its suffix. Because seed files are re-imported (and thus re-executed top-to-bottom) on every single `npx appkit-seed load` / `status` / `delete` invocation, a random suffix generated at *import time* is different every run — so `load` silently created 50 fresh duplicate orders every time instead of upserting the same 50, and `status`/`delete` could never compute the correct existing-doc count because they were checking for IDs that were never actually written (they'd been randomly regenerated since the last `load`).
+
+**The fix, and the pattern to reuse anywhere a seed file needs a stable "random-looking" suffix**: derive the suffix deterministically from stable inputs (e.g. a small string hash of the record's natural key — buyer id + product id + loop index, or whatever uniquely identifies that fixture row) instead of `Math.random()`. See the `seededSuffix()` helper in `orders-seed-data.ts` for the canonical small implementation (`Math.imul` string hash → unsigned → base36, padded to a fixed width). **Never import the canonical `generateOrderId`/`generateRandomString` from `id-generators.ts` into a seed file to "fix" this** — that would just reintroduce the same non-determinism the seed environment can't tolerate; seed files need their own deterministic variant even when the target ID *shape* (prefix-count-date-suffix) matches the runtime generator's output format.
 
 ---
 
@@ -761,6 +794,10 @@ The 4 layout shells (`AdminLayoutShell`, `StoreLayoutShell`, `UserLayoutShell`, 
 | 22 | **Suppression-marker spray instead of fixing the root cause** | When a strict-zero audit is failing, the only legitimate close is a real fix — a primitive extension, a Zod migration, a type narrowing, a behaviour change. Adding a per-line `// audit-X-ok: <reason>` marker to silence the violation is **not progress** — it is the violation hidden from the counter. Markers are reserved for **architecturally irreducible** cases (TS structural escapes, primitive-internal `className`, type-guard params that TS forces to `unknown`). Each marker carries a *specific* reason, not boilerplate. The lesson cost: 2026-06-17 sprayed ~133 `audit-variant-ok` markers across 16 files under the heading of "Phase 14 burn-down progress" — that work was rolled back and the variant plan reassigned to a separate session because the markers hid violations without removing className tokens. Before adding any marker, ask: "does a primitive variant exist or can be added to absorb this?" If yes, extend the primitive or rewrite the call site. Only mark when the answer is provably no (e.g. dynamic className from runtime data with no representable enum). |
 | 23 | **`appkit/src/**` in consumer `tsconfig.json` breaks Vercel Linux builds** | The consumer `tsconfig.json` must NOT include `appkit/src/**/*.ts` or `appkit/src/**/*.tsx` when the consumer pin is `"@mohasinac/appkit": "^X.Y.Z"` (npm registry). Including those paths causes the consumer TypeScript compiler to compile thousands of appkit source files alongside consumer code. On Windows this succeeds (case-insensitive FS, local dev cache). On Vercel's Linux build servers it fails: either OOM during compilation or case-sensitivity errors in appkit's import paths that don't surface on Windows. Symptom: local `npm run build` passes, Vercel `npm run build` exits 1 after 5–8 minutes with no accessible error log. Fix: delete the two `appkit/src/**` lines from `tsconfig.json` — types are already provided by `dist/*.d.ts` in `node_modules/@mohasinac/appkit`. The `scripts/deploy.mjs` pre-flight check enforces this. **When to re-add them**: only if you switch back to `file:./appkit` for local development (the lines are needed so VSCode sees appkit types without a full `npm run build` of the dist). |
 | 24 | **A top-level `import ... from "node:X"` anywhere in a file reachable from `index.ts`/`client.ts` fails the Turbopack production build — even if no client code ever consumes that symbol** | Turbopack resolves a module's full static import graph before any tree-shaking pass. If a file has a static top-level import of a Node builtin (`node:module`, `node:fs`, etc.) and that file is reachable from the client bundle through ANY re-export chain — even a shared barrel file that also exports genuinely client-safe symbols from OTHER files — Turbopack hard-fails with `the chunking context (unknown) does not support external modules (request: node:X)` on every page, in production only (local `next dev`/webpack tolerates it). **Moving which barrel re-exports the symbol is not a fix** — 2026-08-17's first attempt moved `pii-encrypt.ts`'s exports from `index.ts` to `server.ts`, but `index.ts` still imported OTHER, unrelated symbols (`redactPii`, rbac) from the same shared `security/index.ts` barrel that also re-exported `pii-encrypt.ts` — so the poisoned import was still statically reachable. **Real fix**: (a) the Node-only code must use a bare, non-static runtime call (`require("crypto")` inside a function body, never `import { createRequire } from "node:module"` at module scope) so bundlers doing static graph construction never see it; (b) any environment lacking an ambient `require` (a standalone pure-ESM script) must provide its own via `globalThis.require = createRequire(import.meta.url)` before importing appkit, rather than appkit's source code working around one caller in a way that breaks every other consumer; (c) if a file genuinely mixes Node-only code with client-safe code (e.g. `pii-encrypt.ts` had 6 crypto-free display-masking helpers mixed in with AES/HMAC functions), split the file — don't just re-route the barrel. See `asciiDiagrams.md` → "Architecture > PII Encryption vs Display Masking" for the full incident writeup and verification method. |
+| 25 | **`Math.random()` (or any other non-deterministic value) inside a seed data file breaks `appkit-seed load`/`status`/`delete` idempotency** | Seed files are freshly re-imported (and therefore fully re-executed) on every single CLI invocation. Any field computed with `Math.random()`, `Date.now()` used as an ID component (as opposed to just a display timestamp), or similar non-stable output means the SAME conceptual fixture gets a DIFFERENT document ID every run — `load` never upserts, it creates fresh duplicates every time; `status`/`delete` can never find what a previous `load` actually wrote, because they're computing a brand-new random ID to look for. Root-caused 2026-08-19 in `orders-seed-data.ts`'s local `generateOrderId` helper (50 orders, silently duplicating on every reseed). Fix: derive any "random-looking" suffix deterministically from the fixture's own stable identity (index, natural key) via a small string hash — see [ID Generators Reference](#id-generators-reference) above for the exact pattern and why the canonical runtime `generateOrderId`/`generateRandomString` in `id-generators.ts` must NOT be reused here. |
+| 26 | **Narrowing/pruning a seed catalog (fewer stores, fewer products) without updating every file that referenced the old catalog leaves dangling foreign keys** | This project's product catalog was deliberately narrowed to a single coherent franchise (Beyblade) at some point, and `products-standard-seed-data.ts` / `stores-seed-data.ts` / `categories-seed-data.ts` / most of `users-seed-data.ts` were updated to match — but ~20 other seed files (blog posts, events, reviews, orders, notifications, addresses, carts, conversations, etc.) kept referencing the old, now-deleted stores/products/personas. One phantom store id (`store-kaiba-corp-cards`) alone had 52+ references across the codebase pointing at a store that didn't exist in `stores-seed-data.ts` at all — found only by grepping `storeId:` across every seed file and diffing against the real store list. Root-caused + fixed 2026-08-19 (see [Seed Data Reference](#seed-data-reference)'s "narrowed to Beyblade" callout). **Whenever a seed catalog is narrowed, immediately grep every OTHER seed file for the old ids being removed** (`storeId:`, `productId:`, the old uid, etc.) — don't assume "I only touched the catalog files" means nothing else references them. |
+| 27 | **Not every media field renders through the same pipeline — image-only proxies 400 on video, and vice versa** | `/api/media/ext` (backing `seedExtMedia()`) explicitly checks `contentType.startsWith("image/")` and 400s on anything else — it exists to watermark third-party **images**, nothing else. But `background.type:"video"` on carousel slides and `review.video`/`ReviewDetailShell.tsx` both render via a raw `<video src>` element (`MediaVideo` or an inline `<video>` tag) that expects a directly-playable URL, never routed through that proxy. Wrapping a video URL in `seedExtMedia()` (or conversely, expecting an unwrapped video URL to get watermarked like an image) silently breaks playback — found twice in the same session (carousel background video, then flagged proactively before repeating it in review videos). **Before adding any `url`/`video`/`thumbnail` field to seed data, check how the consuming component actually renders it** — grep the component for `MediaVideo`, `<video`, or `resolveMediaUrl` to see whether it expects a raw external URL or a proxied one; don't assume every media field follows the same wrapping convention. |
+| 28 | **On this Windows setup, `npm install` does not reliably resync a `file:./appkit` dependency's non-`dist` files (e.g. `appkit/scripts/*.mjs`) — even a full `rm -rf node_modules/@mohasinac/appkit && npm install`** | `node_modules/@mohasinac/appkit` is a real copy, not a symlink/junction, on this machine (`Get-Item ... | Select LinkType` returns empty). `npm run build` inside `appkit/` only refreshes `appkit/dist/` at the source, which the linked copy also does not pick up automatically. A source fix to `appkit/scripts/seed-cli.mjs` (or any non-compiled file the `bin` entries point at) can silently keep failing with the pre-fix behavior indefinitely even after multiple `npm install` runs report "up to date" or "added N packages." **Verification, not assumption**: after any fix to a file under `appkit/scripts/` or a rebuild of `appkit/dist/`, run `diff node_modules/@mohasinac/appkit/scripts/<file> appkit/scripts/<file>` (and the `dist/` equivalent) before trusting the CLI reflects the fix. If they differ, manually resync: `rm -rf node_modules/@mohasinac/appkit/scripts node_modules/@mohasinac/appkit/dist && cp -r appkit/scripts node_modules/@mohasinac/appkit/scripts && cp -r appkit/dist node_modules/@mohasinac/appkit/dist`. |
 
 ---
 
@@ -1217,7 +1254,7 @@ Defined in `appkit/src/tokens/motion.ts`:
 
 ## End-of-Plan Checklist
 
-Run these steps **in order** at the end of every plan session before marking anything ✅.
+Run these steps **in order** at the end of every plan session before marking anything ✅ — **except** steps 2 (appkit publish), 3–4 (Firebase deploys), 5 (smoke test — needs a running server), and 6 (Vercel deploy), which are all gated by [Rule #10](#-rule-10--never-run-dev-server-or-deploy-without-explicit-request) and only run when the user explicitly asks for that specific step in that message. Step 1 (`npm run check`, no server/deploy involved) is the only one that's still an unconditional default.
 
 ### 1 — Quality Gate
 
