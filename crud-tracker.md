@@ -2,7 +2,24 @@
 
 > **Single working tracker.** Lane A/B split wound down 2026-05-12 (single-lane model now).
 >
-> **Last updated:** 2026-08-19 — **S-nav-wiring-sweep**: Whole-app admin/store/user
+> **Last updated:** 2026-08-19 — **S-related-content**: Fixed the "0 items" category-card
+> bug (nightly `countersReconcile.ts` reconciliation job read the deprecated `category`
+> display-name field instead of `categorySlugs[]`; corrected + backfilled live via new
+> `appkit/scripts/backfill-category-metrics.mjs`, `npm run categories:backfill-metrics`).
+> Built "Related Categories"/"Related Brands" sections, then — per follow-up user requests —
+> expanded the same "related content" pattern across products (found + fixed a second,
+> independent instance of the same category-field bug in `ProductDetailPageView.tsx`'s
+> existing Related Products carousel; expanded to 4 signals: category/brand/tags/store),
+> events (new tag-overlap "Related Events"), blog (extended the existing single related
+> section into 3: category/tags/author), scammer registry (new "Similar Scam Reports",
+> deliberately kept separate from the pre-existing identity-linked "Related Profiles" given
+> the real-person sensitivity), and reviews (`/reviews/[id]` now shows more-reviews-for-
+> product/store sections). Fixed seed-data gaps that would have left the new sections
+> structurally empty (missing product tags, no tag-overlap among active events, only 1
+> verified scammer profile) and added 7 tester checklist items; reseeded and verified via
+> `npx appkit-seed status`. See `newchange.md` → S-related-content for full detail.
+>
+> **Prior, 2026-08-19 — S-nav-wiring-sweep**: Whole-app admin/store/user
 > navigation audit (5 parallel research passes) found ~25 fully-built pages with no sidebar
 > nav entry (`/admin/grouped-listings`, `/store/grouped-listings`, `/store/listing-templates`,
 > the `/user` dashboard hub, plus ~17 more store pages) and the inverse — nav-adjacent route

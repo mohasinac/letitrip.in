@@ -13,10 +13,14 @@ const {
   mockFindBySlug,
   mockIncrementViews,
   mockFindRelated,
+  mockFindByTagsOverlap,
+  mockFindByAuthor,
 } = vi.hoisted(() => ({
   mockFindBySlug: vi.fn(),
   mockIncrementViews: vi.fn(),
   mockFindRelated: vi.fn(),
+  mockFindByTagsOverlap: vi.fn(),
+  mockFindByAuthor: vi.fn(),
 }));
 
 vi.mock("@/providers.config", () => ({
@@ -28,6 +32,8 @@ vi.mock("@mohasinac/appkit", () => ({
     findBySlug: mockFindBySlug,
     incrementViews: mockIncrementViews,
     findRelated: mockFindRelated,
+    findByTagsOverlap: mockFindByTagsOverlap,
+    findByAuthor: mockFindByAuthor,
   },
   createRouteHandler: ({ handler }: { handler: (ctx: { params: unknown }) => Promise<Response> }) => {
     return async (_req: Request, context: { params: Record<string, string> }) =>
@@ -67,6 +73,8 @@ function makePublishedPost(overrides: Record<string, unknown> = {}) {
 beforeEach(() => {
   vi.clearAllMocks();
   mockFindRelated.mockResolvedValue([]);
+  mockFindByTagsOverlap.mockResolvedValue([]);
+  mockFindByAuthor.mockResolvedValue([]);
   mockIncrementViews.mockResolvedValue(undefined);
 });
 

@@ -26,12 +26,16 @@ export const GET = withProviders(
         return errorResponse("Blog post not found", 404);
       }
       safeFireAndForget(blogRepository.incrementViews(post.id), "blog: incrementViews");
-      const related = await blogRepository
-        .findRelated(post.category, post.id, 3)
-        .catch(() => []);
+      const [related, relatedByTags, relatedByAuthor] = await Promise.all([
+        blogRepository.findRelated(post.category, post.id, 3).catch(() => []),
+        blogRepository.findByTagsOverlap(post.tags ?? [], post.id, 3).catch(() => []),
+        blogRepository.findByAuthor(post.authorId, post.id, 3).catch(() => []),
+      ]);
       return successResponse({
         post: toSerializable(post),
         related: related.map(toSerializable),
+        relatedByTags: relatedByTags.map(toSerializable),
+        relatedByAuthor: relatedByAuthor.map(toSerializable),
       });
     },
   }),

@@ -80,6 +80,7 @@ export default async function Page({ params }: Props) {
         incidents={data.incidents}
         comments={data.comments}
         relatedScammers={data.relatedScammers}
+        similarScamReports={data.similarScamReports}
         isAuthenticated={false}
       />
     </>

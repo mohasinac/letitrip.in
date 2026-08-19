@@ -41,6 +41,32 @@
 
 ---
 
+### S-related-content — Category item-count bug fix + "related content" discovery across categories/brands/listings/events/blog/scammers/reviews (2026-08-19)
+
+Started from a screenshot bug report: category cards on `/categories` showed "0 items" for every category while the category detail page correctly showed real products inside.
+
+**Root cause**: `CategoryGrid.tsx`'s card count reads the stored `metrics.productCount` field, which is only kept in sync by a Firestore trigger (`onProductWrite.ts`, correct) and a nightly reconciliation job (`countersReconcile.ts`) that had a real bug — it read the deprecated `category` display-name field instead of `categorySlugs[]`, so it silently no-op'd on every product. The stored field had never been populated for this dataset (no deployed Functions to run either mechanism against current data).
+
+**Fix**: corrected `countersReconcile.ts`'s field selection to match `categorySlugs[0]` (mirroring the already-correct trigger logic), added test coverage, and wrote a standalone data-only backfill script (`appkit/scripts/backfill-category-metrics.mjs`, `npm run categories:backfill-metrics`) that recomputes `metrics.*` directly via firebase-admin — no Functions deploy needed. Ran it against the live `letitrip-in-app` project; category counts are now correct.
+
+**New feature — "Related X" discovery, built out across 7 content types after user follow-up requests**:
+- **Categories/Brands**: `CategoryDetailPageView`/`BrandDetailPageView` gained "Related Categories" (other categories sharing `rootId`, excluding self) / "Related Brands" (other active `categoryType:"brand"` rows) sections, reusing the existing `CategoryGrid`/`CategoryCard`.
+- **Listings**: found and fixed a second, independent instance of the same category-field bug — `ProductDetailPageView.tsx`'s "Related Products" carousel (and its breadcrumb category link) used the deprecated `category` field instead of `categorySlugs[0]`, and a separate dead server action (`getRelatedProducts`) filtered on a `categoryId` field that never existed on `ProductDocument` at all. Fixed both, and expanded to 4 independently-fetched sections per user's chosen signals: same category, same brand, tag overlap ("You might also like"), same store. New `productRepository.findByTagsOverlap()`.
+- **Events**: new tag-overlap "Related Events" carousel on the Overview tab (`eventRepository.findByTagsOverlap()`, `getRelatedEvents()` action, new `<RelatedEventsCarousel>` component).
+- **Blog**: extended the existing single "Related Posts" (same category) section into three — added tag-overlap and same-author sections (`blogRepository.findByTagsOverlap()`/`findByAuthor()`), threading through `BlogPostDetailResponse`/`useBlogPost`/`BlogPostView`. Fixed the same shape in both the live consumer route and a colocated-but-dead appkit route file that shares the response type.
+- **Scammer registry**: added a "Similar Scam Reports" section (same `scamType`, `scammerRepository.findBySameType()`) deliberately kept separate from the pre-existing explicit `relatedScammerIds`-based "Related Profiles" section, with an explicit caption that pattern similarity does not imply the same identity — flagged and handled carefully given this involves real accused individuals.
+- **Reviews**: `/reviews/[id]` now shows "More reviews for [product]" / "More reviews for [store]" sections, reusing existing repository methods and the `ReviewCard` component.
+
+**Seed data fixes** (so the new sections have real content to show, not empty states): all 10 standard Beyblade products had `tags: []` — added cross-generation-overlapping tags (`attack-type`, `balance-type`, `vintage-collectible`, `tournament-grade`, `starter-set`). One active event shared no tag with any other active event — added one. Only 1 of 3 scammer profiles was `verified` (both new relatedness mechanisms need ≥2 verified profiles to ever show anything) — added 2 new verified profiles: one sharing `scamType` with the original (different person, same pattern) and a second cross-linked via `relatedScammerIds` to the first (same operator, different alias) — deliberately not linking the pattern-match pair to the identity-match pair.
+
+**Tester checklist**: added 7 new checklist items across Buying/product-detail, Content & Discovery/blog, Content & Discovery/events, Buying/reviews, Public Pages/core-listing-pages (×2), and Public Pages/stores-sellers-directories — each naming the specific seeded fixture to check. Hrefs point at the static listing page (matching the file's existing convention; `audit-tester-checklist-hrefs.mjs` only resolves static pages, not dynamic `[id]`/`[slug]` routes) with the exact dynamic example named in the description text.
+
+**Reseeded**: `npx appkit-seed load --collections products,events,scammerProfiles,testerChecklistItems` — dry-run confirmed exact expected deltas (2 new scammer profiles, 7 new checklist items, 0 net-new elsewhere since tag additions are in-place edits to existing docs) before running for real. Verified via `npx appkit-seed status`: all 4 collections in sync.
+
+**Environment note**: this session ran concurrently with unrelated in-progress work on the same appkit submodule (orders/prize-draw reveal fields, checkout/OTP-bypass work, watermark theming) — several transient build/lint failures encountered mid-session were confirmed via `git status`/re-running to be from that other work, not this session's changes; none of the files touched here were involved.
+
+---
+
 ### S-index-shape-fix — Firestore composite index shape gaps (products + 7 other collections), audit repo-map completeness, tester seed-data fixes (2026-08-19)
 
 Triggered by a live bug report: `/products` loaded empty by default (with a "Firestore index missing" toast) while items only appeared after toggling "Show sold" — and the same symptom was showing up across other public listing pages and all three dashboards (admin/store/user).
