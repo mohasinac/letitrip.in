@@ -41,6 +41,75 @@
 
 ---
 
+### S-field-drift-sweep — Three-round sweep for "save silently doesn't stick" bugs across the whole app; found the coupon-edit feature was completely non-functional (2026-08-19)
+
+Started from a user report of being unable to edit a user's role/tester flags in the admin panel.
+Two rounds of static UI-wiring investigation (SideDrawer props, RowActionMenu handlers, CSS,
+translations) found nothing broken — the panel itself worked fine. The user then supplied a
+captured `PATCH` request + DevTools screenshot of the follow-up list response, which showed
+`role`/`displayName` updated but `isTester`/`canTestAdmin` silently absent. That was the real
+lead: `src/app/api/admin/users/route.ts`'s `serializeUser()` (the LIST endpoint) had never been
+updated when those two fields were added to the sibling PATCH schema — the write succeeded, the
+list read lied, and `AdminUserEditorView` (which seeds its "current value" state from the list
+row, then unconditionally re-sends it on save) was silently resetting real testers to non-tester
+status on every unrelated edit. Root Cause #38 in CLAUDE.md.
+
+User asked to expand scope three times in a row, each pass finding more:
+
+**Round 1** (admin users/stores): same bug in `admin/stores` — `isVerified`/`isFeatured`/
+`capabilities`/`adminNotes`/`suspensionReason` missing from the list serializer, worse than users
+because it silently un-verified stores and reset custom capabilities to the two-item default on
+any unrelated save. `isFeatured` additionally had no prop path at all between `AdminStoresView`
+and `AdminStoreEditorView` — a second, independent way the same symptom occurs. Fixed both, added
+missing `STORE_FIELDS` constants (existing `USER_FIELDS.IS_TESTER`/`CAN_TEST_ADMIN` were already
+there, just unused), and shipped `scripts/audit-list-serializer-parity.mjs` — a strict-zero audit
+that cross-checks PATCH-schema fields against list-serializer fields for registered resource pairs
+(currently users/stores/team), so this exact drift can't ship silently again.
+
+**Round 2** (seller + user-account + public + remaining admin resources): user-account and
+public-facing surfaces came back completely clean — they uniformly use fresh single-item fetches
+for edit forms rather than reusing list rows, which structurally avoids the whole bug class. Found
+four more real bugs: `AdminSupportTicketDetailView`'s "Apply store change" panel never fetched the
+linked store at all (hardcoded `active`/`false`/`false` defaults, unconditionally overwritten on
+click — fixed with a `useQuery` fetch before allowing the action); the FAQ update schema was
+missing 6 fields the editor sends (`tags`/`order`/`priority`/`isPinned`/`showOnHomepage`/
+`showInFooter`, plus a `displayOrder`→`order` name bug) — while fixing it, found `answer`/`slug`
+would have been written in the wrong shape too (raw string instead of `{text,format}`, top-level
+`slug` instead of nested `seo.slug`) since the handler had never mirrored create's transform;
+grouped-listings "Reassign products" 405'd (no PATCH handler existed — added one); and the seller
+product edit page hand-picked ~28 of 55+ writable fields into its initial form state, two of which
+(`minOfferPercent`/`insuranceCost`) reset to a hardcoded default the moment a seller touched the
+paired toggle — replaced the hand-picked object with a full spread + targeted overrides so a future
+field can't be silently dropped the same way.
+
+**Round 3** (cross-entity quick-action panels + create-vs-update *shape* parity, not just
+presence): cross-entity sweep came back clean beyond the already-fixed ticket panel. Shape-parity
+sweep found the session's most severe bug: **`PATCH /api/admin/coupons/[id]` never called
+`couponsRepository.update()` at all** — it validated the body, handled activate/deactivate, and
+returned a 200 echoing the submission back as if saved, but every other edit (name, description,
+discount, usage, restrictions, validity dates) silently did nothing. Likely broken for a long time;
+nothing about the response would ever tip you off. Also fixed: a `validity`-clobber risk on the
+seller-side coupon PATCH sibling (sending only `{isActive:false}` would wipe `startDate`/
+`endDate` — same wholesale-replace-instead-of-merge mistake, now merged like `restrictions`
+already was); sublisting-category `seo.title`/`seo.description` frozen at creation-time values
+after every rename; grouped-listings `activeMemberCount` not recomputed on PATCH (both admin and
+seller routes); admin events skipping staged-media finalization on PATCH (newly-uploaded images
+left orphaned in Storage `tmp/`). Reviewed but deliberately did NOT "fix" events' slug staying
+frozen after a title rename — checked categories/brands/bundles and found "slug is immutable after
+creation" is the established codebase convention there too (update schemas don't even accept it),
+so auto-recomputing events' slug would make it *inconsistent* with the rest of the app and risk
+breaking existing links. Root Cause #39 (shape-parity class) and #40 (the coupon incident
+specifically) in CLAUDE.md.
+
+Net: 11 real bugs fixed across 3 rounds, one new audit script, 3 new CLAUDE.md root-cause entries,
+`codebaseexports.md` updated for every touched API route. Verified after every round: 0 new
+TypeScript errors, 0 lint issues, full audit suite green. Mid-session, discovered a second,
+independent uncommitted session was active in the same working tree — all fixes ended up swept
+into that session's own commits rather than dedicated ones, verified content-intact afterward
+before this doc-update pass.
+
+---
+
 ### S-seed-reseed-beyblade-migration — Fixed the seed delete/reload pipeline + purged leftover Yu-Gi-Oh content across ~20 seed files (2026-08-19)
 
 Started as "reseed blogs/events, they're using old seeds" and grew into a full seed-system audit

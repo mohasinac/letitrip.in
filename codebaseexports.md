@@ -1184,7 +1184,7 @@
 | `/api/admin/bids` | GET, POST | List/manage bids |
 | `/api/admin/bids/[id]` | GET, PUT, DELETE | Bid CRUD |
 | `/api/admin/faqs` | GET, POST | List/create FAQs |
-| `/api/admin/faqs/[id]` | GET, PUT, DELETE | FAQ CRUD |
+| `/api/admin/faqs/[id]` | GET, PUT, PATCH, DELETE | FAQ CRUD — 2026-08-19: schema fixed to accept `tags`/`order`/`priority`/`isPinned`/`showOnHomepage`/`showInFooter` (was silently dropping all 6); `answer`/`slug` now correctly transformed to `{text,format}`/`"seo.slug"` on update to match create (previously wrote wrong shapes) |
 | `/api/admin/tester-checklist-items` | GET, POST | List/create tester QA checklist test cases |
 | `/api/admin/tester-checklist-items/[id]` | GET, PUT, PATCH, DELETE | Tester checklist item CRUD |
 | `/api/admin/tester-feedback` | GET | Flat filterable list of every tester's checklist responses (All Submissions tab) |
@@ -1192,18 +1192,19 @@
 | `/api/admin/tester-feedback/report` | GET | Coverage report — per-item yes/no counts + flat "no"-answer issues list (Report + Main Issues tabs) |
 | `/api/admin/tester-feedback/export` | GET | Downloads every answered checklist response as a Markdown file (`Content-Disposition: attachment`), grouped by feature area, joined against the checklist catalog for readable labels — `TesterChecklistResponseRepository.getMarkdownReport()`, same output as `npm run tester:export-feedback` (2026-08-17) |
 | `/api/admin/coupons` | GET, POST | List/create coupons |
-| `/api/admin/coupons/[id]` | GET, PUT, DELETE | Coupon CRUD |
+| `/api/admin/coupons/[id]` | GET, PATCH, DELETE | Coupon CRUD — 2026-08-19: PATCH previously never called `couponsRepository.update()` at all (only activate/deactivate worked); every other edit (name/description/discount/usage/restrictions/validity dates) silently no-op'd while returning a 200 that echoed the submission as if saved. Now persists correctly, with `validity`/`restrictions` merged (not replaced wholesale) against the existing document |
 | `/api/admin/carousel` | GET, POST | List/create carousel slides |
 | `/api/admin/carousel/[id]` | GET, PUT, DELETE | Carousel CRUD |
 | `/api/admin/carousels` | GET, POST | List/create carousel groups (`AdminCarouselGroupEditorView`) |
 | `/api/admin/carousels/[id]` | GET, PUT, DELETE | Carousel group CRUD |
+| `/api/admin/grouped-listings/[id]` | GET, PATCH, DELETE | Admin moderation endpoint for a grouped listing (seller-scoped CRUD lives at `/api/store/grouped-listings/[id]`) — PATCH added 2026-08-19 (previously 405'd, "Reassign products" was fully broken); recomputes `activeMemberCount` from `productIds.length` on write, matching create's derivation |
 | `/api/admin/maintenance/cloud-logs` | GET | Google Cloud Logging entries for `/admin/maintenance/cloud-logs` — `listCloudLogEntries()`, bounded single call + client-driven pagination |
 | `/api/admin/sections` | GET, POST | List/create homepage sections |
 | `/api/admin/sections/[id]` | GET, PUT, DELETE | Section CRUD |
 | `/api/admin/ads` | GET, POST | List/create ads |
 | `/api/admin/ads/[id]` | GET, PUT, DELETE | Ad CRUD |
 | `/api/admin/events` | GET, POST | List/create events |
-| `/api/admin/events/[id]` | GET, PUT, DELETE | Event CRUD |
+| `/api/admin/events/[id]` | GET, PATCH, DELETE | Event CRUD — 2026-08-19: PATCH now runs the same staged-media finalize calls (`finalizeStagedMediaField`/`Object`/`ObjectArray`) as create for `coverImage`/`eventImages`/`winnerImages`/`additionalImages`, so a newly-uploaded image swapped in via edit gets promoted out of Storage `tmp/` instead of staying orphaned |
 | `/api/admin/events/[id]/trigger-raffle` | POST | Manual raffle trigger |
 | `/api/admin/payouts` | GET, POST | List/manage payouts |
 | `/api/admin/payouts/[id]` | GET, PUT, DELETE | Payout CRUD |
@@ -1249,7 +1250,9 @@
 | `/api/store/orders/[id]/ship` | POST | Ship order |
 | `/api/store/orders/[id]/emi-installment` | PATCH | Mark one EMI installment paid (EMI/art-stickers session) |
 | `/api/store/coupons` | GET, POST | Store coupons |
-| `/api/store/coupons/[id]` | GET, PUT, DELETE | Coupon CRUD |
+| `/api/store/coupons/[id]` | GET, PATCH, DELETE | Coupon CRUD — 2026-08-19: `validity`/`discount` now merged against the existing document rather than replaced wholesale on PATCH (a caller sending only `validity:{isActive:false}` would otherwise wipe `startDate`/`endDate`); `discount.value`/`minPurchase`/`maxDiscount` rounding for `fixed`-type coupons now mirrors create |
+| `/api/store/grouped-listings/[id]` | GET, PATCH, DELETE | Seller-scoped grouped-listing CRUD (admin moderation lives at `/api/admin/grouped-listings/[id]`) — 2026-08-19: PATCH now coerces `productIds`/`minActiveMembers` and recomputes `activeMemberCount`, mirroring create's derivation (previously wrote uncoerced values and left the count stale) |
+| `/api/store/sublisting-categories/[id]` | GET, PUT, DELETE | Sublisting category CRUD — 2026-08-19: PUT now recomputes `seo.title`/`seo.description` when `name`/`description` change, mirroring create's derivation (previously left page metadata frozen at creation-time values after every rename) |
 | `/api/store/storefront` | GET, PUT | Storefront settings |
 | `/api/store/shipping` | GET, PUT | Shipping settings (manual carrier/pickup only — Shiprocket removed) |
 | `/api/store/payout-settings` | GET, PUT | Payout config |
@@ -1938,6 +1941,7 @@ Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 | audit-media-filename-generators.mjs (appkit) | strict-0 | `MEDIA_FILENAME_PATTERNS` validator regex table stays in sync with `generateMediaFilename()`'s dispatcher — drift causes `/api/media/sign` to 500 in production (W1-51 bug class) |
 | audit-filter-tab-enums.mjs | strict-0 | Every `ADMIN_*_TABS`/`SELLER_*_TABS` filter-chip `id` matches a real value its target Firestore field can hold — a mismatch silently returns zero rows forever (root-cause #33) |
 | audit-function-trigger-shadow-types.mjs | strict-0 | A Firestore-trigger handler's local shadow type (e.g. `NewOrder`) has no field name that doesn't exist on the real document type — caught the 2026-08-19 onOrderCreate bug (every WhatsApp purchase announcement read "A customer" / "₹0") |
+| audit-list-serializer-parity.mjs | strict-0 | Every admin resource's PATCH-writable field (Zod schema) is present in the sibling LIST endpoint's hand-rolled serializer — a missing field means a list-backed editor reseeds from a stale/default value and silently overwrites real data on the next save. Root-caused 2026-08-19 in admin users (`isTester`/`canTestAdmin`) and stores (`isVerified`/`isFeatured`/`capabilities`); registry currently covers users/stores/team (root-cause #38) |
 
 ### ESLint mirror rules (`scripts/eslint-rules/index.mjs`)
 
