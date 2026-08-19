@@ -562,9 +562,10 @@
 | RelatedProducts, RelatedProductsCarousel | Component | Related products — `ProductDetailPageView` now renders up to 4 carousels (same category — fixed off the deprecated `category` field 2026-08-19, same brand, tag overlap, same store) via `RelatedProductsCarousel`, each independently fetched |
 | CustomFieldsEditor, CustomSectionsEditor, CustomSectionTabContent | Editor | Custom fields/sections |
 | NonRefundableConsentModal | Modal | Non-refundable product consent |
-| PrizeDrawItemsEditor | Editor | Prize draw items editor |
+| PrizeDrawItemsEditor | Editor | Prize draw items editor (min 2 items, was 3, 2026-08-19) |
 | PrizeDrawCollage | Display | Prize draw items collage |
-| PrizeRevealModal | Modal | Prize reveal animation |
+| PrizeRevealModal | Modal | Redesigned 2026-08-19 for fully-automatic reveal — pure display (`pending`/`won` from `initialPrizeWon`), no more buyer-click `onReveal` flow; props: `revealMode?: "instant"\|"scheduled"`, exports `PrizeRevealResult` (renamed from `PrizeRevealResponse`) |
+| PrizeDrawWinnerMappingView | View | New 2026-08-19 — read-only item→order winner mapping for classic reveal-mode draws, admin/seller-only (never public); wired into the admin/seller prize-draw "entries" pages alongside `LotteryEntriesView` (lottery mode) |
 | PrizeDrawEntryActions | Actions | Prize draw entry actions |
 | PrizeDrawsSection, PrizeDrawsIndexListing | Component | Prize draws listing |
 | MarketplacePrizeDrawCard | Card | Prize draw marketplace card |
@@ -1804,14 +1805,11 @@ All functions deploy to region `asia-south1`. HTTPS functions require `LETITRIP_
 | weeklyPayoutEligibility | weekly Sat 05:00 UTC | Recompute weekly seller payout eligibility |
 | notificationPrune | weekly Mon 01:00 UTC | Prune read notifications past retention |
 | cleanupRtdbEvents | every 5 minutes | Reap stale RTDB auth-event nodes |
-| prizeRevealOpen | every 5 minutes | Flip prize-draw reveals pending→open + opening notifications |
-| prizeRevealClose | every 5 minutes | Flip prize-draw reveals open→closed |
-| prizeRevealExpiry | every 6 hours UTC | Auto-refund unrevealed prize-draw entries past deadline |
-| prizeRevealReminder | daily 10:00 IST | Nudge prize-draw buyers <24h to deadline |
+| prizeDrawExpiryReveal | every 5 minutes | Scheduled-mode prize draws: assign winners for outstanding paid orders past `prizeRevealWindowEnd`, then close (renamed/repurposed from `prizeRevealClose` 2026-08-19; `prizeRevealOpen`/`prizeRevealExpiry`/`prizeRevealReminder` retired — reveal is now fully automatic, no buyer-claim-deadline mechanic) |
 | bundleStockSync | daily 10:05 IST | Flip bundle isSold when any item runs OOS; also refreshes `bundleOriginalTotal` (sum of member prices) so the discount badge stays accurate as member prices change |
 | catalogueImageStalenessReminder | daily 07:00 IST | Feature B — remind catalogue owners whose photos near the 30-day freshness cutoff |
 
-### Firestore Triggers (19 functions)
+### Firestore Triggers (21 functions)
 
 | Function | Trigger | Purpose |
 |----------|---------|---------|
@@ -1820,6 +1818,8 @@ All functions deploy to region `asia-south1`. HTTPS functions require `LETITRIP_
 | onOrderStatusChange | documentUpdated `orders/{orderId}` | Status transition notifications + returns |
 | onProductWrite | documentWritten `products/{productId}` | Search index + stats + audits |
 | onProductStockChange | documentWritten `products/{productId}` | Recompute bundleStockStatus + groupedListing activeMemberCount |
+| onPrizeDrawPaymentConfirmed | documentUpdated `orders/{orderId}` | Instant-mode prize-draw winner assignment the moment an order's payment is confirmed (2026-08-19) |
+| prizeDrawSoldOutReveal | documentWritten `products/{productId}` | Scheduled-mode prize draws: assign winners for all outstanding orders the instant a draw sells out, then close (2026-08-19) |
 | onReviewWrite | documentWritten `reviews/{reviewId}` | Recompute product + store rating aggregates |
 | onCategoryWrite | documentWritten `categories/{categoryId}` | Path materialization + slug indexes |
 | onStoreWrite | documentWritten `stores/{storeId}` | Status mirror + owner uid index |
