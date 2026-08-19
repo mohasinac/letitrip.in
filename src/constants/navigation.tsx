@@ -421,6 +421,10 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
       { href: String(ROUTES.PUBLIC.HELP),  label: "Help Center"     },
     ],
   },
+  {
+    title: "Testing",
+    items: [],
+  },
 ];
 
 export const USER_NAV_ALL_ITEMS: UserNavItem[] = USER_NAV_GROUPS.flatMap((g) => g.items ?? []);
@@ -437,7 +441,7 @@ const BECOME_SELLER_LABEL = "Open a Store";
 
 const ACCOUNT_GROUP_TITLE = "Account";
 
-const HELP_GROUP_TITLE = "Help";
+const TESTING_GROUP_TITLE = "Testing";
 
 export function getUserNavGroups(
   isSeller: boolean,
@@ -468,7 +472,7 @@ export function getUserNavGroups(
         ],
       };
     }
-    if (group.title === HELP_GROUP_TITLE && isTester) {
+    if (group.title === TESTING_GROUP_TITLE && isTester) {
       const testerItems: UserNavItem[] = [
         { href: String(ROUTES.USER.TESTER_HUB), label: "Tester Hub" },
       ];
@@ -478,10 +482,7 @@ export function getUserNavGroups(
           label: "Admin Dashboard (Testing)",
         });
       }
-      return {
-        ...group,
-        items: [...testerItems, ...group.items],
-      };
+      return { ...group, items: testerItems };
     }
     return group;
   });
