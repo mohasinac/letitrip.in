@@ -22,8 +22,11 @@
  *   - scripts/audit-dashboard-padding.mjs       (double px-4/py-* padding on dashboard pages that DashboardLayoutClient already covers)
  *   - scripts/audit-root-cause.mjs             (in-memory fallbacks, // HACK/WORKAROUND/Fallback comments, deferred TODOs in production code)
  *   - scripts/audit-gitignore.mjs             (unanchored .gitignore patterns that silently exclude nested source files)
- *   - scripts/audit-money-units.mjs           (reintroduced *Paise/InPaise identifiers or paise-scale */÷100 arithmetic)
+ *   - scripts/audit-money-units.mjs           (reintroduced *Paise/InPaise identifiers or paise-scale multiply/divide-by-100 arithmetic)
  *   - scripts/audit-server-client-function-props.mjs (Server Component page.tsx passing an inline function to a Client Component)
+ *   - scripts/audit-select-wrapper-classname.mjs (Select className sizing token instead of wrapperClassName)
+ *   - scripts/audit-listing-filter-parity.mjs (SSR/client default-filter divergence on public listing pages, Root Cause #30)
+ *   - scripts/audit-nav-page-wiring.mjs       (dead admin/store/user nav links — nav entry with no page.tsx, Root Cause #29)
  *
  * Baseline-drift audits: audit-ssr-in-appkit, audit-html-wrappers, audit-code-quality block
  * only when the violation count EXCEEDS the recorded baseline (regressions only).
@@ -223,6 +226,12 @@ const checks = [
     cwd: ROOT,
   },
   {
+    label: "audit-select-wrapper-classname",
+    cmd: "node",
+    args: ["scripts/audit-select-wrapper-classname.mjs"],
+    cwd: ROOT,
+  },
+  {
     label: "audit-jsx-text-comments",
     cmd: "node",
     args: ["scripts/audit-jsx-text-comments.mjs"],
@@ -397,6 +406,10 @@ const checks = [
   // ── Money is decimal rupees everywhere except the two Razorpay boundary files ─
   { label: "audit-money-units", cmd: "node", args: ["scripts/audit-money-units.mjs"], cwd: ROOT },
   { label: "audit-server-client-function-props", cmd: "node", args: ["scripts/audit-server-client-function-props.mjs"], cwd: ROOT },
+  // ── SSR/client default-filter divergence on public listing pages (Root Cause #30) ─
+  { label: "audit-listing-filter-parity", cmd: "node", args: ["scripts/audit-listing-filter-parity.mjs"], cwd: ROOT },
+  // ── Dead admin/store/user nav links — nav entry with no page.tsx behind it (Root Cause #29) ─
+  { label: "audit-nav-page-wiring", cmd: "node", args: ["scripts/audit-nav-page-wiring.mjs"], cwd: ROOT },
 ];
 
 // Baseline violation counts — strict-zero. All three audits verified clean ✓

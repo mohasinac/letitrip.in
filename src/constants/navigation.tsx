@@ -213,6 +213,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.BRANDS),                "Brands",        "admin:brands:read"),
       adminItem(String(ROUTES.ADMIN.SUBLISTING_CATEGORIES), "Sub-listings",  "admin:categories:read"),
       adminItem(String(ROUTES.ADMIN.FEATURES),              "Feature Badges","admin:categories:read"),
+      adminItem(String(ROUTES.ADMIN.GROUPED_LISTINGS),      "Grouped Listings","admin:categories:read"),
       adminItem(String(ROUTES.ADMIN.DEALS),                 "Deals",         "admin:deals:read"),
       adminItem(String(ROUTES.ADMIN.FEATURED),              "Featured",      "admin:featured:read"),
       adminItem(String(ROUTES.ADMIN.COUPONS), "Coupons", "admin:coupons:read"),
@@ -245,6 +246,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.NAVIGATION),          "Navigation",         "admin:navigation:read"),
       adminItem(String(ROUTES.ADMIN.SECTIONS),            "Sections",           "admin:sections:read"),
       adminItem(String(ROUTES.ADMIN.CAROUSEL),            "Carousel",           "admin:carousel:read"),
+      adminItem(String(ROUTES.ADMIN.CAROUSELS),           "Carousels",          "admin:carousel:read"),
       adminItem(String(ROUTES.ADMIN.SETTINGS_ACTIONS),    "Action Permissions", "admin:settings:write"),
       adminItem(String(ROUTES.ADMIN.SETTINGS_NAVIGATION), "Nav Permissions",    "admin:settings:write"),
       adminItem(String(ROUTES.ADMIN.ADS),                 "Ads",                "admin:ads:read"),
@@ -287,6 +289,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.COPILOT),              "Copilot",             "admin:copilot:view"),
       adminItem(String(ROUTES.ADMIN.TEAM),                 "Team",                "admin:team:read"),
       adminItem(String(ROUTES.ADMIN.ROLES),                "Custom Roles",        "admin:roles:read"),
+      adminItem(String(ROUTES.ADMIN.PERMISSIONS),          "Permissions",         "admin:roles:read"),
       adminItem(String(ROUTES.ADMIN.ADMIN_NOTIFICATIONS),  "Admin Notifications", "admin:notifications:read"),
     ],
   },
@@ -314,10 +317,8 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
 // Store dashboard sidebar
 // ---------------------------------------------------------------------------
 
-// P-1: Seller nav trimmed to MVP scope. Auctions, Pre-Orders, Payouts,
-// Coupons, and Prize Draws are all wired now. Bundles stays excluded (not
-// in MVP scope). Fulfilment/Shiprocket was removed from the codebase
-// entirely (manual shipping is the only provider) — not a gap.
+// Every page under src/app/[locale]/store/** must have a nav entry here —
+// see CLAUDE.md Root Cause Pattern #29 (orphaned page.tsx with no nav entry).
 export const STORE_NAV_GROUPS: StoreNavGroup[] = [
   {
     title: "Overview",
@@ -328,17 +329,21 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
   {
     title: "Listings",
     items: [
-      { href: String(ROUTES.STORE.PRODUCTS),    label: "Products"    },
-      { href: String(ROUTES.STORE.ART),         label: "Art"         },
-      { href: String(ROUTES.STORE.STICKERS),    label: "Stickers"    },
-      { href: String(ROUTES.STORE.AUCTIONS),    label: "Auctions"    },
-      { href: String(ROUTES.STORE.PRE_ORDERS),  label: "Pre-Orders"  },
-      { href: String(ROUTES.STORE.PRIZE_DRAWS), label: "Prize Draws" },
-      // Bundles intentionally excluded — not in MVP scope (P-1).
-      // Still not wired: Classifieds, Digital Codes, Live Items, Offers,
-      // Sub-listing Groups, Feature Badges, Templates, Listing Templates,
-      // Grouped Listings — none of these are referenced by store/layout.tsx's
-      // flag filter, unlike Auctions/Pre-Orders/Prize Draws above.
+      { href: String(ROUTES.STORE.PRODUCTS),               label: "Products"               },
+      { href: String(ROUTES.STORE.ART),                    label: "Art"                    },
+      { href: String(ROUTES.STORE.STICKERS),               label: "Stickers"               },
+      { href: String(ROUTES.STORE.AUCTIONS),               label: "Auctions"               },
+      { href: String(ROUTES.STORE.PRE_ORDERS),             label: "Pre-Orders"             },
+      { href: String(ROUTES.STORE.PRIZE_DRAWS),            label: "Prize Draws"            },
+      { href: String(ROUTES.STORE.BUNDLES),                label: "Bundles"                },
+      { href: String(ROUTES.STORE.CLASSIFIED),             label: "Classified"             },
+      { href: String(ROUTES.STORE.DIGITAL_CODES),          label: "Digital Codes"          },
+      { href: String(ROUTES.STORE.LIVE_ITEMS),             label: "Live Items"             },
+      { href: String(ROUTES.STORE.GROUPED_LISTINGS),       label: "Grouped Listings"       },
+      { href: String(ROUTES.STORE.SUBLISTING_CATEGORIES),  label: "Sub-listing Categories" },
+      { href: String(ROUTES.STORE.FEATURES),                label: "Feature Badges"        },
+      { href: String(ROUTES.STORE.LISTING_TEMPLATES),      label: "Listing Templates"      },
+      { href: String(ROUTES.STORE.STORE_CATEGORIES),       label: "Store Categories"       },
     ],
   },
   {
@@ -348,23 +353,33 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
       { href: String(ROUTES.STORE.MESSAGES), label: "Messages" },
       { href: String(ROUTES.STORE.REVIEWS),  label: "Reviews"  },
       { href: String(ROUTES.STORE.BIDS),     label: "Bids"     },
+      { href: String(ROUTES.STORE.OFFERS),   label: "Offers"   },
     ],
   },
   {
     title: "Finance",
     items: [
-      { href: String(ROUTES.STORE.ANALYTICS), label: "Analytics" },
-      { href: String(ROUTES.STORE.PAYOUTS),   label: "Payouts"   },
+      { href: String(ROUTES.STORE.ANALYTICS),        label: "Analytics"        },
+      { href: String(ROUTES.STORE.PAYOUTS),          label: "Payouts"          },
+      { href: String(ROUTES.STORE.PAYOUT_METHODS),   label: "Payout Methods"   },
+      { href: String(ROUTES.STORE.PAYOUT_SETTINGS),  label: "Payout Settings"  },
+      { href: String(ROUTES.STORE.ANALYTICS_CARDS),  label: "Analytics Cards"  },
+      { href: String(ROUTES.STORE.ANALYTICS_ALERTS), label: "Analytics Alerts" },
     ],
   },
   {
     title: "Store",
     items: [
-      { href: String(ROUTES.STORE.STOREFRONT),    label: "Storefront"    },
-      { href: String(ROUTES.STORE.SHIPPING),      label: "Shipping"      },
-      { href: String(ROUTES.STORE.ADDRESSES),     label: "Addresses"     },
-      { href: String(ROUTES.STORE.COUPONS),       label: "Coupons"       },
-      { href: String(ROUTES.STORE.PRINT_CENTER),  label: "Print Center"  },
+      { href: String(ROUTES.STORE.STOREFRONT),       label: "Storefront"      },
+      { href: String(ROUTES.STORE.SHIPPING),         label: "Shipping"        },
+      { href: String(ROUTES.STORE.SHIPPING_CONFIGS), label: "Shipping Configs"},
+      { href: String(ROUTES.STORE.FULFILLMENT),      label: "Fulfillment"     },
+      { href: String(ROUTES.STORE.ADDRESSES),        label: "Addresses"       },
+      { href: String(ROUTES.STORE.COUPONS),          label: "Coupons"         },
+      { href: String(ROUTES.STORE.PRINT_CENTER),     label: "Print Center"    },
+      { href: String(ROUTES.STORE.WHATSAPP),         label: "WhatsApp"        },
+      { href: String(ROUTES.STORE.GOOGLE_REVIEWS),   label: "Google Reviews"  },
+      { href: String(ROUTES.STORE.SLUG),             label: "Store Slug"      },
     ],
   },
   {
@@ -383,6 +398,7 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
   {
     title: "Account",
     items: [
+      { href: String(ROUTES.USER.DASHBOARD),     label: "Dashboard"     },
       { href: String(ROUTES.USER.PROFILE),       label: "My Profile"    },
       { href: String(ROUTES.USER.SETTINGS),      label: "Settings"      },
       { href: String(ROUTES.USER.NOTIFICATIONS), label: "Notifications" },

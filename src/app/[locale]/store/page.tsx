@@ -1,6 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { CollapsibleSection, Div, DynamicBgDiv, ROUTES, SellerTopProducts, StoreDashboardView, apiClient, useCollapsedSections, useStoreDashboard } from "@mohasinac/appkit/client";
+import { CollapsibleSection, Div, DynamicBgDiv, ROUTES, SellerTopProducts, StoreDashboardView, apiClient, useCollapsedSections, useStoreDashboard, formatCurrency } from "@mohasinac/appkit/client";
 const __O = {
   hidden: "overflow-hidden",
 } as const;
@@ -71,10 +71,6 @@ interface TopProduct {
   revenue: number;
   orders: number;
   mainImage?: string;
-}
-
-function rupees(paise: number) {
-  return `₹${(paise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`;
 }
 
 const DASHBOARD_SECTION_IDS = [
@@ -183,7 +179,7 @@ export default function Page() {
           >
             <SellerTopProducts
               products={topProducts}
-              formatRevenue={rupees}
+              formatRevenue={formatCurrency}
               labels={{ title: "Top Products (30d)" }}
             />
           </CollapsibleSection>

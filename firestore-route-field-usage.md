@@ -9,7 +9,7 @@ Scanned 52 views/call-sites (DataListingView configs + repository call sites acr
 - Filter-field orphans: 0
 - Sort-field orphans: 0
 - Unsatisfiable queries: 0
-- Unused declared indices: 385
+- Unused declared indices: 388
 
 ## Route/view summary
 
@@ -33,7 +33,7 @@ Scanned 52 views/call-sites (DataListingView configs + repository call sites acr
 | `appkit/src/features/admin/components/AdminOrdersView.tsx` | orders | — | — |
 | `appkit/src/features/admin/components/AdminPayoutsView.tsx` | payouts | — | — |
 | `appkit/src/features/admin/components/AdminPrizeDrawsView.tsx` | products | listingType== | title,prizeRevealWindowEnd |
-| `appkit/src/features/admin/components/AdminProductsView.tsx` | products | isSold== | title |
+| `appkit/src/features/admin/components/AdminProductsView.tsx` | products | isSold==,listingType==,listingType== | title |
 | `appkit/src/features/admin/components/AdminReviewsView.tsx` | reviews | — | — |
 | `appkit/src/features/admin/components/AdminScammersView.tsx` | scammerProfiles | — | — |
 | `appkit/src/features/admin/components/AdminSessionsView.tsx` | sessions | — | lastActivity |
@@ -46,7 +46,7 @@ Scanned 52 views/call-sites (DataListingView configs + repository call sites acr
 | `appkit/src/features/admin/components/AdminUsersView.tsx` | users | disabled==,disabled== | displayName |
 | `appkit/src/features/admin/components/AdminWishlistsView.tsx` | wishlists | — | — |
 | `appkit/src/features/seller/components/SellerArtView.tsx` | products | listingType== | title |
-| `appkit/src/features/seller/components/SellerAuctionsView.tsx` | products | — | auctionEndDate |
+| `appkit/src/features/seller/components/SellerAuctionsView.tsx` | products | listingType== | auctionEndDate |
 | `appkit/src/features/seller/components/SellerBundlesView.tsx` | categories | categoryType== | bundlePrice |
 | `appkit/src/features/seller/components/SellerClassifiedView.tsx` | products | listingType== | title |
 | `appkit/src/features/seller/components/SellerCouponsView.tsx` | coupons | — | code |

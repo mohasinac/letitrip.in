@@ -153,9 +153,9 @@
 
 | Export | Type | Props/Signature | Purpose |
 |--------|------|-----------------|---------|
-| Select | Component | options, value, onChange, onValueChange, placeholder, label, error, helperText, required, variant | Styled native select with label and error handling |
+| Select | Component | options, value, onChange, onValueChange, placeholder, label, error, helperText, required, variant, bare, className, wrapperClassName | Styled native select with label and error handling. `className` styles the inner `<select>`; `wrapperClassName` sizes the real flex-child wrapper div (use for `flex-shrink-0`/`min-w-*`/`max-w-*` inside a Row) |
 | SelectOption | Type | {label, value, disabled?} | Select option object type |
-| SelectProps | Type | {options, value?, onChange?, onValueChange?, ...} | Select props interface |
+| SelectProps | Type | {options, value?, onChange?, onValueChange?, ..., wrapperClassName?} | Select props interface |
 
 ### Card (`appkit/src/ui/components/Card.tsx`)
 
@@ -228,6 +228,7 @@
 | PriceDisplay.tsx | PriceDisplay | Component | Currency-formatted price |
 | CountdownDisplay.tsx | CountdownDisplay | Component | Countdown timer |
 | SiteLogo.tsx | SiteLogo | Component | SVG wordmark + admin-override pipeline |
+| SiteMark.tsx | SiteMark | Component | Icon-only glyph (distinct from SiteLogo's text wordmark); `size`/`tone` presets, themed via the same `--appkit-logo-stop-*` variables |
 | PageLoader.tsx | PageLoader | Component | Full-page loading with 15s timeout |
 | ViewToggle.tsx | ViewToggle | Component | Grid/list view toggle |
 | ResponsiveView.tsx | ResponsiveView | Component | Responsive breakpoint-aware container |
@@ -339,6 +340,8 @@
 | AdminSectionsView | View | Homepage sections management |
 | AdminCarouselView | View | Carousel management |
 | AdminCarouselEditorView | View | Carousel editor |
+| AdminCarouselGroupEditorView | View | Carousel group create/edit form (name + active/draft status) |
+| AdminGroupedListingsView | View | Admin cross-store grouped-listings moderation (Sieve list + reassign-products drawer); wired to `/admin/grouped-listings` 2026-08-19, was previously unreachable (Root Cause #37) |
 | AdminAdsView, AdminAdEditorView | View | Ads management and editor |
 | AdminMediaView | View | Media management |
 | AdminNavigationView | View | Navigation management |
@@ -487,8 +490,8 @@
 | FAQHelpfulButtons | Component | Helpful/unhelpful vote buttons |
 | RelatedFAQs | List | Related FAQs section |
 | ContactCTA | Button | Contact CTA |
-| FAQPageContent | Page | FAQ page content |
-| FAQSearchableList | Component | 2026-08-19 — searchable FAQ list extracted from `FAQPageView` for reuse (category filter + free-text search over question/answer) |
+| FAQPageContent | Page | FAQ page content. **2026-08-19: now actually wired to the live `/faqs` + `/faqs/[category]` routes** via the new consumer-side `src/components/faq/FAQPageClient.tsx` wrapper (manages search/sort/category `useUrlTable` state, contact info + categories fetched server-side in `page.tsx` via `siteSettingsRepository`). Previously built but unreferenced by any route — the routes rendered `FAQPageView`/`FAQSearchableList` (client-side substring search only) instead. `FAQPageView`/`FAQSearchableList` are now unreferenced dead code, left in place. |
+| FAQSearchableList | Component | 2026-08-19 — searchable FAQ list extracted from `FAQPageView` for reuse (category filter + free-text search over question/answer). Superseded by `FAQPageContent` on the live routes (see above) — no longer referenced by any page. |
 
 ### Tester (`appkit/src/features/tester/components/`)
 
@@ -604,7 +607,6 @@
 | SellerFeaturesView | View | Feature management |
 | SellerGroupedListingsView | View | Grouped listings management |
 | SellerStoreCategoriesView | View | Store category management |
-| SellerTemplatesView | View | Product templates |
 | SellerBundlesView | View | Seller bundles |
 | SellerClassifiedView | View | Classified ads management |
 | SellerDigitalCodesView | View | Digital codes management |
@@ -695,6 +697,7 @@
 | cart | getCartForUser | cache(userId) | Fetch user's cart |
 | events | getEventForDetail | cache(slugOrId) | Fetch event details |
 | history | getHistoryForUser | cache(userId) | Fetch user view history |
+| maintenance | listCloudLogEntries | cache(opts?) | Google Cloud Logging entries for `/admin/maintenance/cloud-logs`; bounded single `getEntries()` call, client-driven pagination via `nextPageToken` (Hobby tier rule #6) |
 | orders | getOrderForDetail | cache(orderId) | Fetch order details |
 | orders | getOrdersForBuyer | cache(buyerId) | Fetch buyer's orders |
 | orders | getRecentOrdersForBuyer | cache(buyerId) | Fetch recent orders |
@@ -773,6 +776,7 @@
 | DigitalCodeDetailView | features/digital-code/ | Component | Digital code listing detail |
 | CodeRevealPanel | features/digital-code/ | Component | Digital code reveal UI |
 | LiveItemDetailView | features/live/ | Component | Live item detail view |
+| CloudLogsListView | features/maintenance/views/CloudLogsListView.tsx | Component | `/admin/maintenance/cloud-logs` table view — filters, pagination, message preview |
 | makeCategoryLoadOptions | features/filters/ | Factory | Create category filter loader |
 | makeCategoryFacetLoadOptions | features/filters/ | Factory | Create category facet loader |
 | LabelsProvider | i18n/LabelsProvider.tsx | Component | i18n context provider (zero-dependency) |
@@ -1191,6 +1195,9 @@
 | `/api/admin/coupons/[id]` | GET, PUT, DELETE | Coupon CRUD |
 | `/api/admin/carousel` | GET, POST | List/create carousel slides |
 | `/api/admin/carousel/[id]` | GET, PUT, DELETE | Carousel CRUD |
+| `/api/admin/carousels` | GET, POST | List/create carousel groups (`AdminCarouselGroupEditorView`) |
+| `/api/admin/carousels/[id]` | GET, PUT, DELETE | Carousel group CRUD |
+| `/api/admin/maintenance/cloud-logs` | GET | Google Cloud Logging entries for `/admin/maintenance/cloud-logs` — `listCloudLogEntries()`, bounded single call + client-driven pagination |
 | `/api/admin/sections` | GET, POST | List/create homepage sections |
 | `/api/admin/sections/[id]` | GET, PUT, DELETE | Section CRUD |
 | `/api/admin/ads` | GET, POST | List/create ads |
@@ -1257,8 +1264,6 @@
 | `/api/store/slug/check` | GET | Slug availability |
 | `/api/store/conversations` | GET | P-11 fix — seller-scoped conversation list; `useConversations` hook parametrized with `{endpoint, unreadField}` to reuse the same hook on the new `/store/messages` page as the existing buyer page |
 | `/api/store/products/[id]/codes` | GET | 501 — digital-code reveal not implemented (was mistakenly a barcode-scan duplicate, now honest) |
-| `/api/store/templates` | GET, POST | Product templates |
-| `/api/store/templates/[id]` | GET, PUT, DELETE | Template CRUD |
 | `/api/store/features` | GET, POST | Store features |
 | `/api/store/features/[id]` | GET, PUT, DELETE | Feature CRUD |
 | + ~30 more | — | WhatsApp, analytics, categories, extensions, etc. |
@@ -1353,6 +1358,7 @@
 |------|-------------|---------|
 | api.ts | API_ROUTES | API endpoint strings for client-side fetch |
 | api-roles.ts | ROLES_ADMIN_ONLY, ROLES_ADMIN_MOD, ROLES_STORE_WRITE, ROLES_STORE_READ, ROLES_ANY_STAFF | RBAC permission tuples |
+| admin-permissions.ts | PERMISSION_GROUPS, PERMISSION_DOMAINS, getPermissionsForDomain, formatPermLabel | Display data for `/admin/permissions` reference page. **Temporary mirror** — verbatim copy of the same exports newly added in `appkit/src/features/auth/permissions/constants.ts` (S-ADMIN-7, 2026-08-19); duplicated here only because this repo currently pins `@mohasinac/appkit` from the npm registry (`^4.1.1`), not `file:./appkit`, so the new appkit exports aren't resolvable yet. Delete this file and import directly once appkit is republished. |
 | brand.ts | BRAND, getBrandCopyright | Brand identity |
 | config.ts | Site configuration | Environment-specific config |
 | dashboard-tabs.ts | STORE_LISTINGS_TABS, STORE_ORDERS_TABS, USER_ORDERS_TABS, ADMIN_PRODUCTS_TABS | Dashboard navigation tabs |
@@ -1598,8 +1604,8 @@ All pages are thin shims delegating to appkit `_internal/server/features/*/` hel
 
 | Domain | Count | Examples |
 |--------|-------|---------|
-| Admin | ~106 | /admin/products, /admin/orders, /admin/users, /admin/categories, /admin/blog, /admin/reviews, /admin/coupons, /admin/carousel, /admin/sections, /admin/events, /admin/payouts, /admin/team, /admin/support, /admin/scammers, /admin/art, /admin/stickers, /admin/addresses, /admin/shipments (+ new/[id]/edit/[id]/lots/[lotId]/items/projections — Feature A), /admin/catalogue-approvals (Feature B), /admin/tester-checklist, /admin/tester-feedback (2026-08-17) |
-| Store | ~76 | /store/products, /store/orders, /store/coupons, /store/analytics, /store/payouts, /store/reviews, /store/templates, /store/features, /store/shipping, /store/art, /store/stickers, /store/print-center, /store/messages (P-11 fix), /store/bundles/new + [id]/edit (P-17 fix, was wired to a dead endpoint) |
+| Admin | ~113 | /admin/products, /admin/orders, /admin/orders/[id]/view (reuses AdminOrderEditorView full-page, 2026-08-19), /admin/users, /admin/categories, /admin/blog, /admin/reviews, /admin/coupons, /admin/carousel, /admin/sections, /admin/events, /admin/payouts, /admin/team, /admin/support, /admin/scammers, /admin/scammers/[id] (reuses AdminScammerEditorView full-page, 2026-08-19), /admin/support-tickets/[id] (reuses AdminSupportTicketDetailView full-page, 2026-08-19), /admin/moderation/[id], /admin/reports/[id], /admin/item-requests/[id] (2026-08-19 — new RSC detail pages, no prior detail UI), /admin/permissions (2026-08-19 — read-only permission catalog, sourced from `src/constants/admin-permissions.ts` mirror pending appkit republish), /admin/art, /admin/stickers, /admin/addresses, /admin/shipments (+ new/[id]/edit/[id]/lots/[lotId]/items/projections — Feature A), /admin/catalogue-approvals (Feature B), /admin/tester-checklist, /admin/tester-feedback (2026-08-17), /admin/grouped-listings (2026-08-19) |
+| Store | ~74 | /store/products, /store/orders, /store/coupons, /store/analytics, /store/payouts, /store/reviews, /store/features, /store/shipping, /store/art, /store/stickers, /store/messages (P-11 fix), /store/bundles/new + [id]/edit (P-17 fix, was wired to a dead endpoint) — /store/templates* and /store/inventory/print removed 2026-08-19 |
 | User | ~33 | /user/orders, /user/profile, /user/wishlist, /user/addresses, /user/history, /user/conversations, /user/notifications, /user/catalogue (+ new/[id]/edit — Feature B), /user/tester (2026-08-17) |
 | Public | ~107 | /products/[id], /categories, /blog, /events, /auctions, /stores, /about, /contact, /faqs, /seller, /cart, /checkout, /profile/[userId]/[tab] (Feature B public catalogue tab) |
 | **Total** | **~322** | |
@@ -1925,6 +1931,11 @@ Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 | audit-server-action-envelope.mjs | strict-0 | Every server action returns `ActionResult` or `void` (Track W6) |
 | audit-usemutation-onerror.mjs | strict-0 | Every mutation flows through `useApiMutation` (not raw `useMutation`) |
 | audit-unnecessary-use-client.mjs | strict-0 | Page / component files with `"use client"` import at least one React hook, next/navigation hook, next-intl hook, or browser global — RSC pages that only render Client Components must not carry the directive (root-cause #17 corollary) |
+| audit-listing-filter-parity.mjs | strict-0 | SSR/client default-filter divergence on public listing pages — `staleTime:Infinity` freezes SSR `initialData` forever if the SSR filter-builder doesn't mirror the client's default toggle state (root-cause #30) |
+| audit-nav-page-wiring.mjs | strict-0 | Every admin/store/user sidebar nav `href` resolves to a real `page.tsx`; every top-level dashboard page has a nav entry pointing at it (root-cause #37) |
+| audit-select-wrapper-classname.mjs | strict-0 | `<Select className="...">` sizing/flex utilities silently ignored — the real flex child is the wrapper div; use `wrapperClassName` instead |
+| audit-tester-checklist-hrefs.mjs | strict-0 | Every `href` in tester checklist seed data resolves to a real route — catches route renames/relocations silently 404-ing the tester's "Go test this →" button |
+| audit-media-filename-generators.mjs (appkit) | strict-0 | `MEDIA_FILENAME_PATTERNS` validator regex table stays in sync with `generateMediaFilename()`'s dispatcher — drift causes `/api/media/sign` to 500 in production (W1-51 bug class) |
 
 ### ESLint mirror rules (`scripts/eslint-rules/index.mjs`)
 

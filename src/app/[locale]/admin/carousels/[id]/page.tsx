@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
-import { Code, Span, carouselsRepository } from "@mohasinac/appkit";
+import { carouselsRepository, AdminCarouselGroupEditorView } from "@mohasinac/appkit";
 import { ROUTES } from "@mohasinac/appkit/client";
-import { Heading, Section, Container, Row, Div, Text, Badge, EmptyState, Table, Thead, Tbody, Tr, Th, Td } from "@mohasinac/appkit/client";
+import { Heading, Section, Container, Row, Div, Text, Badge, Table, Thead, Tbody, Tr, Th, Td } from "@mohasinac/appkit/client";
 import { MAX_SLIDES_PER_CAROUSEL } from "@mohasinac/appkit";
 
 
@@ -30,21 +30,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
               ← Carousels
             </Link>
           </Row>
-          <Heading level={1} className="mb-6" size="2xl" weight="bold">New Named Carousel</Heading>
-          <EmptyState
-            title="Named carousel creation via API"
-            description={
-              <Span>
-                Named carousels group and organise slides for contextual use (e.g. homepage,
-                category pages). To create one, POST to{" "}
-                <Code size="xs" padding="inline" rounded="default" surface="subtle">/api/admin/carousel</Code>{" "}
-                with a <Code size="xs" padding="inline" rounded="default" surface="subtle">name</Code> field,
-                or use the LetItRip CLI. An admin UI form is planned for a future session.
-              </Span>
-            }
-            actionLabel="Back to carousels"
-            actionHref={String(ROUTES.ADMIN.CAROUSELS)}
-          />
+          <AdminCarouselGroupEditorView />
         </Container>
       </Section>
     );

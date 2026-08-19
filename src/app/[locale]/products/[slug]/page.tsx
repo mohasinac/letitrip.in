@@ -6,7 +6,7 @@ import {
   loadProductFeaturesForStore,
 } from "@mohasinac/appkit";
 import { getProductForDetail } from "@mohasinac/appkit";
-import { getSiteSettingsGlobal } from "@mohasinac/appkit/server";
+import { getSiteSettingsGlobal, storeRepository } from "@mohasinac/appkit/server";
 import { MakeOfferButton, ProductDetailActions, PageViewTracker } from "@mohasinac/appkit/client";
 import { submitProductOffer } from "./actions";
 import { generateProductMetadata } from "@/constants";
@@ -36,8 +36,18 @@ export default async function Page({ params }: Props) {
     product?.storeId ?? null,
   ).catch(() => []);
   const siteSettings = await getSiteSettingsGlobal().catch(() => null);
+  const store = product?.storeId
+    ? await storeRepository.findById(product.storeId).catch(() => null)
+    : null;
   const codEnabled = siteSettings?.payment?.codEnabled === true;
-  const emiEnabled = siteSettings?.emi?.enabled === true;
+  // Fully-resolved per-product EMI eligibility: site-wide flag AND the
+  // seller's own opt-in AND price above the minimum order value — mirrors
+  // checkEmiEligibility()'s checkout-time rule exactly (strict `>`).
+  const emiEnabled =
+    siteSettings?.emi?.enabled === true &&
+    store?.emiEnabled === true &&
+    typeof product?.price === "number" &&
+    product.price > (siteSettings?.emi?.minOrderValue ?? Infinity);
 
   const ldProduct = product
     ? productJsonLd({

@@ -18,13 +18,32 @@
  *    bid, budget, payout, refund, threshold) — the paise-conversion pattern
  *    this migration eliminated everywhere except the Razorpay boundary.
  *
+ * 3. `.int()` chained onto a `z.number()` field declaration whose name is
+ *    money-sounding — decimal rupees need fractional precision (₹1,499.50),
+ *    so a whole-integer Zod constraint on a money field rejects legitimate
+ *    amounts. Leftover from when the same field held whole-paise integers.
+ *
+ * 4. The literal word "paise" anywhere outside an identifier (JSDoc
+ *    comments, UI labels/placeholders, help copy) — these don't match check
+ *    #1's identifier-shaped pattern but are exactly as stale, and have
+ *    caused a live 100x data-entry bug in an admin form (a label reading
+ *    "(paise, optional)" on a field that actually stores decimal rupees).
+ *
+ * 5. `SCREAMING_SNAKE_CASE` constants ending in `_PAISE` (e.g.
+ *    `AUCTION_MIN_BID_INCREMENT_PAISE`) — underscore is a `\w` character, so
+ *    no regex `\b` exists between "_" and "PAISE". This constant-naming
+ *    convention slips past both check #1 (camelCase-shaped, case-sensitive)
+ *    and a plain case-insensitive `\bpaise\b` word check.
+ *
  * Allowlist (the only legitimate paise-conversion sites):
  *   - appkit/src/providers/payment-razorpay/index.ts (rupeesToPaise/paiseToRupees)
  *   - appkit/src/_internal/server/jobs/core/payoutBatch.ts (RazorpayX payout REST call)
+ *   - appkit/src/schemas/webhooks/razorpay.ts (Razorpay's own webhook wire format — natively paise)
  *
  * Suppress a specific line with `// audit-money-units-ok: <reason>` on the
  * same line or the line above (e.g. a percentage divisor the heuristic
- * can't distinguish from a paise conversion).
+ * can't distinguish from a paise conversion, or a non-money `.int()` field
+ * whose name happens to contain a money word).
  *
  * Exits 0 — clean
  * Exits 1 — violations found (lists every offending file:line)
@@ -45,6 +64,9 @@ const SCAN_EXTS = new Set([".ts", ".tsx"]);
 const ALLOWLIST_FILES = [
   join("appkit", "src", "providers", "payment-razorpay", "index.ts"),
   join("appkit", "src", "_internal", "server", "jobs", "core", "payoutBatch.ts"),
+  // Razorpay's own webhook wire format — their entities are natively paise,
+  // not our internal storage convention. Mirroring their shape verbatim.
+  join("appkit", "src", "schemas", "webhooks", "razorpay.ts"),
 ];
 
 const MONEY_WORD = /(price|amount|fee|cost|revenue|profit|discount|deposit|total|bid|budget|payout|refund|threshold)/i;
@@ -52,6 +74,12 @@ const MONEY_WORD = /(price|amount|fee|cost|revenue|profit|discount|deposit|total
 // conversion functions — legitimate to import/call anywhere, not just the
 // two allowlisted files. Only flag OTHER *Paise/InPaise identifiers.
 const PAISE_IDENTIFIER = /\b(?!rupeesToPaise\b|paiseToRupees\b)\w*(?:Paise|InPaise)\b/;
+// SCREAMING_SNAKE_CASE constants ending in `_PAISE` (e.g.
+// AUCTION_MIN_BID_INCREMENT_PAISE) — underscore is a \w character, so no
+// regex \b exists between "_" and "PAISE", meaning neither PAISE_IDENTIFIER
+// (case-sensitive, camelCase-shaped) nor a plain \bpaise\b (word-boundary)
+// check catches this constant-naming convention. Separate, explicit check.
+const SCREAMING_PAISE_SUFFIX = /\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*_PAISE\b/;
 const DIVIDE_100 = /\/\s*100\b/;
 const MULTIPLY_100 = /\*\s*100\b/;
 const PERCENT_CONTEXT = /percent|Percent|rate\b|Rate\b/;
@@ -62,6 +90,20 @@ const ROUND_RUPEES_IDIOM = /\*\s*100\s*\)?\s*\/\s*100\b/;
 // identifiers, not a literal 100, so it's a percentage, not paise scaling.
 const RATIO_PERCENT_IDIOM = /\(\s*[\w.?]+\s*\/\s*[\w.?]+\s*\)\s*\*\s*100\b/;
 const SUPPRESSION = /audit-money-units-ok/;
+
+// Check #3 — `.int()` on a money-named `z.number()` field declaration.
+const FIELD_DECL = /^\s*['"]?(\w+)['"]?\s*:\s*z\.number\(\)/;
+const INT_CHAIN = /\.int\(/;
+// Non-money int fields that would otherwise false-positive against
+// MONEY_WORD (e.g. "totalCount", "feeTier", "budgetDay") — suffix-based,
+// checked against the extracted field name only.
+const NON_MONEY_INT_SUFFIX = /(count|qty|quantity|percent|index|tier|limit|rating|day|hour|minute|month|year|version|priority|order|rank|step|level|code|id|page|slots|uses|products|reviews|views|entries|items|orders)$/i;
+
+// Check #4 — the plain word "paise" outside an identifier (comments, UI
+// labels, placeholders). Word-boundary on both sides means this does NOT
+// match inside `rupeesToPaise`/`paiseToRupees` (camelCase — no boundary
+// between "To"/"Paise" or "paise"/"ToRupees").
+const STALE_PAISE_WORD = /\bpaise\b/i;
 
 function walk(dir, files = []) {
   let entries;
@@ -122,6 +164,16 @@ for (const dir of SCAN_DIRS) {
         continue;
       }
 
+      if (!fileTouchesBoundary && SCREAMING_PAISE_SUFFIX.test(line)) {
+        violations.push({
+          file: relPath,
+          line: i + 1,
+          text: line.trim().slice(0, 120),
+          reason: "SCREAMING_SNAKE_CASE _PAISE constant — money is stored as decimal rupees now",
+        });
+        continue;
+      }
+
       if (ROUND_RUPEES_IDIOM.test(line) || RATIO_PERCENT_IDIOM.test(line)) continue;
 
       const hasDivide = DIVIDE_100.test(line);
@@ -132,6 +184,28 @@ for (const dir of SCAN_DIRS) {
           line: i + 1,
           text: line.trim().slice(0, 120),
           reason: "Paise-scale *100/÷100 arithmetic near a money-sounding identifier",
+        });
+      }
+
+      const fieldMatch = FIELD_DECL.exec(line);
+      if (fieldMatch && INT_CHAIN.test(line)) {
+        const fieldName = fieldMatch[1];
+        if (MONEY_WORD.test(fieldName) && !NON_MONEY_INT_SUFFIX.test(fieldName)) {
+          violations.push({
+            file: relPath,
+            line: i + 1,
+            text: line.trim().slice(0, 120),
+            reason: `.int() on money-named field "${fieldName}" — decimal rupees need fractional precision`,
+          });
+        }
+      }
+
+      if (STALE_PAISE_WORD.test(line) && !PAISE_IDENTIFIER.test(line)) {
+        violations.push({
+          file: relPath,
+          line: i + 1,
+          text: line.trim().slice(0, 120),
+          reason: 'Stale "paise" reference — money is stored as decimal rupees now',
         });
       }
     }

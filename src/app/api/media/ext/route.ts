@@ -13,6 +13,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { serverLogger } from "@mohasinac/appkit";
 import {
   CACHE_CONTROL_IMMUTABLE,
+  CACHE_CONTROL_WATERMARK_FALLBACK,
   IMAGE_MIME_PREFIX,
   SVG_MIME,
   applyWatermark,
@@ -150,11 +151,13 @@ export async function GET(request: NextRequest): Promise<Response> {
   }
 
   let body: Buffer = originalBuffer;
+  let watermarked = true;
   try {
     const config = await loadWatermarkConfig();
     body = await applyWatermark(originalBuffer, config, "<ext-proxy>");
   } catch (err) {
     void normalizeError(err);
+    watermarked = false;
     serverLogger.warn("media-ext: watermark failed; serving original", {
       url: rawUrl,
       error: err instanceof Error ? err.message : String(err),
@@ -165,7 +168,9 @@ export async function GET(request: NextRequest): Promise<Response> {
     status: 200,
     headers: {
       "Content-Type": contentType,
-      "Cache-Control": CACHE_CONTROL_IMMUTABLE,
+      // See _watermark.ts CACHE_CONTROL_WATERMARK_FALLBACK — don't cache a
+      // failed-watermark fallback as if it were the final immutable file.
+      "Cache-Control": watermarked ? CACHE_CONTROL_IMMUTABLE : CACHE_CONTROL_WATERMARK_FALLBACK,
     },
   });
 }

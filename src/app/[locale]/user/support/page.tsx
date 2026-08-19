@@ -14,7 +14,7 @@ import {
   Row,
   Badge,
 } from "@mohasinac/appkit/client";
-import { FieldSelect, ListingToolbar } from "@mohasinac/appkit/ui";
+import { FieldSelect, ListingToolbar, Toggle } from "@mohasinac/appkit/ui";
 import { TICKET_STATUSES } from "@/constants";
 import { getSupportTickets } from "@/lib/api/support-client";
 
@@ -51,12 +51,18 @@ function formatDate(d: string | Date) {
   return d ? new Date(d).toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" }) : "";
 }
 
+const CLOSED_STATUSES = new Set(["resolved", "closed"]);
+
 export default function UserSupportPage() {
   const { user, loading: sessionLoading } = useSession();
   const table = useUrlTable({ defaults: { pageSize: "20", sort: "-updatedAt" } });
   const search = table.get("q") ?? "";
   const status = table.get("status") ?? "";
   const sort = table.get("sort") ?? "-updatedAt";
+  // Fetched list is already in-memory (see useQuery below) — a client-side
+  // filter, no Firestore query concerns. Default hides resolved/closed;
+  // an explicit status selection always wins.
+  const hideClosed = table.get("hideClosed") !== "false";
 
   const { data, isLoading } = useQuery<{ tickets: TicketItem[]; total: number }>({
     queryKey: ["user-support-tickets"],
@@ -73,6 +79,7 @@ export default function UserSupportPage() {
     const q = search.trim().toLowerCase();
     const filtered = all
       .filter((t) => (status ? t.status === status : true))
+      .filter((t) => (status || !hideClosed ? true : !CLOSED_STATUSES.has(t.status)))
       .filter((t) =>
         q
           ? t.subject?.toLowerCase().includes(q) ||
@@ -85,7 +92,7 @@ export default function UserSupportPage() {
       const bv = +new Date(sort === "-updatedAt" || sort === "updatedAt" ? b.updatedAt : b.createdAt);
       return sort.startsWith("-") ? bv - av : av - bv;
     });
-  }, [data, search, status, sort]);
+  }, [data, search, status, sort, hideClosed]);
 
   const loading = sessionLoading || isLoading;
   const filterCount = status ? 1 : 0;
@@ -124,7 +131,7 @@ export default function UserSupportPage() {
         onResetAll={() => table.clear()}
       />
 
-      <Div>
+      <Row gap="md" wrap align="center">
         <FieldSelect
           name="status"
           aria-label="Filter by ticket status"
@@ -132,7 +139,15 @@ export default function UserSupportPage() {
           onChange={(v) => table.set("status", v)}
           options={[...TICKET_STATUSES]}
         />
-      </Div>
+        {!status && (
+          <Toggle
+            size="sm"
+            label="Hide resolved/closed"
+            checked={hideClosed}
+            onChange={(v) => table.set("hideClosed", v ? "" : "false")}
+          />
+        )}
+      </Row>
 
       {loading ? (
         <Stack gap="md">

@@ -167,6 +167,7 @@ export const GET = withProviders(createRouteHandler({
         "product_information",
         "account_security",
         "technical_support",
+        "scam_awareness",
       ] as const,
     });
     response.headers.set(

@@ -2,6 +2,7 @@ export { ScrollToTop } from "./ScrollToTop";
 export { ClientErrorReporterMount } from "./ClientErrorReporterMount";
 export { AdminAnalyticsClient } from "./admin/AdminAnalyticsClient";
 export { AdRuntimeInitializer } from "./ads/AdRuntimeInitializer";
+export { FAQPageClient } from "./faq/FAQPageClient";
 export { ForgotPasswordPageClient } from "./auth/ForgotPasswordPageClient";
 export { LoginPageClient } from "./auth/LoginPageClient";
 export { RegisterPageClient } from "./auth/RegisterPageClient";

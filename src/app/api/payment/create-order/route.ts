@@ -10,7 +10,7 @@ import { withProviders } from "@/providers.config";
  * This prevents price-manipulation attacks where a client sends a lower amount.
  *
  * Body: { currency?: string, receipt?: string }
- * Returns: { razorpayOrderId, amount (paise), currency, keyId, baseAmount, platformFee, gstOnFee }
+ * Returns: { razorpayOrderId, amount (paise), currency, keyId, baseAmount, platformFee, gstOnFee } (audit-money-units-ok: Razorpay's own order-object field, natively paise)
  */
 
 import { z } from "zod";

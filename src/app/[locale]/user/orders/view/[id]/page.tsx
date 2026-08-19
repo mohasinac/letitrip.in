@@ -17,6 +17,7 @@ import {
   Button,
   Textarea,
   MediaImage,
+  formatCurrency,
 } from "@mohasinac/appkit/client";
 import {
   groupOrderItemsByBundle,
@@ -43,10 +44,6 @@ const STATUS_COLORS: Record<string, string> = {
   return_requested: "bg-warning-surface text-warning",
   returned:         "bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text-muted)] bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text-muted)]",
 };
-
-function paise(n: number, currency = "INR") {
-  return new Intl.NumberFormat("en-IN", { style: "currency", currency, maximumFractionDigits: 0 }).format(n / 100);
-}
 
 // ─── Order group renderer ───────────────────────────────────────────────────
 
@@ -135,7 +132,7 @@ function renderItemRow(item: OrderItemT, key: string | number, onOpenReveal?: ()
         <Row justify="between" className="mt-1">
           <Text variant="secondary" size="xs">×{item.quantity}</Text>
           <Text size="sm" weight="medium" color="primary">
-            {paise(item.price * item.quantity, item.currency)}
+            {formatCurrency(item.price * item.quantity, item.currency)}
           </Text>
         </Row>
       </Div>
@@ -273,13 +270,13 @@ function renderOrderPayment(order: NonNullable<OrderData>) {
       <Stack gap="xs">
         <Row justify="between">
           <Text variant="secondary" size="sm">Subtotal</Text>
-          <Text size="sm">{paise(order.subtotal, order.currency)}</Text>
+          <Text size="sm">{formatCurrency(order.subtotal, order.currency)}</Text>
         </Row>
         {order.shippingCost !== undefined && (
           <Row justify="between">
             <Text variant="secondary" size="sm">Shipping</Text>
             <Text size="sm">
-              {order.shippingCost === 0 ? "Free" : paise(order.shippingCost, order.currency)}
+              {order.shippingCost === 0 ? "Free" : formatCurrency(order.shippingCost, order.currency)}
             </Text>
           </Row>
         )}
@@ -289,21 +286,21 @@ function renderOrderPayment(order: NonNullable<OrderData>) {
               Discount{order.couponCode ? ` (${order.couponCode})` : ""}
             </Text>
             <Text className="text-success" size="sm">
-              −{paise(order.discount, order.currency)}
+              −{formatCurrency(order.discount, order.currency)}
             </Text>
           </Row>
         )}
         {order.tax !== undefined && order.tax > 0 && (
           <Row justify="between">
             <Text variant="secondary" size="sm">Tax</Text>
-            <Text size="sm">{paise(order.tax, order.currency)}</Text>
+            <Text size="sm">{formatCurrency(order.tax, order.currency)}</Text>
           </Row>
         )}
         <Div border="subtle" className="border-t mt-1" padding="t-xs">
           <Row justify="between">
             <Text size="sm" weight="semibold" color="primary">Total</Text>
             <Text size="sm" weight="semibold" color="primary">
-              {paise(order.total, order.currency)}
+              {formatCurrency(order.total, order.currency)}
             </Text>
           </Row>
         </Div>

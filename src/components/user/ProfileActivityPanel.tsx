@@ -10,6 +10,7 @@ import {
   Text,
   Heading,
   useCollapsedSections,
+  formatCurrency,
 } from "@mohasinac/appkit/client";
 import { Row, apiClient } from "@mohasinac/appkit";
 import { Link } from "@/i18n/navigation";
@@ -32,11 +33,6 @@ interface ReviewLite {
   title?: string;
   productId?: string;
   publishedAt?: string | number;
-}
-
-function formatINR(paise: number): string {
-  const rupees = Math.round((paise ?? 0) / 100);
-  return `₹${rupees.toLocaleString("en-IN")}`;
 }
 
 function StatPill({ label, value }: { label: string; value: string | number }) {
@@ -105,7 +101,7 @@ export function ProfileActivityPanel() {
       {/* eslint-disable-next-line lir/no-hardcoded-grid-cols -- fixed 4-stat strip; FLUID_GRID token oversizes */}
       <Div layout="grid" gap="3" className="grid-cols-2 md:grid-cols-4">
         <StatPill label="Lifetime orders" value={totalOrders} />
-        <StatPill label="Lifetime spent" value={formatINR(totalSpent)} />
+        <StatPill label="Lifetime spent" value={formatCurrency(totalSpent)} />
         <StatPill label="Bids placed" value={bidsData?.total ?? 0} />
         <StatPill label="Member since" value={memberSince ? new Date(memberSince).getFullYear() : "—"} />
       </Div>
@@ -131,7 +127,7 @@ export function ProfileActivityPanel() {
                 >
                   <Text className="text-[var(--appkit-color-text)] truncate" size="xs" weight="medium">{o.id}</Text>
                   <Text className="text-[11px] text-[var(--appkit-color-text-muted)]">
-                    {formatINR(o.totalAmount ?? 0)} · {o.status ?? ""}
+                    {formatCurrency(o.totalAmount ?? 0)} · {o.status ?? ""}
                   </Text>
                 </Link>
               ))}
@@ -148,7 +144,7 @@ export function ProfileActivityPanel() {
                 <Div key={b.id} className="border border-[var(--appkit-color-border)]" padding="inlineSm" rounded="md">
                   <Text className="text-[var(--appkit-color-text)] truncate" size="xs" weight="medium">{b.productId ?? "Auction"}</Text>
                   <Text className="text-[11px] text-[var(--appkit-color-text-muted)]">
-                    {formatINR(b.amount)} · {b.status ?? "active"}
+                    {formatCurrency(b.amount)} · {b.status ?? "active"}
                   </Text>
                 </Div>
               ))}

@@ -37,14 +37,14 @@ import { ERR_RATE_LIMIT } from "./_constants";
 
 const makeOfferSchema = z.object({
   productId: z.string().min(1),
-  offerAmount: z.number().positive().int(),
+  offerAmount: z.number().positive(),
   buyerNote: z.string().max(300).optional(),
 });
 
 const respondToOfferSchema = z.object({
   offerId: z.string().min(1),
   action: z.enum(["accept", "decline", "counter"]),
-  counterAmount: z.number().positive().int().optional(),
+  counterAmount: z.number().positive().optional(),
   sellerNote: z.string().max(300).optional(),
 });
 
@@ -58,7 +58,7 @@ const withdrawOfferSchema = z.object({
 
 const buyerCounterSchema = z.object({
   offerId: z.string().min(1),
-  counterAmount: z.number().positive().int(),
+  counterAmount: z.number().positive(),
   buyerNote: z.string().max(300).optional(),
 });
 

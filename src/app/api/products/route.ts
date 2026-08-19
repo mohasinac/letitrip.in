@@ -81,6 +81,12 @@ function buildFilters(url: URL, rawFilters: string | null): string {
   // multiple values are selected because a document can't satisfy both at once.
   const statusParam = param(url, TABLE_KEYS.STATUS);
   if (statusParam) parts.push(sieveFilter(PRODUCT_FIELDS.STATUS, SIEVE_OP.EQ, statusParam));
+  // Default to published-only when the caller sends no status at all — mirrors
+  // /api/events's hasStatusFilter fallback. Without this, any client-driven
+  // refetch (search/sort/page/other-filter change) that doesn't explicitly pass
+  // status leaks draft/archived/in_review products, since useProducts() never
+  // sends a status param itself (Root Cause #30).
+  else parts.push(sieveFilter(PRODUCT_FIELDS.STATUS, SIEVE_OP.EQ, PRODUCT_FIELDS.STATUS_VALUES.PUBLISHED));
 
   // categorySlugs is an array field â€” use @= (array-contains). Accepts either
   // ?category= or ?categorySlug= from callers; both map to the same array field.

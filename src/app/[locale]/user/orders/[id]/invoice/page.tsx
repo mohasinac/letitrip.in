@@ -1,16 +1,8 @@
 "use client";
 import { use } from "react";
 import { Link } from "@/i18n/navigation";
-import { useOrder, ROUTES, Div, Row, Span, Stack, Table, Thead, Tbody, Tr, Th, Td, Text, Heading, Button, StickyToolbar } from "@mohasinac/appkit/client";
+import { useOrder, ROUTES, Div, Row, Span, Stack, Table, Thead, Tbody, Tr, Th, Td, Text, Heading, Button, StickyToolbar, formatCurrency } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
-
-function paise(n: number, currency = "INR") {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(n / 100);
-}
 
 // ─── Sub-renderers ────────────────────────────────────────────────────────────
 
@@ -110,7 +102,7 @@ function renderInvoiceItemsTable(order: OrderData) {
                 {item.quantity}
               </Td>
               <Td className="text-right print:text-black" padding="sm" color="primary">
-                {paise(item.price * item.quantity, item.currency)}
+                {formatCurrency(item.price * item.quantity, item.currency)}
               </Td>
             </Tr>
           ),
@@ -125,12 +117,12 @@ function renderInvoiceTotals(order: OrderData) {
     <Stack gap="xs" className="ml-auto max-w-xs">
       <Row textSize="sm" justify="between">
         <Text variant="secondary">Subtotal</Text>
-        <Text>{paise(order.subtotal, order.currency)}</Text>
+        <Text>{formatCurrency(order.subtotal, order.currency)}</Text>
       </Row>
       {order.shippingCost !== undefined && (
         <Row textSize="sm" justify="between">
           <Text variant="secondary">Shipping</Text>
-          <Text>{order.shippingCost === 0 ? "Free" : paise(order.shippingCost, order.currency)}</Text>
+          <Text>{order.shippingCost === 0 ? "Free" : formatCurrency(order.shippingCost, order.currency)}</Text>
         </Row>
       )}
       {order.discount !== undefined && order.discount > 0 && (
@@ -139,14 +131,14 @@ function renderInvoiceTotals(order: OrderData) {
             Discount{order.couponCode ? ` (${order.couponCode})` : ""}
           </Text>
           <Text className="text-success print:text-black">
-            −{paise(order.discount, order.currency)}
+            −{formatCurrency(order.discount, order.currency)}
           </Text>
         </Row>
       )}
       {order.tax !== undefined && order.tax > 0 && (
         <Row textSize="sm" justify="between">
           <Text variant="secondary">Tax (GST)</Text>
-          <Text>{paise(order.tax, order.currency)}</Text>
+          <Text>{formatCurrency(order.tax, order.currency)}</Text>
         </Row>
       )}
       <Row textWeight="semibold" textSize="sm" border="default" 
@@ -155,7 +147,7 @@ function renderInvoiceTotals(order: OrderData) {
       >
         <Text className="print:text-black" color="primary" weight="semibold">Total</Text>
         <Text className="print:text-black" color="primary" weight="semibold">
-          {paise(order.total, order.currency)}
+          {formatCurrency(order.total, order.currency)}
         </Text>
       </Row>
     </Stack>

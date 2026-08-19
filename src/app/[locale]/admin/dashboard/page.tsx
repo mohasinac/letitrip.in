@@ -63,7 +63,7 @@ interface DashboardStats {
 interface RecentOrder {
   id: string;
   status: string;
-  totalAmount: number;
+  totalPrice: number;
   currency: string;
   createdAt: string;
 }
@@ -286,7 +286,7 @@ export default function Page() {
                   <Row align="center" gap="3">
                     <Text className="text-[var(--appkit-color-text-muted)]" size="xs">{order.status}</Text>
                     <Text className="text-[var(--appkit-color-text)]" size="xs" weight="semibold">
-                      ₹{(order.totalAmount ?? 0).toLocaleString("en-IN")}
+                      ₹{(order.totalPrice ?? 0).toLocaleString("en-IN")}
                     </Text>
                   </Row>
                 </Link>

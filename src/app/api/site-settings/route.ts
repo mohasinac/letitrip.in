@@ -33,6 +33,7 @@ import { createApiHandler } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { invalidateIntegrationKeysCache } from "@mohasinac/appkit";
 import { enqueueJob } from "@mohasinac/appkit/server";
+import { resolveEffectiveWatermark } from "@/lib/watermark/resolve-effective-watermark";
 
 /**
  * GET /api/site-settings
@@ -60,11 +61,18 @@ export const GET = withProviders(createApiHandler({
     // Filter sensitive fields for non-admin users
     let responseData: any;
 
+    // Resolved (marker → wordmark → text) watermark, returned alongside the
+    // raw stored `watermark` field so consumers of the *effective* value
+    // (MediaVideo's client overlay) never see an empty/text-only default
+    // just because the admin hasn't explicitly configured one, while the
+    // admin edit form keeps reading the untouched raw config it saves back.
+    const effectiveWatermark = resolveEffectiveWatermark(settings);
+
     if (isAdmin) {
       // Admin: include masked credential values so the UI can show "rzp_liâ€¦key4"
       const credentialsMasked =
         await siteSettingsRepository.getCredentialsMasked();
-      responseData = { ...settingsWithoutCreds, credentialsMasked };
+      responseData = { ...settingsWithoutCreds, credentialsMasked, effectiveWatermark };
     } else {
       // Public: strip admin-only fields, expose the Razorpay key ID for the checkout modal
       const { emailSettings: _emailSettings, legalPages: _legalPages, ...publicFields } =
@@ -85,6 +93,7 @@ export const GET = withProviders(createApiHandler({
           whatsappNumber: settings.contact?.whatsappNumber ?? "",
         },
         razorpayKeyId: razorpayKeyIdPublic,
+        effectiveWatermark,
       };
     }
 

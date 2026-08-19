@@ -24,7 +24,7 @@ import { ROLES_STORE_WRITE } from "@/constants";
 
 const bodySchema = z.object({
   type: z.enum(["full", "partial"]),
-  amount: z.number().int().positive(),
+  amount: z.number().positive(),
   reason: z.string().min(3),
   itemIds: z.array(z.string()).optional(),
   confirmIrrevocable: z.literal(true),

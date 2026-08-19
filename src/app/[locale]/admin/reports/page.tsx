@@ -12,7 +12,9 @@ import {
   Modal,
   Textarea,
   Skeleton,
+  ROUTES,
 } from "@mohasinac/appkit/client";
+import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
 import { getAdminReports, updateAdminReport } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
@@ -89,6 +91,12 @@ export default function Page() {
                     </Text>
                   </Stack>
                   <Row gap="sm">
+                    <Link
+                      href={String(ROUTES.ADMIN.REPORT_DETAIL(r.id))}
+                      className="text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-primary)] hover:underline"
+                    >
+                      View
+                    </Link>
                     <Button
                       variant="outline"
                       size="sm"

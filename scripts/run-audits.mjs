@@ -65,6 +65,7 @@ const AUDITS = [
   { name: "toast-coverage",                  script: "scripts/audit-toast-coverage.mjs" },
   { name: "auth-gate-derivation",            script: "scripts/audit-auth-gate-derivation.mjs" },
   { name: "registry-constants",              script: "scripts/audit-route-nav-field-constants.mjs" },
+  { name: "nav-page-wiring",                 script: "scripts/audit-nav-page-wiring.mjs" },
   { name: "schema-base-fields",             script: "scripts/audit-schema-base-fields.mjs" },
   { name: "listing-type-imports",           script: "scripts/audit-listing-type-imports.mjs" },
   { name: "listing-type-registry-usage",    script: "scripts/audit-listing-type-registry-usage.mjs" },
@@ -141,6 +142,9 @@ const AUDITS = [
   { name: "server-action-envelope",          script: "scripts/audit-server-action-envelope.mjs" },
   // unknown-elimination — strict-zero. No env-var opt-out.
   { name: "catch-normalize",                 script: "appkit/scripts/audit-catch-normalize.mjs" },
+  // Guards the W1-51 bug class — validator regex drifting out of sync with
+  // the generateMediaFilename() dispatcher it's meant to validate.
+  { name: "media-filename-generators",       script: "appkit/scripts/audit-media-filename-generators.mjs" },
   { name: "route-schema-registry",           script: "appkit/scripts/audit-route-schema-registry.mjs" },
   // unknown-leakage — strict-zero. Every `: unknown` / `Record<string, unknown>` /
   // `as unknown` outside the allowlist is a violation. Per-line `// audit-
@@ -175,6 +179,25 @@ const AUDITS = [
   // values across that boundary. Invisible to tsc; caused the 2026-08-18
   // "Something went wrong" prod crashes (getRowHref on 7 admin/store pages).
   { name: "server-client-function-props",  script: "scripts/audit-server-client-function-props.mjs" },
+  // Strict-zero. <Select className="..."> only styles the inner <select> —
+  // sizing/flex-control tokens (flex-shrink-0, min-w-*, max-w-*, flex-1)
+  // must go on wrapperClassName, which sizes the real flex-child wrapper div.
+  // Caused the 2026-08-19 header-search-bar sizing regression.
+  { name: "select-wrapper-classname",      script: "scripts/audit-select-wrapper-classname.mjs" },
+  // Strict-zero. SSR/client default-filter divergence on public listing pages
+  // (Root Cause #30) — staleTime:Infinity freezes SSR initialData forever if
+  // the SSR filter-builder doesn't mirror the client's default toggle state.
+  { name: "listing-filter-parity",         script: "scripts/audit-listing-filter-parity.mjs" },
+  // Strict-zero. Tester QA checklist seed data `href` fields are bare
+  // strings with no compile-time tie to real routes — route renames/
+  // relocations/deletions silently rot the tester's deep links
+  // (Root Cause #31).
+  { name: "tester-checklist-hrefs",        script: "scripts/audit-tester-checklist-hrefs.mjs" },
+  // Strict-zero. A filter-chip `id` in filter-tabs.ts that doesn't match
+  // any value its target Firestore field can hold — the chip silently
+  // returns zero rows forever. Found live in 8+ places in one sweep
+  // (2026-08-19); see CLAUDE.md's Recurrent Root Cause Patterns.
+  { name: "filter-tab-enums",              script: "scripts/audit-filter-tab-enums.mjs" },
 
 ];
 function parseArgs(argv) {

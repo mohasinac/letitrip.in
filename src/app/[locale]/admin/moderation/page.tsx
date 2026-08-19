@@ -13,7 +13,9 @@ import {
   Textarea,
   Skeleton,
   ACTIONS,
+  ROUTES,
 } from "@mohasinac/appkit/client";
+import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
 import { getAdminModerationQueue, updateAdminModeration } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
@@ -93,6 +95,12 @@ export default function Page() {
                     ) : null}
                   </Stack>
                   <Row gap="sm">
+                    <Link
+                      href={String(ROUTES.ADMIN.MODERATION_DETAIL(m.id))}
+                      className="text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-primary)] hover:underline"
+                    >
+                      View
+                    </Link>
                     <Button
                       variant="primary"
                       size="sm"

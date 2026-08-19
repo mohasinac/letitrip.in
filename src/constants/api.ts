@@ -67,8 +67,6 @@ const STORE_LETITRIP = {
   PRODUCT_CODES: (id: string) => `/api/store/products/${id}/codes`,
   PRODUCTS_BULK_LOCATION: API_ENDPOINTS.SELLER.PRODUCTS_BULK_LOCATION,
   ORDERS_BULK_LOCATION: API_ENDPOINTS.SELLER.ORDERS_BULK_LOCATION,
-  TEMPLATES: API_ENDPOINTS.SELLER.TEMPLATES,
-  TEMPLATE_BY_ID: API_ENDPOINTS.SELLER.TEMPLATE_BY_ID,
   PROFILE: "/api/store/profile",
   SLUG_CHECK: (slug: string) => `/api/store/slug/check?slug=${encodeURIComponent(slug)}`,
   // S-STORE Tier extensions

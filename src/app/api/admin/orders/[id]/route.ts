@@ -11,8 +11,8 @@ import {
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 // ST-3 — items array shape mirrors OrderDocumentItem; PATCHing items
-// replaces the array wholesale and recalculates totalAmount (sum of
-// items[].totalPrice in paise).
+// replaces the array wholesale and recalculates totalPrice (sum of
+// items[].totalPrice, decimal rupees).
 const orderItemSchema = z.object({
   productId: z.string().min(1),
   productTitle: z.string().min(1),

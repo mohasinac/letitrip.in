@@ -21,6 +21,7 @@ import { NextResponse } from "next/server";
 import { ERROR_MESSAGES, getAdminStorage, serverLogger, mediaAssetsRepository } from "@mohasinac/appkit";
 import {
   CACHE_CONTROL_IMMUTABLE,
+  CACHE_CONTROL_WATERMARK_FALLBACK,
   IMAGE_MIME_PREFIX,
   SVG_MIME,
   applyWatermark,
@@ -144,11 +145,13 @@ export async function GET(
     }
 
     let body: Buffer = originalBuffer;
+    let watermarked = true;
     try {
       const config = await resolveWatermarkConfig(uploadedBy, contextType);
       body = await applyWatermark(originalBuffer, config, storagePath);
     } catch (err) {
       void normalizeError(err);
+      watermarked = false;
       serverLogger.warn(
         "media-proxy: watermark application failed; serving original",
         { storagePath, error: err instanceof Error ? err.message : String(err) },
@@ -159,7 +162,11 @@ export async function GET(
       status: 200,
       headers: {
         "Content-Type": contentType,
-        "Cache-Control": CACHE_CONTROL_IMMUTABLE,
+        // A failed watermark falls back to the original bytes — cache that
+        // fallback briefly, not `immutable`, so a retry can pick up the
+        // watermark once the (likely transient) failure clears instead of
+        // the unwatermarked file being served for a month.
+        "Cache-Control": watermarked ? CACHE_CONTROL_IMMUTABLE : CACHE_CONTROL_WATERMARK_FALLBACK,
       },
     });
   } catch (err) {

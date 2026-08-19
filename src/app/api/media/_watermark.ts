@@ -4,64 +4,50 @@ import { normalizeError } from "@mohasinac/appkit";
  * Both routes apply the same watermark logic; this module is the single source.
  */
 import "@/providers.config";
+import { readFile } from "fs/promises";
+import path from "path";
 import sharp from "sharp";
 import { getAdminStorage, serverLogger, siteSettingsRepository, userRepository } from "@mohasinac/appkit";
+import {
+  resolveEffectiveWatermark,
+  DEFAULT_WATERMARK_TEXT,
+} from "@/lib/watermark/resolve-effective-watermark";
+import type { WatermarkConfig } from "@/lib/watermark/resolve-effective-watermark";
 
 export const DAY_SECONDS = 60 * 60 * 24;
 export const WEEK_SECONDS = DAY_SECONDS * 7;
 export const CACHE_CONTROL_IMMUTABLE = `public, max-age=${DAY_SECONDS}, s-maxage=${WEEK_SECONDS}, immutable`;
+/**
+ * Used ONLY when `applyWatermark()` throws and a route falls back to serving
+ * the original, unwatermarked bytes. Deliberately short-lived and
+ * `must-revalidate` — the failure is very likely transient (a momentary
+ * Storage/sharp hiccup), so the next request should retry watermarking
+ * rather than have browsers/CDNs treat the unwatermarked fallback as the
+ * final `immutable` file for a month.
+ */
+export const CACHE_CONTROL_WATERMARK_FALLBACK = "public, max-age=60, s-maxage=60, must-revalidate";
 
 export const IMAGE_MIME_PREFIX = "image/";
 export const SVG_MIME = "image/svg+xml";
-
-export interface WatermarkConfig {
-  type: "text" | "image";
-  text: string;
-  imageUrl: string;
-  /** % of target image width — 0 disables the watermark entirely. */
-  size: number;
-  /** % opacity — 0 fully transparent, 100 fully opaque. */
-  opacity: number;
-}
-
-export const DEFAULT_WATERMARK: WatermarkConfig = {
-  type: "text",
-  text: "letitrip.in",
-  imageUrl: "",
-  size: 30,
-  opacity: 20,
-};
 
 const WATERMARK_CACHE_TTL_MS = 60_000;
 const MEDIA_PROXY_PATH_PREFIX = "media/";
 
 let watermarkCache: { value: WatermarkConfig; expiresAt: number } | null = null;
 
-function clampPercent(n: unknown, fallback: number): number {
-  if (typeof n !== "number" || !Number.isFinite(n)) return fallback;
-  return Math.max(0, Math.min(100, n));
-}
-
+/**
+ * Resolves the effective watermark via {@link resolveEffectiveWatermark} —
+ * marker image → wordmark image → plain text, see that module for the tier
+ * order. Falls back to the bundled marker (bypassing Firestore) if the
+ * settings read itself fails, so the proxy never renders unwatermarked.
+ */
 export async function loadWatermarkConfig(): Promise<WatermarkConfig> {
   if (watermarkCache && watermarkCache.expiresAt > Date.now()) {
     return watermarkCache.value;
   }
   try {
     const settings = await siteSettingsRepository.getSingleton();
-    const wm = (settings as { watermark?: Partial<WatermarkConfig> }).watermark ?? {};
-    const value: WatermarkConfig = {
-      type: wm.type === "image" ? "image" : "text",
-      text:
-        typeof wm.text === "string" && wm.text.trim()
-          ? wm.text.trim()
-          // Config-driven fallback — was previously a hardcoded "letitrip.in"
-          // literal (Root Cause #21). Falls back to siteName only when the
-          // admin has never configured a watermark at all.
-          : settings?.siteName?.trim() || DEFAULT_WATERMARK.text,
-      imageUrl: typeof wm.imageUrl === "string" ? wm.imageUrl : "",
-      size: clampPercent(wm.size, DEFAULT_WATERMARK.size),
-      opacity: clampPercent(wm.opacity, DEFAULT_WATERMARK.opacity),
-    };
+    const value = resolveEffectiveWatermark(settings);
     watermarkCache = { value, expiresAt: Date.now() + WATERMARK_CACHE_TTL_MS };
     return value;
   } catch (err) {
@@ -70,7 +56,7 @@ export async function loadWatermarkConfig(): Promise<WatermarkConfig> {
       "media-proxy: siteSettingsRepository.getSingleton failed; using default watermark",
       { error: err instanceof Error ? err.message : String(err) },
     );
-    return DEFAULT_WATERMARK;
+    return resolveEffectiveWatermark(null);
   }
 }
 
@@ -110,7 +96,7 @@ export async function resolveWatermarkConfig(
     resolveDisplayName(uploaderUid),
     siteSettingsRepository.getSingleton().catch(() => null),
   ]);
-  const siteName = settings?.siteName?.trim() || DEFAULT_WATERMARK.text;
+  const siteName = settings?.siteName?.trim() || DEFAULT_WATERMARK_TEXT;
   return {
     type: "text",
     text: `${displayName} · ${siteName}`,
@@ -149,6 +135,46 @@ export function buildTextWatermarkSvg(
   return Buffer.from(svg);
 }
 
+/**
+ * Loads the raw bytes for an image watermark. `/media/<slug>` paths are
+ * admin-uploaded overrides fetched via Storage Admin (unchanged behaviour).
+ * Any other root-relative path (e.g. the bundled marker's `/logo.svg`) is a
+ * static asset shipped under `public/` and is read straight off disk — no
+ * Storage round-trip needed for the default brand mark.
+ */
+async function loadWatermarkImageBuffer(
+  imageUrl: string,
+  selfStoragePath: string,
+): Promise<Buffer | null> {
+  if (imageUrl.startsWith(`/${MEDIA_PROXY_PATH_PREFIX}`)) {
+    const wmStoragePath = watermarkUrlToStoragePath(imageUrl);
+    if (!wmStoragePath || wmStoragePath === selfStoragePath) return null;
+    const bucket = getAdminStorage().bucket();
+    const wmFile = bucket.file(wmStoragePath);
+    const [wmExists] = await wmFile.exists();
+    if (!wmExists) return null;
+    const [wmBuffer] = await wmFile.download();
+    return wmBuffer;
+  }
+  if (imageUrl.startsWith("/") && !imageUrl.startsWith("//")) {
+    // `imageUrl` can originate from an admin-editable settings field — never
+    // trust it as a bare path segment. Resolve it and verify the result is
+    // still inside `public/` before reading, so a stray `../../` can't walk
+    // the read outside the intended directory and load an unrelated file.
+    const publicDir = path.join(process.cwd(), "public");
+    const filePath = path.join(publicDir, imageUrl.replace(/^\/+/, ""));
+    const relative = path.relative(publicDir, filePath);
+    if (relative.startsWith("..") || path.isAbsolute(relative)) return null;
+    try {
+      return await readFile(filePath);
+    } catch (err) {
+      void normalizeError(err);
+      return null;
+    }
+  }
+  return null;
+}
+
 export async function applyWatermark(
   source: Buffer,
   config: WatermarkConfig,
@@ -160,26 +186,22 @@ export async function applyWatermark(
   const meta = await image.metadata();
   const targetWidth = meta.width ?? 800;
 
-  if (config.type === "text") {
-    const overlay = buildTextWatermarkSvg(config.text, targetWidth, config.size, config.opacity);
+  if (config.type === "image") {
+    const wmBuffer = await loadWatermarkImageBuffer(config.imageUrl, selfStoragePath);
+    if (wmBuffer) {
+      const wmTargetWidth = Math.max(1, Math.round((targetWidth * config.size) / 100));
+      const resized = await sharp(wmBuffer)
+        .resize(wmTargetWidth, null, { fit: "inside" })
+        .png()
+        .toBuffer();
+      return image.composite([{ input: resized, gravity: "center", blend: "over" }]).toBuffer();
+    }
+    // Image tier unavailable (e.g. an admin-uploaded override was deleted from
+    // Storage) — degrade to the text watermark rather than skip it entirely.
+    const overlay = buildTextWatermarkSvg(DEFAULT_WATERMARK_TEXT, targetWidth, config.size, config.opacity);
     return image.composite([{ input: overlay, gravity: "center", blend: "over" }]).toBuffer();
   }
 
-  // type === "image" — load via Storage Admin to avoid recursion
-  const wmStoragePath = watermarkUrlToStoragePath(config.imageUrl);
-  if (!wmStoragePath || wmStoragePath === selfStoragePath) return source;
-
-  const bucket = getAdminStorage().bucket();
-  const wmFile = bucket.file(wmStoragePath);
-  const [wmExists] = await wmFile.exists();
-  if (!wmExists) return source;
-
-  const [wmBuffer] = await wmFile.download();
-  const wmTargetWidth = Math.max(1, Math.round((targetWidth * config.size) / 100));
-  const resized = await sharp(wmBuffer)
-    .resize(wmTargetWidth, null, { fit: "inside" })
-    .png()
-    .toBuffer();
-
-  return image.composite([{ input: resized, gravity: "center", blend: "over" }]).toBuffer();
+  const overlay = buildTextWatermarkSvg(config.text, targetWidth, config.size, config.opacity);
+  return image.composite([{ input: overlay, gravity: "center", blend: "over" }]).toBuffer();
 }

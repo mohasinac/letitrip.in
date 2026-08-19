@@ -11,6 +11,20 @@ import {
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
+export const GET = withProviders(
+  createRouteHandler({
+    auth: true,
+    roles: [...ROLES_ADMIN_MOD],
+    permission: "admin:products:write",
+    handler: async ({ params }) => {
+      const id = (params as { id: string }).id;
+      const doc = await itemRequestsRepository.findById(id);
+      if (!doc) return ApiErrors.notFound("Not found");
+      return successResponse(doc);
+    },
+  }),
+);
+
 export const PATCH = withProviders(
   createRouteHandler({
     auth: true,

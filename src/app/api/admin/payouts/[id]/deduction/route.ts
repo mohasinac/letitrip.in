@@ -20,8 +20,8 @@ import { ROLES_ADMIN_ONLY } from "@/constants";
 const deductionSchema = z.object({
   orderId: z.string().min(1),
   refundId: z.string().min(1),
-  refundedAmount: z.number().int().positive(),
-  deductedAmount: z.number().int().positive().optional(),
+  refundedAmount: z.number().positive(),
+  deductedAmount: z.number().positive().optional(),
   reason: z.string().min(3).max(500),
 });
 

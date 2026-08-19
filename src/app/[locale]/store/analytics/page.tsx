@@ -1,6 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { SellerAnalyticsView, SellerAnalyticsStats, SellerTopProducts, Div, Text, apiClient } from "@mohasinac/appkit/client";
+import { SellerAnalyticsView, SellerAnalyticsStats, SellerTopProducts, Div, Text, apiClient, formatCurrency } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
 const __P = {
@@ -21,10 +21,6 @@ interface AnalyticsData {
     orders: number;
     mainImage?: string;
   }>;
-}
-
-function rupees(paise: number) {
-  return `₹${(paise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`;
 }
 
 export default function Page() {
@@ -58,13 +54,13 @@ export default function Page() {
         ) : (
           <SellerAnalyticsStats
             summary={summary}
-            formatRevenue={(v: number) => rupees(v)}
+            formatRevenue={formatCurrency}
           />
         )
       }
       renderTopProducts={() =>
         data?.topProducts && data.topProducts.length > 0 ? (
-          <SellerTopProducts products={data.topProducts} formatRevenue={(v) => rupees(v)} />
+          <SellerTopProducts products={data.topProducts} formatRevenue={formatCurrency} />
         ) : null
       }
     />

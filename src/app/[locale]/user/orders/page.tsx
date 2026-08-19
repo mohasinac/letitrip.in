@@ -18,10 +18,10 @@ const CANCELLABLE_STATUSES = new Set(["pending", "confirmed", "processing"]);
 const TRACKABLE_STATUSES = new Set(["shipped"]);
 
 const SORT_OPTIONS = [
-  { value: sortBy("createdAt", "DESC"),   label: "Newest first" },
-  { value: sortBy("createdAt", "ASC"),    label: "Oldest first" },
-  { value: sortBy("totalAmount", "DESC"), label: "Highest total" },
-  { value: "totalAmount",  label: "Lowest total" },
+  { value: sortBy("createdAt", "DESC"),  label: "Newest first" },
+  { value: sortBy("createdAt", "ASC"),   label: "Oldest first" },
+  { value: sortBy("totalPrice", "DESC"), label: "Highest total" },
+  { value: sortBy("totalPrice", "ASC"),  label: "Lowest total" },
 ];
 
 const STATUS_OPTIONS = [

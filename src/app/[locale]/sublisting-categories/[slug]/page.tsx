@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { JsonValue } from "@mohasinac/appkit";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
-import { Heading, Main, MediaImage, Nav, ROUTES, Row, Span, Stack, Text, categoriesRepository, isAuctionListing, isPreOrderListing, normalizeListingType, pluginFor } from "@mohasinac/appkit";
+import { Heading, Main, MediaImage, Nav, ROUTES, Row, Span, Stack, Text, categoriesRepository, isAuctionListing, isPreOrderListing, normalizeListingType, pluginFor, formatCurrency } from "@mohasinac/appkit";
 import type { ListingType } from "@mohasinac/appkit";
 import { Div } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants";
@@ -11,13 +11,6 @@ import { generateMetadata as _gm } from "@/constants";
 const __O = {
   hidden: "overflow-hidden",
 } as const;
-function fmt(paise: number, currency = "INR"): string {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(paise / 100);
-}
 
 export const revalidate = 300;
 
@@ -175,7 +168,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
                       {title}
                     </Text>
                     <Text size="sm" weight="bold" color="primary">
-                      {fmt(price, currency)}
+                      {formatCurrency(price, currency)}
                     </Text>
                   </Stack>
                 </Link>

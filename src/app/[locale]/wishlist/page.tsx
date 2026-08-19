@@ -25,6 +25,7 @@ import {
   ACTIONS,
   LoginRequiredModal,
   useBottomActions,
+  Toggle,
 } from "@mohasinac/appkit/client";
 import type { EnrichedWishlistItem } from "@mohasinac/appkit/client";
 import { Span } from "@mohasinac/appkit/ui";
@@ -70,6 +71,11 @@ function countActiveFilters(f: WishlistFilters): number {
   return n;
 }
 
+// Not folded into WishlistFilters/countActiveFilters — "hide sold out" is
+// on by default (matching the "Show sold" precedent elsewhere in the
+// codebase), so the unusual state is showing sold-out items, not hiding
+// them; it shouldn't count toward the "N filters active" badge.
+
 export default function WishlistPage() {
   const { user, loading: sessionLoading } = useSession();
   const { showToast } = useToast();
@@ -77,6 +83,7 @@ export default function WishlistPage() {
   const wl = useWishlistWithGuest(sessionLoading ? undefined : user?.uid ?? null);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("-addedAt");
+  const [hideSoldOut, setHideSoldOut] = useState(true);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBulkRemoving, setIsBulkRemoving] = useState(false);
   const [isBulkAddingToCart, setIsBulkAddingToCart] = useState(false);
@@ -208,6 +215,13 @@ export default function WishlistPage() {
       });
     }
 
+    // Hide sold-out items by default — wishlist is capped at WISHLIST_MAX
+    // (20) and already fully fetched in-memory (PL6-A exception above), so
+    // this is a plain client-side filter, no query param needed.
+    if (hideSoldOut) {
+      result = result.filter((item) => !item.product?.isSold);
+    }
+
     // Type filter — SB1-G canonical predicates handle both listingType and legacy booleans.
     if (applied.type !== "all") {
       result = result.filter((item) => {
@@ -245,7 +259,7 @@ export default function WishlistPage() {
     });
 
     return result;
-  }, [wl.items, search, sort, applied]);
+  }, [wl.items, search, sort, applied, hideSoldOut]);
 
   const activeFilterCount = countActiveFilters(applied);
 
@@ -287,8 +301,8 @@ export default function WishlistPage() {
     <ListingLayout
       headerSlot={renderWishlistHeader({ isLoading, wl, selectedIds, isBulkRemoving, isBulkAddingToCart, handleRemoveSelected, handleAddSelectedToCart, clearSelection, handleRemoveAll })}
       searchSlot={<Input placeholder="Search wishlist…" value={search} onChange={(e) => setSearch(e.target.value)} className="h-9 text-[length:var(--appkit-text-sm)]" />}
-      sortSlot={<Select options={SORT_OPTIONS} value={sort} onValueChange={setSort} className="h-9 text-[length:var(--appkit-text-sm)] min-w-[160px]" />}
-      filterContent={renderWishlistFilterContent({ pending, setPending })}
+      sortSlot={<Select options={SORT_OPTIONS} value={sort} onValueChange={setSort} className="h-9 text-[length:var(--appkit-text-sm)]" wrapperClassName="min-w-[160px]" />}
+      filterContent={renderWishlistFilterContent({ pending, setPending, hideSoldOut, setHideSoldOut })}
       filterActiveCount={activeFilterCount}
       onFilterApply={handleApply}
       onFilterClear={handleClear}
@@ -353,14 +367,24 @@ function renderWishlistHeader({
 }
 
 function renderWishlistFilterContent({
-  pending, setPending,
+  pending, setPending, hideSoldOut, setHideSoldOut,
 }: {
   pending: WishlistFilters;
   setPending: React.Dispatch<React.SetStateAction<WishlistFilters>>;
+  hideSoldOut: boolean;
+  setHideSoldOut: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   return (
     <Stack gap="md" className={`${__P.p4}`}>
       <Div>
+        <Toggle
+          size="sm"
+          label="Hide sold out"
+          checked={hideSoldOut}
+          onChange={setHideSoldOut}
+        />
+      </Div>
+      <Div border="default" className="border-t" padding="t-md">
         <Text className="mb-2 tracking-wide" color="muted" size="xs" weight="semibold" transform="uppercase">Type</Text>
         <Stack gap="xs">
           {TYPE_OPTIONS.map((opt) => (

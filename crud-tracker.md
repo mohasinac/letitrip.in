@@ -2,7 +2,30 @@
 
 > **Single working tracker.** Lane A/B split wound down 2026-05-12 (single-lane model now).
 >
-> **Last updated:** 2026-08-19 — **S-404-sweep**: Follow-up to the events 404 fix — swept the
+> **Last updated:** 2026-08-19 — **S-nav-wiring-sweep**: Whole-app admin/store/user
+> navigation audit (5 parallel research passes) found ~25 fully-built pages with no sidebar
+> nav entry (`/admin/grouped-listings`, `/store/grouped-listings`, `/store/listing-templates`,
+> the `/user` dashboard hub, plus ~17 more store pages) and the inverse — nav-adjacent route
+> constants with no `page.tsx` behind them (7 admin detail routes: order/moderation/report/
+> item-request/scammer/support-ticket detail + a permissions catalog). Fixed all of them; also
+> fixed a real bug where `/admin/carousels` rendered the wrong component (the flat slide editor
+> instead of a named-carousel list) and built the missing named-carousel CRUD API; built a real
+> Cloud Logging integration replacing the `/admin/maintenance/cloud-logs` placeholder; deleted
+> two dead-code duplicates (`/store/templates` superseded by `/store/listing-templates`;
+> `/store/inventory/print` a degraded duplicate of `/store/print-center`). New strict-zero audit
+> `scripts/audit-nav-page-wiring.mjs` guards against this class of bug going forward (CLAUDE.md
+> Root Cause #37). Switched consumer `package.json`/`tsconfig.json` from the npm-pinned
+> `@mohasinac/appkit@^4.1.1` back to `file:./appkit` (per CLAUDE.md's documented local-dev
+> default) so these appkit-source changes actually take effect — was pinned to npm at session
+> start, meaning any appkit-side change silently wouldn't have run. `npm run check:audits`
+> clean (4 remaining failures — `code-quality`, `seed-external-urls`, `raw-form-input`,
+> `empty-catch` on `src/app/[locale]/faqs/**` — all confirmed pre-existing/unrelated to this
+> session via `git status`, not touched). **Follow-up not fixed** (flagged, not silently
+> changed): `GET /api/admin/moderation/[id]/route.ts` gates on `admin:reviews:write`, which
+> looks mismatched for a moderation-queue resource — needs its own decision, not a drive-by fix.
+> Not published/deployed per explicit user instruction (Rule #10).
+>
+> **Prior, 2026-08-19 — S-404-sweep**: Follow-up to the events 404 fix — swept the
 > codebase for the same two 404-bug shapes (slug/id lookup mismatch; `where("id"=="...")` against a
 > field that's never persisted). Found + fixed one more: `src/app/api/admin/payouts/[id]/route.ts`
 > GET always 404'd (broken Sieve filter, same root cause as the two events admin routes fixed

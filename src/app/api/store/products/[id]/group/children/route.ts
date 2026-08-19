@@ -20,7 +20,7 @@ const childBodySchema = z.union([
     mode: z.literal("create"),
     parentId: z.string().min(1),
     title: z.string().min(1).max(200),
-    price: z.number().int().min(0),
+    price: z.number().min(0),
     condition: z.string().max(40).optional(),
   }),
   z.object({

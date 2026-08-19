@@ -38,6 +38,7 @@
 | `HOMEPAGE_DATA` | `homepage-data.ts` | Static homepage section fallback data |
 | `FAQ_CATEGORIES` | `faq.ts` | FAQ category labels + slugs |
 | `THEME_CONFIG` | `theme.ts` | App theme token defaults |
+| `ADMIN_PERMISSION_GROUPS`, `ADMIN_PERMISSION_DOMAINS`, `getAdminPermissionsForDomain`, `formatAdminPermLabel` | `admin-permissions.ts` | 2026-08-19 — powers the read-only `/admin/permissions` catalog page. **Temporary mirror** of appkit's `PERMISSION_GROUPS`/`PERMISSION_DOMAINS`/`getPermissionsForDomain`/`formatPermLabel` (newly exported from `appkit/src/index.ts`+`client.ts` this session, but this repo pins `@mohasinac/appkit` from the npm registry, not `file:./appkit`, so the new exports aren't resolvable until the next publish). Delete this file and import from `@mohasinac/appkit` directly once appkit is republished and the pin is bumped — see the file's header comment. |
 | `UI_CONFIG` | `ui.ts` | UI-level config (breakpoints, z-index, etc.) |
 | `APP_CONFIG` | `config.ts` | App-wide runtime config (site name, domain, etc.) |
 | `STORE_ORDERS_TABS`, `StoreOrdersTabId` | `dashboard-tabs.ts` | Order status filter tabs: all/pending/processing/shipped/delivered/cancelled/refunded/return_requested |
@@ -108,6 +109,14 @@
 | `CheckoutRouteClient` | `routing/CheckoutRouteClient.tsx` | Checkout page client wrapper. Tier PP (2026-08-18) added a `"value-otp"` state-machine step; `useValueOtpCheckout()` + `useAdminBypassCheckout()` extracted as top-level hooks (mirroring the existing `useEmiCheckout` pattern) to keep the component under the `audit-code-quality.mjs` LARGE_COMPONENT line threshold |
 | `CheckoutSuccessRouteClient` | `routing/CheckoutSuccessRouteClient.tsx` | Post-checkout success client wrapper |
 | `RoutePlaceholderView` | `routing/RoutePlaceholderView.tsx` | Placeholder for unbuilt pages |
+
+---
+
+## FAQ Page Client — `src/components/faq/`
+
+| Name | File | What it does |
+|------|------|-------------|
+| `FAQPageClient` | `faq/FAQPageClient.tsx` | 2026-08-19 — manages search/sort/category `useUrlTable` state and renders appkit's `FAQPageContent` (Sieve-backed via `useFaqList`, real server-side search/sort/pagination). Wired into `/faqs` + `/faqs/[category]` `page.tsx` (Server Components that fetch `categories`/`contact` and pass them down). Replaced the previous `FAQPageView`/`FAQSearchableList` wiring, which only did client-side substring search over a single SSR-fetched batch. |
 
 ---
 
@@ -185,6 +194,7 @@
 | `tester-feedback/[id]/route.ts` | PATCH | Mark a tester response reviewed (2026-08-17) |
 | `tester-feedback/report/route.ts` | GET | Coverage report — per-item yes/no counts + "no"-answer issues list (2026-08-17) |
 | `tester-feedback/export/route.ts` | GET | Downloads `TesterChecklistResponseRepository.getMarkdownReport()` as a Markdown file (`Content-Disposition: attachment; filename="tester-feedback-report-<date>.md"`) — same content as `npm run tester:export-feedback`; wired to the "Download Report" button on `AdminTesterFeedbackView` (2026-08-17) |
+| `item-requests/[id]/route.ts` | GET/PATCH | GET added 2026-08-19 to back the new `/admin/item-requests/[id]` detail page — same auth/RBAC shape as the pre-existing PATCH (`ROLES_ADMIN_MOD`, `admin:products:write`) |
 
 ---
 
