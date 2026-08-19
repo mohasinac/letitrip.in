@@ -12,6 +12,9 @@ import {
   createRouteHandler,
   successResponse,
   errorResponse,
+  finalizeStagedMediaField,
+  finalizeStagedMediaObject,
+  finalizeStagedMediaObjectArray,
 } from "@mohasinac/appkit";
 
 const updateEventSchema = z.object({
@@ -44,11 +47,26 @@ const __PATCH__g = withProviders(
     schema: updateEventSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;
-      const { startsAt, endsAt, ...rest } = body!;
+      const { startsAt, endsAt, coverImage, eventImages, winnerImages, additionalImages, ...rest } = body! as any;
+      // Mirror POST's staged-media finalization (route.ts:205-218) — without
+      // this, a PATCH that swaps in a newly-uploaded image leaves it sitting
+      // in Storage tmp/ (status "staged") instead of being promoted like
+      // create does.
+      const coverImageUrl = coverImage !== undefined || rest.coverImageUrl !== undefined
+        ? await finalizeStagedMediaField(coverImage?.url ?? rest.coverImageUrl)
+        : undefined;
+      const finalizedCoverImage = coverImage
+        ? await finalizeStagedMediaObject({ ...coverImage, url: coverImageUrl ?? coverImage.url })
+        : undefined;
       const updateData = {
         ...rest,
         ...(startsAt && { startsAt: new Date(startsAt) }),
         ...(endsAt && { endsAt: new Date(endsAt) }),
+        ...(finalizedCoverImage && { coverImage: finalizedCoverImage, coverImageUrl: finalizedCoverImage.url }),
+        ...(coverImageUrl !== undefined && !finalizedCoverImage && { coverImageUrl }),
+        ...(eventImages !== undefined && { eventImages: await finalizeStagedMediaObjectArray(eventImages) }),
+        ...(winnerImages !== undefined && { winnerImages: await finalizeStagedMediaObjectArray(winnerImages) }),
+        ...(additionalImages !== undefined && { additionalImages: await finalizeStagedMediaObjectArray(additionalImages) }),
       };
       const updated = await eventRepository.updateEvent(id, updateData as any);
       return successResponse(updated, "Event updated");

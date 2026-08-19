@@ -15,36 +15,24 @@ export default async function Page({ params }: Props) {
   const product = await getSellerProductAction(id);
   if (!product) notFound();
 
+  // Spread the FULL fetched product first so every writable field (auction,
+  // pre-order, classified, digital-code, live-item, print-meta, offers,
+  // insurance, GST, shipping, etc.) is seeded from its real saved value —
+  // then override only the handful of fields that need renaming/normalizing
+  // between ProductDocument's shape and SellerProductDraft's. A hand-picked
+  // allow-list here previously dropped ~30 writable fields silently, and two
+  // of them (minOfferPercent/insuranceCost) were destructively reset to a
+  // hardcoded default the moment the seller touched the paired toggle.
   const initialValues: SellerProductDraft = {
-    title: (product as any).title,
-    slug: (product as any).slug,
-    description: (product as any).description,
+    ...(product as unknown as SellerProductDraft),
     category: (product as any).categorySlug ?? (product as any).category,
     brand: (product as any).brandSlug ?? (product as any).brand,
-    condition: (product as any).condition,
-    tags: (product as any).tags,
     mainImage: (product as any).mainImage ?? (product as any).images?.[0],
-    images: (product as any).images,
-    youtubeId: (product as any).youtubeId,
-    price: (product as any).price,
-    compareAtPrice: (product as any).compareAtPrice,
     stockQuantity: (product as any).stockQuantity ?? (product as any).stock,
     featured: (product as any).isFeatured,
-    isNew: (product as any).isNew,
-    isOnSale: (product as any).isOnSale,
     status: (product as any).status === "published" ? "published" : "draft",
     seoTitle: (product as any).seoTitle ?? (product as any).seo?.title,
     seoDescription: (product as any).seoDescription ?? (product as any).seo?.description,
-    // Auction
-    startingBid: (product as any).startingBid,
-    reservePrice: (product as any).reservePrice,
-    buyNowPrice: (product as any).buyNowPrice,
-    auctionEndDate: (product as any).auctionEndDate,
-    // Pre-order
-    preOrderDeliveryDate: (product as any).preOrderDeliveryDate,
-    preOrderDepositPercent: (product as any).preOrderDepositPercent,
-    preOrderMaxQuantity: (product as any).preOrderMaxQuantity,
-    preOrderProductionStatus: (product as any).preOrderProductionStatus,
   };
 
   const listingType: ProductListingMode = (product as any).listingType ?? "standard";

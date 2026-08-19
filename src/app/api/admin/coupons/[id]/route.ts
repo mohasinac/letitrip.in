@@ -60,14 +60,14 @@ const __PATCH__g = withProviders(
     schema: updateCouponSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;
-      const { action, validity, ...updateData } = body!;
+      const existing = await couponsRepository.findById(id);
+      if (!existing) return errorResponse("Coupon not found", 404);
+
+      const { action, validity, restrictions, ...updateData } = body!;
 
       // Guard: percentage coupons cannot have discount.value > 100
-      if (updateData.discount?.value !== undefined) {
-        const existing = await couponsRepository.findById(id);
-        if (existing?.type === "percentage" && updateData.discount.value > 100) {
-          return errorResponse("Percentage discount cannot exceed 100%", 422);
-        }
+      if (updateData.discount?.value !== undefined && existing.type === "percentage" && updateData.discount.value > 100) {
+        return errorResponse("Percentage discount cannot exceed 100%", 422);
       }
 
       if (action === "deactivate") {
@@ -78,12 +78,19 @@ const __PATCH__g = withProviders(
         await couponsRepository.reactivateCoupon(id);
         return successResponse(null, "Coupon reactivated");
       }
-      if (validity?.isActive === false) {
-        await couponsRepository.deactivateCoupon(id);
-      } else if (validity?.isActive === true) {
-        await couponsRepository.reactivateCoupon(id);
-      }
-      return successResponse({ id, ...updateData }, "Coupon updated");
+
+      // Merge nested objects rather than replacing them wholesale — a caller
+      // sending only `validity: {isActive: false}` must not wipe the coupon's
+      // real startDate/endDate, same reasoning as the restrictions merge.
+      const mergedValidity = validity ? { ...existing.validity, ...validity } : undefined;
+      const mergedRestrictions = restrictions ? { ...existing.restrictions, ...restrictions } : undefined;
+      const updated = await couponsRepository.update(id, {
+        ...updateData,
+        ...(mergedValidity ? { validity: mergedValidity } : {}),
+        ...(mergedRestrictions ? { restrictions: mergedRestrictions } : {}),
+        updatedAt: new Date(),
+      } as any);
+      return successResponse(updated, "Coupon updated");
     },
   }),
 );

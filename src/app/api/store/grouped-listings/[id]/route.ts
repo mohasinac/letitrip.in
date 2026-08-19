@@ -44,8 +44,21 @@ export const PATCH = withProviders(
       if (!doc) return ApiErrors.notFound(GROUP_NOT_FOUND);
       if (doc.storeId !== store.id) return ApiErrors.forbidden("Not your group");
       const body = await parseJsonBody<Record<string, JsonValue>>(request);
+      // Mirror POST's coercion + derived-field logic (route.ts:45-48) — without
+      // this, a PATCH with a malformed productIds/minActiveMembers writes them
+      // uncoerced, and activeMemberCount goes stale until the unrelated
+      // onProductStockChange background job happens to fire for a member product.
+      const patch: Record<string, JsonValue> = { ...body };
+      if ("productIds" in body) {
+        const productIds = Array.isArray(body.productIds) ? body.productIds : [];
+        patch.productIds = productIds;
+        patch.activeMemberCount = productIds.length;
+      }
+      if ("minActiveMembers" in body) {
+        patch.minActiveMembers = Number(body.minActiveMembers ?? 2);
+      }
       try {
-        await groupedListingsRepository.update(id, body);
+        await groupedListingsRepository.update(id, patch);
         return successResponse({ id }, "Group updated");
       } catch (err) {
         void normalizeError(err);

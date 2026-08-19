@@ -61,6 +61,16 @@ export const PUT = withProviders(createRouteHandler<(typeof updateSchema)["_outp
     if (body?.coverImage !== undefined) {
       patch.display = { ...existing.display, coverImage: body.coverImage };
     }
+    // Mirror POST's `seo: { title: name, description }` derivation — without
+    // this, renaming a sublisting category leaves its page <title>/meta
+    // description frozen at the value from creation.
+    if (body?.name !== undefined || body?.description !== undefined) {
+      patch.seo = {
+        ...(existing as any).seo,
+        ...(body?.name !== undefined && { title: body.name }),
+        ...(body?.description !== undefined && { description: body.description }),
+      };
+    }
     await categoriesRepository.update(id, patch);
     const updated = await categoriesRepository.findById(id);
     return successResponse({ category: updated });

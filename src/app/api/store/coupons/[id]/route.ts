@@ -107,9 +107,29 @@ const __PATCH__g = withProviders(
       const mergedRestrictions = restrictions
         ? { ...existing.restrictions, ...restrictions }
         : undefined;
+      // Merge validity rather than replacing wholesale — a caller sending
+      // only `validity: {isActive: false}` must not wipe startDate/endDate.
+      const mergedValidity = validity ? { ...existing.validity, ...validity } : undefined;
+      // Mirror create's rounding for "fixed"-type coupons (POST /api/store/coupons)
+      // so editing discount.value/minPurchase/maxDiscount can't drift in unrounded
+      // floats create would never have allowed in the first place.
+      const mergedDiscount =
+        updateData.discount && existing.type === "fixed"
+          ? {
+              ...updateData.discount,
+              value: Math.round(updateData.discount.value * 100) / 100,
+              ...(updateData.discount.minPurchase !== undefined && {
+                minPurchase: Math.round(updateData.discount.minPurchase * 100) / 100,
+              }),
+              ...(updateData.discount.maxDiscount !== undefined && {
+                maxDiscount: Math.round(updateData.discount.maxDiscount * 100) / 100,
+              }),
+            }
+          : updateData.discount;
       const updated = await couponsRepository.update(id, {
         ...updateData,
-        ...(validity ? { validity } : {}),
+        ...(mergedDiscount ? { discount: mergedDiscount } : {}),
+        ...(mergedValidity ? { validity: mergedValidity } : {}),
         ...(mergedRestrictions ? { restrictions: mergedRestrictions } : {}),
         updatedAt: new Date(),
       } as any);
