@@ -24,11 +24,30 @@ export interface WatermarkConfig {
   size: number;
   /** % opacity — 0 fully transparent, 100 fully opaque. */
   opacity: number;
+  /**
+   * Hex stops `[from, mid, to]` matching the active default-light theme's
+   * `--appkit-gradient-logo` (0% / 55% / 100%), used to retheme the bundled
+   * SVG marker so the watermark stays visually consistent with the live site
+   * theme instead of the hardcoded colors baked into `public/logo.svg`.
+   * Only meaningful when `imageUrl === DEFAULT_MARKER_ASSET_PATH`.
+   */
+  themeGradientStops?: readonly [string, string, string];
 }
 
 export const DEFAULT_WATERMARK_TEXT = "letitrip.in";
-const DEFAULT_SIZE = 24;
-const DEFAULT_OPACITY = 24;
+// Deliberately subtle — a watermark that's easy to spot defeats the point of
+// a "carefully-hidden" provenance mark. See CLAUDE.md Root Cause sweep notes.
+const DEFAULT_SIZE = 8;
+const DEFAULT_OPACITY = 12;
+
+/** default-light's `appkit-color-primary-700/500` + `secondary-400` — used
+ * only if `settings.theme` has no matching record (should be rare). */
+const FALLBACK_GRADIENT_STOPS: readonly [string, string, string] = ["#0f766e", "#14b8a6", "#e879f9"];
+const LOGO_GRADIENT_TOKEN_KEYS = [
+  "appkit-color-primary-700",
+  "appkit-color-primary-500",
+  "appkit-color-secondary-400",
+] as const;
 
 function clampPercent(n: unknown, fallback: number): number {
   if (typeof n !== "number" || !Number.isFinite(n)) return fallback;
@@ -45,6 +64,10 @@ export interface WatermarkResolverSettings {
   };
   logo?: { url?: string };
   siteName?: string;
+  theme?: {
+    themes?: Array<{ id: string; tokens?: Record<string, string> }>;
+    defaultLightThemeId?: string;
+  };
 }
 
 /** Whether the bundled marker asset should be considered available. Kept as
@@ -52,6 +75,23 @@ export interface WatermarkResolverSettings {
  * slot in without changing every call site. */
 function isMarkerAssetAvailable(): boolean {
   return true;
+}
+
+function resolveThemeGradientStops(
+  settings: WatermarkResolverSettings | null | undefined,
+): readonly [string, string, string] {
+  const themeCfg = settings?.theme;
+  const activeId = themeCfg?.defaultLightThemeId || "default-light";
+  const record =
+    themeCfg?.themes?.find((t) => t.id === activeId) ??
+    themeCfg?.themes?.find((t) => t.id === "default-light");
+  const tokens = record?.tokens;
+  if (!tokens) return FALLBACK_GRADIENT_STOPS;
+  const stops = LOGO_GRADIENT_TOKEN_KEYS.map((key) => tokens[key]);
+  if (!stops.every((v): v is string => typeof v === "string" && v.trim().length > 0)) {
+    return FALLBACK_GRADIENT_STOPS;
+  }
+  return stops as unknown as readonly [string, string, string];
 }
 
 export function resolveEffectiveWatermark(
@@ -66,9 +106,16 @@ export function resolveEffectiveWatermark(
     return { type: "image", text: "", imageUrl: wm.imageUrl.trim(), size, opacity };
   }
 
-  // Tier 2 — bundled icon mark.
+  // Tier 2 — bundled icon mark, retinted to the active theme's logo gradient.
   if (isMarkerAssetAvailable()) {
-    return { type: "image", text: "", imageUrl: DEFAULT_MARKER_ASSET_PATH, size, opacity };
+    return {
+      type: "image",
+      text: "",
+      imageUrl: DEFAULT_MARKER_ASSET_PATH,
+      size,
+      opacity,
+      themeGradientStops: resolveThemeGradientStops(settings),
+    };
   }
 
   // Tier 3 — admin-configured wordmark image.
