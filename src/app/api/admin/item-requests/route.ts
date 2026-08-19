@@ -19,7 +19,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:products:read",
     handler: async () => {
       const pending = await itemRequestsRepository.findBy("status", "pending-approval");
       const items = [...pending]

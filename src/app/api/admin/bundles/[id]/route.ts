@@ -32,7 +32,6 @@ const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:categories:read",
     handler: async ({ params }) => {
       const id = String(params?.id ?? "");
       if (!id) return ApiErrors.badRequest(MSG_BUNDLE_ID_REQUIRED);
@@ -47,7 +46,6 @@ const __PUT__g = withProviders(
   createRouteHandler<(typeof bundleUpdateSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:categories:write",
     schema: bundleUpdateSchema,
     handler: async ({ body, params, user }) => {
       const id = String(params?.id ?? "");

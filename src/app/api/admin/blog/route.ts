@@ -70,7 +70,6 @@ const createBlogPostSchema = z.object({
 const __GET__g = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
-  permission: "admin:blog:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
 
@@ -151,7 +150,6 @@ const __GET__g = withProviders(createRouteHandler({
 const __POST__g = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
-  permission: "admin:blog:write",
   schema: createBlogPostSchema,
   handler: async ({ body, user }) => {
     const { publishedAt, ...rest } = body!;

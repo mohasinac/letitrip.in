@@ -25,7 +25,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
     handler: async ({ user, params }) => {
       const { error, doc } = await loadAndAssertOwner(user!.uid, (params as { id: string }).id);
       if (error) return error;
@@ -38,7 +37,6 @@ export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
     handler: async ({ request, user, params }) => {
       const { error } = await loadAndAssertOwner(user!.uid, (params as { id: string }).id);
       if (error) return error;
@@ -61,7 +59,6 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
     handler: async ({ user, params }) => {
       const { error } = await loadAndAssertOwner(user!.uid, (params as { id: string }).id);
       if (error) return error;

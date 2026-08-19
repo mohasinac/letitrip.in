@@ -19,7 +19,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_AUTHENTICATED],
-    permission: "user:api:access",
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const order = await orderRepository.findById(id);

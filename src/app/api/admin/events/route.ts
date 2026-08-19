@@ -149,7 +149,6 @@ const createEventSchema = z.object({
 const __GET__g = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
-  permission: "admin:events:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
 

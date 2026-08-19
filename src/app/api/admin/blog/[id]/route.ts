@@ -41,7 +41,6 @@ const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:blog:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const post = await blogRepository.findBySlug(id).catch(() => null);
@@ -55,7 +54,6 @@ const __PATCH__g = withProviders(
   createRouteHandler<(typeof updateBlogPostSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:blog:write",
     schema: updateBlogPostSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;
@@ -90,7 +88,6 @@ const __DELETE__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:blog:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       await blogRepository.delete(id);

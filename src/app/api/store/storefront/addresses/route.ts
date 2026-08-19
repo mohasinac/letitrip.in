@@ -18,7 +18,6 @@ import { ROLES_STORE_WRITE } from "@/constants";
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
-  permission: "store:api:write",
   handler: async ({ user }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store?.storeSlug)

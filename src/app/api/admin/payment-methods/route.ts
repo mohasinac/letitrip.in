@@ -12,7 +12,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:addresses:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const banStatus = url.searchParams.get("banStatus") as "banned" | "suspicious" | null;

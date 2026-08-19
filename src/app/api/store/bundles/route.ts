@@ -35,7 +35,6 @@ const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:read",
     handler: async ({ request, user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return ApiErrors.forbidden("No store");
@@ -96,7 +95,6 @@ const __POST__g = withProviders(
   createRouteHandler<(typeof bundleCreateSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
     schema: bundleCreateSchema,
     handler: async ({ body, user }) => {
       if (!body) return ApiErrors.badRequest("Body required");

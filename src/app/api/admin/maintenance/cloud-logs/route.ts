@@ -19,7 +19,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ANY_STAFF],
-    permission: "admin:maintenance:view-cloud-logs",
     handler: async ({ request }) => {
       const searchParams = getSearchParams(request);
       const filter = getStringParam(searchParams, "filter") || undefined;

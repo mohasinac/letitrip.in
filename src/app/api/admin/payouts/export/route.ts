@@ -19,7 +19,6 @@ const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:payouts:read",
     handler: async () => {
       const result = await payoutRepository.list({
         sorts: sortBy(COMMON_FIELDS.CREATED_AT),

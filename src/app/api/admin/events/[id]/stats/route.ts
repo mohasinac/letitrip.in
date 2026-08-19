@@ -17,7 +17,6 @@ const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:events:read",
     handler: async ({ params }) => {
       const eventId = (params as { id: string }).id;
       const event = await eventRepository.findById(eventId);

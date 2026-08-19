@@ -15,7 +15,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:products:write",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const doc = await itemRequestsRepository.findById(id);
@@ -29,7 +28,6 @@ export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:products:write",
     handler: async ({ request, params, user }) => {
       const id = (params as { id: string }).id;
       const doc = await itemRequestsRepository.findById(id);

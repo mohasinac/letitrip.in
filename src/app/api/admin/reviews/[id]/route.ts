@@ -21,7 +21,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:reviews:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const review = await reviewRepository.findById(id);
@@ -35,7 +34,6 @@ export const PATCH = withProviders(
   createRouteHandler<(typeof updateReviewSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:reviews:write",
     schema: updateReviewSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;
@@ -54,7 +52,6 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:reviews:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const existing = await reviewRepository.findById(id);

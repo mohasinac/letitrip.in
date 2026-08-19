@@ -8,7 +8,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:tester-feedback:read",
     handler: async () => {
       const markdown = await testerChecklistResponseRepository.getMarkdownReport(SITE_ORIGIN);
       const date = new Date().toISOString().slice(0, 10);

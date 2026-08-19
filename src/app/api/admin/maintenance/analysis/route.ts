@@ -19,7 +19,6 @@ export const POST = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ANY_STAFF],
-    permission: "admin:maintenance:run-analysis",
     schema: analysisSchema,
     handler: async ({ body }) => {
       const sourceArg =

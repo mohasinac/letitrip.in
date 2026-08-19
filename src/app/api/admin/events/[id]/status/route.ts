@@ -19,7 +19,6 @@ const __PATCH__g = withProviders(
   createRouteHandler<(typeof updateStatusSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:events:write",
     schema: updateStatusSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;

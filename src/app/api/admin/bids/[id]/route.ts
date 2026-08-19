@@ -19,7 +19,6 @@ const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:bids:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const bid = await bidRepository.findById(id);
@@ -33,7 +32,6 @@ const __PATCH__g = withProviders(
   createRouteHandler<(typeof updateBidSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:bids:write",
     schema: updateBidSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;

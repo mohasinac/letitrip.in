@@ -27,7 +27,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:addresses:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const ownerType = url.searchParams.get("ownerType") as "user" | "store" | null;

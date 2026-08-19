@@ -24,7 +24,6 @@ const DEFAULT_SORTS = sortBy(STORE_FIELDS.CREATED_AT);
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
-  permission: "admin:stores:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
 

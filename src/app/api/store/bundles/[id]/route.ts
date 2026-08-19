@@ -34,7 +34,6 @@ const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:read",
     handler: async ({ params, user }) => {
       const id = String(params?.id ?? "");
       if (!id) return ApiErrors.badRequest(MSG_BUNDLE_ID_REQUIRED);
@@ -51,7 +50,6 @@ const __PUT__g = withProviders(
   createRouteHandler<(typeof bundleUpdateSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
     schema: bundleUpdateSchema,
     handler: async ({ body, params, user }) => {
       const id = String(params?.id ?? "");
@@ -73,7 +71,6 @@ const __DELETE__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
     handler: async ({ params, user }) => {
       const id = String(params?.id ?? "");
       if (!id) return ApiErrors.badRequest(MSG_BUNDLE_ID_REQUIRED);

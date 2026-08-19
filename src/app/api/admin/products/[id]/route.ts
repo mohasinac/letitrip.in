@@ -30,7 +30,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:products:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const product = await productRepository.findByIdOrSlug(id).catch(() => null);
@@ -44,7 +43,6 @@ export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:products:write",
     schema: updateProductSchema,
     handler: async ({ body, params, user }) => {
       const id = (params as { id: string }).id;
@@ -58,7 +56,6 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:products:delete",
     handler: async ({ params, user }) => {
       const id = (params as { id: string }).id;
       await adminDeleteProduct(user!.uid, id);

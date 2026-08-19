@@ -7,7 +7,6 @@ import { ROLES_STORE_READ } from "@/constants";
 const __GET__g = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_READ],
-  permission: "store:api:write",
   handler: async ({ request, user }) => {
     const url = new URL(request.url);
     const productId = url.searchParams.get("productId") ?? undefined;

@@ -38,7 +38,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:carousel:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const slide = await carouselRepository.findById(id);
@@ -52,7 +51,6 @@ export const PUT = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:carousel:write",
     schema: updateSlideSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;

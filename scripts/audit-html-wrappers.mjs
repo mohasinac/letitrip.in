@@ -339,7 +339,7 @@ const BASELINES = {
   // covers the remaining pre-existing `bg-zinc-*` co-occurrences (Toggle,
   // FooterLayout, BottomActions, tokens/index.ts, NavPermissionsManager,
   // ActionPermissionsManager, Slider, MediaSlider) not yet swept. Drive to 0.
-  CONFLICTING_BG_UTILITY: 3,
+  CONFLICTING_BG_UTILITY: 0,
 };
 
 const hardBlocking = violations.filter((v) => !v.baselineDrift);

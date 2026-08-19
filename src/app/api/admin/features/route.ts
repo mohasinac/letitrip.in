@@ -15,7 +15,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:categories:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const scope = url.searchParams.get("scope") as

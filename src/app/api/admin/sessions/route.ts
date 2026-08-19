@@ -24,7 +24,6 @@ import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const GET = withProviders(createRouteHandler({
   roles: [...ROLES_ADMIN_MOD],
-  permission: "admin:sessions:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
     const userId = getStringParam(searchParams, "userId");

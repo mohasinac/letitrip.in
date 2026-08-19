@@ -29,7 +29,6 @@ const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:events:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const event = await adminGetEventById(id);
@@ -43,7 +42,6 @@ const __PATCH__g = withProviders(
   createRouteHandler<(typeof updateEventSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:events:write",
     schema: updateEventSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;

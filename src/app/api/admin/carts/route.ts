@@ -17,7 +17,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:carts:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const result = await cartRepository.list({

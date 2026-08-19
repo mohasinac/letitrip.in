@@ -69,7 +69,6 @@ const couponCreateSchema = z.object({
  */
 const __GET__g = withProviders(createRouteHandler({
   roles: [...ROLES_ADMIN_MOD],
-  permission: "admin:coupons:read",
   handler: async ({ request }) => {
     const url = new URL(request.url);
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);

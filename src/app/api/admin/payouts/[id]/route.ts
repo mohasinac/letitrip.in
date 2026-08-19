@@ -31,7 +31,6 @@ const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:payouts:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const payout = await payoutRepository.findById(id);
@@ -46,7 +45,6 @@ const __PATCH__g = withProviders(
   createRouteHandler<(typeof updatePayoutSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:payouts:write",
     schema: updatePayoutSchema,
     handler: async ({ user, params, body }) => {
       const id = (params as { id: string }).id;

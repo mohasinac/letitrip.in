@@ -31,7 +31,6 @@ const createFaqSchema = z.object({
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
-  permission: "admin:faqs:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
     const category = getStringParam(searchParams, "category");

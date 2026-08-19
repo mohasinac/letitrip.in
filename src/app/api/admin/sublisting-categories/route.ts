@@ -24,7 +24,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ANY_STAFF],
-    permission: "admin:categories:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const page = Math.max(1, Number(url.searchParams.get("page")) || 1);

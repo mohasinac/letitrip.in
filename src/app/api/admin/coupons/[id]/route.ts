@@ -42,7 +42,6 @@ const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:coupons:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const coupon = await couponsRepository.getCouponByCode(id).catch(() => null);
@@ -56,7 +55,6 @@ const __PATCH__g = withProviders(
   createRouteHandler<(typeof updateCouponSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:coupons:write",
     schema: updateCouponSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;

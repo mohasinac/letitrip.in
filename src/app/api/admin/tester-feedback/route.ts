@@ -13,7 +13,6 @@ const DEFAULT_SORTS = sortBy("createdAt", "DESC");
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
-  permission: "admin:tester-feedback:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
     const testerId = getStringParam(searchParams, "testerId");

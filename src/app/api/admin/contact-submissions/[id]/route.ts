@@ -18,7 +18,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:contact:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const submission = await contactSubmissionsRepository.findById(id);
@@ -32,7 +31,6 @@ export const PATCH = withProviders(
   createRouteHandler<(typeof updateSubmissionSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:contact:write",
     schema: updateSubmissionSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;

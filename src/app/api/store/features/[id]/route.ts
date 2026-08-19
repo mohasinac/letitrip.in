@@ -34,7 +34,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
     handler: async ({ params, user }) => {
       const id = (params as { id: string }).id;
       const result = await loadStoreFeatureOrError(id, user!.uid);
@@ -48,7 +47,6 @@ export const PUT = withProviders(
   createRouteHandler<ProductFeatureUpdatePayload>({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
     schema: productFeatureUpdateSchema,
     handler: async ({ body, params, user }) => {
       const id = (params as { id: string }).id;
@@ -64,7 +62,6 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
     handler: async ({ params, user }) => {
       const id = (params as { id: string }).id;
       const result = await loadStoreFeatureOrError(id, user!.uid);

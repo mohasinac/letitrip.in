@@ -57,7 +57,6 @@ const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const coupon = await couponsRepository.findById(id);
@@ -77,7 +76,6 @@ const __PATCH__g = withProviders(
   createRouteHandler<(typeof updateCouponSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
     schema: updateCouponSchema,
     handler: async ({ user, body, params }) => {
       const id = (params as { id: string }).id;
@@ -142,7 +140,6 @@ const __DELETE__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const existing = await couponsRepository.findById(id);

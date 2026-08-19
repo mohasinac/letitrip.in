@@ -36,7 +36,6 @@ const DEFAULT_SORTS = sortBy(COMMON_FIELDS.CREATED_AT);
 const __GET__g = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
-  permission: "admin:payouts:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
 

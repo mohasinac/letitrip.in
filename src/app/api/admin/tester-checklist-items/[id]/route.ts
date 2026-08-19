@@ -28,7 +28,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:tester-checklist:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const item = await testerChecklistItemRepository.findById(id);
@@ -41,7 +40,6 @@ export const GET = withProviders(
 const updateHandler = createRouteHandler<(typeof updateChecklistItemSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
-  permission: "admin:tester-checklist:write",
   schema: updateChecklistItemSchema,
   handler: async ({ body, params }) => {
     const id = (params as { id: string }).id;
@@ -59,7 +57,6 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:tester-checklist:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const existing = await testerChecklistItemRepository.findById(id);

@@ -26,7 +26,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:brands:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const brand = await categoriesRepository.findById(id);
@@ -40,7 +39,6 @@ export const PUT = withProviders(
   createRouteHandler<(typeof updateBrandSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:brands:write",
     schema: updateBrandSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;

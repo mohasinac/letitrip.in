@@ -23,7 +23,6 @@ export const POST = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-  permission: "store:api:write",
     handler: async ({ user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return errorResponse("Store not found", 404);

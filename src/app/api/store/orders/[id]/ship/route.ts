@@ -7,7 +7,6 @@ export const POST = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE, USER_ROLE.EMPLOYEE],
-    permission: "store:api:write",
     handler: async ({ request, params }) => {
       const id = (params as { id: string }).id;
       const body = await parseJsonBody(request, { allowEmpty: true }).catch(() => ({}));

@@ -20,7 +20,6 @@ export const PUT = withProviders(
   createRouteHandler<(typeof updateSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
     schema: updateSchema,
     handler: async ({ body, user }) => {
       const newSlug = body!.storeSlug;

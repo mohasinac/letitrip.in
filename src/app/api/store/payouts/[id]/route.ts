@@ -30,7 +30,6 @@ const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const { payout } = await loadOwnedPayout(user!.uid, id);
@@ -49,7 +48,6 @@ const __PATCH__g = withProviders(
   createRouteHandler<(typeof updateSellerPayoutSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
     schema: updateSellerPayoutSchema,
     handler: async ({ user, params, body }) => {
       const id = (params as { id: string }).id;

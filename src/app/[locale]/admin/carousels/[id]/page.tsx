@@ -73,7 +73,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
             className={[
               "rounded-lg px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-medium",
               atMax
-                ? "cursor-not-allowed bg-zinc-200 text-zinc-400 bg-[var(--appkit-color-border)] text-[var(--appkit-color-text)]0"
+                ? "cursor-not-allowed bg-[var(--appkit-color-border)] text-[var(--appkit-color-text-muted)]"
                 : "bg-[var(--appkit-color-primary)] text-white hover:opacity-90",
             ].join(" ")}
             aria-disabled={atMax}

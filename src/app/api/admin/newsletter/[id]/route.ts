@@ -11,7 +11,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:newsletter:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const subscriber = await newsletterRepository.findById(id);
@@ -25,7 +24,6 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:newsletter:delete",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const subscriber = await newsletterRepository.findById(id);

@@ -17,7 +17,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:content:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const pageSize = Math.min(Number(url.searchParams.get("pageSize") ?? "50"), 50);

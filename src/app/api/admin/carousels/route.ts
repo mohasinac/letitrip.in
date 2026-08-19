@@ -16,7 +16,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:carousel:read",
     handler: async () => {
       const items = await carouselsRepository.listCarousels();
       return successResponse({ items, total: items.length });
@@ -28,7 +27,6 @@ export const POST = withProviders(
   createRouteHandler<(typeof createCarouselSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:carousel:write",
     schema: createCarouselSchema,
     handler: async ({ body, user }) => {
       const carousel = await carouselsRepository.createCarousel(body!.name, user!.uid);

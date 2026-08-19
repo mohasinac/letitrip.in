@@ -15,7 +15,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE, USER_ROLE.EMPLOYEE],
-    permission: "store:api:write",
     handler: async () => {
       return errorResponse(
         "Digital code management is not implemented yet.",

@@ -38,7 +38,6 @@ const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:categories:read",
     handler: async ({ request }) => {
       const url = new URL(request!.url);
 
@@ -106,7 +105,6 @@ const __POST__g = withProviders(
   createRouteHandler<(typeof bundleCreateSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:categories:write",
     schema: bundleCreateSchema,
     handler: async ({ body, user }) => {
       if (!body) return ApiErrors.badRequest("Body required");

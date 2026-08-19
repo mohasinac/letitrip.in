@@ -22,7 +22,6 @@ const requestPayoutSchema = z.object({
 const __POST__g = withProviders(createRouteHandler<{ paymentMethod: "bank_transfer" | "upi"; notes?: string }>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
   schema: requestPayoutSchema,
   handler: async ({ user, body }) => {
     const displayName = (user as { uid: string; displayName?: string | null }).displayName ?? "";

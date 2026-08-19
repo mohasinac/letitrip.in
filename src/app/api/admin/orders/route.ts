@@ -30,7 +30,6 @@ const DEFAULT_SORTS = sortBy(ORDER_FIELDS.CREATED_AT);
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
-  permission: "admin:orders:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
 

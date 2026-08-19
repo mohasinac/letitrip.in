@@ -28,7 +28,6 @@ const createChecklistItemSchema = z.object({
 export const GET = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
-  permission: "admin:tester-checklist:read",
   handler: async ({ request }) => {
     const searchParams = getSearchParams(request);
     const groupKey = getStringParam(searchParams, "groupKey");

@@ -15,7 +15,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:categories:read",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const doc = await productFeaturesRepository.findById(id);
@@ -30,7 +29,6 @@ export const PUT = withProviders(
   createRouteHandler<ProductFeatureUpdatePayload>({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:categories:write",
     schema: productFeatureUpdateSchema,
     handler: async ({ body, params }) => {
       const id = (params as { id: string }).id;

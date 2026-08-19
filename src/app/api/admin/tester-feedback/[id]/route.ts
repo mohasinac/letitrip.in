@@ -11,7 +11,6 @@ export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:tester-feedback:write",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const existing = await testerChecklistResponseRepository.findById(id);

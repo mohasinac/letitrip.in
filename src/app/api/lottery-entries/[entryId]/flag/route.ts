@@ -10,7 +10,6 @@ import { flagLotteryEntryAction } from "@mohasinac/appkit/server";
 export const PATCH = withProviders(
   createRouteHandler({
     roles: ["admin", "moderator"],
-    permission: "admin:events:write",
     handler: async ({ user, request, params }) => {
       const entryId = (params as { entryId: string }).entryId;
       const body = await parseJsonBody(request) as { flagNote?: string };

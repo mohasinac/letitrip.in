@@ -30,7 +30,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:addresses:read",
     handler: async ({ params }) => {
       const id = (params as Record<string, string>).id;
       const address = await addressesRepository.findById(id);
@@ -44,7 +43,6 @@ export const PATCH = withProviders(
   createRouteHandler<(typeof updateAddressSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:addresses:write",
     schema: updateAddressSchema,
     handler: async ({ params, body, user }) => {
       const id = (params as Record<string, string>).id;

@@ -30,7 +30,6 @@ const revokeUserSchema = z.object({
 export const POST = withProviders(createRouteHandler<(typeof revokeUserSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
-  permission: "admin:sessions:write",
   schema: revokeUserSchema,
   handler: async ({ user, body }) => {
     const { userId } = body!;

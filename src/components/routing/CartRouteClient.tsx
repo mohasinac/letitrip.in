@@ -3,7 +3,7 @@
 import { API_ROUTES } from "@/constants/api";
 import { deleteCartItem, updateCartItemQty, validateCart, persistCartSelection, addToWishlist } from "@/lib/api/cart-client";
 
-const CLS_CHECKOUT_BTN = "w-full bg-zinc-900 text-white hover:bg-zinc-800 bg-[var(--appkit-color-surface)] dark:text-zinc-900 dark:hover:bg-zinc-200";
+const CLS_CHECKOUT_BTN = "w-full bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text)] hover:opacity-90";
 
 async function addToWishlistAndRemoveFromCart(item: CartItem, failedIds: string[]) {
   const res = await addToWishlist(item.productId);

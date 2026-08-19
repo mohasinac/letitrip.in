@@ -17,7 +17,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:event-entries:read",
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const result = await eventEntryRepository.list({

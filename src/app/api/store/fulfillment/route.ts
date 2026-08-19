@@ -16,7 +16,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_STORE_WRITE, USER_ROLE.EMPLOYEE],
-    permission: "store:api:write",
     handler: async ({ request, user }) => {
       const url = new URL(request.url);
       const assignedToMe = url.searchParams.get("assignedTo") === "me";

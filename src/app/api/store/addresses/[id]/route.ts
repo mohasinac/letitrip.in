@@ -21,7 +21,6 @@ const updateAddressSchema = z.object({
 export const PUT = withProviders(createRouteHandler<(typeof updateAddressSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
   schema: updateAddressSchema,
   handler: async ({ body, user, params }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);
@@ -43,7 +42,6 @@ export const PUT = withProviders(createRouteHandler<(typeof updateAddressSchema)
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
   handler: async ({ user, params }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store) return ApiErrors.forbidden("No store found for this account");

@@ -23,7 +23,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:analytics:view",
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const startDate = url.searchParams.get("startDate") ?? undefined;

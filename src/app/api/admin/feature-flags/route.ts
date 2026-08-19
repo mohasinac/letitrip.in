@@ -16,7 +16,6 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:feature-flags:read",
     handler: async () => {
       const settings = await siteSettingsRepository.getSingleton();
       return successResponse({
@@ -31,7 +30,6 @@ export const PUT = withProviders(
   createRouteHandler<(typeof featureFlagsSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:feature-flags:write",
     schema: featureFlagsSchema,
     handler: async ({ body }) => {
       await siteSettingsRepository.updateSingleton({

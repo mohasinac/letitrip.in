@@ -18,7 +18,6 @@ const __PATCH__g = withProviders(
   createRouteHandler<(typeof reviewEntrySchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:events:write",
     schema: reviewEntrySchema,
     handler: async ({ body, params, user }) => {
       const { id: eventId, entryId } = params as { id: string; entryId: string };
