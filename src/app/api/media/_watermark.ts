@@ -142,9 +142,28 @@ export function buildTextWatermarkSvg(
  * static asset shipped under `public/` and is read straight off disk — no
  * Storage round-trip needed for the default brand mark.
  */
+/**
+ * Retints the bundled marker SVG's `#logo-gradient` stops to match the live
+ * site theme's `--appkit-gradient-logo` (0% / 55% / 100%) instead of the
+ * hardcoded blue→pink baked into the file on disk. Only ever applied to the
+ * known-shape `public/logo.svg` — never to an admin-uploaded override.
+ */
+function rethemeMarkerSvg(svg: string, stops: readonly [string, string, string]): string {
+  const [from, mid, to] = stops;
+  return svg.replace(
+    /<linearGradient id="logo-gradient"[^>]*>[\s\S]*?<\/linearGradient>/,
+    `<linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">` +
+      `<stop offset="0%" style="stop-color:${from}"/>` +
+      `<stop offset="55%" style="stop-color:${mid}"/>` +
+      `<stop offset="100%" style="stop-color:${to}"/>` +
+      `</linearGradient>`,
+  );
+}
+
 async function loadWatermarkImageBuffer(
   imageUrl: string,
   selfStoragePath: string,
+  themeGradientStops?: readonly [string, string, string],
 ): Promise<Buffer | null> {
   if (imageUrl.startsWith(`/${MEDIA_PROXY_PATH_PREFIX}`)) {
     const wmStoragePath = watermarkUrlToStoragePath(imageUrl);
@@ -166,13 +185,39 @@ async function loadWatermarkImageBuffer(
     const relative = path.relative(publicDir, filePath);
     if (relative.startsWith("..") || path.isAbsolute(relative)) return null;
     try {
-      return await readFile(filePath);
+      const raw = await readFile(filePath);
+      if (imageUrl === DEFAULT_MARKER_ASSET_PATH && themeGradientStops) {
+        return Buffer.from(rethemeMarkerSvg(raw.toString("utf-8"), themeGradientStops));
+      }
+      return raw;
     } catch (err) {
       void normalizeError(err);
       return null;
     }
   }
   return null;
+}
+
+/**
+ * Scales the alpha channel of a PNG buffer by `opacityPct` (0–100). sharp's
+ * `composite()` has no per-layer opacity option, so this is done by hand on
+ * the raw pixel buffer before compositing — without it, `config.opacity` was
+ * silently ignored for every image-type watermark (only the text watermark's
+ * SVG respected it).
+ */
+async function applyPngOpacity(buffer: Buffer, opacityPct: number): Promise<Buffer> {
+  const alpha = Math.max(0, Math.min(100, opacityPct)) / 100;
+  if (alpha >= 1) return buffer;
+  const { data, info } = await sharp(buffer)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  for (let i = 3; i < data.length; i += info.channels) {
+    data[i] = Math.round(data[i] * alpha);
+  }
+  return sharp(data, { raw: { width: info.width, height: info.height, channels: info.channels } })
+    .png()
+    .toBuffer();
 }
 
 export async function applyWatermark(
@@ -187,14 +232,19 @@ export async function applyWatermark(
   const targetWidth = meta.width ?? 800;
 
   if (config.type === "image") {
-    const wmBuffer = await loadWatermarkImageBuffer(config.imageUrl, selfStoragePath);
+    const wmBuffer = await loadWatermarkImageBuffer(
+      config.imageUrl,
+      selfStoragePath,
+      config.themeGradientStops,
+    );
     if (wmBuffer) {
       const wmTargetWidth = Math.max(1, Math.round((targetWidth * config.size) / 100));
       const resized = await sharp(wmBuffer)
         .resize(wmTargetWidth, null, { fit: "inside" })
         .png()
         .toBuffer();
-      return image.composite([{ input: resized, gravity: "center", blend: "over" }]).toBuffer();
+      const withOpacity = await applyPngOpacity(resized, config.opacity);
+      return image.composite([{ input: withOpacity, gravity: "center", blend: "over" }]).toBuffer();
     }
     // Image tier unavailable (e.g. an admin-uploaded override was deleted from
     // Storage) — degrade to the text watermark rather than skip it entirely.
