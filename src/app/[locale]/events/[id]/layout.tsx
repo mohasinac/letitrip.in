@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { FirestoreValue } from "@mohasinac/appkit";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Div, Stack } from "@mohasinac/appkit/ui";
@@ -25,7 +25,7 @@ export async function generateMetadata({
   const event = await getEventCached(id);
   if (!event) return { title: EVENT_META.NOT_FOUND_TITLE };
 
-  const coverImage = resolveEventCoverImage(event as unknown as Record<string, JsonValue>);
+  const coverImage = resolveEventCoverImage(event as unknown as Record<string, FirestoreValue>);
 
   return _gm({
     title: `${event.title} ${EVENT_META.TITLE_SUFFIX}`,
@@ -47,7 +47,7 @@ export default async function Layout({ children, params }: Props) {
   ]);
   if (!event) notFound();
 
-  const coverImage = resolveEventCoverImage(event as unknown as Record<string, JsonValue>) ?? null;
+  const coverImage = resolveEventCoverImage(event as unknown as Record<string, FirestoreValue>) ?? null;
 
   const eventType = (event.type as string | undefined) ?? "";
   const eventStatus = (event.status as string | undefined) ?? "";

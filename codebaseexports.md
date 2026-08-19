@@ -640,8 +640,10 @@
 | StoreReviewsListing | Listing | Reviews in store listing |
 | StorePreOrdersListing | Listing | Pre-orders in store listing |
 | StoreAddressSelectorCreate | Selector | Store address selector |
+| AdminGuideHubView | View | Admin & employee guide hub — permission-aware card grid |
+| AdminUsersGuideView, AdminCatalogGuideView, AdminStoresGuideView, AdminOrdersGuideView, AdminContentGuideView, AdminSiteConfigGuideView, AdminTeamGuideView, AdminAnalyticsGuideView, AdminTrustGuideView, AdminWhatsAppGuideView, AdminPaymentsGuideView | View | Admin guide sub-pages (2026-08-19: WhatsApp Integration + Payments/Razorpay guides migrated in from the retired `/admin/integration-guides` markdown viewer) |
 | StoreGuideHubView | View | Store guide documentation |
-| StoreListingsGuideView, StoreOrdersGuideView, StoreFinanceGuideView, StoreCapabilitiesGuideView, StoreSettingsGuideView | View | Guide views |
+| StoreListingsGuideView, StoreOrdersGuideView, StoreFinanceGuideView, StoreCapabilitiesGuideView, StoreSettingsGuideView, StoreWhatsAppGuideView | View | Guide views (StoreWhatsAppGuideView added 2026-08-19, migrated in from the retired `/admin/integration-guides` markdown viewer's meta-catalog-setup.md) |
 
 ### Other Feature Components
 
@@ -1628,11 +1630,11 @@ All pages are thin shims delegating to appkit `_internal/server/features/*/` hel
 
 | Domain | Count | Examples |
 |--------|-------|---------|
-| Admin | ~113 | /admin/products, /admin/orders, /admin/orders/[id]/view (reuses AdminOrderEditorView full-page, 2026-08-19), /admin/users, /admin/categories, /admin/blog, /admin/reviews, /admin/coupons, /admin/carousel, /admin/sections, /admin/events, /admin/payouts, /admin/team, /admin/support, /admin/scammers, /admin/scammers/[id] (reuses AdminScammerEditorView full-page, 2026-08-19), /admin/support-tickets/[id] (reuses AdminSupportTicketDetailView full-page, 2026-08-19), /admin/moderation/[id], /admin/reports/[id], /admin/item-requests/[id] (2026-08-19 — new RSC detail pages, no prior detail UI), /admin/permissions (2026-08-19 — read-only permission catalog, sourced from `src/constants/admin-permissions.ts` mirror pending appkit republish), /admin/art, /admin/stickers, /admin/addresses, /admin/shipments (+ new/[id]/edit/[id]/lots/[lotId]/items/projections — Feature A), /admin/catalogue-approvals (Feature B), /admin/tester-checklist, /admin/tester-feedback (2026-08-17), /admin/grouped-listings (2026-08-19), /admin/integration-guides (2026-08-19 — reads `docs/integration-guides/*.md`, converts via `marked`, renders through `<RichTextRenderer>`; gated `admin:site:read`) |
-| Store | ~74 | /store/products, /store/orders, /store/coupons, /store/analytics, /store/payouts, /store/reviews, /store/features, /store/shipping, /store/art, /store/stickers, /store/messages (P-11 fix), /store/bundles/new + [id]/edit (P-17 fix, was wired to a dead endpoint) — /store/templates* and /store/inventory/print removed 2026-08-19 |
+| Admin | ~114 | /admin/products, /admin/orders, /admin/orders/[id]/view (reuses AdminOrderEditorView full-page, 2026-08-19), /admin/users, /admin/categories, /admin/blog, /admin/reviews, /admin/coupons, /admin/carousel, /admin/sections, /admin/events, /admin/payouts, /admin/team, /admin/support, /admin/scammers, /admin/scammers/[id] (reuses AdminScammerEditorView full-page, 2026-08-19), /admin/support-tickets/[id] (reuses AdminSupportTicketDetailView full-page, 2026-08-19), /admin/moderation/[id], /admin/reports/[id], /admin/item-requests/[id] (2026-08-19 — new RSC detail pages, no prior detail UI), /admin/permissions (2026-08-19 — read-only permission catalog, sourced from `src/constants/admin-permissions.ts` mirror pending appkit republish), /admin/art, /admin/stickers, /admin/addresses, /admin/shipments (+ new/[id]/edit/[id]/lots/[lotId]/items/projections — Feature A), /admin/catalogue-approvals (Feature B), /admin/tester-checklist, /admin/tester-feedback (2026-08-17), /admin/grouped-listings (2026-08-19), /admin/guide/whatsapp + /admin/guide/payments (2026-08-19 — migrated in from the retired `/admin/integration-guides` markdown viewer, now real Guide-hub cards + sidebar nav entries; `/admin/integration-guides` itself removed) |
+| Store | ~75 | /store/products, /store/orders, /store/coupons, /store/analytics, /store/payouts, /store/reviews, /store/features, /store/shipping, /store/art, /store/stickers, /store/messages (P-11 fix), /store/bundles/new + [id]/edit (P-17 fix, was wired to a dead endpoint), /store/guide/whatsapp (2026-08-19) — /store/templates* and /store/inventory/print removed 2026-08-19 |
 | User | ~33 | /user/orders, /user/profile, /user/wishlist, /user/addresses, /user/history, /user/conversations, /user/notifications, /user/catalogue (+ new/[id]/edit — Feature B), /user/tester (2026-08-17) |
 | Public | ~107 | /products/[id], /categories, /blog, /events, /auctions, /stores, /about, /contact, /faqs, /seller, /cart, /checkout, /profile/[userId]/[tab] (Feature B public catalogue tab) |
-| **Total** | **~322** | |
+| **Total** | **~324** | |
 
 ### RSC + thin client-wrapper pattern (applied 2026-06-24)
 

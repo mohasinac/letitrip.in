@@ -2,8 +2,8 @@
 
 Auto-generated inventory of code/config files with detected exported and internal symbols.
 
-Generated: 2026-08-19T17:03:01.738Z
-Total indexed files: 1286
+Generated: 2026-08-19T18:11:28.155Z
+Total indexed files: 1287
 
 | Name | Path | Usage / What Is Inside | Symbols (Exported + Internal) |
 |---|---|---|---|
@@ -182,15 +182,15 @@ Total indexed files: 1286
 | layout.tsx | app/[locale]/admin/guide/layout.tsx | Next.js App Router route/layout/page/handler | - |
 | page.tsx | app/[locale]/admin/guide/orders/page.tsx | Next.js App Router route/layout/page/handler | const metadata, const revalidate, fn Page |
 | page.tsx | app/[locale]/admin/guide/page.tsx | Next.js App Router route/layout/page/handler | const isFullAdmin, const metadata, const permissions, const revalidate, const user, fn Page |
+| page.tsx | app/[locale]/admin/guide/payments/page.tsx | Next.js App Router route/layout/page/handler | const metadata, const revalidate, fn Page |
 | page.tsx | app/[locale]/admin/guide/site/page.tsx | Next.js App Router route/layout/page/handler | const metadata, const revalidate, fn Page |
 | page.tsx | app/[locale]/admin/guide/stores/page.tsx | Next.js App Router route/layout/page/handler | const metadata, const revalidate, fn Page |
 | page.tsx | app/[locale]/admin/guide/team/page.tsx | Next.js App Router route/layout/page/handler | const metadata, const revalidate, fn Page |
 | page.tsx | app/[locale]/admin/guide/trust/page.tsx | Next.js App Router route/layout/page/handler | const metadata, const revalidate, fn Page |
 | page.tsx | app/[locale]/admin/guide/users/page.tsx | Next.js App Router route/layout/page/handler | const metadata, const revalidate, fn Page |
+| page.tsx | app/[locale]/admin/guide/whatsapp/page.tsx | Next.js App Router route/layout/page/handler | const metadata, const revalidate, fn Page |
 | layout.tsx | app/[locale]/admin/history/layout.tsx | Next.js App Router route/layout/page/handler | - |
 | page.tsx | app/[locale]/admin/history/page.tsx | Next.js App Router route/layout/page/handler | fn Page |
-| layout.tsx | app/[locale]/admin/integration-guides/layout.tsx | Next.js App Router route/layout/page/handler | - |
-| page.tsx | app/[locale]/admin/integration-guides/page.tsx | Next.js App Router route/layout/page/handler | const guides, const GUIDES_DIR, const raw, const slug, fn loadGuides, fn Page, fn titleFromSlug, interface Guide, let files |
 | ItemRequestDetailActions.tsx | app/[locale]/admin/item-requests/[id]/ItemRequestDetailActions.tsx | Next.js App Router route/layout/page/handler | const action, const router, fn ItemRequestDetailActions, interface ItemRequestDetailActionsProps |
 | page.tsx | app/[locale]/admin/item-requests/[id]/page.tsx | Next.js App Router route/layout/page/handler | const dynamic, const item, const STATUS_VARIANT, fn AdminItemRequestDetailPage, interface Props |
 | page.tsx | app/[locale]/admin/item-requests/page.tsx | Next.js App Router route/layout/page/handler | const action, const load, fn Page |
@@ -360,7 +360,7 @@ Total indexed files: 1286
 | page.tsx | app/[locale]/events/[id]/leaderboard/page.tsx | Next.js App Router route/layout/page/handler | const event, const revalidate, fn generateMetadata, fn Page, type Props, type RouteParams |
 | opengraph-image.tsx | app/[locale]/events/[id]/opengraph-image.tsx | Next.js App Router route/layout/page/handler | const contentType, const doc, const runtime, const size, fn Image, type Props |
 | page.tsx | app/[locale]/events/[id]/page.tsx | Next.js App Router route/layout/page/handler | const description, const event, const isActive, const offerConfig, const pollConfig, const relatedEvents, const tags, fn Page, type OfferConfig, type PollConfig, type Props |
-| EventParticipateClient.tsx | app/[locale]/events/[id]/participate/EventParticipateClient.tsx | Next.js App Router route/layout/page/handler | const atEntryLimit, const body, const canSubmit, const CLS_PARTICIPATE_INFO_ROW, const CLS_STAR_ON, const controller, const data, const dynamicForm, const err, const errors, const field, const formFields, const handleSubmit, const inputType, const isAbort, const isFeedback, const isMultiSelect, const isSurvey, const maxEntries, const msg, const next, const num, const onSpin, const pollConfig, const rating, const requireLogin, const res, const selected, const selectOptions, const setFieldValue, const timeoutId, const toggleVote, const v, const validateAllFields, fn EventParticipateClient, fn renderDynamicField, fn renderEventInfoBlock, fn renderLoginRequired, fn renderPollForm, fn renderSubmitAction, fn renderSuccessState, fn SpinWheelParticipate, fn validateField, interface ParticipateEventInput, interface Props, interface SurveyFormField, let control, type FormFieldType, type itself, type SpinPrize |
+| EventParticipateClient.tsx | app/[locale]/events/[id]/participate/EventParticipateClient.tsx | Next.js App Router route/layout/page/handler | const atEntryLimit, const body, const canSubmit, const CLS_PARTICIPATE_INFO_ROW, const CLS_STAR_ON, const controller, const data, const dynamicForm, const err, const errors, const field, const formFields, const handleSubmit, const inputType, const isAbort, const isFeedback, const isMultiSelect, const isSurvey, const maxEntries, const msg, const next, const num, const onSpin, const pollConfig, const rating, const requireLogin, const res, const selected, const selectOptions, const setFieldValue, const timeoutId, const toggleVote, const v, const validateAllFields, fn EventParticipateClient, fn renderDynamicField, fn renderEventInfoBlock, fn renderLoginRequired, fn renderPollForm, fn renderSubmitAction, fn renderSuccessState, fn SpinWheelParticipate, fn submitRaffleEntryOrThrow, fn validateField, interface ParticipateEventInput, interface Props, interface SurveyFormField, let control, type FormFieldType, type itself, type SpinPrize |
 | page.tsx | app/[locale]/events/[id]/participate/page.tsx | Next.js App Router route/layout/page/handler | const ev, const event, const eventType, const feedbackConfig, const hasLeaderboard, const isActive, const pollConfig, const rafflePrize, const raffleTopN, const raffleType, const revalidate, const spinPrizes, const spinWindowEnd, const spinWindowStart, const surveyConfig, fn generateMetadata, fn Page, type as, type Props, type RouteParams, type SpinPrize |
 | PollInlineClient.tsx | app/[locale]/events/[id]/PollInlineClient.tsx | Next.js App Router route/layout/page/handler | const body, const data, const handleSubmit, const isMultiSelect, const msg, const requiresLogin, const res, const toggleVote, fn PollInlineClient, interface PollConfig, interface PollOption, interface Props |
 | ShareEventButton.tsx | app/[locale]/events/[id]/ShareEventButton.tsx | Next.js App Router route/layout/page/handler | const handleCopy, fn ShareEventButton |
@@ -499,6 +499,7 @@ Total indexed files: 1286
 | page.tsx | app/[locale]/store/guide/orders/page.tsx | Next.js App Router route/layout/page/handler | const metadata, fn Page |
 | page.tsx | app/[locale]/store/guide/page.tsx | Next.js App Router route/layout/page/handler | const metadata, const result, const store, fn Page |
 | page.tsx | app/[locale]/store/guide/settings/page.tsx | Next.js App Router route/layout/page/handler | const metadata, fn Page |
+| page.tsx | app/[locale]/store/guide/whatsapp/page.tsx | Next.js App Router route/layout/page/handler | const metadata, fn Page |
 | layout.tsx | app/[locale]/store/layout.tsx | Next.js App Router route/layout/page/handler | const auctionsOn, const chatOn, const couponsOn, const groups, const payoutsOn, const preOrdersOn, const prizeDrawsOn, const user, fn StoreLayout, type ReactNode |
 | page.tsx | app/[locale]/store/listing-templates/[id]/edit/page.tsx | Next.js App Router route/layout/page/handler | const doc, const f, const id, const onDelete, const onSave, const params, const res, const router, fn Page, let defaults |
 | page.tsx | app/[locale]/store/listing-templates/new/page.tsx | Next.js App Router route/layout/page/handler | const LISTING_TYPES, const onSave, const res, const router, fn Page, let defaults |

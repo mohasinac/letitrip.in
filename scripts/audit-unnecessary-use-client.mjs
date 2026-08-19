@@ -36,6 +36,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const PAGES_DIR = join(ROOT, "src", "app");
 
+const SUPPRESS_RE = /\/\/\s*audit-unnecessary-use-client-ok\s*:/;
+
 // Hook names that justify "use client" when appearing as import specifiers.
 const CLIENT_HOOKS = new Set([
   // React state / lifecycle
@@ -52,6 +54,8 @@ const CLIENT_HOOKS = new Set([
   "useFormatter", "useMessages", "useIntl",
   // React DOM
   "createPortal",
+  // @tanstack/react-query — always client-only (internally built on useState/useEffect)
+  "useQuery", "useMutation", "useInfiniteQuery", "useQueryClient", "useQueries",
 ]);
 
 // Browser-only globals whose bare presence in the source justifies "use client".
@@ -105,6 +109,9 @@ function check(filePath) {
   if (!firstLine.startsWith('"use client"') && !firstLine.startsWith("'use client'")) {
     return null; // Not a client file — nothing to check.
   }
+
+  // Per-file escape hatch — documented above, must actually be honored.
+  if (SUPPRESS_RE.test(content)) return null;
 
   // Check 1: named hook imports.
   let m;

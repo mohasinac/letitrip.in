@@ -77,6 +77,18 @@ interface Props {
   embedded?: boolean;
 }
 
+// Throws with the server's error message (or a fallback) on a non-ok response —
+// keeps the raffle-entry onSubmit handler's own nesting shallow.
+async function submitRaffleEntryOrThrow(eventId: string, message?: string): Promise<void> {
+  const res = await submitEventEntry(
+    API_ROUTES.EVENTS.ENTRIES(eventId),
+    { formResponses: message ? { message } : {} },
+  );
+  if (res.ok) return;
+  const data = await res.json().catch(() => ({}));
+  throw new Error((data as Record<string, string>).error ?? "Failed to submit entry");
+}
+
 // ─── Sub-renderers ────────────────────────────────────────────────────────────
 
 function renderLoginRequired() {
@@ -517,14 +529,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
           onSubmit={async (message) => {
             setError(null);
             try {
-              const res = await submitEventEntry(
-                API_ROUTES.EVENTS.ENTRIES(event.id),
-                { formResponses: message ? { message } : {} },
-              );
-              if (!res.ok) {
-                const data = await res.json().catch(() => ({}));
-                throw new Error((data as Record<string, string>).error ?? "Failed to submit entry");
-              }
+              await submitRaffleEntryOrThrow(event.id, message);
               setIsSubmitted(true);
               setSubmissionCount((c) => c + 1);
               showToast("You're entered in the raffle!", "success");

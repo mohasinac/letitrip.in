@@ -61,10 +61,13 @@ export function statusBadgeClass(eventStatus: string | undefined): string {
   return badgeClass(EVENT_STATUS_BADGE, eventStatus);
 }
 
-export function resolveEventCoverImage(event: Record<string, unknown>): string | undefined {
+export function resolveEventCoverImage(event: Record<string, FirestoreValue>): string | undefined {
   if (typeof event.coverImageUrl === "string" && event.coverImageUrl) return event.coverImageUrl;
-  const coverImage = event.coverImage as { url?: unknown } | null | undefined;
-  const nestedUrl = coverImage?.url;
+  const coverImage = event.coverImage;
+  const nestedUrl =
+    coverImage && typeof coverImage === "object" && !Array.isArray(coverImage) && !(coverImage instanceof Date)
+      ? (coverImage as { readonly [key: string]: FirestoreValue }).url
+      : undefined;
   return typeof nestedUrl === "string" && nestedUrl ? nestedUrl : undefined;
 }
 

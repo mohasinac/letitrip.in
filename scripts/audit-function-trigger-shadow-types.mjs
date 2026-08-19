@@ -78,6 +78,14 @@ const REGISTRY = {
     realSchemaFile: "appkit/src/features/orders/schemas/firestore.ts",
     realTypeName: "OrderDocument",
   },
+  PrizeDrawOrderSnapshot: {
+    realSchemaFile: "appkit/src/features/orders/schemas/firestore.ts",
+    realTypeName: "OrderDocument",
+  },
+  PrizeDrawStockSnapshot: {
+    realSchemaFile: "appkit/src/features/products/schemas/firestore.ts",
+    realTypeName: "ProductDocument",
+  },
 };
 
 function readSource(relPath) {
@@ -147,7 +155,16 @@ function extractFieldNames(bodyText) {
   }
 
   for (const statement of splitTopLevelStatements(bodyText)) {
-    const m = /^\s*(?:\/\*\*[\s\S]*?\*\/\s*)?(\w+)\s*\??\s*:/.exec(statement);
+    // Strip any mix of leading `// line comments` and `/** block comments */`
+    // (real schema files commonly precede a JSDoc block with a `// ── section
+    // header` line) before looking for the field name.
+    let stripped = statement;
+    let prevLength;
+    do {
+      prevLength = stripped.length;
+      stripped = stripped.replace(/^\s*\/\/[^\n]*\n?/, "").replace(/^\s*\/\*\*[\s\S]*?\*\/\s*/, "");
+    } while (stripped.length !== prevLength);
+    const m = /^\s*(\w+)\s*\??\s*:/.exec(stripped);
     if (m) names.add(m[1]);
   }
   return names;

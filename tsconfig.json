@@ -24,8 +24,6 @@
     "next-env.d.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
-    "appkit/src/**/*.ts",
-    "appkit/src/**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
@@ -34,9 +32,6 @@
     ".next/dev",
     "functions",
     "scripts",
-    "src/**/__tests__/**",
-    "appkit/src/**/__tests__/**",
-    "appkit/src/**/*.test.ts",
-    "appkit/src/**/*.test.tsx"
+    "src/**/__tests__/**"
   ]
 }

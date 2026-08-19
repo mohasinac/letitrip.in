@@ -254,7 +254,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.FAQS),                "FAQs",               "admin:faqs:read"),
       adminItem(String(ROUTES.ADMIN.NEWSLETTER),          "Newsletter",         "admin:newsletter:read"),
       adminItem(String(ROUTES.ADMIN.CONTACT),             "Contact",            "admin:contact:read"),
-      adminItem(String(ROUTES.ADMIN.INTEGRATION_GUIDES),  "Integration Guides", "admin:site:read"),
     ],
   },
   {
@@ -308,9 +307,21 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     ],
   },
   {
-    title: "Help",
+    title: "Guides",
+    defaultOpen: false,
     items: [
-      adminItem(String(ROUTES.ADMIN.GUIDE), "Admin Guide", "admin:dashboard:view"),
+      adminItem(String(ROUTES.ADMIN.GUIDE),            "All Guides",          "admin:dashboard:view"),
+      adminItem(String(ROUTES.ADMIN.GUIDE_USERS),      "Users & Accounts",    "admin:users:read"),
+      adminItem(String(ROUTES.ADMIN.GUIDE_CATALOG),    "Catalog",             "admin:products:read"),
+      adminItem(String(ROUTES.ADMIN.GUIDE_STORES),     "Stores & Sellers",    "admin:stores:read"),
+      adminItem(String(ROUTES.ADMIN.GUIDE_ORDERS),     "Orders & Finance",    "admin:orders:read"),
+      adminItem(String(ROUTES.ADMIN.GUIDE_CONTENT),    "Content & Marketing", "admin:blog:read"),
+      adminItem(String(ROUTES.ADMIN.GUIDE_SITE),       "Site Configuration",  "admin:site:read"),
+      adminItem(String(ROUTES.ADMIN.GUIDE_TEAM),       "Team & Permissions",  "admin:team:read"),
+      adminItem(String(ROUTES.ADMIN.GUIDE_ANALYTICS),  "Analytics",           "admin:analytics:view"),
+      adminItem(String(ROUTES.ADMIN.GUIDE_TRUST),      "Trust & Safety",      "admin:moderation:read"),
+      adminItem(String(ROUTES.ADMIN.GUIDE_WHATSAPP),   "WhatsApp Integration","admin:site:read"),
+      adminItem(String(ROUTES.ADMIN.GUIDE_PAYMENTS),   "Payments (Razorpay)", "admin:site:read"),
     ],
   },
 ];
@@ -385,9 +396,16 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
     ],
   },
   {
-    title: "Help",
+    title: "Guides",
+    defaultOpen: false,
     items: [
-      { href: String(ROUTES.STORE.GUIDE), label: "Seller Guide" },
+      { href: String(ROUTES.STORE.GUIDE),               label: "All Guides"          },
+      { href: String(ROUTES.STORE.GUIDE_LISTINGS),      label: "Listings"            },
+      { href: String(ROUTES.STORE.GUIDE_ORDERS),        label: "Orders"              },
+      { href: String(ROUTES.STORE.GUIDE_FINANCE),       label: "Finance"             },
+      { href: String(ROUTES.STORE.GUIDE_SETTINGS),      label: "Settings"            },
+      { href: String(ROUTES.STORE.GUIDE_CAPABILITIES),  label: "Capabilities"        },
+      { href: String(ROUTES.STORE.GUIDE_WHATSAPP),      label: "WhatsApp Catalog Sync" },
     ],
   },
 ];

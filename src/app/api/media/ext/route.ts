@@ -38,7 +38,7 @@ const RETRY_BACKOFF_MS = 300;
 const MAX_ATTEMPTS = 2;
 
 async function fetchUpstreamWithRetry(rawUrl: string): Promise<globalThis.Response> {
-  let lastErr: unknown;
+  let lastErr: Error = new Error("fetchUpstreamWithRetry: no attempts ran");
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     try {
       const res = await fetch(rawUrl, {
@@ -48,8 +48,9 @@ async function fetchUpstreamWithRetry(rawUrl: string): Promise<globalThis.Respon
       if (res.ok || attempt === MAX_ATTEMPTS) return res;
       lastErr = new Error(`Upstream returned ${res.status}`);
     } catch (err) {
-      lastErr = err;
-      if (attempt === MAX_ATTEMPTS) throw err;
+      void normalizeError(err);
+      lastErr = err instanceof Error ? err : new Error(String(err));
+      if (attempt === MAX_ATTEMPTS) throw lastErr;
     }
     await new Promise((r) => setTimeout(r, RETRY_BACKOFF_MS));
   }

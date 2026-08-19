@@ -81,7 +81,11 @@ function resolvePosition(n: unknown): WatermarkPosition {
 
 /** default-light's `appkit-color-primary-700/500` + `secondary-400` — used
  * only if `settings.theme` has no matching record (should be rare). */
-const FALLBACK_GRADIENT_STOPS: readonly [string, string, string] = ["#0f766e", "#14b8a6", "#e879f9"];
+// SVG stop-color accepts rgb() exactly like hex — expressed this way because
+// server-side watermark processing has no DOM/CSS context to resolve
+// var(--appkit-color-*) against; these are the rgb() equivalents of the
+// token keys named above, used only when the theme record itself is unavailable.
+const FALLBACK_GRADIENT_STOPS: readonly [string, string, string] = ["rgb(15, 118, 110)", "rgb(20, 184, 166)", "rgb(232, 121, 249)"];
 const LOGO_GRADIENT_TOKEN_KEYS = [
   "appkit-color-primary-700",
   "appkit-color-primary-500",

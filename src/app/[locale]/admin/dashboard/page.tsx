@@ -70,7 +70,6 @@ const ADMIN_QUICK_ACTION_HREFS: Partial<Record<DashboardQuickActionId, string>> 
   "dqa-admin-events": String(ROUTES.ADMIN.EVENTS),
   "dqa-admin-support": String(ROUTES.ADMIN.SUPPORT_TICKETS),
   "dqa-admin-moderation": String(ROUTES.ADMIN.MODERATION),
-  "dqa-admin-integration-guides": String(ROUTES.ADMIN.INTEGRATION_GUIDES),
   "dqa-admin-users": String(ROUTES.ADMIN.USERS),
   "dqa-admin-categories": String(ROUTES.ADMIN.CATEGORIES),
   "dqa-admin-reviews": String(ROUTES.ADMIN.REVIEWS),
