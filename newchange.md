@@ -41,6 +41,66 @@
 
 ---
 
+### S-seed-reseed-beyblade-migration — Fixed the seed delete/reload pipeline + purged leftover Yu-Gi-Oh content across ~20 seed files (2026-08-19)
+
+Started as "reseed blogs/events, they're using old seeds" and grew into a full seed-system audit
+after the reseed kept surfacing bugs. Four real bugs found and fixed in `appkit/scripts/seed-cli.mjs`
+and seed data: (1) dead `brandsSeedData`/`BRANDS_COLLECTION` references (brands were merged into
+`categories` under SB-UNI-C, but the CLI still tried to import/delete them, hard-erroring every
+`delete` run); (2) `addresses`/`storeAddresses` delete targeted the old per-user/per-store
+subcollection paths from before SB-UNI-A unified everything into a top-level `addresses`
+collection — silently deleted nothing, ever; (3) `carousel-slides-seed-data.ts`'s video slide
+wrapped its MP4 URL in the image-only `/api/media/ext` proxy (400s on non-image content-types),
+same class of bug found again pre-emptively in review videos before it shipped; (4)
+`orders-seed-data.ts`'s local `generateOrderId` used `Math.random()`, so every `appkit-seed load`
+silently created 50 fresh duplicate orders instead of upserting — now a deterministic hash.
+
+Bigger finding: `grouped-listings-seed-data.ts` was exporting `ProductDocument`-shaped rows
+(`isGroupParent`/`groupChildSlugs`) referencing 7 product slugs that don't exist anywhere in seed
+data, written into the `groupedListings` Firestore collection despite that collection's schema
+having been re-scoped by SB-UNI-V into a completely different "theme group" shape
+(`productIds`/`groupTheme`/`minActiveMembers`) with pricing bundles moved to `categories`
+(`categoryType:"bundle"`, SB-UNI-D) instead. Rewrote it from scratch against the real schema and
+the real product catalog.
+
+Investigating that led to the real root cause of "why does blog/event/review content reference
+products/stores that don't exist": the product catalog was deliberately narrowed to a single
+coherent franchise (Beyblade — 3 real stores, 14 real products) at some earlier point, and
+`products-standard-seed-data.ts` / `stores-seed-data.ts` / `categories-seed-data.ts` / most of
+`users-seed-data.ts` were updated to match, but ~20 other seed files (blog posts, events, reviews,
+orders, notifications, addresses, carts, conversations, coupons, payouts, wishlists, history,
+sessions, support tickets, scammers, offers, store-extensions, homepage sections, carousels) never
+were. `store-kaiba-corp-cards` alone (a store that doesn't exist) had 52+ dangling references.
+Delegated the full rewrite to a background agent with the exact real-entity roster (users, stores,
+products, categories) so cross-file FK references stayed consistent; kept the two leftover user
+`uid`s stable (`user-yugi-muto`/`user-seto-kaiba`) to avoid FK cascade risk, only rewrote their
+display content into new Beyblade-collector personas (Rehan Sheikh, Vivaan Kapoor). Also added
+multi-image galleries to standard products/auctions (were all single-image), inline images in
+blog/event HTML content, and images+video on a subset of reviews.
+
+Hit a Windows-specific gotcha mid-fix: `node_modules/@mohasinac/appkit` is a real copy on this
+machine, not a symlink, and `npm install` (even `rm -rf` + reinstall) did not reliably resync
+`appkit/scripts/*.mjs` or `appkit/dist/*` with local source changes — had to manually `cp -r` both
+directories over to get the CLI to reflect the fixes. Documented as Root Cause Pattern #28.
+
+Final state verified clean: `npx appkit-seed status` shows every collection's seed count exactly
+matching what's live in Firestore (users 18/18, products 24/24, orders 50/50, reviews 65/65,
+blogPosts 21/21, events 13/13, etc. — 30 collections, all ✓). `npx tsc --noEmit` clean on every
+touched file. Not published to npm; `file:./appkit` used throughout, no deploy performed (see new
+Rule #10 below — added specifically because this session almost reflexively reached for `npm run
+dev`/deploy steps that weren't actually needed for seed-data-only work).
+
+`CLAUDE.md` updates in the same session: corrected the badly-stale Seed Data Reference (documented
+a ~Session-77 catalog — 8 stores, 70 products, brand collection — none of which exist anymore) and
+Seed API Reference (still described the removed `POST /api/demo/seed` route) against verified
+current reality; added Rule #10 (never run dev server or deploy without an explicit ask, gating
+steps 2-6 of the End-of-Plan Checklist); added an "ID Generators Reference" section documenting
+`appkit/src/utils/id-generators.ts` and the seed-vs-runtime determinism distinction; added Root
+Cause Patterns #25-28 (non-deterministic seed IDs, dangling FKs surviving catalog narrowing,
+media-type-aware proxying, the Windows npm resync gotcha).
+
+---
+
 ### S-tester-sandbox-expansion — Tester checklist grown ~55 → ~308 cases, sandbox gains orders + bids seed data (2026-08-19)
 
 Follow-up to `S-tester-admin-parity` below. The tester checklist catalog was expanded far

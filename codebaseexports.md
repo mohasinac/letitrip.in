@@ -1574,7 +1574,7 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 | wishlist-seed-data.ts | wishlists | User wishlists |
 | history-seed-data.ts | history | Search history |
 | conversations-seed-data.ts | conversations | User messages |
-| grouped-listings-seed-data.ts | groupedListings | Product grouping |
+| grouped-listings-seed-data.ts | groupedListings | Theme-group scrollers (`GroupedListingDocument`: productIds[]/groupTheme/minActiveMembers, SB-UNI-V) — NOT a pricing bundle; pricing bundles live on `categories` (`categoryType:"bundle"`, SB-UNI-D). Rewritten 2026-08-19 off a stale pre-SB-UNI-V shape. |
 | payouts-seed-data.ts | payouts | Seller payouts |
 | scammers-seed-data.ts | scammers | Reported scammer profiles |
 | support-tickets-seed-data.ts | supportTickets | Support ticket examples |
