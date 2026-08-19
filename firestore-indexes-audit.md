@@ -35,6 +35,7 @@
 - [Missing-Index Candidates](#missing-index-candidates)
 - [Is This Safe? (read before deploying)](#is-this-safe-read-before-deploying)
 - [Recommended Actions](#recommended-actions)
+- [Update 2026-08-19 — index shape mismatch found and fixed](#update-2026-08-19--index-shape-mismatch-2-field-vs-3-field-found-and-fixed)
 
 ---
 
@@ -809,3 +810,16 @@ Scattered throughout the per-collection tables — mostly Sieve-declared fields 
 - ~18 application-code bugs fixed (bucket 2) — see `firestore-index-bugfixes.md`.
 - `npm run check`: TypeScript clean (0 errors, both `appkit` and consumer, after rebuilding `appkit/dist`), lint clean (0 errors). Blocked only by one pre-existing, unrelated audit failure (`audit-unknown-leakage` in `tester-checklist-response.repository.ts`, already modified before this session started) — left alone as out of scope.
 - Bucket 4 (`UNSURE` rows) still untouched, as planned.
+
+---
+
+## Update 2026-08-19 — index *shape* mismatch (2-field vs 3-field) found and fixed
+
+Between this file's 2026-08-17 close-out (389 indexes) and 2026-08-19, unrelated feature/schema work in other sessions added further indices in the ordinary course of shipping (new Sieve fields, new collections such as `carts`, growth in `testerChecklistResponses`, etc.) — this file's per-collection tables above were **not** re-audited line-by-line against those additions; they still reflect the 2026-08-17 state plus the specific 2026-08-19 fix documented here. Before today's fix, `appkit/firebase/base/firestore.indexes.json` stood at **404** composite indexes.
+
+A separate pass on 2026-08-19 found that the 2026-08-17 cleanup had, in ~26 cases across 8 collections, left a **shorter index in place of the one the actual query needed** — e.g. a 2-field `(listingType, status)` index where the real filter+sort combination the view issues is 3 or 4 fields deep (`listingType, status, brand, createdAt`), or a bare `(status, createdAt)` shape where the live query also carries `isSold`/`stockQuantity`/`storeId`. These are not the same failure class as bucket-1/3 above (dead index vs missing index) — the index that *looked* like it matched was actually one field short of the query Firestore was really being asked to run, which is a silent `FAILED_PRECONDITION` risk distinct from "no index at all." Affected collections: `products` (17 new), `orders` (2), `categories` (2), `offers` (1), `newsletterSubscribers` (1), `notifications` (1), `events` (1), `faqs` (1) — **26 indexes total**, all additive (no existing entry removed or modified, per the project's index-change rule).
+
+- `appkit/firebase/base/firestore.indexes.json`: 404 → **430** indexes (+26, all new composites, zero removals).
+- Merged into the root `firestore.indexes.json` via `npm run firebase generate`, deployed via `firebase deploy --only indexes`, and confirmed fully built (`node scripts/wait-for-indexes.mjs` → `CREATING=0`) before this update was written.
+- Per-index detail (fields + which query each backs) is itemized in [`firestore-index-requirements.md`](firestore-index-requirements.md) under the matching collection sections, tagged `(2026-08-19)`.
+- `appkit/scripts/audit-listing-indices.mjs`'s `REPO_TO_COLLECTION` map was also widened the same day (23 previously-`[UNKNOWN_REPO]` repository variables mapped to their real collections) — rerunning it after the widening surfaced **zero** new missing-index findings beyond the 26 above, so this list is not expected to grow further from that specific gap.

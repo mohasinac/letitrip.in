@@ -2,13 +2,15 @@
 
 > Current state as of 2026-08-17, post-cleanup: **389 composite indexes** across 44 collections, source of truth `appkit/firebase/base/firestore.indexes.json`, deployed to production Firestore. This is the forward-looking reference — for each index, which query/feature requires it. For the audit trail (what was trimmed, what was added, and why) see [`firestore-indexes-audit.md`](firestore-indexes-audit.md); for the application-code bugs fixed alongside this see [`firestore-index-bugfixes.md`](firestore-index-bugfixes.md).
 >
+> **Update 2026-08-19**: actual deployed count is now **430 composite indexes across 45 collections** (verified directly against `appkit/firebase/base/firestore.indexes.json`, `.indexes.length` + distinct `collectionGroup` values). Of the +41 since the 389 baseline above: **26 are itemized below**, tagged `(2026-08-19)` — a shape-mismatch fix where the 2026-08-17 cleanup left a shorter (e.g. 2-field) index in place of the 3-or-4-field one the real live filter+sort combination actually needs (see [`firestore-indexes-audit.md`](firestore-indexes-audit.md#update-2026-08-19--index-shape-mismatch-2-field-vs-3-field-found-and-fixed) for the full writeup). The remaining +15 were added incidentally by unrelated feature/schema work in other sessions between 2026-08-17 and 2026-08-19 (new `carts` collection, more `testerChecklistResponses`/`orders`/`categories`/`products`/`users` indexes, etc.) and have **not** been individually re-itemized in this document — the per-collection counts in the section headers below still reflect the 2026-08-17 baseline plus only the 2026-08-19 rows explicitly added, so a header count may read a few indexes lower than what's actually live for that collection. Treat this doc as accurate for *what each listed index is for*, not as an exhaustive index-by-index census of the current file — [`firestore-indexes-audit.md`](firestore-indexes-audit.md) and this doc's own count line are the source of truth for totals.
+>
 > **Confidence markers**: plain rows have a confirmed live caller (file:line). Rows marked **(inferred)** are Sieve-declared fields with a plausible UI trigger but no single confirmed call site combining exactly that field set — kept rather than trimmed because the risk of a false negative outweighed the storage cost. Rows marked **(cloud fn)** are read only by a Firebase Function via direct Admin SDK queries, never through the Sieve/API layer.
 >
 > Maintenance rule: when you add a new filter chip, sort option, or `.where()/.orderBy()` combination anywhere in the app, add its composite index here **and** to `firestore.indexes.json` in the same change — don't ship the query first.
 
 ---
 
-## products (98)
+## products (98, +17 on 2026-08-19 → 115 documented here; 119 actually live, see update note above)
 
 Driven by `appkit/src/features/products/repository/products.repository.ts` `SIEVE_FIELDS` + `FILTER_ALIASES`, shared by the public API, admin API, store API, and `listingProcessor` Cloud Function. Sort dropdowns: `appkit/src/features/products/constants/sieve.ts`.
 
@@ -77,10 +79,27 @@ Driven by `appkit/src/features/products/repository/products.repository.ts` `SIEV
 | 93-96 | isSold, status, createdAt/title/price | Admin all-listings view, Hide-sold toggle, no listingType scope |
 | 97 | listingType, prizeRevealWindowEnd | `AdminPrizeDrawsView` "Draw Date Soon" sort |
 | 98 | listingType, status, prizeRevealWindowEnd | Same sort, status-filtered |
+| 99 (2026-08-19) | status, stockQuantity, createdAt DESC | In-stock filter + default sort, no listingType scope (shape-fix: prior index stopped one field short) |
+| 100 (2026-08-19) | isSold, createdAt DESC | Admin all-listings Hide-sold toggle + default sort, no listingType/status scope |
+| 101 (2026-08-19) | listingType, status, stockQuantity, createdAt DESC | In-stock filter, listing-type scoped |
+| 102 (2026-08-19) | listingType, status, categorySlugs (array), createdAt DESC | Category browse, listing-type scoped (4-field shape the 2-field version couldn't serve) |
+| 103 (2026-08-19) | listingType, status, brand, createdAt DESC | Brand filter, listing-type scoped |
+| 104 (2026-08-19) | listingType, status, brand, auctionEndDate ASC | Brand filter + "Ending Soon" auction sort |
+| 105 (2026-08-19) | listingType, status, brand, stockQuantity, createdAt DESC | Brand filter + in-stock + default sort |
+| 106 (2026-08-19) | listingType, status, categorySlugs (array), auctionEndDate ASC | Category browse + "Ending Soon" auction sort |
+| 107 (2026-08-19) | listingType, status, categorySlugs (array), stockQuantity, createdAt DESC | Category browse + in-stock + default sort |
+| 108 (2026-08-19) | isSold, listingType, createdAt DESC | Hide-sold toggle, listing-type scoped, default sort |
+| 109 (2026-08-19) | isSold, listingType, auctionEndDate ASC, createdAt DESC | Hide-sold toggle + auction ending-soon sort, listing-type scoped |
+| 110 (2026-08-19) | isSold, listingType, prizeRevealWindowEnd ASC, createdAt DESC | Hide-sold toggle + prize-draw reveal sort, listing-type scoped |
+| 111 (2026-08-19) | storeId, listingType, auctionEndDate ASC | Store-scoped auction "Ending Soon" sort, listing-type scoped |
+| 112 (2026-08-19) | storeId, listingType, prizeRevealWindowEnd ASC, createdAt DESC | Store-scoped prize-draw reveal sort |
+| 113 (2026-08-19) | storeId, isSold, createdAt DESC | Store-scoped Hide-sold toggle, default sort |
+| 114 (2026-08-19) | storeId, listingType, isSold, createdAt DESC | Store + listing-type scoped Hide-sold toggle |
+| 115 (2026-08-19) | storeId, status, isSold, createdAt DESC | Store + status scoped Hide-sold toggle (`SellerProductsView.tsx` combined filter set) |
 
 ---
 
-## orders (29)
+## orders (29, +2 on 2026-08-19 → 31)
 
 `appkit/src/features/orders/repository/orders.repository.ts`.
 
@@ -113,6 +132,8 @@ Driven by `appkit/src/features/products/repository/products.repository.ts` `SIEV
 | 26 | status, createdAt ASC | Admin "Oldest" sort |
 | 27 | productId, status, createdAt DESC | Seller order listing (`productId in [...]` + status filter) |
 | 28, 29 | productId, totalPrice (both directions) | Seller order listing, amount sort |
+| 30 (2026-08-19) | productId, status, orderDate DESC | Product-scoped order history + status filter, orderDate sort (shape-fix: prior index lacked the sort field) |
+| 31 (2026-08-19) | userId, status, orderDate DESC | User order history + status filter, orderDate sort |
 
 ---
 
@@ -153,7 +174,7 @@ Driven by `appkit/src/features/products/repository/products.repository.ts` `SIEV
 
 ---
 
-## offers (6)
+## offers (6, +1 on 2026-08-19 → 7)
 
 `appkit/src/features/offers/repository/offer.repository.ts`.
 
@@ -165,6 +186,7 @@ Driven by `appkit/src/features/products/repository/products.repository.ts` `SIEV
 | 4 | status, expiresAt | `findExpired`/`findExpiredActive` — `offerExpiry.ts` job |
 | 5 | storeId, createdAt | `findByStore` — seller offer list |
 | 6 | storeId, status, createdAt ASC | `findPendingByStore` |
+| 7 (2026-08-19) | storeId, status, createdAt DESC | Seller offers dashboard, store+status scoped, newest-first sort (shape-fix: distinct DESC-sorted variant of #6's ASC ordering) |
 
 ---
 
@@ -198,7 +220,7 @@ Driven by `appkit/src/features/products/repository/products.repository.ts` `SIEV
 
 ---
 
-## categories (27)
+## categories (27, +2 on 2026-08-19 → 29)
 
 `appkit/src/features/categories/repository/categories.repository.ts`. Unified collection discriminated by `categoryType`.
 
@@ -229,6 +251,8 @@ Driven by `appkit/src/features/products/repository/products.repository.ts` `SIEV
 | 25 | categoryType, isFeatured, order | Public API brand+featured branch |
 | 26 | categoryType, metrics.productCount DESC | Admin "Most Products"/"Most listings" sort |
 | 27 | isBrand, metrics.productCount DESC | Public categories "Most Products" sort (brands tab) |
+| 28 (2026-08-19) | isActive, name ASC | Admin category "Name A–Z" sort + active filter (shape-fix: prior index missing the `name` sort field) |
+| 29 (2026-08-19) | isFeatured, name ASC | Admin category "Name A–Z" sort + featured filter |
 
 ---
 
@@ -259,7 +283,7 @@ Driven by `appkit/src/features/products/repository/products.repository.ts` `SIEV
 
 ---
 
-## faqs (17)
+## faqs (17, +1 on 2026-08-19 → 18)
 
 | # | Fields | Requirement |
 |---|---|---|
@@ -278,8 +302,9 @@ Driven by `appkit/src/features/products/repository/products.repository.ts` `SIEV
 | 13, 14 | tags (array)/searchTokens (array), isActive(, priority, order) | Tag/token search |
 | 15 | isActive, question | "Alphabetical" sort on public FAQ page |
 | 16 | priority DESC, order | Admin default view, no filters |
+| 18 (2026-08-19) | isActive, priority ASC | Admin FAQ "Priority: Low–High" sort + active filter (ascending counterpart of #10's descending order) |
 
-Note: table above has 16 rows for readability but the file declares 17 — #13 (`tags, isActive`) and #14 (`tags, isActive, priority, order`) are both present as separate entries for the plain vs. sort-augmented tag-search paths.
+Note: table above has 16 numbered legacy rows for readability but the file declared 17 pre-2026-08-19 — #13 (`tags, isActive`) and #14 (`tags, isActive, priority, order`) are both present as separate entries for the plain vs. sort-augmented tag-search paths (so legacy total was 17, not 16). Row 18 above is the 2026-08-19 addition, bringing the true total to 18.
 
 ---
 
@@ -374,7 +399,7 @@ Note: table above has 16 rows for readability but the file declares 17 — #13 (
 
 ---
 
-## events (21)
+## events (21, +1 on 2026-08-19 → 22)
 
 `appkit/src/features/events/repository/events.repository.ts`.
 
@@ -395,6 +420,7 @@ Note: table above has 16 rows for readability but the file declares 17 — #13 (
 | 18, 19 | status, title (both directions) | Admin "Title A–Z/Z–A" |
 | 20 | status, type, createdAt DESC | Admin combined status+type filter + createdAt sort |
 | 21 | status, type, title | Admin combined status+type filter + title sort |
+| 22 (2026-08-19) | type, startsAt DESC | Admin/public type filter + newest-start-date sort (shape-fix: prior index lacked the `startsAt` sort field) |
 
 ---
 
@@ -404,6 +430,7 @@ Note: table above has 16 rows for readability but the file declares 17 — #13 (
 |---|---|
 | **addresses** (3) | `listByOwner` (createdAt sort + isDefault lookup), `listByBanStatus` — all three confirmed live in `addresses.repository.ts` |
 | **carouselSlides** (3) | `getActiveSlides`, `getInactiveSlides`, `getSlidesByCreator` — homepage carousel admin |
+| **carts** (1) | Cart lookup query — collection added after the 2026-08-17 baseline (not itemized in the original per-collection audit above; added here 2026-08-19 purely as a missing-row fix, not a new index) |
 | **catalogueItems** (3) | `listByOwner`, `listPublicByOwner`, `listPendingApproval` — personal catalogue feature |
 | **chatRooms** (2) | `listForUser` (buyer/seller sides), always with the `adminDeleted` filter |
 | **codes** (1) | Product redemption codes — `refunds/actions.ts` subcollection lookup (collectionGroup, fixed from the old top-level `productCodes` mismatch) |
@@ -415,8 +442,8 @@ Note: table above has 16 rows for readability but the file declares 17 — #13 (
 | **homepageSections** (1) | `getEnabledSections`/`getDisabledSections` — homepage CMS |
 | **jobs** (1) | `getStaleFinishedRefs` — async job primitive cleanup |
 | **lotteryEntries** (3) | Event/product lottery entry admin + user views |
-| **newsletterSubscribers** (1) | Admin newsletter export/list |
-| **notifications** (6) | User notification inbox (all/unread/by-type), TTL prune job, admin notifications by type |
+| **newsletterSubscribers** (1, +1 on 2026-08-19 → 2) | Admin newsletter export/list. 2026-08-19 addition: `status, subscribedAt DESC` — admin subscriber-status filter + newest-first sort |
+| **notifications** (6, +1 on 2026-08-19 → 7) | User notification inbox (all/unread/by-type), TTL prune job, admin notifications by type. 2026-08-19 addition: `isRead, createdAt DESC` — unread-filter + newest-first sort (shape-fix: prior index lacked the `createdAt` sort field) |
 | **pageViews** (1) | Analytics — page-view range queries |
 | **passwordResetTokens** (1) | `findUnusedForUser` — auth flow |
 | **procurementShipments** (1) | Admin shipments list default sort |

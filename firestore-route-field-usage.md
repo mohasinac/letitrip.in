@@ -9,7 +9,7 @@ Scanned 52 views/call-sites (DataListingView configs + repository call sites acr
 - Filter-field orphans: 0
 - Sort-field orphans: 0
 - Unsatisfiable queries: 0
-- Unused declared indices: 388
+- Unused declared indices: 414
 
 ## Route/view summary
 
@@ -58,7 +58,7 @@ Scanned 52 views/call-sites (DataListingView configs + repository call sites acr
 | `appkit/src/features/seller/components/SellerPreOrdersView.tsx` | products | listingType== | title,preOrderDeliveryDate |
 | `appkit/src/features/seller/components/SellerPrizeDrawsView.tsx` | products | listingType== | title,prizeRevealWindowEnd |
 | `appkit/src/features/seller/components/SellerStickersView.tsx` | products | listingType== | title |
-| `appkit/src/_internal/server/features/checkout/actions.ts:1294` | users | role== | — |
+| `appkit/src/_internal/server/features/checkout/actions.ts:1222` | users | role== | — |
 | `appkit/src/_internal/server/features/lottery/data.ts:31` | events | — | -startsAt |
 | `appkit/src/_internal/server/jobs/core/adminAnalytics.ts:41` | orders | createdAt>= | -createdAt |
 | `appkit/src/_internal/server/jobs/core/adminAnalytics.ts:69` | products | status== | — |
@@ -67,44 +67,4 @@ Scanned 52 views/call-sites (DataListingView configs + repository call sites acr
 | `appkit/src/_internal/server/jobs/core/storeAnalytics.ts:88` | products | status== | — |
 | `src/app/api/admin/newsletter/route.ts:63` | newsletterSubscribers | — | — |
 | `src/app/api/admin/newsletter/route.ts:69` | newsletterSubscribers | — | — |
-
-## Known gaps (informational — not scanned or unresolved)
-
-- [UNKNOWN_REPO] `appkit/src/features/admin/actions/admin-read-actions.ts:265` — sessionRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `appkit/src/features/admin/actions/chat-actions.ts:78` — chatRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `appkit/src/features/homepage/actions/carousel-actions.ts:39` — carouselRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `appkit/src/features/jobs/actions/enqueue-job.ts:36` — jobsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `appkit/src/features/seller/actions/offer-actions.ts:94` — offerRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `appkit/src/features/seller/actions/offer-actions.ts:289` — offerRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `appkit/src/_internal/server/features/site-settings/actions.ts:11` — siteSettingsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `appkit/src/_internal/server/jobs/core/revenueRollup.ts:24` — analyticsRollupRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/actions/contact.actions.ts:89` — supportRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/admin/admin-notifications/route.ts:29` — adminNotificationsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/admin/ads/route.ts:209` — siteSettingsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/admin/ads/route.ts:266` — siteSettingsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/admin/ads/[id]/route.ts:167` — siteSettingsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/admin/ads/[id]/route.ts:201` — siteSettingsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/admin/carousel/route.ts:125` — carouselRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/admin/catalogue/route.ts:29` — catalogueRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/admin/feature-flags/route.ts:35` — siteSettingsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/admin/navigation/route.ts:36` — siteSettingsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/admin/navigation/[id]/route.ts:30` — siteSettingsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/admin/roles/route.ts:32` — customRolesRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/admin/sessions/route.ts:41` — sessionRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/admin/shipments/projections/route.ts:41` — shipmentLotsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/chat/route.ts:77` — chatRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/item-requests/route.ts:17` — itemRequestsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/item-requests/route.ts:30` — itemRequestsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/reports/route.ts:20` — reportsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/store/analytics/alerts/route.ts:37` — analyticsAlertsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/store/analytics/cards/route.ts:35` — analyticsCardsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/store/categories/route.ts:37` — storeCategoriesRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/store/google-reviews/route.ts:43` — storeGoogleConfigRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/store/grouped-listings/route.ts:37` — groupedListingsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/store/listing-templates/route.ts:37` — listingTemplatesRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/store/payout-methods/route.ts:37` — payoutMethodsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/store/shipping-configs/route.ts:37` — shippingConfigsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/support/tickets/route.ts:115` — supportRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/user/catalogue/route.ts:40` — catalogueRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/user/coupons/claim/route.ts:58` — claimedCouponsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 

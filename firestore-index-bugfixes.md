@@ -1,6 +1,6 @@
-# Firestore Index Bug Fixes — 2026-08-17
+# Firestore Index Bug Fixes — 2026-08-17 (+ 2026-08-19 update)
 
-> Companion to [`firestore-indexes-audit.md`](firestore-indexes-audit.md) — that file is the index-by-index audit (bucket 1 = trim, bucket 3 = add missing). This file documents **bucket 2**: the application-code bugs the audit surfaced, what was actually broken, and exactly what changed to fix each one. All fixes below are done; `npm run check` + a fresh index deploy still need to run as the closing step (see bottom).
+> Companion to [`firestore-indexes-audit.md`](firestore-indexes-audit.md) — that file is the index-by-index audit (bucket 1 = trim, bucket 3 = add missing). This file documents **bucket 2**: the application-code bugs the audit surfaced, what was actually broken, and exactly what changed to fix each one. All fixes below are done; `npm run check` + a fresh index deploy still need to run as the closing step (see bottom). A separate, unrelated index-*shape* fix from 2026-08-19 is appended as a dated section at the bottom — it did not touch application code, only `firestore.indexes.json`.
 
 ## Why this file exists
 
@@ -139,3 +139,15 @@ None of round 2's fixes needed new Firestore indexes — every fix was either an
 - Bucket 4 (`UNSURE` trims) from the original audit were left untouched, as planned.
 - `appkit/index.md` / `codebaseexports.md` were not updated — none of the changes above added or renamed a *public* export; they were internal field registrations, route fixes, and UI control removals.
 - This sweep covered every `Admin*View`/`Seller*View` listing component. Public-facing and user-dashboard listing pages (outside these two directories) were not separately swept — if you want that coverage too, say so.
+
+---
+
+## 2026-08-19 — index *shape* mismatch found and fixed (separate session, not a Round 3 of the above)
+
+Distinct root cause from every bug in this file's main list: this was not a field-name typo or an unregistered Sieve field. It was the composite index **shape** — the number/order of fields — being one field shorter than what the live filter+sort combination actually needs, in 26 cases across 8 collections (`products` ×17, `orders` ×2, `categories` ×2, `offers` ×1, `newsletterSubscribers` ×1, `notifications` ×1, `events` ×1, `faqs` ×1). Example: a deployed `(listingType, status)` index existed, but the real query (e.g. a store-scoped "Hide sold" toggle combined with the default `createdAt` sort) needs `(storeId, listingType, isSold, createdAt)` — Firestore's prefix-matching rules mean the shorter index cannot serve a query with additional equality/range/orderBy clauses layered on top, so every affected view was silently hitting `FAILED_PRECONDITION` (or, depending on the client, an opaque empty-results failure) in production.
+
+**Fix**: 26 new composite indexes added to `appkit/firebase/base/firestore.indexes.json` — additive only, no existing entry removed or modified. Deployed via `npm run firebase generate` → `firebase deploy --only indexes`, confirmed fully built via `node scripts/wait-for-indexes.mjs` (`CREATING=0`) before this note was written. Index count: 404 → **430**.
+
+Full per-index detail (exact fields + which query/toggle/sort each backs) is itemized in [`firestore-index-requirements.md`](firestore-index-requirements.md), tagged `(2026-08-19)`, under each affected collection's section. Top-level audit narrative in [`firestore-indexes-audit.md`](firestore-indexes-audit.md#update-2026-08-19--index-shape-mismatch-2-field-vs-3-field-found-and-fixed).
+
+Same-day, separately: `appkit/scripts/audit-listing-indices.mjs`'s `REPO_TO_COLLECTION` map (the static tool used to derive this class of finding) had 23 repository variable names it didn't recognize (`[UNKNOWN_REPO]`, informational-only — those call sites were silently unscanned rather than checked). All 23 were mapped to their real collection after verifying each repository's own `super(<CONSTANT>)` call against its schema file. Rerunning the widened audit found **zero** additional missing-index findings beyond the 26 above — the widened scan is clean.
