@@ -41,6 +41,28 @@
 
 ---
 
+### S-index-shape-fix — Firestore composite index shape gaps (products + 7 other collections), audit repo-map completeness, tester seed-data fixes (2026-08-19)
+
+Triggered by a live bug report: `/products` loaded empty by default (with a "Firestore index missing" toast) while items only appeared after toggling "Show sold" — and the same symptom was showing up across other public listing pages and all three dashboards (admin/store/user).
+
+**Root cause**: the 2026-08-17 index-cleanup session (`bf017b0b0`) left several collections with a shorter composite index than the actual sort-inclusive query needs — e.g. `products(status, stockQuantity)` existed but the real default-listing query (`status==published AND stockQuantity>0`, sorted by `createdAt`) needs the 3-field `products(status, stockQuantity, createdAt)`. Firestore silently rejects the mismatched query with `FAILED_PRECONDITION`, which the API route catches and turns into an empty result + toast — so the bug read as "sold items are stuck visible" when it was actually "in-stock items are stuck hidden," with "Show sold" only working because it happens to drop the filter that hits the missing index.
+
+**Fix — systematic sweep, not just products**: found and added 26 missing composite indexes across `products` (17 — public listings, category/brand detail tabs, admin Products dashboard, seller Products/Auctions/Prize-Draws dashboards), `orders` (2 — incl. `/user/returns`, which was unconditionally broken), `categories` (2), `offers` (1), `faqs` (1), `events` (1), `newsletterSubscribers` (1), `notifications` (1). Purely additive — 404 → 430 indexes, verified zero existing entries touched, zero duplicates. Deployed live (`firebase deploy --only firestore:indexes`, no `--force`) and confirmed all 430 settled via `wait-for-indexes.mjs`.
+
+**Audit completeness**: `appkit/scripts/audit-listing-indices.mjs`'s static analysis had a `REPO_TO_COLLECTION` map with ~23 unmapped repositories (`[UNKNOWN_REPO]`, informational-only, silently unscanned) — closed all of them (25 entries added, each verified against the repository's own collection constant), so the tool's coverage actually spans what it claims to. Regenerated `firestore-route-field-usage.md`: 0 unknown-repo entries (was 37). Widening coverage surfaced no further missing indices.
+
+**Docs**: appended dated `2026-08-19` sections to `firestore-indexes-audit.md`, `firestore-index-requirements.md`, `firestore-index-bugfixes.md` — corrected stale index counts and added the 26 new rows, preserving the 2026-08-17 historical content rather than overwriting it.
+
+**Tester seed-data fixes** (so the newly-fixed toggles have real fixtures to verify against): `preorder-tester-sandbox-1` was missing `stockQuantity` entirely (Firestore excludes documents missing a field from an inequality query, not just ones where it's 0 — so this pre-order would have stayed permanently hidden from the default listing even after the index fix). Added `product-tester-standard-sold` (isSold:true/stockQuantity:0) and `prizedraw-tester-sandbox-closed` (window already ended) since every existing standard/prize-draw fixture was in-stock/open, giving the "Show sold"/"Show closed" toggles nothing real to reveal. Added `category-tester-inactive` (isActive:false) and flipped one existing FAQ (`faq-what-are-procurement-shipments`) to `isActive:false`, since every one of the 17 seeded categories and all 63 FAQs was `isActive:true` — the admin Categories/FAQs "Active" toggle had nothing to show in the inactive branch. `orders`/`offers` seed data already had adequate status coverage (return_requested order, full offer-status spread) — no changes needed there.
+
+**Tester checklist**: added 6 new checklist items (Buying → default-listing-not-empty + show-sold-toggle-reveals-items; User Dashboard → enriched my-returns; Admin → products-default-listing-not-empty + categories-toggle-filters; Selling → seller-products-auctions-default-load + enriched seller-offers-list) covering all of the above.
+
+**Not done — explicit blocker, not silently deferred**: `npx appkit-seed load` (to actually push the seed-data changes into Firestore) is blocked because `@mohasinac/appkit`'s module graph currently fails to load — `appkit/src/_internal/server/features/checkout/actions.ts`/`server-entry.ts` (part of the in-progress S-addons-followup / OTP-bypass work logged above) has undefined `otpRef`/`consentOtpRef` references and a missing `grantConsentOtpBypassCredit` export, which breaks the whole package at import time since it's one ESM module graph. Reseed needs to happen once that compiles cleanly again — tracked as a follow-up, not attempted as a workaround on someone else's in-progress code.
+
+**Files touched**: `appkit/firebase/base/firestore.indexes.json`, `appkit/scripts/audit-listing-indices.mjs`, `appkit/src/features/tester/seed-data/{products,categories,tester-checklist}-tester-seed-data.ts`, `appkit/src/seed/faq-seed-data.ts`, root `firestore.indexes.json` (regenerated mirror), `firestore-indexes-audit.md`, `firestore-index-requirements.md`, `firestore-index-bugfixes.md`, `firestore-route-field-usage.md` (regenerated).
+
+---
+
 ### S-addons-followup — Gift wrap + shipment protection addons, Firebase Functions migrations, admin toggle/dashboard/back-to-top polish, integration guides viewer (2026-08-19)
 
 Follow-up session after the WhatsApp order-updates addon shipped. Scope, per user request: find more addon candidates, find more Firebase Functions migration candidates, keep Firebase/Vercel usage within free-tier budget, add admin toggles for missed config, add dashboard quick-links, fix the back-to-top "gone forever" bug, and add an in-site integration-guides viewer — then publish appkit + deploy.
