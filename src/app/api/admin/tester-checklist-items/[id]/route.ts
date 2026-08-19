@@ -19,6 +19,7 @@ const updateChecklistItemSchema = z.object({
   description: z.string().max(2000).optional(),
   href: z.string().max(300).optional(),
   order: z.number().int().min(0).optional(),
+  phase: z.number().int().min(1).optional(),
   isActive: z.boolean().optional(),
   adminOnly: z.boolean().optional(),
 });

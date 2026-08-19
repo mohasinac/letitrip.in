@@ -43,6 +43,7 @@ export const PUT = withProviders(
         checklistItemId,
         groupKey: item.groupKey,
         pageKey: item.pageKey,
+        phase: item.phase,
         answer: body!.answer,
         comment: body!.comment,
         screenshotUrl: body!.screenshotUrl,

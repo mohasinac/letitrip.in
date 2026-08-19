@@ -20,6 +20,7 @@ const createChecklistItemSchema = z.object({
   description: z.string().max(2000).optional(),
   href: z.string().max(300).optional(),
   order: z.number().int().min(0).optional(),
+  phase: z.number().int().min(1).optional(),
   isActive: z.boolean().optional(),
   adminOnly: z.boolean().optional(),
 });
@@ -71,6 +72,7 @@ export const POST = withProviders(
         description: body!.description,
         href: body!.href,
         order: body!.order ?? 0,
+        phase: body!.phase ?? 1,
         isActive: body!.isActive ?? true,
         adminOnly: body!.adminOnly ?? false,
       });
