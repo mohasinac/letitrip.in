@@ -91,6 +91,11 @@ export default function Page() {
             emptyLabel="You haven't placed any orders yet."
             renderActions={(order) => (
               <>
+                <Button asChild variant="outline" size="sm">
+                  <Link href={ROUTES.USER.ORDER_DETAIL(order.id)}>
+                    {ACTIONS.USER["view-order"].label}
+                  </Link>
+                </Button>
                 {TRACKABLE_STATUSES.has(order.orderStatus) && (
                   <Button asChild variant="ghost" size="sm">
                     <Link href={ROUTES.USER.ORDER_TRACK(order.id)}>

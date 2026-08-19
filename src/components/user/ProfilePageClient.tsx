@@ -55,6 +55,7 @@ function renderProfileViewMode({
   profileBio,
   profileIsPublic,
   handleEdit,
+  userId,
 }: {
   profile: { photoURL?: string | null; email?: string | null; phoneNumber?: string | null; displayName?: string | null };
   resolvedName: string;
@@ -63,6 +64,7 @@ function renderProfileViewMode({
   profileBio: string;
   profileIsPublic: boolean;
   handleEdit: () => void;
+  userId: string;
 }) {
   return (
     <Stack surface="card" padding="lg" gap="5">
@@ -111,6 +113,12 @@ function renderProfileViewMode({
           className="rounded-xl border border-[var(--appkit-color-border)] px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-medium text-[var(--appkit-color-text-muted)] hover:bg-zinc-50 hover:bg-[var(--appkit-color-surface-elevated)] transition-colors"
         >
           Manage Addresses
+        </Link>
+        <Link
+          href={String(ROUTES.PUBLIC.PROFILE(userId))}
+          className="rounded-xl border border-[var(--appkit-color-border)] px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-medium text-[var(--appkit-color-text-muted)] hover:bg-zinc-50 hover:bg-[var(--appkit-color-surface-elevated)] transition-colors"
+        >
+          View Public Profile
         </Link>
       </Row>
     </Stack>
@@ -232,7 +240,7 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
         onToggle={() => toggle("user-profile:details")}
       >
       {!editing ? (
-        renderProfileViewMode({ profile, resolvedName, namePlaceholder, avatarLetter, profileBio, profileIsPublic, handleEdit })
+        renderProfileViewMode({ profile, resolvedName, namePlaceholder, avatarLetter, profileBio, profileIsPublic, handleEdit, userId: user!.uid })
       ) : (
         <Stack gap="lg">
           <Div surface="card" padding="lg">

@@ -11,6 +11,7 @@ import {
   useToast,
   OrdersList,
   ROUTES,
+  ACTIONS,
   Button,
   Div,
   DynamicBgDiv,
@@ -39,8 +40,9 @@ import {
   Archive,
   History,
   Ticket,
+  UserCircle,
 } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 
 const __P = {
   p5: "p-[var(--appkit-space-5)]",
@@ -92,6 +94,7 @@ function formatINR(amount: number): string {
 
 export default function Page() {
   const { user, loading: userLoading } = useAuth();
+  const router = useRouter();
   const { orders, isLoading: ordersLoading } = useOrders({ page: 1, perPage: 3 });
   const { orders: allOrdersForStats } = useOrders({ page: 1, perPage: 100 });
   const { unreadCount } = useNotifications();
@@ -190,12 +193,20 @@ export default function Page() {
                 {user.email && (
                   <Div textSize="sm" className="text-[var(--appkit-color-text-muted)] truncate">{user.email}</Div>
                 )}
-                <Link
-                  href={String(ROUTES.USER.PROFILE)}
-                  className="text-[length:var(--appkit-text-xs)] font-medium text-[var(--appkit-color-primary)] hover:underline"
-                >
-                  View / edit profile →
-                </Link>
+                <Row gap="md" className="mt-0.5">
+                  <Link
+                    href={String(ROUTES.USER.PROFILE)}
+                    className="text-[length:var(--appkit-text-xs)] font-medium text-[var(--appkit-color-primary)] hover:underline"
+                  >
+                    View / edit profile →
+                  </Link>
+                  <Link
+                    href={String(ROUTES.PUBLIC.PROFILE(user.uid))}
+                    className="text-[length:var(--appkit-text-xs)] font-medium text-[var(--appkit-color-primary)] hover:underline"
+                  >
+                    View public profile →
+                  </Link>
+                </Row>
               </Div>
             </Row>
 
@@ -211,7 +222,10 @@ export default function Page() {
       }
       renderNav={() => (
         <Div layout="grid" gap="3" className="grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-          {NAV_LINKS.map(({ label, href, Icon }) => (
+          {(user
+            ? [{ label: "My Public Profile", href: ROUTES.PUBLIC.PROFILE(user.uid), Icon: UserCircle }, ...NAV_LINKS]
+            : NAV_LINKS
+          ).map(({ label, href, Icon }) => (
             <Link
               key={label}
               href={String(href)}
@@ -242,7 +256,21 @@ export default function Page() {
                 View all →
               </Link>
             </Row>
-            <OrdersList orders={orders} isLoading={ordersLoading} emptyLabel="No orders yet" />
+            <OrdersList
+              orders={orders}
+              isLoading={ordersLoading}
+              emptyLabel="No orders yet"
+              onOrderClick={(order) =>
+                router.push(String(ROUTES.USER.ORDER_DETAIL(order.id)))
+              }
+              renderActions={(order) => (
+                <Button asChild variant="outline" size="sm">
+                  <Link href={ROUTES.USER.ORDER_DETAIL(order.id)}>
+                    {ACTIONS.USER["view-order"].label}
+                  </Link>
+                </Button>
+              )}
+            />
           </>
         ) : null
       }

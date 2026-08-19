@@ -139,7 +139,7 @@
 | `UserAddressesClient` | `user/UserAddressesClient.tsx` | Addresses list — set-default + two-step delete confirm |
 | `AddAddressClient` | `user/AddAddressClient.tsx` | Add address client wrapper |
 | `EditAddressClient` | `user/EditAddressClient.tsx` | Edit address client wrapper |
-| `ProfilePageClient` | `user/ProfilePageClient.tsx` | Profile page client wrapper |
+| `ProfilePageClient` | `user/ProfilePageClient.tsx` | Profile page client wrapper — view mode now includes a "View Public Profile" link (`ROUTES.PUBLIC.PROFILE(userId)`) next to "Manage Addresses" |
 | `FontToggleClient` | `user/FontToggleClient.tsx` | Font size toggle (accessibility) |
 
 ---
