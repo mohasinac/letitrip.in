@@ -37,6 +37,22 @@ module.exports = withNextIntl(
       ];
     },
     cacheMaxMemorySize: 0,
+    // Vercel Hobby build containers are hard-capped at 8GB total RAM — a 731-route
+    // app (360 pages + 371 API routes) OOMs during the prerender/compile phase even
+    // with a raised --max-old-space-size heap cap, because source-map generation and
+    // in-build TypeScript checking are both memory-heavy on top of the V8 heap itself.
+    // Type safety is already enforced by `npm run check` (tsc --noEmit on both repos),
+    // which gates every deploy via scripts/deploy.mjs's pre-flight — re-checking types
+    // a second time inside the Vercel build itself is redundant for this project.
+    // Source maps only affect prod stack-trace readability, not app behaviour.
+    typescript: {
+      ignoreBuildErrors: true,
+    },
+    productionBrowserSourceMaps: false,
+    enablePrerenderSourceMaps: false,
+    experimental: {
+      serverSourceMaps: false,
+    },
     // Turbopack (used by `next build`) does not respect webpack's config.resolve.alias.
     // Without this, appkit/node_modules/firebase and root node_modules/firebase are two
     // separate module instances — initializeApp() registers the app in one, but getAuth()
