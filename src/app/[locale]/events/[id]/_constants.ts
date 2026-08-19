@@ -8,6 +8,7 @@ export const EVENT_TAB = {
   OVERVIEW: "overview",
   PARTICIPATE: "participate",
   LEADERBOARD: "leaderboard",
+  SPIN: "spin",
 } as const;
 
 export type EventTab = (typeof EVENT_TAB)[keyof typeof EVENT_TAB];
@@ -25,10 +26,17 @@ export const EVENT_LABELS = {
   OVERVIEW_POLL_HEADING: "Cast Your Vote",
   LEADERBOARD_HEADING: "Leaderboard",
   LEADERBOARD_EMPTY: "No entries on the leaderboard yet.",
+  POLL_RESULTS_HEADING: "Poll Results",
+  POLL_RESULTS_EMPTY: "No votes yet.",
+  VOTES_SUFFIX: "votes",
+  TOTAL_VOTES_SUFFIX: "total votes",
   ENDED_MESSAGE: "This event has ended.",
   PARTICIPANT_FALLBACK: "Participant",
+  GUEST_FALLBACK: "Guest",
   POINTS_SUFFIX: "pts",
   COVER_ALT_FALLBACK: "Event cover",
+  SPIN_RESULTS_HEADING: "Last 10 Spin Results",
+  SPIN_RESULTS_EMPTY: "No spins yet — be the first!",
 } as const;
 
 export const EVENT_META = {
@@ -37,6 +45,7 @@ export const EVENT_META = {
   PARTICIPATE_TITLE: (title: string) => `Participate — ${title}`,
   LEADERBOARD_TITLE: (title: string) => `Leaderboard — ${title}`,
   WINNER_TITLE: (title: string) => `Winner — ${title}`,
+  SPIN_RESULTS_TITLE: (title: string) => `Spin Results — ${title}`,
   NOT_FOUND_TITLE: "Event Not Found",
   DESCRIPTION_MAX_LEN: 155,
   LEADERBOARD_VISIBLE_LIMIT: 10,

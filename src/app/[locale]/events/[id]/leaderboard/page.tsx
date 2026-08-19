@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Div, Heading, Row, Stack, Text } from "@mohasinac/appkit/ui";
 import { EVENT_LABELS, EVENT_META } from "../_constants";
-import { getEventCached, getLeaderboardCached } from "../_data";
+import { getEventCached, getLeaderboardCached, getPollResultsCached } from "../_data";
 
 export const revalidate = 0;
 
@@ -21,11 +21,56 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
-  const [event, leaderboard] = await Promise.all([
-    getEventCached(id),
-    getLeaderboardCached(id),
-  ]);
+  const event = await getEventCached(id);
   if (!event) notFound();
+
+  // Polls have no meaningful "who voted, ranked by points" leaderboard —
+  // show a per-option vote tally instead. Every other event type (sale,
+  // offer, survey, feedback, raffle, spin_wheel) keeps the points-ranked
+  // list: survey in particular has its own explicit hasLeaderboard /
+  // hasPointSystem config, so a points ranking is the correct, intentional
+  // behavior there, not a bug.
+  if (event.type === "poll") {
+    const pollResults = await getPollResultsCached(id);
+
+    if (pollResults.length === 0) {
+      return (
+        <Div className="text-center" paddingY="y-2xl" paddingX="x-lg" rounded="xl" border="default">
+          <Text color="muted">
+            {EVENT_LABELS.POLL_RESULTS_EMPTY}
+          </Text>
+        </Div>
+      );
+    }
+
+    const totalVotes = pollResults.reduce((sum, r) => sum + r.count, 0);
+
+    return (
+      <Stack gap="sm">
+        <Heading
+          level={2} size="lg" weight="semibold" color="primary">
+          {EVENT_LABELS.POLL_RESULTS_HEADING}
+        </Heading>
+        {pollResults.map((result) => (
+          <Row
+            key={result.optionId} paddingY="y-xs" paddingX="x-md" align="center" justify="between" rounded="lg" border="default"
+          >
+            <Text weight="medium" color="muted">
+              {result.label}
+            </Text>
+            <Text size="sm" color="muted">
+              {result.count} {EVENT_LABELS.VOTES_SUFFIX} ({result.percent}%)
+            </Text>
+          </Row>
+        ))}
+        <Text size="xs" color="faint">
+          {totalVotes} {EVENT_LABELS.TOTAL_VOTES_SUFFIX}
+        </Text>
+      </Stack>
+    );
+  }
+
+  const leaderboard = await getLeaderboardCached(id);
 
   if (leaderboard.length === 0) {
     return (

@@ -1,6 +1,7 @@
 "use client";
 
 import { Link, usePathname } from "@/i18n/navigation";
+import { Div } from "@mohasinac/appkit/client";
 import { EVENT_TAB } from "./_constants";
 
 type Tab = { value: string; label: string; href: string };
@@ -13,7 +14,7 @@ export function EventTabBar({ tabs }: Props) {
   const pathname = usePathname();
 
   return (
-    <div
+    <Div
       role="tablist"
       className="flex gap-[var(--appkit-space-2)] border-b border-[var(--appkit-color-border)] overflow-x-auto"
     >
@@ -30,7 +31,7 @@ export function EventTabBar({ tabs }: Props) {
             role="tab"
             aria-selected={isActive}
             scroll={false}
-            prefetch={tab.value !== EVENT_TAB.LEADERBOARD}
+            prefetch={tab.value !== EVENT_TAB.LEADERBOARD && tab.value !== EVENT_TAB.SPIN}
             className={`px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-medium whitespace-nowrap border-b-2 -mb-px transition-colors ${
  isActive
  ? "border-primary text-primary"
@@ -41,6 +42,6 @@ export function EventTabBar({ tabs }: Props) {
           </Link>
         );
       })}
-    </div>
+    </Div>
   );
 }

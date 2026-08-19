@@ -1483,6 +1483,15 @@ export const UI_LABELS = {
     OUT_OF_STOCK_POLICY_LABEL: "If an item goes out of stock",
     OUT_OF_STOCK_POLICY_CANCEL_ORDER: "Cancel my whole order",
     OUT_OF_STOCK_POLICY_SKIP_ITEMS: "Ship what's available and refund the rest",
+    // Manual payment (UPI/Cash) guide + consent
+    MANUAL_PAYMENT_GUIDE_HEADING: "How manual payment works",
+    MANUAL_PAYMENT_GUIDE_STEP1: "We'll create your order and show a UPI ID to pay directly — no card details needed.",
+    MANUAL_PAYMENT_GUIDE_STEP2: "You'll have 15 minutes to pay and upload your UTR/reference number + a screenshot as proof.",
+    MANUAL_PAYMENT_GUIDE_STEP3: "The seller or our team manually confirms your payment before the order ships. If the 15-minute window lapses unpaid, the order is auto-cancelled and stock is released.",
+    MANUAL_PAYMENT_GUIDE_OOS: "If an item you ordered sells out before payment is confirmed, we'll follow the out-of-stock choice above — either ship what's left and refund the difference, or cancel the whole order.",
+    MANUAL_PAYMENT_GUIDE_REFUND: "Refunds for cancelled/returned orders follow our standard refund policy — approved refunds typically reflect in 5–7 business days; platform fees may be non-recoverable.",
+    MANUAL_PAYMENT_GUIDE_REFUND_LINK: "Read the full refund policy",
+    MANUAL_PAYMENT_CONSENT_LABEL: "I understand how manual payment and refunds work",
     // Admin bypass
     ADMIN_BYPASS_PANEL_LABEL: "Admin Test Mode",
     ADMIN_BYPASS_PAYMENT_BTN: "No Payment — Admin Bypass Order",

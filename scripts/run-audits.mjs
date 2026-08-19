@@ -206,6 +206,20 @@ const AUDITS = [
   // overwrite real data on the next save. Found live in users (isTester/
   // canTestAdmin) and stores (isVerified/isFeatured/capabilities) 2026-08-19.
   { name: "list-serializer-parity",         script: "scripts/audit-list-serializer-parity.mjs" },
+  // Strict-zero. A selectable card's primary navigation (Link href /
+  // router.push / handleClick) must never be gated on whether a selection
+  // callback is merely wired — only on whether a selection is actively in
+  // progress. Found live in InteractiveProductCard.tsx 2026-08-20 (href
+  // dropped entirely in the onSelect branch); see CLAUDE.md's Recurrent
+  // Root Cause Patterns.
+  { name: "selectable-card-navigation",     script: "scripts/audit-selectable-card-navigation.mjs" },
+  // Guest-participation (allowGuestParticipation) must stay the single
+  // source of truth for whether an event permits anonymous entries — two
+  // structurally separate decision points (enterEvent()'s generic path and
+  // runAssignSpinPrize()'s independent spin-wheel path) must both read it,
+  // not a hardcoded per-event-type literal. See CLAUDE.md's Recurrent Root
+  // Cause Patterns.
+  { name: "event-guest-gate-consistency",   script: "scripts/audit-event-guest-gate-consistency.mjs" },
 
 ];
 function parseArgs(argv) {

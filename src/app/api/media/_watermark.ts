@@ -34,6 +34,17 @@ export const SVG_MIME = "image/svg+xml";
 const WATERMARK_CACHE_TTL_MS = 60_000;
 const MEDIA_PROXY_PATH_PREFIX = "media/";
 
+/**
+ * Absolute ceiling on the watermark's rendered width in pixels, regardless of
+ * `config.size` (a % of the *source* image width). Without this, a
+ * percentage-based watermark scales unbounded on large originals — 10% of a
+ * 1600px+ hero/carousel image is a much more prominent mark than 10% of a
+ * small product-detail thumbnail, even though the percentage is identical.
+ * Keeps the mark legible-but-small everywhere; thumbnails are already well
+ * under this cap so they're unaffected.
+ */
+const MAX_WATERMARK_PX = 180;
+
 let watermarkCache: { value: WatermarkConfig; expiresAt: number } | null = null;
 
 /**
@@ -129,7 +140,7 @@ export function buildTextWatermarkSvg(
   sizePct: number,
   opacityPct: number,
 ): Buffer {
-  const wmWidth = Math.max(1, Math.round((targetWidth * sizePct) / 100));
+  const wmWidth = Math.max(1, Math.min(MAX_WATERMARK_PX, Math.round((targetWidth * sizePct) / 100)));
   const fontSize = Math.max(12, Math.round(wmWidth / Math.max(text.length * 0.55, 1)));
   const wmHeight = Math.round(fontSize * 1.6);
   const fillAlpha = opacityPct / 100;
@@ -277,7 +288,7 @@ export async function applyWatermark(
       config.themeGradientStops,
     );
     if (wmBuffer) {
-      const wmTargetWidth = Math.max(1, Math.round((targetWidth * config.size) / 100));
+      const wmTargetWidth = Math.max(1, Math.min(MAX_WATERMARK_PX, Math.round((targetWidth * config.size) / 100)));
       const resized = await sharp(wmBuffer)
         .resize(wmTargetWidth, null, { fit: "inside" })
         .png()

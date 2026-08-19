@@ -1,5 +1,5 @@
 "use client";
-import { normalizeError, pluginFor } from "@mohasinac/appkit";
+import { normalizeError, pluginFor } from "@mohasinac/appkit/client";
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import {
   sortBy,
@@ -25,11 +25,12 @@ import {
   LoginRequiredModal,
   useBottomActions,
   Toggle,
+  TextLink,
 } from "@mohasinac/appkit/client";
 import type { EnrichedWishlistItem } from "@mohasinac/appkit/client";
 import { Span } from "@mohasinac/appkit/ui";
 import { removeFromWishlistAction, addWishlistItemToCartAction } from "@/actions/wishlist.actions";
-import { validateWishlist } from "@/lib/api/user-client";
+import { validateWishlist, syncWishlistItem } from "@/lib/api/user-client";
 import { API_ROUTES } from "@/constants";
 
 const __P = {
@@ -86,6 +87,8 @@ export default function WishlistPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBulkRemoving, setIsBulkRemoving] = useState(false);
   const [isBulkAddingToCart, setIsBulkAddingToCart] = useState(false);
+  const [isSyncingAll, setIsSyncingAll] = useState(false);
+  const [syncingIds, setSyncingIds] = useState<Set<string>>(new Set());
 
   const toggleSelect = (id: string, next: boolean) => {
     setSelectedIds((prev) => {
@@ -164,6 +167,44 @@ export default function WishlistPage() {
       setIsBulkRemoving(false);
     }
   }, [wl, isBulkRemoving, user?.uid, showToast]);
+
+  const handleSyncAll = useCallback(async () => {
+    if (!user?.uid || isSyncingAll) return;
+    setIsSyncingAll(true);
+    try {
+      const res = await validateWishlist(API_ROUTES.USER.WISHLIST_VALIDATE, {});
+      if (!res.ok) throw new Error("Sync failed");
+      const data = (await res.json()) as { data: { removedCount: number; syncedCount: number } };
+      const { removedCount, syncedCount } = data.data;
+      const parts: string[] = [];
+      if (syncedCount > 0) parts.push(`${syncedCount} item${syncedCount !== 1 ? "s" : ""} synced`);
+      if (removedCount > 0) parts.push(`${removedCount} sold-out/unavailable item${removedCount !== 1 ? "s" : ""} removed`);
+      showToast(parts.length > 0 ? parts.join(", ") + "." : "Wishlist already up to date.", "success");
+      void wl.refetch?.();
+    } catch (_err) {
+      void normalizeError(_err);
+      showToast("Could not sync wishlist. Please try again.", "error");
+    } finally {
+      setIsSyncingAll(false);
+    }
+  }, [user?.uid, isSyncingAll, wl, showToast]);
+
+  const handleSyncItem = useCallback(async (productId: string) => {
+    if (!user?.uid || syncingIds.has(productId)) return;
+    setSyncingIds((prev) => new Set(prev).add(productId));
+    try {
+      const res = await syncWishlistItem(API_ROUTES.USER.WISHLIST_ITEM_SYNC(productId));
+      if (!res.ok) throw new Error("Sync failed");
+      const data = (await res.json()) as { data: { removed: boolean } };
+      showToast(data.data.removed ? "Item removed — no longer available." : "Item synced.", "success");
+      void wl.refetch?.();
+    } catch (_err) {
+      void normalizeError(_err);
+      showToast("Could not sync this item. Please try again.", "error");
+    } finally {
+      setSyncingIds((prev) => { const next = new Set(prev); next.delete(productId); return next; });
+    }
+  }, [user?.uid, syncingIds, wl, showToast]);
 
   // Staged (pending) filter state — applied on "Apply filters" click
   const [pending, setPending] = useState<WishlistFilters>(EMPTY_FILTERS);
@@ -298,7 +339,7 @@ export default function WishlistPage() {
   return (
     <>
     <ListingLayout
-      headerSlot={renderWishlistHeader({ isLoading, wl, selectedIds, isBulkRemoving, isBulkAddingToCart, handleRemoveSelected, handleAddSelectedToCart, clearSelection, handleRemoveAll })}
+      headerSlot={renderWishlistHeader({ isLoading, wl, selectedIds, isBulkRemoving, isBulkAddingToCart, handleRemoveSelected, handleAddSelectedToCart, clearSelection, handleRemoveAll, user, isSyncingAll, handleSyncAll })}
       searchSlot={<Input placeholder="Search wishlist…" value={search} onChange={(e) => setSearch(e.target.value)} className="h-9 text-[length:var(--appkit-text-sm)]" />}
       sortSlot={<Select options={SORT_OPTIONS} value={sort} onValueChange={setSort} className="h-9 text-[length:var(--appkit-text-sm)]" wrapperClassName="min-w-[160px]" />}
       filterContent={renderWishlistFilterContent({ pending, setPending, hideSoldOut, setHideSoldOut })}
@@ -306,7 +347,7 @@ export default function WishlistPage() {
       onFilterApply={handleApply}
       onFilterClear={handleClear}
     >
-      {renderWishlistItems({ isLoading, filteredItems, wl, search, activeFilterCount, user, selectedIds, handleToggleWishlist, toggleSelect, handleClear, setSearch })}
+      {renderWishlistItems({ isLoading, filteredItems, wl, search, activeFilterCount, user, selectedIds, handleToggleWishlist, toggleSelect, handleClear, setSearch, handleSyncItem, syncingIds })}
     </ListingLayout>
     {/* Mobile bulk actions registered via useBottomActions() bulk mode above */}
     <LoginRequiredModal isOpen={modalOpen} onClose={closeModal} message={modalMessage} />
@@ -317,7 +358,7 @@ export default function WishlistPage() {
 // ─── Sub-renderers ────────────────────────────────────────────────────────────
 
 function renderWishlistHeader({
-  isLoading, wl, selectedIds, isBulkRemoving, isBulkAddingToCart, handleRemoveSelected, handleAddSelectedToCart, clearSelection, handleRemoveAll,
+  isLoading, wl, selectedIds, isBulkRemoving, isBulkAddingToCart, handleRemoveSelected, handleAddSelectedToCart, clearSelection, handleRemoveAll, user, isSyncingAll, handleSyncAll,
 }: {
   isLoading: boolean;
   wl: ReturnType<typeof useWishlistWithGuest>;
@@ -328,6 +369,9 @@ function renderWishlistHeader({
   handleAddSelectedToCart: () => void;
   clearSelection: () => void;
   handleRemoveAll: () => void;
+  user: ReturnType<typeof useSession>["user"];
+  isSyncingAll: boolean;
+  handleSyncAll: () => void;
 }) {
   const busy = isBulkRemoving || isBulkAddingToCart;
   return (
@@ -348,6 +392,11 @@ function renderWishlistHeader({
               </Button>
               <Button variant="ghost" size="sm" onClick={clearSelection} disabled={busy}>Deselect</Button>
             </>
+          )}
+          {!isLoading && wl.total > 0 && selectedIds.size === 0 && user?.uid && (
+            <Button variant="outline" size="sm" onClick={handleSyncAll} disabled={isSyncingAll}>
+              {isSyncingAll ? "Syncing…" : "Sync all"}
+            </Button>
           )}
           {!isLoading && wl.total > 0 && selectedIds.size === 0 && (
             <Button variant="ghost" size="sm" onClick={handleRemoveAll} disabled={busy} className="text-error hover:opacity-80 hover:bg-error-surface">
@@ -377,7 +426,7 @@ function renderWishlistFilterContent({
     <Stack gap="md" className={`${__P.p4}`}>
       <Div>
         <Toggle
-          size="sm"
+          size="md"
           label="Hide sold out"
           checked={hideSoldOut}
           onChange={setHideSoldOut}
@@ -412,7 +461,7 @@ function renderWishlistFilterContent({
 }
 
 function renderWishlistItems({
-  isLoading, filteredItems, wl, search, activeFilterCount, user, selectedIds, handleToggleWishlist, toggleSelect, handleClear, setSearch,
+  isLoading, filteredItems, wl, search, activeFilterCount, user, selectedIds, handleToggleWishlist, toggleSelect, handleClear, setSearch, handleSyncItem, syncingIds,
 }: {
   isLoading: boolean;
   filteredItems: EnrichedWishlistItem[];
@@ -425,6 +474,8 @@ function renderWishlistItems({
   toggleSelect: (id: string, next: boolean) => void;
   handleClear: () => void;
   setSearch: (v: string) => void;
+  handleSyncItem: (productId: string) => Promise<void>;
+  syncingIds: Set<string>;
 }) {
   if (isLoading) {
     return (
@@ -451,29 +502,60 @@ function renderWishlistItems({
     <Div gap="4" className="fluid-grid-card">
       {filteredItems.map((item) => {
         const slug = item.product?.slug ?? item.productSlug ?? item.productId;
+        const href = pluginFor(item.product?.listingType ?? "standard").detailRoute(slug);
+        const isSyncing = syncingIds.has(item.productId);
         return (
-          <InteractiveProductCard
-            key={item.id}
-            href={pluginFor(item.product?.listingType ?? "standard").detailRoute(slug)}
-            isWishlisted
-            onToggleWishlist={user?.uid ? handleToggleWishlist : undefined}
-            // Always pass onSelect so the hover-fade checkbox is reachable;
-            // selectable flips to "always visible" once the user picks anything.
-            selectable={selectedIds.size > 0}
-            isSelected={selectedIds.has(item.productId)}
-            onSelect={toggleSelect}
-            product={{
-              id: item.productId,
-              title: item.product?.title ?? item.productTitle ?? "",
-              price: item.product?.price ?? item.productPrice ?? 0,
-              currency: item.product?.currency ?? "INR",
-              mainImage: item.product?.images?.[0] ?? item.productImage,
-              status: item.product?.status ?? ("published" as const),
-              featured: item.product?.isFeatured ?? false,
-              listingType: item.product?.listingType,
-              slug,
-            }}
-          />
+          <Stack key={item.id} gap="xs">
+            <InteractiveProductCard
+              href={href}
+              isWishlisted
+              onToggleWishlist={user?.uid ? handleToggleWishlist : undefined}
+              // Always pass onSelect so the hover-fade checkbox is reachable;
+              // selectable flips to "always visible" once the user picks anything.
+              selectable={selectedIds.size > 0}
+              isSelected={selectedIds.has(item.productId)}
+              onSelect={toggleSelect}
+              product={{
+                id: item.productId,
+                title: item.product?.title ?? item.productTitle ?? "",
+                price: item.product?.price ?? item.productPrice ?? 0,
+                currency: item.product?.currency ?? "INR",
+                mainImage: item.product?.images?.[0] ?? item.productImage,
+                status: item.product?.status ?? ("published" as const),
+                featured: item.product?.isFeatured ?? false,
+                listingType: item.product?.listingType,
+                slug,
+              }}
+            />
+            <Row gap="xs">
+              <TextLink href={href} variant="none" rounded="md" size="xs" weight="medium" className="flex-1 text-center border border-[var(--appkit-color-border)] px-[var(--appkit-space-2)] py-[var(--appkit-space-1)] hover:bg-[var(--appkit-color-surface-elevated)]">
+                View
+              </TextLink>
+              {user?.uid && (
+                <Button
+                  action={ACTIONS.PRODUCT["sync-wishlist-item"]}
+                  variant="outline"
+                  size="sm"
+                  textSize="xs"
+                  className="flex-1"
+                  isLoading={isSyncing}
+                  onClick={() => handleSyncItem(item.productId)}
+                >
+                  Sync
+                </Button>
+              )}
+              <Button
+                action={ACTIONS.PRODUCT["remove-from-wishlist"]}
+                variant="ghost"
+                size="sm"
+                textSize="xs"
+                className="flex-1 text-error hover:bg-error-surface"
+                onClick={user?.uid ? () => handleToggleWishlist(item.productId) : undefined}
+              >
+                Remove
+              </Button>
+            </Row>
+          </Stack>
         );
       })}
     </Div>

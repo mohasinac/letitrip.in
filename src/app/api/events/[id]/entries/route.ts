@@ -8,12 +8,15 @@ import {
   successResponse,
   userRepository,
 } from "@mohasinac/appkit";
-import { isSoftBanned } from "@mohasinac/appkit/server";
+import { applyRateLimit, isSoftBanned, RateLimitPresets } from "@mohasinac/appkit/server";
 
 const __POST__g = withProviders(
   createRouteHandler({
     authOptional: true,
     handler: async ({ user, request, params }) => {
+      const rl = await applyRateLimit(request, RateLimitPresets.GENEROUS);
+      if (!rl.success) return errorResponse("Too many requests", 429);
+
       if (user) {
         const userDoc = await userRepository.findById(user.uid);
         if (userDoc && isSoftBanned(userDoc, "join_events")) {
@@ -29,7 +32,7 @@ const __POST__g = withProviders(
       const safeUser = user
         ? { uid: user.uid, displayName: user.displayName, email: user.email ?? undefined }
         : undefined;
-      const result = await enterEvent(eventId, body, safeUser);
+      const result = await enterEvent(eventId, body, safeUser, request);
       return successResponse(result, "Entry submitted", 201);
     },
   }),

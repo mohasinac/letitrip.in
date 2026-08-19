@@ -50,9 +50,32 @@ export const POST = withProviders(
         );
       }
 
+      // "Sync all" — refresh the stored productSnapshot (title/thumb/price)
+      // for every surviving item against its live product doc, so the
+      // persisted snapshot never drifts from what's actually being shown.
+      const staleSet = new Set(staleProductIds);
+      const snapshotUpdates = items.reduce<
+        { productId: string; snapshot: { title: string; thumb?: string; currentPrice: number } }[]
+      >((acc, item, i) => {
+        if (staleSet.has(item.productId)) return acc;
+        const result = results[i];
+        if (result.status !== "fulfilled" || !result.value) return acc;
+        const product = result.value;
+        acc.push({
+          productId: item.productId,
+          snapshot: { title: product.title, thumb: product.images?.[0], currentPrice: product.price },
+        });
+        return acc;
+      }, []);
+
+      if (snapshotUpdates.length > 0) {
+        await wishlistRepository.syncSnapshots(uid, snapshotUpdates);
+      }
+
       return successResponse({
         removedCount: staleProductIds.length,
         removedProductIds: staleProductIds,
+        syncedCount: snapshotUpdates.length,
       });
     },
   }),

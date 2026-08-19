@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Div, Stack } from "@mohasinac/appkit/ui";
 import { ROUTES } from "@mohasinac/appkit";
-import { generateMetadata as _gm } from "@/constants";
+import { generateMetadata as _gm } from "@/constants/seo.server";
 import { EVENT_LABELS, EVENT_META, EVENT_TAB } from "./_constants";
 import { eventIsActive, metaDescriptionFromEvent, resolveEventCoverImage } from "./_helpers";
 import { getEventCached, getLeaderboardCached } from "./_data";
@@ -55,8 +55,10 @@ export default async function Layout({ children, params }: Props) {
   const isActive = eventIsActive(event);
 
   const isPoll = eventType === "poll";
+  const isSpinWheel = eventType === "spin_wheel";
   const showParticipateTab = !isPoll && isActive;
   const showLeaderboardTab = leaderboard.length > 0;
+  const showSpinResultsTab = isSpinWheel;
 
   const tabs: Array<{ value: string; label: string; href: string }> = [
     {
@@ -77,6 +79,13 @@ export default async function Layout({ children, params }: Props) {
       value: EVENT_TAB.LEADERBOARD,
       label: EVENT_LABELS.TAB_LEADERBOARD,
       href: String(ROUTES.PUBLIC.EVENT_LEADERBOARD(id)),
+    });
+  }
+  if (showSpinResultsTab) {
+    tabs.push({
+      value: EVENT_TAB.SPIN,
+      label: EVENT_LABELS.TAB_SPIN,
+      href: String(ROUTES.PUBLIC.EVENT_SPIN_RESULTS(id)),
     });
   }
 

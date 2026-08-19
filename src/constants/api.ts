@@ -12,7 +12,7 @@
  * of going through this shim.
  */
 
-import { API_ENDPOINTS } from "@mohasinac/appkit";
+import { API_ENDPOINTS } from "@mohasinac/appkit/constants";
 
 // letitrip-only admin features missing from appkit's ADMIN_ENDPOINTS.
 const ADMIN_LETITRIP = {
@@ -100,6 +100,7 @@ const USER_LETITRIP = {
   ORDER_BY_ID: API_ENDPOINTS.ACCOUNT.ORDER_BY_ID,
   WISHLIST: API_ENDPOINTS.ACCOUNT.WISHLIST,
   WISHLIST_ITEM: (productId: string) => `/api/user/wishlist/${productId}`,
+  WISHLIST_ITEM_SYNC: API_ENDPOINTS.ACCOUNT.WISHLIST_ITEM_SYNC,
   WISHLIST_VALIDATE: API_ENDPOINTS.ACCOUNT.WISHLIST_VALIDATE,
   NOTIFICATIONS: "/api/user/notifications",
   NOTIFICATION_BY_ID: (id: string) => `/api/user/notifications/${id}`,

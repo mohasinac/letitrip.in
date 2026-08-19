@@ -1,7 +1,7 @@
 // NOT "use client" — typed REST wrappers for user account routes.
 // Imported from "use client" components; audit-direct-fetch-ui ignores /lib/api/.
 
-import { API_ENDPOINTS } from "@mohasinac/appkit";
+import { API_ENDPOINTS } from "@mohasinac/appkit/client";
 
 import type { JsonBody } from "./types";
 
@@ -97,4 +97,8 @@ export function validateWishlist(url: string, body: JsonBody): Promise<Response>
     credentials: CREDS,
     body: JSON.stringify(body),
   });
+}
+
+export function syncWishlistItem(url: string): Promise<Response> {
+  return fetch(url, { method: "POST", credentials: CREDS });
 }

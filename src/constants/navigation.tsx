@@ -29,6 +29,7 @@ import {
   Package2,
   Gift,
   Palette,
+  Info,
 } from "lucide-react";
 import type {
   AdminNavGroup,
@@ -77,6 +78,7 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   { key: "blog",       href: String(ROUTES.PUBLIC.BLOG),          icon: <BookOpen     className={`${iconSm} ${navIcons.blog}`}       /> },
   { key: "reviews",    href: String(ROUTES.PUBLIC.REVIEWS),       icon: <Star         className={`${iconSm} ${navIcons.reviews}`}    /> },
   { key: "scams",      href: String(ROUTES.PUBLIC.SCAMS),         icon: <ShieldAlert  className={`${iconSm} ${CLS_SCAM_ICON}`}        /> },
+  { key: "about",      href: String(ROUTES.PUBLIC.ABOUT),         icon: <Info         className={`${iconSm} ${navIcons.about}`}      /> },
 ];
 
 // ---------------------------------------------------------------------------
@@ -117,6 +119,7 @@ export const FOOTER_LINK_GROUPS = [
       { label: "Contact Us",    href: String(ROUTES.PUBLIC.CONTACT)     },
       { label: "Track Order",   href: String(ROUTES.PUBLIC.TRACK_ORDER) },
       { label: "About Us",      href: String(ROUTES.PUBLIC.ABOUT)       },
+      { label: "Developer",     href: String(ROUTES.PUBLIC.DEVELOPER)   },
       { label: "Scam Registry", href: String(ROUTES.PUBLIC.SCAMS)       },
       { label: "Item Requests", href: String(ROUTES.PUBLIC.ITEM_REQUESTS) },
       { label: "Report a Problem", href: String(ROUTES.PUBLIC.REPORT_ENTITY) },

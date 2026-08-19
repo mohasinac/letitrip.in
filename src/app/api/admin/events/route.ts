@@ -141,6 +141,7 @@ const createEventSchema = z.object({
   spinMaxPerUser: z.number().min(0).optional(),
   spinWindowStart: z.string().datetime({ offset: true }).optional(),
   spinWindowEnd: z.string().datetime({ offset: true }).optional(),
+  allowGuestParticipation: z.boolean().optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -244,6 +245,7 @@ const __POST__g = withProviders(createRouteHandler({
       spinWindowEnd: body.spinWindowEnd
         ? new Date(body.spinWindowEnd)
         : undefined,
+      allowGuestParticipation: body.allowGuestParticipation,
       status: EVENT_FIELDS.STATUS_VALUES.DRAFT,
       createdBy: user.uid,
     });

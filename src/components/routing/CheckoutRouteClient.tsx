@@ -1,6 +1,6 @@
 "use client";
-import { normalizeError, checkEmiEligibility, computeEmiSchedule, computeCodHandlingFee, useSiteSettings, type JsonArray } from "@mohasinac/appkit";
-import type { JsonValue, EmiSettings, OutOfStockPolicy, CodHandlingFeeRates, WhatsAppNotifyFeeRates, GiftWrapFeeRates, ShipmentProtectionFeeRates } from "@mohasinac/appkit";
+import { normalizeError, checkEmiEligibility, computeEmiSchedule, computeCodHandlingFee, useSiteSettings, type JsonArray } from "@mohasinac/appkit/client";
+import type { JsonValue, EmiSettings, OutOfStockPolicy, CodHandlingFeeRates, WhatsAppNotifyFeeRates, GiftWrapFeeRates, ShipmentProtectionFeeRates } from "@mohasinac/appkit/client";
 
 import { useCallback, useState, useEffect, useMemo } from "react";
 import {
@@ -439,6 +439,8 @@ function renderPaymentStep({
   setGiftWrapMessage,
   shipmentProtectionAddon,
   setShipmentProtectionAddon,
+  manualPaymentConsent,
+  setManualPaymentConsent,
   handlePayOnline,
   handlePlaceCodOrder,
   handlePlaceCashOrder,
@@ -470,6 +472,8 @@ function renderPaymentStep({
   setGiftWrapMessage: (v: string) => void;
   shipmentProtectionAddon: boolean;
   setShipmentProtectionAddon: (v: boolean) => void;
+  manualPaymentConsent: boolean;
+  setManualPaymentConsent: (v: boolean) => void;
   handlePayOnline: () => Promise<void>;
   handlePlaceCodOrder: () => Promise<void>;
   handlePlaceCashOrder: () => Promise<void>;
@@ -550,14 +554,39 @@ function renderPaymentStep({
             />
           )}
           {showCashOption && (
-            <Button
-              type="button"
-              onClick={handlePlaceCashOrder}
-              disabled={isProcessingPayment || cartIsEmpty}
-              className={PRIMARY_BTN_CLS}
-            >
-              {isProcessingPayment ? "Placing order…" : "Pay via UPI / Cash"}
-            </Button>
+            <Stack gap="sm">
+              <Div border="default" padding="md" rounded="lg" surface="subtle">
+                <Text weight="semibold" size="sm" className="mb-2">
+                  {CK.MANUAL_PAYMENT_GUIDE_HEADING}
+                </Text>
+                <Stack gap="xs">
+                  <Text size="sm" color="muted">1. {CK.MANUAL_PAYMENT_GUIDE_STEP1}</Text>
+                  <Text size="sm" color="muted">2. {CK.MANUAL_PAYMENT_GUIDE_STEP2}</Text>
+                  <Text size="sm" color="muted">3. {CK.MANUAL_PAYMENT_GUIDE_STEP3}</Text>
+                  <Text size="sm" color="muted">{CK.MANUAL_PAYMENT_GUIDE_OOS}</Text>
+                  <Text size="sm" color="muted">
+                    {CK.MANUAL_PAYMENT_GUIDE_REFUND}{" "}
+                    <TextLink href={String(ROUTES.PUBLIC.REFUND_POLICY)} target="_blank" size="sm" variant="muted">
+                      {CK.MANUAL_PAYMENT_GUIDE_REFUND_LINK}
+                    </TextLink>
+                  </Text>
+                </Stack>
+              </Div>
+              <FieldCheckbox
+                name="manualPaymentConsent"
+                label={CK.MANUAL_PAYMENT_CONSENT_LABEL}
+                checked={manualPaymentConsent}
+                onChange={setManualPaymentConsent}
+              />
+              <Button
+                type="button"
+                onClick={handlePlaceCashOrder}
+                disabled={isProcessingPayment || cartIsEmpty || !manualPaymentConsent}
+                className={PRIMARY_BTN_CLS}
+              >
+                {isProcessingPayment ? "Placing order…" : "Pay via UPI / Cash"}
+              </Button>
+            </Stack>
           )}
           {showRazorpay && (
             <Button
@@ -1135,6 +1164,7 @@ export function CheckoutRouteClient({
   const [giftWrapAddon, setGiftWrapAddon] = useState(false);
   const [giftWrapMessage, setGiftWrapMessage] = useState("");
   const [shipmentProtectionAddon, setShipmentProtectionAddon] = useState(false);
+  const [manualPaymentConsent, setManualPaymentConsent] = useState(false);
   const addons: CheckoutAddonSelections = useMemo(
     () => ({
       whatsappNotifyAddon,
@@ -1361,7 +1391,7 @@ export function CheckoutRouteClient({
           return (
             <Stack gap="lg">
               {showCoupons && renderCouponSection({ couponCode, setCouponCode, couponError, isCouponLoading, effectiveCoupons, handleApplyCoupon, handleRemoveCoupon })}
-              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showRazorpay, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, whatsappNotifyAddon, setWhatsappNotifyAddon, giftWrapAddon, setGiftWrapAddon, giftWrapMessage, setGiftWrapMessage, shipmentProtectionAddon, setShipmentProtectionAddon, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
+              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showRazorpay, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, whatsappNotifyAddon, setWhatsappNotifyAddon, giftWrapAddon, setGiftWrapAddon, giftWrapMessage, setGiftWrapMessage, shipmentProtectionAddon, setShipmentProtectionAddon, manualPaymentConsent, setManualPaymentConsent, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
             </Stack>
           );
         }}
