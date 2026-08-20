@@ -19,7 +19,7 @@ import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
 import { getAdminModerationQueue, updateAdminModeration } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
-import type { ModerationQueueDocument } from "@mohasinac/appkit";
+import type { ModerationQueueDocument } from "@mohasinac/appkit/client";
 
 export default function Page() {
   const [items, setItems] = useState<ModerationQueueDocument[]>([]);

@@ -1,7 +1,7 @@
 // NOT "use client" — typed REST wrappers for payment routes.
 // Imported from "use client" components; audit-direct-fetch-ui ignores /lib/api/.
 
-import { API_ENDPOINTS } from "@mohasinac/appkit";
+import { API_ENDPOINTS } from "@mohasinac/appkit/client";
 
 const JSON_HEADERS = { "Content-Type": "application/json" } as const;
 const CREDS = "include" as const;

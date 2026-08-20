@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { LotteryListView } from "@mohasinac/appkit";
-import { generateMetadata as _gm } from "@/constants";
+import { generateMetadata as _gm } from "@/constants/seo.server";
 import { listLotteryEvents } from "@mohasinac/appkit/server";
 
 export const metadata: Metadata = _gm({

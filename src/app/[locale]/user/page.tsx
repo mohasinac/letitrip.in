@@ -1,5 +1,5 @@
 "use client";
-import { Row, Stack, normalizeError } from "@mohasinac/appkit";
+import { Row, Stack, normalizeError } from "@mohasinac/appkit/client";
 import { useRef, useState } from "react";
 import {
   UserAccountHubView,
@@ -18,7 +18,7 @@ import {
   Input,
   Span,
 } from "@mohasinac/appkit/client";
-import { useNotifications } from "@mohasinac/appkit";
+import { useNotifications } from "@mohasinac/appkit/client";
 import {
   ShoppingBag,
   Heart,

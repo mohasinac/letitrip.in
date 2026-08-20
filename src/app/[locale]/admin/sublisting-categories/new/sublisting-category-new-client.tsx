@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { AdminSublistingCategoryEditorView } from "@mohasinac/appkit";
+import { AdminSublistingCategoryEditorView } from "@mohasinac/appkit/client";
 import { ROUTES } from "@mohasinac/appkit/client";
 
 export function SublistingCategoryNewClient() {

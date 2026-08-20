@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { AdminBundleEditorView, ROUTES } from "@mohasinac/appkit";
+import { AdminBundleEditorView, ROUTES } from "@mohasinac/appkit/client";
 
 export function BundleNewClient() {
   const router = useRouter();

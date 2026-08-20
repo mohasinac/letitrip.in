@@ -3,7 +3,7 @@ import { faqJsonLd, normalizeError, siteSettingsRepository } from "@mohasinac/ap
 import type { FAQCategory, FAQCategoryItem } from "@mohasinac/appkit";
 import { listPublicFaqs } from "@mohasinac/appkit/server";
 import { getTranslations } from "next-intl/server";
-import { generateMetadata as _gm } from "@/constants";
+import { generateMetadata as _gm } from "@/constants/seo.server";
 import { FAQPageClient } from "@/components";
 
 export const metadata: Metadata = _gm({

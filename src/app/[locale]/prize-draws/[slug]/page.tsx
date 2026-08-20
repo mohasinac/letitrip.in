@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PrizeDrawDetailPageView, PrizeDrawLotteryDetailView } from "@mohasinac/appkit";
 import { getPrizeDrawForDetail, toClientLotteryConfig } from "@mohasinac/appkit/server";
-import { generateMetadata as _gm } from "@/constants";
+import { generateMetadata as _gm } from "@/constants/seo.server";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 import { notFound } from "next/navigation";
 

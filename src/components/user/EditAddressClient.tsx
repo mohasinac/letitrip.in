@@ -2,7 +2,7 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { AddressForm, useAddress, useUpdateAddress, useToast, ROUTES, Div } from "@mohasinac/appkit/client";
-import { Heading, Stack, Text } from "@mohasinac/appkit";
+import { Heading, Stack, Text } from "@mohasinac/appkit/client";
 interface Props {
   addressId: string;
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { FAQPageContent, ROUTES, useUrlTable } from "@mohasinac/appkit";
-import type { FAQCategory, FAQCategoryItem, FAQSortOption } from "@mohasinac/appkit";
+import { FAQPageContent, ROUTES, useUrlTable } from "@mohasinac/appkit/client";
+import type { FAQCategory, FAQCategoryItem, FAQSortOption } from "@mohasinac/appkit/client";
 import { FilterChipGroup } from "@mohasinac/appkit/ui";
 import { useRouter } from "@/i18n/navigation";
 

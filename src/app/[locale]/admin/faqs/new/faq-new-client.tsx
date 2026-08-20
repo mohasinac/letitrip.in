@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { AdminFaqEditorView, ROUTES } from "@mohasinac/appkit";
+import { AdminFaqEditorView, ROUTES } from "@mohasinac/appkit/client";
 
 export function FaqNewClient() {
   const router = useRouter();

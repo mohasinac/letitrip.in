@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { normalizeError } from "@mohasinac/appkit";
-import type { ImageCropData } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/client";
+import type { ImageCropData } from "@mohasinac/appkit/client";
 
 import { Link } from "@/i18n/navigation";
 import {
@@ -25,7 +25,7 @@ import {
   useCollapsedSections,
 } from "@mohasinac/appkit/client";
 import type { UseFormShellStateResult } from "@mohasinac/appkit/client";
-import { Heading, Row, Stack, Text } from "@mohasinac/appkit";
+import { Heading, Row, Stack, Text } from "@mohasinac/appkit/client";
 
 const __O = {
   hidden: "overflow-hidden",

@@ -17,7 +17,7 @@ import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
 import { getListingTemplates } from "@/lib/api/store-client";
 import { useEffect, useState } from "react";
-import type { ListingTemplateDocument } from "@mohasinac/appkit";
+import type { ListingTemplateDocument } from "@mohasinac/appkit/client";
 
 export default function Page() {
   const router = useRouter();

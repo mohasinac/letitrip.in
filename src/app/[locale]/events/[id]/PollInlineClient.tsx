@@ -1,6 +1,6 @@
 "use client";
-import { Stack, normalizeError } from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
+import { Stack, normalizeError } from "@mohasinac/appkit/client";
+import type { JsonValue } from "@mohasinac/appkit/client";
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useSession, useToast, ROUTES, Checkbox, RadioItem, Div, Button, Textarea, Text } from "@mohasinac/appkit/client";

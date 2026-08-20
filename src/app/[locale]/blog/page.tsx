@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { BlogIndexPageView } from "@mohasinac/appkit";
-import { generateMetadata as _gm } from "@/constants";
+import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const metadata: Metadata = _gm({
   title: "Collectibles Blog — LetItRip",

@@ -1,5 +1,5 @@
 "use client";
-import { Row, Stack, normalizeError } from "@mohasinac/appkit";
+import { Row, Stack, normalizeError } from "@mohasinac/appkit/client";
 import { useState, use } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
@@ -15,7 +15,7 @@ import {
   ACTIONS,
 } from "@mohasinac/appkit/client";
 import { cancelOrderAction } from "@/actions/order.actions";
-import { Heading, Span, Text } from "@mohasinac/appkit";
+import { Heading, Span, Text } from "@mohasinac/appkit/client";
 
 const __P = {
   p5: "p-[var(--appkit-space-5)]",

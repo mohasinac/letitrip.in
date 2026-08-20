@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "@/i18n/navigation"
 import { useParams } from "next/navigation";
-import { Div, ROUTES, Row, SellerCouponEditorView, Text } from "@mohasinac/appkit";
-import type { CouponEditorDraft } from "@mohasinac/appkit";
+import { Div, ROUTES, Row, SellerCouponEditorView, Text } from "@mohasinac/appkit/client";
+import type { CouponEditorDraft } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { getStoreCoupon, updateStoreCoupon } from "@/lib/api/store-client";
 

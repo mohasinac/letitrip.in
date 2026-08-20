@@ -1,6 +1,6 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/client";
+import type { JsonValue } from "@mohasinac/appkit/client";
 
 import {
   Container,

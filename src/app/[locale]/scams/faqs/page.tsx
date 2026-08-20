@@ -3,7 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { ShieldAlert } from "lucide-react";
 import { Breadcrumb, Container, Div, Heading, Main, ROUTES, Row, Section, Span, Stack, Text, faqJsonLd } from "@mohasinac/appkit";
 import { listPublicFaqs } from "@mohasinac/appkit/server";
-import { generateMetadata as _gm } from "@/constants";
+import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const metadata: Metadata = _gm({
   title: "Scam Awareness FAQs — LetItRip",

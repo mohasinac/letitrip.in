@@ -2,7 +2,7 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { AddressForm, useCreateAddress, useToast, ROUTES } from "@mohasinac/appkit/client";
-import { Heading, Stack } from "@mohasinac/appkit";
+import { Heading, Stack } from "@mohasinac/appkit/client";
 export function AddAddressClient() {
   const router = useRouter();
   const { showToast } = useToast();

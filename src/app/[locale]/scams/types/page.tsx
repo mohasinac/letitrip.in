@@ -32,7 +32,7 @@ import {
   faqJsonLd,
 } from "@mohasinac/appkit";
 import type { ScamCategory } from "@mohasinac/appkit";
-import { generateMetadata as _gm } from "@/constants";
+import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const metadata: Metadata = _gm({
   title: "Scam Types — LetItRip Scam Registry",

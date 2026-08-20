@@ -13,9 +13,9 @@ import {
   Text,
   Ul,
   Li,
-} from "@mohasinac/appkit";
-import type { BecomeSellerResult } from "@mohasinac/appkit";
-import { isAdminUser, isSellerUser } from "@mohasinac/appkit";
+} from "@mohasinac/appkit/client";
+import type { BecomeSellerResult } from "@mohasinac/appkit/client";
+import { isAdminUser, isSellerUser } from "@mohasinac/appkit/client";
 
 type ViewState = "guide" | "success" | "already-seller";
 

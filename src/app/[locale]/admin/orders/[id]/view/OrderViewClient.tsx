@@ -7,7 +7,7 @@
 // page, we keep it permanently `open` here instead of forking a bespoke
 // layout — the drawer becomes the page's content, and `onClose` navigates
 // back to the Orders list instead of just toggling local state.
-import { AdminOrderEditorView } from "@mohasinac/appkit";
+import { AdminOrderEditorView } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { ROUTES } from "@mohasinac/appkit/client";
 

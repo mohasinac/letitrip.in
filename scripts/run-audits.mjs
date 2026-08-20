@@ -33,6 +33,7 @@ const AUDITS = [
   { name: "appkit", kind: "npm-prefix", prefix: "./appkit", script: "check:audits" },
 
   // root-side
+  { name: "client-server-only-leak",         script: "scripts/audit-client-server-only-leak.mjs" },
   { name: "a11y",                            script: "scripts/audit-a11y.mjs" },
   { name: "color-pair-function",             script: "scripts/audit-color-pair-function.mjs" },
   { name: "ssr-in-appkit",                   script: "scripts/audit-ssr-in-appkit.mjs" },

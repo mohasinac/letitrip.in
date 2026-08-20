@@ -1,5 +1,5 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/client";
 import { useSearchParams } from "next/navigation";
 import { ResetPasswordView, useResetPassword, useToast } from "@mohasinac/appkit/client";
 

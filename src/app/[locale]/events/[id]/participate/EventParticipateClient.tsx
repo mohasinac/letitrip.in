@@ -1,12 +1,12 @@
 "use client";
-import { Stack, normalizeError } from "@mohasinac/appkit";
-import type { FirestoreDocument, FirestoreValue } from "@mohasinac/appkit";
+import { Stack, normalizeError } from "@mohasinac/appkit/client";
+import type { FirestoreDocument, FirestoreValue } from "@mohasinac/appkit/client";
 import { useState, useCallback } from "react";
 import { Link } from "@/i18n/navigation";
 import { Button, Checkbox, Div, Heading, Input, RadioGroup, RichText, Row, Select, Span, Text, Textarea } from "@mohasinac/appkit/ui";
 import { Label } from "@mohasinac/appkit/client";
 import { EventParticipateView, useSession, useToast, ROUTES } from "@mohasinac/appkit/client";
-import { SpinWheelView, EventRaffleEntryForm } from "@mohasinac/appkit";
+import { SpinWheelView, EventRaffleEntryForm } from "@mohasinac/appkit/client";
 import { LotteryPullForm } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { spinEventWheel, submitEventEntry } from "@/lib/api/events-client";

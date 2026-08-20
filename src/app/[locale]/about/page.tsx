@@ -4,7 +4,7 @@ import { AboutView } from "@mohasinac/appkit";
 import type { AboutContentDocument } from "@mohasinac/appkit";
 import { siteSettingsRepository } from "@mohasinac/appkit";
 import { getTranslations } from "next-intl/server";
-import { generateMetadata as _gm } from "@/constants";
+import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const revalidate = 3600;
 

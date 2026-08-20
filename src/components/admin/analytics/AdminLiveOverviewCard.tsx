@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { ref, onValue, type DataSnapshot } from "firebase/database";
 import { realtimeDb } from "@/lib/firebase/config";
-import { Div, Heading, Row, Span, Stack, Text } from "@mohasinac/appkit";
+import { Div, Heading, Row, Span, Stack, Text } from "@mohasinac/appkit/client";
 
 interface PresenceEntry {
   page: string;

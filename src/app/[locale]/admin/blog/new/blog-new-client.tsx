@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { AdminBlogEditorView, ROUTES } from "@mohasinac/appkit";
+import { AdminBlogEditorView, ROUTES } from "@mohasinac/appkit/client";
 
 export function BlogNewClient() {
   const router = useRouter();

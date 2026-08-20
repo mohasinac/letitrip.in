@@ -39,7 +39,7 @@ import { successResponse } from "@mohasinac/appkit";
 import { ValidationError, NotFoundError } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
-import { sendOrderConfirmationEmail } from "@mohasinac/appkit";
+import { sendOrderConfirmationEmail } from "@mohasinac/appkit/server";
 import { OrderStatusValues, PaymentStatusValues, PaymentMethodValues } from "@mohasinac/appkit";
 import { getDefaultCurrency } from "@mohasinac/appkit";
 

@@ -25,16 +25,13 @@ export * from "./config";
 export {
   SEO_CONFIG,
 } from "./seo";
-export {
-  generateMetadata,
-  generateProductMetadata,
-  generateCategoryMetadata,
-  generateBlogMetadata,
-  generateAuctionMetadata,
-  generateProfileMetadata,
-  generateSearchMetadata,
-} from "./seo.server";
-export type { ProductSeoInput, CategorySeoInput, BlogSeoInput, AuctionSeoInput } from "./seo.server";
+// seo.server.ts (generateMetadata + friends) is deliberately NOT re-exported
+// here — it's a server-only module (imports @mohasinac/appkit/server, which
+// transitively reaches contact/email.tsx's "server-only" guard). Re-exporting
+// it from this general barrel made it reachable from every "use client" file
+// that imports anything else from "@/constants", breaking the webpack
+// production build (2026-08-20). Import directly from "@/constants/seo.server"
+// instead — see CLAUDE.md Root Cause #18.
 
 // Navigation constants
 export {

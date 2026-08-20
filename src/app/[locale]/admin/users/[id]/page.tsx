@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Code, Container, Divider, Heading, Row, Section, Span, Stack, Tabs, TabsList, TabsTrigger, Text } from "@mohasinac/appkit/client";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { getAdminUser } from "@/lib/api/admin-client";

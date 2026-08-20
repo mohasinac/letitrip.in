@@ -1,5 +1,5 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/client";
 
 import { useCallback, useState } from "react";
 import { z } from "zod";

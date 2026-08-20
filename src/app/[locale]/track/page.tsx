@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { generateMetadata as _gm } from "@/constants";
+import { generateMetadata as _gm } from "@/constants/seo.server";
 import { TrackOrderView } from "@mohasinac/appkit";
 
 export const revalidate = 3600;

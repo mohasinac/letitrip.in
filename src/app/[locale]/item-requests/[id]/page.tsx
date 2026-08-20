@@ -16,7 +16,7 @@ import {
 import { useParams } from "next/navigation";
 import { getItemRequest, replyToItemRequest } from "@/lib/api/items-client";
 import { useEffect, useState } from "react";
-import type { ItemRequestDocument } from "@mohasinac/appkit";
+import type { ItemRequestDocument } from "@mohasinac/appkit/client";
 
 export default function Page() {
   const params = useParams<{ id: string }>();

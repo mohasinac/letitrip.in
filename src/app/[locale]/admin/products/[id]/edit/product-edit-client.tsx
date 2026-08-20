@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { AdminProductEditorView, ROUTES } from "@mohasinac/appkit";
+import { AdminProductEditorView, ROUTES } from "@mohasinac/appkit/client";
 
 export function ProductEditClient({ id }: { id: string }) {
   const router = useRouter();

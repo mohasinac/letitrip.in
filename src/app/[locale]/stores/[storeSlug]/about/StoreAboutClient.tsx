@@ -1,7 +1,7 @@
 "use client";
 import { StoreAboutView, type StoreDetail } from "@mohasinac/appkit/client";
 import { Div, Text } from "@mohasinac/appkit/client";
-import { Row, TextLink } from "@mohasinac/appkit";
+import { Row, TextLink } from "@mohasinac/appkit/client";
 
 export function StoreAboutClient({ store }: { store: StoreDetail }) {
   return (

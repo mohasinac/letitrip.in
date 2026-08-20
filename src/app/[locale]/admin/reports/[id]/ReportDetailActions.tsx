@@ -6,7 +6,7 @@
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Button, Modal, Row, Stack, Textarea, useToast, normalizeError } from "@mohasinac/appkit/client";
-import type { ReportDocument } from "@mohasinac/appkit";
+import type { ReportDocument } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { updateAdminReport } from "@/lib/api/admin-client";
 

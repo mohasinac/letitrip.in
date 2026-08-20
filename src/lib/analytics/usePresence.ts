@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/client";
 import { usePathname } from "@/i18n/navigation";
 import {
   ref,

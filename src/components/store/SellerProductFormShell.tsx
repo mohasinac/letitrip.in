@@ -4,11 +4,11 @@ import {
   SellerEditProductView,
   CategoryInlineSelect,
   BrandInlineSelect,
-} from "@mohasinac/appkit";
+} from "@mohasinac/appkit/client";
 import type {
   SellerCreateProductViewProps,
   SellerEditProductViewProps,
-} from "@mohasinac/appkit";
+} from "@mohasinac/appkit/client";
 
 const renderCategorySelector = ({
   value,

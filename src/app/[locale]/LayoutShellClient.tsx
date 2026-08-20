@@ -1,5 +1,5 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/client";
 
 import type { ReactNode } from "react";
 import { useMemo, useCallback, useState } from "react";
@@ -32,12 +32,12 @@ import {
 import { AdRuntimeInitializer } from "@/components";
 import { FooterNewsletterSlot } from "@/components";
 import { usePresence } from "@/lib/analytics/usePresence";
-import { MAIN_NAV_ITEMS, SIDEBAR_SUPPORT_LINKS, FOOTER_LINK_GROUPS } from "@/constants";
-import { BRAND, getBrandCopyright } from "@/constants";
-import { FOOTER_TRUST_BAR_ITEMS, FOOTER_SOCIAL_LINKS, FOOTER_BOTTOM_LINKS } from "@/constants";
-import { SEARCH_LABELS } from "@/constants";
+import { MAIN_NAV_ITEMS, SIDEBAR_SUPPORT_LINKS, FOOTER_LINK_GROUPS } from "@/constants/navigation";
+import { BRAND, getBrandCopyright } from "@/constants/brand";
+import { FOOTER_TRUST_BAR_ITEMS, FOOTER_SOCIAL_LINKS, FOOTER_BOTTOM_LINKS } from "@/constants/footer";
+import { SEARCH_LABELS } from "@/constants/search";
 
-import { Row } from "@mohasinac/appkit";
+import { Row } from "@mohasinac/appkit/client";
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 /** Map session user to the shape expected by AppLayoutShell. */

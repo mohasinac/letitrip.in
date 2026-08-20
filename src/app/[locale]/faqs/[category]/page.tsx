@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { normalizeError, siteSettingsRepository } from "@mohasinac/appkit";
 import type { FAQCategory, FAQCategoryItem } from "@mohasinac/appkit";
 import { getTranslations } from "next-intl/server";
-import { generateMetadata as _gm } from "@/constants";
+import { generateMetadata as _gm } from "@/constants/seo.server";
 import { FAQPageClient } from "@/components";
 
 export const revalidate = 3600;

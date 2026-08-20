@@ -15,7 +15,7 @@ import {
 import { API_ROUTES } from "@/constants";
 import { getAdminNotifications, markAdminNotificationRead } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
-import type { AdminNotificationDocument } from "@mohasinac/appkit";
+import type { AdminNotificationDocument } from "@mohasinac/appkit/client";
 
 export default function Page() {
   const [items, setItems] = useState<AdminNotificationDocument[]>([]);

@@ -24,7 +24,7 @@ import { getUserFromRequest } from "@/lib/firebase/auth-server";
 import { siteSettingsUpdateSchema } from "@/validation/request-schemas";
 
 import { serverLogger } from "@mohasinac/appkit";
-import { sendSiteSettingsChangedEmail } from "@mohasinac/appkit";
+import { sendSiteSettingsChangedEmail } from "@mohasinac/appkit/server";
 import {
   ROLES_ADMIN_ONLY,
   SCHEMA_DEFAULTS,

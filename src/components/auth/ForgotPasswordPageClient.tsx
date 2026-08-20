@@ -1,5 +1,5 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/client";
 import { ForgotPasswordView, useForgotPassword, useToast } from "@mohasinac/appkit/client";
 
 export function ForgotPasswordPageClient() {

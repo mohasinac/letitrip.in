@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { AdminCategoryEditorView, ROUTES } from "@mohasinac/appkit";
+import { AdminCategoryEditorView, ROUTES } from "@mohasinac/appkit/client";
 
 export function CategoryNewClient() {
   const router = useRouter();

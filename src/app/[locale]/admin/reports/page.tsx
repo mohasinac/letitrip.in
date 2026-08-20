@@ -18,7 +18,7 @@ import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
 import { getAdminReports, updateAdminReport } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
-import type { ReportDocument } from "@mohasinac/appkit";
+import type { ReportDocument } from "@mohasinac/appkit/client";
 
 export default function Page() {
   const [items, setItems] = useState<ReportDocument[]>([]);

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { SellerReviewsView } from "@mohasinac/appkit/client";
-import { Heading, Stack, Text, Row, Div } from "@mohasinac/appkit";
+import { Heading, Stack, Text, Row, Div } from "@mohasinac/appkit/client";
 import { Button } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { getUserReviewsByRole } from "@/lib/api/user-client";

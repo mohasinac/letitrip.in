@@ -3,7 +3,7 @@
 import React, { useTransition } from "react";
 import { Button, Stack, Text } from "@mohasinac/appkit/client";
 import { addToCartAction } from "@/actions";
-import type { ProductDocument } from "@mohasinac/appkit";
+import type { ProductDocument } from "@mohasinac/appkit/client";
 
 interface LiveItemActionsClientProps {
   product: ProductDocument;

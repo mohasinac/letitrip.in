@@ -5,7 +5,7 @@
  * rule stays strict-zero (the audit only flags "use client" components).
  */
 
-import { API_ENDPOINTS } from "@mohasinac/appkit";
+import { API_ENDPOINTS } from "@mohasinac/appkit/client";
 
 const JSON_HEADERS = { "Content-Type": "application/json" } as const;
 const CREDS = "include" as const;

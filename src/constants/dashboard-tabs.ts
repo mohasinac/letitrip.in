@@ -22,7 +22,7 @@ export interface DashboardTab {
 export {
   SELLER_LISTING_TABS as STORE_LISTINGS_TABS,
   type SellerListingTabId as StoreListingsTabId,
-} from "@mohasinac/appkit";
+} from "@mohasinac/appkit/constants";
 
 export const STORE_ORDERS_TABS = [
   { id: "all", label: "All" },
@@ -183,4 +183,4 @@ export {
   SELLER_ORDER_STATUS_TABS,
   SELLER_OFFER_STATUS_TABS,
   SELLER_BID_STATUS_TABS,
-} from "@mohasinac/appkit";
+} from "@mohasinac/appkit/constants";

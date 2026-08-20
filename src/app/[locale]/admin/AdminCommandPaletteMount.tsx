@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CommandPalette, useCommandPaletteHotkey, type CommandPaletteGroup } from "@mohasinac/appkit";
+import { CommandPalette, useCommandPaletteHotkey, type CommandPaletteGroup } from "@mohasinac/appkit/client";
 
 /**
  * Quick-jump (⌘K / Ctrl+K) over the admin nav — 65 items across 10 groups

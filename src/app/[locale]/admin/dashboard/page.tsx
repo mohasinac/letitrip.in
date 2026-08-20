@@ -1,7 +1,7 @@
 "use client";
-import { Row, Stack, normalizeError, DASHBOARD_QUICK_ACTIONS, DASHBOARD_QUICK_ACTION_META, type DashboardQuickActionId } from "@mohasinac/appkit";
+import { Row, Stack, normalizeError, DASHBOARD_QUICK_ACTIONS, DASHBOARD_QUICK_ACTION_META, type DashboardQuickActionId } from "@mohasinac/appkit/client";
 import { AdminDashboardView, ROUTES, Span, Text, Div, Grid, Toggle, useToast, DynamicBgDiv, useFeatureFlags, CollapsibleSection, useCollapsedSections } from "@mohasinac/appkit/client";
-import { ADMIN_CHECKOUT_BYPASS_FLAG_KEY } from "@mohasinac/appkit";
+import { ADMIN_CHECKOUT_BYPASS_FLAG_KEY } from "@mohasinac/appkit/client";
 import {
   Plus, UserPlus, Store, Tag, Calendar, FileText, Settings,
   ShoppingBag, Banknote, BarChart, LifeBuoy, ShieldAlert, BookOpen,

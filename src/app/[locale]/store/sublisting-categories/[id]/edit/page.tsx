@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 
 import { useRouter } from "@/i18n/navigation"
 import { useParams } from "next/navigation";
-import { Heading, ROUTES, Row, Text } from "@mohasinac/appkit";
+import { Heading, ROUTES, Row, Text } from "@mohasinac/appkit/client";
 import { Div, Button, Form, Label, Input, Textarea, useApiMutation, apiClient } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 

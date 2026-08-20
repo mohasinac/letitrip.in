@@ -5,7 +5,7 @@
 // (no headless mode), so — matching the same reuse call as the Orders full
 // page — it stays permanently `open` here and `onClose` navigates back to
 // the Scammers list instead of toggling local drawer state.
-import { AdminScammerEditorView } from "@mohasinac/appkit";
+import { AdminScammerEditorView } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { ROUTES } from "@mohasinac/appkit/client";
 

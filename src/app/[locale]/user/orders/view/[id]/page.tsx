@@ -26,7 +26,7 @@ import {
   PrizeRevealModal,
   normalizeError,
   type BundleOrderGroup,
-} from "@mohasinac/appkit";
+} from "@mohasinac/appkit/client";
 import { getOrderDigitalCode } from "@/lib/api/user-client";
 import { raiseOrderDispute } from "@/lib/api/payment-client";
 import { API_ROUTES } from "@/constants";

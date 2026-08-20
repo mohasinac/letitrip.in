@@ -65,4 +65,4 @@ export {
   OAUTH_STATE_VALUES,
   // Defaults
   SCHEMA_DEFAULTS,
-} from "@mohasinac/appkit";
+} from "@mohasinac/appkit/constants";

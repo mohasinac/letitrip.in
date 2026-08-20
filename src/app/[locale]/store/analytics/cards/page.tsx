@@ -16,7 +16,7 @@ import {
 import { API_ROUTES } from "@/constants";
 import { getAnalyticsCards, updateAnalyticsCard } from "@/lib/api/store-client";
 import { useEffect, useState } from "react";
-import type { AnalyticsCardDocument } from "@mohasinac/appkit";
+import type { AnalyticsCardDocument } from "@mohasinac/appkit/client";
 
 export default function Page() {
   const { showToast } = useToast();

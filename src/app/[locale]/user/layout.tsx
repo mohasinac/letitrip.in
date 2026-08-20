@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { RoleGuard } from "@mohasinac/appkit/client";
 import { getFlag } from "@/lib/features";
 import { UserLayoutClient } from "./UserLayoutClient";
@@ -9,7 +9,9 @@ export default function UserLayout({ children }: { children: ReactNode }) {
   const chatOn = getFlag("CHAT");
   return (
     <RoleGuard>
-      <UserLayoutClient flags={{ eventsOn, auctionsOn, chatOn }}>{children}</UserLayoutClient>
+      <UserLayoutClient flags={{ eventsOn, auctionsOn, chatOn }}>
+        <Suspense>{children}</Suspense>
+      </UserLayoutClient>
     </RoleGuard>
   );
 }

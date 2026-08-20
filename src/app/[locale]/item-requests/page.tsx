@@ -15,7 +15,7 @@ import {
 import { useRouter } from "@/i18n/navigation";
 import { getItemRequests } from "@/lib/api/items-client";
 import { useEffect, useState } from "react";
-import type { ItemRequestDocument } from "@mohasinac/appkit";
+import type { ItemRequestDocument } from "@mohasinac/appkit/client";
 
 export default function Page() {
   const router = useRouter();

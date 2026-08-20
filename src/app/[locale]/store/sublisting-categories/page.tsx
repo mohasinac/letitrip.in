@@ -24,7 +24,7 @@ import { useUrlTable } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { getSublistingCategories, deleteSublistingCategory } from "@/lib/api/store-client";
 
-import { Stack, normalizeError } from "@mohasinac/appkit";
+import { Stack, normalizeError } from "@mohasinac/appkit/client";
 interface CategoryRow {
   id: string;
   name: string;

@@ -1,11 +1,11 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/client";
 
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { useSession, ROUTES, SCAM_TYPES, SCAM_PLATFORM_LABELS, Checkbox, Div, Button, Form, Label, Input, Textarea, Select, useApiMutation, apiClient, type FirestoreDocument } from "@mohasinac/appkit/client";
-import { Alert, Stack, Heading, Text, Row, Card, CardBody, Main, Ul, Li } from "@mohasinac/appkit";
+import { Alert, Stack, Heading, Text, Row, Card, CardBody, Main, Ul, Li } from "@mohasinac/appkit/client";
 import { ChevronLeft, Loader2, Plus, X } from "lucide-react";
 import { API_ROUTES } from "@/constants";
 

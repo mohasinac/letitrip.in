@@ -5,7 +5,7 @@
 // internally (no headless mode) — same reuse call as Orders/Scammers: stays
 // permanently `open` here, and `onClose` navigates back to the ticket list
 // instead of toggling local drawer state.
-import { AdminSupportTicketDetailView } from "@mohasinac/appkit";
+import { AdminSupportTicketDetailView } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { ROUTES } from "@mohasinac/appkit/client";
 

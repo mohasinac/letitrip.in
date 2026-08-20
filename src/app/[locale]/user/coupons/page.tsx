@@ -1,5 +1,5 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/client";
 
 /**
  * /user/coupons — Claimed-coupons wallet (plan §10).
@@ -25,7 +25,7 @@ import {
   Text,
 } from "@mohasinac/appkit/client";
 import { useToast } from "@mohasinac/appkit/client";
-import type { ClaimedCouponDocument } from "@mohasinac/appkit";
+import type { ClaimedCouponDocument } from "@mohasinac/appkit/client";
 import { getUserCoupons, deleteUserCoupon } from "@/lib/api/user-client";
 import { API_ROUTES } from "@/constants";
 

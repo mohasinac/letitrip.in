@@ -1,6 +1,6 @@
 import { PublicProfileView, getPublicUserProfile } from "@mohasinac/appkit";
 import type { Metadata } from "next";
-import { generateProfileMetadata } from "@/constants";
+import { generateProfileMetadata } from "@/constants/seo.server";
 
 export const revalidate = 120;
 

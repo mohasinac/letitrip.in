@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
-import { Heading, Stack, Text, Badge } from "@mohasinac/appkit";
+import { Heading, Stack, Text, Badge } from "@mohasinac/appkit/client";
 import {
   AddressCard,
   useAddresses,

@@ -12,7 +12,7 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { successResponse, errorResponse } from "@mohasinac/appkit";
 import { sendVerificationSchema } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
-import { sendVerificationEmailWithLink } from "@mohasinac/appkit";
+import { sendVerificationEmailWithLink } from "@mohasinac/appkit/server";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { AdminCouponEditorView, ROUTES } from "@mohasinac/appkit";
+import { AdminCouponEditorView, ROUTES } from "@mohasinac/appkit/client";
 
 export function CouponNewClient() {
   const router = useRouter();

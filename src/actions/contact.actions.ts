@@ -11,7 +11,7 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 
 import { z } from "zod";
 import { headers } from "next/headers";
-import { sendContactEmail } from "@mohasinac/appkit";
+import { sendContactEmail } from "@mohasinac/appkit/server";
 import {
   rateLimitByIdentifier,
   RateLimitPresets,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { SellerCouponsView, ROUTES } from "@mohasinac/appkit";
+import { SellerCouponsView, ROUTES } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { updateStoreCoupon, deleteStoreCoupon } from "@/lib/api/store-client";
 

@@ -5,7 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { Heading, Main, MediaImage, Nav, ROUTES, Row, Span, Stack, Text, categoriesRepository, isAuctionListing, isPreOrderListing, normalizeListingType, pluginFor, formatCurrency } from "@mohasinac/appkit";
 import type { ListingType } from "@mohasinac/appkit";
 import { Div } from "@mohasinac/appkit/client";
-import { generateMetadata as _gm } from "@/constants";
+import { generateMetadata as _gm } from "@/constants/seo.server";
 
 
 const __O = {

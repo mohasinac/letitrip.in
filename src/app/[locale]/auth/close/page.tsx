@@ -1,5 +1,5 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/client";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button, Row, Stack, Text } from "@mohasinac/appkit/ui";

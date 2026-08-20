@@ -1,6 +1,6 @@
 "use client";
 
-import type { JsonValue } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/client";
 import {
   Container,
   Stack,

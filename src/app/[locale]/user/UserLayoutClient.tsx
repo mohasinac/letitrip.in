@@ -2,7 +2,7 @@
 
 import { Suspense, useMemo, type ReactNode } from "react";
 import { DashboardLayoutClient, useSession } from "@mohasinac/appkit/client";
-import { isAdminUser, isSellerUser } from "@mohasinac/appkit";
+import { isAdminUser, isSellerUser } from "@mohasinac/appkit/client";
 import { getUserNavGroups, ROUTES } from "@/constants";
 import type { UserNavGroup } from "@mohasinac/appkit/client";
 

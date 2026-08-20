@@ -8,7 +8,7 @@ import {
   AfterReviewsAdSlot,
   AfterFAQAdSlot,
 } from "@/components";
-import { generateMetadata as _gm } from "@/constants";
+import { generateMetadata as _gm } from "@/constants/seo.server";
 import { dismissBannerAction } from "@/actions/profile.actions";
 
 export const metadata: Metadata = _gm({

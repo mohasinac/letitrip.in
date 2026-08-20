@@ -31,7 +31,7 @@ import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 import { callFirebaseIdentityToolkit } from "@mohasinac/appkit/server";
 import { z } from "zod";
 import { serverLogger } from "@mohasinac/appkit";
-import { sendVerificationEmailWithLink } from "@mohasinac/appkit";
+import { sendVerificationEmailWithLink } from "@mohasinac/appkit/server";
 
 const registerSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { BugHunterLeaderboardView, normalizeError, ROUTES } from "@mohasinac/appkit";
 import { getBugHunterLeaderboard } from "@mohasinac/appkit/server";
 import { Container, Heading, Section, Text } from "@mohasinac/appkit/ui";
-import { generateMetadata as _gm } from "@/constants";
+import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const revalidate = 0;
 

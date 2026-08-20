@@ -6,7 +6,7 @@
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Button, Row, useToast, ACTIONS, normalizeError } from "@mohasinac/appkit/client";
-import type { ItemRequestDocument } from "@mohasinac/appkit";
+import type { ItemRequestDocument } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { updateAdminItemRequest } from "@/lib/api/admin-client";
 

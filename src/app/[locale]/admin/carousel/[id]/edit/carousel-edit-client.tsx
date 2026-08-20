@@ -1,6 +1,6 @@
 "use client";
 
-import { AdminCarouselEditorView, ROUTES } from "@mohasinac/appkit";
+import { AdminCarouselEditorView, ROUTES } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 
 export function CarouselEditClient({ id }: { id: string }) {

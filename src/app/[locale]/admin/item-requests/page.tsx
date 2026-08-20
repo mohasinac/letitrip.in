@@ -17,7 +17,7 @@ import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
 import { getAdminItemRequests, updateAdminItemRequest } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
-import type { ItemRequestDocument } from "@mohasinac/appkit";
+import type { ItemRequestDocument } from "@mohasinac/appkit/client";
 
 export default function Page() {
   const [items, setItems] = useState<ItemRequestDocument[]>([]);

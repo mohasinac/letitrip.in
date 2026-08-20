@@ -4,7 +4,7 @@ import { AdminAnalyticsView, AdminPageViewsReportView, Label, Input } from "@moh
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@mohasinac/appkit/ui";
 import { AdminLiveOverviewCard } from "./analytics/AdminLiveOverviewCard";
 
-import { Row } from "@mohasinac/appkit";
+import { Row } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 function today() {
   // eslint-disable-next-line lir/no-raw-date

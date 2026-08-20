@@ -415,6 +415,10 @@ const checks = [
   //    concatenated with a dynamic segment instead of a parametrized *_DETAIL route
   //    (the admin dashboard "Recent Orders" 404, 2026-08-19) ─
   { label: "audit-route-nav-field-constants", cmd: "node", args: ["scripts/audit-route-nav-field-constants.mjs"], cwd: ROOT },
+  // ── A "use client" file whose import graph transitively reaches "server-only"
+  //    (directly, or via the bare "@mohasinac/appkit" package) — the exact bug
+  //    class that broke the webpack production build, 2026-08-20 ─
+  { label: "audit-client-server-only-leak", cmd: "node", args: ["scripts/audit-client-server-only-leak.mjs"], cwd: ROOT },
 ];
 
 // Baseline violation counts — strict-zero. All three audits verified clean ✓

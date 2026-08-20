@@ -17,7 +17,7 @@ import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
 import { getAdminRoles } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
-import type { CustomRoleDocument } from "@mohasinac/appkit";
+import type { CustomRoleDocument } from "@mohasinac/appkit/client";
 
 export default function Page() {
   const router = useRouter();

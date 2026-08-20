@@ -12,7 +12,7 @@ import {
   useCollapsedSections,
   formatCurrency,
 } from "@mohasinac/appkit/client";
-import { Row, apiClient } from "@mohasinac/appkit";
+import { Row, apiClient } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
 

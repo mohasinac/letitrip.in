@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { AuctionBidsTable, Div, Heading, ROUTES, Span, Stack, Text, sortBy, useSession, useUrlTable } from "@mohasinac/appkit/client";
 import { FieldSelect, ListingToolbar } from "@mohasinac/appkit/ui";
-import type { BidDocument } from "@mohasinac/appkit";
+import type { BidDocument } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
 import { getUserBids } from "@/lib/api/user-client";
 import { API_ROUTES } from "@/constants";
