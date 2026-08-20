@@ -6,6 +6,7 @@ import {
   Plus, UserPlus, Store, Tag, Calendar, FileText, Settings,
   ShoppingBag, Banknote, BarChart, LifeBuoy, ShieldAlert, BookOpen,
   Users, Star, HelpCircle, Layout, Layers,
+  AlertTriangle, Package2, Gift, ClipboardCheck,
   type LucideIcon,
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -54,6 +55,7 @@ const ADMIN_QUICK_ACTION_ICONS: Record<string, LucideIcon> = {
   Plus, UserPlus, Store, Tag, Calendar, FileText, Settings,
   ShoppingBag, Banknote, BarChart, LifeBuoy, ShieldAlert, BookOpen,
   Users, Star, HelpCircle, Layout, Layers,
+  AlertTriangle, Package2, Gift, ClipboardCheck,
 };
 const ADMIN_QUICK_ACTION_HREFS: Partial<Record<DashboardQuickActionId, string>> = {
   "dqa-admin-add-product": String(ROUTES.ADMIN.PRODUCTS_NEW),
@@ -76,6 +78,11 @@ const ADMIN_QUICK_ACTION_HREFS: Partial<Record<DashboardQuickActionId, string>> 
   "dqa-admin-faqs": String(ROUTES.ADMIN.FAQS),
   "dqa-admin-carousel": String(ROUTES.ADMIN.CAROUSEL),
   "dqa-admin-sections": String(ROUTES.ADMIN.SECTIONS),
+  "dqa-admin-blog": String(ROUTES.ADMIN.BLOG),
+  "dqa-admin-scammers": String(ROUTES.ADMIN.SCAMMERS),
+  "dqa-admin-bundles": String(ROUTES.ADMIN.BUNDLES),
+  "dqa-admin-prize-draws": String(ROUTES.ADMIN.PRIZE_DRAWS),
+  "dqa-admin-tester-checklist": String(ROUTES.ADMIN.TESTER_CHECKLIST),
 };
 const QUICK_ACTIONS = DASHBOARD_QUICK_ACTIONS.admin
   .map((id) => {

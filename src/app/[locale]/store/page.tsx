@@ -7,6 +7,7 @@ const __O = {
 import {
   TrendingUp, ShoppingBag, Clock, Package, Plus, BarChart, Wallet, Store, Star,
   Tag, Gavel, Banknote, Truck, MessageCircle, Phone, Settings,
+  Package2, Gift, Handshake, Layers, FolderTree, Printer,
   type LucideIcon,
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -25,6 +26,7 @@ const GOLD_GRAD  = "linear-gradient(135deg,var(--appkit-color-amber-600) 0%,var(
 // quick-action labels/icons/RBAC metadata; this page only resolves hrefs + icons.
 const SELLER_QUICK_ACTION_ICONS: Record<string, LucideIcon> = {
   Plus, Package, ShoppingBag, Tag, Gavel, Banknote, Truck, MessageCircle, Phone, Star, Store, Settings, BarChart,
+  Package2, Gift, Handshake, Layers, FolderTree, Printer,
 };
 const SELLER_QUICK_ACTION_HREFS: Partial<Record<DashboardQuickActionId, string>> = {
   "dqa-seller-add-product": String(ROUTES.STORE.PRODUCTS_NEW),
@@ -33,8 +35,14 @@ const SELLER_QUICK_ACTION_HREFS: Partial<Record<DashboardQuickActionId, string>>
   "dqa-seller-analytics": String(ROUTES.STORE.ANALYTICS),
   "dqa-seller-add-coupon": String(ROUTES.STORE.COUPONS_NEW),
   "dqa-seller-auctions": String(ROUTES.STORE.AUCTIONS),
+  "dqa-seller-bundles": String(ROUTES.STORE.BUNDLES),
+  "dqa-seller-prize-draws": String(ROUTES.STORE.PRIZE_DRAWS),
+  "dqa-seller-offers": String(ROUTES.STORE.OFFERS),
+  "dqa-seller-grouped-listings": String(ROUTES.STORE.GROUPED_LISTINGS),
+  "dqa-seller-categories": String(ROUTES.STORE.STORE_CATEGORIES),
   "dqa-seller-payout-request": String(ROUTES.STORE.PAYOUTS),
   "dqa-seller-shipping": String(ROUTES.STORE.SHIPPING),
+  "dqa-seller-print-center": String(ROUTES.STORE.PRINT_CENTER),
   "dqa-seller-messages": String(ROUTES.STORE.MESSAGES),
   "dqa-seller-whatsapp": String(ROUTES.STORE.WHATSAPP),
   "dqa-seller-reviews": String(ROUTES.STORE.REVIEWS),

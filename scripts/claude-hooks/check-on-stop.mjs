@@ -422,6 +422,10 @@ const checks = [
   // ── opacity-0 hover-reveal without pointer-events-none silently swallows
   //    mobile taps (no :hover on touch) — "cards don't open on mobile", 2026-08-20 ─
   { label: "audit-hover-reveal-pointer-events", cmd: "node", args: ["scripts/audit-hover-reveal-pointer-events.mjs"], cwd: ROOT },
+  // ── a component's own RBAC gate trusts the cached SessionContext field
+  //    instead of its own data fetch's live 403 — up to 5 min stale after an
+  //    admin grants/revokes access, 2026-08-20 (TesterHubView) ─
+  { label: "audit-rbac-gate-staleness", cmd: "node", args: ["scripts/audit-rbac-gate-staleness.mjs"], cwd: ROOT },
 ];
 
 // Baseline violation counts — strict-zero. All three audits verified clean ✓

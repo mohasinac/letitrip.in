@@ -9,9 +9,12 @@ import {
   useMediaUpload,
   useUpdateProfile,
   useToast,
+  useProfile,
+  useLinkGoogleAccount,
   OrdersList,
   ROUTES,
   ACTIONS,
+  Alert,
   Button,
   Div,
   DynamicBgDiv,
@@ -107,6 +110,15 @@ export default function Page() {
   const updateProfile = useUpdateProfile({
     onSuccess: () => showToast("Profile photo updated.", "success"),
     onError: (err) => showToast(err?.message ?? "Failed to update photo.", "error"),
+  });
+
+  const { data: profile, refetch: refetchProfile } = useProfile({ enabled: !!user });
+  const linkGoogle = useLinkGoogleAccount({
+    onSuccess: () => {
+      showToast("Google account connected.", "success");
+      void refetchProfile();
+    },
+    onError: (err) => showToast(err instanceof Error ? err.message : "Failed to connect Google account.", "error"),
   });
 
   async function onPickFile(file: File | null) {
@@ -209,6 +221,25 @@ export default function Page() {
                 </Row>
               </Div>
             </Row>
+
+            {profile && !profile.googleLinked && (
+              <Alert variant="info" title="Connect your Google account">
+                <Row align="center" justify="between" gap="md" wrap>
+                  <Span size="sm" className="text-[var(--appkit-color-text-muted)]">
+                    Sign in with either your password or Google going forward.
+                  </Span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    isLoading={linkGoogle.isLoading}
+                    onClick={() => linkGoogle.mutate()}
+                  >
+                    Connect Google
+                  </Button>
+                </Row>
+              </Alert>
+            )}
 
             <Div layout="grid" gap="3" className="grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
               <StatCard label="Orders"        value={totalOrders}                   href={String(ROUTES.USER.ORDERS)} />
