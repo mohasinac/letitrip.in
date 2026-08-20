@@ -226,6 +226,13 @@ export const productCreateSchema = productBaseSchema
       !STOCK_QUANTITY_REQUIRED_LISTING_TYPES.has(data.listingType) ||
       data.stockQuantity !== undefined,
     { message: "Stock quantity is required for this listing type", path: ["stockQuantity"] },
+  )
+  .refine(
+    (data) => data.listingType !== "live" || Boolean(data.video?.url),
+    {
+      message: "A video is required for live-item listings — buyers must see the actual animal/plant moving before purchase.",
+      path: ["video"],
+    },
   );
 
 export const productUpdateSchema = productBaseSchema.partial().extend({
