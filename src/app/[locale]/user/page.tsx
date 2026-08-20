@@ -15,6 +15,7 @@ import {
   ROUTES,
   ACTIONS,
   Alert,
+  Badge,
   Button,
   Div,
   DynamicBgDiv,
@@ -237,6 +238,17 @@ export default function Page() {
                   >
                     Connect Google
                   </Button>
+                </Row>
+              </Alert>
+            )}
+
+            {profile && profile.googleLinked && (
+              <Alert variant="success" title="Google account connected">
+                <Row align="center" gap="sm" wrap>
+                  <Badge variant="success" size="sm">Connected</Badge>
+                  <Span size="sm" className="text-[var(--appkit-color-text-muted)]">
+                    Signed in as {profile.googleLinkedEmail ?? "your Google account"}. You can sign in with either your password or Google.
+                  </Span>
                 </Row>
               </Alert>
             )}
