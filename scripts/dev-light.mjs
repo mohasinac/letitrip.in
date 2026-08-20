@@ -10,6 +10,7 @@ import os from "os";
 import path from "path";
 import { performance } from "perf_hooks";
 import { checkAppkitPin } from "./lib/check-appkit-pin.mjs";
+import { syncAppkitLocal } from "./lib/sync-appkit-dist.mjs";
 
 const ROOT = process.cwd();
 
@@ -90,7 +91,7 @@ function runStep(label, stepNum, totalSteps, command, args, opts = {}) {
 
 // ── Sequential build pipeline ────────────────────────────────────────────────
 
-const TOTAL_STEPS = 4;
+const TOTAL_STEPS = 5;
 
 runStep(
   "Building appkit",
@@ -101,9 +102,29 @@ runStep(
   { cwd: path.resolve(ROOT, "appkit") },
 );
 
+// Step 2 — resync node_modules/@mohasinac/appkit (Root Cause Pattern #28):
+// on this Windows setup that directory is a real copy, not a symlink/
+// junction, so the Next.js build below would otherwise bundle whatever
+// stale dist/scripts npm last copied in, silently ignoring the rebuild
+// that just happened in Step 1.
+{
+  const tag = `[dev-light] Step 2/${TOTAL_STEPS}`;
+  console.log(`\n${tag}: Syncing appkit into node_modules...`);
+  const t0 = performance.now();
+  const result = syncAppkitLocal(ROOT);
+  const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
+  if (result.skipped) {
+    console.log(`${tag}: Skipped (${result.reason}) (${elapsed}s)`);
+  } else if (result.synced.length === 0) {
+    console.log(`${tag}: Already in sync (${elapsed}s)`);
+  } else {
+    console.log(`${tag}: Resynced ${result.synced.join(", ")} (${elapsed}s)`);
+  }
+}
+
 runStep(
   "Building CSS",
-  2,
+  3,
   TOTAL_STEPS,
   "npx",
   [
@@ -116,7 +137,7 @@ runStep(
 
 runStep(
   "Building Next.js (incremental)",
-  3,
+  4,
   TOTAL_STEPS,
   "node",
   ["node_modules/next/dist/bin/next", "build"],
@@ -125,7 +146,7 @@ runStep(
 
 // ── Start production server ──────────────────────────────────────────────────
 
-console.log(`\n[dev-light] Step 4/${TOTAL_STEPS}: Starting server on http://localhost:${PORT}`);
+console.log(`\n[dev-light] Step 5/${TOTAL_STEPS}: Starting server on http://localhost:${PORT}`);
 
 const serverEnv = { ...process.env, NODE_OPTIONS: "--max-old-space-size=512" };
 const child = spawn(
