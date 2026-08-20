@@ -307,17 +307,38 @@ async function _GET(request: Request): Promise<NextResponse> {
         ? sieveFilter(PRODUCT_FIELDS.PRE_ORDER_DELIVERY_DATE, SIEVE_OP.LTE, dateTo)
         : null;
 
-  // For the Firebase Function: include all inequality + array filters so it can filter server-side.
-  // For features, pass each selected feature as a separate @= clause (array-contains AND semantics
-  // on the function side); the function handles the OR case differently.
+  // Firestore rejects a query with inequality/range filters on more than one
+  // field (root-caused 2026-08-20: stockQuantity>0 combined with the
+  // createdAt-ordered/cursor-paginated query threw FAILED_PRECONDITION on
+  // both the upstream Function and the local repo fallback, since they share
+  // the same Sieve->Firestore push-down — the "in-memory post-filtering"
+  // this comment block used to promise was never actually implemented).
+  // inStock and the date-range clauses can conflict with the createdAt/other
+  // orderBy field, so they're never pushed into the Firestore-level query —
+  // applied as in-memory predicates below instead, over a single bounded
+  // fetch (pageSize capped at 50 per Rule #6; this catalog is deliberately
+  // small — see CLAUDE.md Seed Data Reference — so one page covers it).
+  const hasUnsafeFilter = inStock || !!dateFromClause || !!dateToClause;
   const filters = sieveAnd(
     filtersBase,
     ...(q ? [sieveFilter(PRODUCT_FIELDS.TITLE, SIEVE_OP.CONTAINS_CI, q)] : []),
-    ...(inStock ? [sieveFilter(PRODUCT_FIELDS.STOCK_QUANTITY, SIEVE_OP.GT, 0)] : []),
-    ...(dateFromClause ? [dateFromClause] : []),
-    ...(dateToClause ? [dateToClause] : []),
     ...(featureIds.length === 1 ? [sieveFilter(PRODUCT_FIELDS.FEATURES, SIEVE_OP.CONTAINS, featureIds[0])] : []),
   );
+
+  function passesUnsafeFilters(item: Record<string, JsonValue>): boolean {
+    if (inStock && !(typeof item.stockQuantity === "number" && item.stockQuantity > 0)) return false;
+    if (dateFromClause) {
+      const field = listingTypeForDate === "auction" ? "auctionEndDate" : "preOrderDeliveryDate";
+      const raw = item[field];
+      if (!raw || String(raw) < String(dateFrom)) return false;
+    }
+    if (dateToClause) {
+      const field = listingTypeForDate === "auction" ? "auctionEndDate" : "preOrderDeliveryDate";
+      const raw = item[field];
+      if (!raw || String(raw) > String(dateTo)) return false;
+    }
+    return true;
+  }
 
   try {
     // Q3: prefer the colocated listingProcessor Firebase Function when the
@@ -336,14 +357,17 @@ async function _GET(request: Request): Promise<NextResponse> {
     // to the local repository so the route stays available. The function and
     // the repository share the same Sieve filter logic so results are
     // semantically identical â€” only the data-locality differs.
+    const fetchPage = hasUnsafeFilter ? 1 : page;
+    const fetchPageSize = hasUnsafeFilter ? 50 : pageSize;
+
     let upstream: ListingProcessorResponse | null = null;
     try {
       upstream = await callListingProcessor("products", {
         filters,
         sorts,
-        page,
-        pageSize,
-        cursor,
+        page: fetchPage,
+        pageSize: fetchPageSize,
+        cursor: hasUnsafeFilter ? null : cursor,
       });
     } catch (upstreamErr) {
       void normalizeError(upstreamErr);
@@ -363,22 +387,31 @@ async function _GET(request: Request): Promise<NextResponse> {
       hasMore = upstream.hasMore;
       nextCursor = upstream.cursor;
     } else {
-      // Pass the FULL sieve (q + inStock + dateRange + features) to the repo
-      // so the Sieve adapter pushes every clause it can into Firestore
-      // .where() and the rest are handled inside the same path the Function
-      // uses. No in-memory filtering, no dropped predicates (prompt.md
-      // Rule #7).
       const result = await productRepository.list({
         filters,
         sorts,
-        page,
-        pageSize,
+        page: fetchPage,
+        pageSize: fetchPageSize,
       });
       items = result.items;
       total = result.total;
       resultPage = result.page;
       totalPages = result.totalPages;
       hasMore = result.hasMore;
+    }
+
+    // inStock / date-range filters couldn't be pushed into the Firestore
+    // query (see hasUnsafeFilter above) — apply them now over the bounded
+    // fetch, then paginate the filtered set to the caller's real page/pageSize.
+    if (hasUnsafeFilter) {
+      const filtered = (items as Array<Record<string, JsonValue>>).filter(passesUnsafeFilters);
+      total = filtered.length;
+      totalPages = Math.max(1, Math.ceil(total / pageSize));
+      resultPage = page;
+      const start = (page - 1) * pageSize;
+      items = filtered.slice(start, start + pageSize);
+      hasMore = start + pageSize < total;
+      nextCursor = null;
     }
 
     // W1-43 â€” when no specific listingType was requested, strip any documents
