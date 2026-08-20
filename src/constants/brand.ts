@@ -8,9 +8,8 @@ export const BRAND = {
   DESCRIPTION: b.description ?? "",
   MADE_IN_TEXT: b.madeInText ?? "",
   SOCIAL_URLS: {
-    INSTAGRAM: b.socialUrls?.instagram ?? "",
-    TWITTER: b.socialUrls?.twitter ?? "",
     WHATSAPP: b.socialUrls?.whatsapp ?? "",
+    GITHUB: b.socialUrls?.github ?? "",
   },
 };
 

@@ -132,6 +132,20 @@ export {
 // UI labels
 export { UI_LABELS } from "./ui";
 
+// Brand icon file paths (payment/tech/social/shipping-carrier)
+export { PAYMENT_ICONS, TECH_ICONS, SOCIAL_ICONS, getCarrierIcon } from "./icons";
+
+// Inline SVG brand-mark components (simple, single-path logos)
+export {
+  VisaIcon,
+  MastercardIcon,
+  RazorpayIcon,
+  VercelIcon,
+  NextJsIcon,
+  FirebaseIcon,
+  CashIcon,
+} from "./brand-icons";
+
 // Style className tokens (extracted from the legacy THEME_CONSTANTS surface)
 export * from "./styles/page";
 export * from "./styles/themed";

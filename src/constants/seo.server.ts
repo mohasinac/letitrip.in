@@ -37,7 +37,6 @@ export const LETITRIP_SEO: SeoConfig = createSeoConfig({
   defaultDescription:
     "Buy, sell & auction action figures, trading cards, spinning tops, model kits and more. India's largest collectibles marketplace.",
   defaultImage: `${SITE_URL}/media/site-og-image`,
-  twitterHandle: "@letitrip",
   locale: "en_IN",
 });
 

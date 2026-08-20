@@ -29,7 +29,8 @@ import {
 } from "@mohasinac/appkit/client";
 import { getOrderDigitalCode } from "@/lib/api/user-client";
 import { raiseOrderDispute } from "@/lib/api/payment-client";
-import { API_ROUTES } from "@/constants";
+import { API_ROUTES, getCarrierIcon } from "@/constants";
+import { BrandBadgeImage } from "@/components";
 
 const CLS_BUNDLE_BADGE = "inline-flex items-center rounded-full bg-fuchsia-100 dark:bg-fuchsia-900/30 px-[var(--appkit-space-2)] py-[var(--appkit-space-0-5)] text-[10px] font-semibold text-fuchsia-700 dark:text-fuchsia-300";
 
@@ -203,12 +204,22 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
         </Span>
       </Row>
       {order.trackingNumber && (
-        <Div textSize="xs" color="muted">
-          Tracking: <Span weight="medium" color="muted">{order.trackingNumber}</Span>
-          {order.shippingCarrier && (
-            <Span className="ml-1.5">via {order.shippingCarrier}</Span>
-          )}
-        </Div>
+        <Row align="center" gap="xs" textSize="xs" color="muted">
+          <Span>
+            Tracking: <Span weight="medium" color="muted">{order.trackingNumber}</Span>
+          </Span>
+          {order.shippingCarrier && (() => {
+            const carrierIcon = getCarrierIcon(order.shippingCarrier);
+            return (
+              <Row align="center" gap="xs" className="ml-1.5">
+                {carrierIcon && (
+                  <BrandBadgeImage src={carrierIcon.icon} alt={carrierIcon.label} className="h-4 w-10" />
+                )}
+                <Span>via {order.shippingCarrier}</Span>
+              </Row>
+            );
+          })()}
+        </Row>
       )}
     </Stack>
   );
