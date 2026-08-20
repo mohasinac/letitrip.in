@@ -169,7 +169,7 @@ export default function Page() {
                     {(user.displayName ?? user.email ?? "U")[0].toUpperCase()}
                   </DynamicBgDiv>
                 )}
-                <Row surface="overlay-xs" className="absolute inset-0 bg-transparent group-hover:bg-[var(--appkit-color-text)]/40 transition-colors opacity-0 group-hover:opacity-100" align="center" justify="center">
+                <Row surface="overlay-xs" className="absolute inset-0 pointer-events-none bg-transparent group-hover:bg-[var(--appkit-color-text)]/40 transition-colors opacity-0 group-hover:opacity-100" align="center" justify="center">
                   <Camera className="w-5 h-5 text-white" />
                 </Row>
                 {uploading && (

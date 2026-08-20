@@ -419,6 +419,9 @@ const checks = [
   //    (directly, or via the bare "@mohasinac/appkit" package) — the exact bug
   //    class that broke the webpack production build, 2026-08-20 ─
   { label: "audit-client-server-only-leak", cmd: "node", args: ["scripts/audit-client-server-only-leak.mjs"], cwd: ROOT },
+  // ── opacity-0 hover-reveal without pointer-events-none silently swallows
+  //    mobile taps (no :hover on touch) — "cards don't open on mobile", 2026-08-20 ─
+  { label: "audit-hover-reveal-pointer-events", cmd: "node", args: ["scripts/audit-hover-reveal-pointer-events.mjs"], cwd: ROOT },
 ];
 
 // Baseline violation counts — strict-zero. All three audits verified clean ✓
