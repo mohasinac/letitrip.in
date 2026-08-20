@@ -1,6 +1,6 @@
 {
   "installCommand": "npm ci --legacy-peer-deps",
-  "buildCommand": "NODE_OPTIONS='--max-old-space-size=8192' npm run build",
+  "buildCommand": "NODE_OPTIONS='--max-old-space-size=4096' npm run build",
   "regions": ["bom1"],
   "git": {
     "deploymentEnabled": false
