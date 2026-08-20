@@ -28,6 +28,7 @@
  *   - scripts/audit-listing-filter-parity.mjs (SSR/client default-filter divergence on public listing pages, Root Cause #30)
  *   - scripts/audit-nav-page-wiring.mjs       (dead admin/store/user nav links — nav entry with no page.tsx, Root Cause #29)
  *   - scripts/audit-route-nav-field-constants.mjs (hardcoded routes, inline nav arrays, raw field strings, and static ROUTES.* hand-concatenated with a dynamic segment instead of a parametrized *_DETAIL route)
+ *   - scripts/audit-sieve-date-fields.mjs     (Sieve field config for a Firestore Timestamp field, filterable but missing parseValue — GTE/LTE silently matches nothing)
  *
  * Baseline-drift audits: audit-ssr-in-appkit, audit-html-wrappers, audit-code-quality block
  * only when the violation count EXCEEDS the recorded baseline (regressions only).
@@ -415,6 +416,11 @@ const checks = [
   //    concatenated with a dynamic segment instead of a parametrized *_DETAIL route
   //    (the admin dashboard "Recent Orders" 404, 2026-08-19) ─
   { label: "audit-route-nav-field-constants", cmd: "node", args: ["scripts/audit-route-nav-field-constants.mjs"], cwd: ROOT },
+  // ── A Sieve field config for a Firestore Timestamp field that's filterable
+  //    but missing parseValue — GTE/LTE silently matches zero documents
+  //    (Timestamp-vs-string type mismatch). Root cause of the "must click
+  //    Show ended to see live auctions" bug, 2026-08-20 ─
+  { label: "audit-sieve-date-fields", cmd: "node", args: ["scripts/audit-sieve-date-fields.mjs"], cwd: ROOT },
   // ── A "use client" file whose import graph transitively reaches "server-only"
   //    (directly, or via the bare "@mohasinac/appkit" package) — the exact bug
   //    class that broke the webpack production build, 2026-08-20 ─

@@ -223,7 +223,14 @@ const AUDITS = [
   // not a hardcoded per-event-type literal. See CLAUDE.md's Recurrent Root
   // Cause Patterns.
   { name: "event-guest-gate-consistency",   script: "scripts/audit-event-guest-gate-consistency.mjs" },
-
+  // Strict-zero. A Sieve field config for a Firestore Timestamp field
+  // (createdAt, auctionEndDate, expiresAt, ...) that's filterable
+  // (canFilter: true) but has no `parseValue` — a GTE/LTE filter on it
+  // silently matches ZERO documents (Timestamp field vs. string filter value
+  // type mismatch, since sievejs's default convertValue never coerces
+  // date-like strings to Date). Root cause of the "must click Show ended to
+  // see live auctions" bug — see CLAUDE.md's Recurrent Root Cause Patterns.
+  { name: "sieve-date-fields",              script: "scripts/audit-sieve-date-fields.mjs" },
 ];
 function parseArgs(argv) {
   const args = argv.slice(2);
