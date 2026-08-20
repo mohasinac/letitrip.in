@@ -260,7 +260,7 @@
 | SortDropdown.tsx | SortDropdown | Component | Sort column/direction dropdown |
 | SectionTabs.tsx | SectionTabs | Component | Section tab navigation |
 | StepperNav.tsx | StepperNav | Component | Multi-step navigation |
-| HorizontalScroller.tsx | HorizontalScroller | Component | Horizontal scroll container with arrows |
+| HorizontalScroller.tsx | HorizontalScroller | Component | Horizontal scroll container with arrows; `arrowStyle?: "circle" \| "full-height"` prop (2026-08-20, default `"circle"`) selects a taller edge-to-edge arrow affordance for compare/scroller-style layouts |
 | ListingLayout.tsx | ListingLayout | Component | Listing page layout shell |
 | ListingViewShell.tsx | ListingViewShell | Component | Listing view scaffold |
 | SlottedListingView.tsx | SlottedListingView | Component | Slot-based listing view |
@@ -298,6 +298,12 @@
 | UserOrderTrackView | View | Order tracking page |
 | UserReturnsView | View | Returns and refunds management |
 | UserSupportView | View | Support/ticket interface |
+
+### About (`appkit/src/features/about/components/`)
+
+| Export | Type | Purpose |
+|--------|------|---------|
+| DeveloperView (+ `DeveloperViewProps`) | View | `/developer` — personal dev/portfolio page. Reuses the existing `siteSettings.aboutContent.teamMembers`/`.milestones` data (already admin-editable via Site Settings → About) filtered to `isDeveloper` members, rather than inventing a separate content model. Async Server Component; `labels?` prop overrides heading/subtitle/journey copy. Note: only `DeveloperView` is new this session — the rest of `features/about/components/` (`AboutView`, `FAQPageView`, `HelpPageView`, `PolicyPageView`, `TrackOrderView`, `FeesView`, `SecurityPrivacyView`, `ShippingPolicyView`, the `How*WorksView` family, `UnauthorizedView`, `PublicProfileView`) pre-dates this catalog entry and is not yet fully catalogued here |
 
 ### Admin (`appkit/src/features/admin/components/`)
 
@@ -460,14 +466,14 @@
 | EventsIndexListing | Listing | Events index/search |
 | EventDetailView | View | Single event detail |
 | EventParticipateView | View | Event participation form |
-| EventLeaderboard | Component | Event leaderboard display |
+| EventLeaderboard | Component | Event leaderboard display. 2026-08-20: gained `pollResults?: PollResultEntry[]` + `renderPollResult?: (result, index) => ReactNode` props — when `pollResults` is set it renders a per-option vote-tally view instead of the ranked voter list (takes priority over `renderList`/`entries`), fed by the new `getEventPollResults(eventId)` server action for `event.type === "poll"` |
 | EventFormDrawer | Drawer | Event form drawer |
 | EventBanner | Banner | Event banner |
 | EventPollWidget | Widget | Event poll widget |
 | RelatedEventsCarousel | Carousel | Related-events carousel — other active events sharing ≥1 tag with the current one (`getRelatedEvents()` server action); used on `/events/[id]`'s Overview tab (2026-08-19) |
 | EventRafflesSection | Section | Raffles section in event |
 | EventRaffleWinnerView | View | Raffle winner announcement |
-| SpinWheelView | View | Spin wheel game |
+| SpinWheelView | View | Spin wheel game. 2026-08-20: paired with a new public "Last 10 Spin Results" tab (`/events/[id]/spin-results`, `ROUTES.PUBLIC.EVENT_SPIN_RESULTS(id)`) fed by the new `getEventSpinResults(eventId, limit?)` server action — joins each winning spin's `spinPrizeId` against the event's `spinPrizes` config for a human label and marks guest spins (`isGuest: true`, no raw identity shown) |
 
 ### Lottery (`appkit/src/_internal/client/features/lottery/`)
 
@@ -536,7 +542,7 @@
 | CTABannerSection | Section | Call-to-action banner |
 | WhatsAppCommunitySection | Section | WhatsApp community CTA |
 | AdvertisementBanner, AdSlot | Component | Ad placement |
-| AnnouncementBar | Component | Announcement banner |
+| AnnouncementBar | Component | Announcement banner; `overlay?: boolean` prop (2026-08-20, default `false`) positions it absolutely over the first in-flow section instead of in normal flow — used on the homepage to overlay the banner over the hero |
 | TestimonialsCarousel, SectionCarousel | Carousel | Carousel components |
 | PromoGrid | Grid | Promotional grid |
 | CharacterHotspot, CharacterHotspotForm | Component | Interactive hotspot |
@@ -915,10 +921,10 @@
 | CustomRolesRepository | stores/customRoles | findByStore | Custom user roles |
 | AdminNotificationsRepository | stores/adminNotifications | listByStore | Admin alerts |
 | OfferRepository | offers | listByProduct, listByUser, listByStore | Price negotiation |
-| WishlistRepository | wishlists | getOrCreate, addItem, removeItem, findByUser, isFull | Wishlists |
+| WishlistRepository (`UserWishlistRepository`, singleton `wishlistRepository`) | wishlists | getOrCreate, addItem, removeItem, findByUser, isFull, syncSnapshots(userSlug, updates) | Wishlists. `syncSnapshots(userSlug, updates: {productId, snapshot}[])` (2026-08-20) overwrites the stored `productSnapshot` (title/thumb/currentPrice) for surviving items in place via a transaction — backs the wishlist "sync" feature (`POST /api/user/wishlist/[productId]/sync`), distinct from `getWishlistItems`'s existing display-only live-product join |
 | HistoryRepository | history | addItem, removeItem, findByUser, clear | View history |
 | EventRepository / EventsRepository | events | findBySlug, listByStatus, list | Events |
-| EventEntryRepository / EventEntriesRepository | eventEntries | findByEvent, findByUser | Event participation |
+| EventEntryRepository / EventEntriesRepository (`eventEntryRepository`) | eventEntries | findByEvent, findByUser, hasUserEntered, hasGuestEntered, getRecentSpinResults, countUserEntries, getLeaderboard, getPollResults, getExportReport, createEntry, reviewEntry | Event participation. 2026-08-20 additions: `hasGuestEntered(eventId, guestIpHash)` — guest counterpart of `hasUserEntered`, keyed by hashed IP; `getRecentSpinResults(eventId, limit=10)` — last N spins that won a prize, most recent first (orderBy `spinWonAt` naturally excludes non-spun entries); `getPollResults(eventId): {optionId, count}[]` — raw vote tally per poll option (caller joins labels, no access to `events` collection here); `getExportReport(eventId, {title, type, pollOptions?}): Promise<string>` — Markdown export for the admin "Download Report" button, per-option tally for polls or per-entry listing for every other type |
 | LotteryEntryRepository | lotteryEntries | listForSource, listForUser, countByUser, countByTransactionId, flagEntry, createEntry | Lottery pulls + entries |
 | NewsletterRepository | newsletter | findByEmail, subscribe, unsubscribe | Newsletter |
 | CopilotLogRepository | copilotLogs | findByUser | AI chat history |
@@ -1120,8 +1126,8 @@
 | Cart | mergeGuestCartAction | buyer+ | Merge guest cart |
 | Checkout | createCheckoutOrderAction | buyer+ | COD/UPI/EMI/admin-bypass order placement. `outOfStockPolicy` param (2026-08-15, default `"skip_items"`) decides cancel-whole-order vs. ship-available-items-only when the transaction finds a shortfall |
 | Checkout | verifyAndPlaceRazorpayOrderAction | buyer+ | Razorpay-paid order placement after signature + amount verification. Same `outOfStockPolicy` param (default `"cancel_order"`); `skip_items` triggers an automatic partial refund via `processRefundAction` since payment was already captured for the full cart |
-| Checkout | sendCheckoutValueOtpAction (`appkit/src/features/checkout/actions/checkout-value-otp-actions.ts`) | buyer+ | Tier PP (2026-08-18) — sends an OTP against the `checkoutValueOtps` namespace when cart total ≥ `siteSettings.payment.otpCheckoutThreshold` (default ₹5,000) and `paymentMethod != "cod"`; evaluated against the whole cart total before per-seller order splitting |
-| Checkout | verifyCheckoutValueOtpAction (same file) | buyer+ | Tier PP — verifies the code; `createCheckoutOrderAction` re-checks `isCheckoutValueOtpVerified()` before placing a high-value non-COD order |
+| Checkout | sendCheckoutValueOtp (`appkit/src/features/checkout/actions/checkout-value-otp-actions.ts` — actual export name has no `Action` suffix, unlike most rows in this table) | buyer+ | Tier PP (2026-08-18) — sends an OTP against the `checkoutValueOtps` namespace when cart total ≥ `siteSettings.payment.otpCheckoutThreshold` (default ₹5,000) and `paymentMethod != "cod"`; evaluated against the whole cart total before per-seller order splitting. 2026-08-20: was already exported from `server.ts` but missing from the main `appkit/src/index.ts` barrel — fixed (real bug, not a rename) |
+| Checkout | verifyCheckoutValueOtp (same file, same naming note) | buyer+ | Tier PP — verifies the code; `createCheckoutOrderAction` re-checks `isCheckoutValueOtpVerified()` before placing a high-value non-COD order. Same 2026-08-20 `index.ts` barrel-export fix as `sendCheckoutValueOtp` |
 | Classified | startClassifiedConversationAction | buyer+ | Initiate seller contact |
 | Digital Code | claimCodeAction | buyer+ | Reveal purchased code |
 | Events | registerEventAction | any authed | Register for event |
@@ -1220,6 +1226,7 @@
 | `/api/admin/events` | GET, POST | List/create events |
 | `/api/admin/events/[id]` | GET, PATCH, DELETE | Event CRUD — 2026-08-19: PATCH now runs the same staged-media finalize calls (`finalizeStagedMediaField`/`Object`/`ObjectArray`) as create for `coverImage`/`eventImages`/`winnerImages`/`additionalImages`, so a newly-uploaded image swapped in via edit gets promoted out of Storage `tmp/` instead of staying orphaned |
 | `/api/admin/events/[id]/trigger-raffle` | POST | Manual raffle trigger |
+| `/api/admin/events/[id]/entries/export` | GET | 2026-08-20 — Markdown download of an event's entries via `eventEntryRepository.getExportReport()` (`ACTIONS.ADMIN["export-event-entries"]`, "Download Report" button on `AdminEventEntriesView`); `ROLES_ADMIN_MOD`, wrapped by `withFeatureGuard("EVENTS", ...)` |
 | `/api/admin/payouts` | GET, POST | List/manage payouts |
 | `/api/admin/payouts/[id]` | GET, PUT, DELETE | Payout CRUD |
 | `/api/admin/payouts/weekly` | POST | Admin-manual trigger for the weekly payout sweep. Enqueues the `payoutsWeekly` job (2026-08-15 — was ~150 lines of inline grouping/creation logic duplicating the scheduled twin; now a thin wrapper around the same `runWeeklyPayoutEligibility` the `weeklyPayoutEligibility` scheduled Function uses) and returns `{jobId, customToken}` |
@@ -1298,6 +1305,7 @@
 | `/api/user/addresses/[id]` | GET, PUT, DELETE | Address CRUD |
 | `/api/user/wishlist` | GET, POST | Wishlist |
 | `/api/user/wishlist/[productId]` | POST, DELETE | Add/remove wishlist |
+| `/api/user/wishlist/[productId]/sync` | POST | 2026-08-20 — refreshes the wishlist entry's stored `productSnapshot` (title/thumb/currentPrice) against the live product via `wishlistRepository.syncSnapshots()`; auto-removes the item instead if the underlying product is now archived/draft/in-review. `ACTIONS.PRODUCT["sync-wishlist-item"]` |
 | `/api/user/history` | GET, POST | View history |
 | `/api/user/history/merge` | POST | Merge histories |
 | `/api/user/notifications` | GET | Notifications |
@@ -1374,7 +1382,7 @@
 
 | File | Key Exports | Purpose |
 |------|-------------|---------|
-| api.ts | API_ROUTES | API endpoint strings for client-side fetch |
+| api.ts | API_ROUTES | API endpoint strings for client-side fetch. 2026-08-20: `API_ROUTES.USER.WISHLIST_ITEM_SYNC` added (mirrors appkit's `ACCOUNT_ENDPOINTS.WISHLIST_ITEM_SYNC`) |
 | api-roles.ts | ROLES_ADMIN_ONLY, ROLES_ADMIN_MOD, ROLES_STORE_WRITE, ROLES_STORE_READ, ROLES_ANY_STAFF | RBAC permission tuples |
 | admin-permissions.ts | PERMISSION_GROUPS, PERMISSION_DOMAINS, getPermissionsForDomain, formatPermLabel | Display data for `/admin/permissions` reference page. **Temporary mirror** — verbatim copy of the same exports newly added in `appkit/src/features/auth/permissions/constants.ts` (S-ADMIN-7, 2026-08-19); duplicated here only because this repo currently pins `@mohasinac/appkit` from the npm registry (`^4.1.1`), not `file:./appkit`, so the new appkit exports aren't resolvable yet. Delete this file and import directly once appkit is republished. |
 | brand.ts | BRAND, getBrandCopyright | Brand identity |
@@ -1383,22 +1391,22 @@
 | faq.ts | FAQ_CATEGORIES | FAQ category mapping |
 | homepage-data.ts | TRUST_INDICATORS, TRUST_FEATURES, SITE_FEATURES | Homepage content blocks |
 | languages.ts | SUPPORTED_LANGUAGES, LANGUAGES_PAGE_SIZE | i18n configuration |
-| navigation.tsx | MAIN_NAV_ITEMS, ADMIN_NAV_GROUPS, STORE_NAV_GROUPS, USER_NAV_GROUPS, SIDEBAR_SUPPORT_LINKS, FOOTER_LINK_GROUPS | Navigation structures |
+| navigation.tsx | MAIN_NAV_ITEMS, ADMIN_NAV_GROUPS, STORE_NAV_GROUPS, USER_NAV_GROUPS, SIDEBAR_SUPPORT_LINKS, FOOTER_LINK_GROUPS | Navigation structures. 2026-08-20: `MAIN_NAV_ITEMS` gained an `about` entry (icon color key `about: "text-info"` added to `src/constants/styles/nav-icons.ts`'s `NAV_ICON_COLORS`); `FOOTER_LINK_GROUPS`'s Support group gained a "Developer" link (`ROUTES.PUBLIC.DEVELOPER`) |
 | search.ts | SEARCH_LABELS | Search overlay labels |
 | seo.ts | SEO_CONFIG | SEO metadata defaults |
 | seo.server.ts | generateMetadata, generateProductMetadata, etc. | Server-side metadata generators |
 | theme.ts | THEME_CONSTANTS | Theme mode constants |
 | tickets.ts | TICKET_CATEGORIES, TICKET_STATUSES | Support ticket enums |
-| ui.ts | UI_LABELS | UI copy/labels |
+| ui.ts | UI_LABELS | UI copy/labels. 2026-08-20: `UI_LABELS.CHECKOUT` gained `MANUAL_PAYMENT_GUIDE_HEADING`, `MANUAL_PAYMENT_GUIDE_STEP1/2/3`, `MANUAL_PAYMENT_GUIDE_OOS`, `MANUAL_PAYMENT_GUIDE_REFUND`, `MANUAL_PAYMENT_GUIDE_REFUND_LINK`, `MANUAL_PAYMENT_CONSENT_LABEL` — manual-payment explainer copy shown at checkout |
 
 ### Appkit Constants (`appkit/src/constants/`)
 
 | File | Key Exports | Purpose |
 |------|-------------|---------|
-| api-endpoints.ts | API_ENDPOINTS + 50 endpoint collections | Canonical API paths |
+| api-endpoints.ts | API_ENDPOINTS + 50 endpoint collections | Canonical API paths. 2026-08-20: `ADMIN_ENDPOINTS.EVENT_ENTRIES_EXPORT(id)` and `ACCOUNT_ENDPOINTS.WISHLIST_ITEM_SYNC(itemId)` added |
 | api-endpoint-resolver.ts | resolveEndpoint, resolveEndpointFn | Endpoint path resolution |
 | cache-invalidation.ts | COLLECTION_CACHE_PATHS | Collection-to-cache path mapping |
-| field-names.ts | Schema field constants | Firestore document field names |
+| field-names.ts | Schema field constants | Firestore document field names. 2026-08-20: `STORE_FIELDS` gained `ADMIN_NOTES`, `IS_FEATURED`, `SUSPENSION_REASON`, `CAPABILITIES` — a schema-local duplicate already had them but the canonical constant had drifted behind it |
 | limits.ts | WISHLIST_MAX, HISTORY_MAX, CART_MAX_ITEMS | User-facing hard caps |
 | sort.ts | SORT_DIR, sortBy | Sieve sort token builder |
 | table-keys.ts | TABLE_KEYS, VIEW_MODE | useUrlTable() parameter keys |
@@ -1466,6 +1474,8 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 
 **2026-08-15**: `OrderDocument` gained `outOfStockPolicy?: "cancel_order" \| "skip_items"`, `droppedItems?: {productId, productTitle, requestedQty, availableQty}[]`, and `refundPending?: boolean` (orders/schemas/firestore.ts). New `OutOfStockPolicyValues` const alongside the existing `PaymentMethodValues`/`OrderStatusValues` pattern.
 
+**2026-08-20 (events guest participation + poll/spin result views, wishlist sync)**: `EventDocument.allowGuestParticipation?: boolean` added (`events/schemas/firestore.ts`) — the single admin-controlled flag that decides whether unauthenticated visitors can participate in an event, replacing a prior hardcoded per-`event.type` literal in `enterEvent()`. `EventEntryDocument` gained `guestIpHash?: string` (HMAC-hashed caller IP, set only when `userId` is absent and the event allows guest participation — raw IP is never persisted, mirrors the PII blind-index pattern) and `spinCount?: number`. Two new types in `features/events/types/index.ts`: `PollResultEntry` (`{optionId, label, count, percent}`, returned by `getEventPollResults(eventId)`) and `SpinResultEntry` (`{id, userDisplayName?, isGuest, spinPrizeId?, spinPrizeTitle?, spinWonAt?}`, returned by `getEventSpinResults(eventId, limit?)`). `PollResultEntry` is re-exported from both `index.ts` and `server.ts`; **`SpinResultEntry` is defined and used but not currently re-exported by name from either barrel** (only reachable via `@mohasinac/appkit`'s `features/events` subpath) — noted here as a real gap, not fixed as part of this catalog update since only appkit source changes existing prior to this session are in scope for the catalog, not new appkit patches. `CartUpdatedEventDetail` (`{itemCount, totalValue, productTitle?}`) added in `features/cart/utils/pending-ops.ts` — the payload of the new `CART_UPDATED_EVENT` CustomEvent (see § Utils & Helpers).
+
 ---
 
 ## 12. Utils & Helpers
@@ -1503,7 +1513,7 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 | pii-mask.ts *(new, 3.8.2)* | ENC_PREFIX, HMAC_PREFIX, isPiiEncrypted, maskName, maskEmail, maskPublicReview, maskPublicBid, maskPublicEventEntry, maskOfferForSeller | Crypto-free display-masking helpers (pure string ops) | `index.ts` (universal) + `server.ts` |
 | pii-redact.ts | redactPii, safeDisplayName, safeDisplayEmail, maskIp | Log/error redaction | `index.ts` + `server.ts` |
 | authorization.ts | requireAuth, requireRole, requireOwnership, canChangeRole, getRoleLevel | RBAC guard functions | `index.ts` + `server.ts` |
-| rate-limit.ts | rateLimit, applyRateLimit, RateLimitPresets | Request rate limiting | `index.ts` + `server.ts` |
+| rate-limit.ts | rateLimit, applyRateLimit, RateLimitPresets, getClientIP, hashGuestIdentity | Request rate limiting. `getClientIP(request)` (2026-08-20 — newly exported, was module-private) extracts the caller's IP from `x-forwarded-for`/`x-real-ip`; `hashGuestIdentity(scope, request)` (new) is a deterministic, non-reversible HMAC-SHA256 hash of `${scope}:${getClientIP(request)}` — reuses the PII blind-index primitive so a guest event participant's IP is never persisted raw, only this hash (backs `EventEntryDocument.guestIpHash`) | `index.ts` + `server.ts` |
 | rbac.ts | DEFAULT_ROLES, resolvePermissions, hasPermission, Can, createRbacHook | Permission resolution | `index.ts` + `server.ts` |
 | settings-encryption.ts | encryptSecret, decryptSecret, maskSecret | Site-settings API-key encryption (no Node builtin) | `index.ts` + `server.ts` |
 
@@ -1517,13 +1527,26 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 > `asciiDiagrams.md` → "Architecture > PII Encryption vs Display Masking" for the full incident
 > writeup, and CLAUDE.md Root Cause Pattern #24.
 
+### `appkit/src/features/cart/utils/pending-ops.ts`
+
+| Export | Purpose |
+|--------|---------|
+| CART_OPS_CHANGE_EVENT, WISHLIST_OPS_CHANGE_EVENT | Window `CustomEvent` names fired whenever the pending (not-yet-synced) cart/wishlist op queue changes |
+| CART_UPDATED_EVENT (2026-08-20) | Window `CustomEvent` name fired whenever an item is successfully added to the cart (server or guest path) — carries the resulting totals so layout chrome (header cart badge, a UPI-quick-pay widget, etc.) can react to the exact new state without re-fetching, unlike `CART_OPS_CHANGE_EVENT` which carries no payload |
+| CartUpdatedEventDetail (2026-08-20) | Type — `{itemCount: number, totalValue: number, productTitle?: string}`, the `detail` payload of `CART_UPDATED_EVENT` |
+| dispatchCartUpdated(detail) (2026-08-20) | Function — dispatches `CART_UPDATED_EVENT` with the given detail; no-op during SSR |
+| formatCartAddedMessage(detail, formatCurrency) (2026-08-20) | Function — shared "added to cart" toast copy so every add-to-cart entry point (`useAddToCart` hook, local-first quick-add on listing grids) shows the same item + updated count/total message instead of composing the sentence twice |
+| getCartOps, pushCartOp, clearCartOps, getCartOpsDelta | Cart op queue read/write (localStorage-backed) |
+| getWishlistOps, pushWishlistOp, clearWishlistOps, getWishlistOpsDelta | Wishlist op queue read/write (localStorage-backed) |
+| CartOp, CartOpKind, WishlistOp, WishlistOpKind | Types for the queued op shapes |
+
 ---
 
 ## 13. Registries
 
 | Registry | File | Entries | Purpose |
 |----------|------|---------|---------|
-| ACTIONS | _internal/shared/actions/action-registry.ts | 23 resource buckets | Master CTA registry — labels, permissions, confirmation, icons |
+| ACTIONS | _internal/shared/actions/action-registry.ts | 23 resource buckets | Master CTA registry — labels, permissions, confirmation, icons. 2026-08-20: new entries `ACTIONS.PRODUCT["sync-wishlist-item"]` (label "Sync", refreshes a wishlist entry's stored price/title/image against the live listing) and `ACTIONS.ADMIN["export-event-entries"]` (label "Download Report", `permissions: ["admin"]`, powers the new event-entries Markdown export) |
 | ACTION_META | features/products/constants/action-defs.ts | Tier 1 public CTAs | Primary action metadata |
 | ROW_ACTION_META | features/products/constants/action-defs.ts | Tier 2 row/table actions | Row action metadata |
 | FORM_ACTION_META | features/products/constants/action-defs.ts | Tier 3 form footers | Form footer actions |
@@ -1633,8 +1656,8 @@ All pages are thin shims delegating to appkit `_internal/server/features/*/` hel
 | Admin | ~114 | /admin/products, /admin/orders, /admin/orders/[id]/view (reuses AdminOrderEditorView full-page, 2026-08-19), /admin/users, /admin/categories, /admin/blog, /admin/reviews, /admin/coupons, /admin/carousel, /admin/sections, /admin/events, /admin/payouts, /admin/team, /admin/support, /admin/scammers, /admin/scammers/[id] (reuses AdminScammerEditorView full-page, 2026-08-19), /admin/support-tickets/[id] (reuses AdminSupportTicketDetailView full-page, 2026-08-19), /admin/moderation/[id], /admin/reports/[id], /admin/item-requests/[id] (2026-08-19 — new RSC detail pages, no prior detail UI), /admin/permissions (2026-08-19 — read-only permission catalog, sourced from `src/constants/admin-permissions.ts` mirror pending appkit republish), /admin/art, /admin/stickers, /admin/addresses, /admin/shipments (+ new/[id]/edit/[id]/lots/[lotId]/items/projections — Feature A), /admin/catalogue-approvals (Feature B), /admin/tester-checklist, /admin/tester-feedback (2026-08-17), /admin/grouped-listings (2026-08-19), /admin/guide/whatsapp + /admin/guide/payments (2026-08-19 — migrated in from the retired `/admin/integration-guides` markdown viewer, now real Guide-hub cards + sidebar nav entries; `/admin/integration-guides` itself removed) |
 | Store | ~75 | /store/products, /store/orders, /store/coupons, /store/analytics, /store/payouts, /store/reviews, /store/features, /store/shipping, /store/art, /store/stickers, /store/messages (P-11 fix), /store/bundles/new + [id]/edit (P-17 fix, was wired to a dead endpoint), /store/guide/whatsapp (2026-08-19) — /store/templates* and /store/inventory/print removed 2026-08-19 |
 | User | ~33 | /user/orders, /user/profile, /user/wishlist, /user/addresses, /user/history, /user/conversations, /user/notifications, /user/catalogue (+ new/[id]/edit — Feature B), /user/tester (2026-08-17) |
-| Public | ~107 | /products/[id], /categories, /blog, /events, /auctions, /stores, /about, /contact, /faqs, /seller, /cart, /checkout, /profile/[userId]/[tab] (Feature B public catalogue tab) |
-| **Total** | **~324** | |
+| Public | ~109 | /products/[id], /categories, /blog, /events, /auctions, /stores, /about, /contact, /faqs, /seller, /cart, /checkout, /profile/[userId]/[tab] (Feature B public catalogue tab), /developer (2026-08-20 — `DeveloperView`), /events/[id]/spin-results (2026-08-20 — "Last 10 Spin Results" tab, `EVENT_TYPE.SPIN_WHEEL` only) |
+| **Total** | **~326** | |
 
 ### RSC + thin client-wrapper pattern (applied 2026-06-24)
 
@@ -1763,7 +1786,7 @@ Route constants defined in `appkit/src/next/routing/route-map.ts` via the `ROUTE
 
 | Namespace | Examples | Purpose |
 |-----------|---------|---------|
-| ROUTES.PUBLIC | PRODUCTS, PRODUCT(id), AUCTIONS, STORES, STORE(slug), BLOG, EVENTS, FAQS, CART, CHECKOUT, SEARCH, PROFILE(userId) — `/profile/[userId]`, tabbed via `/profile/[userId]/[tab]`; Feature B renders `PublicCatalogueView` at `tab === "catalogue"` | Public page routes |
+| ROUTES.PUBLIC | PRODUCTS, PRODUCT(id), AUCTIONS, STORES, STORE(slug), BLOG, EVENTS, FAQS, CART, CHECKOUT, SEARCH, PROFILE(userId) — `/profile/[userId]`, tabbed via `/profile/[userId]/[tab]`; Feature B renders `PublicCatalogueView` at `tab === "catalogue"`; DEVELOPER = `/developer` (2026-08-20, `DeveloperView`), EVENT_SPIN_RESULTS(id) = `/events/[id]/spin-results` (2026-08-20, "Last 10 Spin Results" tab) | Public page routes |
 | ROUTES.ADMIN | DASHBOARD, PRODUCTS, ORDERS, USERS, STORES, CATEGORIES, BRANDS, BLOG, EVENTS, PAYOUTS, SETTINGS, SHIPMENTS / SHIPMENTS_NEW / SHIPMENTS_EDIT(id) / SHIPMENT_LOT_ITEMS(id, lotId) / SHIPMENTS_PROJECTIONS (Feature A), CATALOGUE_APPROVALS (Feature B), TESTER_CHECKLIST / TESTER_FEEDBACK (2026-08-17) | Admin dashboard routes |
 | ROUTES.STORE | DASHBOARD, PRODUCTS, ORDERS, COUPONS, ANALYTICS, PAYOUTS, REVIEWS, SHIPPING, TEMPLATES | Store dashboard routes |
 | ROUTES.USER | ORDERS, ORDER_DETAIL(id), PROFILE, WISHLIST, ADDRESSES, HISTORY, NOTIFICATIONS, CONVERSATIONS, CATALOGUE / CATALOGUE_NEW / CATALOGUE_EDIT(id) (Feature B), TESTER_HUB (2026-08-17) | User dashboard routes |
@@ -1887,7 +1910,7 @@ All 21 run as a chain via `appkit`'s `npm run check:audits` (the first entry in 
 | audit-route-schema-registry.mjs | strict-0 | All 464 route exports are registered (or carry suppression marker) |
 | audit-z-any-z-unknown.mjs | strict-0 | No `z.any()` / `z.unknown()` in schema definitions |
 
-### Consumer audits (61 scripts in `scripts/`)
+### Consumer audits (64 scripts in `scripts/`)
 
 Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 
@@ -1968,6 +1991,9 @@ Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 | audit-list-serializer-parity.mjs | strict-0 | Every admin resource's PATCH-writable field (Zod schema) is present in the sibling LIST endpoint's hand-rolled serializer — a missing field means a list-backed editor reseeds from a stale/default value and silently overwrites real data on the next save. Root-caused 2026-08-19 in admin users (`isTester`/`canTestAdmin`) and stores (`isVerified`/`isFeatured`/`capabilities`); registry currently covers users/stores/team (root-cause #38) |
 | audit-hover-reveal-pointer-events.mjs | strict-0 | `opacity-0` + `group-hover:opacity-100`/`hover:opacity-100` without `pointer-events-none` in the same className — a hover-revealed element stays fully interactive while invisible, and `:hover` never fires on touch devices, so it silently swallows mobile taps meant for whatever is underneath it. Root-caused 2026-08-20 across 16 occurrences (mobile "cards don't open" reports) |
 | audit-rbac-gate-staleness.mjs | strict-0 | A component reading an RBAC field (`role`/`isTester`/`canTestAdmin`/`disabled` or a role predicate) off `useSession()`/`useAuth()` and using it standalone in an early-return `<Alert variant="warning"\|"error"\|"danger">` denial, while also calling its own `useQuery`/`apiClient.get` for the same protected resource — the cached session field is only refreshed every 5 minutes, so the gate should defer to the fetch's own 403 instead. Root-caused 2026-08-20 in `TesterHubView.tsx` (root-cause #44) |
+| audit-sieve-date-fields.mjs | strict-0 | A Sieve field config for a Firestore Timestamp field (`createdAt`, `auctionEndDate`, `expiresAt`, ...) that's filterable (`canFilter: true`) but has no `parseValue` — sievejs's default `convertValue()` never coerces a date-like string to a `Date`, so a Firestore inequality (`>`/`<`/`>=`/`<=`) compares a Timestamp field against a string and silently matches ZERO documents. Root cause of the "must click Show ended to see live auctions" bug — fixed across 27 repository files by wiring `parseValue: parseSieveDateValue` (root-cause #47) |
+| audit-selectable-card-navigation.mjs | strict-0 | A `REGISTRY` of `BaseListingCard.Checkbox`-consuming components asserts each one's nav marker (`href={...}`/`onClick={handleClick}`) sits outside its selection-conditional's bracket span — catches the "a selection callback being merely wired silently disables primary navigation" bug class. Root-caused 2026-08-20 in `InteractiveProductCard.tsx`'s `onSelect` branch, which rendered `<ProductCard>` without forwarding `href` at all (root-cause #43) |
+| audit-event-guest-gate-consistency.mjs | strict-0 | Guards the "one admin-controlled flag (`EventDocument.allowGuestParticipation`) governs guest participation uniformly across every event type" contract — flags a hardcoded per-`event.type` literal reintroduced in either `enterEvent()`'s generic path or `runAssignSpinPrize()`'s inline transaction-based entry creation (spins don't reach `enterEvent()` at all) instead of reading `event.allowGuestParticipation`. Root-caused 2026-08-20 |
 
 ### ESLint mirror rules (`scripts/eslint-rules/index.mjs`)
 
