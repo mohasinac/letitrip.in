@@ -2,7 +2,7 @@
 
 Auto-generated inventory of code/config files with detected exported and internal symbols.
 
-Generated: 2026-08-20T06:13:15.937Z
+Generated: 2026-08-20T08:10:11.517Z
 Total indexed files: 1290
 
 | Name | Path | Usage / What Is Inside | Symbols (Exported + Internal) |
@@ -608,7 +608,7 @@ Total indexed files: 1290
 | page.tsx | app/[locale]/user/orders/[id]/track/page.tsx | Next.js App Router route/layout/page/handler | fn Page |
 | page.tsx | app/[locale]/user/orders/page.tsx | Next.js App Router route/layout/page/handler | const CANCELLABLE_STATUSES, const filterCount, const page, const router, const search, const SORT_OPTIONS, const status, const STATUS_OPTIONS, const table, const TRACKABLE_STATUSES, fn Page |
 | page.tsx | app/[locale]/user/orders/view/[id]/page.tsx | Next.js App Router route/layout/page/handler | const a, const body, const canCancel, const canReveal, const canTrack, const CLS_BUNDLE_BADGE, const CODE_REVEAL_STATUSES, const date, const groups, const handleRaiseDispute, const hasDigitalCode, const headerLine, const isPrizeDraw, const item, const res, const result, const revealStatus, const STATUS_COLORS, const statusColor, fn fetchOrderCode, fn OrderDetailPage, fn renderBack, fn renderItemRow, fn renderOrderActions, fn renderOrderAddress, fn renderOrderGroup, fn renderOrderHeader, fn renderOrderItems, fn renderOrderPayment, type BundleOrderGroup, type OrderData, type OrderGroup, type OrderItemT, type RevealedCode |
-| page.tsx | app/[locale]/user/page.tsx | Next.js App Router route/layout/page/handler | const __O, const __P, const BRAND_GRAD, const fileRef, const NAV_LINKS, const parts, const router, const totalOrders, const totalSpent, const updateProfile, const url, const wishlistCount, fn formatINR, fn onPickFile, fn Page, fn StatCard |
+| page.tsx | app/[locale]/user/page.tsx | Next.js App Router route/layout/page/handler | const __O, const __P, const BRAND_GRAD, const fileRef, const linkGoogle, const NAV_LINKS, const parts, const router, const totalOrders, const totalSpent, const updateProfile, const url, const wishlistCount, fn formatINR, fn onPickFile, fn Page, fn StatCard |
 | page.tsx | app/[locale]/user/pre-orders/page.tsx | Next.js App Router route/layout/page/handler | const base, const date, const filtered, const loading, const orders, const preOrderItems, const q, const search, const sort, const SORT_OPTIONS, const STATUS_VARIANT, const statusVariant, const table, fn formatAmount, fn UserPreOrdersPage, interface OrderDoc, interface OrderItem |
 | page.tsx | app/[locale]/user/prize-draws/page.tsx | Next.js App Router route/layout/page/handler | const base, const date, const drawItems, const filtered, const loading, const orders, const q, const search, const sort, const SORT_OPTIONS, const STATUS_VARIANT, const statusVariant, const table, fn formatAmount, fn UserPrizeDrawsPage, interface OrderDoc, interface OrderItem |
 | page.tsx | app/[locale]/user/profile/page.tsx | Next.js App Router route/layout/page/handler | fn Page |

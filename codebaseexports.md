@@ -1887,7 +1887,7 @@ All 21 run as a chain via `appkit`'s `npm run check:audits` (the first entry in 
 | audit-route-schema-registry.mjs | strict-0 | All 464 route exports are registered (or carry suppression marker) |
 | audit-z-any-z-unknown.mjs | strict-0 | No `z.any()` / `z.unknown()` in schema definitions |
 
-### Consumer audits (59 scripts in `scripts/`)
+### Consumer audits (61 scripts in `scripts/`)
 
 Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 
@@ -1966,6 +1966,8 @@ Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 | audit-client-server-only-leak.mjs | strict-0 | Walks every `"use client"` file's full import graph (relative, `@/` alias, appkit subpaths) and fails if it transitively reaches `import "server-only"` or the bare `@mohasinac/appkit` package (resolves to `server-entry.js`, the full server-action surface) — the bug class that broke the webpack production build, 2026-08-20. Exempts genuine `"use server"` action files, which Next's compiler safely splits |
 | audit-function-trigger-shadow-types.mjs | strict-0 | A Firestore-trigger handler's local shadow type (e.g. `NewOrder`) has no field name that doesn't exist on the real document type — caught the 2026-08-19 onOrderCreate bug (every WhatsApp purchase announcement read "A customer" / "₹0") |
 | audit-list-serializer-parity.mjs | strict-0 | Every admin resource's PATCH-writable field (Zod schema) is present in the sibling LIST endpoint's hand-rolled serializer — a missing field means a list-backed editor reseeds from a stale/default value and silently overwrites real data on the next save. Root-caused 2026-08-19 in admin users (`isTester`/`canTestAdmin`) and stores (`isVerified`/`isFeatured`/`capabilities`); registry currently covers users/stores/team (root-cause #38) |
+| audit-hover-reveal-pointer-events.mjs | strict-0 | `opacity-0` + `group-hover:opacity-100`/`hover:opacity-100` without `pointer-events-none` in the same className — a hover-revealed element stays fully interactive while invisible, and `:hover` never fires on touch devices, so it silently swallows mobile taps meant for whatever is underneath it. Root-caused 2026-08-20 across 16 occurrences (mobile "cards don't open" reports) |
+| audit-rbac-gate-staleness.mjs | strict-0 | A component reading an RBAC field (`role`/`isTester`/`canTestAdmin`/`disabled` or a role predicate) off `useSession()`/`useAuth()` and using it standalone in an early-return `<Alert variant="warning"\|"error"\|"danger">` denial, while also calling its own `useQuery`/`apiClient.get` for the same protected resource — the cached session field is only refreshed every 5 minutes, so the gate should defer to the fetch's own 403 instead. Root-caused 2026-08-20 in `TesterHubView.tsx` (root-cause #44) |
 
 ### ESLint mirror rules (`scripts/eslint-rules/index.mjs`)
 
