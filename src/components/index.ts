@@ -15,6 +15,8 @@ export { VerifyEmailPageClient } from "./auth/VerifyEmailPageClient";
 export { AfterHeroAdSlot, AfterFeaturedProductsAdSlot, AfterReviewsAdSlot, AfterFAQAdSlot } from "./homepage/AdSlots";
 export { HomepageNewsletterForm } from "./homepage/HomepageNewsletterForm";
 export { FooterNewsletterSlot } from "./layout/FooterNewsletterSlot";
+export { FooterBadgesSlot } from "./layout/FooterBadgesSlot";
+export { BrandBadgeImage } from "./layout/BrandBadgeImage";
 export { LiveItemActionsClient } from "./live/LiveItemActionsClient";
 export { CartRouteClient } from "./routing/CartRouteClient";
 export { CheckoutRouteClient } from "./routing/CheckoutRouteClient";
@@ -24,6 +26,7 @@ export { StoreCreateProductShell, StoreEditProductShell } from "./store/SellerPr
 export { AddAddressClient } from "./user/AddAddressClient";
 export { EditAddressClient } from "./user/EditAddressClient";
 export { FontToggleClient } from "./user/FontToggleClient";
+export { HandModeToggleClient } from "./user/HandModeToggleClient";
 export { ProfilePageClient } from "./user/ProfilePageClient";
 export { ProfileActivityPanel } from "./user/ProfileActivityPanel";
 export { UserAddressesClient } from "./user/UserAddressesClient";
