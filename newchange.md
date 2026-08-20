@@ -41,6 +41,16 @@
 
 ---
 
+### S-google-link-confirm — "Already linked" confirmation on /user dashboard for Google account linking (2026-08-20)
+
+User asked whether Google-account linking (password account ↔ Google identity, including cross-email explicit linking) had been built — verified via Explore agent that it had (shipped earlier the same session/day: `useLinkGoogleAccount` hook, `linkGoogleAccount` server handler in `src/app/api/auth/google/callback/route.ts`, `UserDocument.googleLinked`/`googleLinkedEmail` fields). Same-email login auto-merges into the existing Firebase Auth uid with no dedupe error; a different Google email requires the explicit "Connect Google" button and results in one account carrying both the original + linked email.
+
+**Gap found and fixed**: `/user` dashboard home (`src/app/[locale]/user/page.tsx`) only rendered the "Connect your Google account" alert for the *unlinked* case — once linked, the block silently disappeared with no confirmation, unlike `/user/settings` → Account tab's `LinkedAccountsSection.tsx`, which already showed a "Connected" badge + linked email. Added a matching `Alert variant="success"` + `Badge variant="success"` confirmation block to the dashboard for the linked case. No schema/server changes — `profile.googleLinked`/`googleLinkedEmail` were already returned by `GET /api/user/profile`. Committed (`8482d58ac`) and pushed to `origin/main`; **production has not been redeployed** (Vercel auto-deploy is disabled per Rule #10) — this and the rest of today's earlier Google-link work are on `main` but not yet live.
+
+Also surfaced: the working tree had unrelated in-progress, uncommitted work (a "hand mode" toggle feature, a new checkout `pricing-preview` route) with real `tsc` errors at the time, apparently from a concurrent session — left untouched; only the one intended file was staged and committed.
+
+---
+
 ### S-wishlist-events-overhaul — Wishlist card fixes, homepage layout, watermark cap, events overhaul (guest participation, spin-wheel fix, poll tallies), compare/scroller, checkout consent, About/Developer nav (2026-08-20)
 
 Started from a single large batch of user-reported UX issues spanning 9 areas. Planned via plan-mode with three parallel `Explore` agents up front, clarifying questions on the genuinely ambiguous points (wishlist "sync" semantics, guest-participation scope, watermark complaint specifics, "comparison details" meaning), then executed as 11 workstreams — some directly, two large events-feature chunks (poll leaderboard/admin export; spin-wheel fix/guest toggle) delegated to parallel background agents since they were independently scoped and file-disjoint enough to run concurrently.
