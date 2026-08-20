@@ -137,7 +137,9 @@ For lint-fixable issues use `npm run check:fix` (runs `lint:fix` first, then ful
 
 ## 🛑 RULE #6 — CODE WITHIN VERCEL HOBBY (FLUID COMPUTE) TIER LIMITS
 
-This project deploys to Vercel **Hobby** with **Fluid Compute enabled** (1 vCPU Standard, 2 GB function memory, 8 GB build machine, Node 22.x, region `iad1`). Every API route, server action, and Server Component you write must respect the ceilings below. Local dev (`npm run dev:hot`) enforces these via `VERCEL_HOBBY_TIER=1` in `scripts/dev-next.mjs`. The default `npm run dev` (build+start) runs a production server that matches Vercel's runtime behavior.
+This project deploys to Vercel **Hobby** with **Fluid Compute enabled** (1 vCPU Standard, 2 GB function memory, Node 22.x, region `iad1`). Every API route, server action, and Server Component you write must respect the ceilings below. Local dev (`npm run dev:hot`) enforces these via `VERCEL_HOBBY_TIER=1` in `scripts/dev-next.mjs`. The default `npm run dev` (build+start) runs a production server that matches Vercel's runtime behavior.
+
+**Build machine exception (2026-08-20)**: the account was upgraded to **Pro** specifically to move the *build machine* off Hobby's 8 GB Standard tier to a 16 GB Enhanced machine (`vercel.json` has no explicit build-machine override — Enhanced is now the account default) — Turbopack's build-time peak RSS for this app (~5.7–6.2 GB, verified locally) didn't reliably fit in Hobby's real available headroom, causing repeated OOM/SIGKILL build failures even though the code itself was correct (see the 2026-08-20 server-only-leak saga below and Root Cause #24-adjacent findings). **This is a build-time-only exception.** Every *runtime* ceiling below (function memory, timeouts, payload, quotas) is still deliberately treated as Hobby-tier and must keep being respected when writing new code — the Pro upgrade was not an invitation to write less defensive code or lean on higher runtime limits Pro would otherwise unlock. The goal is to avoid inflating Vercel usage/credit consumption beyond what the build-machine fix required.
 
 | Limit | Ceiling | Env var | Implication for new code |
 |------|---------|---------|--------------------------|
@@ -146,7 +148,7 @@ This project deploys to Vercel **Hobby** with **Fluid Compute enabled** (1 vCPU 
 | Background function timeout | **60 s** | `VERCEL_BACKGROUND_TIMEOUT_S` | The hard ceiling for any handler we mark `runtime: "nodejs"` and let run async. Anything heavier belongs in `functions/`. |
 | Request payload | **4.5 MB** | `VERCEL_MAX_PAYLOAD_BYTES` | Never accept raw image bytes in JSON. Use the `/api/media` signed-URL upload flow. |
 | Image optimization input | **50 MB** | `VERCEL_MAX_IMAGE_BYTES` | Reject `next/image` sources larger than this; pre-resize on upload. |
-| Build machine memory | 8 GB (reference, not enforced locally) | — | The Vercel build machine has plenty of room — `next build` won't OOM under normal conditions. Build output per function still caps at 250 MB compressed; don't pull large native modules into `src/app/api/**`. |
+| Build machine memory | **16 GB** (Pro Enhanced, since 2026-08-20 — was 8 GB Hobby Standard) | — | Build output per function still caps at 250 MB compressed; don't pull large native modules into `src/app/api/**`. This is a build-time-only exception — see the callout above. |
 | Fluid Active CPU | 4 h / 30 d on Hobby | dashboard | Cache aggressively. Every cold start counts. |
 | Function invocations | 1 M / 30 d on Hobby | dashboard | Same reasoning — caching > invoking. |
 
