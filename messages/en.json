@@ -3047,7 +3047,7 @@
     "formBuyNowPrice": "Buy Now Price (â‚¹)",
     "formBuyNowPriceHelp": "Optional instant purchase price that skips the auction",
     "formMinBidIncrement": "Minimum Bid Increment (â‚¹)",
-    "formMinBidIncrementHelp": "Minimum amount each new bid must exceed the current bid by",
+    "formMinBidIncrementHelp": "Minimum amount each new bid must exceed the current bid by. This can only raise the platform's tiered minimum for this listing, never lower it — leave blank to use the tier as-is.",
     "formAutoExtendable": "Auto-Extend Auction",
     "formAutoExtendableHelp": "If someone bids in the last few minutes, the auction extends automatically to prevent sniping",
     "formAuctionExtensionMinutes": "Extension Minutes",

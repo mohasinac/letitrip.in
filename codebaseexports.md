@@ -565,7 +565,8 @@
 | BidHistory | Component | Auction bid history |
 | PlaceBidForm | Form | Place bid form |
 | MakeOfferForm, MakeOfferButton | Component | Make offer components |
-| RelatedProducts, RelatedProductsCarousel | Component | Related products — `ProductDetailPageView` now renders up to 4 carousels (same category — fixed off the deprecated `category` field 2026-08-19, same brand, tag overlap, same store) via `RelatedProductsCarousel`, each independently fetched |
+| RelatedProducts, RelatedProductsCarousel | Component | Related products — `RelatedProductsCarousel` renders one category/brand/tags/store carousel; `RelatedProducts` wraps a bespoke grid (used by auction's "Similar Auctions") |
+| RelatedItemsSection (`RelatedItemsSection.tsx`) | Component | 2026-08-20 — the shared 4-carousel stack (category/brand/tags/store) fed by `computeRelatedItems()`; used by standard, auction, pre-order, prize-draw, classified, digital-code, live detail pages. See [Listing Types Reference](../CLAUDE.md#listing-types-reference) |
 | CustomFieldsEditor, CustomSectionsEditor, CustomSectionTabContent | Editor | Custom fields/sections |
 | NonRefundableConsentModal | Modal | Non-refundable product consent |
 | PrizeDrawItemsEditor | Editor | Prize draw items editor (min 2 items, was 3, 2026-08-19) |
@@ -582,7 +583,11 @@
 | CompareOverlay | Overlay | Product comparison |
 | SublistingCategorySelect | Select | Sublisting category picker |
 | SublistingCarouselSection | Section | Sublisting carousel |
-| ShowGroupSection, GroupSettingsPanel | Component | Grouped listing display |
+| ShowGroupSection, GroupSettingsPanel | Component | Product-level `groupId`/`isGroupParent` "set of parts" display (distinct from the `groupedListings` collection below) |
+| ClassifiedDetailPageView (`appkit/src/features/classified/components/`) | View | 2026-08-20 — full-parity SSR detail page for classified listings (gallery, breadcrumbs, share, tabs, related items, grouped listings; no reviews tab — no purchase flow). Replaces the old bare `ClassifiedDetailView` client component |
+| ClassifiedContactSellerPanel (`appkit/src/features/classified/components/`) | Component | 2026-08-20 — extracted "Contact Seller" interactive CTA (client), slotted into `ClassifiedDetailPageView`'s buy bar |
+| DigitalCodeDetailPageView (`appkit/src/features/digital-codes/components/`) | View | 2026-08-20 — full-parity SSR detail page for digital-code listings; `renderPrimaryActions` slot reuses the same `ProductDetailActions` cart CTA as standard products |
+| LiveItemDetailPageView (`appkit/src/features/live/components/`) | View | 2026-08-20 — full-parity SSR detail page for live listings; `renderActions` slot preserves the existing `LiveItemActionsClient` (vendor-verification gate) |
 
 ### Seller / Store Dashboard (`appkit/src/features/seller/components/`)
 
@@ -616,6 +621,7 @@
 | SellerOffersView, SellerOffersPanel | View | Seller offers/negotiation |
 | SellerFeaturesView | View | Feature management |
 | SellerGroupedListingsView | View | Grouped listings management |
+| GroupedListingsCarousel (`appkit/src/features/grouped/components/`) | Component | 2026-08-20 — first PUBLIC renderer for the `groupedListings` collection; fed by `getGroupsWithItemsForProduct()`, rendered on every product-based detail page. Previously fully built (schema/repo/CRUD) with zero public consumers |
 | SellerStoreCategoriesView | View | Store category management |
 | SellerBundlesView | View | Seller bundles |
 | SellerClassifiedView | View | Classified ads management |
@@ -663,7 +669,7 @@
 | orders | RefundHistoryTable, RefundRequestView | Component | Refund components |
 | orders | OrderPaymentSummary | Component | `appkit/src/features/orders/components/OrderPaymentSummary.tsx` — reads `order.paymentRecord` (Feature C), falls back to legacy `paymentMethod`/`paymentId`/`paymentProofUrl` fields for pre-migration orders |
 | shipments | AdminShipmentsView, AdminShipmentEditorView, AdminShipmentLotItemsView, AdminShipmentProjectionsView, ShipmentItemLinkModal | View/Component | `appkit/src/features/shipments/components/` — Feature A (Procurement Shipments, admin-only): list/editor/lot-items(+bulk-import)/projections + the shared "Create pre-order link" modal |
-| catalogue | UserCatalogueView, CatalogueItemEditorView, PublicCatalogueView, AdminCatalogueApprovalsView | View | `appkit/src/features/catalogue/components/` — Feature B (Personal Catalogue): owner's own list, item editor, public read-only grid (mounted as the "Catalogue" tab on `/profile/[userId]/[tab]`), admin approval queue |
+| catalogue | UserCatalogueView, CatalogueItemEditorView, PublicCatalogueView, PublicCatalogueItemDetailView, AdminCatalogueApprovalsView | View | `appkit/src/features/catalogue/components/` — Feature B (Personal Catalogue): owner's own list, item editor, public read-only grid (mounted as the "Catalogue" tab on `/profile/[userId]/[tab]`), admin approval queue. `PublicCatalogueItemDetailView` (2026-08-20) is the per-item detail page at `/catalogue/[ownerSlug]/[itemId]` — previously the grid's cards weren't even clickable, no route existed |
 | pre-orders | MarketplacePreorderCard, PreOrderFilters | Component | Pre-order card and filtering |
 | pre-orders | PreOrdersListView, PreOrdersIndexListing | View | Pre-orders listing |
 | pre-orders | PreOrderDetailPageView | Page | Pre-order detail page |
@@ -711,6 +717,7 @@
 | bundles | resolveBundleMemberIds | sync(bundle) | Pure id-resolution helper backing `listBundleMembers` |
 | bundles | resolveBundleOriginalTotal | async(productIds[]) | Sum member product prices for the discount "before" total; `undefined` if any member fails to resolve |
 | bundles | listFeaturedBundles | cache(limit?) | Active bundles for homepage placement |
+| bundles | getRelatedBundles | cache(bundle, limit?) | 2026-08-20 — "Related Bundles" section (other active bundles, excludes self) — bundle detail pages previously had no related section |
 | cart | getCartForUser | cache(userId) | Fetch user's cart |
 | events | getEventForDetail | cache(slugOrId) | Fetch event details |
 | history | getHistoryForUser | cache(userId) | Fetch user view history |
@@ -721,8 +728,13 @@
 | pre-orders | getPreOrderForDetail | cache(slugOrId) | Fetch pre-order details |
 | pre-orders | getProductFeaturesForPreOrder | cache(storeId) | Load features for pre-order |
 | products | getProductForDetail | cache(slugOrId) | Fetch product details |
-| products | getReviewsForProduct | cache(productId) | Fetch product reviews |
+| products | getReviewsForProduct | cache(productId) | Fetch product reviews (raw docs) |
+| products | getReviewItemsForProduct | cache(productId) | 2026-08-20 — reviews mapped straight to client `Review[]` shape via `toReview`; used by classified/digital-code/live PageViews |
 | products | listSitemapProducts | async() | List products for sitemap |
+| products | computeRelatedItems | cache(product) | 2026-08-20 — the shared 4-signal related-items computation (category/brand/tags/store), extracted from `ProductDetailPageView`; feeds `<RelatedItemsSection>` on every listing-type detail page. See [Listing Types Reference](../CLAUDE.md#listing-types-reference) |
+| products | toProductItem | sync(doc) | Firestore doc → card-grid `ProductItem`; now copies `listingType` (Root Cause #48 fix) so related/grouped cards route correctly |
+| grouped | getGroupsForProduct | cache(productId) | 2026-08-20 — groups a product belongs to (`isActive`+`visibilityStatus:"visible"`) |
+| grouped | getGroupsWithItemsForProduct | cache(productId) | 2026-08-20 — same, hydrated with each group's other member products; feeds `<GroupedListingsCarousel>` |
 | promotions | getCouponByCode | cache(code) | Fetch coupon details |
 | reviews | getReviewsForProduct | cache(productId) | Fetch product reviews |
 | reviews | getReviewsForStore | cache(storeId) | Fetch store reviews |
@@ -905,7 +917,7 @@
 | FAQsRepository / FirebaseFAQsRepository | faqs | search, listByCategory, findBySlug | FAQ management |
 | BlogRepository | blogs | publish, unpublish, search, listByCategory | Blog posts |
 | PayoutRepository | payouts | listByStore, listByStatus, updateStatus | Seller payouts |
-| GroupedListingsRepository | groupedListings | findByStore, findByCategory | Grouped products |
+| GroupedListingsRepository | groupedListings | findByStore, findByCategory, findByProductId (2026-08-20 — powers the public `GroupedListingsCarousel`) | Grouped products |
 | PayoutMethodsRepository | stores/payoutMethods | findByStore | Seller bank accounts |
 | ShippingConfigsRepository | stores/shippingConfigs | findByStore | Seller shipping rules |
 | AnalyticsCardsRepository | stores/analyticsCards | findByStore | Custom analytics |
@@ -1128,6 +1140,8 @@
 | Checkout | verifyAndPlaceRazorpayOrderAction | buyer+ | Razorpay-paid order placement after signature + amount verification. Same `outOfStockPolicy` param (default `"cancel_order"`); `skip_items` triggers an automatic partial refund via `processRefundAction` since payment was already captured for the full cart |
 | Checkout | sendCheckoutValueOtp (`appkit/src/features/checkout/actions/checkout-value-otp-actions.ts` — actual export name has no `Action` suffix, unlike most rows in this table) | buyer+ | Tier PP (2026-08-18) — sends an OTP against the `checkoutValueOtps` namespace when cart total ≥ `siteSettings.payment.otpCheckoutThreshold` (default ₹5,000) and `paymentMethod != "cod"`; evaluated against the whole cart total before per-seller order splitting. 2026-08-20: was already exported from `server.ts` but missing from the main `appkit/src/index.ts` barrel — fixed (real bug, not a rename) |
 | Checkout | verifyCheckoutValueOtp (same file, same naming note) | buyer+ | Tier PP — verifies the code; `createCheckoutOrderAction` re-checks `isCheckoutValueOtpVerified()` before placing a high-value non-COD order. Same 2026-08-20 `index.ts` barrel-export fix as `sendCheckoutValueOtp` |
+| Checkout | previewCheckoutPricing (`appkit/src/_internal/server/features/checkout/actions.ts`) | buyer+ | 2026-08-20 — read-only "what will I actually be charged" breakdown (subtotal, shippingFee, codHandlingFee, whatsappNotifyFee, giftWrapFee, shipmentProtectionFee, gstAmount, couponDiscount, total) for the checkout Order Summary. Reuses `resolveShippingCost`/`computeGroupCouponDiscount`/the same compute*Fee helpers order placement uses, so it can never diverge from what gets charged. Never mutates stock/cart/coupon-usage. Backs `POST /api/checkout/pricing-preview` |
+| Checkout | resolveShippingCost (`appkit/src/_internal/server/features/checkout/actions.ts`) | server-only | 2026-08-20 — exported (was module-private) so `/api/payment/create-order` and `previewCheckoutPricing` can compute the exact per-seller shipping fee order placement charges/records, instead of a third re-implementation |
 | Classified | startClassifiedConversationAction | buyer+ | Initiate seller contact |
 | Digital Code | claimCodeAction | buyer+ | Reveal purchased code |
 | Events | registerEventAction | any authed | Register for event |
@@ -1361,6 +1375,7 @@
 | `/api/cart/merge` | POST | Merge carts |
 | `/api/checkout/preflight` | POST | Checkout validation |
 | `/api/checkout` | POST | Place order |
+| `/api/checkout/pricing-preview` | POST | 2026-08-20 — read-only checkout pricing breakdown (shipping/fees/GST/coupon) for the Order Summary, backed by `previewCheckoutPricing` |
 | `/api/payment/verify` | POST | Payment verification |
 | `/api/orders/[id]/payment-proof` | POST | Buyer proof upload (`attachPaymentProofAction`); extended Tier PP (2026-08-18) with `buyerReportedUpiId`/`buyerMarkedPaid`/`buyerFraudAgreementAccepted` |
 | `/api/orders/[id]/dispute` | POST | Tier PP (2026-08-18) — `raiseOrderDisputeAction`, buyer/seller/admin, only valid on `autoApproved` orders |
@@ -1398,6 +1413,7 @@
 | theme.ts | THEME_CONSTANTS | Theme mode constants |
 | tickets.ts | TICKET_CATEGORIES, TICKET_STATUSES | Support ticket enums |
 | ui.ts | UI_LABELS | UI copy/labels. 2026-08-20: `UI_LABELS.CHECKOUT` gained `MANUAL_PAYMENT_GUIDE_HEADING`, `MANUAL_PAYMENT_GUIDE_STEP1/2/3`, `MANUAL_PAYMENT_GUIDE_OOS`, `MANUAL_PAYMENT_GUIDE_REFUND`, `MANUAL_PAYMENT_GUIDE_REFUND_LINK`, `MANUAL_PAYMENT_CONSENT_LABEL` — manual-payment explainer copy shown at checkout |
+| icons.ts | PAYMENT_ICONS, TECH_ICONS, SOCIAL_ICONS, getCarrierIcon | Static brand icon file paths under `public/icons/{social,payment,tech,shipping}/` (Visa/Mastercard/UPI/Cash, Razorpay/Vercel/Next.js/Firebase, WhatsApp/GitHub) plus a case-insensitive free-text carrier-name → icon lookup for Shiprocket/Delhivery/DTDC/India Post/Ekart. Added 2026-08-21 fake-data cleanup session. |
 
 ### Appkit Constants (`appkit/src/constants/`)
 
@@ -1786,7 +1802,7 @@ Route constants defined in `appkit/src/next/routing/route-map.ts` via the `ROUTE
 
 | Namespace | Examples | Purpose |
 |-----------|---------|---------|
-| ROUTES.PUBLIC | PRODUCTS, PRODUCT(id), AUCTIONS, STORES, STORE(slug), BLOG, EVENTS, FAQS, CART, CHECKOUT, SEARCH, PROFILE(userId) — `/profile/[userId]`, tabbed via `/profile/[userId]/[tab]`; Feature B renders `PublicCatalogueView` at `tab === "catalogue"`; DEVELOPER = `/developer` (2026-08-20, `DeveloperView`), EVENT_SPIN_RESULTS(id) = `/events/[id]/spin-results` (2026-08-20, "Last 10 Spin Results" tab) | Public page routes |
+| ROUTES.PUBLIC | PRODUCTS, PRODUCT(id), AUCTIONS, STORES, STORE(slug), BLOG, EVENTS, FAQS, CART, CHECKOUT, SEARCH, PROFILE(userId) — `/profile/[userId]`, tabbed via `/profile/[userId]/[tab]`; Feature B renders `PublicCatalogueView` at `tab === "catalogue"`; DEVELOPER = `/developer` (2026-08-20, `DeveloperView`), EVENT_SPIN_RESULTS(id) = `/events/[id]/spin-results` (2026-08-20, "Last 10 Spin Results" tab); CATALOGUE_ITEM_DETAIL(ownerSlug,itemId) = `/catalogue/[ownerSlug]/[itemId]` (2026-08-20 — per-item catalogue detail page, previously no route existed); CLASSIFIED_DETAIL/DIGITAL_CODE_DETAIL/LIVE_DETAIL now actually wired into `pluginFor().detailRoute()` (2026-08-20, Root Cause #48 — previously all three silently fell back to PRODUCT_DETAIL) | Public page routes |
 | ROUTES.ADMIN | DASHBOARD, PRODUCTS, ORDERS, USERS, STORES, CATEGORIES, BRANDS, BLOG, EVENTS, PAYOUTS, SETTINGS, SHIPMENTS / SHIPMENTS_NEW / SHIPMENTS_EDIT(id) / SHIPMENT_LOT_ITEMS(id, lotId) / SHIPMENTS_PROJECTIONS (Feature A), CATALOGUE_APPROVALS (Feature B), TESTER_CHECKLIST / TESTER_FEEDBACK (2026-08-17) | Admin dashboard routes |
 | ROUTES.STORE | DASHBOARD, PRODUCTS, ORDERS, COUPONS, ANALYTICS, PAYOUTS, REVIEWS, SHIPPING, TEMPLATES | Store dashboard routes |
 | ROUTES.USER | ORDERS, ORDER_DETAIL(id), PROFILE, WISHLIST, ADDRESSES, HISTORY, NOTIFICATIONS, CONVERSATIONS, CATALOGUE / CATALOGUE_NEW / CATALOGUE_EDIT(id) (Feature B), TESTER_HUB (2026-08-17) | User dashboard routes |
