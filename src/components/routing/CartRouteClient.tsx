@@ -15,8 +15,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { JsonValue, JsonArray } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
-import { Alert, Button, CartItemRow, CartSummary, CartView, Checkbox, Div, Heading, Input, Text, useAuth, useCartQuery, useGuestCart, useGuestCartMerge, useGuestWishlist, useToast, ROUTES, useAuthGate, ACTION_ID, ACTIONS, LoginRequiredModal, useBottomActions, pluginFor, detectListingTypeFromSlug } from "@mohasinac/appkit/client";
-import type { CartItem, ListingType } from "@mohasinac/appkit/client";
+import { Alert, Button, CartItemRow, CartSummary, CartView, Checkbox, Div, Heading, Input, Text, useAuth, useCartQuery, useGuestCart, useGuestCartMerge, useGuestWishlist, useToast, ROUTES, useAuthGate, ACTION_ID, ACTIONS, LoginRequiredModal, useBottomActions, pluginFor, detectListingTypeFromSlug, getCartOps, CART_OPS_CHANGE_EVENT } from "@mohasinac/appkit/client";
+import type { CartItem, CartOp, ListingType } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 
 import { Row, Stack, normalizeError } from "@mohasinac/appkit/client";
@@ -173,6 +173,48 @@ function serverItemsToCartItems(
   }));
 }
 
+/**
+ * Layers the local-first pending op queue on top of the server cart items —
+ * mirrors useCartCount's `pendingDelta` (which does the same thing for the
+ * badge NUMBER, not the item list). Root-caused 2026-08-20: the badge/toast
+ * looked right the instant "Add to Cart" was clicked on any listing-grid
+ * card (a local-only write, queued for later sync), but the Cart page
+ * rendered `serverCart.cart.items` directly with no such layering, so a
+ * still-unsynced item was invisible here even after the sync-flush gap
+ * itself was fixed — this keeps the page correct even if a sync cycle
+ * hasn't run yet (e.g. immediately after add, before the periodic/on-hide
+ * flush fires).
+ */
+function mergePendingCartOps(
+  serverItems: CartItemWithListingType[],
+  ops: CartOp[],
+): CartItemWithListingType[] {
+  if (ops.length === 0) return serverItems;
+  const removedIds = new Set(ops.filter((o) => o.op === "remove").map((o) => o.productId));
+  const merged = serverItems.filter((item) => !removedIds.has(item.productId));
+  const existingIds = new Set(merged.map((item) => item.productId));
+  for (const op of ops) {
+    if (op.op !== "add" || existingIds.has(op.productId)) continue;
+    existingIds.add(op.productId);
+    merged.push({
+      id: op.productId,
+      productId: op.productId,
+      quantity: op.quantity ?? 1,
+      listingType: detectListingTypeFromSlug(op.productId),
+      meta: {
+        productId: op.productId,
+        title: op.productTitle ?? op.productId,
+        image: op.productImage,
+        price: op.price ?? 0,
+        currency: "INR",
+        storeId: op.storeId,
+        attributes: { storeName: op.storeName ?? "" },
+      },
+    });
+  }
+  return merged;
+}
+
 function guestItemsToCartItems(
   items: ReturnType<typeof useGuestCart>["items"],
 ): CartItemWithListingType[] {
@@ -215,9 +257,19 @@ export function CartRouteClient() {
     onNavigate: (url) => router.push(url),
   });
 
+  // Re-render whenever the pending-ops queue changes (e.g. useSyncManager
+  // just flushed and cleared it) so a merged-in item disappears once the
+  // server cart actually contains it, instead of staying merged forever.
+  const [, forcePendingOpsRerender] = useState(0);
+  useEffect(() => {
+    const onChange = () => forcePendingOpsRerender((n) => n + 1);
+    window.addEventListener(CART_OPS_CHANGE_EVENT, onChange);
+    return () => window.removeEventListener(CART_OPS_CHANGE_EVENT, onChange);
+  }, []);
+
   const isAuthenticated = !!user?.uid;
   const cartItems = isAuthenticated
-    ? serverItemsToCartItems(serverCart?.cart?.items ?? [])
+    ? mergePendingCartOps(serverItemsToCartItems(serverCart?.cart?.items ?? []), getCartOps())
     : guestItemsToCartItems(guest.items);
 
   // ---------------------------------------------------------------------------

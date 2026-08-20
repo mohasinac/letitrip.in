@@ -10,6 +10,7 @@ import {
   DashboardNavProvider,
   LayoutClient,
   SessionProvider,
+  SyncManagerMount,
   ToastProvider,
   TourProvider,
   WishlistCapWatcher,
@@ -100,6 +101,7 @@ export default async function Layout({ children, params }: Props) {
           <ToastProvider position="top-right">
             <ClientErrorReporterMount />
             <WishlistCapWatcher />
+            <SyncManagerMount />
             <BottomActionsProvider>
               <DashboardNavProvider>
                 <LayoutClient>
