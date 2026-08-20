@@ -311,19 +311,79 @@ async function _GET(request: Request): Promise<NextResponse> {
   // field (root-caused 2026-08-20: stockQuantity>0 combined with the
   // createdAt-ordered/cursor-paginated query threw FAILED_PRECONDITION on
   // both the upstream Function and the local repo fallback, since they share
-  // the same Sieve->Firestore push-down — the "in-memory post-filtering"
-  // this comment block used to promise was never actually implemented).
-  // inStock and the date-range clauses can conflict with the createdAt/other
-  // orderBy field, so they're never pushed into the Firestore-level query —
-  // applied as in-memory predicates below instead, over a single bounded
-  // fetch (pageSize capped at 50 per Rule #6; this catalog is deliberately
-  // small — see CLAUDE.md Seed Data Reference — so one page covers it).
-  const hasUnsafeFilter = inStock || !!dateFromClause || !!dateToClause;
+  // the same Sieve->Firestore push-down). Firestore DOES allow a single
+  // inequality filter when the query's orderBy is on that SAME field — the
+  // default auctions/pre-orders sort ("Ending Soon" = auctionEndDate ASC) is
+  // exactly this shape, so when the requested sort matches the date field
+  // and inStock isn't also active, push the date clause straight into the
+  // Firestore-level query instead of treating it as unsafe.
+  const dateField =
+    listingTypeForDate === "auction"
+      ? PRODUCT_FIELDS.AUCTION_END_DATE
+      : listingTypeForDate === "pre-order"
+        ? PRODUCT_FIELDS.PRE_ORDER_DELIVERY_DATE
+        : null;
+  const requestedSortField = sorts.replace(/^-/, "");
+  const canPushDateFilter =
+    (!!dateFromClause || !!dateToClause) && !inStock && !!dateField && requestedSortField === dateField;
+
+  // inStock, or a date-range clause whose sort doesn't match (or is combined
+  // with inStock), still can't be pushed into the Firestore-level query —
+  // applied as in-memory predicates below instead, over a bounded fetch
+  // (pageSize capped at 50 per Rule #6; this catalog is deliberately small —
+  // see CLAUDE.md Seed Data Reference). Root-caused 2026-08-20: that bounded
+  // fetch used to be sorted by the CLIENT's requested field (e.g. the
+  // default "Ending Soon" = auctionEndDate ASC) — since ended auctions have
+  // smaller/older timestamps, ASC order front-loads exactly the items the
+  // in-memory filter is about to reject, so once ≥50 auctions have already
+  // ended the entire bounded batch could be all-ended and the live ones
+  // never got fetched at all ("have to click Show Ended to see live
+  // auctions"). Fixed by fetching in whichever direction front-loads the
+  // items that will actually PASS the filter, then re-sorting the filtered
+  // result by the client's real requested order before paginating.
+  const hasUnsafeFilter = inStock || ((!!dateFromClause || !!dateToClause) && !canPushDateFilter);
   const filters = sieveAnd(
     filtersBase,
+    ...(canPushDateFilter && dateFromClause ? [dateFromClause] : []),
+    ...(canPushDateFilter && dateToClause ? [dateToClause] : []),
     ...(q ? [sieveFilter(PRODUCT_FIELDS.TITLE, SIEVE_OP.CONTAINS_CI, q)] : []),
     ...(featureIds.length === 1 ? [sieveFilter(PRODUCT_FIELDS.FEATURES, SIEVE_OP.CONTAINS, featureIds[0])] : []),
   );
+  // When a date clause is still unsafe, fetch sorted by the date field in
+  // whichever direction guarantees every item that will pass the filter is
+  // front-loaded: dateFrom (>=, "still live") wants the largest/most-future
+  // dates first (DESC); dateTo (<=, "ends by") wants the smallest first
+  // (ASC). Falls back to the client's requested sort when no date clause is
+  // in play at all.
+  const fetchSorts =
+    hasUnsafeFilter && dateField && (dateFromClause || dateToClause)
+      ? dateFromClause
+        ? sortBy(dateField, "DESC")
+        : sortBy(dateField, "ASC")
+      : sorts;
+  const sortFieldOverridden = fetchSorts !== sorts;
+
+  function sortByRequestedOrder(rows: Array<Record<string, JsonValue>>): Array<Record<string, JsonValue>> {
+    if (!sortFieldOverridden) return rows;
+    const desc = sorts.startsWith("-");
+    const field = requestedSortField;
+    return [...rows].sort((a, b) => {
+      const av = a[field];
+      const bv = b[field];
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      const cmp =
+        typeof av === "number" && typeof bv === "number"
+          ? av - bv
+          : String(av) < String(bv)
+            ? -1
+            : String(av) > String(bv)
+              ? 1
+              : 0;
+      return desc ? -cmp : cmp;
+    });
+  }
 
   function passesUnsafeFilters(item: Record<string, JsonValue>): boolean {
     if (inStock && !(typeof item.stockQuantity === "number" && item.stockQuantity > 0)) return false;
@@ -364,7 +424,7 @@ async function _GET(request: Request): Promise<NextResponse> {
     try {
       upstream = await callListingProcessor("products", {
         filters,
-        sorts,
+        sorts: fetchSorts,
         page: fetchPage,
         pageSize: fetchPageSize,
         cursor: hasUnsafeFilter ? null : cursor,
@@ -389,7 +449,7 @@ async function _GET(request: Request): Promise<NextResponse> {
     } else {
       const result = await productRepository.list({
         filters,
-        sorts,
+        sorts: fetchSorts,
         page: fetchPage,
         pageSize: fetchPageSize,
       });
@@ -403,8 +463,13 @@ async function _GET(request: Request): Promise<NextResponse> {
     // inStock / date-range filters couldn't be pushed into the Firestore
     // query (see hasUnsafeFilter above) — apply them now over the bounded
     // fetch, then paginate the filtered set to the caller's real page/pageSize.
+    // When the fetch was sorted by an overridden field (see fetchSorts
+    // above), re-sort the filtered set back into the client's actually
+    // requested order before paginating.
     if (hasUnsafeFilter) {
-      const filtered = (items as Array<Record<string, JsonValue>>).filter(passesUnsafeFilters);
+      const filtered = sortByRequestedOrder(
+        (items as Array<Record<string, JsonValue>>).filter(passesUnsafeFilters),
+      );
       total = filtered.length;
       totalPages = Math.max(1, Math.ceil(total / pageSize));
       resultPage = page;
