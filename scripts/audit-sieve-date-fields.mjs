@@ -24,21 +24,46 @@
  * `parseSieveDateValue` (same file) converts the raw string to a real
  * `Date`, which the Admin SDK compares correctly against a Timestamp field.
  *
- * This audit statically scans every `*.repository.ts` file for Sieve field
- * config entries (`fieldName: { canFilter: true, canSort: ..., ... }`) whose
- * key LOOKS like a Firestore Timestamp field (ends in `At`/`Date`/`Time`, or
- * is in the small named-exception list below for fields that don't follow
- * that suffix convention) and is filterable (`canFilter: true`) but has no
- * `parseValue`. Strict zero — every new Timestamp-typed filterable field
- * must set `parseValue: parseSieveDateValue` (or an explicit, reasoned
+ * This audit statically scans every `.ts`/`.tsx` file under `appkit/src` —
+ * NOT just `*.repository.ts` — for Sieve field config entries (`fieldName: {
+ * canFilter: true, canSort: ..., ... }`) whose key LOOKS like a Firestore
+ * Timestamp field (ends in `At`/`Date`/`Time`, or is in the small
+ * named-exception list below for fields that don't follow that suffix
+ * convention) and is filterable (`canFilter: true`) but has no `parseValue`.
+ * Strict zero — every new Timestamp-typed filterable field must set
+ * `parseValue: parseSieveDateValue` (or an explicit, reasoned
  * `// audit-sieve-date-field-ok: <reason>` on the same line for a field that
  * matches the naming heuristic but is genuinely NOT a Timestamp).
+ *
+ * **Whole-tree scan, not repository-only (2026-08-20 follow-up)**: a Sieve
+ * field config doesn't have to live in a `*.repository.ts` file to be real —
+ * `PRODUCT_FEATURE_SIEVE_FIELDS` lives in `features/products/schemas/
+ * product-features.ts` and is imported into `product-features.repository.ts`.
+ * An audit scoped to `*.repository.ts` filenames would miss a future
+ * Timestamp field added there (or in any other schema/action/service file
+ * that defines its own field-config object consumed by `sieveQuery`/
+ * `applySieveToFirestore`).
+ *
+ * **The `findAll()` legacy query path is a separate, un-auditable gap, fixed
+ * at the source instead of here**: `BaseRepository`/`FirebaseRepository`
+ * (`appkit/src/providers/db-firebase/base.ts`) expose a second, older query
+ * method — `findAll(query: SieveQuery)` — that parses filter strings with
+ * its own standalone `coerceValue()`, entirely separate from
+ * `SieveFieldConfig`/`parseValue`. There is no per-field config object on
+ * that path for an audit to inspect, so a future `findAll({filters:
+ * "createdAt>=..."})` call would hit the identical Timestamp-vs-string bug
+ * with nothing here to catch it. `coerceValue()` was hardened directly
+ * (auto-detects ISO-8601-shaped strings and converts them to `Date`) so the
+ * bug class is closed at the root for that path instead of policed by a
+ * static check.
  *
  * Method: plain regex over raw source text, no TS compiler in the loop —
  * matches this project's existing audit convention (see
  * audit-filter-tab-enums.mjs for precedent). Field config object literals in
  * this codebase never nest a second `{}` inside themselves, so a
- * non-greedy `\{([^{}]*)\}` capture is sufficient.
+ * non-greedy `\{([^{}]*)\}` capture is sufficient. Comments are stripped
+ * before matching so a docstring example (e.g. the one in `sieve.ts` itself)
+ * can't false-positive.
  */
 
 import { readFileSync, readdirSync, statSync } from "node:fs";
@@ -68,13 +93,16 @@ function looksLikeDateField(key) {
   return DATE_SUFFIX_RE.test(bare) || EXTRA_TIMESTAMP_FIELD_NAMES.has(bare);
 }
 
+const SKIP_DIR_NAMES = new Set(["node_modules", "__tests__", "dist"]);
+const SKIP_FILE_RE = /\.(test|spec|d)\.tsx?$/;
+
 function walk(dir, out) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const p = join(dir, entry.name);
     if (entry.isDirectory()) {
-      if (entry.name === "node_modules") continue;
+      if (SKIP_DIR_NAMES.has(entry.name)) continue;
       walk(p, out);
-    } else if (entry.isFile() && entry.name.endsWith(".repository.ts")) {
+    } else if (entry.isFile() && /\.tsx?$/.test(entry.name) && !SKIP_FILE_RE.test(entry.name)) {
       out.push(p);
     }
   }
@@ -82,15 +110,30 @@ function walk(dir, out) {
 }
 
 /**
- * Extracts every `key: { ...body... }` field-config entry from a repository
- * source file. Keys may be bare identifiers or quoted dot-paths
+ * Blanks out `/* ... *\/` and `// ...` comment content (preserving newlines
+ * and overall string length, so line numbers stay accurate) so a docstring
+ * example containing `canFilter: true` can't false-positive as a real field
+ * config. Doesn't account for `//`/`/*` inside string literals — accepted
+ * trade-off for a no-compiler regex audit; no real field-config object in
+ * this codebase contains those sequences in a key or value.
+ */
+function stripComments(src) {
+  return src
+    .replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " "))
+    .replace(/\/\/[^\n]*/g, (m) => " ".repeat(m.length));
+}
+
+/**
+ * Extracts every `key: { ...body... }` field-config entry from a source
+ * file. Keys may be bare identifiers or quoted dot-paths
  * (`"validity.startDate"`). Object bodies here never contain a nested `{}`.
  */
 function extractFieldConfigs(src) {
+  const clean = stripComments(src);
   const entries = [];
   const re = /("[^"]+"|\b[A-Za-z_][A-Za-z0-9_]*)\s*:\s*\{([^{}]*)\}/g;
   let m;
-  while ((m = re.exec(src))) {
+  while ((m = re.exec(clean))) {
     const [full, rawKey, body] = m;
     if (!/canFilter\s*:/.test(body) || !/canSort\s*:/.test(body)) continue; // not a SieveFieldConfig entry
     const key = rawKey.replace(/^"|"$/g, "");
@@ -120,7 +163,7 @@ function main() {
   }
 
   if (violations.length === 0) {
-    console.log(`audit-sieve-date-fields: clean ✓ (${files.length} repository file(s) checked)`);
+    console.log(`audit-sieve-date-fields: clean ✓ (${files.length} file(s) checked)`);
     process.exit(0);
   }
 
