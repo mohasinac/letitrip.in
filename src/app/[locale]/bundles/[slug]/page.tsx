@@ -5,6 +5,7 @@ import {
   buildBundleMetadata,
   getBundleForDetail,
   listBundleMembers,
+  getRelatedBundles,
 } from "@mohasinac/appkit/server";
 import { buyBundleAction } from "@/actions/bundle.actions";
 
@@ -37,13 +38,17 @@ export default async function Page({
   const bundle = await getBundleForDetail(slug);
   if (!bundle) notFound();
 
-  const members = await listBundleMembers(bundle);
+  const [members, relatedBundles] = await Promise.all([
+    listBundleMembers(bundle),
+    getRelatedBundles(bundle),
+  ]);
 
   return (
     <BundleDetailView
       bundle={bundle}
       members={members}
       onBuyNow={buyBundleAction}
+      relatedBundles={relatedBundles}
     />
   );
 }

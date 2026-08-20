@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { getLiveItemForDetail } from "@mohasinac/appkit";
+import { getLiveItemForDetail, LiveItemDetailPageView } from "@mohasinac/appkit";
 import { buildLiveItemMetadata } from "@mohasinac/appkit/server";
-import { LiveItemDetailView } from "@mohasinac/appkit/client";
 import { LiveItemActionsClient } from "@/components";
 import { SEO_CONFIG } from "@/constants";
 
@@ -20,9 +19,10 @@ export default async function Page({ params }: Props) {
   const product = await getLiveItemForDetail(slug).catch(() => null);
 
   return (
-    <LiveItemDetailView
-      product={product}
-      renderActions={product ? () => <LiveItemActionsClient product={product} /> : undefined}
+    <LiveItemDetailPageView
+      slug={slug}
+      initialProduct={product}
+      renderActions={(p) => <LiveItemActionsClient product={p} />}
     />
   );
 }
