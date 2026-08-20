@@ -1887,7 +1887,7 @@ All 21 run as a chain via `appkit`'s `npm run check:audits` (the first entry in 
 | audit-route-schema-registry.mjs | strict-0 | All 464 route exports are registered (or carry suppression marker) |
 | audit-z-any-z-unknown.mjs | strict-0 | No `z.any()` / `z.unknown()` in schema definitions |
 
-### Consumer audits (58 scripts in `scripts/`)
+### Consumer audits (59 scripts in `scripts/`)
 
 Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 
@@ -1963,6 +1963,7 @@ Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 | audit-tester-checklist-hrefs.mjs | strict-0 | Every `href` in tester checklist seed data resolves to a real route — catches route renames/relocations silently 404-ing the tester's "Go test this →" button |
 | audit-media-filename-generators.mjs (appkit) | strict-0 | `MEDIA_FILENAME_PATTERNS` validator regex table stays in sync with `generateMediaFilename()`'s dispatcher — drift causes `/api/media/sign` to 500 in production (W1-51 bug class) |
 | audit-filter-tab-enums.mjs | strict-0 | Every `ADMIN_*_TABS`/`SELLER_*_TABS` filter-chip `id` matches a real value its target Firestore field can hold — a mismatch silently returns zero rows forever (root-cause #33) |
+| audit-client-server-only-leak.mjs | strict-0 | Walks every `"use client"` file's full import graph (relative, `@/` alias, appkit subpaths) and fails if it transitively reaches `import "server-only"` or the bare `@mohasinac/appkit` package (resolves to `server-entry.js`, the full server-action surface) — the bug class that broke the webpack production build, 2026-08-20. Exempts genuine `"use server"` action files, which Next's compiler safely splits |
 | audit-function-trigger-shadow-types.mjs | strict-0 | A Firestore-trigger handler's local shadow type (e.g. `NewOrder`) has no field name that doesn't exist on the real document type — caught the 2026-08-19 onOrderCreate bug (every WhatsApp purchase announcement read "A customer" / "₹0") |
 | audit-list-serializer-parity.mjs | strict-0 | Every admin resource's PATCH-writable field (Zod schema) is present in the sibling LIST endpoint's hand-rolled serializer — a missing field means a list-backed editor reseeds from a stale/default value and silently overwrites real data on the next save. Root-caused 2026-08-19 in admin users (`isTester`/`canTestAdmin`) and stores (`isVerified`/`isFeatured`/`capabilities`); registry currently covers users/stores/team (root-cause #38) |
 
