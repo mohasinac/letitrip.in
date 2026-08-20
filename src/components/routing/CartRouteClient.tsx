@@ -691,6 +691,7 @@ export function CartRouteClient() {
     checkoutDisabled
       ? {}
       : {
+          infoLabel: `Total: ₹${finalTotal.toFixed(2)} · ${selectedCount} item${selectedCount !== 1 ? "s" : ""}`,
           actions: [
             {
               id: ACTION_ID.CHECKOUT,
@@ -1152,7 +1153,7 @@ function SellerGroupSection({
                   className="mt-5 flex-shrink-0"
                 />
               )}
-              <Div className="flex-1">
+              <Div className="flex-1 min-w-0">
                 <CartItemRow
                   item={item}
                   href={productHref}
