@@ -51,7 +51,7 @@ const ADMIN_PASSWORD = valOf("--password") || process.env.ADMIN_SEED_PASSWORD ||
 const ADMIN = {
   uid: "user-admin-letitrip",
   email: "admin@letitrip.in",
-  phoneNumber: "+919876500000",
+  phoneNumber: "+918919665811",
   displayName: "LetItRip Admin",
   role: "admin",
   storeId: "store-letitrip-official",
@@ -87,7 +87,7 @@ const SITE_SETTINGS_DEFAULTS = {
   },
   contactSocial: {
     supportEmail: "support@letitrip.in",
-    phone: "+919876500000",
+    phone: "+918919665811",
   },
   fees: {
     platformCommissionPercent: 5,

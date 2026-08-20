@@ -123,7 +123,6 @@ export const FOOTER_LINK_GROUPS = [
       { label: "Scam Registry", href: String(ROUTES.PUBLIC.SCAMS)       },
       { label: "Item Requests", href: String(ROUTES.PUBLIC.ITEM_REQUESTS) },
       { label: "Report a Problem", href: String(ROUTES.PUBLIC.REPORT_ENTITY) },
-      { label: "Bug Hunters",   href: String(ROUTES.PUBLIC.BUG_HUNTERS) },
     ],
   },
   {

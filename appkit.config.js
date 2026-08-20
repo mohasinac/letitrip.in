@@ -14,22 +14,24 @@ const config = {
       "India's collector-first marketplace for figures, TCG gear, cosplay, and curated collectibles. Trusted sellers, authentic products.",
     madeInText: "Made with ♥ for collectors",
     socialUrls: {
-      instagram: "https://instagram.com/letitrip.in",
-      twitter: "https://twitter.com/letitrip_in",
-      whatsapp: "https://wa.me/c/917000000000",
+      whatsapp: "https://chat.whatsapp.com/JOlbdSwhVWYDKujolcBZDr",
+      github: "https://github.com/mohasinac",
     },
   },
 
   // ─── SEO defaults ────────────────────────────────────────────────────────
+  // Kept in sync with LETITRIP_SEO in src/constants/seo.server.ts — that file
+  // is the canonical source consumed by generateMetadata() for real pages;
+  // these values are what root layout.tsx, sitemap.ts, robots.ts, and every
+  // opengraph-image.tsx fallback siteName pull from.
   seo: {
     siteUrl: "https://letitrip.in",
-    defaultTitle: "letitrip — Curated Marketplace",
+    defaultTitle: "LetItRip — India's Collectibles Marketplace",
     defaultDescription:
-      "Discover unique products, auctions, and pre-orders on letitrip — your curated online marketplace.",
-    defaultImage: "/images/og-default.png",
-    siteName: "letitrip",
-    twitterHandle: "@letitrip",
-    locale: "en-IN",
+      "Buy, sell & auction action figures, trading cards, spinning tops, model kits and more. India's largest collectibles marketplace.",
+    defaultImage: "/media/site-og-image",
+    siteName: "LetItRip",
+    locale: "en_IN",
   },
 
   // ─── i18n / next-intl routing ────────────────────────────────────────────
