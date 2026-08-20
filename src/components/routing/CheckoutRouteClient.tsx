@@ -3,6 +3,7 @@ import { normalizeError, checkEmiEligibility, computeEmiSchedule, computeCodHand
 import type { JsonValue, EmiSettings, OutOfStockPolicy, CodHandlingFeeRates, WhatsAppNotifyFeeRates, GiftWrapFeeRates, ShipmentProtectionFeeRates } from "@mohasinac/appkit/client";
 
 import { useCallback, useState, useEffect, useMemo } from "react";
+import type { ReactNode } from "react";
 import {
   AddressForm,
   Button,
@@ -13,6 +14,7 @@ import {
   FieldSelect,
   FieldTextarea,
   Heading,
+  IconBox,
   Input,
   Row,
   SideDrawer,
@@ -38,13 +40,19 @@ import {
   sendCheckoutValueOtpAction,
   verifyCheckoutValueOtpAction,
 } from "@/actions/checkout.actions";
-import { API_ROUTES, UI_LABELS } from "@/constants";
+import { API_ROUTES, UI_LABELS, PAYMENT_ICONS, CashIcon, RazorpayIcon } from "@/constants";
+// Deep import (not the @/components barrel): CheckoutRouteClient is itself
+// re-exported from that barrel, so importing it back would be circular.
+import { BrandBadgeImage } from "@/components/layout/BrandBadgeImage";
 import {
   createCheckoutOrder,
   createRazorpayOrder,
   verifyRazorpayPayment,
+  fetchCheckoutPricingPreview,
   type CheckoutAddonSelections,
+  type CheckoutPricingPreview,
 } from "@/lib/api/payment-client";
+import { Truck, Banknote, MessageCircle, Gift, ShieldCheck, Receipt, Tag } from "lucide-react";
 import { applyCartCoupon, removeCartCoupon } from "@/lib/api/cart-client";
 import { applyCheckoutBypass } from "@/lib/api/admin-client";
 
@@ -238,6 +246,62 @@ function useEmiCheckout({
   }, [selectedAddress, emiTenure, outOfStockPolicy, addons, router, showToast, setStep, setActionError, setIsProcessingPayment, ensureValueOtpGate]);
 
   return { emiTenure, setEmiTenure, emiVisible, emiSchedule, handlePlaceEmiOrder };
+}
+
+/**
+ * Fetches the server-authoritative pricing breakdown (shipping, COD handling
+ * fee, add-ons, GST, coupon discount) so the Order Summary can show the true
+ * total instead of just subtotal − coupon discount. Debounced so toggling an
+ * add-on checkbox doesn't fire a request per keystroke/click. `paymentMethod`
+ * only affects whether the COD handling fee line is populated — every other
+ * field is payment-method-agnostic.
+ */
+function usePricingPreview({
+  uid,
+  step,
+  addressId,
+  paymentMethod,
+  addons,
+  couponSignal,
+}: {
+  uid: string | undefined;
+  step: CheckoutStep;
+  addressId: string | undefined;
+  paymentMethod: "cod" | "online" | "upi_manual" | "cash" | "emi";
+  addons: CheckoutAddonSelections;
+  /** Serialized applied-coupon state (code:amount pairs) — a plain dependency so applying/removing a coupon re-fetches the preview. */
+  couponSignal: string;
+}) {
+  const [preview, setPreview] = useState<CheckoutPricingPreview | null>(null);
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+
+  useEffect(() => {
+    if (!uid || step !== "payment") return;
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      setIsLoadingPreview(true);
+      fetchCheckoutPricingPreview({
+        addressId,
+        paymentMethod,
+        whatsappNotifyAddon: addons.whatsappNotifyAddon,
+        giftWrapAddon: addons.giftWrapAddon,
+        shipmentProtectionAddon: addons.shipmentProtectionAddon,
+      })
+        .then(async (res) => {
+          if (!res.ok || cancelled) return;
+          const json = await res.json().catch(() => ({}));
+          if (!cancelled && json?.data) setPreview(json.data as CheckoutPricingPreview);
+        })
+        .catch((err: unknown) => void normalizeError(err))
+        .finally(() => { if (!cancelled) setIsLoadingPreview(false); });
+    }, 300);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [uid, step, addressId, paymentMethod, addons.whatsappNotifyAddon, addons.giftWrapAddon, addons.shipmentProtectionAddon, couponSignal]);
+
+  return { preview, isLoadingPreview };
 }
 
 // --- Sub-renderers -----------------------------------------------------------
@@ -508,50 +572,63 @@ function renderPaymentStep({
             ]}
           />
           {codSettings?.whatsappNotifyFeeEnabled && (
-            <FieldCheckbox
-              name="whatsappNotifyAddon"
-              label={`Get WhatsApp order updates (+${formatEmiRupees(codSettings.whatsappNotifyFee ?? 10)})`}
-              hint="Receive order status updates on WhatsApp for this order."
-              checked={whatsappNotifyAddon}
-              onChange={setWhatsappNotifyAddon}
-            />
+            <Row gap="sm" align="start">
+              <IconBox size="sm" tone="brand"><MessageCircle size={14} /></IconBox>
+              <Div className="flex-1">
+                <FieldCheckbox
+                  name="whatsappNotifyAddon"
+                  label={`Get WhatsApp order updates (+${formatEmiRupees(codSettings.whatsappNotifyFee ?? 10)})`}
+                  hint="Receive order status updates on WhatsApp for this order."
+                  checked={whatsappNotifyAddon}
+                  onChange={setWhatsappNotifyAddon}
+                />
+              </Div>
+            </Row>
           )}
           {codSettings?.giftWrapFeeEnabled && (
-            <Stack gap="xs">
-              <FieldCheckbox
-                name="giftWrapAddon"
-                label={`Add gift wrap (+${formatEmiRupees(codSettings.giftWrapFee ?? 49)})`}
-                hint="We'll wrap this order and include your message with the package."
-                checked={giftWrapAddon}
-                onChange={setGiftWrapAddon}
-              />
-              {giftWrapAddon && (
-                <FieldTextarea
-                  name="giftWrapMessage"
-                  label="Gift message (optional)"
-                  value={giftWrapMessage}
-                  onChange={(v) => setGiftWrapMessage(v.slice(0, 500))}
-                  rows={2}
-                  maxLength={500}
-                  showCharCount
-                  placeholder="Add a note for the recipient…"
+            <Row gap="sm" align="start">
+              <IconBox size="sm" tone="brand"><Gift size={14} /></IconBox>
+              <Stack gap="xs" className="flex-1">
+                <FieldCheckbox
+                  name="giftWrapAddon"
+                  label={`Add gift wrap (+${formatEmiRupees(codSettings.giftWrapFee ?? 49)})`}
+                  hint="We'll wrap this order and include your message with the package."
+                  checked={giftWrapAddon}
+                  onChange={setGiftWrapAddon}
                 />
-              )}
-            </Stack>
+                {giftWrapAddon && (
+                  <FieldTextarea
+                    name="giftWrapMessage"
+                    label="Gift message (optional)"
+                    value={giftWrapMessage}
+                    onChange={(v) => setGiftWrapMessage(v.slice(0, 500))}
+                    rows={2}
+                    maxLength={500}
+                    showCharCount
+                    placeholder="Add a note for the recipient…"
+                  />
+                )}
+              </Stack>
+            </Row>
           )}
           {codSettings?.shipmentProtectionFeeEnabled && subtotal > 0 && (
-            <FieldCheckbox
-              name="shipmentProtectionAddon"
-              label={`Add shipment protection (+${formatEmiRupees(
-                Math.max(
-                  codSettings.shipmentProtectionFeeMin ?? 30,
-                  Math.round(subtotal * ((codSettings.shipmentProtectionFeePercent ?? 2) / 100) * 100) / 100,
-                ),
-              )})`}
-              hint="Covers this order against loss or damage in transit."
-              checked={shipmentProtectionAddon}
-              onChange={setShipmentProtectionAddon}
-            />
+            <Row gap="sm" align="start">
+              <IconBox size="sm" tone="brand"><ShieldCheck size={14} /></IconBox>
+              <Div className="flex-1">
+                <FieldCheckbox
+                  name="shipmentProtectionAddon"
+                  label={`Add shipment protection (+${formatEmiRupees(
+                    Math.max(
+                      codSettings.shipmentProtectionFeeMin ?? 30,
+                      Math.round(subtotal * ((codSettings.shipmentProtectionFeePercent ?? 2) / 100) * 100) / 100,
+                    ),
+                  )})`}
+                  hint="Covers this order against loss or damage in transit."
+                  checked={shipmentProtectionAddon}
+                  onChange={setShipmentProtectionAddon}
+                />
+              </Div>
+            </Row>
           )}
           {showCashOption && (
             <Stack gap="sm">
@@ -584,7 +661,11 @@ function renderPaymentStep({
                 disabled={isProcessingPayment || cartIsEmpty || !manualPaymentConsent}
                 className={PRIMARY_BTN_CLS}
               >
-                {isProcessingPayment ? "Placing order…" : "Pay via UPI / Cash"}
+                <Row gap="xs" align="center" justify="center">
+                  <BrandBadgeImage src={PAYMENT_ICONS.upi} alt="UPI" className="h-4 w-10" />
+                  <CashIcon className="h-4 w-4" />
+                  <Span>{isProcessingPayment ? "Placing order…" : "Pay via UPI / Cash"}</Span>
+                </Row>
               </Button>
             </Stack>
           )}
@@ -595,7 +676,10 @@ function renderPaymentStep({
               disabled={isProcessingPayment || cartIsEmpty}
               className={PRIMARY_BTN_CLS}
             >
-              {CK.PAYMENT_ONLINE_BTN}
+              <Row gap="xs" align="center" justify="center">
+                <RazorpayIcon className="h-4 w-4" />
+                <Span>{CK.PAYMENT_ONLINE_BTN}</Span>
+              </Row>
             </Button>
           )}
           {showCod && (
@@ -606,9 +690,12 @@ function renderPaymentStep({
                 const payNow = depositAmount + codHandlingFee;
                 const payOnDelivery = Math.max(0, subtotal - depositAmount);
                 return (
-                  <Text className="mb-2" size="sm" color="muted">
-                    {CK.COD_HANDLING_FEE_LABEL}: {formatEmiRupees(codHandlingFee)} · {CK.COD_PAY_NOW_LABEL}: {formatEmiRupees(payNow)} · {CK.COD_PAY_ON_DELIVERY_LABEL}: {formatEmiRupees(payOnDelivery)}
-                  </Text>
+                  <Row gap="xs" align="center" className="mb-2">
+                    <Banknote size={14} className="text-[var(--appkit-color-text-muted)]" />
+                    <Text size="sm" color="muted">
+                      {CK.COD_HANDLING_FEE_LABEL}: {formatEmiRupees(codHandlingFee)} · {CK.COD_PAY_NOW_LABEL}: {formatEmiRupees(payNow)} · {CK.COD_PAY_ON_DELIVERY_LABEL}: {formatEmiRupees(payOnDelivery)}
+                    </Text>
+                  </Row>
                 );
               })()}
               <Button
@@ -617,7 +704,10 @@ function renderPaymentStep({
                 disabled={isProcessingPayment || cartIsEmpty}
                 className="w-full border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] dark:bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-bg)] dark:hover:bg-[var(--appkit-color-surface-elevated)]"
               >
-                {CK.PAYMENT_COD_BTN}
+                <Row gap="xs" align="center" justify="center">
+                  <CashIcon className="h-4 w-4" />
+                  <Span>{CK.PAYMENT_COD_BTN}</Span>
+                </Row>
               </Button>
             </Div>
           )}
@@ -747,6 +837,29 @@ function renderCouponSection({
   );
 }
 
+/** A single fee/discount line in the Order Summary breakdown — icon + label + amount. */
+function OrderSummaryLine({
+  icon,
+  label,
+  amount,
+  tone = "muted",
+}: {
+  icon: ReactNode;
+  label: string;
+  amount: string;
+  tone?: "muted" | "success";
+}) {
+  return (
+    <Row textSize="sm" className="mb-1" color={tone} align="center" justify="between">
+      <Row gap="xs" align="center">
+        {icon}
+        <Text>{label}</Text>
+      </Row>
+      <Text>{amount}</Text>
+    </Row>
+  );
+}
+
 function renderOrderSummary({
   selectedAddress,
   formattedSubtotal,
@@ -756,6 +869,8 @@ function renderOrderSummary({
   addressesLoading,
   actionError,
   handleAdvanceToPayment,
+  pricingPreview,
+  isLoadingPreview,
 }: {
   selectedAddress: Address | null;
   formattedSubtotal: string;
@@ -765,7 +880,10 @@ function renderOrderSummary({
   addressesLoading: boolean;
   actionError: string;
   handleAdvanceToPayment: () => void;
+  pricingPreview: CheckoutPricingPreview | null;
+  isLoadingPreview: boolean;
 }) {
+  const iconCls = "text-[var(--appkit-color-text-muted)]";
   return (
     <Div surface="card" padding="sm">
       <Heading level={3} className="mb-3" color="primary" size="base" weight="semibold">
@@ -788,16 +906,39 @@ function renderOrderSummary({
         <Text>Subtotal</Text>
         <Text>{formattedSubtotal}</Text>
       </Row>
-      {totalDiscount > 0 && (
-        <Row textSize="sm" className="text-success mb-1" align="center" justify="between">
-          <Text>Coupon discount</Text>
-          <Text>−₹{totalDiscount.toFixed(2)}</Text>
-        </Row>
+      {pricingPreview && pricingPreview.shippingFee > 0 && (
+        <OrderSummaryLine icon={<Truck size={14} className={iconCls} />} label="Shipping" amount={formatEmiRupees(pricingPreview.shippingFee)} />
+      )}
+      {pricingPreview && pricingPreview.codHandlingFee > 0 && (
+        <OrderSummaryLine icon={<Banknote size={14} className={iconCls} />} label="COD handling fee" amount={formatEmiRupees(pricingPreview.codHandlingFee)} />
+      )}
+      {pricingPreview && pricingPreview.whatsappNotifyFee > 0 && (
+        <OrderSummaryLine icon={<MessageCircle size={14} className={iconCls} />} label="WhatsApp updates" amount={formatEmiRupees(pricingPreview.whatsappNotifyFee)} />
+      )}
+      {pricingPreview && pricingPreview.giftWrapFee > 0 && (
+        <OrderSummaryLine icon={<Gift size={14} className={iconCls} />} label="Gift wrap" amount={formatEmiRupees(pricingPreview.giftWrapFee)} />
+      )}
+      {pricingPreview && pricingPreview.shipmentProtectionFee > 0 && (
+        <OrderSummaryLine icon={<ShieldCheck size={14} className={iconCls} />} label="Shipment protection" amount={formatEmiRupees(pricingPreview.shipmentProtectionFee)} />
+      )}
+      {pricingPreview && pricingPreview.gstAmount > 0 && (
+        <OrderSummaryLine icon={<Receipt size={14} className={iconCls} />} label="GST" amount={formatEmiRupees(pricingPreview.gstAmount)} />
+      )}
+      {(pricingPreview ? pricingPreview.couponDiscount : totalDiscount) > 0 && (
+        <OrderSummaryLine
+          icon={<Tag size={14} className="text-success" />}
+          label="Coupon discount"
+          amount={`−${formatEmiRupees(pricingPreview ? pricingPreview.couponDiscount : totalDiscount)}`}
+          tone="success"
+        />
       )}
       <Row border="default" className="border-t" padding="t-sm" align="center" justify="between">
         <Text weight="semibold" color="primary">{CK.ORDER_SUMMARY_TOTAL}</Text>
         <Text weight="semibold" color="primary">{formattedTotal}</Text>
       </Row>
+      {isLoadingPreview && !pricingPreview && step === "payment" && (
+        <Text className="mt-1" size="xs" color="muted">Calculating shipping & fees…</Text>
+      )}
       {step === "address" && (
         <Button
           type="button"
@@ -1186,8 +1327,24 @@ export function CheckoutRouteClient({
 
   const totalDiscount = effectiveCoupons.reduce((s, c) => s + c.discountAmount, 0);
   const subtotal = cartData?.subtotal ?? 0;
-  const effectiveTotal = Math.max(0, subtotal - totalDiscount);
   const cartIsEmpty = (cartData?.cart?.items?.length ?? 0) === 0;
+
+  // Order Summary pricing preview — the true total including shipping, COD
+  // handling fee, add-ons, and GST, matching what order placement actually
+  // charges/records (see usePricingPreview above). Falls back to the plain
+  // subtotal-minus-coupon estimate while the preview hasn't loaded yet.
+  const previewPaymentMethod: "cod" | "online" | "upi_manual" | "cash" | "emi" =
+    showCashOption ? "cash" : showCod ? "cod" : showRazorpay ? "online" : "emi";
+  const couponSignal = effectiveCoupons.map((c) => `${c.code}:${c.discountAmount}`).join(",");
+  const { preview: pricingPreview, isLoadingPreview } = usePricingPreview({
+    uid: user?.uid,
+    step,
+    addressId: selectedAddress?.id,
+    paymentMethod: previewPaymentMethod,
+    addons,
+    couponSignal,
+  });
+  const effectiveTotal = pricingPreview ? pricingPreview.total : Math.max(0, subtotal - totalDiscount);
 
   const {
     valueOtpMaskedEmail,
@@ -1395,7 +1552,7 @@ export function CheckoutRouteClient({
             </Stack>
           );
         }}
-        renderOrderSummary={() => renderOrderSummary({ selectedAddress, formattedSubtotal, formattedTotal, totalDiscount, step, addressesLoading, actionError, handleAdvanceToPayment })}
+        renderOrderSummary={() => renderOrderSummary({ selectedAddress, formattedSubtotal, formattedTotal, totalDiscount, step, addressesLoading, actionError, handleAdvanceToPayment, pricingPreview, isLoadingPreview })}
       />
     </Div>
   );

@@ -72,6 +72,33 @@ export interface CheckoutAddonSelections {
   shipmentProtectionAddon?: boolean;
 }
 
+export interface CheckoutPricingPreviewBody extends CheckoutAddonSelections {
+  addressId?: string;
+  paymentMethod: "cod" | "online" | "upi_manual" | "cash" | "emi";
+  excludedProductIds?: string[];
+}
+
+export interface CheckoutPricingPreview {
+  subtotal: number;
+  shippingFee: number;
+  codHandlingFee: number;
+  whatsappNotifyFee: number;
+  giftWrapFee: number;
+  shipmentProtectionFee: number;
+  gstAmount: number;
+  couponDiscount: number;
+  total: number;
+}
+
+export async function fetchCheckoutPricingPreview(body: CheckoutPricingPreviewBody): Promise<Response> {
+  return fetch(API_ENDPOINTS.CHECKOUT.PRICING_PREVIEW, {
+    method: "POST",
+    headers: JSON_HEADERS,
+    credentials: CREDS,
+    body: JSON.stringify(body),
+  });
+}
+
 export async function createRazorpayOrder(
   amount: number,
   addons?: CheckoutAddonSelections,

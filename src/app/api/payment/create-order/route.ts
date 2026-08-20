@@ -14,7 +14,7 @@ import { withProviders } from "@/providers.config";
  */
 
 import { z } from "zod";
-import { createRazorpayOrder, rupeesToPaise, computeWhatsAppNotifyFee, computeGiftWrapFee, computeShipmentProtectionFee } from "@mohasinac/appkit";
+import { createRazorpayOrder, rupeesToPaise, computeWhatsAppNotifyFee, computeGiftWrapFee, computeShipmentProtectionFee, splitCartIntoOrderGroups, resolveShippingCost } from "@mohasinac/appkit";
 import { siteSettingsRepository, unitOfWork, productRepository } from "@mohasinac/appkit";
 import { successResponse, ApiErrors } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
@@ -107,8 +107,20 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
     const giftWrapFee = computeGiftWrapFee(giftWrapAddon, siteSettings?.commissions ?? {});
     const shipmentProtectionFee = computeShipmentProtectionFee(subtotalRs, shipmentProtectionAddon, siteSettings?.commissions ?? {});
     const addonFees = whatsappNotifyFee + giftWrapFee + shipmentProtectionFee;
-    const rawTotal = subtotalRs + platformFee + gstOnFee + addonFees;
-    const totalAmount = Math.max(rawTotal, subtotalRs + minimumTransactionFee + addonFees);
+
+    // Shipping is charged per resulting order (one per seller-group the cart
+    // splits into at order-creation time), same as createRazorpayGroupOrder /
+    // createOrderForGroup — reuses the same resolveShippingCost the order
+    // that gets placed after payment actually charges/records, so the amount
+    // captured here can't fall short of what's later recorded as owed.
+    const orderGroups = splitCartIntoOrderGroups(activeItems.map((item) => ({ item })));
+    const shippingFeesByGroup = await Promise.all(
+      orderGroups.map((group) => resolveShippingCost(group.items[0].item.storeId)),
+    );
+    const shippingFee = shippingFeesByGroup.reduce((sum, r) => sum + r.shippingFee, 0);
+
+    const rawTotal = subtotalRs + platformFee + gstOnFee + addonFees + shippingFee;
+    const totalAmount = Math.max(rawTotal, subtotalRs + minimumTransactionFee + addonFees + shippingFee);
 
     const amountInPaise = rupeesToPaise(totalAmount);
 
@@ -133,6 +145,7 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
       whatsappNotifyFee,
       giftWrapFee,
       shipmentProtectionFee,
+      shippingFee,
       baseAmount: subtotalRs,
     });
   },

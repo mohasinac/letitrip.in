@@ -17,7 +17,7 @@ import { createCheckoutOrderAction } from "@mohasinac/appkit";
 
 const checkoutSchema = z.object({
   addressId: z.string().min(1, "addressId is required"),
-  paymentMethod: z.enum(["cod", "online", "upi_manual", "emi"]).default("cod"),
+  paymentMethod: z.enum(["cod", "online", "upi_manual", "cash", "emi"]).default("cod"),
   /** Required when paymentMethod === "emi" — validated further by createCheckoutOrderAction. */
   emiTenureMonths: z.number().int().min(2).max(6).optional(),
   notes: z.string().max(500).optional(),
