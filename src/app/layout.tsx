@@ -61,8 +61,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    site: SEO_CONFIG.twitterHandle,
-    creator: SEO_CONFIG.twitterHandle,
+    ...(SEO_CONFIG.twitterHandle
+      ? { site: SEO_CONFIG.twitterHandle, creator: SEO_CONFIG.twitterHandle }
+      : {}),
     title: SEO_CONFIG.defaultTitle,
     description: SEO_CONFIG.defaultDescription,
   },
@@ -154,6 +155,12 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `try{if(localStorage.getItem('font-style')==='cursive'){document.documentElement.classList.add('font-cursive');}}catch(e){
  void normalizeError(e);}`,
+          }}
+        />
+        <script
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: `try{var h=localStorage.getItem('appkit:hand-mode');document.documentElement.setAttribute('data-hand',h==='left'?'left':'right');}catch(e){}`,
           }}
         />
       </head>

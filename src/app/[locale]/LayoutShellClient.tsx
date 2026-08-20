@@ -13,8 +13,10 @@ import {
   NavigationLoader,
   ROUTES,
   Div,
+  Stack,
   Search,
   ThemeProvider,
+  HandModeProvider,
   buildThemeRegistry,
   isAdminUser,
   isSellerUser,
@@ -30,7 +32,7 @@ import {
   type SiteSettingsThemeInput,
 } from "@mohasinac/appkit/client";
 import { AdRuntimeInitializer } from "@/components";
-import { FooterNewsletterSlot } from "@/components";
+import { FooterNewsletterSlot, FooterBadgesSlot } from "@/components";
 import { usePresence } from "@/lib/analytics/usePresence";
 import { MAIN_NAV_ITEMS, SIDEBAR_SUPPORT_LINKS, FOOTER_LINK_GROUPS } from "@/constants/navigation";
 import { BRAND, getBrandCopyright } from "@/constants/brand";
@@ -252,7 +254,12 @@ export default function LayoutShellClient({
       showTrustBar: true,
       trustBarItems: FOOTER_TRUST_BAR_ITEMS,
       socialLinks: FOOTER_SOCIAL_LINKS,
-      newsletterSlot: <FooterNewsletterSlot />,
+      newsletterSlot: (
+        <Stack gap="lg">
+          <FooterNewsletterSlot />
+          <FooterBadgesSlot />
+        </Stack>
+      ),
       linkGroups: FOOTER_LINK_GROUPS,
       bottomLinks: FOOTER_BOTTOM_LINKS,
     };
@@ -266,6 +273,7 @@ export default function LayoutShellClient({
     Date.now() - new Date(user.createdAt).getTime() < THIRTY_DAYS_MS;
 
   return (
+    <HandModeProvider initialHand={user?.uiPreferences?.handMode}>
     <ThemeProvider registry={themeRegistry}>
       <AdRuntimeInitializer />
       <AppLayoutShell
@@ -350,5 +358,6 @@ export default function LayoutShellClient({
       </AppLayoutShell>
       <NavigationLoader />
     </ThemeProvider>
+    </HandModeProvider>
   );
 }

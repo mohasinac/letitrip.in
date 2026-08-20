@@ -5,6 +5,7 @@ import { normalizeError } from "@mohasinac/appkit/client";
 import type { ImageCropData } from "@mohasinac/appkit/client";
 
 import { Link } from "@/i18n/navigation";
+import { HandModeToggleClient } from "./HandModeToggleClient";
 import {
   useProfile,
   useUpdateProfile,
@@ -330,6 +331,7 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
         </Stack>
       )}
       </CollapsibleSection>
+      <HandModeToggleClient />
     </Stack>
   );
 }

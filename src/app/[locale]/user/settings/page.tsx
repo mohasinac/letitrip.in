@@ -26,7 +26,7 @@ import {
 import { Tabs, TabsList, TabsTrigger, Accordion, PaginatedSelect } from "@mohasinac/appkit/ui";
 import type { AsyncPage, PaginatedSelectOption } from "@mohasinac/appkit/ui";
 import { SUPPORTED_LANGUAGES, LANGUAGES_PAGE_SIZE } from "@/constants";
-import { FontToggleClient } from "@/components";
+import { FontToggleClient, HandModeToggleClient } from "@/components";
 import { API_ROUTES } from "@/constants";
 
 type Tab = "account" | "privacy" | "appearance" | "notifications";
@@ -288,6 +288,11 @@ function renderAppearanceTab({
       <SectionCard>
         <SectionTitle>Theme & Font</SectionTitle>
         <FontToggleClient />
+      </SectionCard>
+
+      <SectionCard>
+        <SectionTitle>Layout</SectionTitle>
+        <HandModeToggleClient />
       </SectionCard>
 
       <SectionCard>

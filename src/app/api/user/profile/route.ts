@@ -72,6 +72,7 @@ const updateProfileSchema = z.object({
     .object({
       collapsedSections: z.array(z.string()).optional(),
       dataViewMode: z.enum(["table", "grid", "list"]).optional(),
+      handMode: z.enum(["left", "right"]).optional(),
     })
     .optional(),
 });
@@ -110,7 +111,11 @@ export const PATCH = withProviders(createApiHandler<(typeof updateProfileSchema)
     // merged against the current value here (not just the key this request
     // is changing) or a dataViewMode write would silently wipe out
     // collapsedSections and vice versa.
-    if (uiPreferences?.collapsedSections !== undefined || uiPreferences?.dataViewMode !== undefined) {
+    if (
+      uiPreferences?.collapsedSections !== undefined ||
+      uiPreferences?.dataViewMode !== undefined ||
+      uiPreferences?.handMode !== undefined
+    ) {
       const existing = (user!.uiPreferences as Record<string, JsonValue>) ?? {};
       await userRepository.update(user!.uid, {
         uiPreferences: {
@@ -120,6 +125,9 @@ export const PATCH = withProviders(createApiHandler<(typeof updateProfileSchema)
             : {}),
           ...(uiPreferences.dataViewMode !== undefined
             ? { dataViewMode: uiPreferences.dataViewMode }
+            : {}),
+          ...(uiPreferences.handMode !== undefined
+            ? { handMode: uiPreferences.handMode }
             : {}),
         },
       } as any);
