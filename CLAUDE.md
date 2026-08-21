@@ -413,7 +413,7 @@ Traditional dev server with webpack HMR + file watchers. Uses ~3.5 GB. Best for 
 | **notifications** (23 seeded) | id (`notif-`), userId, type (10 types), title, body, isRead, entityId, entityType, createdAt | — | userId, type, isRead, entityId, createdAt | Covers all 10 notification types, mixed read/unread. `AdminNotificationsView` gained a "View details" row action (2026-08-21) → `ViewNotificationModal` — was list-only before, no way to see full body/payload/link. |
 | **adminAuditLog** (0 seeded — grows organically from real admin actions) | id (Firestore auto-ID), actorUid, actorName?, action (closed enum — see below), targetType, targetId, targetLabel?, reason?, metadata?, createdAt | — | actorUid, action, targetType, createdAt | Added 2026-08-21 (Admin Audit Log MVP). Queryable record of high-value privileged admin actions — NOT an exhaustive every-write-path audit trail. Single write-site: `recordAdminAction()` (`appkit/src/_internal/server/features/audit-log/actions.ts`), best-effort/non-blocking (a failed audit write never fails the underlying action). Instrumented actions (`AdminAuditActionValues`): `user_hard_ban` (hardBanCascade.ts), `user_soft_ban`/`user_unban` (soft-ban/unban routes), `checkout_bypass` (admin checkout-bypass route), `coupon_update` (adminUpdateCoupon), `payout_mark_paid` (adminUpdatePayout, only when status→paid), `store_status_change` (admin store PATCH route), `user_role_change` (adminUpdateUser, only when role actually changes). Admin-only list UI at `/admin/audit-log` (`AdminAuditLogView` + `ViewAuditLogEntryModal`), nav entry under Finance. The only "logs" surface before this (`/admin/maintenance/cloud-logs`) is raw Google Cloud Logging infra output — not actor/action semantics — and still exists unchanged for that purpose. |
 | **sessions** (5 seeded) | id, userId, isActive, expiresAt, lastActivity, deviceInfo.{browser, os, device, ip (masked)}, location.country | deviceInfo.ip | userId, isActive, expiresAt, lastActivity, createdAt | IP masked — never returned to client |
-| **siteSettings** (1 doc) | Singleton doc at `site_settings/global`. 12 groups: branding, appearance, announcementBanner, seoDefaults, contactSocial, watermark, fees, integrations (API keys), shipping, auctionConfig, platformLimits, legalPages. Feature flags. Carousel + section defaults. **`aboutContent`** (2026-08-19, typed via `AboutContentDocument` in `appkit/src/features/about/schemas/firestore.ts` — no longer a loose `Record<string,string>`): hero title/subtitle, mission, `howItems[]`, `valueItems[]`, `milestones[]`, and a `teamMembers[]` "Meet the Team" section (name/role/bio/photo + `isFounder`/`isDeveloper` flags) — admin-editable via Site Settings → About tab, rendered by `<AboutView>` at `/about`. | integrations.* (all API keys) | — | Single doc. VA8 admin form overwrites these. API keys are empty strings in seed — set via admin UI. |
+| **siteSettings** (1 doc) | Singleton doc at `siteSettings/global` — note the collection is camelCase `siteSettings`, **not** `site_settings` (this row and `AdminSiteConfigGuideView` both said `site_settings/global` until 2026-08-21; the real path is `SITE_SETTINGS_COLLECTION` in `appkit/src/features/admin/schemas/firestore.ts` + `SINGLETON_ID = "global"`). 12 groups: branding, appearance, announcementBanner, seoDefaults, contactSocial, watermark, fees, credentials (API keys — the field is `credentials.*`, **not** `integrations.*`), shipping, auctionConfig, platformLimits, legalPages. Feature flags. Carousel + section defaults. **`aboutContent`** (2026-08-19, typed via `AboutContentDocument` in `appkit/src/features/about/schemas/firestore.ts` — no longer a loose `Record<string,string>`): hero title/subtitle, mission, `howItems[]`, `valueItems[]`, `milestones[]`, and a `teamMembers[]` "Meet the Team" section (name/role/bio/photo + `isFounder`/`isDeveloper` flags) — admin-editable via Site Settings → About tab, rendered by `<AboutView>` at `/about`. | credentials.* (all API keys) | — | Single doc. VA8 admin form overwrites these. Seeded API keys are `*_PLACEHOLDER` **strings**, not empty — code that falls back to an env var when Firestore has no key must test for the `PLACEHOLDER` substring, not just emptiness (`resolveEmailProvider()` in `appkit/src/features/contact/email.tsx` is the reference). Every `credentials.*` value is AES-256-GCM encrypted with an `enc:v1:` prefix via `encryptSecret()`, which **throws** when `SETTINGS_ENCRYPTION_KEY` is unset — see § "Secrets & Encryption Keys". |
 
 ---
 
@@ -1439,6 +1439,44 @@ Defined in `appkit/src/tokens/motion.ts`:
 2. **Never add a `NEXT_PUBLIC_` prefix** to a secret or server-only variable (Firebase Admin keys, Razorpay secret, PII keys, internal secrets). If the code only runs server-side, the prefix is wrong.
 3. **Never pass unnecessary env vars** as props or context to client components. Read them in Server Components or API routes and pass only the derived, sanitised values downstream.
 4. **No new env vars** without a corresponding entry in `.env.local` (for local dev) and a note in `newchange.md` explaining what the key does and where to get its value.
+5. **`.env.local` is only ONE of three runtimes.** See § "Secrets & Runtime Env Parity" below — a secret present locally but missing on Vercel or in Firebase Functions is the single most common cause of "works on my machine, silently broken in prod" in this project.
+
+---
+
+## Secrets & Runtime Env Parity
+
+> Added 2026-08-21 after `SETTINGS_ENCRYPTION_KEY` was found missing from **all three** runtimes and `RESEND_API_KEY` was found stale on Vercel — both silent, both production-breaking. This section is the checklist for any server-side secret.
+
+**There are three independent runtimes, each with its own env store. Adding a secret to one does not add it to the others:**
+
+| Runtime | Env store | How to set | Takes effect |
+|---|---|---|---|
+| Local dev | `.env.local` (gitignored) | edit the file | next `npm run dev` |
+| Vercel (Next.js: API routes, RSC, server actions) | Vercel project env vars | see the CLI caveat below | **only on a NEW deployment** — an env change alone does nothing to the running deploy |
+| Firebase Functions (scheduled jobs, Firestore triggers, HTTPS) | `functions/.env.<projectId>` (gitignored) or Secret Manager | edit the file | next `npm run firebase deploy -- --only functions` |
+
+**Vercel CLI caveat (verified 2026-08-21, cost ~40 minutes):** `vercel env add` **silently stores an empty value** when fed via stdin in this environment (Git Bash *and* PowerShell, piped *and* `< file` redirect) — it prints `Added Environment Variable` either way. Worse, `vercel env pull` returns `""` for any var whose `type` is `sensitive` (Vercel's write-only kind), so a readback of `""` proves *nothing* about the stored value. **Use the REST API and confirm from the returned `created` object:**
+
+```bash
+TOKEN=$(node -e "const fs=require('fs');process.stdout.write(JSON.parse(fs.readFileSync(process.env.APPDATA+'/xdg.data/com.vercel.cli/auth.json','utf8')).token)")
+# List (also reveals each var's `type`): GET /v9/projects/$P/env?teamId=$T&decrypt=true
+# Delete:                                DELETE /v9/projects/$P/env/<envId>?teamId=$T
+# Create:                                POST /v10/projects/$P/env?teamId=$T
+#   body: {"key":"…","value":"…","type":"encrypted","target":["production","preview","development"]}
+```
+
+Prefer `type: "encrypted"` over `"sensitive"` — it is equally encrypted at rest but readable back, so the value can actually be verified. `projectId`/`orgId` are in `.vercel/project.json`.
+
+**To pick up an env change on Vercel without shipping uncommitted work**, use `vercel redeploy <current-prod-url>` — it rebuilds the already-live commit with current env vars. `vercel --prod` uploads the **working tree**, which will ship a concurrent session's half-finished changes (see [Concurrent-session git hygiene](#recurrent-root-cause-patterns)).
+
+### `SETTINGS_ENCRYPTION_KEY` specifically
+
+64-char hex (32 bytes). Backs `encryptSecret()`/`decryptSecret()` in [appkit/src/security/settings-encryption.ts](appkit/src/security/settings-encryption.ts), which protect `siteSettings.credentials.*` (every admin-entered API key) and `stores.*.whatsappConfig.accessToken`.
+
+- `encryptSecret()` **throws** when it's unset — so with no key, *saving* any admin API key or any store WhatsApp token fails outright. This is a hard failure, not a degraded mode.
+- `decryptSecret()` returns non-`enc:v1:` input **unchanged**, which is why plaintext seed placeholders read back fine and masked this gap for a long time.
+- Required in **all three** runtimes: Functions needs it because `getDecryptedCredentials()` runs there via `resolveEmailProvider()`.
+- **Rotating it orphans every `enc:v1:` value permanently.** Before minting a new one, scan `siteSettings.credentials.*` and every `stores/*.whatsappConfig.accessToken` for the `enc:v1:` prefix and confirm the count is zero.
 
 ---
 
