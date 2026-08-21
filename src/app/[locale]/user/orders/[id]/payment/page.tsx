@@ -25,6 +25,7 @@ import {
   Anchor,
   useSiteSettings,
   buildPaymentProofReviewMessage,
+  isManualPaymentMethod,
 } from "@mohasinac/appkit/client";
 import { attachPaymentProof } from "@/lib/api/payment-client";
 
@@ -53,9 +54,9 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const [isPending, setIsPending] = useState(false);
   const [now, setNow] = useState(() => Date.now());
 
-  const displayedUpiId = (order as any)?.displayedUpiId ?? "";
-  const paymentDeadline = (order as any)?.paymentDeadline
-    ? new Date((order as any).paymentDeadline as string | Date).getTime()
+  const displayedUpiId = order?.displayedUpiId ?? "";
+  const paymentDeadline = order?.paymentDeadline
+    ? new Date(order.paymentDeadline).getTime()
     : null;
   const windowExpired = paymentDeadline != null && now >= paymentDeadline;
 
@@ -66,7 +67,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   }, [paymentDeadline]);
 
   const handleUpload = async (file: File): Promise<string> => {
-    const displayName = (order as any)?.buyerName ?? (order as any)?.userId ?? "buyer";
+    const displayName = order?.userId ?? "buyer";
     const namePart = String(displayName).toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").slice(0, 20);
     return upload(file, "payment-proofs", false, {
       type: "payment-proof",
@@ -130,11 +131,10 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
     return <Text size="sm" color="muted">Order not found.</Text>;
   }
 
-  const pm = (order as any)?.paymentMethod ?? "";
-  const isCashOrUpi = pm === "cash" || pm === "upi_manual";
-  const alreadyPaid = (order as any)?.paymentStatus === "paid";
-  const cancellationReason = (order as any)?.cancellationReason;
-  const orderStatus = (order as any)?.status;
+  const isCashOrUpi = isManualPaymentMethod(order?.paymentMethod);
+  const alreadyPaid = order?.paymentStatus === "paid";
+  const cancellationReason = order?.cancellationReason;
+  const orderStatus = order?.orderStatus;
 
   if (!isCashOrUpi) {
     return (
@@ -206,14 +206,14 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
         </Stack>
       )}
 
-      {settings?.contact?.whatsappNumber && (order as any)?.productTitle && (
+      {settings?.contact?.whatsappNumber && order.items[0]?.title && (
         <Anchor
           href={`https://wa.me/${settings.contact.whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(
             buildPaymentProofReviewMessage({
               orderId: id,
-              buyerName: (order as any)?.userName ?? "buyer",
-              productTitle: (order as any).productTitle,
-              totalAmount: (order as any)?.totalPrice ?? 0,
+              buyerName: order.userId,
+              productTitle: order.items[0].title,
+              totalAmount: order.total,
               reviewUrl: typeof window !== "undefined" ? window.location.href : "",
             }),
           )}`}

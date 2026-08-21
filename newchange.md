@@ -41,6 +41,31 @@
 
 ---
 
+### S-manual-payment-review — Manual-payment proof flow: dead adapter fix, admin review queue, buyer/seller surfacing (2026-08-21)
+
+Started from "we don't see the upload payment proofs for manual payments in the orders, or that flow actually." Expected to build the flow; found it was **already fully built** (Tier PP: buyer upload page, admin verify / request-reupload / reject-as-fraud with a 7-day ban cascade, the 15-minute expiry sweep, the 2-hour auto-approve sweep) and broken by one adapter.
+
+**Root cause (new CLAUDE.md Root Cause #57).** `orderDocumentToOrder()` mapped `paymentStatus` and nothing else payment-related. `/user/orders/[id]/payment` gates its entire render on `paymentMethod`, which was therefore `undefined` for every order — so **every** buyer reaching it, including via the post-checkout redirect, was shown *"This order does not require manual payment upload."* The flow was 100% dead and the symptom was a polite fallback message, not an error. Fixed by mapping the full manual-payment block (12 fields) onto `Order` and typing them properly, which let ~8 `(order as any)` casts on the payment page be deleted.
+
+**Three more real bugs found in the same trace:**
+- `attachPaymentProofAction` never cleared `paymentReviewOutcome`, so a proof re-uploaded after `adminRequestProofReuploadAction` kept its stale `"reupload_requested"` value — invisible to *both* `getUnreviewedProofPastDeadline` (2-hour auto-approve) and any queue keyed on that field. The order stalled silently forever. Now cleared (`paymentReviewOutcome`/`paymentReviewedBy`/`paymentReviewedAt`; the note is kept so the buyer still sees what was asked for).
+- `ROUTES.USER.ORDER_PAYMENT` had exactly **one** caller in the whole codebase — the post-checkout redirect. A buyer who navigated away, or who got the "please re-upload your proof" notification, had no link back. Added a manual-payment panel on `/user/orders/view/[id]` with a Complete-payment / Re-upload CTA, the admin's review note, and per-state copy.
+- The payment page's "cancelled — window expired" branch read `order.status`; the `Order` type's field is `orderStatus`, so it never fired.
+
+**Admin review queue.** There was no way to *find* orders needing action — `AdminOrdersView` filtered on `status` only. Added a "Manual payment" chip group (Awaiting payment / Awaiting verification) plus an inline per-row state marker. Deliberately **not** a Sieve filter: both states hinge on the *absence* of a field (`paymentProofUrl` / `paymentReviewOutcome`) and a Firestore `!= null` clause silently drops every doc where the field was never written — which is exactly the awaiting-payment set. Instead `orderRepository.listPaymentReviewQueue(mode, opts)` runs one bounded query and refines in memory, reusing the technique (and the composite index) the existing sweep queries already use. Reached via a `paymentReview` **query param**, threaded through a new `buildExtraParams` seam on `AdminListingConfig`/`useAdminListingData` (participates in the react-query key).
+
+Also considered and **rejected**: adding a stored `paymentQueueState` field. A denormalised mirror drifts the first time a write path forgets it (Root Cause #42) — deriving from the two real fields keeps buyer, seller, and admin from ever disagreeing.
+
+**Seller surfacing.** `SellerOrderDetailPanel` showed only the raw method word (`upi_manual`) with no indication the money had landed. Added a read-only state badge + UTR. The buyer's screenshot is deliberately **not** shown to sellers (bank/UPI capture; verification is admin+moderator-only).
+
+New shared constants in `appkit/src/features/orders/constants/payment-window.ts` (`MANUAL_PAYMENT_METHODS`/`isManualPaymentMethod`, `PaymentReviewQueueMode` + guard, scan limit) replace the inlined `pm !== "cash" && pm !== "upi_manual"` chains that had let the `emi` case drift between call sites.
+
+**Docs**: new CLAUDE.md § "Manual Payment Review Flow" + Root Cause #57; `codebaseexports.md` rows for the adapter and the constants file. **Tester cases**: +12 (5 buyer, 6 admin, 1 seller), each naming the exact regression it guards.
+
+⚠️ A parallel session was editing this working tree throughout (it landed Root Cause #56 / `RecordDetailModal`). One of my repository edits was overwritten mid-session and had to be re-applied; committed per-file rather than `git add -A`.
+
+---
+
 ### S-email-channels-digest — Email/WhatsApp/Firebase channel split, Resend root-cause fix, circuit breaker, daily status digest (2026-08-21)
 
 Started from "email OTP doesn't work" plus a resurrected plan file from a session that had ended (`the-otp-features-for-ancient-robin.md`). Re-verified every file:line claim in that plan against current source via 4 parallel `Explore` agents before touching anything (Rule #4) — most claims held, but three had drifted and one was outright wrong: the plan assumed `WATCH_AUCTION` was a dead action-registry entry free to repurpose for a new "Follow" button, when it's actually live and wired to a client-side localStorage wishlist on `/auctions` and store auction listings. Rewrote the plan with corrections, then scoped this session to its email/OTP half (bid deposits + auction-follow deliberately left out).

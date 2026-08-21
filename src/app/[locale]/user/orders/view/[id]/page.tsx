@@ -25,6 +25,8 @@ import {
   useProduct,
   PrizeRevealModal,
   normalizeError,
+  isManualPaymentMethod,
+  PAYMENT_WINDOW_MINUTES,
   type BundleOrderGroup,
 } from "@mohasinac/appkit/client";
 import { getOrderDigitalCode } from "@/lib/api/user-client";
@@ -314,6 +316,89 @@ function renderOrderPayment(order: NonNullable<OrderData>) {
   );
 }
 
+/**
+ * Manual-payment (cash / UPI / EMI) status panel — the buyer's only durable
+ * entry point into the proof-upload flow.
+ *
+ * Before this, `ROUTES.USER.ORDER_PAYMENT` had exactly one caller: the
+ * post-checkout redirect in CheckoutRouteClient. A buyer who navigated away,
+ * or who got the "payment proof needs correction" notification from
+ * `adminRequestProofReuploadAction`, had no link back to the upload page at
+ * all — the flow was reachable only by typing the URL.
+ */
+function renderManualPaymentPanel(order: NonNullable<OrderData>) {
+  if (!isManualPaymentMethod(order.paymentMethod)) return null;
+  if (order.paymentStatus === "paid") {
+    return (
+      <Div surface="card" padding="md" className="mt-4">
+        <Span layout="inline-flex" color="success" surface="success-surface" weight="semibold" className="text-[10px]" rounded="full" padding="pill-xs">
+          Payment verified
+        </Span>
+        {order.paymentTransactionId && (
+          <Text className="mt-1" color="muted" size="xs">UTR / Transaction ID: {order.paymentTransactionId}</Text>
+        )}
+      </Div>
+    );
+  }
+
+  const rejected = order.paymentReviewOutcome === "rejected_fraud";
+  const needsReupload = order.paymentReviewOutcome === "reupload_requested";
+  // `attachPaymentProofAction` clears `paymentReviewOutcome` on re-upload, so
+  // a set proof with no outcome is genuinely queued for review.
+  const awaitingReview = !!order.paymentProofUrl && !order.paymentReviewOutcome;
+
+  if (rejected) {
+    return (
+      <Div surface="card" padding="md" className="mt-4">
+        <Span layout="inline-flex" color="error" surface="danger-surface" weight="semibold" className="text-[10px]" rounded="full" padding="pill-xs">
+          Payment rejected
+        </Span>
+        <Text className="mt-1" color="muted" size="xs">
+          {order.paymentReviewNote
+            ? `This order was cancelled after review: ${order.paymentReviewNote}`
+            : "This order was cancelled after our team reviewed the payment proof."}
+        </Text>
+      </Div>
+    );
+  }
+
+  return (
+    <Div surface="card" padding="md" className="mt-4">
+      <Row justify="between" align="center" wrap gap="3">
+        <Div>
+          <Span
+            layout="inline-flex"
+            color={awaitingReview ? "info" : "warning"}
+            surface={awaitingReview ? "info-surface" : "warning-surface"}
+            weight="semibold"
+            className="text-[10px]"
+            rounded="full"
+            padding="pill-xs"
+          >
+            {awaitingReview ? "Payment under review" : needsReupload ? "Payment proof needs correction" : "Payment pending"}
+          </Span>
+          <Text className="mt-1" color="muted" size="xs">
+            {awaitingReview
+              ? "We've received your payment proof. Our team verifies within 2 hours, after which the order auto-confirms."
+              : needsReupload
+                ? order.paymentReviewNote
+                  ? `Our team asked for a corrected screenshot: ${order.paymentReviewNote}`
+                  : "Our team asked for a corrected screenshot."
+                : `Transfer the amount via UPI and upload your payment screenshot within ${PAYMENT_WINDOW_MINUTES} minutes, or the item returns to stock.`}
+          </Text>
+        </Div>
+        {!awaitingReview && (
+          <Button variant="primary" size="sm" asChild>
+            <Link href={String(ROUTES.USER.ORDER_PAYMENT(order.id))}>
+              {needsReupload ? "Re-upload proof" : "Complete payment"}
+            </Link>
+          </Button>
+        )}
+      </Row>
+    </Div>
+  );
+}
+
 function renderOrderActions(order: NonNullable<OrderData>, canTrack: boolean, canCancel: boolean) {
   return (
     <Row gap="3" wrap>
@@ -388,6 +473,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         renderPayment={() => order ? renderOrderPayment(order) : null}
         renderActions={() => order ? renderOrderActions(order, canTrack, canCancel) : null}
       />
+      {order && renderManualPaymentPanel(order)}
       {order?.autoApproved && (
         <Div surface="card" padding="md" className="mt-4">
           <Row justify="between" align="center" wrap gap="3">

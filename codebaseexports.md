@@ -774,7 +774,7 @@
 
 | Domain | Export | Purpose |
 |--------|--------|---------|
-| orders | orderDocumentToOrder | Convert Firestore doc to Order shape — 2026-08-21: now also maps `orderDate`/`shippingDate`/`deliveryDate`/`cancellationDate`/`trackingUrl` (were silently dropped, leaving the buyer tracking page with no real data to render — Root Cause #52) |
+| orders | orderDocumentToOrder | Convert Firestore doc to Order shape — 2026-08-21: now also maps `orderDate`/`shippingDate`/`deliveryDate`/`cancellationDate`/`trackingUrl` (were silently dropped, leaving the buyer tracking page with no real data to render — Root Cause #52), **and** the manual-payment block `paymentMethod`/`displayedUpiId`/`paymentDeadline`/`paymentProofUrl`/`paymentProofUploadedAt`/`paymentTransactionId`/`buyerReportedUpiId`/`buyerMarkedPaid`/`paymentUpiMismatch`/`paymentReviewOutcome`/`paymentReviewNote`/`cancellationReason` — dropping `paymentMethod` alone had made the entire buyer proof-upload flow dead (Root Cause #57) |
 | classified | adapters (barrel) | Classified data adapters |
 | digital-code | adapters (barrel) | Digital code adapters |
 | live | adapters (barrel) | Live item adapters |
@@ -1447,7 +1447,7 @@
 | products/listing-tabs.ts | LISTING_TABS, SELLER_LISTING_TABS | Product listing type tabs |
 | products/sieve.ts | Sieve query builders | Filter/sort helpers |
 | scams/scam-types.ts | SCAM_TYPES, SCAM_CATEGORIES (27 types, 6 categories) | Scam pattern data |
-| orders/payment-window.ts | PAYMENT_WINDOW_MINUTES (15), PAYMENT_WINDOW_MS, PAYMENT_WINDOW_EXPIRED_REASON, PAYMENT_FRAUD_REJECTED_REASON | Tier PP (2026-08-18) — shared by checkout order creation, buyer countdown UI, and the `paymentWindowTimeout` sweep so they never drift |
+| orders/payment-window.ts | PAYMENT_WINDOW_MINUTES (15), PAYMENT_WINDOW_MS, PAYMENT_WINDOW_EXPIRED_REASON, PAYMENT_FRAUD_REJECTED_REASON, MANUAL_PAYMENT_METHODS, isManualPaymentMethod(), PaymentReviewQueueMode, PAYMENT_REVIEW_QUEUE_MODES, isPaymentReviewQueueMode(), PAYMENT_REVIEW_QUEUE_SCAN_LIMIT | Tier PP (2026-08-18) — shared by checkout order creation, buyer countdown UI, and the `paymentWindowTimeout` sweep so they never drift. **2026-08-21**: gained the manual-payment-method set + payment-review queue discriminator (see CLAUDE.md § "Manual Payment Review Flow"); exported from both `index.ts` and `client.ts` |
 
 ---
 
