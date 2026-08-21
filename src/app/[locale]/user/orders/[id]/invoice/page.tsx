@@ -125,16 +125,26 @@ function renderInvoiceTotals(order: OrderData) {
           <Text>{order.shippingCost === 0 ? "Free" : formatCurrency(order.shippingCost, order.currency)}</Text>
         </Row>
       )}
-      {order.discount !== undefined && order.discount > 0 && (
-        <Row textSize="sm" justify="between">
-          <Text variant="secondary">
-            Discount{order.couponCode ? ` (${order.couponCode})` : ""}
-          </Text>
-          <Text className="text-success print:text-black">
-            −{formatCurrency(order.discount, order.currency)}
-          </Text>
-        </Row>
-      )}
+      {order.appliedDiscounts && order.appliedDiscounts.length > 0
+        ? order.appliedDiscounts.map((d) => (
+            <Row textSize="sm" justify="between" key={d.code}>
+              <Text variant="secondary">Discount ({d.code})</Text>
+              <Text className="text-success print:text-black">
+                −{formatCurrency(d.discountAmount, order.currency)}
+              </Text>
+            </Row>
+          ))
+        : order.discount !== undefined &&
+          order.discount > 0 && (
+            <Row textSize="sm" justify="between">
+              <Text variant="secondary">
+                Discount{order.couponCode ? ` (${order.couponCode})` : ""}
+              </Text>
+              <Text className="text-success print:text-black">
+                −{formatCurrency(order.discount, order.currency)}
+              </Text>
+            </Row>
+          )}
       {order.tax !== undefined && order.tax > 0 && (
         <Row textSize="sm" justify="between">
           <Text variant="secondary">Tax (GST)</Text>

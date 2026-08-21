@@ -27,6 +27,7 @@ import {
   normalizeError,
   isManualPaymentMethod,
   PAYMENT_WINDOW_MINUTES,
+  OrderAddonBadges,
   type BundleOrderGroup,
 } from "@mohasinac/appkit/client";
 import { getOrderDigitalCode } from "@/lib/api/user-client";
@@ -274,6 +275,9 @@ function renderOrderPayment(order: NonNullable<OrderData>) {
   return (
     <Div surface="card" padding="md">
       <Text className="mb-3" color="primary" size="sm" weight="semibold">Payment Summary</Text>
+      {/* Add-ons and the applied coupon, from the order itself — the buyer can
+          confirm what they paid for extras without reconstructing it. */}
+      <OrderAddonBadges order={order} variant="detail" currency={order.currency} className="mb-3" />
       <Stack gap="xs">
         <Row justify="between">
           <Text variant="secondary" size="sm">Subtotal</Text>
@@ -287,16 +291,28 @@ function renderOrderPayment(order: NonNullable<OrderData>) {
             </Text>
           </Row>
         )}
-        {order.discount !== undefined && order.discount > 0 && (
-          <Row justify="between">
-            <Text variant="secondary" size="sm">
-              Discount{order.couponCode ? ` (${order.couponCode})` : ""}
-            </Text>
-            <Text className="text-success" size="sm">
-              −{formatCurrency(order.discount, order.currency)}
-            </Text>
-          </Row>
-        )}
+        {order.appliedDiscounts && order.appliedDiscounts.length > 0
+          ? order.appliedDiscounts.map((d) => (
+              <Row justify="between" key={d.code}>
+                <Text variant="secondary" size="sm">
+                  Discount ({d.code})
+                </Text>
+                <Text className="text-success" size="sm">
+                  −{formatCurrency(d.discountAmount, order.currency)}
+                </Text>
+              </Row>
+            ))
+          : order.discount !== undefined &&
+            order.discount > 0 && (
+              <Row justify="between">
+                <Text variant="secondary" size="sm">
+                  Discount{order.couponCode ? ` (${order.couponCode})` : ""}
+                </Text>
+                <Text className="text-success" size="sm">
+                  −{formatCurrency(order.discount, order.currency)}
+                </Text>
+              </Row>
+            )}
         {order.tax !== undefined && order.tax > 0 && (
           <Row justify="between">
             <Text variant="secondary" size="sm">Tax</Text>

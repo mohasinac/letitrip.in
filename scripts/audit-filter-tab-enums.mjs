@@ -92,6 +92,18 @@ const REGISTRY = {
     exportName: "ProductStatus",
   },
 
+  // ListingType — the 9-value canonical discriminator on `products`. This
+  // array used LABELS as ids ("Products", "Auctions", …) until 2026-08-21,
+  // which is exactly why the drift was invisible: it lived in the audited
+  // file but was never registered here, so nothing compared it to the real
+  // union. Two whole types (art, stickers) had been missing from it since
+  // they were added.
+  ADMIN_PRODUCT_LISTING_TYPE_TABS: {
+    sourceFile: "appkit/src/features/products/types/index.ts",
+    shape: "union-type",
+    exportName: "ListingType",
+  },
+
   // EventStatus — draft|active|paused|ended|cancelled. Deliberately NOT
   // field-names.ts's EVENT_FIELDS.STATUS_VALUES (confirmed stale — claims a
   // "published" value that was never real).

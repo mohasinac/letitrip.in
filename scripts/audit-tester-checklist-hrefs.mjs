@@ -61,7 +61,7 @@ if (!exists) {
 const DYNAMIC_SEGMENT_RE = /^\[.+\]$/;
 const ROUTE_GROUP_RE = /^\(.+\)$/;
 
-function collectRoutes(dir, segments, routes, dynamicPrefixes) {
+function collectRoutes(dir, segments, routes, dynamicPrefixes, dynamicSubRoutes) {
   let entries;
   try {
     entries = readdirSync(dir, { withFileTypes: true });
@@ -84,9 +84,7 @@ function collectRoutes(dir, segments, routes, dynamicPrefixes) {
       // Record the static prefix leading up to this dynamic segment (e.g.
       // "/auctions/") when it resolves to a real detail page, instead of
       // just skipping it — lets seeded hrefs deep-link to a specific
-      // fixture id under this route. Deliberately doesn't descend further
-      // (no checklist href today targets a route nested below a dynamic
-      // segment).
+      // fixture id under this route.
       let dynEntries;
       try {
         dynEntries = readdirSync(join(dir, entry.name), { withFileTypes: true });
@@ -99,18 +97,49 @@ function collectRoutes(dir, segments, routes, dynamicPrefixes) {
       if (dynHasPage) {
         dynamicPrefixes.add("/" + [...segments, ""].join("/"));
       }
+      // Also record STATIC sub-routes beneath the dynamic segment, e.g.
+      // `/stores/{slug}/art` from `stores/[storeSlug]/art/page.tsx`
+      // (extended 2026-08-21). Store tabs are real pages and a checklist item
+      // should be able to deep-link one; without this the audit forced every
+      // such href back to the bare `/stores/{slug}` detail page, which is a
+      // worse test instruction. Recorded as `prefix + "/" + subroute` so the
+      // fixture-id check below still validates the id in the middle AND the
+      // tab name at the end — a typo'd tab still fails.
+      for (const sub of dynEntries) {
+        if (!sub.isDirectory()) continue;
+        if (DYNAMIC_SEGMENT_RE.test(sub.name) || ROUTE_GROUP_RE.test(sub.name)) continue;
+        let subEntries;
+        try {
+          subEntries = readdirSync(join(dir, entry.name, sub.name), {
+            withFileTypes: true,
+          });
+        } catch {
+          continue;
+        }
+        const subHasPage = subEntries.some(
+          (e) => e.isFile() && (e.name === "page.tsx" || e.name === "page.ts"),
+        );
+        if (subHasPage) {
+          dynamicSubRoutes.add({
+            prefix: "/" + [...segments, ""].join("/"),
+            suffix: "/" + sub.name,
+          });
+        }
+      }
       continue;
     }
     const nextSegments = ROUTE_GROUP_RE.test(entry.name)
       ? segments
       : [...segments, entry.name];
-    collectRoutes(join(dir, entry.name), nextSegments, routes, dynamicPrefixes);
+    collectRoutes(join(dir, entry.name), nextSegments, routes, dynamicPrefixes, dynamicSubRoutes);
   }
 }
 
 const validRoutes = new Set();
 const dynamicRoutePrefixes = new Set();
-collectRoutes(APP_DIR, [], validRoutes, dynamicRoutePrefixes);
+/** { prefix, suffix } pairs for a static page nested under a dynamic segment. */
+const dynamicSubRoutes = new Set();
+collectRoutes(APP_DIR, [], validRoutes, dynamicRoutePrefixes, dynamicSubRoutes);
 validRoutes.add("/");
 
 // --- Build a known-id allowlist from seed data (main + tester fixtures) ---
@@ -196,13 +225,30 @@ function nearestSuggestion(href) {
   return best;
 }
 
+/** A seeded fixture id, either a literal or one produced by a template loop. */
+function isKnownId(value) {
+  if (!value) return false;
+  if (knownSeedIds.has(value)) return true;
+  return knownSeedIdTemplates.some((rx) => rx.test(value));
+}
+
 function matchesKnownFixture(href) {
+  // Shape 1: /<prefix>/<fixture-id>
   for (const prefix of dynamicRoutePrefixes) {
     if (!href.startsWith(prefix)) continue;
     const trailing = href.slice(prefix.length);
     if (!trailing || trailing.includes("/")) continue;
-    if (knownSeedIds.has(trailing)) return true;
-    if (knownSeedIdTemplates.some((rx) => rx.test(trailing))) return true;
+    if (isKnownId(trailing)) return true;
+  }
+  // Shape 2: /<prefix>/<fixture-id>/<static-subroute> — e.g. a store tab
+  // (/stores/store-beyblade-arena/art). Both halves are validated: the id must
+  // be a real fixture AND the sub-route must be a real page, so a typo in
+  // either still fails.
+  for (const { prefix, suffix } of dynamicSubRoutes) {
+    if (!href.startsWith(prefix) || !href.endsWith(suffix)) continue;
+    const id = href.slice(prefix.length, href.length - suffix.length);
+    if (!id || id.includes("/")) continue;
+    if (isKnownId(id)) return true;
   }
   return false;
 }

@@ -19,10 +19,11 @@ export interface DashboardTab {
 // Store dashboard
 // ---------------------------------------------------------------------------
 
-export {
-  SELLER_LISTING_TABS as STORE_LISTINGS_TABS,
-  type SellerListingTabId as StoreListingsTabId,
-} from "@mohasinac/appkit/constants";
+// STORE_LISTINGS_TABS (a rename of appkit's SELLER_LISTING_TABS) was removed
+// 2026-08-21 — it had zero consumers and only existed as an alias. Import
+// SELLER_LISTING_TABS from @mohasinac/appkit/constants directly if a store
+// listings tab bar is ever built; it is now derived from the listing-type
+// plugin registry, so it can't go stale the way this alias's admin twin did.
 
 export const STORE_ORDERS_TABS = [
   { id: "all", label: "All" },
@@ -59,16 +60,13 @@ export type StoreReviewsRoleTabId = (typeof STORE_REVIEWS_ROLE_TABS)[number]["id
 // Admin dashboard
 // ---------------------------------------------------------------------------
 
-export const ADMIN_PRODUCTS_TABS = [
-  { id: "all", label: "All" },
-  { id: "standard", label: "Products" },
-  { id: "auction", label: "Auctions" },
-  { id: "pre-order", label: "Pre-Orders" },
-  { id: "prize-draw", label: "Prize Draws" },
-  { id: "bundle", label: "Bundles" },
-] as const satisfies readonly DashboardTab[];
-
-export type AdminProductsTabId = (typeof ADMIN_PRODUCTS_TABS)[number]["id"];
+// ADMIN_PRODUCTS_TABS was removed 2026-08-21. It had zero consumers, listed
+// only 5 of the 9 listing types (no classified/digital-code/live/art/stickers),
+// and still carried a `bundle` entry — a value that stopped being a
+// listingType in SB-UNI-D, so filtering products by it matched nothing. The
+// live admin type chips are ADMIN_PRODUCT_LISTING_TYPE_TABS in
+// `appkit/src/features/admin/constants/filter-tabs.ts`, which is now covered
+// by audit-listing-type-tab-coverage and audit-filter-tab-enums.
 
 export const ADMIN_ORDERS_TABS = STORE_ORDERS_TABS;
 export type AdminOrdersTabId = StoreOrdersTabId;

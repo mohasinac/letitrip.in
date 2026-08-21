@@ -67,7 +67,7 @@ const READ_OPTIONS = [
 
 const TYPE_BUCKETS: Record<string, Set<string>> = {
   orders: new Set(["order_placed", "order_confirmed", "order_shipped", "order_delivered", "order_cancelled"]),
-  bids: new Set(["bid_placed", "bid_outbid", "bid_won", "bid_lost"]),
+  bids: new Set(["bid_placed", "bid_outbid", "bid_won", "bid_lost", "auction_ended"]),
   system: new Set(["system", "welcome"]),
   promotions: new Set(["promotion"]),
 };

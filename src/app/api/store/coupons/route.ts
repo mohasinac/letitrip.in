@@ -78,7 +78,6 @@ const __POST__g = withProviders(createRouteHandler<(typeof createCouponSchema)["
       validity: { startDate: new Date(startDate), endDate: new Date(endDate), isActive },
       restrictions: {
         firstTimeUserOnly: false,
-        combineWithSellerCoupons: false,
         ...(applicableProducts && applicableProducts.length > 0 && { applicableProducts }),
         ...(applicableCategories && applicableCategories.length > 0 && { applicableCategories }),
       },

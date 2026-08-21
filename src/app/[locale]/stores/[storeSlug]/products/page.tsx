@@ -1,23 +1,20 @@
 import { Suspense } from "react";
-import {
-  StoreProductsPageView,
-  loadProductFeaturesForStore,
-} from "@mohasinac/appkit";
-import { ProductFeaturesProvider, PageViewTracker } from "@mohasinac/appkit/client";
+import { StoreProductsPageView } from "@mohasinac/appkit";
 
 type Props = {
   params: Promise<{ storeSlug: string }>;
+  searchParams: Promise<Record<string, string | string[]>>;
 };
 
-export default async function Page({ params }: Props) {
+export default async function Page({ params, searchParams }: Props) {
   const { storeSlug } = await params;
-  const features = await loadProductFeaturesForStore(storeSlug).catch(() => []);
+  // Forwarded so the URL's sort/filter/page reach the SSR fetch. Without this
+  // the first paint always rendered page 1 in the default order, no matter what
+  // the toolbar showed as selected.
+  const sp = await searchParams;
   return (
     <Suspense>
-      <PageViewTracker entityType="store" entityId={storeSlug} url={`/stores/${storeSlug}/products`} />
-      <ProductFeaturesProvider features={features}>
-        <StoreProductsPageView storeSlug={storeSlug} />
-      </ProductFeaturesProvider>
+      <StoreProductsPageView storeSlug={storeSlug} searchParams={sp} />
     </Suspense>
   );
 }

@@ -210,6 +210,34 @@ const AUDITS = [
   // returns zero rows forever. Found live in 8+ places in one sweep
   // (2026-08-19); see CLAUDE.md's Recurrent Root Cause Patterns.
   { name: "filter-tab-enums",              script: "scripts/audit-filter-tab-enums.mjs" },
+  // Strict-zero. `functions/lib` is a tsup snapshot that INLINES appkit at
+  // build time, so rebuilding appkit/dist never updates it. A stale bundle
+  // makes the deployed listingProcessor Function apply different Sieve
+  // semantics than the app's own repository fallback — silently. Caused the
+  // 2026-08-21 "/products returns every listing type" leak.
+  { name: "functions-bundle-freshness",    script: "scripts/audit-functions-bundle-freshness.mjs" },
+  // Strict-zero. Every hand-written "list all the listing types" map must
+  // cover the whole ListingType union, and the maps converted to registry
+  // derivations must stay derived. Ten such maps had drifted apart by
+  // 2026-08-21: /products offered 4 of 9 type chips, art/stickers were absent
+  // from most, and the long-dead `bundle` type was still listed in several.
+  { name: "listing-type-tab-coverage",     script: "scripts/audit-listing-type-tab-coverage.mjs" },
+  // Strict-zero. A tab the user can click that has no render branch shows a
+  // blank panel — CategoryDetailTabs did exactly this for four listing types.
+  { name: "tab-body-coverage",             script: "scripts/audit-tab-body-coverage.mjs" },
+  // Strict-zero. A SIEVE_FIELDS entry for a field the document doesn't have
+  // (matches zero rows forever), or a filter emitted on a real field that
+  // SIEVE_FIELDS omits (silently dropped — `throwExceptions: false`). Both
+  // were live 2026-08-21: `freeShipping` was allowlisted but isn't a field,
+  // while the real `shippingPaidBy` clause the Free-shipping toggle emitted
+  // was thrown away, so the toggle did nothing at all.
+  { name: "sieve-field-schema-parity",     script: "scripts/audit-sieve-field-schema-parity.mjs" },
+  // Strict-zero. A sort option whose field isn't `canSort: true` in the target
+  // repository's SIEVE_FIELDS — sievejs drops the sort silently, so the option
+  // renders and does nothing ("Featured First"/"Promoted First" were dead this
+  // way). Also asserts every ListingViewConfig has sortOptions and a
+  // defaultSort that is actually one of them.
+  { name: "listing-sort-fields",           script: "scripts/audit-listing-sort-fields.mjs" },
   // Strict-zero. A Firestore-trigger handler's local shadow type (e.g.
   // `NewOrder`) with a field name that doesn't exist on the real document —
   // every read of that field is `undefined` at runtime. Caught the

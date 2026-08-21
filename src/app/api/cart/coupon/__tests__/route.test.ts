@@ -9,6 +9,7 @@ const {
   mockCartClearAllCoupons,
   mockValidateCouponForCart,
   mockClaimedClaim,
+  mockDetectCouponConflict,
 } = vi.hoisted(() => ({
   mockCartGetOrCreate: vi.fn(),
   mockCartAddCoupon: vi.fn(),
@@ -16,13 +17,10 @@ const {
   mockCartClearAllCoupons: vi.fn(),
   mockValidateCouponForCart: vi.fn(),
   mockClaimedClaim: vi.fn(),
+  mockDetectCouponConflict: vi.fn(() => null),
 }));
 
 vi.mock("@/providers.config", () => ({ withProviders: (fn: unknown) => fn }));
-
-vi.mock("@/lib/coupon-conflict", () => ({
-  detectConflict: vi.fn(() => null),
-}));
 
 vi.mock("@mohasinac/appkit", () => ({
   cartRepository: {
@@ -33,6 +31,7 @@ vi.mock("@mohasinac/appkit", () => ({
   },
   claimedCouponsRepository: { claim: mockClaimedClaim },
   validateCouponForCart: mockValidateCouponForCart,
+  detectCouponConflict: mockDetectCouponConflict,
   ApiErrors: {
     badRequest: (msg: string) => new Response(JSON.stringify({ ok: false, error: msg }), { status: 400 }),
     notFound: (msg: string) => new Response(JSON.stringify({ ok: false, error: msg }), { status: 404 }),
@@ -61,9 +60,8 @@ vi.mock("@mohasinac/appkit", () => ({
 }));
 
 import { POST, DELETE } from "../route";
-import { detectConflict } from "@/lib/coupon-conflict";
 
-const mockDetectConflict = detectConflict as ReturnType<typeof vi.fn>;
+const mockDetectConflict = mockDetectCouponConflict as ReturnType<typeof vi.fn>;
 
 function makeReq(body: unknown, method = "POST"): Request {
   return new Request("http://localhost/api/cart/coupon", {
@@ -81,7 +79,7 @@ const baseCart = {
 
 const validCouponResult = {
   valid: true,
-  coupon: { id: "coupon-1", scope: "admin", restrictions: { combineWithSellerCoupons: true } },
+  coupon: { id: "coupon-1", scope: "admin", restrictions: {} },
   discountAmount: 100,
   eligibleSubtotal: 1000,
   eligibleProductIds: ["product-x"],
@@ -143,7 +141,7 @@ describe("POST /api/cart/coupon", () => {
     expect(json.error).toContain("Coupon expired");
   });
 
-  it("detectConflict returns a message → 400 with conflict message", async () => {
+  it("detectCouponConflict returns a message → 400 with conflict message", async () => {
     mockDetectConflict.mockReturnValue("Store coupon already applied");
     const res = await POST(makeReq({ code: "NEW10" }) as never);
     expect(res.status).toBe(400);
@@ -151,7 +149,7 @@ describe("POST /api/cart/coupon", () => {
     expect(json.error).toContain("Store coupon");
   });
 
-  it("second seller coupon same storeId: detectConflict called with correct args", async () => {
+  it("second seller coupon same storeId: detectCouponConflict called with correct args", async () => {
     mockCartGetOrCreate.mockResolvedValue({
       ...baseCart,
       appliedCoupons: [{ code: "STORE10", scope: "seller", storeId: "store-A" }],
@@ -185,7 +183,7 @@ describe("POST /api/cart/coupon", () => {
   it("coupon with no ID → claimedCouponsRepository.claim NOT called", async () => {
     mockValidateCouponForCart.mockResolvedValue({
       ...validCouponResult,
-      coupon: { scope: "admin", restrictions: { combineWithSellerCoupons: true } },
+      coupon: { scope: "admin", restrictions: {} },
     });
     await POST(makeReq({ code: "NOID10" }) as never);
     expect(mockClaimedClaim).not.toHaveBeenCalled();

@@ -61,7 +61,7 @@ const validCoupon = {
   scope: "admin",
   storeId: null,
   discount: { value: 10, maxDiscount: 500, minPurchase: 0 },
-  restrictions: { firstTimeUserOnly: false, combineWithSellerCoupons: true },
+  restrictions: { firstTimeUserOnly: false },
   validity: { isActive: true, startDate: "2026-01-01", endDate: "2027-01-01" },
 };
 

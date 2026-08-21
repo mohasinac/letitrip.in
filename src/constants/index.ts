@@ -84,11 +84,9 @@ export type { TicketCategory } from "./tickets";
 
 // Dashboard tab configuration (SB10-B / Tier TC2)
 export {
-  STORE_LISTINGS_TABS,
   STORE_ORDERS_TABS,
   STORE_REVIEWS_TABS,
   STORE_REVIEWS_ROLE_TABS,
-  ADMIN_PRODUCTS_TABS,
   ADMIN_ORDERS_TABS,
   ADMIN_USERS_TABS,
   ADMIN_USER_DETAIL_TABS,
@@ -102,11 +100,9 @@ export {
 } from "./dashboard-tabs";
 export type {
   DashboardTab,
-  StoreListingsTabId,
   StoreOrdersTabId,
   StoreReviewsTabId,
   StoreReviewsRoleTabId,
-  AdminProductsTabId,
   AdminOrdersTabId,
   AdminUsersTabId,
   AdminUserDetailTabId,

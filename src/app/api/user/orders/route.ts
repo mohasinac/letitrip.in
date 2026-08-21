@@ -18,6 +18,19 @@ import {
 // account/ one, which lacks "return_requested". Typing against either here
 // would be wrong or fragile; a plain string membership check needs no type
 // import at all and sidesteps the collision entirely.
+/**
+ * The stored `OrderDocument.orderType` values a buyer can filter by.
+ * "standard" also covers legacy orders written before orderType existed —
+ * see the in-memory fallback below.
+ */
+const VALID_ORDER_TYPES = new Set<string>([
+  "standard",
+  "auction",
+  "offer",
+  "preorder",
+  "prize-draw",
+]);
+
 const VALID_STATUSES = new Set<string>([
   OrderStatusValues.PENDING,
   OrderStatusValues.CONFIRMED,

@@ -1,9 +1,19 @@
 "use client";
-import { normalizeError, checkEmiEligibility, computeEmiSchedule, computeCodHandlingFee, useSiteSettings, type JsonArray } from "@mohasinac/appkit/client";
-import type { JsonValue, EmiSettings, OutOfStockPolicy, CodHandlingFeeRates, WhatsAppNotifyFeeRates, GiftWrapFeeRates, ShipmentProtectionFeeRates } from "@mohasinac/appkit/client";
+import { normalizeError, checkEmiEligibility, computeEmiSchedule, computeCodHandlingFee, useSiteSettings, CouponHelpDetails, type JsonArray } from "@mohasinac/appkit/client";
+import type { JsonValue, EmiSettings, OutOfStockPolicy, CodHandlingFeeRates, WhatsAppNotifyFeeRates, GiftWrapFeeRates, ShipmentProtectionFeeRates, StoreAddonsValue } from "@mohasinac/appkit/client";
+import { StoreAddonsPicker, CartPriceBreakdown } from "@mohasinac/appkit/client";
+import { Banknote } from "lucide-react";
 
 import { useCallback, useState, useEffect, useMemo } from "react";
-import type { ReactNode } from "react";
+import {
+  Alert,
+  CART_LANE,
+  CART_LANE_LABELS,
+  activeLane,
+  isLockedLane,
+  laneItems,
+  type LaneAssignable,
+} from "@mohasinac/appkit/client";
 import {
   AddressForm,
   Button,
@@ -12,9 +22,7 @@ import {
   Div,
   FieldCheckbox,
   FieldSelect,
-  FieldTextarea,
   Heading,
-  IconBox,
   Input,
   Row,
   SideDrawer,
@@ -48,12 +56,10 @@ import {
   createCheckoutOrder,
   createRazorpayOrder,
   verifyRazorpayPayment,
-  fetchCheckoutPricingPreview,
-  type CheckoutAddonSelections,
   type CheckoutPricingPreview,
 } from "@/lib/api/payment-client";
-import { Truck, Banknote, MessageCircle, Gift, ShieldCheck, Receipt, Tag } from "lucide-react";
-import { applyCartCoupon, removeCartCoupon } from "@/lib/api/cart-client";
+import { usePricingPreview } from "@/lib/hooks/usePricingPreview";
+import { applyCartCoupon, removeCartCoupon, persistCartAddons } from "@/lib/api/cart-client";
 import { applyCheckoutBypass } from "@/lib/api/admin-client";
 
 const __P = {
@@ -124,7 +130,12 @@ interface AppliedCoupon {
 }
 
 interface ServerCartResponse {
-  cart: { items: JsonArray; appliedCoupons?: AppliedCoupon[] };
+  cart: {
+    items: JsonArray;
+    appliedCoupons?: AppliedCoupon[];
+    /** Per-store add-on selections — seeds the pickers so a cart choice persists here. */
+    storeAddons?: Record<string, StoreAddonsValue>;
+  };
   subtotal: number;
   itemCount: number;
 }
@@ -175,7 +186,6 @@ function useEmiCheckout({
   cartIsEmpty,
   selectedAddress,
   outOfStockPolicy,
-  addons,
   router,
   showToast,
   setStep,
@@ -189,7 +199,6 @@ function useEmiCheckout({
   cartIsEmpty: boolean;
   selectedAddress: Address | null;
   outOfStockPolicy: OutOfStockPolicy;
-  addons: CheckoutAddonSelections;
   router: ReturnType<typeof useRouter>;
   showToast: ReturnType<typeof useToast>["showToast"];
   setStep: (step: CheckoutStep) => void;
@@ -220,7 +229,6 @@ function useEmiCheckout({
         paymentMethod: "emi",
         emiTenureMonths: emiTenure,
         outOfStockPolicy,
-        ...addons,
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -243,66 +251,16 @@ function useEmiCheckout({
     } finally {
       setIsProcessingPayment(false);
     }
-  }, [selectedAddress, emiTenure, outOfStockPolicy, addons, router, showToast, setStep, setActionError, setIsProcessingPayment, ensureValueOtpGate]);
+  }, [selectedAddress, emiTenure, outOfStockPolicy, router, showToast, setStep, setActionError, setIsProcessingPayment, ensureValueOtpGate]);
 
   return { emiTenure, setEmiTenure, emiVisible, emiSchedule, handlePlaceEmiOrder };
 }
 
-/**
- * Fetches the server-authoritative pricing breakdown (shipping, COD handling
- * fee, add-ons, GST, coupon discount) so the Order Summary can show the true
- * total instead of just subtotal − coupon discount. Debounced so toggling an
- * add-on checkbox doesn't fire a request per keystroke/click. `paymentMethod`
- * only affects whether the COD handling fee line is populated — every other
- * field is payment-method-agnostic.
- */
-function usePricingPreview({
-  uid,
-  step,
-  addressId,
-  paymentMethod,
-  addons,
-  couponSignal,
-}: {
-  uid: string | undefined;
-  step: CheckoutStep;
-  addressId: string | undefined;
-  paymentMethod: "cod" | "online" | "upi_manual" | "cash" | "emi";
-  addons: CheckoutAddonSelections;
-  /** Serialized applied-coupon state (code:amount pairs) — a plain dependency so applying/removing a coupon re-fetches the preview. */
-  couponSignal: string;
-}) {
-  const [preview, setPreview] = useState<CheckoutPricingPreview | null>(null);
-  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
-
-  useEffect(() => {
-    if (!uid || step !== "payment") return;
-    let cancelled = false;
-    const timer = setTimeout(() => {
-      setIsLoadingPreview(true);
-      fetchCheckoutPricingPreview({
-        addressId,
-        paymentMethod,
-        whatsappNotifyAddon: addons.whatsappNotifyAddon,
-        giftWrapAddon: addons.giftWrapAddon,
-        shipmentProtectionAddon: addons.shipmentProtectionAddon,
-      })
-        .then(async (res) => {
-          if (!res.ok || cancelled) return;
-          const json = await res.json().catch(() => ({}));
-          if (!cancelled && json?.data) setPreview(json.data as CheckoutPricingPreview);
-        })
-        .catch((err: unknown) => void normalizeError(err))
-        .finally(() => { if (!cancelled) setIsLoadingPreview(false); });
-    }, 300);
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [uid, step, addressId, paymentMethod, addons.whatsappNotifyAddon, addons.giftWrapAddon, addons.shipmentProtectionAddon, couponSignal]);
-
-  return { preview, isLoadingPreview };
-}
+// The debounced pricing-preview fetcher that used to live here now lives in
+// `@/lib/hooks/usePricingPreview`, shared with the cart page. Two independent
+// fetchers were free to drift into showing different totals for the same cart,
+// and add-on selections are no longer request parameters at all — the server
+// reads them per store off the cart document.
 
 // --- Sub-renderers -----------------------------------------------------------
 
@@ -515,14 +473,9 @@ function renderPaymentStep({
   setOutOfStockPolicy,
   codSettings,
   subtotal,
-  whatsappNotifyAddon,
-  setWhatsappNotifyAddon,
-  giftWrapAddon,
-  setGiftWrapAddon,
-  giftWrapMessage,
-  setGiftWrapMessage,
-  shipmentProtectionAddon,
-  setShipmentProtectionAddon,
+  storeAddons,
+  onStoreAddonsChange,
+  addonStores,
   manualPaymentConsent,
   setManualPaymentConsent,
   handlePayOnline,
@@ -548,14 +501,15 @@ function renderPaymentStep({
   setOutOfStockPolicy: (v: OutOfStockPolicy) => void;
   codSettings: (CodHandlingFeeRates & WhatsAppNotifyFeeRates & GiftWrapFeeRates & ShipmentProtectionFeeRates & { codDepositPercent?: number }) | null;
   subtotal: number;
-  whatsappNotifyAddon: boolean;
-  setWhatsappNotifyAddon: (v: boolean) => void;
-  giftWrapAddon: boolean;
-  setGiftWrapAddon: (v: boolean) => void;
-  giftWrapMessage: string;
-  setGiftWrapMessage: (v: string) => void;
-  shipmentProtectionAddon: boolean;
-  setShipmentProtectionAddon: (v: boolean) => void;
+  /** Per-store add-on selections, keyed by storeId. */
+  storeAddons: Record<string, StoreAddonsValue>;
+  onStoreAddonsChange: (storeId: string, next: StoreAddonsValue) => void;
+  /**
+   * The stores this checkout will produce orders for, with their subtotals —
+   * taken from the pricing preview so the list and the fees agree by
+   * construction. Empty until the preview loads.
+   */
+  addonStores: { storeId: string; storeName: string; subtotal: number }[];
   manualPaymentConsent: boolean;
   setManualPaymentConsent: (v: boolean) => void;
   handlePayOnline: () => Promise<void>;
@@ -591,64 +545,33 @@ function renderPaymentStep({
               { value: "cancel_order", label: CK.OUT_OF_STOCK_POLICY_CANCEL_ORDER },
             ]}
           />
-          {codSettings?.whatsappNotifyFeeEnabled && (
-            <Row gap="sm" align="start">
-              <IconBox size="sm" tone="brand"><MessageCircle size={14} /></IconBox>
-              <Div className="flex-1">
-                <FieldCheckbox
-                  name="whatsappNotifyAddon"
-                  label={`Get WhatsApp order updates (+${formatEmiRupees(codSettings.whatsappNotifyFee ?? 10)})`}
-                  hint="Receive order status updates on WhatsApp for this order."
-                  checked={whatsappNotifyAddon}
-                  onChange={setWhatsappNotifyAddon}
-                />
-              </Div>
-            </Row>
-          )}
-          {codSettings?.giftWrapFeeEnabled && (
-            <Row gap="sm" align="start">
-              <IconBox size="sm" tone="brand"><Gift size={14} /></IconBox>
-              <Stack gap="xs" className="flex-1">
-                <FieldCheckbox
-                  name="giftWrapAddon"
-                  label={`Add gift wrap (+${formatEmiRupees(codSettings.giftWrapFee ?? 49)})`}
-                  hint="We'll wrap this order and include your message with the package."
-                  checked={giftWrapAddon}
-                  onChange={setGiftWrapAddon}
-                />
-                {giftWrapAddon && (
-                  <FieldTextarea
-                    name="giftWrapMessage"
-                    label="Gift message (optional)"
-                    value={giftWrapMessage}
-                    onChange={(v) => setGiftWrapMessage(v.slice(0, 500))}
-                    rows={2}
-                    maxLength={500}
-                    showCharCount
-                    placeholder="Add a note for the recipient…"
+          {/* Add-ons, per store. These fees are billed per order group, so one
+              global checkbox would have charged every seller in the cart. Each
+              store gets its own controls, labelled with the store's name once
+              there is more than one to tell apart. */}
+          {addonStores.length > 0 && (
+            <Stack gap="sm">
+              <Text size="xs" color="muted" weight="semibold" transform="uppercase" className="tracking-wide">
+                Add-ons
+              </Text>
+              {addonStores.map((store) => (
+                <Stack key={store.storeId} gap="xs" className="min-w-0">
+                  {addonStores.length > 1 && (
+                    <Text size="xs" color="muted" truncate={1}>
+                      {store.storeName}
+                    </Text>
+                  )}
+                  <StoreAddonsPicker
+                    storeId={store.storeId}
+                    storeSubtotal={store.subtotal}
+                    value={storeAddons[store.storeId] ?? {}}
+                    onChange={onStoreAddonsChange}
+                    rates={codSettings}
+                    showGiftMessage
                   />
-                )}
-              </Stack>
-            </Row>
-          )}
-          {codSettings?.shipmentProtectionFeeEnabled && subtotal > 0 && (
-            <Row gap="sm" align="start">
-              <IconBox size="sm" tone="brand"><ShieldCheck size={14} /></IconBox>
-              <Div className="flex-1">
-                <FieldCheckbox
-                  name="shipmentProtectionAddon"
-                  label={`Add shipment protection (+${formatEmiRupees(
-                    Math.max(
-                      codSettings.shipmentProtectionFeeMin ?? 30,
-                      Math.round(subtotal * ((codSettings.shipmentProtectionFeePercent ?? 2) / 100) * 100) / 100,
-                    ),
-                  )})`}
-                  hint="Covers this order against loss or damage in transit."
-                  checked={shipmentProtectionAddon}
-                  onChange={setShipmentProtectionAddon}
-                />
-              </Div>
-            </Row>
+                </Stack>
+              ))}
+            </Stack>
           )}
           {showCashOption && (
             <Stack gap="sm">
@@ -853,36 +776,20 @@ function renderCouponSection({
       {couponError && (
         <Text className="mt-1.5 text-error" size="xs">{couponError}</Text>
       )}
+      <Div paddingY="y-sm">
+        <CouponHelpDetails showRevalidationNote />
+      </Div>
     </Div>
   );
 }
 
-/** A single fee/discount line in the Order Summary breakdown — icon + label + amount. */
-function OrderSummaryLine({
-  icon,
-  label,
-  amount,
-  tone = "muted",
-}: {
-  icon: ReactNode;
-  label: string;
-  amount: string;
-  tone?: "muted" | "success";
-}) {
-  return (
-    <Row textSize="sm" className="mb-1" color={tone} align="center" justify="between">
-      <Row gap="xs" align="center">
-        {icon}
-        <Text>{label}</Text>
-      </Row>
-      <Text>{amount}</Text>
-    </Row>
-  );
-}
+// `OrderSummaryLine` used to live here, private to this file. It is now part of
+// <CartPriceBreakdown> in appkit, shared with the cart page — the two surfaces
+// render the same fee lines, so a new line added to one has to appear in both.
 
 function renderOrderSummary({
   selectedAddress,
-  formattedSubtotal,
+  subtotalValue,
   formattedTotal,
   totalDiscount,
   step,
@@ -893,8 +800,9 @@ function renderOrderSummary({
   isLoadingPreview,
 }: {
   selectedAddress: Address | null;
-  formattedSubtotal: string;
   formattedTotal: string;
+  /** Raw subtotal — the breakdown needs a number, not a formatted string. */
+  subtotalValue: number;
   totalDiscount: number;
   step: CheckoutStep;
   addressesLoading: boolean;
@@ -903,7 +811,6 @@ function renderOrderSummary({
   pricingPreview: CheckoutPricingPreview | null;
   isLoadingPreview: boolean;
 }) {
-  const iconCls = "text-[var(--appkit-color-text-muted)]";
   return (
     <Div surface="card" padding="sm">
       <Heading level={3} className="mb-3" color="primary" size="base" weight="semibold">
@@ -922,42 +829,21 @@ function renderOrderSummary({
           </Text>
         </Div>
       )}
-      <Row color="muted" textSize="sm" className="mb-1" align="center" justify="between">
-        <Text>Subtotal</Text>
-        <Text>{formattedSubtotal}</Text>
-      </Row>
-      {pricingPreview && pricingPreview.shippingFee > 0 && (
-        <OrderSummaryLine icon={<Truck size={14} className={iconCls} />} label="Shipping" amount={formatEmiRupees(pricingPreview.shippingFee)} />
-      )}
-      {pricingPreview && pricingPreview.codHandlingFee > 0 && (
-        <OrderSummaryLine icon={<Banknote size={14} className={iconCls} />} label="COD handling fee" amount={formatEmiRupees(pricingPreview.codHandlingFee)} />
-      )}
-      {pricingPreview && pricingPreview.whatsappNotifyFee > 0 && (
-        <OrderSummaryLine icon={<MessageCircle size={14} className={iconCls} />} label="WhatsApp updates" amount={formatEmiRupees(pricingPreview.whatsappNotifyFee)} />
-      )}
-      {pricingPreview && pricingPreview.giftWrapFee > 0 && (
-        <OrderSummaryLine icon={<Gift size={14} className={iconCls} />} label="Gift wrap" amount={formatEmiRupees(pricingPreview.giftWrapFee)} />
-      )}
-      {pricingPreview && pricingPreview.shipmentProtectionFee > 0 && (
-        <OrderSummaryLine icon={<ShieldCheck size={14} className={iconCls} />} label="Shipment protection" amount={formatEmiRupees(pricingPreview.shipmentProtectionFee)} />
-      )}
-      {pricingPreview && pricingPreview.gstAmount > 0 && (
-        <OrderSummaryLine icon={<Receipt size={14} className={iconCls} />} label="GST" amount={formatEmiRupees(pricingPreview.gstAmount)} />
-      )}
-      {(pricingPreview ? pricingPreview.couponDiscount : totalDiscount) > 0 && (
-        <OrderSummaryLine
-          icon={<Tag size={14} className="text-success" />}
-          label="Coupon discount"
-          amount={`−${formatEmiRupees(pricingPreview ? pricingPreview.couponDiscount : totalDiscount)}`}
-          tone="success"
-        />
-      )}
-      <Row border="default" className="border-t" padding="t-sm" align="center" justify="between">
-        <Text weight="semibold" color="primary">{CK.ORDER_SUMMARY_TOTAL}</Text>
-        <Text weight="semibold" color="primary">{formattedTotal}</Text>
-      </Row>
-      {isLoadingPreview && !pricingPreview && step === "payment" && (
-        <Text className="mt-1" size="xs" color="muted">Calculating shipping & fees…</Text>
+      {/* Shared with the cart's expandable preview — one implementation, so a
+          new fee line can't appear in one place and not the other. */}
+      <CartPriceBreakdown
+        preview={pricingPreview}
+        fallbackSubtotal={Math.max(0, subtotalValue - totalDiscount)}
+        isLoading={isLoadingPreview}
+        unavailableNote={
+          step === "payment" ? "Calculating shipping & fees…" : "Shipping & fees calculated at the payment step."
+        }
+      />
+      {!pricingPreview && (
+        <Row border="default" className="border-t" padding="t-sm" align="center" justify="between">
+          <Text weight="semibold" color="primary">{CK.ORDER_SUMMARY_TOTAL}</Text>
+          <Text weight="semibold" color="primary">{formattedTotal}</Text>
+        </Row>
       )}
       {step === "address" && (
         <Button
@@ -1162,7 +1048,6 @@ function usePaymentHandlers({
   user,
   subtotal,
   outOfStockPolicy,
-  addons,
   router,
   showToast,
   setStep,
@@ -1174,7 +1059,6 @@ function usePaymentHandlers({
   user: ReturnType<typeof useAuth>["user"];
   subtotal: number;
   outOfStockPolicy: OutOfStockPolicy;
-  addons: CheckoutAddonSelections;
   router: ReturnType<typeof useRouter>;
   showToast: ReturnType<typeof useToast>["showToast"];
   setStep: (step: CheckoutStep) => void;
@@ -1189,7 +1073,7 @@ function usePaymentHandlers({
     setActionError("");
     setStep("processing");
     try {
-      const createRes = await createRazorpayOrder(subtotal, addons);
+      const createRes = await createRazorpayOrder(subtotal);
       if (!createRes.ok) {
         const err = await createRes.json().catch(() => ({}));
         throw new Error((err as { error?: string }).error ?? "Failed to create order");
@@ -1209,7 +1093,6 @@ function usePaymentHandlers({
         razorpay_signature: rzpResponse.razorpay_signature,
         addressId: selectedAddress.id,
         outOfStockPolicy,
-        ...addons,
       });
       if (!verifyRes.ok) {
         const err = await verifyRes.json().catch(() => ({}));
@@ -1228,7 +1111,7 @@ function usePaymentHandlers({
     } finally {
       setIsProcessingPayment(false);
     }
-  }, [selectedAddress, user, subtotal, router, showToast, outOfStockPolicy, addons, ensureValueOtpGate]);
+  }, [selectedAddress, user, subtotal, router, showToast, outOfStockPolicy, ensureValueOtpGate]);
 
   const handlePlaceCodOrder = useCallback(async () => {
     if (!selectedAddress) return;
@@ -1236,7 +1119,7 @@ function usePaymentHandlers({
     setActionError("");
     setStep("processing");
     try {
-      const res = await createCheckoutOrder({ addressId: selectedAddress.id, paymentMethod: "cod", outOfStockPolicy, ...addons });
+      const res = await createCheckoutOrder({ addressId: selectedAddress.id, paymentMethod: "cod", outOfStockPolicy });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error((err as { error?: string }).error ?? ORDER_PLACEMENT_FAILED_MSG);
@@ -1254,7 +1137,7 @@ function usePaymentHandlers({
     } finally {
       setIsProcessingPayment(false);
     }
-  }, [selectedAddress, router, showToast, outOfStockPolicy, addons]);
+  }, [selectedAddress, router, showToast, outOfStockPolicy]);
 
   const handlePlaceCashOrder = useCallback(async () => {
     if (!selectedAddress) return;
@@ -1263,7 +1146,7 @@ function usePaymentHandlers({
     setActionError("");
     setStep("processing");
     try {
-      const res = await createCheckoutOrder({ addressId: selectedAddress.id, paymentMethod: "cash", outOfStockPolicy, ...addons });
+      const res = await createCheckoutOrder({ addressId: selectedAddress.id, paymentMethod: "cash", outOfStockPolicy });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error((err as { error?: string }).error ?? ORDER_PLACEMENT_FAILED_MSG);
@@ -1284,7 +1167,7 @@ function usePaymentHandlers({
     } finally {
       setIsProcessingPayment(false);
     }
-  }, [selectedAddress, router, showToast, outOfStockPolicy, addons, ensureValueOtpGate]);
+  }, [selectedAddress, router, showToast, outOfStockPolicy, ensureValueOtpGate]);
 
   return { handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder };
 }
@@ -1351,19 +1234,43 @@ export function CheckoutRouteClient({
   const [actionError, setActionError] = useState("");
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [outOfStockPolicy, setOutOfStockPolicy] = useState<OutOfStockPolicy>("skip_items");
-  const [whatsappNotifyAddon, setWhatsappNotifyAddon] = useState(false);
-  const [giftWrapAddon, setGiftWrapAddon] = useState(false);
-  const [giftWrapMessage, setGiftWrapMessage] = useState("");
-  const [shipmentProtectionAddon, setShipmentProtectionAddon] = useState(false);
   const [manualPaymentConsent, setManualPaymentConsent] = useState(false);
-  const addons: CheckoutAddonSelections = useMemo(
-    () => ({
-      whatsappNotifyAddon,
-      giftWrapAddon,
-      giftWrapMessage: giftWrapAddon ? giftWrapMessage : undefined,
-      shipmentProtectionAddon,
-    }),
-    [whatsappNotifyAddon, giftWrapAddon, giftWrapMessage, shipmentProtectionAddon],
+
+  /**
+   * Add-on selections, per store — was four cart-wide booleans, which meant one
+   * tick billed the add-on against every seller in the cart.
+   *
+   * Seeded from the cart document so a choice made in the cart is still ticked
+   * here, and written straight back to it: the cart doc is what the server
+   * reads when the order is placed, so these controls stay authoritative for
+   * Buy Now (which never passes through the cart page at all).
+   */
+  const [localStoreAddons, setLocalStoreAddons] = useState<Record<string, StoreAddonsValue> | null>(null);
+  const serverStoreAddons = (cartData?.cart?.storeAddons ?? {}) as Record<string, StoreAddonsValue>;
+  const storeAddons = localStoreAddons ?? serverStoreAddons;
+  // Changes whenever a selection is persisted, so the pricing preview refetches
+  // without needing to know the shape of what changed.
+  const addonSignal = useMemo(
+    () =>
+      Object.entries(storeAddons)
+        .map(([sid, a]) => `${sid}:${a.whatsappNotifyAddon ? 1 : 0}${a.giftWrapAddon ? 1 : 0}${a.shipmentProtectionAddon ? 1 : 0}`)
+        .sort()
+        .join("|"),
+    [storeAddons],
+  );
+
+  const handleStoreAddonsChange = useCallback(
+    (storeId: string, next: StoreAddonsValue) => {
+      setLocalStoreAddons((prev) => ({ ...(prev ?? serverStoreAddons), [storeId]: next }));
+      persistCartAddons(storeId, next).catch((err: unknown) => {
+        void normalizeError(err);
+        showToast("Could not update add-ons. Please try again.", "error");
+      });
+    },
+    // serverStoreAddons is a fresh object each render; addonSignal tracks its
+    // real content, so depending on that keeps the callback stable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [addonSignal, showToast],
   );
 
   // --- Coupon state ---
@@ -1376,8 +1283,25 @@ export function CheckoutRouteClient({
   const [isCouponLoading, setIsCouponLoading] = useState(false);
 
   const totalDiscount = effectiveCoupons.reduce((s, c) => s + c.discountAmount, 0);
-  const subtotal = cartData?.subtotal ?? 0;
-  const cartIsEmpty = (cartData?.cart?.items?.length ?? 0) === 0;
+
+  // Lane scoping. `cartData.subtotal` is the WHOLE cart, but only one lane is
+  // payable at a time (auction > offer > standard) and the server-side
+  // `assertCheckoutLane` will refuse anything else — so showing a blended
+  // subtotal here would quote a number the buyer cannot actually pay.
+  // `pricingPreview` is already lane-scoped server-side; this is the fallback
+  // shown before it loads.
+  const allCartItems = (cartData?.cart?.items ?? []) as unknown as LaneAssignable[];
+  const checkoutLane = activeLane(allCartItems);
+  const laneScopedItems = checkoutLane ? laneItems(allCartItems, checkoutLane) : [];
+  const isLockedCheckoutLane = checkoutLane !== null && isLockedLane(checkoutLane);
+  const subtotal =
+    checkoutLane === null || checkoutLane === CART_LANE.STANDARD
+      ? (cartData?.subtotal ?? 0)
+      : laneScopedItems.reduce((sum, i) => {
+          const line = i as unknown as { lockedPrice?: number; price?: number; quantity?: number };
+          return sum + (line.lockedPrice ?? line.price ?? 0) * (line.quantity ?? 1);
+        }, 0);
+  const cartIsEmpty = laneScopedItems.length === 0;
 
   // Order Summary pricing preview — the true total including shipping, COD
   // handling fee, add-ons, and GST, matching what order placement actually
@@ -1387,14 +1311,26 @@ export function CheckoutRouteClient({
     showCashOption ? "cash" : showCod ? "cod" : showRazorpay ? "online" : "emi";
   const couponSignal = effectiveCoupons.map((c) => `${c.code}:${c.discountAmount}`).join(",");
   const { preview: pricingPreview, isLoadingPreview } = usePricingPreview({
-    uid: user?.uid,
-    step,
+    enabled: !!user?.uid && step === "payment",
     addressId: selectedAddress?.id,
     paymentMethod: previewPaymentMethod,
-    addons,
+    addonSignal,
     couponSignal,
   });
   const effectiveTotal = pricingPreview ? pricingPreview.total : Math.max(0, subtotal - totalDiscount);
+
+  // The stores this checkout will actually produce orders for. Taken from the
+  // preview rather than derived separately, so the add-on controls and the fee
+  // lines can't disagree about which stores are involved.
+  const addonStores = useMemo(
+    () =>
+      (pricingPreview?.stores ?? []).map((s) => ({
+        storeId: s.storeId,
+        storeName: s.storeName,
+        subtotal: s.subtotal,
+      })),
+    [pricingPreview],
+  );
 
   const {
     valueOtpMaskedEmail,
@@ -1418,7 +1354,6 @@ export function CheckoutRouteClient({
     cartIsEmpty,
     selectedAddress,
     outOfStockPolicy,
-    addons,
     router,
     showToast,
     setStep,
@@ -1498,7 +1433,6 @@ export function CheckoutRouteClient({
     user,
     subtotal,
     outOfStockPolicy,
-    addons,
     router,
     showToast,
     setStep,
@@ -1522,7 +1456,6 @@ export function CheckoutRouteClient({
   const stepIndex = step === "address" ? 0 : 1;
 
   const fmtOpts: Intl.NumberFormatOptions = { style: "currency", currency: "INR", minimumFractionDigits: 2, maximumFractionDigits: 2 };
-  const formattedSubtotal = subtotal.toLocaleString("en-IN", fmtOpts);
   const formattedTotal = effectiveTotal.toLocaleString("en-IN", fmtOpts);
 
   // Mobile bottom bar — step-dependent primary CTA
@@ -1604,12 +1537,20 @@ export function CheckoutRouteClient({
           }
           return (
             <Stack gap="lg">
-              {showCoupons && renderCouponSection({ couponCode, setCouponCode, couponError, isCouponLoading, effectiveCoupons, handleApplyCoupon, handleRemoveCoupon })}
-              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showRazorpay, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, whatsappNotifyAddon, setWhatsappNotifyAddon, giftWrapAddon, setGiftWrapAddon, giftWrapMessage, setGiftWrapMessage, shipmentProtectionAddon, setShipmentProtectionAddon, manualPaymentConsent, setManualPaymentConsent, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
+              {isLockedCheckoutLane && (
+                <Alert variant="info">
+                  {`You're paying for your ${CART_LANE_LABELS[checkoutLane!].toLowerCase()}. The price is already agreed, so coupons don't apply and the rest of your cart stays where it is.`}
+                </Alert>
+              )}
+              {/* Coupons are disabled on the locked lanes — the price was won
+                  at auction or negotiated on an offer, so stacking a discount
+                  on top would re-open a settled number. */}
+              {showCoupons && !isLockedCheckoutLane && renderCouponSection({ couponCode, setCouponCode, couponError, isCouponLoading, effectiveCoupons, handleApplyCoupon, handleRemoveCoupon })}
+              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showRazorpay, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, storeAddons, onStoreAddonsChange: handleStoreAddonsChange, addonStores, manualPaymentConsent, setManualPaymentConsent, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
             </Stack>
           );
         }}
-        renderOrderSummary={() => renderOrderSummary({ selectedAddress, formattedSubtotal, formattedTotal, totalDiscount, step, addressesLoading, actionError, handleAdvanceToPayment, pricingPreview, isLoadingPreview })}
+        renderOrderSummary={() => renderOrderSummary({ selectedAddress, formattedTotal, subtotalValue: subtotal, totalDiscount, step, addressesLoading, actionError, handleAdvanceToPayment, pricingPreview, isLoadingPreview })}
       />
     </Div>
   );

@@ -20,24 +20,27 @@ const pricingPreviewSchema = z.object({
   addressId: z.string().optional(),
   paymentMethod: z.enum(["cod", "online", "upi_manual", "cash", "emi"]).default("cod"),
   excludedProductIds: z.array(z.string()).optional(),
-  whatsappNotifyAddon: z.boolean().optional().default(false),
-  giftWrapAddon: z.boolean().optional().default(false),
-  shipmentProtectionAddon: z.boolean().optional().default(false),
+  /**
+   * Which cart lane to price. The cart page prices whichever tab the buyer has
+   * open — including one that is currently gated off — so it must be explicit.
+   * Omitted by checkout, which prices the lane that is actually payable.
+   */
+  lane: z.enum(["standard", "auction", "offer"]).optional(),
+  // Add-on booleans are NOT accepted: they live per store on the cart document
+  // (`CartDocument.storeAddons`), which is the granularity they are billed at.
 });
 
 export const POST = withProviders(createRouteHandler<(typeof pricingPreviewSchema)["_output"]>({
   auth: true,
   schema: pricingPreviewSchema,
   handler: async ({ user, body }) => {
-    const { addressId, paymentMethod, excludedProductIds, whatsappNotifyAddon, giftWrapAddon, shipmentProtectionAddon } = body!;
+    const { addressId, paymentMethod, excludedProductIds, lane } = body!;
     const preview = await previewCheckoutPricing({
       userId: user!.uid,
       addressId,
       paymentMethod,
       excludedProductIds,
-      whatsappNotifyAddon,
-      giftWrapAddon,
-      shipmentProtectionAddon,
+      lane,
     });
     return successResponse(preview);
   },

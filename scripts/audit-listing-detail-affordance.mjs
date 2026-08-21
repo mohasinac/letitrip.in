@@ -142,13 +142,47 @@ if (!scanRootExists) {
   process.exit(0);
 }
 
+/**
+ * Config factories a view may build its `ListingViewConfig` from.
+ *
+ * A view that delegates to one of these has its affordance declared in the
+ * FACTORY, not in the view file — so scanning the view alone reports a false
+ * dead end. Five per-listing-type admin views were collapsed onto
+ * `buildListingTypeListingConfig` on 2026-08-21; without this, consolidating
+ * duplication would have looked like five new violations.
+ *
+ * Keyed by the factory function name so the check stays specific: any file
+ * calling it inherits the factory's own affordance tokens.
+ */
+const CONFIG_FACTORIES = {
+  buildListingTypeListingConfig:
+    "appkit/src/features/products/config/listing-type-listing-config.ts",
+};
+
+/** Affordance tokens contributed by whichever factories a file calls. */
+function factoryAffordanceText(text) {
+  let extra = "";
+  for (const [fn, rel] of Object.entries(CONFIG_FACTORIES)) {
+    if (!text.includes(`${fn}(`)) continue;
+    try {
+      extra += readFileSync(join(ROOT, rel), "utf8");
+    } catch {
+      // A moved/renamed factory shouldn't crash the audit — the view just
+      // falls back to being judged on its own contents.
+    }
+  }
+  return extra;
+}
+
 const violations = [];
 let checked = 0;
 
 for (const file of walk(SCAN_ROOT)) {
-  const text = readFileSync(file, "utf8");
-  if (!text.includes(LISTING_MARKER)) continue;
+  const ownText = readFileSync(file, "utf8");
+  if (!ownText.includes(LISTING_MARKER)) continue;
   checked++;
+  // Judge the view together with any config factory it delegates to.
+  const text = ownText + factoryAffordanceText(ownText);
   if (SUPPRESS_RE.test(text)) continue;
   if (AFFORDANCES.some((m) => text.includes(m))) continue;
   if (DETAIL_ACTION_TOKENS.some((t) => text.includes(t))) continue;

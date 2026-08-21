@@ -88,7 +88,7 @@ const mockPercentCoupon = {
   code: "PALACE15",
   type: "percentage",
   storeId: "store-pokemon-palace",
-  restrictions: { firstTimeUserOnly: false, combineWithSellerCoupons: true },
+  restrictions: { firstTimeUserOnly: false, applicableCategories: ["category-beyblade-burst"] },
   validity: { isActive: true },
 };
 
@@ -196,9 +196,9 @@ describe("PATCH /api/store/coupons/[id]", () => {
       params as never,
     );
     const updateArg = mockCouponUpdate.mock.calls[0][1] as { restrictions: Record<string, unknown> };
-    // Should have merged existing combineWithSellerCoupons: true + new firstTimeUserOnly: true
+    // Should have merged the existing applicableCategories + the new firstTimeUserOnly
     expect(updateArg.restrictions.firstTimeUserOnly).toBe(true);
-    expect(updateArg.restrictions.combineWithSellerCoupons).toBe(true);
+    expect(updateArg.restrictions.applicableCategories).toEqual(["category-beyblade-burst"]);
   });
 
   it("no restrictions in body → restrictions not set in update", async () => {

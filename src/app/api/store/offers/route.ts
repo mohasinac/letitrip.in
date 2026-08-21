@@ -5,7 +5,7 @@ import { withProviders } from "@/providers.config";
  */
 import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
-import { offerRepository, storeRepository } from "@mohasinac/appkit";
+import { offerRepository, storeRepository, maskOfferForSeller } from "@mohasinac/appkit";
 import { ROLES_STORE_READ } from "@/constants";
 
 export const GET = withProviders(createApiHandler({
@@ -40,8 +40,11 @@ export const GET = withProviders(createApiHandler({
       pageSize,
     });
 
+    // The sibling server action (`listSellerOffers`) already masks; this route
+    // did not, so the seller's own list leaked every buyer's full name and
+    // email. Same helper, same guarantee, both read paths.
     return successResponse({
-      items: result.items,
+      items: result.items.map(maskOfferForSeller),
       total: result.total,
       page: result.page,
       pageSize: result.pageSize,

@@ -14,7 +14,7 @@ import { withProviders } from "@/providers.config";
  */
 
 import { z } from "zod";
-import { createRazorpayOrder, rupeesToPaise, computeWhatsAppNotifyFee, computeGiftWrapFee, computeShipmentProtectionFee, splitCartIntoOrderGroups, resolveShippingCost } from "@mohasinac/appkit";
+import { createRazorpayOrder, rupeesToPaise, computeWhatsAppNotifyFee, computeGiftWrapFee, computeShipmentProtectionFee, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, splitCartIntoOrderGroups, resolveShippingCost } from "@mohasinac/appkit";
 import { siteSettingsRepository, unitOfWork, productRepository } from "@mohasinac/appkit";
 import { successResponse, ApiErrors } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
@@ -22,15 +22,15 @@ import { createRouteHandler } from "@mohasinac/appkit";
 import { getDefaultCurrency } from "@mohasinac/appkit";
 import { isCheckoutValueOtpVerified } from "@mohasinac/appkit/server";
 
+/**
+ * Add-on selections are deliberately NOT accepted here. They live on the cart
+ * document keyed per store (`CartDocument.storeAddons`), which is the
+ * granularity they are billed at — accepting them in the request as well would
+ * make the same charge answerable from two places.
+ */
 const createOrderSchema = z.object({
   currency: z.string().default(getDefaultCurrency()),
   receipt: z.string().optional(),
-  /** Buyer opted into the ₹10 WhatsApp order-updates addon. Unchecked by default. */
-  whatsappNotifyAddon: z.boolean().optional().default(false),
-  /** Buyer opted into gift wrap. Unchecked by default. */
-  giftWrapAddon: z.boolean().optional().default(false),
-  /** Buyer opted into shipment protection. Unchecked by default. */
-  shipmentProtectionAddon: z.boolean().optional().default(false),
 });
 
 const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_output"]>({
@@ -40,7 +40,7 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
     const keyId = process.env.RAZORPAY_KEY_ID;
     if (!keyId) throw ApiErrors.internalError("Razorpay is not configured on this server");
 
-    const { currency, receipt, whatsappNotifyAddon, giftWrapAddon, shipmentProtectionAddon } = body!;
+    const { currency, receipt } = body!;
     const uid = user!.uid;
 
     // --- Server-side amount computation from live cart + current product prices ---
@@ -97,16 +97,12 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
       }
     }
 
-    const platformFeePercent = siteSettings?.commissions?.platformFeePercent ?? 5;
-    const gstPercent = siteSettings?.commissions?.gstPercent ?? 18;
-    const minimumTransactionFee = Math.max(0, siteSettings?.commissions?.minimumTransactionFee ?? 0);
+    const commissionRates = siteSettings?.commissions ?? CHECKOUT_DEFAULT_COMMISSIONS;
+    const minimumTransactionFee = Math.max(0, commissionRates.minimumTransactionFee ?? 0);
 
-    const platformFee = Math.round(subtotalRs * (platformFeePercent / 100) * 100) / 100;
-    const gstOnFee = Math.round(platformFee * (gstPercent / 100) * 100) / 100;
-    const whatsappNotifyFee = computeWhatsAppNotifyFee(whatsappNotifyAddon, siteSettings?.commissions ?? {});
-    const giftWrapFee = computeGiftWrapFee(giftWrapAddon, siteSettings?.commissions ?? {});
-    const shipmentProtectionFee = computeShipmentProtectionFee(subtotalRs, shipmentProtectionAddon, siteSettings?.commissions ?? {});
-    const addonFees = whatsappNotifyFee + giftWrapFee + shipmentProtectionFee;
+    // Was hand-rolled arithmetic here, diverging from every other money path
+    // the moment any rule changed (as the ₹10 cap just did). One helper now.
+    const { platformFee, gstOnFee } = computeCheckoutFees(subtotalRs, commissionRates);
 
     // Shipping is charged per resulting order (one per seller-group the cart
     // splits into at order-creation time), same as createRazorpayGroupOrder /
@@ -118,6 +114,25 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
       orderGroups.map((group) => resolveShippingCost(group.items[0].item.storeId)),
     );
     const shippingFee = shippingFeesByGroup.reduce((sum, r) => sum + r.shippingFee, 0);
+
+    // Add-ons are per store, read off the cart doc — this route used to charge
+    // each add-on ONCE for the whole cart while the orders it later produced
+    // charged per store, so Razorpay collected less than the orders recorded.
+    const addonFees = orderGroups.reduce((sum, group) => {
+      const storeId = group.items[0].item.storeId;
+      const addons = cart.storeAddons?.[storeId] ?? {};
+      const groupSubtotal = group.items.reduce((gs, { item }) => {
+        const product = productById.get(item.productId);
+        const unit = item.bundleCategorySlug && item.bundleProductIds?.length ? item.price : (product?.price ?? item.price);
+        return gs + unit * item.quantity;
+      }, 0);
+      return (
+        sum +
+        computeWhatsAppNotifyFee(addons.whatsappNotifyAddon ?? false, commissionRates) +
+        computeGiftWrapFee(addons.giftWrapAddon ?? false, commissionRates) +
+        computeShipmentProtectionFee(groupSubtotal, addons.shipmentProtectionAddon ?? false, commissionRates)
+      );
+    }, 0);
 
     const rawTotal = subtotalRs + platformFee + gstOnFee + addonFees + shippingFee;
     const totalAmount = Math.max(rawTotal, subtotalRs + minimumTransactionFee + addonFees + shippingFee);
@@ -142,9 +157,10 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
       keyId,
       platformFee,
       gstOnFee,
-      whatsappNotifyFee,
-      giftWrapFee,
-      shipmentProtectionFee,
+      // One figure now, not three: add-ons are per store, so the individual
+      // fees only mean something alongside the store they belong to. The
+      // per-store split is what /api/checkout/pricing-preview returns.
+      addonFees,
       shippingFee,
       baseAmount: subtotalRs,
     });

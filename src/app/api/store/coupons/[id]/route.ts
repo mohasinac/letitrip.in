@@ -47,7 +47,6 @@ const updateCouponSchema = z.object({
       applicableProducts: z.array(z.string()).optional(),
       applicableCategories: z.array(z.string()).optional(),
       firstTimeUserOnly: z.boolean().optional(),
-      combineWithSellerCoupons: z.boolean().optional(),
     })
     .optional(),
   action: z.enum(["activate", "deactivate"]).optional(),

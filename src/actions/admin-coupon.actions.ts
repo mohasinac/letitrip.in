@@ -57,7 +57,6 @@ const restrictionsConfigSchema = z.object({
   excludeProducts: z.array(z.string()).optional(),
   excludeCategories: z.array(z.string()).optional(),
   firstTimeUserOnly: z.boolean().default(false),
-  combineWithSellerCoupons: z.boolean().default(false),
 });
 
 const createCouponSchema = z.object({

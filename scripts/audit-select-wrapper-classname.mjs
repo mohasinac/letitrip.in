@@ -2,17 +2,26 @@
 /**
  * audit-select-wrapper-classname.mjs
  *
- * The shared `<Select>` primitive (appkit/src/ui/components/Select.tsx) wraps
- * the real `<select>` in an outer `.appkit-select` div — that outer div is the
- * actual flex/grid child when `<Select>` sits inside a Row/flex container.
- * `className` only ever reaches the inner `<select>`, so a caller passing a
- * sizing/flex-control utility via `className` (intending to constrain the
- * Select's width in a flex row) gets silently ignored: the wrapper's own
- * `width: 100%` wins, and the Select balloons while its flex siblings get
- * squeezed. Use the dedicated `wrapperClassName` prop for sizing instead.
+ * Guards a whole defect class, not just one component (Recurrent Root Cause #29):
+ * a primitive whose ROOT wrapper element is the real flex/grid child, while the
+ * caller's `className` only ever reaches an inner control. A caller passing a
+ * sizing/flex-control utility via `className` — intending to constrain the
+ * control's width in a flex row — gets silently ignored: the wrapper's own
+ * `width: 100%` wins, and the control balloons while its flex siblings get
+ * squeezed to nothing. Each such primitive exposes a dedicated
+ * `wrapperClassName` prop that lands on the real flex child.
  *
- * Strict-zero — no legitimate case puts a sizing/flex-control token on
- * `<Select>`'s `className`. No suppression marker exists for this audit; if a
+ * Confirmed instances (see COMPONENTS below):
+ *  - `<Select>`   — `.appkit-select` wrapper; broke the header search bar (2026-08-19)
+ *  - `<Checkbox>` — `.appkit-checkbox` wrapper; broke the mobile cart, where the
+ *                   checkbox claimed 100% of the row and pushed each item card
+ *                   off-screen past its seller card's border
+ *
+ * The filename is kept for its registry entry in scripts/run-audits.mjs even
+ * though the scope is now broader than `<Select>`.
+ *
+ * Strict-zero — no legitimate case puts a sizing/flex-control token on these
+ * components' `className`. No suppression marker exists for this audit; if a
  * genuine exception ever surfaces, add one and register it in
  * scripts/audit-no-suppression-comments.mjs's SUPPRESSION_MARKERS.
  *
@@ -40,10 +49,26 @@ const SKIP_DIRS = new Set([
 ]);
 const SKIP_FILE_RE = /\.(d\.ts|test\.tsx?|spec\.tsx?)$/;
 
-// Select.tsx itself defines the primitive — its own internal usage is exempt.
-const SELECT_SOURCE_FILE = join(ROOT, "appkit", "src", "ui", "components", "Select.tsx");
+/**
+ * Each entry: the JSX tag to scan, the file defining it (exempt — its own
+ * internal usage is the primitive's implementation), and the inner element
+ * `className` actually lands on, for the error message.
+ */
+const COMPONENTS = [
+  {
+    tag: "Select",
+    sourceFile: join(ROOT, "appkit", "src", "ui", "components", "Select.tsx"),
+    innerElement: "<select>",
+    wrapper: ".appkit-select",
+  },
+  {
+    tag: "Checkbox",
+    sourceFile: join(ROOT, "appkit", "src", "ui", "components", "Checkbox.tsx"),
+    innerElement: "<input>",
+    wrapper: ".appkit-checkbox",
+  },
+];
 
-const SELECT_OPENER_RE = /<Select\b([^>]*?)(?=\/?>)/g;
 const CLASSNAME_RE = /(?<!wrapper)className\s*=\s*(?:"([^"]*)"|'([^']*)'|\{`([^`]*)`\}|\{"([^"]*)"\}|\{'([^']*)'\})/;
 const BARE_PROP_RE = /\bbare\b(?:\s*=\s*\{?\s*(?:true)?\s*\}?)?/;
 const WRAPPER_CLASSNAME_RE = /\bwrapperClassName\s*=/;
@@ -62,6 +87,38 @@ const SIZING_TOKEN_RES = [
   /\bw-\[[^\]]+\]/,
 ];
 
+const EXEMPT_SOURCE_FILES = new Set(COMPONENTS.map((c) => c.sourceFile));
+
+/**
+ * Extract a JSX opening tag's attribute text, starting just after `<Tag`.
+ *
+ * A naive `[^>]*?` stops at the first `>` character — which includes the `>`
+ * inside an arrow function (`onChange={() => f()}`), silently truncating the
+ * attribute list before later props like `className` and producing a false
+ * negative. This walks characters instead, tracking string/template/brace
+ * state, and returns the text up to the `>` that actually closes the tag.
+ */
+function extractOpenerAttrs(text, from) {
+  let depth = 0;
+  let quote = null;
+  for (let i = from; i < text.length; i++) {
+    const ch = text[i];
+    if (quote) {
+      if (ch === "\\") { i++; continue; }
+      if (ch === quote) quote = null;
+      continue;
+    }
+    if (ch === '"' || ch === "'" || ch === "`") { quote = ch; continue; }
+    if (ch === "{") { depth++; continue; }
+    if (ch === "}") { depth--; continue; }
+    if (ch === ">" && depth === 0) {
+      const end = text[i - 1] === "/" ? i - 1 : i;
+      return text.slice(from, end);
+    }
+  }
+  return null;
+}
+
 function walk(dir, files = []) {
   let entries;
   try {
@@ -78,7 +135,7 @@ function walk(dir, files = []) {
     }
     if (!entry.name.endsWith(".tsx") && !entry.name.endsWith(".jsx")) continue;
     if (SKIP_FILE_RE.test(entry.name)) continue;
-    if (full === SELECT_SOURCE_FILE) continue;
+    if (EXEMPT_SOURCE_FILES.has(full)) continue;
     files.push(full);
   }
   return files;
@@ -89,31 +146,38 @@ const violations = [];
 for (const dir of SCAN_DIRS) {
   for (const file of walk(dir)) {
     const text = readFileSync(file, "utf8");
-    if (!text.includes("<Select")) continue;
-    const lines = text.split("\n");
 
-    for (const match of text.matchAll(SELECT_OPENER_RE)) {
-      const [, attrs] = match;
-      if (BARE_PROP_RE.test(attrs)) continue; // bare mode: className already lands on the real flex child
-      if (WRAPPER_CLASSNAME_RE.test(attrs)) continue; // already sizing the wrapper correctly
+    for (const { tag, innerElement, wrapper } of COMPONENTS) {
+      if (!text.includes(`<${tag}`)) continue;
 
-      const cls = CLASSNAME_RE.exec(attrs);
-      if (!cls) continue;
-      const classValue = cls[1] ?? cls[2] ?? cls[3] ?? cls[4] ?? cls[5] ?? "";
-      if (!classValue.trim()) continue;
+      const openerRe = new RegExp(`<${tag}(?![A-Za-z0-9_])`, "g");
+      for (const match of text.matchAll(openerRe)) {
+        const attrs = extractOpenerAttrs(text, (match.index ?? 0) + match[0].length);
+        if (attrs === null) continue;
+        if (BARE_PROP_RE.test(attrs)) continue; // bare mode: className already lands on the real flex child
+        if (WRAPPER_CLASSNAME_RE.test(attrs)) continue; // already sizing the wrapper correctly
 
-      const offending = SIZING_TOKEN_RES.filter((rx) => rx.test(classValue));
-      if (offending.length === 0) continue;
+        const cls = CLASSNAME_RE.exec(attrs);
+        if (!cls) continue;
+        const classValue = cls[1] ?? cls[2] ?? cls[3] ?? cls[4] ?? cls[5] ?? "";
+        if (!classValue.trim()) continue;
 
-      const before = text.slice(0, match.index ?? 0);
-      const lineIdx = before.split("\n").length - 1;
+        const offending = SIZING_TOKEN_RES.filter((rx) => rx.test(classValue));
+        if (offending.length === 0) continue;
 
-      violations.push({
-        file: relative(ROOT, file).replace(/\\/g, "/"),
-        line: lineIdx + 1,
-        classValue: classValue.slice(0, 120),
-        token: classValue.match(offending[0])?.[0] ?? "",
-      });
+        const before = text.slice(0, match.index ?? 0);
+        const lineIdx = before.split("\n").length - 1;
+
+        violations.push({
+          tag,
+          innerElement,
+          wrapper,
+          file: relative(ROOT, file).replace(/\\/g, "/"),
+          line: lineIdx + 1,
+          classValue: classValue.slice(0, 120),
+          token: classValue.match(offending[0])?.[0] ?? "",
+        });
+      }
     }
   }
 }
@@ -128,15 +192,16 @@ if (violations.length <= BASELINE) {
 }
 
 console.error(
-  `audit-select-wrapper-classname: REGRESSION — ${violations.length} <Select> site(s) carry a sizing/flex-control token in className instead of wrapperClassName (baseline ${BASELINE}, over by ${violations.length - BASELINE}).\n`,
+  `audit-select-wrapper-classname: REGRESSION — ${violations.length} site(s) carry a sizing/flex-control token in className instead of wrapperClassName (baseline ${BASELINE}, over by ${violations.length - BASELINE}).\n`,
 );
 for (const v of violations.slice(0, 20)) {
-  console.error(`  ${v.file}:${v.line}  [${v.token}]  className="${v.classValue}"`);
+  console.error(`  ${v.file}:${v.line}  <${v.tag}>  [${v.token}]  className="${v.classValue}"`);
 }
 if (violations.length > 20) {
   console.error(`  … and ${violations.length - 20} more`);
 }
 console.error(
-  "\n  Fix: move the sizing/flex-control token(s) to the wrapperClassName prop — className only styles the inner <select>; wrapperClassName sizes the actual flex-child wrapper div.",
+  "\n  Fix: move the sizing/flex-control token(s) to the wrapperClassName prop — className only styles the inner control\n" +
+    "  (e.g. <select> / <input>); wrapperClassName sizes the actual flex-child wrapper div (.appkit-select / .appkit-checkbox).",
 );
 process.exit(1);

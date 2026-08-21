@@ -76,7 +76,6 @@ export async function sellerCreateCouponAction(
         },
         restrictions: {
           firstTimeUserOnly: false,
-          combineWithSellerCoupons: false,
         },
       };
     

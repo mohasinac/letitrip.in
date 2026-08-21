@@ -15,7 +15,7 @@ interface CouponData {
   discount?: { value?: number; minPurchase?: number; maxDiscount?: number };
   usage?: { totalLimit?: number; perUserLimit?: number };
   validity?: { startDate?: string | { _seconds?: number }; endDate?: string | { _seconds?: number }; isActive?: boolean };
-  restrictions?: { applicableProducts?: string[]; applicableCategories?: string[]; firstTimeUserOnly?: boolean; combineWithSellerCoupons?: boolean };
+  restrictions?: { applicableProducts?: string[]; applicableCategories?: string[]; firstTimeUserOnly?: boolean; };
 }
 
 function toDateString(val: string | { _seconds?: number } | undefined): string {

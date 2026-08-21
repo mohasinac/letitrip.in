@@ -46,6 +46,38 @@ export function persistCartSelection(itemIds: string[] | null): Promise<void> {
     .then(() => undefined);
 }
 
+/** Paid add-on selections for ONE store — mirrors CartStoreAddons. */
+export interface CartStoreAddonSelections {
+  whatsappNotifyAddon?: boolean;
+  giftWrapAddon?: boolean;
+  giftWrapMessage?: string;
+  shipmentProtectionAddon?: boolean;
+}
+
+/**
+ * Persist one store's add-on selections to the cart document.
+ *
+ * Add-ons are billed per store, so they are chosen and stored per store. This
+ * write is what the checkout server actions later read — the checkout request
+ * itself carries no add-on flags.
+ *
+ * Unlike `persistCartSelection` this does NOT swallow failures: a dropped
+ * add-on write means the buyer is charged something other than what they see,
+ * so the caller needs to know and re-sync.
+ */
+export async function persistCartAddons(
+  storeId: string,
+  addons: CartStoreAddonSelections,
+): Promise<void> {
+  const res = await fetch(API_ENDPOINTS.CART.ADDONS, {
+    method: "PUT",
+    headers: JSON_HEADERS,
+    body: JSON.stringify({ storeId, ...addons }),
+    credentials: CREDS,
+  });
+  if (!res.ok) throw new Error("Failed to update add-ons");
+}
+
 // ── Wishlist ─────────────────────────────────────────────────────────────────
 
 export function addToWishlist(productId: string): Promise<Response> {

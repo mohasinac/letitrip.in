@@ -15,29 +15,6 @@ function numParam(url: URL, key: string, fallback: number): number {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-function computeAggregates(ratings: number[]): {
-  averageRating: number;
-  ratingDistribution: Record<number, number>;
-} {
-  const ratingDistribution: Record<number, number> = {
-    1: 0,
-    2: 0,
-    3: 0,
-    4: 0,
-    5: 0,
-  };
-
-  for (const rating of ratings) {
-    ratingDistribution[rating] = (ratingDistribution[rating] ?? 0) + 1;
-  }
-
-  const sum = ratings.reduce((total, rating) => total + rating, 0);
-  return {
-    averageRating: ratings.length > 0 ? sum / ratings.length : 0,
-    ratingDistribution,
-  };
-}
-
 function buildPublicFilters(url: URL, baseFilters: string[]): string {
   const parts = [...baseFilters];
 
@@ -129,17 +106,19 @@ export async function GET(request: Request): Promise<NextResponse> {
       );
     }
 
-    const allApprovedReviews =
-      await reviewRepository.findApprovedByProduct(productId);
-    const aggregates = computeAggregates(
-      allApprovedReviews.map((review) => review.rating),
-    );
-    const result = await reviewRepository.listForProduct(productId, {
-      filters: sieveFilter(REVIEW_FIELDS.STATUS, SIEVE_OP.EQ, REVIEW_FIELDS.STATUS_VALUES.APPROVED),
-      sorts,
-      page,
-      pageSize,
-    });
+    // Aggregates come from Firestore count() aggregation queries, not a document scan —
+    // this used to call the unbounded findApprovedByProduct() purely to compute them.
+    const [aggregates, result] = await Promise.all([
+      reviewRepository.getApprovedRatingSummary(productId),
+      reviewRepository.listForProduct(productId, {
+        filters: buildPublicFilters(url, [
+          sieveFilter(REVIEW_FIELDS.STATUS, SIEVE_OP.EQ, REVIEW_FIELDS.STATUS_VALUES.APPROVED),
+        ]),
+        sorts,
+        page,
+        pageSize,
+      }),
+    ]);
 
     const response = NextResponse.json({
       success: true,
@@ -152,6 +131,7 @@ export async function GET(request: Request): Promise<NextResponse> {
         hasMore: result.hasMore,
         averageRating: aggregates.averageRating,
         ratingDistribution: aggregates.ratingDistribution,
+        totalApproved: aggregates.total,
       },
     });
     response.headers.set(

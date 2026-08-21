@@ -261,7 +261,7 @@
 | SortDropdown.tsx | SortDropdown | Component | Sort column/direction dropdown |
 | SectionTabs.tsx | SectionTabs | Component | Section tab navigation |
 | StepperNav.tsx | StepperNav | Component | Multi-step navigation |
-| HorizontalScroller.tsx | HorizontalScroller | Component | Horizontal scroll container with arrows; `arrowStyle?: "circle" \| "full-height"` prop (2026-08-20, default `"circle"`) selects a taller edge-to-edge arrow affordance for compare/scroller-style layouts |
+| HorizontalScroller.tsx | HorizontalScroller | Component | Horizontal scroll container with arrows; `arrowStyle?: "circle" \| "full-height"` prop (2026-08-20, default `"circle"`) selects a taller edge-to-edge arrow affordance for compare/scroller-style layouts. 2026-08-21: arrows now sit in a reserved gutter on the **wrapper** (not padding on the scroll track, which scrolled away and let cards slide under them) and are hidden below `sm`; `showFadeEdges` prop removed (had zero consumers once arrows became boundary walls) |
 | ListingLayout.tsx | ListingLayout | Component | Listing page layout shell |
 | ListingViewShell.tsx | ListingViewShell | Component | Listing view scaffold |
 | SlottedListingView.tsx | SlottedListingView | Component | Slot-based listing view |
@@ -427,9 +427,11 @@
 
 | Export | Type | Purpose |
 |--------|------|---------|
-| CartItemRow, CartDrawer | Component | Cart sidebar drawer |
+| CartItemRow, CartDrawer | Component | Cart sidebar drawer. `CartItemRow` takes `variant?: "card" \| "row"` — `"row"` drops its own surface/padding for use inside a seller card |
 | CartView | View | Full cart page |
 | CartSummary | Component | Cart summary widget |
+| CartPriceBreakdown | Component | Aggregate fee-line list (subtotal, shipping, add-ons, platform fee, GST, coupon, total). One implementation, three mounts: cart desktop expander, cart mobile sheet, checkout Order Summary. Aggregate only — per-store detail belongs on the seller card |
+| StoreAddonsPicker | Component | Per-store paid add-on checkboxes (WhatsApp updates / gift wrap / shipment protection), gated + priced by `siteSettings.commissions`. Used in both the cart's seller cards and the checkout summary, since Buy Now skips the cart |
 | CheckoutView | View | Checkout page |
 | CheckoutAddressStep | Step | Checkout address step |
 | CheckoutOtpModal | Modal | OTP verification modal |
@@ -657,7 +659,7 @@
 | StoresIndexListing | Listing | Stores index/search |
 | StoreProductsListing | Listing | Products in store listing |
 | StoreAuctionsListing | Listing | Auctions in store listing |
-| StoreReviewsListing | Listing | Reviews in store listing |
+| StoreReviewsListing | Listing | Reviews in store listing — thin wrapper over `ReviewsListingPanel` |
 | StorePreOrdersListing | Listing | Pre-orders in store listing |
 | StoreAddressSelectorCreate | Selector | Store address selector |
 | AdminGuideHubView | View | Admin & employee guide hub — permission-aware card grid |
@@ -683,10 +685,15 @@
 | pre-orders | PreOrdersListView, PreOrdersIndexListing | View | Pre-orders listing |
 | pre-orders | PreOrderDetailPageView | Page | Pre-order detail page |
 | promotions | CouponCard, CouponsIndexListing | Component | Coupon display |
+| promotions | CouponHelpDetails | Component | `appkit/src/features/promotions/components/CouponHelpDetails.tsx` — expandable "How coupons work" explainer (`<Details tone="card">`). Mounted on the cart summary, the checkout coupon box (`showRevalidationNote`), and above the public coupons grid. Copy comes from `COUPON_HELP` so the three surfaces can't drift |
+| promotions | COUPON_HELP | Constant | `appkit/src/features/promotions/constants/coupon-help.ts` — single source of the buyer-facing coupon scoping/stacking copy. Keep in sync with `detectCouponConflict()` and the seeded FAQ `faq-coupons-and-discounts` |
+| promotions | detectCouponConflict, IncomingCoupon | Action | `appkit/src/features/promotions/actions/coupon-stacking.ts` — the stacking rule: at most one seller coupon per `storeId` plus at most one admin (platform-wide) coupon per cart. Pure, no I/O. Moved out of the consumer's `src/lib/coupon-conflict.ts` (deleted) when checkout re-validation became a second consumer |
+| promotions | resolveCouponCategorySlugs | Action | `appkit/src/features/promotions/actions/coupon-actions.ts` — batched productId → `categorySlugs[]` resolver injected into `validateCouponForCart` so the coupon repository can enforce category restrictions without a cross-repository import. Called only when the coupon actually has one |
 | promotions | PromotionsView, PromotionsHero | View | Promotions/offers page |
 | reviews | ReviewCard, ReviewsList, ReviewFilters | Component | Reviews display |
 | reviews | ReviewSummary, ViewReviewModal | Component | Review summary and modal |
-| reviews | ReviewsIndexListing | Listing | Reviews index/search |
+| reviews | ReviewsIndexListing | Listing | Reviews index/search — thin wrapper over `ReviewsListingPanel` |
+| reviews | ReviewsListingPanel | Listing | `appkit/src/features/reviews/components/ReviewsListingPanel.tsx` — the one paginated reviews surface (toolbar + sort + rating filter + card grid). `source: {kind:"product"\|"store"\|"all"}` picks the endpoint; `stateMode:"url"` for the dedicated pages, `"local"` for a detail page's Reviews tab. Backs `/reviews`, `/stores/[slug]/reviews`, and the Reviews tab on product / digital-code / live detail pages plus the auction page's Store Reviews section |
 | shell | FormShell, StepForm, StepFormActions | Component | `appkit/src/features/shell/` — the real multi-step wizard chrome + step engine (see Rule #9 table in CLAUDE.md); state comes from `ui/forms/FormShell.tsx`'s `FormShellProvider` |
 | ui/forms | FormErrorSummary | Component | `appkit/src/ui/forms/FormErrorSummary.tsx` — reads `FormShellContext` directly (no required props), lists every current live error beside a form's Submit/Save/Publish button; step-tagged + clickable when `fieldToStepIndex` is populated. Supplements (not replaces) per-field inline errors. Every `<FormShell>`/`useFormShellState`/`<Form schema>` callsite must render one — enforced by `audit-form-error-summary` |
 | shell | QuickFormDrawer | Component | `appkit/src/features/shell/QuickFormDrawer.tsx` — compact 1–3 field inline-edit drawer, schema required |
@@ -1095,7 +1102,8 @@
 | useSellerStore | Store data | Seller store info |
 | useSellerStorefront | Storefront data | Store customization |
 | useBecomeSeller | Mutation | Register as seller |
-| useBottomActions | Actions[] | Bottom action bar items |
+| useBottomActions | Actions[] | Bottom action bar items. `desktop?: "hidden" \| "after-scroll" \| "always"` (default `"hidden"`) controls whether the bar may also show above `lg`, where it has always been `lg:hidden`; `"after-scroll"` reveals it once the page scrolls past the hero so the primary CTA comes back |
+| ListingBottomActions | Component | `appkit/src/features/products/components/ListingBottomActions.tsx` — the shared sticky-CTA registrar for every listing type whose bar is just "primary CTA scrolls to the buy/contact panel + price label": pre-order, prize-draw, classified, digital-code, live. Drives labels/variants from `MOBILE_PRIMARY_ACTIONS` (Rule #7). Auction and standard product keep bespoke registrars (live countdown / three state-dependent buttons) |
 
 ### Shipments Hooks (Feature A) — `appkit/src/features/shipments/hooks/useShipments.ts`
 
@@ -1384,6 +1392,7 @@
 | `/api/cart` | GET, POST | Cart operations |
 | `/api/cart/[itemId]` | PUT, DELETE | Cart item CRUD |
 | `/api/cart/selection` | POST | Selection update |
+| `/api/cart/addons` | PUT | Set ONE store's paid add-on selections (`{storeId, whatsappNotifyAddon?, giftWrapAddon?, giftWrapMessage?, shipmentProtectionAddon?}`) → `cartRepository.setStoreAddons`. Rejects a storeId with no cart item. This is the source of truth for what add-ons get charged — checkout requests carry no add-on flags |
 | `/api/cart/merge` | POST | Merge carts |
 | `/api/checkout/preflight` | POST | Checkout validation |
 | `/api/checkout` | POST | Place order |
@@ -1444,8 +1453,9 @@
 | File | Key Exports | Purpose |
 |------|-------------|---------|
 | products/action-defs.ts | ACTION_META, ROW_ACTION_META, ADMIN_BULK_ACTIONS, SELLER_BULK_ACTIONS, ADMIN_ROW_ACTIONS, SELLER_ROW_ACTIONS | CTA registry (42 actions) |
-| products/listing-tabs.ts | LISTING_TABS, SELLER_LISTING_TABS | Product listing type tabs |
-| products/sieve.ts | Sieve query builders | Filter/sort helpers |
+| products/listing-tabs.ts | CATEGORY_PAGE_TABS, STORE_PAGE_TABS, SELLER_LISTING_TABS, PRODUCT_TYPE_FILTER_TABS, ART_STICKERS_TYPE_FILTER_TABS, GENERIC_PRODUCT_LISTING_TYPES, ART_STICKERS_LISTING_TYPES, ListingTab | Listing-type tab bars + chips. **2026-08-21**: every array is now DERIVED from `ALL_LISTING_TYPES` + `pluginFor()` — see CLAUDE.md § "Browse chrome lives on the plugin". `GENERIC_PRODUCT_LISTING_TYPES` now spans all 9 types (was 4). `SEARCH_RESULT_TABS` removed (zero consumers). Guarded by `audit-listing-type-tab-coverage` |
+| products/sieve.ts | STANDARD_SORT_OPTIONS, STANDARD_PUBLIC_SORT_OPTIONS, AUCTION_SORT_OPTIONS, AUCTION_PUBLIC_SORT_OPTIONS, PREORDER_SORT_OPTIONS, PREORDER_PUBLIC_SORT_OPTIONS, PRIZE_DRAW_SORT_OPTIONS, PRIZE_DRAW_PUBLIC_SORT_OPTIONS, BUNDLE_SORT_OPTIONS, SortOption | Per-type sort sets. **2026-08-21**: `SORT_OPTIONS_BY_LISTING_TYPE` REMOVED — the per-type lookup is derived from the plugin registry via `sortOptionsFor()`/`commonSortOptionsFor()`; the old map was missing 5 of 9 types and still keyed `bundle`. Guarded by `audit-listing-sort-fields` |
+| products/config/listing-type-listing-config.ts | buildListingTypeListingConfig(), ListingTypeListingRow, BuildListingTypeListingOptions | **New 2026-08-21.** One admin `ListingViewConfig` for any listing type, driven by the plugin registry. Replaces 5 near-identical hand-written views (Art/Stickers/Classified/Digital Codes/Live), all of which had `filterKeys: []` |
 | scams/scam-types.ts | SCAM_TYPES, SCAM_CATEGORIES (27 types, 6 categories) | Scam pattern data |
 | orders/payment-window.ts | PAYMENT_WINDOW_MINUTES (15), PAYMENT_WINDOW_MS, PAYMENT_WINDOW_EXPIRED_REASON, PAYMENT_FRAUD_REJECTED_REASON, MANUAL_PAYMENT_METHODS, isManualPaymentMethod(), PaymentReviewQueueMode, PAYMENT_REVIEW_QUEUE_MODES, isPaymentReviewQueueMode(), PAYMENT_REVIEW_QUEUE_SCAN_LIMIT | Tier PP (2026-08-18) — shared by checkout order creation, buyer countdown UI, and the `paymentWindowTimeout` sweep so they never drift. **2026-08-21**: gained the manual-payment-method set + payment-review queue discriminator (see CLAUDE.md § "Manual Payment Review Flow"); exported from both `index.ts` and `client.ts` |
 
@@ -2023,6 +2033,11 @@ Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 | audit-hover-reveal-pointer-events.mjs | strict-0 | `opacity-0` + `group-hover:opacity-100`/`hover:opacity-100` without `pointer-events-none` in the same className — a hover-revealed element stays fully interactive while invisible, and `:hover` never fires on touch devices, so it silently swallows mobile taps meant for whatever is underneath it. Root-caused 2026-08-20 across 16 occurrences (mobile "cards don't open" reports) |
 | audit-rbac-gate-staleness.mjs | strict-0 | A component reading an RBAC field (`role`/`isTester`/`canTestAdmin`/`disabled` or a role predicate) off `useSession()`/`useAuth()` and using it standalone in an early-return `<Alert variant="warning"\|"error"\|"danger">` denial, while also calling its own `useQuery`/`apiClient.get` for the same protected resource — the cached session field is only refreshed every 5 minutes, so the gate should defer to the fetch's own 403 instead. Root-caused 2026-08-20 in `TesterHubView.tsx` (root-cause #44) |
 | audit-sieve-date-fields.mjs | strict-0 | A Sieve field config for a Firestore Timestamp field (`createdAt`, `auctionEndDate`, `expiresAt`, ...) that's filterable (`canFilter: true`) but has no `parseValue` — sievejs's default `convertValue()` never coerces a date-like string to a `Date`, so a Firestore inequality (`>`/`<`/`>=`/`<=`) compares a Timestamp field against a string and silently matches ZERO documents. Root cause of the "must click Show ended to see live auctions" bug — fixed across 27 repository files by wiring `parseValue: parseSieveDateValue` (root-cause #47) |
+| audit-listing-type-tab-coverage.mjs | strict-0 | Every hand-written enumeration of `ListingType` (plugin registry, capabilities, feature flags, Sieve alias map, badge variants, admin type chips) covers the whole union, contains no dead type (notably `bundle`), and the arrays converted to registry derivations stay derived. Ten such lists had drifted apart, leaving `/products` with 4 of 9 type chips (root-cause #61) |
+| audit-tab-body-coverage.mjs | strict-0 | A tab the user can click that has no render branch — `CategoryDetailTabs` showed a blank panel for 4 listing types while `BrandDetailTabs` silently dropped the same 4 (root-cause #61) |
+| audit-sieve-field-schema-parity.mjs | strict-0 | A `SIEVE_FIELDS` entry for a field the document lacks (`SIEVE_ORPHAN` — e.g. `freeShipping`, matched zero rows forever), or a filter emitted on a real field `SIEVE_FIELDS` omits (`EMITTED_BUT_UNFILTERABLE` — e.g. `shippingPaidBy`, so the public Free-shipping toggle did nothing). `throwExceptions: false` makes both silent (root-cause #62) |
+| audit-listing-sort-fields.mjs | strict-0 | A sort option whose field is not `canSort: true` — sievejs drops the sort, so the dropdown entry renders and reorders nothing (`-featured`/`-isPromoted` were dead this way). Also asserts every `ListingViewConfig` has `sortOptions` and a `defaultSort` that is one of them (root-cause #63) |
+| audit-functions-bundle-freshness.mjs | strict-0 | `functions/lib` is a tsup snapshot that INLINES appkit at build time, so rebuilding `appkit/dist` never updates it — a stale bundle makes the deployed `listingProcessor` apply different Sieve semantics than the app fallback, silently. mtime check + a registry of correctness-critical tokens that must appear in the built output (root-cause #64) |
 | audit-selectable-card-navigation.mjs | strict-0 | A `REGISTRY` of `BaseListingCard.Checkbox`-consuming components asserts each one's nav marker (`href={...}`/`onClick={handleClick}`) sits outside its selection-conditional's bracket span — catches the "a selection callback being merely wired silently disables primary navigation" bug class. Root-caused 2026-08-20 in `InteractiveProductCard.tsx`'s `onSelect` branch, which rendered `<ProductCard>` without forwarding `href` at all (root-cause #43) |
 | audit-listing-detail-affordance.mjs | report-only (`MIGRATE=strict` to fail) | Every `.tsx` under `appkit/src` referencing `ListingViewConfig` must expose a way to OPEN a row: `onRowClick` / `rowHrefTemplate` / `renderEditor` / an `onEdit`\|`onView`\|`onOpen` card prop / a detail-ish row-action token / a row-scoped link (nav marker **and** an `.id` reference on the same line). Deliberately does NOT accept bare `renderRowActions` — a menu of pure mutations (Accept/Reject, Revoke, Unsubscribe) lets you act on a record you could never read. Found 16 of 70 dead ends 2026-08-21, 7 fixed; report-only until the other 9 land. Suppress with `// audit-detail-affordance-ok: <reason>` (root-cause #56) |
 | audit-event-guest-gate-consistency.mjs | strict-0 | Guards the "one admin-controlled flag (`EventDocument.allowGuestParticipation`) governs guest participation uniformly across every event type" contract — flags a hardcoded per-`event.type` literal reintroduced in either `enterEvent()`'s generic path or `runAssignSpinPrize()`'s inline transaction-based entry creation (spins don't reach `enterEvent()` at all) instead of reading `event.allowGuestParticipation`. Root-caused 2026-08-20 |

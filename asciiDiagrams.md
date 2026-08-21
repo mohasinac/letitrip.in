@@ -22,6 +22,7 @@
   - [PaginatedMultiSelect ✅](#shared--paginatedmultiselect-)
   - [AsyncFacetSection ✅](#shared--asyncfacetsection-)
   - [AuctionBidsTable ✅](#shared--auctionbidstable-collapsible)
+  - [Checkout Lanes ✅](#shared--checkout-lanes--2026-08-21)
   - [CTA Action Registry — ACTIONS.ADMIN ✅](#shared--cta-action-registry--actionsadmin-)
 - **Card Components & List Views** *(all collections)*
   - [Card Inventory Table](#card-components--card-inventory-table)
@@ -1177,6 +1178,125 @@ PRODUCT / AUCTION DETAIL                    ON BUTTON CLICK
 - `appkit/src/features/auctions/components/PlaceBidFormClient.tsx` — body unchanged; new `PlaceBidModalButton` companion wraps the same `<PlaceBidFormClient>` inside `<Modal size="md" title="Place your bid">`.
 - `appkit/src/features/products/components/MakeOfferButton.tsx` — inline state-machine "confirm" stage replaced by `<Modal>`-hosted form; success / pending banners still render inline after the modal closes.
 - `appkit/src/features/auctions/actions/bid-actions.ts` — eBay-style proxy bidding: the buyer's `bidAmount` (or explicit `autoMaxBid`) is treated as their cap; server computes `visibleBid = min(cap, prevCap + minIncrement)` and bumps the previous winner's visible price when their cap still beats the challenger. See verification script `scripts/qa/verify-proxy-bid-logic.mjs` (10 scenarios).
+
+---
+
+## Shared > Checkout Lanes ✅ (2026-08-21)
+
+Three obligations, one cart, strict priority. See CLAUDE.md § "Checkout Lanes" for the rules; these are the flows.
+
+### 1. Won auction → locked cart lane → paid order
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant CRON as auctionSettlement<br/>(every 15 min)
+    participant BID as bidRepository
+    participant PROD as productRepository
+    participant CART as cartRepository
+    participant NOTIF as sendNotification
+    participant WIN as Winner (browser)
+    participant CO as /checkout?lane=auction
+    participant ORD as orderRepository
+
+    CRON->>PROD: getExpiredAuctions(now)
+    CRON->>BID: getActiveByProduct(productId)
+    alt no bids
+        CRON->>PROD: status = archived
+    else highest bid < reservePrice
+        CRON->>BID: markLost(all)
+        CRON->>PROD: status = archived
+        CRON->>NOTIF: auction_ended -> seller (reserve not met)
+    else winner found
+        CRON->>BID: markWon(top) / markLost(rest)
+        CRON->>PROD: isSold = true, availableQuantity = 0
+        CRON->>CART: addItem(winnerUid, {isAuctionWin, auctionId, bidId,<br/>lockedPrice, checkoutDeadline = +48h, locked: true})
+        Note over CART: NOT an order. A locked, non-removable cart line.
+        CRON->>NOTIF: bid_won -> winner<br/>actionUrl = /checkout?lane=auction
+    end
+
+    WIN->>CO: open (auction lane auto-selected: highest priority)
+    Note over CO: Offer + Cart tabs render but their checkout<br/>button is DISABLED with a stated reason
+    CO->>CO: totals = auction lane items only; coupons hidden
+    WIN->>CO: address + payment method
+    CO->>CO: assertCheckoutLane() + assertLockedLinesStillValid()
+    CO->>ORD: create order (orderType "auction", real OrderDocument,<br/>unitPrice = lockedPrice, semantic order- id)
+    ORD->>BID: finalizeLockedLines -> bid.orderId = order.id
+    ORD->>CART: locked line removed with the rest of the lane
+```
+
+### 2. Offer → accept → locked cart lane → paid
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant B as Buyer
+    participant PD as /products/[slug]<br/>MakeOfferButton
+    participant OA as offer-actions
+    participant OR as offerRepository
+    participant S as Seller (/store/offers)
+    participant CART as cartRepository
+    participant CO as /checkout?lane=offer
+    participant ORD as orderRepository
+
+    B->>PD: Make an offer (amount, note)
+    PD->>OA: makeOfferAction
+    OA->>OR: create(status=pending, expiresAt=+48h)
+    OA-->>S: notification offer_received
+
+    S->>S: row -> View details, then Accept / Decline / Counter
+    Note over S: Counter opens a QuickFormDrawer for the amount —<br/>previously the callback took no input, so it had no caller
+    S->>OA: respondToOfferAction({offerId, action, counterAmount?})
+    OA->>OR: accept(lockedPrice, checkoutDeadline=+48h)  [one write]
+    OA-->>B: notification offer_responded
+
+    B->>OA: checkoutOfferAction(offerId)
+    OA->>CART: addItem({isOffer, offerId, lockedPrice, checkoutDeadline})
+    B->>CO: checkout (offer lane; Cart tab disabled)
+    CO->>OR: assertLockedLinesStillValid — status + deadline + buyer
+    CO->>ORD: create order (orderType "offer", unitPrice = lockedPrice)
+    ORD->>OR: finalizeLockedLines -> markPaid(offerId, orderId)
+    Note over OR: "paid" had NO server-side writer before this
+```
+
+### 3. Lane gating + add-to-cart block
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant UI as Cart / Checkout UI
+    participant L as lanes.ts (shared)
+    participant CA as cart-actions (server)
+    participant CK as checkout actions (server)
+
+    U->>UI: open /cart
+    UI->>L: activeLane(allItems)
+    L-->>UI: "auction" | "offer" | "standard"
+    UI->>UI: auto-select that tab; enable only its checkout button
+    UI->>UI: other tabs -> disabled + laneBlockReason() + "Go to <lane>"
+    UI->>UI: summary total = laneItems(items, tab) only
+
+    U->>CA: addToCart(productId)
+    CA->>L: canAddNewItems(existing items)
+    alt a higher lane is pending
+        CA-->>U: ValidationError CART_LANE_BLOCKED
+    else standard
+        CA->>CA: capability + stock checks, then add
+    end
+
+    U->>CK: place order
+    CK->>L: activeLane(WHOLE cart) vs selected items
+    alt selection contains off-lane items
+        CK-->>U: ValidationError CHECKOUT_LANE_BLOCKED
+    else
+        CK->>CK: proceed
+    end
+```
+
+- `appkit/src/_internal/shared/checkout/lanes.ts` — the derived partition + priority. Consumed by the cart route, the checkout route, `cart-actions`, `order-splitter`, and the checkout server actions, so the tab a buyer sees and the lane the server permits cannot disagree.
+- `appkit/src/_internal/server/features/checkout/locked-lines.ts` — `assertCheckoutLane` (priority), `assertLockedLinesStillValid` (re-check at ORDER time, not just add-to-cart time), `finalizeLockedLines` (close the loop, best-effort).
+- Lapsing lives in `runOfferExpiry` (3 sweeps in one job, no early return) rather than a new Scheduler job.
 
 ---
 

@@ -26,6 +26,7 @@ const createNotificationSchema = z.object({
     "bid_outbid",
     "bid_won",
     "bid_lost",
+    "auction_ended",
     "review_approved",
     "review_replied",
     "product_available",

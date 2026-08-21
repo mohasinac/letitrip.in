@@ -47,11 +47,9 @@ const couponCreateSchema = z.object({
       excludeProducts: z.array(z.string()).optional(),
       excludeCategories: z.array(z.string()).optional(),
       firstTimeUserOnly: z.boolean().default(false),
-      combineWithSellerCoupons: z.boolean().default(false),
     })
     .default({
       firstTimeUserOnly: false,
-      combineWithSellerCoupons: false,
     }),
   createdBy: z.string().optional().default("admin"),
 }).superRefine((data, ctx) => {

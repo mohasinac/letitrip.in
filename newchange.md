@@ -40,6 +40,61 @@
 ## SESSION LOG (newest first)
 
 ---
+### S-listing-parity — Listing-type tabs/filters/sieves/sorts unified; global listing audit (2026-08-21)
+
+Started from "the types mini tabs at top of products dont show all types of products making it hard for users to see certain orders … also update the filters as well as sieves as per the latest schema and requirements, and sorts too. do a global audit for all listing layouts views" (+ "these missing pre orders and any new types", with a screenshot showing 5 of 9 type chips).
+
+**Root cause: ten independent hand-written enumerations of `ListingType`, none cross-checked.** Only the ones typed `Record<ListingType, …>` were compile-safe; the rest had drifted. `/products` offered 4 of 9 chips; admin chips used display LABELS as Sieve values; `useListingTypeFlags` + the badge map covered 7; three arrays still offered the long-dead `bundle`; the seller row-mapper collapsed 5 types to `"standard"`. → Root Cause #61.
+
+**Fix — the plugin registry now owns browse chrome.** `ListingTypePlugin` gained `tabSlug` / `pluralLabel` / `chipLabel` / `browseRoute` / `hideDefault` / `sortOptions` / `publicSortOptions` / `extraFacetKeys`, plus derived accessors `sortOptionsFor` / `commonSortOptionsFor` / `hideDefaultsFor`. Every tab array, chip set and sort lookup is now derived from `ALL_LISTING_TYPES` + `pluginFor()`. Three zero-consumer arrays (`SEARCH_RESULT_TABS`, `ADMIN_PRODUCTS_TABS`, `STORE_LISTINGS_TABS`) were deleted rather than fixed.
+
+**`/products` spans all 9 types, chips are multi-select.** Per the user's choice, `<FilterChipGroup>` gained a `multiple` mode (checkbox semantics, pipe-joined OR-group value). The sort dropdown and visible "Show sold"/"Show ended" toggles follow the selection; a single selected type links to its dedicated page. `defaultTogglesForListingTypes()` is shared by SSR and client so they cannot disagree (Root Cause #30).
+
+**Sieve parity (Root Cause #62).** `freeShipping` was allowlisted but is not a `ProductDocument` field — the public "Free shipping" toggle emitted the real `shippingPaidBy==seller` and Sieve silently dropped it, so the toggle did nothing at all. Removed the orphan, added `shippingPaidBy` + 12 more real fields, and fixed 5 product routes safelisting the non-existent `categorySlug`. Also wired facets that rendered and counted toward the filter badge but were never put on the wire: `tags`, `sublistingCategory`, `features`, and the per-type `classified.*` / `digitalCode.*` / `liveItem.*` sets.
+
+**Sort parity (Root Cause #63).** "Featured First"/"Promoted First" targeted `canSort: false` fields, so sievejs dropped the sort — dead on arrival, and offered nowhere. Made both sortable (per the user's "make them work" choice) with 22 new composite indexes, wired them into admin + seller, deleted two drifted local shadow sort arrays, and fixed two `defaultSort` values that were not among their own `sortOptions`.
+
+**Stale Functions bundle (Root Cause #64).** `functions/lib` is a tsup snapshot that inlines appkit at build time; it was one build stale and still carried the pre-fix `listingType` alias, so the deployed `listingProcessor` returned every type regardless of filter — which is what the screenshot's stray Sticker Sheet card actually was.
+
+**12 SSR listing views consolidated.** The 8 store/prize-draw views each hand-rolled `productRepository.list()` + `.catch(() => null)` — the exact pattern that caused the `/art` empty-page bug — and none were registered in the audit meant to prevent it. All now route through `listPublicProducts` / the new `listStoreProducts`. Store tab shims now forward `searchParams`, so the URL's sort/filter reaches the first paint.
+
+**Dead surfaces fixed.** `CategoryDetailTabs` rendered a blank panel for 4 listing types; `BrandDetailTabs` silently dropped the same 4. The store "Art & Stickers" tab showed a real count and linked to a page filtered to `standard` — it now has a real `/stores/{slug}/art` route. The legacy store SEO route rendered Products for 6 of 10 tabs; the legacy search redirect mapped 2 of 9.
+
+**Consolidation.** 5 near-identical admin per-type views collapsed onto `buildListingTypeListingConfig()` (they were 5 copies of one config, all with `filterKeys: []`). `useAdminListing.resetAll()` now restores `filterDefaults` instead of clearing to `""`. Two views' filter chips moved from local `useState` to URL state.
+
+**7 audits added/extended**, all registered in `scripts/run-audits.mjs`: `listing-type-tab-coverage`, `tab-body-coverage`, `sieve-field-schema-parity`, `listing-sort-fields`, `functions-bundle-freshness`, plus `filter-tab-enums` (now covers the listing-type array) and `listing-filter-parity` (SSR registry 4 → 12, + a shared-toggle-helper check). Each was verified to fire on the original bug before being left green.
+
+`npm run check` exits 0.
+
+**Not done / deferred:** the 5 *seller* per-type views were left on their own configs — unlike the admin five they carry genuinely different columns (art shows `printMeta.size`, live shows species) and their own create/edit routes, so folding them in would have needed more options than the duplication costs. `audit-listing-detail-affordance` still reports 8 pre-existing views without a detail surface (unchanged by this session — the audit was taught to see through the new config factory so consolidation didn't inflate the count). Firestore index deploy and the Functions deploy were NOT run (Rule #10) — `firestore.indexes.json` is regenerated and `functions/lib` rebuilt locally, both awaiting an explicit deploy request.
+
+---
+
+
+
+### S-lanes — Art/stickers listing fix, offer flow completion, won-auction checkout lanes (2026-08-21)
+
+Started from "art and stickers have the same issue as auctions — nothing shows unless I click Show all" plus "properly code the won auctions and accepted offers, I think that was missed."
+
+**Art & stickers — two independent defects, both confirmed:**
+1. `art`/`stickers` were in the `ListingType` union and `LISTING_TYPE_REGISTRY` but never in `LISTING_KIND_ALIAS_MAP`. The alias resolver returns `""` for an unknown token and `expandFilterAliases` drops the empty clause — so `listingType==art|stickers` was **deleted before reaching Firestore** on the SSR path, on `/api/products`, and inside `listingProcessor`. The alias also tested the whole pipe-joined value as one token, so `/products`' own 4-type OR-group was being dropped too. → Root Cause #58.
+2. The SSR views pushed `stockQuantity > 0` into Firestore against a `createdAt` sort — exactly what `6fe4e0dd8`/`efb7d1b6a` removed from the API route and never back-ported — and `.catch(() => null)` turned the `FAILED_PRECONDITION` into a bare empty page. `/pre-orders` had it too. → Root Cause #59.
+
+Fixed by consolidating all four SSR views **and** the route onto one `listPublicProducts()` (five hand-rolled copies, well past Rule of Three). Also fixed `sieveMultiEq(CONDITION, …)`, which emitted an AND of two equalities on one field and could never match.
+
+**Audit** (user asked for one so it can't recur): `audit-listing-filter-parity.mjs` rewritten from token-presence to structural checks — `SSR_BYPASSES_SHARED_QUERY`, `SSR_DIRECT_REPOSITORY_QUERY`, `SILENT_QUERY_CATCH`, `UNSAFE_INEQUALITY_PUSHDOWN`, `LISTING_TYPE_NOT_MAPPED`. Verified by re-introducing each original bug. It also surfaced a latent crash in `audit-listing-type-reads.mjs` (`BASELINE` referenced but never declared — it would have thrown instead of reporting on the first real violation).
+
+**Offers** — the flow existed but was broken at both ends and wrong in the middle: both list views read response keys the API never sends (seller `offers` vs `items`; buyer `json.items` vs `json.data.items`), the seller page passed no handlers so accept/decline/counter didn't exist as UI (`respondToOfferAction` had zero non-test callers), countering had no input form, all five copies of `unitPriceFor` ignored `lockedPrice` (so an accepted offer was billed at list price while the cart showed the agreed one), `"paid"` had no server-side writer, accepted-past-deadline offers were never swept, and `/api/store/offers` skipped `maskOfferForSeller` (leaking buyer name + email).
+
+**Won auctions** — `createFromAuction` wrote a document that was not an `OrderDocument` (no `items[]`, no `buyerId`, no `paymentMethod`, auto-ID), so no orders UI could render it and no payment path could reach it: there was **no way anywhere in the product for a winner to pay**. `buyNowAuction` created the same. Replaced with a locked cart line; deleted the factory. `reservePrice` was displayed, editable and promised in the buyer guide but never enforced — now it is. → Root Cause #60.
+
+**Checkout Lanes** (new CLAUDE.md section + `asciiDiagrams.md` sequence diagrams) — auction > offer > standard, derived not stored, enforced server-side in both order paths and in add-to-cart, with per-lane totals and disabled-with-reason tabs. `/user/orders` gained matching All / Normal / Auction wins / Offer wins tabs.
+
+**~20 new tester cases** (art/stickers default view, offers end-to-end, won auctions, checkout lanes) + a pre-accepted sandbox offer fixture, since a single tester can't accept their own offer on another store's listing. All 360 checklist hrefs validate.
+
+**Not done — publish held deliberately.** A concurrent session is mid-refactor in `appkit/src/_internal/shared/listing-types/` (new required `ListingTypePlugin` fields not yet added to 6 of 9 configs; `PREORDER_PUBLIC_SORT_OPTIONS` import that doesn't exist; a promised `audit-listing-type-tab-coverage.mjs` not yet on disk; `appkit/package.json` already bumped to 4.11.2 by them). The appkit build does not compile because of that work, so `npm run check` cannot pass and publishing would ship a half-finished refactor. One cross-session fix was made: they renamed `ReviewListParams.perPage` → `pageSize` and left `ReviewsIndexListing.tsx:134` on the old name — completed rather than reverted.
+
+---
 
 ### S-manual-payment-review — Manual-payment proof flow: dead adapter fix, admin review queue, buyer/seller surfacing (2026-08-21)
 

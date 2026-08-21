@@ -5,11 +5,11 @@ import {
   cartRepository,
   claimedCouponsRepository,
   createRouteHandler,
+  detectCouponConflict,
   successResponse,
   validateCouponForCart,
 } from "@mohasinac/appkit";
 import type { CouponDocument } from "@mohasinac/appkit";
-import { detectConflict } from "@/lib/coupon-conflict";
 
 const couponSchema = z.object({
   code: z.string().min(1, "Coupon code is required").max(50),
@@ -58,19 +58,17 @@ export const POST = withProviders(
             id?: string;
             scope?: string;
             storeId?: string;
-            restrictions?: { combineWithSellerCoupons?: boolean };
           }
         | undefined;
 
       const incomingScope = (couponDoc?.scope ?? "admin") as "admin" | "seller";
-      const combineFlag = couponDoc?.restrictions?.combineWithSellerCoupons;
 
-      // Conflict detection against all currently applied coupons
-      const conflict = detectConflict(existingCoupons, {
+      // Conflict detection against all currently applied coupons: one seller
+      // coupon per store, plus at most one admin (platform-wide) coupon.
+      const conflict = detectCouponConflict(existingCoupons, {
         code: normalised,
         scope: incomingScope,
         storeId: couponDoc?.storeId,
-        combineWithSellerCoupons: combineFlag,
       });
       if (conflict) {
         return ApiErrors.badRequest(conflict);
@@ -90,8 +88,6 @@ export const POST = withProviders(
         scope: incomingScope,
         storeId: couponDoc?.storeId,
         applicableItemIds,
-        // Store the combine flag so conflict detection works for future coupons
-        combineWithSellerCoupons: combineFlag,
       });
 
       // Auto-bind to the user's wallet â€” if they typed a code they hadn't
@@ -115,7 +111,6 @@ export const POST = withProviders(
               discount: fullCoupon?.discount ?? { value: result.discountAmount ?? 0 },
               restrictions: fullCoupon?.restrictions ?? {
                 firstTimeUserOnly: false,
-                combineWithSellerCoupons: true,
               },
             },
             expiresAt: fullCoupon?.validity?.endDate ?? null,

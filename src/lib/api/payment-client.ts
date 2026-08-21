@@ -65,20 +65,24 @@ export async function createCheckoutOrder(body: unknown): Promise<Response> {
 
 // ── Razorpay ─────────────────────────────────────────────────────────────────
 
-export interface CheckoutAddonSelections {
-  whatsappNotifyAddon?: boolean;
-  giftWrapAddon?: boolean;
-  giftWrapMessage?: string;
-  shipmentProtectionAddon?: boolean;
-}
-
-export interface CheckoutPricingPreviewBody extends CheckoutAddonSelections {
+/**
+ * Add-on selections are no longer part of any checkout request body — they live
+ * on the cart document keyed per store (`CartDocument.storeAddons`), because
+ * that is the granularity they are billed at. Write them with
+ * `persistCartAddons()` from `@/lib/api/cart-client`.
+ */
+export interface CheckoutPricingPreviewBody {
   addressId?: string;
   paymentMethod: "cod" | "online" | "upi_manual" | "cash" | "emi";
   excludedProductIds?: string[];
+  /** Which cart lane to price. Omit to price whichever lane is payable. */
+  lane?: "standard" | "auction" | "offer";
 }
 
-export interface CheckoutPricingPreview {
+/** One store's slice — mirrors `CheckoutPricingPreviewStore` on the server. */
+export interface CheckoutPricingPreviewStore {
+  storeId: string;
+  storeName: string;
   subtotal: number;
   shippingFee: number;
   codHandlingFee: number;
@@ -90,6 +94,24 @@ export interface CheckoutPricingPreview {
   total: number;
 }
 
+export interface CheckoutPricingPreview {
+  subtotal: number;
+  shippingFee: number;
+  codHandlingFee: number;
+  whatsappNotifyFee: number;
+  giftWrapFee: number;
+  shipmentProtectionFee: number;
+  gstAmount: number;
+  couponDiscount: number;
+  /** Capped buyer-facing commission, charged once for the checkout. */
+  platformFee: number;
+  /** GST on the capped commission. */
+  gstOnFee: number;
+  total: number;
+  /** Per-store breakdown, feeding each seller card's own fee lines. */
+  stores: CheckoutPricingPreviewStore[];
+}
+
 export async function fetchCheckoutPricingPreview(body: CheckoutPricingPreviewBody): Promise<Response> {
   return fetch(API_ENDPOINTS.CHECKOUT.PRICING_PREVIEW, {
     method: "POST",
@@ -99,19 +121,21 @@ export async function fetchCheckoutPricingPreview(body: CheckoutPricingPreviewBo
   });
 }
 
-export async function createRazorpayOrder(
-  amount: number,
-  addons?: CheckoutAddonSelections,
-): Promise<Response> {
+/**
+ * The server computes the amount from the live cart — `amount` is sent for
+ * logging parity only and is never trusted. Add-ons come from the cart doc.
+ */
+export async function createRazorpayOrder(amount: number): Promise<Response> {
   return fetch(API_ENDPOINTS.PAYMENT.CREATE_ORDER, {
     method: "POST",
     headers: JSON_HEADERS,
     credentials: CREDS,
-    body: JSON.stringify({ amount, ...addons }),
+    body: JSON.stringify({ amount }),
   });
 }
 
-export interface RazorpayVerifyBody extends CheckoutAddonSelections {
+/** Add-ons come from the cart doc server-side — see CheckoutPricingPreviewBody. */
+export interface RazorpayVerifyBody {
   razorpay_order_id: string;
   razorpay_payment_id: string;
   razorpay_signature: string;

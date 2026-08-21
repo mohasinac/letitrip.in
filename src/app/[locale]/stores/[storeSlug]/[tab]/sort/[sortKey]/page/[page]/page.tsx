@@ -1,16 +1,32 @@
 import { Suspense } from "react";
 import {
   StoreAboutView,
+  StoreArtStickersPageView,
   StoreAuctionsPageView,
+  StoreClassifiedsPageView,
+  StoreDigitalCodesPageView,
+  StoreLiveItemsPageView,
+  StorePreOrdersPageView,
+  StorePrizeDrawsPageView,
   StoreProductsPageView,
   StoreReviewsPageView,
+  STORE_PAGE_TABS,
   storeRepository,
   type StoreDetail,
 } from "@mohasinac/appkit";
 import type { Metadata } from "next";
 import { redirect } from "@/i18n/navigation";
 
-type StoreTab = "products" | "auctions" | "reviews" | "about";
+/**
+ * Legacy canonical store URL: `/stores/{slug}/{tab}/sort/{sortKey}/page/{n}`.
+ *
+ * `normalizeTab` used to allow only `products | auctions | reviews | about`, so
+ * every other real store tab — pre-orders, prize-draws, classified,
+ * digital-codes, live, art — silently fell back to Products and rendered the
+ * wrong inventory under a URL that named a different one. The allowlist is now
+ * derived from STORE_PAGE_TABS (itself derived from the listing-type plugin
+ * registry), so a new listing type is reachable here the moment it exists.
+ */
 type StoreSortKey = "relevance" | "newest" | "price-asc" | "price-desc";
 
 type Props = {
@@ -21,14 +37,21 @@ type Props = {
     sortKey: string;
     page: string;
   }>;
+  searchParams: Promise<Record<string, string | string[]>>;
 };
 
-const DEFAULT_TAB: StoreTab = "products";
+/** Tabs backed by a listing type, plus the two non-listing store tabs. */
+const ALLOWED_TABS: string[] = [
+  ...STORE_PAGE_TABS.map((t) => t.id),
+  "reviews",
+  "about",
+];
+
+const DEFAULT_TAB = "products";
 const DEFAULT_SORT: StoreSortKey = "relevance";
 
-function normalizeTab(tab: string): StoreTab {
-  const allowed: StoreTab[] = ["products", "auctions", "reviews", "about"];
-  return allowed.includes(tab as StoreTab) ? (tab as StoreTab) : DEFAULT_TAB;
+function normalizeTab(tab: string): string {
+  return ALLOWED_TABS.includes(tab) ? tab : DEFAULT_TAB;
 }
 
 function normalizeSortKey(sortKey: string): StoreSortKey {
@@ -46,7 +69,7 @@ function normalizePage(page: string): number {
 function buildCanonicalPath(
   locale: string,
   storeSlug: string,
-  tab: StoreTab,
+  tab: string,
   sortKey: StoreSortKey,
   page: number,
 ): string {
@@ -61,8 +84,9 @@ function formatSlug(slug: string): string {
     .join(" ");
 }
 
-function tabLabel(tab: StoreTab): string {
-  return tab.charAt(0).toUpperCase() + tab.slice(1);
+/** Prefer the tab's registered label; fall back to a title-cased slug. */
+function tabLabel(tab: string): string {
+  return STORE_PAGE_TABS.find((t) => t.id === tab)?.label ?? formatSlug(tab);
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -87,8 +111,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function Page({ params }: Props) {
+export default async function Page({ params, searchParams }: Props) {
   const { locale, storeSlug, tab, sortKey, page } = await params;
+  const sp = await searchParams;
 
   const normalizedTab = normalizeTab(tab);
   const normalizedSort = normalizeSortKey(sortKey);
@@ -107,18 +132,33 @@ export default async function Page({ params }: Props) {
     redirect(canonicalPath);
   }
 
-  if (normalizedTab === "products") {
-    return <Suspense><StoreProductsPageView storeSlug={storeSlug} /></Suspense>;
+  // One branch per store tab. Keyed on the same `tabSlug` values
+  // STORE_PAGE_TABS produces, so a tab can never render another tab's content.
+  switch (normalizedTab) {
+    case "products":
+      return <Suspense><StoreProductsPageView storeSlug={storeSlug} searchParams={sp} /></Suspense>;
+    case "auctions":
+      return <Suspense><StoreAuctionsPageView storeSlug={storeSlug} searchParams={sp} /></Suspense>;
+    case "pre-orders":
+      return <Suspense><StorePreOrdersPageView storeSlug={storeSlug} searchParams={sp} /></Suspense>;
+    case "prize-draws":
+      return <Suspense><StorePrizeDrawsPageView storeSlug={storeSlug} searchParams={sp} /></Suspense>;
+    case "classifieds":
+      return <Suspense><StoreClassifiedsPageView storeSlug={storeSlug} searchParams={sp} /></Suspense>;
+    case "digital-codes":
+      return <Suspense><StoreDigitalCodesPageView storeSlug={storeSlug} searchParams={sp} /></Suspense>;
+    case "live":
+      return <Suspense><StoreLiveItemsPageView storeSlug={storeSlug} searchParams={sp} /></Suspense>;
+    case "art":
+      return <Suspense><StoreArtStickersPageView storeSlug={storeSlug} searchParams={sp} /></Suspense>;
+    case "reviews":
+      return <Suspense><StoreReviewsPageView storeSlug={storeSlug} /></Suspense>;
+    default:
+      break;
   }
 
-  if (normalizedTab === "auctions") {
-    return <Suspense><StoreAuctionsPageView storeSlug={storeSlug} /></Suspense>;
-  }
-
-  if (normalizedTab === "reviews") {
-    return <Suspense><StoreReviewsPageView storeSlug={storeSlug} /></Suspense>;
-  }
-
+  // `bundles` and `about` both land here; bundles has no legacy canonical URL
+  // of its own, so it falls through to the store's About view as before.
   const store = await storeRepository.findBySlug(storeSlug).catch(() => undefined);
   if (!store) {
     return null;

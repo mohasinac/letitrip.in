@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { StorePrizeDrawsPageView } from "@mohasinac/appkit";
+import { StoreArtStickersPageView } from "@mohasinac/appkit";
 
 type Props = {
   params: Promise<{ storeSlug: string }>;
@@ -8,13 +8,10 @@ type Props = {
 
 export default async function Page({ params, searchParams }: Props) {
   const { storeSlug } = await params;
-  // Forwarded so the URL's sort/filter/page reach the SSR fetch. Without this
-  // the first paint always rendered page 1 in the default order, no matter what
-  // the toolbar showed as selected.
   const sp = await searchParams;
   return (
     <Suspense>
-      <StorePrizeDrawsPageView storeSlug={storeSlug} searchParams={sp} />
+      <StoreArtStickersPageView storeSlug={storeSlug} searchParams={sp} />
     </Suspense>
   );
 }
