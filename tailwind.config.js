@@ -105,21 +105,37 @@ module.exports = defineTailwindConfig({
           950: "#222730",
         },
         // Semantic state colors — use these instead of raw red/green/amber/sky
+        // Two pairings per status, and they are NOT interchangeable:
+        //   chip    -> bg-{status}-surface + text-{status}
+        //   overlay -> bg-{status}-solid   + text-{status}-on-solid
+        // `surface`/DEFAULT invert with the theme (light tint + dark text in
+        // light themes, dark tint + light text in dark themes), so mixing
+        // either with a literal `text-white` is invisible in exactly one
+        // theme. `solid`/`on-solid` are theme-invariant for that reason.
+        // Enforced by scripts/audit-status-color-pairs.mjs.
         success: {
           DEFAULT: "var(--appkit-color-success)",
           surface: "var(--appkit-color-success-surface)",
+          solid: "var(--appkit-color-success-solid)",
+          "on-solid": "var(--appkit-color-success-on-solid)",
         },
         warning: {
           DEFAULT: "var(--appkit-color-warning)",
           surface: "var(--appkit-color-warning-surface)",
+          solid: "var(--appkit-color-warning-solid)",
+          "on-solid": "var(--appkit-color-warning-on-solid)",
         },
         error: {
           DEFAULT: "var(--appkit-color-error)",
           surface: "var(--appkit-color-error-surface)",
+          solid: "var(--appkit-color-error-solid)",
+          "on-solid": "var(--appkit-color-error-on-solid)",
         },
         info: {
           DEFAULT: "var(--appkit-color-info)",
           surface: "var(--appkit-color-info-surface)",
+          solid: "var(--appkit-color-info-solid)",
+          "on-solid": "var(--appkit-color-info-on-solid)",
         },
         star: "var(--appkit-color-star)",
         surface: {
@@ -161,6 +177,7 @@ module.exports = defineTailwindConfig({
         modal: "var(--appkit-z-modal)",
         toast: "var(--appkit-z-toast)",
         tooltip: "var(--appkit-z-tooltip)",
+        "back-to-top": "var(--appkit-z-back-to-top)",
       },
       fontSize: {
         "2xs": ["0.625rem", { lineHeight: "0.75rem" }],

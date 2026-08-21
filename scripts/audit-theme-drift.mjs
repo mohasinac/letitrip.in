@@ -118,6 +118,12 @@ function isExemptColorKey(key, label) {
   if (/^appkit-color-(?:instagram|facebook|tiktok|deviantart|whatsapp|youtube)$/.test(key)) return true;
   if (key === "appkit-color-error-hover") return true;
   if (key === "appkit-color-text-on-dark") return true;
+  // Solid status fills (`--appkit-color-{status}-solid` / `-on-solid`) are
+  // deliberately theme-INVARIANT — a dark saturated fill with white text in
+  // every theme, so an overlay badge on a product photo stays legible whether
+  // the page is light or dark. Making them theme-substitutable would let a
+  // theme reintroduce exactly the white-on-white bug they exist to prevent.
+  if (/^appkit-color-(?:success|warning|error|info)-(?:solid|on-solid)$/.test(key)) return true;
   if (key === "appkit-color-text-on-primary" && label !== "default-light") return true;
   if (key === "appkit-color-error-title" || key === "appkit-color-error-text") return true;
   // Theme templates (cobalt-night, sunset) deliberately only override the

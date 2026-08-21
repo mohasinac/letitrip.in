@@ -58,7 +58,7 @@ Scanned 52 views/call-sites (DataListingView configs + repository call sites acr
 | `appkit/src/features/seller/components/SellerShippingConfigsView.tsx` | shippingConfigs | — | — |
 | `appkit/src/features/seller/components/SellerStickersView.tsx` | products | listingType== | title |
 | `appkit/src/features/seller/components/SellerStoreCategoriesView.tsx` | storeCategories | — | — |
-| `appkit/src/_internal/server/features/checkout/actions.ts:1661` | users | role== | — |
+| `appkit/src/_internal/server/features/checkout/actions.ts:1654` | users | role== | — |
 | `appkit/src/_internal/server/features/lottery/data.ts:31` | events | — | -startsAt |
 | `appkit/src/_internal/server/jobs/core/adminAnalytics.ts:41` | orders | createdAt>= | -createdAt |
 | `appkit/src/_internal/server/jobs/core/adminAnalytics.ts:69` | products | status== | — |
@@ -72,5 +72,5 @@ Scanned 52 views/call-sites (DataListingView configs + repository call sites acr
 
 - [UNKNOWN_ENDPOINT] `appkit/src/features/admin/components/AdminAuditLogView.tsx` — endpoint ADMIN_ENDPOINTS.AUDIT_LOG not in ENDPOINT_TO_COLLECTION — add to audit-listing-indices.mjs to derive indices
 - [UNKNOWN_REPO] `appkit/src/_internal/server/features/audit-log/actions.ts:33` — adminAuditLogRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/admin/audit-log/route.ts:35` — adminAuditLogRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
+- [UNKNOWN_REPO] `src/app/api/admin/audit-log/route.ts:42` — adminAuditLogRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 

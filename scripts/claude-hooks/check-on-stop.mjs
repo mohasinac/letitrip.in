@@ -25,6 +25,7 @@
  *   - scripts/audit-money-units.mjs           (reintroduced *Paise/InPaise identifiers or paise-scale multiply/divide-by-100 arithmetic)
  *   - scripts/audit-server-client-function-props.mjs (Server Component page.tsx passing an inline function to a Client Component)
  *   - scripts/audit-select-wrapper-classname.mjs (Select className sizing token instead of wrapperClassName)
+ *   - scripts/audit-primitive-child-wrappers.mjs (a primitive's internal {children} wrapper that collapses fill children to 0x0)
  *   - scripts/audit-listing-filter-parity.mjs (SSR/client default-filter divergence on public listing pages, Root Cause #30)
  *   - scripts/audit-nav-page-wiring.mjs       (dead admin/store/user nav links — nav entry with no page.tsx, Root Cause #29)
  *   - scripts/audit-route-nav-field-constants.mjs (hardcoded routes, inline nav arrays, raw field strings, and static ROUTES.* hand-concatenated with a dynamic segment instead of a parametrized *_DETAIL route)
@@ -231,6 +232,12 @@ const checks = [
     label: "audit-select-wrapper-classname",
     cmd: "node",
     args: ["scripts/audit-select-wrapper-classname.mjs"],
+    cwd: ROOT,
+  },
+  {
+    label: "audit-primitive-child-wrappers",
+    cmd: "node",
+    args: ["scripts/audit-primitive-child-wrappers.mjs"],
     cwd: ROOT,
   },
   {

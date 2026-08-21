@@ -24,20 +24,18 @@ const checkoutSchema = z.object({
   excludedProductIds: z.array(z.string()).optional(),
   /** Buyer's choice for what to do when a cart item is unavailable at checkout time. */
   outOfStockPolicy: z.enum(["cancel_order", "skip_items"]).default("skip_items"),
-  /** Buyer opted into the ₹10 WhatsApp order-updates addon. Unchecked by default. */
-  whatsappNotifyAddon: z.boolean().optional().default(false),
-  /** Buyer opted into gift wrap. Unchecked by default. */
-  giftWrapAddon: z.boolean().optional().default(false),
-  giftWrapMessage: z.string().max(500).optional(),
-  /** Buyer opted into shipment protection. Unchecked by default. */
-  shipmentProtectionAddon: z.boolean().optional().default(false),
+  // Add-on selections deliberately do NOT live in this body. They are per-store
+  // and read from `CartDocument.storeAddons` (written by PUT /api/cart/addons) —
+  // the same key the cart is split on, which is the granularity they are billed
+  // at. Accepting them here as well would be a second source of truth for one
+  // charge, which is exactly the drift Root Cause #65 removed.
 });
 
 export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_output"]>({
   auth: true,
   schema: checkoutSchema,
   handler: async ({ user, body }) => {
-    const { addressId, paymentMethod, emiTenureMonths, notes, excludedProductIds, outOfStockPolicy, whatsappNotifyAddon, giftWrapAddon, giftWrapMessage, shipmentProtectionAddon } = body!;
+    const { addressId, paymentMethod, emiTenureMonths, notes, excludedProductIds, outOfStockPolicy } = body!;
     const result = await createCheckoutOrderAction({
       userId: user!.uid,
       userName:
@@ -51,10 +49,6 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
       notes,
       excludedProductIds,
       outOfStockPolicy,
-      whatsappNotifyAddon,
-      giftWrapAddon,
-      giftWrapMessage,
-      shipmentProtectionAddon,
     });
     return successResponse(result, SUCCESS_MESSAGES.CHECKOUT.ORDER_PLACED);
   },

@@ -40,7 +40,7 @@ const ITEM_BASE =
 const ITEM_IDLE = "bg-[var(--appkit-color-surface)] hover:bg-[var(--appkit-color-surface)]";
 const ITEM_ACTIVE = "bg-primary/10 border-primary";
 const UNREAD_DOT =
-  "inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-error px-[var(--appkit-space-1-5)] text-[length:var(--appkit-text-xs)] font-semibold text-white";
+  "inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-error-solid px-[var(--appkit-space-1-5)] text-[length:var(--appkit-text-xs)] font-semibold text-error-on-solid";
 const MESSAGE_LIST_CLASS =
   "flex flex-1 flex-col gap-[var(--appkit-space-2)] overflow-y-auto py-[var(--appkit-space-3)] min-h-[300px]";
 const BUBBLE_MINE =

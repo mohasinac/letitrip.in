@@ -32,6 +32,10 @@ export interface OrderViewClientProps {
   paymentUpiMismatch?: boolean;
   buyerMarkedPaid?: boolean;
   buyerFraudAgreementAccepted?: boolean;
+  /** Without this the full-page variant behaved differently from the drawer:
+   *  an already-rejected or re-upload-requested order still rendered live
+   *  Verify/Reject buttons. */
+  paymentReviewOutcome?: string;
 }
 
 export function OrderViewClient(props: OrderViewClientProps) {

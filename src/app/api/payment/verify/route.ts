@@ -29,13 +29,10 @@ const verifySchema = z.object({
    * the field.
    */
   outOfStockPolicy: z.enum(["cancel_order", "skip_items"]).default("cancel_order"),
-  /** Buyer opted into the ₹10 WhatsApp order-updates addon — must match the value sent to /api/payment/create-order. */
-  whatsappNotifyAddon: z.boolean().optional().default(false),
-  /** Buyer opted into gift wrap — must match the value sent to /api/payment/create-order. */
-  giftWrapAddon: z.boolean().optional().default(false),
-  giftWrapMessage: z.string().max(500).optional(),
-  /** Buyer opted into shipment protection — must match the value sent to /api/payment/create-order. */
-  shipmentProtectionAddon: z.boolean().optional().default(false),
+  // Add-ons are NOT accepted here. The doc comments used to say each one "must
+  // match the value sent to /api/payment/create-order" — that contract is gone:
+  // both paths now read `CartDocument.storeAddons`, per store, so there is no
+  // client-supplied value left to keep in sync (Root Cause #65).
 });
 
 const __POST__g = withProviders(createRouteHandler<(typeof verifySchema)["_output"]>({
@@ -49,10 +46,6 @@ const __POST__g = withProviders(createRouteHandler<(typeof verifySchema)["_outpu
       addressId,
       notes,
       outOfStockPolicy,
-      whatsappNotifyAddon,
-      giftWrapAddon,
-      giftWrapMessage,
-      shipmentProtectionAddon,
     } = body!;
     const result = await verifyAndPlaceRazorpayOrderAction({
       userId: user!.uid,
@@ -67,10 +60,6 @@ const __POST__g = withProviders(createRouteHandler<(typeof verifySchema)["_outpu
       addressId,
       notes,
       outOfStockPolicy,
-      whatsappNotifyAddon,
-      giftWrapAddon,
-      giftWrapMessage,
-      shipmentProtectionAddon,
     });
     return successResponse(result, SUCCESS_MESSAGES.CHECKOUT.PAYMENT_RECEIVED);
   },

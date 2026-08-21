@@ -48,6 +48,11 @@ const __GET__g = withProviders(
       );
       const q = url.searchParams.get("q")?.trim().toLowerCase() ?? "";
       const sorts = url.searchParams.get("sorts") ?? sortBy("name", "ASC");
+      // SellerBundlesView renders Active/Inactive and Sold-out chips and emits
+      // them in `filters`; this handler ignored the param entirely, so all three
+      // chips were inert. The admin sibling already refines in memory the same
+      // way (src/app/api/admin/bundles/route.ts) — keep the pair symmetric.
+      const filters = url.searchParams.get("filters") ?? "";
 
       let items = (
         await categoriesRepository.listByType("bundle", {
@@ -55,6 +60,15 @@ const __GET__g = withProviders(
           limit: MAX_LIST_LIMIT,
         })
       ).filter((b) => b.createdByStoreId === store.id);
+
+      if (filters.includes("isActive==true")) {
+        items = items.filter((b) => b.isActive === true);
+      } else if (filters.includes("isActive==false")) {
+        items = items.filter((b) => b.isActive === false);
+      }
+      if (filters.includes("bundleStockStatus==out_of_stock")) {
+        items = items.filter((b) => b.bundleStockStatus === "out_of_stock");
+      }
 
       if (q) {
         items = items.filter(

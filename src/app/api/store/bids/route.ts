@@ -4,6 +4,16 @@ import { createRouteHandler, successResponse, ApiErrors, sortBy, sieveFilter, si
 import { bidRepository, productRepository, storeRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_READ } from "@/constants";
 
+// Sort fields SellerBidsView is allowed to request — the sortable subset of
+// BidRepository.SIEVE_FIELDS. Anything else falls back to the default rather
+// than reaching orderBy() unvalidated.
+const VALID_SORT_FIELDS = new Set<string>([
+  BID_FIELDS.BID_DATE,
+  BID_FIELDS.BID_AMOUNT,
+  BID_FIELDS.STATUS,
+  BID_FIELDS.USER_NAME,
+]);
+
 const __GET__g = withProviders(createRouteHandler({
   auth: true,
   roles: [...ROLES_STORE_READ],
@@ -12,6 +22,30 @@ const __GET__g = withProviders(createRouteHandler({
     const productId = url.searchParams.get("productId") ?? undefined;
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
     const pageSize = Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize")) || 50));
+
+    // SellerBidsView renders a status chip group, a sort dropdown and a bidder
+    // search box, and this handler read none of the three — all three controls
+    // were inert. `status` and `userName` are both in BidRepository.SIEVE_FIELDS.
+    const filtersParam = url.searchParams.get("filters") ?? undefined;
+    const statusParam = filtersParam?.match(/status==([\w-]+)/)?.[1];
+    const statusClause = statusParam
+      ? sieveFilter(BID_FIELDS.STATUS, SIEVE_OP.EQ, statusParam)
+      : undefined;
+
+    const sortParam = url.searchParams.get("sorts") ?? undefined;
+    const sortField = sortParam?.replace(/^-/, "");
+    const sorts =
+      sortField && VALID_SORT_FIELDS.has(sortField)
+        ? sortParam!
+        : sortBy(BID_FIELDS.BID_DATE);
+
+    // Bidder-name search. `@=` is prefix-only against Firestore (see the
+    // incompatibility notes at the head of providers/db-firebase/sieve.ts), so
+    // this matches from the start of the name rather than mid-string.
+    const q = (url.searchParams.get("q") || "").trim();
+    const qClause = q
+      ? sieveFilter(BID_FIELDS.USER_NAME, SIEVE_OP.STARTS, q)
+      : undefined;
 
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store) return ApiErrors.forbidden("No store found for this account");
@@ -23,8 +57,12 @@ const __GET__g = withProviders(createRouteHandler({
         return ApiErrors.forbidden("Product does not belong to your store");
       }
       const result = await bidRepository.list({
-        filters: sieveFilter(BID_FIELDS.PRODUCT_ID, SIEVE_OP.EQ, productId),
-        sorts: sortBy(BID_FIELDS.BID_DATE),
+        filters: sieveAnd(
+          sieveFilter(BID_FIELDS.PRODUCT_ID, SIEVE_OP.EQ, productId),
+          statusClause,
+        qClause,
+        ),
+        sorts,
         page,
         pageSize,
       });
@@ -47,9 +85,16 @@ const __GET__g = withProviders(createRouteHandler({
       title: p.title ?? p.id,
     }));
 
+    // The pipe-joined productId group is a single-field OR, which the enhanced
+    // Firebase adapter upgrades to a Firestore `in` query. AND-ing the status /
+    // search clauses onto it keeps that upgrade intact.
     const result = await bidRepository.list({
-      filters: productIds.map((id) => `productId==${id}`).join("|"),
-      sorts: sortBy(BID_FIELDS.BID_DATE),
+      filters: sieveAnd(
+        productIds.map((id) => `productId==${id}`).join("|"),
+        statusClause,
+        qClause,
+      ),
+      sorts,
       page,
       pageSize,
     });

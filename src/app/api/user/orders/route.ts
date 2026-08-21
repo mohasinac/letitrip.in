@@ -63,6 +63,12 @@ export const GET = withProviders(
       const filtersParam = getStringParam(searchParams, "filters");
       const statusParam = getStringParam(searchParams, "status") ??
         filtersParam?.match(/status==([\w-]+)/)?.[1];
+      // UserOrdersView's lane tabs emit `orderType==auction` inside `filters`.
+      // This handler used to parse only `status==`, so every Type tab was inert
+      // (it returned the full unfiltered list) while VALID_ORDER_TYPES sat here
+      // unreferenced — see the in-memory "standard" branch below.
+      const orderTypeParam = getStringParam(searchParams, "orderType") ??
+        filtersParam?.match(/orderType==([\w-]+)/)?.[1];
       const sortParam = getStringParam(searchParams, "sorts") ?? getStringParam(searchParams, "sort");
       const pageParam = getStringParam(searchParams, "page") ?? "1";
       const perPageParam = String(
@@ -70,10 +76,24 @@ export const GET = withProviders(
       );
       const q = (getStringParam(searchParams, "q") || "").trim().toLowerCase();
 
-      const filters =
-        statusParam && VALID_STATUSES.has(statusParam)
-          ? `status==${statusParam}`
+      const validOrderType =
+        orderTypeParam && VALID_ORDER_TYPES.has(orderTypeParam)
+          ? orderTypeParam
           : undefined;
+      // "standard" is deliberately NOT pushed into Firestore: orders written
+      // before `orderType` existed carry no value, and `orderType==standard`
+      // would exclude every one of them. It is refined in memory below instead
+      // — the same reason OrderRepository.ADMIN_SIEVE_FIELDS carries that note.
+      const pushableOrderType =
+        validOrderType && validOrderType !== "standard" ? validOrderType : undefined;
+
+      const filters =
+        [
+          statusParam && VALID_STATUSES.has(statusParam) ? `status==${statusParam}` : null,
+          pushableOrderType ? `orderType==${pushableOrderType}` : null,
+        ]
+          .filter(Boolean)
+          .join(",") || undefined;
 
       // sortParam arrives as e.g. "-createdAt" / "totalPrice" (sortBy()
       // output). Strip the leading "-" to validate the bare field name
@@ -92,8 +112,18 @@ export const GET = withProviders(
         pageSize: perPageParam,
       });
 
-      let items = result.items.map(orderDocumentToOrder);
+      // Refine on the raw documents, before the adapter runs — the client-facing
+      // `Order` shape is a lossy projection and this must not depend on whether
+      // `orderType` happens to survive it.
+      let docs = result.items;
       let total = result.total;
+      if (validOrderType === "standard") {
+        // Legacy orders predate the field entirely, so "no orderType" IS standard.
+        docs = docs.filter((d) => !d.orderType || d.orderType === "standard");
+        total = docs.length;
+      }
+
+      let items = docs.map(orderDocumentToOrder);
       if (q) {
         items = items.filter((o) => o.id.toLowerCase().includes(q));
         total = items.length;

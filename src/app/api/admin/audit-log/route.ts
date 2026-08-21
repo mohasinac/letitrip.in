@@ -31,9 +31,16 @@ export const GET = withProviders(
       const pageSize = getNumberParam(searchParams, "pageSize", 50, { min: 1, max: 50 });
       const filters = getStringParam(searchParams, "filters");
       const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
+      // AdminAuditLogView's toolbar says "Search by actor uid" but this handler
+      // never read `q`, so the box was inert. An actor uid is an exact id, so
+      // this is an equality lookup rather than a prefix/contains match (`@=` is
+      // prefix-only against Firestore anyway — see providers/db-firebase/sieve.ts).
+      const q = (getStringParam(searchParams, "q") || "").trim();
+      const effectiveFilters =
+        [filters, q ? `actorUid==${q}` : null].filter(Boolean).join(",") || undefined;
 
       const result = await adminAuditLogRepository.list({
-        filters,
+        filters: effectiveFilters,
         sorts,
         page: String(page),
         pageSize: String(pageSize),

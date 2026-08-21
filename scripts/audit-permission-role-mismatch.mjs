@@ -99,11 +99,20 @@ for (const dir of SCAN_DIRS) {
     const callStarts = [...src.matchAll(/createRouteHandler\s*(?:<[^>]*>)?\s*\(\s*\{/g)];
     for (const m of callStarts) {
       const start = m.index;
-      // Grab a generous window — these option blocks are short (roles,
-      // permission, schema, handler are all declared before the handler
-      // body itself gets large); 800 chars comfortably covers the option
-      // block for every route in this codebase.
-      const window = src.slice(start, start + 800);
+      // Bound the window at this call's own `handler:` key. `roles`,
+      // `permission` and `schema` are always declared before it, so that is
+      // exactly where the option block ends — and stopping there is what keeps
+      // one route's options from being read together with the next route's.
+      //
+      // This used to be a flat `start + 800` slice, which silently paired a
+      // permission-less GET's `roles` with the PATCH below it: once a short
+      // handler was fixed by REMOVING its `permission`, the next handler's
+      // `permission` slid into the window and the audit reported the very file
+      // that had just been corrected (src/app/api/admin/carousels/[id]/route.ts,
+      // 2026-08-21). A false positive that appears in response to the correct
+      // fix is worse than no check at all.
+      const handlerKey = /(?:^|\n)\s*handler\s*:/.exec(src.slice(start, start + 4000));
+      const window = src.slice(start, start + (handlerKey ? handlerKey.index + handlerKey[0].length : 800));
       const rolesTokens = extractRolesTokens(window);
       if (!rolesTokens) continue;
       const permissionMatch = window.match(/(?:^|\n)\s*permission\s*:\s*["'][^"']+["']/);

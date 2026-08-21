@@ -88,6 +88,14 @@ const AUDITS = [
   // flicker because the runtime ThemeProvider writes the TS preset over the
   // CSS block on hydration.
   { name: "theme-drift",                     script: "scripts/audit-theme-drift.mjs" },
+  // Status colours must be used in matched pairs — chip is
+  // `bg-{status}-surface + text-{status}`, overlay is
+  // `bg-{status}-solid + text-{status}-on-solid`. Both the surface tint and
+  // the bare status ink invert with the theme, so pairing either with a
+  // literal `text-white` is invisible in exactly one theme. Also blocks
+  // `danger-*` utilities, which Tailwind never generates for the consumer
+  // build and therefore drops silently. Strict-zero.
+  { name: "status-color-pairs",              script: "scripts/audit-status-color-pairs.mjs" },
   // Icon+label nav pattern: align="end"/"center" on a flex-1 label span
   // right after a shrink-0 icon span visually separates them. Strict-zero.
   { name: "icon-label-split",                script: "scripts/audit-icon-label-split.mjs" },
@@ -196,6 +204,12 @@ const AUDITS = [
   // must go on wrapperClassName, which sizes the real flex-child wrapper div.
   // Caused the 2026-08-19 header-search-bar sizing regression.
   { name: "select-wrapper-classname",      script: "scripts/audit-select-wrapper-classname.mjs" },
+  // Strict-zero. A primitive's internal `{children}` wrapper must not introduce
+  // a sizing context the consumer can't see — `.appkit-button__content` was
+  // shrink-to-fit in both axes, so every fill child (<MediaImage>, <Image fill>,
+  // absolute inset-0) collapsed to 0x0 and every image-tile button in the app
+  // rendered blank. Root Cause #68.
+  { name: "primitive-child-wrappers",      script: "scripts/audit-primitive-child-wrappers.mjs" },
   // Strict-zero. SSR/client default-filter divergence on public listing pages
   // (Root Cause #30) — staleTime:Infinity freezes SSR initialData forever if
   // the SSR filter-builder doesn't mirror the client's default toggle state.
