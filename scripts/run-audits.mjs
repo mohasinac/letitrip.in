@@ -229,6 +229,13 @@ const AUDITS = [
   // dropped entirely in the onSelect branch); see CLAUDE.md's Recurrent
   // Root Cause Patterns.
   { name: "selectable-card-navigation",     script: "scripts/audit-selectable-card-navigation.mjs" },
+  // Report-only (run with MIGRATE=strict to fail). A dashboard listing view
+  // whose rows the user can see but never OPEN — no row click, no view/edit
+  // row action, no editor drawer, no row-scoped link. Two shapes: data
+  // fetched then discarded (AdminCartsView rendered items.length and threw
+  // items[] away) and acting blind (Approve/Reject on a catalogue submission
+  // whose photos were never shown). 16 of 70 found + 7 fixed 2026-08-21.
+  { name: "listing-detail-affordance",      script: "scripts/audit-listing-detail-affordance.mjs" },
   // Every admin/seller/user dashboard listing must use the DataListingView
   // config-driven scaffold, not a hand-rolled ListingToolbar/DataTable
   // composition. 22 bypasses found + migrated 2026-08-21; see the script's
