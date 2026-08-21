@@ -2,7 +2,22 @@
 
 > **Single working tracker.** Lane A/B split wound down 2026-05-12 (single-lane model now).
 >
-> **Last updated:** 2026-08-19 — **S-related-content**: Fixed the "0 items" category-card
+> **Last updated:** 2026-08-21 — **S-wire-audit-ship**: Verified this week's work is
+> actually *wired*, not merely written, then shipped. Deployed the Firebase Functions first —
+> they were 2h21m stale and `auctionSettlement` is scheduled, so production was still writing
+> auction wins as orders no checkout could pay (Root Cause #60). Fixed **six listing controls
+> that rendered, were clickable, and did nothing** (`/user/orders` Type tabs, `/store/bids`
+> status+sort+search, `/store/bundles` chips, `/admin/team` permission group, `/admin/audit-log`
+> and `/admin/notifications` search) — all the Root Cause #62 silent-drop shape. Made EMI orders
+> reviewable in admin (the panel inlined `cash || upi_manual` and omitted `emi`) and stopped
+> already-decided orders re-offering Verify/Reject. Normalised `OrderDocument.platformFee`,
+> which meant fee+GST on Razorpay and bare fee on COD. Reseeded (17 new tester cases; permanent
+> catalog verified untouched). Published appkit 4.12.1, deployed Functions + rules, pushed both
+> repos, deployed Vercel. **Ran alongside a concurrent session in the same tree throughout** —
+> collided four times; every hand-off was verified rather than assumed. See `newchange.md` →
+> S-wire-audit-ship, including the list of approved-but-not-built follow-ups.
+>
+> **Prior, 2026-08-19 — S-related-content**: Fixed the "0 items" category-card
 > bug (nightly `countersReconcile.ts` reconciliation job read the deprecated `category`
 > display-name field instead of `categorySlugs[]`; corrected + backfilled live via new
 > `appkit/scripts/backfill-category-metrics.mjs`, `npm run categories:backfill-metrics`).
