@@ -40,6 +40,46 @@
 ## SESSION LOG (newest first)
 
 ---
+### S-wire-audit-ship — Six dead listing controls, admin EMI review, fee semantics; full ship (2026-08-21)
+
+Started from "since sunday we have wired so many changes … make sure all the changes are wired and all planned followed through and completed. if all verified publish and deploy". Scope was set to **this week's work only** (the tracker's post-beta DX/RA/AK/AP/LP tiers explicitly excluded).
+
+**This session ran alongside a second Claude session in the same working tree, throughout.** That collided four separate times — it committed while the gate was running, bumped `appkit/package.json` while this session was committing, published 4.12.1 while this session was building, and emptied seven audit allowlists mid-run (commit `f176b53f8`), which surfaced two pre-existing raw `<button>`s in `ImageLightbox.tsx` and turned the gate red. Everything was verified after the fact rather than assumed: the published 4.12.1 tarball was checked for all five of this session's markers before accepting it instead of cutting 4.12.2, and the deployed Functions bundle was checked for them before accepting Firebase's "Skipped (No changes detected)".
+
+**Finding 1 — the deployed Functions were 2h21m stale, and it was a live production bug.** All 56 were deployed at 15:37 IST; the entire Checkout Lanes model (`lanes.ts` +163, `locked-lines.ts` +138, `auctionSettlement` +127, `offerExpiry` +121, `checkout/actions.ts` +520) landed at 17:58. `auctionSettlement` is scheduled, so per Root Cause #60 production was still writing auction wins as orders no checkout could pay. Deployed first, before any code work. The first attempt died on the CLI's 10s discovery probe (`Cannot determine backend specification`) — the bundle itself loads in 669ms, so it was the probe, not the code; `FUNCTIONS_DISCOVERY_TIMEOUT=180` cleared it.
+
+**Finding 2 — six listing controls rendered, were clickable, and did nothing.** All six are the Root Cause #62 shape (`sieve.ts` runs `throwExceptions:false`, so an unhonoured clause is dropped in silence):
+
+| Control | Dropped at |
+|---|---|
+| `/user/orders` Type tabs | route parsed only `status==`; `VALID_ORDER_TYPES` declared and never used |
+| `/store/bids` status **+ sort + search** | route read only `productId`/`page`/`pageSize`, sort hardcoded |
+| `/store/bundles` Active/Inactive/Sold-out | route never read `filters` (its admin sibling did) |
+| `/admin/team` permission group | `permissionGroup` absent from `UserRepository.SIEVE_FIELDS` |
+| `/admin/audit-log` search | route never read `q` |
+| `/admin/notifications` search | route never read `q` |
+
+`/admin/team`'s composite indexes (`permissionGroup, role, createdAt`) were **already declared and deployed** — built for a query the allowlist had been discarding. The notifications placeholder promised title search that is not expressible (title is not sieve-filterable, and the adapter cannot OR across two fields), so it was corrected rather than left as a promise the search cannot keep.
+
+**Finding 3 — admin EMI orders were unreviewable.** `AdminOrderEditorView` inlined `cash || upi_manual`, omitting `emi`, so the whole proof panel never rendered for an EMI order while the list row (which correctly used `isManualPaymentMethod`) advertised it as awaiting verification. It also never read `paymentReviewOutcome`, so an already-rejected order still offered live Verify/Reject. Both the drawer and `/admin/orders/[id]/view` were fixed; the page had omitted the field entirely.
+
+**Finding 4 — `OrderDocument.platformFee` meant two different things.** Razorpay wrote fee+GST, COD wrote the bare fee, so no revenue rollup could read it without knowing which path created the row. Normalised to COD's shape; the buyer-facing total is unchanged. Also removed the add-on booleans from `/api/checkout`, `/api/payment/verify` and both action input types — accepted and then ignored, a second source of truth for a per-store charge.
+
+**Two deliberate non-fixes**, both recorded rather than silently skipped:
+- `/api/user/orders`' `q` search still filters after paging. Fixing it needs an `id` filter, and the Firebase adapter has no `documentId` mapping — it would have recreated the silent-drop bug being removed.
+- `couponsRepository.validateCoupon`'s flat-total min-spend was left alone. No UI calls it (verified), so the divergence is unreachable; changing acceptance would break an exported action and its tests for no user benefit. Documented on the method instead.
+
+**Reseed.** `created 1204, errors 0`; all 30 collections `✓`; `testerChecklistItems` 667 → 684; **every other collection's count unchanged**, so the permanent catalog was untouched as required. The dry-run beforehand confirmed 17 creates, all in that one collection. Caught mid-flight: `sync-appkit.mjs` **skips itself** under a registry pin, so `node_modules` was serving a build 8 minutes older than the local one and the new tester cases were missing from it — Root Cause #28, found by comparing dist mtimes, fixed with the documented manual resync. **With a `^x.y.z` pin, `appkit build` alone does not reach the seed CLI.**
+
+**Also**: seller now notified when an auction win is forfeited (only the buyer was told, so the seller saw a sale that never paid out); `/admin/carousels/[id]` gained the missing GET, which is why `ROLES_ADMIN_MOD` sat unused there and why a created carousel could never be reopened, renamed, published or deleted; real WhatsApp invite in seed data (the old value was never a valid invite code); 17 tester cases covering all of the above.
+
+**Two audit false-positives worth knowing:** `audit-permission-role-mismatch` scans an **800-char window** from each `createRouteHandler({`, so two short adjacent handlers let one's `permission:` fall inside the other's window — the roles-only GET is declared last in that file for this reason. `audit-typography` has no suppression marker, only a filename allowlist.
+
+**Shipped**: appkit 4.12.1 published (verified to contain this session's fixes) · consumer pinned + registry-resolved lockfile · Functions rebuilt and deployed · firestore/storage/database rules released · 490 indexes verified deployed · both repos pushed · Vercel production deploy.
+
+**NOT built** — planned, approved, not started: `/products` scoping to types without a dedicated navbar entry (which will require rewriting the `product-type-chips-cover-all-types` tester case, since it asserts the opposite), the mobile bulk-bar gate, type chips → checkboxes, the cart `updateItem` full-document overwrite that wipes `storeAddons`, weekly no-cron tester expiry, the on-site mailbox + Resend inbound webhook, and the EMI instalment lane.
+
+---
 ### S-listing-parity — Listing-type tabs/filters/sieves/sorts unified; global listing audit (2026-08-21)
 
 Started from "the types mini tabs at top of products dont show all types of products making it hard for users to see certain orders … also update the filters as well as sieves as per the latest schema and requirements, and sorts too. do a global audit for all listing layouts views" (+ "these missing pre orders and any new types", with a screenshot showing 5 of 9 type chips).
