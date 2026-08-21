@@ -44,7 +44,11 @@ export async function register(): Promise<void> {
       const { triggerDeploymentDigest } = await import("@mohasinac/appkit/server");
       const result = await triggerDeploymentDigest(resolveDeploymentVersion());
       if (result.sent) console.log("[instrumentation] Deployment digest sent");
-    } catch (error) {
+    // This file deliberately has no top-level imports — it runs at process
+    // start, before the app boots, and pulls everything in via dynamic import.
+    // A static `normalizeError` import would load appkit on every cold start
+    // purely to type-narrow a fire-and-forget log line.
+    } catch (error) { // audit-catch-raw-ok: no top-level imports in instrumentation
       console.error("[instrumentation] Deployment digest failed (non-fatal):", error);
     }
   })();
