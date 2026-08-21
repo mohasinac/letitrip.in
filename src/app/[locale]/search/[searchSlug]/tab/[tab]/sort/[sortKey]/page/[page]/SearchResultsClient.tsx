@@ -29,7 +29,6 @@ export function SearchResultsClient({ locale, query, total, products }: Props) {
     <SearchView
       query={query}
       total={total}
-      isLoading={false}
       renderSearchInput={() => (
         <Stack gap="md">
           <Form method="get" action={`/${locale}/search`} align="center" gap="xs" className="flex">

@@ -27,7 +27,6 @@ const createBrandSchema = z.object({
   slug: z.string().optional(),
   description: z.string().optional(),
   logoURL: z.string().optional(),
-  bannerURL: z.string().optional(),
   website: z.string().url().optional().or(z.literal("")),
   country: z.string().optional(),
   founded: z.number().int().optional(),

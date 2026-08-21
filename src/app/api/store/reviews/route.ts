@@ -28,8 +28,10 @@ export const GET = withProviders(createApiHandler({
     const sp = getSearchParams(request);
     const page = getNumberParam(sp, "page", 1, { min: 1 });
     const pageSize = getNumberParam(sp, "pageSize", 20, { min: 1, max: 50 });
-    const rating = getStringParam(sp, "rating");
-    const replied = getStringParam(sp, "replied");
+    const filtersParam = getStringParam(sp, "filters") || "";
+    const rating = filtersParam.match(/rating==(\d)/)?.[1] ?? getStringParam(sp, "rating");
+    const replied = filtersParam.match(/replied==(true|false)/)?.[1] ?? getStringParam(sp, "replied");
+    const q = (getStringParam(sp, "q") || "").trim().toLowerCase();
     const sorts = getStringParam(sp, "sorts") || DEFAULT_SORTS;
 
     let filters = `storeId==${store.id}`;
@@ -42,10 +44,18 @@ export const GET = withProviders(createApiHandler({
       pageSize: String(pageSize),
     });
 
-    // Apply replied filter client-side (sellerReply not indexed)
+    // Apply replied/search filters client-side (sellerReply/full-text not indexed)
     let reviews = result.items;
     if (replied === "true") reviews = reviews.filter((r) => !!r.sellerReply);
     if (replied === "false") reviews = reviews.filter((r) => !r.sellerReply);
+    if (q) {
+      reviews = reviews.filter((r) =>
+        (r.productTitle ?? "").toLowerCase().includes(q) ||
+        (r.userName ?? "").toLowerCase().includes(q) ||
+        (r.comment ?? "").toLowerCase().includes(q) ||
+        (r.title ?? "").toLowerCase().includes(q),
+      );
+    }
 
     return successResponse({
       reviews,

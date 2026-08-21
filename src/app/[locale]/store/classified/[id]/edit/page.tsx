@@ -38,17 +38,18 @@ export default async function Page({ params }: Props) {
 
   async function handleSave(draft: SellerProductDraft) {
     "use server";
-    await sellerUpdateProductAction(id, { ...draft, listingType: "classified" });
+    return sellerUpdateProductAction(id, { ...draft, listingType: "classified" });
   }
 
   async function handlePublish(draft: SellerProductDraft) {
     "use server";
-    await sellerUpdateProductAction(id, {
+    const result = await sellerUpdateProductAction(id, {
       ...draft,
       listingType: "classified",
       status: "published",
     });
-    redirect(String(ROUTES.STORE.CLASSIFIED));
+    if (result.ok) redirect(String(ROUTES.STORE.CLASSIFIED));
+    return result;
   }
 
   return (

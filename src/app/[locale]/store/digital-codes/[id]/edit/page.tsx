@@ -38,17 +38,18 @@ export default async function Page({ params }: Props) {
 
   async function handleSave(draft: SellerProductDraft) {
     "use server";
-    await sellerUpdateProductAction(id, { ...draft, listingType: "digital-code" });
+    return sellerUpdateProductAction(id, { ...draft, listingType: "digital-code" });
   }
 
   async function handlePublish(draft: SellerProductDraft) {
     "use server";
-    await sellerUpdateProductAction(id, {
+    const result = await sellerUpdateProductAction(id, {
       ...draft,
       listingType: "digital-code",
       status: "published",
     });
-    redirect(String(ROUTES.STORE.DIGITAL_CODES));
+    if (result.ok) redirect(String(ROUTES.STORE.DIGITAL_CODES));
+    return result;
   }
 
   return (

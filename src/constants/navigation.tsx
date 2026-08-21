@@ -199,6 +199,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     items: [
       adminItem(String(ROUTES.ADMIN.ANALYTICS), "Analytics", "admin:analytics:view"),
       adminItem(String(ROUTES.ADMIN.PAYOUTS), "Payouts", "admin:payouts:read"),
+      adminItem(String(ROUTES.ADMIN.AUDIT_LOG), "Audit Log", "admin:audit-log:read"),
     ],
   },
   {

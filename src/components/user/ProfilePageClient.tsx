@@ -24,6 +24,7 @@ import {
   updateProfileSchema,
   applyZodIssues,
   useCollapsedSections,
+  FormErrorSummary,
 } from "@mohasinac/appkit/client";
 import type { UseFormShellStateResult } from "@mohasinac/appkit/client";
 import { Heading, Row, Stack, Text } from "@mohasinac/appkit/client";
@@ -302,6 +303,7 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
                       aria-label="Public profile"
                     />
                   </Row>
+                  <FormErrorSummary />
                   <Row gap="3" padding="t-2xs">
                     <Button rounded="xl"
                       type="button"

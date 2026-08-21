@@ -412,6 +412,9 @@ function renderAddressStep({
 
 function renderValueOtpStep({
   maskedEmail,
+  maskedPhone,
+  channel,
+  whatsappAvailable,
   otpCode,
   setOtpCode,
   otpError,
@@ -419,8 +422,12 @@ function renderValueOtpStep({
   isSending,
   handleVerify,
   handleResend,
+  handleSendWhatsapp,
 }: {
   maskedEmail: string;
+  maskedPhone: string;
+  channel: "email" | "whatsapp";
+  whatsappAvailable: boolean;
   otpCode: string;
   setOtpCode: (v: string) => void;
   otpError: string;
@@ -428,7 +435,9 @@ function renderValueOtpStep({
   isSending: boolean;
   handleVerify: () => Promise<void>;
   handleResend: () => Promise<void>;
+  handleSendWhatsapp: () => Promise<void>;
 }) {
+  const destination = channel === "whatsapp" ? maskedPhone || "your WhatsApp number" : maskedEmail || "your registered email";
   return (
     <Div className={STEP_CARD_CLS}>
       <Heading level={2} className="mb-1" color="primary" size="lg" weight="semibold">
@@ -438,8 +447,8 @@ function renderValueOtpStep({
         High-value orders need a quick verification step
       </Text>
       <Text className="mb-4" color="muted" size="sm">
-        We sent a 6-digit code to{" "}
-        <Span weight="medium" color="primary">{maskedEmail || "your registered email"}</Span>.{" "}
+        {channel === "whatsapp" ? "We sent a 6-digit code via WhatsApp to " : "We sent a 6-digit code to "}
+        <Span weight="medium" color="primary">{destination}</Span>.{" "}
         Enter it below to continue.
       </Text>
       <Stack gap="md">
@@ -472,6 +481,17 @@ function renderValueOtpStep({
         >
           {isSending ? "Resending…" : "Resend code"}
         </Button>
+        {whatsappAvailable && channel === "email" && (
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleSendWhatsapp}
+            disabled={isSending}
+            textSize="sm" className="w-full text-[var(--appkit-color-text-muted)] underline"
+          >
+            Send via WhatsApp instead
+          </Button>
+        )}
       </Stack>
     </Div>
   );
@@ -967,15 +987,22 @@ function useValueOtpCheckout({
   showToast,
   setStep,
   setActionError,
+  selectedAddress,
 }: {
   subtotal: number;
   showToast: ReturnType<typeof useToast>["showToast"];
   setStep: (step: CheckoutStep) => void;
   setActionError: (msg: string) => void;
+  selectedAddress: Address | null;
 }) {
-  const { data: siteSettings } = useSiteSettings<{ payment?: { otpCheckoutThreshold?: number } }>();
+  const { data: siteSettings } = useSiteSettings<{
+    payment?: { otpCheckoutThreshold?: number };
+    notificationChannels?: { whatsapp?: { otpEnabled?: boolean } };
+  }>();
   const [valueOtpVerified, setValueOtpVerified] = useState(false);
   const [valueOtpMaskedEmail, setValueOtpMaskedEmail] = useState("");
+  const [valueOtpMaskedPhone, setValueOtpMaskedPhone] = useState("");
+  const [valueOtpChannel, setValueOtpChannel] = useState<"email" | "whatsapp">("email");
   const [valueOtpCode, setValueOtpCode] = useState("");
   const [valueOtpError, setValueOtpError] = useState("");
   const [isSendingValueOtp, setIsSendingValueOtp] = useState(false);
@@ -987,27 +1014,47 @@ function useValueOtpCheckout({
   const requiresValueOtp =
     typeof otpThreshold === "number" && otpThreshold > 0 && subtotal >= otpThreshold;
 
-  const handleSendValueOtp = useCallback(async () => {
-    setIsSendingValueOtp(true);
-    setActionError("");
-    try {
-      const result = await sendCheckoutValueOtpAction();
-      if (!result.ok) {
-        setActionError(result.error);
-        showToast(result.error, "error");
-        return;
+  // WhatsApp is an opt-in alternative to email, never the default — only
+  // offered when the admin has it configured AND the selected address has a
+  // phone number to send it to.
+  const whatsappOtpAvailable =
+    siteSettings?.notificationChannels?.whatsapp?.otpEnabled === true && Boolean(selectedAddress?.phone);
+
+  const handleSendValueOtp = useCallback(
+    async (channel: "email" | "whatsapp" = "email") => {
+      setIsSendingValueOtp(true);
+      setActionError("");
+      try {
+        const result = await sendCheckoutValueOtpAction(channel, channel === "whatsapp" ? selectedAddress?.id : undefined);
+        if (!result.ok) {
+          setActionError(result.error);
+          showToast(result.error, "error");
+          return;
+        }
+        setValueOtpChannel(channel);
+        if (result.data.skipped) {
+          setValueOtpVerified(true);
+          setStep("payment");
+          showToast("Verification is temporarily unavailable — continuing without it.", "info");
+          return;
+        }
+        setValueOtpMaskedEmail(result.data.maskedEmail ?? "");
+        setValueOtpMaskedPhone(result.data.maskedPhone ?? "");
+        showToast(
+          channel === "whatsapp" ? "Verification code sent via WhatsApp." : "Verification code sent.",
+          "success",
+        );
+      } catch (err) {
+        void normalizeError(err);
+        const msg = err instanceof Error ? err.message : "Failed to send verification code";
+        setActionError(msg);
+        showToast(msg, "error");
+      } finally {
+        setIsSendingValueOtp(false);
       }
-      setValueOtpMaskedEmail(result.data.maskedEmail);
-      showToast("Verification code sent.", "success");
-    } catch (err) {
-      void normalizeError(err);
-      const msg = err instanceof Error ? err.message : "Failed to send verification code";
-      setActionError(msg);
-      showToast(msg, "error");
-    } finally {
-      setIsSendingValueOtp(false);
-    }
-  }, [showToast, setActionError]);
+    },
+    [showToast, setActionError, setStep, selectedAddress],
+  );
 
   const handleVerifyValueOtp = useCallback(async () => {
     if (!valueOtpCode) return;
@@ -1048,6 +1095,9 @@ function useValueOtpCheckout({
   return {
     valueOtpVerified,
     valueOtpMaskedEmail,
+    valueOtpMaskedPhone,
+    valueOtpChannel,
+    whatsappOtpAvailable,
     valueOtpCode,
     setValueOtpCode,
     valueOtpError,
@@ -1348,6 +1398,9 @@ export function CheckoutRouteClient({
 
   const {
     valueOtpMaskedEmail,
+    valueOtpMaskedPhone,
+    valueOtpChannel,
+    whatsappOtpAvailable,
     valueOtpCode,
     setValueOtpCode,
     valueOtpError,
@@ -1356,7 +1409,7 @@ export function CheckoutRouteClient({
     handleSendValueOtp,
     handleVerifyValueOtp,
     ensureValueOtpGate,
-  } = useValueOtpCheckout({ subtotal, showToast, setStep, setActionError });
+  } = useValueOtpCheckout({ subtotal, showToast, setStep, setActionError, selectedAddress });
 
   const { emiTenure, setEmiTenure, emiVisible, emiSchedule, handlePlaceEmiOrder } = useEmiCheckout({
     emiSettings,
@@ -1536,13 +1589,17 @@ export function CheckoutRouteClient({
           if (step === "value-otp") {
             return renderValueOtpStep({
               maskedEmail: valueOtpMaskedEmail,
+              maskedPhone: valueOtpMaskedPhone,
+              channel: valueOtpChannel,
+              whatsappAvailable: whatsappOtpAvailable,
               otpCode: valueOtpCode,
               setOtpCode: setValueOtpCode,
               otpError: valueOtpError,
               isVerifying: isVerifyingValueOtp,
               isSending: isSendingValueOtp,
               handleVerify: handleVerifyValueOtp,
-              handleResend: handleSendValueOtp,
+              handleResend: () => handleSendValueOtp(valueOtpChannel),
+              handleSendWhatsapp: () => handleSendValueOtp("whatsapp"),
             });
           }
           return (

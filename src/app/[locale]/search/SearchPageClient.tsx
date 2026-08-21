@@ -12,7 +12,6 @@ export function SearchPageClient({ locale, query }: Props) {
     <SearchView
       query={query}
       total={0}
-      isLoading={false}
       renderSearchInput={() => (
         <Form method="get" action={`/${locale}/search`} align="center" gap="xs" className="flex">
           <Input name="q" defaultValue={query} placeholder="Search products, categories, stores" />

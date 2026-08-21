@@ -1,27 +1,23 @@
 "use client";
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "@/i18n/navigation";
 import {
   sortBy,
-  useSession,
   useUrlTable,
   ROUTES,
   Div,
-  Heading,
   Text,
   Stack,
   Row,
   Badge,
+  DataListingView,
 } from "@mohasinac/appkit/client";
-import { ListingToolbar } from "@mohasinac/appkit/ui";
+import type { ListingViewConfig } from "@mohasinac/appkit/client";
+import { API_ROUTES } from "@/constants";
 
 const SORT_OPTIONS = [
   { value: sortBy("createdAt", "DESC"), label: "Newest" },
-  { value: sortBy("createdAt", "ASC"),  label: "Oldest" },
+  { value: sortBy("createdAt", "ASC"), label: "Oldest" },
 ];
-import { API_ROUTES } from "@/constants";
-import { getUserOrders } from "@/lib/api/user-client";
 
 interface OrderItem {
   productId: string;
@@ -38,6 +34,10 @@ interface OrderDoc {
   items: OrderItem[];
 }
 
+interface OrdersResponse {
+  items?: OrderDoc[];
+}
+
 function formatAmount(amount: number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -47,115 +47,80 @@ function formatAmount(amount: number) {
 }
 
 const STATUS_VARIANT: Record<string, "active" | "pending" | "danger" | "info" | "admin"> = {
-  PENDING:    "pending",
+  PENDING: "pending",
   PROCESSING: "pending",
-  SHIPPED:    "info",
-  DELIVERED:  "active",
-  CANCELLED:  "danger",
+  SHIPPED: "info",
+  DELIVERED: "active",
+  CANCELLED: "danger",
 };
 
 export default function UserPrizeDrawsPage() {
-  const { user, loading: sessionLoading } = useSession();
-  const table = useUrlTable({ defaults: { pageSize: "12", sort: "-createdAt" } });
-  const search = table.get("q") ?? "";
-  const sort = table.get("sort") ?? "-createdAt";
+  const sideTable = useUrlTable({ defaults: { sort: sortBy("createdAt", "DESC") } });
 
-  const { data, isLoading } = useQuery<{ items: OrderDoc[] }>({
-    queryKey: ["user-prize-draws"],
-    queryFn: () =>
-      getUserOrders(`${API_ROUTES.USER.ORDERS}?perPage=100`)
-        .then((r) => r.json())
-        .then((r) => r.data),
-    enabled: !sessionLoading && !!user,
-    staleTime: 30_000,
-  });
-
-  const orders = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    const base = (data?.items ?? []).filter((o) =>
-      o.items?.some((item) => item.listingType === "prize-draw"),
-    );
-    const filtered = q
-      ? base.filter((o) =>
-          o.id.toLowerCase().includes(q) ||
-          o.items.some((it) => it.productTitle?.toLowerCase().includes(q)),
-        )
-      : base;
-    return [...filtered].sort((a, b) =>
-      sort === "createdAt"
-        ? +new Date(a.createdAt) - +new Date(b.createdAt)
-        : +new Date(b.createdAt) - +new Date(a.createdAt),
-    );
-  }, [data, search, sort]);
-
-  const loading = sessionLoading || isLoading;
-
-  return (
-    <Stack className="w-full" gap="lg">
-      <Div>
-        <Heading level={1} className="text-[var(--appkit-color-text)]" size="2xl" weight="semibold">
-          My Prize Draws
-        </Heading>
-        {!loading && (
-          <Text variant="secondary" className="mt-0.5" size="sm">
-            {orders.length} prize draw{orders.length !== 1 ? "s" : ""}
-          </Text>
-        )}
-      </Div>
-
-      <ListingToolbar
-        searchValue={search}
-        searchPlaceholder="Search prize draws…"
-        onSearchChange={(v) => table.set("q", v)}
-        sortValue={sort}
-        sortOptions={SORT_OPTIONS}
-        onSortChange={(v) => table.set("sort", v)}
-        hideViewToggle
-        hasActiveState={!!search}
-        onResetAll={() => table.clear()}
-      />
-
-      {loading ? (
-        <Stack gap="md">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Stack padding="5" 
-              key={i}
-              className="animate-pulse border border-[var(--appkit-color-border)]" gap="3" rounded="xl"
+  const config: ListingViewConfig<OrdersResponse, OrderDoc> = {
+    portal: "user",
+    title: "My Prize Draws",
+    searchPlaceholder: "Search prize draws…",
+    emptyLabel: "You haven't entered any prize draws yet.",
+    filterKeys: [],
+    defaultSort: sortBy("createdAt", "DESC"),
+    queryKey: ["user", "prize-draws", "listing"],
+    endpoint: `${API_ROUTES.USER.ORDERS}?pageSize=50`,
+    sortOptions: SORT_OPTIONS,
+    hideTableView: true,
+    mapRows: (response) => {
+      const q = (sideTable.get("q") || "").trim().toLowerCase();
+      const sort = sideTable.get("sort") || SORT_OPTIONS[0].value;
+      const base = (response.items ?? []).filter((o) =>
+        o.items?.some((item) => item.listingType === "prize-draw"),
+      );
+      const filtered = q
+        ? base.filter((o) =>
+            o.id.toLowerCase().includes(q) ||
+            o.items.some((it) => it.productTitle?.toLowerCase().includes(q)),
+          )
+        : base;
+      return [...filtered].sort((a, b) =>
+        sort === "createdAt"
+          ? +new Date(a.createdAt) - +new Date(b.createdAt)
+          : +new Date(b.createdAt) - +new Date(a.createdAt),
+      );
+    },
+    getTotal: (_response, rows) => rows.length,
+    buildFilters: () => undefined,
+    renderCards: (rows, _view, _selection, isLoading) => {
+      if (isLoading) {
+        return (
+          <Stack gap="md">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Div key={i} className="h-20 animate-pulse border border-[var(--appkit-color-border)]" rounded="xl" />
+            ))}
+          </Stack>
+        );
+      }
+      if (rows.length === 0) {
+        return (
+          <Div padding="y-6xl" className="text-center">
+            <Text variant="secondary">You haven&apos;t entered any prize draws yet.</Text>
+            <Link
+              href={String(ROUTES.PUBLIC.PRIZE_DRAWS)}
+              className="mt-3 inline-block text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-primary)] hover:underline"
             >
-              <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
-              <Div className="h-3 w-1/2 bg-[var(--appkit-color-border)]" rounded="default" />
-            </Stack>
-          ))}
-        </Stack>
-      ) : orders.length === 0 ? (
-        <Div padding="y-6xl" className="text-center">
-          <Text variant="secondary">You haven&apos;t entered any prize draws yet.</Text>
-          <Link
-            href={String(ROUTES.PUBLIC.PRIZE_DRAWS)}
-            className="mt-3 inline-block text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-primary)] hover:underline"
-          >
-            Browse prize draws
-          </Link>
-        </Div>
-      ) : (
+              Browse prize draws
+            </Link>
+          </Div>
+        );
+      }
+      return (
         <Stack gap="md">
-          {orders.map((order) => {
-            const drawItems = order.items.filter(
-              (item) => item.listingType === "prize-draw",
-            );
+          {rows.map((order) => {
+            const drawItems = order.items.filter((item) => item.listingType === "prize-draw");
             const date = order.createdAt
-              ? new Date(order.createdAt).toLocaleDateString("en-IN", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })
+              ? new Date(order.createdAt).toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" })
               : "";
             const statusVariant = STATUS_VARIANT[order.status] ?? "pending";
             return (
-              <Div padding="5" 
-                key={order.id}
-                className="border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)]" rounded="xl" shadow="sm"
-              >
+              <Div padding="5" key={order.id} className="border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)]" rounded="xl" shadow="sm">
                 <Row justify="between" align="start" gap="3">
                   <Stack className="min-w-0" gap="xs">
                     <Link
@@ -190,7 +155,9 @@ export default function UserPrizeDrawsPage() {
             );
           })}
         </Stack>
-      )}
-    </Stack>
-  );
+      );
+    },
+  };
+
+  return <DataListingView config={config} />;
 }

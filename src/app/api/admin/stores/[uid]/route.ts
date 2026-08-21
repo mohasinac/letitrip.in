@@ -10,6 +10,8 @@ import {
   createRouteHandler,
   successResponse,
   errorResponse,
+  recordAdminAction,
+  AdminAuditActionValues,
 } from "@mohasinac/appkit";
 
 const updateStoreSchema = z.object({
@@ -39,7 +41,7 @@ export const PATCH = withProviders(
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
     schema: updateStoreSchema,
-    handler: async ({ body, params }) => {
+    handler: async ({ body, params, user }) => {
       const storeId = (params as { uid: string }).uid;
       const store = await storeRepository.findById(storeId);
       if (!store) return errorResponse("Store not found", 404);
@@ -55,6 +57,18 @@ export const PATCH = withProviders(
 
       if (Object.keys(update).length > 0) {
         await storeRepository.update(storeId, update as any);
+      }
+
+      if (body!.storeStatus !== undefined || isVerified !== undefined) {
+        void recordAdminAction({
+          actorUid: user!.uid,
+          action: AdminAuditActionValues.STORE_STATUS_CHANGE,
+          targetType: "store",
+          targetId: storeId,
+          targetLabel: store.storeName ?? storeId,
+          reason: suspensionReason,
+          metadata: { storeStatus: body!.storeStatus ?? null, isVerified: isVerified ?? null },
+        });
       }
 
       return successResponse({ storeId, ...body }, "Store updated");

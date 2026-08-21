@@ -68,6 +68,9 @@ const fallbackAuthProvider: IClientAuthProvider = {
   async applyActionCode() {
     throw new Error("Firebase client config is missing. Email verification is unavailable.");
   },
+  async sendEmailVerification() {
+    throw new Error("Firebase client config is missing. Email verification is unavailable.");
+  },
   async sendPasswordResetEmail() {
     throw new Error("Firebase client config is missing. Password reset is unavailable.");
   },

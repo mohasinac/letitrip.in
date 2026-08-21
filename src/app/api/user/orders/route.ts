@@ -43,10 +43,19 @@ export const GET = withProviders(
     auth: true,
     handler: async ({ user, request }) => {
       const searchParams = getSearchParams(request);
-      const statusParam = getStringParam(searchParams, "status");
-      const sortParam = getStringParam(searchParams, "sort");
+      // Two param shapes are accepted: the original hand-rolled `status`/
+      // `sort`/`perPage` (still used by useOrders() for the dashboard summary
+      // widgets) and DataListingView's standard `filters`/`sorts`/`pageSize`/`q`
+      // (used by the /user/orders listing page). Both resolve to the same query.
+      const filtersParam = getStringParam(searchParams, "filters");
+      const statusParam = getStringParam(searchParams, "status") ??
+        filtersParam?.match(/status==([\w-]+)/)?.[1];
+      const sortParam = getStringParam(searchParams, "sorts") ?? getStringParam(searchParams, "sort");
       const pageParam = getStringParam(searchParams, "page") ?? "1";
-      const perPageParam = getStringParam(searchParams, "perPage") ?? "12";
+      const perPageParam = String(
+        Math.min(50, Math.max(1, Number(getStringParam(searchParams, "pageSize") ?? getStringParam(searchParams, "perPage") ?? "12") || 12)),
+      );
+      const q = (getStringParam(searchParams, "q") || "").trim().toLowerCase();
 
       const filters =
         statusParam && VALID_STATUSES.has(statusParam)
@@ -70,14 +79,21 @@ export const GET = withProviders(
         pageSize: perPageParam,
       });
 
+      let items = result.items.map(orderDocumentToOrder);
+      let total = result.total;
+      if (q) {
+        items = items.filter((o) => o.id.toLowerCase().includes(q));
+        total = items.length;
+      }
+
       serverLogger.info("Orders listed", {
         userId: user!.uid,
         count: result.total,
       });
 
       return successResponse({
-        items: result.items.map(orderDocumentToOrder),
-        total: result.total,
+        items,
+        total,
         page: result.page,
         perPage: result.pageSize,
         totalPages: result.totalPages,

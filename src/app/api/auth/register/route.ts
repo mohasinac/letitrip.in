@@ -31,7 +31,6 @@ import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 import { callFirebaseIdentityToolkit } from "@mohasinac/appkit/server";
 import { z } from "zod";
 import { serverLogger } from "@mohasinac/appkit";
-import { sendVerificationEmailWithLink } from "@mohasinac/appkit/server";
 
 const registerSchema = z.object({
   email: z.string().email(ERROR_MESSAGES.VALIDATION.INVALID_EMAIL),
@@ -150,24 +149,11 @@ export async function POST(request: NextRequest) {
       ),
     });
 
-    // Send verification email (async, don't wait)
-    auth
-      .generateEmailVerificationLink(email)
-      .then((link) => {
-        // Send verification email via Resend
-        sendVerificationEmailWithLink(email, link)
-          .then(() => serverLogger.info("Verification email sent"))
-          .catch((emailErr) =>
-            serverLogger.error("Failed to send verification email", {
-              error: emailErr,
-            }),
-          );
-      })
-      .catch((err) =>
-        serverLogger.error("Failed to generate verification link", {
-          error: err,
-        }),
-      );
+    // Verification email is no longer sent here — the client fires Firebase's
+    // own sendEmailVerification() right after this response resolves and it
+    // signs the client SDK in (see useRegister in appkit's useAuth.ts). This
+    // is a "profile related auth change" per project policy: Firebase-only,
+    // no Resend involvement.
 
     // Return success with session
     const response = NextResponse.json(

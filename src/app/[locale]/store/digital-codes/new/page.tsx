@@ -8,7 +8,7 @@ export default function Page() {
   async function handleSave(draft: SellerProductDraft) {
     "use server";
     // Auto-save: create as draft but do NOT redirect — user is still editing.
-    await createSellerProductAction({
+    return createSellerProductAction({
       ...draft,
       listingType: "digital-code",
       status: "draft",
@@ -17,12 +17,13 @@ export default function Page() {
 
   async function handlePublish(draft: SellerProductDraft) {
     "use server";
-    await createSellerProductAction({
+    const result = await createSellerProductAction({
       ...draft,
       listingType: "digital-code",
       status: "published",
     });
-    redirect(String(ROUTES.STORE.DIGITAL_CODES));
+    if (result.ok) redirect(String(ROUTES.STORE.DIGITAL_CODES));
+    return result;
   }
 
   return (

@@ -110,7 +110,7 @@ const __POST__g = withProviders(createRouteHandler({
 
     const validation = couponCreateSchema.safeParse(body);
     if (!validation.success) {
-      return errorResponse(ERROR_MESSAGES.VALIDATION.FAILED, 400);
+      return errorResponse(ERROR_MESSAGES.VALIDATION.FAILED, 400, validation.error.issues);
     }
 
     const input: CouponCreateInput = {

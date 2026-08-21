@@ -64,8 +64,7 @@ export function AdminAnalyticsClient() {
           />
         </TabsContent>
         <TabsContent value="pageviews">
-          {dateRangePicker}
-          <AdminPageViewsReportView startDate={startDate} endDate={endDate} />
+          <AdminPageViewsReportView />
         </TabsContent>
       </Tabs>
     </>

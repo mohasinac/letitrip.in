@@ -69,7 +69,7 @@ export const POST = withProviders(createApiHandler({
   auth: true,
   roles: [...ROLES_ADMIN_MOD],
   permission: "admin:products:write",
-    handler: async ({ request, user: _user }) => {
+    handler: async ({ request }) => {
     const body = await request.json();
     const validation = validateRequestBody(productCreateSchema, body);
 

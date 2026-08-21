@@ -8,7 +8,7 @@ import { buildPrintMetaPayload } from "@/lib/print-meta";
 export default function Page() {
   async function handleSave(draft: SellerProductDraft) {
     "use server";
-    await createSellerProductAction({
+    return createSellerProductAction({
       ...buildPrintMetaPayload(draft),
       listingType: "stickers",
       status: "draft",
@@ -17,12 +17,13 @@ export default function Page() {
 
   async function handlePublish(draft: SellerProductDraft) {
     "use server";
-    await createSellerProductAction({
+    const result = await createSellerProductAction({
       ...buildPrintMetaPayload(draft),
       listingType: "stickers",
       status: "published",
     });
-    redirect(String(ROUTES.STORE.STICKERS));
+    if (result.ok) redirect(String(ROUTES.STORE.STICKERS));
+    return result;
   }
 
   return (

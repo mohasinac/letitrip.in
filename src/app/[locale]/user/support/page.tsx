@@ -1,22 +1,20 @@
 "use client";
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "@/i18n/navigation";
 import {
   sortBy,
-  useSession,
   useUrlTable,
   ROUTES,
   Div,
-  Heading,
   Text,
   Stack,
   Row,
   Badge,
+  DataListingView,
 } from "@mohasinac/appkit/client";
-import { FieldSelect, ListingToolbar, Toggle } from "@mohasinac/appkit/ui";
+import type { ListingViewConfig } from "@mohasinac/appkit/client";
+import { API_ENDPOINTS } from "@mohasinac/appkit/client";
+import { FieldSelect } from "@mohasinac/appkit/ui";
 import { TICKET_STATUSES } from "@/constants";
-import { getSupportTickets } from "@/lib/api/support-client";
 
 const __P = {
   p5: "p-[var(--appkit-space-5)]",
@@ -33,18 +31,23 @@ interface TicketItem {
   unreadByUser?: number;
 }
 
+interface TicketsResponse {
+  tickets?: TicketItem[];
+  total?: number;
+}
+
 const SORT_OPTIONS = [
   { value: sortBy("updatedAt", "DESC"), label: "Recently updated" },
   { value: sortBy("createdAt", "DESC"), label: "Newest" },
-  { value: sortBy("createdAt", "ASC"),  label: "Oldest" },
+  { value: sortBy("createdAt", "ASC"), label: "Oldest" },
 ];
 
 const STATUS_VARIANT: Record<string, "active" | "pending" | "danger" | "info" | "admin"> = {
-  open:             "pending",
-  in_progress:      "info",
-  waiting_on_user:  "pending",
-  resolved:         "active",
-  closed:           "admin",
+  open: "pending",
+  in_progress: "info",
+  waiting_on_user: "pending",
+  resolved: "active",
+  closed: "admin",
 };
 
 function formatDate(d: string | Date) {
@@ -54,122 +57,92 @@ function formatDate(d: string | Date) {
 const CLOSED_STATUSES = new Set(["resolved", "closed"]);
 
 export default function UserSupportPage() {
-  const { user, loading: sessionLoading } = useSession();
-  const table = useUrlTable({ defaults: { pageSize: "20", sort: "-updatedAt" } });
-  const search = table.get("q") ?? "";
-  const status = table.get("status") ?? "";
-  const sort = table.get("sort") ?? "-updatedAt";
-  // Fetched list is already in-memory (see useQuery below) — a client-side
-  // filter, no Firestore query concerns. Default hides resolved/closed;
-  // an explicit status selection always wins.
-  const hideClosed = table.get("hideClosed") !== "false";
+  const sideTable = useUrlTable({ defaults: { sort: sortBy("updatedAt", "DESC") } });
+  const hideClosed = sideTable.get("hideClosed") !== "false";
 
-  const { data, isLoading } = useQuery<{ tickets: TicketItem[]; total: number }>({
-    queryKey: ["user-support-tickets"],
-    queryFn: () =>
-      getSupportTickets()
-        .then((r) => r.json())
-        .then((r) => r.data),
-    enabled: !sessionLoading && !!user,
-    staleTime: 30_000,
-  });
-
-  const tickets = useMemo(() => {
-    const all = data?.tickets ?? [];
-    const q = search.trim().toLowerCase();
-    const filtered = all
-      .filter((t) => (status ? t.status === status : true))
-      .filter((t) => (status || !hideClosed ? true : !CLOSED_STATUSES.has(t.status)))
-      .filter((t) =>
-        q
-          ? t.subject?.toLowerCase().includes(q) ||
-            t.id.toLowerCase().includes(q) ||
-            t.category?.toLowerCase().includes(q)
-          : true,
-      );
-    return [...filtered].sort((a, b) => {
-      const av = +new Date(sort === "-updatedAt" || sort === "updatedAt" ? a.updatedAt : a.createdAt);
-      const bv = +new Date(sort === "-updatedAt" || sort === "updatedAt" ? b.updatedAt : b.createdAt);
-      return sort.startsWith("-") ? bv - av : av - bv;
-    });
-  }, [data, search, status, sort, hideClosed]);
-
-  const loading = sessionLoading || isLoading;
-  const filterCount = status ? 1 : 0;
-
-  return (
-    <Stack className="w-full" gap="lg">
-      <Row justify="between" wrap align="center">
-        <Div>
-          <Heading level={1} className="text-[var(--appkit-color-text)]" size="2xl" weight="semibold">
-            Support Tickets
-          </Heading>
-          {!loading && data && (
-            <Text variant="secondary" className="mt-0.5" size="sm">
-              {data.total} ticket{data.total !== 1 ? "s" : ""}
-            </Text>
-          )}
-        </Div>
-        <Link
-          href={ROUTES.USER.SUPPORT_NEW}
-          className="rounded-xl bg-primary px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-semibold text-white hover:bg-primary-600"
-        >
-          + New ticket
-        </Link>
-      </Row>
-
-      <ListingToolbar
-        searchValue={search}
-        searchPlaceholder="Search tickets…"
-        onSearchChange={(v) => table.set("q", v)}
-        sortValue={sort}
-        sortOptions={SORT_OPTIONS}
-        onSortChange={(v) => table.set("sort", v)}
-        hideViewToggle
-        filterCount={filterCount}
-        hasActiveState={filterCount > 0 || !!search}
-        onResetAll={() => table.clear()}
+  const config: ListingViewConfig<TicketsResponse, TicketItem> = {
+    portal: "user",
+    title: "Support Tickets",
+    searchPlaceholder: "Search tickets…",
+    emptyLabel: "You haven't opened any support tickets yet.",
+    filterKeys: ["status"],
+    defaultSort: sortBy("updatedAt", "DESC"),
+    queryKey: ["user", "support-tickets", "listing"],
+    endpoint: `${API_ENDPOINTS.SUPPORT.TICKETS}?pageSize=50`,
+    sortOptions: SORT_OPTIONS,
+    hideTableView: true,
+    toggles: [
+      { label: "Hide resolved/closed", active: hideClosed, onChange: (next) => sideTable.set("hideClosed", next ? "" : "false") },
+    ],
+    toolbarExtra: (
+      <Link
+        href={ROUTES.USER.SUPPORT_NEW}
+        className="rounded-xl bg-primary px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-semibold text-white hover:bg-primary-600"
+      >
+        + New ticket
+      </Link>
+    ),
+    mapRows: (response) => {
+      const q = (sideTable.get("q") || "").trim().toLowerCase();
+      const status = sideTable.get("status") || "";
+      const sort = sideTable.get("sort") || SORT_OPTIONS[0].value;
+      const all = response.tickets ?? [];
+      const filtered = all
+        .filter((t) => (status ? t.status === status : true))
+        .filter((t) => (status || !hideClosed ? true : !CLOSED_STATUSES.has(t.status)))
+        .filter((t) =>
+          q
+            ? t.subject?.toLowerCase().includes(q) ||
+              t.id.toLowerCase().includes(q) ||
+              t.category?.toLowerCase().includes(q)
+            : true,
+        );
+      return [...filtered].sort((a, b) => {
+        const av = +new Date(sort === "-updatedAt" || sort === "updatedAt" ? a.updatedAt : a.createdAt);
+        const bv = +new Date(sort === "-updatedAt" || sort === "updatedAt" ? b.updatedAt : b.createdAt);
+        return sort.startsWith("-") ? bv - av : av - bv;
+      });
+    },
+    getTotal: (_response, rows) => rows.length,
+    buildFilters: () => undefined,
+    renderFilterPanel: ({ pendingFilters, setPendingFilters }) => (
+      <FieldSelect
+        name="status"
+        label="Ticket status"
+        value={pendingFilters.status || ""}
+        onChange={(v) => setPendingFilters((p) => ({ ...p, status: v }))}
+        options={[...TICKET_STATUSES]}
       />
-
-      <Row gap="md" wrap align="center">
-        <FieldSelect
-          name="status"
-          aria-label="Filter by ticket status"
-          value={status}
-          onChange={(v) => table.set("status", v)}
-          options={[...TICKET_STATUSES]}
-        />
-        {!status && (
-          <Toggle
-            size="sm"
-            label="Hide resolved/closed"
-            checked={hideClosed}
-            onChange={(v) => table.set("hideClosed", v ? "" : "false")}
-          />
-        )}
-      </Row>
-
-      {loading ? (
+    ),
+    renderCards: (rows, _view, _selection, isLoading) => {
+      if (isLoading) {
+        return (
+          <Stack gap="md">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Stack key={i} className={`animate-pulse border border-[var(--appkit-color-border)] ${__P.p5}`} gap="3" rounded="xl">
+                <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
+                <Div className="h-3 w-1/2 bg-[var(--appkit-color-border)]" rounded="default" />
+              </Stack>
+            ))}
+          </Stack>
+        );
+      }
+      if (rows.length === 0) {
+        const status = sideTable.get("status") || "";
+        return (
+          <Div padding="y-6xl" className="text-center">
+            <Text variant="secondary">
+              {status ? `No ${status.replace("_", " ")} tickets.` : "You haven't opened any support tickets yet."}
+            </Text>
+            <Link href={ROUTES.USER.SUPPORT_NEW} className="mt-3 inline-block text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-primary)] hover:underline">
+              Open your first ticket →
+            </Link>
+          </Div>
+        );
+      }
+      return (
         <Stack gap="md">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Stack key={i} className={`animate-pulse border border-[var(--appkit-color-border)] ${__P.p5}`} gap="3" rounded="xl">
-              <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
-              <Div className="h-3 w-1/2 bg-[var(--appkit-color-border)]" rounded="default" />
-            </Stack>
-          ))}
-        </Stack>
-      ) : tickets.length === 0 ? (
-        <Div padding="y-6xl" className="text-center">
-          <Text variant="secondary">
-            {status ? `No ${status.replace("_", " ")} tickets.` : "You haven't opened any support tickets yet."}
-          </Text>
-          <Link href={ROUTES.USER.SUPPORT_NEW} className="mt-3 inline-block text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-primary)] hover:underline">
-            Open your first ticket →
-          </Link>
-        </Div>
-      ) : (
-        <Stack gap="md">
-          {tickets.map((t) => (
+          {rows.map((t) => (
             <Link
               key={t.id}
               href={String(ROUTES.USER.SUPPORT_TICKET(t.id))}
@@ -197,7 +170,9 @@ export default function UserSupportPage() {
             </Link>
           ))}
         </Stack>
-      )}
-    </Stack>
-  );
+      );
+    },
+  };
+
+  return <DataListingView config={config} />;
 }

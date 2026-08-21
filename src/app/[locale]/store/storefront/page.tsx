@@ -27,7 +27,7 @@ export default async function Page() {
 
   async function handleSave(data: StorefrontDraft) {
     "use server";
-    await updateStoreAction({
+    return updateStoreAction({
       storeName: data.storeName,
       storeDescription: data.storeDescription,
       storeCategory: data.storeCategory,

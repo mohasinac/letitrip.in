@@ -30,6 +30,7 @@ export const GET = withProviders(createRouteHandler({
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
     const pageSize = Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize")) || 50));
     const sorts = url.searchParams.get("sorts") ?? DEFAULT_SORTS;
+    const q = (url.searchParams.get("q") || "").trim().toLowerCase();
 
     const result = await categoriesRepository.list({
       filters: sieveFilter("categoryType", SIEVE_OP.EQ, "sublisting"),
@@ -37,7 +38,15 @@ export const GET = withProviders(createRouteHandler({
       page: String(page),
       pageSize: String(pageSize),
     });
-    return successResponse({ items: result.items, total: result.total, page, pageSize });
+    let items = result.items;
+    let total = result.total;
+    if (q) {
+      items = items.filter((c) =>
+        (c.name ?? "").toLowerCase().includes(q) || (c.itemCode ?? "").toLowerCase().includes(q),
+      );
+      total = items.length;
+    }
+    return successResponse({ items, total, page, pageSize });
   },
 }));
 

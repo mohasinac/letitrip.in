@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getLiveItemForDetail, LiveItemDetailPageView } from "@mohasinac/appkit";
 import { buildLiveItemMetadata } from "@mohasinac/appkit/server";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 import { LiveItemActionsClient } from "@/components";
 import { SEO_CONFIG } from "@/constants";
 
@@ -19,10 +20,13 @@ export default async function Page({ params }: Props) {
   const product = await getLiveItemForDetail(slug).catch(() => null);
 
   return (
-    <LiveItemDetailPageView
-      slug={slug}
-      initialProduct={product}
-      renderActions={(p) => <LiveItemActionsClient product={p} />}
-    />
+    <>
+      <PageViewTracker entityType="live" entityId={slug} url={`/live/${slug}`} />
+      <LiveItemDetailPageView
+        slug={slug}
+        initialProduct={product}
+        renderActions={(p) => <LiveItemActionsClient product={p} />}
+      />
+    </>
   );
 }

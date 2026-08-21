@@ -43,13 +43,14 @@ export default async function Page({ params }: Props) {
 
   async function handleSave(draft: SellerProductDraft) {
     "use server";
-    await sellerUpdateProductAction(id, { ...draft, listingType: "pre-order" });
+    return sellerUpdateProductAction(id, { ...draft, listingType: "pre-order" });
   }
 
   async function handlePublish(draft: SellerProductDraft) {
     "use server";
-    await sellerUpdateProductAction(id, { ...draft, listingType: "pre-order", status: "published" });
-    redirect(String(ROUTES.STORE.PRE_ORDERS));
+    const result = await sellerUpdateProductAction(id, { ...draft, listingType: "pre-order", status: "published" });
+    if (result.ok) redirect(String(ROUTES.STORE.PRE_ORDERS));
+    return result;
   }
 
   return (

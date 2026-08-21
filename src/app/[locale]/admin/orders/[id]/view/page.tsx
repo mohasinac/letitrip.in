@@ -34,6 +34,14 @@ export default async function AdminOrderViewPage({ params }: Props) {
           orderId={order.id}
           orderLabel={`Order ${order.id}`}
           currentStatus={order.status}
+          items={(order.items ?? []).map((item) => ({
+            productId: item.productId,
+            title: item.productTitle,
+            image: item.image,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            totalPrice: item.totalPrice,
+          }))}
           paymentProofUrl={order.paymentProofUrl}
           paymentTransactionId={order.paymentTransactionId}
           paymentMethod={order.paymentMethod}

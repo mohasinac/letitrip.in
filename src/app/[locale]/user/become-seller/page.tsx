@@ -40,7 +40,6 @@ export default function Page() {
     <BecomeSellerView
       labels={{ title: "Become a Seller on LetItRip" }}
       state={state}
-      isLoading={authLoading || mutation.isPending}
       renderGuide={() => (
         <Stack
           gap="lg"

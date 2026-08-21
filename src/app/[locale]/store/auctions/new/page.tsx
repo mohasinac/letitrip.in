@@ -8,13 +8,14 @@ export default function Page() {
   async function handleSave(draft: SellerProductDraft) {
     "use server";
     // Auto-save: create as draft but do NOT redirect — user is still editing.
-    await createSellerProductAction({ ...draft, listingType: "auction", status: "draft" });
+    return createSellerProductAction({ ...draft, listingType: "auction", status: "draft" });
   }
 
   async function handlePublish(draft: SellerProductDraft) {
     "use server";
-    await createSellerProductAction({ ...draft, listingType: "auction", status: "published" });
-    redirect(String(ROUTES.STORE.AUCTIONS));
+    const result = await createSellerProductAction({ ...draft, listingType: "auction", status: "published" });
+    if (result.ok) redirect(String(ROUTES.STORE.AUCTIONS));
+    return result;
   }
 
   return (

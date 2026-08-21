@@ -44,17 +44,18 @@ export default async function Page({ params }: Props) {
 
   async function handleSave(draft: SellerProductDraft) {
     "use server";
-    await sellerUpdateProductAction(id, { ...buildPrintMetaPayload(draft), listingType: "stickers" });
+    return sellerUpdateProductAction(id, { ...buildPrintMetaPayload(draft), listingType: "stickers" });
   }
 
   async function handlePublish(draft: SellerProductDraft) {
     "use server";
-    await sellerUpdateProductAction(id, {
+    const result = await sellerUpdateProductAction(id, {
       ...buildPrintMetaPayload(draft),
       listingType: "stickers",
       status: "published",
     });
-    redirect(String(ROUTES.STORE.STICKERS));
+    if (result.ok) redirect(String(ROUTES.STORE.STICKERS));
+    return result;
   }
 
   return (

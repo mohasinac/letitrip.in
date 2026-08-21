@@ -73,7 +73,11 @@ export async function makeOfferAction(
     if (!rl.success) return { ok: false, error: ERR_RATE_LIMIT };
     const parsed = makeOfferSchema.safeParse(input);
     if (!parsed.success)
-      return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid offer data" };
+      return {
+        ok: false,
+        error: parsed.error.issues[0]?.message ?? "Invalid offer data",
+        fieldErrors: parsed.error.flatten().fieldErrors,
+      };
     const data = await makeOffer(user.uid, user.email ?? "", parsed.data as MakeOfferInput);
     return { ok: true, data };
   } catch (err) {
@@ -104,7 +108,11 @@ export async function respondToOfferAction(
     if (!rl.success) return { ok: false, error: ERR_RATE_LIMIT };
     const parsed = respondToOfferSchema.safeParse(input);
     if (!parsed.success)
-      return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+      return {
+        ok: false,
+        error: parsed.error.issues[0]?.message ?? "Invalid input",
+        fieldErrors: parsed.error.flatten().fieldErrors,
+      };
     const data = await respondToOffer(user.uid, parsed.data as RespondToOfferInput);
     return { ok: true, data };
   } catch (err) {
@@ -120,7 +128,12 @@ export async function acceptCounterOfferAction(
   try {
     const user = await requireAuthUser();
     const parsed = acceptCounterSchema.safeParse(input);
-    if (!parsed.success) return { ok: false, error: "Invalid input" };
+    if (!parsed.success)
+      return {
+        ok: false,
+        error: parsed.error.issues[0]?.message ?? "Invalid input",
+        fieldErrors: parsed.error.flatten().fieldErrors,
+      };
     const data = await acceptCounterOffer(user.uid, parsed.data.offerId);
     return { ok: true, data };
   } catch (err) {
@@ -139,7 +152,11 @@ export async function counterOfferByBuyerAction(
     if (!rl.success) return { ok: false, error: ERR_RATE_LIMIT };
     const parsed = buyerCounterSchema.safeParse(input);
     if (!parsed.success)
-      return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid counter offer data" };
+      return {
+        ok: false,
+        error: parsed.error.issues[0]?.message ?? "Invalid counter offer data",
+        fieldErrors: parsed.error.flatten().fieldErrors,
+      };
     const data = await counterOfferByBuyer(user.uid, user.email ?? "", parsed.data as BuyerCounterInput);
     return { ok: true, data };
   } catch (err) {
@@ -155,7 +172,12 @@ export async function withdrawOfferAction(
   try {
     const user = await requireAuthUser();
     const parsed = withdrawOfferSchema.safeParse(input);
-    if (!parsed.success) return { ok: false, error: "Invalid input" };
+    if (!parsed.success)
+      return {
+        ok: false,
+        error: parsed.error.issues[0]?.message ?? "Invalid input",
+        fieldErrors: parsed.error.flatten().fieldErrors,
+      };
     await withdrawOffer(user.uid, parsed.data.offerId);
     return { ok: true, data: undefined };
   } catch (err) {

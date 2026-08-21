@@ -102,9 +102,10 @@ export const GET = withProviders(
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const q = (url.searchParams.get("q") || "").trim().toLowerCase();
-      const status = (url.searchParams.get("status") || "all").trim();
-      const provider = (url.searchParams.get("provider") || "all").trim();
-      const placement = (url.searchParams.get("placement") || "all").trim();
+      const filters = url.searchParams.get("filters") || "";
+      const status = filters.match(/status==([\w-]+)/)?.[1] ?? "all";
+      const provider = filters.match(/provider==([\w-]+)/)?.[1] ?? "all";
+      const placement = filters.match(/placement==([\w-]+)/)?.[1] ?? "all";
       const page = Math.max(1, Number(url.searchParams.get("page") || "1"));
       const pageSize = Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize") || "20")));
 

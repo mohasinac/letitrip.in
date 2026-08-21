@@ -28,7 +28,11 @@ async function getResendApiKey(
 ): Promise<string> {
   try {
     const creds = await getSiteSettingsCredentials();
-    return creds.resendApiKey || process.env.RESEND_API_KEY || "";
+    const seededKey = creds.resendApiKey?.trim() ?? "";
+    // A placeholder seed value (e.g. "re_PLACEHOLDER") is truthy but not a real
+    // key — it must never win over a real RESEND_API_KEY env var.
+    if (seededKey && !seededKey.includes("PLACEHOLDER")) return seededKey;
+    return process.env.RESEND_API_KEY || "";
   } catch (_err) {
     void normalizeError(_err);
     return process.env.RESEND_API_KEY || ""; // site settings unavailable — fall back to env var

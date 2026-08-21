@@ -520,7 +520,6 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
       <>
         {!embedded && renderEventInfoBlock(event)}
         <EventRaffleEntryForm
-          eventId={event.id}
           prizeLabel={event.rafflePrize}
           raffleType={event.raffleType}
           topN={event.raffleTopN}

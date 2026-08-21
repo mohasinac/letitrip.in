@@ -56,6 +56,8 @@ const CLIENT_HOOKS = new Set([
   "createPortal",
   // @tanstack/react-query — always client-only (internally built on useState/useEffect)
   "useQuery", "useMutation", "useInfiniteQuery", "useQueryClient", "useQueries",
+  // appkit custom hooks — internally built on useSearchParams/useRouter/useState
+  "useUrlTable", "useApiMutation", "useSession", "useToast", "useBulkSelection",
 ]);
 
 // Browser-only globals whose bare presence in the source justifies "use client".

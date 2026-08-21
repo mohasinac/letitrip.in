@@ -180,27 +180,48 @@ check(
 // Cohort 4 + 5 — Listing toolbar adoption across user pages
 // ────────────────────────────────────────────────────────────────────────────
 
+// 2026-08-21 — these 10 pages were migrated off hand-wired useUrlTable +
+// ListingToolbar onto the standard DataListingView scaffold (see
+// scripts/audit-listing-view-standard.mjs). Most inline the config directly
+// (marker: "DataListingView"); orders/returns became thin consumer shims
+// delegating to an appkit View component that owns DataListingView itself
+// (marker: the component name), per the SSR Architecture "thin shim" rule.
 const USER_PAGES_WITH_TOOLBAR = [
-  "src/app/[locale]/user/orders/page.tsx",
-  "src/app/[locale]/user/returns/page.tsx",
-  "src/app/[locale]/user/reviews/page.tsx",
-  "src/app/[locale]/user/pre-orders/page.tsx",
-  "src/app/[locale]/user/prize-draws/page.tsx",
-  "src/app/[locale]/user/digital-codes/page.tsx",
-  "src/app/[locale]/user/events/page.tsx",
-  "src/app/[locale]/user/bids/page.tsx",
-  "src/app/[locale]/user/notifications/page.tsx",
-  "src/app/[locale]/user/support/page.tsx",
+  ["src/app/[locale]/user/orders/page.tsx", "UserOrdersView"],
+  ["src/app/[locale]/user/returns/page.tsx", "UserReturnsView"],
+  ["src/app/[locale]/user/reviews/page.tsx", "DataListingView"],
+  ["src/app/[locale]/user/pre-orders/page.tsx", "DataListingView"],
+  ["src/app/[locale]/user/prize-draws/page.tsx", "DataListingView"],
+  ["src/app/[locale]/user/digital-codes/page.tsx", "DataListingView"],
+  ["src/app/[locale]/user/events/page.tsx", "DataListingView"],
+  ["src/app/[locale]/user/bids/page.tsx", "UserBidsView"],
+  ["src/app/[locale]/user/notifications/page.tsx", "DataListingView"],
+  ["src/app/[locale]/user/support/page.tsx", "DataListingView"],
 ];
 
-for (const rel of USER_PAGES_WITH_TOOLBAR) {
+for (const [rel, marker] of USER_PAGES_WITH_TOOLBAR) {
   check(
-    `Cohort 4/5 · ${rel} wired to useUrlTable + ListingToolbar`,
+    `Cohort 4/5 · ${rel} wired to DataListingView`,
     join(ROOT, rel),
-    "useUrlTable",
-    "ListingToolbar",
+    marker,
   );
 }
+
+check(
+  "Cohort 4/5 · UserOrdersView (appkit) uses DataListingView",
+  join(APPKIT, "src/features/account/components/UserOrdersView.tsx"),
+  "DataListingView",
+);
+check(
+  "Cohort 4/5 · UserReturnsView (appkit) uses DataListingView",
+  join(APPKIT, "src/features/account/components/UserReturnsView.tsx"),
+  "DataListingView",
+);
+check(
+  "Cohort 4/5 · UserBidsView (appkit) uses DataListingView",
+  join(APPKIT, "src/features/account/components/UserBidsView.tsx"),
+  "DataListingView",
+);
 
 check(
   "Cohort 5 · UserAddressesClient ships inline search + label filter",
@@ -228,7 +249,7 @@ check(
 check(
   "Cohort 6 · Notifications page has no `tabs` filter (tabs replaced by toolbar)",
   join(ROOT, "src/app/[locale]/user/notifications/page.tsx"),
-  "ListingToolbar",
+  "DataListingView",
 );
 {
   // negative check — old FilterKey tabs union should be gone
@@ -260,7 +281,7 @@ requireFile("Cohort 7 · Ticket constants module exists",          join(ROOT, "s
 check(
   "Cohort 7 · Support list page replaced the old single-line UserSupportView delegate",
   join(ROOT, "src/app/[locale]/user/support/page.tsx"),
-  "ListingToolbar",
+  "DataListingView",
   "TICKET_STATUSES",
 );
 

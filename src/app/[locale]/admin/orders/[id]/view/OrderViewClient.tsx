@@ -15,6 +15,14 @@ export interface OrderViewClientProps {
   orderId: string;
   orderLabel: string;
   currentStatus: string;
+  items?: {
+    productId: string;
+    title: string;
+    image?: string;
+    quantity: number;
+    unitPrice: number;
+    totalPrice: number;
+  }[];
   paymentProofUrl?: string;
   paymentTransactionId?: string;
   paymentMethod?: string;

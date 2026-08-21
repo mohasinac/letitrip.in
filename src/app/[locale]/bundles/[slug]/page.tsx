@@ -7,6 +7,7 @@ import {
   listBundleMembers,
   getRelatedBundles,
 } from "@mohasinac/appkit/server";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 import { buyBundleAction } from "@/actions/bundle.actions";
 
 export const revalidate = 120;
@@ -44,11 +45,14 @@ export default async function Page({
   ]);
 
   return (
-    <BundleDetailView
-      bundle={bundle}
-      members={members}
-      onBuyNow={buyBundleAction}
-      relatedBundles={relatedBundles}
-    />
+    <>
+      <PageViewTracker entityType="bundle" entityId={slug} url={`/bundles/${slug}`} />
+      <BundleDetailView
+        bundle={bundle}
+        members={members}
+        onBuyNow={buyBundleAction}
+        relatedBundles={relatedBundles}
+      />
+    </>
   );
 }

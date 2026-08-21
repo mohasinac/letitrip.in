@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getClassifiedForDetail, ClassifiedDetailPageView } from "@mohasinac/appkit";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 import { buildClassifiedMetadata } from "@mohasinac/appkit/server";
 import { SEO_CONFIG } from "@/constants";
 
@@ -17,5 +18,10 @@ export default async function Page({ params }: Props) {
   const { slug } = await params;
   const product = await getClassifiedForDetail(slug).catch(() => null);
 
-  return <ClassifiedDetailPageView slug={slug} initialProduct={product} />;
+  return (
+    <>
+      <PageViewTracker entityType="classified" entityId={slug} url={`/classified/${slug}`} />
+      <ClassifiedDetailPageView slug={slug} initialProduct={product} />
+    </>
+  );
 }

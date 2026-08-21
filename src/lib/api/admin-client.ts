@@ -133,3 +133,7 @@ export function deleteAdminRole(url: string): Promise<Response> {
 export function getAdminUser(url: string): Promise<Response> {
   return fetch(url);
 }
+
+export function getAdminUserAddresses(userId: string): Promise<Response> {
+  return fetch(`${API_ROUTES.ADMIN.ADDRESSES}?ownerType=user&ownerId=${encodeURIComponent(userId)}`);
+}

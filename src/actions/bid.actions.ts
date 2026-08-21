@@ -42,7 +42,7 @@ const placeBidSchema = z.object({
 
 export type PlaceBidActionResult =
   | { ok: true; data: PlaceBidResult }
-  | { ok: false; error: string; code?: string };
+  | { ok: false; error: string; code?: string; issues?: unknown[] };
 
 export async function placeBidAction(
   input: PlaceBidInput,
@@ -63,6 +63,7 @@ export async function placeBidAction(
           return {
             ok: false,
             error: parsed.error.issues[0]?.message ?? "Invalid bid data",
+            issues: parsed.error.issues,
           };
     
         const data = await placeBid(user.uid, user.email ?? "", parsed.data);

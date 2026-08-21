@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getDigitalCodeForDetail, DigitalCodeDetailPageView } from "@mohasinac/appkit";
 import { buildDigitalCodeMetadata } from "@mohasinac/appkit/server";
-import { ProductDetailActions } from "@mohasinac/appkit/client";
+import { ProductDetailActions, PageViewTracker } from "@mohasinac/appkit/client";
 import { SEO_CONFIG } from "@/constants";
 
 export const revalidate = 60;
@@ -19,22 +19,24 @@ export default async function Page({ params }: Props) {
   const product = await getDigitalCodeForDetail(slug).catch(() => null);
 
   return (
-    <DigitalCodeDetailPageView
-      slug={slug}
-      initialProduct={product}
-      renderPrimaryActions={(ctx) => (
-        <ProductDetailActions
-          productId={ctx.productId}
-          productSlug={ctx.productSlug}
-          productTitle={ctx.productTitle}
-          productImage={ctx.productImage}
-          price={ctx.price ?? undefined}
-          currency={ctx.currency}
-          storeId={ctx.storeId}
-          storeName={ctx.storeName}
-          inStock={ctx.inStock}
-        />
-      )}
-    />
+    <>
+      <PageViewTracker entityType="digital-code" entityId={slug} url={`/digital-codes/${slug}`} />
+      <DigitalCodeDetailPageView
+        slug={slug}
+        initialProduct={product}
+        renderPrimaryActions={(ctx) => (
+          <ProductDetailActions
+            productId={ctx.productId}
+            productTitle={ctx.productTitle}
+            productImage={ctx.productImage}
+            price={ctx.price ?? undefined}
+            currency={ctx.currency}
+            storeId={ctx.storeId}
+            storeName={ctx.storeName}
+            inStock={ctx.inStock}
+          />
+        )}
+      />
+    </>
   );
 }

@@ -43,13 +43,14 @@ export default async function Page({ params }: Props) {
 
   async function handleSave(draft: SellerProductDraft) {
     "use server";
-    await sellerUpdateProductAction(id, { ...draft, listingType: "auction" });
+    return sellerUpdateProductAction(id, { ...draft, listingType: "auction" });
   }
 
   async function handlePublish(draft: SellerProductDraft) {
     "use server";
-    await sellerUpdateProductAction(id, { ...draft, listingType: "auction", status: "published" });
-    redirect(String(ROUTES.STORE.AUCTIONS));
+    const result = await sellerUpdateProductAction(id, { ...draft, listingType: "auction", status: "published" });
+    if (result.ok) redirect(String(ROUTES.STORE.AUCTIONS));
+    return result;
   }
 
   return (

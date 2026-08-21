@@ -54,7 +54,7 @@ export const POST = withProviders(
       const json = await parseJsonBody(request, { allowEmpty: true });
       const parsed = previewSchema.safeParse(json);
       if (!parsed.success) {
-        return errorResponse(ERRORS.INVALID_PAYLOAD, 400);
+        return errorResponse(ERRORS.INVALID_PAYLOAD, 400, parsed.error.issues);
       }
       try {
         const token = generateToken();

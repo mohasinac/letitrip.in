@@ -5,9 +5,9 @@ import { generateMetadata as _gm } from "@/constants/seo.server";
 export const metadata: Metadata = _gm({
   title: "Collectibles Brands — LetItRip",
   description:
-    "Shop by brand: Bandai, Mattel, Pokémon Company, Konami, Funko, NECA, Good Smile, Takara Tomy and more on LetItRip.",
+    "Shop Beyblade collectibles by brand — Takara-Tomy and Beyblade — on LetItRip.",
   path: "/brands",
-  keywords: ["bandai india", "pokemon company", "funko india", "good smile india", "mattel india", "collectibles brands"],
+  keywords: ["takara tomy india", "beyblade brand", "collectibles brands"],
 });
 
 export const revalidate = 300;

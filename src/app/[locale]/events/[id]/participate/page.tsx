@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function Page({ params }: Props) {
-  const { locale: _locale, id } = await params;
+  const { id } = await params;
   const event = await getEventCached(id);
   if (!event) notFound();
 

@@ -13,10 +13,16 @@
  * fixed 2026-08-19 (CLAUDE.md Recurrent Root Cause Patterns #31).
  *
  * This audit extracts every seeded `href` and confirms it resolves to a real
- * static page under src/app/[locale]/**. All seeded hrefs are static paths
- * today (no dynamic [param] segments) — a route through a dynamic segment
- * folder is intentionally skipped rather than validated, since no current
- * checklist item targets one and doing so needs a different strategy anyway.
+ * page under src/app/[locale]/**. Two shapes are accepted:
+ *   1. A static path — must exactly match a real page.tsx/page.ts route.
+ *   2. A dynamic-route deep link (e.g. /auctions/auction-tester-sandbox-won)
+ *      — the prefix up to the dynamic segment (/auctions/) must resolve to a
+ *      real page.tsx under a [param] folder, AND the trailing slug must be a
+ *      known seed-data id (regex-scanned from appkit/src/seed/**.ts and
+ *      appkit/src/features/tester/seed-data/**.ts, same lightweight approach
+ *      as the href extraction below — no TS parsing). This lets checklist
+ *      items link straight to the specific fixture they're testing instead
+ *      of a generic listing page, while still catching typos/route rot.
  *
  * Strict-zero, no suppression marker — a checklist item either has a working
  * href or omits the field entirely (it's optional).
@@ -55,7 +61,7 @@ if (!exists) {
 const DYNAMIC_SEGMENT_RE = /^\[.+\]$/;
 const ROUTE_GROUP_RE = /^\(.+\)$/;
 
-function collectRoutes(dir, segments, routes) {
+function collectRoutes(dir, segments, routes, dynamicPrefixes) {
   let entries;
   try {
     entries = readdirSync(dir, { withFileTypes: true });
@@ -74,17 +80,87 @@ function collectRoutes(dir, segments, routes) {
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
     if (entry.name === "node_modules") continue;
-    if (DYNAMIC_SEGMENT_RE.test(entry.name)) continue; // skip dynamic segments — not validated today
+    if (DYNAMIC_SEGMENT_RE.test(entry.name)) {
+      // Record the static prefix leading up to this dynamic segment (e.g.
+      // "/auctions/") when it resolves to a real detail page, instead of
+      // just skipping it — lets seeded hrefs deep-link to a specific
+      // fixture id under this route. Deliberately doesn't descend further
+      // (no checklist href today targets a route nested below a dynamic
+      // segment).
+      let dynEntries;
+      try {
+        dynEntries = readdirSync(join(dir, entry.name), { withFileTypes: true });
+      } catch {
+        continue;
+      }
+      const dynHasPage = dynEntries.some(
+        (e) => e.isFile() && (e.name === "page.tsx" || e.name === "page.ts"),
+      );
+      if (dynHasPage) {
+        dynamicPrefixes.add("/" + [...segments, ""].join("/"));
+      }
+      continue;
+    }
     const nextSegments = ROUTE_GROUP_RE.test(entry.name)
       ? segments
       : [...segments, entry.name];
-    collectRoutes(join(dir, entry.name), nextSegments, routes);
+    collectRoutes(join(dir, entry.name), nextSegments, routes, dynamicPrefixes);
   }
 }
 
 const validRoutes = new Set();
-collectRoutes(APP_DIR, [], validRoutes);
+const dynamicRoutePrefixes = new Set();
+collectRoutes(APP_DIR, [], validRoutes, dynamicRoutePrefixes);
 validRoutes.add("/");
+
+// --- Build a known-id allowlist from seed data (main + tester fixtures) ---
+
+const SEED_ID_DIRS = [
+  join(ROOT, "appkit", "src", "seed"),
+  join(ROOT, "appkit", "src", "features", "tester", "seed-data"),
+];
+const SEED_ID_STRING_RE = /id:\s*"([\w-]+)"/g;
+// Some fixtures build their id from a template literal inside a loop (e.g.
+// `auction-tester-sandbox-cycle-${i + 1}`) rather than a static string —
+// captured separately and turned into a wildcard regex below, since the
+// literal interpolated value can't be read from source text alone.
+const SEED_ID_TEMPLATE_RE = /id:\s*`([^`]*)`/g;
+// A handful of collections (blog posts confirmed 2026-08-21) route on a
+// separate `slug` field that's NOT the same as `id` (e.g. id
+// "blog-spot-genuine-takara-tomy-beyblade" vs slug
+// "spot-genuine-takara-tomy-beyblade", the latter being what the real
+// /blog/[slug] route actually reads) — scan slug fields too so a checklist
+// href using the real route param isn't flagged as unknown.
+const SEED_SLUG_STRING_RE = /slug:\s*"([\w-]+)"/g;
+
+function templateToRegex(template) {
+  const parts = template.split(/\$\{[^}]*\}/);
+  const escaped = parts.map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  return new RegExp("^" + escaped.join("[\\w-]+") + "$");
+}
+
+function collectSeedIds() {
+  const ids = new Set();
+  const templateRegexes = [];
+  for (const dir of SEED_ID_DIRS) {
+    let files;
+    try {
+      files = readdirSync(dir, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const f of files) {
+      if (!f.isFile() || !f.name.endsWith(".ts")) continue;
+      const fileText = readFileSync(join(dir, f.name), "utf8");
+      for (const m of fileText.matchAll(SEED_ID_STRING_RE)) ids.add(m[1]);
+      for (const m of fileText.matchAll(SEED_SLUG_STRING_RE)) ids.add(m[1]);
+      for (const m of fileText.matchAll(SEED_ID_TEMPLATE_RE)) templateRegexes.push(templateToRegex(m[1]));
+    }
+  }
+  return { ids, templateRegexes };
+}
+
+const { ids: knownSeedIds, templateRegexes: knownSeedIdTemplates } = collectSeedIds();
 
 // --- Extract every seeded href with its line number ---
 
@@ -120,10 +196,21 @@ function nearestSuggestion(href) {
   return best;
 }
 
+function matchesKnownFixture(href) {
+  for (const prefix of dynamicRoutePrefixes) {
+    if (!href.startsWith(prefix)) continue;
+    const trailing = href.slice(prefix.length);
+    if (!trailing || trailing.includes("/")) continue;
+    if (knownSeedIds.has(trailing)) return true;
+    if (knownSeedIdTemplates.some((rx) => rx.test(trailing))) return true;
+  }
+  return false;
+}
+
 const violations = [];
 for (const { href, line } of seeded) {
-  if (DYNAMIC_SEGMENT_RE.test(href)) continue;
   if (validRoutes.has(href)) continue;
+  if (matchesKnownFixture(href)) continue;
   violations.push({ href, line, suggestion: nearestSuggestion(href) });
 }
 

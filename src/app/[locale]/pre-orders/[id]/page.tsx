@@ -4,6 +4,7 @@ import {
   getPreOrderForDetail,
   getProductFeaturesForPreOrder,
 } from "@mohasinac/appkit";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 import { reservePreOrderAction } from "@/actions/pre-order.actions";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
@@ -32,11 +33,14 @@ export default async function Page({ params }: Props) {
   const product = await getPreOrderForDetail(id);
   const productFeatures = await getProductFeaturesForPreOrder(product?.storeId ?? null);
   return (
-    <PreOrderDetailPageView
-      id={id}
-      initialPreOrder={product}
-      productFeatures={productFeatures}
-      onReserveNow={reservePreOrderAction}
-    />
+    <>
+      <PageViewTracker entityType="pre-order" entityId={id} url={`/pre-orders/${id}`} />
+      <PreOrderDetailPageView
+        id={id}
+        initialPreOrder={product}
+        productFeatures={productFeatures}
+        onReserveNow={reservePreOrderAction}
+      />
+    </>
   );
 }

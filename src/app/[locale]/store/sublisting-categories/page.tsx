@@ -1,30 +1,29 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import {
   sortBy,
   Badge,
   Button,
   Div,
-  Heading,
-  Input,
   Row,
-  Select,
-  Skeleton,
   Text,
   ACTIONS,
+  ROUTES,
+  DataListingView,
+  Stack,
 } from "@mohasinac/appkit/client";
+import type { ListingViewConfig } from "@mohasinac/appkit/client";
+import { API_ROUTES } from "@/constants";
+import { getSublistingCategories, deleteSublistingCategory } from "@/lib/api/store-client";
+import { normalizeError } from "@mohasinac/appkit/client";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 const __O = {
   hidden: "overflow-hidden",
 } as const;
-import { ROUTES } from "@mohasinac/appkit/client";
-import { useUrlTable } from "@mohasinac/appkit/client";
-import { API_ROUTES } from "@/constants";
-import { getSublistingCategories, deleteSublistingCategory } from "@/lib/api/store-client";
 
-import { Stack, normalizeError } from "@mohasinac/appkit/client";
 interface CategoryRow {
   id: string;
   name: string;
@@ -33,7 +32,10 @@ interface CategoryRow {
   productCount?: number;
 }
 
-const PAGE_SIZE = 25;
+interface CategoriesResponse {
+  items?: unknown[];
+  total?: number;
+}
 
 const SORT_OPTIONS = [
   { value: sortBy("name", "ASC"), label: "Name A–Z" },
@@ -41,81 +43,6 @@ const SORT_OPTIONS = [
   { value: sortBy("createdAt", "DESC"), label: "Newest" },
   { value: sortBy("createdAt", "ASC"), label: "Oldest" },
 ];
-
-export default function Page() {
-  const table = useUrlTable({ defaults: { sort: "name", pageSize: String(PAGE_SIZE) } });
-
-  const [rows, setRows] = useState<CategoryRow[]>([]);
-  const [total, setTotal] = useState(0);
-  const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-
-  const sort = table.get("sort") || "name";
-  const page = table.getNumber("page", 1);
-
-  const load = useCallback(() => {
-    setLoading(true);
-    setLoadError(null);
-    const params = new URLSearchParams({
-      page: String(page),
-      pageSize: String(PAGE_SIZE),
-      sorts: sort,
-    });
-    getSublistingCategories(`${API_ROUTES.STORE.SUBLISTING_CATEGORIES}?${params.toString()}`)
-      .then((r) => r.json())
-      .then((res) => {
-        const data = (res as any)?.data;
-        const items: unknown[] = data?.items ?? [];
-        setTotal(typeof data?.total === "number" ? data.total : items.length);
-        setRows(
-          items.map((item: any) => ({
-            id: String(item.id ?? ""),
-            name: String(item.name ?? ""),
-            itemCode: item.itemCode ? String(item.itemCode) : undefined,
-            description: item.description ? String(item.description) : undefined,
-            productCount: typeof item.productCount === "number" ? item.productCount : 0,
-          })),
-        );
-      })
-      .catch((err: unknown) => {
-        setLoadError(err instanceof Error ? err.message : "Could not load categories");
-      })
-      .finally(() => setLoading(false));
-  }, [page, sort]);
-
-  useEffect(load, [load]);
-
-  const handleDelete = async (id: string, name: string) => {
-    // eslint-disable-next-line no-alert
-    if (!confirm(`Delete "${name}"? All linked listings will be unlinked. This cannot be undone.`))
-      return;
-    setDeletingId(id);
-    try {
-      await deleteSublistingCategory(API_ROUTES.STORE.SUBLISTING_CATEGORY_BY_ID(id));
-      load();
-    } catch (_err) {
-      void normalizeError(_err);
-      // eslint-disable-next-line no-alert
-      alert("Failed to delete. You may only delete categories you created.");
-    } finally {
-      setDeletingId(null);
-    }
-  };
-
-  const filtered = search.trim()
-    ? rows.filter(
-        (r) =>
-          r.name.toLowerCase().includes(search.toLowerCase()) ||
-          (r.itemCode ?? "").toLowerCase().includes(search.toLowerCase()),
-      )
-    : rows;
-
-  const totalPages = Math.ceil(total / PAGE_SIZE);
-
-  return renderPage({ filtered, loading, loadError, search, setSearch, sort, total, totalPages, page, table, deletingId, handleDelete });
-}
 
 function renderCategoryRow(
   cat: CategoryRow,
@@ -152,107 +79,82 @@ function renderCategoryRow(
   );
 }
 
-function renderPage({
-  filtered, loading, loadError, search, setSearch, sort, total, totalPages, page, table, deletingId, handleDelete,
-}: {
-  filtered: CategoryRow[];
-  loading: boolean;
-  loadError: string | null;
-  search: string;
-  setSearch: (v: string) => void;
-  sort: string;
-  total: number;
-  totalPages: number;
-  page: number;
-  table: ReturnType<typeof useUrlTable>;
-  deletingId: string | null;
-  handleDelete: (id: string, name: string) => void;
-}) {
-  return (
-    <Div className="mx-auto max-w-4xl">
-      <Row justify="between" align="start" className="mb-6" gap="md">
-        <Div>
-          <Heading level={1} weight="bold" size="2xl">Sub-listing Categories</Heading>
-          <Text variant="secondary" className="mt-1" size="sm">
-            Group your listings of the same collectible across conditions, grades, or prices. Buyers browsing one listing will see all others in the group.
-          </Text>
-        </Div>
-        <Button variant="primary" size="sm" asChild>
-          <Link href={String(ROUTES.STORE.SUBLISTING_CATEGORIES_NEW)}>+ New Category</Link>
-        </Button>
-      </Row>
+export default function Page() {
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-      <Row gap="sm" className="mb-4" align="center">
-        <Div className="flex-1">
-          <Input placeholder="Search by name or item code…" value={search} onChange={(e) => setSearch(e.target.value)} aria-label="Search sub-listing categories" />
-        </Div>
-        <Select value={sort} onChange={(e) => table.set("sort", e.target.value)} aria-label="Sort categories" options={SORT_OPTIONS} />
-      </Row>
+  const handleDelete = async (id: string, name: string) => {
+    // eslint-disable-next-line no-alert
+    if (!confirm(`Delete "${name}"? All linked listings will be unlinked. This cannot be undone.`))
+      return;
+    setDeletingId(id);
+    try {
+      await deleteSublistingCategory(API_ROUTES.STORE.SUBLISTING_CATEGORY_BY_ID(id));
+      queryClient.invalidateQueries({ queryKey: ["store", "sublisting-categories", "listing"] });
+    } catch (_err) {
+      void normalizeError(_err);
+      // eslint-disable-next-line no-alert
+      alert("Failed to delete. You may only delete categories you created.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
-      {loadError && !loading && (
-        <Div className="mb-4 border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)]" rounded="lg" padding="md">
-          <Text size="sm" className="text-[var(--appkit-color-error)]">Could not load categories: {loadError}</Text>
-        </Div>
-      )}
-
-      {loading ? (
-        <Stack gap="md" padding="y-xl">
-          {[0, 1, 2].map((i) => <Skeleton key={i} className="h-16 rounded-xl" />)}
-        </Stack>
-      ) : filtered.length === 0 ? (
-        <Stack justify="center" className="border border-dashed border-[var(--appkit-color-border)] text-center" padding="y-4xl" align="center" rounded="2xl">
-          <Text className="mb-2" size="3xl">🏷️</Text>
-          <Text size="sm" weight="semibold">
-            {search ? "No categories match your search" : "No sub-listing categories yet"}
-          </Text>
-          <Text variant="secondary" className="mt-1" size="xs">
-            {search
-              ? "Try a different keyword"
-              : "Create your first category to group listings of the same item."}
-          </Text>
-          {!search && (
+  const config: ListingViewConfig<CategoriesResponse, CategoryRow> = {
+    portal: "seller",
+    title: "Sub-listing Categories",
+    subtitle: "Group your listings of the same collectible across conditions, grades, or prices. Buyers browsing one listing will see all others in the group.",
+    searchPlaceholder: "Search by name or item code…",
+    emptyLabel: "No sub-listing categories yet",
+    filterKeys: [],
+    defaultSort: sortBy("name", "ASC"),
+    queryKey: ["store", "sublisting-categories", "listing"],
+    endpoint: API_ROUTES.STORE.SUBLISTING_CATEGORIES,
+    sortOptions: SORT_OPTIONS,
+    hideTableView: true,
+    primaryAction: { label: "New Category", onClick: () => { window.location.href = String(ROUTES.STORE.SUBLISTING_CATEGORIES_NEW); } },
+    mapRows: (response) =>
+      (response.items ?? []).map((raw) => {
+        const item = raw as Record<string, unknown>;
+        return {
+          id: String(item.id ?? ""),
+          name: String(item.name ?? ""),
+          itemCode: item.itemCode ? String(item.itemCode) : undefined,
+          description: item.description ? String(item.description) : undefined,
+          productCount: typeof item.productCount === "number" ? item.productCount : 0,
+        };
+      }),
+    getTotal: (response, rows) => (typeof response.total === "number" ? response.total : rows.length),
+    buildFilters: () => undefined,
+    renderCards: (rows, _view, _selection, isLoading) => {
+      if (isLoading) {
+        return (
+          <Stack gap="md" padding="y-xl">
+            {[0, 1, 2].map((i) => <Div key={i} className="h-16 animate-pulse border border-[var(--appkit-color-border)]" rounded="xl" />)}
+          </Stack>
+        );
+      }
+      if (rows.length === 0) {
+        return (
+          <Stack justify="center" className="border border-dashed border-[var(--appkit-color-border)] text-center" padding="y-4xl" align="center" rounded="2xl">
+            <Text className="mb-2" size="3xl">🏷️</Text>
+            <Text size="sm" weight="semibold">No sub-listing categories yet</Text>
+            <Text variant="secondary" className="mt-1" size="xs">
+              Create your first category to group listings of the same item.
+            </Text>
             <Button variant="primary" size="sm" className="mt-4" asChild>
               <Link href={String(ROUTES.STORE.SUBLISTING_CATEGORIES_NEW)}>Create Category</Link>
             </Button>
-          )}
-        </Stack>
-      ) : (
+          </Stack>
+        );
+      }
+      return (
         <Div className={`divide-y divide-[var(--appkit-color-border)] border border-[var(--appkit-color-border)] ${__O.hidden}`} rounded="xl">
-          {filtered.map((cat) => renderCategoryRow(cat, deletingId, handleDelete))}
+          {rows.map((cat) => renderCategoryRow(cat, deletingId, handleDelete))}
         </Div>
-      )}
+      );
+    },
+  };
 
-      <Row justify="between" align="center" className="mt-3">
-        <Text variant="secondary" size="xs">
-          {total} categor{total !== 1 ? "ies" : "y"} total
-          {search && ` · ${filtered.length} matching "${search}"`}
-          {" · "}You can edit or delete categories you created.
-        </Text>
-
-        {totalPages > 1 && (
-          <Row gap="xs" align="center" className="shrink-0">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.setPage(page - 1)}
-              disabled={page <= 1}
-            >
-              Previous
-            </Button>
-            <Text variant="secondary" size="xs" className="px-[0.25rem]">
-              {page} / {totalPages}
-            </Text>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.setPage(page + 1)}
-              disabled={page >= totalPages}
-            >
-              Next
-            </Button>
-          </Row>
-        )}
-      </Row>
-    </Div>
-  );
+  return <DataListingView config={config} />;
 }

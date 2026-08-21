@@ -136,6 +136,18 @@ export const ADMIN_USER_DETAIL_TABS = [
 
 export type AdminUserDetailTabId = (typeof ADMIN_USER_DETAIL_TABS)[number]["id"];
 
+/** Area tabs on the admin store-detail page (/admin/stores/[id]/view). */
+export const ADMIN_STORE_DETAIL_TABS = [
+  { id: "overview", label: "Overview" },
+  { id: "products", label: "Products" },
+  { id: "orders", label: "Orders" },
+  { id: "reviews", label: "Reviews" },
+  { id: "payouts", label: "Payouts" },
+  { id: "coupons", label: "Coupons" },
+] as const satisfies readonly DashboardTab[];
+
+export type AdminStoreDetailTabId = (typeof ADMIN_STORE_DETAIL_TABS)[number]["id"];
+
 // ---------------------------------------------------------------------------
 // User dashboard
 // ---------------------------------------------------------------------------

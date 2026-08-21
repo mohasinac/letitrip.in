@@ -88,7 +88,7 @@ export async function createStoreAction(
       const rl = await rateLimitByIdentifier(`create-store:${user.uid}`, RateLimitPresets.STRICT);
       if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
       const parsed = createStoreSchema.safeParse(input);
-      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input", parsed.error);
       return createStore(user.uid, user.name ?? "seller", parsed.data as CreateStoreInput) as any;
   });
 }
@@ -125,7 +125,7 @@ export async function updateStoreAction(
       const rl = await rateLimitByIdentifier(`update-store:${user.uid}`, RateLimitPresets.API);
       if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
       const parsed = updateStoreSchema.safeParse(input);
-      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input", parsed.error);
       return updateStore(user.uid, parsed.data as UpdateStoreInput) as any;
   });
 }
@@ -153,7 +153,7 @@ export async function updatePayoutSettingsAction(
       const rl = await rateLimitByIdentifier(`update-payout-settings:${user.uid}`, RateLimitPresets.STRICT);
       if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
       const parsed = updatePayoutSettingsSchema.safeParse(input);
-      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input", parsed.error);
       return updatePayoutSettings(user.uid, parsed.data as UpdatePayoutSettingsInput);
   });
 }
@@ -183,7 +183,7 @@ export async function requestPayoutAction(
       const rl = await rateLimitByIdentifier(`request-payout:${user.uid}`, RateLimitPresets.STRICT);
       if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
       const parsed = payoutRequestSchema.safeParse(input);
-      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input", parsed.error);
       return requestPayout(user.uid, user.name ?? user.email ?? user.uid, user.email ?? "", parsed.data as RequestPayoutInput);
   });
 }
@@ -206,35 +206,37 @@ export async function bulkSellerOrderAction(
 
 // --- Create Seller Product ----------------------------------------------------
 
-export async function createSellerProductAction(input: unknown): Promise<void> {
-  const user = await requireRoleUser(["seller", "admin"]);
-  const rl = await rateLimitByIdentifier(`create-seller-product:${user.uid}`, RateLimitPresets.API);
-  if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-  const parsed = productCreateSchema.safeParse(input);
-  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+export async function createSellerProductAction(input: unknown): Promise<ActionResult<void>> {
+  return wrapAction(async () => {
+    const user = await requireRoleUser(["seller", "admin"]);
+    const rl = await rateLimitByIdentifier(`create-seller-product:${user.uid}`, RateLimitPresets.API);
+    if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
+    const parsed = productCreateSchema.safeParse(input);
+    if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input", parsed.error);
 
-  // P-10 — prize-draw listings require legal sign-off before going live;
-  // this gate applies to admin too (no bypass), unlike the capability checks below.
-  if ((parsed.data as Record<string, JsonValue>).listingType === "prize-draw" && !getFlag("PRIZE_DRAWS")) {
-    throw new AuthorizationError("Prize draw listings are not currently enabled.");
-  }
+    // P-10 — prize-draw listings require legal sign-off before going live;
+    // this gate applies to admin too (no bypass), unlike the capability checks below.
+    if ((parsed.data as Record<string, JsonValue>).listingType === "prize-draw" && !getFlag("PRIZE_DRAWS")) {
+      throw new AuthorizationError("Prize draw listings are not currently enabled.");
+    }
 
-  // Capability gate — admin bypasses
-  if (!isAdminUser(user)) {
-    const store = await getSellerStore(user.uid);
-    if (store) {
-      const caps = await getStoreCapabilities(store.id);
-      const lt = (parsed.data as Record<string, JsonValue>).listingType;
-      if (lt === "auction" && !caps.includes("host_auctions")) {
-        throw new AuthorizationError("Your store is not approved to create auction listings.");
-      }
-      if (lt === "pre-order" && !caps.includes("host_preorders")) {
-        throw new AuthorizationError("Your store is not approved to create pre-order listings.");
+    // Capability gate — admin bypasses
+    if (!isAdminUser(user)) {
+      const store = await getSellerStore(user.uid);
+      if (store) {
+        const caps = await getStoreCapabilities(store.id);
+        const lt = (parsed.data as Record<string, JsonValue>).listingType;
+        if (lt === "auction" && !caps.includes("host_auctions")) {
+          throw new AuthorizationError("Your store is not approved to create auction listings.");
+        }
+        if (lt === "pre-order" && !caps.includes("host_preorders")) {
+          throw new AuthorizationError("Your store is not approved to create pre-order listings.");
+        }
       }
     }
-  }
 
-  return createSellerProduct(user.uid, user.name ?? user.email ?? "Seller", user.email ?? "", parsed.data as Record<string, JsonValue>);
+    return createSellerProduct(user.uid, user.name ?? user.email ?? "Seller", user.email ?? "", parsed.data as Record<string, JsonValue>);
+  });
 }
 
 // --- Read Actions -------------------------------------------------------------
@@ -325,7 +327,7 @@ export async function sellerUpdateProductAction(
     const user = await requireAuthUser();
       if (!id?.trim()) throw new ValidationError("id is required");
       const parsed = productUpdateSchema.partial().safeParse(input);
-      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE);
+      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE, parsed.error);
       const profile = await userRepository.findById(user.uid);
       return sellerUpdateProduct(user.uid, profile?.role ?? "user", id, parsed.data as Record<string, JsonValue>) as any;
   });
@@ -425,7 +427,7 @@ export async function updateSellerShippingAction(
       const rl = await rateLimitByIdentifier(`update-shipping:${user.uid}`, RateLimitPresets.STRICT);
       if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
       const parsed = updateShippingSchema.safeParse(input);
-      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
+      if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input", parsed.error);
 
       const data = parsed.data;
       const config = {

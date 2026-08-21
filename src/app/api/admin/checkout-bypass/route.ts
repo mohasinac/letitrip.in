@@ -8,6 +8,8 @@ import {
   ApiErrors,
   PaymentMethodValues,
   serverLogger,
+  recordAdminAction,
+  AdminAuditActionValues,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
@@ -80,6 +82,15 @@ export const POST = withProviders(
         excludedProductIds,
         adminBypass: true,
         adminBypassBy: adminUid,
+      });
+
+      void recordAdminAction({
+        actorUid: adminUid,
+        action: AdminAuditActionValues.CHECKOUT_BYPASS,
+        targetType: "order",
+        targetId: result.orderIds[0] ?? addressId,
+        reason,
+        metadata: { addressId, orderIds: result.orderIds },
       });
 
       return successResponse(result, "Admin bypass order placed successfully.");

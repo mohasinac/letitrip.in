@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PrizeDrawDetailPageView, PrizeDrawLotteryDetailView } from "@mohasinac/appkit";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 import { getPrizeDrawForDetail, toClientLotteryConfig } from "@mohasinac/appkit/server";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
@@ -48,13 +49,21 @@ export default async function Page({ params }: PageProps) {
     };
 
     return (
-      <PrizeDrawLotteryDetailView
-        product={clientProduct}
-        user={user ? { uid: user.uid, displayName: user.displayName } : null}
-      />
+      <>
+        <PageViewTracker entityType="prize-draw" entityId={slug} url={`/prize-draws/${slug}`} />
+        <PrizeDrawLotteryDetailView
+          product={clientProduct}
+          user={user ? { uid: user.uid, displayName: user.displayName } : null}
+        />
+      </>
     );
   }
 
   // Classic reveal-mode prize draw.
-  return <PrizeDrawDetailPageView id={slug} currentUserId={user?.uid} />;
+  return (
+    <>
+      <PageViewTracker entityType="prize-draw" entityId={slug} url={`/prize-draws/${slug}`} />
+      <PrizeDrawDetailPageView id={slug} currentUserId={user?.uid} />
+    </>
+  );
 }

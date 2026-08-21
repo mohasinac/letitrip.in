@@ -104,7 +104,6 @@ export default async function Page({ params }: Props) {
         renderPrimaryActions={(ctx) => (
           <ProductDetailActions
             productId={ctx.productId}
-            productSlug={ctx.productSlug}
             productTitle={ctx.productTitle}
             productImage={ctx.productImage}
             price={ctx.price ?? undefined}

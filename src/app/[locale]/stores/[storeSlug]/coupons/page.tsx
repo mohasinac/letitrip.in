@@ -13,7 +13,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <Suspense>
-      <CouponsIndexListing storeSlug={storeSlug} storeId={storeId} />
+      <CouponsIndexListing storeId={storeId} />
     </Suspense>
   );
 }

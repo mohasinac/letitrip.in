@@ -130,6 +130,19 @@ const AUDITS = [
   { name: "mock-gating",                     script: "scripts/audit-mock-gating.mjs" },
   { name: "form-schema",                     script: "scripts/audit-form-schema.mjs" },
   { name: "quick-form-drawer-schema",        script: "scripts/audit-quick-form-drawer-schema.mjs" },
+  // Every form that owns schema-driven validation must also render the
+  // shared <FormErrorSummary> beside its Submit/Save button — closes the
+  // "validates but never shown anywhere" gap the product-create bug exposed.
+  { name: "form-error-summary",              script: "scripts/audit-form-error-summary.mjs" },
+  // Catches the exact "prop received, silently discarded" bug class that
+  // caused FormShell.tsx's `schema: _schema` and StepForm.tsx's dead
+  // `_setFieldErrors` in the first place. Best-effort/regex-based — see the
+  // script header for known limitations.
+  { name: "dead-underscore-prop",            script: "scripts/audit-dead-underscore-prop.mjs" },
+  // A `.safeParse(` result that's computed but never piped into
+  // setFieldError/applyZodIssues/a thrown ValidationError — validation ran,
+  // nothing happened with it.
+  { name: "unvalidated-safeparse",           script: "scripts/audit-unvalidated-safeparse.mjs" },
   { name: "media-direct-upload",             script: "scripts/audit-media-direct-upload.mjs" },
   { name: "firestore-storage-urls",          script: "scripts/audit-firestore-storage-urls.mjs" },
   { name: "raw-img-src",                     script: "scripts/audit-raw-img-src.mjs" },
@@ -216,6 +229,11 @@ const AUDITS = [
   // dropped entirely in the onSelect branch); see CLAUDE.md's Recurrent
   // Root Cause Patterns.
   { name: "selectable-card-navigation",     script: "scripts/audit-selectable-card-navigation.mjs" },
+  // Every admin/seller/user dashboard listing must use the DataListingView
+  // config-driven scaffold, not a hand-rolled ListingToolbar/DataTable
+  // composition. 22 bypasses found + migrated 2026-08-21; see the script's
+  // own header comment for the full writeup.
+  { name: "listing-view-standard",          script: "scripts/audit-listing-view-standard.mjs" },
   // Guest-participation (allowGuestParticipation) must stay the single
   // source of truth for whether an event permits anonymous entries — two
   // structurally separate decision points (enterEvent()'s generic path and

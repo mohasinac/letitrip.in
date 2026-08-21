@@ -295,7 +295,7 @@
 | MessagesView | View | User messaging view |
 | ChatList, ChatWindow | Component | Chat conversations list and window |
 | BecomeSellerView | View | Seller registration form |
-| UserOrderTrackView | View | Order tracking page |
+| UserOrderTrackView | View | Order tracking page — 2026-08-21: `/user/orders/[id]/track/page.tsx` finally wires its `renderBack`/`renderTracking`/`renderNotFound` slots (was a Root Cause #8 blank-slot-shell instance); renders `<OrderStatusTimeline>` from `useOrder(id)` |
 | UserReturnsView | View | Returns and refunds management |
 | UserSupportView | View | Support/ticket interface |
 
@@ -316,16 +316,20 @@
 | AdminDashboardView | View | Main admin dashboard |
 | AdminProductsView | View | Admin products listing |
 | AdminProductEditorView | View | Admin product editor |
-| AdminOrdersView | View | Admin orders management |
-| AdminOrderEditorView | View | Order editor |
+| AdminOrdersView | View | Admin orders management — 2026-08-21: row `primary`/`image` now read the order's denormalized `items[]` (`productTitle`/`image`) instead of the raw order id (Root Cause #52); row click + row menu "Open full page" → `/admin/orders/[id]/view` |
+| AdminOrderEditorView | View | Order editor — 2026-08-21: accepts `items?: AdminOrderItemRow[]`, renders a thumbnail+title+qty+price items section above the status form; also mounted full-page (not just drawer) at `/admin/orders/[id]/view` via `OrderViewClient.tsx` |
 | AdminUsersView | View | Admin user management |
-| AdminUserEditorView | View | User editor |
-| AdminStoresView | View | Stores management |
+| AdminUserEditorView | View | User editor — 2026-08-21: accepts `photoURL?`, renders an `<Avatar>` header for visual continuity with `/admin/users/[id]` |
+| AdminStoresView | View | Stores management — 2026-08-21: row menu "Open full page" → `/admin/stores/[id]/view` |
 | AdminStoreEditorView | View | Store editor |
+| AdminPayoutMarkPaidModal (+ `AdminPayoutMarkPaidModalProps`) | Component | 2026-08-21 — extracted "mark payout as paid" form + mutation, shared by `AdminPayoutsView`'s row action and `/admin/payouts/[id]/view` so the two surfaces can't drift (Root Cause #52 pattern) |
+| AdminAuditLogView (+ `AdminAuditLogViewProps`) | View | 2026-08-21 — read-only list of `adminAuditLog` entries (actor/action/target/date/reason filters); row click/"View details" → `ViewAuditLogEntryModal`. Net-new — no admin action audit trail existed before this. `/admin/audit-log`, nav under Finance, permission `admin:audit-log:read` |
+| ViewAuditLogEntryModal (+ `AuditLogEntryDetail`, `ViewAuditLogEntryModalProps`) | Component | 2026-08-21 — full audit-log entry detail modal (action, actor, target, reason, metadata JSON), mirrors `ViewReviewModal`'s shape |
+| ViewNotificationModal (+ `NotificationEntryDetail`, `ViewNotificationModalProps`) | Component | 2026-08-21 — full notification detail modal (title/message/image/related entity/action link); wired into `AdminNotificationsView`'s row click + new "View details" row action — was list-only before |
 | AdminCategoriesView | View | Categories management |
 | AdminCategoryEditorView | View | Category editor |
 | AdminBrandsView | View | Brands management |
-| AdminBrandEditorView | View | Brand editor |
+| AdminBrandEditorView | View | Brand editor. **2026-08-21** — "Logo" input renamed to "Cover Image" (it always wrote `display.coverImage`, the label was wrong); dead "Banner" input (`brandBannerImage`) removed; added `country`/`founded` inputs wired to `brandInputSchema` fields the backend already accepted but the form never exposed |
 | AdminBidsView | View | Auction bids view |
 | AdminCouponsView | View | Coupons management |
 | AdminCouponEditorView | View | Coupon editor |
@@ -340,7 +344,7 @@
 | AdminEventEntriesView | View | Event entries management |
 | AdminAllEventEntriesView | View | All event entries listing |
 | AdminReviewsView | View | Reviews management |
-| AdminPayoutsView | View | Payouts management |
+| AdminPayoutsView | View | Payouts management — 2026-08-21: row click + "Open full page" → `/admin/payouts/[id]/view`; mark-paid form extracted to `AdminPayoutMarkPaidModal` |
 | AdminArtView | View | Art print listings management (EMI/art-stickers session) |
 | AdminStickersView | View | Sticker listings management (EMI/art-stickers session) |
 | AdminSectionsView | View | Homepage sections management |
@@ -361,7 +365,7 @@
 | AdminWishlistsView | View | User wishlists management |
 | AdminHistoryView | View | User history management |
 | AdminPrizeDrawsView | View | Prize draws management |
-| AdminBundlesView, AdminBundleEditorView | View | Bundles management and editor |
+| AdminBundlesView, AdminBundleEditorView | View | Bundles management and editor. **2026-08-21** — editor gained a `brandSlug` `<Select>` field (real association, replaces `BrandDetailPageView`'s old `seo.keywords` string-match heuristic) |
 | AdminSublistingCategoriesView, AdminSublistingCategoryEditorView | View | Sublisting categories |
 | AdminFeaturesView, AdminFeatureEditorView | View | Product features management |
 | AdminFeatureFlagsView | View | Feature flags management |
@@ -454,6 +458,7 @@
 | BundleItemsPicker | Picker | Multi-select bundle items picker |
 | CategoryBundlesListing | Listing | Bundles in category (cards via `MarketplaceBundleCard`, discount-aware) |
 | CategoryStoresListing | Listing | Stores in category |
+| CategoryHighlightsAndFaqSection | Component | 2026-08-21 — renders `highlights`/`faqs` (bulleted list + `FAQAccordion`-adapted Q&A); used by `CategoryDetailPageView` and `BrandDetailPageView`, returns `null` when both empty |
 
 ### Events (`appkit/src/features/events/components/`)
 
@@ -562,7 +567,7 @@
 | ProductInfo | Component | Product information display |
 | ProductTabs, ProductTabsShell | Tabs | Product detail tabs |
 | ProductGalleryClient | Gallery | Product image + video gallery — `video?: ProductGalleryVideo` renders a trailing slide (poster + play badge), opens in `ImageLightbox` theater mode with a native `<video controls>` (zoom/rotate still apply) |
-| BidHistory | Component | Auction bid history |
+| BidHistory | Component | Auction bid history — default row shows amount, masked bidder identity (`bidderName`, falls back to a partial-id `maskBidderId()`), and bid date+time |
 | PlaceBidForm | Form | Place bid form |
 | MakeOfferForm, MakeOfferButton | Component | Make offer components |
 | RelatedProducts, RelatedProductsCarousel | Component | Related products — `RelatedProductsCarousel` renders one category/brand/tags/store carousel; `RelatedProducts` wraps a bespoke grid (used by auction's "Similar Auctions") |
@@ -598,11 +603,13 @@
 | SellerAuctionsView | View | Seller auctions |
 | SellerPreOrdersView | View | Seller pre-orders |
 | SellerPrizeDrawsView | View | Seller prize draws |
-| SellerOrdersView | View | Seller orders |
+| SellerOrdersView | View | Seller orders — 2026-08-21: row primary/thumbnail read denormalized `items[0]` (Root Cause #52); row menu gained "Open full page" → `/store/orders/[id]/view` |
+| SellerOrderDetailPanel (+ props) | Component | 2026-08-21 — extracted order-detail body (items w/ thumbnails, address, payment, EMI, status/tracking form) from `SellerOrdersView`'s drawer; shared by the drawer and `/store/orders/[id]/view` |
 | SellerBidsView | View | Seller auction bids |
 | SellerCouponsView, SellerCouponEditorView | View | Seller coupons |
 | SellerReviewsView | View | Seller reviews |
-| SellerPayoutsView | View | Seller payouts history — row "View Details" opens a self-contained SideDrawer (status/progress, transaction ID, expected date, `sellerReminderFlag` toggle); bulk-select drives a working "Export Selected" CSV action (`ACTIONS.STORE["export-payout"]`) |
+| SellerPayoutsView | View | Seller payouts history — row "View Details" opens a self-contained SideDrawer (status/progress, transaction ID, expected date, `sellerReminderFlag` toggle); bulk-select drives a working "Export Selected" CSV action (`ACTIONS.STORE["export-payout"]`). 2026-08-21: drawer body extracted to `SellerPayoutDetailContent` (gross/fee/net breakdown + refund-deduction list added); row menu gained "Open full page" → `/store/payouts/[id]/view` |
+| SellerPayoutDetailContent (+ props) | Component | 2026-08-21 — shared payout-detail body (status progress, gross/fee/refund-deduction/net breakdown, dates, orders, reminder toggle); used by `SellerPayoutsView`'s drawer and `/store/payouts/[id]/view` |
 | SellerPayoutStats, SellerPayoutHistoryTable | Component | Payout statistics |
 | SellerPayoutSettingsView | View | Payout configuration |
 | SellerPayoutRequestView | View | Payout withdrawal form |
@@ -621,7 +628,7 @@
 | SellerOffersView, SellerOffersPanel | View | Seller offers/negotiation |
 | SellerFeaturesView | View | Feature management |
 | SellerGroupedListingsView | View | Grouped listings management |
-| GroupedListingsCarousel (`appkit/src/features/grouped/components/`) | Component | 2026-08-20 — first PUBLIC renderer for the `groupedListings` collection; fed by `getGroupsWithItemsForProduct()`, rendered on every product-based detail page. Previously fully built (schema/repo/CRUD) with zero public consumers |
+| GroupedListingsCarousel (`appkit/src/features/grouped/components/`) | Component | 2026-08-20 — first PUBLIC renderer for the `groupedListings` collection; fed by `getGroupsWithItemsForProduct()`, rendered on every product-based detail page. Previously fully built (schema/repo/CRUD) with zero public consumers. **2026-08-21** — also fed by `getGroupsForCategory`/`getGroupsForBrand` on `CategoryDetailPageView`/`BrandDetailPageView` |
 | SellerStoreCategoriesView | View | Store category management |
 | SellerBundlesView | View | Seller bundles |
 | SellerClassifiedView | View | Classified ads management |
@@ -668,6 +675,7 @@
 | orders | OrderFilters, OrderSiblingPayments | Component | Order filtering, sibling payments |
 | orders | RefundHistoryTable, RefundRequestView | Component | Refund components |
 | orders | OrderPaymentSummary | Component | `appkit/src/features/orders/components/OrderPaymentSummary.tsx` — reads `order.paymentRecord` (Feature C), falls back to legacy `paymentMethod`/`paymentId`/`paymentProofUrl` fields for pre-migration orders |
+| orders | OrderStatusTimeline (+ props) | Component | 2026-08-21 — `appkit/src/features/orders/components/OrderStatusTimeline.tsx` — genuine (non-fabricated) status timeline built from `orderDate`/`shippingDate`/`deliveryDate`/`cancellationDate`; renders `trackingUrl` as an external link (new tab). No live courier-API integration. Feeds `/user/orders/[id]/track` |
 | shipments | AdminShipmentsView, AdminShipmentEditorView, AdminShipmentLotItemsView, AdminShipmentProjectionsView, ShipmentItemLinkModal | View/Component | `appkit/src/features/shipments/components/` — Feature A (Procurement Shipments, admin-only): list/editor/lot-items(+bulk-import)/projections + the shared "Create pre-order link" modal |
 | catalogue | UserCatalogueView, CatalogueItemEditorView, PublicCatalogueView, PublicCatalogueItemDetailView, AdminCatalogueApprovalsView | View | `appkit/src/features/catalogue/components/` — Feature B (Personal Catalogue): owner's own list, item editor, public read-only grid (mounted as the "Catalogue" tab on `/profile/[userId]/[tab]`), admin approval queue. `PublicCatalogueItemDetailView` (2026-08-20) is the per-item detail page at `/catalogue/[ownerSlug]/[itemId]` — previously the grid's cards weren't even clickable, no route existed |
 | pre-orders | MarketplacePreorderCard, PreOrderFilters | Component | Pre-order card and filtering |
@@ -679,6 +687,7 @@
 | reviews | ReviewSummary, ViewReviewModal | Component | Review summary and modal |
 | reviews | ReviewsIndexListing | Listing | Reviews index/search |
 | shell | FormShell, StepForm, StepFormActions | Component | `appkit/src/features/shell/` — the real multi-step wizard chrome + step engine (see Rule #9 table in CLAUDE.md); state comes from `ui/forms/FormShell.tsx`'s `FormShellProvider` |
+| ui/forms | FormErrorSummary | Component | `appkit/src/ui/forms/FormErrorSummary.tsx` — reads `FormShellContext` directly (no required props), lists every current live error beside a form's Submit/Save/Publish button; step-tagged + clickable when `fieldToStepIndex` is populated. Supplements (not replaces) per-field inline errors. Every `<FormShell>`/`useFormShellState`/`<Form schema>` callsite must render one — enforced by `audit-form-error-summary` |
 | shell | QuickFormDrawer | Component | `appkit/src/features/shell/QuickFormDrawer.tsx` — compact 1–3 field inline-edit drawer, schema required |
 | shell | CommandPalette, useCommandPaletteHotkey, CommandPaletteGroup | Component/Hook/Type | `appkit/src/features/shell/CommandPalette.tsx` — ⌘K/Ctrl+K search-and-jump modal over a flat group/item list; mounted in admin via consumer's `AdminCommandPaletteMount.tsx` |
 | search | Search | Component | Search input with suggestions |
@@ -735,6 +744,8 @@
 | products | toProductItem | sync(doc) | Firestore doc → card-grid `ProductItem`; now copies `listingType` (Root Cause #48 fix) so related/grouped cards route correctly |
 | grouped | getGroupsForProduct | cache(productId) | 2026-08-20 — groups a product belongs to (`isActive`+`visibilityStatus:"visible"`) |
 | grouped | getGroupsWithItemsForProduct | cache(productId) | 2026-08-20 — same, hydrated with each group's other member products; feeds `<GroupedListingsCarousel>` |
+| grouped | getGroupsForCategory | cache(categorySlug) | 2026-08-21 — groups tagged to a category, hydrated with ALL member products; feeds `<GroupedListingsCarousel>` on `CategoryDetailPageView` |
+| grouped | getGroupsForBrand | cache(brandSlug) | 2026-08-21 — same, for `BrandDetailPageView` |
 | promotions | getCouponByCode | cache(code) | Fetch coupon details |
 | reviews | getReviewsForProduct | cache(productId) | Fetch product reviews |
 | reviews | getReviewsForStore | cache(storeId) | Fetch store reviews |
@@ -762,7 +773,7 @@
 
 | Domain | Export | Purpose |
 |--------|--------|---------|
-| orders | orderDocumentToOrder | Convert Firestore doc to Order shape |
+| orders | orderDocumentToOrder | Convert Firestore doc to Order shape — 2026-08-21: now also maps `orderDate`/`shippingDate`/`deliveryDate`/`cancellationDate`/`trackingUrl` (were silently dropped, leaving the buyer tracking page with no real data to render — Root Cause #52) |
 | classified | adapters (barrel) | Classified data adapters |
 | digital-code | adapters (barrel) | Digital code adapters |
 | live | adapters (barrel) | Live item adapters |
@@ -917,7 +928,7 @@
 | FAQsRepository / FirebaseFAQsRepository | faqs | search, listByCategory, findBySlug | FAQ management |
 | BlogRepository | blogs | publish, unpublish, search, listByCategory | Blog posts |
 | PayoutRepository | payouts | listByStore, listByStatus, updateStatus | Seller payouts |
-| GroupedListingsRepository | groupedListings | findByStore, findByCategory, findByProductId (2026-08-20 — powers the public `GroupedListingsCarousel`) | Grouped products |
+| GroupedListingsRepository | groupedListings | findByStore, findByCategory, findByProductId (2026-08-20 — powers the public `GroupedListingsCarousel`), findByCategorySlug, findByBrandSlug (2026-08-21 — same `isActive`+`visibilityStatus:"visible"` filter, feed `getGroupsForCategory`/`getGroupsForBrand`) | Grouped products |
 | PayoutMethodsRepository | stores/payoutMethods | findByStore | Seller bank accounts |
 | ShippingConfigsRepository | stores/shippingConfigs | findByStore | Seller shipping rules |
 | AnalyticsCardsRepository | stores/analyticsCards | findByStore | Custom analytics |
@@ -950,6 +961,7 @@
 | ShipmentItemsRepository | shipmentItems | listByLot, createItem, bulkCreate, updateItem, unlink, hasLinkedItemsInLot | Feature A per-item CRUD; `bulkCreate` writes ≤500 rows in one Firestore WriteBatch |
 | CatalogueRepository | catalogueItems | listByOwner, listPublicByOwner, listPendingApproval (Sieve), listStale | Feature B personal-catalogue CRUD; `update` auto-stamps `lastImageUpdateAt` whenever `images` changes |
 | JobsRepository (`jobsRepository`) | jobs | markProcessing, markDone, markFailed, getStaleFinishedRefs | Async job primitive (2026-08-15) — pure auto-ID docs, `getStaleFinishedRefs(ttlDays=30)` feeds the `cleanupRtdbEvents` TTL sweep |
+| AdminAuditLogRepository (`adminAuditLogRepository`) | adminAuditLog | list (Sieve: actorUid/actorName/action/targetType/targetId/createdAt) | 2026-08-21 — net-new admin action audit trail (MVP scope, not exhaustive). Writes go only through `recordAdminAction()`, never through this repository's own methods directly from a route |
 | TesterChecklistItemRepository (`testerChecklistItemRepository`) | testerChecklistItems | createItem, update, listActive, list (Sieve), confirmBug, reopenAsNewVersion, getBugHunterLeaderboard | Tester QA program (2026-08-17) — admin-managed test-case catalog, mirrors FAQs. Bug-hunter rewards (2026-08-19): `confirmBug(id, hunterId, hunterName)` credits the reporting tester and sets `isActive:false`; `reopenAsNewVersion(oldId)` clones a disabled, bug-confirmed item into a new active `version+1` doc (id `{old.id}-v{n}`) for retest, leaving the old doc disabled with its credit intact; `getBugHunterLeaderboard(limit)` single-query in-memory aggregation of `bugConfirmed==true` docs by `bugHunterId`, mirrors `EventEntryRepository.getLeaderboard()` |
 | TesterChecklistResponseRepository (`testerChecklistResponseRepository`) | testerChecklistResponses | upsertResponse, listForTester, list (Sieve), markReviewed, getCoverageReport, getMarkdownReport | Tester QA program — one doc per (tester, case), deterministic ID `${testerId}__${checklistItemId}`; `getCoverageReport()` powers the admin Report + Main Issues tabs (2026-08-19: `issues[]` now also carries `bugConfirmed`/`bugHunterId`/`bugHunterName`/`supersededByItemId` denormalized from the catalog item); `getMarkdownReport(siteOrigin)` (2026-08-17) dumps every answered case as Markdown — Issues ("No") + Notes on passing cases ("Yes" with a comment), grouped by feature area, for a human or a future Claude session to read directly and go fix |
 
@@ -1477,6 +1489,8 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 **2026-08-17**: `isTester?: boolean` added to `UserDocument` (account/schemas/firestore.ts) — orthogonal to `role`, unlocks the Tester Hub + auto-approves the user's store. `isTestData?: boolean` + `testDataExpiresAt?: Date` added to `StoreDocument`, `CategoryDocument`, `ProductDocument`, `BlogPostDocument`, `EventDocument` for the tester sandbox (swept by `testerSandboxCleanup`).
 
 **2026-08-19**: `canTestAdmin?: boolean` added to `UserDocument` (auth/schemas/firestore.ts) — orthogonal to `isTester`, unlocks admin-only checklist items in the Tester Hub AND real `/admin/**` RBAC access without changing `role`; meaningless unless `isTester` is also true. Separately, real `isAdminUser(user)` accounts now bypass the `isTester` gate outright (not via this flag) in `TesterHubView`, `getUserNavGroups`, and both `/api/user/tester-checklist*` routes — an admin never needs `isTester`/`canTestAdmin` set to reach the Tester Hub. `EVENT_FIELDS.SLUG` added to `events/schemas/firestore.ts`; `getPublicEventById`/`getEventLeaderboard`/`enterEvent` (events/actions/event-actions.ts) now resolve by `findByIdOrSlug` so public event URLs can link by slug.
+
+**2026-08-21 (Categories & Brands enrichment)**: `CategoryDocument` gains `highlights?: string[]` + `faqs?: {question,answer}[]` (category/brand editorial content, renders via the new shared `CategoryHighlightsAndFaqSection` component — `null` when both empty) and, on bundle rows only, `brandSlug?: string` (a real brand tag, replacing the old `seo.keywords`-substring heuristic `BrandDetailPageView` used to match a bundle to a brand — distinct from `bundleQueryRule.filter.brandSlug`, which is a dynamic-rule query filter). The dead `brandBannerImage` field (never seeded, never rendered) was removed — see CLAUDE.md Root Cause Pattern #51. New component: `CategoryHighlightsAndFaqSection` (`appkit/src/features/categories/components/`), used by both `CategoryDetailPageView` and `BrandDetailPageView`. `AdminBrandEditorView`'s "Logo"/"Banner" inputs were relabeled/fixed to match what they actually write (`display.coverImage`, not the removed dead field), and gained `country`/`founded` inputs; `renderBrandOg()` (`_internal/server/features/brands/og.tsx`) now reads `display.coverImage` instead of the nonexistent `logoURL`.
 
 **2026-08-19 (follow-up — RBAC mechanism for `canTestAdmin`)**: `isEffectiveAdminUser(input)` added to `features/auth/role-predicates.ts`, exported from both `index.ts` and `client.ts` alongside `isAdminUser`/`isSellerUser`/etc. — `isAdminUser(input) || Boolean(input?.isTester && input?.canTestAdmin)`. This is the actual bypass used at the two RBAC chokepoints: `next/api/routeHandler.ts` (`createRouteHandler`) — when the plain JWT-role check fails and `"admin"` is in `effectiveRoles`, one live `userRepository.findById(uid)` lookup resolves `isTester`/`canTestAdmin` (never present in session-cookie claims — only `role` is) and, on success, merges them onto the in-memory `RouteUser` before calling the handler; the `options.permission` bypass (`!isAdminUser(user)`) was changed to `!isEffectiveAdminUser(user)` using the same enriched user — and `_internal/server/features/auth/permissions.ts` (`makeAdminSectionLayout`) — `if (user.role === "admin")` became `if (isEffectiveAdminUser(user))`, and `GetUser`'s return shape widened to include `isTester?`/`canTestAdmin?`. `src/lib/firebase/auth-server.ts`'s `getServerSessionUser()` (the RSC `SessionUser` builder every `makeAdminSectionLayout` call uses as `getUser`) now returns `isTester`/`canTestAdmin` — previously omitted even though it already did a live Firestore read. Bug fixed alongside: `src/app/api/user/tester-checklist/route.ts` (GET) and `.../[checklistItemId]/route.ts` (PUT) previously read `user!.isTester` off the JWT-derived `RouteUser`, which is never populated (only `role` is baked into session-cookie claims) — real testers were silently 403ing. Both routes now do their own live `userRepository.findById(user!.uid)` lookup and filter out `adminOnly: true` checklist items unless `isEffectiveAdminUser(profile)`. New seed exports from `features/tester/seed-data/` (all re-exported via `seed/index.ts` and merged in `appkit/scripts/seed-cli.mjs`): `couponsTesterSeedData` (3 disposable coupons — perUserLimit:1, pre-expired, seller-scope), `bidsTesterSeedData` (1 winning bid on a dedicated already-ended `auction-tester-sandbox-won`, kept separate from the still-biddable `auction-tester-sandbox-1`), `ordersTesterSeedData` (14 orders — one per `OrderStatus` value plus auction-win/bundle/prize-draw-win/prize-draw-lose order types, plus a 5-item "order-tester-sandbox-multi-item" fixture added 2026-08-19 to exercise the My Orders / dashboard Recent Orders item-summary + "+N more" badge UI). `products-prize-draws-seed-data.ts` / `products-classifieds-seed-data.ts` / `products-digital-codes-seed-data.ts` (`appkit/src/seed/`) — previously empty stubs never wired into `seed-cli.mjs`'s write path — now each hold one real Beyblade-themed listing and are merged into `SEED_DATA_MAP.products` in `seed-cli.mjs` (`products-live-items-seed-data.ts` deliberately stays empty — `listingType:"live"` is animal/plant-specific, inapplicable to this catalog). `orders-seed-data.ts`'s `statuses` rotation gained `"confirmed"`/`"returned"` (previously only 7 of 9 `OrderStatus` values were ever seeded). Admin UI: `AdminUserEditorView` gained a "Can Test Admin Areas" toggle under "Is Tester" (hidden unless Is Tester is on); the checklist item editor (`AdminTesterChecklistItemEditorView`) gained an "Admin-only" toggle; `src/app/api/admin/tester-checklist-items/route.ts` + `[id]/route.ts` Zod schemas gained `adminOnly`. Navigation: `getUserNavGroups` (`src/constants/navigation.tsx`) gained a 4th `canTestAdmin` param — when true, injects an "Admin Dashboard (Testing)" link into the Help nav group alongside the existing `isTester`-gated "Tester Hub" link.
 
@@ -2010,6 +2024,9 @@ Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 | audit-sieve-date-fields.mjs | strict-0 | A Sieve field config for a Firestore Timestamp field (`createdAt`, `auctionEndDate`, `expiresAt`, ...) that's filterable (`canFilter: true`) but has no `parseValue` — sievejs's default `convertValue()` never coerces a date-like string to a `Date`, so a Firestore inequality (`>`/`<`/`>=`/`<=`) compares a Timestamp field against a string and silently matches ZERO documents. Root cause of the "must click Show ended to see live auctions" bug — fixed across 27 repository files by wiring `parseValue: parseSieveDateValue` (root-cause #47) |
 | audit-selectable-card-navigation.mjs | strict-0 | A `REGISTRY` of `BaseListingCard.Checkbox`-consuming components asserts each one's nav marker (`href={...}`/`onClick={handleClick}`) sits outside its selection-conditional's bracket span — catches the "a selection callback being merely wired silently disables primary navigation" bug class. Root-caused 2026-08-20 in `InteractiveProductCard.tsx`'s `onSelect` branch, which rendered `<ProductCard>` without forwarding `href` at all (root-cause #43) |
 | audit-event-guest-gate-consistency.mjs | strict-0 | Guards the "one admin-controlled flag (`EventDocument.allowGuestParticipation`) governs guest participation uniformly across every event type" contract — flags a hardcoded per-`event.type` literal reintroduced in either `enterEvent()`'s generic path or `runAssignSpinPrize()`'s inline transaction-based entry creation (spins don't reach `enterEvent()` at all) instead of reading `event.allowGuestParticipation`. Root-caused 2026-08-20 |
+| audit-form-error-summary.mjs | strict-0 | Every `<FormShell schema=...>`/`useFormShellState(...)`/`<Form schema=...>` callsite must also render `<FormErrorSummary />` in the same file — catches a form with real Zod validation but no visible place for the user to see every simultaneous error. Added 2026-08-21 |
+| audit-dead-underscore-prop.mjs | strict-0 | Flags an object-destructure alias (`{ real: _alias }`) or array-destructure alias (`const [a, _b] = ...`) bound and never referenced again anywhere else in the file — the exact defect class behind `FormShell.tsx`'s discarded `schema: _schema` and `StepForm.tsx`'s dead `_setFieldErrors`. Suppression scans a contiguous `//` comment block above the declaration, not just one line. Added 2026-08-21 |
+| audit-unvalidated-safeparse.mjs | strict-0 | Flags a `.safeParse(...)` call whose result isn't piped into `setFieldError`/`setErrors`/`applyZodIssues`/`throw new ValidationError(...)` within a bounded window afterward — "validation ran but the result went nowhere," distinct from `audit-form-schema` ("no schema at all"). Added 2026-08-21 |
 
 ### ESLint mirror rules (`scripts/eslint-rules/index.mjs`)
 

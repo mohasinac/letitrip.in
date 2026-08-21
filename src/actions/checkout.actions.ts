@@ -26,16 +26,17 @@ const valueOtpVerifySchema = z.object({
   code: z.string().length(6).regex(/^\d{6}$/, "Must be 6 digits"),
 });
 
-export async function sendCheckoutValueOtpAction(): Promise<
-  ActionResult<{ maskedEmail: string }>
-> {
+export async function sendCheckoutValueOtpAction(
+  channel: "email" | "whatsapp" = "email",
+  addressId?: string,
+): Promise<ActionResult<{ maskedEmail?: string; maskedPhone?: string; skipped?: boolean }>> {
   return wrapAction(async () => {
     const user = await requireAuthUser();
     const email = user.email;
     if (!email) {
       throw new ValidationError("Account email is required to send a verification code.");
     }
-    return sendCheckoutValueOtp(user.uid, email);
+    return sendCheckoutValueOtp(user.uid, email, channel, addressId);
   });
 }
 

@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Div, Stack } from "@mohasinac/appkit/ui";
 import { ROUTES } from "@mohasinac/appkit";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { EVENT_LABELS, EVENT_META, EVENT_TAB } from "./_constants";
 import { eventIsActive, metaDescriptionFromEvent, resolveEventCoverImage } from "./_helpers";
@@ -91,6 +92,7 @@ export default async function Layout({ children, params }: Props) {
 
   return (
     <Stack className="mx-auto max-w-3xl" gap="lg" paddingY="y-2xl" paddingX="x-md">
+      <PageViewTracker entityType="event" entityId={id} url={String(ROUTES.PUBLIC.EVENT_DETAIL(id))} />
       <EventHeader
         title={event.title ?? ""}
         coverImage={coverImage}

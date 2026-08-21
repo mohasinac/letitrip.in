@@ -27,24 +27,21 @@ const __GET__g = withProviders(async function GET(
   const searchParams = getSearchParams(request);
   const page = getNumberParam(searchParams, "page", 1, { min: 1 });
   const pageSize = getNumberParam(searchParams, "pageSize", 50, { min: 1, max: 50 });
-  const reviewStatus = getStringParam(searchParams, "reviewStatus");
+  const filters = getStringParam(searchParams, "filters");
   const q = (getStringParam(searchParams, "q") || "").trim().toLowerCase();
 
   serverLogger.info("Admin listing event entries", {
     eventId,
     page,
     pageSize,
-    reviewStatus,
+    filters,
     q,
   });
 
   const result = await eventEntryRepository.listForEvent(eventId, {
     page,
     pageSize,
-    filters:
-      reviewStatus && reviewStatus !== "all"
-        ? `reviewStatus==${reviewStatus}`
-        : undefined,
+    filters: filters || undefined,
   });
 
   if (!q) {

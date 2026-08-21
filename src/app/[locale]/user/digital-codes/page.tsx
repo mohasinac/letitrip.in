@@ -1,23 +1,20 @@
 "use client";
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
 import {
   sortBy,
-  useSession,
   useUrlTable,
   CodeRevealPanel,
   type RevealedCode,
   ROUTES,
   Div,
-  Heading,
   Text,
   Stack,
   Row,
 } from "@mohasinac/appkit/client";
-import { ListingToolbar } from "@mohasinac/appkit/ui";
+import { DataListingView } from "@mohasinac/appkit/client";
+import type { ListingViewConfig } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
-import { getOrderDigitalCode, getUserOrders } from "@/lib/api/user-client";
+import { getOrderDigitalCode } from "@/lib/api/user-client";
 
 const __P = {
   p4: "p-[var(--appkit-space-4)]",
@@ -25,7 +22,7 @@ const __P = {
 
 const SORT_OPTIONS = [
   { value: sortBy("createdAt", "DESC"), label: "Newest" },
-  { value: sortBy("createdAt", "ASC"),  label: "Oldest" },
+  { value: sortBy("createdAt", "ASC"), label: "Oldest" },
 ];
 
 async function fetchOrderCode(orderId: string): Promise<RevealedCode> {
@@ -50,6 +47,17 @@ interface OrderDoc {
   items: OrderItem[];
 }
 
+interface OrdersResponse {
+  items?: OrderDoc[];
+}
+
+interface CodeRow {
+  id: string;
+  orderId: string;
+  item: OrderItem;
+  createdAt: string | Date;
+}
+
 function formatAmount(amount: number) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -62,7 +70,7 @@ function CodeRevealRow({ item, orderId }: { item: OrderItem; orderId: string }) 
   return (
     <Stack className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p4}`} gap="3" rounded="lg">
       <Row justify="between" align="start">
-        <Stack gap="none" className="">
+        <Stack gap="none">
           <Link
             href={String(ROUTES.PUBLIC.DIGITAL_CODE_DETAIL(item.productId))}
             className="text-[length:var(--appkit-text-sm)] font-semibold text-[var(--appkit-color-text)] hover:underline line-clamp-1"
@@ -84,89 +92,74 @@ function CodeRevealRow({ item, orderId }: { item: OrderItem; orderId: string }) 
 }
 
 export default function UserDigitalCodesPage() {
-  const { user, loading: sessionLoading } = useSession();
-  const table = useUrlTable({ defaults: { pageSize: "12", sort: "-createdAt" } });
-  const search = table.get("q") ?? "";
+  // Read-only side table for the live search/sort URL state — DataListingView's
+  // own ListingToolbar writes "q"/"sort" to the same URL params. This endpoint
+  // has no server-side search (a user's own code purchases are always a small,
+  // bounded set fetched in full), so mapRows applies both client-side.
+  const sideTable = useUrlTable({ defaults: { sort: sortBy("createdAt", "DESC") } });
 
-  const { data, isLoading } = useQuery<{ items: OrderDoc[] }>({
-    queryKey: ["user-digital-codes"],
-    queryFn: () =>
-      getUserOrders(`${API_ROUTES.USER.ORDERS}?perPage=100`)
-        .then((r) => r.json())
-        .then((r) => r.data),
-    enabled: !sessionLoading && !!user,
-    staleTime: 30_000,
-  });
-
-  const codeItems = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    const result: Array<{ orderId: string; item: OrderItem }> = [];
-    for (const order of data?.items ?? []) {
-      for (const item of order.items ?? []) {
-        if (item.listingType !== "digital-code") continue;
-        if (q && !(item.productTitle?.toLowerCase().includes(q) || order.id.toLowerCase().includes(q))) continue;
-        result.push({ orderId: order.id, item });
+  const config: ListingViewConfig<OrdersResponse, CodeRow> = {
+    portal: "user",
+    title: "My Digital Codes",
+    searchPlaceholder: "Search by product or order…",
+    emptyLabel: "You haven't purchased any digital codes yet.",
+    filterKeys: [],
+    defaultSort: sortBy("createdAt", "DESC"),
+    queryKey: ["user", "digital-codes", "listing"],
+    endpoint: `${API_ROUTES.USER.ORDERS}?pageSize=50`,
+    sortOptions: SORT_OPTIONS,
+    hideTableView: true,
+    mapRows: (response) => {
+      const q = (sideTable.get("q") || "").trim().toLowerCase();
+      const sort = sideTable.get("sort") || SORT_OPTIONS[0].value;
+      const rows: CodeRow[] = [];
+      for (const order of response.items ?? []) {
+        for (const item of order.items ?? []) {
+          if (item.listingType !== "digital-code") continue;
+          if (q && !(item.productTitle?.toLowerCase().includes(q) || order.id.toLowerCase().includes(q))) continue;
+          rows.push({ id: `${order.id}-${item.productId}`, orderId: order.id, item, createdAt: order.createdAt });
+        }
       }
-    }
-    return result;
-  }, [data, search]);
-
-  const loading = sessionLoading || isLoading;
-
-  return (
-    <Stack className="w-full" gap="lg">
-      <Div>
-        <Heading level={1} className="text-[var(--appkit-color-text)]" size="2xl" weight="semibold">
-          My Digital Codes
-        </Heading>
-        {!loading && (
-          <Text variant="secondary" className="mt-0.5" size="sm">
-            {codeItems.length} code{codeItems.length !== 1 ? "s" : ""}
-          </Text>
-        )}
-      </Div>
-
-      <ListingToolbar
-        searchValue={search}
-        searchPlaceholder="Search by product or order…"
-        onSearchChange={(v) => table.set("q", v)}
-        sortValue={table.get("sort") ?? "-createdAt"}
-        sortOptions={SORT_OPTIONS}
-        onSortChange={(v) => table.set("sort", v)}
-        hideViewToggle
-        hasActiveState={!!search}
-        onResetAll={() => table.clear()}
-      />
-
-      {loading ? (
-        <Stack gap="md">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Stack padding="5" 
-              key={i}
-              className="animate-pulse border border-[var(--appkit-color-border)]" gap="3" rounded="xl"
+      rows.sort((a, b) => {
+        const diff = +new Date(b.createdAt) - +new Date(a.createdAt);
+        return sort === sortBy("createdAt", "ASC") ? -diff : diff;
+      });
+      return rows;
+    },
+    getTotal: (_response, rows) => rows.length,
+    buildFilters: () => undefined,
+    renderCards: (rows, _view, _selection, isLoading) => {
+      if (isLoading) {
+        return (
+          <Stack gap="md">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Div key={i} className="h-16 animate-pulse border border-[var(--appkit-color-border)]" rounded="xl" />
+            ))}
+          </Stack>
+        );
+      }
+      if (rows.length === 0) {
+        return (
+          <Div padding="y-6xl" className="text-center">
+            <Text variant="secondary">You haven&apos;t purchased any digital codes yet.</Text>
+            <Link
+              href={String(ROUTES.PUBLIC.DIGITAL_CODES)}
+              className="mt-3 inline-block text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-primary)] hover:underline"
             >
-              <Div className="h-4 w-1/3 bg-[var(--appkit-color-border)]" rounded="default" />
-              <Div className="h-8 w-full bg-[var(--appkit-color-border)]" rounded="default" />
-            </Stack>
-          ))}
-        </Stack>
-      ) : codeItems.length === 0 ? (
-        <Div padding="y-6xl" className="text-center">
-          <Text variant="secondary">You haven&apos;t purchased any digital codes yet.</Text>
-          <Link
-            href={String(ROUTES.PUBLIC.DIGITAL_CODES)}
-            className="mt-3 inline-block text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-primary)] hover:underline"
-          >
-            Browse digital codes
-          </Link>
-        </Div>
-      ) : (
+              Browse digital codes
+            </Link>
+          </Div>
+        );
+      }
+      return (
         <Stack gap="sm">
-          {codeItems.map(({ orderId, item }, idx) => (
-            <CodeRevealRow key={`${orderId}-${idx}`} item={item} orderId={orderId} />
+          {rows.map((row) => (
+            <CodeRevealRow key={row.id} item={row.item} orderId={row.orderId} />
           ))}
         </Stack>
-      )}
-    </Stack>
-  );
+      );
+    },
+  };
+
+  return <DataListingView config={config} />;
 }
