@@ -9,17 +9,22 @@ export function ForgotPasswordPageClient() {
   return (
     <ForgotPasswordView
       onSubmit={async (email) => {
+        // Always show the same generic message regardless of outcome —
+        // Firebase's client SDK can throw auth/user-not-found for a
+        // nonexistent email, and surfacing that raw would let an attacker
+        // enumerate registered accounts. This mirrors the no-enumeration
+        // behavior the old server-side route used to provide explicitly.
         try {
           await forgot.mutateAsync({ email });
-          showToast("Password reset email sent. Check your inbox.", "success");
         } catch (err) {
           void normalizeError(err);
-          showToast(err instanceof Error ? err.message : "Failed to send reset email.", "error");
+        } finally {
+          showToast("If an account exists for that email, a reset link is on its way.", "success");
         }
       }}
       isLoading={forgot.isPending}
-      error={forgot.error?.message ?? null}
-      success={forgot.isSuccess ? "Password reset email sent. Check your inbox." : null}
+      error={null}
+      success={forgot.isSuccess ? "If an account exists for that email, a reset link is on its way." : null}
     />
   );
 }

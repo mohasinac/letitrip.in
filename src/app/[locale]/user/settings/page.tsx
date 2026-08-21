@@ -5,9 +5,7 @@ import {
   useAuth,
   ROUTES,
   ACTIONS,
-  useChangePassword,
-  useRequestPasswordChangeOtp,
-  useVerifyPasswordChangeOtp,
+  useForgotPassword,
   useChangeEmail,
   useLinkGoogleAccount,
   useProfile,
@@ -72,21 +70,9 @@ function renderAccountTab({
   setEmailPassword,
   handleEmailSubmit,
   changeEmail,
-  currentPassword,
-  setCurrentPassword,
-  newPassword,
-  setNewPassword,
-  confirmPassword,
-  setConfirmPassword,
-  handlePasswordSubmit,
-  changePassword,
-  passwordOtpStep,
-  passwordOtpMaskedEmail,
-  otpCode,
-  setOtpCode,
-  handleOtpSubmit,
-  requestPasswordOtp,
-  verifyPasswordOtp,
+  handleSendPasswordReset,
+  isSendingPasswordReset,
+  passwordResetSent,
   googleLinked,
   googleLinkedEmail,
   onLinkGoogle,
@@ -99,21 +85,9 @@ function renderAccountTab({
   setEmailPassword: (v: string) => void;
   handleEmailSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   changeEmail: ReturnType<typeof useChangeEmail>;
-  currentPassword: string;
-  setCurrentPassword: (v: string) => void;
-  newPassword: string;
-  setNewPassword: (v: string) => void;
-  confirmPassword: string;
-  setConfirmPassword: (v: string) => void;
-  handlePasswordSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  changePassword: ReturnType<typeof useChangePassword>;
-  passwordOtpStep: "form" | "otp";
-  passwordOtpMaskedEmail: string;
-  otpCode: string;
-  setOtpCode: (v: string) => void;
-  handleOtpSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  requestPasswordOtp: ReturnType<typeof useRequestPasswordChangeOtp>;
-  verifyPasswordOtp: ReturnType<typeof useVerifyPasswordChangeOtp>;
+  handleSendPasswordReset: () => void;
+  isSendingPasswordReset: boolean;
+  passwordResetSent: boolean;
   googleLinked?: boolean;
   googleLinkedEmail?: string | null;
   onLinkGoogle: () => void;
@@ -175,49 +149,28 @@ function renderAccountTab({
       <SectionCard>
         <Accordion title="Change Password">
           <Stack gap="md" padding="t-sm">
-            {passwordOtpStep === "form" ? (
-              <Form onSubmit={handlePasswordSubmit} className="grid gap-[1rem] md:grid-cols-[1fr_240px]" align="start">
-                <Stack gap="sm">
-                  <Input id="current-password" type="password" label="Current Password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required autoComplete="current-password" />
-                  <Input id="new-password" type="password" label="New Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={8} autoComplete="new-password" />
-                  <Input id="confirm-password" type="password" label="Confirm New Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required autoComplete="new-password" />
-                  <Div>
-                    <Button type="submit" isLoading={requestPasswordOtp.isPending} size="sm">{ACTIONS.USER["update-password"].label}</Button>
-                  </Div>
-                </Stack>
-                <Text variant="secondary" className="md:mt-1" size="xs">
-                  Pick at least 8 characters. We recommend a mix of upper-case, numbers, and a symbol. We'll email a verification code to confirm it's really you before the change takes effect.
+            <Div className="grid gap-[1rem] md:grid-cols-[1fr_240px]" align="start">
+              <Stack gap="sm">
+                <Text size="sm">
+                  {passwordResetSent
+                    ? `We sent a password reset link to ${user?.email || "your email"}. Click it to choose a new password.`
+                    : `We'll email a secure reset link to ${user?.email || "your account email"}.`}
                 </Text>
-              </Form>
-            ) : (
-              <Form onSubmit={handleOtpSubmit} className="grid gap-[1rem] md:grid-cols-[1fr_240px]" align="start">
-                <Stack gap="sm">
-                  <Text size="sm">We sent a 6-digit code to {passwordOtpMaskedEmail || "your email"}.</Text>
-                  <Input
-                    id="password-otp-code"
-                    type="text"
-                    label="Verification code"
-                    value={otpCode}
-                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                    required
-                    maxLength={6}
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                  />
-                  <Row gap="sm">
-                    <Button type="submit" isLoading={verifyPasswordOtp.isPending || changePassword.isPending} disabled={otpCode.length !== 6} size="sm">
-                      Verify &amp; change password
-                    </Button>
-                    <Button type="button" variant="ghost" size="sm" onClick={() => requestPasswordOtp.mutate({ currentPassword })} isLoading={requestPasswordOtp.isPending}>
-                      Resend code
-                    </Button>
-                  </Row>
-                </Stack>
-                <Text variant="secondary" className="md:mt-1" size="xs">
-                  The code expires in 10 minutes. After changing, you stay signed in on this device; other sessions are not signed out.
-                </Text>
-              </Form>
-            )}
+                <Div>
+                  <Button
+                    type="button"
+                    onClick={handleSendPasswordReset}
+                    isLoading={isSendingPasswordReset}
+                    size="sm"
+                  >
+                    {passwordResetSent ? "Resend reset link" : ACTIONS.USER["update-password"].label}
+                  </Button>
+                </Div>
+              </Stack>
+              <Text variant="secondary" className="md:mt-1" size="xs">
+                Changing your password requires access to your email inbox — that's what proves it's really you, so nobody with only a stolen browser session can lock you out of your account. The link expires in 1 hour.
+              </Text>
+            </Div>
           </Stack>
         </Accordion>
       </SectionCard>
@@ -336,64 +289,29 @@ export default function Page() {
     },
   });
 
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordOtpStep, setPasswordOtpStep] = useState<"form" | "otp">("form");
-  const [passwordOtpMaskedEmail, setPasswordOtpMaskedEmail] = useState("");
-  const [otpCode, setOtpCode] = useState("");
+  const [passwordResetSent, setPasswordResetSent] = useState(false);
 
-  // Password change is a 3-step identity-gated flow (2026-08-20 — see
-  // appkit/src/features/auth/password-change-otp.ts): the old single POST
-  // used to apply the new password with no server-verified check beyond an
-  // active session. Step 1 (this mutation) proves current-password
-  // knowledge via Firebase reauth and emails a code; step 2 verifies the
-  // code; step 3 (changePassword below) only then actually applies it.
-  const requestPasswordOtp = useRequestPasswordChangeOtp({
-    onSuccess: (data) => {
-      setPasswordOtpMaskedEmail(data.maskedEmail);
-      setPasswordOtpStep("otp");
-      showToast(`Verification code sent to ${data.maskedEmail}.`, "success");
-    },
-    onError: (err) => {
-      showToast(err instanceof Error ? err.message : "Failed to send verification code.", "error");
-    },
-  });
-
-  const changePassword = useChangePassword({
+  // Password change is Firebase-only: it sends the same native reset-link
+  // email as "Forgot Password", to the signed-in user's own address.
+  // Completing it requires access to that inbox, which a stolen session
+  // cookie alone can't provide — the identity proof the older custom
+  // OTP-code flow existed for, achieved via inbox possession instead.
+  const sendPasswordReset = useForgotPassword({
     onSuccess: () => {
-      showToast("Password changed successfully.", "success");
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-      setOtpCode("");
-      setPasswordOtpStep("form");
+      setPasswordResetSent(true);
+      showToast("Password reset link sent — check your inbox.", "success");
     },
     onError: (err) => {
-      showToast(err instanceof Error ? err.message : "Failed to change password.", "error");
+      showToast(err instanceof Error ? err.message : "Failed to send reset link.", "error");
     },
   });
 
-  const verifyPasswordOtp = useVerifyPasswordChangeOtp({
-    onSuccess: () => {
-      changePassword.mutate({ currentPassword, newPassword });
-    },
-    onError: (err) => {
-      showToast(err instanceof Error ? err.message : "Invalid or expired code.", "error");
-    },
-  });
-
-  const handlePasswordSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) { showToast("New passwords do not match.", "error"); return; }
-    if (newPassword.length < 8) { showToast("Password must be at least 8 characters.", "error"); return; }
-    requestPasswordOtp.mutate({ currentPassword });
-  };
-
-  const handleOtpSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (otpCode.length !== 6) return;
-    verifyPasswordOtp.mutate({ code: otpCode });
+  const handleSendPasswordReset = () => {
+    if (!user?.email) {
+      showToast("Your account has no email address on file.", "error");
+      return;
+    }
+    sendPasswordReset.mutate({ email: user.email });
   };
 
   const [emailPassword, setEmailPassword] = useState("");
@@ -442,10 +360,9 @@ export default function Page() {
 
       {activeTab === "account" && renderAccountTab({
         user, newEmail, setNewEmail, emailPassword, setEmailPassword, handleEmailSubmit, changeEmail,
-        currentPassword, setCurrentPassword, newPassword, setNewPassword, confirmPassword, setConfirmPassword,
-        handlePasswordSubmit, changePassword,
-        passwordOtpStep, passwordOtpMaskedEmail, otpCode, setOtpCode, handleOtpSubmit,
-        requestPasswordOtp, verifyPasswordOtp,
+        handleSendPasswordReset,
+        isSendingPasswordReset: sendPasswordReset.isPending,
+        passwordResetSent,
         googleLinked: profile?.googleLinked, googleLinkedEmail: profile?.googleLinkedEmail,
         onLinkGoogle: () => linkGoogle.mutate(), isLinkingGoogle: linkGoogle.isLoading,
       })}

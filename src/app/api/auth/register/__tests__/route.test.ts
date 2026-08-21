@@ -5,24 +5,20 @@ const {
   mockGetUserByEmail,
   mockCreateUser,
   mockCreateCustomToken,
-  mockGenerateEmailVerificationLink,
   mockSetCustomUserClaims,
   mockCreateSessionCookie,
   mockCreateSession,
   mockUserCreateWithId,
-  mockSendVerificationEmail,
   mockFetch,
 } = vi.hoisted(() => ({
   mockApplyRateLimit: vi.fn(),
   mockGetUserByEmail: vi.fn(),
   mockCreateUser: vi.fn(),
   mockCreateCustomToken: vi.fn(),
-  mockGenerateEmailVerificationLink: vi.fn(),
   mockSetCustomUserClaims: vi.fn(),
   mockCreateSessionCookie: vi.fn(),
   mockCreateSession: vi.fn(),
   mockUserCreateWithId: vi.fn(),
-  mockSendVerificationEmail: vi.fn(),
   mockFetch: vi.fn(),
 }));
 
@@ -31,7 +27,6 @@ vi.mock("firebase-admin/auth", () => ({
     getUserByEmail: mockGetUserByEmail,
     createUser: mockCreateUser,
     createCustomToken: mockCreateCustomToken,
-    generateEmailVerificationLink: mockGenerateEmailVerificationLink,
     setCustomUserClaims: mockSetCustomUserClaims,
   })),
 }));
@@ -63,7 +58,6 @@ vi.mock("@mohasinac/appkit", () => {
     createSessionCookie: mockCreateSessionCookie,
     sessionRepository: { createSession: mockCreateSession },
     userRepository: { createWithId: mockUserCreateWithId },
-    sendVerificationEmailWithLink: mockSendVerificationEmail,
     handleApiError,
     errorResponse: (msg: string, status = 400) =>
       new Response(JSON.stringify({ success: false, error: msg }), { status }),
@@ -119,8 +113,6 @@ beforeEach(() => {
   mockGetUserByEmail.mockRejectedValue(notFoundErr);
   mockCreateUser.mockResolvedValue(newUserRecord);
   mockCreateCustomToken.mockResolvedValue("custom-token-xyz");
-  mockGenerateEmailVerificationLink.mockResolvedValue("https://verify.link/abc");
-  mockSendVerificationEmail.mockResolvedValue(undefined);
   mockCreateSessionCookie.mockResolvedValue("session-cookie-xyz");
   mockCreateSession.mockResolvedValue({ id: "session-reg-id" });
   mockUserCreateWithId.mockResolvedValue(undefined);

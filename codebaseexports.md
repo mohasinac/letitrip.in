@@ -979,9 +979,8 @@
 | useRegister | Mutation | User registration |
 | useVerifyEmail | Mutation | Email verification |
 | useResendVerification | Mutation | Resend verification |
-| useForgotPassword | Mutation | Forgot password |
+| useForgotPassword | Mutation | Forgot password — also backs "Change Password" in Settings (Firebase-native reset link; there is no separate change-password hook) |
 | useResetPassword | Mutation | Password reset |
-| useChangePassword | Mutation | Change password |
 | useChangeEmail | Mutation | Change email |
 | useLogout | Mutation | Sign out |
 | useHasRole, useIsAdmin, useIsModerator | boolean | Check user permissions |
@@ -1841,6 +1840,7 @@ All functions deploy to region `asia-south1`. HTTPS functions require `LETITRIP_
 | Function | Cron | Purpose |
 |----------|------|---------|
 | revenueRollup | daily 01:30 UTC | 2026-08-19 — pre-aggregates `{totalRevenue, deliveredOrderCount}` into the `analytics/dashboardRollup` singleton doc (`analyticsRollupRepository`), so `GET /api/admin/dashboard` reads one doc instead of scanning every `delivered` order |
+| dailyStatusDigest | daily 10:00 IST | 2026-08-21 — emails the previous 24h order summary (count, revenue, status breakdown, stuck-pending count, active listings) to `siteSettings.emailSettings.dailyDigest.recipients`/`ccRecipients`. Core: `runDailyStatusDigest` (`appkit/src/_internal/server/jobs/core/dailyStatusDigest.tsx`). **Three entry points, one implementation**: (1) this scheduled Function; (2) `POST /api/admin/daily-digest/trigger` (admin-only, on demand); (3) `runDeploymentDigest(ctx, version)` from `instrumentation.ts`'s `register()` on server start — the deploy notification. (3) is guarded by a `system/deployDigest` `lastVersion` marker claimed in a Firestore transaction, because Vercel runs `register()` on **every lambda cold start**, not once per deploy — without the marker this would be a per-cold-start email storm. Version = `VERCEL_GIT_COMMIT_SHA` (12 chars) → `VERCEL_DEPLOYMENT_ID` → package version → `"local"`. The digest arriving is itself the platform health signal |
 | auctionSettlement | every 15 minutes (UTC) | Settle expired auctions + notify winners |
 | pendingOrderTimeout | every 2 hours | Cancel pending COD orders past timeout (skips any order with `paymentDeadline` set — that's `paymentWindowTimeout`'s domain — and now calls `restoreStockForOrder()`, Tier PP 2026-08-18) |
 | paymentWindowTimeout | every 5 minutes | Tier PP (2026-08-18) — transactionally cancel manual/cash/EMI orders whose 15-min `paymentDeadline` passed with no proof uploaded; `restoreStockForOrder()` |

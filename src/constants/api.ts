@@ -106,7 +106,6 @@ const USER_LETITRIP = {
   NOTIFICATION_BY_ID: (id: string) => `/api/user/notifications/${id}`,
   NOTIFICATIONS_READ_ALL: "/api/user/notifications/read-all",
   NOTIFICATION_PREFERENCES: "/api/user/notification-preferences",
-  CHANGE_PASSWORD: API_ENDPOINTS.ACCOUNT.CHANGE_PASSWORD,
   OFFERS: "/api/user/offers",
   EVENTS: "/api/user/events",
   REVIEWS: API_ENDPOINTS.ACCOUNT.REVIEWS,
