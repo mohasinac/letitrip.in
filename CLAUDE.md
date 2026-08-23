@@ -1326,6 +1326,24 @@ Prefer props over raw className for these concerns. `className` is the escape ha
 
 > Track A — every Firebase function is declared once as a typed `FunctionDefinition` record. There is no manual `bindToFirebase.{schedule,documentCreated,https}` call in consumer code.
 
+### Runtime & dependency floors (updated 2026-08-23)
+
+| Where | Node | firebase-admin | firebase-functions |
+|---|---|---|---|
+| `functions/` (Cloud Functions) | **22** | `^14.3.0` | `^7.3.2` |
+| Root Next.js app | 22 (Vercel) | **`^13.10.0`** — see below | n/a |
+| `appkit` peer range | `>=22` | `^13.6.1 \|\| ^14.3.0` | `^7.3.2` |
+
+**The runtime lives in `functions/package.json` → `engines.node`.** `firebase.json` declares no runtime key, so that field is the single source of truth. Node 20 was deprecated 2026-04-30 and decommissions **2026-10-30**; the move to 22 was forced by that date and by `firebase-admin@14` requiring `node >=22`.
+
+**`functions/tsup.config.ts` → `target` must track `engines.node`.** It is esbuild's downlevel level; left behind the runtime it emits older syntax than the deployed Node runs natively. Both say `22` today.
+
+**The admin-version split between functions and the app is deliberate, not drift** — see Recurrent Root Cause #69. Do not "align" them without reading it first; doing so took production down.
+
+**Deploying functions from this machine needs `FUNCTIONS_DISCOVERY_TIMEOUT=120`.** The bare `npm run firebase deploy -- --only functions` fails with `Cannot determine backend specification. Timeout after 10000`. This is environmental, not a code fault — verify by timing `node -e "require('./lib/index.js')"` in `functions/`, which loads in well under a second warm. (A cold run immediately after a fresh tsup build can take ~13s reading the 2.3 MB bundle off disk; re-run before concluding anything.)
+
+**Going to Node 24 later** needs the *global* `firebase-tools` upgraded first — 14.21.0 supports up to `nodejs22` only (its `runtimes/supported/types.js` enumerates the list). Confirm GCP offers `nodejs24` for 2nd-gen functions in `asia-south1` before committing.
+
 **Pattern**:
 
 ```ts
@@ -1408,6 +1426,8 @@ return successResponse({ jobId, customToken }, "Job started");
 **Refresh — every 4 hours, distinct from the daily cleanup above.** `testerSandboxRefresh` (Firebase Function, `appkit/src/_internal/server/jobs/core/testerSandboxRefresh.ts`, `runTesterSandboxRefresh(ctx)`) reverts every *still-live* sandbox fixture (`categories`/`stores`/`products`/`blogPosts`/`events` where `isTestData:true`, plus the sandbox `bids`) back to its canonical seeded shape via `merge:true` upserts, and deletes any `isTestData` doc not in the known seed-id set — i.e. a tester-created extra (cloned product, new bid) rather than an edit to an existing fixture. Added 2026-08-21 because multiple testers sharing one live sandbox could edit or bid on a fixture and pollute it for the next tester until the 7-day TTL cleanup happened to catch it — this closes that gap without waiting on expiry. Scoped to the tester sandbox only; the permanent Beyblade catalog is never touched by either job. The tester-sandbox auction fixtures (`products-tester-seed-data.ts`) are staggered 1h/2h/3h-out (`auction-tester-sandbox-cycle-{1,2,3}`, generated from a loop, plus the always-ended `auction-tester-sandbox-won`) so this 4-hour cycle reliably lets testers watch a live auction actually end mid-session.
 
 **Known gap**: `npm run check` does not run an actual `next build`, so it cannot catch Turbopack-level bundling regressions (e.g. a `node:module`-importing file becoming reachable from a client chunk). If touching anything in this tier's import chain, also run a real `npm run build` before calling a change done.
+
+**And a real `next build` is itself not sufficient** — a bundling-adjacent fault can still be invisible until the code actually *runs* in a Lambda. Root Cause #69 passed `tsc`, `npm run check` and a full production build, then 500'd every route in production. That class is caught only by the post-deploy smoke test in `scripts/deploy.mjs` (§ "Deploy to Vercel Production"). Three gates, each catching what the previous cannot: `check` → `build` → smoke.
 
 **Feedback export — one Markdown report, two consumers.** `TesterChecklistResponseRepository.getMarkdownReport(siteOrigin)` (2026-08-17) is the single source of the export shape: it joins every answered response against the `testerChecklistItems` catalog for readable labels, then groups into an **Issues** section (every `"no"` answer — checkbox list with tester name, comment, screenshot link, deep link, review status) and a **Notes on passing cases** section (every `"yes"` that still left a comment — usually styling/readability feedback). `node appkit/scripts/export-tester-feedback.mjs` (`npm run tester:export-feedback`) mirrors this exact logic as a standalone CLI, writing `tester-feedback-report.md` at the repo root (gitignored) for a human or a future Claude session to `Read` directly — no live Firestore query needed. `GET /api/admin/tester-feedback/export` streams the same Markdown as a download via the "Download Report" button on `AdminTesterFeedbackView` (`ACTIONS.ADMIN["export-tester-feedback"]`). **When changing the report shape, update both** — the CLI script and `getMarkdownReport()` must stay in sync; there is no single shared implementation between the two runtimes (Node CLI vs. an appkit repository method invoked from a Next.js route).
 
@@ -1661,10 +1681,17 @@ node scripts/wait-for-indexes.mjs
 ### 4 — Firebase Functions (if functions/ changed)
 
 ```bash
-npm run firebase deploy --only functions
+# Rebuild the bundle FIRST if appkit changed — functions/lib is a tsup
+# snapshot that inlines appkit and does not track it (Root Cause #64).
+npm --prefix ./functions run build
+node -e "require('./functions/lib/index.js')"   # must load
+
+FUNCTIONS_DISCOVERY_TIMEOUT=120 npm run firebase deploy -- --only functions
 ```
 
-Confirm no `MODULE_NOT_FOUND` in cold-start logs after deploy.
+`FUNCTIONS_DISCOVERY_TIMEOUT` is required on this machine — without it the CLI fails with `Cannot determine backend specification. Timeout after 10000` before uploading anything. Environmental, not a code fault.
+
+Confirm the log lines read `updating Node.js 22 (2nd Gen) function …` with no deprecation warning, and no `MODULE_NOT_FOUND` in cold-start logs. A deployed HTTPS function returning **401** is healthy — it means the module loaded and the auth gate ran; **500** means it failed to load.
 
 ### 5 — Smoke Test
 
@@ -1680,7 +1707,13 @@ Must exit 0.
 node scripts/deploy.mjs
 ```
 
-Pre-flight checks: lockfile resolves from npm registry, `tsconfig.json` excludes `appkit/src/**`, `npm run check` passes. Then deploys via `vercel --prod`.
+Pre-flight checks: lockfile resolves from npm registry, `tsconfig.json` excludes `appkit/src/**`, `npm run check` passes. Then deploys via `vercel --prod --archive=tgz`.
+
+**Then it smoke-tests production and fails the command if the site is broken** (added 2026-08-23). It requests `/`, `/en/products` and `/api/site-settings` against `SMOKE_ORIGIN` (default `https://letitrip.in`), retrying 3× with backoff so alias propagation isn't mistaken for a failure. Any non-2xx/3xx exits 1 with the rollback command.
+
+This exists because **a green build is not proof the site runs**. Recurrent Root Cause #69: a deployment Vercel reported as `readyState: READY` served 500 on *every* route, because the failure was at Lambda module load — after the build, invisible to `npm run check` and to `next build`. It was caught only by requesting a page. Never treat `READY` as success; the smoke test now enforces that automatically.
+
+To point it at a preview deployment instead: `SMOKE_ORIGIN=https://<deployment>.vercel.app node scripts/deploy.mjs`.
 
 ### 7 — Update Index Files
 

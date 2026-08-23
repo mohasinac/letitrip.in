@@ -220,4 +220,74 @@ const deploy = spawnSync("vercel", ["--prod", "--archive=tgz"], {
   shell: true,
 });
 
-process.exit(deploy.status ?? 0);
+if ((deploy.status ?? 0) !== 0) {
+  console.error(red(bold("\nvercel --prod failed — skipping smoke test.")));
+  process.exit(deploy.status ?? 1);
+}
+
+// ─── POST-DEPLOY SMOKE TEST ──────────────────────────────────────────────────
+//
+// A green build is NOT proof the site runs. Recurrent Root Cause #69: shipping
+// firebase-admin 14 produced a deployment Vercel reported as `readyState:
+// READY` while EVERY route 500'd, because a CommonJS transitive require()'d an
+// ESM-only package. That failure happens at Lambda module load — after the
+// build, outside anything `npm run check` or `next build` can observe. It was
+// only caught by requesting a page.
+//
+// So: request real pages, and fail loudly if production is broken.
+section("Post-deploy smoke test");
+
+const SMOKE_ORIGIN = process.env.SMOKE_ORIGIN ?? "https://letitrip.in";
+// One SSR page, one dynamic listing page, and one API route that exercises the
+// firebase-admin import chain — the exact path #69 broke.
+const SMOKE_PATHS = ["/", "/en/products", "/api/site-settings"];
+const SMOKE_ATTEMPTS = 3;
+const SMOKE_BACKOFF_MS = 5000;
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function probe(url) {
+  try {
+    const res = await fetch(url, { redirect: "follow" });
+    return { status: res.status, ok: res.status >= 200 && res.status < 400 };
+  } catch (err) {
+    return { status: 0, ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+}
+
+let smokeFailed = false;
+for (const path of SMOKE_PATHS) {
+  const url = `${SMOKE_ORIGIN}${path}`;
+  let result;
+  // Retry: the alias can take a moment to point at the new deployment, so a
+  // single failed probe is not yet evidence the deploy is bad.
+  for (let attempt = 1; attempt <= SMOKE_ATTEMPTS; attempt++) {
+    result = await probe(url);
+    if (result.ok) break;
+    if (attempt < SMOKE_ATTEMPTS) await sleep(SMOKE_BACKOFF_MS * attempt);
+  }
+  if (result.ok) {
+    pass(`${path} → ${result.status}`);
+  } else {
+    smokeFailed = true;
+    console.error(red(`✗ ${path} → ${result.status || "no response"}${result.error ? ` (${result.error})` : ""}`));
+  }
+}
+
+if (smokeFailed) {
+  console.error(
+    red(
+      bold(
+        "\nDEPLOY IS LIVE BUT BROKEN — production is serving errors.\n" +
+          "  Inspect:  vercel logs <deployment-url>\n" +
+          "  Restore:  vercel rollback <previous-deployment-url> --yes\n" +
+          "  A build that succeeds can still fail at Lambda module load; see\n" +
+          "  Recurrent Root Cause #69 in CLAUDE.md.",
+      ),
+    ),
+  );
+  process.exit(1);
+}
+
+console.log(green(bold("\nDeployed and verified serving.")));
+process.exit(0);
