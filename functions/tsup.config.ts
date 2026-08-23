@@ -4,7 +4,10 @@ import path from "node:path";
 export default defineConfig({
   entry: ["src/index.ts"],
   format: ["cjs"],
-  target: "node20",
+  // Must track functions/package.json engines.node — this is the syntax level
+  // esbuild downlevels to, and leaving it behind the runtime emits older
+  // JS than the deployed Node can natively run.
+  target: "node22",
   platform: "node",
   outDir: "lib",
   clean: true,
