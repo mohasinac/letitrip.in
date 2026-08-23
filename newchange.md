@@ -76,6 +76,14 @@ Started from the deploy warning `Runtime Node.js 20 was deprecated on 2026-04-30
 
 **Also noted**: a cold `require()` of the freshly-built 2.3 MB Functions bundle takes ~13s and looks exactly like a regression; warm it is ~800ms. Re-run before concluding anything from that number.
 
+**Follow-up in the same session — the lesson turned into automation, plus a concurrent-session collision.**
+
+`scripts/deploy.mjs` now smoke-tests production after `vercel --prod` and exits 1 if the site is serving errors (`/`, `/en/products`, `/api/site-settings`; 3 retries with backoff so alias propagation isn't mistaken for failure; `SMOKE_ORIGIN` overridable; prints the rollback command on failure). Verified against the live site including a negative control. CLAUDE.md gained a runtime/dependency-floor table on the Functions section (where the Node 22 pin actually lives, the deliberate admin 13-vs-14 split, `tsup target` tracking `engines.node`, the `FUNCTIONS_DISCOVERY_TIMEOUT` requirement, what Node 24 would need), a corrected End-of-Plan Functions step, and a note that a real `next build` is **also** insufficient — three gates now stack: `check` → `build` → smoke.
+
+**A second Claude session was live in the same working tree throughout this stretch**, and it cost real time. The gate went red twice on code that wasn't this session's: first a type error in their new `SectionForm.tsx` (which they fixed mid-run), then `audit-quick-form-drawer-schema` on their `entity-form.ts`. Everything was verified per-file rather than assumed — root typecheck and audits were run in isolation to prove this session's work was clean while appkit was broken. Staging was done strictly per-file, never `git add -A`; despite that, their commit `59e57bdb5` still swept in this session's `codebaseexports.md` / `newchange.md` / `index.md` / `src/index.md`, because a bare `git commit` picks up whatever is in the index. Content is intact, only the commit message is misattributed — not worth rewriting shared history over. **Deployment was deliberately NOT run**: `vercel --prod` uploads the working tree, which still held ~6 files of their uncommitted work, and shipping that is precisely how this session's earlier outage happened.
+
+One genuine defect was found and fixed while chasing the red gate: `audit-unknown-leakage` is line-based with no comment handling, so a JSDoc line in their `stores/adapters.ts` explaining why `Record<string, unknown>` is deliberately *not* used failed a strict-zero audit. Fixed at the audit (skip comment-only lines, block-comment state tracked), matching the precedent CLAUDE.md already documents for `audit-sieve-date-fields`; unit-tested that real code violations are still caught.
+
 ---
 ### S-whatsapp-enable — WhatsApp credentials wiring, catalog import as async job, seller brand fix, tester cases (2026-08-22)
 

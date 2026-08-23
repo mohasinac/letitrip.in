@@ -2064,4 +2064,4 @@ Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 Three appkit audits run directly from the consumer dispatcher (separate from the `appkit` npm-prefix entry that runs the chain):
 - `appkit/scripts/audit-catch-normalize.mjs`
 - `appkit/scripts/audit-route-schema-registry.mjs`
-- `appkit/scripts/audit-unknown-leakage.mjs` — **closed strict-0** (W18 complete 2026-06-17: 992 → 0)
+- `appkit/scripts/audit-unknown-leakage.mjs` — **closed strict-0** (W18 complete 2026-06-17: 992 → 0). **2026-08-24**: now skips comment-only lines (block-comment state tracked). The scan is line-based, so any docstring that *mentioned* `Record<string, unknown>` — typically to explain why it is deliberately NOT used — failed the audit and blocked `npm run check` for everyone. Mirrors the comment-stripping `audit-sieve-date-fields` and `audit-status-color-pairs` already do; real code violations are unaffected.
