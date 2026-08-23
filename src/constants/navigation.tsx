@@ -119,6 +119,7 @@ export const FOOTER_LINK_GROUPS = [
       { label: "Contact Us",    href: String(ROUTES.PUBLIC.CONTACT)     },
       { label: "Track Order",   href: String(ROUTES.PUBLIC.TRACK_ORDER) },
       { label: "About Us",      href: String(ROUTES.PUBLIC.ABOUT)       },
+      { label: "Our Ethics",    href: String(ROUTES.PUBLIC.ETHICS)      },
       { label: "Developer",     href: String(ROUTES.PUBLIC.DEVELOPER)   },
       { label: "Scam Registry", href: String(ROUTES.PUBLIC.SCAMS)       },
       { label: "Item Requests", href: String(ROUTES.PUBLIC.ITEM_REQUESTS) },
@@ -153,6 +154,7 @@ export const FOOTER_LINK_GROUPS = [
     heading: "Legal",
     links: [
       { label: "Terms of Service",  href: String(ROUTES.PUBLIC.TERMS)           },
+      { label: "Code of Conduct",   href: String(ROUTES.PUBLIC.CODE_OF_CONDUCT) },
       { label: "Privacy Policy",    href: String(ROUTES.PUBLIC.PRIVACY)         },
       { label: "Cookie Policy",     href: String(ROUTES.PUBLIC.COOKIE_POLICY)   },
       { label: "Refund Policy",     href: String(ROUTES.PUBLIC.REFUND_POLICY)   },

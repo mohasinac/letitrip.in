@@ -17,6 +17,7 @@
 
 | Date | Task | What was deferred / skipped | Status | Fix target |
 |------|------|-----------------------------|--------|------------|
+| 2026-08-24 | S-ethics-conduct | `ShippingPolicyView` never reads `siteSettings.legalPages.shipping` — it is i18n-only, unlike its five `PolicyPageView` siblings. The admin Legal tab has always offered a "Shipping Policy" textarea whose value nothing renders (write-only field). Left alone this session: `ShippingPolicyView` is a bespoke view, not a `PolicyPageView` shim, so wiring it is a real change rather than a one-line registry entry. | ⏳ Open | Either add `shipping` to `POLICY_META` and convert the page to a shim, or read `legalPages.shipping` inside `ShippingPolicyView` |
 | 2026-05-10 | CSS import rule | `@import "@mohasinac/appkit/styles"` in globals.css caused Turbopack PostCSS crash ("Unknown AST node type 0"). Fixed: import via JS in layout.tsx instead. Rule: never @import pre-compiled node_modules CSS through globals.css — use JS imports only. | ✅ Fixed | Ongoing rule |
 | 2026-05-08 | A3/VA6 + A4/VA4 | Session 70 added `/admin/blog/new/`, `/admin/blog/[id]/`, `/admin/coupons/new/`, `/admin/coupons/[id]/` alongside existing `[[...action]]` catch-alls — creates Next.js "same specificity" route collision error. Multiple other admin routes likely affected (products, bids, carousel, categories, orders, reviews, sections, users). | ✅ Fully resolved Session 88 — all 10 remaining `[[...action]]` catch-all folders removed from admin routes; dedicated `/page.tsx` list pages created for each. Zero catch-alls remain. | RC4 ✅ |
 | 2026-05-08 | SP1/P10 | Seed data source-of-truth policy formalised: SeedPanel SP1/P10 documentation (slugPattern, mediaFields, PII fields, column metadata) is canonical for all 23 collections. Seed files must be updated in-session with any schema change. P23–P31 sessions expand counts only. | ✅ Policy adopted — no code change needed | Noted in prompt.md + crud-tracker.md |
@@ -38,6 +39,63 @@
 ---
 
 ## SESSION LOG (newest first)
+
+---
+### S-ethics-conduct — /ethics + /code-of-conduct pages, expanded About values, three-way `legalPages` drift fixed (2026-08-24)
+
+Started as a question about `TABLE_KEYS.LIVE_SEX` — **not a defect**: it's the biological sex of a live animal/plant on a `listingType:"live"` listing (`liveSex` facet → Male/Female/Unknown; seller field `"male"|"female"|"unknown"|"n/a"`; fixtures are a Golden Retriever, a Bearded Dragon, a juniper bonsai). The type is already gated by `vendorVerified`, `jurisdictionAllowed[]`, and `cites?`. No change made there. The follow-up ask — "add a moral page as well as value pages" — is the actual work.
+
+**Shipped**: `/ethics` (platform commitments) and `/code-of-conduct` (rules for users) as `PolicyPageView` shims, admin-overridable + i18n fallback like their four siblings; the About page's Values section expanded from 3 to 6 values with a subtitle, an optional per-value `detail` paragraph, and a link through to `/ethics`. Footer entries in the same commit (Support → "Our Ethics", Legal → "Code of Conduct"). No new API route — `PUT /api/admin/site` validates with a permissive `z.record`.
+
+**`PolicyPageView` was refactored before extending it, not after.** It carried *three* parallel hand-written enumerations of its own policy union — `namespaceMap`, `firestoreFieldMap`, and an inline `policyPath` literal inside the related-links filter — so going 4→6 by hand would have been Root Cause #61 in miniature. All three collapsed into one `POLICY_META: Record<PolicyKey, {path, namespace, firestoreField, relatedLabelKey}>`, with `relatedLinks` derived from it. A seventh policy is now one entry, and omitting it is a compile error.
+
+**That refactor exposed a three-way `legalPages` drift, one leg of which was a live bug.** The TS type declared `termsOfService`/`privacyPolicy`/`shippingPolicy` — names **no** reader or writer had ever used — while admin-write and public-read both agreed on `terms`/`privacy`/`cookies`/`refundPolicy`/`shipping`. The `(settings as any)` cast in `PolicyPageView` is why `tsc` never saw it. Fixing the type immediately failed the build on `site-settings-seed-data.ts`, which had been written against the *wrong* type — and its one key that **did** match a real reader, `refundPolicy`, held a TipTap `JSON.stringify({type:"doc",…})` document that `PolicyPageView` injects through `dangerouslySetInnerHTML`. **`/refund-policy` had been rendering a wall of raw JSON in production.** All seven keys are now seeded as empty strings (empty = fall back to the i18n copy, which every page already ships) with the format contract recorded inline. The `as any` cast is gone, so the read path is type-checked from here on.
+
+**Also fixed**: `PUT /api/admin/site` only revalidated `/`, while the policy and about pages set `revalidate = 3600` — so an admin edit to any legal page was invisible for up to an hour and the editor looked broken. It now busts all nine affected paths.
+
+**Not fixed, deliberately**: `ShippingPolicyView` still never reads `legalPages.shipping` (i18n-only), so that admin field remains write-only. Out of scope for this session — logged in DEFERRED.
+
+**Verification**: `tsc` clean in both repos; every audit downstream of the pre-existing `unknown-leakage` failure run individually and passing, including `nav-page-wiring`, `tester-checklist-hrefs`, and `functions-bundle-freshness` (the functions bundle was rebuilt after `appkit/dist`, per Root Cause #64). Eslint 0 errors. 8 new tester-checklist cases covering both pages, the self-excluding related-links footer, the admin HTML override round-trip, the expanded values section, and a regression case for the raw-JSON refund page.
+
+---
+### S-node22-deps — Cloud Functions Node 20→22, Firebase majors, dependency sweep; prod outage + rollback (2026-08-23)
+
+Started from the deploy warning `Runtime Node.js 20 was deprecated on 2026-04-30 and will be decommissioned on 2026-10-30`, plus "see if there is anything new for rest of the dependencies… start from appkit then move to the functions then to the letitrip".
+
+**The Node bump and the Firebase major turned out to be one change, not two** — `firebase-admin@14.3.0` declares `engines.node: ">=22"`, so admin 14 cannot be taken without the runtime move. Target was `nodejs22`, not 24: the *global* `firebase-tools@14.21.0` enumerates support only up to `nodejs22`, and 22 already matched CI (`node-version: "22"`), local (v22.17.0) and Vercel. Node 24 deferred by the user.
+
+**Two upgrades were excluded on evidence, not caution.** `@typescript-eslint@8.67.0` (still `latest`) declares `typescript: ">=4.8.4 <6.1.0"`, so TS 6.1+ breaks the lint stage of `npm run check` — TypeScript stays 5.9.3. `@types/node` stays `^22` because it tracks the Node major line, so `^22` is *correct* for a Node 22 target rather than stale. Zod: the root app was found to be **already on zod 4**; only appkit's 102 import sites remain on 3, and the two coexist because `createRouteHandler` duck-types on `.safeParse`.
+
+**Shipped**: functions `engines.node` 20→22 (the field Cloud Functions actually reads — `firebase.json` has no runtime key) and `tsup.config.ts` `target` node20→node22; firebase-functions 6→7 (surface is 8 files, 100% v2 API, and every `v2/*` subpath used survives in v7); sharp 0.33→0.35, file-type 21→22, pdfkit 0.15→0.20, next 16.3.2, eslint 9→10 across appkit+functions, plus next-intl/react-query/resend/lucide/vitest/concurrently. appkit 4.12.4 → 4.13.0 → 4.13.1.
+
+**Production went down for ~10 minutes.** Deploying the app on `firebase-admin@14` made **every route 500**, including `/`. Cause: admin 14 bumps `jwks-rsa ^3→^4`, `jwks-rsa@4` depends on `jose@6` which is pure ESM, and `jwks-rsa` is CommonJS and `require()`s it. Local Node 22.17 resolves that via native `require(esm)`, so `npm run check`, `tsc` **and a full `next build` all passed** — the failure is inside Turbopack's `externalImport` on the Lambda, at module load, *after* Vercel reports `readyState: READY`. Caught by the post-deploy check, rolled back via `vercel rollback`, prod back to 200 before continuing. Cloud Functions were unaffected (Google's `nodejs22` handles `require(esm)`; deployed functions return 401 = module loaded + auth gate ran, not 500). Resolution is a deliberate split: functions keep admin 14, the app steps back to `^13.10.0`, appkit's peer range widened to `^13.6.1 || ^14.3.0`. Written up as **Recurrent Root Cause #69**.
+
+**The lesson generalised into automation.** `scripts/deploy.mjs` now smoke-tests production after `vercel --prod` and exits 1 if it is serving errors — `/`, `/en/products`, `/api/site-settings`, 3 retries with backoff, `SMOKE_ORIGIN` overridable. A green build is not proof the site runs; three gates now stack, each catching what the previous cannot: `check` → `build` → smoke.
+
+**Verified beyond the gate** (because the gate demonstrably could not catch this class): real production build, sharp 0.35.3/libvips 8.18.3 composite+webp round-trip, file-type 22 magic-byte detection, pdfkit 0.20 PDF header, Functions bundle loading ~850ms warm, and all public routes + one firebase-admin-backed API returning 200 post-deploy.
+
+**Also noted**: a cold `require()` of the freshly-built 2.3 MB Functions bundle takes ~13s and looks exactly like a regression; warm it is ~800ms. Re-run before concluding anything from that number.
+
+---
+### S-whatsapp-enable — WhatsApp credentials wiring, catalog import as async job, seller brand fix, tester cases (2026-08-22)
+
+Started from "enable whatsapp setup in the site setting and let me know what information do i need… i have whatsapp with my number but as a business account so need a way to sync both properly", plus tester cases for seller coupons / custom brands / custom categories / multi-image / video, "and all of this should work. and properly behave".
+
+**WhatsApp turned out to be ~90% built already** — admin Site Settings tab ⑬, Meta Cloud API text+template senders, the `whatsappNotify` job with retry + circuit breaker, checkout OTP, catalog push and import were all real, not stubs. An initial suspicion that the settings PATCH was stripping the Cloud API fields (its zod `credentials` object omits them) was **checked and disproved**: the admin UI PUTs `/api/admin/site`, whose schema is `z.record(z.string(), z.unknown())`. No bug there.
+
+**Three real defects fixed.** (1) `onOrderCreate` read `ctx.env()` only, so credentials saved in Site Settings never reached the order-placed announcement — now resolves DB-first via the existing `resolveKeys()`, guarding `PLACEHOLDER` values the way the checkout OTP path does. (2) Catalog push sent a **relative** `/products/{slug}` link that Meta rejects — now absolute via `SITE_URL`. (3) Seller inline "+ Create new brand" was a hard 403 for every seller: `src/app/api/admin/brands/route.ts` allowed `ROLES_STORE_WRITE` with a comment saying sellers may create brands, while `createBrandAction` hardcoded `requireRoleUser("admin")` and `requireRole` is an exact-match allowlist with no hierarchy.
+
+**Catalog import moved to the Async Job Primitive.** The route ran up to 2 Firestore reads + 1 write *per item* sequentially for up to 250 items — a Rule #6 timeout risk well before its own cap — and declared `paging.next` in its response type without ever following it. The new `whatsappCatalogImport` runner follows pagination under the Function's 300s budget, caps at 40 pages defensively, and resolves existing slugs with **one** `findByStore` read instead of 2N. Seller UI subscribes via the existing `useBulkEvent` channel.
+
+**One planned change was dropped after verifying it wasn't a bug.** Seller-created categories omit `categoryType`, which looked like Root Cause #58 — but all 10 seeded listing categories omit it too, so a new category behaves identically to every existing one. Setting it on new rows only would have *created* the inconsistency. What was real: CLAUDE.md documented the union as `"listing" | "brand" | "bundle"`, and there is no `"listing"` value (`"category" | "sublisting" | "brand" | "bundle"`); the create payload is cast `as any`, so a future session following the doc would have written garbage silently. Doc corrected instead.
+
+**Seeded** the platform WhatsApp number (`918919665811`) into `whatsappAdminNotifyNumbers` and default Meta template names (`order_placed`, `order_confirmed`, `order_shipped`, `order_delivered`, `order_cancelled`, `refund_initiated`, `en`) — matching `WHATSAPP_TEMPLATE_BY_TYPE`. `whatsappPhoneNumberId`/`whatsappCloudApiToken` deliberately left **empty**: a placeholder there would be treated as a usable token and fail on send, whereas empty makes the code log "not configured" and skip cleanly. Before writing, existing credentials were read and confirmed all placeholder/empty, so nothing real was destroyed — note a reseed *does* overwrite `siteSettings.credentials` (raw `merge:true` write at `seed-cli.mjs:628`, bypassing the encrypting repository).
+
+**21 tester cases added** covering the inline brand/category quick-create (the only path a seller has — there is no `/store/brands` route), coupon scope + stacking, gallery reorder/remove/crop, both video sources, and WhatsApp settings persistence.
+
+**Also hit**: the Windows `file:` resync gotcha (Root Cause #28) — `appkit/dist` had the new seed values while `node_modules/@mohasinac/appkit/dist` still had the old ones. Caught by diffing before seeding; unnoticed it would have silently written stale data and reported success.
+
+Shipped as appkit 4.12.4 + Firebase functions + Vercel.
 
 ---
 ### S-wire-audit-ship — Six dead listing controls, admin EMI review, fee semantics; full ship (2026-08-21)

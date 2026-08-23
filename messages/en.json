@@ -2000,12 +2000,26 @@
     "howBiddersTitle": "For Bidders",
     "howBiddersText": "Join live auctions on PSA-graded cards, first-edition sets, limited-run figures, and retired die-cast models. Set auto-bid limits and let the engine fight for you — every win is final and fully protected.",
     "valuesTitle": "Our Values",
+    "valuesSubtitle": "Six things we hold to. Each one is backed by something the platform actually enforces — not a slogan we liked the sound of.",
+    "valuesLinkLabel": "How we hold ourselves to this →",
     "valuesTrust": "Authenticity First",
     "valuesTrustText": "Fake listings and counterfeit products have no place here. Our scam registry, seller verification, and community reporting systems keep the marketplace clean and trustworthy.",
+    "valuesTrustDetail": "A confirmed counterfeit means the listing comes down, the buyer is refunded in full, and the seller loses their account — permanently.",
     "valuesCommunity": "Collector Community",
     "valuesCommunityText": "LetItRip is built around the people who live and breathe this hobby. We host tournaments, meetups, and events that bring the community together — online and in person across India.",
+    "valuesCommunityDetail": "Disputes are settled by people who know the difference between edge wear and a crease, because getting grading arguments right matters to collectors.",
     "valuesInnovation": "Built for the Hobby",
     "valuesInnovationText": "Every feature we ship is shaped by feedback from real collectors. From auction mechanics to grading documentation and scam protection — we build what the community actually needs.",
+    "valuesInnovationDetail": "Auctions auto-extend by five minutes on a late bid, so a win is decided by what you were willing to pay rather than by your connection speed.",
+    "valuesFairPricing": "Fair Pricing, Stated Fees",
+    "valuesFairPricingText": "Every charge is itemised on the cart and checkout summary before you pay, and the figure you are shown is the figure taken. Optional add-ons are opt-in and never pre-ticked.",
+    "valuesFairPricingDetail": "Our commission is capped rather than open-ended, so the platform's cut cannot balloon on a high-value grail.",
+    "valuesResponsible": "Responsible Listings",
+    "valuesResponsibleText": "Some things should not be sold carelessly. Prohibited items are removed, and the small number of live animal and plant listings we permit carry duties that ordinary parcels do not.",
+    "valuesResponsibleDetail": "A live listing requires seller verification, declared species and care needs, a lawful-destination check at checkout, CITES paperwork where it applies, and in-person or specialist transport — never ordinary parcel post.",
+    "valuesPrivacy": "Privacy by Default",
+    "valuesPrivacyText": "Public pages show only what the marketplace needs to stay trustworthy. Your personal details are not part of that.",
+    "valuesPrivacyDetail": "Bidder names are masked in public bid history, personal data is encrypted at rest, and payment proof screenshots are visible to administrators only — never to the seller.",
     "milestonesTitle": "Our Journey",
     "milestoneFounded": "Launched as India's first dedicated collectibles marketplace — focused on Pokémon TCG, Hot Wheels, and anime figures from day one",
     "milestoneAuctions": "Introduced real-time auctions with auto-bid support, starting with PSA-graded Pokémon and rare Yu-Gi-Oh! singles",
@@ -2029,6 +2043,8 @@
     "relatedTerms": "Terms of Service",
     "relatedCookies": "Cookie Policy",
     "relatedRefund": "Refund Policy",
+    "relatedEthics": "Our Ethics",
+    "relatedConduct": "Code of Conduct",
     "sections": [
       {
         "heading": "1. Acceptance of Terms",
@@ -2108,6 +2124,8 @@
     "relatedTerms": "Terms of Service",
     "relatedCookies": "Cookie Policy",
     "relatedRefund": "Refund Policy",
+    "relatedEthics": "Our Ethics",
+    "relatedConduct": "Code of Conduct",
     "sections": [
       {
         "heading": "1. Information We Collect",
@@ -3671,6 +3689,110 @@
     "verifying": "Verifying...",
     "verify": "Verify Phone Number"
   },
+  "ethics": {
+    "title": "Our Ethics",
+    "lastUpdated": "Last updated: 24 August 2026",
+    "intro": "This page describes what LetItRip commits to as a platform. Every commitment below corresponds to something the platform actually does — a check we run, a gate we enforce, or a limit we hold ourselves to — not an aspiration. Where a commitment has an exception, we state the exception. If we ever fall short of what is written here, tell us at conduct@letitrip.in and we will correct the page or the behaviour.",
+    "relatedTitle": "Related Policies",
+    "relatedPrivacy": "Privacy Policy",
+    "relatedTerms": "Terms of Service",
+    "relatedCookies": "Cookie Policy",
+    "relatedRefund": "Refund Policy",
+    "relatedEthics": "Our Ethics",
+    "relatedConduct": "Code of Conduct",
+    "sections": [
+      {
+        "heading": "1. Authenticity is the entire product",
+        "body": "A collectibles marketplace that tolerates fakes is worthless to collectors. Counterfeit and replica trading cards, reproduction vintage die-cast sold as originals, bootleg figures, and anything infringing Pokemon, Bandai, Hasbro, Mattel, or Takara Tomy trademarks are prohibited outright — not discouraged, prohibited. We remove the listing and permanently suspend the seller's account. We do not take a commission on a sale we later find to be counterfeit; the buyer is refunded in full. Our public scam registry exists so that a seller who defrauds one collector cannot quietly do it again to the next."
+      },
+      {
+        "heading": "2. Honest condition, honest grading",
+        "body": "Sellers must describe condition accurately and photograph the actual item being sold — not a stock image, not a better-condition example of the same item. Professionally graded items (PSA, BGS, CGC) must display the exact grade and, where available, the slab population data. Restoration, repair, trimming, reprints, and reproduction parts must be disclosed in the listing body, not buried or omitted. A listing that hides a known flaw is a misdescription and is handled as one, whatever the seller's intent."
+      },
+      {
+        "heading": "3. Auctions that are not rigged",
+        "body": "Every bid is binding and every bidder is bidding against real people. Shill bidding — a seller or an associate bidding on their own listing to inflate the price — is an unfair trade practice under the Consumer Protection Act, 2019, and results in permanent suspension. Auctions auto-extend by five minutes when a bid lands in the final five, so a win is decided by what a bidder is willing to pay rather than by connection latency. Where a seller has set a reserve price, we honour it: if the reserve is not met, the item does not sell, and we say so plainly rather than quietly awarding it anyway."
+      },
+      {
+        "heading": "4. Living things are not ordinary merchandise",
+        "body": "LetItRip permits a small number of live listings — animals and plants — and treats them as a category with its own duties rather than as another kind of parcel. A seller cannot create a live listing at all until they have passed vendor verification; the ability is off by default for every account. Each live listing must declare the species, approximate age, sex where determinable, and honest care requirements, so a buyer knows what the animal actually needs before they commit. Buyers can only complete a purchase in states and territories where that species may lawfully be kept and transferred; the check runs at add-to-cart, not after payment. Anything covered by CITES or protected under the Wildlife Protection Act, 1972 must carry the appropriate declaration, and listings for wildlife that cannot lawfully be traded are removed and reported. Transport is limited to in-person handover or a specialist live-animal courier — never ordinary parcel post. We would rather lose a sale than move an animal in a way that harms it."
+      },
+      {
+        "heading": "5. Fees you can predict before you pay",
+        "body": "The platform commission is capped, and the cap applies before GST is calculated on it, so the fee cannot scale without limit on a high-value order. Every fee a buyer pays — commission, GST, shipping, cash-on-delivery handling, and any optional add-on such as gift wrap or shipment protection — is itemised on the cart and checkout summary before payment, and the figure shown is the figure charged. Optional add-ons are opt-in per seller and never pre-ticked. We do not add a fee at the payment step that was absent from the summary."
+      },
+      {
+        "heading": "6. Sellers are paid what they were told they would be paid",
+        "body": "Payout deductions are disclosed up front on the seller fees page and itemised on each payout record. Where a refund is issued after a payout has already been made, the clawback is shown as a line item against a named order rather than as an unexplained balance adjustment. We do not withhold payouts as leverage in a dispute; where funds are held pending investigation, the seller is told why and for how long."
+      },
+      {
+        "heading": "7. Privacy on public surfaces",
+        "body": "Public pages show the minimum needed to make the marketplace trustworthy. Bidder names in public bid history are masked, so an auction can be audited for shill bidding without exposing who was bidding. Personal data — names, email addresses, phone numbers, delivery addresses — is encrypted at rest, and IP addresses recorded for session security are masked and never returned to any client. Payment proof screenshots uploaded for manual payment review are visible to platform administrators only, never to the seller, because they show bank and UPI details that are none of the seller's business."
+      },
+      {
+        "heading": "8. Enforcement proportionate to what was done",
+        "body": "Not every violation deserves the same response, and treating them identically is its own kind of unfairness. Minor and first-time issues get a warning and a chance to correct the listing. Repeated or serious conduct gets a temporary suspension. Permanent removal is reserved for fraud, counterfeiting, and conduct that puts other users at risk. A rejected payment proof carries a seven-day suspension, not a permanent ban, because a bad or mistaken upload is not the same act as deliberate fraud. Scam registry entries can be removed when an accusation is withdrawn or found to be unsupported — an entry is a record, not a life sentence."
+      },
+      {
+        "heading": "9. Security of what you entrust to us",
+        "body": "Credentials and API keys stored in platform settings are encrypted with AES-256-GCM at rest. Card payments are handled entirely by our payment provider; LetItRip never receives, processes, or stores full card numbers. Uploaded media is served through our own proxy rather than exposing raw storage URLs, so an image cannot be enumerated or hotlinked out of context. Where we discover a security issue affecting user data, we will tell the affected users rather than wait to be asked."
+      },
+      {
+        "heading": "10. When we get it wrong",
+        "body": "This page describes intent and current practice, and both can fall out of step with each other. If you believe a commitment here is not being met — by a seller, by a moderator, or by us — write to conduct@letitrip.in with specifics. We will either fix the behaviour or amend this page to stop claiming something that is not true. Material changes to this page are reflected in the last-updated date above."
+      }
+    ]
+  },
+  "codeOfConduct": {
+    "title": "Code of Conduct",
+    "lastUpdated": "Last updated: 24 August 2026",
+    "intro": "Our Ethics page describes what LetItRip owes you. This page describes what we ask of each other. It applies to everyone using the platform — buyers, sellers, bidders, and staff — and it is a condition of holding an account. Where this page and the Terms of Service overlap, the Terms govern as the legal agreement; this page explains the behaviour we expect in plainer language.",
+    "relatedTitle": "Related Policies",
+    "relatedPrivacy": "Privacy Policy",
+    "relatedTerms": "Terms of Service",
+    "relatedCookies": "Cookie Policy",
+    "relatedRefund": "Refund Policy",
+    "relatedEthics": "Our Ethics",
+    "relatedConduct": "Code of Conduct",
+    "sections": [
+      {
+        "heading": "1. List honestly",
+        "body": "Photograph the actual item you are selling, from angles that show its real condition. Describe condition accurately using the standard grades, and disclose every flaw a buyer would want to know about — creases, whitening, edge wear, repairs, restoration, trimming, missing accessories, reproduction parts, or a broken seal. Do not use a stock image or a better example of the same item in place of yours. Do not stuff titles with unrelated keywords to catch searches your item does not match. If you are unsure whether something counts as a flaw, disclose it; nobody has ever been penalised for over-disclosing."
+      },
+      {
+        "heading": "2. Live listings carry additional duties",
+        "body": "If you sell a live animal or plant, you take on obligations that do not apply to a boxed collectible. List only after your account has passed vendor verification. Declare the species, approximate age, sex where determinable, and the genuine care the animal needs — including the parts a buyer might not want to hear. Sell only into states and territories where that species may lawfully be kept and transferred, and provide any CITES or Wildlife Protection Act documentation the species requires. Arrange in-person handover or a specialist live-animal courier; never send a living thing through ordinary parcel post. Answer a prospective buyer's care questions honestly even when the honest answer costs you the sale. If you are not able to meet all of this, do not create the listing."
+      },
+      {
+        "heading": "3. Bid in good faith",
+        "body": "A bid is a commitment to buy at that price. Do not bid on your own listing, and do not arrange for anyone else to bid on it, whether to raise the price or to create the appearance of interest. Do not place bids you intend to retract, and do not coordinate with other bidders or with the seller to manipulate the outcome. If you win, pay. Habitual retraction or non-payment costs you bidding privileges, and a pattern of it costs you the account."
+      },
+      {
+        "heading": "4. Pay and ship on time",
+        "body": "Buyers using cash, manual UPI, or EMI have a fifteen-minute window to upload a genuine payment proof and reference number. Upload the real transaction, not an edited screenshot or an unrelated one — a fabricated proof is treated as fraud, not as an error. Sellers must ship within the handling time stated on their store, provide real tracking that actually resolves, and pack well enough that the item arrives in the condition described. If something goes wrong on your side, say so early; a delay explained is a small problem and a delay concealed is a dispute."
+      },
+      {
+        "heading": "5. Reviews reflect real experience",
+        "body": "Review only transactions you actually completed. Do not pay for reviews, offer discounts or free items in exchange for them, or ask a buyer to change a rating as a condition of resolving a problem. Do not leave a retaliatory review in response to one you disagree with. Sellers may publicly respond to any review and should — a calm, factual response is far more persuasive to future buyers than a removed review would have been."
+      },
+      {
+        "heading": "6. Communicate like you are talking to a person",
+        "body": "Disagreements about grading, shipping, and pricing are normal in this hobby. Harassment, threats, slurs, and abuse directed at another user or at staff are not, and they are grounds for suspension regardless of who was right about the item. Do not solicit payment outside the platform: it strips both parties of dispute resolution and refund protection, and it is one of the most common shapes a scam takes here. Do not share another user's personal information."
+      },
+      {
+        "heading": "7. Report rather than retaliate",
+        "body": "If you encounter a fraudulent listing, a counterfeit, or a user acting in bad faith, use the report flow or submit to the scam registry. Report truthfully and include what you can evidence. The registry is a serious tool with real consequences for the person named, so a knowingly false or vindictive submission is itself a violation and is handled as one. Do not attempt to punish another user directly through mass reporting, review bombing, or public pile-ons."
+      },
+      {
+        "heading": "8. Prohibited outright",
+        "body": "The following end an account: counterfeit, replica, or unauthorised reprint items presented as genuine; goods infringing third-party intellectual property; weapons, controlled substances, and anything otherwise unlawful under Indian law; protected wildlife that cannot lawfully be traded; stolen goods; buying, selling, or sharing accounts; and automated scraping or any attempt to circumvent our payment, authentication, or moderation systems."
+      },
+      {
+        "heading": "9. Enforcement and appeals",
+        "body": "Responses escalate with severity and repetition: a warning and a request to correct, then a temporary suspension, then permanent removal with any linked stores and listings taken down alongside the account. A rejected payment proof carries a seven-day suspension rather than permanent removal. If you believe an action against your account was wrong, write to support@letitrip.in with your account details and what you think was misjudged. Appeals are reviewed by someone other than the person who took the original action, and you will get a reasoned answer rather than a form reply."
+      }
+    ]
+  },
   "cookies": {
     "metaTitle": "Cookie Policy — LetItRip",
     "metaDescription": "How LetItRip uses cookies and similar tracking technologies, including a full list of cookies by category.",
@@ -3685,6 +3807,8 @@
     "relatedTerms": "Terms of Service",
     "relatedCookies": "Cookie Policy",
     "relatedRefund": "Refund Policy",
+    "relatedEthics": "Our Ethics",
+    "relatedConduct": "Code of Conduct",
     "whatTitle": "What Are Cookies?",
     "whatText": "Cookies are small text files placed on your device when you visit a website. They allow the website to remember information about your visit — such as your login session and cart items — so you do not have to re-enter it on every page. We also use similar technologies like localStorage and sessionStorage for client-side state that does not leave your device.",
     "typesTitle": "Types of Cookies We Use",
@@ -3763,6 +3887,8 @@
     "relatedTerms": "Terms of Service",
     "relatedCookies": "Cookie Policy",
     "relatedRefund": "Refund Policy",
+    "relatedEthics": "Our Ethics",
+    "relatedConduct": "Code of Conduct",
     "sections": [
       {
         "heading": "1. Sealed Products (Unopened)",

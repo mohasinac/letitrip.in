@@ -42,6 +42,8 @@ export default async function Page() {
         missionText: val("missionText", t("missionText")),
         howItWorksTitle: val("howItWorksTitle", t("howItWorksTitle")),
         valuesTitle: val("valuesTitle", t("valuesTitle")),
+        valuesSubtitle: val("valuesSubtitle", t("valuesSubtitle")),
+        valuesLinkLabel: t("valuesLinkLabel"),
         milestonesTitle: val("milestonesTitle", t("milestonesTitle")),
         teamTitle: aboutContent?.teamTitle ?? "Meet the Team",
         teamSubtitle: aboutContent?.teamSubtitle,
@@ -77,9 +79,42 @@ export default async function Page() {
         aboutContent?.valueItems?.length
           ? aboutContent.valueItems
           : [
-              { title: t("valuesTrust"), text: t("valuesTrustText"), icon: "🛡️" },
-              { title: t("valuesCommunity"), text: t("valuesCommunityText"), icon: "🤝" },
-              { title: t("valuesInnovation"), text: t("valuesInnovationText"), icon: "🚀" },
+              {
+                title: t("valuesTrust"),
+                text: t("valuesTrustText"),
+                detail: t("valuesTrustDetail"),
+                icon: "🛡️",
+              },
+              {
+                title: t("valuesCommunity"),
+                text: t("valuesCommunityText"),
+                detail: t("valuesCommunityDetail"),
+                icon: "🤝",
+              },
+              {
+                title: t("valuesInnovation"),
+                text: t("valuesInnovationText"),
+                detail: t("valuesInnovationDetail"),
+                icon: "🚀",
+              },
+              {
+                title: t("valuesFairPricing"),
+                text: t("valuesFairPricingText"),
+                detail: t("valuesFairPricingDetail"),
+                icon: "⚖️",
+              },
+              {
+                title: t("valuesResponsible"),
+                text: t("valuesResponsibleText"),
+                detail: t("valuesResponsibleDetail"),
+                icon: "🌱",
+              },
+              {
+                title: t("valuesPrivacy"),
+                text: t("valuesPrivacyText"),
+                detail: t("valuesPrivacyDetail"),
+                icon: "🔒",
+              },
             ]
       }
       milestones={

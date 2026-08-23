@@ -2,7 +2,7 @@
 
 Auto-generated inventory of code/config files with detected exported and internal symbols.
 
-Generated: 2026-08-21T12:08:59.705Z
+Generated: 2026-08-23T18:33:12.117Z
 Total indexed files: 1302
 
 | Name | Path | Usage / What Is Inside | Symbols (Exported + Internal) |
@@ -351,6 +351,7 @@ Total indexed files: 1302
 | page.tsx | app/[locale]/classified/page.tsx | Next.js App Router route/layout/page/handler | const metadata, const params, const q, const query, fn Page, type filter |
 | ClientProviderBootstrap.tsx | app/[locale]/ClientProviderBootstrap.tsx | Next.js App Router route/layout/page/handler | const fallbackAuthProvider, const fallbackRealtimeProvider, const fallbackSessionAdapter, const firebaseConfig, const hasFirebaseConfig, const user, fn ClientProviderBootstrap, fn toAdapterUser, type AdapterAuthUser, type IClientAuthProvider, type IClientRealtimeProvider, type IClientSessionAdapter, type RealtimeSnapshot, type Unsubscribe, type User |
 | layout.tsx | app/[locale]/contact/layout.tsx | Next.js App Router route/layout/page/handler | fn Layout, type Props |
+| page.tsx | app/[locale]/code-of-conduct/page.tsx | Next.js App Router route/layout/page/handler | const metadata, const revalidate, fn Page |
 | page.tsx | app/[locale]/contact/page.tsx | Next.js App Router route/layout/page/handler | const metadata, const revalidate, fn Page |
 | page.tsx | app/[locale]/cookies/page.tsx | Next.js App Router route/layout/page/handler | const metadata, const revalidate, fn Page |
 | page.tsx | app/[locale]/developer/page.tsx | Next.js App Router route/layout/page/handler | const metadata, const revalidate, fn Page |
@@ -373,6 +374,7 @@ Total indexed files: 1302
 | ShareEventButton.tsx | app/[locale]/events/[id]/ShareEventButton.tsx | Next.js App Router route/layout/page/handler | const handleCopy, fn ShareEventButton |
 | page.tsx | app/[locale]/events/[id]/spin-results/page.tsx | Next.js App Router route/layout/page/handler | const diffDay, const diffHr, const diffMin, const diffMs, const diffSec, const event, const results, const revalidate, const then, fn generateMetadata, fn Page, fn relativeTime, type Props, type RouteParams |
 | page.tsx | app/[locale]/events/[id]/winner/page.tsx | Next.js App Router route/layout/page/handler | const coupon, const couponId, const currentUserIsWinner, const event, const eventAny, const revalidate, const viewer, const winnerUserId, fn generateMetadata, fn Page, let rafflePrizeCouponCode, type Props, type RouteParams |
+| page.tsx | app/[locale]/ethics/page.tsx | Next.js App Router route/layout/page/handler | const metadata, const revalidate, fn Page |
 | page.tsx | app/[locale]/events/page.tsx | Next.js App Router route/layout/page/handler | const metadata, const resolvedSearchParams, const revalidate, fn Page |
 | page.tsx | app/[locale]/faq/page.tsx | Next.js App Router route/layout/page/handler | fn Page |
 | opengraph-image.tsx | app/[locale]/faqs/[category]/opengraph-image.tsx | Next.js App Router route/layout/page/handler | const contentType, const size, fn Image, type Props |
@@ -647,7 +649,7 @@ Total indexed files: 1302
 | route.test.ts | app/api/admin/analytics/__tests__/route.test.ts | Next.js App Router route/layout/page/handler | const json, const makeReq, const mockAnalyticsData, const res, const url, let _user |
 | route.ts | app/api/admin/analytics/pageviews/route.ts | Next.js App Router route/layout/page/handler | const agg, const byEntity, const DEFAULT_SORTS, const endDate, const entityKey, const entityTypeMatch, const filtersParam, const GET, const items, const page, const pageSize, const q, const row, const rows, const sorts, const start, const startDate, const today, const totalFiltered, const url, fn isEntityType, interface EntityAgg, let entityType, let list, let total, type PageViewEntityType |
 | route.ts | app/api/admin/analytics/route.ts | Next.js App Router route/layout/page/handler | const data, const endDate, const GET, const startDate, const url |
-| route.ts | app/api/admin/audit-log/route.ts | Next.js App Router route/layout/page/handler | const DEFAULT_SORTS, const filters, const GET, const page, const pageSize, const result, const searchParams, const sorts |
+| route.ts | app/api/admin/audit-log/route.ts | Next.js App Router route/layout/page/handler | const DEFAULT_SORTS, const effectiveFilters, const filters, const GET, const page, const pageSize, const q, const result, const searchParams, const sorts |
 | route.test.ts | app/api/admin/bids/__tests__/route.test.ts | Next.js App Router route/layout/page/handler | const call, const json, const mockResult, const res, let _user |
 | route.test.ts | app/api/admin/bids/[id]/__tests__/route.test.ts | Next.js App Router route/layout/page/handler | const json, const makeRequest, const mockBid, const params, const res, const result, let _user, let body |
 | route.ts | app/api/admin/bids/[id]/route.ts | Next.js App Router route/layout/page/handler | const __DELETE__g, const __GET__g, const __PATCH__g, const bid, const DELETE, const GET, const id, const PATCH, const updateBidSchema |
@@ -670,7 +672,7 @@ Total indexed files: 1302
 | route.ts | app/api/admin/carousel/[id]/route.ts | Next.js App Router route/layout/page/handler | const DELETE, const existing, const GET, const id, const MSG_SLIDE_NOT_FOUND, const PUT, const slide, const updated, const updateSlideSchema |
 | route.ts | app/api/admin/carousel/reorder/route.ts | Next.js App Router route/layout/page/handler | const POST, const reorderSchema |
 | route.ts | app/api/admin/carousel/route.ts | Next.js App Router route/layout/page/handler | const cardSchema, const createSlideSchema, const DEFAULT_SORTS, const GET, const model, const overlaySchema, const page, const pageSize, const POST, const rawFilters, const result, const searchParams, const slide, const sorts |
-| route.ts | app/api/admin/carousels/[id]/route.ts | Next.js App Router route/layout/page/handler | const DELETE, const existing, const id, const MSG_CAROUSEL_NOT_FOUND, const PATCH, const updateCarouselSchema, const updated |
+| route.ts | app/api/admin/carousels/[id]/route.ts | Next.js App Router route/layout/page/handler | const carousel, const DELETE, const existing, const GET, const id, const MSG_CAROUSEL_NOT_FOUND, const PATCH, const updateCarouselSchema, const updated |
 | route.ts | app/api/admin/carousels/route.ts | Next.js App Router route/layout/page/handler | const carousel, const createCarouselSchema, const GET, const items, const POST |
 | route.test.ts | app/api/admin/carts/__tests__/route.test.ts | Next.js App Router route/layout/page/handler | const json, const mockListResult, const res, let _user |
 | route.ts | app/api/admin/carts/route.ts | Next.js App Router route/layout/page/handler | const GET, const result, const url |
@@ -751,7 +753,7 @@ Total indexed files: 1302
 | route.ts | app/api/admin/notifications/[id]/resend/route.ts | Next.js App Router route/layout/page/handler | const existing, const id, const POST |
 | route.ts | app/api/admin/notifications/[id]/route.ts | Next.js App Router route/layout/page/handler | const DELETE, const existing, const id |
 | route.ts | app/api/admin/notifications/bulk/route.ts | Next.js App Router route/layout/page/handler | const BULK_MAX, const existing, const failed, const POST, const schema, const skipped, const succeeded |
-| route.ts | app/api/admin/notifications/route.ts | Next.js App Router route/layout/page/handler | const GET, const result, const url |
+| route.ts | app/api/admin/notifications/route.ts | Next.js App Router route/layout/page/handler | const effectiveFilters, const GET, const q, const rawFilters, const result, const url |
 | route.test.ts | app/api/admin/orders/__tests__/route.test.ts | Next.js App Router route/layout/page/handler | const arg, const json, const makeReq, const mockOrder, const pagedResult, const res, const url, const v, let _user |
 | route.test.ts | app/api/admin/orders/[id]/__tests__/route.test.ts | Next.js App Router route/layout/page/handler | const json, const makeReq, const mockOrder, const newItems, const params, const res, const result, const updateArg, let _user, let body |
 | route.ts | app/api/admin/orders/[id]/payment-reject-fraud/route.ts | Next.js App Router route/layout/page/handler | const PATCH, const result, const schema |
@@ -1016,9 +1018,9 @@ Total indexed files: 1302
 | route.ts | app/api/store/analytics/cards/route.ts | Next.js App Router route/layout/page/handler | const body, const doc, const GET, const POST, const result, const store, type JsonValue |
 | route.ts | app/api/store/analytics/route.ts | Next.js App Router route/layout/page/handler | const count, const data, const fallback, const GET, const orders, const raw, const revenue, const since, const store, const uid, fn firestoreFallback |
 | route.test.ts | app/api/store/bids/__tests__/route.test.ts | Next.js App Router route/layout/page/handler | const json, const makeReq, const mockAuctions, const mockBids, const mockStore, const res, const url, let _user |
-| route.ts | app/api/store/bids/route.ts | Next.js App Router route/layout/page/handler | const __GET__g, const auctionResult, const auctionSummary, const GET, const page, const pageSize, const product, const productId, const productIds, const result, const store, const url |
+| route.ts | app/api/store/bids/route.ts | Next.js App Router route/layout/page/handler | const __GET__g, const auctionResult, const auctionSummary, const filtersParam, const GET, const page, const pageSize, const product, const productId, const productIds, const q, const qClause, const result, const sortField, const sortParam, const sorts, const statusClause, const statusParam, const store, const url, const VALID_SORT_FIELDS |
 | route.ts | app/api/store/bundles/[id]/route.ts | Next.js App Router route/layout/page/handler | const __DELETE__g, const __GET__g, const __PUT__g, const bundle, const DELETE, const GET, const id, const MSG_BUNDLE_ID_REQUIRED, const MSG_BUNDLE_NOT_FOUND, const MSG_NO_STORE, const PUT, const store, const updateBody, const updated, fn loadOwnedBundleOrFail |
-| route.ts | app/api/store/bundles/route.ts | Next.js App Router route/layout/page/handler | const __GET__g, const __POST__g, const bundleOriginalTotal, const cmp, const created, const DEFAULT_PAGE_SIZE, const existing, const GET, const id, const MAX_LIST_LIMIT, const MAX_PAGE_SIZE, const page, const pageSize, const POST, const q, const rawSlug, const slug, const sortDesc, const sortKey, const sorts, const start, const store, const total, const url, fn slugify, let items, let va |
+| route.ts | app/api/store/bundles/route.ts | Next.js App Router route/layout/page/handler | const __GET__g, const __POST__g, const bundleOriginalTotal, const cmp, const created, const DEFAULT_PAGE_SIZE, const existing, const filters, const GET, const id, const MAX_LIST_LIMIT, const MAX_PAGE_SIZE, const page, const pageSize, const POST, const q, const rawSlug, const slug, const sortDesc, const sortKey, const sorts, const start, const store, const total, const url, fn slugify, let items, let va |
 | route.ts | app/api/store/categories/route.ts | Next.js App Router route/layout/page/handler | const body, const doc, const GET, const POST, const result, const store, type JsonValue |
 | route.ts | app/api/store/conversations/route.ts | Next.js App Router route/layout/page/handler | const __GET__g, const GET, const items, const store |
 | route.test.ts | app/api/store/coupons/__tests__/route.test.ts | Next.js App Router route/layout/page/handler | const callArg, const json, const makeGetReq, const makePostReq, const mockStore, const msg, const pagedCoupons, const res, const result, const url, const validCouponBody, let _user, let body |
@@ -1095,8 +1097,8 @@ Total indexed files: 1302
 | route.ts | app/api/store/sublisting-categories/[id]/route.ts | Next.js App Router route/layout/page/handler | const category, const DELETE, const existing, const GET, const id, const MSG_SUBLISTING_CAT_NOT_FOUND, const patch, const PUT, const store, const updated, const updateSchema |
 | route.ts | app/api/store/sublisting-categories/route.ts | Next.js App Router route/layout/page/handler | const category, const createSchema, const DEFAULT_SORTS, const GET, const id, const page, const pageSize, const POST, const q, const result, const sorts, const store, const url, let items, let total |
 | route.test.ts | app/api/store/whatsapp-settings/__tests__/route.test.ts | Next.js App Router route/layout/page/handler | const callArg, const json, const makeGetReq, const makePutReq, const mockStore, const res, const result, const text, let _user, let body |
-| route.ts | app/api/store/whatsapp-settings/catalog-import/route.ts | Next.js App Router route/layout/page/handler | const accessToken, const capabilities, const catalog, const cfg, const err, const existingProduct, const item, const items, const META_GRAPH_BASE, const POST, const priceStr, const productInput, const res, const SLUG_PREFIX, const store, const url, const waDescription, interface MetaCatalogItem, interface MetaCatalogResponse, let imported, let price, let skipped |
-| route.ts | app/api/store/whatsapp-settings/catalog-sync/route.ts | Next.js App Router route/layout/page/handler | const accessToken, const capabilities, const cfg, const POST, const products, const publishedStandard, const store, const storeProducts, const syncResult |
+| route.ts | app/api/store/whatsapp-settings/catalog-import/route.ts | Next.js App Router route/layout/page/handler | const capabilities, const cfg, const POST, const store |
+| route.ts | app/api/store/whatsapp-settings/catalog-sync/route.ts | Next.js App Router route/layout/page/handler | const accessToken, const capabilities, const cfg, const POST, const products, const publishedStandard, const store, const storeProducts, const syncResult, var directly |
 | route.ts | app/api/store/whatsapp-settings/route.ts | Next.js App Router route/layout/page/handler | const capabilities, const connected, const existing, const GET, const PUT, const putSchema, const resolvedToken, const store, const updated, fn maskConfig, type WhatsAppConfig |
 | route.integration.test.ts | app/api/stores/__tests__/route.integration.test.ts | Next.js App Router route/layout/page/handler | const BASE, const ids, const json, const res, const store |
 | route.test.ts | app/api/stores/__tests__/route.test.ts | Next.js App Router route/layout/page/handler | const callArg, const items, const json, const makeReq, const makeStore, const pagedResult, const res, const status, const url |
@@ -1167,7 +1169,7 @@ Total indexed files: 1302
 | route.ts | app/api/user/orders/[id]/label/route.ts | Next.js App Router route/layout/page/handler | const GET, const id, const labelUrl, const order, const res |
 | route.ts | app/api/user/orders/[id]/qr/route.ts | Next.js App Router route/layout/page/handler | const GET, const id, const order, const qrServiceUrl, const trackUrl |
 | route.ts | app/api/user/orders/[id]/route.ts | Next.js App Router route/layout/page/handler | const doc, const GET, const orderId |
-| route.ts | app/api/user/orders/route.ts | Next.js App Router route/layout/page/handler | const filters, const filtersParam, const GET, const pageParam, const perPageParam, const q, const result, const searchParams, const sortField, const sortParam, const sorts, const statusParam, const VALID_ORDER_TYPES, const VALID_SORT_FIELDS, const VALID_STATUSES, let items, let total |
+| route.ts | app/api/user/orders/route.ts | Next.js App Router route/layout/page/handler | const filters, const filtersParam, const GET, const orderTypeParam, const pageParam, const perPageParam, const pushableOrderType, const q, const result, const searchParams, const sortField, const sortParam, const sorts, const statusParam, const VALID_ORDER_TYPES, const VALID_SORT_FIELDS, const VALID_STATUSES, const validOrderType, let docs, let items, let total |
 | route.ts | app/api/user/payment-methods/[id]/route.ts | Next.js App Router route/layout/page/handler | const body, const DELETE, const method, const PUT, const updated, type RouteContext |
 | route.ts | app/api/user/payment-methods/route.ts | Next.js App Router route/layout/page/handler | const banned, const existing, const GET, const hash, const method, const POST, const saveMethodSchema, const typeFilter, const url, let methods |
 | route.test.ts | app/api/user/profile/__tests__/route.test.ts | Next.js App Router route/layout/page/handler | const json, const res, const result, const scamCalls, fn makeGetReq, fn makePatchReq, let _user, let body |
