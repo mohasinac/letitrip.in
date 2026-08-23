@@ -18,6 +18,7 @@ import {
 import { syncProductsToCatalog, decryptPii } from "@mohasinac/appkit/server";
 import type { CatalogSyncProduct } from "@mohasinac/appkit/server";
 import { ROLES_STORE_WRITE } from "@/constants";
+import { SITE_URL } from "@/config/app-url";
 
 export const POST = withProviders(
   createRouteHandler({
@@ -78,7 +79,10 @@ export const POST = withProviders(
           p.condition === "used" || p.condition === "refurbished"
             ? (p.condition as "used" | "refurbished")
             : "new",
-        link: `/products/${p.slug ?? p.id}`,
+        // Meta requires an absolute URL — a relative "/products/{slug}" is
+        // rejected/ignored on its side. SITE_URL already resolves Vercel
+        // prod/preview/localhost, so don't read an env var directly here.
+        link: `${SITE_URL.replace(/\/$/, "")}/products/${p.slug ?? p.id}`,
       }));
 
       if (products.length === 0) {
