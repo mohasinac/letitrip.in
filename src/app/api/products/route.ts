@@ -271,6 +271,9 @@ async function _GET(request: Request): Promise<NextResponse> {
       totalPages: result.totalPages,
       hasMore: result.hasMore,
       cursor: result.cursor,
+      // A bounded fetch saturated its ceiling, so `total` above is a FLOOR.
+      // The client renders "50+" rather than an exact count when this is set.
+      truncated: result.truncated,
       query: {
         filters: result.filters,
         sorts: result.sorts,

@@ -1,6 +1,6 @@
 "use client";
-import { normalizeError, checkEmiEligibility, computeEmiSchedule, computeCodHandlingFee, useSiteSettings, CouponHelpDetails, type JsonArray } from "@mohasinac/appkit/client";
-import type { JsonValue, EmiSettings, OutOfStockPolicy, CodHandlingFeeRates, WhatsAppNotifyFeeRates, GiftWrapFeeRates, ShipmentProtectionFeeRates, StoreAddonsValue } from "@mohasinac/appkit/client";
+import { normalizeError, checkEmiEligibility, computeBuyerEmiQuote, computeCodHandlingFee, useSiteSettings, CouponHelpDetails, type JsonArray } from "@mohasinac/appkit/client";
+import type { JsonValue, BuyerEmiSettings, BuyerFacingFees, OutOfStockPolicy, StoreAddonsValue } from "@mohasinac/appkit/client";
 import { StoreAddonsPicker, CartPriceBreakdown } from "@mohasinac/appkit/client";
 import { Banknote } from "lucide-react";
 
@@ -149,7 +149,7 @@ const STEP_SUBLABEL_CLS = "text-[length:var(--appkit-text-sm)] text-[var(--appki
 const CLS_APPLIED_COUPON_ROW = "rounded-lg bg-success-surface border border-success px-[var(--appkit-space-3)] py-[var(--appkit-space-2)]";
 const PRIMARY_BTN_CLS = "w-full rounded-lg bg-[var(--appkit-color-primary)] px-[var(--appkit-space-4)] py-[var(--appkit-space-3)] text-[length:var(--appkit-text-sm)] font-semibold text-white hover:opacity-90 disabled:opacity-50";
 
-/** EMI amounts from computeEmiSchedule are decimal rupees — format as INR. */
+/** EMI amounts from computeBuyerEmiQuote are decimal rupees — format as INR. */
 function formatEmiRupees(amount: number): string {
   return amount.toLocaleString("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
 }
@@ -193,7 +193,7 @@ function useEmiCheckout({
   setIsProcessingPayment,
   ensureValueOtpGate,
 }: {
-  emiSettings: EmiSettings | null;
+  emiSettings: BuyerEmiSettings | null;
   showEmi: boolean;
   subtotal: number;
   cartIsEmpty: boolean;
@@ -213,7 +213,7 @@ function useEmiCheckout({
   );
   const emiVisible = showEmi && !!emiSettings && emiEligible && !cartIsEmpty;
   const emiSchedule = useMemo(
-    () => (emiVisible && emiSettings ? computeEmiSchedule(subtotal, emiTenure, emiSettings) : null),
+    () => (emiVisible && emiSettings ? computeBuyerEmiQuote(subtotal, emiTenure, emiSettings) : null),
     [emiVisible, emiSettings, subtotal, emiTenure],
   );
 
@@ -493,13 +493,13 @@ function renderPaymentStep({
   showRazorpay: boolean;
   showCod: boolean;
   emiVisible: boolean;
-  emiSettings: EmiSettings | null;
+  emiSettings: BuyerEmiSettings | null;
   emiTenure: number;
   setEmiTenure: (v: number) => void;
-  emiSchedule: ReturnType<typeof computeEmiSchedule> | null;
+  emiSchedule: ReturnType<typeof computeBuyerEmiQuote> | null;
   outOfStockPolicy: OutOfStockPolicy;
   setOutOfStockPolicy: (v: OutOfStockPolicy) => void;
-  codSettings: (CodHandlingFeeRates & WhatsAppNotifyFeeRates & GiftWrapFeeRates & ShipmentProtectionFeeRates & { codDepositPercent?: number }) | null;
+  codSettings: BuyerFacingFees | null;
   subtotal: number;
   /** Per-store add-on selections, keyed by storeId. */
   storeAddons: Record<string, StoreAddonsValue>;
@@ -1190,8 +1190,8 @@ export function CheckoutRouteClient({
   showCod?: boolean;
   showCoupons?: boolean;
   showEmi?: boolean;
-  emiSettings?: EmiSettings | null;
-  codSettings?: CodHandlingFeeRates & WhatsAppNotifyFeeRates & GiftWrapFeeRates & ShipmentProtectionFeeRates & { codDepositPercent?: number } | null;
+  emiSettings?: BuyerEmiSettings | null;
+  codSettings?: BuyerFacingFees | null;
 }) {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();

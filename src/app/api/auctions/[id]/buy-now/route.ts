@@ -35,7 +35,10 @@ const __POST__g = withProviders(
           user!.email ?? "",
           { productId },
         );
-        return successResponse(result, "Auction purchased via Buy Now", 201);
+        // "Claimed", not "purchased" — Buy Now places a bid at the buyout price
+        // and a locked cart line. The auction stays live and the item is only
+        // sold once this is paid for; see `claimAuctionForCheckout`.
+        return successResponse(result, "Buy Now claimed — complete checkout to secure it", 201);
       } catch (err) {
         if (err instanceof NotFoundError) return errorResponse(err.message, 404);
         if (err instanceof ValidationError) return errorResponse(err.message, 400);

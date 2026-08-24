@@ -33,7 +33,7 @@ import {
   laneOf,
   type CartLane,
   type StoreAddonsValue,
-  type StoreAddonsRates,
+  type BuyerFacingFees,
 } from "@mohasinac/appkit/client";
 // ---------------------------------------------------------------------------
 // Types
@@ -273,10 +273,13 @@ function guestItemsToCartItems(
 
 export interface CartRouteClientProps {
   /**
-   * `siteSettings.commissions` — gates and prices the per-store add-on
-   * checkboxes. Read on the server so the controls are correct on first paint.
+   * The buyer-facing subset of `siteSettings.commissions` — gates and prices
+   * the per-store add-on checkboxes. Read on the server so the controls are
+   * correct on first paint, and PROJECTED there via `toBuyerFacingFees`:
+   * `StoreAddonsRates` alone can't keep the internal rates out, because a
+   * wider object satisfies it structurally and still gets serialised whole.
    */
-  commissions?: StoreAddonsRates | null;
+  commissions?: BuyerFacingFees | null;
 }
 
 export function CartRouteClient({ commissions = null }: CartRouteClientProps = {}) {

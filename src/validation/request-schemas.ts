@@ -316,107 +316,13 @@ export const userAddressUpdateSchema = userAddressBaseSchema.partial();
 // SITE SETTINGS SCHEMAS
 // ============================================
 
-export const siteSettingsUpdateSchema = z
-  .object({
-    siteName: z.string().min(1).max(100).optional(),
-    siteDescription: z.string().min(1).max(500).optional(),
-    contactEmail: z.string().email().optional(),
-    supportEmail: z.string().email().optional(),
-    maintenanceMode: z.boolean().optional(),
-    maintenanceMessage: z.string().max(500).optional(),
-    announcementBar: z
-      .object({
-        enabled: z.boolean(),
-        message: z.string().min(1).max(500),
-      })
-      .optional(),
-    emailSettings: z
-      .object({
-        fromName: z.string().min(1).max(100),
-        fromEmail: z.string().email(),
-        replyTo: z.string().email(),
-      })
-      .optional(),
-    socialLinks: z
-      .object({
-        facebook: z.string().url().optional().or(z.literal("")),
-        twitter: z.string().url().optional().or(z.literal("")),
-        instagram: z.string().url().optional().or(z.literal("")),
-        linkedin: z.string().url().optional().or(z.literal("")),
-      })
-      .optional(),
-    features: z
-      .array(
-        z.object({
-          id: z.string().min(1).max(100),
-          name: z.string().min(1).max(100),
-          description: z.string().max(500).default(""),
-          icon: z.string().max(100).default(""),
-          enabled: z.boolean(),
-        }),
-      )
-      .max(50)
-      .optional(),
-    payment: z
-      .object({
-        razorpayEnabled: z.boolean(),
-        upiManualEnabled: z.boolean(),
-        codEnabled: z.boolean(),
-      })
-      .optional(),
-    featureFlags: z
-      .object({
-        chats: z.boolean(),
-        smsVerification: z.boolean(),
-        translations: z.boolean(),
-        wishlists: z.boolean(),
-        auctions: z.boolean(),
-        reviews: z.boolean(),
-        events: z.boolean(),
-        blog: z.boolean(),
-        coupons: z.boolean(),
-        notifications: z.boolean(),
-        sellerRegistration: z.boolean(),
-        preOrders: z.boolean(),
-      })
-      .optional(),
-    commissions: z
-      .object({
-        platformFeePercent: z.number().min(0).max(100),
-        gstPercent: z.number().min(0).max(100),
-        minimumTransactionFee: z.number().min(0),
-        platformFeeMax: z.number().min(0).optional(),
-        gatewayFeePercent: z.number().min(0).max(100),
-        codDepositPercent: z.number().min(0).max(100),
-        codHandlingFeeMin: z.number().min(0),
-        codHandlingFeePercent: z.number().min(0).max(100),
-        whatsappNotifyFeeEnabled: z.boolean(),
-        whatsappNotifyFee: z.number().min(0),
-        giftWrapFeeEnabled: z.boolean(),
-        giftWrapFee: z.number().min(0),
-        shipmentProtectionFeeEnabled: z.boolean(),
-        shipmentProtectionFeePercent: z.number().min(0).max(100),
-        shipmentProtectionFeeMin: z.number().min(0),
-        sellerShippingFixed: z.number().min(0),
-        platformShippingPercent: z.number().min(0).max(100),
-        platformShippingFixedMin: z.number().min(0),
-        autoPayoutWindowDays: z.number().min(0).optional(),
-        payoutHoldDays: z.number().min(0).optional(),
-        minPayoutAmount: z.number().min(0).optional(),
-        auctionListingFee: z.number().min(0).optional(),
-        preOrderListingFee: z.number().min(0).optional(),
-        featuredSlotFee: z.number().min(0).optional(),
-        promotedSlotFee: z.number().min(0).optional(),
-      })
-      .optional(),
-    credentials: z
-      .object({
-        razorpayKeyId: z.string().max(512).optional(),
-        razorpayKeySecret: z.string().max(512).optional(),
-        razorpayWebhookSecret: z.string().max(512).optional(),
-        resendApiKey: z.string().max(512).optional(),
-        whatsappApiKey: z.string().max(512).optional(),
-      })
-      .optional(),
-  })
-  .partial();
+// `siteSettingsUpdateSchema` was deleted 2026-08-24 along with its only
+// caller, `PATCH /api/site-settings`. It declared a stale subset of the real
+// document (no `integrations`, `platformLimits`, `auctionConfig`,
+// `notificationChannels`, `emi`, `gst`, `laborRate`, `theme`, `watermark`;
+// wrong `legalPages` key names; a `featureFlags` shape missing `listingTypes`)
+// — and because Zod strips unknown keys while Firestore `.update()` replaces
+// nested maps wholesale, validating a real admin save through it would have
+// silently wiped every per-listing-type feature flag. The single admin write
+// path is now `PUT /api/admin/site`, which allow-lists top-level groups
+// instead. Do not resurrect this without regenerating it from the schema.

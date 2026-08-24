@@ -189,6 +189,9 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.ART),             "Art",             "admin:products:read"),
       adminItem(String(ROUTES.ADMIN.STICKERS),        "Stickers",        "admin:products:read"),
       adminItem(String(ROUTES.ADMIN.ORDERS),          "Orders",          "admin:orders:read"),
+      // Beside Orders, not with Bids under Content: an offer is a
+      // commerce-pipeline object that ends in an order.
+      adminItem(String(ROUTES.ADMIN.OFFERS),          "Offers",          "admin:offers:read"),
       adminItem(String(ROUTES.ADMIN.FULFILLMENT),     "Fulfillment",     "admin:orders:read"),
       adminItem(String(ROUTES.ADMIN.RETURN_REQUESTS), "Returns",         "admin:returns:read"),
       adminItem(String(ROUTES.ADMIN.STORES),          "Stores",          "admin:stores:read"),

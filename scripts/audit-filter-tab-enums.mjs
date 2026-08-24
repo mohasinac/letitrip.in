@@ -54,6 +54,21 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const FILTER_TABS_FILE = join(ROOT, "appkit/src/features/admin/constants/filter-tabs.ts");
 
 /**
+ * Files scanned for chip arrays.
+ *
+ * This used to be ONLY filter-tabs.ts, which is how `TYPE_OPTIONS` — an inline
+ * literal inside AdminEventsView.tsx holding three ids that are not `EventType`
+ * values (`contest`, `giveaway`, `flash-sale`, each matching zero rows forever)
+ * — stayed invisible to this audit for as long as it existed. A chip array
+ * declared next to the component that renders it is exactly as dangerous as one
+ * declared in a constants file, so both are in scope.
+ */
+const SCANNED_FILES = [
+  "appkit/src/features/admin/constants/filter-tabs.ts",
+  "appkit/src/features/events/components/AdminEventsView.tsx",
+];
+
+/**
  * @typedef {{
  *   sourceFile: string,
  *   shape: "const-object" | "union-type",
@@ -126,6 +141,13 @@ const REGISTRY = {
   },
 
   // OfferStatus — pending|accepted|declined|countered|expired|withdrawn|paid.
+  // The admin variant surfaces the FULL union; the seller one deliberately
+  // shows only the four states a seller acts on.
+  ADMIN_OFFER_STATUS_TABS: {
+    sourceFile: "appkit/src/features/seller/schemas/firestore.ts",
+    shape: "union-type",
+    exportName: "OfferStatus",
+  },
   SELLER_OFFER_STATUS_TABS: {
     sourceFile: "appkit/src/features/seller/schemas/firestore.ts",
     shape: "union-type",
@@ -177,8 +199,10 @@ function extractEnumValues(src, source) {
 }
 
 function main() {
-  const tabsSrc = readSource("appkit/src/features/admin/constants/filter-tabs.ts");
-  const arrays = parseTabArrays(tabsSrc);
+  const arrays = [];
+  for (const file of SCANNED_FILES) {
+    arrays.push(...parseTabArrays(readSource(file)));
+  }
 
   /** @type {{ array: string, id: string, reason: string }[]} */
   const violations = [];
@@ -204,6 +228,7 @@ function main() {
     }
     const realSet = new Set(realValues);
 
+    // NO_DEAD_VALUE — a chip whose id no document can hold returns zero rows.
     for (const id of ids) {
       if (SENTINEL_IDS.has(id)) continue;
       if (!realSet.has(id)) {
@@ -213,6 +238,22 @@ function main() {
           reason: `not a member of ${registryEntry.exportName} (${realValues.join("|")})`,
         });
       }
+    }
+
+    // COVERAGE — the mirror check. This audit only ever asserted the direction
+    // above, which is why ADMIN_EVENT_STATUS_TABS could sit at 3 of 5 statuses
+    // indefinitely: `paused` and `cancelled` rows existed and were simply
+    // unreachable, with no chip that would isolate them. A missing member is
+    // just as silent a defect as a dead one.
+    const chipSet = new Set(ids);
+    const omit = new Set(registryEntry.omit ?? []);
+    for (const value of realValues) {
+      if (chipSet.has(value) || omit.has(value)) continue;
+      violations.push({
+        array: name,
+        id: value,
+        reason: `MISSING — "${value}" is a real ${registryEntry.exportName} value with no chip, so rows in that state cannot be filtered for. Add a chip, or add it to this entry's \`omit\` list with a reason.`,
+      });
     }
   }
 

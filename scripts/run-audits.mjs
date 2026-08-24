@@ -56,6 +56,7 @@ const AUDITS = [
   { name: "auth-gates",                      script: "scripts/audit-auth-gates.mjs" },
   { name: "inline-actions",                  script: "scripts/audit-inline-actions.mjs" },
   { name: "product-form-shell",              script: "scripts/audit-product-form-shell.mjs" },
+  { name: "no-step-wizard",                  script: "scripts/audit-no-step-wizard.mjs" },
   { name: "dashboard-padding",               script: "scripts/audit-dashboard-padding.mjs" },
   { name: "user-pages-overhaul",             script: "scripts/audit-user-pages-overhaul.mjs" },
   { name: "root-cause",                      script: "scripts/audit-root-cause.mjs" },
@@ -264,6 +265,16 @@ const AUDITS = [
   // overwrite real data on the next save. Found live in users (isTester/
   // canTestAdmin) and stores (isVerified/isFeatured/capabilities) 2026-08-19.
   { name: "list-serializer-parity",         script: "scripts/audit-list-serializer-parity.mjs" },
+  // Strict-zero. Two ways a private field reaches the public internet:
+  // (1) a schema field triaged into neither the PUBLIC_* nor the PRIVATE_*
+  // list of its adapter — new fields are private by default; (2) a raw
+  // repository document passed as a prop into a Client Component, which
+  // serialises it into the page's public RSC flight payload. Both were live
+  // 2026-08-24: /api/site-settings was a deny-list shipping gst.gstin, the
+  // full commissions model and unmasked adSettings.providerCredentials, and
+  // four pages (incl. the homepage) put a decrypted Meta WhatsApp access
+  // token into public HTML behind an `as unknown as` cast.
+  { name: "public-projection-parity",       script: "scripts/audit-public-projection-parity.mjs" },
   // Strict-zero. A selectable card's primary navigation (Link href /
   // router.push / handleClick) must never be gated on whether a selection
   // callback is merely wired — only on whether a selection is actively in

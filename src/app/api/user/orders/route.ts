@@ -10,6 +10,8 @@ import {
   orderDocumentToOrder,
   sortBy,
   ORDER_FIELDS,
+  isOrderScope,
+  statusesForScope,
 } from "@mohasinac/appkit";
 
 // Set<string> (not a literal-union Set) — two different `OrderStatus` types
@@ -87,9 +89,20 @@ export const GET = withProviders(
       const pushableOrderType =
         validOrderType && validOrderType !== "standard" ? validOrderType : undefined;
 
+      // Lifecycle scope (Active / Closed / All). An explicit `status` always
+      // wins: picking "Delivered" while sitting on the Active tab should show
+      // delivered orders, not the empty intersection of the two.
+      const scopeParam = getStringParam(searchParams, "orderScope") ?? "";
+      const scopeStatuses =
+        !statusParam && isOrderScope(scopeParam) ? statusesForScope(scopeParam) : undefined;
+
       const filters =
         [
           statusParam && VALID_STATUSES.has(statusParam) ? `status==${statusParam}` : null,
+          // A pipe-joined OR-group on ONE field, which the Firebase Sieve
+          // adapter upgrades to a single Firestore "in" query — no fan-out,
+          // and it reuses the existing (status, createdAt) composite index.
+          scopeStatuses?.length ? `status==${scopeStatuses.join("|")}` : null,
           pushableOrderType ? `orderType==${pushableOrderType}` : null,
         ]
           .filter(Boolean)
@@ -116,17 +129,31 @@ export const GET = withProviders(
       // `Order` shape is a lossy projection and this must not depend on whether
       // `orderType` happens to survive it.
       let docs = result.items;
+      let items = docs.map(orderDocumentToOrder);
       let total = result.total;
+      let totalPages = result.totalPages;
+
+      // Both refinements below run over ONE page of results, so the count they
+      // produce describes that page, not the result set. Assigning it to
+      // `total` (which is what this route did until 2026-08-24) told the pager
+      // there was exactly one page — so the default "Normal" lane, the most
+      // common view on this screen, could never be paged past page 1.
+      // `truncated` reports the honest shape instead: the count is a floor.
+      let truncated = false;
       if (validOrderType === "standard") {
         // Legacy orders predate the field entirely, so "no orderType" IS standard.
         docs = docs.filter((d) => !d.orderType || d.orderType === "standard");
-        total = docs.length;
+        items = docs.map(orderDocumentToOrder);
+        truncated = true;
       }
-
-      let items = docs.map(orderDocumentToOrder);
       if (q) {
         items = items.filter((o) => o.id.toLowerCase().includes(q));
-        total = items.length;
+        truncated = true;
+      }
+      if (truncated) {
+        // A floor, and a pager that offers Next without claiming a last page.
+        total = Math.max(items.length, (result.page - 1) * result.pageSize + items.length);
+        totalPages = result.hasMore ? result.page + 1 : result.page;
       }
 
       serverLogger.info("Orders listed", {
@@ -139,7 +166,8 @@ export const GET = withProviders(
         total,
         page: result.page,
         perPage: result.pageSize,
-        totalPages: result.totalPages,
+        totalPages,
+        truncated,
       });
     },
   }),

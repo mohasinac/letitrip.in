@@ -12,8 +12,8 @@ import {
   StoreReviewsPageView,
   STORE_PAGE_TABS,
   storeRepository,
-  type StoreDetail,
 } from "@mohasinac/appkit";
+import { toStoreDetail } from "@mohasinac/appkit/server";
 import type { Metadata } from "next";
 import { redirect } from "@/i18n/navigation";
 
@@ -164,5 +164,8 @@ export default async function Page({ params, searchParams }: Props) {
     return null;
   }
 
-  return <StoreAboutView store={store as unknown as StoreDetail} />;
+  // StoreAboutView is a Client Component — project through the public
+  // allow-list so the raw document (Meta access token, adminNotes,
+  // customCommissionRate) never reaches the RSC flight payload.
+  return <StoreAboutView store={toStoreDetail(store)} />;
 }

@@ -1054,8 +1054,49 @@ PROMO STRIP (optional, above TB1 when titleBarPromoStripText is set)
 └──────────────────────────────────────────────────────────────────────┘
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  FIXED BOTTOM  (lg:hidden — mobile only)
+  FIXED BOTTOM — THREE TIERS  (2026-08-24, Root Cause #71)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Mirror of the sticky header at the other end of the viewport. Exactly three
+CSS variables, exactly three writers. Everything else CONSUMES.
+
+                                              ↑ page content scrolls under ↑
+
+   ┌───┐                        ← BackToTop — the CEILING. z-95.
+   │ ▲ │                          bottom = keyboard + nav + chrome + 1 gutter
+   └───┘                          Never learns any individual bar's height.
+ ─────────────────────────────  ← ⎫
+ │ « 1 2 3 »                 │    ⎪  BottomChrome — the MIDDLE TIER. z-40.
+ ├───────────────────────────┤    ⎬  fixed flex column, bottom = keyboard + nav
+ │ ♡  [Add to Cart] [Buy Now]│    ⎪  ONE ResizeObserver on the container →
+ └───────────────────────────┘    ⎭  --bottom-chrome-height = its offsetHeight
+ ─────────────────────────────      = the SUM of whatever is inside it
+ │ 🏠   🛍   🔍   🛒   👤   │  ← BN-1 — the FLOOR. h-16. z-40. lg:hidden.
+ ═════════════════════════════      --bottom-nav-height (+ safe-area inset)
+                                    (--keyboard-inset-height sits under all)
+
+  Var                        Sole writer                What it measures
+  ────────────────────────── ────────────────────────── ─────────────────────
+  --keyboard-inset-height    useVisualViewportInset.ts  on-screen keyboard
+  --bottom-nav-height        BottomNavLayout.tsx        the tab bar (floor)
+  --bottom-chrome-height     BottomChrome.tsx           the WHOLE middle tier
+
+  Joining the tier — two ways, no third:
+    • shell-level  → render as a child of <BottomChrome> (BottomActions)
+    • deeper tree  → createPortal into BOTTOM_CHROME_SLOT_ID via
+                     useBottomChromeSlot()  (ListingLayout mobile pagination)
+    The slot renders FIRST, so portalled bars stack above the CTA row.
+
+  Three rules for anything in the tier:
+    1. Hide by COLLAPSING, never by transforming. translate-y-full leaves
+       layout height behind → the tier over-reports on every page with no bar.
+       BottomActions uses grid-template-rows: 1fr → 0fr + overflow-hidden
+       min-h-0 child. display:none (lg:hidden) also works, needs nothing.
+    2. Background / border / shadow go INSIDE the collapsing box — on the box
+       itself they still paint a hairline + shadow smudge at zero height.
+    3. Only viewport-`fixed` children. A `sticky` element is bottom-anchored
+       only once stuck, which no ResizeObserver sees — it consumes the tier,
+       it never joins it.
 
 BN-1 — h-16 fixed bottom — MOBILE ONLY (lg:hidden) — z-40
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -1067,6 +1108,10 @@ BN-1 — h-16 fixed bottom — MOBILE ONLY (lg:hidden) — z-40
 └──────────────────────────────────────────────────────────────────────┘
  • "More" tap → public SidebarLayout OR dashboard drawer, depending on context
  • Profile slot: avatar + role label when authenticated; generic icon when guest
+ • EXACTLY ONE bottom nav per route. BottomNavLayout is the only publisher of
+   --bottom-nav-height, so two mounted at once = two bars on the same pixels
+   and a height nobody owns. Dashboard routes render their own (below), so
+   LayoutShellClient passes showBottomNav={!isDashboard} to suppress this one.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   PUBLIC SIDEBAR  (SidebarLayout — slides in from RIGHT)
@@ -1128,7 +1173,17 @@ variant="user"   →  UserSidebar
 
   --header-height is set by ResizeObserver on the sticky <header> wrapper.
   All sticky offsets throughout the app: style={{ top: "var(--header-height, 0px)" }}
-  Main content: mb-28 (has bottom actions) or mb-16 (no actions) on mobile, md:mb-0
+
+  Bottom clearance is on the FOOTER, not on <Main> (2026-08-24). FooterLayout
+  is a sibling rendered AFTER <Main>, so a margin on <Main> only ever gapped
+  main-to-footer — it never cleared the end of the page, and the footer's own
+  copyright / bottom-links strip sat under the chrome, unreadable. It now
+  carries pb-[calc(var(--bottom-nav-height,4rem)+var(--bottom-chrome-height,0px))],
+  which also keeps the footer's background running behind the translucent bars
+  instead of showing a band of bare page background. <Main> has no bottom margin.
+  (Was: mb-28 / mb-16 / lg:mb-24 / lg:mb-0, picked by a boolean the shell had to
+  keep in sync with BottomActions' own isVisible by hand.)
+
   FormShell footer offset: bottom: var(--bottom-nav-height, 64px)  ← BN-1 is h-16 = 64 px
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1149,9 +1204,10 @@ Key implementation files:
 - `TitleBarLayout.tsx` — TB1 + TB2 + promo strip; profile icon now carries an unread-notifications badge (red 99+ pill) driven by `unreadNotificationCount` prop (2026-05-17)
 - `TitleBar.tsx` — domain shell: injects cartCount/wishlistCount/dashboardNav; also `useNotifications()` → unread count passed to `TitleBarLayout`
 - `NavbarLayout.tsx` — MNB-1 with scroll arrows
-- `BottomNavLayout.tsx` + `BottomNavbar.tsx` — BN-1
-- `AppLayoutShell.tsx` — assembles everything + public SidebarLayout
-- `DashboardLayoutClient.tsx` — dashboard drawer state + DashboardNavContext registration; content gutter widened to `md:pl-14 lg:pl-16` so the sidebar toggle pill never overlaps content; wrap children in `max-w-screen-2xl mx-auto` so wide screens center (2026-05-17)
+- `BottomNavLayout.tsx` + `BottomNavbar.tsx` — BN-1; `BottomNavLayout` is the sole writer of `--bottom-nav-height`
+- `BottomChrome.tsx` — the middle tier (2026-08-24); sole writer of `--bottom-chrome-height`. `bottom-chrome-slot.ts` (in `ui/`, react-only, so `ui → features/layout` never closes an import cycle) holds the portal id + `useBottomChromeSlot()`
+- `AppLayoutShell.tsx` — assembles everything + public SidebarLayout; `showBottomNav` gates BN-1 off on dashboard routes
+- `DashboardLayoutClient.tsx` — dashboard drawer state + DashboardNavContext registration; its `DashboardBottomNav` renders through the shared `BottomNavLayout` (2026-08-24) so it publishes `--bottom-nav-height` like the public bar — it used to hand-roll its own `fixed bottom-0` at the same z-index as the ungated public one, i.e. two tab bars on identical pixels with only one of them publishing a height; content gutter widened to `md:pl-14 lg:pl-16` so the sidebar toggle pill never overlaps content; wrap children in `max-w-screen-2xl mx-auto` so wide screens center (2026-05-17)
 - `UserSidebar.tsx` — toggle tab background switched from hardcoded green gradient to `var(--appkit-color-primary-700)` → `var(--appkit-color-secondary-500)` so it themes light/dark (2026-05-17); `UserNavItem.confirm?: { title?; message }` field intercepts nav with `window.confirm()` (e.g. the buyer→store dashboard link)
 
 ---

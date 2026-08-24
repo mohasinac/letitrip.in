@@ -86,9 +86,12 @@
       "BID_INCREMENT_TOO_LOW": "Your bid must meet the minimum increment.",
       "BID_SELF_BID": "You cannot bid on your own listing.",
       "BID_USER_BANNED": "Your account is not permitted to bid.",
-      "BID_BUY_NOW_UNAVAILABLE": "Buy-now is not available for this auction.",
-      "BID_BUY_NOW_BIDS_STARTED": "Buy-now is no longer available — bidding has started.",
+      "BID_BUY_NOW_UNAVAILABLE": "Buy Now is unavailable — bidding has already passed the Buy Now price.",
       "BID_BUY_NOW_NO_PRICE": "Buy-now price is not set.",
+      "BID_BUYOUT_LAPSED": "Your Buy Now claim expired. Head back to the auction to bid or try again.",
+      "BID_BUYOUT_OUTBID": "Bidding passed the Buy Now price while you were checking out, so this purchase can no longer go through.",
+      "BID_AUCTION_ALREADY_SOLD": "Another buyer completed their purchase first, so this auction is already sold.",
+      "BID_AUCTION_ENDED_BEFORE_CHECKOUT": "The auction ended before you completed payment, so it went to the winning bidder.",
       "OFFER_DISABLED": "The seller is not accepting offers on this listing.",
       "OFFER_PRICE_TOO_LOW": "Your offer is below the minimum acceptable price.",
       "OFFER_LIMIT_REACHED": "You have reached the offer limit for this listing.",
@@ -798,10 +801,12 @@
     "eventTypeFeedback": "Feedback",
     "eventTypeRaffle": "Raffle",
     "eventTypeSpinWheel": "Spin the Wheel",
+    "eventTypeLottery": "Lottery",
     "eventStatusDraft": "Draft",
     "eventStatusActive": "Active",
     "eventStatusPaused": "Paused",
     "eventStatusEnded": "Ended",
+    "eventStatusCancelled": "Cancelled",
     "entryStatusPending": "Pending",
     "entryStatusApproved": "Approved",
     "entryStatusFlagged": "Flagged",
@@ -1982,7 +1987,10 @@
     "offer": "Offer",
     "poll": "Poll",
     "survey": "Survey / Giveaway",
-    "feedback": "Feedback"
+    "feedback": "Feedback",
+    "raffle": "Raffle",
+    "spin_wheel": "Spin the Wheel",
+    "lottery": "Lottery"
   },
   "feedbackConfig": {
     "allowAnonymousLabel": "Allow anonymous submissions"
@@ -3484,7 +3492,8 @@
     "draft": "Draft",
     "active": "Active",
     "paused": "Paused",
-    "ended": "Ended"
+    "ended": "Ended",
+    "cancelled": "Cancelled"
   },
   "formFieldTypes": {
     "text": "Short text",

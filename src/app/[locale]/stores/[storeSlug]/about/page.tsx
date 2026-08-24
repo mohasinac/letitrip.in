@@ -1,5 +1,5 @@
-import { storeRepository, type StoreDetail } from "@mohasinac/appkit";
-import { GoogleReviewsSection } from "@mohasinac/appkit/server";
+import { storeRepository } from "@mohasinac/appkit";
+import { GoogleReviewsSection, toStoreDetail } from "@mohasinac/appkit/server";
 import { StoreAboutClient } from "./StoreAboutClient";
 
 type Props = {
@@ -12,10 +12,15 @@ export default async function Page({ params }: Props) {
 
   if (!store) return null;
 
-  const gr = (store as unknown as { googleReviews?: { placeId: string; enabled: boolean; maxReviews?: number; minRating?: number; layout?: "grid" | "carousel" } }).googleReviews;
+  // `gr` is read off the raw document and consumed by a Server Component only —
+  // it never crosses the client boundary. Everything that DOES cross it goes
+  // through toStoreDetail(), the single public allow-list: passing the raw
+  // StoreDocument here used to serialise the store's Meta WhatsApp access
+  // token, adminNotes and customCommissionRate into this page's public HTML.
+  const gr = store.googleReviews;
   return (
     <>
-      <StoreAboutClient store={store as unknown as StoreDetail} />
+      <StoreAboutClient store={toStoreDetail(store)} />
       {gr?.enabled && gr.placeId && (
         <GoogleReviewsSection
           placeId={gr.placeId}

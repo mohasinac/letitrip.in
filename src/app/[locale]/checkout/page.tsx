@@ -10,6 +10,8 @@ import {
   ADMIN_CHECKOUT_BYPASS_FLAG_KEY,
   isAdminUser,
   checkEmiEligibility,
+  toBuyerEmiSettings,
+  toBuyerFacingFees,
 } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
 import { getFlag } from "@/lib/features";
@@ -70,8 +72,8 @@ export default async function Page() {
         showCod={showCod}
         showCoupons={showCoupons}
         showEmi={showEmi}
-        emiSettings={emiSettings}
-        codSettings={settings?.commissions ?? null}
+        emiSettings={toBuyerEmiSettings(emiSettings)}
+        codSettings={toBuyerFacingFees(settings?.commissions)}
       />
     </Suspense>
   );

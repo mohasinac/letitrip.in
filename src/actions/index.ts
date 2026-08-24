@@ -219,14 +219,14 @@ export {
   getSellerStorefrontProductsAction,
 } from "./product.actions";
 
-// Store reads (public)
-export {
-  listStoresAction,
-  getStoreBySlugAction,
-  getStoreProductsAction,
-  getStoreAuctionsAction,
-  getStoreReviewsAction,
-} from "./store.actions";
+// Store + site-settings server actions were deleted 2026-08-24. Every one was
+// unauthenticated and returned RAW documents — listStoresAction handed back a
+// whole page of decrypted StoreDocuments, getSiteSettingsAction returned the
+// singleton including the encrypted credentials blob. None had a client
+// importer, so none was reachable, but a single import would have put them in
+// the action manifest. All have authenticated, projected HTTP equivalents:
+// /api/stores, /api/stores/[storeSlug], /api/admin/site.
+
 
 // Promotions reads (public)
 export { getPromotionsAction } from "./promotions.actions";
@@ -234,8 +234,6 @@ export { getPromotionsAction } from "./promotions.actions";
 // Search (public)
 export { searchProductsAction } from "./search.actions";
 
-// Site settings (public read, admin write)
-export { getSiteSettingsAction } from "./site-settings.actions";
 
 // Realtime token (auth required)
 export { getRealtimeTokenAction } from "./realtime-token.actions";
@@ -368,8 +366,6 @@ export { enterEventAction } from "./event.actions";
 // Admin coupon list (admin role required)
 export { listAdminCouponsAction } from "./admin-coupon.actions";
 
-// Site settings update (admin role required)
-export { updateSiteSettingsAction } from "./site-settings.actions";
 
 // Offer mutations (auth required â€” buyer / seller)
 export {

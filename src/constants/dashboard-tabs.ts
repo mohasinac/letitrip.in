@@ -81,26 +81,21 @@ export const ADMIN_USERS_TABS = [
 
 export type AdminUsersTabId = (typeof ADMIN_USERS_TABS)[number]["id"];
 
-export const ADMIN_STORES_TABS = [
-  { id: "all", label: "All" },
-  { id: "active", label: "Active" },
-  { id: "pending", label: "Pending" },
-  { id: "suspended", label: "Suspended" },
-  { id: "verified", label: "Verified" },
-] as const satisfies readonly DashboardTab[];
-
-export type AdminStoresTabId = (typeof ADMIN_STORES_TABS)[number]["id"];
-
-export const ADMIN_EVENTS_TABS = [
-  { id: "all", label: "All" },
-  { id: "active", label: "Active" },
-  { id: "draft", label: "Draft" },
-  { id: "ended", label: "Ended" },
-  { id: "raffle", label: "Raffles" },
-  { id: "spin_wheel", label: "Spin Wheel" },
-] as const satisfies readonly DashboardTab[];
-
-export type AdminEventsTabId = (typeof ADMIN_EVENTS_TABS)[number]["id"];
+// ADMIN_STORES_TABS and ADMIN_EVENTS_TABS were deleted 2026-08-24. Both had
+// ZERO importers — the live chip sets are ADMIN_STORE_STATUS_TABS and
+// ADMIN_EVENT_STATUS_TABS in appkit's filter-tabs.ts — and both were wrong in
+// ways that would have shipped silently if anything had wired them up:
+//
+//   ADMIN_STORES_TABS  offered a "verified" chip, which is not a StoreStatus at
+//                      all (verification is the separate `isVerified` boolean),
+//                      so it would have emitted `status==verified` and matched
+//                      zero rows forever; it also omitted the real `rejected`.
+//   ADMIN_EVENTS_TABS  mixed two different fields into one chip group — three
+//                      statuses plus two TYPES (`raffle`, `spin_wheel`) — so
+//                      picking a type chip would have filtered `status` by it.
+//
+// Same reasoning as the three zero-consumer arrays removed on 2026-08-21: a
+// dead array is a loaded gun for whoever wires it up next.
 
 export const ADMIN_BLOG_TABS = [
   { id: "all", label: "All" },

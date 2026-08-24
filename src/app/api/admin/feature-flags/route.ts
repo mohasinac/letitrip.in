@@ -7,8 +7,15 @@ import {
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
+// `featureFlags` is NOT flat: `listingTypes` and `categoryTypes` are nested
+// boolean maps, and AdminFeatureFlagsView PUTs the whole object back. A plain
+// `record(string, boolean)` rejected those two keys, so every listing-type and
+// category-type toggle silently failed to save while the flat flags went
+// through — the form looked like it worked and did not.
 const featureFlagsSchema = z.object({
-  flags: z.record(z.string(), z.boolean()).optional(),
+  flags: z
+    .record(z.string(), z.union([z.boolean(), z.record(z.string(), z.boolean())]))
+    .optional(),
   rollouts: z.record(z.string(), z.number().min(0).max(100)).optional(),
 });
 

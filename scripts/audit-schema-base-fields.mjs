@@ -10,10 +10,17 @@
  *     `_internal/shared/types/base-document.ts` to prevent field-list drift
  *     across the 23 schema files.
  *
- * Strict-zero. Suppression: `// audit-schema-base-ok: <reason>` on the
- * `id:` line OR the line immediately above it. Use only for embedded
- * sub-documents (not collection roots) that legitimately carry their own
- * id without being a direct Firestore collection root.
+ * Strict-zero, with NO suppression marker. This header used to advertise
+ * `// audit-schema-base-ok: <reason>`, and the failure output told you to use
+ * it — but the check was never implemented, AND `audit-no-suppression-comments`
+ * bans that marker, so following the advice just produced a different failing
+ * audit. Corrected 2026-08-24.
+ *
+ * For an embedded sub-document that legitimately carries its own `id`, declare
+ * it as a `type` alias rather than an `interface`: a type alias is not a
+ * Firestore collection root, and this audit skips them by design. See
+ * `SiteSettingsAdPlacement` / `SiteSettingsAdInventoryItem` in
+ * features/admin/schemas/firestore.ts.
  *
  * Exit 0 — clean
  * Exit 1 — violations found
@@ -135,8 +142,10 @@ console.error(`audit-schema-base-fields: ${violations.length} violation(s).\n`);
 console.error("Every Firestore collection root interface must extend BaseDocument:");
 console.error("  import { BaseDocument } from '../../_internal/shared/types/base-document';");
 console.error("  interface FooDocument extends BaseDocument { /* no id: string here */ }\n");
-console.error("For embedded sub-documents (not collection roots), suppress with:");
-console.error("  // audit-schema-base-ok: embedded sub-document, not a collection root\n");
+console.error("For an embedded sub-document that carries its own id, declare it as a type");
+console.error("alias instead — this audit skips those by design, and there is no");
+console.error("suppression marker (audit-no-suppression-comments bans them):");
+console.error("  export type FooItem = { id: string; /* ... */ };\n");
 for (const v of violations) {
   console.error(`  [MISSING_BASE_DOCUMENT] ${v.file}:${v.line}`);
   console.error(`    ${v.text}`);

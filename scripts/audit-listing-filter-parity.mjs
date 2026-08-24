@@ -121,10 +121,58 @@ const SSR_LISTING_VIEWS = [
  * how Root Cause #30 is written, and `staleTime: Infinity` makes the resulting
  * disagreement permanent rather than transient.
  */
-const SHARED_TOGGLE_HELPER = "defaultTogglesForListingTypes";
+const SHARED_TOGGLE_HELPER = "defaultAvailabilityForListingTypes";
+/**
+ * All five public browse SSR views. Only the first two were registered until
+ * 2026-08-24 — and the three that were NOT are exactly the ones that had
+ * hard-coded their default (`AuctionsListView` carried a literal
+ * `hideEndedByDefault: true`, `PreOrdersListView` a literal
+ * `hideSoldByDefault: true` that contradicted pre-order's own registered
+ * hide-default). The check existed; the files it needed to cover did not.
+ */
 const SHARED_TOGGLE_CONSUMERS = [
   "appkit/src/features/products/components/ProductsIndexPageView.tsx",
   "appkit/src/features/products/components/ArtStickersListView.tsx",
+  "appkit/src/features/auctions/components/AuctionsListView.tsx",
+  "appkit/src/features/pre-orders/components/PreOrdersListView.tsx",
+  "appkit/src/features/products/components/PrizeDrawsListingView.tsx",
+];
+
+/**
+ * (e) Every client listing component must send `availability` on EVERY
+ * request, including the default "available".
+ *
+ * This is Root Cause #30 inverted, and it is the single most fragile thing
+ * about the availability scope. `/api/products` treats an ABSENT value as
+ * "all" so non-browse callers (related items, search, compare) are unaffected
+ * — which means a browse component that forgets to send it filters on the SSR
+ * paint and NOT on the refetch, and `staleTime: Infinity` freezes that
+ * disagreement for the life of the page.
+ *
+ * The banned tokens are how the OLD divergence was written: a client-computed
+ * `inStock:` default, or a bare `new Date().toISOString()` cutoff. Both now
+ * belong to the server.
+ */
+const AVAILABILITY_CLIENT_VIEWS = [
+  "appkit/src/features/products/components/ProductsIndexListing.tsx",
+  "appkit/src/features/products/components/AuctionsIndexListing.tsx",
+  "appkit/src/features/products/components/PrizeDrawsIndexListing.tsx",
+  "appkit/src/features/pre-orders/components/PreOrdersIndexListing.tsx",
+  "appkit/src/features/stores/components/StoreProductsListing.tsx",
+  "appkit/src/features/stores/components/StoreAuctionsListing.tsx",
+  "appkit/src/features/stores/components/StorePreOrdersListing.tsx",
+  "appkit/src/features/stores/components/StoreClassifiedsListing.tsx",
+  "appkit/src/features/stores/components/StoreDigitalCodesListing.tsx",
+  "appkit/src/features/stores/components/StoreLiveItemsListing.tsx",
+  "appkit/src/features/categories/components/CategoryProductsListing.tsx",
+];
+const AVAILABILITY_TOKEN = "availability";
+const AVAILABILITY_BANNED = [
+  { token: "inStock:", why: "superseded by the availability scope" },
+  {
+    token: "new Date().toISOString()",
+    why: "a client-computed date cutoff is the server's job now",
+  },
 ];
 
 /** The only file allowed to decide how a public product query is shaped. */
@@ -287,13 +335,46 @@ for (const file of SHARED_TOGGLE_CONSUMERS) {
   }
   if (!content.includes(SHARED_TOGGLE_HELPER)) {
     violations.push({
-      kind: "TOGGLE_DEFAULTS_NOT_SHARED",
+      kind: "AVAILABILITY_DEFAULTS_NOT_SHARED",
       file,
       detail:
-        `does not call ${SHARED_TOGGLE_HELPER}() — the "Show sold"/"Show ended" ` +
-        `defaults must come from the shared helper, not a hardcoded literal, or SSR ` +
+        `does not call ${SHARED_TOGGLE_HELPER}() — the availability-scope default ` +
+        `must come from the shared helper, not a hardcoded literal, or SSR ` +
         `and the client refetch can disagree permanently (staleTime: Infinity)`,
     });
+  }
+}
+
+// (e) Every client listing component sends `availability` on every request,
+//     and none of them re-implements the old client-side default.
+for (const file of AVAILABILITY_CLIENT_VIEWS) {
+  const content = readSource(file);
+  if (content === null) {
+    violations.push({
+      kind: "MISSING_FILE",
+      file,
+      detail: `registered availability consumer not found — update the registry in ${relative(ROOT, __filename)}`,
+    });
+    continue;
+  }
+  if (!content.includes(AVAILABILITY_TOKEN)) {
+    violations.push({
+      kind: "CLIENT_OMITS_AVAILABILITY",
+      file,
+      detail:
+        `never references \`${AVAILABILITY_TOKEN}\` — /api/products reads an absent ` +
+        `value as "all", so this component would filter on the SSR paint and NOT ` +
+        `on the refetch, permanently (Root Cause #30)`,
+    });
+  }
+  for (const { token, why } of AVAILABILITY_BANNED) {
+    if (content.includes(token)) {
+      violations.push({
+        kind: "CLIENT_REIMPLEMENTS_AVAILABILITY",
+        file,
+        detail: `contains \`${token}\` — ${why}`,
+      });
+    }
   }
 }
 
@@ -377,13 +458,23 @@ if (unionSource === null) {
       file: SHARED_QUERY_MODULE,
       detail: "the shared public-listing query module is gone — SSR views have nothing to delegate to",
     });
-  } else if (!shared.includes("hasUnsafeFilter")) {
+  } else if (!shared.includes("inMemory") || !shared.includes("isListingRowAvailable")) {
     violations.push({
       kind: "SHARED_QUERY_LOST_INMEMORY_PATH",
       file: SHARED_QUERY_MODULE,
       detail:
-        "no `hasUnsafeFilter` branch — the in-memory inStock/date-range handling that " +
-        "6fe4e0dd8 introduced has been removed, which reintroduces the FAILED_PRECONDITION bug",
+        "no `inMemory` branch, or it no longer applies `isListingRowAvailable` — the " +
+        "availability predicate and unsafe date ranges MUST be refined over a bounded " +
+        "fetch, never pushed into Firestore, or the FAILED_PRECONDITION bug that " +
+        "6fe4e0dd8 fixed comes back (Root Cause #59)",
+    });
+  } else if (!shared.includes("PUBLIC_PRODUCT_MAX_PAGE_SIZE")) {
+    violations.push({
+      kind: "SHARED_QUERY_UNBOUNDED_FETCH",
+      file: SHARED_QUERY_MODULE,
+      detail:
+        "the in-memory path no longer caps its fetch — every bounded fetch must be " +
+        "capped at PUBLIC_PRODUCT_MAX_PAGE_SIZE (Rule #6)",
     });
   }
 }

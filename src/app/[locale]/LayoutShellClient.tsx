@@ -325,6 +325,12 @@ export default function LayoutShellClient({
       }}
       footer={footer}
       contentClassName={isDashboard ? "w-full" : undefined}
+      // Dashboard routes mount their own section-scoped bottom nav inside
+      // DashboardLayoutClient. Both bars are `fixed bottom-0` at the same
+      // z-index and both publish --bottom-nav-height, so exactly one may be
+      // mounted. Derived from the pathname rather than useDashboardNav().hasNav
+      // (which is only set in an effect) so the public bar never flashes.
+      showBottomNav={!isDashboard}
       {...(siteSettingsBackground?.light?.value ? { lightBackground: siteSettingsBackground.light } : {})}
       {...(siteSettingsBackground?.dark?.value ? { darkBackground: siteSettingsBackground.dark } : {})}
       searchSlotRenderer={(onClose) => (

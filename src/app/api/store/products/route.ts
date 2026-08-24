@@ -8,8 +8,16 @@ import { withProviders } from "@/providers.config";
  */
 import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse, ApiErrors } from "@mohasinac/appkit";
-import { productRepository, storeRepository } from "@mohasinac/appkit";
+import { storeRepository } from "@mohasinac/appkit";
+import {
+  listPublicProducts,
+  parsePublicProductParams,
+  ANY_STATUS,
+} from "@mohasinac/appkit/server";
 import { ROLES_STORE_READ } from "@/constants";
+import { sortBy, PRODUCT_FIELDS } from "@mohasinac/appkit";
+
+const DEFAULT_SORT = sortBy(PRODUCT_FIELDS.CREATED_AT, "DESC");
 
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_STORE_READ],
@@ -22,39 +30,38 @@ export const GET = withProviders(createApiHandler({
     }
 
     const url = new URL(request.url);
-    const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
-    const pageSize = Math.min(
-      50,
-      Math.max(1, Number(url.searchParams.get("pageSize")) || 25),
-    );
-    const clientFilters = url.searchParams.get("filters") ?? "";
-    const sorts =
-      url.searchParams.get("sorts") ??
-      url.searchParams.get("sort") ??
-      "-createdAt";
 
-    // Server-side security: force storeId filter so sellers can't see other stores' products
-    const storeFilter = `storeId==${store.id}`;
-    const filters = clientFilters
-      ? `${storeFilter},${clientFilters}`
-      : storeFilter;
-
-    const result = await productRepository.list({
-      filters,
-      sorts,
-      page,
-      pageSize,
+    // Shares the one listing query with every public surface, so a seller
+    // filtering their own auctions issues the same shape /auctions does — and
+    // gets the availability scope, the bounded-fan-out and the `truncated`
+    // honesty for free instead of a fourth hand-rolled filter builder.
+    const result = await listPublicProducts({
+      ...parsePublicProductParams(url.searchParams, {
+        pageSize: Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize")) || 25)),
+        sorts: url.searchParams.get("sorts") ?? url.searchParams.get("sort") ?? DEFAULT_SORT,
+      }),
+      // A dashboard exists to show drafts and archived rows, which the public
+      // default would hide.
+      status: ANY_STATUS,
+      // Server-side security: the store identity comes from the session, never
+      // from the URL, so a seller cannot read another store's inventory.
+      storeId: store.id,
+      rawFilters: url.searchParams.get("filters") || null,
     });
-    const totalPages = Math.max(1, Math.ceil(result.total / pageSize));
+
+    if (!result) {
+      return ApiErrors.internalError("Product search is temporarily unavailable.");
+    }
 
     return successResponse({
       products: result.items,
       meta: {
         page: result.page,
-        limit: pageSize,
+        limit: result.pageSize,
         total: result.total,
-        totalPages,
-        hasMore: result.page < totalPages,
+        totalPages: result.totalPages,
+        hasMore: result.hasMore,
+        truncated: result.truncated,
       },
     });
   },

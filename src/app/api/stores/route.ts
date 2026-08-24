@@ -4,7 +4,7 @@ import {
   storeRepository,
   parseListingParams,
 } from "@mohasinac/appkit";
-import { filterTestDataForViewer } from "@mohasinac/appkit/server";
+import { filterTestDataForViewer, toStoreListItem } from "@mohasinac/appkit/server";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
@@ -29,25 +29,9 @@ const SAFE_STORE_FILTER_FIELDS = new Set([
   "averageRating", "stats.totalProducts",
 ]);
 
+/** The public projection is `toStoreListItem` — see appkit's stores/adapters.ts. */
 function toPublicStore(s: Record<string, JsonValue>): StoreListItem {
-  const stats = s.stats as Record<string, JsonValue> | undefined;
-  return {
-    id: s.id as string,
-    storeSlug: s.storeSlug as string,
-    ownerId: s.ownerId as string,
-    storeName: s.storeName as string,
-    storeDescription: s.storeDescription as string | undefined,
-    storeCategory: s.storeCategory as string | undefined,
-    storeLogoURL: s.storeLogoURL as string | undefined,
-    storeBannerURL: s.storeBannerURL as string | undefined,
-    status: s.status as string,
-    isPublic: s.isPublic as boolean,
-    totalProducts: (stats?.totalProducts ?? s.totalProducts) as number | undefined,
-    itemsSold: (stats?.itemsSold ?? s.itemsSold) as number | undefined,
-    totalReviews: (stats?.totalReviews ?? s.totalReviews) as number | undefined,
-    averageRating: (stats?.averageRating ?? s.averageRating) as number | undefined,
-    createdAt: s.createdAt as string | undefined,
-  } as StoreListItem;
+  return toStoreListItem(s as Record<string, unknown>);
 }
 
 async function _GET(request: Request): Promise<NextResponse> {

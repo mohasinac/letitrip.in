@@ -10,6 +10,11 @@ import type { JsonValue } from "@mohasinac/appkit";
 import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse, errorResponse } from "@mohasinac/appkit";
 import { productRepository } from "@mohasinac/appkit";
+import {
+  listPublicProducts,
+  parsePublicProductParams,
+  ANY_STATUS,
+} from "@mohasinac/appkit/server";
 import { serverLogger } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
@@ -24,6 +29,9 @@ import {
   productCreateSchema,
 } from "@/validation/request-schemas";
 import { ROLES_ADMIN_MOD } from "@/constants";
+import { sortBy, PRODUCT_FIELDS } from "@mohasinac/appkit";
+
+const DEFAULT_SORT = sortBy(PRODUCT_FIELDS.CREATED_AT, "DESC");
 
 /**
  * GET /api/admin/products
@@ -33,22 +41,23 @@ export const GET = withProviders(createApiHandler({
   permission: "admin:products:read",
   handler: async ({ request }) => {
     const url = new URL(request.url);
-    const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
-    const pageSize = Math.min(
-      50,
-      Math.max(1, Number(url.searchParams.get("pageSize")) || 50),
-    );
-    const filters = url.searchParams.get("filters") ?? undefined;
-    const sorts =
-      url.searchParams.get("sorts") ??
-      url.searchParams.get("sort") ??
-      "-createdAt";
-    const result = await productRepository.list({
-      filters,
-      sorts,
-      page,
-      pageSize,
+
+    // Same listing query as every public surface — see the seller route for
+    // the reasoning. `ANY_STATUS` is what makes this legitimate here: an admin
+    // list exists to surface drafts and in-review rows.
+    const result = await listPublicProducts({
+      ...parsePublicProductParams(url.searchParams, {
+        pageSize: Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize")) || 50)),
+        sorts: url.searchParams.get("sorts") ?? url.searchParams.get("sort") ?? DEFAULT_SORT,
+      }),
+      status: ANY_STATUS,
+      rawFilters: url.searchParams.get("filters") || null,
     });
+
+    if (!result) {
+      return errorResponse("Product search is temporarily unavailable.", 500);
+    }
+
     return successResponse({
       items: result.items,
       total: result.total,
@@ -56,6 +65,7 @@ export const GET = withProviders(createApiHandler({
       pageSize: result.pageSize,
       totalPages: result.totalPages,
       hasMore: result.hasMore,
+      truncated: result.truncated,
     });
   },
 }));

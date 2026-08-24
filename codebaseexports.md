@@ -40,7 +40,7 @@
 |--------|------|-----------------|---------|
 | Container | Component | size, as, surface, padding, rounded, border, shadow, children | Page-level container with max-width, centering, responsive padding |
 | Stack | Component | gap, centered, align, as, surface, padding, rounded, border, shadow, children | Vertical flex column with responsive gap |
-| Row | Component | gap, centered, align, justify, wrap, as, surface, padding, rounded, border, shadow, children | Horizontal flex row with alignment control |
+| Row | Component | gap, centered, align, justify, wrap, reverse (`boolean \| "hand"`), as, surface, padding, rounded, border, shadow, children | Horizontal flex row with alignment control. `reverse="hand"` mirrors only in left-hand mode, via CSS `[data-hand]` — no hook, stays server-safe |
 | Grid | Component | cols, gap, as, surface, padding, rounded, border, shadow, children | Responsive CSS grid with multiple layout presets |
 | GAP_MAP | Constant | {none, px, xs, sm, 2.5, 3, md, 5, lg, xl, 2xl} | Gap token map for spacing |
 | GRID_MAP | Constant | {1-6, cards, productCards, sidebar, etc.} | Responsive grid column presets |
@@ -254,7 +254,7 @@
 | DescriptionField.tsx | DescriptionField | Component | Description textarea with rich text |
 | ItemRow.tsx | ItemRow | Component | Horizontal item display row |
 | ActiveFilterChips.tsx | ActiveFilterChips | Component | Active filter chip display |
-| FilterChipGroup.tsx | FilterChipGroup | Component | Filter chip group |
+| FilterChipGroup.tsx | FilterChipGroup, FilterChipGroupTab | Component | Filter chip group. **2026-08-24**: `FilterChipGroupTab.count` renders a trailing count; `hideEmpty` (opt-in, default false) drops zero-count chips. A chip with `count === undefined` — meaning NOT counted / count failed, never zero — and the currently-selected chip are always kept. Only ever correct for a FILTER over existing rows, never a creation picker |
 | FilterDrawer.tsx | FilterDrawer | Component | Filter sidebar/drawer |
 | BulkActionBar.tsx | BulkActionBar | Component | Bulk selection action bar |
 | RowActionMenu.tsx | RowActionMenu | Component | Row-level action dropdown |
@@ -487,7 +487,8 @@
 
 | Export | Type | Purpose |
 |--------|------|---------|
-| LotterySlotGrid | Grid | Visual slot grid (never shows price/weight) |
+| LotterySlotGrid | Grid | Visual slot grid (never shows price/weight). Deliberately number-only — prize photos go in the `PrizeDrawCollage` above it, since this grid can be 200 tiles wide |
+| slotsToCollageItems | Mapper | `slot-collage-items.ts` — maps `ClientLotterySlot[]` onto `CollagePrizeItem[]` for `PrizeDrawCollage`; drops slots with no `image`. Shared by `LotteryDetailView` + `PrizeDrawLotteryDetailView` so the "which slots get a tile" rule can't drift |
 | LotteryPullForm | Form | User lottery pull form (TX ID + phone + slot) |
 | LotteryListView | Listing | Card grid of lottery events |
 | LotteryDetailView | Detail | Full lottery event page with slot grid + pull form |
@@ -578,7 +579,7 @@
 | CustomFieldsEditor, CustomSectionsEditor, CustomSectionTabContent | Editor | Custom fields/sections |
 | NonRefundableConsentModal | Modal | Non-refundable product consent |
 | PrizeDrawItemsEditor | Editor | Prize draw items editor (min 2 items, was 3, 2026-08-19) |
-| PrizeDrawCollage | Display | Prize draw items collage |
+| PrizeDrawCollage | Display | Prize draw items collage. Generic over `<T extends CollagePrizeItem>` (2026-08-24) so lottery slots can reuse it without faking `PrizeDrawItem`'s required `condition`/`images`; also exports the `CollagePrizeItem` structural type. Its Button carries `flex-col items-stretch` — removing that re-breaks the tile layout (Root Cause #68) |
 | PrizeRevealModal | Modal | Redesigned 2026-08-19 for fully-automatic reveal — pure display (`pending`/`won` from `initialPrizeWon`), no more buyer-click `onReveal` flow; props: `revealMode?: "instant"\|"scheduled"`, exports `PrizeRevealResult` (renamed from `PrizeRevealResponse`) |
 | PrizeDrawWinnerMappingView | View | New 2026-08-19 — read-only item→order winner mapping for classic reveal-mode draws, admin/seller-only (never public); wired into the admin/seller prize-draw "entries" pages alongside `LotteryEntriesView` (lottery mode) |
 | PrizeDrawEntryActions | Actions | Prize draw entry actions |
@@ -733,6 +734,7 @@
 | bundles | listBundleMembers | cache(bundle) | Resolve bundle's member `ProductDocument[]` — falls back to `bundleQueryRule.productIds` when `bundleProductIds` mirror is empty |
 | bundles | resolveBundleMemberIds | sync(bundle) | Pure id-resolution helper backing `listBundleMembers` |
 | bundles | resolveBundleOriginalTotal | async(productIds[]) | Sum member product prices for the discount "before" total; `undefined` if any member fails to resolve |
+| bundles | resolveBundleCategorySlugs | async(productIds[]) | **2026-08-24**. Union of the members' `categorySlugs` → the `bundleCategorySlugs` mirror. A bundle row has no category of its own, which is why the category page counted every active bundle site-wide. Maintain alongside `resolveBundleOriginalTotal` so the two mirrors cannot drift |
 | bundles | listFeaturedBundles | cache(limit?) | Active bundles for homepage placement |
 | bundles | getRelatedBundles | cache(bundle, limit?) | 2026-08-20 — "Related Bundles" section (other active bundles, excludes self) — bundle detail pages previously had no related section |
 | cart | getCartForUser | cache(userId) | Fetch user's cart |
@@ -750,6 +752,11 @@
 | products | listSitemapProducts | async() | List products for sitemap |
 | products | computeRelatedItems | cache(product) | 2026-08-20 — the shared 4-signal related-items computation (category/brand/tags/store), extracted from `ProductDetailPageView`; feeds `<RelatedItemsSection>` on every listing-type detail page. See [Listing Types Reference](../CLAUDE.md#listing-types-reference) |
 | products | toProductItem | sync(doc) | Firestore doc → card-grid `ProductItem`; now copies `listingType` (Root Cause #48 fix) so related/grouped cards route correctly |
+| products | listPublicProducts | async(input, opts?) | THE public listing query. 2026-08-24 — also backs `/api/admin/products` + `/api/store/products` via the `ANY_STATUS` sentinel, and the homepage `getFeatured*` helpers. Three execution paths for the availability scope; returns `truncated` when a bounded fetch saturates. See [Availability & Order-Scope Tabs](../CLAUDE.md#availability--order-scope-tabs) |
+| products | listingTabCounts | async(tabs, scope) | **2026-08-24**. One count per listing-type tab, derived from the tab array itself (so a tenth type is counted automatically) and resolved in a single parallel batch. Backs the category / brand / store tab bars. Keys are `tabSlug`; a value of `undefined` means the count FAILED, never zero — callers keep such a tab visible (Root Cause #59) |
+| products | ListingTabScope, ListingTabCounts | type | Scope (`categoriesIn` / `brandName` / `storeId`) and the `tabSlug -> number | undefined` result map |
+| products | defaultAvailabilityForListingTypes | sync(types?) | The availability scope a listing surface opens in. SSR and client MUST both derive from this — `audit-listing-filter-parity` asserts on the name (Root Cause #30) |
+| products | ANY_STATUS | Constant | `status` sentinel meaning "every publication state". Authenticated dashboards only — a public surface passing it would leak drafts |
 | grouped | getGroupsForProduct | cache(productId) | 2026-08-20 — groups a product belongs to (`isActive`+`visibilityStatus:"visible"`) |
 | grouped | getGroupsWithItemsForProduct | cache(productId) | 2026-08-20 — same, hydrated with each group's other member products; feeds `<GroupedListingsCarousel>` |
 | grouped | getGroupsForCategory | cache(categorySlug) | 2026-08-21 — groups tagged to a category, hydrated with ALL member products; feeds `<GroupedListingsCarousel>` on `CategoryDetailPageView` |
@@ -782,6 +789,8 @@
 | Domain | Export | Purpose |
 |--------|--------|---------|
 | orders | orderDocumentToOrder | Convert Firestore doc to Order shape — 2026-08-21: now also maps `orderDate`/`shippingDate`/`deliveryDate`/`cancellationDate`/`trackingUrl` (were silently dropped, leaving the buyer tracking page with no real data to render — Root Cause #52), **and** the manual-payment block `paymentMethod`/`displayedUpiId`/`paymentDeadline`/`paymentProofUrl`/`paymentProofUploadedAt`/`paymentTransactionId`/`buyerReportedUpiId`/`buyerMarkedPaid`/`paymentUpiMismatch`/`paymentReviewOutcome`/`paymentReviewNote`/`cancellationReason` — dropping `paymentMethod` alone had made the entire buyer proof-upload flow dead (Root Cause #57) |
+| **site-settings** | **toPublicSiteSettings**, PUBLIC_SITE_SETTINGS_FIELDS, PRIVATE_SITE_SETTINGS_FIELDS | **Allow-list projection for the public `GET /api/site-settings`.** Every `SiteSettingsDocument` field is triaged into the public or private list; a field in neither fails `audit-public-projection-parity`. Replaced a deny-list spread that shipped `gst.gstin`, all 25 `commissions.*`, `laborRate`, `adSettings.providerCredentials` and every draft ad to anonymous callers (Root Cause #70) |
+| **stores** | **toStoreDetail**, **toStoreListItem**, PUBLIC_STORE_FIELDS, PRIVATE_STORE_FIELDS, StoreProjectionSource | **The single public projection for `StoreDocument`** — used by `/api/stores`, `/api/stores/[storeSlug]`, and every SSR page passing a store into a client component. Collapsed three hand-rolled allow-lists into one. Also flattens `stats.*` and serialises `createdAt` to ISO, which the previous raw casts skipped |
 | classified | adapters (barrel) | Classified data adapters |
 | digital-code | adapters (barrel) | Digital code adapters |
 | live | adapters (barrel) | Live item adapters |
@@ -1012,6 +1021,8 @@
 | Hook | Returns | Purpose |
 |------|---------|---------|
 | useProducts | Products[] | Fetch products |
+| useAvailabilityScope | `{ availability, extraParams, renderAboveContent }` | 2026-08-24 — wires the Available/Sold&Ended/All scope into a `ListingViewConfig`. Uses `buildExtraParams`, NOT `filterKeys`: the scope is a tab, so registering it as a filter key would inflate the drawer badge and let Clear reset it |
+| useOrderScope | `{ scope, extraParams, renderAboveContent }` | 2026-08-24 — the order-lifecycle equivalent (Active/Closed/All), same shape so both read alike at every call site |
 | useProductDetail | ProductDetail | Fetch product detail |
 | useRelatedProducts | Products[] | Fetch related products |
 | useBrands | Brands[] | Fetch brands |
@@ -1423,7 +1434,7 @@
 | admin-permissions.ts | PERMISSION_GROUPS, PERMISSION_DOMAINS, getPermissionsForDomain, formatPermLabel | Display data for `/admin/permissions` reference page. **Temporary mirror** — verbatim copy of the same exports newly added in `appkit/src/features/auth/permissions/constants.ts` (S-ADMIN-7, 2026-08-19); duplicated here only because this repo currently pins `@mohasinac/appkit` from the npm registry (`^4.1.1`), not `file:./appkit`, so the new appkit exports aren't resolvable yet. Delete this file and import directly once appkit is republished. |
 | brand.ts | BRAND, getBrandCopyright | Brand identity |
 | config.ts | Site configuration | Environment-specific config |
-| dashboard-tabs.ts | STORE_LISTINGS_TABS, STORE_ORDERS_TABS, USER_ORDERS_TABS, ADMIN_PRODUCTS_TABS | Dashboard navigation tabs |
+| dashboard-tabs.ts | STORE_ORDERS_TABS, USER_ORDERS_TABS, ADMIN_BLOG_TABS, ADMIN_USERS_TABS, … | Dashboard navigation tabs. **2026-08-24**: `ADMIN_STORES_TABS` and `ADMIN_EVENTS_TABS` deleted — both had zero importers, and both were wrong (the first offered a `verified` chip that is not a `StoreStatus`; the second mixed statuses and types in one group). Live sets are `ADMIN_STORE_STATUS_TABS` / `ADMIN_EVENT_STATUS_TABS` in appkit |
 | faq.ts | FAQ_CATEGORIES | FAQ category mapping |
 | homepage-data.ts | TRUST_INDICATORS, TRUST_FEATURES, SITE_FEATURES | Homepage content blocks |
 | languages.ts | SUPPORTED_LANGUAGES, LANGUAGES_PAGE_SIZE | i18n configuration |
@@ -1449,6 +1460,10 @@
 | table-keys.ts | TABLE_KEYS, VIEW_MODE | useUrlTable() parameter keys |
 
 ### Feature Constants (`appkit/src/features/*/constants/`)
+
+| `orders/constants/order-scope.ts` | `ORDER_SCOPE_VALUES`, `OrderScope`, `isOrderScope`, `statusesForScope`, `ORDER_SCOPE_TABS`, `mergeOrderScopeFilter` | 2026-08-24 — the order lifecycle grouping. `STATUS_SCOPE` is a `Record<OrderStatus, …>` so a tenth status is a COMPILE error, not a row belonging to neither tab. Import `OrderStatus` from `features/orders/types/index`, never the barrel (Root Cause #36). `mergeOrderScopeFilter` skips itself when an explicit `status==` is already present — two equalities on one field AND to nothing |
+| `_internal/shared/listing-types/availability.ts` | `AvailabilityRow`, `DateLike`, `UnavailableClause`, `toDate`, `num`, `baseAvailable`, `isPubliclyVisible`, `alwaysAvailable`, `STOCK_ONLY_UNAVAILABLE_CLAUSES` | 2026-08-24 — the type-agnostic half of the availability predicate; the per-type half is `isAvailable` on each plugin. Combined by `isListingRowAvailable()` in `_registry.ts` |
+| `_internal/shared/features/homepage/section-gate.ts` | `SECTION_FEATURE_GATE`, `filterSectionsByFeatureFlags` | 2026-08-24 — the homepage feature-flag gate. Existed before inside a function with zero call sites, so `auctions: false` hid auctions everywhere EXCEPT the homepage |
 
 | File | Key Exports | Purpose |
 |------|-------------|---------|
@@ -1639,7 +1654,9 @@ Types are co-located with their feature schemas in `appkit/src/features/*/schema
 
 | File | Collection | Purpose |
 |------|-----------|---------|
-| categories-seed-data.ts | categories | Product categories + brands (merged SB-UNI-C) |
+| categories-seed-data.ts | categoriesSeedData | 58 rows: 47 categories (4 tiers, 2 roots) + 2 sublistings + 4 brands + 5 bundles. **2026-08-24**: structural fields are DERIVED by `buildCategoryTree`, never hand-written |
+| _helpers/category-tree.ts | CategoryTreeNode, buildCategoryTree | Nested literal → flat rows with parentIds/ancestors/tier/path/childrenIds/isLeaf/rootId and DFS `position`/`subtreeSize` computed. Deterministic (Root Cause #25) |
+| _helpers/category-forest.ts | CATEGORY_FOREST | The authoring literal for the 4-level, 2-root tree (`category-spinning-tops` + `category-living-collectibles`) |
 | users-seed-data.ts | users | Demo user profiles |
 | stores-seed-data.ts | stores | Demo seller stores |
 | products-standard-seed-data.ts | products | Standard product listings |
@@ -1808,6 +1825,8 @@ Exported from `@mohasinac/appkit` unless otherwise noted.
 | Details / Summary | `appkit/src/ui/components/Details.tsx` | Native `<details>` disclosure widget. |
 | Dialog | `appkit/src/ui/components/Dialog.tsx` | Native `<dialog>` with top-layer rendering + focus trap. |
 | StickyToolbar | `appkit/src/ui/components/StickyToolbar.tsx` | Translucent sticky bar under `AppLayoutShell`; offset from `--header-height`. |
+| BottomChrome | `appkit/src/features/layout/BottomChrome.tsx` | **The middle tier of the bottom edge.** The bottom edge is three tiers — `BottomNavLayout` is the floor (publishes `--bottom-nav-height`), `BackToTop` is the ceiling, and everything non-nav lives inside this fixed flex column, which publishes its own measured `--bottom-chrome-height` via one `ResizeObserver`. `BottomActions` renders as a direct child; bars authored deeper in the tree (`ListingLayout`'s mobile pagination) portal into `BOTTOM_CHROME_SLOT_ID`. Consumers read ONE variable, so a bar changing height, revealing on desktop scroll, or being added later needs no edit anywhere else. Two rules for children: hide by **collapsing** (a transform leaves layout height behind and over-reports the tier — see `BottomActions`' `grid-rows-[1fr→0fr]`), and never put `overflow:hidden` on the container (`BottomActions`' `absolute bottom-full` panels are deliberately outside the measured flow). |
+| useBottomChromeSlot / BOTTOM_CHROME_SLOT_ID | `appkit/src/ui/components/bottom-chrome-slot.ts` | Resolves `BottomChrome`'s portal target, `null` until mounted. Lives in `ui/` rather than beside `BottomChrome` because `features/layout` imports `ui` — a `ui` component reaching back would close a cycle through the `ui` barrel. React-only, no other imports. |
 | IconBox | `appkit/src/ui/components/IconBox.tsx` | Square icon container (`size` × `rounded` × `tone`). |
 | Kbd | `appkit/src/ui/components/Kbd.tsx` | `<kbd>` with `size` + `tone`. |
 | Quote | `appkit/src/ui/components/Quote.tsx` | Inline `<q>` + multi-line `<blockquote>` via `block`. |
@@ -2032,6 +2051,7 @@ Run via the dispatcher; ordering mirrors the historical `check:audits` chain.
 | audit-client-server-only-leak.mjs | strict-0 | Walks every `"use client"` file's full import graph (relative, `@/` alias, appkit subpaths) and fails if it transitively reaches `import "server-only"` or the bare `@mohasinac/appkit` package (resolves to `server-entry.js`, the full server-action surface) — the bug class that broke the webpack production build, 2026-08-20. Exempts genuine `"use server"` action files, which Next's compiler safely splits |
 | audit-function-trigger-shadow-types.mjs | strict-0 | A Firestore-trigger handler's local shadow type (e.g. `NewOrder`) has no field name that doesn't exist on the real document type — caught the 2026-08-19 onOrderCreate bug (every WhatsApp purchase announcement read "A customer" / "₹0") |
 | audit-list-serializer-parity.mjs | strict-0 | Every admin resource's PATCH-writable field (Zod schema) is present in the sibling LIST endpoint's hand-rolled serializer — a missing field means a list-backed editor reseeds from a stale/default value and silently overwrites real data on the next save. Root-caused 2026-08-19 in admin users (`isTester`/`canTestAdmin`) and stores (`isVerified`/`isFeatured`/`capabilities`); registry currently covers users/stores/team (root-cause #38) |
+| audit-public-projection-parity.mjs | strict-0 | Two rules, no suppression marker. (1) Every field of a registered *Document interface is triaged into its adapter’s `PUBLIC_*` or `PRIVATE_*` list, the public list matches what the projection literal actually emits, and a projection never `...spread`s the source document — new schema fields are PRIVATE by default. (2) A raw repository document (storeRepository/siteSettingsRepository) passed as a JSX prop into a confirmed Client Component, incl. via `as unknown as`, which serialises it into the page’s public RSC flight payload. Root-caused 2026-08-24: `/api/site-settings` was a deny-list shipping `gst.gstin`/all `commissions.*`/unmasked `adSettings.providerCredentials`, and four pages (incl. the homepage) published a decrypted Meta WhatsApp access token in HTML (root-cause #70) |
 | audit-hover-reveal-pointer-events.mjs | strict-0 | `opacity-0` + `group-hover:opacity-100`/`hover:opacity-100` without `pointer-events-none` in the same className — a hover-revealed element stays fully interactive while invisible, and `:hover` never fires on touch devices, so it silently swallows mobile taps meant for whatever is underneath it. Root-caused 2026-08-20 across 16 occurrences (mobile "cards don't open" reports) |
 | audit-rbac-gate-staleness.mjs | strict-0 | A component reading an RBAC field (`role`/`isTester`/`canTestAdmin`/`disabled` or a role predicate) off `useSession()`/`useAuth()` and using it standalone in an early-return `<Alert variant="warning"\|"error"\|"danger">` denial, while also calling its own `useQuery`/`apiClient.get` for the same protected resource — the cached session field is only refreshed every 5 minutes, so the gate should defer to the fetch's own 403 instead. Root-caused 2026-08-20 in `TesterHubView.tsx` (root-cause #44) |
 | audit-sieve-date-fields.mjs | strict-0 | A Sieve field config for a Firestore Timestamp field (`createdAt`, `auctionEndDate`, `expiresAt`, ...) that's filterable (`canFilter: true`) but has no `parseValue` — sievejs's default `convertValue()` never coerces a date-like string to a `Date`, so a Firestore inequality (`>`/`<`/`>=`/`<=`) compares a Timestamp field against a string and silently matches ZERO documents. Root cause of the "must click Show ended to see live auctions" bug — fixed across 27 repository files by wiring `parseValue: parseSieveDateValue` (root-cause #47) |

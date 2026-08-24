@@ -8,7 +8,7 @@ import {
 import { getProductForDetail } from "@mohasinac/appkit";
 import { getSiteSettingsGlobal, storeRepository } from "@mohasinac/appkit/server";
 import { MakeOfferButton, ProductDetailActions, PageViewTracker } from "@mohasinac/appkit/client";
-import { submitProductOffer } from "./actions";
+import { submitProductOffer } from "@/actions/offer.actions";
 import { generateProductMetadata } from "@/constants/seo.server";
 
 export const revalidate = 60;

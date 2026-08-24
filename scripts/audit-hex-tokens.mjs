@@ -124,6 +124,11 @@ const EXEMPT_PATH_PATTERNS = [
   /^appkit\/src\/features\/checkout\/actions\/checkout-value-otp-actions\.ts$/,
   // Firestore seed data documents — color strings are document field values, not CSS.
   /^appkit\/src\/seed\/categories-seed-data\.ts$/,
+  // Same data, same reason: the category tree's authoring literal was split out
+  // of categories-seed-data.ts in 2026-08-24. `display.color` is a per-category
+  // accent an admin sets, and the schema explicitly accepts a raw hex there
+  // (see BrandDetailPageView's `brandColor`, consumed as an inline style).
+  /^appkit\/src\/seed\/_helpers\/category-forest\.ts$/,
   /^appkit\/src\/seed\/site-settings-seed-data\.ts$/,
   /^appkit\/src\/features\/tester\/seed-data\/categories-tester-seed-data\.ts$/,
   /^appkit\/src\/features\/layout\/background-seed-defaults\.ts$/,

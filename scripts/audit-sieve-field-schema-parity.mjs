@@ -86,6 +86,24 @@ const REGISTRY = [
         "@deprecated read-only alias of categorySlugs, still present on real documents",
     },
   },
+  {
+    // Registered 2026-08-24 alongside /admin/offers, which widened
+    // OfferRepository.SIEVE_FIELDS from 5 keys to 13. Without an entry here a
+    // Sieve field naming a property `OfferDocument` does not have would be
+    // silently dropped by sievejs (`throwExceptions: false`) and the filter
+    // would match zero rows with no error anywhere — Root Cause #62.
+    name: "offers",
+    sieveFile: "appkit/src/features/seller/repository/offer.repository.ts",
+    sieveExport: "SIEVE_FIELDS",
+    schemaFile: "appkit/src/features/seller/schemas/firestore.ts",
+    schemaInterface: "OfferDocument",
+    emitFiles: [
+      "src/app/api/admin/offers/route.ts",
+      "src/app/api/store/offers/route.ts",
+      "src/app/api/user/offers/route.ts",
+    ],
+    fieldConstant: "OFFER_FIELDS",
+  },
 ];
 
 /** Fields every document inherits from BaseDocument. */

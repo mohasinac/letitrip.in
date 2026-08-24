@@ -28,6 +28,8 @@ import {
   type RespondToOfferInput,
   type BuyerCounterInput,
 } from "@mohasinac/appkit";
+import { ACTION_ID } from "@mohasinac/appkit";
+import { checkActionAllowed } from "@mohasinac/appkit/server";
 import type { CartDocument } from "@mohasinac/appkit";
 import type { OfferDocument } from "@mohasinac/appkit";
 import type { ActionResult } from "@mohasinac/appkit";
@@ -69,6 +71,16 @@ export async function makeOfferAction(
 ): Promise<ActionResult<OfferDocument>> {
   try {
     const user = await requireAuthUser();
+    // Two deliberately separate gates, both real, at different layers:
+    //   featureFlags.offers          — does this feature exist at all (domain,
+    //                                  enforced inside makeOffer)
+    //   actionConfig["make-offer"]   — is this CTA currently permitted
+    //                                  (presentation, enforced here)
+    // Enforced at the server-action entrypoint rather than in appkit's domain
+    // layer, because ActionId is a UI concept and the domain shouldn't know
+    // about it. Until now this toggle was only honoured client-side by
+    // useAuthGate, so flipping it off changed nothing an API caller had to obey.
+    await checkActionAllowed(ACTION_ID.MAKE_OFFER, user);
     const rl = await rateLimitByIdentifier(`offer:make:${user.uid}`, RateLimitPresets.STRICT);
     if (!rl.success) return { ok: false, error: ERR_RATE_LIMIT };
     const parsed = makeOfferSchema.safeParse(input);
@@ -215,4 +227,26 @@ export async function checkoutOfferAction(
     if (err instanceof Error && err.message) return { ok: false, error: err.message };
     return { ok: false, error: "Failed to checkout offer. Please try again." };
   }
+}
+
+/**
+ * Thin adapter for `MakeOfferButton`'s `onMakeOffer` prop, which is
+ * `(productId, amount, note?) => Promise<void>` and signals failure by throwing.
+ *
+ * Lives here rather than in a route-segment `actions.ts` because BOTH the
+ * product detail page and the classified detail page mount that button — a
+ * route-segment action imported across segments is a smell, and duplicating it
+ * would give the two surfaces two chances to drift.
+ */
+export async function submitProductOffer(
+  productId: string,
+  amount: number,
+  buyerNote?: string,
+): Promise<void> {
+  const result = await makeOfferAction({
+    productId,
+    offerAmount: amount,
+    buyerNote,
+  });
+  if (!result.ok) throw new Error(result.error);
 }

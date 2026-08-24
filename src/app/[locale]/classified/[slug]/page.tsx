@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { getClassifiedForDetail, ClassifiedDetailPageView } from "@mohasinac/appkit";
-import { PageViewTracker } from "@mohasinac/appkit/client";
+import { MakeOfferButton, PageViewTracker } from "@mohasinac/appkit/client";
 import { buildClassifiedMetadata } from "@mohasinac/appkit/server";
+import { submitProductOffer } from "@/actions/offer.actions";
 import { SEO_CONFIG } from "@/constants";
 
 export const revalidate = 60;
@@ -21,7 +22,20 @@ export default async function Page({ params }: Props) {
   return (
     <>
       <PageViewTracker entityType="classified" entityId={slug} url={`/classified/${slug}`} />
-      <ClassifiedDetailPageView slug={slug} initialProduct={product} />
+      <ClassifiedDetailPageView
+        slug={slug}
+        initialProduct={product}
+        // Same snippet as /products/[slug] — both detail views expose the same
+        // renderOfferAction contract precisely so this can't drift.
+        renderOfferAction={({ productId, price, minOfferPercent }) => (
+          <MakeOfferButton
+            productId={productId}
+            listedPrice={price}
+            minOfferPercent={minOfferPercent}
+            onMakeOffer={submitProductOffer}
+          />
+        )}
+      />
     </>
   );
 }
