@@ -8,13 +8,11 @@ import { THEMED_TEXT_SUCCESS } from "@/constants";
 import { Button, FieldInput, Form, Stack, Text } from "@mohasinac/appkit/ui";
 import { useApiMutation, useToast } from "@mohasinac/appkit/client";
 import { apiClient } from "@mohasinac/appkit/client";
+// The local `newsletterSchema` this file used to declare was a third copy of
+// the same one-field shape; all three newsletter boxes now share one.
+import { newsletterSubscribeSchema } from "@mohasinac/appkit/client";
+import { FormErrorSummary } from "@mohasinac/appkit/client";
 
-const newsletterSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Enter a valid email address"),
-});
 
 export function HomepageNewsletterForm() {
   const [email, setEmail] = useState("");
@@ -43,7 +41,7 @@ export function HomepageNewsletterForm() {
     async () => {
       setSuccess(null);
       clearErrors();
-      const parsed = newsletterSchema.safeParse({ email: email.trim() });
+      const parsed = newsletterSubscribeSchema.safeParse({ email: email.trim() });
       if (!parsed.success) {
         parsed.error.issues.forEach((issue) =>
           setFieldError(String(issue.path[0]), issue.message),
@@ -63,12 +61,13 @@ export function HomepageNewsletterForm() {
   );
 
   return (
-    <Form
+    <Form schema={newsletterSubscribeSchema}
       onSubmit={(e) => e.preventDefault()}
       className="flex w-full max-w-xl flex-col gap-[var(--appkit-space-1)]"
     >
       {({ setFieldError, clearErrors }) => (
         <>
+          <FormErrorSummary />
           <Stack direction="sm-row" className="w-full" gap="xs" data-section="homepagenewsletterform-div-9">
             <FieldInput
               name="email"

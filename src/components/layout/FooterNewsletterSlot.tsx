@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Button, FieldInput, Form, Row, Text } from "@mohasinac/appkit/ui";
 import { useApiMutation, useToast, apiClient } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
+import { newsletterSubscribeSchema } from "@mohasinac/appkit/client";
+import { FormErrorSummary } from "@mohasinac/appkit/client";
 
 export function FooterNewsletterSlot() {
   const [email, setEmail] = useState("");
@@ -35,10 +37,11 @@ export function FooterNewsletterSlot() {
   }
 
   return (
-    <Form
+    <Form schema={newsletterSubscribeSchema}
       onSubmit={(e) => e.preventDefault()}
       className="flex flex-col gap-[var(--appkit-space-2)] w-full"
     >
+      <FormErrorSummary />
       <Text size="xs" weight="medium" color="muted">
         Get deals &amp; drops in your inbox
       </Text>
