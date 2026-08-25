@@ -97,6 +97,8 @@ const AUDITS = [
   // `danger-*` utilities, which Tailwind never generates for the consumer
   // build and therefore drops silently. Strict-zero.
   { name: "status-color-pairs",              script: "scripts/audit-status-color-pairs.mjs" },
+  { name: "table-column-priority",           script: "scripts/audit-table-column-priority.mjs" },
+  { name: "column-renderers",                script: "scripts/audit-column-renderers.mjs" },
   // Icon+label nav pattern: align="end"/"center" on a flex-1 label span
   // right after a shrink-0 icon span visually separates them. Strict-zero.
   { name: "icon-label-split",                script: "scripts/audit-icon-label-split.mjs" },
