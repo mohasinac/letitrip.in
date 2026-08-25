@@ -16,6 +16,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { cancelOrderAction } from "@/actions/order.actions";
 import { Heading, Span, Text } from "@mohasinac/appkit/client";
+import { orderCancelSchema, FormErrorSummary } from "@mohasinac/appkit/client";
 
 const __P = {
   p5: "p-[var(--appkit-space-5)]",
@@ -118,8 +119,9 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
           </Link>
         </Stack>
       ) : (
-        <Form
+        <Form schema={orderCancelSchema}
           onSubmit={(e) => e.preventDefault()} rounded="xl" padding="lg" surface="default" border="default" spacing="md">
+          <FormErrorSummary />
           {activeItems.length > 1 && (
             <Stack gap="xs">
               <Text size="sm" weight="medium" color="primary">Items to cancel</Text>

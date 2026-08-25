@@ -7,6 +7,8 @@ import { useParams } from "next/navigation";
 import { Heading, ROUTES, Row, Text } from "@mohasinac/appkit/client";
 import { Div, Button, Form, Label, Input, Textarea, useApiMutation, apiClient } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
+import { sublistingCategoryFormSchema } from "@mohasinac/appkit/client";
+import { FormErrorSummary } from "@mohasinac/appkit/client";
 
 const LBL_CLS = "block text-[length:var(--appkit-text-sm)] font-medium text-[var(--appkit-color-text-muted)] mb-1";
 
@@ -77,9 +79,10 @@ export default function Page() {
         </Text>
       </Div>
 
-      <Form onSubmit={handleSubmit} spacing="md">
+      <Form schema={sublistingCategoryFormSchema} onSubmit={handleSubmit} spacing="md">
         <>
-          <Label className={LBL_CLS}>
+
+        <FormErrorSummary />          <Label className={LBL_CLS}>
             Category name <Text as="span" className="text-error">*</Text>
           </Label>
           <Input

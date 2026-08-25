@@ -8,6 +8,8 @@ import { useSession, ROUTES, SCAM_TYPES, SCAM_PLATFORM_LABELS, Checkbox, Div, Bu
 import { Alert, Stack, Heading, Text, Row, Card, CardBody, Main, Ul, Li } from "@mohasinac/appkit/client";
 import { ChevronLeft, Loader2, Plus, X } from "lucide-react";
 import { API_ROUTES } from "@/constants";
+import { scamReportFormSchema } from "@mohasinac/appkit/client";
+import { FormErrorSummary } from "@mohasinac/appkit/client";
 
 const LOGIN_HREF =
   `${String(ROUTES.AUTH.LOGIN)}?redirect=${encodeURIComponent("/scams/report")}` as const;
@@ -313,7 +315,8 @@ function ScamReportForm({ userId }: { userId: string }) {
         <ChevronLeft className="h-4 w-4" /> Back to Scam Registry
       </Link>
 
-      <Form onSubmit={handleSubmit}>
+      <Form schema={scamReportFormSchema} onSubmit={handleSubmit}>
+        <FormErrorSummary />
         <Stack gap="lg">
           <Stack gap="xs">
             <Heading level={1} weight="bold" size="2xl">

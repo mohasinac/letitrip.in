@@ -28,6 +28,7 @@ import {
   isManualPaymentMethod,
 } from "@mohasinac/appkit/client";
 import { attachPaymentProof } from "@/lib/api/payment-client";
+import { paymentProofSchema, FormErrorSummary } from "@mohasinac/appkit/client";
 
 const CONTAINER_CLS = "w-full max-w-lg";
 
@@ -247,9 +248,10 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       {/* Upload proof */}
       <Stack border="default" padding="md" surface="default" gap="md" rounded="xl">
         <Text size="sm" weight="semibold" color="primary">Step 2 — Upload payment screenshot</Text>
-        <Form onSubmit={(e) => e.preventDefault()}>
+        <Form schema={paymentProofSchema} onSubmit={(e) => e.preventDefault()}>
           {() => (
             <Stack gap="md">
+              <FormErrorSummary />
               <MediaUploadField
                 label="Payment screenshot (JPG/PNG/PDF)"
                 value={proofUrl}
