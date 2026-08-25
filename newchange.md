@@ -17,8 +17,9 @@
 
 | Date | Task | What was deferred / skipped | Status | Fix target |
 |------|------|-----------------------------|--------|------------|
-| 2026-08-24 | S-availability-scope | **Three gated steps, none run** (Rule #10 / Appkit Publish Rules). (1) **appkit is pinned to `^4.13.1`**, so none of this session's appkit work reaches the app — `node_modules/@mohasinac/appkit/dist` was manually resynced to verify types, and `npm install` reverts that. (2) The **26 new Firestore indexes** must be deployed or the Sold & Ended tab returns the "temporarily unavailable" banner on every click. (3) **No visual pass**: the highest-value check is the homepage watched for ~35s past first paint — the CSR refetch lands at 30s and replaces the SSR strip, so if the two disagree it shows up exactly then and nowhere else. | ⏳ Open | Next session with publish + deploy approval |
-| 2026-08-24 | S-availability-scope | **`npm run check` does not exit 0** — four audits fail in files this session never touched, all from a concurrent session's in-flight categories refactor: `hex-tokens` (`seed/_helpers/category-forest.ts`) and `tester-checklist-hrefs` (category ids moved into that `_helpers/` subdirectory, which the href audit's non-recursive `readdirSync` cannot see), plus `variant-prop-coverage` (`BundleCollage.tsx`) and `unknown-leakage` (`_internal/shared/history/*`, `orders.repository.ts`). The href audit likely just needs to recurse into `_helpers/` — but that is the other session's call to make, not something to decide inside their mid-refactor. | ⏳ Open | Whoever owns the categories refactor |
+| 2026-08-24 | S-availability-scope | **Three gated steps, none run** — (1) appkit pinned to `^4.13.1`; (2) 26 Firestore indexes undeployed; (3) no visual pass. | ✅ **(1) and (2) CLOSED 2026-08-25 (R0 release)** — appkit **4.15.0** published and the root repinned; the generated `firestore.indexes.json` was **33 indexes stale** (490 vs 523 — 26 products + 4 stores + 3 offers) and is now deployed and settled. (3) visual pass still open. | Visual pass only |
+| 2026-08-24 | S-availability-scope | **`npm run check` does not exit 0** — four audits failing from a concurrent session's categories refactor. | ✅ **STALE — re-measured 2026-08-25 and the gate exits 0.** All four named audits are clean. Do not act on this row. | — |
+| 2026-08-25 | R0 release | **`npx appkit-seed load` has not been run against production**, so archive fixtures added in W2/W5 are missing from the live database — confirmed for `auction-…-lord-spryzen-ended-unsold` and `digitalcode-…-launch-codes-depleted`, neither of which appears in the Sold & Ended tab in production. The availability filter itself works (the two scopes return different result sets); the archive is simply thinner than the seed intends. Deliberately not run during the release: it writes to live Firestore and is a separate decision from deploying code. | ⏳ Open | A session with explicit approval to seed production |
 | 2026-08-24 | S-bottom-edge | **Visual pass not run** — `npm run dev` was never started (Rule #10), so the three-tier bottom edge is verified only by `tsc` + audits + inspecting the compiled CSS. Nothing here is confirmed on a real screen. Highest-value checks, in order: (1) desktop ≥1024px scrolling slowly through 400px on `/products/{slug}` — the CTA bar and BackToTop share that exact threshold, so they appear on the same tick and must already be clear of each other; (2) `/faqs` at mobile width — BackToTop must sit exactly where it did before, which is what the `translate-y-full` → `grid-rows` collapse protects; (3) footer bottom at both widths, with rows selected on `/admin/products` so the tier is at its tallest; (4) `/admin` mobile showing exactly one tab bar. | ⏳ Open | Next session with a browser, or fold into the tester checklist |
 | 2026-08-24 | S-public-projection | `StoreRepository.mapDoc` still decrypts `whatsappConfig.accessToken` on **every** read, so any new code path that forgets to project handles plaintext. Making it decrypt-on-demand looked like a ~30-line change and is not: the token is **double-encrypted** (`encryptPii`, colon format + PII key, wrapped by `encryptSecret`, dot format + settings key) and `mapDoc`'s decrypt is load-bearing for that round-trip — removing it breaks WhatsApp catalog sync and risks unrecoverable live seller tokens. Stopped deliberately rather than risk live secrets. Defense-in-depth only; the actual leak is closed by the adapters + audit. | ⏳ Open | Own session: normalise to a single encryption layer with a decrypt-and-re-encrypt migration, then drop the `mapDoc` override and add `getDecryptedWhatsAppToken()` |
 | 2026-08-24 | S-ethics-conduct | `ShippingPolicyView` never reads `siteSettings.legalPages.shipping` — it is i18n-only, unlike its five `PolicyPageView` siblings. The admin Legal tab has always offered a "Shipping Policy" textarea whose value nothing renders (write-only field). Left alone this session: `ShippingPolicyView` is a bespoke view, not a `PolicyPageView` shim, so wiring it is a real change rather than a one-line registry entry. | ⏳ Open | Either add `shipping` to `POLICY_META` and convert the page to a shim, or read `legalPages.shipping` inside `ShippingPolicyView` |
@@ -43,6 +44,71 @@
 ---
 
 ## SESSION LOG (newest first)
+
+---
+
+### 2026-08-25 — R0: first full release of the validation work (appkit 4.15.0)
+
+**Everything shipped.** `npm run check` exits 0 **against the published
+package**, not a locally-resynced `node_modules` — that distinction is the
+point of this release.
+
+#### 🛑 The build was broken against the registry, and nothing could see it
+
+Root pinned `^4.13.1` with the lockfile resolving that exact tarball, while
+**14 symbols added in the trust/platform waves were imported by 19 consumer
+files**. Vercel runs `npm ci`, so the build would have failed. It looked fine
+locally only because `node_modules/@mohasinac/appkit` had been hand-resynced —
+and `scripts/lib/sync-appkit-dist.mjs` **self-skips unless the pin is exactly
+`file:./appkit`**, so the next `npm install` silently reverts that resync and
+`tsc` is structurally blind to the difference.
+
+**Published 4.15.0, not 4.14.0.** `4.14.0` was already on the registry but its
+version bump was still *uncommitted locally* — it was published from a working
+tree matching no commit, the exact anti-pattern CLAUDE.md warns about. Rather
+than overwrite it, the bump went to 4.15.0 (new exports = minor). appkit was
+committed first (97 files), then built, then published.
+
+#### Deployed
+
+| | Result |
+|---|---|
+| appkit | **4.15.0** published; root repinned; lockfile regenerated, verified `resolved: registry` and `link: false` |
+| Firestore indexes | `generate` first (generated file was **33 behind**), 523 deployed, waited to `CREATING=0` across 24,058 indexes (~5 min) |
+| Rules | firestore + storage + RTDB released |
+| Functions | all 55 on Node 22 2nd-gen; `listingProcessor` / `gateway` / `invoicePdf` probed → **401**, i.e. module loaded and the auth gate ran (500 would mean load failure) |
+| Vercel | `node scripts/deploy.mjs` → READY; its post-deploy smoke test passed `/`, `/en/products`, `/api/site-settings` |
+
+#### Verified, and one thing NOT verified
+
+The availability scope now returns **different result sets per tab in
+production** (`available` → 6 distinct listings, `unavailable` → 13, including
+ended auctions), so the filter is applied and the query no longer fails.
+
+**But two archive fixtures — `auction-…-lord-spryzen-ended-unsold` and
+`digitalcode-…-launch-codes-depleted` — are absent from production entirely.**
+That is a **seed gap, not a code gap**: `npx appkit-seed load` has not been run
+since those fixtures were added. The Sold & Ended archive works but is thinner
+than intended. Logged in DEFERRED.
+
+A first pass also *appeared* to show an error banner on all three tabs — a
+**false positive**: the string matched the error-message dictionary embedded in
+the RSC payload, not a rendered element. Worth remembering when grepping
+Next.js HTML for error text.
+
+#### Runbook corrections (CLAUDE.md)
+
+- **`npm run test:qa` has never existed.** The End-of-Plan checklist called
+  `npm run test:qa smoke` at step 5, failing with "Missing script" every time
+  it was reached. Replaced with the real Playwright commands.
+- **`npm run firebase -- <cmd>`** — without the `--`, npm swallows `--only` as
+  its own flag, so `npm run firebase deploy --only indexes` can deploy
+  *everything*. The file used both forms inconsistently.
+- **`generate` must precede the index scripts** — both read the *generated*
+  root file to enumerate collection groups, so a stale one makes them wait on
+  (or delete) the wrong set. Also recorded that `wait-for-indexes.mjs` has
+  **no timeout**.
+
 
 ---
 ### S-availability-scope — one definition of "available"; homepage stops advertising dead listings (2026-08-24)
