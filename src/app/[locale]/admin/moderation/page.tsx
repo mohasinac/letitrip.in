@@ -9,11 +9,12 @@ import {
   EmptyState,
   Row,
   Section,
-  Modal,
-  Textarea,
   Skeleton,
   ACTIONS,
   ROUTES,
+  ReviewDecisionModal,
+  moderationReviewFormSchema,
+  type ModerationReviewFormValues,
 } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
@@ -25,8 +26,6 @@ export default function Page() {
   const [items, setItems] = useState<ModerationQueueDocument[]>([]);
   const [loading, setLoading] = useState(true);
   const [rejectTargetId, setRejectTargetId] = useState<string | null>(null);
-  const [rejectReason, setRejectReason] = useState("");
-  const [submitting, setSubmitting] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -38,25 +37,9 @@ export default function Page() {
 
   useEffect(load, []);
 
-  const review = async (id: string, status: "approved" | "rejected", reason?: string) => {
-    await updateAdminModeration(API_ROUTES.ADMIN.MODERATION_BY_ID(id), { status, reason });
+  const review = async (id: string, body: ModerationReviewFormValues) => {
+    await updateAdminModeration(API_ROUTES.ADMIN.MODERATION_BY_ID(id), body);
     load();
-  };
-
-  const closeRejectModal = () => {
-    setRejectTargetId(null);
-    setRejectReason("");
-  };
-
-  const submitReject = async () => {
-    if (!rejectTargetId) return;
-    setSubmitting(true);
-    try {
-      await review(rejectTargetId, "rejected", rejectReason);
-      closeRejectModal();
-    } finally {
-      setSubmitting(false);
-    }
   };
 
   return (
@@ -104,7 +87,7 @@ export default function Page() {
                     <Button
                       variant="primary"
                       size="sm"
-                      onClick={() => review(m.id, "approved")}
+                      onClick={() => review(m.id, { status: "approved" })}
                     >
                       {ACTIONS.ADMIN["approve-product"].label}
                     </Button>
@@ -123,37 +106,20 @@ export default function Page() {
         </Stack>
       </Container>
 
-      <Modal
+      <ReviewDecisionModal
         isOpen={rejectTargetId !== null}
-        onClose={closeRejectModal}
+        onClose={() => setRejectTargetId(null)}
         title="Reject media"
-        size="sm"
-        actions={
-          <Row justify="end" gap="sm">
-            <Button variant="ghost" onClick={closeRejectModal} disabled={submitting}>
-              Cancel
-            </Button>
-            <Button
-              variant="danger"
-              onClick={submitReject}
-              disabled={submitting}
-              isLoading={submitting}
-            >
-              {ACTIONS.ADMIN["reject-product"].label}
-            </Button>
-          </Row>
-        }
-      >
-        <Stack gap="sm">
-          <Textarea
-            label="Reason"
-            value={rejectReason}
-            onChange={(e) => setRejectReason(e.target.value)}
-            rows={4}
-            placeholder="Why is this asset being rejected? The seller will see this note."
-          />
-        </Stack>
-      </Modal>
+        schema={moderationReviewFormSchema}
+        status="rejected"
+        noteField="reason"
+        noteLabel="Reason"
+        noteHelp="Required — the seller will see this note."
+        notePlaceholder="Why is this asset being rejected?"
+        confirmLabel={ACTIONS.ADMIN["reject-product"].label}
+        confirmVariant="danger"
+        onConfirm={(values) => review(rejectTargetId!, values)}
+      />
     </Section>
   );
 }

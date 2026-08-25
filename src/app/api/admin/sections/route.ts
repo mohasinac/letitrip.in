@@ -13,6 +13,8 @@ import {
   getSearchParams,
   getStringParam,
   serverLogger,
+  homepageSectionCreateSchema,
+  resolveNextSectionOrder,
 } from "@mohasinac/appkit";
 import { homepageSectionsRepository } from "@mohasinac/appkit";
 import { sortBy, HOMEPAGE_SECTION_FIELDS } from "@mohasinac/appkit";
@@ -84,66 +86,35 @@ export const GET = withProviders(
  *
  * Create a new homepage section
  */
-const sectionCreateSchema = z.object({
-  type: z.enum([
-    "welcome",
-    "carousel",
-    "stats",
-    "trust-indicators",
-    "categories",
-    "brands",
-    "products",
-    "pre-orders",
-    "auctions",
-    "banner",
-    "features",
-    "reviews",
-    "whatsapp-community",
-    "faq",
-    "blog-articles",
-    "newsletter",
-    "stores",
-    "events",
-    "social-feed",
-    "custom-cards",
-    "google-reviews",
-  ] as const),
-  enabled: z.boolean().optional().default(true),
-  order: z.number().optional(),
-  config: z.object({}).passthrough(), // Allow any config based on type
-});
-
+// The create contract lives in appkit and is shared with the OTHER route that
+// can create a section (`POST /api/homepage-sections`). Two local copies is
+// how one of them ended up four section types behind the union while the
+// other had no schema at all.
+/*
+ * The create contract lives in appkit and is SHARED with the other route that
+ * can create a section (`POST /api/homepage-sections`). Two local copies is
+ * how one of them fell four section types behind `SectionType` while the other
+ * had no schema at all.
+ *
+ * Parsed via `createRouteHandler({ schema })` rather than the manual
+ * `validateRequestBody` this route used before — appkit compiles against zod 3
+ * and this file against zod 4, so an appkit-authored schema does not satisfy a
+ * consumer-side zod-4 `ZodType` parameter. The route handler's own schema seam
+ * is the one that bridges the two majors, which is why every other route in
+ * this codebase goes through it.
+ */
 export const POST = withProviders(
-  createRouteHandler({
+  createRouteHandler<(typeof homepageSectionCreateSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:sections:write",
-    handler: async ({ request, user }) => {
-      const body = await request.json();
-      const validation = validateRequestBody(sectionCreateSchema, body);
+    schema: homepageSectionCreateSchema,
+    handler: async ({ user, body }) => {
+      const { type, enabled, config, order } = body!;
 
-      if (!validation.success) {
-        return errorResponse(
-          ERROR_MESSAGES.VALIDATION.FAILED,
-          400,
-          formatZodErrors(validation.errors),
-        );
-      }
-
-      const { type, enabled, config, order } = validation.data;
-
-      let resolvedOrder = order;
-      if (resolvedOrder === undefined) {
-        const latest = await homepageSectionsRepository.list({
-          sorts: DESC_SORTS,
-          page: "1",
-          pageSize: "1",
-        });
-        resolvedOrder =
-          typeof latest.items[0]?.order === "number"
-            ? latest.items[0].order + 1
-            : 1;
-      }
+      // Shared with `POST /api/homepage-sections`, which needs the identical
+      // answer — see `resolveNextSectionOrder`.
+      const resolvedOrder = order ?? (await resolveNextSectionOrder());
 
       const input: HomepageSectionCreateInput = {
         type: type as SectionType,

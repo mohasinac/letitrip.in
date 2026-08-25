@@ -5,7 +5,15 @@
 // PATCH /api/admin/reports/[id]).
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { Button, Modal, Row, Stack, Textarea, useToast, normalizeError } from "@mohasinac/appkit/client";
+import {
+  Button,
+  Row,
+  useToast,
+  normalizeError,
+  ReviewDecisionModal,
+  reportReviewFormSchema,
+  type ReportReviewFormValues,
+} from "@mohasinac/appkit/client";
 import type { ReportDocument } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { updateAdminReport } from "@/lib/api/admin-client";
@@ -19,20 +27,28 @@ export function ReportDetailActions({ id, status }: ReportDetailActionsProps) {
   const router = useRouter();
   const { showToast } = useToast();
   const [actionOpen, setActionOpen] = useState(false);
-  const [resolutionNote, setResolutionNote] = useState("");
+  const [dismissOpen, setDismissOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const action = async (nextStatus: ReportDocument["status"], resolution?: string) => {
+  // `resolvedAt` is NOT sent. It used to be `new Date()`, which JSON turns into
+  // a string, and the old raw-spread route wrote that string into a field the
+  // document declares as a Date. The server stamps it now.
+  /**
+   * THROWS on failure, on purpose — see the moderation twin. The action and
+   * dismiss paths run inside `ReviewDecisionModal`, which needs the rejection
+   * to reach it so it can stay open and keep the note.
+   */
+  const action = async (body: ReportReviewFormValues) => {
+    await updateAdminReport(API_ROUTES.ADMIN.REPORT_BY_ID(id), body);
+    showToast("Report updated.", "success");
+    router.refresh();
+  };
+
+  /** "Take" opens no modal, so it reports for itself. */
+  const take = async () => {
     setSubmitting(true);
     try {
-      await updateAdminReport(API_ROUTES.ADMIN.REPORT_BY_ID(id), {
-        status: nextStatus,
-        resolution,
-        resolvedAt: nextStatus === "actioned" || nextStatus === "dismissed" ? new Date() : undefined,
-      });
-      showToast("Report updated.", "success");
-      setActionOpen(false);
-      router.refresh();
+      await action({ status: "under-review" });
     } catch (err) {
       void normalizeError(err);
       showToast("Failed to update report.", "error");
@@ -48,43 +64,50 @@ export function ReportDetailActions({ id, status }: ReportDetailActionsProps) {
   return (
     <>
       <Row gap="sm">
-        <Button variant="outline" onClick={() => action("under-review")} disabled={submitting}>
+        <Button
+          variant="outline"
+          onClick={take}
+          disabled={submitting}
+        >
           Take
         </Button>
         <Button variant="primary" onClick={() => setActionOpen(true)} disabled={submitting}>
           Action
         </Button>
-        <Button variant="ghost" onClick={() => action("dismissed", "Dismissed")} disabled={submitting}>
+        <Button variant="ghost" onClick={() => setDismissOpen(true)} disabled={submitting}>
           Dismiss
         </Button>
       </Row>
 
-      <Modal
+      <ReviewDecisionModal
         isOpen={actionOpen}
         onClose={() => setActionOpen(false)}
         title="Action report"
-        size="sm"
-        actions={
-          <Row justify="end" gap="sm">
-            <Button variant="ghost" onClick={() => setActionOpen(false)} disabled={submitting}>
-              Cancel
-            </Button>
-            <Button variant="primary" onClick={() => action("actioned", resolutionNote)} disabled={submitting} isLoading={submitting}>
-              Confirm action
-            </Button>
-          </Row>
-        }
-      >
-        <Stack gap="sm">
-          <Textarea
-            label="Resolution note"
-            value={resolutionNote}
-            onChange={(e) => setResolutionNote(e.target.value)}
-            rows={4}
-            placeholder="What did you do about this report? The reporter may see a summary."
-          />
-        </Stack>
-      </Modal>
+        schema={reportReviewFormSchema}
+        status="actioned"
+        noteField="resolution"
+        noteLabel="Resolution note"
+        noteHelp="Required — the reporter may see a summary."
+        notePlaceholder="What did you do about this report?"
+        confirmLabel="Confirm action"
+        onConfirm={action}
+      />
+
+      {/* Dismiss used to send a hardcoded "Dismissed" as its resolution, which
+          is the status restated rather than a reason. It now asks. */}
+      <ReviewDecisionModal
+        isOpen={dismissOpen}
+        onClose={() => setDismissOpen(false)}
+        title="Dismiss report"
+        schema={reportReviewFormSchema}
+        status="dismissed"
+        noteField="resolution"
+        noteLabel="Why is this being dismissed?"
+        noteHelp="Required — the reporter may see a summary."
+        notePlaceholder="e.g. Reviewed the listing and found nothing that breaches policy."
+        confirmLabel="Dismiss report"
+        onConfirm={action}
+      />
     </>
   );
 }

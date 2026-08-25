@@ -7,6 +7,8 @@ import {
   parseJsonBody,
   type JsonValue,
   payoutMethodsRepository,
+  payoutMethodUpdateSchema,
+  ValidationError,
   storeRepository,
   successResponse,
 } from "@mohasinac/appkit";
@@ -41,10 +43,22 @@ export const PATCH = withProviders(
       const { error } = await loadAndAssertOwner(user!.uid, (params as { id: string }).id);
       if (error) return error;
       const body = await parseJsonBody<Record<string, JsonValue>>(request);
+      // The raw body used to be handed straight to `.update()` — no schema, no
+      // field filtering, so any key a caller invented was persisted and
+      // `sellerId`/`storeId` could be rewritten from the request. The update
+      // schema is `.strict()`, so an unknown key is now a 400 rather than a
+      // silent write.
+      const parsed = payoutMethodUpdateSchema.safeParse(body);
+      if (!parsed.success) {
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid payout method",
+          parsed.error.issues,
+        );
+      }
       try {
         const updated = await payoutMethodsRepository.update(
           (params as { id: string }).id,
-          body,
+          parsed.data,
         );
         return successResponse(updated, "Updated");
       } catch (err) {

@@ -8,8 +8,12 @@ import {
   Button,
   Row,
   Section,
-  Input,
-  Select,
+  Form,
+  FieldInput,
+  FieldSelect,
+  FormErrorSummary,
+  applyZodIssues,
+  payoutMethodFormSchema,
   ROUTES,
   useToast,
   ACTIONS,
@@ -35,11 +39,20 @@ export default function Page() {
   });
   const [saving, setSaving] = useState(false);
 
-  const onSave = async () => {
+  const onSave = async (setFieldError: (field: string, message: string) => void) => {
     setSaving(true);
     try {
       const res = await createPayoutMethod(API_ROUTES.STORE.PAYOUT_METHODS, form as Record<string, unknown>);
-      if (!res.ok) throw new Error("Save failed");
+      if (!res.ok) {
+        // Surface what the route objected to on a field. This used to be a
+        // hardcoded "Save failed" that discarded the server's message.
+        const detail = await res
+          .json()
+          .then((j: { error?: string; message?: string }) => j?.error ?? j?.message)
+          .catch(() => undefined);
+        setFieldError("label", detail ?? "Save failed");
+        return;
+      }
       showToast("Payout method saved", "success");
       router.push(String(ROUTES.STORE.PAYOUT_METHODS));
     } catch (err) {
@@ -55,11 +68,15 @@ export default function Page() {
       <Container size="md">
         <Stack gap="lg" padding="y-lg">
           <Heading level={1}>New Payout Method</Heading>
+          <Form schema={payoutMethodFormSchema} onSubmit={(e) => e.preventDefault()}>
+          {({ setFieldError, clearErrors }) => (
           <Stack gap="md">
-            <Select
+            <FormErrorSummary />
+            <FieldSelect
+              name="type"
               label="Type"
               value={form.type}
-              onValueChange={(v) => setForm({ ...form, type: String(v) })}
+              onChange={(v) => setForm({ ...form, type: String(v) })}
               options={[
                 { value: "upi", label: "UPI" },
                 { value: "bank", label: "Bank account" },
@@ -67,53 +84,46 @@ export default function Page() {
                 { value: "other", label: "Other" },
               ]}
             />
-            <Input
-              label="Label"
-              value={form.label}
-              onChange={(e) => setForm({ ...form, label: e.target.value })}
-              placeholder="e.g. Primary UPI"
-            />
+            <FieldInput name="label" label="Label" value={form.label} onChange={(v) => setForm({ ...form, label: v })} placeholder="e.g. Primary UPI" />
             {form.type === "upi" && (
-              <Input
-                label="UPI VPA"
-                value={form.upiVpa}
-                onChange={(e) => setForm({ ...form, upiVpa: e.target.value })}
-                placeholder="name@upi"
-              />
+              <FieldInput name="upiVpa" label="UPI VPA" value={form.upiVpa} onChange={(v) => setForm({ ...form, upiVpa: v })} placeholder="name@upi" />
             )}
             {form.type === "bank" && (
               <>
-                <Input
-                  label="Account holder"
-                  value={form.accountHolderName}
-                  onChange={(e) => setForm({ ...form, accountHolderName: e.target.value })}
-                />
-                <Input
-                  label="Account number"
-                  value={form.accountNumber}
-                  onChange={(e) => setForm({ ...form, accountNumber: e.target.value })}
-                />
-                <Input
-                  label="IFSC code"
-                  value={form.ifscCode}
-                  onChange={(e) => setForm({ ...form, ifscCode: e.target.value })}
-                />
-                <Input
-                  label="Bank name"
-                  value={form.bankName}
-                  onChange={(e) => setForm({ ...form, bankName: e.target.value })}
-                />
+                <FieldInput name="accountHolderName" label="Account holder" value={form.accountHolderName} onChange={(v) => setForm({ ...form, accountHolderName: v })} />
+                <FieldInput name="accountNumber" label="Account number" value={form.accountNumber} onChange={(v) => setForm({ ...form, accountNumber: v })} />
+                <FieldInput name="ifscCode" label="IFSC code" value={form.ifscCode} onChange={(v) => setForm({ ...form, ifscCode: v })} />
+                <FieldInput name="bankName" label="Bank name" value={form.bankName} onChange={(v) => setForm({ ...form, bankName: v })} />
               </>
             )}
+            <Row justify="end" gap="sm">
+              <Button variant="ghost" type="button" onClick={() => router.back()} disabled={saving}>
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={saving}
+                isLoading={saving}
+                onClick={() => {
+                  clearErrors();
+                  // Nothing checked this before — a bank method with a blank
+                  // account number, IFSC and holder name saved cleanly and
+                  // only failed at payout time.
+                  const parsed = payoutMethodFormSchema.safeParse(form);
+                  if (!parsed.success) {
+                    applyZodIssues(parsed.error.issues, setFieldError);
+                    return;
+                  }
+                  void onSave(setFieldError);
+                }}
+              >
+                {ACTIONS.STORE["save-changes"].label}
+              </Button>
+            </Row>
           </Stack>
-          <Row justify="end" gap="sm">
-            <Button variant="ghost" onClick={() => router.back()} disabled={saving}>
-              Cancel
-            </Button>
-            <Button variant="primary" onClick={onSave} disabled={saving} isLoading={saving}>
-              {ACTIONS.STORE["save-changes"].label}
-            </Button>
-          </Row>
+          )}
+          </Form>
         </Stack>
       </Container>
     </Section>

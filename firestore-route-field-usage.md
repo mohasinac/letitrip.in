@@ -60,7 +60,7 @@ Scanned 54 views/call-sites (DataListingView configs + repository call sites acr
 | `appkit/src/features/seller/components/SellerShippingConfigsView.tsx` | shippingConfigs | — | — |
 | `appkit/src/features/seller/components/SellerStickersView.tsx` | products | listingType== | title |
 | `appkit/src/features/seller/components/SellerStoreCategoriesView.tsx` | storeCategories | — | — |
-| `appkit/src/_internal/server/features/checkout/actions.ts:1657` | users | role== | — |
+| `appkit/src/_internal/server/features/checkout/actions.ts:1668` | users | role== | — |
 | `appkit/src/_internal/server/features/lottery/data.ts:31` | events | — | -startsAt |
 | `appkit/src/_internal/server/jobs/core/adminAnalytics.ts:41` | orders | createdAt>= | -createdAt |
 | `appkit/src/_internal/server/jobs/core/adminAnalytics.ts:69` | products | status== | — |

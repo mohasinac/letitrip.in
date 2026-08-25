@@ -7,6 +7,8 @@ import {
   parseJsonBody,
   type JsonValue,
   payoutMethodsRepository,
+  payoutMethodCreateSchema,
+  ValidationError,
   storeRepository,
   successResponse,
 } from "@mohasinac/appkit";
@@ -33,9 +35,23 @@ export const POST = withProviders(
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return ApiErrors.forbidden("No store");
       const body = await parseJsonBody<Record<string, JsonValue>>(request);
+      // Parse, don't spread. This used to write the raw request body straight
+      // into Firestore with no check of any kind, so a bank payout method
+      // with a blank account number, blank IFSC and blank holder name saved
+      // cleanly — and only failed at payout time, by which point it is a
+      // support ticket rather than a form error.
+      const parsed = payoutMethodCreateSchema.safeParse(body);
+      if (!parsed.success) {
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid payout method",
+          parsed.error.issues,
+        );
+      }
       try {
         const doc = await payoutMethodsRepository.create({
-          ...body,
+          ...parsed.data,
+          // From the session, never the body — otherwise a seller could file a
+          // payout method against another seller's store.
           storeId: store.id,
           sellerId: user!.uid,
         });

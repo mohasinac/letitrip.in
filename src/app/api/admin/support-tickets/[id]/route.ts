@@ -5,12 +5,17 @@ import {
   successResponse,
   errorResponse,
   supportRepository,
+  TicketStatusValues,
+  TicketPriorityValues,
 } from "@mohasinac/appkit";
 import { ROLES_TRUST_SAFETY } from "@/constants";
 
 const patchSchema = z.object({
-  status: z.enum(["open", "in_progress", "waiting_on_user", "resolved", "closed"]).optional(),
-  priority: z.enum(["low", "normal", "high", "urgent"]).optional(),
+  // Derived from the runtime maps rather than restated — see the scammers
+  // route for why. `field-names.ts` carried a fictitious `medium` priority
+  // for exactly this reason.
+  status: z.enum(TicketStatusValues).optional(),
+  priority: z.enum(TicketPriorityValues).optional(),
   assignedTo: z.string().optional(),
   assignedToName: z.string().optional(),
   internalNotes: z.string().optional(),

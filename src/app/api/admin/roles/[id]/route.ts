@@ -4,6 +4,8 @@ import {
   ApiErrors,
   createRouteHandler,
   customRolesRepository,
+  customRoleUpdateSchema,
+  ValidationError,
   errorResponse,
   parseJsonBody,
   type JsonValue,
@@ -34,8 +36,19 @@ export const PATCH = withProviders(
       const doc = await customRolesRepository.findById(id);
       if (!doc) return ApiErrors.notFound("Not found");
       const body = await parseJsonBody<Record<string, JsonValue>>(request);
+      // Same reasoning as the create path. `.strict()`, so an unknown key is a
+      // 400 rather than a silent write — and `slug`/`createdBy` are not in the
+      // update schema at all, so a role cannot be re-attributed or have its
+      // stable identifier changed out from under the users assigned to it.
+      const parsed = customRoleUpdateSchema.safeParse(body);
+      if (!parsed.success) {
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid role",
+          parsed.error.issues,
+        );
+      }
       try {
-        const updated = await customRolesRepository.update(id, body);
+        const updated = await customRolesRepository.update(id, parsed.data);
         return successResponse(updated);
       } catch (err) {
         void normalizeError(err);

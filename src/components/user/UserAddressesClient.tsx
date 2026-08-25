@@ -123,7 +123,7 @@ export function UserAddressesClient() {
       <Row align="center" justify="between">
         <Heading level={1} size="xl" weight="bold" color="primary">My Addresses</Heading>
         <Link
-          href={String(ROUTES.USER.ADDRESSES_ADD)}
+          href={String(ROUTES.USER.ADDRESSES_NEW)}
           className="rounded-xl bg-primary px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-semibold text-white hover:bg-primary-600"
         >
           + Add Address
@@ -231,7 +231,7 @@ export function UserAddressesClient() {
       </Div>
 
       <Button rounded="lg"
-        onClick={() => router.push(String(ROUTES.USER.ADDRESSES_ADD))}
+        onClick={() => router.push(String(ROUTES.USER.ADDRESSES_NEW))}
         variant="outline"
         paddingX="md" paddingY="md" textSize="sm" weight="medium"
         className="mt-2 border border-dashed border-neutral-300 dark:border-[var(--appkit-color-border)] text-[var(--appkit-color-text-muted)] dark:text-[var(--appkit-color-text-muted)] transition hover:border-neutral-400 dark:hover:border-[var(--appkit-color-border-subtle)] hover:text-neutral-700 dark:hover:text-[var(--appkit-color-text)]"

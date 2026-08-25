@@ -1,12 +1,9 @@
-import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import {
   ApiErrors,
   createRouteHandler,
-  errorResponse,
   moderationQueueRepository,
-  parseJsonBody,
-  type JsonValue,
+  moderationReviewUpdateSchema,
   successResponse,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
@@ -25,25 +22,26 @@ export const GET = withProviders(
 );
 
 export const PATCH = withProviders(
-  createRouteHandler({
+  createRouteHandler<(typeof moderationReviewUpdateSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
-    handler: async ({ request, params, user }) => {
+    schema: moderationReviewUpdateSchema,
+    handler: async ({ params, user, body }) => {
       const id = (params as { id: string }).id;
       const doc = await moderationQueueRepository.findById(id);
       if (!doc) return ApiErrors.notFound("Not found");
-      const body = await parseJsonBody<Record<string, JsonValue>>(request);
-      try {
-        const updated = await moderationQueueRepository.update(id, {
-          ...body,
-          reviewerId: user!.uid,
-          reviewedAt: new Date(),
-        });
-        return successResponse(updated, "Reviewed");
-      } catch (err) {
-        void normalizeError(err);
-        return errorResponse(err instanceof Error ? err.message : "Update failed", 400);
-      }
+
+      // `reviewerId` and `reviewedAt` are set here, never accepted from the
+      // body — otherwise a caller could attribute the review to somebody else
+      // or backdate it. The schema does not declare either field, so a body
+      // carrying them is a 400 rather than a silent overwrite.
+      const updated = await moderationQueueRepository.update(id, {
+        status: body!.status,
+        reason: body!.reason,
+        reviewerId: user!.uid,
+        reviewedAt: new Date(),
+      });
+      return successResponse(updated, "Reviewed");
     },
   }),
 );

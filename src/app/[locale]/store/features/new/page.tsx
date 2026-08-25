@@ -1,41 +1,42 @@
 "use client";
 
+/**
+ * Create a store-scoped feature badge.
+ *
+ * ## What this replaced
+ *
+ * A page that did not create anything. It collected a single `label`, checked
+ * it was non-empty, and then called `router.push(ROUTES.STORE.FEATURES)` — no
+ * API call anywhere in the file. A seller filled the form, was returned to the
+ * list, and their badge simply did not exist. Same shape as the coupon PATCH
+ * that returned 200 and never wrote (Root Cause #40): the success path looked
+ * indistinguishable from a real one.
+ *
+ * It also collected one field where the real feature has ten, so even a
+ * working version of it would have produced a badge with no icon, category or
+ * product-type scope.
+ *
+ * `AdminFeatureEditorView` is the real editor and already supports exactly
+ * this: `fixedScope="store"` plus an `endpointOverride` pointing at the seller
+ * routes — which is how `SellerFeaturesView`'s drawer has always used it.
+ * Rendering it here makes the page and the drawer one implementation instead
+ * of two that can disagree.
+ */
+
+import { AdminFeatureEditorView, SELLER_ENDPOINTS, ROUTES } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
-import { Button, Div, Form, Heading, Input, Row, Stack, Text, ACTIONS } from "@mohasinac/appkit/client";
-import { useState } from "react";
-import { ROUTES } from "@mohasinac/appkit/client";
 
 export default function Page() {
   const router = useRouter();
-  const [label, setLabel] = useState("");
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!label.trim()) { setError("Feature label is required."); return; }
-    router.push(String(ROUTES.STORE.FEATURES));
-  };
-
   return (
-    <Div className="mx-auto max-w-2xl">
-      <Heading level={1} className="mb-6" size="2xl" weight="semibold">New Feature Badge</Heading>
-      <Form onSubmit={handleSubmit}>
-        <Stack gap="md">
-          {error && <Text color="danger">{error}</Text>}
-          <Input
-            name="label"
-            label="Feature Label"
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
-            placeholder="e.g. Free Shipping"
-            required
-          />
-          <Row gap="sm" justify="end">
-            <Button type="button" onClick={() => router.push(String(ROUTES.STORE.FEATURES))} action={ACTIONS.STORE["cancel-form"]} />
-            <Button type="submit" action={ACTIONS.STORE["create-feature"]} />
-          </Row>
-        </Stack>
-      </Form>
-    </Div>
+    <AdminFeatureEditorView
+      fixedScope="store"
+      endpointOverride={{
+        create: SELLER_ENDPOINTS.FEATURES,
+        byId: SELLER_ENDPOINTS.FEATURE_BY_ID,
+      }}
+      onSaved={() => router.push(String(ROUTES.STORE.FEATURES))}
+      onDeleted={() => router.push(String(ROUTES.STORE.FEATURES))}
+    />
   );
 }

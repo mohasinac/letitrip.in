@@ -7,6 +7,7 @@ import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { offerRepository, storeRepository, maskOfferForSeller } from "@mohasinac/appkit";
 import { ROLES_STORE_READ } from "@/constants";
+import { offerDocumentToOffer } from "@mohasinac/appkit/server";
 
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_STORE_READ],
@@ -44,7 +45,10 @@ export const GET = withProviders(createApiHandler({
     // did not, so the seller's own list leaked every buyer's full name and
     // email. Same helper, same guarantee, both read paths.
     return successResponse({
-      items: result.items.map(maskOfferForSeller),
+      // Mask FIRST, adapt second. Reversing these would adapt the unmasked
+      // document and then mask a shape the masker does not know.
+      // `includeBuyerIdentity` stays off: the seller is masked from it.
+      items: result.items.map((o) => offerDocumentToOffer(maskOfferForSeller(o))),
       total: result.total,
       page: result.page,
       pageSize: result.pageSize,

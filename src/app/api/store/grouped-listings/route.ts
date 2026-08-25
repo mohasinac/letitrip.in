@@ -5,6 +5,8 @@ import {
   createRouteHandler,
   errorResponse,
   groupedListingsRepository,
+  groupedListingCreateSchema,
+  ValidationError,
   parseJsonBody,
   type JsonValue,
   storeRepository,
@@ -32,10 +34,20 @@ export const POST = withProviders(
     handler: async ({ request, user }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return ApiErrors.forbidden("No store");
+      // Parse, don't spread. This used to write the raw request body straight
+      // into Firestore: nothing checked required fields, and any key a caller
+      // invented was persisted verbatim.
       const body = await parseJsonBody<Record<string, JsonValue>>(request);
+      const parsed = groupedListingCreateSchema.safeParse(body);
+      if (!parsed.success) {
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid grouped listing",
+          parsed.error.issues,
+        );
+      }
       try {
         const doc = await groupedListingsRepository.create({
-          ...body,
+          ...parsed.data,
           storeId: store.id,
           createdBy: user!.uid,
           isActive: body.isActive ?? true,

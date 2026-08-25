@@ -40,6 +40,9 @@
 - [Public Data Projections](#public-data-projections)
 - [Recurrent Root Cause Patterns](#recurrent-root-cause-patterns)
 - [Checkout Lanes](#checkout-lanes)
+- [Offer Lifecycle](#offer-lifecycle)
+- [Status History](#status-history)
+- [Order Provenance — `sourceContext`](#order-provenance--sourcecontext)
 - [Coupon Scoping & Stacking](#coupon-scoping--stacking)
 - [Manual Payment Review Flow](#manual-payment-review-flow)
 - [Known TS Patterns to Avoid](#known-ts-patterns-to-avoid)
@@ -132,8 +135,21 @@ For lint-fixable issues use `npm run check:fix` (runs `lint:fix` first, then ful
 - Registry lives at [scripts/run-audits.mjs](scripts/run-audits.mjs); to add an audit, add a new entry to the `AUDITS` array there. **Don't** add a per-audit script alias to `package.json`.
 
 **Other dispatchers**:
-- `npm run firebase <generate|deploy|reset>` — replaces `firebase:generate`/`firebase:deploy[:rules|:indexes]`/`firebase:reset[:all]`. `--only indexes` and `--only rules` are convenience shortcuts.
-- `npm run test:qa <smoke|pw|audit>` — replaces `test:smoke[:only]`/`test:pw[:only]`/`test:audit[:existing]`. Forwards `--only`, `--use-existing`, etc.
+- `npm run firebase -- <generate|deploy|reset>` — replaces `firebase:generate`/`firebase:deploy[:rules|:indexes]`/`firebase:reset[:all]`. `--only indexes` and `--only rules` are convenience shortcuts. **Always pass the `--`**: without it npm swallows `--only` as its own CLI flag rather than forwarding it, so `npm run firebase deploy --only indexes` can deploy *everything*. `node scripts/firebase.mjs deploy --only indexes` is equally safe.
+
+> 🛑 **There is no `test:qa` script.** Earlier revisions of this file documented
+> `npm run test:qa <smoke|pw|audit>` (and the End-of-Plan checklist called
+> `npm run test:qa smoke`); no such script has ever existed in `package.json`,
+> so that step failed with "Missing script" every time it was reached.
+> The real end-to-end surface is Playwright:
+> - `npm run test:e2e` — against a local server
+> - `npm run test:e2e:prod` — against `https://letitrip.in`
+> - `npm run test:e2e:iphone` / `:laptop` / `:monitor` — per-viewport projects
+>
+> Specs live in `scripts/qa/playwright/`. `node scripts/deploy.mjs` also runs
+> its own built-in post-deploy smoke test (`/`, `/en/products`,
+> `/api/site-settings`), which is the gate that actually catches a Lambda
+> module-load failure — see Recurrent Root Cause #69.
 
 **Stop hook automation**: `.claude/settings.json` runs the fast audits (`check:audits`) automatically at end of every Claude turn via `scripts/claude-hooks/check-on-stop.mjs`. Failures block the turn and surface to the assistant for fixing. **Every audit is now strict zero-tolerance** — there is no baseline-drift mode; any violation `> 0` fails the audit. Legitimate dynamic patterns are handled by explicit per-line suppression markers (`// audit-inline-style-ok`, `// toast-handled-by-hook`, `// toast-intentionally-silent`, `// reexport-from-internal-ok`, `// audit-sieve-views-ok`, `// audit-variant-ok` — primitives whose internal CSS the audit must allow) at the site of the decision, each with a brief reason. tsc + lint are excluded from the Stop hook because they are too slow per-turn; run `npm run check` manually before commits.
 
@@ -1060,7 +1076,7 @@ Each adapter carries a `PUBLIC_*_FIELDS` list and a `PRIVATE_*_FIELDS` list with
 | 33 | **A `FilterChipGroup`/status-tab `id` that doesn't exactly match a value the target Firestore field can hold returns zero rows forever, with no error anywhere** | `id` gets passed straight into `sieveFilter(field, SIEVE_OP.EQ, id)`; Firestore `==` is byte-exact (confirmed via the Sieve adapter source — no case coercion happens for filter *values*, only field *names*), so a wrong word, wrong case, or an aspirational value that was never a real stored status (e.g. treating `isSold`/`auctionEndDate` — derived signals, not stored status values — as if they were `status=="sold"`/`status=="ended"`) silently breaks the chip. Found live in 8+ places in one 2026-08-19 sweep: seller Products ("Sold", "Active"→should be "Published"), Auctions ("Ended"/"Cancelled" — no such status exists; "ended" is `auctionEndDate` vs now, not stored), Prize Draws (same), Pre-orders (same), Orders (uppercase ids vs lowercase stored values), Offers ("Rejected"→real value is "Declined"), and admin Products ("Pending"→should be "Pending"'s real value `in_review`) and Events ("Published"→not a real `EventStatus` value). **Red flag: any new status/type filter-tab array — always grep the real schema/type union it's supposed to filter before trusting the array's `id`s**, never assume from the label text. Enforced going forward by `scripts/audit-filter-tab-enums.mjs` (strict-zero, registered in `scripts/run-audits.mjs`, runs in `npm run check`) — it cross-checks every registered `ADMIN_*_TABS`/`SELLER_*_TABS` array in `filter-tabs.ts` against its real backing enum's own schema/types file. Extend its `REGISTRY` map whenever a new status/type tab array is added. |
 | 34 | **`appkit/src/constants/field-names.ts` calls itself canonical but is stale in places — verify against the feature's own schema file before trusting it** | Confirmed two concrete disagreements during the 2026-08-19 sweep: `EVENT_FIELDS.STATUS_VALUES` includes a `"published"` value the real `EventStatus` type (`appkit/src/features/events/types/index.ts`) never had (`draft\|active\|paused\|ended\|cancelled` only); `SCAMMER_FIELDS.STATUS_VALUES` is missing the real `"removed"` value that `ScammerStatusValues` (`appkit/src/features/scams/schemas/firestore.ts`) actually has. Don't propagate a pattern (a filter-tab array, a status badge map, a Sieve field allowlist) from `field-names.ts` alone — cross-check the feature's own `schemas/firestore.ts` or `types/index.ts`, which is what `audit-filter-tab-enums.mjs` (Root Cause #33) does by design. |
 | 35 | **`ListingViewConfig.toggles`** (`appkit/src/features/admin/components/DataListingView.tsx`) **is the standard mechanism for admin/seller "hide-by-default" boolean quick-filters — it existed with zero consumers before 2026-08-19** | Mirrors the public `ListingToolbar.toggles` pattern (pill toggles like "Show sold"/"Show ended" already used on public listing pages) — same `{ label, active, onChange }` shape, rendered inline in the sticky toolbar instead of buried in the filter drawer. When adding a new admin/seller derived-state toggle (a boolean that isn't a real multi-value status, e.g. "hide already-paid payouts," "hide resolved tickets," "hide sold auctions"), use this config field with a second, independent `useUrlTable()` call reading/writing the same URL param `DataListingView`'s own internal table also reads (safe — `useUrlTable` has no local state, multiple instances against the same URL stay in sync) — don't invent a bespoke `FilterChipGroup` pair for what's fundamentally a boolean, and don't reach for `!=` if the "hide N of M values" shape needs excluding more than one value: Firestore allows at most one `!=` clause per query and requires any inequality filter's field to be the first `orderBy`, so multi-value exclusion against an arbitrary default sort must use pipe-joined `EQ` (`sieveFilter(field, SIEVE_OP.EQ, "a\|b\|c")` — sievejs parses same-field `\|` as an OR-group, which the Firestore adapter upgrades to a `.where(..,"in",..)` query, with no such restriction) listing the values to *keep*, not the ones to exclude. |
-| 36 | **Two unrelated `OrderStatus` types exist in appkit with different value sets — the public barrel exports the wrong (narrower) one** | `appkit/src/features/orders/types/index.ts` declares `OrderStatus` as `pending\|confirmed\|processing\|shipped\|delivered\|cancelled\|refunded\|return_requested\|returned` (9 values, matches `OrderStatusValues`/the real `orders` collection). `appkit/src/features/account/types/index.ts` independently declares its *own* `OrderStatus` — `placed\|pending\|confirmed\|processing\|shipped\|delivered\|cancelled\|returned\|refunded` — missing `return_requested`, with an extra `placed` no order ever has. `appkit/src/index.ts` re-exports `OrderStatus` from `./features/account/index`, so any consumer importing `type OrderStatus` from `@mohasinac/appkit` silently gets the narrower account/ version — assigning `OrderStatusValues.RETURN_REQUESTED` (a real, correct value) to a `OrderStatus[]`-typed array then fails to typecheck. Root-caused 2026-08-19 fixing `src/app/api/user/orders/route.ts`'s `VALID_STATUSES` list. **Workaround, not a fix**: don't type against the barrel's `OrderStatus` for anything involving `return_requested` — use `Set<string>`/no type annotation instead, matching what the fixed route now does. The real fix (renaming one of the two types and repointing the barrel, then auditing every consumer of the wrong one) is out of scope for a single-route fix and needs its own session. |
+| 36 | **Two unrelated `OrderStatus` types exist in appkit with different value sets — the public barrel exports the wrong (narrower) one** | `appkit/src/features/orders/types/index.ts` declares `OrderStatus` as `pending\|confirmed\|processing\|shipped\|delivered\|cancelled\|refunded\|return_requested\|returned` (9 values, matches `OrderStatusValues`/the real `orders` collection). `appkit/src/features/account/types/index.ts` independently declares its *own* `OrderStatus` — `placed\|pending\|confirmed\|processing\|shipped\|delivered\|cancelled\|returned\|refunded` — missing `return_requested`, with an extra `placed` no order ever has. `appkit/src/index.ts` re-exports `OrderStatus` from `./features/account/index`, so any consumer importing `type OrderStatus` from `@mohasinac/appkit` silently gets the narrower account/ version — assigning `OrderStatusValues.RETURN_REQUESTED` (a real, correct value) to a `OrderStatus[]`-typed array then fails to typecheck. Root-caused 2026-08-19 fixing `src/app/api/user/orders/route.ts`'s `VALID_STATUSES` list. **FIXED 2026-08-24 (W2).** `features/account/types/index.ts` no longer declares its own copy — it re-exports `OrderStatus` and `PaymentStatus` from `features/orders/types/index`, so the barrel and every consumer now resolve to the single correct 9-value union and the two can no longer drift. The fake `placed` is gone; `return_requested` is reachable everywhere. The cascade of `tsc` errors this produced was the point, not a side effect: it enumerated every file that had been silently typed against the narrower union. **The lesson survives the fix** — two same-named types in one package is a defect even when both look plausible, and the barrel's choice between them is invisible at every call site. |
 | 37 | **A `page.tsx` with no nav entry, or a nav entry with no `page.tsx`, silently ships as "half done"** | A whole-app admin/store/user nav audit (2026-08-19) found ~25 instances of a real, fully-built feature (working view + API) with zero sidebar entry — `/admin/grouped-listings`, `/store/grouped-listings`, `/store/listing-templates`, the `/user` dashboard hub, plus ~17 more store pages — reachable only by typing the exact URL. The inverse also existed: `/admin/carousels` (list page) rendered the wrong component entirely (the flat slide editor, not a named-carousel list), and a 7-route family (order/moderation/report/item-request/scammer/support-ticket detail + a permissions catalog) had nav-adjacent `ROUTES.ADMIN.*` constants with no `page.tsx` ever built behind them. Also found: two genuine feature duplicates that both went unwired at the same time — a legacy `ProductTemplateDocument`-based "Templates" feature superseded by, but never removed in favor of, the newer `ListingTemplateDocument`-based one; and a degraded `/store/inventory/print` duplicate of the real `/store/print-center` (same component, `store={null}`, no data). **Whenever a new `page.tsx` is added under `admin/`, `store/`, or `user/`, add its nav entry in the same commit; whenever a new nav entry is added, confirm the target `page.tsx` already exists.** Enforced going forward by `scripts/audit-nav-page-wiring.mjs` (strict-zero on dead nav links — a nav href with no matching `page.tsx` fails `npm run check`; report-only, non-blocking on the inverse — a page with no nav entry — since legitimate sub-routes like `new/`, `[id]/edit/`, `/view` are expected to exist without one). No suppression marker — a nav entry either points at a real page or it doesn't. |
 | 38 | **A hand-rolled admin LIST endpoint serializer silently drops fields the sibling PATCH schema accepts — the write succeeds, the list read lies, and a list-backed editor destructively re-saves the wrong default** | Root-caused 2026-08-19 starting from a report that admin couldn't edit a user's tester flags. `src/app/api/admin/users/route.ts`'s `serializeUser()` never picked up `isTester`/`canTestAdmin` after they were added to `updateUserSchema` in the sibling `[uid]/route.ts` — the PATCH write persisted correctly, but the LIST GET response omitted them entirely. Traced into the consumer: `AdminUsersView.tsx` seeds `AdminUserEditorView`'s "current value" props from the list row (always `undefined` → editor state defaults to `false`), and the save handler **unconditionally** re-sends that wrong default on every save — so editing *any other field* on a real tester silently stripped their tester flags. A broader sweep found the identical (and more severe) bug in `src/app/api/admin/stores/route.ts` — missing `isVerified`/`isFeatured`/`capabilities`/`adminNotes`/`suspensionReason` — where saving any unrelated field on an already-verified store silently un-verified it and reset its custom capabilities to the two-item default. `isFeatured` additionally had **no prop path at all** between `AdminStoresView.tsx` and `AdminStoreEditorView.tsx` (not just a stripped API field) — a second, independent way the same symptom can occur. **The single-item GET endpoint returning the raw, unstripped document while the LIST endpoint hand-picks a narrower field set is the reliable tell** — check for that asymmetry whenever adding a field to an admin PATCH schema. Enforced going forward by `scripts/audit-list-serializer-parity.mjs` (strict-zero, registered in `scripts/run-audits.mjs`) — a small `REGISTRY` cross-checks each PATCH schema's fields against its paired list serializer's fields (regex/brace-walk based, no TS compiler in the loop, matching `audit-filter-tab-enums.mjs`'s precedent). Fields that are genuinely safe to omit (never unconditionally sent, nothing reads them back from a list row) go in that registry entry's `allow` array with the reasoning recorded inline — not a silent skip. |
 | 39 | **A CREATE handler's field *transform* (wrapping a value in an object, deriving a value, writing a nested dot-path) isn't automatically mirrored by the sibling UPDATE handler even when both accept the same field name — this is a different bug from #38 (missing field), and #38's audit can't catch it** | Found in a 2026-08-19 sweep specifically hunting shape drift (not presence drift): `src/app/api/admin/faqs/route.ts`'s POST wraps a flat `answer: string` into `{text, format:"html"}` and writes `slug` to the nested `"seo.slug"` dot-path — the sibling PATCH originally just spread the raw body straight into Firestore, so editing an existing FAQ's answer would have written a plain string into a field every reader expects to be `{text,format}`. Same class, more instances: `src/app/api/store/sublisting-categories/[id]/route.ts` didn't recompute `seo.title`/`seo.description` on rename (page metadata frozen at creation); `src/app/api/store/grouped-listings/[id]/route.ts` and its admin counterpart didn't recompute `activeMemberCount` from `productIds.length` on PATCH (stale until an unrelated background job happened to fire); `src/app/api/admin/events/[id]/route.ts` skipped the staged-media finalize calls (`finalizeStagedMediaField`/`Object`/`ObjectArray`) that create runs, orphaning newly-uploaded images in Storage `tmp/`. **Not every apparent instance is a bug** — checked whether `events`' `slug` (derived from `title` on create, never recomputed on update, and title *is* PATCH-editable) was the same pattern, and it isn't: categories/brands/bundles all establish "slug is immutable after creation, the update schema doesn't even accept it" as the deliberate codebase convention, so leaving events' slug frozen too is *consistent*, and auto-recomputing it would risk breaking existing bookmarks/links — verify against sibling resources' established behavior before assuming divergence is a bug. **When adding a field to a CREATE handler that requires any transform beyond a straight write, grep the sibling UPDATE handler for the same field and confirm it applies the identical transform — not just that it accepts the field.** No dedicated audit script for this class yet (each instance found needed a different transform shape); `audit-list-serializer-parity.mjs` (#38) only catches field-presence drift on the list-vs-PATCH axis, not shape drift on the create-vs-PATCH axis. |
@@ -1138,6 +1154,127 @@ activeLane(cart)   = first lane in that order with >= 1 item
 **After the fact**: `OrderDocument.orderType` records which lane produced an order, and drives the All / Normal / Auction wins / Offer wins tabs on `/user/orders`. `"standard"` is filtered **in memory**, never as a Firestore `==` — orders written before the field existed have no value, and an equality filter silently excludes every document missing the field.
 
 ---
+
+## Offer Lifecycle
+
+> Added 2026-08-24 (W2). An offer is **an order with more phases in front of it**. Read this before touching anything under `appkit/src/features/seller/` that names an offer, or `_internal/server/features/offers/`.
+
+**Phases**: `made → countered → accepted → paid`, with `declined` / `withdrawn` / `expired` as the terminal-negative branch. `OfferStatus` has **7 values and gains no more** — see the `superseded` note below.
+
+### The chain — a negotiation is one story, not N documents
+
+`counterOfferByBuyer` creates a **new** offer document per round. Before W2 those rounds were unlinked: `previousOfferId` existed only inside a `serverLogger.info` call and never reached Firestore, so a three-round negotiation was three unrelated documents and `counterRounds` was genuinely unknowable. Four persisted fields fix that:
+
+| Field | Direction |
+|---|---|
+| `previousOfferId` | walk back one round |
+| `supersededByOfferId` | walk forward one round |
+| `chainRootOfferId` | denormalised to the root, so a **list row renders "Round 2" with zero extra reads** |
+| `counterRound` | 1-based; absent means 1 |
+
+`findChain(chainRootOfferId)` is a **single-field equality with `limit(3)`**, served by Firestore's automatic index — **no composite index**, and none of the ten existing `offers` indexes is affected. If a change to it starts demanding a composite, the query shape has drifted. Legacy documents have no `chainRootOfferId`, so `findChain` returns zero rows: callers must fall back to `[offer]` and never read empty as "missing".
+
+**Order matters in `counterOfferByBuyer`: create the new round FIRST, then supersede the old one.** It used to `withdraw()` then `create()`, so a throw in `create` destroyed the buyer's live counter with no replacement and burned one of their three slots. Reversed, the worst failure is a transient extra pending offer, which `hasActiveOffer` and the expiry sweep already handle.
+
+**`sellerNote` is deliberately NOT carried forward to the next round.** Copying it would render as "Seller note" on a round the seller has never seen. Round N-1 still exists and its note renders in its own round.
+
+### `superseded` is a RENDER KEY, never an `OfferStatus`
+
+A document that is `withdrawn` **and** carries `supersededByOfferId` renders neutral ("Superseded") — the buyer did not walk away, they countered. A `withdrawn` with no such field renders negative ("Withdrawn").
+
+Making it an eighth status value would add a filter chip in `ADMIN_OFFER_STATUS_TABS` matching zero stored rows — exactly the defect `audit-filter-tab-enums` exists to catch.
+
+### Admin is a coordinator, not a participant
+
+| | accept | counter | decline | cancel | view |
+|---|---|---|---|---|---|
+| buyer | · | ✔ | · | withdraw | ✔ |
+| **store** | ✔ | ✔ | ✔ | · | ✔ |
+| admin | ✗ | ✗ | ✗ | ✔ with reason | ✔ |
+
+The store keeps sole authority over its own pricing. `ADMIN_ROW_ACTIONS.offers` is `[VIEW, CANCEL]` and a checklist case asserts it stays that way.
+
+**Cancel is a reasoned escalation.** `reason` is `.min(10).max(300)` and **required** — the route used to accept it as optional and never read the body at all, so every reason an admin typed was discarded and the buyer was told nothing. Handler order is load-bearing:
+
+```
+removeItemsByOfferId  FIRST   — a leftover locked line keeps the buyer's offer
+                                lane non-empty, and since that lane outranks
+                                the standard one it blocks their ENTIRE cart
+  → expireMany([offer], { actor, trigger:"adminCancelOffer", reason,
+                          cancelledByAdminUid })
+  → recordAdminAction(OFFER_CANCEL)   — best-effort, never fails the action
+  → notification, now quoting the reason
+```
+
+Two records on purpose: `adminAuditLog` answers *"what have admins done lately"*, the offer's own `statusHistory` answers *"what happened to this offer"* — and only the second is visible to the buyer and store. `adminAuditLog` is **not** PII-encrypted, so its `metadata` carries `buyerUid` only, never a name.
+
+**There is no bulk cancel.** There was a destructively-labelled bulk action whose `onClick` only called `clearSelection()`. It was deleted rather than wired: one shared reason across a heterogeneous selection is worse audit data than no bulk action, and a registry-backed control that reads as working and does nothing is worse than an absent one.
+
+---
+
+## Status History
+
+> Added 2026-08-24 (W2). The generic primitive behind order and offer timelines. Eight more entities adopt it in W15 — read this before adding the ninth.
+
+**Source of truth**: `appkit/src/_internal/shared/history/` — `StatusChangeEntry`, `withHistory()`, `STATUS_HISTORY_MAX = 50`.
+
+```ts
+interface StatusChangeEntry {
+  at: Date;
+  actorUid?: string;                              // NEVER a name or an email
+  actorRole: "buyer" | "seller" | "admin" | "system";
+  changes: Record<string, FieldChange>;           // DELTA ONLY, never a snapshot
+  reason?: string; note?: string;
+  trigger: string;                                // the function/job that caused it
+}
+```
+
+**Append inside the repository's write primitives, not at the call sites.** Orders have 32 status write paths funnelling through 7 methods; offers funnel through one `updateStatus` choke point. Every mutation takes an optional `prior` document, and every existing caller already held one — so history costs **zero extra Firestore reads**, and threading `prior` into `acceptCounter` deleted a `findById`, landing the feature one read *cheaper*.
+
+**No `BaseRepository` hook.** `BaseRepository.update()` does not read before writing, so a generic hook would force a pre-read on every update of every collection (Rule #6), and it carries neither actor nor trigger.
+
+### Four rules, each learned the hard way
+
+1. **Never fabricate a timestamp.** A step with no recorded date renders an em-dash. Not `new Date()`, and not a proxy field: `updatedAt` means "last write of any kind" and `expiresAt` is a deadline, not an event. An offer that expired before W2 has no timestamp at all, and inventing one makes the record lie.
+2. **History carries no PII, and this is enforced in the primitive.** `encryptPiiFields` is a flat top-level loop that never descends into arrays, so a value named `buyerName`/`buyerEmail` inside `statusHistory[].changes` or `.note` would be stored **in plaintext** and never decrypted on the way back out. `withHistory` takes a `piiFields` list and scrubs it. Orders were safe only by luck — no overlap with `ORDER_PII_FIELDS`; offers are not. A convention saying "don't put PII in history" is one forgetful adopter away from a leak.
+3. **`arrayUnion` cannot enforce the FIFO cap**, so batch paths fold entries in memory and write whole arrays. This is why `expireMany` takes **documents, not ids** — every caller already held them, so it costs nothing.
+4. **Truncation is never silent.** Cap 50, and `statusHistoryTruncated` records how many fell off the front so the UI can say "earlier history trimmed" instead of implying none existed.
+
+### Money is NOT in the history
+
+Only the **final** coupon and add-on state is kept, and it already lives on the order document (`appliedDiscounts[]`, the add-on flag/fee pairs). `appliedDiscounts` and `storeAddons` are **not tracked fields**, and a coupon that lapsed before the order existed is not that order's history. The timeline exists to answer *"where is my order and what happened to it"*; pricing churn buries the handful of transitions anyone reads.
+
+**Refunds and partial refunds ARE in it.** A partial refund changes no tracked field, so a plain diff would leave no trace — it is contributed explicitly via `withHistory`'s `extraChanges`. Diffing `refunds[]` was rejected: it renders as *"an array of 1 became an array of 2"*, which is true and useless.
+
+**Orders track exactly five fields** — `status`, `paymentStatus`, `paymentReviewOutcome`, `trackingNumber`, `cancellationReason` — plus `refund`. An explicit list is essential: a whole-document diff would record the `updatedAt` bump on every write and exhaust the 50-entry cap within days.
+
+### Rendering
+
+One rail, `<StatusTimeline>` (`appkit/src/features/status-history/components/`), with two thin wrappers supplying only their own phase vocabulary: `OrderStatusTimeline` and `OfferPhaseTimeline`. **It never fetches** — a client component loading its own chain would fire one request per opened modal per portal. Each wrapper has Branch A (recorded history) and Branch B (derive from scalar dates, for documents written before W2).
+
+Colour follows Root Cause #67: the negative dot is the `<Div surface="danger-surface">` **variant prop**, never the utility class `bg-danger-surface`, which Tailwind silently drops.
+
+---
+
+## Order Provenance — `sourceContext`
+
+> Added 2026-08-24 (W2). How the buyer earned the right to buy at this price.
+
+`orderType` has five values and **cannot separate a settled auction win from a buyout** — both are `"auction"`. So `OrderSourceContext` keys on its **own** discriminator, `path`, with six variants: `standard` · `auction-won` · `auction-buy-now` · `offer-accepted` · `pre-order` · `prize-draw`.
+
+A discriminated union rather than a bag of optionals: `winningBidAmount` is meaningless on a buyout, and a flat shape would encode a buyout's bid count as if it were a fact about a competitive auction.
+
+**Built by ONE function** — `buildOrderSourceContext()` (`_internal/server/features/checkout/source-context.ts`), called from both `createOrderForGroup` (manual/COD) and `createRazorpayGroupOrder`. Two hand-written copies would be the create-vs-create axis of Root Cause #39, and those two ~200-line twins have already drifted once (add-on fees, Root Cause #65).
+
+**Written once at creation, never recomputed.** `product.price` moves, `currentBid` is a mirror a pending buyout deliberately never writes to, and a settled auction is eventually archived. Recomputing would silently rewrite history.
+
+**Read cost**: standard / pre-order / prize-draw cost **zero** extra reads. Auctions pay one `findByProductSorted` (bid count, winner, runner-up and the standing bid all come from it); offers pay one `findById`. A checkout is single-lane by construction, so a standard cart never pays either. Failure returns `undefined` and logs — the money path must not 500 because a provenance record could not be assembled.
+
+### 🛑 A buyout is a REAL bid
+
+`OrderSourceAuctionBuyNow` once asserted *"zero bids BY DEFINITION (`!bidsHaveStarted`)"*. **That gate no longer exists.** `buyNowAuction` places an actual `BidDocument` (`isBuyout: true`) plus a 1h locked cart line and leaves the auction **live**; `claimAuctionForCheckout` is the atomic arbiter at order time. `bidCount` therefore counts the competitive bids the buyout beat and is **not** always zero, and `standingBidAtBuyout` is read from the bids rather than `product.currentBid`.
+
+An unpaid buyout lapses to **`cancelled`**, not `forfeited`, and the seller is deliberately **not** notified — nothing was ever sold.
 
 ## Coupon Scoping & Stacking
 
@@ -1800,17 +1937,27 @@ If using `file:./appkit` locally (normal dev): skip publish entirely.
 ### 3 — Firebase Indexes + Rules (if schema/index changed)
 
 ```bash
-npm run firebase generate
-npm run firebase deploy --only indexes
-node scripts/wait-for-indexes.mjs    # wait until CREATING=0
-npm run firebase deploy --only rules
+npm run firebase -- generate                  # MUST be first — see below
+npm run firebase -- deploy --only indexes
+node scripts/wait-for-indexes.mjs             # wait until CREATING=0
+npm run firebase -- deploy --only rules
 ```
+
+**`generate` must run first, always.** Both `wait-for-indexes.mjs` and
+`firebase-delete-indexes.mjs` enumerate collection groups from the *generated*
+root `firestore.indexes.json`, not from the base file — so if the generated
+file is stale they will silently wait on, or delete, the wrong set. (Measured
+2026-08-25: the generated file was **33 indexes behind** the base.)
+
+**`wait-for-indexes.mjs` has no timeout and no max attempts** — it polls every
+15s until `CREATING=0`. A permanently-stuck index loops forever; be ready to
+interrupt it.
 
 If indexes had stale entries causing 409:
 
 ```bash
 node appkit/scripts/firebase-delete-indexes.mjs
-npm run firebase deploy --only indexes
+npm run firebase -- deploy --only indexes
 node scripts/wait-for-indexes.mjs
 ```
 
@@ -1832,10 +1979,14 @@ Confirm the log lines read `updating Node.js 22 (2nd Gen) function …` with no 
 ### 5 — Smoke Test
 
 ```bash
-npm run test:qa smoke
+npm run test:e2e:prod      # Playwright against https://letitrip.in
 ```
 
-Must exit 0.
+Must exit 0. **This step used to read `npm run test:qa smoke`, which is not a
+script that exists** — see the dispatcher note near the top of this file. Note
+that `node scripts/deploy.mjs` (step 6) already runs its own built-in smoke
+test of `/`, `/en/products` and `/api/site-settings` and fails the deploy on
+any non-2xx/3xx, so in practice step 6 gates before this one does.
 
 ### 6 — Vercel Deploy (only when explicitly asked)
 

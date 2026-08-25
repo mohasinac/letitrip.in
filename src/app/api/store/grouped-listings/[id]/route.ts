@@ -5,6 +5,8 @@ import {
   createRouteHandler,
   errorResponse,
   groupedListingsRepository,
+  groupedListingUpdateSchema,
+  ValidationError,
   parseJsonBody,
   type JsonValue,
   storeRepository,
@@ -46,14 +48,22 @@ export const PATCH = withProviders(
       // this, a PATCH with a malformed productIds/minActiveMembers writes them
       // uncoerced, and activeMemberCount goes stale until the unrelated
       // onProductStockChange background job happens to fire for a member product.
-      const patch: Record<string, JsonValue> = { ...body };
-      if ("productIds" in body) {
-        const productIds = Array.isArray(body.productIds) ? body.productIds : [];
-        patch.productIds = productIds;
-        patch.activeMemberCount = productIds.length;
+      // Parsed, not spread. The schema is `.strict()`, so an unknown key is a
+      // 400 rather than a silent write — `{...body}` previously persisted
+      // anything a caller invented, including `storeId`.
+      const parsed = groupedListingUpdateSchema.safeParse(body);
+      if (!parsed.success) {
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid grouped listing",
+          parsed.error.issues,
+        );
       }
-      if ("minActiveMembers" in body) {
-        patch.minActiveMembers = Number(body.minActiveMembers ?? 2);
+      const patch: Record<string, JsonValue> = { ...parsed.data } as Record<string, JsonValue>;
+      // `activeMemberCount` is DERIVED, never accepted from the body — it is
+      // what the public visibility check reads, and a caller-supplied count
+      // could disagree with the array it is supposed to describe.
+      if (parsed.data.productIds) {
+        patch.activeMemberCount = parsed.data.productIds.length;
       }
       try {
         await groupedListingsRepository.update(id, patch);

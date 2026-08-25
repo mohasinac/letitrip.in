@@ -5,13 +5,15 @@ import {
   successResponse,
   errorResponse,
   reviewRepository,
+  ReviewStatusValues,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const MSG_REVIEW_NOT_FOUND = "Review not found.";
 
 const updateReviewSchema = z.object({
-  status: z.enum(["pending", "approved", "rejected"]).optional(),
+  // Derived, not restated — see the scammers route.
+  status: z.enum(ReviewStatusValues).optional(),
   featured: z.boolean().optional(),
   adminReply: z.string().optional(),
   rejectionReason: z.string().optional(),

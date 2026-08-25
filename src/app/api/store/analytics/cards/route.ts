@@ -5,8 +5,7 @@ import {
   analyticsCardsRepository,
   createRouteHandler,
   errorResponse,
-  parseJsonBody,
-  type JsonValue,
+  analyticsCardCreateSchema,
   storeRepository,
   successResponse,
 } from "@mohasinac/appkit";
@@ -26,23 +25,24 @@ export const GET = withProviders(
 );
 
 export const POST = withProviders(
-  createRouteHandler({
+  createRouteHandler<(typeof analyticsCardCreateSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    handler: async ({ request, user }) => {
-      const body = await parseJsonBody<Record<string, JsonValue>>(request);
-      try {
-        const doc = await analyticsCardsRepository.create({
-          ...body,
-          scope: "seller",
-          ownerId: user!.uid,
-          isBuiltIn: false,
-        });
-        return successResponse(doc, "Card created", 201);
-      } catch (err) {
-        void normalizeError(err);
-        return errorResponse(err instanceof Error ? err.message : "Create failed", 400);
-      }
+    schema: analyticsCardCreateSchema,
+    handler: async ({ user, body }) => {
+      // `isBuiltIn: false` is pinned here — a seller-authored card claiming to
+      // be built-in would sit alongside the platform's own and could not be
+      // told apart.
+      const doc = await analyticsCardsRepository.create({
+        ...body!,
+        filters: body!.filters ?? {},
+        position: body!.position ?? 0,
+        isVisible: body!.isVisible ?? true,
+        scope: "seller",
+        ownerId: user!.uid,
+        isBuiltIn: false,
+      });
+      return successResponse(doc, "Card created", 201);
     },
   }),
 );

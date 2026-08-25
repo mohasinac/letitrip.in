@@ -39,13 +39,112 @@
  * destructively overwritten, nothing reads them back from a list row) go in
  * that registry entry's `allow` array with the reasoning left in this file's
  * REGISTRY comments, not a silent skip.
+ *
+ * ## Why the registry is THREE pairs and not twelve
+ *
+ * A plan carried an item to "extend this from 3 to 12", naming address
+ * clusters, payment-method clusters, history, wishlists, media, store
+ * addresses, sessions, ads and payouts-CSV. Every one was checked on
+ * 2026-08-24 and NONE of them is a pair:
+ *
+ *   · payment-methods, sessions, newsletter — their PATCH takes an ACTION
+ *     (`ban`, `approve_unban`, `revoke`), not a field set. Nothing round-trips
+ *     from a list row into an editor and back, so a narrower list response
+ *     cannot clobber anything.
+ *   · addresses — the list returns the repository documents whole. There is no
+ *     hand-picked field set to drift from.
+ *   · history, media, store-addresses, wishlists — these DO hand-pick list
+ *     fields, but have no detail route at all, so there is no PATCH schema to
+ *     pair them with.
+ *   · ads — masks its credentials and MERGES on write.
+ *
+ * The bug class needs all three of: a hand-picked list serializer, a
+ * field-update PATCH, and an editor seeded from the list row. Three pairs meet
+ * that today. The `NEW_PAIR` check below is what stops a fourth appearing
+ * unregistered — which is the real risk, not the nine that do not exist.
  */
 
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+
+// ---------------------------------------------------------------------------
+// NEW_PAIR — a route that grows both halves of the bug class must register.
+//
+// The registry is hand-maintained, so the failure mode it cannot see is a
+// FOURTH pair appearing later: someone adds a `.map(x => ({...}))` list
+// serializer beside an existing field-update PATCH, and this audit stays green
+// because it was never told to look there.
+//
+// A pair needs BOTH halves. A route with only one is not a risk, which is why
+// the nine candidates the plan named do not appear here.
+// ---------------------------------------------------------------------------
+
+/** `.map((x) => ({` — a list response built from hand-picked fields. */
+const HANDPICK_RE = /\.map\(\s*\(?\w+(?::\s*\w+)?\)?\s*=>\s*\(\{/;
+
+/**
+ * A FIELD-update schema, as opposed to an action schema.
+ *
+ * `z.object({ action: z.enum([...]) })` is a command, not a field set — it
+ * cannot participate in the round-trip this audit guards, so a route whose
+ * only schema is action-shaped is correctly ignored.
+ */
+function hasFieldUpdateSchema(source) {
+  const m = source.match(/const \w*[Uu]pdate\w*Schema = z\.object\(\{([\s\S]*?)\}\);/);
+  if (!m) return false;
+  const body = m[1];
+  const keys = [...body.matchAll(/^\s*(\w+)\s*:/gm)].map((x) => x[1]);
+  const fieldKeys = keys.filter((k) => k !== "action" && k !== "banReason");
+  return fieldKeys.length > 0;
+}
+
+function checkForUnregisteredPairs(registeredListFiles) {
+  const found = [];
+  const adminApi = join(ROOT, "src", "app", "api", "admin");
+  let dirs = [];
+  try {
+    dirs = readdirSync(adminApi, { withFileTypes: true }).filter((d) => d.isDirectory());
+  } catch {
+    return found;
+  }
+  for (const d of dirs) {
+    const listPath = join(adminApi, d.name, "route.ts");
+    let listSrc;
+    try {
+      listSrc = readFileSync(listPath, "utf8");
+    } catch {
+      continue;
+    }
+    if (!HANDPICK_RE.test(listSrc)) continue;
+
+    // Find a sibling detail route carrying a field-update schema.
+    let detailSrc = null;
+    try {
+      for (const sub of readdirSync(join(adminApi, d.name), { withFileTypes: true })) {
+        if (!sub.isDirectory() || !sub.name.startsWith("[")) continue;
+        try {
+          detailSrc = readFileSync(join(adminApi, d.name, sub.name, "route.ts"), "utf8");
+        } catch {
+          /* no route in that segment */
+        }
+      }
+    } catch {
+      /* no subdirectories */
+    }
+    const bothHalves = detailSrc
+      ? hasFieldUpdateSchema(detailSrc)
+      : hasFieldUpdateSchema(listSrc);
+    if (!bothHalves) continue;
+
+    const rel = `src/app/api/admin/${d.name}/route.ts`;
+    if (!registeredListFiles.has(rel)) found.push(rel);
+  }
+  return found;
+}
 
 const REGISTRY = [
   {
@@ -281,8 +380,24 @@ function main() {
     }
   }
 
+  // A route that has grown BOTH halves of the bug class but is not registered.
+  const unregistered = checkForUnregisteredPairs(
+    new Set(REGISTRY.map((e) => e.listFile)),
+  );
+  for (const file of unregistered) {
+    violations.push({
+      pair: "(unregistered)",
+      field: "—",
+      reason:
+        `${file} now hand-picks its list fields AND has a field-update PATCH, ` +
+        `but no REGISTRY entry. Add one so the two are checked against each other.`,
+    });
+  }
+
   if (violations.length === 0) {
-    console.log(`audit-list-serializer-parity: clean ✓ (${REGISTRY.length} pair(s) checked)`);
+    console.log(
+      `audit-list-serializer-parity: clean ✓ (${REGISTRY.length} pair(s) checked, no unregistered pairs)`,
+    );
     process.exit(0);
   }
 

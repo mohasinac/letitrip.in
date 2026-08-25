@@ -1,12 +1,10 @@
-import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import {
   ApiErrors,
   createRouteHandler,
-  errorResponse,
-  parseJsonBody,
-  type JsonValue,
+  toSellerGoogleConfig,
   storeGoogleConfigRepository,
+  storeGoogleConfigUpdateSchema,
   storeRepository,
   successResponse,
 } from "@mohasinac/appkit";
@@ -20,35 +18,41 @@ export const GET = withProviders(
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return ApiErrors.forbidden("No store");
       const doc = await storeGoogleConfigRepository.getByStore(store.id);
-      return successResponse(doc ?? { storeId: store.id, isConnected: false });
+      return successResponse(
+        // Allow-list projection, not the raw document — see
+        // `toSellerGoogleConfig`. The GET used to return the whole thing,
+        // including the Google OAuth refresh token.
+        doc ? toSellerGoogleConfig(doc) : { storeId: store.id, isConnected: false },
+      );
     },
   }),
 );
 
 export const PUT = withProviders(
-  createRouteHandler({
+  createRouteHandler<(typeof storeGoogleConfigUpdateSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    handler: async ({ request, user }) => {
+    schema: storeGoogleConfigUpdateSchema,
+    handler: async ({ user, body }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return ApiErrors.forbidden("No store");
       const existing = await storeGoogleConfigRepository.getByStore(store.id);
-      const body = await parseJsonBody<Record<string, JsonValue>>(request);
-      try {
-        const doc = existing
-          ? await storeGoogleConfigRepository.update(existing.id, {
-              ...body,
-              storeId: store.id,
-            })
-          : await storeGoogleConfigRepository.create({
-              ...body,
-              storeId: store.id,
-            });
-        return successResponse(doc, "Saved");
-      } catch (err) {
-        void normalizeError(err);
-        return errorResponse(err instanceof Error ? err.message : "Save failed", 400);
-      }
+
+      // The schema is `.strict()` and declares neither `oauthRefreshToken` nor
+      // the sync-output fields (`averageRating`, `totalReviews`,
+      // `lastSyncedAt`), so a body carrying any of them is a 400 rather than a
+      // seller writing the review count their own storefront displays.
+      const doc = existing
+        ? await storeGoogleConfigRepository.update(existing.id, {
+            ...body!,
+            storeId: store.id,
+          })
+        : await storeGoogleConfigRepository.create({
+            ...body!,
+            isConnected: body!.isConnected ?? false,
+            storeId: store.id,
+          });
+      return successResponse(toSellerGoogleConfig(doc), "Saved");
     },
   }),
 );

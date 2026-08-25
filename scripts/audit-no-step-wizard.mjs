@@ -45,15 +45,17 @@ const PRIMITIVE_FILES = [
 ];
 
 /**
- * The six known wizards, in planned migration order. Remove an entry the
- * moment its file stops rendering a wizard — never add one.
+ * The known wizards, in planned migration order. Remove an entry the moment
+ * its file stops rendering a wizard — never add one.
+ *
+ * `SellerPayoutSettingsView.tsx` was removed 2026-08-24 (W3): it migrated in
+ * W1 and the audit had been printing "✓ migrated — remove from GRANDFATHERED"
+ * ever since. A stale entry is not harmless — it is a hole that would let the
+ * wizard be reintroduced into that exact file without failing.
  */
 const GRANDFATHERED = [
-  "appkit/src/features/seller/components/SellerPayoutSettingsView.tsx",
   "appkit/src/features/seller/components/SellerShippingView.tsx",
   "appkit/src/features/seller/components/SellerStorefrontView.tsx",
-  "appkit/src/features/admin/components/AdminBlogEditorView.tsx",
-  "appkit/src/features/events/components/AdminEventEditorView.tsx",
   "appkit/src/features/seller/components/SellerProductShell.tsx",
 ];
 

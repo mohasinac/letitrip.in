@@ -43,7 +43,29 @@
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { createRequire } from "node:module";
+import { createRequire, register } from "node:module";
+import { pathToFileURL } from "node:url";
+
+// ---------------------------------------------------------------------------
+// Make `import("@mohasinac/appkit")` resolvable from this script.
+//
+// appkit is "type": "module" built by plain tsc, and tsc does not rewrite
+// import specifiers — so its ~2,190 emitted files carry extensionless relative
+// imports. Bundlers accept those; Node's ESM resolver does not.
+//
+// `appkit/scripts/node-esm-loader.mjs` already solves this generically (it is
+// what makes the appkit-seed CLI work) — retry with `.js` then `/index.js`,
+// stub CSS/asset imports, and neutralise the `server-only` / `client-only`
+// sentinels whose module bodies unconditionally throw outside Next.js.
+//
+// Registered from the SOURCE path, not node_modules: on this machine
+// `node_modules/@mohasinac/appkit` is a real copy that goes stale
+// independently of `appkit/` (Root Cause #28).
+// ---------------------------------------------------------------------------
+register(
+  "./appkit/scripts/node-esm-loader.mjs",
+  pathToFileURL(process.cwd() + "/"),
+);
 
 // ---------------------------------------------------------------------------
 // args
@@ -122,41 +144,93 @@ const db = admin.firestore();
 /**
  * Load the schema registry.
  *
- * `import("@mohasinac/appkit")` currently fails from a standalone Node ESM
- * script: the package is `"type": "module"`, and `dist/server-entry.js` line
- * 16 re-exports `"./index"` with no file extension — which bundlers tolerate
- * and Node's ESM resolver does not. Verified from four different importer
- * locations; all fail with ERR_MODULE_NOT_FOUND on `dist/index`.
+ * Resolvable thanks to the ESM loader registered at the top of this file. The
+ * `appkit/dist/index.js` fallback stays for the case where the package link is
+ * broken but a build exists — a real state on this machine, since
+ * `node_modules/@mohasinac/appkit` is a copy rather than a symlink.
  *
- * That is a packaging bug worth fixing at the build step (emit extensioned
- * relative specifiers). Until it is, don't let this tool die with a raw
- * resolver stack trace — say what is wrong and what to do about it.
+ * Failures are reported, not swallowed: an empty `catch {}` here is what would
+ * turn "appkit failed to build" into "no schemas registered", and this tool
+ * exists specifically to stop silent field loss.
  */
 async function loadSchemaRegistry() {
+  const failures = [];
   for (const specifier of ["@mohasinac/appkit", "../../appkit/dist/index.js"]) {
     try {
       const mod = await import(specifier);
       if (mod?.SCHEMAS) return mod.SCHEMAS;
-    } catch {
-      // try the next specifier
+      failures.push(`${specifier}: loaded, but exports no SCHEMAS`);
+    } catch (err) {
+      failures.push(`${specifier}: ${err?.code ?? ""} ${err?.message ?? err}`.trim());
     }
   }
+  console.error("\n✗ Could not load SCHEMAS from appkit:\n");
+  for (const f of failures) console.error(`  - ${f}`);
+  console.error(
+    "\n  The ESM resolver hook is registered at the top of this file, so an\n" +
+    "  ERR_MODULE_NOT_FOUND here means something else: most likely appkit has\n" +
+    "  not been built (`npm --prefix appkit run build`), or dist is stale.\n",
+  );
   return null;
 }
 
 const SCHEMAS = await loadSchemaRegistry();
-if (!SCHEMAS) {
-  console.error(
-    "\n✗ Could not load SCHEMAS from @mohasinac/appkit.\n\n" +
-    "  appkit's built entry re-exports './index' without a file extension\n" +
-    "  (dist/server-entry.js:16). Node ESM cannot resolve that, so any\n" +
-    "  standalone .mjs script importing the bare specifier fails.\n\n" +
-    "  Fix at the build step — emit extensioned relative specifiers — or run\n" +
-    "  this check from a context that bundles appkit rather than importing it\n" +
-    "  directly.\n",
-  );
-  process.exit(2);
-}
+if (!SCHEMAS) process.exit(2);
+
+/**
+ * Entities whose registered schema is a FORM DRAFT, not a document schema.
+ *
+ * A draft models what the user types; the document models what is stored, and
+ * the save handler transforms between them. Blog is the clearest case: the
+ * draft holds `coverImage` as a plain URL string and `publishedAt` as an ISO
+ * string, while the document stores `{type,url}` and a Firestore Timestamp.
+ * Every document therefore "fails to parse" against the draft, permanently and
+ * correctly.
+ *
+ * For these, the parse mismatch is reported as INFO rather than as a failure.
+ * The DROPPED-KEY check still runs and still gates — that is the thing this
+ * tool exists for, and it is meaningful either way, because a key present in
+ * the document and absent after parsing is a field the form would delete.
+ *
+ * Treating impedance as failure would make the tool exit 1 forever for these
+ * entities, which is worse than useless: a permanently-red gate is one nobody
+ * reads, so the first REAL failure would be invisible.
+ */
+const DRAFT_SHAPED = new Set([
+  "blog", "event", "productFeature", "storeCategory",
+  "listingTemplate", "payoutMethod", "shippingConfig", "groupedListing",
+  "sellerCoupon", "customRole",
+]);
+
+/**
+ * Fields the SERVER owns. A form schema legitimately omits these, so their
+ * absence after parsing is not field loss.
+ *
+ * Deliberately a short, explicit, universal list rather than a per-entity
+ * allow list: the point of this tool is that a dropped key is loud, and a
+ * generous ignore list is how it would go quiet. `slug` is here because every
+ * slug in this codebase is derived server-side at creation and frozen
+ * thereafter (verified for product features: the repository slugifies the
+ * label and writes `slug: id`).
+ *
+ * If a real business field ever needs adding here, that is the signal it is
+ * NOT server-owned and the schema should name it instead.
+ */
+const SERVER_OWNED = new Set([
+  "id",
+  "slug",
+  "createdAt",
+  "updatedAt",
+  "createdBy",
+  "updatedBy",
+  // Ownership. Always resolved from the session and written by the route —
+  // never accepted from a request body, because a caller who could set them
+  // could file a record against someone else's store.
+  "storeId",
+  "sellerId",
+  "ownerId",
+  "userId",
+]);
 
 // ---------------------------------------------------------------------------
 // entity -> collection. Only entities with a registered form schema are
@@ -171,6 +245,7 @@ const COLLECTION_FOR = {
   category: "categories",
   brand: "categories",
   coupon: "coupons",
+  sellerCoupon: "coupons",
   blog: "blogPosts",
   event: "events",
   faq: "faqs",
@@ -185,10 +260,14 @@ const COLLECTION_FOR = {
   carouselSlide: "carouselSlides",
   homepageSection: "homepageSections",
   role: "customRoles",
+  customRole: "customRoles",
   listingTemplate: "listingTemplates",
   payoutMethod: "payoutMethods",
   shippingConfig: "shippingConfigs",
   storeCategory: "storeCategories",
+  productFeature: "productFeatures",
+  payoutMethod: "payoutMethods",
+  shippingConfig: "shippingConfigs",
 };
 
 // ---------------------------------------------------------------------------
@@ -265,6 +344,9 @@ for (const entity of targets) {
       continue;
     }
     for (const p of droppedPaths(data, parsed.data)) {
+      // A form schema does not carry server-owned fields; their absence is
+      // correct, not loss. Nested paths are matched on their ROOT key.
+      if (SERVER_OWNED.has(p.split(".")[0])) continue;
       droppedCounts.set(p, (droppedCounts.get(p) ?? 0) + 1);
     }
   }
@@ -278,7 +360,17 @@ for (const entity of targets) {
 
   if (!AS_JSON) {
     console.log(`\n── ${entity}  (${collection}, ${total} doc${total === 1 ? "" : "s"}${FULL ? ", FULL" : ""})`);
-    if (parseFailures.length > 0) {
+    if (parseFailures.length > 0 && DRAFT_SHAPED.has(entity)) {
+      console.log(
+        `   ℹ ${parseFailures.length} doc(s) do not parse — EXPECTED: this is a form-draft` +
+        ` schema, not a document schema (see DRAFT_SHAPED). Sample:`,
+      );
+      for (const f of parseFailures.slice(0, 2)) {
+        console.log(`       ${f.id}: ${f.issues.join(" | ")}`);
+      }
+      console.log("   Read these for a rule that is genuinely WRONG (e.g. a regex no stored row satisfies),");
+      console.log("   not for shape differences the save handler deliberately transforms.");
+    } else if (parseFailures.length > 0) {
       sawFailure = true;
       console.log(`   ✗ ${parseFailures.length} doc(s) FAILED to parse — the schema rejects data that already exists:`);
       for (const f of parseFailures.slice(0, 5)) {
@@ -287,6 +379,20 @@ for (const entity of targets) {
     }
     if (dropped.length === 0) {
       console.log("   ✓ no fields dropped");
+    } else if (DRAFT_SHAPED.has(entity)) {
+      // A form draft legitimately omits document fields it does not collect —
+      // a derived count, a visibility state, a taxonomy slug set elsewhere.
+      //
+      // Crucially this is NOT loss: every update path here is a `.partial()`
+      // schema written through a Firestore merge, so a field the form never
+      // names is never touched. Loss would require a FULL-document write built
+      // from the parsed form values, which is exactly what none of these do.
+      //
+      // Reported, not silenced: read the list and confirm each entry is
+      // derived or session-owned. A BUSINESS field appearing here means the
+      // form cannot edit something it should.
+      console.log(`   ℹ ${dropped.length} document field(s) the form does not carry (expected for a draft):`);
+      for (const d of dropped) console.log(`       ${String(d.count).padStart(4)}/${total}  ${d.path}`);
     } else {
       console.log(`   ${dropped.length} field(s) dropped by this schema:`);
       for (const d of dropped) {

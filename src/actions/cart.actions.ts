@@ -44,6 +44,19 @@ const addToCartSchema = z.object({
   // appkit's addItemToCart enforces canAddToCart via capabilityFor so
   // classified+live are rejected at the action layer; the zod enum accepts
   // them so generic add-to-cart calls don't 422 before the capability gate.
+  /*
+   * All NINE listing types. `art` and `stickers` were missing until
+   * 2026-08-24 (W3) — added to the union, the plugin registry, the capability
+   * map and the Sieve alias map, but not here.
+   *
+   * Not a live bug today, and verified rather than assumed (Rule #4): the real
+   * add-to-cart path is `POST /api/cart`, which takes only {productId,
+   * quantity} and derives the type server-side via `normalizeListingType`,
+   * never validating it against an enum. This enum sits on paths an art or
+   * sticker listing cannot currently reach. It was a trap waiting for the
+   * first caller that did — the third instalment of Root Cause #58, where a
+   * union member is added everywhere except the one allowlist that gates it.
+   */
   listingType: z.enum([
     "standard",
     "auction",
@@ -52,6 +65,8 @@ const addToCartSchema = z.object({
     "classified",
     "digital-code",
     "live",
+    "art",
+    "stickers",
   ]),
   /** Set when item originates from an accepted Make-an-Offer */
   offerId: z.string().optional(),

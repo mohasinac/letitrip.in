@@ -35,13 +35,12 @@
  * `permission:` line or the line above, for genuine cases (e.g. a future
  * RBAC model where non-employee permission resolution is intentional).
  *
- * REPORT MODE — first run (2026-08-15) found 151 pre-existing instances,
- * spanning admin AND store routes (i.e. this most likely silently 403s real
- * moderators and sellers on a large swath of routes today, not just the
- * category/brand routes this audit was written to prevent regressing). That
- * is a large, separate fix effort outside this session's scope — reporting
- * every run (never silent) without blocking `npm run check` until someone
- * signs up to burn the list down. Set STRICT=1 to fail on any violation.
+ * STRICT since W2. Its first run (2026-08-15) found 151 pre-existing
+ * instances across admin AND store routes, so it shipped in report mode until
+ * someone signed up to burn the list down. Re-measured in W2 the count is
+ * ZERO — they were fixed at some point and neither this header nor CLAUDE.md
+ * was updated, which is exactly the drift a non-blocking audit invites. With
+ * nothing to burn down there is no reason left not to block.
  */
 import { readFileSync, readdirSync } from "node:fs";
 import { join, extname, relative } from "node:path";
@@ -138,17 +137,27 @@ for (const dir of SCAN_DIRS) {
   }
 }
 
-const STRICT = process.env.STRICT === "1";
-
+// Strict as of W2. This audit reports ZERO violations today, so making it
+// block costs nothing and buys real regression protection. An audit that
+// cannot fail is documentation, not a gate — `audit-listing-detail-affordance`
+// proved it by silently absorbing two new dead-end listing views while
+// reporting a number nobody was obliged to act on.
+//
+// The per-line suppression marker stays the escape hatch; a tolerated COUNT
+// does not, because it hides which instances are known and which are new.
+//
+// Worth recording: this audit's own header, and CLAUDE.md, both described
+// ~151 pre-existing violations. Re-measured in W2 it reports ZERO — they were
+// fixed at some point and nothing updated the claim. That is precisely the
+// drift a report-mode audit invites.
 if (violations.length === 0) {
   console.log("audit-permission-role-mismatch: clean ✓");
   process.exit(0);
 }
 
-const stream = STRICT ? console.error : console.log;
+const stream = console.error;
 stream(
-  `audit-permission-role-mismatch: ${violations.length} guaranteed-403 role/permission combo(s) found` +
-    (STRICT ? "." : " — REPORT MODE (set STRICT=1 to fail)."),
+  `audit-permission-role-mismatch: ${violations.length} guaranteed-403 role/permission combo(s) found.`,
 );
 stream(
   "A `permission` field alongside a `roles` array containing anything other than \"admin\"/\"employee\"\n" +
@@ -159,4 +168,4 @@ stream(
 for (const v of violations) {
   stream(`  ${v.file}:${v.line}  roles: [${v.roles}]`);
 }
-process.exit(STRICT ? 1 : 0);
+process.exit(1);

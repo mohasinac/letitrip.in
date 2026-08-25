@@ -2,8 +2,7 @@ import { withProviders } from "@/providers.config";
 import {
   adminNotificationsRepository,
   createRouteHandler,
-  parseJsonBody,
-  type JsonValue,
+  adminNotificationCreateSchema,
   successResponse,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY } from "@/constants";
@@ -21,13 +20,17 @@ export const GET = withProviders(
 );
 
 export const POST = withProviders(
-  createRouteHandler({
+  createRouteHandler<(typeof adminNotificationCreateSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    handler: async ({ request }) => {
-      const body = await parseJsonBody<Record<string, JsonValue>>(request);
+    schema: adminNotificationCreateSchema,
+    handler: async ({ body }) => {
+      // `isRead` / `readAt` are per-admin read state and belong to the
+      // read/dismiss path — the schema declares neither, so a creator cannot
+      // file a notification that is already marked read.
       const doc = await adminNotificationsRepository.create({
-        ...body,
+        ...body!,
+        audienceUserIds: body!.audienceUserIds ?? [],
         isRead: false,
       });
       return successResponse(doc, "Notification created", 201);

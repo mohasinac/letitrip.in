@@ -205,9 +205,87 @@ const STOCK_QUANTITY_REQUIRED_LISTING_TYPES = new Set([
   "live",
 ]);
 
+/*
+ * ---------------------------------------------------------------------------
+ * PER-TYPE LISTING FIELDS — the ones `productBaseSchema` was missing.
+ * ---------------------------------------------------------------------------
+ *
+ * 🛑 This was live, silent data loss.
+ *
+ * `productBaseSchema` is a plain `z.object()` with no `.passthrough()`, so it
+ * STRIPS every key it does not name. It named none of the classified,
+ * digital-code, live-item or prize-draw fields — and the real seller create
+ * path (`createSellerProductAction` -> `productCreateSchema.safeParse`) runs
+ * through it.
+ *
+ * So a seller filled in a classified's meetup city, a digital code's delivery
+ * method, a live animal's species and CITES permit, or a prize draw's entry
+ * price — pressed Publish, got a success — and every one of those fields was
+ * dropped before the document was written. The listing existed; the thing that
+ * made it that KIND of listing did not.
+ *
+ * Shapes mirror `ProductClassifiedMeta` / `ProductDigitalCodeMeta` /
+ * `ProductLiveItemMeta` and the prize-draw fields on `ProductDocument`. They
+ * are nested exactly as the document nests them: `classified.meetupArea.city`,
+ * not a flattened `classifiedCity`, because a flattened shape here would be a
+ * second spelling of the same data and the write path would have to translate.
+ */
+
+const classifiedMetaSchema = z.object({
+  meetupArea: z.object({
+    city: z.string().min(1, "A meetup city is required for a classified listing."),
+    locality: z.string().optional(),
+    pincode: z.string().optional(),
+  }),
+  contactMethod: z.enum(["chat", "phone", "both"]).optional(),
+  acceptsShipping: z.boolean().optional(),
+  negotiable: z.boolean().optional(),
+});
+
+const digitalCodeMetaSchema = z.object({
+  codeDeliveryMethod: z.enum(["auto-claim", "manual-email"]),
+  codePoolSize: z.coerce.number().int().min(0).optional(),
+  codesAvailable: z.coerce.number().int().min(0).optional(),
+  redemptionInstructions: z.string().max(2000).optional(),
+  expiresAt: z.string().optional(),
+});
+
+const liveItemMetaSchema = z.object({
+  species: z.string().min(1, "A species is required for a live-item listing."),
+  ageMonths: z.coerce.number().int().min(0).optional(),
+  sex: z.enum(["male", "female", "unknown", "n/a"]).optional(),
+  careInfo: z.string().max(4000).optional(),
+  transport: z.object({
+    method: z.enum(["courier", "in-person", "specialist"]),
+    handlingFee: z.coerce.number().min(0).optional(),
+    insuranceIncluded: z.boolean().optional(),
+  }),
+  // Not optional on purpose: shipping a live animal into a jurisdiction that
+  // forbids it is the one mistake this field exists to prevent.
+  jurisdictionAllowed: z.array(z.string()).min(1, "At least one permitted jurisdiction is required."),
+  vendorVerified: z.boolean().optional(),
+  cites: z.string().optional(),
+});
+
 export const productCreateSchema = productBaseSchema
   .extend({
     status: z.enum(["draft", "published"]).optional(),
+
+    // The four blocks above, plus the prize-draw fields, which live at the top
+    // level of ProductDocument rather than in a nested meta object.
+    classified: classifiedMetaSchema.optional(),
+    digitalCode: digitalCodeMetaSchema.optional(),
+    liveItem: liveItemMetaSchema.optional(),
+
+    pricePerEntry: z.coerce.number().min(0).optional(),
+    prizeMaxEntries: z.coerce.number().int().min(1).optional(),
+    prizeDrawMode: z.enum(["reveal", "lottery"]).optional(),
+    prizeRevealMode: z.enum(["instant", "scheduled"]).optional(),
+    prizeRevealWindowStart: z.string().optional(),
+    prizeRevealWindowEnd: z.string().optional(),
+    prizeDrawDurationDays: z.coerce.number().int().min(1).optional(),
+    prizeSlotPrice: z.coerce.number().min(0).optional(),
+    prizeGithubFileUrl: z.string().optional(),
   })
   .refine(
     (data) =>
@@ -236,6 +314,22 @@ export const productCreateSchema = productBaseSchema
   );
 
 export const productUpdateSchema = productBaseSchema.partial().extend({
+  // Editing has to carry these too. A create-only fix would mean a classified
+  // could be created correctly and then lose its meetup city the first time
+  // anyone edited its title — the create/update transform asymmetry of
+  // Recurrent Root Cause #39.
+  classified: classifiedMetaSchema.optional(),
+  digitalCode: digitalCodeMetaSchema.optional(),
+  liveItem: liveItemMetaSchema.optional(),
+  pricePerEntry: z.coerce.number().min(0).optional(),
+  prizeMaxEntries: z.coerce.number().int().min(1).optional(),
+  prizeDrawMode: z.enum(["reveal", "lottery"]).optional(),
+  prizeRevealMode: z.enum(["instant", "scheduled"]).optional(),
+  prizeRevealWindowStart: z.string().optional(),
+  prizeRevealWindowEnd: z.string().optional(),
+  prizeDrawDurationDays: z.coerce.number().int().min(1).optional(),
+  prizeSlotPrice: z.coerce.number().min(0).optional(),
+  prizeGithubFileUrl: z.string().optional(),
   status: z
     .enum(["draft", "published", "in_review", "archived"])
     .optional(),

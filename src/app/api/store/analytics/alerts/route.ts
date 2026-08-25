@@ -5,8 +5,7 @@ import {
   analyticsAlertsRepository,
   createRouteHandler,
   errorResponse,
-  parseJsonBody,
-  type JsonValue,
+  analyticsAlertCreateSchema,
   storeRepository,
   successResponse,
 } from "@mohasinac/appkit";
@@ -26,26 +25,25 @@ export const GET = withProviders(
 );
 
 export const POST = withProviders(
-  createRouteHandler({
+  createRouteHandler<(typeof analyticsAlertCreateSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    handler: async ({ request, user }) => {
+    schema: analyticsAlertCreateSchema,
+    handler: async ({ user, body }) => {
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return ApiErrors.forbidden("No store");
-      const body = await parseJsonBody<Record<string, JsonValue>>(request);
-      try {
-        const doc = await analyticsAlertsRepository.create({
-          ...body,
-          scope: "seller",
-          ownerId: user!.uid,
-          isActive: body.isActive ?? true,
-          notifyChannels: Array.isArray(body.notifyChannels) ? body.notifyChannels : ["in-app"],
-        });
-        return successResponse(doc, "Alert created", 201);
-      } catch (err) {
-        void normalizeError(err);
-        return errorResponse(err instanceof Error ? err.message : "Create failed", 400);
-      }
+
+      // `scope` and `ownerId` come from the session. The schema declares
+      // neither, so a seller cannot file an admin-scoped alert or attribute one
+      // to another owner.
+      const doc = await analyticsAlertsRepository.create({
+        ...body!,
+        scope: "seller",
+        ownerId: user!.uid,
+        isActive: body!.isActive ?? true,
+        notifyChannels: body!.notifyChannels ?? ["in-app"],
+      });
+      return successResponse(doc, "Alert created", 201);
     },
   }),
 );

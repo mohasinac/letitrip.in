@@ -174,11 +174,117 @@ function factoryAffordanceText(text) {
   return extra;
 }
 
+/**
+ * Blank out comments, preserving every byte offset and newline so line numbers
+ * stay exact.
+ *
+ * ## It must understand REGEX LITERALS, and here is why
+ *
+ * A first version did not, and produced a false positive that took a while to
+ * pin down. In `/^https?:\\/\\//` the last two characters before the closing
+ * delimiter are an escaped slash followed by the delimiter itself — so a naive
+ * scanner sees `//`, calls it a line comment, and blanks the rest of that line.
+ * That silently removed the `, {` which opened the next argument, unbalancing
+ * the brace walk downstream and making a perfectly well-formed call look as
+ * though it were missing its metadata object.
+ *
+ * A `/` begins a regex only in VALUE position. The standard heuristic — the
+ * previous non-whitespace character being one of `(,=:[!&|?{};` or nothing at
+ * all — distinguishes that from division, and covers every case this codebase
+ * actually contains.
+ */
+function stripComments(source) {
+  const NL = String.fromCharCode(10);
+  const BACKSLASH = String.fromCharCode(92);
+  const QUOTES = [String.fromCharCode(34), String.fromCharCode(39), String.fromCharCode(96)];
+  const REGEX_PRECEDERS = new Set(["(", ",", "=", ":", "[", "!", "&", "|", "?", "{", "}", ";", "+", "-", "*", "%", "<", ">", "~", "^"]);
+
+  let out = "";
+  let i = 0;
+  let quote = null;
+  let lastMeaningful = "";
+
+  while (i < source.length) {
+    const c = source[i];
+    const next = source[i + 1];
+
+    if (quote) {
+      out += c;
+      if (c === quote && source[i - 1] !== BACKSLASH) quote = null;
+      i++;
+      continue;
+    }
+
+    if (QUOTES.includes(c)) {
+      quote = c;
+      out += c;
+      lastMeaningful = c;
+      i++;
+      continue;
+    }
+
+    if (c === "/" && next === "/") {
+      while (i < source.length && source[i] !== NL) {
+        out += " ";
+        i++;
+      }
+      continue;
+    }
+
+    if (c === "/" && next === "*") {
+      while (i < source.length && !(source[i] === "*" && source[i + 1] === "/")) {
+        out += source[i] === NL ? NL : " ";
+        i++;
+      }
+      out += "  ";
+      i += 2;
+      continue;
+    }
+
+    // A regex literal. Copied through verbatim so its contents can never be
+    // mistaken for a comment, a quote or a brace.
+    if (c === "/" && (lastMeaningful === "" || REGEX_PRECEDERS.has(lastMeaningful))) {
+      out += c;
+      i++;
+      let inClass = false;
+      while (i < source.length) {
+        const r = source[i];
+        if (source[i - 1] === BACKSLASH) {
+          out += r;
+          i++;
+          continue;
+        }
+        if (r === "[") inClass = true;
+        else if (r === "]") inClass = false;
+        else if (r === "/" && !inClass) {
+          out += r;
+          i++;
+          break;
+        } else if (r === NL) {
+          // Unterminated — not a regex after all. Stop rather than run away.
+          break;
+        }
+        out += r;
+        i++;
+      }
+      lastMeaningful = "/";
+      continue;
+    }
+
+    out += c;
+    if (!/\s/.test(c)) lastMeaningful = c;
+    i++;
+  }
+  return out;
+}
+
 const violations = [];
 let checked = 0;
 
 for (const file of walk(SCAN_ROOT)) {
-  const ownText = readFileSync(file, "utf8");
+  // Comments stripped BEFORE the listing-view test — a docstring that names
+  // ListingViewConfig does not make a file a listing view.
+  const ownText = stripComments(readFileSync(file, "utf8"));
   if (!ownText.includes(LISTING_MARKER)) continue;
   checked++;
   // Judge the view together with any config factory it delegates to.
@@ -201,13 +307,19 @@ if (violations.length === 0) {
   process.exit(0);
 }
 
-const strict = process.env.MIGRATE === "strict" || process.env.STRICT === "1";
-const log = strict ? console.error : console.log;
+// STRICT since W8. The count reached zero, which is exactly the condition this
+// audit's own message named for flipping the default.
+//
+// It was report-mode for a reason worth remembering: it started at 9, was still
+// 8 when this work measured it, and had silently absorbed TWO new regressions
+// in between — a number nobody is obliged to act on is a number that grows.
+// Two of the ten it last reported were also false positives (a tab component
+// and a hook that merely MENTION ListingViewConfig in a docstring), which is
+// the other way a report-mode audit loses its readers.
+const log = console.error;
 
 log(
-  strict
-    ? `audit-listing-detail-affordance: ${violations.length} dead-end listing view(s) of ${checked} checked — rows can be seen but never opened.\n`
-    : `audit-listing-detail-affordance: REPORT MODE — ${violations.length}/${checked} listing views await a detail surface.\n  Run with MIGRATE=strict to fail. Flip the default once the count reaches 0.\n`,
+  `audit-listing-detail-affordance: ${violations.length} dead-end listing view(s) of ${checked} checked — rows can be seen but never opened.\n`,
 );
 for (const v of violations) log(`  ${v}`);
 log(
@@ -226,4 +338,4 @@ log(
     "annotate the file with: // audit-detail-affordance-ok: <reason>",
   ].join("\n"),
 );
-process.exit(strict ? 1 : 0);
+process.exit(1);

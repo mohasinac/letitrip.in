@@ -12,6 +12,7 @@ import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { offerRepository } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
+import { offerDocumentToOffer } from "@mohasinac/appkit/server";
 
 export const GET = withProviders(
   createApiHandler({
@@ -31,7 +32,8 @@ export const GET = withProviders(
         "-createdAt";
       const result = await offerRepository.list({ filters, sorts, page, pageSize });
       return successResponse({
-        items: result.items,
+        // Admin coordinates offers, so identity is in scope here.
+        items: result.items.map((o) => offerDocumentToOffer(o, { includeBuyerIdentity: true })),
         total: result.total,
         page: result.page,
         pageSize: result.pageSize,

@@ -6,6 +6,7 @@ import {
   successResponse,
   errorResponse,
   scammerRepository,
+  ScammerStatusValues,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY, ROLES_TRUST_SAFETY } from "@/constants";
 import type { ScammerDocument } from "@mohasinac/appkit";
@@ -13,7 +14,11 @@ import type { ScammerDocument } from "@mohasinac/appkit";
 const MSG_SCAMMER_NOT_FOUND = "Scammer profile not found.";
 
 const patchSchema = z.object({
-  status: z.enum(["pending_review", "verified", "rejected", "removed"]).optional(),
+  // Derived from the runtime map, never restated — a hand-written copy here
+  // would be one more independent enumeration of a union that already has
+  // several (Recurrent Root Cause #61), and a wrong value in a status filter
+  // matches zero rows in silence (#33).
+  status: z.enum(ScammerStatusValues).optional(),
   verificationNote: z.string().optional(),
 });
 

@@ -8,6 +8,7 @@ import {
   successResponse,
   errorResponse,
 } from "@mohasinac/appkit";
+import { OrderStatusValues } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 // ST-3 — items array shape mirrors OrderDocumentItem; PATCHing items
@@ -33,10 +34,28 @@ const orderItemSchema = z.object({
 });
 
 const updateOrderSchema = z.object({
-  status: z.string().optional(),
+  /**
+   * The real 9-value union, not `z.string()`.
+   *
+   * A bare string meant an admin PATCH could write any status at all — a typo
+   * ("shiped"), a value from a different entity's vocabulary, or a status this
+   * codebase retired. Every filter chip, badge map and scope tab keys on an
+   * exact match, so such a row becomes invisible to every one of them at once,
+   * with no error anywhere (Root Cause #33).
+   *
+   * Safe to tighten: every stored value is lowercase and already a member —
+   * verified against the seed data and every write path. The uppercase strings
+   * elsewhere in the tree are display copy in the buyer/seller guide views,
+   * not stored values.
+   */
+  status: z
+    .enum(Object.values(OrderStatusValues) as [string, ...string[]])
+    .optional(),
   trackingNumber: z.string().optional(),
-  shiprocketOrderId: z.string().optional(),
-  shiprocketShipmentId: z.string().optional(),
+  // `shiprocketOrderId`/`shiprocketShipmentId` were removed here: Shiprocket
+  // was deleted from this codebase entirely, and nothing anywhere read either
+  // field. They only served to let an admin PATCH write two dead keys onto a
+  // real order document.
   trackingUrl: z.string().optional(),
   notes: z.string().optional(),
   // ST-3 — admin can replace the order's line-item array (e.g. partial

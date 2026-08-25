@@ -9,10 +9,11 @@ import {
   EmptyState,
   Row,
   Section,
-  Modal,
-  Textarea,
   Skeleton,
   ROUTES,
+  ReviewDecisionModal,
+  reportReviewFormSchema,
+  type ReportReviewFormValues,
 } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
@@ -24,8 +25,7 @@ export default function Page() {
   const [items, setItems] = useState<ReportDocument[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionTargetId, setActionTargetId] = useState<string | null>(null);
-  const [resolutionNote, setResolutionNote] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const [dismissTargetId, setDismissTargetId] = useState<string | null>(null);
 
   const load = () => {
     setLoading(true);
@@ -37,25 +37,9 @@ export default function Page() {
 
   useEffect(load, []);
 
-  const action = async (id: string, status: ReportDocument["status"], resolution?: string) => {
-    await updateAdminReport(API_ROUTES.ADMIN.REPORT_BY_ID(id), { status, resolution, resolvedAt: status === "actioned" || status === "dismissed" ? new Date() : undefined });
+  const action = async (id: string, body: ReportReviewFormValues) => {
+    await updateAdminReport(API_ROUTES.ADMIN.REPORT_BY_ID(id), body);
     load();
-  };
-
-  const closeActionModal = () => {
-    setActionTargetId(null);
-    setResolutionNote("");
-  };
-
-  const submitAction = async () => {
-    if (!actionTargetId) return;
-    setSubmitting(true);
-    try {
-      await action(actionTargetId, "actioned", resolutionNote);
-      closeActionModal();
-    } finally {
-      setSubmitting(false);
-    }
   };
 
   return (
@@ -100,7 +84,7 @@ export default function Page() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => action(r.id, "under-review")}
+                      onClick={() => action(r.id, { status: "under-review" })}
                     >
                       Take
                     </Button>
@@ -114,7 +98,7 @@ export default function Page() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => action(r.id, "dismissed", "Dismissed")}
+                      onClick={() => setDismissTargetId(r.id)}
                     >
                       Dismiss
                     </Button>
@@ -126,37 +110,35 @@ export default function Page() {
         </Stack>
       </Container>
 
-      <Modal
+      <ReviewDecisionModal
         isOpen={actionTargetId !== null}
-        onClose={closeActionModal}
+        onClose={() => setActionTargetId(null)}
         title="Action report"
-        size="sm"
-        actions={
-          <Row justify="end" gap="sm">
-            <Button variant="ghost" onClick={closeActionModal} disabled={submitting}>
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={submitAction}
-              disabled={submitting}
-              isLoading={submitting}
-            >
-              Confirm action
-            </Button>
-          </Row>
-        }
-      >
-        <Stack gap="sm">
-          <Textarea
-            label="Resolution note"
-            value={resolutionNote}
-            onChange={(e) => setResolutionNote(e.target.value)}
-            rows={4}
-            placeholder="What did you do about this report? The reporter may see a summary."
-          />
-        </Stack>
-      </Modal>
+        schema={reportReviewFormSchema}
+        status="actioned"
+        noteField="resolution"
+        noteLabel="Resolution note"
+        noteHelp="Required — the reporter may see a summary."
+        notePlaceholder="What did you do about this report?"
+        confirmLabel="Confirm action"
+        onConfirm={(values) => action(actionTargetId!, values)}
+      />
+
+      {/* Dismiss used to send a hardcoded "Dismissed" as its resolution, which
+          is not a reason — it is the status restated. It now asks. */}
+      <ReviewDecisionModal
+        isOpen={dismissTargetId !== null}
+        onClose={() => setDismissTargetId(null)}
+        title="Dismiss report"
+        schema={reportReviewFormSchema}
+        status="dismissed"
+        noteField="resolution"
+        noteLabel="Why is this being dismissed?"
+        noteHelp="Required — the reporter may see a summary."
+        notePlaceholder="e.g. Reviewed the listing and found nothing that breaches policy."
+        confirmLabel="Dismiss report"
+        onConfirm={(values) => action(dismissTargetId!, values)}
+      />
     </Section>
   );
 }

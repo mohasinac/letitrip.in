@@ -1,5 +1,21 @@
 "use client";
 
+/**
+ * Create a storefront category.
+ *
+ * ## What changed
+ *
+ * This page had five raw `<Input>`/`<Textarea>` controls, no `<Form>` wrapper
+ * and no validation of any kind — an entirely empty category could be saved,
+ * and the only feedback on failure was a generic "Save failed" toast that
+ * threw away whatever the server actually objected to.
+ *
+ * It now shares ONE schema with `POST /api/store/categories`
+ * (`storeCategoryFormSchema`), so what the form accepts and what the route
+ * accepts cannot drift apart, and every rejection lands on the field that
+ * caused it instead of in a toast.
+ */
+
 import {
   Container,
   Stack,
@@ -7,11 +23,15 @@ import {
   Button,
   Row,
   Section,
-  Input,
-  Textarea,
+  Form,
+  FieldInput,
+  FieldTextarea,
+  FormErrorSummary,
+  applyZodIssues,
   ROUTES,
   useToast,
   ACTIONS,
+  storeCategoryFormSchema,
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
@@ -34,33 +54,98 @@ export default function Page() {
   });
   const [saving, setSaving] = useState(false);
 
-  const onSave = async () => {
-    setSaving(true);
-    const body = { ...form, slug: form.slug || slugify(form.label) };
-    const res = await createStoreCategory(API_ROUTES.STORE.STORE_CATEGORIES, body);
-    setSaving(false);
-    if (res.ok) {
-      showToast("Saved", "success");
-      router.push(String(ROUTES.STORE.STORE_CATEGORIES));
-    } else showToast("Save failed", "error");
-  };
-
   return (
     <Section>
       <Container size="md">
         <Stack gap="lg" padding="y-lg">
           <Heading level={1}>New Storefront Category</Heading>
-          <Stack gap="md">
-            <Input label="Label" value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} />
-            <Input label="Slug (optional)" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} placeholder={slugify(form.label) || "auto"} />
-            <Textarea label="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} />
-            <Input label="Cover image URL" value={form.coverImageUrl} onChange={(e) => setForm({ ...form, coverImageUrl: e.target.value })} />
-            <Input type="number" label="Display order" value={String(form.displayOrder)} onChange={(e) => setForm({ ...form, displayOrder: Number(e.target.value) || 0 })} />
-          </Stack>
-          <Row justify="end" gap="sm">
-            <Button variant="ghost" onClick={() => router.back()}>Cancel</Button>
-            <Button variant="primary" onClick={onSave} disabled={saving} isLoading={saving}>{ACTIONS.STORE["save-changes"].label}</Button>
-          </Row>
+          <Form schema={storeCategoryFormSchema} onSubmit={(e) => e.preventDefault()}>
+            {({ setFieldError, clearErrors }) => (
+              <Stack gap="md">
+                <FormErrorSummary />
+                <FieldInput
+                  name="label"
+                  label="Label"
+                  required
+                  value={form.label}
+                  onChange={(v) => setForm({ ...form, label: v })}
+                />
+                <FieldInput
+                  name="slug"
+                  label="Slug"
+                  hint="Left blank, this is generated from the label."
+                  value={form.slug}
+                  onChange={(v) => setForm({ ...form, slug: v })}
+                  placeholder={slugify(form.label) || "auto"}
+                />
+                <FieldTextarea
+                  name="description"
+                  label="Description"
+                  rows={3}
+                  value={form.description}
+                  onChange={(v) => setForm({ ...form, description: v })}
+                />
+                <FieldInput
+                  name="coverImageUrl"
+                  label="Cover image URL"
+                  value={form.coverImageUrl}
+                  onChange={(v) => setForm({ ...form, coverImageUrl: v })}
+                />
+                <FieldInput
+                  name="displayOrder"
+                  type="number"
+                  label="Display order"
+                  value={String(form.displayOrder)}
+                  onChange={(v) => setForm({ ...form, displayOrder: Number(v) || 0 })}
+                />
+                <Row justify="end" gap="sm">
+                  <Button variant="ghost" type="button" onClick={() => router.back()}>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    type="submit"
+                    disabled={saving}
+                    isLoading={saving}
+                    onClick={async () => {
+                      clearErrors();
+                      // The slug is derived here, before parsing, so a blank
+                      // one is filled rather than reported as an error — the
+                      // server requires it, the form does not ask for it.
+                      const values = { ...form, slug: form.slug || slugify(form.label) };
+                      const parsed = storeCategoryFormSchema.safeParse(values);
+                      if (!parsed.success) {
+                        applyZodIssues(parsed.error.issues, setFieldError);
+                        return;
+                      }
+                      setSaving(true);
+                      const res = await createStoreCategory(
+                        API_ROUTES.STORE.STORE_CATEGORIES,
+                        values,
+                      );
+                      setSaving(false);
+                      if (res.ok) {
+                        showToast("Saved", "success");
+                        router.push(String(ROUTES.STORE.STORE_CATEGORIES));
+                      } else {
+                        // `createStoreCategory` returns a raw Response, so the
+                        // server's message has to be read out of the body.
+                        // This used to be an unconditional "Save failed" toast
+                        // that discarded whatever the route actually objected to.
+                        const detail = await res
+                          .json()
+                          .then((j: { error?: string; message?: string }) => j?.error ?? j?.message)
+                          .catch(() => undefined);
+                        setFieldError("label", detail ?? "Save failed");
+                      }
+                    }}
+                  >
+                    {ACTIONS.STORE["save-changes"].label}
+                  </Button>
+                </Row>
+              </Stack>
+            )}
+          </Form>
         </Stack>
       </Container>
     </Section>

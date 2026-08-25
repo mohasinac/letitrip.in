@@ -7,6 +7,8 @@ import {
   parseJsonBody,
   type FirestoreDocument,
   shippingConfigsRepository,
+  shippingConfigUpdateSchema,
+  ValidationError,
   storeRepository,
   successResponse,
 } from "@mohasinac/appkit";
@@ -41,10 +43,17 @@ export const PATCH = withProviders(
       const { error } = await loadAndAssertOwner(user!.uid, (params as { id: string }).id);
       if (error) return error;
       const body = await parseJsonBody<FirestoreDocument>(request);
+      const parsed = shippingConfigUpdateSchema.safeParse(body);
+      if (!parsed.success) {
+        throw new ValidationError(
+          parsed.error.issues[0]?.message ?? "Invalid shipping rule",
+          parsed.error.issues,
+        );
+      }
       try {
         const updated = await shippingConfigsRepository.update(
           (params as { id: string }).id,
-          body,
+          parsed.data,
         );
         return successResponse(updated, "Updated");
       } catch (err) {

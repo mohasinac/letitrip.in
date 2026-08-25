@@ -7,6 +7,7 @@ import {
   supportRepository,
   orderRepository,
   userRepository,
+  TicketCategoryValues,
 } from "@mohasinac/appkit";
 import { isSoftBanned } from "@mohasinac/appkit/server";
 
@@ -14,22 +15,11 @@ const MAX_OPEN_TICKETS = 2;
 const _MAX_ORDER_TICKETS = 1;
 
 const createSchema = z.object({
-  category: z.enum([
-    "order_issue",
-    "billing_payment",
-    "account",
-    "listing_dispute",
-    "scam_report",
-    "refund_request",
-    "auction_dispute",
-    "general",
-    // ST-4 — sellers request admin-only store field changes
-    "store_change_request",
-    // ST-3 — buyers/sellers request order line-item mutation
-    "order_modification_request",
-    // ST-5 — appeal a ban (bypasses soft-ban guard + active-ticket limit)
-    "unban_request",
-  ]),
+  // Derived from `TicketCategoryValues`, not restated. The literal list that
+  // used to live here was an eleven-value copy that happened to still agree —
+  // the kind of copy that agrees right up until someone adds a twelfth
+  // category to the union and not to this route (Recurrent Root Cause #61).
+  category: z.enum(TicketCategoryValues),
   subject: z.string().min(3).max(200),
   description: z.string().min(10).max(5000),
   orderId: z.string().optional(),

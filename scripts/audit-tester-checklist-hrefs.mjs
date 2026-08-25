@@ -172,18 +172,31 @@ function collectSeedIds() {
   const ids = new Set();
   const templateRegexes = [];
   for (const dir of SEED_ID_DIRS) {
-    let files;
-    try {
-      files = readdirSync(dir, { withFileTypes: true });
-    } catch {
-      continue;
-    }
-    for (const f of files) {
-      if (!f.isFile() || !f.name.endsWith(".ts")) continue;
-      const fileText = readFileSync(join(dir, f.name), "utf8");
-      for (const m of fileText.matchAll(SEED_ID_STRING_RE)) ids.add(m[1]);
-      for (const m of fileText.matchAll(SEED_SLUG_STRING_RE)) ids.add(m[1]);
-      for (const m of fileText.matchAll(SEED_ID_TEMPLATE_RE)) templateRegexes.push(templateToRegex(m[1]));
+    // Recursive: ids no longer all live in top-level *-seed-data.ts files.
+    // The category tree moved to `_helpers/category-forest.ts` (2026-08-24),
+    // and a flat scan silently stopped seeing every category id — which reads
+    // as "this href points at a category that doesn't exist" rather than as
+    // "the audit can't see it any more".
+    const stack = [dir];
+    while (stack.length > 0) {
+      const current = stack.pop();
+      let files;
+      try {
+        files = readdirSync(current, { withFileTypes: true });
+      } catch (_err) {
+        continue; // directory does not exist
+      }
+      for (const f of files) {
+        if (f.isDirectory()) {
+          stack.push(join(current, f.name));
+          continue;
+        }
+        if (!f.isFile() || !f.name.endsWith(".ts")) continue;
+        const fileText = readFileSync(join(current, f.name), "utf8");
+        for (const m of fileText.matchAll(SEED_ID_STRING_RE)) ids.add(m[1]);
+        for (const m of fileText.matchAll(SEED_SLUG_STRING_RE)) ids.add(m[1]);
+        for (const m of fileText.matchAll(SEED_ID_TEMPLATE_RE)) templateRegexes.push(templateToRegex(m[1]));
+      }
     }
   }
   return { ids, templateRegexes };

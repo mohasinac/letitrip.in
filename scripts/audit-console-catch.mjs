@@ -19,7 +19,7 @@
  * those are covered by audit-silent-fetch-catch.mjs instead.
  *
  * Run:  node scripts/audit-console-catch.mjs
- *       STRICT=1 node scripts/audit-console-catch.mjs   # force fail
+ *       (Strict since W2 — any violation fails. There is no report mode.)
  */
 
 import { readFileSync, readdirSync, statSync } from "node:fs";
@@ -101,19 +101,18 @@ if (violations.length === 0) {
   process.exit(0);
 }
 
-const strict = process.env.STRICT === "1";
-const exitCode = strict ? 1 : 0;
-
-if (strict) {
-  console.error(`\n✗ audit-console-catch — ${violations.length} violation(s):`);
-} else {
-  console.warn(`\n⚠ audit-console-catch — ${violations.length} violation(s) (report mode; set STRICT=1 to fail):`);
-}
+// Strict as of W2. This audit reports ZERO violations today, so making it
+// block costs nothing and buys real regression protection. An audit that
+// cannot fail is documentation, not a gate — `audit-listing-detail-affordance`
+// proved it by silently absorbing two new dead-end listing views while
+// reporting a number nobody was obliged to act on.
+//
+// The per-line suppression marker stays the escape hatch; a tolerated COUNT
+// does not, because it hides which instances are known and which are new.
+console.error(`\n✗ audit-console-catch — ${violations.length} violation(s):`);
 for (const v of violations) {
-  console[strict ? "error" : "warn"](`  ${v.file}:${v.line}  — ${v.snippet}`);
+  console.error(`  ${v.file}:${v.line}  — ${v.snippet}`);
 }
-if (!strict) {
-  console.warn("\nFix: replace with `safeFireAndForget(promise, \"context\")` for non-critical ops,");
-  console.warn("or a real `catch (err) { void normalizeError(err); serverLogger.warn(...); }` for important ops.");
-}
-process.exit(exitCode);
+console.error("\nFix: replace with `safeFireAndForget(promise, \"context\")` for non-critical ops,");
+console.error("or a real `catch (err) { void normalizeError(err); serverLogger.warn(...); }` for important ops.");
+process.exit(1);

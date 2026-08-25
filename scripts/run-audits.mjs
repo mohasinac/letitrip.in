@@ -225,6 +225,8 @@ const AUDITS = [
   // returns zero rows forever. Found live in 8+ places in one sweep
   // (2026-08-19); see CLAUDE.md's Recurrent Root Cause Patterns.
   { name: "filter-tab-enums",              script: "scripts/audit-filter-tab-enums.mjs" },
+  { name: "field-names-union-parity",      script: "scripts/audit-field-names-union-parity.mjs" },
+  { name: "field-ui-meta",                 script: "scripts/audit-field-ui-meta.mjs" },
   // Strict-zero. `functions/lib` is a tsup snapshot that INLINES appkit at
   // build time, so rebuilding appkit/dist never updates it. A stale bundle
   // makes the deployed listingProcessor Function apply different Sieve
