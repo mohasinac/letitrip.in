@@ -14,6 +14,7 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { stripComments } from "./lib/strip-comments.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -42,7 +43,10 @@ for (const root of SCAN) {
   try { statSync(root); } catch { continue; }
   for (const file of walk(root)) {
     if (ALLOW.includes(file)) continue;
-    const src = readFileSync(file, "utf8");
+    // Comment-stripped: a prose mention of <QuickFormDrawer> in a docstring
+    // is not a call site. This is the FOURTH audit found flagging its own
+    // documentation — hence the shared helper rather than a fifth local copy.
+    const src = stripComments(readFileSync(file, "utf8"));
     // Match opening JSX tag across multiple lines. Lazy [\s\S]*? + ensure we
     // stop at the first `>` that closes the tag (not one inside an attribute
     // value — JSX attribute values use `{}` or `""` so a literal `>` outside

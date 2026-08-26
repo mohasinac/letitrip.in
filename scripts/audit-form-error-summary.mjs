@@ -14,6 +14,24 @@
  *
  * Scope: src/ + appkit/src/ — not the primitive definition files themselves.
  *
+ * ## 🛑 The W21 mobile bar does NOT satisfy this rule
+ *
+ * `useFormBottomActions()` publishes a "Fix N issues" sheet into the
+ * bottom-chrome tier, rendering the same `<FormErrorList>` this summary does.
+ * It is tempting to accept it as an alternative — the W21 plan said it would
+ * have to be, expecting the summary to MOVE into the bar and all ~75 files to
+ * start failing.
+ *
+ * That is not what happened, and accepting it would be a real weakening.
+ * `useBottomActions` defaults to `desktop: "hidden"`, so the bar exists on
+ * phones only. A file whose sole error surface were the bar would show a
+ * desktop user a form that refuses to save and says nothing about why.
+ *
+ * So the two are ADDITIVE, not alternative: the inline summary is the
+ * always-present surface, the bar is the mobile ergonomics on top. Nothing
+ * moved out of any file, no suppression marker was needed anywhere, and this
+ * audit is unchanged in what it demands.
+ *
  * Whole-file suppression: `// audit-form-error-summary-ok: <reason>`
  * anywhere in the file (e.g. a form whose FormErrorSummary is legitimately
  * rendered by a different file — a shared layout wrapper — not co-located).

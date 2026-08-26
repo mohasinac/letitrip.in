@@ -49,6 +49,7 @@
 
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, sep } from "node:path";
+import { stripComments } from "./lib/strip-comments.mjs";
 
 const ROOT = process.cwd();
 
@@ -110,34 +111,6 @@ const SKIP_DIRS = new Set(["node_modules", ".next", "dist", "__tests__", ".git"]
 // Shared helpers (same technique as audit-list-serializer-parity /
 // audit-sieve-field-schema-parity — regex + brace walk, no TS compiler).
 // ---------------------------------------------------------------------------
-
-/** Strips comments so prose can't desync the scanners. */
-function stripComments(src) {
-  let out = "";
-  let inStr = null;
-  for (let i = 0; i < src.length; i++) {
-    const c = src[i];
-    if (inStr) {
-      out += c;
-      if (c === "\\") { out += src[++i] ?? ""; continue; }
-      if (c === inStr) inStr = null;
-      continue;
-    }
-    if (c === "/" && src[i + 1] === "/") {
-      const nl = src.indexOf("\n", i);
-      i = nl === -1 ? src.length : nl - 1;
-      continue;
-    }
-    if (c === "/" && src[i + 1] === "*") {
-      const end = src.indexOf("*/", i + 2);
-      i = end === -1 ? src.length : end + 1;
-      continue;
-    }
-    if (c === '"' || c === "'" || c === "`") { inStr = c; out += c; continue; }
-    out += c;
-  }
-  return out;
-}
 
 /** Walks from an opening `{`, string-aware, returning the balanced body. */
 function findBalancedBody(src, openBraceIndex) {

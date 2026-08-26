@@ -45,6 +45,7 @@
 import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { stripComments } from "./lib/strip-comments.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -167,11 +168,6 @@ const KNOWN_DEAD_TYPES = {
 
 function read(relPath) {
   return readFileSync(join(ROOT, relPath), "utf8");
-}
-
-/** Strip line + block comments so a doc example can't be mistaken for code. */
-function stripComments(src) {
-  return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^[ \t]*\/\/.*$/gm, "");
 }
 
 /** Extract the quoted members of `export type ListingType = "a" | "b";`. */

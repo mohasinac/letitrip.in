@@ -69,6 +69,7 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { stripComments } from "./lib/strip-comments.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SCAN_DIR = join(ROOT, "appkit/src");
@@ -107,20 +108,6 @@ function walk(dir, out) {
     }
   }
   return out;
-}
-
-/**
- * Blanks out `/* ... *\/` and `// ...` comment content (preserving newlines
- * and overall string length, so line numbers stay accurate) so a docstring
- * example containing `canFilter: true` can't false-positive as a real field
- * config. Doesn't account for `//`/`/*` inside string literals — accepted
- * trade-off for a no-compiler regex audit; no real field-config object in
- * this codebase contains those sequences in a key or value.
- */
-function stripComments(src) {
-  return src
-    .replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " "))
-    .replace(/\/\/[^\n]*/g, (m) => " ".repeat(m.length));
 }
 
 /**

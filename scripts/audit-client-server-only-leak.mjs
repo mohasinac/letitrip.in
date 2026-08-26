@@ -58,6 +58,7 @@
 import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join, dirname, relative, resolve as resolvePath } from "node:path";
 import { fileURLToPath } from "node:url";
+import { stripComments } from "./lib/strip-comments.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -97,18 +98,6 @@ function realSpecFromMatch(m) {
     return allTypeOnly ? null : fromSpec;
   }
   return null;
-}
-
-/**
- * Strips `//` line comments and `/* ... *\/` block comments before regex
- * scanning, so example code or migration notes inside a comment (e.g.
- * `// import { X } from "@mohasinac/appkit"`) never registers as a real
- * import statement. Deliberately naive (doesn't understand strings that
- * contain `//` or `/*`) — acceptable here since real import/export
- * specifiers never contain comment-like sequences.
- */
-function stripComments(src) {
-  return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
 }
 
 function resolveFile(base) {

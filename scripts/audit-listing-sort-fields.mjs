@@ -32,6 +32,7 @@
 import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { stripComments } from "./lib/strip-comments.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -74,10 +75,6 @@ const CONFIG_SCAN_DIRS = [
 
 function read(rel) {
   return readFileSync(join(ROOT, rel), "utf8");
-}
-
-function stripComments(src) {
-  return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^[ \t]*\/\/.*$/gm, "");
 }
 
 /**

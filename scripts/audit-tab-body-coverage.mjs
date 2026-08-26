@@ -41,6 +41,7 @@
 import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { stripComments } from "./lib/strip-comments.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const UNION_FILE = "appkit/src/features/products/types/index.ts";
@@ -70,10 +71,6 @@ const REGISTRY = [
 
 function read(relPath) {
   return readFileSync(join(ROOT, relPath), "utf8");
-}
-
-function stripComments(src) {
-  return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^[ \t]*\/\/.*$/gm, "");
 }
 
 function extractUnion(src, name) {

@@ -45,6 +45,7 @@
 import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { stripComments } from "./lib/strip-comments.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -111,10 +112,6 @@ const BASE_DOCUMENT_FIELDS = ["id", "createdAt", "updatedAt"];
 
 function read(rel) {
   return readFileSync(join(ROOT, rel), "utf8");
-}
-
-function stripComments(src) {
-  return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^[ \t]*\/\/.*$/gm, "");
 }
 
 /** Balanced slice of the initialiser for `const NAME ... = { … }`. */

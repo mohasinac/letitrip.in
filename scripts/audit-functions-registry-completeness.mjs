@@ -23,6 +23,7 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { stripComments } from "./lib/strip-comments.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -84,15 +85,6 @@ function findDefineFunctionCallsites() {
     }
   }
   return offenders;
-}
-
-function stripComments(source) {
-  // Remove /* ... */ block comments and // line comments. Naive — does not
-  // attempt to preserve regex literals or strings, sufficient for our audit
-  // which only needs identifier presence outside comments.
-  return source
-    .replace(/\/\*[\s\S]*?\*\//g, " ")
-    .replace(/(^|\s)\/\/[^\n]*/g, "$1 ");
 }
 
 function findHttpsDefinitionsMissingSecret() {

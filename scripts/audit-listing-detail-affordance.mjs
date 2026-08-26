@@ -49,6 +49,7 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { stripComments } from "./lib/strip-comments.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SCAN_ROOT = join(ROOT, "appkit", "src");
@@ -172,110 +173,6 @@ function factoryAffordanceText(text) {
     }
   }
   return extra;
-}
-
-/**
- * Blank out comments, preserving every byte offset and newline so line numbers
- * stay exact.
- *
- * ## It must understand REGEX LITERALS, and here is why
- *
- * A first version did not, and produced a false positive that took a while to
- * pin down. In `/^https?:\\/\\//` the last two characters before the closing
- * delimiter are an escaped slash followed by the delimiter itself — so a naive
- * scanner sees `//`, calls it a line comment, and blanks the rest of that line.
- * That silently removed the `, {` which opened the next argument, unbalancing
- * the brace walk downstream and making a perfectly well-formed call look as
- * though it were missing its metadata object.
- *
- * A `/` begins a regex only in VALUE position. The standard heuristic — the
- * previous non-whitespace character being one of `(,=:[!&|?{};` or nothing at
- * all — distinguishes that from division, and covers every case this codebase
- * actually contains.
- */
-function stripComments(source) {
-  const NL = String.fromCharCode(10);
-  const BACKSLASH = String.fromCharCode(92);
-  const QUOTES = [String.fromCharCode(34), String.fromCharCode(39), String.fromCharCode(96)];
-  const REGEX_PRECEDERS = new Set(["(", ",", "=", ":", "[", "!", "&", "|", "?", "{", "}", ";", "+", "-", "*", "%", "<", ">", "~", "^"]);
-
-  let out = "";
-  let i = 0;
-  let quote = null;
-  let lastMeaningful = "";
-
-  while (i < source.length) {
-    const c = source[i];
-    const next = source[i + 1];
-
-    if (quote) {
-      out += c;
-      if (c === quote && source[i - 1] !== BACKSLASH) quote = null;
-      i++;
-      continue;
-    }
-
-    if (QUOTES.includes(c)) {
-      quote = c;
-      out += c;
-      lastMeaningful = c;
-      i++;
-      continue;
-    }
-
-    if (c === "/" && next === "/") {
-      while (i < source.length && source[i] !== NL) {
-        out += " ";
-        i++;
-      }
-      continue;
-    }
-
-    if (c === "/" && next === "*") {
-      while (i < source.length && !(source[i] === "*" && source[i + 1] === "/")) {
-        out += source[i] === NL ? NL : " ";
-        i++;
-      }
-      out += "  ";
-      i += 2;
-      continue;
-    }
-
-    // A regex literal. Copied through verbatim so its contents can never be
-    // mistaken for a comment, a quote or a brace.
-    if (c === "/" && (lastMeaningful === "" || REGEX_PRECEDERS.has(lastMeaningful))) {
-      out += c;
-      i++;
-      let inClass = false;
-      while (i < source.length) {
-        const r = source[i];
-        if (source[i - 1] === BACKSLASH) {
-          out += r;
-          i++;
-          continue;
-        }
-        if (r === "[") inClass = true;
-        else if (r === "]") inClass = false;
-        else if (r === "/" && !inClass) {
-          out += r;
-          i++;
-          break;
-        } else if (r === NL) {
-          // Unterminated — not a regex after all. Stop rather than run away.
-          break;
-        }
-        out += r;
-        i++;
-      }
-      lastMeaningful = "/";
-      continue;
-    }
-
-    out += c;
-    if (!/\s/.test(c)) lastMeaningful = c;
-    i++;
-  }
-  return out;
 }
 
 const violations = [];

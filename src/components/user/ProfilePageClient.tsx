@@ -167,7 +167,11 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
     setFieldError,
     clearErrors,
     validate,
-  }: Pick<UseFormShellStateResult, "setFieldError" | "clearErrors" | "validate">) => {
+    markSubmitAttempted,
+  }: Pick<UseFormShellStateResult, "setFieldError" | "clearErrors" | "validate" | "markSubmitAttempted">) => {
+    // Save is a type="button" onClick, so no native submit event fires and
+    // <Form> cannot mark this for us. Unhides <FormErrorSummary>.
+    markSubmitAttempted();
     clearErrors();
     const parsed = validate<{
       displayName?: string;
@@ -260,7 +264,7 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
               spacing="md"
               onSubmit={async (e) => e.preventDefault()}
             >
-              {({ setFieldError, clearErrors, validate }) => (
+              {({ setFieldError, clearErrors, validate, markSubmitAttempted }) => (
                 <>
                   <Heading level={2} size="base" weight="semibold" color="primary">Edit Profile</Heading>
                   <FieldInput
@@ -321,7 +325,7 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
                       disabled={update.isPending}
                       paddingX="md" paddingY="sm" textSize="sm" weight="semibold"
                       className="disabled:opacity-60 transition-colors"
-                      onClick={() => void handleSaveProfile({ setFieldError, clearErrors, validate })}
+                      onClick={() => void handleSaveProfile({ setFieldError, clearErrors, validate, markSubmitAttempted })}
                     >
                       {update.isPending ? "Saving…" : "Save Changes"}
                     </Button>
