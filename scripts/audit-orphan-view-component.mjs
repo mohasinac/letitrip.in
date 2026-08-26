@@ -73,7 +73,6 @@ const GRANDFATHERED = new Set([
 
   // ── Wire it: a real feature with no route ────────────────────────────
   // W22 step 5d. Lottery events can currently only be created by seeding.
-  "LotteryAdminEditView",
   "LotteryAdminSlotView",
 
   // ── Superseded: the consumer renders something else now ──────────────

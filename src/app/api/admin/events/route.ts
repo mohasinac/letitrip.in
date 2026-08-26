@@ -5,7 +5,8 @@ import {
   ROLES_ADMIN_MOD,
   ROLES_ADMIN_ONLY,
 } from "@/constants";
-import { sortBy } from "@mohasinac/appkit";
+import { sortBy, ALL_EVENT_TYPES } from "@mohasinac/appkit";
+import type { EventType } from "@mohasinac/appkit";
 
 const DEFAULT_SORTS = sortBy(EVENT_FIELDS.CREATED_AT);
 /**
@@ -53,15 +54,25 @@ const spinPrizeSchema = z.object({
 });
 
 const createEventSchema = z.object({
-  type: z.enum([
-    "sale",
-    "offer",
-    "poll",
-    "survey",
-    "feedback",
-    "raffle",
-    "spin_wheel",
-  ]),
+  /*
+   * DERIVED from `eventTypeSchema`, not restated. This was a hand-written
+   * 7-value copy missing `lottery` — so `eventTypeSchema` accepted it, the
+   * repository accepted it, the public pages rendered it, and the one place
+   * that creates events rejected it. Lottery events could therefore ONLY come
+   * from `npm run seed`.
+   *
+   * That made it the eighth hand-maintained copy of a union in this codebase
+   * (Root Cause #61). Adding `"lottery"` to the literal would have fixed
+   * today's bug and left the ninth copy waiting.
+   *
+   * Built from `ALL_EVENT_TYPES` (itself derived from a `Record<EventType,
+   * true>`, so a missing member is a compile error) using the CONSUMER's zod
+   * rather than importing appkit's `eventTypeSchema` directly. That is not
+   * style: appkit resolves `zod` to a nested v3 while the app resolves to v4,
+   * so a schema constructed across the boundary infers as `unknown` and
+   * `body.type` stops typechecking. Values shared, schema local.
+   */
+  type: z.enum(ALL_EVENT_TYPES as [EventType, ...EventType[]]),
   title: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
   description: z.string().default(""),
   startsAt: z.string().datetime({ offset: true }),

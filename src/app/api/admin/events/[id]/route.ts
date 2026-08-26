@@ -17,12 +17,36 @@ import {
   finalizeStagedMediaObjectArray,
 } from "@mohasinac/appkit";
 
+/*
+ * `.passthrough()` is deliberate here — an event carries open-ended
+ * type-specific config that this schema does not enumerate, and tightening it
+ * without a full-collection round-trip diff is the most dangerous edit
+ * available on this route.
+ *
+ * 🛑 But `lotteryConfig` is CARVED OUT, because passthrough is exactly what
+ * made it destructive. The authoring UI builds slots from form state with no
+ * booking fields on them, so letting that through writes `isBooked: false`
+ * over every slot a buyer has already pulled — silently, with a 200.
+ *
+ * It goes to `PUT ./lottery-config` instead, which is the only place that has
+ * both the admin's intent and the stored bookings, and therefore the only
+ * place a correct merge can happen. Refused loudly rather than dropped: a
+ * caller that still sends it is doing something that used to destroy data,
+ * and should be told, not quietly ignored.
+ */
 const updateEventSchema = z.object({
   title: z.string().min(1).optional(),
   description: z.string().optional(),
   startsAt: z.string().optional(),
   endsAt: z.string().optional(),
   status: z.string().optional(),
+  lotteryConfig: z
+    .never({
+      message:
+        "lotteryConfig cannot be written here — use PUT /api/admin/events/{id}/lottery-config, " +
+        "which preserves slots that have already been pulled.",
+    })
+    .optional(),
 }).passthrough();
 
 const __GET__g = withProviders(
