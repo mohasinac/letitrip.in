@@ -88,11 +88,10 @@ const SUPPRESS_RE = /audit-form-sectionised-ok:/;
  * Known hand-rolled forms, awaiting migration. DELETE an entry when its file
  * gains a `<SectionForm>` — the staleness check will tell you.
  *
- * Generated 2026-08-27 from the tree as it stood. 48 entries (16 dropped once the submit-ownership filter landed).
+ * Generated 2026-08-27 from the tree as it stood. 47 entries (16 dropped once the submit-ownership filter landed).
  */
 const GRANDFATHERED = new Set([
   "src/app/[locale]/admin/roles/new/page.tsx",
-  "src/app/[locale]/store/categories/[id]/edit/page.tsx",
   "src/app/[locale]/store/listing-templates/new/page.tsx",
   "src/app/[locale]/store/listing-templates/[id]/edit/page.tsx",
   "src/app/[locale]/store/payout-methods/new/page.tsx",

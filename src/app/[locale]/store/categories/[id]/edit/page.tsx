@@ -23,15 +23,14 @@ import {
   Container,
   Stack,
   Heading,
-  Button,
-  Row,
   Section,
   Skeleton,
-  Form,
-  FieldInput,
-  FieldTextarea,
-  FieldCheckbox,
+  FormShellContext,
   FormErrorSummary,
+  SectionForm,
+  buildSectionsFromSchema,
+  useSectionFormNav,
+  useFormShellState,
   applyZodIssues,
   ROUTES,
   useToast,
@@ -44,7 +43,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { API_ROUTES } from "@/constants";
 import { getStoreCategory, updateStoreCategory, deleteStoreCategory } from "@/lib/api/store-client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type FormState = Partial<StoreCategoryFormValues>;
 
@@ -70,6 +69,48 @@ export default function Page() {
     router.push(String(ROUTES.STORE.STORE_CATEGORIES));
   };
 
+  const update = (partial: FormState) => setForm((prev) => ({ ...prev, ...partial }));
+
+  const sections = useMemo(
+    () => buildSectionsFromSchema<FormState>(storeCategoryFormSchema),
+    [],
+  );
+
+  const { openIds, setOpenIds, goToSection, fieldToSectionIndex, sectionMeta } =
+    useSectionFormNav(sections, form);
+
+  const { shellCtx, setFieldError, validate } = useFormShellState(storeCategoryFormSchema, {
+    sections: sectionMeta,
+    onGoToSection: goToSection,
+    fieldToSectionIndex,
+  });
+
+  const onSubmit = async () => {
+    const parsed = storeCategoryFormSchema.safeParse(form);
+    if (!parsed.success) {
+      applyZodIssues(parsed.error.issues, setFieldError);
+      return;
+    }
+    setSaving(true);
+    const res = await updateStoreCategory(
+      API_ROUTES.STORE.STORE_CATEGORY_BY_ID(id),
+      parsed.data,
+    );
+    setSaving(false);
+    if (res.ok) {
+      showToast("Saved", "success");
+      router.push(String(ROUTES.STORE.STORE_CATEGORIES));
+      return;
+    }
+    // The server's objection lands on a field, not in a toast that throws the
+    // reason away.
+    const detail = await res
+      .json()
+      .then((j: { error?: string; message?: string }) => j?.error ?? j?.message)
+      .catch(() => undefined);
+    setFieldError("label", detail ?? "Save failed");
+  };
+
   if (loading) {
     return (
       <Section>
@@ -90,95 +131,33 @@ export default function Page() {
       <Container size="md">
         <Stack gap="lg" padding="y-lg">
           <Heading level={1}>Edit Storefront Category</Heading>
-          <Form schema={storeCategoryFormSchema} onSubmit={(e) => e.preventDefault()}>
-            {({ setFieldError, clearErrors }) => (
-              <Stack gap="md">
-                <FormErrorSummary />
-                <FieldInput
-                  name="label"
-                  label="Label"
-                  required
-                  value={form.label ?? ""}
-                  onChange={(v) => setForm({ ...form, label: v })}
-                />
-                <FieldInput
-                  name="slug"
-                  label="Slug"
-                  required
-                  value={form.slug ?? ""}
-                  onChange={(v) => setForm({ ...form, slug: v })}
-                />
-                <FieldTextarea
-                  name="description"
-                  label="Description"
-                  rows={3}
-                  value={form.description ?? ""}
-                  onChange={(v) => setForm({ ...form, description: v })}
-                />
-                <FieldInput
-                  name="displayOrder"
-                  type="number"
-                  label="Display order"
-                  value={String(form.displayOrder ?? 0)}
-                  onChange={(v) => setForm({ ...form, displayOrder: Number(v) || 0 })}
-                />
-                <FieldCheckbox
-                  name="isActive"
-                  label="Active"
-                  checked={form.isActive !== false}
-                  onChange={(v) => setForm({ ...form, isActive: v })}
-                />
-                <Row justify="between" gap="sm">
-                  <Button
-                    variant="danger"
-                    type="button"
-                    onClick={() => setConfirmDelete(true)}
-                  >
-                    {ACTIONS.STORE["delete-listing"].label}
-                  </Button>
-                  <Row gap="sm">
-                    <Button variant="ghost" type="button" onClick={() => router.back()}>
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="primary"
-                      type="submit"
-                      disabled={saving}
-                      isLoading={saving}
-                      onClick={async () => {
-                        clearErrors();
-                        const parsed = storeCategoryFormSchema.safeParse(form);
-                        if (!parsed.success) {
-                          applyZodIssues(parsed.error.issues, setFieldError);
-                          return;
-                        }
-                        setSaving(true);
-                        const res = await updateStoreCategory(
-                          API_ROUTES.STORE.STORE_CATEGORY_BY_ID(id),
-                          parsed.data,
-                        );
-                        setSaving(false);
-                        if (res.ok) {
-                          showToast("Saved", "success");
-                          router.push(String(ROUTES.STORE.STORE_CATEGORIES));
-                        } else {
-                          // The server's objection lands on a field, not in a
-                          // toast that throws the reason away.
-                          const detail = await res
-                            .json()
-                            .then((j: { error?: string; message?: string }) => j?.error ?? j?.message)
-                            .catch(() => undefined);
-                          setFieldError("label", detail ?? "Save failed");
-                        }
-                      }}
-                    >
-                      {ACTIONS.STORE["save-changes"].label}
-                    </Button>
-                  </Row>
-                </Row>
-              </Stack>
-            )}
-          </Form>
+          <FormShellContext.Provider value={shellCtx}>
+            <FormErrorSummary />
+            <SectionForm<FormState>
+              sections={sections}
+              values={form}
+              onChange={update}
+              onSubmit={onSubmit}
+              onValidationChange={() => validate(form)}
+              schema={storeCategoryFormSchema}
+              openIds={openIds}
+              onOpenChange={setOpenIds}
+              submitLabel={ACTIONS.STORE["save-changes"].label}
+              cancelLabel="Cancel"
+              onCancel={() => router.back()}
+              isLoading={saving}
+              /*
+               * The slot added for exactly this. Delete used to be hand-rolled
+               * in a footer row, which is why SectionForm could not be used
+               * here at all: the alternative was `hideActions`, and that also
+               * silences the pinned mobile bar.
+               */
+              destructiveAction={{
+                label: ACTIONS.STORE["delete-listing"].label,
+                onClick: () => setConfirmDelete(true),
+              }}
+            />
+          </FormShellContext.Provider>
         </Stack>
       </Container>
       <ConfirmDeleteModal
