@@ -69,7 +69,7 @@ for (const root of SCAN) {
      * `schema`. Two accepted proofs:
      *
      *   1. the file imports zod and declares the schema itself, or
-     *   2. it imports a `*Schema` binding from a schema MODULE.
+     *   2. it imports a binding whose NAME ends in `Schema`.
      *
      * (2) was missing and it made the audit reject the better pattern. W4
      * established that a schema belongs in a `schemas/` module, not in a view
@@ -79,15 +79,24 @@ for (const root of SCAN) {
      * the view is a proxy for "has a schema" that is false exactly when the
      * schema is correctly shared, which is also the only way two portals can
      * be guaranteed to accept the same field set.
+     *
+     * The binding NAME is the proof, not the import PATH. A first draft of (2)
+     * required the path to contain `schema`, which worked for appkit own
+     * views and rejected every CONSUMER form — those cannot reach into
+     * `appkit/src` and must import from `@mohasinac/appkit/client`. Since
+     * `hasSchemaProp` has already confirmed the binding is passed AS the
+     * schema, the only remaining question is whether it IS one, and a
+     * `*Schema` name that is not a schema is a naming lie no static rule
+     * should pretend to catch.
      */
     const importsZod = /from\s+["']zod["']/.test(src);
-    const importsSchemaModule =
-      /import\s*\{[^}]*\b[A-Za-z_$][\w$]*Schema\b[^}]*\}\s*from\s*["'][^"']*(?:schema|schemas)[^"']*["']/.test(src);
+    const importsSchemaBinding =
+      /import\s*(?:type\s*)?\{[^}]*\b[A-Za-z_$][\w$]*Schema\b[^}]*\}\s*from\s*["'][^"']+["']/.test(src);
 
-    if (!hasSchemaProp || !(importsZod || importsSchemaModule)) {
+    if (!hasSchemaProp || !(importsZod || importsSchemaBinding)) {
       violations.push(
         `${rel} :: uses FormShell/useFormShellState without a Zod schema reference ` +
-          `(needs a schema prop AND either import "zod" or a *Schema import from a schemas/ module)`,
+          `(needs a schema prop AND either import "zod" or an imported *Schema binding)`,
       );
     }
   }
