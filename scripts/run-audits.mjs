@@ -72,6 +72,8 @@ const AUDITS = [
   { name: "nav-page-wiring",                 script: "scripts/audit-nav-page-wiring.mjs" },
   { name: "create-affordance",               script: "scripts/audit-create-affordance.mjs" },
   { name: "dead-route-key",                  script: "scripts/audit-dead-route-key.mjs" },
+  { name: "orphan-view-component",           script: "scripts/audit-orphan-view-component.mjs" },
+  { name: "client-verb-match",               script: "scripts/audit-client-verb-match.mjs" },
   { name: "schema-base-fields",             script: "scripts/audit-schema-base-fields.mjs" },
   { name: "listing-type-imports",           script: "scripts/audit-listing-type-imports.mjs" },
   { name: "listing-type-registry-usage",    script: "scripts/audit-listing-type-registry-usage.mjs" },
