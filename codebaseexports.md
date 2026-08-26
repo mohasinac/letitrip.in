@@ -352,7 +352,8 @@
 | AdminCarouselView | View | Carousel management |
 | AdminCarouselEditorView | View | Carousel editor |
 | AdminCarouselGroupEditorView | View | Carousel group create/edit form (name + active/draft status) |
-| AdminGroupedListingsView | View | Admin cross-store grouped-listings moderation (Sieve list + reassign-products drawer); wired to `/admin/grouped-listings` 2026-08-19, was previously unreachable (Root Cause #37) |
+| AdminGroupedListingsView Gained a create link + per-row Edit in W22 — until then "Reassign products" was its only row action, because the admin PATCH could not write any other field | View Gained a create link + per-row Edit in W22 — until then "Reassign products" was its only row action, because the admin PATCH could not write any other field | Admin cross-store grouped-listings moderation (Sieve list + reassign-products drawer); wired to `/admin/grouped-listings` 2026-08-19, was previously unreachable (Root Cause #37) Gained a create link + per-row Edit in W22 — until then "Reassign products" was its only row action, because the admin PATCH could not write any other field |
+| GroupedListingEditorView (`appkit/src/features/grouped/components/`) | View | ONE editor for all four grouped-listing surfaces (admin + store × new/edit). Sections derive from `groupedListingFormSchema`; `productIds` and the admin-only store picker are the two overrides. Replaced two hand-rolled seller forms that covered 5 of 8 fields and hardcoded `productIds: []` |
 | AdminAdsView, AdminAdEditorView | View | Ads management and editor |
 | AdminMediaView | View | Media management |
 | AdminNavigationView | View | Navigation management |
@@ -496,7 +497,8 @@
 | LotteryDetailView | Detail | Full lottery event page with slot grid + pull form |
 | LotteryEntriesView | Admin | Admin/owner entry table with flag action |
 | LotteryAdminSlotView | Admin | Admin-only slot view with price + weight |
-| LotteryAdminEditView | Admin | Lottery create/edit form with slot builder |
+| LotteryAdminEditView | Admin | Lottery SLOT builder. **Not a create flow** — it has no title/date/status/media fields, so a lottery made through it alone would have no dates and the draw window is measured from them. The event is created in the ordinary event editor. Its write shape deliberately **cannot express booking state** (W22, Root Cause #76) |
+| lotteryConfigWriteSchema, lotterySlotWriteSchema, mergeLotteryConfig (`appkit/src/features/lottery/schemas/config-write.ts`) | Schema | The ONLY sanctioned way to write `lotteryConfig`. `.strict()` with no `isBooked`/`bookedBy*`/`weight`, so a request cannot name booking state; `mergeLotteryConfig` re-attaches it from the stored config **by `slotNumber`, never by array index**. Removing a pulled slot is a 409 |
 | PrizeDrawLotteryDetailView | Detail | Prize-draw product in lottery mode |
 
 ### FAQ (`appkit/src/features/faq/components/`)
