@@ -222,7 +222,11 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.BRANDS),                "Brands",        "admin:brands:read"),
       adminItem(String(ROUTES.ADMIN.SUBLISTING_CATEGORIES), "Sub-listings",  "admin:categories:read"),
       adminItem(String(ROUTES.ADMIN.FEATURES),              "Feature Badges","admin:categories:read"),
-      adminItem(String(ROUTES.ADMIN.GROUPED_LISTINGS),      "Grouped Listings","admin:categories:read"),
+      // Own permission since 2026-08-26 (W22). It borrowed
+      // `admin:categories:read` because none existed — so a role granted
+      // category access silently got storefront curation too, and a role that
+      // should curate could not be given it without category rights.
+      adminItem(String(ROUTES.ADMIN.GROUPED_LISTINGS),      "Grouped Listings","admin:grouped-listings:read"),
       adminItem(String(ROUTES.ADMIN.DEALS),                 "Deals",         "admin:deals:read"),
       adminItem(String(ROUTES.ADMIN.FEATURED),              "Featured",      "admin:featured:read"),
       adminItem(String(ROUTES.ADMIN.COUPONS), "Coupons", "admin:coupons:read"),
