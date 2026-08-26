@@ -20,7 +20,7 @@ import {
   formatCurrency,
 } from "@mohasinac/appkit/client";
 import {
-  groupOrderItemsByBundle,
+  groupOrderItemsByLine,
   BUNDLE_COPY,
   useProduct,
   PrizeRevealModal,
@@ -28,7 +28,7 @@ import {
   isManualPaymentMethod,
   PAYMENT_WINDOW_MINUTES,
   OrderAddonBadges,
-  type BundleOrderGroup,
+  type LineOrderGroup,
 } from "@mohasinac/appkit/client";
 import { getOrderDigitalCode } from "@/lib/api/user-client";
 import { raiseOrderDispute } from "@/lib/api/payment-client";
@@ -70,12 +70,12 @@ type OrderItemT = {
   quantity: number;
   price: number;
   currency?: string;
-  /** Required by OrderItemForBundleGrouping constraint on groupOrderItemsByBundle */
+  /** Required by OrderItemForLineGrouping constraint on groupOrderItemsByLine */
   bundleCategorySlug?: string;
   bundleProductIds?: string[];
 };
 
-type OrderGroup = BundleOrderGroup<OrderItemT>;
+type OrderGroup = LineOrderGroup<OrderItemT>;
 
 function renderItemRow(
   item: OrderItemT,
@@ -230,7 +230,7 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
 
 function renderOrderItems(order: NonNullable<OrderData>, onOpenReveal?: (productId: string) => void) {
   if (!order.items?.length) return null;
-  const groups = groupOrderItemsByBundle<OrderItemT>(order.items as OrderItemT[]);
+  const groups = groupOrderItemsByLine<OrderItemT>(order.items as OrderItemT[]);
   const hasDigitalCode = order.items.some((i: any) => i.listingType === "digital-code");
   const canReveal = CODE_REVEAL_STATUSES.has((order.orderStatus ?? "").toLowerCase());
   return (

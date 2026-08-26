@@ -13,9 +13,29 @@ import { requireAuthUser, rateLimitByIdentifier, RateLimitPresets } from "@mohas
 import { addBundleToCartAction } from "@mohasinac/appkit/server";
 import { ROUTES } from "@mohasinac/appkit";
 
-export async function buyBundleAction(input: { bundleSlug: string }): Promise<void> {
+export async function buyBundleAction(input: {
+  bundleSlug: string;
+  /** Copies of the whole bundle. Bundles are all-or-nothing. */
+  quantity?: number;
+}): Promise<void> {
   const user = await requireAuthUser();
   await rateLimitByIdentifier(`bundle:buy:${user.uid}`, RateLimitPresets.STRICT);
-  await addBundleToCartAction(user.uid, input.bundleSlug);
+  await addBundleToCartAction(user.uid, input.bundleSlug, input.quantity ?? 1);
   redirect(`${String(ROUTES.USER.CHECKOUT)}?directItem=${encodeURIComponent(input.bundleSlug)}&type=bundle`);
+}
+
+/**
+ * Same add, no redirect — the buyer stays on the bundle page.
+ *
+ * Without this there is no way to get a bundle INTO the cart and leave it
+ * there, so "editable in the cart" had nothing to edit: the only bundle CTA
+ * added the line and immediately pushed the buyer past the cart to checkout.
+ */
+export async function addBundleToCartOnlyAction(input: {
+  bundleSlug: string;
+  quantity?: number;
+}): Promise<void> {
+  const user = await requireAuthUser();
+  await rateLimitByIdentifier(`bundle:add:${user.uid}`, RateLimitPresets.STRICT);
+  await addBundleToCartAction(user.uid, input.bundleSlug, input.quantity ?? 1);
 }

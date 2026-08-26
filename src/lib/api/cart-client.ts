@@ -25,6 +25,24 @@ export function updateCartItemQty(itemId: string, quantity: number): Promise<Res
   });
 }
 
+/**
+ * Replace a grouped line's member quantities. Sends the WHOLE array, not a
+ * delta — the cart is one Firestore document, so a per-member request would
+ * race with itself on a fast double-click. A member at 0 is dropped; dropping
+ * the last one removes the line server-side.
+ */
+export function updateCartGroupMembers(
+  itemId: string,
+  groupMembers: Array<{ productId: string; quantity: number }>,
+): Promise<Response> {
+  return fetch(API_ENDPOINTS.CART.BY_ITEM_ID(itemId), {
+    method: "PATCH",
+    headers: JSON_HEADERS,
+    body: JSON.stringify({ groupMembers }),
+    credentials: CREDS,
+  });
+}
+
 // ── Cart meta endpoints ──────────────────────────────────────────────────────
 
 export function validateCart(productIds: string[]): Promise<Response> {

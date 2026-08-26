@@ -1,7 +1,6 @@
 import { normalizeError } from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
 import { NextResponse } from "next/server";
-import { productRepository, sanitizeProductsForPublic } from "@mohasinac/appkit";
+import { productRepository, toPublicGroupMembers } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
 
@@ -33,7 +32,12 @@ async function _GET(_request: Request, context: RouteContext): Promise<NextRespo
     const response = NextResponse.json({
       success: true,
       data: {
-        items: sanitizeProductsForPublic(items as unknown as Array<Record<string, JsonValue>>),
+        // Allow-list projection, not `sanitizeProductsForPublic` (a delete-list
+        // of four seller-identity keys that published every other field of
+        // ProductDocument). The member picker also needs stock/store/sold
+        // state, so the payload had to change anyway — see § "Public Data
+        // Projections".
+        items: toPublicGroupMembers(items),
         total: items.length,
       },
     });

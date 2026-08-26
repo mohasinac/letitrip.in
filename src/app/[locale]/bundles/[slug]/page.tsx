@@ -8,7 +8,7 @@ import {
   getRelatedBundles,
 } from "@mohasinac/appkit/server";
 import { PageViewTracker } from "@mohasinac/appkit/client";
-import { buyBundleAction } from "@/actions/bundle.actions";
+import { buyBundleAction, addBundleToCartOnlyAction } from "@/actions/bundle.actions";
 
 export const revalidate = 120;
 
@@ -51,6 +51,7 @@ export default async function Page({
         bundle={bundle}
         members={members}
         onBuyNow={buyBundleAction}
+        onAddToCart={addBundleToCartOnlyAction}
         relatedBundles={relatedBundles}
       />
     </>

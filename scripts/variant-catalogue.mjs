@@ -80,6 +80,7 @@ export const PRIMITIVE_TAGS = [
   "IconBox",
   "HorizontalRule",
   "Divider",
+  "QuantityStepper",
   // Form primitives (catalogue forbids consumer-side className on these)
   "Form",
   "FieldInput",

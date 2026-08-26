@@ -14,7 +14,7 @@ import { withProviders } from "@/providers.config";
  */
 
 import { z } from "zod";
-import { createRazorpayOrder, rupeesToPaise, computeWhatsAppNotifyFee, computeGiftWrapFee, computeShipmentProtectionFee, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, splitCartIntoOrderGroups, resolveShippingCost } from "@mohasinac/appkit";
+import { createRazorpayOrder, rupeesToPaise, computeWhatsAppNotifyFee, computeGiftWrapFee, computeShipmentProtectionFee, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, splitCartIntoOrderGroups, resolveShippingCost, lineTotalFor } from "@mohasinac/appkit";
 import { siteSettingsRepository, unitOfWork, productRepository } from "@mohasinac/appkit";
 import { successResponse, ApiErrors } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
@@ -75,11 +75,12 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
           `"${item.productTitle}" is no longer available. Please remove it from your cart.`,
         );
       }
-      // Bundle cart-lines lock their price at add-time (bundlePrice) — honour it.
-      const unitPriceRs = item.bundleCategorySlug && item.bundleProductIds?.length
-        ? item.price
-        : product.price;
-      subtotalRs += unitPriceRs * item.quantity;
+      // What this line costs is decided in exactly one place. This route used to
+      // hand-roll the rule and reproduced only the bundle branch, silently
+      // omitting the locked-price one — so Razorpay CAPTURED the seller's list
+      // price for an accepted offer or a won auction while the cart displayed
+      // the negotiated amount. See `unitPriceFor` in order-math.ts.
+      subtotalRs += lineTotalFor(item, product);
     }
 
     // --- Platform fee + GST (same as verifyAndPlaceRazorpayOrderAction) ---
@@ -121,11 +122,10 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
     const addonFees = orderGroups.reduce((sum, group) => {
       const storeId = group.items[0].item.storeId;
       const addons = cart.storeAddons?.[storeId] ?? {};
-      const groupSubtotal = group.items.reduce((gs, { item }) => {
-        const product = productById.get(item.productId);
-        const unit = item.bundleCategorySlug && item.bundleProductIds?.length ? item.price : (product?.price ?? item.price);
-        return gs + unit * item.quantity;
-      }, 0);
+      const groupSubtotal = group.items.reduce(
+        (gs, { item }) => gs + lineTotalFor(item, productById.get(item.productId) ?? null),
+        0,
+      );
       return (
         sum +
         computeWhatsAppNotifyFee(addons.whatsappNotifyAddon ?? false, commissionRates) +

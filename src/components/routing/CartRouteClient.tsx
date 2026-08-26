@@ -1,7 +1,7 @@
 "use client";
 
 import { API_ROUTES } from "@/constants/api";
-import { deleteCartItem, updateCartItemQty, validateCart, persistCartSelection, persistCartAddons, addToWishlist } from "@/lib/api/cart-client";
+import { deleteCartItem, updateCartItemQty, updateCartGroupMembers, validateCart, persistCartSelection, persistCartAddons, addToWishlist } from "@/lib/api/cart-client";
 import { usePricingPreview } from "@/lib/hooks/usePricingPreview";
 
 const CLS_CHECKOUT_BTN = "w-full";
@@ -17,8 +17,8 @@ import { ChevronDown, ChevronUp, Clock } from "lucide-react";
 import type { JsonValue, JsonArray } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
-import { Alert, Button, CartItemRow, CartSummary, CartView, Checkbox, Div, Heading, Input, Text, useAuth, useCartQuery, useGuestCart, useGuestCartMerge, useGuestWishlist, useToast, ROUTES, useAuthGate, ACTION_ID, ACTIONS, LoginRequiredModal, useBottomActions, pluginFor, detectListingTypeFromSlug, getCartOps, CART_OPS_CHANGE_EVENT } from "@mohasinac/appkit/client";
-import type { CartItem, CartOp, ListingType } from "@mohasinac/appkit/client";
+import { Alert, Button, CartItemRow, CartGroupLineRow, CartSummary, CartView, Checkbox, Div, Heading, Input, Text, useAuth, useCartQuery, useGuestCart, useGuestCartMerge, useGuestWishlist, useToast, ROUTES, useAuthGate, ACTION_ID, ACTIONS, LoginRequiredModal, useBottomActions, pluginFor, detectListingTypeFromSlug, getCartOps, CART_OPS_CHANGE_EVENT } from "@mohasinac/appkit/client";
+import type { CartItem, CartOp, ListingType, CartLineKind, CartGroupSource, CartLineMember } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 
 import { Row, Stack, normalizeError, CouponHelpDetails } from "@mohasinac/appkit/client";
@@ -66,6 +66,17 @@ interface ServerCartItem {
   lockedPrice?: number;
   /** When the claim on that locked price lapses. */
   checkoutDeadline?: string;
+  // ── Multi-member lines. Every one of these used to be dropped by the
+  //    adapter below, which is why the cart could never render a bundle's
+  //    contents and linked a bundle line to a product page that doesn't exist.
+  lineKind?: CartLineKind;
+  groupSource?: CartGroupSource;
+  groupId?: string;
+  groupSlug?: string;
+  groupTitle?: string;
+  groupMembers?: CartLineMember[];
+  bundleCategorySlug?: string;
+  bundleProductIds?: string[];
 }
 
 /** Local helper — derives the per-item `listingType` snapshot used by cart UI rendering. */
@@ -80,6 +91,14 @@ type CartItemWithListingType = CartItem & {
   bidId?: string;
   lockedPrice?: number;
   checkoutDeadline?: string;
+  lineKind?: CartLineKind;
+  groupSource?: CartGroupSource;
+  groupId?: string;
+  groupSlug?: string;
+  groupTitle?: string;
+  groupMembers?: CartLineMember[];
+  bundleCategorySlug?: string;
+  bundleProductIds?: string[];
 };
 
 
@@ -138,6 +157,30 @@ function getProductHref(productId: string, listingType?: ListingType): string {
 }
 
 /**
+ * Where a cart LINE points.
+ *
+ * A multi-member line's `productId` is not a product: for a bundle it is the
+ * bundle category's id, for a group it is the group id. Feeding either to
+ * `getProductHref` produced `/products/{categoryId}` — a guaranteed 404 that
+ * had been the bundle line's only link since bundles reached the cart.
+ */
+function getCartLineHref(item: CartItemWithListingType): string {
+  if (item.lineKind === "bundle" && item.bundleCategorySlug) {
+    return String(ROUTES.PUBLIC.BUNDLE_DETAIL(item.bundleCategorySlug));
+  }
+  if (item.lineKind === "group") {
+    if (item.groupSource === "grouped-listing" && item.groupSlug) {
+      return String(ROUTES.PUBLIC.GROUP_DETAIL(item.groupSlug));
+    }
+    // A product group's id IS its parent product's slug, so the parent's own
+    // detail page is the group's canonical page.
+    const target = item.groupSlug ?? item.groupId;
+    if (target) return getProductHref(target, item.listingType);
+  }
+  return getProductHref(item.productId, item.listingType);
+}
+
+/**
  * Server-side addItemToCart/mergeGuestCart now always resolve a real
  * storeName from the store document (appkit cart-actions.ts), so this path
  * should rarely fire — kept as defense-in-depth for cart items added before
@@ -192,6 +235,17 @@ function serverItemsToCartItems(
     bidId: item.bidId,
     lockedPrice: item.lockedPrice,
     checkoutDeadline: item.checkoutDeadline,
+    // Multi-member fields. Dropping these here is what made a bundle line
+    // render as a nameless single row with a 404 link — the data was on the
+    // document all along, the adapter just never carried it (Root Cause #57).
+    lineKind: item.lineKind,
+    groupSource: item.groupSource,
+    groupId: item.groupId,
+    groupSlug: item.groupSlug,
+    groupTitle: item.groupTitle,
+    groupMembers: item.groupMembers,
+    bundleCategorySlug: item.bundleCategorySlug,
+    bundleProductIds: item.bundleProductIds,
     meta: {
       productId: item.productId,
       title: item.productTitle,
@@ -320,6 +374,8 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
   // Optimistic UI — qty overrides + pending remove with undo
   // ---------------------------------------------------------------------------
   const [optimisticQty, setOptimisticQty] = useState<Map<string, number>>(new Map());
+  /** Per-member overrides inside a grouped line, keyed `${lineId}:${productId}`. */
+  const [optimisticMemberQty, setOptimisticMemberQty] = useState<Map<string, number>>(new Map());
   const [pendingRemoveIds, setPendingRemoveIds] = useState<Set<string>>(new Set());
   const undoTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
@@ -327,8 +383,26 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
   const effectiveItems = useMemo(
     () => cartItems
       .filter((i) => !pendingRemoveIds.has(i.id))
-      .map((i) => optimisticQty.has(i.id) ? { ...i, quantity: optimisticQty.get(i.id)! } : i),
-    [cartItems, optimisticQty, pendingRemoveIds],
+      .map((i) => optimisticQty.has(i.id) ? { ...i, quantity: optimisticQty.get(i.id)! } : i)
+      .map((i) => {
+        // Same idea one level down: a member stepper shouldn't lag a round
+        // trip. A member optimistically dropped to 0 disappears immediately;
+        // the server removes the whole line when the last one goes.
+        if (!i.groupMembers?.length || optimisticMemberQty.size === 0) return i;
+        const lineId = i.itemId ?? i.id;
+        const next = i.groupMembers
+          .map((m) => {
+            const override = optimisticMemberQty.get(`${lineId}:${m.productId}`);
+            return override === undefined ? m : { ...m, quantity: override };
+          })
+          .filter((m) => m.quantity > 0);
+        if (next.length === 0) return i;
+        // `meta.price` is the price of ONE COPY, derived from the members —
+        // recompute it here or the seller subtotal lags the stepper.
+        const onePrice = next.reduce((sum, m) => sum + m.unitPrice * m.quantity, 0);
+        return { ...i, groupMembers: next, meta: { ...i.meta, price: onePrice } };
+      }),
+    [cartItems, optimisticQty, optimisticMemberQty, pendingRemoveIds],
   );
 
   // The cart-wide subtotal (`serverCart.subtotal`) is deliberately not read
@@ -607,6 +681,48 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
       }
     },
     [isAuthenticated, guest, showToast, refetch],
+  );
+
+  /**
+   * Change one member's per-copy quantity inside a grouped line.
+   *
+   * Sends the whole member array (see cart-client), and optimistically applies
+   * the single change so the stepper doesn't lag a round trip. A grouped line
+   * cannot exist in the guest cart — `useGuestCart` is keyed
+   * `{productId, quantity}` and `mergeGuestCart` rebuilds lines from products,
+   * so there is nothing for a group line to survive a login as.
+   */
+  const handleMemberQtyChange = useCallback(
+    async (lineId: string, productId: string, qty: number) => {
+      if (!isAuthenticated) return;
+      const line = cartItems.find((i) => (i.itemId ?? i.id) === lineId);
+      if (!line?.groupMembers?.length) return;
+
+      const nextMembers = line.groupMembers.map((m) =>
+        m.productId === productId ? { ...m, quantity: qty } : m,
+      );
+      const optimisticKey = `${lineId}:${productId}`;
+      setOptimisticMemberQty((prev) => { const m = new Map(prev); m.set(optimisticKey, qty); return m; });
+      try {
+        const res = await updateCartGroupMembers(
+          lineId,
+          nextMembers.map((m) => ({ productId: m.productId, quantity: m.quantity })),
+        );
+        if (!res.ok) {
+          const errData = (await res.json().catch(() => ({}))) as { error?: string };
+          showToast(errData.error ?? "Could not update this item. Please try again.", "error");
+        } else if (qty === 0) {
+          showToast("Item removed from the group.", "info");
+        }
+      } catch (_err) {
+        void normalizeError(_err);
+        showToast("Could not update this item. Please try again.", "error");
+      } finally {
+        setOptimisticMemberQty((prev) => { const m = new Map(prev); m.delete(optimisticKey); return m; });
+        refetch?.();
+      }
+    },
+    [isAuthenticated, cartItems, showToast, refetch],
   );
 
   const handleRemove = useCallback(
@@ -1161,6 +1277,7 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
                 renderStoreFooter={renderStoreFooter}
                 onToggleItem={toggleItem}
                 onQtyChange={handleQtyChange}
+                onMemberQtyChange={handleMemberQtyChange}
                 onRemove={handleRemove}
                 onMoveToWishlist={handleMoveToWishlist}
               />
@@ -1390,9 +1507,11 @@ interface CartTabItemsProps extends ItemCallbacks {
   effectiveSelected: Set<string> | null;
   /** Per-store fees + add-on checkboxes, rendered inside each seller card. */
   renderStoreFooter: (storeId: string) => React.ReactNode;
+  /** Only the Cart tab needs this — grouped lines are always standard-lane. */
+  onMemberQtyChange: (lineId: string, productId: string, qty: number) => void;
 }
 
-function CartTabItems({ cartBucket, oosItems, filteredCartItems, filteredOos, sellerGroupsCart, sellerGroupsOos, normalizedQuery, searchQuery, isAuthenticated, effectiveSelected, renderStoreFooter, onToggleItem, onQtyChange, onRemove, onMoveToWishlist }: CartTabItemsProps) {
+function CartTabItems({ cartBucket, oosItems, filteredCartItems, filteredOos, sellerGroupsCart, sellerGroupsOos, normalizedQuery, searchQuery, isAuthenticated, effectiveSelected, renderStoreFooter, onToggleItem, onQtyChange, onMemberQtyChange, onRemove, onMoveToWishlist }: CartTabItemsProps) {
   if (normalizedQuery && filteredCartItems.length === 0 && filteredOos.length === 0) {
     return <Text className={EMPTY_STATE_CLASS}>No items match &ldquo;{searchQuery.trim()}&rdquo;</Text>;
   }
@@ -1400,7 +1519,7 @@ function CartTabItems({ cartBucket, oosItems, filteredCartItems, filteredOos, se
     <>
       {sellerGroupsCart.map((group) => (
         <Div key={group.sellerId} surface="card" padding="sm" overflow="hidden" className="min-w-0">
-          <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={effectiveSelected} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={false} renderFooter={renderStoreFooter} />
+          <SellerGroupSection group={group} isAuthenticated={isAuthenticated} effectiveSelected={effectiveSelected} onToggleItem={onToggleItem} onQtyChange={onQtyChange} onMemberQtyChange={onMemberQtyChange} onRemove={onRemove} onMoveToWishlist={onMoveToWishlist} isOutOfStock={false} renderFooter={renderStoreFooter} />
         </Div>
       ))}
       {cartBucket.length === 0 && oosItems.length === 0 && (
@@ -1470,6 +1589,13 @@ interface SellerGroupSectionProps {
   effectiveSelected: Set<string> | null;
   onToggleItem: (itemId: string) => void;
   onQtyChange: (id: string, qty: number) => void;
+  /**
+   * Change one member's quantity inside a grouped line (0 drops it).
+   * Optional because a grouped line only ever appears in the STANDARD lane —
+   * it carries no bidId/offerId by construction — so the auctions and offers
+   * tabs have nothing to pass.
+   */
+  onMemberQtyChange?: (lineId: string, productId: string, qty: number) => void;
   onRemove: (id: string) => void;
   onMoveToWishlist: (cartItemId: string, productId: string) => void;
   isOutOfStock: boolean;
@@ -1491,6 +1617,7 @@ function SellerGroupSection({
   effectiveSelected,
   onToggleItem,
   onQtyChange,
+  onMemberQtyChange,
   onRemove,
   onMoveToWishlist,
   isOutOfStock,
@@ -1542,7 +1669,10 @@ function SellerGroupSection({
         {group.items.map((item) => {
           const iid = item.itemId ?? item.id;
           const isChecked = !effectiveSelected || effectiveSelected.has(iid);
-          const productHref = getProductHref(item.productId, item.listingType);
+          // A multi-member line's productId is a bundle category / group id,
+          // not a product — getCartLineHref knows the difference.
+          const productHref = getCartLineHref(item);
+          const isGroupedLine = Boolean(item.groupMembers?.length);
 
           return (
             <Row key={item.id} align="start" gap="3" padding="y-sm" className="min-w-0">
@@ -1557,14 +1687,32 @@ function SellerGroupSection({
                 />
               )}
               <Div className="flex-1 min-w-0">
-                <CartItemRow
-                  item={item}
-                  href={productHref}
-                  isOutOfStock={isOutOfStock}
-                  onQtyChange={isOutOfStock || locked ? undefined : onQtyChange}
-                  onRemove={locked ? undefined : onRemove}
-                  variant="row"
-                />
+                {isGroupedLine ? (
+                  <CartGroupLineRow
+                    id={iid}
+                    title={item.groupTitle ?? item.meta.title}
+                    image={item.meta.image}
+                    currency={item.meta.currency}
+                    lineKind={item.lineKind === "bundle" ? "bundle" : "group"}
+                    members={item.groupMembers!}
+                    quantity={item.quantity}
+                    href={productHref}
+                    locked={Boolean(locked || isOutOfStock)}
+                    onQtyChange={isOutOfStock || locked ? undefined : onQtyChange}
+                    onMemberQtyChange={isOutOfStock || locked ? undefined : onMemberQtyChange}
+                    onRemove={locked ? undefined : onRemove}
+                    variant="row"
+                  />
+                ) : (
+                  <CartItemRow
+                    item={item}
+                    href={productHref}
+                    isOutOfStock={isOutOfStock}
+                    onQtyChange={isOutOfStock || locked ? undefined : onQtyChange}
+                    onRemove={locked ? undefined : onRemove}
+                    variant="row"
+                  />
+                )}
                 {locked && lockedBadge && (
                   <Row gap="xs" align="center" wrap className="mt-1 min-w-0">
                     <Text className="text-warning" size="xs" weight="medium">

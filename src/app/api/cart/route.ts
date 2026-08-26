@@ -11,7 +11,7 @@ import { z } from "zod";
 import { successResponse, ApiErrors } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-import { cartRepository, storeRepository } from "@mohasinac/appkit";
+import { cartRepository, storeRepository, assertCanAddNewItems } from "@mohasinac/appkit";
 import { productRepository, normalizeListingType } from "@mohasinac/appkit";
 
 import { createRouteHandler } from "@mohasinac/appkit";
@@ -93,8 +93,12 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
       return ApiErrors.badRequest(ERROR_MESSAGES.CART.INSUFFICIENT_STOCK);
     }
 
+    // Lane gate + the cart read in one step. This route wrote through
+    // `cartRepository.addItem` directly and so never ran the gate that
+    // `addItemToCart` applies, letting a buyer with an unpaid auction win or
+    // accepted offer keep adding new items.
     // Cart 50-distinct-items hard cap. Quantity bumps to an existing item are unrestricted.
-    const existing = await cartRepository.getOrCreate(user!.uid);
+    const existing = await assertCanAddNewItems(user!.uid);
     const alreadyInCart = existing.items.some((i) => i.productId === product.id);
     if (!alreadyInCart && existing.items.length >= CART_MAX_ITEMS) {
       return errorResponse(
