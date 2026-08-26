@@ -27,6 +27,21 @@
  *
  * Exits 1 on any NAV_DEAD_LINK violation. NAV_ORPHAN_PAGE never affects the
  * exit code — it's printed as an informational section only.
+ *
+ * ## Four holes closed 2026-08-26 (W22)
+ *
+ * The audit reported "clean" and was telling the truth — but only about a
+ * fraction of what it appeared to cover. Each hole is marked at its fix site:
+ *
+ *  1. **Public nav was unscanned.** MAIN_NAV_ITEMS, SIDEBAR_SUPPORT_LINKS and
+ *     FOOTER_LINK_GROUPS — 55 hrefs — were never checked for dead links.
+ *  2. **`getUserNavGroups()` was unparsed.** The block extractor stops at the
+ *     first `
+];`, so every runtime-injected user nav item was invisible.
+ *  3. **EXCLUDED_SEGMENTS blocked recursion, not just matching**, hiding any
+ *     real hub page nested under new/ edit/ view/ …
+ *  4. **`pagePathExists` could not resolve a dynamic route**, so a nav entry
+ *     pointing at a `[param]` folder would have been a false NAV_DEAD_LINK.
  */
 
 import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
@@ -41,6 +56,19 @@ const ROUTE_MAP_FILE = join(ROOT, "appkit", "src", "next", "routing", "route-map
 const APP_DIR = join(ROOT, "src", "app", "[locale]");
 
 const NAV_GROUP_NAMES = ["ADMIN_NAV_GROUPS", "STORE_NAV_GROUPS", "USER_NAV_GROUPS"];
+
+/*
+ * Hole 1 (closed 2026-08-26): the three portal sidebars were the ONLY thing
+ * checked, so the public-facing nav — 55 hrefs across the header, the sidebar
+ * support links and the footer — was never checked for dead links at all.
+ * Every one happened to resolve, which is luck rather than enforcement: a
+ * dead footer link 404s exactly as loudly as a dead admin one.
+ *
+ * These are flat arrays, not `{title, items}` groups, so `extractGroupBlock`
+ * ends them on the same `
+];` and `extractHrefs` reads the same two shapes.
+ */
+const FLAT_NAV_NAMES = ["MAIN_NAV_ITEMS", "SIDEBAR_SUPPORT_LINKS", "FOOTER_LINK_GROUPS"];
 
 // Segments that mark a page.tsx as a legitimate non-nav sub-route (create
 // forms, edit forms, dynamic detail pages, and known action sub-paths).
@@ -82,6 +110,24 @@ function extractGroupBlock(source, groupName) {
   return source.slice(start, end);
 }
 
+/*
+ * Hole 2 (closed 2026-08-26): `extractGroupBlock` slices from
+ * `export const USER_NAV_GROUPS` to the first `
+];`, so everything
+ * `getUserNavGroups()` injects at runtime — Store Dashboard, View Public
+ * Profile, Tester Hub, Admin Dashboard (Testing) — was invisible.
+ *
+ * That mattered concretely: `USER_NAV_GROUPS.Testing` is literally
+ * `items: []`, so `/user/tester` escaped orphan status ONLY because an
+ * unrelated line in ADMIN_NAV_GROUPS happens to reference it. Delete that
+ * admin line and a still-reachable page silently becomes an orphan.
+ */
+function extractRuntimeNavBlock(source) {
+  const start = source.indexOf("export function getUserNavGroups");
+  if (start === -1) return null;
+  return source.slice(start);
+}
+
 function extractHrefs(block) {
   const hrefs = [];
 
@@ -104,8 +150,41 @@ function extractHrefs(block) {
 function pagePathExists(urlPath) {
   // urlPath like "/admin/grouped-listings" -> src/app/[locale]/admin/grouped-listings/page.tsx
   const segments = urlPath.split("/").filter(Boolean);
-  const dir = join(APP_DIR, ...segments);
-  return existsSync(join(dir, "page.tsx"));
+  return resolveSegments(APP_DIR, segments);
+}
+
+/*
+ * Hole 4 (closed 2026-08-26): this was a literal `join(...segments)`, so it
+ * could not resolve a href onto a route served by a `[param]` folder. Any
+ * future nav entry pointing at one would have been a guaranteed false
+ * NAV_DEAD_LINK — an audit that cries wolf is one people start suppressing.
+ *
+ * Walks segment by segment, preferring an exact directory and falling back to
+ * a single dynamic child. Catch-alls (`[...slug]`) match greedily and end the
+ * walk, which is what Next does.
+ */
+function resolveSegments(baseDir, segments) {
+  if (segments.length === 0) return existsSync(join(baseDir, "page.tsx"));
+
+  const [head, ...rest] = segments;
+  const exact = join(baseDir, head);
+  if (existsSync(exact) && resolveSegments(exact, rest)) return true;
+
+  let children;
+  try {
+    children = readdirSync(baseDir, { withFileTypes: true });
+  } catch {
+    return false;
+  }
+  for (const child of children) {
+    if (!child.isDirectory()) continue;
+    const name = child.name;
+    if (!name.startsWith("[") || !name.endsWith("]")) continue;
+    const isCatchAll = name.startsWith("[...") || name.startsWith("[[...");
+    if (isCatchAll) return existsSync(join(baseDir, name, "page.tsx"));
+    if (resolveSegments(join(baseDir, name), rest)) return true;
+  }
+  return false;
 }
 
 // ─── Walk admin/store/user for top-level page.tsx orphan candidates ───────
@@ -128,7 +207,17 @@ function walkPages(baseDir, urlPrefix, out) {
     if (!isDynamic && !isExcluded && existsSync(join(childDir, "page.tsx"))) {
       out.push(childUrl);
     }
-    if (!isDynamic && !isExcluded) {
+    /*
+     * Hole 3 (closed 2026-08-26): recursion used to stop at an excluded
+     * segment as well as skipping it, so a real hub page nested anywhere
+     * under new/ edit/ view/ … was permanently invisible to the orphan pass.
+     * Excluding a segment means "this page is a legitimate sub-route", not
+     * "nothing below here counts".
+     *
+     * Dynamic segments still stop the walk: everything under `[id]/` is
+     * per-record by definition and can never need its own nav entry.
+     */
+    if (!isDynamic) {
       walkPages(childDir, childUrl, out);
     }
   }
@@ -143,7 +232,18 @@ const routeMap = parseRouteMap(routeMapSource);
 const deadLinks = [];
 const allNavPaths = new Set();
 
-for (const groupName of NAV_GROUP_NAMES) {
+/*
+ * Every nav surface, not just the three sidebars. The `countsAsNav` flag is
+ * the one real difference: a public header/footer link proves a page is
+ * REACHABLE, but it is not a dashboard nav entry, so it must not silence the
+ * orphan pass for a portal page.
+ */
+const NAV_SOURCES = [
+  ...NAV_GROUP_NAMES.map((name) => ({ name, countsAsNav: true, required: true })),
+  ...FLAT_NAV_NAMES.map((name) => ({ name, countsAsNav: false, required: true })),
+];
+
+for (const { name: groupName, countsAsNav } of NAV_SOURCES) {
   const block = extractGroupBlock(navSource, groupName);
   if (!block) {
     console.log(`audit-nav-page-wiring: could not find ${groupName} in navigation.tsx — skipping`);
@@ -163,9 +263,35 @@ for (const groupName of NAV_GROUP_NAMES) {
     } else {
       urlPath = href.path;
     }
-    allNavPaths.add(urlPath);
+    if (countsAsNav) allNavPaths.add(urlPath);
     if (!pagePathExists(urlPath)) {
       deadLinks.push({ group: groupName, urlPath, source: href.kind === "route-ref" ? `ROUTES.${href.section}.${href.key}` : `"${href.path}"` });
+    }
+  }
+}
+
+/*
+ * The runtime-injected user nav. Dead-link checked like everything else, and
+ * it DOES count as nav — these items are how a real user reaches those pages,
+ * regardless of the static array being empty.
+ */
+const runtimeBlock = extractRuntimeNavBlock(navSource);
+if (runtimeBlock) {
+  for (const href of extractHrefs(runtimeBlock)) {
+    let urlPath;
+    if (href.kind === "route-ref") {
+      urlPath = resolveRoute(routeMap, href.section, href.key);
+      if (urlPath === undefined) continue;
+    } else {
+      urlPath = href.path;
+    }
+    allNavPaths.add(urlPath);
+    if (!pagePathExists(urlPath)) {
+      deadLinks.push({
+        group: "getUserNavGroups()",
+        urlPath,
+        source: href.kind === "route-ref" ? `ROUTES.${href.section}.${href.key}` : `"${href.path}"`,
+      });
     }
   }
 }
