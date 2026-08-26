@@ -51,6 +51,28 @@ const ENDPOINT_FILES = [
 const SUPPRESS = /audit-client-verb-ok:/;
 const VERBS = ["post", "put", "patch", "delete"];
 
+/**
+ * 🛑 THREE LIVE 404s, found by this audit on the run that added NO_ROUTE.
+ * Each is a real broken feature, not a lint nit. Grandfathered only so the
+ * audit can ship green and stop NEW instances; every one is owed a fix.
+ *
+ * Remove an entry when its route exists — never add one.
+ */
+const GRANDFATHERED = new Set([
+  // The seller's bulk "cancel bids" action. /api/store/bids/[id] was never
+  // built, so every cancel fails — and the caller counts the failures and
+  // toasts "N bid(s) failed to cancel", so it is loudly, permanently broken.
+  "appkit/src/features/seller/components/SellerBidsView.tsx::DELETE::SELLER_ENDPOINTS.BID_BY_ID",
+  // The seller's publish/unpublish toggle. /api/store/products/[id] does not
+  // exist (only the collection, bulk-location and scan routes do), and the
+  // call is wrapped in `.catch(() => null)` — so this one fails SILENTLY.
+  "appkit/src/features/seller/components/SellerProductsView.tsx::PATCH::SELLER_ENDPOINTS.PRODUCT_BY_ID",
+  // Fallout from the Firebase-native auth migration (Root Cause #54/#55):
+  // the server-side verification routes were deleted in favour of the client
+  // SDK's own flows, and this hook was left pointing at one of them.
+  "appkit/src/features/auth/hooks/useAuth.ts::POST::AUTH_ENDPOINTS.RESEND_VERIFICATION",
+]);
+
 function walk(dir, out = []) {
   let entries;
   try { entries = readdirSync(dir, { withFileTypes: true }); } catch { return out; }
@@ -140,6 +162,7 @@ function main() {
   const endpoints = parseEndpoints();
   const exportedVerbs = new Map(); // routeFile -> Set<VERB>
   const violations = [];
+  const stale = new Set(GRANDFATHERED);
   let checked = 0;
 
   for (const root of SCAN) {
@@ -148,12 +171,38 @@ function main() {
       const raw = readFileSync(file, "utf8");
       const lines = raw.split("\n");
       const src = stripComments(raw);
-      if (!/apiClient\s*\.\s*(?:post|put|patch|delete)\s*\(/.test(src)) continue;
+      // Cheap pre-filter. It must name BOTH call shapes: keying it on
+      // `apiClient` alone skipped every raw-`fetch` file before the scan below
+      // ever ran, which is how `SellerBidsView`'s dead DELETE survived the
+      // first version of this audit.
+      if (
+        !/apiClient\s*\.\s*(?:post|put|patch|delete)\s*\(/.test(src) &&
+        !/fetch\s*\(/.test(src)
+      ) continue;
 
-      const re = /apiClient\s*\.\s*(post|put|patch|delete)\s*\(\s*([A-Z_]+)\.(\w+)/g;
-      let m;
-      while ((m = re.exec(src)) !== null) {
-        const [, verb, obj, key] = m;
+      /*
+       * `apiClient.verb(ENDPOINT…)` and raw `fetch(ENDPOINT…, { method })`.
+       *
+       * Scanning only `apiClient` missed a live bug: `SellerBidsView`'s bulk
+       * cancel calls `fetch(SELLER_ENDPOINTS.BID_BY_ID(id), {method:"DELETE"})`
+       * at a route that does not exist at all, so it fails every time. An
+       * audit that covers one of the two ways this codebase makes a request
+       * covers the wrong half of the problem.
+       */
+      const calls = [];
+      const apiRe = /apiClient\s*\.\s*(post|put|patch|delete)\s*\(\s*([A-Z_]+)\.(\w+)/g;
+      let mm;
+      while ((mm = apiRe.exec(src)) !== null) {
+        calls.push({ index: mm.index, verb: mm[1], obj: mm[2], key: mm[3] });
+      }
+      const fetchRe =
+        /fetch\s*\(\s*([A-Z_]+)\.(\w+)\s*\([^)]*\)\s*,\s*\{[^}]*?method\s*:\s*["'](POST|PUT|PATCH|DELETE)["']/g;
+      while ((mm = fetchRe.exec(src)) !== null) {
+        calls.push({ index: mm.index, verb: mm[3].toLowerCase(), obj: mm[1], key: mm[2] });
+      }
+
+      for (const m of calls) {
+        const { verb, obj, key } = m;
         // Try the exact object first; fall back to a unique suffix match so a
         // nested group (API_ROUTES.ACCOUNT.PROFILE) still resolves. Ambiguity
         // is a SKIP, never a guess.
@@ -165,10 +214,29 @@ function main() {
         if (!apiPath) continue; // not statically resolvable — skip, don't guess
 
         const routeFile = routeFileFor(apiPath);
-        if (!routeFile) continue;
-
         const lineNo = src.slice(0, m.index).split("\n").length;
         if (SUPPRESS.test(lines[lineNo - 1] ?? "") || SUPPRESS.test(lines[lineNo - 2] ?? "")) continue;
+
+        const gfKey = `${rel(file)}::${verb.toUpperCase()}::${obj}.${key}`;
+        if (!routeFile) {
+          if (GRANDFATHERED.has(gfKey)) { stale.delete(gfKey); continue; }
+          /*
+           * NO_ROUTE — the endpoint constant resolves to a path with no
+           * route file behind it. Every such call is a 404, permanently.
+           *
+           * This is the API-side mirror of `audit-dead-route-key`'s NO_PAGE,
+           * and it is how `SellerBidsView`'s bulk cancel shipped: the
+           * constant `SELLER_ENDPOINTS.BID_BY_ID` exists, so the call
+           * compiles and reads as correct, and `/api/store/bids/[id]` was
+           * never built.
+           */
+          checked++;
+          violations.push(
+            `${rel(file)}:${lineNo} :: ${verb.toUpperCase()} ${obj}.${key} -> "${apiPath}" ` +
+              `has NO route file — every call 404s`,
+          );
+          continue;
+        }
 
         if (!exportedVerbs.has(routeFile)) {
           const routeSrc = stripComments(readFileSync(routeFile, "utf8"));
@@ -192,8 +260,17 @@ function main() {
     }
   }
 
+  if (stale.size > 0) {
+    console.log("[audit-client-verb-match] route now exists — remove from GRANDFATHERED:");
+    for (const k of stale) console.log(`  ✓ ${k}`);
+    console.log("");
+  }
+
   if (violations.length === 0) {
-    console.log(`audit-client-verb-match: clean ✓ (${checked} resolvable call(s) checked)`);
+    const left = GRANDFATHERED.size - stale.size;
+    console.log(
+      `audit-client-verb-match: clean ✓ (${checked} resolvable call(s); ${left} known 404(s) awaiting a route)`,
+    );
     process.exit(0);
   }
 
