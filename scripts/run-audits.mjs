@@ -70,6 +70,8 @@ const AUDITS = [
   { name: "auth-gate-derivation",            script: "scripts/audit-auth-gate-derivation.mjs" },
   { name: "registry-constants",              script: "scripts/audit-route-nav-field-constants.mjs" },
   { name: "nav-page-wiring",                 script: "scripts/audit-nav-page-wiring.mjs" },
+  { name: "create-affordance",               script: "scripts/audit-create-affordance.mjs" },
+  { name: "dead-route-key",                  script: "scripts/audit-dead-route-key.mjs" },
   { name: "schema-base-fields",             script: "scripts/audit-schema-base-fields.mjs" },
   { name: "listing-type-imports",           script: "scripts/audit-listing-type-imports.mjs" },
   { name: "listing-type-registry-usage",    script: "scripts/audit-listing-type-registry-usage.mjs" },
