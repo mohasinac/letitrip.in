@@ -8,6 +8,7 @@
 import { AdminScammerEditorView, toScammerStatus } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { ROUTES } from "@mohasinac/appkit/client";
+import type { SerialisedStatusChangeEntry } from "@mohasinac/appkit/client";
 
 export interface ScammerViewClientProps {
   scammerId: string;
@@ -20,13 +21,23 @@ export interface ScammerViewClientProps {
   verificationNote?: string;
   reportedBy: string;
   reportedByAnon: boolean;
+  /**
+   * The profile's decision history, dates already serialised to ISO by the
+   * page — the rest of this component's date props are strings, and mixing
+   * Dates with strings across the RSC boundary is how a `toLocaleString`
+   * ends up rendering "Invalid Date".
+   */
+  statusHistory?: SerialisedStatusChangeEntry[];
+  statusHistoryTruncated?: number;
 }
+
 
 export function ScammerViewClient(props: ScammerViewClientProps) {
   const router = useRouter();
   return (
     <AdminScammerEditorView
       {...props}
+      statusHistory={props.statusHistory as never}
       // The page passes whatever the server document holds, so it is narrowed
       // here rather than asserted — an unrecognised status becomes
       // `pending_review` explicitly instead of styling itself as one by

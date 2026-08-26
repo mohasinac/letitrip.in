@@ -48,6 +48,11 @@ export default async function AdminSupportTicketViewPage({ params }: Props) {
           internalNotes={ticket.internalNotes}
           orderId={ticket.orderId}
           relatedParties={ticket.relatedParties}
+          statusHistory={(ticket.statusHistory ?? []).map((e) => ({
+            ...e,
+            at: e.at instanceof Date ? e.at.toISOString() : String(e.at),
+          }))}
+          statusHistoryTruncated={ticket.statusHistoryTruncated}
         />
       </Container>
     </Section>

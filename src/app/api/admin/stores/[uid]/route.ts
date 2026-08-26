@@ -48,15 +48,37 @@ export const PATCH = withProviders(
 
       const update: Record<string, JsonValue> = {};
       const { adminNotes, isFeatured, isVerified, suspensionReason, capabilities } = body!;
-      if (body!.storeStatus !== undefined) update[STORE_FIELDS.STATUS] = body!.storeStatus;
       if (adminNotes !== undefined) update[STORE_FIELDS.ADMIN_NOTES] = adminNotes;
       if (isFeatured !== undefined) update[STORE_FIELDS.IS_FEATURED] = isFeatured;
       if (isVerified !== undefined) update[STORE_FIELDS.IS_VERIFIED] = isVerified;
       if (suspensionReason !== undefined) update[STORE_FIELDS.SUSPENSION_REASON] = suspensionReason;
       if (capabilities !== undefined) update[STORE_FIELDS.CAPABILITIES] = capabilities;
 
-      if (Object.keys(update).length > 0) {
-        await storeRepository.update(storeId, update as any);
+      /*
+       * 🛑 A status change goes through `setStatus`, never a bare `update`.
+       *
+       * `status` and `isPublic` are two distinct fields, and every public
+       * visibility check gates on `isPublic`. This handler wrote `status`
+       * directly and never touched `isPublic`, so approving a pending store
+       * left it active AND invisible, with no error anywhere. `setStatus`
+       * syncs them; `store` is threaded in as `prior` so the timeline entry
+       * costs no second read.
+       */
+      const ctx = {
+        actor: { role: "admin" as const, uid: user!.uid },
+        trigger: "adminStorePatch",
+        reason: suspensionReason,
+      };
+      if (body!.storeStatus !== undefined) {
+        await storeRepository.setStatus(
+          storeId,
+          body!.storeStatus as never,
+          update as never,
+          ctx,
+          store,
+        );
+      } else if (Object.keys(update).length > 0) {
+        await storeRepository.adminUpdate(storeId, update as never, ctx, store);
       }
 
       if (body!.storeStatus !== undefined || isVerified !== undefined) {
@@ -71,7 +93,10 @@ export const PATCH = withProviders(
         });
       }
 
-      return successResponse({ storeId, ...body }, "Store updated");
+      // The stored document, not an echo of the request — echoing is what hid
+      // the dropped payout UTR for as long as it was hidden.
+      const updated = await storeRepository.findById(storeId);
+      return successResponse(updated, "Store updated");
     },
   }),
 );

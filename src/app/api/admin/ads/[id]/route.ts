@@ -6,6 +6,8 @@ import {
   ROLES_ADMIN_ONLY,
 } from "@/constants";
 import {
+  AD_TRACKED_FIELDS,
+  withHistory,
   createApiHandler as createRouteHandler,
   errorResponse,
   siteSettingsRepository,
@@ -112,15 +114,41 @@ export const PATCH = withProviders(
       const prevStatus = String((existing as Record<string, JsonValue>).status ?? "draft");
       const nextStatus = body?.status ?? prevStatus;
 
-      // Audit trail — track every status transition
-      const existingHistory = Array.isArray((existing as Record<string, JsonValue>).statusHistory)
-        ? ((existing as Record<string, JsonValue>).statusHistory as Array<unknown>)
-        : [];
+      /*
+       * ── Status history, on the SHARED primitive ────────────────────────
+       *
+       * This was hand-rolled here and diverged from `StatusChangeEntry` in six
+       * ways: a `{from,to,changedAt,changedBy}` shape typed `Array<unknown>`,
+       * a cap of 20 via `slice(-19)` instead of 50, silent truncation with no
+       * counter, and no `actorRole`, `trigger` or `reason` at all — so an ad
+       * paused by a scheduled job and one paused by an admin were
+       * indistinguishable.
+       *
+       * `withHistory` is a PURE FUNCTION, which is what makes it usable here:
+       * ads live inside the `siteSettings` singleton and have no repository of
+       * their own, so there is no write primitive to hook. The date fields are
+       * ISO strings rather than Timestamps for the same reason — the whole
+       * inventory is serialised into one settings document.
+       */
+      const historyPatch = withHistory(
+        existing as never,
+        {
+          ...(body?.status !== undefined ? { status: body.status } : {}),
+          ...(body?.startAt !== undefined ? { startAt: body.startAt } : {}),
+          ...(body?.endAt !== undefined ? { endAt: body.endAt } : {}),
+        } as never,
+        {
+          tracked: AD_TRACKED_FIELDS,
+          actor: { role: "admin", uid: user?.uid },
+          trigger: "adminAdPatch",
+          // No PII on an ad record — but the parameter is passed explicitly
+          // rather than omitted, so the next field added here has to be
+          // triaged rather than defaulting into the history silently.
+          piiFields: [],
+        },
+      ) as { statusHistory?: unknown[]; statusHistoryTruncated?: number } | null;
 
-      const statusHistoryEntry =
-        body?.status && body.status !== prevStatus
-          ? { from: prevStatus, to: body.status, changedAt: nowIso, changedBy: user?.uid || "admin" }
-          : null;
+      const statusChanged = Boolean(body?.status && body.status !== prevStatus);
 
       const updated = {
         ...existing,
@@ -131,10 +159,15 @@ export const PATCH = withProviders(
         },
         updatedAt: nowIso,
         updatedBy: user?.uid || "admin",
-        lastStatusChange: statusHistoryEntry ? nowIso : (existing as Record<string, JsonValue>).lastStatusChange,
-        statusHistory: statusHistoryEntry
-          ? [...existingHistory.slice(-19), statusHistoryEntry]
-          : existingHistory,
+        lastStatusChange: statusChanged ? nowIso : (existing as Record<string, JsonValue>).lastStatusChange,
+        ...(historyPatch
+          ? {
+              statusHistory: historyPatch.statusHistory,
+              ...(historyPatch.statusHistoryTruncated !== undefined
+                ? { statusHistoryTruncated: historyPatch.statusHistoryTruncated }
+                : {}),
+            }
+          : {}),
         // Set publishedAt / publishedBy on first activation
         publishedAt:
           body?.status === AD_FIELDS.STATUS_VALUES.ACTIVE && prevStatus !== AD_FIELDS.STATUS_VALUES.ACTIVE

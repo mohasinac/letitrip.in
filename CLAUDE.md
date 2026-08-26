@@ -1257,9 +1257,32 @@ Only the **final** coupon and add-on state is kept, and it already lives on the 
 
 **Orders track exactly five fields** — `status`, `paymentStatus`, `paymentReviewOutcome`, `trackingNumber`, `cancellationReason` — plus `refund`. An explicit list is essential: a whole-document diff would record the `updatedAt` bump on every write and exhaust the 50-entry cap within days.
 
+### The nine adopters
+
+| Entity | Funnel | Notes |
+|---|---|---|
+| orders | 7 repository write primitives | W2 |
+| offers | one `updateStatus` choke point | W2 |
+| support tickets | `updateTicketStatus` · `addMessage` (status only) · `assignTicket` | `addMessage` reads only when a status accompanies the reply, so an ordinary reply still costs one write and no read |
+| payouts | `updateStatus` + 3 batch primitives | The batch threads its own RUNNING copy, not the original snapshot — the sequence is pending → processing → failed, and diffing the last write against the first snapshot loses the dispatch attempt |
+| stores | `setStatus` (status) · `adminUpdate` (everything else) | |
+| scammers | `adminUpdate` | The route used to bypass it entirely |
+| bids | 4 batch mutators + 3 by id | `markManyLost` accepts a bare ref OR a `{ref, data}` pair. Widened rather than made required: forcing a read per losing bid would put a large auction's settlement over the read budget |
+| shipments | `adminUpdate` | The only adopter that costs a read — its PATCH route does not fetch first |
+| catalogue | `setListingStatus` | The funnel had to be BUILT; five scattered `update()` calls moved `listingStatus` before |
+| ads | `withHistory` called from the route | No repository — ads live inside the `siteSettings` singleton. Works because `withHistory` is a pure function |
+
+**`returns` is not an entity.** `return_requested` is an *order status* and the returns views are views over orders, so returns already ride the order timeline.
+
+**Every adopter passes `piiFields` explicitly, including the ones with no PII.** Passing `[]` rather than omitting the argument means the next field added to that document has to be triaged rather than defaulting into the history silently.
+
 ### Rendering
 
-One rail, `<StatusTimeline>` (`appkit/src/features/status-history/components/`), with two thin wrappers supplying only their own phase vocabulary: `OrderStatusTimeline` and `OfferPhaseTimeline`. **It never fetches** — a client component loading its own chain would fire one request per opened modal per portal. Each wrapper has Branch A (recorded history) and Branch B (derive from scalar dates, for documents written before W2).
+One rail, `<StatusTimeline>` (`appkit/src/features/status-history/components/`), with **three** consumers.
+
+`OrderStatusTimeline` and `OfferPhaseTimeline` are thin wrappers supplying a KNOWN phase sequence, and render the steps a record has not reached yet as upcoming. That earns a dedicated wrapper because the vocabulary is part of the product.
+
+**`RecordStatusTimeline` serves the other seven**, which have no such sequence — a store goes active → suspended → active, a bid goes active → outbid → active → won, a payout retries. There is nothing to pre-render, so the timeline is simply the entries that happened. Writing that seven times would be seven chances for the actor label, the em-dash rule or the negative tone to drift. It maps a `StatusChangeEntry` to a step by taking `changes.status` (or `changes.listingStatus`) as the headline, falling back to naming the fields that did move — so an entry recording only "ETA moved" still reads as an event rather than a blank row. **It never fetches** — a client component loading its own chain would fire one request per opened modal per portal. Each wrapper has Branch A (recorded history) and Branch B (derive from scalar dates, for documents written before W2).
 
 Colour follows Root Cause #67: the negative dot is the `<Div surface="danger-surface">` **variant prop**, never the utility class `bg-danger-surface`, which Tailwind silently drops.
 

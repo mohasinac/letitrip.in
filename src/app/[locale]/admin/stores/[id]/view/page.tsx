@@ -26,6 +26,7 @@ import {
   type JsonValue,
 } from "@mohasinac/appkit/client";
 import { ADMIN_STORE_DETAIL_TABS, type AdminStoreDetailTabId } from "@/constants";
+import { RecordStatusTimeline } from "@mohasinac/appkit/client";
 
 const STATUS_BADGE_VARIANT: Record<string, "success" | "warning" | "danger" | "info" | "default"> = {
   active: "success",
@@ -177,6 +178,18 @@ export default function Page() {
                       <Text size="sm">{store.adminNotes as string}</Text>
                     </Div>
                   )}
+
+                  {/*
+                    "Why is this store suspended and who did it" was previously
+                    recoverable only from `adminAuditLog`, which the store
+                    owner can never see. `statusHistory` rides on the store
+                    document itself. `adminNotes` is deliberately NOT tracked —
+                    its own schema comment says it is never shown to the owner.
+                  */}
+                  <RecordStatusTimeline
+                    entries={store.statusHistory as never}
+                    truncatedCount={store.statusHistoryTruncated as number | undefined}
+                  />
 
                   <Text size="xs" color="muted">
                     Created {store.createdAt ? new Date(store.createdAt as string).toLocaleString() : "—"}

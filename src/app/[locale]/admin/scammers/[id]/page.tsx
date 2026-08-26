@@ -41,6 +41,11 @@ export default async function AdminScammerViewPage({ params }: Props) {
           verificationNote={scammer.verificationNote}
           reportedBy={scammer.reportedBy}
           reportedByAnon={scammer.reportedByAnon}
+          statusHistory={(scammer.statusHistory ?? []).map((e) => ({
+            ...e,
+            at: e.at instanceof Date ? e.at.toISOString() : String(e.at),
+          }))}
+          statusHistoryTruncated={scammer.statusHistoryTruncated}
         />
       </Container>
     </Section>

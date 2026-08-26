@@ -40,13 +40,17 @@ export const PATCH = withProviders(
     roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:shipments:write",
     schema: updateShipmentSchema,
-    handler: async ({ params, body }) => {
+    handler: async ({ params, body, user }) => {
       const id = (params as { id: string }).id;
-      const shipment = await shipmentsRepository.update(id, {
-        ...body!,
-        etaDate: body!.etaDate ? new Date(body!.etaDate) : undefined,
-        receivedDate: body!.receivedDate ? new Date(body!.receivedDate) : undefined,
-      });
+      const shipment = await shipmentsRepository.adminUpdate(
+        id,
+        {
+          ...body!,
+          etaDate: body!.etaDate ? new Date(body!.etaDate) : undefined,
+          receivedDate: body!.receivedDate ? new Date(body!.receivedDate) : undefined,
+        } as never,
+        { actor: { role: "admin", uid: user!.uid }, trigger: "adminShipmentPatch" },
+      );
       return successResponse(shipment, "Shipment updated");
     },
   }),

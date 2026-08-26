@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
+import { RecordStatusTimeline } from "@mohasinac/appkit/client";
 import {
   ADMIN_ENDPOINTS,
   AdminPayoutMarkPaidModal,
@@ -195,6 +196,17 @@ export default function Page() {
                     <Text size="sm">{payout.adminNote as string}</Text>
                   </Div>
                 )}
+
+                {/*
+                  Payouts are where this matters most to a seller: a failed
+                  dispatch used to be readable only from `lastFailureReason`,
+                  which the NEXT retry overwrites. The timeline keeps each
+                  attempt with its own reason.
+                */}
+                <RecordStatusTimeline
+                  entries={payout.statusHistory as never}
+                  truncatedCount={payout.statusHistoryTruncated as number | undefined}
+                />
 
                 <Text size="xs" color="muted">
                   Requested {payout.requestedAt ? new Date(payout.requestedAt as string).toLocaleString() : "—"}

@@ -51,12 +51,19 @@ export const PATCH = withProviders(
     roles: [...ROLES_TRUST_SAFETY],
     permission: "admin:support-tickets:write",
     schema: patchSchema,
-    handler: async ({ params, body }) => {
+    handler: async ({ params, body, user }) => {
       const id = (params as { id: string }).id;
       const ticket = await supportRepository.getTicketById(id);
       if (!ticket) return errorResponse("Ticket not found", 404);
 
-      const updated = await supportRepository.updateTicketStatus(id, body! as any);
+      // `ticket` is threaded through as `prior`, so the timeline entry costs
+      // no second read of a document this handler already holds (Rule #6).
+      const updated = await supportRepository.updateTicketStatus(
+        id,
+        body!,
+        { actor: { role: "admin", uid: user?.uid }, trigger: "adminUpdateTicket" },
+        ticket,
+      );
       return successResponse(updated, "Ticket updated");
     },
   }),

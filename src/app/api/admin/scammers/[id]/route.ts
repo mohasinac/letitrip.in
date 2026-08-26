@@ -61,7 +61,19 @@ const __PATCH__g = withProviders(
         updates.verificationNote = body!.verificationNote;
       }
 
-      await scammerRepository.update(id, updates);
+      // Through `adminUpdate`, not a bare `update` — that is the funnel the
+      // timeline entry is appended in, and `scammer` is already in hand from
+      // the 404 check above so it costs no extra read.
+      await scammerRepository.adminUpdate(
+        id,
+        updates,
+        {
+          actor: { role: "admin", uid: user!.uid },
+          trigger: "adminScammerPatch",
+          reason: body!.verificationNote,
+        },
+        scammer,
+      );
       return successResponse({ id }, "Scammer profile updated");
     },
   }),

@@ -41,7 +41,18 @@ export const POST = withProviders(
         createdAt: new Date(),
       };
 
-      await supportRepository.addMessage(ticketId, message, body!.newStatus as any);
+      // `ticket` was already fetched above for the ownership + closed checks,
+      // so passing it as `prior` keeps the status entry read-free (Rule #6).
+      await supportRepository.addMessage(
+        ticketId,
+        message,
+        body!.newStatus,
+        {
+          actor: { role: isStaff ? "admin" : "buyer", uid: user!.uid },
+          trigger: "ticketReply",
+        },
+        ticket,
+      );
       return successResponse(message, "Message sent", 201);
     },
   }),
