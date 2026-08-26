@@ -54,8 +54,10 @@ const PRIMITIVE_FILES = [
  * wizard be reintroduced into that exact file without failing.
  */
 const GRANDFATHERED = [
-  "appkit/src/features/seller/components/SellerShippingView.tsx",
-  "appkit/src/features/seller/components/SellerStorefrontView.tsx",
+  // SellerShippingView and SellerStorefrontView migrated 2026-08-26.
+  // SellerProductShell is the last one: 1583 lines with a TypeSpecificStepDef
+  // map keyed on ProductListingMode, so it is the registry-driven
+  // `formSections` work rather than a mechanical swap.
   "appkit/src/features/seller/components/SellerProductShell.tsx",
 ];
 
@@ -64,8 +66,12 @@ const PATTERNS = [
   { re: /<\s*StepFormActions\b/, what: "<StepFormActions> — SectionForm owns one shared submit" },
   { re: /<\s*StepIndicator\b/, what: "<StepIndicator> — sections are not numbered stages" },
   { re: /\bStepDef\b/, what: "StepDef type — use SectionDef" },
-  { re: /\bcurrentStep\s*=/, what: "currentStep prop — sections have no cursor" },
-  { re: /\bonStepChange\s*=/, what: "onStepChange prop — use onOpenChange" },
+  // Anchored on `={` so these match a JSX PROP, not prose. A bare
+  // `\bcurrentStep\s*=` also matched `currentStep === 0` inside a tester-case
+  // description explaining the defect — the same "a mention is not a use"
+  // false positive the comment-stripping in the other audits prevents.
+  { re: /\bcurrentStep\s*=\s*\{/, what: "currentStep prop — sections have no cursor" },
+  { re: /\bonStepChange\s*=\s*\{/, what: "onStepChange prop — use onOpenChange" },
   { re: /["'`]stepform:/, what: "stepform: localStorage key — section state lives in the URL" },
 ];
 
