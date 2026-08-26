@@ -19,15 +19,14 @@ import {
   Container,
   Stack,
   Heading,
-  Button,
-  Row,
   Section,
   Skeleton,
-  Form,
-  FieldInput,
-  FieldSelect,
-  FieldCheckbox,
+  FormShellContext,
   FormErrorSummary,
+  SectionForm,
+  buildSectionsFromSchema,
+  useSectionFormNav,
+  useFormShellState,
   applyZodIssues,
   ROUTES,
   useToast,
@@ -44,7 +43,7 @@ import {
   updateShippingConfig,
   deleteShippingConfig,
 } from "@/lib/api/store-client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function Page() {
   const router = useRouter();
@@ -85,6 +84,57 @@ export default function Page() {
     router.push(String(ROUTES.STORE.SHIPPING_CONFIGS));
   };
 
+  const update = (partial: Partial<typeof form>) =>
+    setForm((prev) => ({ ...prev, ...partial }));
+
+  const sections = useMemo(
+    () =>
+      buildSectionsFromSchema<typeof form>(shippingConfigFormSchema, {
+        /*
+         * Keep the curated labels. Derived options run each enum value
+         * through `humaniseFieldName`, which turns "weight" into "Weight" —
+         * accurate and worse than "By weight". The `options` override exists
+         * for exactly this, and passing it keeps SHIPPING_METHOD_OPTIONS as
+         * the one place those labels live.
+         */
+        options: { method: [...SHIPPING_METHOD_OPTIONS] },
+      }),
+    [],
+  );
+
+  const { openIds, setOpenIds, goToSection, fieldToSectionIndex, sectionMeta } =
+    useSectionFormNav(sections, form);
+
+  const { shellCtx, setFieldError, validate } = useFormShellState(shippingConfigFormSchema, {
+    sections: sectionMeta,
+    onGoToSection: goToSection,
+    fieldToSectionIndex,
+  });
+
+  const onSubmit = async () => {
+    const parsed = shippingConfigFormSchema.safeParse(form);
+    if (!parsed.success) {
+      applyZodIssues(parsed.error.issues, setFieldError);
+      return;
+    }
+    setSaving(true);
+    const res = await updateShippingConfig(
+      API_ROUTES.STORE.SHIPPING_CONFIG_BY_ID(id),
+      parsed.data,
+    );
+    setSaving(false);
+    if (res.ok) {
+      showToast("Saved", "success");
+      router.push(String(ROUTES.STORE.SHIPPING_CONFIGS));
+      return;
+    }
+    const detail = await res
+      .json()
+      .then((j: { error?: string; message?: string }) => j?.error ?? j?.message)
+      .catch(() => undefined);
+    setFieldError("label", detail ?? "Save failed");
+  };
+
   if (loading) {
     return (
       <Section>
@@ -104,98 +154,27 @@ export default function Page() {
       <Container size="md">
         <Stack gap="lg" padding="y-lg">
           <Heading level={1}>Edit Shipping Configuration</Heading>
-          <Form schema={shippingConfigFormSchema} onSubmit={(e) => e.preventDefault()}>
-            {({ setFieldError, clearErrors }) => (
-              <Stack gap="md">
-                <FormErrorSummary />
-                <FieldInput
-                  name="label"
-                  label="Label"
-                  required
-                  value={form.label}
-                  onChange={(v) => setForm({ ...form, label: v })}
-                />
-                <FieldSelect
-                  name="method"
-                  label="Method"
-                  required
-                  value={form.method}
-                  onChange={(v) => setForm({ ...form, method: String(v) })}
-                  options={SHIPPING_METHOD_OPTIONS}
-                />
-                <FieldInput
-                  name="flatRate"
-                  type="number"
-                  label="Flat rate (₹)"
-                  value={String(form.flatRate)}
-                  onChange={(v) => setForm({ ...form, flatRate: Number(v) || 0 })}
-                />
-                <FieldInput
-                  name="estimatedDays"
-                  type="number"
-                  label="Estimated days"
-                  value={String(form.estimatedDays)}
-                  onChange={(v) => setForm({ ...form, estimatedDays: Number(v) || 0 })}
-                />
-                <Row gap="md" wrap>
-                  <FieldCheckbox
-                    name="isDefault"
-                    label="Default"
-                    checked={form.isDefault}
-                    onChange={(v) => setForm({ ...form, isDefault: v })}
-                  />
-                  <FieldCheckbox
-                    name="isActive"
-                    label="Active"
-                    checked={form.isActive}
-                    onChange={(v) => setForm({ ...form, isActive: v })}
-                  />
-                </Row>
-                <Row justify="between" gap="sm">
-                  <Button variant="danger" type="button" onClick={() => setConfirmDelete(true)}>
-                    {ACTIONS.STORE["delete-listing"].label}
-                  </Button>
-                  <Row gap="sm">
-                    <Button variant="ghost" type="button" onClick={() => router.back()}>
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="primary"
-                      type="submit"
-                      disabled={saving}
-                      isLoading={saving}
-                      onClick={async () => {
-                        clearErrors();
-                        const parsed = shippingConfigFormSchema.safeParse(form);
-                        if (!parsed.success) {
-                          applyZodIssues(parsed.error.issues, setFieldError);
-                          return;
-                        }
-                        setSaving(true);
-                        const res = await updateShippingConfig(
-                          API_ROUTES.STORE.SHIPPING_CONFIG_BY_ID(id),
-                          parsed.data,
-                        );
-                        setSaving(false);
-                        if (res.ok) {
-                          showToast("Saved", "success");
-                          router.push(String(ROUTES.STORE.SHIPPING_CONFIGS));
-                        } else {
-                          const detail = await res
-                            .json()
-                            .then((j: { error?: string; message?: string }) => j?.error ?? j?.message)
-                            .catch(() => undefined);
-                          setFieldError("label", detail ?? "Save failed");
-                        }
-                      }}
-                    >
-                      {ACTIONS.STORE["save-changes"].label}
-                    </Button>
-                  </Row>
-                </Row>
-              </Stack>
-            )}
-          </Form>
+          <FormShellContext.Provider value={shellCtx}>
+            <FormErrorSummary />
+            <SectionForm<typeof form>
+              sections={sections}
+              values={form}
+              onChange={update}
+              onSubmit={onSubmit}
+              onValidationChange={() => validate(form)}
+              schema={shippingConfigFormSchema}
+              openIds={openIds}
+              onOpenChange={setOpenIds}
+              submitLabel={ACTIONS.STORE["save-changes"].label}
+              cancelLabel="Cancel"
+              onCancel={() => router.back()}
+              isLoading={saving}
+              destructiveAction={{
+                label: ACTIONS.STORE["delete-listing"].label,
+                onClick: () => setConfirmDelete(true),
+              }}
+            />
+          </FormShellContext.Provider>
         </Stack>
       </Container>
       <ConfirmDeleteModal
