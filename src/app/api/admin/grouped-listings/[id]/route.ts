@@ -9,13 +9,22 @@ import {
   errorResponse,
   successResponse,
   groupedListingsRepository,
+  groupedListingUpdateSchema,
   type GroupedListingDocument,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
-const updateGroupedListingSchema = z.object({
-  productIds: z.array(z.string()).optional(),
-});
+/**
+ * 🛑 This was `z.object({ productIds })` — and `z.object()` STRIPS unknown
+ * keys, so an admin saving a group's title, theme or visibility got a **200
+ * that wrote nothing**. Root Cause #40's exact shape: a success response is
+ * what the broken version returns, so only a reload reveals it.
+ *
+ * Now the same `.strict()` schema the seller route parses, so the two portals
+ * cannot accept different field sets for one document. It already contains
+ * `productIds`, so `AdminGroupedListingsView`'s Reassign drawer is unaffected.
+ */
+const updateGroupedListingSchema = groupedListingUpdateSchema;
 
 export const GET = withProviders(
   createRouteHandler({

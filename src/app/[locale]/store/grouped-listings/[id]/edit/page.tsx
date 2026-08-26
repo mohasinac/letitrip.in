@@ -1,130 +1,40 @@
 "use client";
 
-import {
-  Button,
-  Container,
-  Div,
-  Heading,
-  Input,
-  Row,
-  ROUTES,
-  Section,
-  Select,
-  Stack,
-  Textarea,
-  Toggle,
-  useToast,
-} from "@mohasinac/appkit/client";
+import { use } from "react";
+import { Container, Heading, ROUTES, Section, Stack, GroupedListingEditorView } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
-import { useParams } from "next/navigation";
-import { API_ROUTES } from "@/constants";
-import { getGroupedListing, updateGroupedListing } from "@/lib/api/store-client";
-import { useEffect, useState } from "react";
 
-const THEME_OPTIONS = [
-  { value: "generic", label: "Generic" },
-  { value: "related", label: "Related (similar items)" },
-  { value: "character", label: "Character (same character)" },
-  { value: "lineage", label: "Lineage (series / wave)" },
-  { value: "set", label: "Set (same set / drop)" },
-];
-
-export default function Page() {
+/**
+ * Edit this seller's grouped listing.
+ *
+ * Replaces a hand-rolled form that validated nothing at all and, like its
+ * `new` sibling, had no input for `productIds`, `minActiveMembers` or
+ * `coverImage` — so the members of a group could not be changed from the page
+ * whose whole job is editing the group.
+ *
+ * Now the same component the admin pages use, so a field added to
+ * `groupedListingFormSchema` appears on all four surfaces at once instead of
+ * needing four edits that can each be forgotten separately.
+ */
+export default function StoreGroupedListingEditPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
   const router = useRouter();
-  const params = useParams();
-  const id = String(params.id);
-  const { showToast } = useToast();
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    groupTheme: "generic",
-    isActive: true,
-    isFeatured: false,
-  });
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    getGroupedListing(API_ROUTES.STORE.GROUPED_LISTING_BY_ID(id))
-      .then((r) => r.json())
-      .then((json) => {
-        const d = json?.data;
-        if (d) {
-          setForm({
-            title: d.title ?? "",
-            description: d.description ?? "",
-            groupTheme: d.groupTheme ?? "generic",
-            isActive: d.isActive ?? true,
-            isFeatured: d.isFeatured ?? false,
-          });
-        }
-      })
-      .finally(() => setLoading(false));
-  }, [id]);
-
-  const onSave = async () => {
-    setSaving(true);
-    const res = await updateGroupedListing(API_ROUTES.STORE.GROUPED_LISTING_BY_ID(id), form);
-    setSaving(false);
-    if (res.ok) {
-      showToast("Saved", "success");
-      router.push(String(ROUTES.STORE.GROUPED_LISTINGS));
-    } else {
-      showToast("Save failed", "error");
-    }
-  };
-
-  if (loading) {
-    return (
-      <Section>
-        <Container size="md">
-          <Div textSize="sm" color="muted" padding="y-lg">Loading…</Div>
-        </Container>
-      </Section>
-    );
-  }
 
   return (
     <Section>
       <Container size="md">
         <Stack gap="lg" padding="y-lg">
           <Heading level={1}>Edit Grouped Listing</Heading>
-          <Stack gap="md">
-            <Input
-              label="Title"
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              required
-            />
-            <Textarea
-              label="Description"
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-              rows={3}
-            />
-            <Select
-              label="Group theme"
-              value={form.groupTheme}
-              onValueChange={(v) => setForm({ ...form, groupTheme: String(v) })}
-              options={THEME_OPTIONS}
-            />
-            <Toggle
-              checked={form.isActive}
-              onChange={(v) => setForm({ ...form, isActive: v })}
-              label="Active"
-            />
-            <Toggle
-              checked={form.isFeatured}
-              onChange={(v) => setForm({ ...form, isFeatured: v })}
-              label="Featured on homepage"
-            />
-          </Stack>
-          <Row justify="end" gap="sm">
-            <Button variant="ghost" onClick={() => router.back()}>Cancel</Button>
-            <Button variant="primary" onClick={onSave} disabled={saving} isLoading={saving}>
-              Save Changes
-            </Button>
-          </Row>
+          <GroupedListingEditorView
+            scope="store"
+            groupId={id}
+            onSaved={() => router.push(String(ROUTES.STORE.GROUPED_LISTINGS))}
+            onCancel={() => router.push(String(ROUTES.STORE.GROUPED_LISTINGS))}
+          />
         </Stack>
       </Container>
     </Section>

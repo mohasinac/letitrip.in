@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { carouselsRepository, AdminCarouselGroupEditorView } from "@mohasinac/appkit";
-import { ROUTES } from "@mohasinac/appkit/client";
+import { ROUTES } from "@mohasinac/appkit";
 import { Heading, Section, Container, Row, Div, Text, Badge, Table, Thead, Tbody, Tr, Th, Td } from "@mohasinac/appkit/client";
 import { MAX_SLIDES_PER_CAROUSEL } from "@mohasinac/appkit";
 

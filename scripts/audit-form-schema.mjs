@@ -64,12 +64,30 @@ for (const root of SCAN) {
       /\bschema\s*=\s*\{/.test(src) ||
       /\bschema\s*:\s*[A-Za-z_$]/.test(src) ||
       /\buseFormShellState\s*(?:<[^>]+>\s*)?\(\s*[A-Za-z_$]/.test(src);
+    /*
+     * The schema must be PROVABLY a Zod schema, not just any identifier named
+     * `schema`. Two accepted proofs:
+     *
+     *   1. the file imports zod and declares the schema itself, or
+     *   2. it imports a `*Schema` binding from a schema MODULE.
+     *
+     * (2) was missing and it made the audit reject the better pattern. W4
+     * established that a schema belongs in a `schemas/` module, not in a view
+     * — registering one from a `.tsx` made `schemas/registry.ts` import React
+     * trees, and `routeHandler.ts` imports that registry, so every API route
+     * pulled an admin editor into the server bundle. Requiring `from "zod"` in
+     * the view is a proxy for "has a schema" that is false exactly when the
+     * schema is correctly shared, which is also the only way two portals can
+     * be guaranteed to accept the same field set.
+     */
     const importsZod = /from\s+["']zod["']/.test(src);
+    const importsSchemaModule =
+      /import\s*\{[^}]*\b[A-Za-z_$][\w$]*Schema\b[^}]*\}\s*from\s*["'][^"']*(?:schema|schemas)[^"']*["']/.test(src);
 
-    if (!hasSchemaProp || !importsZod) {
+    if (!hasSchemaProp || !(importsZod || importsSchemaModule)) {
       violations.push(
         `${rel} :: uses FormShell/useFormShellState without a Zod schema reference ` +
-          `(schema prop and import "zod" both required)`,
+          `(needs a schema prop AND either import "zod" or a *Schema import from a schemas/ module)`,
       );
     }
   }
