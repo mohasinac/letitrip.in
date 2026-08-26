@@ -18,7 +18,7 @@ export default async function AdminCarouselsPage() {
         <Row justify="between" className="mb-6">
           <Heading level={1} size="2xl" weight="bold">Named Carousels</Heading>
           <Link
-            href={String(ROUTES.ADMIN.CAROUSEL_DETAIL("new"))}
+            href={String(ROUTES.ADMIN.CAROUSELS_NEW)}
             className="rounded-lg px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-medium bg-[var(--appkit-color-primary)] text-white hover:opacity-90"
           >
             + New Carousel
@@ -30,7 +30,7 @@ export default async function AdminCarouselsPage() {
             title="No named carousels yet"
             description="Named carousels group slides for contextual use (homepage, category pages)."
             actionLabel="New Carousel"
-            actionHref={String(ROUTES.ADMIN.CAROUSEL_DETAIL("new"))}
+            actionHref={String(ROUTES.ADMIN.CAROUSELS_NEW)}
           />
         ) : (
           <Div className={`${__O.hidden}`} rounded="xl" border="default">

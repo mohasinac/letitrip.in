@@ -18,24 +18,13 @@ interface Props {
 
 export default async function AdminCarouselDetailPage({ params }: Props) {
   const { id } = await params;
-  if (id === "new") {
-    return (
-      <Section padding="y-xl">
-        <Container>
-          <Row className="mb-6" gap="sm">
-            <Link
-              href={String(ROUTES.ADMIN.CAROUSELS)}
-              className="text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text)]"
-            >
-              ← Carousels
-            </Link>
-          </Row>
-          <AdminCarouselGroupEditorView />
-        </Container>
-      </Section>
-    );
-  }
 
+  /*
+   * The `id === "new"` branch that used to sit here is gone — creation lives
+   * at `carousels/new/page.tsx` now. A magic id inside a dynamic route makes
+   * a real document called `new` permanently unreachable, and it is invisible
+   * to `audit-dead-route-key`.
+   */
   const result = await carouselsRepository.getCarouselWithSlides(id).catch(() => null);
   if (!result) return notFound();
 
@@ -68,6 +57,13 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
               </Text>
             </Row>
           </Div>
+          <Row gap="sm">
+          <Link
+            href={String(ROUTES.ADMIN.CAROUSELS_EDIT(id))}
+            className="rounded-lg border border-[var(--appkit-color-border)] px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-medium text-[var(--appkit-color-text)] hover:opacity-90"
+          >
+            Edit carousel
+          </Link>
           <Link
             href={atMax ? "#" : String(ROUTES.ADMIN.CAROUSEL_NEW)}
             className={[
@@ -81,6 +77,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
           >
             + Add Slide
           </Link>
+          </Row>
         </Row>
 
         {slides.length === 0 ? (
