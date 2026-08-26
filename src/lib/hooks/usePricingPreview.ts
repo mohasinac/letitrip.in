@@ -17,6 +17,33 @@ import { fetchCheckoutPricingPreview, type CheckoutPricingPreview } from "@/lib/
  * selection is persisted, so the preview refetches without this hook needing to
  * know the shape of what changed.
  */
+
+/**
+ * Why a status and not just `preview == null`.
+ *
+ * `null` used to mean four different things at once — not started, in flight,
+ * a lane with nothing payable, and a request that failed — and callers picked
+ * whichever reading suited them. The visible consequence was a hard ₹0.00
+ * Total: the server returns a fully-zeroed preview object for an empty lane
+ * (`EMPTY_PRICING_PREVIEW`), which is truthy, so `preview ? preview.total :
+ * fallback` rendered the zero. Meanwhile a genuine failure was swallowed
+ * entirely and the whole add-ons section simply disappeared.
+ *
+ *   not started / in flight  → "idle" | "loading"   (and preview is null)
+ *   lane has nothing payable → "ready", preview.stores.length === 0
+ *   real figures             → "ready", preview.stores.length > 0
+ *   request failed           → "error", preview is the LAST GOOD one, or null
+ */
+export type PricingPreviewStatus = "idle" | "loading" | "ready" | "error";
+
+export interface UsePricingPreviewResult {
+  preview: CheckoutPricingPreview | null;
+  isLoadingPreview: boolean;
+  status: PricingPreviewStatus;
+  /** Human-readable failure reason, or null. Only set while `status` is "error". */
+  error: string | null;
+}
+
 export function usePricingPreview({
   enabled,
   addressId,
@@ -35,25 +62,46 @@ export function usePricingPreview({
   addonSignal?: string;
   /** Serialized applied-coupon state, so applying/removing a coupon refetches. */
   couponSignal?: string;
-}) {
+}): UsePricingPreviewResult {
   const [preview, setPreview] = useState<CheckoutPricingPreview | null>(null);
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+  const [status, setStatus] = useState<PricingPreviewStatus>("idle");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!enabled) {
       setPreview(null);
+      setStatus("idle");
+      setError(null);
       return;
     }
     let cancelled = false;
     const timer = setTimeout(() => {
       setIsLoadingPreview(true);
+      setStatus("loading");
       fetchCheckoutPricingPreview({ addressId, paymentMethod, lane })
         .then(async (res) => {
-          if (!res.ok || cancelled) return;
+          if (cancelled) return;
           const json = await res.json().catch(() => ({}));
-          if (!cancelled && json?.data) setPreview(json.data as CheckoutPricingPreview);
+          if (cancelled) return;
+          if (!res.ok || !json?.data) {
+            // Deliberately does NOT clear `preview`. On a refetch failure the
+            // last good figures plus a warning beat blanking the summary to
+            // zero, which is what the previous bare `return` produced.
+            setError(typeof json?.error === "string" ? json.error : "Couldn't calculate fees.");
+            setStatus("error");
+            return;
+          }
+          setPreview(json.data as CheckoutPricingPreview);
+          setError(null);
+          setStatus("ready");
         })
-        .catch((err: unknown) => void normalizeError(err))
+        .catch((err: unknown) => {
+          const normalized = normalizeError(err);
+          if (cancelled) return;
+          setError(normalized.message);
+          setStatus("error");
+        })
         .finally(() => {
           if (!cancelled) setIsLoadingPreview(false);
         });
@@ -64,5 +112,5 @@ export function usePricingPreview({
     };
   }, [enabled, addressId, paymentMethod, lane, addonSignal, couponSignal]);
 
-  return { preview, isLoadingPreview };
+  return { preview, isLoadingPreview, status, error };
 }

@@ -225,35 +225,82 @@ This restores the `npm run watch:appkit` live-reload workflow for the next sessi
 
 ---
 
-### ✅ PREVIOUS LAST — S-jobs-checkout-policy (2026-08-15): async job primitive + checkout out-of-stock policy + publish/deploy
+### ✅ ARCHIVED — S-jobs-checkout-policy (2026-08-15): async job primitive + checkout out-of-stock policy + publish/deploy
+
+> Was labelled "PREVIOUS LAST" until 2026-08-26. It is not — roughly a dozen
+> sessions ran after it without updating this file. See `newchange.md` for the
+> real sequence.
 
 **Done this session:** New `jobs` Firestore collection + `onJobCreated` Function (`JOB_RUNNERS` dispatch), reusing pre-existing-but-unwired `bulk_events` RTDB scaffolding; `admin/payouts/weekly` + `admin/users/[uid]/hard-ban` migrated onto it; two dormant bulk-action stubs wired to real endpoints. Checkout `outOfStockPolicy: "cancel_order" | "skip_items"` buyer choice with a shared `bucketCartItemsByStock()` fixing a COD-vs-Razorpay divergence; Razorpay's skip-items path auto-refunds via `processRefundAction`. Removed 128 vestigial RBAC dead-comment markers. Published appkit 3.5.2; Vercel deploy succeeded. Full detail in `crud-tracker.md`'s S-jobs-checkout-policy entry.
 
 ---
 
-### ⏳ CURRENT — appkit 3.5.3 + Beyblade-minimal catalog LIVE. Awaiting next directive.
+> 🛑 **This file went stale between 2026-08-15 and 2026-08-26** and is only
+> partially repaired. The `⏳ CURRENT` block below claimed appkit **3.5.3**
+> while the real pin was **4.27.0** — roughly a dozen sessions ran without
+> touching this file, so a `/work`-style "pick up the next ⏳ session" flow was
+> resuming from an eleven-day-old world.
+>
+> **`newchange.md` is the authoritative session log; `crud-tracker.md` is the
+> authoritative task list.** Only the verifiable facts below have been
+> refreshed (2026-08-26) — the session-by-session history in between was NOT
+> reconstructed, because inventing it would be worse than admitting the gap.
+> Read `newchange.md`'s newest entries before trusting anything here.
 
-**Status:** Deployed and live at https://www.letitrip.in (2026-08-15). Firestore was fully reset this session — all prior YGO/multi-franchise seed data is gone, replaced with a minimal Beyblade-only catalog (4 generations, 2 brands, 2 stores). Firebase indexes/rules were freshly regenerated + redeployed as part of the reset (518 indexes, confirmed READY). Functions were deleted by the reset and NOT redeployed this session (`npm run firebase deploy --only functions` still pending — no Functions currently live, e.g. `onJobCreated` from the prior session is gone too). appkit 3.5.3 on npm.
+### ⏳ CURRENT — appkit 4.27.0; last session S-checkout-extras (2026-08-26)
 
-**Immediate follow-up options** (pull when explicitly prioritised):
-- **Redeploy Firebase Functions** — the reset deleted all 49 previously-deployed Functions (including `onJobCreated` from S-jobs-checkout-policy); `npm run firebase deploy --only functions` has not been run since. Anything depending on Functions (async jobs, scheduled sweeps, triggers) is currently inert in prod.
-- **Fix `scripts/wait-for-indexes.mjs`** — queries a single hard-coded collection group (`sessions`) under a stale comment claiming it returns all indexes globally; it doesn't. Correct endpoint is the `-` wildcard with no `pageSize` param. Worked around ad hoc this session; the shared script itself is still broken.
-- **Browser smoke — jobs + checkout policy** (carried over, now stale-er) — S-jobs-checkout-policy's features were never smoke-tested against live prod, and the DB reset since then means they'd need re-testing against the new minimal seed anyway.
-- **P-18 actual-vs-projected reconciliation** — carried over from an earlier session, still open.
-- **P-6 Pre-orders / P-7 Seller Payouts / P-8 GST** — next unstarted patches in `patches-roadmap.md`'s original sequence (re-verify that file's checklist is current before pulling).
+**Verified state (2026-08-26):** appkit `4.27.0`, root pinned `^4.27.0`. HEAD is
+`119c400d0` on `main`. **The working tree is shared with a concurrent session**
+— reviews, carousels and product tabs are mid-refactor in both repos, and
+`src/actions/review.actions.ts` is currently at the wrong arity because of it.
+Never `git add -A` here (see `feedback_concurrent_session_git_hygiene`).
+
+**Last completed session — S-checkout-extras**: checkout grew an Add-ons & fees
+step (Address → Add-ons & fees → Payment) and the four silent gates that had
+hidden the add-ons feature since 2026-08-21 were opened. Full write-up in
+`newchange.md`; tasks in `crud-tracker.md` → **Tier CX**.
+
+**`npm run check` does not currently exit 0 — on a concurrent session's files,
+not on Tier CX.** `src/actions/review.actions.ts` is at the wrong arity from
+their in-flight review-helpful-vote refactor, and `audit-catch-normalize` fails
+on `src/instrumentation.ts:100`. Tier CX's own state is clean (appkit `tsc`,
+eslint 0 errors in both repos, 74 tests green).
+
+> 🛑 **A retracted finding, kept as a warning.** This session twice reported
+> that `check:lint`, `npm run audit:all`, `scripts/run-audits.mjs` and nine
+> named audit scripts were **missing**, and wrote that into this file and the
+> tracker. All of them exist. The Bash tool's working directory persists
+> between calls, an earlier `cd appkit` was still in effect, and the greps were
+> reading `appkit/package.json` and `appkit/scripts/`. **Run `pwd` before
+> concluding that anything is absent** — a negative from a path-relative
+> command is only as trustworthy as the cwd it ran in.
+
+**Immediate follow-up options** (pull when explicitly prioritised; each
+re-verify before starting — these predate the stale window):
+- **Enable the three add-on fee flags** at Admin → Site Settings → Commissions.
+  One toggle; without it Tier CX's UI stays invisible on the live database.
+- **Fix `scripts/wait-for-indexes.mjs`** — queries a single hard-coded
+  collection group (`sessions`) under a comment claiming it returns all indexes
+  globally. Correct endpoint is the `-` wildcard with no `pageSize`.
+- **P-6 Pre-orders / P-7 Seller Payouts / P-8 GST** — next unstarted patches in
+  `patches-roadmap.md`'s original sequence. **Re-verify that file's checklist
+  is current before pulling**; it may also have drifted.
 
 ---
 
 ### ⏳ NEXT UP
 
+> ⚠️ **Ordering below predates the stale window and has not been re-prioritised.**
+> Rows 1–2 were added 2026-08-26 and are current; the rest are carried forward
+> unverified. Confirm against `crud-tracker.md` before committing to any of them.
+
 | # | Session | Scope | Why this slot |
 |---|---------|-------|---------------|
-| 1 | **Redeploy Firebase Functions** | `npm run firebase deploy --only functions` — all 49 Functions were deleted by this session's reset and never redeployed. | Prod currently has zero live Functions; anything trigger/schedule-based is inert. |
-| 2 | **Fix `wait-for-indexes.mjs`** | Correct the collection-group query to the `-` wildcard endpoint. | Currently always reports false "all settled" — a latent trap for the next index deploy. |
-| 3 | **Browser smoke — jobs + checkout policy** | Validate the async-job primitive and out-of-stock policy end-to-end against live prod, against the new minimal seed data. | Shipped but unverified even before this session's reset; now also needs re-seeding awareness. |
-| 4 | **P-6 Pre-orders** | Next unstarted patch in the original roadmap sequence. | See `patches-roadmap.md`. |
-| 5 | **P-7 Seller Payouts (manual UPI)** | Admin records transfer, no 3rd-party integration. | Revenue-critical for sellers. |
-| 6 | **P-8 GST** | Tax calc, invoice GST breakup, product HSN field. | Blocks P-9's deposit+GST-invoice half. |
+| 1 | **Enable add-on fee flags + visual pass** | Toggle the three switches at Site Settings → Commissions, then look at `/checkout` on desktop and mobile. | Tier CX ships invisible until someone flips them; nothing in it has been seen on a screen. |
+| 2 | **Fix `wait-for-indexes.mjs`** | Correct the collection-group query to the `-` wildcard endpoint. | Reports a false "all settled" — a latent trap for the next index deploy. |
+| 3 | **P-6 Pre-orders** | Next unstarted patch in the original roadmap sequence. | See `patches-roadmap.md`. |
+| 4 | **P-7 Seller Payouts (manual UPI)** | Admin records transfer, no 3rd-party integration. | Revenue-critical for sellers. |
+| 5 | **P-8 GST** | Tax calc, invoice GST breakup, product HSN field. | Blocks P-9's deposit+GST-invoice half. |
 | – | **Tier SB-UNI Phase 3–9** *(pull individually)* | SB-UNI-Q (per-type detail/list views) · R (per-type forms + seller flow) · T (search facets). | Pull when prioritised. |
 | – | **S-polish-pass** | 10-phase listing quality polish. Plan: `~/.claude/plans/plan-to-find-and-polished-aho.md`. | After SB-UNI-Phase2. |
 

@@ -146,6 +146,8 @@ const LISTING_TYPE_SEARCH_KEYWORDS: Record<string, string[]> = {
 
 const EMPTY_STATE_CLASS = "py-[var(--appkit-space-6)] text-center text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text-muted)]";
 const ERROR_TEXT_CLASS = "text-[var(--appkit-color-error)]";
+/** Shown when the pricing preview FAILED, as opposed to not having run yet. */
+const CART_FEES_UNAVAILABLE_NOTE = "We couldn't calculate shipping & fees just now. Your total will be confirmed at checkout.";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -948,7 +950,7 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
    * selected forms no group at all. Guests get no preview (the route is
    * auth-gated) and fall back to client-side subtotals.
    */
-  const { preview: pricingPreview, isLoadingPreview } = usePricingPreview({
+  const { preview: pricingPreview, isLoadingPreview, status: previewStatus } = usePricingPreview({
     enabled: isAuthenticated && !isEmpty && !laneHasNothingPayable,
     paymentMethod: "cash",
     lane: activeTabLane,
@@ -1121,6 +1123,7 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
               itemCount={activeTabLane === CART_LANE.STANDARD ? laneSelectedCount : laneBucket.length}
               fallbackSubtotal={laneDisplayTotal}
               isLoading={isLoadingPreview}
+              errorNote={previewStatus === "error" ? CART_FEES_UNAVAILABLE_NOTE : undefined}
               unavailableNote={
                 isAuthenticated ? "Calculating shipping & fees…" : "Sign in to see shipping & fees."
               }
@@ -1348,6 +1351,7 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
                   itemCount={activeTabLane === CART_LANE.STANDARD ? laneSelectedCount : laneBucket.length}
                   fallbackSubtotal={laneDisplayTotal}
                   isLoading={isLoadingPreview}
+                  errorNote={previewStatus === "error" ? CART_FEES_UNAVAILABLE_NOTE : undefined}
                   unavailableNote={
                     isAuthenticated ? "Calculating shipping & fees…" : "Sign in to see shipping & fees."
                   }

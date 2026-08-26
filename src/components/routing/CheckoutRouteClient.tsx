@@ -1,7 +1,7 @@
 "use client";
-import { normalizeError, checkEmiEligibility, computeBuyerEmiQuote, computeCodHandlingFee, useSiteSettings, CouponHelpDetails, type JsonArray } from "@mohasinac/appkit/client";
-import type { JsonValue, BuyerEmiSettings, BuyerFacingFees, OutOfStockPolicy, StoreAddonsValue } from "@mohasinac/appkit/client";
-import { StoreAddonsPicker, CartPriceBreakdown } from "@mohasinac/appkit/client";
+import { normalizeError, checkEmiEligibility, computeBuyerEmiQuote, computeCodHandlingFee, useSiteSettings, CouponHelpDetails } from "@mohasinac/appkit/client";
+import type { JsonValue, BuyerEmiSettings, BuyerFacingFees, OutOfStockPolicy, StoreAddonsValue, PricedCartLine, CartPriceBreakdownStore } from "@mohasinac/appkit/client";
+import { StoreAddonsPicker, CartPriceBreakdown, hasAnyStoreAddon, clientLineTotal } from "@mohasinac/appkit/client";
 import { Banknote } from "lucide-react";
 
 import { useCallback, useState, useEffect, useMemo } from "react";
@@ -58,7 +58,7 @@ import {
   verifyRazorpayPayment,
   type CheckoutPricingPreview,
 } from "@/lib/api/payment-client";
-import { usePricingPreview } from "@/lib/hooks/usePricingPreview";
+import { usePricingPreview, type PricingPreviewStatus } from "@/lib/hooks/usePricingPreview";
 import { applyCartCoupon, removeCartCoupon, persistCartAddons } from "@/lib/api/cart-client";
 import { applyCheckoutBypass } from "@/lib/api/admin-client";
 
@@ -129,18 +129,54 @@ interface AppliedCoupon {
   applicableItemIds?: string[];
 }
 
+/**
+ * One line of the server cart, as it arrives over the wire.
+ *
+ * Typed rather than left as `JsonArray`: this used to be cast
+ * `as unknown as LaneAssignable[]` and then re-cast a second time to read
+ * `price`/`quantity`, which meant the file had no type-level knowledge of the
+ * cart at all — a renamed field would have compiled and silently priced
+ * everything at zero. `PricedCartLine` is the exact set of fields the shared
+ * pricing rule reads, so `clientLineTotal(line)` type-checks against it.
+ */
+interface CheckoutCartLine extends LaneAssignable, PricedCartLine {
+  itemId?: string;
+  productId: string;
+  storeId?: string;
+  storeName?: string;
+}
+
 interface ServerCartResponse {
   cart: {
-    items: JsonArray;
+    items: CheckoutCartLine[];
     appliedCoupons?: AppliedCoupon[];
     /** Per-store add-on selections — seeds the pickers so a cart choice persists here. */
     storeAddons?: Record<string, StoreAddonsValue>;
+    /**
+     * When non-empty, only these lines are being bought. `previewCheckoutPricing`
+     * honours it, so anything derived here must too or the page quotes a
+     * subtotal higher than the buyer will be charged.
+     */
+    selectedItemIds?: string[] | null;
   };
   subtotal: number;
   itemCount: number;
 }
 
-type CheckoutStep = "address" | "value-otp" | "payment" | "processing";
+type CheckoutStep = "address" | "extras" | "value-otp" | "payment" | "processing";
+
+/**
+ * A seller this checkout will produce an order for, with everything the extras
+ * step needs to render its card. `fees` is null until the pricing preview lands
+ * — the card renders regardless, because the add-on checkboxes are the point
+ * and they do not need a fee total to be usable.
+ */
+interface CheckoutAddonStore {
+  storeId: string;
+  storeName: string;
+  subtotal: number;
+  fees: CartPriceBreakdownStore | null;
+}
 
 // --- Shared class strings ----------------------------------------------------
 
@@ -473,9 +509,6 @@ function renderPaymentStep({
   setOutOfStockPolicy,
   codSettings,
   subtotal,
-  storeAddons,
-  onStoreAddonsChange,
-  addonStores,
   manualPaymentConsent,
   setManualPaymentConsent,
   handlePayOnline,
@@ -501,15 +534,6 @@ function renderPaymentStep({
   setOutOfStockPolicy: (v: OutOfStockPolicy) => void;
   codSettings: BuyerFacingFees | null;
   subtotal: number;
-  /** Per-store add-on selections, keyed by storeId. */
-  storeAddons: Record<string, StoreAddonsValue>;
-  onStoreAddonsChange: (storeId: string, next: StoreAddonsValue) => void;
-  /**
-   * The stores this checkout will produce orders for, with their subtotals —
-   * taken from the pricing preview so the list and the fees agree by
-   * construction. Empty until the preview loads.
-   */
-  addonStores: { storeId: string; storeName: string; subtotal: number }[];
   manualPaymentConsent: boolean;
   setManualPaymentConsent: (v: boolean) => void;
   handlePayOnline: () => Promise<void>;
@@ -545,34 +569,9 @@ function renderPaymentStep({
               { value: "cancel_order", label: CK.OUT_OF_STOCK_POLICY_CANCEL_ORDER },
             ]}
           />
-          {/* Add-ons, per store. These fees are billed per order group, so one
-              global checkbox would have charged every seller in the cart. Each
-              store gets its own controls, labelled with the store's name once
-              there is more than one to tell apart. */}
-          {addonStores.length > 0 && (
-            <Stack gap="sm">
-              <Text size="xs" color="muted" weight="semibold" transform="uppercase" className="tracking-wide">
-                Add-ons
-              </Text>
-              {addonStores.map((store) => (
-                <Stack key={store.storeId} gap="xs" className="min-w-0">
-                  {addonStores.length > 1 && (
-                    <Text size="xs" color="muted" truncate={1}>
-                      {store.storeName}
-                    </Text>
-                  )}
-                  <StoreAddonsPicker
-                    storeId={store.storeId}
-                    storeSubtotal={store.subtotal}
-                    value={storeAddons[store.storeId] ?? {}}
-                    onChange={onStoreAddonsChange}
-                    rates={codSettings}
-                    showGiftMessage
-                  />
-                </Stack>
-              ))}
-            </Stack>
-          )}
+          {/* The per-store add-on pickers used to live here. They moved to the
+              Extras & fees step, which is reachable before payment and shows
+              each seller's fees next to its own checkboxes. */}
           {showCashOption && (
             <Stack gap="sm">
               <Div border="default" padding="md" rounded="lg" surface="subtle">
@@ -709,6 +708,151 @@ function renderPaymentStep({
   );
 }
 
+/** One fee line inside a seller's extras card. Rendered only when charged. */
+function SellerFeeLine({ label, amount }: { label: string; amount: number }) {
+  if (amount <= 0) return null;
+  return (
+    <Row align="center" justify="between" gap="sm" className="min-w-0">
+      <Text size="xs" color="muted" truncate={1} className="min-w-0">{label}</Text>
+      <Text size="xs" color="muted" className="flex-shrink-0 tabular-nums">{formatEmiRupees(amount)}</Text>
+    </Row>
+  );
+}
+
+/**
+ * One seller's card on the Extras & fees step: what this seller is charging,
+ * and the add-ons the buyer can choose for THEM specifically.
+ *
+ * Read-only by design — deliberately not `SellerGroupSection` from the cart,
+ * which carries selection checkboxes, quantity steppers, remove and
+ * move-to-wishlist. Every one of those is a cart mutation with no meaning at
+ * checkout, and each would force a re-preview round trip.
+ *
+ * Per CLAUDE.md § "Buyer-Facing Fees": per-store detail belongs on the seller
+ * card, and the Order Summary breakdown stays aggregate. Two views of the same
+ * numbers at two different granularities, never the same view twice.
+ */
+function renderSellerExtrasCard({
+  store,
+  multiStore,
+  addons,
+  onStoreAddonsChange,
+  codSettings,
+  previewFailed,
+}: {
+  store: CheckoutAddonStore;
+  multiStore: boolean;
+  addons: StoreAddonsValue;
+  onStoreAddonsChange: (storeId: string, next: StoreAddonsValue) => void;
+  codSettings: BuyerFacingFees | null;
+  previewFailed: boolean;
+}) {
+  // A store with nothing selected forms no order group and is charged nothing,
+  // so its extras are shown disabled with the reason rather than hidden — a
+  // silently absent control reads as the feature having vanished.
+  const nothingSelected = store.subtotal <= 0;
+  const fees = store.fees;
+  return (
+    <Div key={store.storeId} surface="card" padding="md" rounded="lg" border="default">
+      <Row align="center" justify="between" gap="sm" className="min-w-0 mb-2">
+        <Text size="sm" weight="semibold" color="primary" truncate={1} className="min-w-0">
+          {multiStore ? store.storeName : CK.EXTRAS_FEES_HEADING}
+        </Text>
+        <Text size="sm" color="primary" className="flex-shrink-0 tabular-nums">
+          {formatEmiRupees(store.subtotal)}
+        </Text>
+      </Row>
+      {fees && (
+        <Stack gap="none" className="mb-2">
+          <SellerFeeLine label="Shipping" amount={fees.shippingFee} />
+          <SellerFeeLine label="COD handling fee" amount={fees.codHandlingFee} />
+          <SellerFeeLine label="WhatsApp updates" amount={fees.whatsappNotifyFee} />
+          <SellerFeeLine label="Gift wrap" amount={fees.giftWrapFee} />
+          <SellerFeeLine label="Shipment protection" amount={fees.shipmentProtectionFee} />
+          <SellerFeeLine label="GST" amount={fees.gstAmount} />
+        </Stack>
+      )}
+      {previewFailed && (
+        <Text size="xs" color="error" className="mb-2">{CK.SELLER_FEES_UNAVAILABLE_NOTE}</Text>
+      )}
+      {hasAnyStoreAddon(codSettings) ? (
+        <StoreAddonsPicker
+          storeId={store.storeId}
+          storeSubtotal={store.subtotal}
+          value={addons}
+          onChange={onStoreAddonsChange}
+          rates={codSettings}
+          disabled={nothingSelected}
+          disabledReason={nothingSelected ? CK.EXTRAS_NOTHING_SELECTED_NOTE : undefined}
+          showGiftMessage
+        />
+      ) : (
+        <Text size="xs" color="muted">{CK.EXTRAS_NO_ADDONS_NOTE}</Text>
+      )}
+    </Div>
+  );
+}
+
+/**
+ * Step 2 — Add-ons & fees.
+ *
+ * Its seller list comes from the CART, not from the pricing preview, which is
+ * why it is interactive on first paint. Deriving it from the preview (as the
+ * old inline add-ons block did) meant the controls could not exist until a
+ * network round trip had completed, and vanished entirely and silently if that
+ * request ever failed.
+ */
+function renderExtrasStep({
+  addonStores,
+  storeAddons,
+  onStoreAddonsChange,
+  codSettings,
+  previewStatus,
+  cartIsEmpty,
+}: {
+  addonStores: CheckoutAddonStore[];
+  storeAddons: Record<string, StoreAddonsValue>;
+  onStoreAddonsChange: (storeId: string, next: StoreAddonsValue) => void;
+  codSettings: BuyerFacingFees | null;
+  previewStatus: PricingPreviewStatus;
+  cartIsEmpty: boolean;
+}) {
+  return (
+    <Div className={STEP_CARD_CLS}>
+      <Text className={STEP_SUBLABEL_CLS}>{CK.EXTRAS_SUBLABEL}</Text>
+      <Heading level={2} className="mb-4" color="primary" size="lg" weight="semibold">
+        {CK.EXTRAS_HEADING}
+      </Heading>
+      {cartIsEmpty || addonStores.length === 0 ? (
+        <Stack gap="xs">
+          <Text size="sm" weight="semibold" color="primary">{CK.NOTHING_PAYABLE_HEADING}</Text>
+          <Text size="sm" color="muted">{CK.NOTHING_PAYABLE_BODY}</Text>
+          <TextLink href={String(ROUTES.USER.CART)} size="sm">{CK.NOTHING_PAYABLE_CTA}</TextLink>
+        </Stack>
+      ) : (
+        <Stack gap="md">
+          {addonStores.length > 1 && (
+            <Text size="sm" color="muted">{CK.EXTRAS_INTRO}</Text>
+          )}
+          {addonStores.map((store) =>
+            renderSellerExtrasCard({
+              store,
+              multiStore: addonStores.length > 1,
+              addons: storeAddons[store.storeId] ?? {},
+              onStoreAddonsChange,
+              codSettings,
+              previewFailed: previewStatus === "error",
+            }),
+          )}
+          {previewStatus === "loading" && (
+            <Text size="xs" color="muted">{CK.FEES_CALCULATING_NOTE}</Text>
+          )}
+        </Stack>
+      )}
+    </Div>
+  );
+}
+
 function renderCouponSection({
   couponCode,
   setCouponCode,
@@ -795,9 +939,12 @@ function renderOrderSummary({
   step,
   addressesLoading,
   actionError,
-  handleAdvanceToPayment,
+  handleAdvance,
   pricingPreview,
   isLoadingPreview,
+  previewStatus,
+  hasPayableFigures,
+  cartIsEmpty,
 }: {
   selectedAddress: Address | null;
   formattedTotal: string;
@@ -807,10 +954,16 @@ function renderOrderSummary({
   step: CheckoutStep;
   addressesLoading: boolean;
   actionError: string;
-  handleAdvanceToPayment: () => void;
+  /** Advances one step — to extras from address, to payment from extras. */
+  handleAdvance: () => void;
   pricingPreview: CheckoutPricingPreview | null;
   isLoadingPreview: boolean;
+  previewStatus: PricingPreviewStatus;
+  /** True only when the preview succeeded AND priced at least one store. */
+  hasPayableFigures: boolean;
+  cartIsEmpty: boolean;
 }) {
+  const isAdvanceStep = step === "address" || step === "extras";
   return (
     <Div surface="card" padding="sm">
       <Heading level={3} className="mb-3" color="primary" size="base" weight="semibold">
@@ -831,31 +984,35 @@ function renderOrderSummary({
       )}
       {/* Shared with the cart's expandable preview — one implementation, so a
           new fee line can't appear in one place and not the other. */}
+      {/* `hasPayableFigures`, not `pricingPreview`, decides whether the server
+          numbers are shown. An empty lane comes back as a fully-zeroed but
+          TRUTHY preview object, which used to render a confident ₹0.00 Total. */}
       <CartPriceBreakdown
-        preview={pricingPreview}
+        preview={hasPayableFigures ? pricingPreview : null}
         fallbackSubtotal={Math.max(0, subtotalValue - totalDiscount)}
         isLoading={isLoadingPreview}
+        errorNote={previewStatus === "error" ? CK.FEES_UNAVAILABLE_NOTE : undefined}
         unavailableNote={
-          step === "payment" ? "Calculating shipping & fees…" : "Shipping & fees calculated at the payment step."
+          selectedAddress ? CK.FEES_CALCULATING_NOTE : CK.FEES_PENDING_NOTE
         }
       />
-      {!pricingPreview && (
+      {!hasPayableFigures && (
         <Row border="default" className="border-t" padding="t-sm" align="center" justify="between">
           <Text weight="semibold" color="primary">{CK.ORDER_SUMMARY_TOTAL}</Text>
           <Text weight="semibold" color="primary">{formattedTotal}</Text>
         </Row>
       )}
-      {step === "address" && (
+      {isAdvanceStep && (
         <Button
           type="button"
-          onClick={handleAdvanceToPayment}
-          disabled={!selectedAddress || addressesLoading}
+          onClick={handleAdvance}
+          disabled={!selectedAddress || addressesLoading || cartIsEmpty}
           className="mt-4 w-full bg-[var(--appkit-color-text)] text-[var(--appkit-color-bg)] hover:bg-[var(--appkit-color-text)] dark:bg-[var(--appkit-color-bg)] dark:text-[var(--appkit-color-text)]"
         >
-          {CK.ADDRESS_CONTINUE_BTN}
+          {step === "address" ? CK.ADDRESS_CONTINUE_BTN : CK.EXTRAS_CONTINUE_BTN}
         </Button>
       )}
-      {actionError && step === "address" && (
+      {actionError && isAdvanceStep && (
         <Text className="mt-2 text-error" size="sm">{actionError}</Text>
       )}
     </Div>
@@ -1290,18 +1447,35 @@ export function CheckoutRouteClient({
   // subtotal here would quote a number the buyer cannot actually pay.
   // `pricingPreview` is already lane-scoped server-side; this is the fallback
   // shown before it loads.
-  const allCartItems = (cartData?.cart?.items ?? []) as unknown as LaneAssignable[];
+  const allCartItems: CheckoutCartLine[] = cartData?.cart?.items ?? [];
   const checkoutLane = activeLane(allCartItems);
-  const laneScopedItems = checkoutLane ? laneItems(allCartItems, checkoutLane) : [];
+  const laneScopedItems = (checkoutLane ? laneItems(allCartItems, checkoutLane) : []) as CheckoutCartLine[];
   const isLockedCheckoutLane = checkoutLane !== null && isLockedLane(checkoutLane);
+  /**
+   * Only the lines actually being bought. `previewCheckoutPricing` filters on
+   * this too, so anything derived here that ignores it quotes a subtotal above
+   * what the buyer is charged.
+   */
+  const selectedItemIds = cartData?.cart?.selectedItemIds ?? null;
+  const payableItems = useMemo(() => {
+    if (!selectedItemIds?.length) return laneScopedItems;
+    const keep = new Set(selectedItemIds);
+    return laneScopedItems.filter((line) => !line.itemId || keep.has(line.itemId));
+    // laneScopedItems is rebuilt every render; its content is tracked by the
+    // cart query's own identity, which is what changes when the cart changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cartData?.cart?.items, checkoutLane, selectedItemIds]);
+  // `cartData.subtotal` comes from `cartRepository.getSubtotal`, which ignores
+  // selection, lockedPrice and lanes alike — so it is only usable as a rough
+  // standard-lane figure. Everything else sums through the one shared pricing
+  // rule (Recurrent Root Cause #75).
   const subtotal =
     checkoutLane === null || checkoutLane === CART_LANE.STANDARD
-      ? (cartData?.subtotal ?? 0)
-      : laneScopedItems.reduce((sum, i) => {
-          const line = i as unknown as { lockedPrice?: number; price?: number; quantity?: number };
-          return sum + (line.lockedPrice ?? line.price ?? 0) * (line.quantity ?? 1);
-        }, 0);
-  const cartIsEmpty = laneScopedItems.length === 0;
+      ? (selectedItemIds?.length
+          ? payableItems.reduce((sum, line) => sum + clientLineTotal(line), 0)
+          : (cartData?.subtotal ?? 0))
+      : payableItems.reduce((sum, line) => sum + clientLineTotal(line), 0);
+  const cartIsEmpty = payableItems.length === 0;
 
   // Order Summary pricing preview — the true total including shipping, COD
   // handling fee, add-ons, and GST, matching what order placement actually
@@ -1310,27 +1484,69 @@ export function CheckoutRouteClient({
   const previewPaymentMethod: "cod" | "online" | "upi_manual" | "cash" | "emi" =
     showCashOption ? "cash" : showCod ? "cod" : showRazorpay ? "online" : "emi";
   const couponSignal = effectiveCoupons.map((c) => `${c.code}:${c.discountAmount}`).join(",");
-  const { preview: pricingPreview, isLoadingPreview } = usePricingPreview({
-    enabled: !!user?.uid && step === "payment",
+  const {
+    preview: pricingPreview,
+    isLoadingPreview,
+    status: previewStatus,
+  } = usePricingPreview({
+    // Fires from the ADDRESS step, not just payment — the fee figures are the
+    // whole point of the extras step and waiting until payment meant they
+    // appeared after the buyer had already committed. Gated on an address
+    // because GST needs the resolved state and shipping needs the store↔buyer
+    // pair, so a preview without one is a number guaranteed to change; the
+    // 300ms debounce is what keeps address-card clicking to one request.
+    enabled: !!user?.uid && !!selectedAddress && !cartIsEmpty,
     addressId: selectedAddress?.id,
     paymentMethod: previewPaymentMethod,
+    // Passed explicitly rather than letting the server default independently.
+    // NOT taken from `?lane=` — assertCheckoutLane refuses anything but the
+    // active lane at placement, so a URL-supplied lane would render a
+    // payable-looking total for a lane the order will be refused on.
+    lane: checkoutLane ?? undefined,
     addonSignal,
     couponSignal,
   });
-  const effectiveTotal = pricingPreview ? pricingPreview.total : Math.max(0, subtotal - totalDiscount);
+  /**
+   * True only when the server priced at least one store. An empty lane returns
+   * a fully-zeroed but TRUTHY preview, so `preview ? … : fallback` rendered a
+   * confident ₹0.00 for it.
+   */
+  const hasPayableFigures = previewStatus === "ready" && (pricingPreview?.stores.length ?? 0) > 0;
+  const effectiveTotal = hasPayableFigures && pricingPreview
+    ? pricingPreview.total
+    : Math.max(0, subtotal - totalDiscount);
 
-  // The stores this checkout will actually produce orders for. Taken from the
-  // preview rather than derived separately, so the add-on controls and the fee
-  // lines can't disagree about which stores are involved.
-  const addonStores = useMemo(
-    () =>
-      (pricingPreview?.stores ?? []).map((s) => ({
-        storeId: s.storeId,
-        storeName: s.storeName,
-        subtotal: s.subtotal,
-      })),
-    [pricingPreview],
-  );
+  /**
+   * The sellers this checkout will produce orders for, derived from CART ITEMS.
+   *
+   * This came off `pricingPreview.stores` before, which is why the add-ons were
+   * invisible: the preview only ran on the payment step, so there was no seller
+   * list — and therefore no controls — until then, and none at all if the
+   * request failed. The preview is still authoritative once it lands; it just
+   * no longer decides whether the section exists.
+   */
+  const addonStores = useMemo<CheckoutAddonStore[]>(() => {
+    const byStore = new Map<string, CheckoutAddonStore>();
+    for (const line of payableItems) {
+      if (!line.storeId) continue;
+      const entry = byStore.get(line.storeId) ?? {
+        storeId: line.storeId,
+        storeName: line.storeName || line.storeId,
+        subtotal: 0,
+        fees: null,
+      };
+      entry.subtotal += clientLineTotal(line);
+      byStore.set(line.storeId, entry);
+    }
+    const priced = new Map((pricingPreview?.stores ?? []).map((s) => [s.storeId, s]));
+    return [...byStore.values()].map((s) => {
+      const fees = priced.get(s.storeId) ?? null;
+      // The server subtotal wins when present — it is what will actually be
+      // billed, including a live listing price that has moved since the line
+      // was added, which the client cannot see.
+      return { ...s, subtotal: fees?.subtotal ?? s.subtotal, fees };
+    });
+  }, [payableItems, pricingPreview]);
 
   const {
     valueOtpMaskedEmail,
@@ -1369,11 +1585,30 @@ export function CheckoutRouteClient({
     [],
   );
 
+  const handleAdvanceToExtras = useCallback(() => {
+    if (!selectedAddress || cartIsEmpty) return;
+    setActionError("");
+    setStep("extras");
+  }, [selectedAddress, cartIsEmpty]);
+
   const handleAdvanceToPayment = useCallback(() => {
-    if (!selectedAddress) return;
+    if (!selectedAddress || cartIsEmpty) return;
     setActionError("");
     setStep("payment");
-  }, [selectedAddress]);
+  }, [selectedAddress, cartIsEmpty]);
+
+  /**
+   * Back, scoped to the two steps where nothing has been committed yet.
+   *
+   * Safe on the extras step because add-on toggles are persisted to the cart
+   * document as they are made — stepping back loses nothing and costs no server
+   * call. Deliberately unreachable from `processing` (an order is in flight)
+   * and from `value-otp` (a code has been sent).
+   */
+  const handleStepBack = useCallback(() => {
+    setActionError("");
+    setStep((prev) => (prev === "payment" ? "extras" : prev === "extras" ? "address" : prev));
+  }, []);
 
   const handleApplyCoupon = useCallback(async () => {
     const code = couponCode.trim().toUpperCase();
@@ -1451,21 +1686,76 @@ export function CheckoutRouteClient({
     setIsProcessingPayment,
   });
 
+  /**
+   * `?lane=` is advisory. `AUCTION_CHECKOUT_URL` deep-links a buyer here from a
+   * settlement email, and if that win has since been paid or forfeited they
+   * used to land on an ordinary standard-lane checkout with no explanation at
+   * all. It is validated against the real lane values and never fed to the
+   * pricing preview — see the `lane:` comment above.
+   */
+  const requestedLane = searchParams.get("lane");
+  const laneMismatch =
+    !!requestedLane &&
+    (Object.values(CART_LANE) as string[]).includes(requestedLane) &&
+    checkoutLane !== null &&
+    requestedLane !== checkoutLane;
+
   // --- Render -----------------------------------------------------------------
 
-  const stepIndex = step === "address" ? 0 : 1;
+  // A map rather than a ternary so `value-otp` and `processing` say explicitly
+  // that they are interstitials WITHIN payment rather than falling through to
+  // whatever the last branch happened to be.
+  const STEP_INDEX: Record<CheckoutStep, number> = {
+    address: 0,
+    extras: 1,
+    payment: 2,
+    "value-otp": 2,
+    processing: 2,
+  };
+  const stepIndex = STEP_INDEX[step];
 
   const fmtOpts: Intl.NumberFormatOptions = { style: "currency", currency: "INR", minimumFractionDigits: 2, maximumFractionDigits: 2 };
   const formattedTotal = effectiveTotal.toLocaleString("en-IN", fmtOpts);
 
-  // Mobile bottom bar — step-dependent primary CTA
+  /**
+   * Mobile bottom bar — one explicit branch per step.
+   *
+   * This used to END in an un-guarded `return [PAY_ONLINE]`, reached by every
+   * step that wasn't address/value-otp/processing. Since `showRazorpay`
+   * defaults to false, that offered "Pay Online (Razorpay)" — wired to the
+   * Razorpay handler — on a site where Razorpay is switched off. The payment
+   * branch now picks the CTA that matches an ENABLED method, and an
+   * unrecognised step gets no bar at all rather than a plausible-looking wrong
+   * one.
+   */
   const bottomActions = useMemo(() => {
+    // Built inside the memo: a fresh object at component scope would be a new
+    // reference every render, so the memo would recompute every render and
+    // re-publish the bar each time.
+    const backAction = {
+      id: ACTION_ID.CHECKOUT_BACK,
+      label: CK.EXTRAS_BACK_BTN,
+      variant: "ghost" as const,
+      disabled: false,
+      onClick: handleStepBack,
+      grow: false,
+    };
     if (step === "address") {
       return [{
         id: ACTION_ID.CONTINUE_TO_VERIFY,
         label: CK.ADDRESS_CONTINUE_BTN,
         variant: "primary" as const,
-        disabled: !selectedAddress || addressesLoading,
+        disabled: !selectedAddress || addressesLoading || cartIsEmpty,
+        onClick: handleAdvanceToExtras,
+        grow: true,
+      }];
+    }
+    if (step === "extras") {
+      return [backAction, {
+        id: ACTION_ID.CONTINUE_TO_PAYMENT,
+        label: CK.EXTRAS_CONTINUE_BTN,
+        variant: "primary" as const,
+        disabled: !selectedAddress || cartIsEmpty,
         onClick: handleAdvanceToPayment,
         grow: true,
       }];
@@ -1481,15 +1771,25 @@ export function CheckoutRouteClient({
       }];
     }
     if (step === "processing") return [];
-    return [{
-      id: ACTION_ID.PAY_ONLINE,
-      label: CK.PAYMENT_ONLINE_BTN,
-      variant: "primary" as const,
-      disabled: isProcessingPayment || cartIsEmpty,
-      onClick: handlePayOnline,
-      grow: true,
-    }];
-  }, [step, selectedAddress, addressesLoading, handleAdvanceToPayment, isProcessingPayment, isVerifyingValueOtp, valueOtpCode.length, handleVerifyValueOtp, cartIsEmpty, handlePayOnline]);
+    if (step === "payment") {
+      const disabled = isProcessingPayment || cartIsEmpty;
+      const primary = showCashOption
+        ? { id: ACTION_ID.PAY_COD, label: "Pay via UPI / Cash", onClick: handlePlaceCashOrder }
+        : showRazorpay
+          ? { id: ACTION_ID.PAY_ONLINE, label: CK.PAYMENT_ONLINE_BTN, onClick: handlePayOnline }
+          : showCod
+            ? { id: ACTION_ID.PAY_COD, label: CK.PAYMENT_COD_BTN, onClick: handlePlaceCodOrder }
+            : emiVisible
+              ? { id: ACTION_ID.PAY_COD, label: CK.PAYMENT_EMI_BTN, onClick: handlePlaceEmiOrder }
+              : null;
+      // No enabled payment method means no CTA — the in-page step already says
+      // so, and a bar that does nothing is worse than no bar.
+      if (!primary) return [backAction];
+      return [backAction, { ...primary, variant: "primary" as const, disabled, grow: true }];
+    }
+    return [];
+
+  }, [step, selectedAddress, addressesLoading, handleAdvanceToExtras, handleAdvanceToPayment, handleStepBack, isProcessingPayment, isVerifyingValueOtp, valueOtpCode.length, handleVerifyValueOtp, cartIsEmpty, handlePayOnline, handlePlaceCashOrder, handlePlaceCodOrder, handlePlaceEmiOrder, showCashOption, showRazorpay, showCod, emiVisible, requireAuth]);
 
   useBottomActions(
     bottomActions.length > 0
@@ -1512,12 +1812,27 @@ export function CheckoutRouteClient({
       {renderAddressDrawer({ addAddressDrawerOpen, setAddAddressDrawerOpen, handleAddressFormSubmit, isCreatingAddress })}
       <CheckoutView
         labels={{ title: CK.TITLE }}
-        totalSteps={2}
+        totalSteps={3}
         activeStep={stepIndex}
         renderStepIndicator={(activeStep, totalSteps) => renderStepIndicator(activeStep, totalSteps)}
         renderStep={() => {
           if (step === "address") {
             return renderAddressStep({ addresses: addresses ?? [], selectedAddress, handleSelectAddress, setAddAddressDrawerOpen });
+          }
+          if (step === "extras") {
+            return (
+              <Stack gap="lg">
+                {laneMismatch && <Alert variant="info">{CK.LANE_MISMATCH_NOTE}</Alert>}
+                {renderExtrasStep({
+                  addonStores,
+                  storeAddons,
+                  onStoreAddonsChange: handleStoreAddonsChange,
+                  codSettings,
+                  previewStatus,
+                  cartIsEmpty,
+                })}
+              </Stack>
+            );
           }
           if (step === "value-otp") {
             return renderValueOtpStep({
@@ -1546,11 +1861,11 @@ export function CheckoutRouteClient({
                   at auction or negotiated on an offer, so stacking a discount
                   on top would re-open a settled number. */}
               {showCoupons && !isLockedCheckoutLane && renderCouponSection({ couponCode, setCouponCode, couponError, isCouponLoading, effectiveCoupons, handleApplyCoupon, handleRemoveCoupon })}
-              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showRazorpay, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, storeAddons, onStoreAddonsChange: handleStoreAddonsChange, addonStores, manualPaymentConsent, setManualPaymentConsent, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
+              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showRazorpay, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, manualPaymentConsent, setManualPaymentConsent, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
             </Stack>
           );
         }}
-        renderOrderSummary={() => renderOrderSummary({ selectedAddress, formattedTotal, subtotalValue: subtotal, totalDiscount, step, addressesLoading, actionError, handleAdvanceToPayment, pricingPreview, isLoadingPreview })}
+        renderOrderSummary={() => renderOrderSummary({ selectedAddress, formattedTotal, subtotalValue: subtotal, totalDiscount, step, addressesLoading, actionError, handleAdvance: step === "address" ? handleAdvanceToExtras : handleAdvanceToPayment, pricingPreview, isLoadingPreview, previewStatus, hasPayableFigures, cartIsEmpty })}
       />
     </Div>
   );

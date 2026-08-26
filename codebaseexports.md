@@ -430,8 +430,10 @@
 | CartItemRow, CartDrawer | Component | Cart sidebar drawer. `CartItemRow` takes `variant?: "card" \| "row"` — `"row"` drops its own surface/padding for use inside a seller card |
 | CartView | View | Full cart page |
 | CartSummary | Component | Cart summary widget |
-| CartPriceBreakdown | Component | Aggregate fee-line list (subtotal, shipping, add-ons, platform fee, GST, coupon, total). One implementation, three mounts: cart desktop expander, cart mobile sheet, checkout Order Summary. Aggregate only — per-store detail belongs on the seller card |
-| StoreAddonsPicker | Component | Per-store paid add-on checkboxes (WhatsApp updates / gift wrap / shipment protection), gated + priced by `siteSettings.commissions`. Used in both the cart's seller cards and the checkout summary, since Buy Now skips the cart |
+| CartPriceBreakdown | Component | Aggregate fee-line list (subtotal, shipping, add-ons, platform fee, GST, coupon, total). One implementation, three mounts: cart desktop expander, cart mobile sheet, checkout Order Summary. Aggregate only — per-store detail belongs on the seller card. `errorNote` renders a failure message alongside the last good figures, so a failed refetch never blanks the summary to ₹0 |
+| StoreAddonsPicker | Component | Per-store paid add-on checkboxes (WhatsApp updates / gift wrap / shipment protection), gated + priced by `siteSettings.commissions`. Mounted on the cart's seller cards and on the checkout Extras & fees step |
+| hasAnyStoreAddon | Predicate | `(rates) => boolean` — true when the site offers at least one paid add-on. Exported because `StoreAddonsPicker` renders `null` when it is false, so a parent that doesn't check draws a bare heading over empty space |
+| clientLineTotal | Util | `(line: PricedCartLine) => number` — a cart line's contribution to a subtotal, computed client-side. Delegates to `lineTotalFor(line, null)` so the lockedPrice / bundle-before-members / group-sum priority stays in `order-math.ts`. Never re-derive it at a call site (Root Cause #75) |
 | CheckoutView | View | Checkout page |
 | CheckoutAddressStep | Step | Checkout address step |
 | CheckoutOtpModal | Modal | OTP verification modal |
