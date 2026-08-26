@@ -59,18 +59,16 @@ const VERBS = ["post", "put", "patch", "delete"];
  * Remove an entry when its route exists — never add one.
  */
 const GRANDFATHERED = new Set([
-  // The seller's bulk "cancel bids" action. /api/store/bids/[id] was never
-  // built, so every cancel fails — and the caller counts the failures and
-  // toasts "N bid(s) failed to cancel", so it is loudly, permanently broken.
-  "appkit/src/features/seller/components/SellerBidsView.tsx::DELETE::SELLER_ENDPOINTS.BID_BY_ID",
-  // The seller's publish/unpublish toggle. /api/store/products/[id] does not
-  // exist (only the collection, bulk-location and scan routes do), and the
-  // call is wrapped in `.catch(() => null)` — so this one fails SILENTLY.
-  "appkit/src/features/seller/components/SellerProductsView.tsx::PATCH::SELLER_ENDPOINTS.PRODUCT_BY_ID",
-  // Fallout from the Firebase-native auth migration (Root Cause #54/#55):
-  // the server-side verification routes were deleted in favour of the client
-  // SDK's own flows, and this hook was left pointing at one of them.
-  "appkit/src/features/auth/hooks/useAuth.ts::POST::AUTH_ENDPOINTS.RESEND_VERIFICATION",
+  /*
+   * Empty, and it should stay that way.
+   *
+   * It held three entries for about an hour on 2026-08-26 — the three live
+   * 404s this audit found the moment it learned to scan raw `fetch`. All
+   * three are fixed: `/api/store/bids/[id]` and `/api/store/products/[id]`
+   * were built, and `useResendVerification` was repointed at the client SDK
+   * (its route had been deleted in the Firebase-native auth migration and was
+   * never coming back — Root Cause #54).
+   */
 ]);
 
 function walk(dir, out = []) {
