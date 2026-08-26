@@ -16,6 +16,22 @@ export function getAnalyticsCards(url: string): Promise<Response> {
   return fetch(url, { credentials: CREDS });
 }
 
+/**
+ * Create a custom analytics card.
+ *
+ * Missing until 2026-08-27, which is why the "New custom card" button on
+ * /store/analytics/cards had no onClick at all — the route and the schema
+ * both existed, and nothing could reach them.
+ */
+export function createAnalyticsCard(url: string, body: JsonBody): Promise<Response> {
+  return fetch(url, {
+    method: "POST",
+    headers: JSON_HEADERS,
+    credentials: CREDS,
+    body: JSON.stringify(body),
+  });
+}
+
 export function updateAnalyticsCard(url: string, body: JsonBody): Promise<Response> {
   return fetch(url, {
     method: "PATCH",
