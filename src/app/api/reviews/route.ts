@@ -4,6 +4,7 @@ import { withProviders } from "@/providers.config";
 import { createRouteHandler, userRepository } from "@mohasinac/appkit";
 import { isSoftBanned, serverLogger } from "@mohasinac/appkit/server";
 import { normalizeError } from "@mohasinac/appkit";
+import { reviewSubmitSchema } from "@mohasinac/appkit";
 
 function param(url: URL, key: string): string | null {
   return url.searchParams.get(key);
@@ -150,9 +151,10 @@ export async function GET(request: Request): Promise<NextResponse> {
 }
 
 export const POST = withProviders(
-  createRouteHandler({
+  createRouteHandler<(typeof reviewSubmitSchema)["_output"]>({
     auth: true,
-    handler: async ({ user, request }) => {
+    schema: reviewSubmitSchema,
+    handler: async ({ user, body }) => {
       const userDoc = await userRepository.findById(user!.uid);
       if (userDoc && isSoftBanned(userDoc, "write_reviews")) {
         const ban = userDoc.softBans?.find((b) => b.action === "write_reviews");
@@ -161,8 +163,10 @@ export const POST = withProviders(
           403,
         );
       }
-      const body = await parseJsonBody(request);
-      const result = await createReview(user!.uid, body as any);
+      // `body as any` on a public review-creation path: rating could be a
+      // string, body could be absent, images could be arbitrary. The schema
+      // has existed in `_internal/shared/features/reviews/schema.ts` all along.
+      const result = await createReview(user!.uid, body!);
       return successResponse(result, "Review submitted", 201);
     },
   }),

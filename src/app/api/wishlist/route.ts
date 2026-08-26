@@ -1,5 +1,6 @@
 import { withProviders } from "@/providers.config";
 import { WISHLIST_MAX, WishlistFullError, createRouteHandler, errorResponse, normalizeError, parseJsonBody, productRepository, successResponse, wishlistRepository } from "@mohasinac/appkit";
+import { wishlistAddSchema } from "@mohasinac/appkit";
 
 export const GET = withProviders(
   createRouteHandler({
@@ -51,12 +52,15 @@ export const GET = withProviders(
 );
 
 export const POST = withProviders(
-  createRouteHandler({
+  createRouteHandler<(typeof wishlistAddSchema)["_output"]>({
     auth: true,
-    handler: async ({ user, request }) => {
-      const body = await parseJsonBody(request);
-      const { productId } = body as { productId?: string };
-      if (!productId) return errorResponse("productId required", 400);
+    schema: wishlistAddSchema,
+    handler: async ({ user, body }) => {
+      // `postApiWishlist` has declared this exact shape in SCHEMAS.api since
+      // the registry was seeded — and this route, its only consumer, read the
+      // body raw and cast it. `body as { productId?: string }` has no runtime
+      // effect: productId could be a number, an object, or absent.
+      const { productId } = body!;
       try {
         const count = await wishlistRepository.addItem(user!.uid, productId);
         return successResponse({
