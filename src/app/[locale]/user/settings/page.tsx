@@ -26,6 +26,7 @@ import type { AsyncPage, PaginatedSelectOption } from "@mohasinac/appkit/ui";
 import { SUPPORTED_LANGUAGES, LANGUAGES_PAGE_SIZE } from "@/constants";
 import { FontToggleClient, HandModeToggleClient } from "@/components";
 import { API_ROUTES } from "@/constants";
+import { changeEmailSchema, FormErrorSummary } from "@mohasinac/appkit/client";
 
 type Tab = "account" | "privacy" | "appearance" | "notifications";
 
@@ -121,7 +122,8 @@ function renderAccountTab({
             <Text variant="secondary" size="xs">
               A verification link will be sent to your new address. Your email updates after you click the link.
             </Text>
-            <Form onSubmit={handleEmailSubmit} className="grid gap-[1rem] md:grid-cols-[1fr_240px]" align="start">
+            <Form schema={changeEmailSchema} onSubmit={handleEmailSubmit} className="grid gap-[1rem] md:grid-cols-[1fr_240px]" align="start">
+              <FormErrorSummary />
               <Stack gap="sm">
                 <Input id="new-email" type="email" label="New Email Address" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required autoComplete="email" placeholder="new@example.com" />
                 <Input id="email-password" type="password" label="Current Password" value={emailPassword} onChange={(e) => setEmailPassword(e.target.value)} required autoComplete="current-password" />
