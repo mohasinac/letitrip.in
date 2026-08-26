@@ -1288,6 +1288,75 @@ Colour follows Root Cause #67: the negative dot is the `<Div surface="danger-sur
 
 ---
 
+## Notifications
+
+> Added 2026-08-26 (W19). Read before adding a notification type, a
+> `relatedType`, or a `sendNotification()` call site.
+
+**One union.** `NOTIFICATION_TYPE_VALUES` in
+`appkit/src/features/admin/schemas/firestore.ts` — a runtime array with the
+type derived from it, so a Zod enum, the admin filter chips, the per-channel
+allow-list and every `Record<NotificationType, …>` resolve to one place.
+
+There were **four** until W19, and the worst part was which one was public:
+`appkit/src/index.ts` exported the **seed factory's** 9-value guess. Between
+them the copies invented four values no notification has ever had —
+`review_posted`, `payout_processed`, `review_received`, `payout_completed`
+(note the first two and last two are different spellings of the same two
+imagined concepts). The 9-value `constants/` copy fed the admin filter chips
+and the per-channel allow-list, so **18 of 27 types were unfilterable** and an
+admin **could not allow-list `offer_received` or `payment_review`** at all.
+
+**`sendNotification` fills three things the caller used to have to remember**,
+which is why they were almost never filled:
+
+| | Before | Now |
+|---|---|---|
+| `emailHtml` | 0 of 40 callers → every type shipped `<p>{message}</p>` | `renderNotificationEmail(type, ctx)`, a `Record<NotificationType, TemplateDef>` |
+| `actionUrl` | 5 of 40 callers, each hand-writing a path | `resolveNotificationActionUrl(relatedType, relatedId, audience)` |
+| audience | n/a | `TYPE_AUDIENCE`, a `Record<NotificationType, …>` |
+
+A caller-supplied value always wins — a few flows legitimately point somewhere
+the `relatedType` cannot express (the payment-proof upload page rather than
+the order page).
+
+**Audience is a property of the EVENT, not the person.** A seller is also a
+buyer: `order_shipped` belongs in `/user`, and the payout for that same order
+belongs in `/store`. Pass `audience` explicitly only when one type genuinely
+reaches two portals — `offer_received` goes to the seller, `offer_responded`
+back to the buyer.
+
+**`bid`, `offer` and `review` resolve to a LIST, on purpose.** None has a
+per-record page in any role — W8 fixed those dead-end listings with a detail
+modal, not a route. Linking the list is a real, permitted destination;
+fabricating `/user/bids/{id}` would 404 and `audit-nav-page-wiring` would
+correctly fail on the ROUTES key. When those pages exist, change the one entry.
+
+### 🛑 `Partial<Record<…>>` is right in one of these maps and wrong in the other
+
+The distinction is what a missing key MEANS.
+
+- **`typeToPrefsKey` must be COMPLETE.** A missing entry left `typeKey`
+  undefined, so the opt-out check never ran and the user's preference was
+  **silently ignored** — the toggle was right there, read as honoured, and
+  mail kept arriving. It omitted `emi_installment_due_soon`,
+  `emi_installment_overdue` and `payment_review`. It is a
+  `Record<NotificationType, …>` now.
+- **`WHATSAPP_TEMPLATE_FIELD` stays `Partial`.** A missing entry means "no
+  Meta-approved template exists for this type", which is a fact about the Meta
+  Business account rather than a defect: six of 28 are approved (the order
+  lifecycle, matching the ₹10 addon-gated set), and the rest fall back to
+  free-form, which Meta accepts inside the 24-hour service window and rejects
+  outside it. Listing all 28 with empty values would be a `Record` that lies
+  about coverage.
+
+**An `as never` on a `sendNotification()` payload is how a type gets smuggled
+past the union.** `catalogue_images_stale` and the `catalogueItem`
+`relatedType` were both sent that way — and the cast silences every other
+field's check on that call, not just the one being worked around. Both are
+declared now, and `resolveNotificationActionUrl`'s `default` branch is an
+exhaustiveness check so the next one cannot compile without a destination.
+
 ## Order Provenance — `sourceContext`
 
 > Added 2026-08-24 (W2). How the buyer earned the right to buy at this price.
