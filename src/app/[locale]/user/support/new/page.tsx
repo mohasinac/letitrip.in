@@ -11,10 +11,14 @@ import {
   Text,
   Stack,
   Row,
-  Input,
-  Textarea,
   Button,
+  Form,
+  FieldInput,
   FieldSelect,
+  FieldTextarea,
+  FormErrorSummary,
+  applyZodIssues,
+  supportTicketCreateSchema,
 } from "@mohasinac/appkit/client";
 import { TICKET_CATEGORIES, type TicketCategory } from "@/constants";
 import { createSupportTicket } from "@/lib/api/support-client";
@@ -45,21 +49,29 @@ export default function NewSupportTicketPage() {
     );
   }
 
-  const canSubmit =
-    subject.trim().length >= MIN_SUBJECT &&
-    description.trim().length >= MIN_DESCRIPTION &&
-    (category !== "order_issue" || orderId.trim().length > 0);
+  async function submit(setFieldError: (name: string, error: string | null) => void) {
+    if (submitting) return;
 
-  async function submit() {
-    if (!canSubmit || submitting) return;
+    /*
+     * The schema replaces a `canSubmit` boolean that DISABLED the button. A
+     * disabled submit with no explanation is worse than an error: the user
+     * cannot tell whether the subject is too short, the description too
+     * short, or the order id missing — the three things it silently gated on.
+     */
+    const parsed = supportTicketCreateSchema.safeParse({
+      category,
+      subject: subject.trim(),
+      description: description.trim(),
+      orderId: orderId.trim() || undefined,
+    });
+    if (!parsed.success) {
+      applyZodIssues(parsed.error.issues, setFieldError);
+      return;
+    }
+
     setSubmitting(true);
     try {
-      const res = await createSupportTicket({
-        category,
-        subject: subject.trim(),
-        description: description.trim(),
-        ...(category === "order_issue" ? { orderId: orderId.trim() } : {}),
-      });
+      const res = await createSupportTicket(parsed.data);
       const json = await res.json();
       if (!res.ok || !json?.ok) {
         showToast(json?.error ?? "Could not create ticket.", "error");
@@ -93,63 +105,64 @@ export default function NewSupportTicketPage() {
         </Text>
       </Div>
 
-      <Stack gap="md" className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`} rounded="xl">
-        <Div>
-          <Text className="text-[var(--appkit-color-text-muted)] mb-1" size="xs" weight="medium">Category</Text>
-          <FieldSelect
-            name="category"
-            aria-label="Ticket category"
-            value={category}
-            onChange={(v) => setCategory(v as TicketCategory)}
-            options={[...TICKET_CATEGORIES]}
-          />
-        </Div>
+      <Form
+        schema={supportTicketCreateSchema}
+        onSubmit={(e) => e.preventDefault()}
+        className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5} rounded-xl`}
+      >
+        {({ setFieldError, clearErrors }) => (
+        <Stack gap="md">
+        <FormErrorSummary />
+        <FieldSelect
+          name="category"
+          label="Category"
+          value={category}
+          onChange={(v) => setCategory(v as TicketCategory)}
+          options={[...TICKET_CATEGORIES]}
+        />
 
         {category === "order_issue" && (
-          <Input
-            id="order-id"
+          <FieldInput
+            name="orderId"
             label="Order ID"
             placeholder="e.g. order-3-20260508-a1b2c3"
             value={orderId}
-            onChange={(e) => setOrderId(e.target.value)}
-            helperText="Required for order issues. You can find this on My Orders."
+            onChange={setOrderId}
+            hint="Required for order issues. You can find this on My Orders."
             required
           />
         )}
 
-        <Input
-          id="subject"
+        <FieldInput
+          name="subject"
           label="Subject"
           placeholder="Short summary (e.g. Wrong item delivered)"
           value={subject}
-          onChange={(e) => setSubject(e.target.value)}
+          onChange={setSubject}
           required
-          minLength={MIN_SUBJECT}
-          maxLength={200}
-          helperText={`${subject.trim().length}/200 — at least ${MIN_SUBJECT} characters`}
+          hint={`${subject.trim().length}/200 — at least ${MIN_SUBJECT} characters`}
         />
 
-        <Stack gap="xs">
-          <Text className="text-[var(--appkit-color-text-muted)]" size="xs" weight="medium">Describe the issue</Text>
-          <Textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={8}
-            placeholder="What happened, when, and what would you like us to do? Include screenshots in a follow-up reply if helpful."
-            maxLength={5000}
-            className="w-full rounded-md border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-3)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)]"
-          />
-          <Text variant="secondary" size="xs" align="end">
-            {description.trim().length}/5000 — at least {MIN_DESCRIPTION} characters
-          </Text>
-        </Stack>
+        <FieldTextarea
+          name="description"
+          label="Describe the issue"
+          value={description}
+          onChange={setDescription}
+          rows={8}
+          placeholder="What happened, when, and what would you like us to do? Include screenshots in a follow-up reply if helpful."
+          required
+          hint={`${description.trim().length}/5000 — at least ${MIN_DESCRIPTION} characters`}
+        />
 
         <Row gap="sm" padding="t-xs">
           <Button
-            type="button"
+            type="submit"
             variant="primary"
-            onClick={submit}
-            disabled={!canSubmit || submitting}
+            onClick={() => {
+              clearErrors();
+              void submit(setFieldError);
+            }}
+            disabled={submitting}
           >
             {submitting ? "Submitting…" : "Submit ticket"}
           </Button>
@@ -162,7 +175,9 @@ export default function NewSupportTicketPage() {
             Cancel
           </Button>
         </Row>
-      </Stack>
+        </Stack>
+        )}
+      </Form>
     </Stack>
   );
 }

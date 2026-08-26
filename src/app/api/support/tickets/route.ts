@@ -1,5 +1,4 @@
 import { withProviders } from "@/providers.config";
-import { z } from "zod";
 import {
   createRouteHandler,
   successResponse,
@@ -7,23 +6,21 @@ import {
   supportRepository,
   orderRepository,
   userRepository,
-  TicketCategoryValues,
+  supportTicketCreateSchema,
 } from "@mohasinac/appkit";
 import { isSoftBanned } from "@mohasinac/appkit/server";
 
 const MAX_OPEN_TICKETS = 2;
 const _MAX_ORDER_TICKETS = 1;
 
-const createSchema = z.object({
-  // Derived from `TicketCategoryValues`, not restated. The literal list that
-  // used to live here was an eleven-value copy that happened to still agree —
-  // the kind of copy that agrees right up until someone adds a twelfth
-  // category to the union and not to this route (Recurrent Root Cause #61).
-  category: z.enum(TicketCategoryValues),
-  subject: z.string().min(3).max(200),
-  description: z.string().min(10).max(5000),
-  orderId: z.string().optional(),
-});
+/*
+ * The SHARED schema, not a local one. This route's own copy agreed on the four
+ * field rules and was missing the fifth: an `order_issue` ticket needs an
+ * `orderId`. Only `/user/support/new` enforced that, and its sibling drawer
+ * enforced nothing — so the same ticket was acceptable or not depending on
+ * which surface the user opened. The shared schema carries the refine.
+ */
+const createSchema = supportTicketCreateSchema;
 
 export const GET = withProviders(
   createRouteHandler({
