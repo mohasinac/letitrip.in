@@ -3,7 +3,6 @@
  * Seller-scoped CRUD lives at /api/store/grouped-listings/[id].
  */
 import { withProviders } from "@/providers.config";
-import { z } from "zod";
 import {
   createRouteHandler,
   errorResponse,

@@ -470,6 +470,19 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
     ],
   },
   {
+    /*
+     * Deliberately empty. `getUserNavGroups()` fills this group at runtime and
+     * ONLY when `isTester` — a static entry here would show the Tester Hub to
+     * every buyer.
+     *
+     * It read as a bug for a while because the nav audit's extractor stopped
+     * at the first `
+];` and never parsed the runtime injections, so
+     * `/user/tester` looked like an orphan page and escaped that status only
+     * because an unrelated ADMIN_NAV_GROUPS line happens to reference it.
+     * The extractor parses `getUserNavGroups()` now, so the group is empty
+     * here and still covered.
+     */
     title: "Testing",
     items: [],
   },

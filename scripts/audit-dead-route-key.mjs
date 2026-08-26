@@ -61,9 +61,6 @@ const SUPPRESS = /audit-dead-route-key-ok:/;
  * the entry — never add one.
  */
 const GRANDFATHERED = new Set([
-  // No page anywhere. Only `API.PRODUCT_CODES` exists, keyed separately.
-  // Scheduled for deletion in W22 step 6.
-  "STORE.PRODUCT_CODES",
   // Found by this audit on its first run: the directory holds only `[slug]/`,
   // so the public sub-listing INDEX has never existed. Nothing links to it, so
   // it is dead rather than broken — building a public index is its own call.

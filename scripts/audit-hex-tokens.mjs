@@ -279,6 +279,19 @@ for (const file of allFiles) {
       const before = stripped.slice(Math.max(0, m.index - 4), m.index);
       if (before.includes("var(")) continue;
 
+      /*
+       * `#` also introduces an ISSUE NUMBER, and a 3-digit one is
+       * indistinguishable from shorthand hex by shape alone — "React #441" is
+       * a real error code, not a colour. So the tell has to be the preceding
+       * word, not the digits.
+       *
+       * Deliberately a short, specific list. A generic "skip inside prose"
+       * rule would hide real hex in every JSDoc and every seed-data string,
+       * which is most of where raw colours actually get written.
+       */
+      const beforeWord = stripped.slice(Math.max(0, m.index - 24), m.index);
+      if (/\b(React|issue|Issue|PR|ticket)\s+$/i.test(beforeWord)) continue;
+
       const isStyle = line.includes("style=") || line.includes("style:");
       violations.push({
         file: rel,
