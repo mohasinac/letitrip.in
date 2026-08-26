@@ -2,11 +2,20 @@
 
 Auto-generated inventory of code/config files with detected exported and internal symbols.
 
+> ⚠️ Hand-maintained since 2026-08-26. `appkit/scripts/get-index.js` writes the
+> REPO-ROOT `index.md`, not this file. The rows immediately below the header
+> are the W18–W21 addition; everything after is the older generated body.
+
 Generated: 2026-08-23T18:33:12.117Z
 Total indexed files: 1302
 
 | Name | Path | Usage / What Is Inside | Symbols (Exported + Internal) |
 |---|---|---|---|
+| ScammerViewClient.tsx | app/[locale]/admin/scammers/[id]/ScammerViewClient.tsx | 2026-08-26 (W18) — threads the profile's decision history to the drawer as `SerialisedStatusChangeEntry[]`. Dates are ISO'd on the server: every other date prop here is a string, and mixing the two renders "Invalid Date" | fn ScammerViewClient, interface ScammerViewClientProps |
+| SupportTicketViewClient.tsx | app/[locale]/admin/support-tickets/[id]/SupportTicketViewClient.tsx | Same, for the ticket drawer. Both files used to hand-write the serialised-entry interface with `Record<string, {from: unknown; to: unknown}>` — a duplication AND an untyped seam `audit-unknown-leakage` refused | fn SupportTicketViewClient, interface SupportTicketViewClientProps |
+| route.ts (admin/payouts/[id]) | app/api/admin/payouts/[id]/route.ts | 2026-08-26 (W18) — returns the STORED document instead of echoing `{id, ...body}`; the echo is what hid a `transactionId` that was being silently discarded. `notes` renamed `adminNote`, the field name the action actually picks | GET, PATCH |
+| route.ts (admin/stores/[uid]) | app/api/admin/stores/[uid]/route.ts | 2026-08-26 (W18) — status changes go through `storeRepository.setStatus`, which syncs `isPublic`. Writing `status` alone left an approved store active AND invisible | GET, PATCH |
+| route.ts (admin/ads/[id]) | app/api/admin/ads/[id]/route.ts | 2026-08-26 (W18) — its hand-rolled `{from,to,changedAt,changedBy}` history normalised onto `withHistory`. Ads live in the `siteSettings` singleton and have no repository, which works only because the primitive is a pure function | GET, PATCH, DELETE |
 | empty-loader.js | __mocks__/empty-loader.js | Module implementation | fn emptyLoader |
 | server-only-empty.js | __mocks__/server-only-empty.js | Module implementation | - |
 | proxy.test.ts | __tests__/proxy.test.ts | Module implementation | const match, const matcherRegex, const source, fn readMatcherPattern |
