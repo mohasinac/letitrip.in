@@ -64,13 +64,31 @@ const FIELD_RE = /<Field(?:Input|Select|Textarea|Checkbox)\b|<FormField\b/;
 const SECTION_FORM_RE = /<\s*SectionForm\b/;
 /** Quick mode is a sanctioned surface, and has its own schema audit. */
 const QUICK_DRAWER_RE = /<\s*QuickFormDrawer\b/;
+/**
+ * A file only OWNS a form if it also owns a submit. Without this the count
+ * includes three kinds of file that must NOT render their own <SectionForm>:
+ *
+ *   · search and filter inputs built from FieldInput — TesterHubView's
+ *     "Search test cases" box, SellerProductsFilterDrawer
+ *   · read-only views that render a field for display (UserBidsView)
+ *   · FIELD GROUPS whose parent owns the submit — ProductForm renders inside
+ *     SellerProductShell, which IS sectionised. Wrapping the child too would
+ *     nest one SectionForm inside another
+ *
+ * Found while working the list: TesterHubView was flagged for a search box.
+ * A count with noise in it is a count people learn to ignore, which is why
+ * two W22 audits were cut for exactly this rather than shipped.
+ */
+const OWNS_A_SUBMIT_RE =
+  /apiClient\.(post|put|patch)|method:\s*["'](POST|PUT|PATCH)["']|useApiMutation|useMutation|onSubmit\s*[=:]|mutationFn/;
+
 const SUPPRESS_RE = /audit-form-sectionised-ok:/;
 
 /**
  * Known hand-rolled forms, awaiting migration. DELETE an entry when its file
  * gains a `<SectionForm>` — the staleness check will tell you.
  *
- * Generated 2026-08-27 from the tree as it stood. 65 entries.
+ * Generated 2026-08-27 from the tree as it stood. 49 entries (16 dropped once the submit-ownership filter landed).
  */
 const GRANDFATHERED = new Set([
   "src/app/[locale]/admin/roles/new/page.tsx",
@@ -81,22 +99,17 @@ const GRANDFATHERED = new Set([
   "src/app/[locale]/store/payout-methods/new/page.tsx",
   "src/app/[locale]/store/shipping-configs/new/page.tsx",
   "src/app/[locale]/store/shipping-configs/[id]/edit/page.tsx",
-  "src/app/[locale]/user/events/page.tsx",
   "src/app/[locale]/user/notifications/page.tsx",
   "src/app/[locale]/user/orders/[id]/cancel/page.tsx",
   "src/app/[locale]/user/orders/[id]/payment/page.tsx",
-  "src/app/[locale]/user/reviews/page.tsx",
   "src/app/[locale]/user/support/new/page.tsx",
-  "src/app/[locale]/user/support/page.tsx",
   "src/components/homepage/HomepageNewsletterForm.tsx",
   "src/components/layout/FooterNewsletterSlot.tsx",
   "src/components/routing/CheckoutRouteClient.tsx",
   "src/components/user/ProfilePageClient.tsx",
   "src/components/user/UserAddressesClient.tsx",
   "appkit/src/features/account/components/AddressForm.tsx",
-  "appkit/src/features/account/components/UserBidsView.tsx",
   "appkit/src/features/account/components/UserSupportView.tsx",
-  "appkit/src/features/admin/components/AdminAddressBookView.tsx",
   "appkit/src/features/admin/components/AdminBrandEditorView.tsx",
   "appkit/src/features/admin/components/AdminBundleEditorView.tsx",
   "appkit/src/features/admin/components/AdminCarouselEditorView.tsx",
@@ -112,31 +125,20 @@ const GRANDFATHERED = new Set([
   "appkit/src/features/auth/components/LoginForm.tsx",
   "appkit/src/features/auth/components/RegisterForm.tsx",
   "appkit/src/features/auth/components/ResetPasswordView.tsx",
-  "appkit/src/features/cart/components/StoreAddonsPicker.tsx",
   "appkit/src/features/catalogue/components/CatalogueItemEditorView.tsx",
-  "appkit/src/features/categories/components/CategoryForm.tsx",
   "appkit/src/features/consultation/components/ConsultationForm.tsx",
   "appkit/src/features/corporate/components/CorporateInquiryForm.tsx",
   "appkit/src/features/events/components/EventRaffleEntryForm.tsx",
   "appkit/src/features/homepage/components/NewsletterBanner.tsx",
   "appkit/src/features/products/components/GroupSettingsPanel.tsx",
   "appkit/src/features/products/components/MakeOfferButton.tsx",
-  "appkit/src/features/products/components/PrizeDrawItemsEditor.tsx",
-  "appkit/src/features/products/components/ProductForm.tsx",
-  "appkit/src/features/seller/components/BarcodeField.tsx",
-  "appkit/src/features/seller/components/PrintCenterView.tsx",
-  "appkit/src/features/seller/components/QuickProductForm.tsx",
-  "appkit/src/features/seller/components/SellerAddressesView.tsx",
   "appkit/src/features/seller/components/SellerGoogleReviewsView.tsx",
-  "appkit/src/features/seller/components/SellerProductsFilterDrawer.tsx",
   "appkit/src/features/shipments/components/AdminShipmentEditorView.tsx",
   "appkit/src/features/shipments/components/AdminShipmentLotItemsView.tsx",
   "appkit/src/features/shipments/components/ShipmentItemLinkModal.tsx",
   "appkit/src/features/store-extensions/components/ReviewDecisionModal.tsx",
-  "appkit/src/features/tester/components/TesterChecklistStepRow.tsx",
   "appkit/src/features/tester/components/TesterHubView.tsx",
   "appkit/src/_internal/client/features/lottery/LotteryAdminEditView.tsx",
-  "appkit/src/_internal/client/features/lottery/LotteryEntriesView.tsx",
   "appkit/src/_internal/client/features/lottery/LotteryPullForm.tsx",
 ]);
 
@@ -169,6 +171,7 @@ for (const root of SCAN) {
       .replace(/(^|\s)\/\/[^\n]*/g, "$1 ");
 
     if (!FIELD_RE.test(src)) continue;
+    if (!OWNS_A_SUBMIT_RE.test(src)) continue;
     if (SECTION_FORM_RE.test(src)) continue;
     if (QUICK_DRAWER_RE.test(src)) continue;
     if (SUPPRESS_RE.test(raw)) continue;
