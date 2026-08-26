@@ -7,7 +7,7 @@ import {
   serverLogger,
   bundleUpdateSchema,
 } from "@mohasinac/appkit";
-import { resolveBundleOriginalTotal } from "@mohasinac/appkit/server";
+import { resolveBundleOriginalTotal, findBundleMemberStores } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 import { withFeatureGuard } from "@/lib/features";
 
@@ -53,6 +53,17 @@ const __PUT__g = withProviders(
       if (!id) return ApiErrors.badRequest(MSG_BUNDLE_ID_REQUIRED);
       const bundle = await loadBundleOrFail(id);
       if (!bundle) return ApiErrors.notFound(MSG_BUNDLE_NOT_FOUND);
+
+      // Same single-seller rule as create — an edit is the other way a
+      // cross-store bundle could come into existence.
+      if (body?.bundleProductIds) {
+        const memberStores = await findBundleMemberStores(body.bundleProductIds);
+        if (memberStores.length > 1) {
+          return ApiErrors.badRequest(
+            `A bundle's items must all come from one seller — these span ${memberStores.length} (${memberStores.join(", ")}).`,
+          );
+        }
+      }
 
       const updateBody = body?.bundleProductIds
         ? { ...body, bundleOriginalTotal: await resolveBundleOriginalTotal(body.bundleProductIds) }

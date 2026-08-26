@@ -1181,7 +1181,10 @@ The last two are both "pick as you wish" and share one picker (`GroupMemberPicke
 
 ### Other rules
 
-- **Single-store only.** `storeId` is the order-splitting key *and* the key per-store add-ons, coupons, shipping and payout hang off, so a line spanning sellers would break five things at once. The picker stands itself down (read-only, no CTA) on a cross-store group; `addGroupLineToCart` rejects it again server-side.
+- **Single-store only, enforced in three places.** `storeId` is the order-splitting key *and* the key per-store add-ons, coupons, shipping and payout hang off, so a line spanning sellers would break five things at once — the order belongs to one seller while containing another's products, and that second seller gets no notification, no shipping resolution and no payout.
+  - **Groups**: the picker stands itself down (read-only table, no Qty column, no CTA) on a cross-store group, and `addGroupLineToCart` rejects it again server-side.
+  - **Bundles**: refused at SAVE time by `findBundleMemberStores()` in all four bundle write routes (admin + store × create + update). Save-time rather than add-to-cart-time on purpose: bundles already in the database keep working and checkout is untouched, while the hole stops being reachable. Bundles had no guard at all until 2026-08-26 — every existing bundle being single-store was luck, not a rule.
+  - Seeded fixtures `product-tester-crossstore-a/b` exist in the banned shape precisely so both refusals are testable by hand; a guard with no data that triggers it is a guard nobody can verify.
 - **A one-member selection becomes an ordinary product line**, not a group line — 1 item × qty N is already exactly what a normal line means.
 - **Ids and quantities only** cross the wire. `POST /api/cart/group` re-resolves every price, title and image from Firestore; accepting them from the client is a ₹1-group exploit.
 - **A rejected member fails the whole request, naming it.** Silently dropping one hands the buyer a line that quietly isn't what they picked.

@@ -9,7 +9,7 @@ import {
   bundleCreateSchema,
   sortBy,
 } from "@mohasinac/appkit";
-import { resolveBundleOriginalTotal } from "@mohasinac/appkit/server";
+import { resolveBundleOriginalTotal, findBundleMemberStores } from "@mohasinac/appkit/server";
 import { ROLES_STORE_WRITE } from "@/constants";
 import { withFeatureGuard } from "@/lib/features";
 
@@ -123,6 +123,16 @@ const __POST__g = withProviders(
       const existing = await categoriesRepository.findById(id);
       if (existing) {
         return ApiErrors.badRequest(`Bundle already exists: ${id}`);
+      }
+
+      // Single-seller rule — see findBundleMemberStores. A seller can only
+      // bundle their own stock anyway, but the check is explicit so the rule
+      // lives in one place rather than being implied by ownership.
+      const memberStores = await findBundleMemberStores(body.bundleProductIds);
+      if (memberStores.length > 1) {
+        return ApiErrors.badRequest(
+          `A bundle's items must all come from one seller — these span ${memberStores.length} (${memberStores.join(", ")}).`,
+        );
       }
 
       const bundleOriginalTotal = await resolveBundleOriginalTotal(body.bundleProductIds);
