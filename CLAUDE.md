@@ -40,6 +40,7 @@
 - [Public Data Projections](#public-data-projections)
 - [Recurrent Root Cause Patterns](#recurrent-root-cause-patterns)
 - [Bundles vs Product Groups vs Grouped Listings](#bundles-vs-product-groups-vs-grouped-listings)
+- [Lottery Config Writes](#lottery-config-writes)
 - [Grouped Cart Lines](#grouped-cart-lines)
 - [Checkout Lanes](#checkout-lanes)
 - [Offer Lifecycle](#offer-lifecycle)
@@ -47,6 +48,7 @@
 - [Order Provenance — `sourceContext`](#order-provenance--sourcecontext)
 - [Coupon Scoping & Stacking](#coupon-scoping--stacking)
 - [Manual Payment Review Flow](#manual-payment-review-flow)
+- [Error Observability](#error-observability)
 - [Known TS Patterns to Avoid](#known-ts-patterns-to-avoid)
 - [CTA Registry Rules](#cta-registry-rules)
 - [Codebase Exports Catalog](#codebase-exports-catalog)
@@ -153,7 +155,7 @@ For lint-fixable issues use `npm run check:fix` (runs `lint:fix` first, then ful
 > `/api/site-settings`), which is the gate that actually catches a Lambda
 > module-load failure — see Recurrent Root Cause #69.
 
-**Stop hook automation**: `.claude/settings.json` runs the fast audits (`check:audits`) automatically at end of every Claude turn via `scripts/claude-hooks/check-on-stop.mjs`. Failures block the turn and surface to the assistant for fixing. **Every audit is now strict zero-tolerance** — there is no baseline-drift mode; any violation `> 0` fails the audit. Legitimate dynamic patterns are handled by explicit per-line suppression markers (`// audit-inline-style-ok`, `// toast-handled-by-hook`, `// toast-intentionally-silent`, `// reexport-from-internal-ok`, `// audit-sieve-views-ok`, `// audit-variant-ok` — primitives whose internal CSS the audit must allow) at the site of the decision, each with a brief reason. tsc + lint are excluded from the Stop hook because they are too slow per-turn; run `npm run check` manually before commits.
+**Stop hook automation**: `.claude/settings.json` runs the fast audits (`check:audits`) automatically at end of every Claude turn via `scripts/claude-hooks/check-on-stop.mjs`. Failures block the turn and surface to the assistant for fixing. **Every audit is now strict zero-tolerance** — there is no baseline-drift mode; any violation `> 0` fails the audit. Legitimate dynamic patterns are handled by explicit per-line suppression markers (`// audit-inline-style-ok`, `// toast-handled-by-hook`, `// toast-intentionally-silent`, `// reexport-from-internal-ok`, `// audit-sieve-views-ok`, `// audit-client-entry-ok`, `// audit-variant-ok` — primitives whose internal CSS the audit must allow) at the site of the decision, each with a brief reason. tsc + lint are excluded from the Stop hook because they are too slow per-turn; run `npm run check` manually before commits.
 
 **Pre-commit**: the `pre-commit` npm script is wired to `npm run check`. If you have a git hook runner installed, use it.
 
@@ -1128,6 +1130,11 @@ Each adapter carries a `PUBLIC_*_FIELDS` list and a `PRIVATE_*_FIELDS` list with
 | 74 | **A validation summary that renders before the user has done anything accuses them of mistakes they have not made yet — and the plan predicted this exact regression before it shipped** | Root-caused 2026-08-26 from a screenshot of the address form listing six "… is required" errors on a form nobody had typed into. Two independently-reasonable decisions compounded. (a) **`FormErrorSummary` was deliberately un-gated** — its own docstring said *"not gated by `touched`, unlike the inline per-field errors"*, which is right for the state it was designed for (errors that already exist) and wrong for first paint. (b) **Eleven views call `validate(draft)` from a MOUNT EFFECT**, which is also right — it is what keeps the summary and the submit-button state current as the user types after a failed submit. Together they meant every schema-driven form in the app opened by parsing an empty draft and displaying every `.min(1)` failure, and the louder it got with each schema the migration added. **Fixed** by adding `submitAttemptCount` to `FormShellContextValue` (`submitAttempted` is derived as `> 0`, never stored twice) and gating the SUMMARY on it. **The critical detail is which of the two causes was fixed**: the obvious repair is to delete the on-mount `validate(draft)`, and that is wrong — the summary then stops updating as the user fixes fields, which is the entire reason it exists. **Gate the display, not the computation.** Per-field inline errors keep their own `touched` gate and were never the problem: a field the user visited and left empty *should* say so; it is the summary that must wait, because it speaks about fields they have not reached yet. **Marking the attempt has to happen where an attempt happens** — `<Form>`'s native `onSubmit` handler, `<SectionForm>`'s submit button, `QuickFormDrawer`'s — and NOT inside `validate()`, which is called from those eleven mount effects and would have defeated the gate entirely while looking like the natural home for it. Six call sites whose submit control is a `type="button"` with an `onClick` fire no native submit event and call `markSubmitAttempted()` themselves. **The plan for this rework had called this exact regression in advance** — *"with no step to scope errors to, the live-validate effect makes FormErrorSummary list every empty required field on first paint … this is the single most likely UX regression in the plan"* — and it shipped anyway, because the mitigation was written as a note rather than as a mechanism. A predicted regression with no code enforcing the prediction is an unfixed regression. |
 
 | 75 | **One money predicate, hand-written in six places — and the two copies that were never back-ported to the consumer repo had also silently dropped a branch, so Razorpay CAPTURED the list price for an accepted offer** | Root-caused 2026-08-26 while adding grouped cart lines. `unitPriceFor` (`_internal/shared/checkout/order-math.ts`) documents itself as "the single source of truth for what do we charge for this line" and its own docstring records that a 2026-08-21 fix taught it about `lockedPrice`. That fix reached appkit and stopped there. **Four more hand-rolled copies of the rule existed**: two in `src/app/api/payment/create-order/route.ts` (lines 79 and 126) and one in `createRazorpayGroupOrder`'s order-item mapping, each spelled `item.bundleCategorySlug && item.bundleProductIds?.length ? item.price : product.price` — reproducing the *bundle* branch and omitting the *locked-price* one. Consequence: a buyer who negotiated a price through Make-an-Offer, or won an auction, was quoted the agreed amount in the cart and **charged the seller's listing price by Razorpay**, with the resulting order recording the same wrong figure. Nothing errored; the two numbers simply never appeared on the same screen. **The tell is structural, not behavioural**: a rule whose docstring says "single source of truth" but which is *reachable by copy-paste* will be copied, and a copy made before a branch was added never learns about it. Grepping for the FUNCTION name finds none of the copies — you have to grep for the *shape of the expression*. **Fixed** by exporting `lineTotalFor(item, product)` (= `unitPriceFor × quantity`) and migrating all thirteen multiplication sites plus the three hand-rolled ones onto it, so the multiplication that used to differ per call site is now inside the definition. **The same session found the same disease twice more on adjacent axes**: `sumGroupGst` now backs both GST loops (they were two hand-written loops, Root Cause #59's shape), and `expandCartLineToOrderRows` backs both order-item mappings. **When a helper is described as canonical, check whether anything structurally PREVENTS a call site from re-deriving it — and prefer exporting the whole computed value over exporting a factor the caller must still combine.** |
+| 76 | **A Server Component importing a runtime value from the `"use client"` entry — the binding becomes a client-reference proxy, and calling it or reading a property off it throws during the server render as an opaque React #441** | Root-caused 2026-08-26 from a production console showing nothing but `Minified React error #441` on the homepage. That error is a WRAPPER — *"An error occurred in the Server Components render. The specific message is omitted in production builds… A digest property is included"* — so the message a developer needs does not exist client-side at all. `appkit/src/client.ts` line 1 is `"use client"`. When a Server Component imports from `@mohasinac/appkit/client`, every binding becomes a client reference: **rendering one as JSX is fine and is the normal RSC boundary**, but calling it (`sortBy(...)`) or property-accessing it (`ROUTES.USER.X`) on the server throws. **Three live failures from this one mistake, each with a completely different symptom, which is what made it hard to recognise as one bug:** (a) `PrizeDrawsSection` called `sortBy` -> the homepage `section-prize-draws` subtree threw and the error boundary replaced the page — the reported crash; (b) `EventRafflesSection` called `sieveFilter`/`sortBy` inside its own `try/catch`, so the identical throw was **swallowed into an empty array** and the section silently rendered nothing, indistinguishable from "no active raffles" (Root Cause #59's shape); (c) `src/app/[locale]/sell/page.tsx` read `ROUTES.USER.BECOME_SELLER` and so returned **HTTP 200 carrying an error instead of redirecting** — the seller-onboarding entry point was dead, and a 200 is exactly what no monitoring flags. **How to localise a #441 without server logs** — the digest is in the RSC flight payload, and so is the subtree that owns it: `curl -sS "$ORIGIN/" -H "RSC: 1"` then grep for `<id>:E{"digest":"…"}` and for `$L<id>`, which appears inside the row that referenced it (here `45:["$","$1","section-prize-draws",{"children":["$L5e",false]}]`). A page with no server error has **zero** `:E{"digest":` rows, so this doubles as a per-route health probe. Note the initial HTML carried the same digest while still painting normally and containing no `role="alert"` — the boundary only renders after hydration, so "the page looks fine" does not mean the page is fine. **Fixed** by importing from the DEFINING module (Root Cause #18): `sortBy` -> `constants/sort`, `sieveFilter`/`sieveAnd`/`SIEVE_OP` -> `utils/sieve-builder`, `ROUTES` -> `@mohasinac/appkit` in consumer code. **Enforced** by `scripts/audit-client-entry-in-server.mjs` (strict-zero, suppression `// audit-client-entry-ok: <reason>`). **Its scope is deliberately narrow and must stay so**: it flags only Next.js route entries (`page`/`layout`/`template`/`default`.tsx, `route.ts`) and `async function` components, because those are the only two shapes that execute on the server. A plain helper module with no `"use client"` (e.g. `src/lib/api/*-client.ts`) is reached only from client components and **must keep importing from `/client`** — pointing it at the bare `@mohasinac/appkit` entry is precisely the Turbopack client-bundle leak `audit-client-server-only-leak` blocks (Root Cause #6). The two audits pull in opposite directions; that scope is what keeps them compatible, and a first, broader version of this audit did break the other one. |
+| 77 | **A crash in one homepage section could take down the whole homepage — an independently-fetched, non-load-bearing strip had no containment of its own** | Companion to #76, fixed in the same session. The homepage composes ~26 sections, each fetching its own data, and there was **no error boundary between them and `[locale]/error.tsx`**. So a throw anywhere in any one section replaced the ENTIRE page with "Something went wrong" — a single bad import in a prize-draws strip cost the whole marketplace homepage. **Fixed** with `<HomepageSectionBoundary sectionId sectionType>` (`appkit/src/features/homepage/components/`) wrapped around every section at the one choke point, `renderSection()`. Three properties are deliberate: (1) **the fallback renders `null`**, not an error card — a visitor should see a homepage missing one row, not a homepage that is mostly an apology; (2) it **still reports** through `trackError` -> the client-error beacon, so it is silent to the visitor and loud to the operator, which is the opposite of Root Cause #59's swallow; (3) `sectionId`/`sectionType` are **plain strings** because this is a Client Component rendered from a Server Component, so a function prop such as `onError` would not be serialisable across that boundary. **When a page composes N independently-fetched units, ask what happens when one throws — the default in the App Router is "all of them die".** |
+| 78 | **The digest a production React error hands the user pointed at nothing — `onRequestError` was never defined and `setErrorTracker` was never called, so RSC render errors were recorded in no system at all** | Found while diagnosing #76, and the reason that diagnosis needed the flight-payload forensics above instead of a lookup. Three independent breaks in one chain. (a) **Next.js's `onRequestError` hook did not exist.** It is the only hook that sees RSC render and Server Action failures — neither passes through `createRouteHandler`, which was the sole producer of `serverErrors` rows with `source:"vercel"`. So the admin surface at `/admin/maintenance/server-errors` could never show the class of error that actually took the homepage down. (b) **`setErrorTracker` had zero call sites.** `ErrorView` and `GlobalError` both carefully capture `error.digest` into a `trackError` payload — and with no tracker registered, `getTracker()` falls back to a bare `console.error`, so the digest died in the browser console. The ingestion route `/api/client-errors` and the `reportClientError` beacon were both already live; only the registration was missing. (c) **`ErrorView` rendered the digest only when `NODE_ENV === "development"`**, so a user reporting "something went wrong" in production had literally nothing actionable to quote. A digest is an opaque hash, not sensitive data. **Fixed** all three: `onRequestError` in `src/instrumentation.ts` writing the digest as `code` (the field the admin list surfaces, so a user-quoted digest is searchable), `setErrorTracker` registered in `ClientProviderBootstrap` forwarding to `reportClientError` with the digest as `requestId` (the join key to the server-side row for the same failure), and the digest shown in production as "Reference: …". `ErrorBoundary` now also forwards `componentStack`, a `serverErrors` schema field that had been declared for a long time with **no producer whatsoever**. **The general lesson: an observability surface that exists is not an observability surface that works — trace producer -> transport -> store -> UI for each error class you claim to capture, because every link here existed except the one that mattered.** |
+
+| 76 | **An authoring form whose write shape can EXPRESS state it does not own will eventually overwrite it — and against a `.passthrough()` route that is a silent, total erasure with a 200** | Root-caused 2026-08-26 (W22) across three surfaces at once, each with the same shape and each producing a *successful-looking save*. **(a) The severe one.** `LotteryAdminEditView` built its slot array from form state and sent `isBooked: false` plus `weight: 0` on every slot, dropping `bookedByUserId`/`bookedByDisplayName`/`bookedByUserLotteryNumber` — while `PATCH /api/admin/events/[id]` is `.passthrough()`. So the first save of a live lottery marked every purchased slot available again and erased the buyers, with no error anywhere. The editor had **zero consumers**, and that was not an oversight to fix by wiring it up: *wiring it up was the bug*. **The fix is not validation.** A schema that merely checks `isBooked` is a boolean still lets `false` through. The write shape now **cannot express booking state at all** — `lotterySlotWriteSchema` is `.strict()` with no booking fields, so `isBooked` is a 400 rather than something a merge has to defend against — and `mergeLotteryConfig` re-attaches bookings from the STORED config. **Merge by natural key, never by array index**: deleting slot 3 shifts every later index by one, so an index-wise merge hands slot 7's buyer slot 8's prize. Removing a slot somebody has pulled is a **409**, not a 400 — the request is well-formed and the admin is not confused, so the correct next action is to reopen the pull, not to fix a field. **(b) The inverse, same family**: `PATCH /api/admin/grouped-listings/[id]` validated against `z.object({ productIds })`, and `z.object()` STRIPS unknown keys — so an admin saving a title got a 200 and no write (Root Cause #40's shape, on the admin-vs-store axis; the seller route's `.strict()` schema accepted all 8 fields). **(c) The quiet one**: `AddressForm` had no `landmark` field while the store route accepted one, so every edit sent `undefined` and dropped it. **All three are invisible without a reload**, which is why each shipped with a tester case written as an explicit before/after rather than a "check it works" case. **When reviewing any authoring form, ask what the STORED record holds that the form does not — and confirm the write shape cannot name it. A field the form can send is a field the form can destroy.** |
 
 ---
 
@@ -1144,6 +1151,82 @@ Each adapter carries a `PUBLIC_*_FIELDS` list and a `PRIVATE_*_FIELDS` list with
 The last two are both "pick as you wish" and share one picker (`GroupMemberPicker`) and one cart-line shape. Only the bundle is all-or-nothing.
 
 **A grouped listing needs no price field and one should not be added back.** Under pick-as-you-wish the price simply *is* the sum of what the buyer selected — computed in the picker and recomputed server-side by `unitPriceFor`. That is why removing those fields was correct and why this feature did not have to undo it.
+
+---
+
+## Lottery Config Writes
+
+> Added 2026-08-26 (W22, Root Cause #76). Read before touching `lotteryConfig`,
+> `LotteryAdminEditView`, or `PATCH /api/admin/events/[id]`.
+
+### 🛑 Exactly one route may write `lotteryConfig`
+
+**`PUT /api/admin/events/[id]/lottery-config`.** The generic event PATCH
+**rejects the field outright** (`z.never()`), and that rejection is load-bearing
+rather than tidy: that route is `.passthrough()`, so a slot array sent through
+it writes verbatim — including over slots that have already been pulled.
+
+Refused loudly, not dropped. A caller still sending `lotteryConfig` there is
+doing something that used to destroy data and should be told.
+
+The `.passthrough()` stays for everything else on that route. Tightening it
+needs a full-collection round-trip diff — it is the most dangerous edit
+available there.
+
+| Concern | Where |
+|---|---|
+| Write contract | `lotteryConfigWriteSchema` / `lotterySlotWriteSchema` (`features/lottery/schemas/config-write.ts`) |
+| Merge | `mergeLotteryConfig(input, existing)` — same file, the only function allowed to produce a stored config |
+| Read, for seeding the form | **`adminGetEventById`** |
+
+### The write shape cannot express booking state, on purpose
+
+`lotterySlotWriteSchema` is `.strict()` and carries **only** `slotNumber`,
+`name`, `image`, `price`. No `isBooked`, no `bookedBy*`, no `weight`.
+
+An admin editing a lottery is describing **prizes, not attendance**. A schema
+that merely *validated* `isBooked` would still let `false` through — which is
+exactly what the old editor sent for every slot. Making the field
+unrepresentable is what closes it; `isBooked` in a request body is a 400.
+
+`weight` is server-derived from price and is never client input. `totalSlots`
+is derived from `slots.length` and never accepted — a caller-supplied count
+that disagrees with the array is the mirror-drift trap (Root Cause #42), and
+the count is what the fullness check reads.
+
+### Merge by `slotNumber`, never by array index
+
+Array position is not identity. Deleting slot 3 shifts every later index by
+one, and an index-wise merge hands slot 7's buyer the prize that was slot 8's.
+
+**A booked slot cannot be removed** — that is a **409**, not a 400. The request
+is well-formed; the world changed under the admin. Conflating it with a
+validation error would read as "your form is wrong" when the correct action is
+to reopen the pull first.
+
+### 🛑 Never seed the form from `getLotteryEventCached`
+
+It runs `toClientLotteryConfig`, an allow-list that strips `price` and `weight`
+from every slot. Seeding an editor from it shows every price as `0` and then
+saves those zeros back — a total repricing that looks like an ordinary edit.
+Use `adminGetEventById`.
+
+### A lottery EVENT and its SLOTS are edited in different places
+
+`LotteryAdminEditView` has no fields for title, dates, status or media, so it
+is not a create flow: a lottery made through it alone would have no dates, and
+the draw window is measured from them.
+
+- **Event** (title/dates/status/media) → the ordinary event editor. `lottery`
+  was missing from its type picker entirely, which is why lottery events could
+  previously only come from `npm run seed`.
+- **Slots** → `/admin/lotteries/{id}/edit`.
+
+Guarded by `features/lottery/schemas/__tests__/config-write.test.ts`, whose
+assertions were verified to FAIL against the pre-fix behaviour. Kept as a unit
+test despite this project's tester-cases-first preference for the same reason
+the W13 per-type test was: the failure is invisible in the UI — the save
+succeeds, the page re-renders, and only a buyer's missing pull gives it away.
 
 ---
 
@@ -1533,6 +1616,57 @@ A denormalised mirror field would drift the first time a write path forgot it (R
 
 ---
 
+## Error Observability
+
+> Added 2026-08-26 (see Root Cause #78). Where a thrown error goes. Read before
+> adding a new error class, and before concluding that "nothing logged it".
+
+Every class lands in the single `serverErrors` collection, read by
+`/admin/maintenance/server-errors` (and its `client-errors` / `function-errors`
+siblings, which are the same list filtered by `source`).
+
+| Error class | Producer | `source` |
+|---|---|---|
+| API route throw (5xx + `LOG_AS_INCIDENT_CODES`) | `createRouteHandler`'s catch (`appkit/src/next/api/routeHandler.ts`) | `vercel` |
+| **RSC render + Server Action throw** | **`onRequestError` in `src/instrumentation.ts`** | `vercel` |
+| `window.onerror` / `unhandledrejection` | `installClientErrorReporter` → `reportClientError` beacon | `client` |
+| Error boundary catch (incl. `ErrorView`, `GlobalError`, `HomepageSectionBoundary`) | `trackError` → the tracker registered in `ClientProviderBootstrap` → same beacon | `client` |
+
+**The digest is the join key.** A production React error shows the user
+`Reference: <digest>`; `onRequestError` stores that same value as `code` on the
+server-side row, and the client-side row carries it as `requestId`. One search
+in the admin list ties the two together. Do not hide the digest from production
+UI — it is an opaque hash, and hiding it is what makes a user's bug report
+useless (Root Cause #78).
+
+**Still dead, deliberately unfixed** — don't mistake these for working:
+`source: "function"` has no production producer (`wrapJobHandler` is referenced
+only by its own test), and `installDegradedReadReporter` is never called, so
+`safeRead` failures are discarded.
+
+**`setErrorTracker` must be called exactly once, at client bootstrap.** With no
+registration `getTracker()` silently falls back to `console.error` and every
+`trackError` call in the tree — including the ones that carefully captured a
+digest — dies in the browser console.
+
+### Localising an opaque React #441
+
+The message is stripped in production, but the RSC payload names the subtree:
+
+```bash
+curl -sS -o rsc.txt "$ORIGIN/" -H "RSC: 1" -H "User-Agent: Mozilla/5.0"
+grep -o '[0-9a-f]*:E{"digest":"[0-9]*"}' rsc.txt   # the error row, e.g. 5e:…
+grep -o '.\{400\}\$L5e' rsc.txt                     # the row that referenced it
+```
+
+A healthy route has **zero** `:E{"digest":` rows, so this is also a per-route
+health probe worth running after any change to a Server Component. Note the
+initial HTML can carry the digest while still painting normally with no
+`role="alert"` — the boundary renders after hydration, so "it looks fine" is not
+evidence that it is.
+
+---
+
 ## Known TS Patterns to Avoid
 
 | Anti-pattern | Correct alternative |
@@ -1582,6 +1716,9 @@ A denormalised mirror field would drift the first time a write path forgot it (R
 | `bg-danger-surface` / `text-danger-*` / `text-{status}-surface` / `bg-{status}-on-solid` | Use `error-*`. `danger` is a flat alias with no sub-keys and is absent from the consumer build, and a tint is only ever a background while an ink is only ever a foreground — Tailwind generates none of these, and drops them silently. Enforced by `audit-status-color-pairs.mjs`. |
 | `<Row surface="default" color="inverse">` for a pill on a dark/branded backdrop | `<Row surface="frost">` — translucent white on dark, paired with on-primary ink in `SURFACE_TEXT_PAIR_MAP`. Every theme-relative surface (`default`/`card`/`muted`/`{status}-surface`/…) is a LIGHT background in light themes, so `color="inverse"` renders white-on-white. |
 | `<Select className="flex-shrink-0 min-w-[140px]">` inside a flex row | `<Select wrapperClassName="flex-shrink-0 min-w-[140px]">` — `className` only styles the inner `<select>`; `wrapperClassName` sizes the actual flex-child wrapper div. Enforced by `audit-select-wrapper-classname.mjs`. Root Cause #29. |
+| `import { sortBy } from "@mohasinac/appkit/client"` in a Server Component (or any `ROUTES` / `sieveFilter` / `SIEVE_OP` runtime value) | Import from the DEFINING module — `constants/sort`, `utils/sieve-builder`, `next/routing/route-map` — or from `@mohasinac/appkit` in consumer code. `client.ts` is `"use client"`, so in a Server Component the binding is a client-reference proxy: rendering it as JSX is fine, calling it or reading a property off it throws as an opaque React #441. Enforced by `audit-client-entry-in-server.mjs`. Root Cause #76. **Does not apply to client-graph helper modules** (`src/lib/api/*-client.ts`) — those must keep using `/client` or they trip `audit-client-server-only-leak` (Root Cause #6). |
+| `resolveMediaUrl(src)` on a `<video>` source | `resolveVideoUrl(src)` — same `/media/…` mapping for our own Storage/GCS objects, but a third-party URL is returned untouched instead of being sent to `/api/media/ext`, which is image-only and 400s on `video/mp4`. Posters/thumbnails stay on `resolveMediaUrl`. Root Cause #27. |
+| `t("someKey")` built unconditionally for a facet that may not render | Construct the options behind the same guard that renders them. `ProductFilters` built four status labels at the top of the component body, so a single missing key produced a `MISSING_MESSAGE` storm on every public listing that never shows a status facet. |
 | `<Button className="… block …">` (or a bare `flex` / `hidden`) around an image tile | Drop the display utility and make the **parent** a flex column. `globals.css` declares `.block`/`.flex`/`.hidden` un-layered + `!important`, so it beats `.appkit-button`'s `display:inline-flex`; the button stops being a flex container and `.appkit-button__content`'s `flex:1 1 auto` / `align-self:stretch` go inert, collapsing every `<MediaImage>` child to 0x0. Enforced by `audit-primitive-child-wrappers.mjs`. Root Cause #68. |
 | `<Button>` with an image tile **and** a caption, no `flex-col` | Add `flex-col items-stretch` to the Button. The content wrapper inherits `flex-direction` from a `row` button, so tile and caption become side-by-side row items and the tile shrinks to a fraction of its width. Same audit, same root cause. |
 | Manual `useState<string \| null>(null)` for inline form error | Call `setFieldError("<fieldName>", message)` from the `<Form>` render-prop helpers. FieldInput / FieldSelect / FieldTextarea / FieldCheckbox all wire `aria-invalid` + role="alert" error block automatically. |

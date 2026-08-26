@@ -1280,7 +1280,7 @@ Total indexed files: 1313
 | request.mjs | i18n/request.mjs | Module implementation | - |
 | resolve-locale.ts | i18n/resolve-locale.ts | Module implementation | fn resolveLocale |
 | routing.ts | i18n/routing.ts | Module implementation | const i18n, const routing, type Locale |
-| instrumentation.ts | instrumentation.ts | Module implementation | const deploymentId, const result, const sha, fn register, fn resolveDeploymentVersion |
+| instrumentation.ts | instrumentation.ts | Module implementation | const deploymentId, const error, const result, const sha, fn onRequestError, fn register, fn resolveDeploymentVersion |
 | conversations-authorise.test.ts | lib/__tests__/conversations-authorise.test.ts | Module implementation | const result, fn conv |
 | features.test.ts | lib/__tests__/features.test.ts | Module implementation | const guarded, const handler, const key, const mockResponse, const originalEnv, const req, const res, var is |
 | sieve-validators.test.ts | lib/__tests__/sieve-validators.test.ts | Module implementation | const ALLOWED, const dotSet, const result |

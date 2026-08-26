@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/navigation";
-import { AdminSublistingCategoriesView, ROUTES, Heading } from "@mohasinac/appkit/client";
+import { AdminSublistingCategoriesView, Heading } from "@mohasinac/appkit/client";
 
-import { Row } from "@mohasinac/appkit";
+import { ROUTES, Row } from "@mohasinac/appkit";
 export const metadata = { title: "Sub-listing Categories — Admin" };
 
 export default function Page() {

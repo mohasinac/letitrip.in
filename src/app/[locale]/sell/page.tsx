@@ -1,5 +1,5 @@
 import { redirect } from "@/i18n/navigation";
-import { ROUTES } from "@mohasinac/appkit/client";
+import { ROUTES } from "@mohasinac/appkit";
 
 export const revalidate = 3600;
 

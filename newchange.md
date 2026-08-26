@@ -17,6 +17,9 @@
 
 | Date | Task | What was deferred / skipped | Status | Fix target |
 |------|------|-----------------------------|--------|------------|
+| 2026-08-26 | S-prod-console-errors | **RTDB `presence` + `analytics` client writes are architecturally impossible and were left in place, by explicit decision.** `src/lib/analytics/usePresence.ts` runs on **every route for every visitor** (called unconditionally from `LayoutShellClient.tsx:229`) and fires three browser-side RTDB operations: `set(presence/{clientId})`, `onDisconnect(...).remove()`, and `runTransaction(analytics/pageviews/{date}/{path})` (that last is why the console shows the odd path `…/2026-08-26/|` — `/` is illegal in an RTDB key so it is replaced with `|`). `appkit/firebase/base/database.rules.json` is a **backend-only-write** architecture: root is `.read:false/.write:false`, `presence/$uid` is explicitly `.write:false` (and its `.validate` demands an `online` field the client never sends), and **`analytics` has no rule at all**. The client also uses the default *unauthenticated* Firebase app — `usePresence` never calls `signInWithCustomToken` — so `auth` is `null` even for signed-in users. **These writes have never once succeeded.** The read side is equally broken: `AdminLiveOverviewCard.tsx:28-64` subscribes to `presence` (the collection root, whose `.read` rule lives one level down at `$uid`) and to `analytics/pageviews/{date}`, so the admin Live Overview card renders `—` permanently. Two `permission_denied` warnings per page load will therefore **still appear in the console** after this session — expected, not a regression. | ⏳ Open — user chose "investigate further before deciding" | Own session. Three viable directions: (a) delete the dead client writes and drop/repoint the Live Overview card; (b) move them behind an Admin-SDK API route, preserving the backend-only-write rule but costing ~1 Vercel invocation per page view (a real Rule #6 consideration); (c) authenticate the client via the existing `/api/realtime/token` custom-token flow and add narrowly-scoped `presence`/`analytics` rules |
+| 2026-08-26 | S-prod-console-errors | **`npm run check` does not exit 0, for reasons owned by a concurrent session.** Both the root repo and the `appkit` submodule were already dirty at session start with in-flight lottery/events/reviews/Tabs work. Remaining failures, none of them from this session's diff: 2 tsc errors — `src/actions/review.actions.ts:218` (file is **unmodified**; appkit's `voteReviewHelpfulDomain` changed arity underneath it) and `src/app/api/admin/events/route.ts:223` (`EventType` unknown) — plus `audit-feature-flags` and `audit-direct-fetch-ui`, both pointing at **untracked** lottery files (`api/admin/events/[id]/lottery-config/route.ts`, `admin/lotteries/[id]/edit/LotteryConfigClient.tsx`). Left untouched per concurrent-session git hygiene. Everything from this session is clean: appkit `check:types` passes, lint is 0 errors, and every audit passes except those two. | ⏳ Open — belongs to the lottery/events session | That session finishes its work; re-run `npm run check` before any commit that spans both |
+| 2026-08-26 | S-prod-console-errors | **No real `next build` and no visual pass.** Rule #10 — no dev server or deploy was run. The #441 fix is verified by the RSC digest probe against *production* (which still serves the OLD build), by the new strict-zero audit, by `tsc`, and by a runtime unit-check of `resolveMediaUrl`/`resolveVideoUrl`. It is **not** confirmed against a locally-built bundle, and CLAUDE.md's own Tier-QA note is explicit that `npm run check` cannot catch Turbopack-level boundary regressions — three gates exist (`check` → `build` → post-deploy smoke) and only the first has run. | ⏳ Open | Next session with a browser: `npm run dev`, then re-run the RSC digest probe against `localhost` expecting **0** `:E{"digest":` rows on `/` and `/sell` |
 | 2026-08-26 | S-checkout-extras | **The three add-on `*FeeEnabled` flags must be toggled once by an admin** at Site Settings → Commissions. The defaults were flipped to `true` in the schema, the seed and `CHECKOUT_DEFAULT_COMMISSIONS`, but a *default* only reaches a fresh install or `resetToDefaults` — the existing `siteSettings/global` has `false` **stored**. Deliberately not solved with an `undefined → true` client default: the four `compute*Fee` helpers all read `if (!rates.XEnabled) return 0`, so that would show a checkbox that bills ₹0 (Root Cause #59's shape, built on purpose). A re-seed of `siteSettings` would also flip them, but stamps every other seeded commission value over any admin edits. | ⏳ Open | One admin toggle, or an explicitly-approved `appkit-seed load --collections siteSettings` |
 | 2026-08-26 | S-checkout-extras | **A measurement trap worth internalising, not a defect.** This session twice concluded that project tooling was missing — `check:lint`, `npm run audit:all`, `scripts/run-audits.mjs`, and nine named audit scripts — and wrote all of it into the tracker and `prompt.md` before catching it. Every one of them **exists and works**. The cause: the Bash tool's working directory **persists between calls**, an earlier `cd appkit` was still in effect, and so `grep '"check:lint"' package.json` and `ls scripts/run-audits.mjs` were interrogating **`appkit/`**, not the repo root. Two independent "findings" were really one stale `cd`. **`pwd` before concluding a file or script does not exist** — a negative result from a path-relative command is only as trustworthy as the cwd it ran in. | ✅ Closed same session — the false rows were corrected before commit | Ongoing habit |
 | 2026-08-24 | S-availability-scope | **Three gated steps, none run** — (1) appkit pinned to `^4.13.1`; (2) 26 Firestore indexes undeployed; (3) no visual pass. | ✅ **(1) and (2) CLOSED 2026-08-25 (R0 release)** — appkit **4.15.0** published and the root repinned; the generated `firestore.indexes.json` was **33 indexes stale** (490 vs 523 — 26 products + 4 stores + 3 offers) and is now deployed and settled. (3) visual pass still open. | Visual pass only |
@@ -46,6 +49,118 @@
 ---
 
 ## SESSION LOG (newest first)
+
+---
+
+### 2026-08-26 — S-prod-console-errors: four production console errors, root-caused against the live site
+
+Started from a raw browser console dump of `www.letitrip.in`: a repeating
+`Minified React error #441`, a `MISSING_MESSAGE` storm, a media 404, and two
+RTDB `permission_denied` warnings. Four separate-looking symptoms; three of them
+turned out to be real defects and one of those accounted for **three** distinct
+production failures.
+
+#### The #441 was not diagnosable from the console, by design
+
+React error #441 is a *wrapper*: "An error occurred in the Server Components
+render. The specific message is omitted in production builds… A digest property
+is included." The real error is server-side and the client only ever sees an
+opaque hash — and **nothing in this app recorded RSC render errors**, so that
+hash pointed at nothing.
+
+Located it by parsing the RSC flight payload from the live site instead:
+
+```
+45:["$","$1","section-prize-draws",{"children":["$L5e",false]}]
+5e:E{"digest":"3201100654"}
+```
+
+`section-prize-draws` was throwing. The initial HTML carried the same digest
+while still painting normally with **zero** `role="alert"` elements — the
+boundary only renders after hydration, which is why the page "looked fine".
+
+#### One cause, three unrelated-looking symptoms
+
+`appkit/src/client.ts` is `"use client"`, so a runtime value imported from it
+into a Server Component is a client-reference proxy — rendering it as JSX is
+fine, calling it or property-accessing it on the server throws.
+
+| Where | Symptom |
+|---|---|
+| `PrizeDrawsSection` — `sortBy(...)` | the reported #441; error boundary replaced the homepage |
+| `EventRafflesSection` — `sieveFilter(...)` | **swallowed by its own `try/catch`** → section silently rendered nothing, indistinguishable from "no active raffles" (Root Cause #59's shape) |
+| `src/app/[locale]/sell/page.tsx` — `ROUTES.USER…` | returned **HTTP 200 with an error instead of redirecting** — seller onboarding dead, and a 200 is what no monitoring flags |
+
+Swept 21 more files onto defining-module imports. Root Cause **#76**.
+
+#### The other two real bugs
+
+- **`filters.statusInReview`** was never added to `messages/en.json`. It fired
+  5–7× per page because `ProductFilters` built its four status labels
+  *unconditionally* at the top of the component body — including on the five
+  public listings that never render a status facet. Added the key, moved the
+  construction behind `shouldShowStatus`, deleted three dead keys
+  (`statusOutOfStock` / `statusDiscontinued` / `statusSold`, none of which is a
+  real `ProductStatus`).
+- **`/media/sample/BigBuckBunny.mp4` 404** — the seed data was *correct*.
+  `resolveMediaUrl()` stripped the first path segment from **every**
+  `storage.googleapis.com` URL on the assumption it was our bucket, rewriting
+  Google's public sample bucket into a `/media/…` path that has never existed.
+  Scoped that branch to `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` and added
+  `resolveVideoUrl()` — a foreign video URL now passes through untouched rather
+  than hitting `/api/media/ext`, which is image-only and 400s on `video/mp4`
+  (Root Cause #27). Verified at runtime against all four URL shapes.
+
+#### Prevention, at two layers — the audit alone was not enough
+
+1. **`scripts/audit-client-entry-in-server.mjs`** (strict-zero, registered in the
+   dispatcher + stop hook + suppression-marker registry). Verified it fails on
+   all three original bugs and passes on the fixed tree.
+2. **`<HomepageSectionBoundary>`** wrapped around every homepage section at the
+   single `renderSection()` choke point. ~26 independently-fetched sections had
+   **no boundary between them and `[locale]/error.tsx`**, so any one throw cost
+   the entire page. Fallback renders `null` — a homepage missing one row beats a
+   homepage that is an apology — while still reporting. Root Cause **#77**.
+
+**The audit's first version was too broad and I had to correct it.** It flagged
+`src/lib/api/*-client.ts`, which are client-graph-only and **must** import from
+`/client` — pointing them at the bare entry is exactly the Turbopack leak
+`audit-client-server-only-leak` blocks (Root Cause #6). The two audits pull in
+opposite directions; the fix was to scope this one to Next.js route entries and
+`async function` components, the only two shapes that run on the server.
+
+#### Closing the observability gap that made this expensive
+
+Three independent breaks in one chain, all now fixed (Root Cause **#78**):
+`onRequestError` did not exist, so RSC/Server-Action errors were recorded
+nowhere; `setErrorTracker` had **zero call sites**, so the digest `ErrorView`
+carefully captures died in `console.error`; and `ErrorView` hid the digest
+outside development, leaving a bug-reporting user with nothing to quote. The
+ingestion route, the beacon and the admin UI were all already live — only the
+wiring was missing. `ErrorBoundary` now also forwards `componentStack`, a
+`serverErrors` field that had been declared with no producer at all.
+
+#### Not fixed, deliberately
+
+The two RTDB `permission_denied` warnings. They are **architecturally
+impossible** writes — backend-only-write rules, `analytics` has no rule at all,
+and the client uses the unauthenticated Firebase app — so they have never once
+succeeded, and the admin Live Overview card cannot read them either. User chose
+to decide the direction separately. Logged in DEFERRED; the warnings will still
+appear in the console.
+
+#### Build-tooling notes worth keeping
+
+- Rebuilding `appkit/dist` required resyncing `node_modules/@mohasinac/appkit`
+  (the documented Windows copy gotcha). **`cp -r` corrupted the tree partway**,
+  leaving a nested `dist/dist` and 123 missing files; `robocopy /E` from
+  PowerShell with absolute paths was the reliable route, verified 4615/4615 and
+  `diff -rq` clean. One file needed a forced copy — robocopy's same-size
+  heuristic skipped it.
+- **`functions/lib` must be rebuilt AFTER the audits, not before.** appkit's own
+  audit suite regenerates `dist/styles.css`, which re-trips
+  `audit-functions-bundle-freshness` (Root Cause #64) even though the bundle was
+  just built.
 
 ---
 

@@ -235,6 +235,12 @@ const checks = [
     cwd: ROOT,
   },
   {
+    label: "audit-client-entry-in-server",
+    cmd: "node",
+    args: ["scripts/audit-client-entry-in-server.mjs"],
+    cwd: ROOT,
+  },
+  {
     label: "audit-primitive-child-wrappers",
     cmd: "node",
     args: ["scripts/audit-primitive-child-wrappers.mjs"],

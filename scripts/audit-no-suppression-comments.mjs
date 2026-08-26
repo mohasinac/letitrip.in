@@ -51,6 +51,7 @@ const SUPPRESSION_MARKERS = [
   "// audit-unknown-ok:",
   "// audit-silent-catch-ok:",
   "// audit-child-wrapper-ok:",
+  "// audit-client-entry-ok:",
   "// rbac-public:",
   "// rbac-scope-enforced-in-handler:",
   "// toast-intentionally-silent:",

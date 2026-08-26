@@ -1,5 +1,5 @@
 import { AdminBundlesView } from "@mohasinac/appkit";
-import { ROUTES } from "@mohasinac/appkit/client";
+import { ROUTES } from "@mohasinac/appkit";
 
 export const metadata = { title: "Bundles — Admin" };
 

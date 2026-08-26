@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { itemRequestsRepository } from "@mohasinac/appkit";
-import { ROUTES } from "@mohasinac/appkit/client";
+import { ROUTES } from "@mohasinac/appkit";
 import { Section, Container, Row, Stack, Heading, Text, Badge } from "@mohasinac/appkit/client";
 import { ItemRequestDetailActions } from "./ItemRequestDetailActions";
 
