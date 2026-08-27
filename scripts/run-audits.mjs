@@ -271,6 +271,16 @@ const AUDITS = [
   // while the real `shippingPaidBy` clause the Free-shipping toggle emitted
   // was thrown away, so the toggle did nothing at all.
   { name: "sieve-field-schema-parity",     script: "scripts/audit-sieve-field-schema-parity.mjs" },
+  // Guards the SHAPE of searchTxt queries, not the presence of a fix. Two
+  // fixes here were silently reverted by a rename that kept the new names and
+  // restored the old logic — invisible to tsc and to any grep-for-a-symbol
+  // check. Blocks array-contains-any (OR) on a search field and an `if` whose
+  // body is only a comment (emits no clause, drops every filter silently).
+  { name: "search-semantics",              script: "scripts/audit-search-semantics.mjs" },
+  // A searchTxt migration is all-or-nothing: interface + INDEXED_FIELDS +
+  // SIEVE_FIELDS + seed tokens + composite index + no PII. Any one missing
+  // produces silence, not an error. MIGRATED is enforced, PENDING reported.
+  { name: "searchtxt-migration",           script: "scripts/audit-searchtxt-migration.mjs" },
   // Strict-zero. A sort option whose field isn't `canSort: true` in the target
   // repository's SIEVE_FIELDS — sievejs drops the sort silently, so the option
   // renders and does nothing ("Featured First"/"Promoted First" were dead this

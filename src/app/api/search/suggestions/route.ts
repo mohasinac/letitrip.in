@@ -17,6 +17,10 @@ import {
   eventRepository,
   ROUTES,
   sortBy,
+  sieveFilter,
+  SIEVE_OP,
+  PRODUCT_FIELDS,
+  ProductStatusValues,
 } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
 
@@ -70,23 +74,38 @@ export const GET = withProviders(
       const wantBlog = wantAll || typeFilter === "blog";
       const wantEvent = wantAll || typeFilter === "event";
 
-      const filters = (searchTerm: string) =>
-        `searchTokens=*${searchTerm.toLowerCase()}*`;
+      // `searchTokens=*term*` was not a Sieve expression at all: `=*` is not an
+      // operator, so `parseFilters` discarded the term and every request ran
+      // with ZERO filters. That is why the dropdown returned the same newest
+      // rows for every keystroke — and, with no `status` clause either, why it
+      // surfaced drafts and archived products to anonymous callers.
+      //
+      // Sieve cannot express `array-contains`, so the token search travels via
+      // `baseOpts.search` on the repository call instead. `status==published`
+      // is now explicit rather than accidental.
+      const publishedOnly = sieveFilter(
+        PRODUCT_FIELDS.STATUS,
+        SIEVE_OP.EQ,
+        ProductStatusValues.PUBLISHED,
+      );
 
       const [products, categories, blog, events] = await Promise.all([
         wantProduct
           ? productRepository
-              .list({
-                filters: filters(q),
-                sorts: sortBy("createdAt"),
-                pageSize: PER_TYPE_LIMIT,
-              })
+              .list(
+                {
+                  filters: publishedOnly,
+                  sorts: sortBy("createdAt"),
+                  pageSize: PER_TYPE_LIMIT,
+                },
+                { search: q },
+              )
               .catch(() => ({ items: [] as Record<string, JsonValue>[] }))
           : Promise.resolve({ items: [] as Record<string, JsonValue>[] }),
         wantCategory
           ? categoriesRepository
               .list({
-                filters: filters(q),
+                filters: undefined,
                 sorts: sortBy("name", "ASC"),
                 pageSize: PER_TYPE_LIMIT,
               })
@@ -94,14 +113,14 @@ export const GET = withProviders(
           : Promise.resolve({ items: [] as Record<string, JsonValue>[] }),
         wantBlog
           ? blogRepository
-              .listPublished({}, { filters: filters(q), sorts: sortBy("publishedAt"), pageSize: PER_TYPE_LIMIT })
+              .listPublished({}, { filters: undefined, sorts: sortBy("publishedAt"), pageSize: PER_TYPE_LIMIT })
               .then((r) => ({ items: r.items as unknown as Record<string, JsonValue>[] }))
               .catch(() => ({ items: [] as Record<string, JsonValue>[] }))
           : Promise.resolve({ items: [] as Record<string, JsonValue>[] }),
         wantEvent
           ? eventRepository
               .list({
-                filters: filters(q),
+                filters: undefined,
                 sorts: sortBy("startsAt"),
                 pageSize: PER_TYPE_LIMIT,
               })
