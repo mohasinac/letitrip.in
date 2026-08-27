@@ -208,6 +208,45 @@ for (const dir of SCAN_DIRS) {
       });
     }
 
+    // --- UNSHRINKABLE_GLYPH ----------------------------------------------
+    //
+    // A raw `<svg>` inside an interactive control, carrying a size but no
+    // `shrink-0`, is a flex ITEM with the default `flex-shrink: 1`. If the
+    // control has padding — `.appkit-button--sm` has 0.75rem of it — the
+    // content box can be narrower than the glyph's stated width, and the glyph
+    // silently shrinks to fit rather than rendering at the size it declares.
+    //
+    // That is exactly what happened in the title bar: `<Button size="sm"
+    // className="w-9 h-9">` left a 12px content box, so its `w-5 h-5` (20px)
+    // svg rendered at ~12px while the sibling <Link> icons, which have no
+    // padding, rendered full size. OFF_SCALE_ICON could not see it — 20px IS
+    // on the scale. The rendered size and the declared size simply differed.
+    //
+    // `<Icon>` applies `shrink-0` for you, which is the real fix; this rule is
+    // for anything still hand-rolling an `<svg>`.
+    {
+      const SVG_RE = /<svg\b/g;
+      let sm;
+      while ((sm = SVG_RE.exec(source))) {
+        const attrs = source.slice(sm.index, openerEnd(source, sm.index) + 1);
+        const sized = HW_RE.test(attrs) || WH_RE.test(attrs);
+        if (!sized) continue;
+        if (/\bshrink-0\b|\bflex-shrink-0\b/.test(attrs)) continue;
+        if (!inControl(source, sm.index)) continue;
+        violations.push({
+          file: relPath,
+          line: lineOf(source, sm.index),
+          rule: "UNSHRINKABLE_GLYPH",
+          snippet: `<svg …> inside a control, sized but not shrink-0`,
+          hint:
+            `A padded flex control can leave a content box narrower than this glyph,\n` +
+            `      and it will shrink to fit rather than render at its stated size —\n` +
+            `      silently, and invisibly to the size-scale rule above.\n` +
+            `      Use <Icon name="…" size="…" /> (it applies shrink-0), or add shrink-0.`,
+        });
+      }
+    }
+
     // --- TEXT_GLYPH_ICON --------------------------------------------------
     // The glyph must be the ENTIRE content of its slot — `>♥<`, `"♡"`, or a
     // ternary yielding only glyphs. `"3★ and above"` is a rating LABEL, where

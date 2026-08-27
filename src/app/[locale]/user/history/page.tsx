@@ -120,7 +120,7 @@ function HistoryRow({ item, onRemove }: HistoryRowProps) {
         title="Remove from history"
         className={REMOVE_BTN}
       >
-        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2}>
+        <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M6 18L18 6" />
         </svg>
       </Button>

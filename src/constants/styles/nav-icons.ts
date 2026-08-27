@@ -5,7 +5,13 @@
  * equivalent; kept as a typed map so navigation.tsx can drop the legacy
  * `THEME_CONSTANTS` import without losing the colour scheme.
  */
-export const NAV_ICON_SIZE_SM = "w-4 h-4";
+/**
+ * Nav-row glyph size. The `lg` tier (20px) on the ICON_SIZE scale, matching the
+ * title-bar action icons above it — the two rows sit inches apart and read as
+ * one control strip, so a 16px nav row under a 20px action row looked like a
+ * mistake rather than a hierarchy.
+ */
+export const NAV_ICON_SIZE_SM = "w-5 h-5";
 
 export const NAV_ICON_COLORS = {
   home: "text-info",
