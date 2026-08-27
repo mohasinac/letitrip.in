@@ -28,7 +28,15 @@ function normalizeTab(value: string): PromotionsTab {
     : "deals";
 }
 
-function buildCanonicalPath(locale: string, tab: PromotionsTab): string {
+/**
+ * Where an unrecognised tab gets sent — a NAVIGATION target, not a canonical.
+ *
+ * It was named `buildCanonicalPath` while doing double duty as both, which is
+ * how the section ended up with four competing canonicals. The canonical now
+ * lives on `../layout.tsx`; this only normalises `/promotions/wat` →
+ * `/promotions/deals`.
+ */
+function buildRedirectPath(locale: string, tab: PromotionsTab): string {
   return `/${locale}/promotions/${tab}`;
 }
 
@@ -37,7 +45,7 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string; tab: string }>;
 }): Promise<Metadata> {
-  const { locale, tab } = await params;
+  const { tab } = await params;
   const activeTab = normalizeTab(tab);
 
   const descriptions: Record<PromotionsTab, string> = {
@@ -47,10 +55,23 @@ export async function generateMetadata({
     all: "All promotions — deals, coupons, and featured products in one place.",
   };
 
+  /*
+   * No `alternates` — the canonical is inherited from `../layout.tsx`, which
+   * names `/promotions`, the URL the sitemap advertises. Next merges metadata,
+   * so omitting the key here keeps the parent's.
+   *
+   * These four tabs are views of one page, and they consolidate onto it the
+   * same way every `stores/[storeSlug]/*` tab consolidates onto
+   * `/stores/{slug}`. Each declaring its own canonical split the section into
+   * four competing URLs, none of which was the one in the sitemap — and it did
+   * so with a locale-prefixed relative string while `_gm` emits absolute
+   * unprefixed URLs, so the two never even agreed on a format.
+   *
+   * Per-tab title and description stay: they are genuinely different content.
+   */
   return {
     title: `Promotions — ${TAB_LABELS[activeTab]} | LetItRip`,
     description: descriptions[activeTab],
-    alternates: { canonical: buildCanonicalPath(locale, activeTab) },
   };
 }
 
@@ -63,7 +84,7 @@ export default async function Page({
   const activeTab = normalizeTab(tab);
 
   if (tab !== activeTab) {
-    redirect(buildCanonicalPath(locale, activeTab));
+    redirect(buildRedirectPath(locale, activeTab));
   }
 
   const promotions = await getPromotions().catch(() => null);
