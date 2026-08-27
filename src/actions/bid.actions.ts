@@ -1,5 +1,4 @@
 "use server";
-import { normalizeError } from "@mohasinac/appkit";
 
 import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
@@ -15,7 +14,7 @@ import {
   rateLimitByIdentifier,
   RateLimitPresets,
 } from "@mohasinac/appkit";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
+import { ApiError, ValidationError } from "@mohasinac/appkit";
 import {
   placeBid,
   buyNowAuction,
@@ -40,50 +39,44 @@ const placeBidSchema = z.object({
 
 // --- Server Actions --------------------------------------------------------
 
-export type PlaceBidActionResult =
-  | { ok: true; data: PlaceBidResult }
-  | { ok: false; error: string; code?: string; issues?: unknown[] };
-
+/**
+ * 🛑 ONE envelope, produced by `wrapAction`. Never add a second.
+ *
+ * Both actions in this file used to `return { ok, data }` from INSIDE
+ * `wrapAction`, so the value on the wire was
+ * `{ ok: true, data: { ok: false, error: "AUCTION_ENDED" } }` — the outer `ok`
+ * was `true` for every possible outcome, including every failure.
+ * `PlaceBidFormClient` reads the outer `ok`, so success, `BUY_NOW_UNAVAILABLE`,
+ * rate-limits and "please sign in" all took the same branch, and the buyout's
+ * `checkoutUrl` (read one level too shallow) was always `undefined`. Buy Now
+ * placed a real bid and a real locked cart line and then told the buyer
+ * nothing — the reported "just for show" bug.
+ *
+ * Throw instead of returning a failure shape: `wrapAction` maps every AppError
+ * subclass to `{ ok: false, code, error }` via `mapToHttpError`, which is
+ * strictly more information than the hand-rolled catch produced.
+ */
 export async function placeBidAction(
   input: PlaceBidInput,
-): Promise<ActionResult<PlaceBidActionResult>> {
+): Promise<ActionResult<PlaceBidResult>> {
   return wrapAction(async () => {
-    try {
-        const user = await requireAuthUser();
-    
-        const rl = await rateLimitByIdentifier(
-          `bid:place:${user.uid}`,
-          RateLimitPresets.STRICT,
-        );
-        if (!rl.success)
-          return { ok: false, error: "Too many requests. Please slow down." };
-    
-        const parsed = placeBidSchema.safeParse(input);
-        if (!parsed.success)
-          return {
-            ok: false,
-            error: parsed.error.issues[0]?.message ?? "Invalid bid data",
-            issues: parsed.error.issues,
-          };
-    
-        const data = await placeBid(user.uid, user.email ?? "", parsed.data);
-        return { ok: true, data };
-      } catch (err: unknown) {
-        void normalizeError(err);
-        if (err instanceof AuthorizationError)
-          return { ok: false, error: "Please sign in to place a bid." };
-        if (err instanceof ValidationError) {
-          const veData = "data" in err ? (err as { data?: unknown }).data : undefined;
-          return {
-            ok: false,
-            error: err.message,
-            code: (veData as { code?: string } | undefined)?.code,
-          };
-        }
-        if (err instanceof Error && err.message)
-          return { ok: false, error: err.message };
-        return { ok: false, error: "Failed to place bid. Please try again." };
-      }
+    const user = await requireAuthUser();
+
+    const rl = await rateLimitByIdentifier(
+      `bid:place:${user.uid}`,
+      RateLimitPresets.STRICT,
+    );
+    if (!rl.success)
+      throw new ApiError(429, "Too many requests. Please slow down.");
+
+    const parsed = placeBidSchema.safeParse(input);
+    if (!parsed.success)
+      throw new ValidationError(
+        parsed.error.issues[0]?.message ?? "Invalid bid data",
+        parsed.error,
+      );
+
+    return placeBid(user.uid, user.email ?? "", parsed.data);
   });
 }
 
@@ -104,47 +97,30 @@ export async function getBidByIdAction(
   });
 }
 
-export type BuyNowActionResult =
-  | { ok: true; data: BuyNowAuctionResult }
-  | { ok: false; error: string; code?: string };
-
+/** See the note on `placeBidAction` — single envelope, throw to fail. */
 export async function buyNowAction(
   productId: string,
-): Promise<ActionResult<BuyNowActionResult>> {
+): Promise<ActionResult<BuyNowAuctionResult>> {
   return wrapAction(async () => {
-    try {
-        const user = await requireAuthUser();
-    
-        const rl = await rateLimitByIdentifier(
-          `auction:buynow:${user.uid}`,
-          RateLimitPresets.STRICT,
-        );
-        if (!rl.success)
-          return { ok: false, error: "Too many requests. Please slow down." };
-    
-        const data = await buyNowAuction(
-          user.uid,
-          (user as any).displayName ?? user.email ?? "Unknown User",
-          user.email ?? "",
-          { productId },
-        );
-        return { ok: true, data };
-      } catch (err: unknown) {
-        void normalizeError(err);
-        if (err instanceof AuthorizationError)
-          return { ok: false, error: "Please sign in to purchase." };
-        if (err instanceof ValidationError) {
-          const veData = "data" in err ? (err as { data?: unknown }).data : undefined;
-          return {
-            ok: false,
-            error: err.message,
-            code: (veData as { code?: string } | undefined)?.code,
-          };
-        }
-        if (err instanceof Error && err.message)
-          return { ok: false, error: err.message };
-        return { ok: false, error: "Buy Now failed. Please try again." };
-      }
+    const user = await requireAuthUser();
+
+    const rl = await rateLimitByIdentifier(
+      `auction:buynow:${user.uid}`,
+      RateLimitPresets.STRICT,
+    );
+    if (!rl.success)
+      throw new ApiError(429, "Too many requests. Please slow down.");
+
+    // `AuthPayload` carries the provider display name as `name`, NOT
+    // `displayName`. This read used to be `(user as any).displayName`, which is
+    // always undefined — so every buyout recorded the buyer's raw email as
+    // their public bidder name. The cast is what hid it (Root Cause #45).
+    return buyNowAuction(
+      user.uid,
+      user.name ?? user.email ?? "Unknown User",
+      user.email ?? "",
+      { productId },
+    );
   });
 }
 

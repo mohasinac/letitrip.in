@@ -50,6 +50,91 @@
 
 ## SESSION LOG (newest first)
 
+### 2026-08-27 — S-four-silent-defects: an auth gate that couldn't wait, a Buy Now that swallowed everything, and two design-system holes
+
+Four user reports, three of them *silent* — nothing errored, nothing logged, and
+the UI rendered a plausible-looking wrong state.
+
+**A — "I'm logged in but the wishlist icon says I need to be logged in."**
+`useAuthGate` destructured `const { user } = useAuth()` and discarded `loading`.
+`SessionProvider` is mounted `initialUser={null}` (the root locale layout is
+static and must stay so), so on every hard load `user` is null and `loading` true
+until Firebase persistence *and* `/api/user/profile` resolve — a window in which
+every gated CTA in the app treated a signed-in user as signed out. A click there
+is now PARKED in a ref and replayed through a `useCallback` keyed on
+`[user, settings]`, so the caller's closure is preserved while the gate re-reads
+the session at drain time. **Deleting the on-mount check would have been the
+wrong fix** — a dropped click is indistinguishable from a dead button.
+`isAuthResolving` is exposed so controls can show the wait. Also removed three
+`ACTION_META.requiredPermission` values using dot-separated keys that match no
+role in `DEFAULT_ROLES` — guaranteed denials, zero live call sites.
+
+**D — "the buy now button on auctions is still just for show."** The server was
+always correct: `buyNowAuction` really did write the bid and the locked cart
+line. `buyNowAction` returned a *double* envelope (`wrapAction` around an
+already-enveloped return), and the client read the OUTER `ok` — so success,
+`AUCTION_ENDED`, rate-limit and "please sign in" all took one silent
+`router.refresh()` branch, and `checkoutUrl` was read one level too shallow and
+was always `undefined`. Collapsed to a single envelope (which fixed
+`placeBidAction`'s identical bug), surfaced real errors, and routed success to
+`/checkout?lane=auction`. Adjacent dead paths fixed in the same pass: mobile had
+no Buy Now CTA at all while `MOBILE_PRIMARY_ACTIONS.auction` had declared one for
+months; the mobile Place Bid button scrolled to `#auction-bid-form`, which lives
+inside a `hidden lg:block` panel; and `(user as any).displayName` does not exist
+on `AuthPayload` (it is `name`), so every buyout recorded the buyer's raw email
+as their public bidder name — the cast is what hid it.
+
+**🛑 The dead `POST /api/auctions/[id]/buy-now` route held the ONLY
+`isSoftBanned(user, "place_bids")` check in the codebase.** The live
+server-action path had none, so an admin-issued bidding ban did nothing at all.
+The guard was moved into `placeBid`/`buyNowAuction` (reusing a profile read both
+already made, so it costs no extra Firestore read) *before* the route was
+deleted.
+
+**C — "hovering any link shows white background behind white text in dark
+mode."** `darkMode: "class"` was fine and `dark:` variants win — that hypothesis
+is a dead end. Two real causes: ~30 sites had no dark half at all, and ~20 more
+carried two competing UNPREFIXED hover fills manufactured by the (now deleted)
+`scripts/migrate-dark-classes.mjs`. With `important: true` in both configs those
+tie on specificity AND on `!important`, so **emission order** decides — verified
+by byte offset in the built CSS, not inferred. Fix is to REMOVE the light class,
+never to add a `dark:` one. Three theme-inverting tokens added
+(`--appkit-color-surface-hover` / `-raised` / `--appkit-color-primary-surface`);
+the first two had already been **referenced by 10 call sites while declared
+nowhere**, so those hovers were transparent. Swept 49 hover sites, 44 more of the
+same orphan shape on `text`/`border`/`bg`, and 17 component-CSS rules.
+
+**B — "the wishlist icon is very small … this issue is with all icons in
+general."** Measuring changed the plan: **305 of 327** glyph sites were already
+on a consistent scale, so the blanket rename originally planned would have
+changed zero pixels across 122 files. It was dropped. The real defects were
+structural: `♥`/`♡` text characters used as icons (no width/height utility can
+size one), a glyph size unrelated to its control's size (a 14px heart in a 44px
+button; `<Button>` hardcoded `h-4 w-4` for every size), and `.appkit-button--sm`'s
+`min-height: 36px` beating a caller's `h-8` to render the card heart as a
+**32×36 ellipse**. Shipped `ICON_SIZE`, an `<Icon>` primitive consuming the
+long-unconsumed `icon-registry.ts`, `IconButton size="touch"` (44px), a
+size-aware `ActionIcon`, and one `WishlistHeartButton` replacing all seven heart
+sites and their three glyph technologies. A `2xl` (28px) tier was added rather
+than churning ten lightbox/carousel controls — ten sites had independently and
+unanimously picked 28px, which is a tier, not ten mistakes.
+
+**Enforcement.** Two strict-zero audits with no suppression marker:
+`audit-theme-invariant-hover.mjs` (hardcoded tint / duplicate hover fill /
+component-CSS neutral with no dark twin) and `audit-icon-sizing.mjs` (off-scale
+glyph / text glyph as icon), both scoped and registered in `run-audits.mjs`.
+CLAUDE.md gains Root Cause rows #79 and #80 plus five primitive-rule entries.
+
+**Process note worth carrying forward.** One codemod used an over-broad
+`re.sub(r'  +"', '"')` that stripped indentation from ~710 lines across 80
+files — including files belonging to a concurrent session. It was caught, and
+every line was repaired by restoring indentation from git. Python's text-mode
+write also silently converted LF→CRLF on Windows, which made
+`audit-html-wrappers` fail on `<label` matching `/<label\s/`. **Scope a
+codemod to the files you actually intend to change, and write bytes, not text.**
+
+---
+
 ### 2026-08-27 — S-seo-recovery: the site left Google, and one dead line made every page uncacheable
 
 **Report:** "what happened to my site seo? it is not even showing on google search anymore." A `site:letitrip.in` query returned exactly ONE result — the homepage, at `https://www.letitrip.in/`.

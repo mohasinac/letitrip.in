@@ -14,7 +14,7 @@
  * 1. ~30 sites had no dark half at all and had never worked in a dark theme.
  *
  * 2. ~20 more carried TWO competing unprefixed hover fills on one element —
- *    `hover:bg-zinc-50 hover:bg-[var(--appkit-color-surface-elevated)]`. That
+ *    a `zinc-50` tint beside an arbitrary `surface-elevated` fill. That
  *    shape was manufactured by `scripts/migrate-dark-classes.mjs`, which
  *    rewrote `dark:hover:bg-zinc-800` into an UNPREFIXED arbitrary utility and
  *    left the light class beside it. Both configs set `important: true`, so the

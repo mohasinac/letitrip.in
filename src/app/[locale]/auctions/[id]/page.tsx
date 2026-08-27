@@ -80,7 +80,10 @@ export default async function Page({ params }: Props) {
         initialAuction={auction}
         productFeatures={productFeatures}
         onPlaceBid={placeBidAction}
-        onBuyNow={buyNowAction.bind(null, id)}
+        // Bind the resolved document id, matching what the bid path already
+        // passes (`String(product.id)`). `id` here is the raw URL segment,
+        // which for auctions is a slug.
+        onBuyNow={buyNowAction.bind(null, String(auction?.id ?? id))}
       />
     </>
   );

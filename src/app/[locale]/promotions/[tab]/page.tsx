@@ -99,7 +99,7 @@ export default async function Page({
                   "shrink-0 rounded-full border px-[var(--appkit-space-4)] py-[var(--appkit-space-1-5)] text-[length:var(--appkit-text-sm)] font-medium transition-colors whitespace-nowrap",
                   isActive
                     ? "border-primary-500 bg-primary-50 text-primary-700 dark:border-primary-400 dark:bg-primary-900/30 dark:text-primary-300"
-                    : "border-[var(--appkit-color-border)] text-[var(--appkit-color-text-muted)] hover:bg-zinc-50 hover:bg-[var(--appkit-color-surface-elevated)]",
+                    : "border-[var(--appkit-color-border)] text-[var(--appkit-color-text-muted)] hover:bg-surface-hover",
                 ].join(" ")}
               >
                 {TAB_LABELS[tabValue]}

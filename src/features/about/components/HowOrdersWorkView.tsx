@@ -103,7 +103,7 @@ export async function HowOrdersWorkView() {
       label: t("s1Label"),
       desc: t("s1Desc"),
       color:
-        "bg-slate-50 border-slate-200 bg-[var(--appkit-color-surface-input)] border-[var(--appkit-color-border)]",
+      " bg-[var(--appkit-color-surface-input)] border-[var(--appkit-color-border)]",
       badge:
         "bg-[var(--appkit-color-border)] text-[var(--appkit-color-text-muted)]",
       icon: "🕐",

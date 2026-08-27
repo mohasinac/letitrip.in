@@ -222,7 +222,9 @@
 | Breadcrumb.tsx | Breadcrumb | Component | Breadcrumb navigation |
 | Divider.tsx | Divider | Component | Visual separator |
 | EmptyState.tsx | EmptyState | Component | Empty/no-data state with icon + CTA |
-| IconButton.tsx | IconButton | Component | Icon-only button |
+| IconButton.tsx | IconButton, ICON_BUTTON_ICON_SIZE | Component | Icon-only button. Sizes `sm`/`md`/`touch`(44px)/`lg` are TRUE squares — unlike `<Button>`, whose `--sm` min-height beats a caller's `h-8`. `ICON_BUTTON_ICON_SIZE` maps each box to the glyph size it wants |
+| Icon.tsx | Icon | Component | The single way to render an icon. `<Icon name={IconKey} size={IconSizeKey} tone filled>` resolving through `ICONS`. RSC-safe (lucide is CJS, no hooks here) |
+| icons/icon-registry.ts | ICONS, ICON_SIZE, IconKey, IconSizeKey, isIconKey, resolveIcon | Registry | Name→component map plus the ONLY sanctioned glyph scale: xs 12 / sm 14 / md 16 / lg 20 / xl 24 / 2xl 28. Enforced by `audit-icon-sizing.mjs` |
 | TextLink.tsx | TextLink | Component | Styled inline link |
 | StarRating.tsx | StarRating | Component | Star rating display/input |
 | PriceDisplay.tsx | PriceDisplay | Component | Currency-formatted price |
@@ -716,7 +718,7 @@
 | search | SearchFiltersRow, SearchResultsSection | Component | Search UI |
 | search | SearchView | View | Full search page |
 | wishlist | WishlistCard, WishlistPage, WishlistView | View | Wishlist page |
-| wishlist | WishlistToggleButton | Button | Add to wishlist button |
+| wishlist | WishlistHeartButton | Button | The single wishlist heart. `size` is a PLACEMENT (`inline`/`card`/`detail`), not a raw size; `card` is a 44px tap target. Owns no auth modal — `useAuthGate` is the gate. Replaced WishlistToggleButton (dead code, competing modal, unsizeable glyph) |
 | wishlist | WishlistCapWatcher | Watcher | Wishlist capacity monitor |
 | scams | ScamRegistryView, ScamProfileView | View | Scam registry — `ScamProfileView` now takes `similarScamReports?` (other verified profiles sharing scamType, distinct from the pre-existing explicit `relatedScammerIds`-based "Related Profiles"); `getScammerProfilePageData()` returns both (2026-08-19) |
 | scams | ScamAwarenessModal | Modal | Scam awareness warning |

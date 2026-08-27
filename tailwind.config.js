@@ -42,6 +42,10 @@ module.exports = defineTailwindConfig({
         primary: {
           // Lime Green — light mode energy accent (Beyblade green blades)
           DEFAULT: "var(--appkit-color-primary)",
+          // Brand-tinted hover fill. Mirrors the `{status}.surface` shape.
+          // Replaces `hover:bg-primary-50`, which is a near-white rose in
+          // default-dark rather than a brand tint.
+          surface: "var(--appkit-color-primary-surface)",
           50: "var(--appkit-color-primary-50)",
           100: "var(--appkit-color-primary-100)",
           200: "var(--appkit-color-primary-200)",
@@ -142,6 +146,13 @@ module.exports = defineTailwindConfig({
           DEFAULT: "var(--appkit-color-surface)",
           elevated: "var(--appkit-color-surface-elevated)",
           input: "var(--appkit-color-surface-input)",
+          // Theme-INVERTING interactive fills. `hover:bg-surface-hover` is the
+          // replacement for every hardcoded `hover:bg-{zinc,slate,gray,neutral}-{50,100,200}`,
+          // which stays near-white in dark themes and renders white-on-white
+          // under `dark:hover:text-*`. `elevated` is NOT a substitute — it
+          // equals `surface` in default-light and sunset.
+          hover: "var(--appkit-color-surface-hover)",
+          raised: "var(--appkit-color-surface-raised)",
         },
       },
       spacing: {

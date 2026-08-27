@@ -3,7 +3,7 @@ import { Stack, normalizeError } from "@mohasinac/appkit/client";
 import type { FirestoreDocument, FirestoreValue } from "@mohasinac/appkit/client";
 import { useState, useCallback } from "react";
 import { Link } from "@/i18n/navigation";
-import { Button, Checkbox, Div, Heading, Input, RadioGroup, RichText, Row, Select, Span, Text, Textarea } from "@mohasinac/appkit/ui";
+import { Button, Checkbox, Div, Heading, Icon, Input, RadioGroup, RichText, Row, Select, Span, Text, Textarea } from "@mohasinac/appkit/ui";
 import { Label } from "@mohasinac/appkit/client";
 import { EventParticipateView, useSession, useToast, ROUTES } from "@mohasinac/appkit/client";
 import { SpinWheelView, EventRaffleEntryForm } from "@mohasinac/appkit/client";
@@ -386,7 +386,9 @@ function renderDynamicField(
             className={star <= rating ? CLS_STAR_ON : ""}
             aria-label={`${star} star`}
           >
-            ★
+            {/* Was the text character ★, which no size utility can control —
+                it rendered at whatever the platform font served. */}
+            <Icon name="review" size="md" filled={star <= rating} />
           </Button>
         ))}
       </Row>

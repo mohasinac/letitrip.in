@@ -383,7 +383,7 @@ function renderAddressStep({
           <Button
             type="button"
             onClick={() => setAddAddressDrawerOpen(true)}
-            className="bg-zinc-900 text-white hover:bg-zinc-800 bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text)]"
+            className="bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text)] hover:bg-surface-hover"
           >
             + Add new address
           </Button>
