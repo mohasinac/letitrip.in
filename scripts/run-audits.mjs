@@ -292,6 +292,18 @@ const AUDITS = [
   // SIEVE_FIELDS + seed tokens + composite index + no PII. Any one missing
   // produces silence, not an error. MIGRATED is enforced, PENDING reported.
   { name: "searchtxt-migration",           script: "scripts/audit-searchtxt-migration.mjs" },
+  // Strict-zero. Keeps two deleted footguns deleted and blocks the SHAPE of the
+  // bug each caused. `addPiiIndices` returned {...source, ...indices}, so
+  // spreading it over ciphertext restored the plaintext — that is how both
+  // token repositories wrote every verification and reset email in CLEARTEXT,
+  // invisibly, since mapDoc decrypts on read either way. The exported
+  // NEWSLETTER_PII_* pair was empty with no reader while the repository's own
+  // module-local copy did the work, so it read as proof of a leak that did not
+  // exist. Also blocks NEW emitters of case-insensitive Sieve operators, which
+  // the adapter throws on and `throwExceptions: false` turned into silence —
+  // measured: a `@=*` clause first meant NOTHING was applied, so the route
+  // returned the entire unfiltered collection with a 200.
+  { name: "legacy-search-pii",             script: "scripts/audit-legacy-search-pii.mjs" },
   // Strict-zero. A sort option whose field isn't `canSort: true` in the target
   // repository's SIEVE_FIELDS — sievejs drops the sort silently, so the option
   // renders and does nothing ("Featured First"/"Promoted First" were dead this

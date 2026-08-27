@@ -181,6 +181,17 @@ for (const file of files) {
   const src = stripComments(readFileSync(file, "utf8"));
   for (const m of src.matchAll(/piiFields\s*(?::[^=]*)?=\s*([A-Z_]+)/g)) {
     if (!/SECRET|TOKEN/.test(m[1])) continue;
+    // Same carve-out as the registry scan above, which this half was missing:
+    // a `*_PII_*` name is genuine PII encrypted with the PII key, and
+    // `TOKEN_PII_FIELDS` is an auth token's EMAIL address. The hazard this rule
+    // exists for is a `*_SECRET_FIELDS`-shaped name — fields belonging to the
+    // settings-key system — reaching a repository's `piiFields`.
+    //
+    // Without this the rule fired the moment the token repositories were
+    // migrated OFF their hand-rolled `create` overrides (which wrote email in
+    // cleartext) and ONTO the declarative `piiFields` hook — i.e. it flagged
+    // the fix for the bug, not the bug.
+    if (/_PII_/.test(m[1])) continue;
     violations.push({
       rule: "SETTINGS_KEY_IN_PII_REGISTRY",
       detail: `${rel(file)}:${lineAt(src, m.index)} — piiFields = ${m[1]}: this encrypts a settings-key field with the PII key. The two decryptors are different functions; the round-trip cannot close.`,
