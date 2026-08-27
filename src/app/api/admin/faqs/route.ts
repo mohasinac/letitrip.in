@@ -96,7 +96,11 @@ export const POST = withProviders(
         showOnHomepage: b.showOnHomepage ?? false,
         showInFooter: b.showInFooter ?? false,
         "seo.slug": slug,
-        searchTokens: [],
+        // `searchTokens: []` was here — a field renamed to `searchTxt`, and one
+        // the route should not send either way: `faqsRepository.create` derives
+        // it via `buildFaqSearchTxt` so the seed and every write path produce
+        // byte-identical tokens. Passing an empty array only wrote dead data.
+        // The `as any` below is why tsc never flagged the stale name.
         stats: { views: 0, helpful: 0 },
         createdAt: now,
         updatedAt: now,
