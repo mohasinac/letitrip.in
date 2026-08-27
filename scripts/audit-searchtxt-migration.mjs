@@ -171,6 +171,35 @@ for (const c of MIGRATED) {
   if (builderMatch && PII_SHAPED.test(builderMatch[1])) {
     v("PII_IN_SEARCHTXT", c.repo, `${c.name}: a PII-shaped field feeds searchTxt — encryption and partial-match search are mutually exclusive (D1)`);
   }
+
+  // ---------------------------------------------------------------------
+  // Rules 7 and 8 are why this audit certified FOUR half-migrations.
+  //
+  // Rules 1-6 check the interface, the indexed-field list, the Sieve config,
+  // the seed tokens, the composite index and PII. `stores`, `events`,
+  // `blogPosts` and `reviews` satisfied ALL SIX while their repositories
+  // contained exactly one line about searchTxt — the SIEVE_FIELDS entry. Seed
+  // rows had tokens; anything created through the app had none, and nothing
+  // ever queried the field. Being searchable takes SEVEN things, and the two
+  // nobody wrote down are the two that make it work.
+  // ---------------------------------------------------------------------
+
+  // 7 — a WRITE path derives the field
+  const hasWritePath =
+    /buildSearchTxtFor\s*\(/.test(repo) ||        // the BaseRepository hook
+    /searchTxt:\s*build\w*SearchTxt\(/.test(repo); // or an inline derivation
+  if (!hasWritePath) {
+    v("NO_WRITE_PATH", c.repo,
+      `${c.name}: nothing derives searchTxt on write — only SEEDED rows are searchable, and anything a user creates is invisible to search forever`);
+  }
+
+  // 8 — a READ path queries the field
+  const hasReadPath = /array-contains["']?\s*,|["']array-contains["']/.test(repo)
+    && /SEARCH_TXT|["']searchTxt["']/.test(repo);
+  if (!hasReadPath) {
+    v("NO_READ_PATH", c.repo,
+      `${c.name}: nothing queries searchTxt with array-contains — the field is written and then never read, so search returns whatever the caller's other filters happen to match`);
+  }
 }
 
 // The old field must be gone everywhere — a leftover means a half-done rename.

@@ -43,7 +43,7 @@ async function _GET(request: Request): Promise<NextResponse> {
   const sorts = std.sorts ?? DEFAULT_SORT;
 
   const userParts: string[] = [];
-  if (std.q) userParts.push(`storeName@=*${std.q}`);
+  // Token search travels as an opt, not a filter clause — see events/route.ts.
   const category = param(url, "category");
   if (category) userParts.push(`storeCategory==${category}`);
   if (std.filters) {
@@ -66,6 +66,7 @@ async function _GET(request: Request): Promise<NextResponse> {
   let upstream: ListingProcessorResponse | null = null;
   try {
     upstream = await callListingProcessor("stores", {
+      baseOpts: std.q ? { search: std.q } : undefined,
       filters: filtersForFunction,
       sorts,
       page,
@@ -86,7 +87,11 @@ async function _GET(request: Request): Promise<NextResponse> {
     hasMore = upstream.hasMore;
   } else {
     try {
-      const result = await storeRepository.listStores({ filters: filtersForRepo, sorts, page, pageSize });
+      const result = await storeRepository.listStores(
+        { filters: filtersForRepo, sorts, page, pageSize },
+        true,
+        std.q ? { search: std.q } : undefined,
+      );
       items = filterTestDataForViewer(result.items as unknown as Array<Record<string, JsonValue>>, viewer).map(toPublicStore);
       total = result.total;
       resultPage = result.page;

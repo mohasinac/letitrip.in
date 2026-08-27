@@ -54,16 +54,15 @@ const TOKENIZER = join(REPO_ROOT, "appkit", "src", "utils", "search-txt.ts");
  * function to read the source list out of. Extend when a collection migrates.
  */
 const BUILDERS = [
-  {
-    collection: "products",
-    file: "appkit/src/features/products/repository/products.repository.ts",
-    fn: "buildProductSearchTxt",
-  },
-  {
-    collection: "faqs",
-    file: "appkit/src/features/faq/repository/faqs.repository.ts",
-    fn: "buildFaqSearchTxt",
-  },
+  // Every collection whose write-path derivation lives in the shared builders
+  // module. Adding one here is what makes its backfill entry enforced.
+  { collection: "products", file: "appkit/src/utils/search-txt-builders.ts", fn: "buildProductSearchTxt" },
+  { collection: "stores", file: "appkit/src/utils/search-txt-builders.ts", fn: "buildStoreSearchTxt" },
+  { collection: "events", file: "appkit/src/utils/search-txt-builders.ts", fn: "buildEventSearchTxt" },
+  { collection: "blogPosts", file: "appkit/src/utils/search-txt-builders.ts", fn: "buildBlogSearchTxt" },
+  { collection: "reviews", file: "appkit/src/utils/search-txt-builders.ts", fn: "buildReviewSearchTxt" },
+  // faqs predates the shared module and keeps its builder in the repository.
+  { collection: "faqs", file: "appkit/src/features/faq/repository/faqs.repository.ts", fn: "buildFaqSearchTxt" },
 ];
 
 const violations = [];

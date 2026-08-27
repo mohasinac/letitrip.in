@@ -40,8 +40,10 @@ function buildPublicFilters(url: URL, baseFilters: string[]): string {
   const dateTo = param(url, "dateTo");
   if (dateTo) parts.push(`createdAt<=${dateTo}`);
 
-  const q = param(url, "q")?.trim();
-  if (q) parts.push(`productTitle@=*${q}`);
+  // `q` is deliberately NOT a filter clause: token search is array-contains,
+  // which Sieve cannot express. As `productTitle@=*` it made the adapter throw
+  // and `throwExceptions: false` swallowed it, discarding every later clause
+  // and the sort. It travels as an opt instead — see the listAll calls below.
 
   const hasImages = param(url, "hasImages");
   if (hasImages === "true") parts.push("hasImages==true");
@@ -73,14 +75,19 @@ export async function GET(request: Request): Promise<NextResponse> {
       return response;
     }
 
+    const searchTerm = param(url, "q")?.trim() || undefined;
+
     if (latest) {
       const filters = buildPublicFilters(url, ["status==approved"]);
-      const result = await reviewRepository.listAll({
-        filters,
-        sorts,
-        page,
-        pageSize: Math.min(pageSize, 50),
-      });
+      const result = await reviewRepository.listAll(
+        {
+          filters,
+          sorts,
+          page,
+          pageSize: Math.min(pageSize, 50),
+        },
+        searchTerm ? { search: searchTerm } : undefined,
+      );
       const response = NextResponse.json({
         success: true,
         data: {

@@ -38,7 +38,11 @@ async function _GET(request: Request): Promise<NextResponse> {
   const safe = rawFilters ? validateSieveFilters(rawFilters, SAFE_EVENT_FILTER_FIELDS) : "";
   const hasStatusFilter = safe.includes("status==");
   const parts: string[] = hasStatusFilter ? [] : ["status==active"];
-  if (std.q) parts.push(`title@=*${std.q}`);
+  // Token search rides OUTSIDE `filters` — `array-contains` is not expressible
+  // in Sieve. As a `title@=*` clause it made the adapter throw, which
+  // `throwExceptions: false` turned into silence: the clause, every later
+  // clause and the sort were all discarded and the route answered 200 with
+  // the entire collection.
   if (safe) parts.push(safe);
   const filters = parts.join(",");
 
@@ -51,6 +55,7 @@ async function _GET(request: Request): Promise<NextResponse> {
   let upstream: ListingProcessorResponse | null = null;
   try {
     upstream = await callListingProcessor("events", {
+      baseOpts: std.q ? { search: std.q } : undefined,
       filters,
       sorts,
       page,
@@ -71,7 +76,10 @@ async function _GET(request: Request): Promise<NextResponse> {
     hasMore = upstream.hasMore;
   } else {
     try {
-      const result = await eventRepository.list({ filters, sorts, page, pageSize });
+      const result = await eventRepository.list(
+        { filters, sorts, page, pageSize },
+        std.q ? { search: std.q } : undefined,
+      );
       // Strip internal fields (createdBy) before returning
       items = (result.items as unknown as Array<Record<string, JsonValue>>).map(
         ({ createdBy: _createdBy, ...rest }) => rest,
