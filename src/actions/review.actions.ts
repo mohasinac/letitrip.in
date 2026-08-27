@@ -215,7 +215,8 @@ export async function voteReviewHelpfulAction(
     throw new ValidationError(ERR_REVIEW_ID_REQUIRED);
   }
 
-  await voteReviewHelpfulDomain(reviewId, helpful);
+  // Keyed on the voter so a repeat call is a no-op rather than another +1.
+  await voteReviewHelpfulDomain(reviewId, helpful, user.uid);
 }
 
 // --- Read Actions -------------------------------------------------------------

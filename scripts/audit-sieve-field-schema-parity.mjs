@@ -111,7 +111,23 @@ const REGISTRY = [
 const BASE_DOCUMENT_FIELDS = ["id", "createdAt", "updatedAt"];
 
 function read(rel) {
-  return readFileSync(join(ROOT, rel), "utf8");
+  /*
+   * CRLF normalised at read time. `core.autocrlf=true` on this machine, so
+   * git stores LF and checks out CRLF — the WORKING TREE is CRLF for ~592
+   * source files, and every audit reads the working tree.
+   *
+   * `ownFields` splits on a newline and matches a per-line field regex, so a
+   * trailing carriage return rides along in the captured TYPE text and the
+   * field-name comparison against SIEVE_FIELDS stops matching. The symptom is
+   * spectacular and completely misleading: 61 SIEVE_ORPHANs claiming `title`,
+   * `slug` and `status` are not fields on ProductDocument.
+   *
+   * Same family as the Python-write CRLF trap already recorded in the plan —
+   * an audit regression on lines nobody edited is a line-ending suspicion
+   * first. Fixed at the READER so every parser downstream is immune, rather
+   * than normalising 592 files against git own configured behaviour.
+   */
+  return readFileSync(join(ROOT, rel), "utf8").replace(/\r\n/g, "\n");
 }
 
 /** Balanced slice of the initialiser for `const NAME ... = { … }`. */

@@ -124,7 +124,7 @@ export const POST = withProviders(createApiHandler<(typeof chatSchema)["_output"
         })
         .catch((err) =>
           serverLogger.error("copilot.log.write", {
-            error: err instanceof Error ? err.message : String(err),
+            error: normalizeError(err).message,
           }),
         );
 

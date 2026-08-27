@@ -13,6 +13,7 @@ import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { contactSubmissionsRepository } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit";
 
 const contactSchema = z.object({
   name: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
@@ -34,7 +35,9 @@ export const POST = withProviders(createRouteHandler<(typeof contactSchema)["_ou
 
     // Persist to Firestore (non-blocking â€” don't fail if it errors)
     contactSubmissionsRepository.save({ name, email, subject, message }).catch((err) => {
-      serverLogger.error("Failed to save contact submission to Firestore", err);
+      serverLogger.error("Failed to save contact submission to Firestore", {
+        error: normalizeError(err).message,
+      });
     });
 
     const result = await sendContactEmail({ name, email, subject, message });

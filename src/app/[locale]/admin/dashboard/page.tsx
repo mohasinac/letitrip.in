@@ -155,7 +155,7 @@ export default function Page() {
         }
       })
       .catch((err) => {
-        setLoadError((prev) => prev ?? (err instanceof Error ? err.message : "Couldn't load checkout-bypass flag."));
+        setLoadError((prev) => prev ?? (normalizeError(err).message || "Couldn't load checkout-bypass flag."));
       });
   }, []);
 
@@ -201,7 +201,7 @@ export default function Page() {
         });
       })
       .catch((err) => {
-        const msg = err instanceof Error ? err.message : "Couldn't load dashboard stats.";
+        const msg = normalizeError(err).message || "Couldn't load dashboard stats.";
         setLoadError((prev) => prev ?? msg);
         showToast(msg, "error");
       });
@@ -211,7 +211,7 @@ export default function Page() {
         if (data?.data?.orders) setRecentOrders(data.data.orders);
       })
       .catch((err) => {
-        const msg = err instanceof Error ? err.message : "Couldn't load recent orders.";
+        const msg = normalizeError(err).message || "Couldn't load recent orders.";
         setLoadError((prev) => prev ?? msg);
       });
   }, [showToast, flagsLoading, flags.PAYOUTS, flags.COUPONS]);

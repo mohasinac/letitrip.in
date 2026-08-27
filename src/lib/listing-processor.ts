@@ -25,15 +25,48 @@ export interface ListingProcessorArgs {
   page: number;
   pageSize: number;
   cursor: string | null;
-  baseOpts?: { status?: string; storeId?: string; categoriesIn?: string[] };
+  /**
+   * Options handed to the collection's lister, beyond the Sieve model.
+   *
+   * `search` is the important one and was missing: Sieve has no array-contains
+   * operator (`SIEVE_OP` tops out at `@=`), so a token search can NEVER travel
+   * in the `f=` filter string — it has to come through here. The repositories
+   * already implement it; this type was the only thing preventing any caller
+   * from reaching it, which is why token search was dead code.
+   */
+  baseOpts?: {
+    status?: string;
+    storeId?: string;
+    categoriesIn?: string[];
+    /** Free-text query, tokenized server-side into an array-contains clause. */
+    search?: string;
+    /** stores: restrict to active+public (defaults true in the lister). */
+    activeOnly?: boolean;
+    /** eventEntries: required by that lister. */
+    eventId?: string;
+  };
 }
 
 export type ListingProcessorCollection =
+  // NOTE: these must match `LISTERS` keys in
+  // appkit/src/_internal/server/jobs/core/listingProcessor.ts exactly — the
+  // Function 400s on an unknown collection. "blog" used to be listed here and
+  // is not a registered lister; the real key is "blogPosts".
   | "products"
-  | "blog"
+  | "blogPosts"
   | "events"
   | "stores"
-  | "coupons";
+  | "coupons"
+  | "faqs"
+  | "reviews"
+  | "orders"
+  | "bids"
+  | "payouts"
+  | "categories"
+  | "brands"
+  | "scammers"
+  | "notifications"
+  | "users";
 
 export async function callListingProcessor(
   collection: ListingProcessorCollection,

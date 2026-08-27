@@ -11,6 +11,7 @@ import {
 } from "@mohasinac/appkit";
 import { enqueueJob, sendSiteSettingsChangedEmail } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_ONLY, SCHEMA_DEFAULTS } from "@/constants";
+import { normalizeError } from "@mohasinac/appkit";
 
 /**
  * The top-level groups `AdminSiteSettingsView.buildFullPayload()` sends.
@@ -102,7 +103,9 @@ export const PUT = withProviders(
           payload: {},
           requestedBy: user!.uid,
         }).catch((err) => {
-          serverLogger.error("Failed to enqueue resetOtpVerification job", err);
+          serverLogger.error("Failed to enqueue resetOtpVerification job", {
+            error: normalizeError(err).message,
+          });
         });
       }
 
@@ -124,7 +127,7 @@ export const PUT = withProviders(
       }).catch((err) =>
         serverLogger.error(
           ERROR_MESSAGES.API.SETTINGS_CHANGE_NOTIFICATION_ERROR,
-          { err },
+          { error: normalizeError(err).message },
         ),
       );
 

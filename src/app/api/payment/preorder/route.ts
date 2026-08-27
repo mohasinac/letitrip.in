@@ -42,6 +42,7 @@ import { createRouteHandler } from "@mohasinac/appkit";
 import { sendOrderConfirmationEmail } from "@mohasinac/appkit/server";
 import { OrderStatusValues, PaymentStatusValues, PaymentMethodValues } from "@mohasinac/appkit";
 import { getDefaultCurrency } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit";
 
 const preorderDepositSchema = z.object({
   razorpay_order_id: z.string().min(1),
@@ -158,7 +159,9 @@ const __POST__g = withProviders(createRouteHandler<
       shippingAddress,
       paymentMethod: PaymentMethodValues.RAZORPAY,
     }).catch((err) =>
-      serverLogger.warn("Pre-order confirmation email failed", { err }),
+      serverLogger.warn("Pre-order confirmation email failed", {
+        error: normalizeError(err).message,
+      }),
     );
 
     serverLogger.info(
