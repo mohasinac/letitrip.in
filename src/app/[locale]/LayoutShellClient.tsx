@@ -2,7 +2,7 @@
 import { normalizeError } from "@mohasinac/appkit/client";
 
 import type { ReactNode } from "react";
-import { useMemo, useCallback, useState } from "react";
+import { Suspense, useMemo, useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
@@ -362,7 +362,17 @@ export default function LayoutShellClient({
       <ScamAwarenessModal isOpen={showScamModal} onAcknowledged={() => setScamModalDismissed(true)} />
       {children}
       </AppLayoutShell>
-      <NavigationLoader />
+      {/*
+        Suspense is REQUIRED, not decorative. NavigationLoader calls
+        useSearchParams(), and it renders here — OUTSIDE the root layout's
+        <Suspense>, which wraps only {children}. Without a boundary of its own
+        it forces EVERY page in the app out of static prerendering, so
+        `next build` fails even on pages with no dynamic content at all
+        (/refund-policy was the tell). See Root Cause #17.
+      */}
+      <Suspense fallback={null}>
+        <NavigationLoader />
+      </Suspense>
     </ThemeProvider>
     </HandModeProvider>
   );
