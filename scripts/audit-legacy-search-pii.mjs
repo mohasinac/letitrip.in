@@ -83,7 +83,9 @@ const KNOWN_LEGACY = new Set([
   "appkit/src/features/search/repository/search.repository.ts",
   "appkit/src/features/stores/actions/store-query-actions.ts",
   "appkit/src/features/stores/api/route.ts",
-  "appkit/src/_internal/server/features/products/list-public.ts",
+  // list-public.ts came OFF this list in Phase 2 — it was the highest-value
+  // entry, covering /products, /auctions, /api/admin/products and
+  // /api/store/products. The ratchet tightening is the intended direction.
   // The operator definitions themselves; deleted last (they are what the
   // call sites above still reference).
   "appkit/src/utils/sieve-builder.ts",

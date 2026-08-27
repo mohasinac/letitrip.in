@@ -19,10 +19,7 @@ import {
 } from "@mohasinac/appkit/server";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
-import {
-  callListingProcessor,
-  type ListingProcessorResponse,
-} from "@/lib/listing-processor";
+import { listingProcessorFirstExecutor } from "@/lib/listing-processor";
 import { validateSieveFilters } from "@/lib/sieve-validators";
 
 /** Matches the Cache-Control used by listingProcessor on Firebase side. */
@@ -64,65 +61,6 @@ const SAFE_PRODUCT_FILTER_FIELDS = new Set([
 ]);
 
 const IDS_MAX = 20;
-
-/**
- * Prefer the colocated `listingProcessor` Firebase Function (cheaper data
- * locality); fall back to the local repository if it is unconfigured OR fails
- * (cold-start crash, 401 from a secret-binding regression, network blip) so the
- * route stays available. Both share the same Sieve filter logic, so results are
- * semantically identical — only the locality differs.
- *
- * This executor is the seam that lets `listPublicProducts` live in appkit while
- * the Function-vs-repository preference (which needs consumer env) stays here.
- */
-const listingProcessorFirstExecutor: PublicProductExecutor = async (
-  query: PublicProductQuery,
-) => {
-  let upstream: ListingProcessorResponse | null = null;
-  try {
-    upstream = await callListingProcessor("products", {
-      filters: query.filters,
-      sorts: query.sorts,
-      page: query.page,
-      pageSize: query.pageSize,
-      cursor: query.cursor ?? null,
-    });
-  } catch (upstreamErr) {
-    void normalizeError(upstreamErr);
-    logError(
-      "products",
-      "listingProcessor upstream failed - falling back to local repo",
-      upstreamErr,
-    );
-    upstream = null;
-  }
-
-  if (upstream) {
-    return {
-      items: upstream.items,
-      total: upstream.total,
-      page: upstream.page,
-      totalPages: upstream.totalPages,
-      hasMore: upstream.hasMore,
-      cursor: upstream.cursor,
-    };
-  }
-
-  const result = await productRepository.list({
-    filters: query.filters,
-    sorts: query.sorts,
-    page: query.page,
-    pageSize: query.pageSize,
-  });
-  return {
-    items: result.items,
-    total: result.total,
-    page: result.page,
-    totalPages: result.totalPages,
-    hasMore: result.hasMore,
-    cursor: null,
-  };
-};
 
 async function _GET(request: Request): Promise<NextResponse> {
   const url = new URL(request.url);

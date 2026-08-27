@@ -7,7 +7,13 @@
  * repository.
  */
 
+import { normalizeError, productRepository } from "@mohasinac/appkit";
+import type {
+  PublicProductExecutor,
+  PublicProductQuery,
+} from "@mohasinac/appkit/server";
 import { callFirebaseFunction } from "@/lib/firebase-gateway";
+import { logError } from "@/lib/logger";
 
 export interface ListingProcessorResponse {
   items: unknown[];
@@ -82,3 +88,80 @@ export async function callListingProcessor(
     baseOpts: args.baseOpts,
   });
 }
+
+/**
+ * Prefer the colocated `listingProcessor` Firebase Function (cheaper data
+ * locality); fall back to the local repository if it is unconfigured OR fails
+ * (cold-start crash, 401 from a secret-binding regression, network blip) so the
+ * route stays available. Both share the same Sieve filter logic, so results are
+ * semantically identical — only the locality differs.
+ *
+ * This executor is the seam that lets `listPublicProducts` live in appkit while
+ * the Function-vs-repository preference (which needs consumer env) stays here.
+ *
+ * It lives in this lib rather than inside one route because THREE routes need
+ * it. `/api/admin/products` and `/api/store/products` were calling
+ * `listPublicProducts` with no executor at all, so the two heaviest endpoints in
+ * the app — both running `ANY_STATUS` queries — executed inside the Vercel
+ * function against the 10s ceiling, while `/api/products` delegated. Copying the
+ * executor into each route would have been three copies of a fallback that has
+ * already drifted once.
+ */
+export const listingProcessorFirstExecutor: PublicProductExecutor = async (
+  query: PublicProductQuery,
+) => {
+  let upstream: ListingProcessorResponse | null = null;
+  try {
+    upstream = await callListingProcessor("products", {
+      filters: query.filters,
+      sorts: query.sorts,
+      page: query.page,
+      pageSize: query.pageSize,
+      cursor: query.cursor ?? null,
+      // searchTxt matching is `array-contains`, which Sieve cannot express, so
+      // it rides outside `filters`. The Function's products lister forwards
+      // opts wholesale to productRepository.list, so this is all it takes —
+      // but omitting it loses the search term with no error on either side.
+      baseOpts: query.search ? { search: query.search } : undefined,
+    });
+  } catch (upstreamErr) {
+    void normalizeError(upstreamErr);
+    logError(
+      "products",
+      "listingProcessor upstream failed - falling back to local repo",
+      upstreamErr,
+    );
+    upstream = null;
+  }
+
+  if (upstream) {
+    return {
+      items: upstream.items,
+      total: upstream.total,
+      page: upstream.page,
+      totalPages: upstream.totalPages,
+      hasMore: upstream.hasMore,
+      cursor: upstream.cursor,
+    };
+  }
+
+  // The fallback must search identically to the upstream it replaces, or a
+  // Function cold-start silently downgrades search to "return everything".
+  const result = await productRepository.list(
+    {
+      filters: query.filters,
+      sorts: query.sorts,
+      page: query.page,
+      pageSize: query.pageSize,
+    },
+    query.search ? { search: query.search } : undefined,
+  );
+  return {
+    items: result.items,
+    total: result.total,
+    page: result.page,
+    totalPages: result.totalPages,
+    hasMore: result.hasMore,
+    cursor: null,
+  };
+};

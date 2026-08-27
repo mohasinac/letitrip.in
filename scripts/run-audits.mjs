@@ -304,6 +304,15 @@ const AUDITS = [
   // measured: a `@=*` clause first meant NOTHING was applied, so the route
   // returned the entire unfiltered collection with a 200.
   { name: "legacy-search-pii",             script: "scripts/audit-legacy-search-pii.mjs" },
+  // Strict-zero. The wiring between a search box and the rows it returns.
+  // `backfill-search-txt.mjs` re-implements the tokenizer and its source lists
+  // (it must run against a stale appkit/dist), which makes it the one place
+  // that can disagree with the write path and never be caught by tsc — it had
+  // already drifted, indexing 9 of the 12 fields buildProductSearchTxt does.
+  // Also blocks an executor that rebuilds a query and drops `search`: token
+  // matching rides OUTSIDE `filters` because Sieve cannot express
+  // array-contains, so a dropped term returns an unfiltered page with a 200.
+  { name: "search-parity",                 script: "scripts/audit-search-parity.mjs" },
   // Strict-zero. A sort option whose field isn't `canSort: true` in the target
   // repository's SIEVE_FIELDS — sievejs drops the sort silently, so the option
   // renders and does nothing ("Featured First"/"Promoted First" were dead this

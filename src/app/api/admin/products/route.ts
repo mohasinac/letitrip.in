@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import { listingProcessorFirstExecutor } from "@/lib/listing-processor";
 import type { JsonValue } from "@mohasinac/appkit";
 import { toApiIssues } from "@mohasinac/appkit";
 /**
@@ -53,6 +54,12 @@ export const GET = withProviders(createApiHandler({
       }),
       status: ANY_STATUS,
       rawFilters: url.searchParams.get("filters") || null,
+    }, {
+      // Was calling listPublicProducts with no options at all, so it fell
+      // through to the in-Vercel default executor — an ANY_STATUS query, one of
+      // the two heaviest endpoints in the app, running against the 10s ceiling
+      // while /api/products delegated the identical query to the Function.
+      executor: listingProcessorFirstExecutor,
     });
 
     if (!result) {

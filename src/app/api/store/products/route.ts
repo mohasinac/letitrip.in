@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import { listingProcessorFirstExecutor } from "@/lib/listing-processor";
 /**
  * Seller Products API Route
  * GET /api/store/products â€” Returns the authenticated seller's products
@@ -47,6 +48,11 @@ export const GET = withProviders(createApiHandler({
       // from the URL, so a seller cannot read another store's inventory.
       storeId: store.id,
       rawFilters: url.searchParams.get("filters") || null,
+    }, {
+      // Same omission as the admin route: no options meant no executor, so a
+      // seller's ANY_STATUS inventory query ran inside Vercel rather than in
+      // the colocated Function.
+      executor: listingProcessorFirstExecutor,
     });
 
     if (!result) {
