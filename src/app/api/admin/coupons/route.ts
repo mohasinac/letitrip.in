@@ -7,6 +7,7 @@ import { withProviders } from "@/providers.config";
  */
 
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
+import { toApiIssues } from "@mohasinac/appkit";
 import { successResponse, errorResponse } from "@mohasinac/appkit";
 import { couponsRepository } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
@@ -108,7 +109,9 @@ const __POST__g = withProviders(createRouteHandler({
 
     const validation = couponCreateSchema.safeParse(body);
     if (!validation.success) {
-      return errorResponse(ERROR_MESSAGES.VALIDATION.FAILED, 400, validation.error.issues);
+      return errorResponse(ERROR_MESSAGES.VALIDATION.FAILED, 400, {
+        issues: toApiIssues(validation.error.issues),
+      });
     }
 
     const input: CouponCreateInput = {

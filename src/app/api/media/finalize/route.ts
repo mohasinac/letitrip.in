@@ -109,8 +109,10 @@ export const POST = withProviders(createRouteHandler({
 
     const [exists] = await fileRef.exists();
     if (!exists) {
+      // storagePath is server context, not something the client can act on.
+      serverLogger.warn("Media finalize: object missing", { path: storagePath });
       return errorResponse("Uploaded object not found at storagePath", 404, {
-        path: storagePath,
+        code: "NOT_FOUND",
       });
     }
 
@@ -122,11 +124,14 @@ export const POST = withProviders(createRouteHandler({
     if (!declaredKind) {
       safeFireAndForget(fileRef.delete(), CLEANUP_LABEL);
       const hint = getConversionHint(declaredMime);
-      return errorResponse(hint ?? ERROR_MESSAGES.UPLOAD.INVALID_TYPE, 400, {
-        allowed: ALLOWED_TYPES_LABEL,
-        detected: declaredMime || "unknown",
-        ...(hint ? { hint } : {}),
-      });
+      // The allowed/detected detail used to ride under `details`, which no
+      // client has ever read — so the user saw a bare "invalid type". It goes
+      // in the MESSAGE now, which is rendered.
+      return errorResponse(
+        `${hint ?? ERROR_MESSAGES.UPLOAD.INVALID_TYPE} Detected ${declaredMime || "unknown"}; allowed: ${ALLOWED_TYPES_LABEL}.`,
+        400,
+        { code: "INVALID_TYPE" },
+      );
     }
 
     if (!Number.isFinite(size) || size <= 0) {
@@ -137,10 +142,11 @@ export const POST = withProviders(createRouteHandler({
     const maxSize = MAX_BYTES[declaredKind];
     if (size > maxSize) {
       safeFireAndForget(fileRef.delete(), CLEANUP_LABEL);
-      return errorResponse(ERROR_MESSAGES.UPLOAD.FILE_TOO_LARGE, 400, {
-        maxSize: MAX_LABEL[declaredKind],
-        fileSize: formatFileSize(size),
-      });
+      return errorResponse(
+        `${ERROR_MESSAGES.UPLOAD.FILE_TOO_LARGE} This file is ${formatFileSize(size)}; the limit is ${MAX_LABEL[declaredKind]}.`,
+        400,
+        { code: "FILE_TOO_LARGE" },
+      );
     }
 
     // Magic-byte verification on the first few KB of the uploaded object.
@@ -151,10 +157,11 @@ export const POST = withProviders(createRouteHandler({
     const detectedKind = detected ? classifyMime(detected.mime) : null;
     if (!detected || !detectedKind) {
       safeFireAndForget(fileRef.delete(), CLEANUP_LABEL);
-      return errorResponse(ERROR_MESSAGES.UPLOAD.INVALID_TYPE, 400, {
-        allowed: ALLOWED_TYPES_LABEL,
-        detected: detected?.mime ?? "unknown",
-      });
+      return errorResponse(
+        `${ERROR_MESSAGES.UPLOAD.INVALID_TYPE} Detected ${detected?.mime ?? "unknown"}; allowed: ${ALLOWED_TYPES_LABEL}.`,
+        400,
+        { code: "INVALID_TYPE" },
+      );
     }
     if (detectedKind !== declaredKind) {
       safeFireAndForget(fileRef.delete(), CLEANUP_LABEL);
@@ -162,13 +169,9 @@ export const POST = withProviders(createRouteHandler({
       // "wrong content-type header" from generic upload errors and can re-prompt
       // the user accurately.
       return errorResponse(
-        "Uploaded file bytes do not match the declared content type",
+        `Uploaded file bytes do not match the declared content type (declared ${declaredMime}, detected ${detected.mime})`,
         422,
-        {
-          code: "MIME_MISMATCH",
-          declared: declaredMime,
-          detected: detected.mime,
-        },
+        { code: "MIME_MISMATCH" },
       );
     }
     if (declaredKind === "pdf") {
@@ -177,10 +180,11 @@ export const POST = withProviders(createRouteHandler({
         head.subarray(0, PDF_MAGIC.length).toString("ascii") === PDF_MAGIC;
       if (!looksLikePdf) {
         safeFireAndForget(fileRef.delete(), CLEANUP_LABEL);
-        return errorResponse(ERROR_MESSAGES.UPLOAD.INVALID_TYPE, 400, {
-          allowed: `PDF (must start with ${PDF_MAGIC} header)`,
-          detected: "non-pdf bytes claiming application/pdf",
-        });
+        return errorResponse(
+          `${ERROR_MESSAGES.UPLOAD.INVALID_TYPE} Expected a PDF starting with the ${PDF_MAGIC} header.`,
+          400,
+          { code: "INVALID_TYPE" },
+        );
       }
     }
 

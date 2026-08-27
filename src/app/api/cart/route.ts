@@ -104,7 +104,7 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
       return errorResponse(
         `Cart full (${existing.items.length}/${CART_MAX_ITEMS}). Remove items to add new ones.`,
         409,
-        { code: "CART_FULL", limit: CART_MAX_ITEMS, current: existing.items.length },
+        { code: "CART_FULL" },
       );
     }
 

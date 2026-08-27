@@ -1,4 +1,5 @@
 import { normalizeError } from "@mohasinac/appkit";
+import { toApiIssues } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
@@ -54,7 +55,9 @@ export const POST = withProviders(
       const json = await parseJsonBody(request, { allowEmpty: true });
       const parsed = previewSchema.safeParse(json);
       if (!parsed.success) {
-        return errorResponse(ERRORS.INVALID_PAYLOAD, 400, parsed.error.issues);
+        return errorResponse(ERRORS.INVALID_PAYLOAD, 400, {
+          issues: toApiIssues(parsed.error.issues),
+        });
       }
       try {
         const token = generateToken();

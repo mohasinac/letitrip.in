@@ -26,13 +26,13 @@ async function _POST(req: Request, { params }: { params: Promise<{ id: string }>
   }>(req);
 
   if (!body.proofUrl) {
-    return errorResponse("proofUrl is required", 400, "MISSING_PROOF_URL");
+    return errorResponse("proofUrl is required", 400, { code: "MISSING_PROOF_URL" });
   }
   if (!body.buyerFraudAgreementAccepted) {
     return errorResponse(
       "You must confirm this payment is genuine before submitting proof",
       400,
-      "AGREEMENT_NOT_ACCEPTED",
+      { code: "AGREEMENT_NOT_ACCEPTED" },
     );
   }
 
@@ -47,13 +47,13 @@ async function _POST(req: Request, { params }: { params: Promise<{ id: string }>
 
   if (!result.ok) {
     if (result.error?.includes("PROOF_ALREADY_ATTACHED")) {
-      return errorResponse("Payment proof already attached to this order", 409, "PROOF_ALREADY_ATTACHED");
+      return errorResponse("Payment proof already attached to this order", 409, { code: "PROOF_ALREADY_ATTACHED" });
     }
     if (result.error?.includes("PAYMENT_WINDOW_EXPIRED")) {
-      return errorResponse("The 15-minute payment window for this order has expired", 409, "PAYMENT_WINDOW_EXPIRED");
+      return errorResponse("The 15-minute payment window for this order has expired", 409, { code: "PAYMENT_WINDOW_EXPIRED" });
     }
     if (result.error?.includes("UNAUTHORIZED") || result.error?.includes("Ownership")) {
-      return errorResponse("Not authorized to attach proof for this order", 403, "FORBIDDEN");
+      return errorResponse("Not authorized to attach proof for this order", 403, { code: "FORBIDDEN" });
     }
     return errorResponse(result.error ?? "Failed to attach payment proof", 400);
   }

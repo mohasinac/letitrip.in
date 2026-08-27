@@ -52,9 +52,8 @@ export function HomepageNewsletterForm() {
         await subscribeMutation.mutateAsync(parsed.data);
       } catch (_err) {
         void normalizeError(_err);
-        const message = "Could not subscribe right now. Please try again.";
-        setFieldError("email", message);
-        showToast(message, "error");
+        // Inline on the field only — the mutation already toasted.
+        setFieldError("email", "Could not subscribe right now. Please try again.");
       }
     },
     [email, subscribeMutation, showToast],

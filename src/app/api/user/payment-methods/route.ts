@@ -57,7 +57,7 @@ export const POST = withProviders(createRouteHandler<(typeof saveMethodSchema)["
     const existing = await savedPaymentMethodsRepository.listByIdentifierHash(hash);
     const banned = existing.find((m) => m.banStatus === "banned");
     if (banned) {
-      return errorResponse("This payment method has been flagged and cannot be used.", 403, "PAYMENT_METHOD_BANNED");
+      return errorResponse("This payment method has been flagged and cannot be used.", 403, { code: "PAYMENT_METHOD_BANNED" });
     }
 
     const method = await savedPaymentMethodsRepository.upsertForUser(user!.uid, {

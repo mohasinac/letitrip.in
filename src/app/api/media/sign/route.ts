@@ -83,14 +83,13 @@ export const POST = withProviders(createRouteHandler({
 
     if (!isAllowedMime(contentType)) {
       const hint = getConversionHint(contentType);
+      // The allowed/detected detail used to ride under `details`, which no
+      // client has ever read — so the user saw a bare "invalid type". It goes
+      // in the MESSAGE now, which is rendered.
       return errorResponse(
-        hint ?? ERROR_MESSAGES.UPLOAD.INVALID_TYPE,
+        `${hint ?? ERROR_MESSAGES.UPLOAD.INVALID_TYPE} Detected ${contentType || "unknown"}; allowed: ${ALLOWED_TYPES_LABEL}.`,
         400,
-        {
-          allowed: ALLOWED_TYPES_LABEL,
-          detected: contentType || "unknown",
-          ...(hint ? { hint } : {}),
-        },
+        { code: "INVALID_TYPE" },
       );
     }
 
@@ -100,10 +99,11 @@ export const POST = withProviders(createRouteHandler({
     const kind = classifyMime(contentType)!;
     const maxSize = MAX_BYTES[kind];
     if (size > maxSize) {
-      return errorResponse(ERROR_MESSAGES.UPLOAD.FILE_TOO_LARGE, 400, {
-        maxSize: MAX_LABEL[kind],
-        fileSize: formatFileSize(size),
-      });
+      return errorResponse(
+        `${ERROR_MESSAGES.UPLOAD.FILE_TOO_LARGE} This file is ${formatFileSize(size)}; the limit is ${MAX_LABEL[kind]}.`,
+        400,
+        { code: "FILE_TOO_LARGE" },
+      );
     }
     const isPdf = kind === "pdf";
 
@@ -123,7 +123,12 @@ export const POST = withProviders(createRouteHandler({
     }
     const ctx = contextInput as MediaFilenameContext;
     const guard = applyMediaContextGuards({ detectedMime: contentType, context: ctx });
-    if (!guard.ok) return errorResponse(guard.error, guard.status, guard.details);
+    if (!guard.ok) {
+      // guard.details is server context (filename, limits), not something the
+      // client can act on — log it, send only the code.
+      serverLogger.warn("Media sign: context guard rejected", { details: guard.details });
+      return errorResponse(guard.error, guard.status, { code: "MEDIA_CONTEXT_INVALID" });
+    }
     const filename = guard.filename;
 
     const defaultFolder = isPdf ? PDF_FOLDER : DEFAULT_MEDIA_FOLDER;

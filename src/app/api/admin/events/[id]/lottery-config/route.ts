@@ -59,7 +59,7 @@ const __PUT__g = withProviders(
 
       const merged = mergeLotteryConfig(body!, event.lotteryConfig);
       if (!merged.ok) {
-        return errorResponse(merged.message, 409, merged.code);
+        return errorResponse(merged.message, 409, { code: merged.code });
       }
 
       await eventRepository.update(id, { lotteryConfig: merged.config });

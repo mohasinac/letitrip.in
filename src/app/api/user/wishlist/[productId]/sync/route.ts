@@ -18,7 +18,7 @@ export const POST = withProviders(
       const items = await wishlistRepository.getWishlistItems(uid);
       const item = items.find((i) => i.productId === productId);
       if (!item) {
-        return errorResponse("Item not in wishlist", 404, "NOT_FOUND");
+        return errorResponse("Item not in wishlist", 404, { code: "NOT_FOUND" });
       }
 
       const product = await productRepository.findById(productId).catch(() => null);

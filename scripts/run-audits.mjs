@@ -183,6 +183,17 @@ const AUDITS = [
   // W6 — error contract / silent-failure gates (workstreams 1, 3, 5)
   { name: "silent-body-parse",               script: "scripts/audit-silent-body-parse.mjs" },
   { name: "server-action-envelope",          script: "scripts/audit-server-action-envelope.mjs" },
+  // Strict-zero, no suppression marker. Producer/consumer parity for the HTTP
+  // ERROR envelope, both directions. Four producers emitted a body while
+  // ApiClientError read three keys off it, and nobody checked they matched —
+  // `api-response.ts` emitted `details` (unread) and never emitted
+  // `code`/`issues`/`requestId` (read). Consequence: every createApiHandler
+  // route's validation failure reached the user as a bare "Validation failed"
+  // with no field name, and applyZodIssues was dead code app-wide.
+  // Deliberately NOT folded into server-action-envelope above — that one is
+  // designed to start failing once `success` can be dropped, i.e. it
+  // self-terminates; this rule is permanent.
+  { name: "api-error-envelope",              script: "scripts/audit-api-error-envelope.mjs" },
   // unknown-elimination — strict-zero. No env-var opt-out.
   { name: "catch-normalize",                 script: "appkit/scripts/audit-catch-normalize.mjs" },
   // Guards the W1-51 bug class — validator regex drifting out of sync with

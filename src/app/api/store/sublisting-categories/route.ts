@@ -1,5 +1,6 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
+import { mediaUrlSchema } from "@/validation/request-schemas";
 import {
   createRouteHandler,
   successResponse,
@@ -19,7 +20,7 @@ const createSchema = z.object({
   name: z.string().min(1).max(120),
   itemCode: z.string().max(40).optional(),
   description: z.string().max(500).optional(),
-  coverImage: z.string().url().optional().or(z.literal("")),
+  coverImage: mediaUrlSchema.optional().or(z.literal("")),
 });
 
 export const GET = withProviders(createRouteHandler({

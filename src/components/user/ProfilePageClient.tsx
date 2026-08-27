@@ -140,18 +140,16 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
   const [isPublic, setIsPublic] = useState(true);
 
   const update = useUpdateProfile({
+    errorMessage: "Failed to update profile.",
     onSuccess: () => {
       showToast("Profile updated successfully!", "success");
       setEditing(false);
     },
-    onError: (err) => {
-      showToast(err.message ?? "Failed to update profile.", "error");
-    },
   });
 
   const avatarUpdate = useUpdateProfile({
+    errorMessage: "Failed to update avatar.",
     onSuccess: () => showToast("Avatar updated", "success"),
-    onError: (err) => showToast(err.message ?? "Failed to update avatar.", "error"),
   });
 
   const handleEdit = () => {

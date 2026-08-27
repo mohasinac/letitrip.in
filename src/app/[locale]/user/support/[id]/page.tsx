@@ -84,6 +84,7 @@ export default function TicketDetailPage({ params }: PageProps) {
   });
 
   const sendReply = useApiMutation({
+    errorMessage: "Failed to send reply.",
     mutationFn: (body: string) =>
       getSupportTicketMessages(id, { body }).then(async (r) => {
         const j = await r.json();
@@ -95,7 +96,6 @@ export default function TicketDetailPage({ params }: PageProps) {
       queryClient.invalidateQueries({ queryKey: ["user-support-ticket", id] });
       showToast("Reply sent.", "success");
     },
-    onError: (e: any) => showToast(e?.message ?? "Failed to send reply.", "error"),
   });
 
   if (isLoading) {

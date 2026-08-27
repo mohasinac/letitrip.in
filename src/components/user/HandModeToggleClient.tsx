@@ -7,7 +7,7 @@ export function HandModeToggleClient() {
   const { hand, setHand } = useHandMode();
   const { showToast } = useToast();
   const update = useUpdateProfile({
-    onError: (err) => showToast(err.message ?? "Failed to save left-hand mode.", "error"),
+  errorMessage: "Failed to save left-hand mode.",
   });
 
   function toggle(next: boolean) {

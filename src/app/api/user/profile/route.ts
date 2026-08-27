@@ -1,6 +1,7 @@
 import { withProviders } from "@/providers.config";
 import type { JsonValue } from "@mohasinac/appkit";
 import { z } from "zod";
+import { mediaUrlSchema } from "@/validation/request-schemas";
 import { userRepository } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { createApiHandler } from "@mohasinac/appkit";
@@ -54,7 +55,12 @@ const updateProfileSchema = z.object({
   displayName: z.string().optional(),
   email: z.string().email().optional(),
   phoneNumber: z.string().optional(),
-  photoURL: z.string().url().optional().or(z.literal("")),
+  // `mediaUrlSchema`, NOT `.url()`. The avatar flow ends at
+  // `POST /api/media/finalize`, which mints the canonical relative form
+  // `/media/<shortId>` — an absolute-URL check rejects the app's own output
+  // and made every avatar save 400. `""` stays accepted: it is how the UI
+  // clears a photo.
+  photoURL: mediaUrlSchema.optional().or(z.literal("")),
   avatarMetadata: z
     .object({
       url: z.string(),

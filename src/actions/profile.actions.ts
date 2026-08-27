@@ -25,6 +25,7 @@ import {
   userRepository,
 } from "@mohasinac/appkit";
 import type { UserDocument } from "@mohasinac/appkit";
+import { mediaUrlSchema } from "@/validation/request-schemas";
 
 // --- Validation schema --------------------------------------------------------
 
@@ -32,7 +33,9 @@ const updateProfileSchema = z.object({
   displayName: z.string().optional(),
   email: z.string().email("Invalid email format").optional(),
   phoneNumber: z.string().optional(),
-  photoURL: z.string().url().optional().or(z.literal("")),
+  // See the note in src/app/api/user/profile/route.ts — `.url()` rejects the
+  // canonical `/media/<shortId>` form that /api/media/finalize mints.
+  photoURL: mediaUrlSchema.optional().or(z.literal("")),
   avatarMetadata: z
     .object({
       url: z.string(),

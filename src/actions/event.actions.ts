@@ -1,6 +1,7 @@
 "use server";
 import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 import { z } from "zod";
+import { mediaUrlSchema } from "@/validation/request-schemas";
 import { EVENT_FIELDS } from "@/constants";
 import { requireRoleUser, requireAuthUser, normalizeError } from "@mohasinac/appkit";
 import {
@@ -50,21 +51,21 @@ const dateInputSchema = z.preprocess((value) => {
 const singleImageMediaSchema = z
   .union([
     z.object({
-      url: z.string().url(),
+      url: mediaUrlSchema,
       type: z.enum(["image", "video", "file"]),
       alt: z.string().optional(),
-      thumbnailUrl: z.string().url().optional(),
+      thumbnailUrl: mediaUrlSchema.optional(),
     }),
-    z.string().url().transform((url) => ({ url, type: "image" as const })),
+    mediaUrlSchema.transform((url) => ({ url, type: "image" as const })),
   ])
   .nullable()
   .optional();
 
 const mediaFieldSchema = z.object({
-  url: z.string().url(),
+  url: mediaUrlSchema,
   type: z.enum(["image", "video", "file"]),
   alt: z.string().optional(),
-  thumbnailUrl: z.string().url().optional(),
+  thumbnailUrl: mediaUrlSchema.optional(),
 });
 
 const createEventSchema = z.object({
@@ -75,7 +76,7 @@ const createEventSchema = z.object({
   startsAt: dateInputSchema,
   endsAt: dateInputSchema,
   coverImage: singleImageMediaSchema,
-  coverImageUrl: z.string().url().optional(),
+  coverImageUrl: mediaUrlSchema.optional(),
   eventImages: z.array(mediaFieldSchema).max(10).optional().default([]),
   winnerImages: z.array(mediaFieldSchema).max(5).optional().default([]),
   additionalImages: z.array(mediaFieldSchema).max(10).optional().default([]),

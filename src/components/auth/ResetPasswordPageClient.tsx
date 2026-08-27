@@ -17,8 +17,9 @@ export function ResetPasswordPageClient() {
           await reset.mutateAsync({ token: code, newPassword });
           showToast("Your password has been reset successfully.", "success");
         } catch (err) {
+          // `reset` already surfaced this, and ResetPasswordView renders
+          // `reset.error` inline as well. Swallow so it is said once.
           void normalizeError(err);
-          showToast(err instanceof Error ? err.message : "Failed to reset password.", "error");
         }
       }}
       isLoading={reset.isPending}

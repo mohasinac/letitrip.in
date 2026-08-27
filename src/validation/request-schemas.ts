@@ -10,7 +10,6 @@
  */
 
 import { z } from "zod";
-import { normalizeError } from "@mohasinac/appkit";
 import { getDefaultCurrency } from "@mohasinac/appkit";
 
 // ============================================
@@ -26,33 +25,26 @@ export const urlSchema = z.string().url().max(2048);
 
 export const dateStringSchema = z.string().datetime({ offset: true });
 
-import { FIREBASE_STORAGE_HOST, GCS_HOST } from "@mohasinac/appkit";
+import {
+  isStoredMediaRef,
+  MEDIA_URL_MAX_LENGTH,
+  MEDIA_URL_MESSAGE,
+} from "@mohasinac/appkit";
 
-const APPROVED_MEDIA_DOMAINS = [
-  FIREBASE_STORAGE_HOST,
-  GCS_HOST,
-  "res.cloudinary.com",
-  "images.unsplash.com",
-];
-
+/**
+ * A media reference we are willing to PERSIST. The zod-4 twin of appkit's
+ * `mediaUrlSchema` — the two Zod majors mean the schema object can't be
+ * shared, so both refine on the SAME predicate (`isStoredMediaRef`) instead
+ * of each re-deriving the rule. That re-derivation is what let both copies
+ * be wrong in the same way.
+ *
+ * For a genuine EXTERNAL link (brand website, social handle, tracking URL)
+ * use `urlSchema` above — not this.
+ */
 export const mediaUrlSchema = z
   .string()
-  .url()
-  .max(2048)
-  .refine(
-    (url) => {
-      try {
-        const { hostname } = new URL(url);
-        return APPROVED_MEDIA_DOMAINS.some(
-          (domain) => hostname === domain || hostname.endsWith(`.${domain}`),
-        );
-      } catch (_err) {
-        void normalizeError(_err);
-        return false; // URL constructor throws for invalid URL strings
-      }
-    },
-    { message: "Image or video URL must be hosted on an approved CDN domain" },
-  );
+  .max(MEDIA_URL_MAX_LENGTH)
+  .refine(isStoredMediaRef, { message: MEDIA_URL_MESSAGE });
 
 export function validateRequestBody<T>(
   schema: z.ZodSchema<T>,

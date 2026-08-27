@@ -109,7 +109,7 @@ export const POST = withProviders(createRouteHandler<(typeof addSchema)["_output
         return errorResponse(
           `Wishlist full (${e.current}/${e.limit}). Remove an item to add new ones.`,
           409,
-          { code: "WISHLIST_FULL", limit: e.limit, current: e.current },
+          { code: "WISHLIST_FULL" },
         );
       }
       throw e;

@@ -19,23 +19,23 @@ async function _POST(req: Request, { params }: { params: Promise<{ id: string }>
   const body = await parseJsonBody<{ reason?: string }>(req);
 
   if (!body.reason?.trim()) {
-    return errorResponse("A reason is required", 400, "MISSING_REASON");
+    return errorResponse("A reason is required", 400, { code: "MISSING_REASON" });
   }
 
   const result = await raiseOrderDisputeAction(id, body.reason);
 
   if (!result.ok) {
     if (result.error?.includes("Ownership")) {
-      return errorResponse("Not authorized to raise a dispute on this order", 403, "FORBIDDEN");
+      return errorResponse("Not authorized to raise a dispute on this order", 403, { code: "FORBIDDEN" });
     }
     if (result.error?.includes("NOT_FOUND") || result.error?.includes("not found")) {
-      return errorResponse("Order not found", 404, "NOT_FOUND");
+      return errorResponse("Order not found", 404, { code: "NOT_FOUND" });
     }
     if (result.error?.includes("auto-approved")) {
       return errorResponse(
         "Disputes can only be raised on auto-approved orders",
         400,
-        "NOT_AUTO_APPROVED",
+        { code: "NOT_AUTO_APPROVED" },
       );
     }
     return errorResponse(result.error ?? "Failed to raise dispute", 400);

@@ -158,27 +158,27 @@ export default function NotificationsPage() {
   }, [queryClient]);
 
   const { mutate: markRead } = useApiMutation({
+    errorMessage: "Could not mark notification as read.",
     mutationFn: (id: string) => markUserNotificationRead(API_ROUTES.USER.NOTIFICATION_BY_ID(id)),
     onSuccess: invalidateNotifications,
-    onError: () => showToast("Could not mark notification as read.", "error"),
   });
 
   const { mutate: markAllRead, isPending: markingAll } = useApiMutation({
+    errorMessage: "Could not mark notifications as read.",
     mutationFn: () => markAllUserNotificationsRead(API_ROUTES.USER.NOTIFICATIONS_READ_ALL),
     onSuccess: () => {
       invalidateNotifications();
       showToast("All notifications marked as read.", "success");
     },
-    onError: () => showToast("Could not mark notifications as read.", "error"),
   });
 
   const { mutate: deleteNotif } = useApiMutation({
+    errorMessage: "Could not delete notification.",
     mutationFn: (id: string) => deleteUserNotification(API_ROUTES.USER.NOTIFICATION_BY_ID(id)),
     onSuccess: () => {
       invalidateNotifications();
       showToast("Notification deleted.", "info");
     },
-    onError: () => showToast("Could not delete notification.", "error"),
   });
 
   const config: ListingViewConfig<NotifResponse, NotifItem> = {

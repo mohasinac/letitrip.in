@@ -16,6 +16,7 @@ const DEFAULT_SORTS = sortBy(EVENT_FIELDS.CREATED_AT);
  */
 
 import { z } from "zod";
+import { mediaUrlSchema } from "@/validation/request-schemas";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import {
@@ -36,10 +37,10 @@ import {
 import type { SurveyConfig, FeedbackConfig } from "@mohasinac/appkit";
 
 const mediaFieldSchema = z.object({
-  url: z.string().url(),
+  url: mediaUrlSchema,
   type: z.enum(["image", "video", "file"]),
   alt: z.string().optional(),
-  thumbnailUrl: z.string().url().optional(),
+  thumbnailUrl: mediaUrlSchema.optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -78,7 +79,7 @@ const createEventSchema = z.object({
   startsAt: z.string().datetime({ offset: true }),
   endsAt: z.string().datetime({ offset: true }),
   coverImage: mediaFieldSchema.nullable().optional(),
-  coverImageUrl: z.string().url().optional(),
+  coverImageUrl: mediaUrlSchema.optional(),
   eventImages: z.array(mediaFieldSchema).max(10).optional().default([]),
   winnerImages: z.array(mediaFieldSchema).max(5).optional().default([]),
   additionalImages: z.array(mediaFieldSchema).max(10).optional().default([]),

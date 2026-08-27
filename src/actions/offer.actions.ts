@@ -1,5 +1,6 @@
 "use server";
 import { normalizeError } from "@mohasinac/appkit";
+import { toApiIssues } from "@mohasinac/appkit";
 
 import { wrapAction } from "@mohasinac/appkit/server";
 /**
@@ -88,7 +89,7 @@ export async function makeOfferAction(
       return {
         ok: false,
         error: parsed.error.issues[0]?.message ?? "Invalid offer data",
-        fieldErrors: parsed.error.flatten().fieldErrors,
+        issues: toApiIssues(parsed.error.issues),
       };
     const data = await makeOffer(user.uid, user.email ?? "", parsed.data as MakeOfferInput);
     return { ok: true, data };
@@ -123,7 +124,7 @@ export async function respondToOfferAction(
       return {
         ok: false,
         error: parsed.error.issues[0]?.message ?? "Invalid input",
-        fieldErrors: parsed.error.flatten().fieldErrors,
+        issues: toApiIssues(parsed.error.issues),
       };
     const data = await respondToOffer(user.uid, parsed.data as RespondToOfferInput);
     return { ok: true, data };
@@ -144,7 +145,7 @@ export async function acceptCounterOfferAction(
       return {
         ok: false,
         error: parsed.error.issues[0]?.message ?? "Invalid input",
-        fieldErrors: parsed.error.flatten().fieldErrors,
+        issues: toApiIssues(parsed.error.issues),
       };
     const data = await acceptCounterOffer(user.uid, parsed.data.offerId);
     return { ok: true, data };
@@ -167,7 +168,7 @@ export async function counterOfferByBuyerAction(
       return {
         ok: false,
         error: parsed.error.issues[0]?.message ?? "Invalid counter offer data",
-        fieldErrors: parsed.error.flatten().fieldErrors,
+        issues: toApiIssues(parsed.error.issues),
       };
     const data = await counterOfferByBuyer(user.uid, user.email ?? "", parsed.data as BuyerCounterInput);
     return { ok: true, data };
@@ -188,7 +189,7 @@ export async function withdrawOfferAction(
       return {
         ok: false,
         error: parsed.error.issues[0]?.message ?? "Invalid input",
-        fieldErrors: parsed.error.flatten().fieldErrors,
+        issues: toApiIssues(parsed.error.issues),
       };
     await withdrawOffer(user.uid, parsed.data.offerId);
     return { ok: true, data: undefined };

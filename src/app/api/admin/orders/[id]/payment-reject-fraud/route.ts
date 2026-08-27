@@ -32,10 +32,10 @@ export const PATCH = withProviders(
 
       if (!result.ok) {
         if (result.error?.includes("UNAUTHORIZED") || result.error?.includes("moderator")) {
-          return errorResponse("Only admin or moderator can reject a payment as fraudulent", 403, "FORBIDDEN");
+          return errorResponse("Only admin or moderator can reject a payment as fraudulent", 403, { code: "FORBIDDEN" });
         }
         if (result.error?.includes("NOT_FOUND") || result.error?.includes("not found")) {
-          return errorResponse("Order not found", 404, "NOT_FOUND");
+          return errorResponse("Order not found", 404, { code: "NOT_FOUND" });
         }
         return errorResponse(result.error ?? "Failed to reject payment", 400);
       }

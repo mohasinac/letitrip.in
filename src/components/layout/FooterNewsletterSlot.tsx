@@ -13,6 +13,7 @@ export function FooterNewsletterSlot() {
   const { showToast } = useToast();
 
   const subscribeMutation = useApiMutation({
+    errorMessage: "Could not subscribe. Please try again.",
     mutationFn: (payload: { email: string }) =>
       apiClient.post(API_ROUTES.NEWSLETTER.SUBSCRIBE, {
         ...payload,
@@ -22,9 +23,6 @@ export function FooterNewsletterSlot() {
       setDone(true);
       setEmail("");
       showToast("Subscribed! Check your inbox.", "success");
-    },
-    onError: () => {
-      showToast("Could not subscribe. Please try again.", "error");
     },
   });
 

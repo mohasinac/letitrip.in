@@ -1,5 +1,6 @@
 import { withProviders } from "@/providers.config";
 import type { JsonValue } from "@mohasinac/appkit";
+import { toApiIssues } from "@mohasinac/appkit";
 /**
  * Admin Products API Route
  * GET  /api/admin/products â€” Delegated to @mohasinac/feat-admin
@@ -87,7 +88,7 @@ export const POST = withProviders(createApiHandler({
       return errorResponse(
         ERROR_MESSAGES.VALIDATION.FAILED,
         400,
-        formatZodErrors(validation.errors),
+        { issues: toApiIssues(validation.errors.issues) },
       );
     }
 

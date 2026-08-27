@@ -1,4 +1,5 @@
 import { normalizeError } from "@mohasinac/appkit";
+import { toApiIssues } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 /**
  * Admin Homepage Sections Detail API Route
@@ -38,7 +39,7 @@ export const PATCH = withProviders(
 
       if (!id) {
         return errorResponse(ERROR_MESSAGES.VALIDATION.FAILED, 400, {
-          id: ["ID is required"],
+          issues: [{ path: ["id"], message: "ID is required" }],
         });
       }
 
@@ -49,7 +50,7 @@ export const PATCH = withProviders(
         return errorResponse(
           ERROR_MESSAGES.VALIDATION.FAILED,
           400,
-          formatZodErrors(validation.errors),
+          { issues: toApiIssues(validation.errors.issues) },
         );
       }
 
@@ -108,7 +109,7 @@ export const DELETE = withProviders(
 
       if (!id) {
         return errorResponse(ERROR_MESSAGES.VALIDATION.FAILED, 400, {
-          id: ["ID is required"],
+          issues: [{ path: ["id"], message: "ID is required" }],
         });
       }
 

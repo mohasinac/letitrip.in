@@ -109,8 +109,8 @@ export default function Page() {
   const [uploading, setUploading] = useState(false);
 
   const updateProfile = useUpdateProfile({
+    errorMessage: "Failed to update photo.",
     onSuccess: () => showToast("Profile photo updated.", "success"),
-    onError: (err) => showToast(err?.message ?? "Failed to update photo.", "error"),
   });
 
   const { data: profile, refetch: refetchProfile } = useProfile({ enabled: !!user });
@@ -133,9 +133,11 @@ export default function Page() {
         lastName: parts[1] ?? "",
       });
       await updateProfile.mutateAsync({ photoURL: url });
-    } catch (e: any) {
+    } catch (e: unknown) {
       void normalizeError(e);
-      showToast(e?.message ?? "Upload failed.", "error");
+      // No toast: `updateProfile` surfaces its own failure, and `upload()`
+      // surfaces the upload one. Toasting here made a failed avatar save say
+      // the same thing twice.
     } finally {
       setUploading(false);
     }
