@@ -137,3 +137,19 @@ export function getAdminUser(url: string): Promise<Response> {
 export function getAdminUserAddresses(userId: string): Promise<Response> {
   return fetch(`${API_ROUTES.ADMIN.ADDRESSES}?ownerType=user&ownerId=${encodeURIComponent(userId)}`);
 }
+
+/**
+ * Write a lottery's slot configuration.
+ *
+ * The ONLY sanctioned writer of `lotteryConfig` — the generic event PATCH
+ * rejects that field, because it is `.passthrough()` and letting a slot array
+ * through it erased every slot a buyer had already pulled.
+ */
+export function updateLotteryConfig(url: string, body: JsonBody): Promise<Response> {
+  return fetch(url, {
+    method: "PUT",
+    headers: JSON_HEADERS,
+    credentials: CREDS,
+    body: JSON.stringify(body),
+  });
+}

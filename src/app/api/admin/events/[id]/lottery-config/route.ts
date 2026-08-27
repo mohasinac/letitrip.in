@@ -1,3 +1,4 @@
+import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -35,7 +36,7 @@ import { ROLES_ADMIN_ONLY } from "@/constants";
  * world just changed under them. Conflating the two would read as "your form
  * is wrong" when the correct action is to reopen the pull first.
  */
-export const PUT = withProviders(
+const __PUT__g = withProviders(
   createRouteHandler<(typeof lotteryConfigWriteSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
@@ -66,3 +67,10 @@ export const PUT = withProviders(
     },
   }),
 );
+
+/*
+ * Guarded like every sibling under `admin/events` — a lottery IS an event, so
+ * turning the EVENTS flag off must close this door too. Without it the generic
+ * event routes 404 while the one route that writes lotteryConfig stayed open.
+ */
+export const PUT = withFeatureGuard("EVENTS", __PUT__g);

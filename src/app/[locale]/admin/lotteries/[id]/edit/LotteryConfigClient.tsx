@@ -8,6 +8,7 @@ import {
   type LotteryConfigWriteInput,
 } from "@mohasinac/appkit/client";
 import { ADMIN_ENDPOINTS } from "@mohasinac/appkit/client";
+import { updateLotteryConfig } from "@/lib/api/admin-client";
 
 interface Props {
   eventId: string;
@@ -43,11 +44,10 @@ export function LotteryConfigClient({ eventId, initialData }: Props) {
       eventId={eventId}
       initialData={initialData}
       onSubmit={async (data: { lotteryConfig: LotteryConfigWriteInput }) => {
-        const res = await fetch(ADMIN_ENDPOINTS.EVENT_LOTTERY_CONFIG(eventId), {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data.lotteryConfig),
-        });
+        const res = await updateLotteryConfig(
+          ADMIN_ENDPOINTS.EVENT_LOTTERY_CONFIG(eventId),
+          data.lotteryConfig as never,
+        );
         const payload = (await res.json().catch(() => null)) as
           | { error?: string; message?: string }
           | null;

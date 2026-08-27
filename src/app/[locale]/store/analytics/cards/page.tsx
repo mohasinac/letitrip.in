@@ -15,6 +15,7 @@ import {
   QuickFormDrawer,
   analyticsCardCreateSchema,
   ANALYTICS_CARD_TYPES,
+  type FormValues,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import {
@@ -72,7 +73,7 @@ export default function Page() {
    * A drawer rather than a page: this is a short create on top of a list the
    * seller is already reading, which is exactly the quick-mode case.
    */
-  const onCreate = async (values: Record<string, unknown>) => {
+  const onCreate = async (values: FormValues) => {
     setSaving(true);
     const res = await createAnalyticsCard(
       API_ROUTES.STORE.ANALYTICS_CARDS,
