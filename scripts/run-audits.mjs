@@ -320,6 +320,18 @@ const AUDITS = [
   // four pages (incl. the homepage) put a decrypted Meta WhatsApp access
   // token into public HTML behind an `as unknown as` cast.
   { name: "public-projection-parity",       script: "scripts/audit-public-projection-parity.mjs" },
+  // Strict-zero, no suppression marker. Sits beside public-projection-parity
+  // because both are secret-exposure gates. Six rules, each written against a
+  // defect found 2026-08-27: two independent `"enc:v1:"` literals, so the PII
+  // and settings crypto (different separators, different field order,
+  // DIFFERENT KEYS) were indistinguishable to every "is this encrypted" check;
+  // a settings-key constant sitting in the PII field registry one assignment
+  // away from encrypting store OAuth tokens unrecoverably; a hex key read
+  // without the normalisation its sibling applies, where Buffer.from truncates
+  // silently and desyncs every blind index; ciphertext interpolated into a
+  // thrown error and thence into the logs; and a Firestore .update() replacing
+  // a whole map that holds PII, destroying the siblings it does not mention.
+  { name: "pii-crypto",                     script: "scripts/audit-pii-crypto.mjs" },
   // Strict-zero. A selectable card's primary navigation (Link href /
   // router.push / handleClick) must never be gated on whether a selection
   // callback is merely wired — only on whether a selection is actively in
