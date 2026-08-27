@@ -96,6 +96,7 @@ export const POST = withProviders(
         showOnHomepage: b.showOnHomepage ?? false,
         showInFooter: b.showInFooter ?? false,
         "seo.slug": slug,
+        searchTokens: [],
         stats: { views: 0, helpful: 0 },
         createdAt: now,
         updatedAt: now,
