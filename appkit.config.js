@@ -20,12 +20,25 @@ const config = {
   },
 
   // ─── SEO defaults ────────────────────────────────────────────────────────
-  // Kept in sync with LETITRIP_SEO in src/constants/seo.server.ts — that file
-  // is the canonical source consumed by generateMetadata() for real pages;
-  // these values are what root layout.tsx, sitemap.ts, robots.ts, and every
-  // opengraph-image.tsx fallback siteName pull from.
+  // 🛑 `siteUrl` is THE canonical host, and this is its ONLY definition.
+  //
+  // src/constants/seo.server.ts derives LETITRIP_SEO.siteUrl from this value
+  // (via SEO_CONFIG) rather than reading env itself. It used to have its own
+  // `NEXT_PUBLIC_APP_URL || NEXT_PUBLIC_SITE_URL || "https://letitrip.in"`
+  // chain, and a comment here claiming the two were "kept in sync". They were
+  // not: once NEXT_PUBLIC_SITE_URL was set to the www host on Vercel, the
+  // env-driven path (page canonicals, og:url, JSON-LD) said www while this
+  // hardcoded literal (robots.txt Host/Sitemap, every sitemap <loc>, root
+  // metadataBase) still said apex. Result: all 182 sitemap URLs pointed at a
+  // host that 307-redirects, and the site fell out of Google.
+  //
+  // Two owners of one value is the bug. Keep it to one.
+  // Enforced by scripts/audit-seo-canonical-host.mjs.
+  //
+  // Must include the scheme, must NOT have a trailing slash, and must match the
+  // Vercel primary domain — the other host 308-redirects to it.
   seo: {
-    siteUrl: "https://letitrip.in",
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://www.letitrip.in",
     defaultTitle: "LetItRip — India's Collectibles Marketplace",
     defaultDescription:
       "Buy, sell & auction action figures, trading cards, spinning tops, model kits and more. India's largest collectibles marketplace.",

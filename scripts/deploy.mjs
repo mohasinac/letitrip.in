@@ -237,7 +237,22 @@ if ((deploy.status ?? 0) !== 0) {
 // So: request real pages, and fail loudly if production is broken.
 section("Post-deploy smoke test");
 
-const SMOKE_ORIGIN = process.env.SMOKE_ORIGIN ?? "https://letitrip.in";
+// Derived from appkit.config.js — the ONE canonical-host definition — rather
+// than hardcoded. It used to default to the apex, which is the host that
+// 307-redirects; combined with `redirect: "follow"` and an `ok` of
+// `>= 200 && < 400` below, the smoke test reported a pass while every URL it
+// requested was a cross-host redirect. It proved the site responded, never that
+// it was indexable.
+const CANONICAL_ORIGIN = (() => {
+  try {
+    const cfg = readFileSync(resolve(ROOT, "appkit.config.js"), "utf8");
+    const m = /siteUrl:\s*process\.env\.NEXT_PUBLIC_SITE_URL\s*\|\|\s*"(https:\/\/[^"]+)"/.exec(cfg);
+    return m ? m[1].replace(/\/+$/, "") : "https://www.letitrip.in";
+  } catch {
+    return "https://www.letitrip.in";
+  }
+})();
+const SMOKE_ORIGIN = process.env.SMOKE_ORIGIN ?? CANONICAL_ORIGIN;
 // One SSR page, one dynamic listing page, and one API route that exercises the
 // firebase-admin import chain — the exact path #69 broke.
 const SMOKE_PATHS = ["/", "/en/products", "/api/site-settings"];
@@ -289,5 +304,116 @@ if (smokeFailed) {
   process.exit(1);
 }
 
-console.log(green(bold("\nDeployed and verified serving.")));
+// ─── POST-DEPLOY SEO VERIFICATION ────────────────────────────────────────────
+//
+// The smoke test above proves the site RESPONDS. This proves it is INDEXABLE —
+// a distinction that cost this site its Google presence in August 2026, when
+// every page returned 200 while the sitemap advertised 182 URLs on a host that
+// 307-redirected.
+//
+// Also warms `/sitemap.xml`, which is `revalidate = 3600` and so rebuilds from
+// Firestore on first request after a deploy.
+section("Post-deploy SEO verification");
+
+const seoFailures = [];
+const seoWarn = (m) => console.log(yellow(`  ! ${m}`));
+
+async function fetchText(url, init) {
+  const res = await fetch(url, init);
+  return { status: res.status, headers: res.headers, body: await res.text() };
+}
+
+try {
+  // 1. The non-canonical host must PERMANENTLY redirect.
+  //    `redirect: "manual"` is essential — following the redirect is exactly how
+  //    a cross-host 307 read as a pass before.
+  const altOrigin = CANONICAL_ORIGIN.includes("://www.")
+    ? CANONICAL_ORIGIN.replace("://www.", "://")
+    : CANONICAL_ORIGIN.replace("://", "://www.");
+  const alt = await fetch(`${altOrigin}/`, { redirect: "manual" });
+  if (alt.status === 301 || alt.status === 308) {
+    pass(`${altOrigin}/ → ${alt.status} permanent → ${alt.headers.get("location")}`);
+  } else if (alt.status === 302 || alt.status === 307) {
+    seoFailures.push(
+      `${altOrigin}/ returns ${alt.status} (TEMPORARY). Google keeps the index entry on ` +
+        `the redirecting host instead of moving it. Set the Vercel domain redirect to permanent (308).`,
+    );
+  } else {
+    seoWarn(`${altOrigin}/ → ${alt.status} (expected a permanent redirect to ${CANONICAL_ORIGIN})`);
+  }
+
+  // 2. robots.txt must agree with the serving host.
+  const robots = await fetchText(`${CANONICAL_ORIGIN}/robots.txt`);
+  for (const key of ["Host", "Sitemap"]) {
+    const line = robots.body.split(/\r?\n/).find((l) => l.startsWith(`${key}:`));
+    if (!line) seoFailures.push(`robots.txt has no ${key}: line`);
+    else if (!line.includes(CANONICAL_ORIGIN))
+      seoFailures.push(`robots.txt ${line.trim()} — expected ${CANONICAL_ORIGIN}`);
+    else pass(`robots.txt ${key} = ${CANONICAL_ORIGIN}`);
+  }
+
+  // 3. Sitemap: right host, no test fixtures, no empty sections.
+  const sitemap = await fetchText(`${CANONICAL_ORIGIN}/sitemap.xml`);
+  const locs = [...sitemap.body.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  if (locs.length === 0) {
+    seoFailures.push("sitemap.xml contains zero URLs");
+  } else {
+    const offHost = locs.filter((u) => !u.startsWith(CANONICAL_ORIGIN));
+    if (offHost.length)
+      seoFailures.push(
+        `${offHost.length}/${locs.length} sitemap URLs are not on ${CANONICAL_ORIGIN} ` +
+          `(e.g. ${offHost[0]}) — every one of them redirects, which is what de-indexed the site.`,
+      );
+    else pass(`sitemap: all ${locs.length} URLs on ${CANONICAL_ORIGIN}`);
+
+    const testUrls = locs.filter((u) => /tester|sandbox/i.test(u));
+    if (testUrls.length)
+      seoFailures.push(
+        `${testUrls.length} tester-sandbox URLs in the public sitemap (e.g. ${testUrls[0]}). ` +
+          `These are deleted on a cycle, so Google indexes them and then 404s.`,
+      );
+    else pass("sitemap: no tester-sandbox fixtures");
+
+    // A section dropping to zero is silent — assert the ones we know must exist.
+    for (const seg of ["categories", "products", "blog", "brands"]) {
+      const n = locs.filter((u) => u.includes(`/${seg}/`)).length;
+      if (n === 0)
+        seoFailures.push(
+          `sitemap section "${seg}" has 0 URLs. An empty section looks identical to ` +
+            `"this site has none" — the category section was empty for months this way.`,
+        );
+      else pass(`sitemap: ${seg} = ${n}`);
+    }
+  }
+
+  // 4. Canonicals must be self-referencing.
+  //    Matched across the WHOLE document, not just <head> — metadata placement is
+  //    non-deterministic under streaming (it flips between requests on the same
+  //    URL), so a head-only assertion would be flaky rather than strict.
+  for (const p of ["/", "/products", "/reviews", "/promotions"]) {
+    const page = await fetchText(`${CANONICAL_ORIGIN}${p}`);
+    const m = /<link rel="canonical" href="([^"]+)"/.exec(page.body);
+    const expected = p === "/" ? CANONICAL_ORIGIN : `${CANONICAL_ORIGIN}${p}`;
+    if (!m) seoFailures.push(`${p} has no canonical`);
+    else if (m[1].replace(/\/+$/, "") !== expected.replace(/\/+$/, ""))
+      seoFailures.push(`${p} canonical is ${m[1]} — expected ${expected}`);
+    else pass(`${p} canonical ✓`);
+  }
+} catch (err) {
+  seoFailures.push(`SEO verification could not complete: ${err instanceof Error ? err.message : String(err)}`);
+}
+
+if (seoFailures.length) {
+  console.error(red(bold("\nDEPLOY IS LIVE BUT NOT INDEXABLE:")));
+  for (const f of seoFailures) console.error(red(`  ✗ ${f}`));
+  console.error(
+    yellow(
+      "\n  The site is serving, so this is not necessarily a rollback — but Google will\n" +
+        "  act on it. Fix before submitting the sitemap in Search Console.",
+    ),
+  );
+  process.exit(1);
+}
+
+console.log(green(bold("\nDeployed, verified serving, and verified indexable.")));
 process.exit(0);

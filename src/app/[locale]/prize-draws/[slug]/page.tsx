@@ -14,10 +14,31 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
+  // This used to interpolate the raw slug straight into the title, shipping
+  // `<title>prizedraw-beyblade-burst-collectors-draw — Prize Draw — LetItRip</title>`
+  // to Google on every prize-draw page, with a constant description shared by
+  // all of them. It never fetched the draw.
+  //
+  // `getPrizeDrawForDetail` is React.cache()-wrapped (makeGetListingForDetail),
+  // and the page body below already calls it — so this read is deduped and adds
+  // no Firestore cost.
+  const product = await getPrizeDrawForDetail(slug).catch(() => null);
+  if (!product) {
+    return _gm({
+      title: "Prize draw not found — LetItRip",
+      description: "This prize draw is unavailable or has ended.",
+      path: `/prize-draws/${slug}`,
+      noIndex: true,
+    });
+  }
   return _gm({
-    title: `${slug} — Prize Draw — LetItRip`,
-    description: "Fair-RNG prize draw on LetItRip.",
+    title: `${product.title} — Prize Draw — LetItRip`,
+    description:
+      product.seoDescription?.trim() ||
+      product.description?.slice(0, 160) ||
+      `Enter the ${product.title} prize draw on LetItRip — provably fair RNG, verified sellers.`,
     path: `/prize-draws/${slug}`,
+    image: product.mainImage || product.images?.[0] || undefined,
   });
 }
 

@@ -50,6 +50,34 @@
 
 ## SESSION LOG (newest first)
 
+### 2026-08-27 — S-seo-recovery: the site left Google, and one dead line made every page uncacheable
+
+**Report:** "what happened to my site seo? it is not even showing on google search anymore." A `site:letitrip.in` query returned exactly ONE result — the homepage, at `https://www.letitrip.in/`.
+
+**Nothing in the repo was de-indexing anything.** No `noindex`, no `X-Robots-Tag`, no blanket `Disallow: /`; the root layout explicitly sets `index: true, follow: true` and the live HTML confirmed it. Two unrelated causes, one after the other.
+
+**1. The canonical host split in two** (Root Cause #81). `appkit.config.js` hardcoded the apex while `src/constants/seo.server.ts` read `NEXT_PUBLIC_APP_URL || NEXT_PUBLIC_SITE_URL || <apex>` — with a comment in the first claiming they were "kept in sync". Once the Vercel env pointed at www, page canonicals/`og:url`/JSON-LD said **www** and robots.txt `Host:`/`Sitemap:`, every sitemap `<loc>` and root `metadataBase` still said **apex**. All 182 sitemap URLs 307-redirected — *temporary*, which tells Google not to move the index entry — while the destination declared a canonical on a host in no sitemap. Compounded by the `firebase-admin@14` outage (#69), which 500'd `/robots.txt` itself, and by `git.deploymentEnabled: false`, so committing that fix deployed nothing.
+
+**2. A dead line made the whole site uncacheable** (Root Cause #82). `[locale]/layout.tsx` called `await headers()` to read `x-invoke-path`/`x-pathname` — **headers nothing has ever set** (a repo-wide grep finds one occurrence: the line reading them). The `disabledRoutes` admin feature was therefore dead. But `headers()` is a dynamic API in the ROOT layout, so every page served `no-store`/`MISS`, every `revalidate = 120` was overridden, and every crawler hit was a billed invocation. Verified on `/terms` and `/privacy`.
+
+**Also found and fixed (all silent):**
+- `/promotions` and `/reviews` **self-canonicalised to the homepage** — inherited from a static `alternates.canonical` in the root layout
+- `classified`/`digital-codes`/`live` shipped **no canonical at all** (`siteUrl` never passed → `alternates: undefined`), and built it from `product.id` while the routes are `[slug]`
+- `prize-draws` put the **raw slug** in `<title>`
+- **0 of ~47 category pages** in the sitemap — `categoryType == "listing"` is not a `CategoryType` value
+- **34 of 182 sitemap URLs were tester-sandbox fixtures** that get deleted on a cycle
+- Product JSON-LD images were **relative** → rejected by Google; `Organization.name` rendered `"Letitrip"` (wrong casing, from a mis-set env var); `sameAs` hardcoded `[]`
+- `getStoreBySlug` not `React.cache`d and awaited twice per store page view
+
+**Shipped:** one env-driven host definition; root canonical + bogus `hi` hreflang removed; `disabledRoutes` moved to `proxy.ts` (TTL-cached, fail-open) and `generateStaticParams` added, so the site can cache; AggregateRating merged into the product node from already-fetched `avgRating`/`reviewCount` (zero extra reads, no `Review.author`, so no PII); two strict-zero audits (`seo-canonical-host`, `seo-sitemap-parity`), both negative-tested; `deploy.mjs` now verifies the site is **indexable**, not just responding — its `SMOKE_ORIGIN` pointed at the redirecting host and used `redirect: "follow"`, so it passed while every URL cross-host redirected.
+
+**⚠️ NOT deployed, and blocked on two things:**
+1. **appkit is pinned to npm `^4.27.0`, not `file:./appkit`.** Every appkit-side change here works locally only because `dist` was hand-synced into `node_modules`. It will not survive `npm install` and **will not deploy without an appkit publish**.
+2. **`npm run check` is red on 5 audits, none from this session** — `code-quality` (your in-flight `PlaceBidFormClient.tsx`) and four on unmodified committed files (`unvalidated-safeparse`, `unknown-leakage`, `feature-flags`, `direct-fetch-ui`). Types are green in both repos; `functions/lib` was rebuilt.
+
+**Deferred by design** (see plan Part 9): the seed/schema SEO work, dead-code wiring, keyword and nightly-generation work all overlap the in-flight search + PII plan (`searchTokens` is being deleted for `searchTxt`), and should follow it rather than migrate twice.
+
+
 ---
 
 ### 2026-08-26 — S-prod-console-errors: four production console errors, root-caused against the live site

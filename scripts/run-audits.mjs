@@ -102,6 +102,19 @@ const AUDITS = [
   // `danger-*` utilities, which Tailwind never generates for the consumer
   // build and therefore drops silently. Strict-zero.
   { name: "status-color-pairs",              script: "scripts/audit-status-color-pairs.mjs" },
+  // Strict-zero, no suppression marker. A `hover:bg-{palette}-{50,100,200}` is a
+  // theme-INVARIANT light tint — unreadable behind `dark:hover:text-*` white ink
+  // in every dark theme, which is the "white background behind white text on
+  // hover" report. Also blocks two competing `hover:bg-*` on one element (the
+  // deleted scripts/migrate-dark-classes.mjs ORPHAN_REPLACEMENTS artifact): both
+  // tie at (0,2,0) AND both carry !important under `important: true`, so
+  // EMISSION ORDER decides and the hardcoded tint was emitted last and won.
+  { name: "theme-invariant-hover",           script: "scripts/audit-theme-invariant-hover.mjs" },
+  // Strict-zero, no suppression marker. Icon size must come from ICON_SIZE, and
+  // a text character (♥/★) must never stand in for an icon inside a control —
+  // no width or height utility can size one. Scoped to interactive controls;
+  // decorative section art is a composition choice, not a system violation.
+  { name: "icon-sizing",                     script: "scripts/audit-icon-sizing.mjs" },
   { name: "table-column-priority",           script: "scripts/audit-table-column-priority.mjs" },
   { name: "column-renderers",                script: "scripts/audit-column-renderers.mjs" },
   { name: "unvalidated-request-body",        script: "scripts/audit-unvalidated-request-body.mjs" },
@@ -320,6 +333,18 @@ const AUDITS = [
   // date-like strings to Date). Root cause of the "must click Show ended to
   // see live auctions" bug — see CLAUDE.md's Recurrent Root Cause Patterns.
   { name: "sieve-date-fields",              script: "scripts/audit-sieve-date-fields.mjs" },
+  // The canonical host must have exactly ONE definition (appkit.config.js
+  // `seo.siteUrl`); robots.txt Host/Sitemap, every sitemap <loc>, metadataBase
+  // and every page canonical must derive from it. Two owners drifted in Aug
+  // 2026 — the sitemap advertised 182 URLs on a host that 307-redirected and
+  // the site fell out of Google, with nothing erroring. Strict-zero.
+  { name: "seo-canonical-host",             script: "scripts/audit-seo-canonical-host.mjs" },
+  // A sitemap section returning zero URLs is indistinguishable from a site that
+  // genuinely has none of that entity. Catches a discriminator literal absent
+  // from its own TS union (`categoryType == "listing"` hid ~47 category pages),
+  // a catch that swallows to [] unlogged, and tester fixtures reaching the
+  // public sitemap. Strict-zero.
+  { name: "seo-sitemap-parity",             script: "scripts/audit-seo-sitemap-parity.mjs" },
 ];
 function parseArgs(argv) {
   const args = argv.slice(2);

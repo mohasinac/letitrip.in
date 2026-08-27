@@ -61,6 +61,15 @@ export default async function Page({ params }: Props) {
         images: product.images,
         category: product.category,
         status: product.status,
+        // `avgRating` / `reviewCount` are denormalised onto the product document
+        // and already fetched above — emitting the AggregateRating costs zero
+        // extra reads and is what earns review stars in Google results.
+        // `aggregateRatingJsonLd` is deliberately NOT used: it builds a second,
+        // offer-less `Product` node, duplicating the entity on the same page.
+        rating:
+          typeof product.avgRating === "number" && typeof product.reviewCount === "number"
+            ? { average: product.avgRating, count: product.reviewCount }
+            : undefined,
       })
     : null;
 

@@ -30,6 +30,8 @@
  *   - scripts/audit-nav-page-wiring.mjs       (dead admin/store/user nav links — nav entry with no page.tsx, Root Cause #29)
  *   - scripts/audit-route-nav-field-constants.mjs (hardcoded routes, inline nav arrays, raw field strings, and static ROUTES.* hand-concatenated with a dynamic segment instead of a parametrized *_DETAIL route)
  *   - scripts/audit-sieve-date-fields.mjs     (Sieve field config for a Firestore Timestamp field, filterable but missing parseValue — GTE/LTE silently matches nothing)
+ *   - scripts/audit-seo-canonical-host.mjs    (two owners of the canonical host disagreeing — the sitemap advertises URLs on a host that redirects)
+ *   - scripts/audit-seo-sitemap-parity.mjs    (a sitemap fetcher filtering on a literal absent from its own union, or swallowing to [] unlogged)
  *
  * Baseline-drift audits: audit-ssr-in-appkit, audit-html-wrappers, audit-code-quality block
  * only when the violation count EXCEEDS the recorded baseline (regressions only).
@@ -434,6 +436,12 @@ const checks = [
   //    (Timestamp-vs-string type mismatch). Root cause of the "must click
   //    Show ended to see live auctions" bug, 2026-08-20 ─
   { label: "audit-sieve-date-fields", cmd: "node", args: ["scripts/audit-sieve-date-fields.mjs"], cwd: ROOT },
+  // ── The canonical host drifting between its two owners, and a sitemap section
+  //    silently returning zero URLs. Both are invisible at runtime — the only
+  //    symptom is Google slowly dropping the site, which is what happened in
+  //    August 2026. Cheap enough to run per-turn. ─
+  { label: "audit-seo-canonical-host", cmd: "node", args: ["scripts/audit-seo-canonical-host.mjs"], cwd: ROOT },
+  { label: "audit-seo-sitemap-parity", cmd: "node", args: ["scripts/audit-seo-sitemap-parity.mjs"], cwd: ROOT },
   // ── A "use client" file whose import graph transitively reaches "server-only"
   //    (directly, or via the bare "@mohasinac/appkit" package) — the exact bug
   //    class that broke the webpack production build, 2026-08-20 ─

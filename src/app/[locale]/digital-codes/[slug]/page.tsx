@@ -11,7 +11,12 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = await getDigitalCodeForDetail(slug).catch(() => null);
-  return buildDigitalCodeMetadata(product, { siteName: SEO_CONFIG.siteName ?? "LetItRip" });
+  // `siteUrl` is required for a canonical — without it the builder returns
+  // `alternates: undefined` and the page ships none. See classified/[slug].
+  return buildDigitalCodeMetadata(product, {
+    siteName: SEO_CONFIG.siteName ?? "LetItRip",
+    siteUrl: SEO_CONFIG.siteUrl,
+  });
 }
 
 export default async function Page({ params }: Props) {

@@ -1,8 +1,9 @@
 import { Suspense, type ReactNode } from "react";
 import { cache } from "react";
 import type { Metadata } from "next";
-import { headers } from "next/headers";
-import { notFound } from "next/navigation";
+// `headers` and `notFound` were imported here for the disabled-route gate that
+// now lives in src/proxy.ts. Do not reintroduce a dynamic API in this file —
+// see the note in the Layout body.
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import {
@@ -18,18 +19,31 @@ import {
 } from "@mohasinac/appkit/client";
 import { ClientErrorReporterMount } from "@/components";
 import { siteSettingsRepository } from "@mohasinac/appkit";
-import { getDisabledRoutes } from "@mohasinac/appkit/server";
 import { getFlag } from "@/lib/features";
 import LayoutShellClient from "./LayoutShellClient";
 import QueryProvider from "./QueryProvider";
 import { LOCALE_CONFIG } from "@/constants";
 import { resolveLocale } from "@/i18n/resolve-locale";
+import { routing } from "@/i18n/routing";
 import ClientProviderInitializer from "@/app/ClientProviderInitializer";
 import { ScrollToTop } from "@/components";
 
 const getCachedSiteSettings = cache(() =>
   siteSettingsRepository.getSingleton().catch(() => null)
 );
+
+/**
+ * Required for the `[locale]` segment to render statically. Without it Next
+ * treats the dynamic segment as unknown at build time and renders it per
+ * request — so removing the `headers()` call below is necessary but NOT
+ * sufficient to make the site cacheable.
+ *
+ * `routing.locales` is a single-entry list today (`["en"]`, with
+ * `localePrefix: "never"`), so this generates exactly one param.
+ */
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getCachedSiteSettings();
@@ -51,19 +65,25 @@ export default async function Layout({ children, params }: Props) {
 
   const siteSettings = await getCachedSiteSettings();
 
-  // Block disabled nav-item routes (strips locale prefix, skips Tier 2 paths)
-  const reqHeaders = await headers();
-  const rawPath = reqHeaders.get("x-invoke-path") ?? reqHeaders.get("x-pathname") ?? "";
-  if (rawPath) {
-    const TIER2 = ["/admin", "/store", "/user", "/checkout"];
-    const localePath = rawPath.replace(new RegExp(`^/${locale}`), "") || "/";
-    if (!TIER2.some((t) => localePath.startsWith(t))) {
-      const disabledRoutes = await getDisabledRoutes();
-      if (disabledRoutes.some((r) => localePath === r || localePath.startsWith(`${r}/`))) {
-        notFound();
-      }
-    }
-  }
+  // 🛑 The disabled-nav-route gate USED TO LIVE HERE. It has moved to
+  // `src/proxy.ts`. Do not move it back, and do not call `headers()`, `cookies()`
+  // or any other dynamic API in this file.
+  //
+  // Why: this is the ROOT locale layout, so a dynamic API here opts EVERY PAGE
+  // ON THE SITE into dynamic rendering. Every request — including every crawler
+  // hit — paid a full cold render, every response was
+  // `Cache-Control: private, no-cache, no-store`, `X-Vercel-Cache: MISS`, and the
+  // `export const revalidate = 120` those pages declare was silently overridden.
+  // Verified on `/terms` and `/privacy`, which have no per-request data at all.
+  //
+  // And it bought nothing: the code read `x-invoke-path` / `x-pathname`, and
+  // NOTHING has ever set either header (`x-invoke-path` is a Next 12/13 internal
+  // that Next 16 no longer emits; `x-pathname` is not a Next header and the proxy
+  // never set it). `rawPath` was always "", so the gate never ran — a dead
+  // feature charging a function invocation on every request.
+  //
+  // The proxy has `request.nextUrl.pathname` natively, needs no dynamic API, and
+  // fails open on a settings-fetch error.
   // No fallback here (unlike generateMetadata's favicon use above) — TitleBarLayout
   // treats an empty siteLogoUrl as "no admin logo configured" and renders the
   // desktop center nav slot instead. Falling back to "/logo.svg" would always be

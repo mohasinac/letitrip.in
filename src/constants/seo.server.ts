@@ -16,6 +16,7 @@ import type {
   BlogSeoInput,
   AuctionSeoInput,
 } from "@mohasinac/appkit/server";
+import { SEO_CONFIG } from "./seo";
 
 export type {
   SeoConfig,
@@ -25,10 +26,18 @@ export type {
   AuctionSeoInput,
 };
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_APP_URL ||
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  "https://letitrip.in";
+// 🛑 Single source of truth for the canonical host: appkit.config.js `seo.siteUrl`,
+// surfaced here through SEO_CONFIG. Do NOT reintroduce a local env chain.
+//
+// This file used to read `NEXT_PUBLIC_APP_URL || NEXT_PUBLIC_SITE_URL ||
+// "https://letitrip.in"` independently of appkit.config.js's hardcoded literal.
+// Both claimed to be canonical; neither deferred to the other. When the Vercel
+// env was pointed at the www host, page canonicals/og:url/JSON-LD followed it
+// and robots.txt/sitemap/metadataBase did not — so every URL in the sitemap
+// 307-redirected and Google dropped the site. See the comment in appkit.config.js.
+//
+// Enforced by scripts/audit-seo-canonical-host.mjs.
+const SITE_URL = SEO_CONFIG.siteUrl;
 
 export const LETITRIP_SEO: SeoConfig = createSeoConfig({
   siteName: "LetItRip",

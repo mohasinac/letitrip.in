@@ -6,6 +6,29 @@ import type { Metadata, Viewport } from "next";
 import { SEO_CONFIG } from "@/constants";
 import { initProviders } from "@/providers.config";
 import { organizationJsonLd, searchBoxJsonLd } from "@mohasinac/appkit/server";
+import appkitConfig from "@/lib/appkit-config";
+
+/**
+ * Site identity for the two site-wide JSON-LD nodes.
+ *
+ * Passed explicitly rather than letting the builders read
+ * `NEXT_PUBLIC_SITE_NAME` / `NEXT_PUBLIC_SITE_URL`. Production had
+ * `NEXT_PUBLIC_SITE_NAME="Letitrip"` — the wrong casing, which CLAUDE.md's brand
+ * rule forbids — and that string was being emitted as `Organization.name` on
+ * every page, i.e. the name Google may use in a Knowledge Panel. Sourcing it
+ * from appkit.config.js makes the brand a code-reviewed constant rather than a
+ * deploy-time env value nobody re-reads.
+ *
+ * `sameAs` feeds schema.org entity recognition; it was hardcoded `[]` while
+ * appkit.config.js carried real social URLs that nothing read.
+ */
+const SITE_IDENTITY = {
+  siteName: SEO_CONFIG.siteName,
+  siteUrl: SEO_CONFIG.siteUrl,
+  sameAs: Object.values(appkitConfig.brand?.socialUrls ?? {}).filter(
+    (u): u is string => typeof u === "string" && u.length > 0,
+  ),
+} as const;
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700", "800"],
@@ -92,13 +115,24 @@ export const metadata: Metadata = {
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
   },
-  alternates: {
-    canonical: SEO_CONFIG.siteUrl,
-    languages: {
-      en: SEO_CONFIG.siteUrl,
-      hi: `${SEO_CONFIG.siteUrl}/hi`,
-    },
-  },
+  // 🛑 Deliberately NO `alternates` here. Do not add one back.
+  //
+  // A root layout's metadata is INHERITED by every page that does not override
+  // it, so a static absolute `canonical: SEO_CONFIG.siteUrl` made every such
+  // page declare the homepage as its canonical URL — telling Google those pages
+  // are duplicates of `/` and should be dropped. /promotions and /reviews were
+  // both live examples; they self-canonicalised to the apex homepage.
+  //
+  // With no canonical here, Next emits none and Google self-canonicalises to the
+  // requested URL, which is correct. Pages that want an explicit one supply
+  // `path` to generateMetadata() from @/constants/seo.server.
+  //
+  // The `languages` map is gone for the same reason plus a second one: it
+  // advertised `hi` as an hreflang alternate while src/i18n/routing.ts declares
+  // `locales: ["en"]`, so /hi never resolved. A single-locale site needs no
+  // hreflang at all.
+  //
+  // Enforced by scripts/audit-seo-page-metadata.mjs.
 };
 
 /**
@@ -134,14 +168,14 @@ export default async function RootLayout({
           type="application/ld+json"
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(organizationJsonLd()),
+            __html: JSON.stringify(organizationJsonLd(SITE_IDENTITY)),
           }}
         />
         <script
           type="application/ld+json"
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(searchBoxJsonLd()),
+            __html: JSON.stringify(searchBoxJsonLd(SITE_IDENTITY)),
           }}
         />
         <script
