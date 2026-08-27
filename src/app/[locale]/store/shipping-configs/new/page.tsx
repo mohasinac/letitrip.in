@@ -4,14 +4,13 @@ import {
   Container,
   Stack,
   Heading,
-  Button,
-  Row,
   Section,
-  Form,
-  FieldInput,
-  FieldSelect,
-  FieldCheckbox,
+  FormShellContext,
   FormErrorSummary,
+  SectionForm,
+  buildSectionsFromSchema,
+  useSectionFormNav,
+  useFormShellState,
   applyZodIssues,
   shippingConfigFormSchema,
   SHIPPING_METHOD_OPTIONS,
@@ -22,7 +21,7 @@ import {
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
 import { createShippingConfig } from "@/lib/api/store-client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 /**
  * Create a shipping configuration.
@@ -43,9 +42,14 @@ import { useState } from "react";
  * `false`/`true` forever. Same shape as Root Cause #52: the data was already
  * flowing, nothing rendered it.
  *
- * The per-method fields (price-per-kg, free-above) are kept conditional as
- * they were — they are meaningless for the other methods, and the edit page
- * showing a flat-rate box for a pickup config is its own smaller gap.
+ * ## The per-method fields are still conditional — from the SCHEMA now
+ *
+ * This page hand-wrote three `{form.method === "x" && …}` blocks, which is
+ * exactly why it could not be derived. `FieldUiMeta.when` moved that decision
+ * onto the schema, beside the `superRefine` that requires the same field under
+ * the same condition, so the two cannot drift apart. The edit page picks the
+ * same behaviour up for free — it used to show a flat-rate box for every
+ * method, including pickup.
  */
 export default function Page() {
   const router = useRouter();
@@ -62,130 +66,80 @@ export default function Page() {
   });
   const [saving, setSaving] = useState(false);
 
+  const update = (partial: Partial<typeof form>) =>
+    setForm((prev) => ({ ...prev, ...partial }));
+
+  /*
+   * The per-method rate fields are conditional, and that used to be the
+   * reason this page could not be derived — it hand-wrote three
+   * `{form.method === "x" && …}` blocks. `FieldUiMeta.when` moved that onto
+   * the schema, next to the `superRefine` that requires the same field under
+   * the same condition, so the two cannot drift.
+   */
+  const sections = useMemo(
+    () =>
+      buildSectionsFromSchema<typeof form>(shippingConfigFormSchema, {
+        options: { method: [...SHIPPING_METHOD_OPTIONS] },
+      }),
+    [],
+  );
+
+  const { openIds, setOpenIds, goToSection, fieldToSectionIndex, sectionMeta } =
+    useSectionFormNav(sections, form);
+
+  const { shellCtx, setFieldError, validate } = useFormShellState(shippingConfigFormSchema, {
+    sections: sectionMeta,
+    onGoToSection: goToSection,
+    fieldToSectionIndex,
+  });
+
+  const onSubmit = async () => {
+    const parsed = shippingConfigFormSchema.safeParse(form);
+    if (!parsed.success) {
+      applyZodIssues(parsed.error.issues, setFieldError);
+      return;
+    }
+    setSaving(true);
+    const res = await createShippingConfig(
+      API_ROUTES.STORE.SHIPPING_CONFIGS,
+      parsed.data,
+    );
+    setSaving(false);
+    if (res.ok) {
+      showToast("Saved", "success");
+      router.push(String(ROUTES.STORE.SHIPPING_CONFIGS));
+      return;
+    }
+    const detail = await res
+      .json()
+      .then((j: { error?: string; message?: string }) => j?.error ?? j?.message)
+      .catch(() => undefined);
+    setFieldError("label", detail ?? "Save failed");
+  };
+
   return (
     <Section>
       <Container size="md">
         <Stack gap="lg" padding="y-lg">
           <Heading level={1}>New Shipping Configuration</Heading>
 
-          <Form schema={shippingConfigFormSchema} onSubmit={(e) => e.preventDefault()}>
-            {({ setFieldError, clearErrors }) => (
-              <Stack gap="md">
-                <FormErrorSummary />
-
-                <FieldInput
-                  name="label"
-                  label="Label"
-                  required
-                  value={form.label}
-                  onChange={(v) => setForm({ ...form, label: v })}
-                  placeholder="e.g. Flat ₹99"
-                />
-                <FieldSelect
-                  name="method"
-                  label="Method"
-                  required
-                  value={form.method}
-                  onChange={(v) => setForm({ ...form, method: String(v) })}
-                  options={SHIPPING_METHOD_OPTIONS}
-                />
-
-                {form.method === "flat" && (
-                  <FieldInput
-                    name="flatRate"
-                    type="number"
-                    label="Flat rate (₹)"
-                    value={String(form.flatRate)}
-                    onChange={(v) => setForm({ ...form, flatRate: Number(v) || 0 })}
-                  />
-                )}
-                {form.method === "weight" && (
-                  <FieldInput
-                    name="pricePerKg"
-                    type="number"
-                    label="Price per kg (₹)"
-                    value={String(form.pricePerKg)}
-                    onChange={(v) => setForm({ ...form, pricePerKg: Number(v) || 0 })}
-                  />
-                )}
-                {form.method === "free" && (
-                  <FieldInput
-                    name="freeAbove"
-                    type="number"
-                    label="Free above (₹)"
-                    value={String(form.freeAbove)}
-                    onChange={(v) => setForm({ ...form, freeAbove: Number(v) || 0 })}
-                  />
-                )}
-
-                <FieldInput
-                  name="estimatedDays"
-                  type="number"
-                  label="Estimated days"
-                  value={String(form.estimatedDays)}
-                  onChange={(v) => setForm({ ...form, estimatedDays: Number(v) || 0 })}
-                />
-
-                <Row gap="md" wrap>
-                  <FieldCheckbox
-                    name="isDefault"
-                    label="Default"
-                    checked={form.isDefault}
-                    onChange={(v) => setForm({ ...form, isDefault: v })}
-                  />
-                  <FieldCheckbox
-                    name="isActive"
-                    label="Active"
-                    checked={form.isActive}
-                    onChange={(v) => setForm({ ...form, isActive: v })}
-                  />
-                </Row>
-
-                <Row justify="end" gap="sm">
-                  <Button variant="ghost" type="button" onClick={() => router.back()}>
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    disabled={saving}
-                    isLoading={saving}
-                    onClick={async () => {
-                      clearErrors();
-                      const parsed = shippingConfigFormSchema.safeParse(form);
-                      if (!parsed.success) {
-                        applyZodIssues(parsed.error.issues, setFieldError);
-                        return;
-                      }
-                      setSaving(true);
-                      const res = await createShippingConfig(
-                        API_ROUTES.STORE.SHIPPING_CONFIGS,
-                        parsed.data,
-                      );
-                      setSaving(false);
-                      if (res.ok) {
-                        showToast("Saved", "success");
-                        router.push(String(ROUTES.STORE.SHIPPING_CONFIGS));
-                        return;
-                      }
-                      /*
-                       * Onto the field, not a toast. The old page threw
-                       * `new Error("Save failed")` and showed its message,
-                       * discarding whatever the server actually said.
-                       */
-                      const detail = await res
-                        .json()
-                        .then((j: { error?: string; message?: string }) => j?.error ?? j?.message)
-                        .catch(() => undefined);
-                      setFieldError("label", detail ?? "Save failed");
-                    }}
-                  >
-                    {ACTIONS.STORE["save-changes"].label}
-                  </Button>
-                </Row>
-              </Stack>
-            )}
-          </Form>
+          <FormShellContext.Provider value={shellCtx}>
+            <FormErrorSummary />
+            <SectionForm<typeof form>
+              sections={sections}
+              values={form}
+              onChange={update}
+              onSubmit={onSubmit}
+              onValidationChange={() => validate(form)}
+              schema={shippingConfigFormSchema}
+              openIds={openIds}
+              onOpenChange={setOpenIds}
+              submitLabel={ACTIONS.STORE["save-changes"].label}
+              cancelLabel="Cancel"
+              onCancel={() => router.back()}
+              isLoading={saving}
+            />
+          </FormShellContext.Provider>
         </Stack>
       </Container>
     </Section>
