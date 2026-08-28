@@ -19,16 +19,25 @@
  */
 
 import { spawnSync } from "node:child_process";
-import { join, dirname } from "node:path";
+import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-// Order mirrors the legacy `check:audits` && chain. Don't reorder without
-// reviewing scripts/claude-hooks/check-on-stop.mjs — that hook calls the
-// underlying audit-*.mjs files directly, not this dispatcher, so the
-// ordering invariant here is purely about reproducing legacy output.
-const AUDITS = [
+// Order mirrors the legacy `check:audits` && chain.
+//
+// 🛑 THIS ARRAY IS THE ONLY LIST OF AUDITS.
+// `scripts/claude-hooks/check-on-stop.mjs` imports it rather than repeating it.
+// It used to hand-maintain its own copy, and the two drifted badly: 73 of the
+// 148 registered audits had never once run in the Stop hook, including
+// `pii-crypto`, `public-projection-parity`, `permission-role-mismatch` and
+// `silent-degrade`. A new audit is now covered by the hook the moment it is
+// registered here — that is the point.
+//
+// Set `slow: true` on an entry to exclude it from the per-turn hook (it still
+// runs in `npm run check`). Excluding is an explicit, reviewable decision;
+// inclusion is the default.
+export const AUDITS = [
   // appkit's own audit suite (runs in ./appkit cwd)
   { name: "appkit", kind: "npm-prefix", prefix: "./appkit", script: "check:audits" },
 
@@ -551,4 +560,9 @@ function main() {
   }
 }
 
-main();
+// Only dispatch when run directly. `check-on-stop.mjs` imports AUDITS from this
+// module, and without this guard that import would run the whole suite twice.
+const invokedDirectly =
+  process.argv[1] &&
+  fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+if (invokedDirectly) main();

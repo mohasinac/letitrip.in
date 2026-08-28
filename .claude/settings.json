@@ -63,5 +63,18 @@
     ]
   },
   "model": "claude-sonnet-4-6",
-  "hooks": {}
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/claude-hooks/check-on-stop.mjs",
+            "timeout": 180,
+            "statusMessage": "Running quality gates..."
+          }
+        ]
+      }
+    ]
+  }
 }

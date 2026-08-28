@@ -34,11 +34,16 @@
  * -----
  *   node scripts/audit-hex-tokens.mjs              # audit only
  *   node scripts/audit-hex-tokens.mjs --fix         # auto-fix Category A
- *   node scripts/audit-hex-tokens.mjs --baseline=N  # pass if violations ≤ N
- *   node scripts/audit-hex-tokens.mjs --strict       # baseline=0
- *   node scripts/audit-hex-tokens.mjs --warn-only    # exit 0 even on violations
  *
- * Exits 0 on clean (or within baseline), 1 on violations.
+ * Exits 0 on clean, 1 on any violation. **Strict zero — no baseline mode.**
+ *
+ * `--baseline=N` and `--strict` were documented here for a long time and were
+ * never implemented: no code read either flag, so `--baseline=50` silently
+ * behaved as a normal strict run. `--warn-only` WAS real and is now removed —
+ * it exited 0 with violations present, which is the baseline-drift behaviour
+ * CLAUDE.md states does not exist in this repo. Use the per-line
+ * `// audit-hex-tokens-ok: <reason>` marker for a genuine exception; it names
+ * the decision at the site of the decision instead of hiding a count.
  */
 
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
@@ -80,7 +85,6 @@ const KNOWN_TOKENS = loadKnownTokens();
 // ---------------------------------------------------------------------------
 const argv = process.argv.slice(2);
 const FIX_MODE  = argv.includes("--fix");
-const WARN_ONLY = argv.includes("--warn-only");
 
 // ---------------------------------------------------------------------------
 // Patterns
@@ -377,8 +381,4 @@ for (const [cat, label] of Object.entries(categories)) {
 }
 process.stderr.write("\n");
 
-if (WARN_ONLY) {
-  process.exit(0);
-} else {
-  process.exit(1);
-}
+process.exit(1);
