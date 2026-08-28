@@ -246,6 +246,44 @@ for (const rel of EXECUTOR_FILES) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// R4 LISTER_DROPS_SEARCH — the third hop, and the one that only fails in prod.
+//
+// A route can send `baseOpts.search`, and its repository can implement token
+// search, and search STILL returns an unfiltered page — because the
+// listingProcessor Function's dispatch table calls `repo.list(m)` with no
+// second argument. The route's LOCAL fallback filters correctly, so this
+// reproduces only in production and only while the Function is reachable.
+//
+// Found by querying prod after a deploy: `/api/stores?q=zzzznope` returned the
+// same 2 rows as a real term and `/api/events?q=zzzznope` returned all 12,
+// while both routes and both repositories were already correct. Five listers
+// were dropping it — the `faqs` lister carries a comment about this exact bug.
+// ---------------------------------------------------------------------------
+{
+  const lp = join(REPO_ROOT, "appkit", "src", "_internal", "server", "jobs", "core", "listingProcessor.ts");
+  if (existsSync(lp)) {
+    const body = stripComments(readFileSync(lp, "utf8"));
+    // Collections whose repository takes a `search` opt today.
+    for (const coll of ["products", "faqs", "stores", "events", "blogPosts", "reviews", "orders"]) {
+      const m = body.match(
+        new RegExp(`\\n  ${coll}:\\s*\\(([^)]*)\\)\\s*=>([\\s\\S]*?)(?=\\n  [A-Za-z_$][\\w$]*:|\\n\\};)`),
+      );
+      if (!m) continue;
+      const [params, impl] = [m[1], m[2]];
+      // Either it names `search`, or it forwards the whole opts object.
+      const forwards = /\bsearch\b/.test(impl) || /\bo\b(?!\w)/.test(impl);
+      if (!/\bo\b(?!\w)/.test(params) || !forwards) {
+        push("LISTER_DROPS_SEARCH",
+          `listingProcessor: the \`${coll}\` lister does not forward \`search\`. That is how ` +
+          `token search reaches the repository — Sieve cannot express array-contains, so it ` +
+          `never rides inside \`filters\`. Dropped, the Function answers 200 with an UNFILTERED ` +
+          `page while the local fallback still filters, so it does not reproduce locally.`);
+      }
+    }
+  }
+}
+
 if (violations.length > 0) {
   console.error(`[audit-search-parity] ${violations.length} violation(s):\n`);
   for (const v of violations) console.error(`  [${v.rule}]\n    ${v.detail}\n`);
