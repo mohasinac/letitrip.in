@@ -45,6 +45,9 @@ export const GET = withProviders(createRouteHandler({
     });
     const filters = getStringParam(searchParams, "filters");
     const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
+    // `searchTxt` is an `array-contains` clause, which Sieve cannot express —
+    // so it travels alongside `filters`, not inside it.
+    const search = getStringParam(searchParams, "q")?.trim() || undefined;
 
     const store = await storeRepository.findByOwnerId(user!.uid);
     serverLogger.info("Seller orders list requested", {
@@ -83,7 +86,7 @@ export const GET = withProviders(createRouteHandler({
       sorts,
       page,
       pageSize,
-    });
+    }, { search });
 
     return successResponse({
       orders: sieveResult.items,

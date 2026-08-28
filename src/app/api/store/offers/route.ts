@@ -30,6 +30,10 @@ export const GET = withProviders(createApiHandler({
     const extraFilters = url.searchParams.get("filters");
     if (extraFilters) filterParts.push(extraFilters);
 
+    // `searchTxt` is an `array-contains` clause, which Sieve cannot express —
+    // so it travels alongside `filters`, not inside it.
+    const search = url.searchParams.get("q")?.trim() || undefined;
+
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store) {
       return successResponse({ items: [], total: 0, page, pageSize, totalPages: 0, hasMore: false });
@@ -39,7 +43,7 @@ export const GET = withProviders(createApiHandler({
       sorts,
       page,
       pageSize,
-    });
+    }, { search });
 
     // The sibling server action (`listSellerOffers`) already masks; this route
     // did not, so the seller's own list leaked every buyer's full name and
