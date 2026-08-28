@@ -74,6 +74,41 @@ export async function register(): Promise<void> {
     );
   }
 
+  // -- Degraded-read reporting -------------------------------------------
+  // `safeRead()` wraps an optional read whose failure must not break the page,
+  // and records a DEGRADED_READ row instead of returning a plausible empty
+  // value. It has always had this seam and NOTHING has ever called it — so even
+  // where safeRead was used, the failure vanished. `DEGRADED_READ` already
+  // exists in HTTP_ERROR_CODES and errors.codes; the whole pathway was designed
+  // and never connected.
+  //
+  // Registered here for the same reason as the action reporter above: Next.js
+  // calls register() itself, so it cannot be orphaned the way setErrorTracker
+  // was (Root Cause #78).
+  try {
+    const { installDegradedReadReporter, serverErrorsRepository } = await import(
+      "@mohasinac/appkit/server"
+    );
+    installDegradedReadReporter((report) => {
+      console.warn(`[degraded-read] ${report.key}: ${report.message}`);
+      void serverErrorsRepository().record({
+        source: "vercel",
+        route: report.route,
+        code: report.code,
+        message: `${report.key}: ${report.message}`,
+        stack: report.stack,
+        requestId: "degraded-read",
+      });
+    });
+  } catch (error) {
+    const { normalizeError } = await import("@mohasinac/appkit");
+    void normalizeError(error);
+    console.error(
+      "[instrumentation] installDegradedReadReporter failed (non-fatal):",
+      error,
+    );
+  }
+
   // Deployment digest — one email per deployed version, not per cold start.
   // Vercel runs register() on every lambda cold start, so the send is guarded
   // by a Firestore version marker claimed in a transaction (see

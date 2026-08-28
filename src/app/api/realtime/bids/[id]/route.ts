@@ -5,6 +5,25 @@ import { getAdminRealtimeDb } from "@mohasinac/appkit";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Close the stream ourselves before the platform kills it.
+ *
+ * 🛑 This route had no maxDuration. The listener is attached in
+ * `ReadableStream.start` and detached only in `cancel()`, which fires on a
+ * client abort but NOT when the serverless instance is frozen or reclaimed. So
+ * the platform would kill the stream, the browser's EventSource would
+ * auto-reconnect, and each reconnect attached a fresh RTDB listener on a fresh
+ * Admin connection — a reconnect loop on any busy auction page, costing both
+ * Vercel invocations and RTDB connections.
+ *
+ * Ending the stream deliberately at a known point means `cancel()` runs, the
+ * listener is detached, and the client reconnects on a schedule we chose rather
+ * than whenever the platform happens to reap us. Comfortably inside the 60s
+ * background ceiling in Rule #6.
+ */
+export const maxDuration = 50;
+const STREAM_TTL_MS = 45_000;
+
 function sseChunk(type: string, data?: unknown): Uint8Array {
   return new TextEncoder().encode(`data: ${JSON.stringify({ type, data })}\n\n`);
 }
@@ -32,6 +51,7 @@ async function __GET__g(
   const ref = rtdb.ref(`/auction-bids/${productId}`);
 
   let valueListener: ((snap: any) => void) | null = null;
+  let ttlTimer: ReturnType<typeof setTimeout> | null = null;
 
   const stream = new ReadableStream({
     start(controller) {
@@ -47,8 +67,26 @@ async function __GET__g(
       ref.on("value", valueListener, () => {
         tryEnqueue(controller, "error");
       });
+
+      // Self-terminate before the platform does, so the teardown below always
+      // runs. EventSource reconnects on its own.
+      ttlTimer = setTimeout(() => {
+        if (valueListener) {
+          ref.off("value", valueListener);
+          valueListener = null;
+        }
+        try {
+          controller.close();
+        } catch (_err) {
+          void normalizeError(_err); // already closed — client disconnected first
+        }
+      }, STREAM_TTL_MS);
     },
     cancel() {
+      if (ttlTimer) {
+        clearTimeout(ttlTimer);
+        ttlTimer = null;
+      }
       if (valueListener) {
         ref.off("value", valueListener);
         valueListener = null;

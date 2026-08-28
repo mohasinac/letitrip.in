@@ -54,6 +54,10 @@ const REQUIRED_HOOKS = [
     name: "setActionErrorReporter",
     why: "records server-action failures; without it all 222 wrapAction call sites fail with no serverErrors row and no log line",
   },
+  {
+    name: "installDegradedReadReporter",
+    why: "records safeRead() failures as DEGRADED_READ; without it a failed optional read returns its fallback and is indistinguishable from a legitimately empty result",
+  },
 ];
 
 const SKIP_DIRS = new Set([
