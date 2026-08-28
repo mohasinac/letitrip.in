@@ -1,62 +1,26 @@
-import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
-import { blogGET, serverLogger } from "@mohasinac/appkit";
+import { blogGET } from "@mohasinac/appkit";
 
-function isMissingFirestoreIndexError(error: unknown): boolean {
-	const message = error instanceof Error ? error.message : String(error);
-	return (
-		message.includes("FAILED_PRECONDITION") &&
-		message.includes("requires an index")
-	);
-}
-
-async function blogGetHandler(
-	...args: Parameters<typeof blogGET>
-): Promise<Response> {
-	const [request] = args as [Request, ...unknown[]];
-	const requestUrl = new URL(request.url);
-	const hasSearchQuery = Boolean(requestUrl.searchParams.get("q"));
-
-	try {
-		const response = await blogGET(...args);
-
-		if (hasSearchQuery && response.status >= 500) {
-			const fallbackUrl = new URL(request.url);
-			fallbackUrl.searchParams.delete("q");
-
-			serverLogger.warn(
-				"Blog search returned server error; retrying without q filter",
-				{ url: request.url, status: response.status },
-			);
-
-			const fallbackRequest = new Request(fallbackUrl, {
-				method: "GET",
-				headers: request.headers,
-			});
-			return blogGET(fallbackRequest as Parameters<typeof blogGET>[0]);
-		}
-
-		return response;
-	} catch (error) {
-		void normalizeError(error);
-		if (hasSearchQuery && isMissingFirestoreIndexError(error)) {
-			const fallbackUrl = new URL(request.url);
-			fallbackUrl.searchParams.delete("q");
-
-			serverLogger.warn(
-				"Blog search query hit missing Firestore index; retrying without q filter",
-				{ url: request.url },
-			);
-
-			const fallbackRequest = new Request(fallbackUrl, {
-				method: "GET",
-				headers: request.headers,
-			});
-			return blogGET(fallbackRequest as Parameters<typeof blogGET>[0]);
-		}
-
-		throw error;
-	}
-}
-
-export const GET = withProviders(blogGetHandler as (request: Request, context?: any) => Promise<Response>);
+/**
+ * A bare pass-through, deliberately.
+ *
+ * This used to wrap `blogGET` in a fallback that, on a missing-index error,
+ * DELETED `q` from the query and re-issued the request — returning the
+ * unfiltered blog list as though it were search results, with HTTP 200. A
+ * reader searching "dranzer" got all 18 posts and had no way to tell that from
+ * a genuine match. The warn line it logged went to the server; the user was
+ * told nothing.
+ *
+ * It was scaffolding for the pre-`searchTxt` era, when blog search ran as
+ * `title@=*` — a case-sensitive prefix match that needed an index nobody had
+ * declared. `blogGET` now pushes a `searchTxt` `array-contains` clause down,
+ * and the four blogPosts composite indexes it needs are deployed.
+ *
+ * Verified against production before deleting the fallback, with the
+ * nonsense-term control that is the only thing distinguishing "filtering" from
+ * "returning everything": q=beyblade → 6, q=zzzznope → 0, no q → 18.
+ *
+ * If a future query shape does lack an index, the correct outcome is a loud
+ * failure, not a plausible-looking wrong answer.
+ */
+export const GET = withProviders(blogGET);

@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import { SORT_DROPPED_FOR_EXACT_SEARCH, withDegraded } from "@mohasinac/appkit";
 /**
  * Admin Reviews API Route
  * GET /api/admin/reviews
@@ -35,8 +36,15 @@ export const GET = withProviders(createApiHandler({
     const effectiveFilters =
       [filters, qFilter].filter(Boolean).join(",") || undefined;
 
-    // Avoid forcing extra composite indices for exact blind-index lookups.
+    // The sort is genuinely unavailable here: `q` resolves through an HMAC
+    // blind index or an exact name match, and preserving the caller's sort
+    // across these three endpoints was MEASURED at 14 more composite indexes
+    // — to order a set an exact email match bounds at one row. Dropping it is
+    // the right trade. Dropping it silently was not: the sort dropdown went on
+    // displaying "Oldest" over unsorted rows, so the compromise now travels on
+    // the response.
     const effectiveSorts = q ? undefined : sorts;
+    const degraded = q ? [SORT_DROPPED_FOR_EXACT_SEARCH] : [];
 
     const result = await reviewRepository.listAll({
       filters: effectiveFilters,
@@ -44,13 +52,13 @@ export const GET = withProviders(createApiHandler({
       page,
       pageSize,
     });
-    return successResponse({
+    return successResponse(withDegraded({
       items: result.items,
       total: result.total,
       page: result.page,
       pageSize: result.pageSize,
       totalPages: result.totalPages,
       hasMore: result.hasMore,
-    });
+    }, degraded));
   },
 }));
