@@ -392,6 +392,11 @@ const AUDITS = [
   // converting them to ciphertext-by-default means triaging every call site
   // into plaintext/masked/neither. A 16th repo fails the build today.
   { name: "pii-coverage",                   script: "scripts/audit-pii-coverage.mjs" },
+  // List queries belong in the listingProcessor Function, not inside Vercel's
+  // 10s ceiling. 61 routes still run theirs locally — a ratchet, so a NEW one
+  // fails while the backlog is burned down. Also strict on reshaping an
+  // already-paginated result and reporting the survivors as `total`.
+  { name: "listing-delegation",             script: "scripts/audit-listing-delegation.mjs" },
   // Every admin/seller/user dashboard listing must use the DataListingView
   // config-driven scaffold, not a hand-rolled ListingToolbar/DataTable
   // composition. 22 bypasses found + migrated 2026-08-21; see the script's
