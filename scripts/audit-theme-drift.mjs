@@ -29,7 +29,7 @@
  * validated at write time by the Site Settings server action.
  */
 
-import { readFileSync } from "fs";
+import { readFileSync, readdirSync, statSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join, relative } from "path";
 
@@ -173,8 +173,137 @@ function diff(label, cssTokens, tsTokens) {
   return issues;
 }
 
+// ---------------------------------------------------------------------------
+// RULE 2 — THEME_INVARIANT_TEXT (ratchet)
+// ---------------------------------------------------------------------------
+/**
+ * A component CSS rule setting `color:` from the raw neutral ramp
+ * (`--appkit-color-zinc-*` / `--appkit-color-slate-*`) is theme-INVARIANT: the
+ * ramp is declared once under `:root` and is not overridden by any theme block,
+ * so the same grey renders in `default-dark`, `cobalt-night` and `sunset`.
+ *
+ * Rule 1 above proves the TS presets and tokens.css agree. It says nothing
+ * about whether component CSS actually READS those tokens — and it did not.
+ * `Typography.style.css` had `.appkit-color--muted` reading
+ * `--appkit-color-text-FAINT` (one step lighter than its own name, for ~1,039
+ * `color="muted"` call sites), `.appkit-color--faint` and `.appkit-label`
+ * reading the raw ramp, and `.dark` overrides pinning all of them back to a
+ * fixed grey — `.dark .appkit-color--faint` resolved to zinc-600 (#52525b) on a
+ * near-black page. Fixed 2026-08-29; that file is at 0 and must stay there.
+ *
+ * The remaining 122 sites are the same defect in 38 other components, each
+ * hand-rolling a light/dark pair off the ramp. They need a browser to
+ * re-verify, so they are RATCHETED, not baselined: a file may never exceed its
+ * recorded count, a file absent from the map must be at zero, and lowering a
+ * count requires updating the map — so the debt cannot silently grow OR be
+ * silently misreported. Removing an entry is the goal.
+ *
+ * Fix by reading `--appkit-color-text` / `-text-muted` / `-text-faint`, which
+ * already invert per theme, and DELETING the paired `.dark` override — the
+ * token does that job, and a second mechanism can only disagree with it.
+ */
+const THEME_INVARIANT_TEXT_RATCHET = {
+  "ui/DataTable.style.css": 3,
+  "ui/components/Accordion.style.css": 3,
+  "ui/components/ActiveFilterChips.style.css": 4,
+  "ui/components/Avatar.style.css": 2,
+  "ui/components/Badge.style.css": 2,
+  "ui/components/BaseListingCard.style.css": 1,
+  "ui/components/Breadcrumb.style.css": 3,
+  "ui/components/BulkActionBar.style.css": 1,
+  "ui/components/Checkbox.style.css": 2,
+  "ui/components/DescriptionField.style.css": 3,
+  "ui/components/Divider.style.css": 1,
+  "ui/components/Dropdown.style.css": 2,
+  "ui/components/EmptyState.style.css": 1,
+  "ui/components/FilterDrawer.style.css": 2,
+  "ui/components/FormField.style.css": 2,
+  "ui/components/IconButton.style.css": 3,
+  "ui/components/ListingLayout.style.css": 2,
+  "ui/components/PaginatedSelect.style.css": 2,
+  "ui/components/Pagination.style.css": 4,
+  "ui/components/PasswordStrengthIndicator.style.css": 3,
+  "ui/components/PriceDisplay.style.css": 1,
+  "ui/components/Progress.style.css": 1,
+  "ui/components/Radio.style.css": 2,
+  "ui/components/RatingDisplay.style.css": 4,
+  "ui/components/RowActionMenu.style.css": 2,
+  "ui/components/Select.style.css": 4,
+  "ui/components/Semantic.style.css": 16,
+  "ui/components/SideDrawer.style.css": 4,
+  "ui/components/StarRating.style.css": 2,
+  "ui/components/StatsGrid.style.css": 3,
+  "ui/components/StepperNav.style.css": 4,
+  "ui/components/SummaryCard.style.css": 4,
+  "ui/components/TablePagination.style.css": 4,
+  "ui/components/TagInput.style.css": 4,
+  "ui/components/TextLink.style.css": 3,
+  "ui/components/Tooltip.style.css": 3,
+  "ui/components/ViewToggle.style.css": 2,
+  "ui/rich-text/RichText.style.css": 13,
+};
+
+const RAW_RAMP_COLOR_RX = /(^|[^-\w])color:\s*var\(--appkit-color-(?:zinc|slate)-\d/;
+
+function collectCssFiles(dir, out = []) {
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    if (statSync(full).isDirectory()) collectCssFiles(full, out);
+    else if (entry.endsWith(".css")) out.push(full);
+  }
+  return out;
+}
+
+function countRawRampText(file) {
+  let count = 0;
+  for (const line of readFileSync(file, "utf-8").split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("/*") || trimmed.startsWith("*")) continue;
+    // `background-color:` and `border-color:` end in "color:" too; the leading
+    // boundary in the regex rejects them, but the fill/border ramp is a
+    // legitimate use in either case.
+    if (!RAW_RAMP_COLOR_RX.test(line)) continue;
+    count += 1;
+  }
+  return count;
+}
+
+function checkThemeInvariantText() {
+  const issues = [];
+  for (const file of collectCssFiles(APPKIT_SRC)) {
+    if (file === TOKENS_CSS) continue;
+    const key = relative(APPKIT_SRC, file).replace(/\\/g, "/");
+    const actual = countRawRampText(file);
+    const allowed = THEME_INVARIANT_TEXT_RATCHET[key] ?? 0;
+    if (actual > allowed) {
+      issues.push({
+        file: rel(file),
+        detail:
+          `THEME_INVARIANT_TEXT: ${actual} \`color:\` declaration(s) read the raw ` +
+          `--appkit-color-{zinc,slate}-* ramp; the ratchet allows ${allowed}.\n` +
+          `The ramp is declared once in :root and no theme overrides it, so this ` +
+          `renders the same grey in every theme.\n` +
+          `Read --appkit-color-text / -text-muted / -text-faint instead, and delete ` +
+          `any paired \`.dark\` override — those tokens already invert per theme.`,
+      });
+    } else if (actual < allowed) {
+      issues.push({
+        file: rel(file),
+        detail:
+          `THEME_INVARIANT_TEXT: ${actual} site(s) remain but the ratchet still records ` +
+          `${allowed}. Lower it to ${actual} (or delete the entry if 0) in ` +
+          `scripts/audit-theme-drift.mjs — a ratchet that over-reports its debt stops ` +
+          `being a measure of it.`,
+      });
+    }
+  }
+  return issues;
+}
+
 const cssSource = readFileSync(TOKENS_CSS, "utf-8");
 const failures = [];
+
+for (const issue of checkThemeInvariantText()) failures.push(issue);
 
 for (const theme of THEMES) {
   const tsPath = join(THEMES_DIR, theme.tsFile);
