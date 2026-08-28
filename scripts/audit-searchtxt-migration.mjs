@@ -34,6 +34,13 @@ const APPKIT = join(REPO_ROOT, "appkit", "src");
 /** Fully wired — every rule below is enforced. */
 const MIGRATED = [
   {
+    name: "scammerProfiles",
+    schema: "features/scams/schemas/firestore.ts",
+    repo: "features/scams/repository/scammer.repository.ts",
+    seeds: ["seed/scammers-seed-data.ts"],
+    indexCollection: "scammerProfiles",
+  },
+  {
     name: "faqs",
     schema: "features/faq/schemas/firestore.ts",
     repo: "features/faq/repository/faqs.repository.ts",
@@ -110,12 +117,50 @@ const MIGRATED = [
 ];
 
 /** Awaiting migration — reported, not enforced. */
+/**
+ * Re-triaged 2026-08-28 against the actual `*_COLLECTION` constants. Three
+ * names were wrong and two were never collections at all, so the old count of
+ * 16 overstated the backlog by five and pointed four of the rest at nothing.
+ *
+ *   scammers  -> scammerProfiles   (SCAMMER_COLLECTION)
+ *   catalogue -> catalogueItems    (CATALOGUE_COLLECTION) — this misnaming also
+ *                                  made the PII backfill a silent no-op for
+ *                                  months; see backfill-pii.mjs
+ *   media     -> mediaAssets       (the repository's super() argument)
+ *
+ * `bundles` and `sublistingCategories` are NOT collections. Both are rows in
+ * `categories` discriminated by `categoryType` (SB-UNI-D / the sublisting
+ * work), so migrating `categories` covers them and a separate entry could only
+ * ever point at an empty collection — the exact failure the `catalogue` typo
+ * produced.
+ */
+const NOT_COLLECTIONS = {
+  bundles: 'categories rows with categoryType:"bundle"',
+  sublistingCategories: 'categories rows with categoryType:"sublisting"',
+};
+
 const PENDING = [
-  "categories", "scammers",
-  "supportTickets", "bundles", "sublistingCategories",
+  "categories",
+  "supportTickets",
   "bids", "payouts", "shipments", "groupedListings", "notifications",
-  "users", "adminAuditLog", "jobs", "media", "itemRequests", "catalogue",
+  "users", "adminAuditLog", "jobs", "mediaAssets", "itemRequests",
+  "catalogueItems",
 ];
+
+// Enforced, not just documented. A name here is a collection that does not
+// exist, so a migration targeting it would query nothing and report success —
+// which is precisely what the `catalogue`/`catalogueItems` typo did to the PII
+// backfill for months. Cheap to check, and it makes the note above load-bearing
+// rather than a comment someone can silently contradict.
+for (const [name, why] of Object.entries(NOT_COLLECTIONS)) {
+  if (PENDING.includes(name) || MIGRATED.includes(name)) {
+    console.error(
+      `audit-searchtxt-migration: "${name}" is not a Firestore collection — ${why}. ` +
+      `A migration targeting it would query nothing and pass.`,
+    );
+    process.exit(1);
+  }
+}
 
 /** Field names that must never feed searchTxt (decision D1). */
 const PII_SHAPED = /\b(email|phone|upiVpa|accountNumber|ifsc|password|token|ip)\b/i;

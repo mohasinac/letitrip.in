@@ -28,16 +28,17 @@ const __GET__g = withProviders(
       const filters  = getStringParam(searchParams, "filters") || undefined;
       const q        = getStringParam(searchParams, "q")       || undefined;
 
-      const model: SieveModel = {
-        page,
-        pageSize,
-        sorts,
-        filters: q
-          ? filters ? `${filters},displayNames@=${q}` : `displayNames@=${q}`
-          : filters,
-      };
+      // `searchTxt` is an `array-contains` clause, which Sieve cannot express —
+      // so it travels alongside `filters`, not inside it.
+      //
+      // This used to build `displayNames@=${q}`. `@=` is array-contains, which
+      // matches a WHOLE element: "Vikram" found nothing against
+      // `displayNames: ["Vikram M", "Vikram Mehta"]`, and phones and UPI ids
+      // were never searched at all despite the box promising them. searchTxt
+      // indexes word prefixes across all four identity arrays.
+      const model: SieveModel = { page, pageSize, sorts, filters };
 
-      const result = await scammerRepository.listAll(model);
+      const result = await scammerRepository.listAll(model, { search: q });
       return successResponse({
         scammers: result.items,
         meta: { total: result.total, page, pageSize },
