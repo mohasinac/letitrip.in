@@ -463,7 +463,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
       setDisputeOpen(false);
     } catch (err) {
       void normalizeError(err);
-      showToast(err instanceof Error ? err.message : "Failed to raise dispute.", "error");
+      showToast("Failed to raise dispute.", "error");
     } finally {
       setIsSubmittingDispute(false);
     }

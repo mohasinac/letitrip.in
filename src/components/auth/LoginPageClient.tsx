@@ -13,7 +13,7 @@ export function LoginPageClient() {
       router.push(String(ROUTES.HOME));
     },
     onError: (err) => {
-      showToast(err instanceof Error ? err.message : "Sign-in failed. Please try again.", "error");
+      showToast("Sign-in failed. Please try again.", "error");
     },
   });
 
@@ -27,7 +27,7 @@ export function LoginPageClient() {
       router.push(String(ROUTES.HOME));
     },
     onError: (err) => {
-      showToast(err instanceof Error ? err.message : "Google sign-in failed. Please try again.", "error");
+      showToast("Google sign-in failed. Please try again.", "error");
     },
   });
 

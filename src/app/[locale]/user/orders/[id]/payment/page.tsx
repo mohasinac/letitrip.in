@@ -112,7 +112,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       router.push(String(ROUTES.USER.ORDER_DETAIL(id)));
     } catch (err) {
       void normalizeError(err);
-      showToast(err instanceof Error ? err.message : "Submission failed.", "error");
+      showToast("Submission failed.", "error");
     } finally {
       setIsPending(false);
     }

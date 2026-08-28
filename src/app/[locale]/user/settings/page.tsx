@@ -287,7 +287,7 @@ export default function Page() {
       void refetchProfile();
     },
     onError: (err) => {
-      showToast(err instanceof Error ? err.message : "Failed to connect Google account.", "error");
+      showToast("Failed to connect Google account.", "error");
     },
   });
 
@@ -304,7 +304,7 @@ export default function Page() {
       showToast("Password reset link sent — check your inbox.", "success");
     },
     onError: (err) => {
-      showToast(err instanceof Error ? err.message : "Failed to send reset link.", "error");
+      showToast("Failed to send reset link.", "error");
     },
   });
 
@@ -336,7 +336,7 @@ export default function Page() {
       setNewEmail("");
     },
     onError: (err) => {
-      showToast(err instanceof Error ? err.message : "Failed to update email.", "error");
+      showToast("Failed to update email.", "error");
     },
   });
 

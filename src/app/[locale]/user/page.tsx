@@ -99,7 +99,7 @@ export default function Page() {
       showToast("Google account connected.", "success");
       void refetchProfile();
     },
-    onError: (err) => showToast(err instanceof Error ? err.message : "Failed to connect Google account.", "error"),
+    onError: (err) => showToast("Failed to connect Google account.", "error"),
   });
 
   async function onPickFile(file: File | null) {

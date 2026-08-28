@@ -224,7 +224,7 @@ export default function Page() {
       showToast(next ? "Checkout bypass enabled." : "Checkout bypass disabled.", "success");
     } catch (err) {
       void normalizeError(err);
-      showToast(err instanceof Error ? err.message : "Failed to toggle bypass.", "error");
+      showToast("Failed to toggle bypass.", "error");
     } finally {
       setBypassLoading(false);
     }

@@ -12,7 +12,7 @@ export function RegisterPageClient() {
       router.push(String(ROUTES.HOME));
     },
     onError: (err) => {
-      showToast(err instanceof Error ? err.message : "Registration failed. Please try again.", "error");
+      showToast("Registration failed. Please try again.", "error");
     },
   });
 

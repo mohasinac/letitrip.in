@@ -1151,7 +1151,7 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
       router.push(checkoutHref);
     } catch (err) {
       void normalizeError(err);
-      showToast(err instanceof Error ? err.message : "Failed to select all items", "error");
+      showToast("Failed to select all items", "error");
     }
   }
 
