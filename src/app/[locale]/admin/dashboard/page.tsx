@@ -248,7 +248,7 @@ export default function Page() {
             isCollapsed={isCollapsed("admin-dashboard:stats")}
             onToggle={() => toggle("admin-dashboard:stats")}
           >
-            <Grid cols={2} gap="3" className="sm:grid-cols-4">
+            <Grid cols="statTiles" gap="3">
               <StatCard label="Pending Orders" value={stats?.pendingOrders ?? null} href={String(ROUTES.ADMIN.ORDERS)} />
               {flags.PAYOUTS && (
                 <StatCard label="Pending Payouts" value={stats?.pendingPayouts ?? null} href={String(ROUTES.ADMIN.PAYOUTS)} />
@@ -268,7 +268,7 @@ export default function Page() {
           onToggle={() => toggle("admin-dashboard:quick-actions")}
         >
           <Stack gap="xl">
-            <Grid cols={2} gap="3" className="sm:grid-cols-4">
+            <Grid cols="navTiles" gap="3">
               {QUICK_ACTIONS.map(({ label, href, Icon }) => (
                 <Link
                   key={label}

@@ -315,35 +315,15 @@
     border: 1px solid color-mix(in srgb, var(--appkit-color-border) 80%, transparent);
   }
 
-  /* Grid Utilities */
-  .grid-auto-fill {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  }
-
-  .grid-auto-fit {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  }
-
-  /* Fluid Grid Utilities used by appkit tokens (THEME_CONSTANTS.fluidGrid) */
-  .fluid-grid-card {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  }
-
-  .fluid-grid-admin {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  }
-
-  .fluid-grid-wide {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  }
-
-  .fluid-grid-thumb {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  }
+  /* The `.grid-auto-fill` / `.grid-auto-fit` / `.fluid-grid-*` utilities that
+     used to live here are gone. Every card grid now goes through
+     `<Grid cols="cards">` and appkit's own `.appkit-grid--cards` ladder, which
+     ships in dist/styles.css. That matters beyond tidiness: these rules were
+     defined only in THIS app's globals.css, yet four appkit components
+     referenced `.fluid-grid-card` — appkit's own build never generated it, so
+     any other consumer of the package rendered those grids as plain blocks.
+     Their header also cited `THEME_CONSTANTS.fluidGrid`, which no longer
+     exists. */
 
   /* Flexbox Utilities */
   .flex-center {

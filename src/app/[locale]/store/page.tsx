@@ -1,6 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { CollapsibleSection, Div, DynamicBgDiv, ROUTES, SellerTopProducts, StoreDashboardView, apiClient, useCollapsedSections, useStoreDashboard, formatCurrency } from "@mohasinac/appkit/client";
+import { CollapsibleSection, Div, Grid, DynamicBgDiv, ROUTES, SellerTopProducts, StoreDashboardView, apiClient, useCollapsedSections, useStoreDashboard, formatCurrency } from "@mohasinac/appkit/client";
 const __O = {
   hidden: "overflow-hidden",
 } as const;
@@ -132,7 +132,7 @@ export default function Page() {
           isCollapsed={isCollapsed("store-dashboard:stats")}
           onToggle={() => toggle("store-dashboard:stats")}
         >
-          <Div layout="grid" gap="4" className="grid-cols-2 sm:grid-cols-3">
+          <Grid cols="statTiles" gap="md">
             <StatCard
               label="Total Revenue"
               value={stats ? `${stats.currency} ${stats.totalRevenue.toLocaleString()}` : "—"}
@@ -175,7 +175,7 @@ export default function Page() {
               gradient={GREEN_GRAD}
               Icon={Star}
             />
-          </Div>
+          </Grid>
         </CollapsibleSection>
       )}
       renderQuickActions={() => (
@@ -184,7 +184,7 @@ export default function Page() {
           isCollapsed={isCollapsed("store-dashboard:quick-actions")}
           onToggle={() => toggle("store-dashboard:quick-actions")}
         >
-          <Div layout="grid" gap="3" className="grid-cols-2 sm:grid-cols-3">
+          <Grid cols="navTiles" gap="3">
             {QUICK_ACTIONS.map(({ label, href, Icon }) => (
               <Link
                 key={label}
@@ -200,7 +200,7 @@ export default function Page() {
                 {label}
               </Link>
             ))}
-          </Div>
+          </Grid>
         </CollapsibleSection>
       )}
       renderTopProducts={() =>

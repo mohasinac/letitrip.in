@@ -1,13 +1,5 @@
 "use client";
-import {
-  PromotionsViewProductSection,
-  InteractiveProductCard,
-  Div,
-  Stack,
-  AdSlot,
-  pluginFor,
-  type AdSlotId,
-} from "@mohasinac/appkit/client";
+import { PromotionsViewProductSection, InteractiveProductCard, Div, Grid, Stack, AdSlot, pluginFor, type AdSlotId } from "@mohasinac/appkit/client";
 
 type Product = { id: string; slug?: string; listingType?: string; [key: string]: unknown };
 type Props = {
@@ -25,7 +17,7 @@ export function PromotionsProductsClient({ title, subtitle, products, adSlotId }
       hasProducts={products.length > 0}
       renderProducts={() => (
         <Stack gap="lg">
-          <Div layout="grid" gap="4" className="grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+          <Grid cols="cards" gap="md">
             {products.map((product) => (
               <InteractiveProductCard
                 key={product.id}
@@ -35,7 +27,7 @@ export function PromotionsProductsClient({ title, subtitle, products, adSlotId }
                 )}
               />
             ))}
-          </Div>
+          </Grid>
           <AdSlot id={adSlotId} />
         </Stack>
       )}

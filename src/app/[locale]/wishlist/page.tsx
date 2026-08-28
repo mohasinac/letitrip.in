@@ -1,32 +1,7 @@
 "use client";
 import { normalizeError, pluginFor } from "@mohasinac/appkit/client";
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import {
-  sortBy,
-  useWishlistWithGuest,
-  useSession,
-  InteractiveProductCard,
-  ListingLayout,
-  Input,
-  Select,
-  Div,
-  Heading,
-  Text,
-  Stack,
-  Row,
-  Button,
-  useToast,
-  isAuctionListing,
-  isPreOrderListing,
-  normalizeListingType,
-  useAuthGate,
-  ACTION_ID,
-  ACTIONS,
-  LoginRequiredModal,
-  useBottomActions,
-  Toggle,
-  TextLink,
-} from "@mohasinac/appkit/client";
+import { sortBy, useWishlistWithGuest, useSession, InteractiveProductCard, ListingLayout, Input, Select, Div, Grid, Heading, Text, Stack, Row, Button, useToast, isAuctionListing, isPreOrderListing, normalizeListingType, useAuthGate, ACTION_ID, ACTIONS, LoginRequiredModal, useBottomActions, Toggle, TextLink } from "@mohasinac/appkit/client";
 import type { EnrichedWishlistItem } from "@mohasinac/appkit/client";
 import { Span } from "@mohasinac/appkit/ui";
 import { removeFromWishlistAction, addWishlistItemToCartAction } from "@/actions/wishlist.actions";
@@ -479,11 +454,11 @@ function renderWishlistItems({
 }) {
   if (isLoading) {
     return (
-      <Div gap="4" className="fluid-grid-card">
+      <Grid cols="cards" gap="md">
         {Array.from({ length: 8 }).map((_, i) => (
           <Div key={i} className="animate-pulse aspect-[3/4]" surface="subtle" rounded="xl" border="default" />
         ))}
-      </Div>
+      </Grid>
     );
   }
   if (filteredItems.length === 0) {
@@ -499,7 +474,7 @@ function renderWishlistItems({
     );
   }
   return (
-    <Div gap="4" className="fluid-grid-card">
+    <Grid cols="cards" gap="md">
       {filteredItems.map((item) => {
         const slug = item.product?.slug ?? item.productSlug ?? item.productId;
         const href = pluginFor(item.product?.listingType ?? "standard").detailRoute(slug);
@@ -558,6 +533,6 @@ function renderWishlistItems({
           </Stack>
         );
       })}
-    </Div>
+    </Grid>
   );
 }

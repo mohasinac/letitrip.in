@@ -1,16 +1,5 @@
 "use client";
-import {
-  AdSlot,
-  Button,
-  Div,
-  Form,
-  Input,
-  InteractiveProductCard,
-  ROUTES,
-  SearchView,
-  Stack,
-  Text,
-} from "@mohasinac/appkit/client";
+import { AdSlot, Button, Div, Grid, Form, Input, InteractiveProductCard, ROUTES, SearchView, Stack, Text } from "@mohasinac/appkit/client";
 
 const __P = {
   p6: "p-[var(--appkit-space-6)]",
@@ -41,7 +30,7 @@ export function SearchResultsClient({ locale, query, total, products }: Props) {
       renderResults={() =>
         products.length > 0 ? (
           <Stack gap="lg">
-            <Div layout="grid" gap="4" className="grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+            <Grid cols="cards" gap="md">
               {products.map((product) => (
                 <InteractiveProductCard
                   key={product.id}
@@ -49,7 +38,7 @@ export function SearchResultsClient({ locale, query, total, products }: Props) {
                   href={String(ROUTES.PUBLIC.PRODUCT_DETAIL((product as any).slug ?? product.id))}
                 />
               ))}
-            </Div>
+            </Grid>
             <AdSlot id="listing-between-rows" />
           </Stack>
         ) : (

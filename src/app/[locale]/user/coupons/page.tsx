@@ -12,18 +12,7 @@ import { normalizeError } from "@mohasinac/appkit/client";
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import {
-  useSession,
-  ROUTES,
-  ACTIONS,
-  Button,
-  Div,
-  Heading,
-  Row,
-  Span,
-  Stack,
-  Text,
-} from "@mohasinac/appkit/client";
+import { useSession, ROUTES, ACTIONS, Button, Div, Grid, Heading, Row, Span, Stack, Text } from "@mohasinac/appkit/client";
 import { useToast } from "@mohasinac/appkit/client";
 import type { ClaimedCouponDocument } from "@mohasinac/appkit/client";
 import { getUserCoupons, deleteUserCoupon } from "@/lib/api/user-client";
@@ -193,17 +182,17 @@ export default function ClaimedCouponsPage() {
 
       {/* Tab body */}
       {isLoading ? (
-        <Div gap="3" className="fluid-grid-card">
+        <Grid cols="cardsWide" gap="3">
           {Array.from({ length: 4 }).map((_, i) => (
             <Div key={i} className="animate-pulse h-32" surface="subtle" rounded="xl" border="default" />
           ))}
-        </Div>
+        </Grid>
       ) : items.length === 0 ? (
         <Div className="text-center" padding="y-4xl">
           <Text variant="secondary">No {tab} coupons.</Text>
         </Div>
       ) : (
-        <Div gap="3" className="fluid-grid-card">
+        <Grid cols="cardsWide" gap="3">
           {items.map((c) => (
             <CouponWalletCard
               key={c.id}
@@ -213,7 +202,7 @@ export default function ClaimedCouponsPage() {
               removable={tab === "active"}
             />
           ))}
-        </Div>
+        </Grid>
       )}
     </Stack>
   );

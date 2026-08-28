@@ -4,22 +4,7 @@ import { useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { Heading, Stack, Text, Badge } from "@mohasinac/appkit/client";
-import {
-  AddressCard,
-  useAddresses,
-  useDeleteAddress,
-  useSetDefaultAddress,
-  useToast,
-  ROUTES,
-  Div,
-  Row,
-  Input,
-  Button,
-  FieldSelect,
-  SideDrawer,
-  Textarea,
-  useApiMutation,
-} from "@mohasinac/appkit/client";
+import { AddressCard, useAddresses, useDeleteAddress, useSetDefaultAddress, useToast, ROUTES, Div, Grid, Row, Input, Button, FieldSelect, SideDrawer, Textarea, useApiMutation } from "@mohasinac/appkit/client";
 import type { AddressCardAddress } from "@mohasinac/appkit/client";
 import { requestAddressUnban } from "@/lib/api/user-client";
 
@@ -106,7 +91,7 @@ export function UserAddressesClient() {
 
   if (isLoading) {
     return (
-      <Div layout="grid" gap="4" className="sm:grid-cols-2">
+      <Grid cols="cardsWide" gap="md">
         {Array.from({ length: 3 }).map((_, i) => (
           <Stack key={i} className={`animate-pulse ${__P.p4}`} gap="sm" rounded="xl" border="default">
             <Div className="h-4 w-1/3" surface="subtle" rounded="default" />
@@ -114,7 +99,7 @@ export function UserAddressesClient() {
             <Div className="h-3 w-1/2" surface="subtle" rounded="default" />
           </Stack>
         ))}
-      </Div>
+      </Grid>
     );
   }
 
@@ -191,7 +176,7 @@ export function UserAddressesClient() {
         </Text>
       )}
 
-      <Div layout="grid" gap="4" className="sm:grid-cols-2">
+      <Grid cols="cardsWide" gap="md">
         {addresses.map((addr) => {
           const isBanned = addr.banStatus === "banned";
           const isUnbanPending = addr.banStatus === "unban_requested";
@@ -228,7 +213,7 @@ export function UserAddressesClient() {
             </Stack>
           );
         })}
-      </Div>
+      </Grid>
 
       <Button rounded="lg"
         onClick={() => router.push(String(ROUTES.USER.ADDRESSES_NEW))}

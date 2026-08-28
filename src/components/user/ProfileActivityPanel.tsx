@@ -1,17 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import {
-  useAuth,
-  useOrders,
-  ROUTES,
-  CollapsibleSection,
-  Div,
-  Stack,
-  Text,
-  Heading,
-  useCollapsedSections,
-  formatCurrency,
-} from "@mohasinac/appkit/client";
+import { useAuth, useOrders, ROUTES, CollapsibleSection, Div, Grid, Stack, Text, Heading, useCollapsedSections, formatCurrency } from "@mohasinac/appkit/client";
 import { Row, apiClient } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
@@ -98,13 +87,12 @@ export function ProfileActivityPanel() {
         isCollapsed={isCollapsed("user-profile:stats")}
         onToggle={() => toggle("user-profile:stats")}
       >
-      {/* eslint-disable-next-line lir/no-hardcoded-grid-cols -- fixed 4-stat strip; FLUID_GRID token oversizes */}
-      <Div layout="grid" gap="3" className="grid-cols-2 md:grid-cols-4">
+      <Grid cols="statTiles" gap="3">
         <StatPill label="Lifetime orders" value={totalOrders} />
         <StatPill label="Lifetime spent" value={formatCurrency(totalSpent)} />
         <StatPill label="Bids placed" value={bidsData?.total ?? 0} />
         <StatPill label="Member since" value={memberSince ? new Date(memberSince).getFullYear() : "—"} />
-      </Div>
+      </Grid>
       </CollapsibleSection>
 
       <CollapsibleSection

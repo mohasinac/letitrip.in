@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { Heading, Main, MediaImage, Nav, ROUTES, Row, Span, Stack, Text, categoriesRepository, isAuctionListing, isPreOrderListing, normalizeListingType, pluginFor, formatCurrency } from "@mohasinac/appkit";
 import type { ListingType } from "@mohasinac/appkit";
-import { Div } from "@mohasinac/appkit/client";
+import { Div, Grid } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 
@@ -109,7 +109,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
             </Link>
           </Stack>
         ) : (
-          <Div layout="grid" gap="3" className="grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          <Grid cols="categoryCards" gap="3">
             {listings.map((listing) => {
               const l = listing as Record<string, JsonValue>;
               const id = String(l.id ?? "");
@@ -174,7 +174,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
                 </Link>
               );
             })}
-          </Div>
+          </Grid>
         )}
       </Div>
     </Main>

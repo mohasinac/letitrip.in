@@ -46,6 +46,7 @@ const AUDITS = [
   { name: "raw-sticky-toolbar",              script: "scripts/audit-raw-sticky-toolbar.mjs" },
   { name: "no-demo-seed-route",              script: "scripts/audit-no-demo-seed-route.mjs" },
   { name: "responsive-wrap",                 script: "scripts/audit-responsive-wrap.mjs" },
+  { name: "card-grid-cols",                  script: "scripts/audit-card-grid-cols.mjs" },
   { name: "og-coverage",                     script: "appkit/scripts/verify-og-coverage.mjs" },
   { name: "hex-tokens",                      script: "scripts/audit-hex-tokens.mjs", supportsFix: true },
   { name: "config-factories",                script: "scripts/audit-config-factories.mjs" },

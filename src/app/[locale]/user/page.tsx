@@ -1,27 +1,7 @@
 "use client";
 import { Row, Stack, normalizeError } from "@mohasinac/appkit/client";
 import { useRef, useState } from "react";
-import {
-  UserAccountHubView,
-  useAuth,
-  useOrders,
-  useWishlistCount,
-  useMediaUpload,
-  useUpdateProfile,
-  useToast,
-  useProfile,
-  useLinkGoogleAccount,
-  OrdersList,
-  ROUTES,
-  ACTIONS,
-  Alert,
-  Badge,
-  Button,
-  Div,
-  DynamicBgDiv,
-  Input,
-  Span,
-} from "@mohasinac/appkit/client";
+import { UserAccountHubView, useAuth, useOrders, useWishlistCount, useMediaUpload, useUpdateProfile, useToast, useProfile, useLinkGoogleAccount, OrdersList, ROUTES, ACTIONS, Alert, Badge, Button, Div, Grid, DynamicBgDiv, Input, Span } from "@mohasinac/appkit/client";
 import { useNotifications } from "@mohasinac/appkit/client";
 import {
   ShoppingBag,
@@ -255,18 +235,18 @@ export default function Page() {
               </Alert>
             )}
 
-            <Div layout="grid" gap="3" className="grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
+            <Grid cols="statTiles" gap="3">
               <StatCard label="Orders"        value={totalOrders}                   href={String(ROUTES.USER.ORDERS)} />
               <StatCard label="Total spent"   value={formatINR(totalSpent)}    href={String(ROUTES.USER.ORDERS)} />
               <StatCard label="Wishlist"      value={wishlistCount ?? 0}            href={String(ROUTES.USER.WISHLIST)} />
               <StatCard label="Unread alerts" value={unreadCount ?? 0}              href={String(ROUTES.USER.NOTIFICATIONS)} />
               <StatCard label="Support"       value={"Open"}                         href={String(ROUTES.USER.SUPPORT)} />
-            </Div>
+            </Grid>
           </Stack>
         ) : null
       }
       renderNav={() => (
-        <Div layout="grid" gap="3" className="grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+        <Grid cols="navTiles" gap="3">
           {(user
             ? [{ label: "My Public Profile", href: ROUTES.PUBLIC.PROFILE(user.slug ?? user.uid), Icon: UserCircle }, ...NAV_LINKS]
             : NAV_LINKS
@@ -285,7 +265,7 @@ export default function Page() {
               {label}
             </Link>
           ))}
-        </Div>
+        </Grid>
       )}
       renderRecentOrders={() =>
         orders.length > 0 || ordersLoading ? (
