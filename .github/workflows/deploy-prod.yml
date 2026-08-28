@@ -26,13 +26,19 @@ jobs:
       - name: Build appkit
         run: npm --prefix appkit run build
 
+      # `npm run check` is the sole pre-deploy gate: tsc in both repos, ~60
+      # audits, then eslint. The "Run tests" step that used to follow it is
+      # gone along with vitest — the suite was 352-red and ungated, and its
+      # mocks asserted against behaviour the code did not have, so a green run
+      # was not evidence of anything.
+      #
+      # The gate that actually catches a production outage is the post-deploy
+      # smoke test inside scripts/deploy.mjs (Root Cause #69: a build Vercel
+      # reported READY served 500 on every route). Deployment here goes
+      # through `vercel --prod` directly, so that smoke test does NOT run in
+      # this workflow — prefer `node scripts/deploy.mjs` locally.
       - name: Run quality gate
         run: npm run check
-
-      - name: Run tests
-        run: |
-          npm run test -- --run
-          npm --prefix appkit run test -- --run
 
       - name: Install Vercel CLI
         run: npm install -g vercel

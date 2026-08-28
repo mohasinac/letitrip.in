@@ -30,7 +30,6 @@ const SCAN_DIRS = [
 ];
 const ALLOW_PATHS = [
   "appkit/src/features/email/primitives.tsx",
-  "appkit/src/features/email/__tests__",
 ];
 const SKIP_DIRS = new Set([
   "node_modules",

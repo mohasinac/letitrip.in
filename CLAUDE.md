@@ -141,19 +141,40 @@ For lint-fixable issues use `npm run check:fix` (runs `lint:fix` first, then ful
 **Other dispatchers**:
 - `npm run firebase -- <generate|deploy|reset>` — replaces `firebase:generate`/`firebase:deploy[:rules|:indexes]`/`firebase:reset[:all]`. `--only indexes` and `--only rules` are convenience shortcuts. **Always pass the `--`**: without it npm swallows `--only` as its own CLI flag rather than forwarding it, so `npm run firebase deploy --only indexes` can deploy *everything*. `node scripts/firebase.mjs deploy --only indexes` is equally safe.
 
-> 🛑 **There is no `test:qa` script.** Earlier revisions of this file documented
-> `npm run test:qa <smoke|pw|audit>` (and the End-of-Plan checklist called
-> `npm run test:qa smoke`); no such script has ever existed in `package.json`,
-> so that step failed with "Missing script" every time it was reached.
-> The real end-to-end surface is Playwright:
-> - `npm run test:e2e` — against a local server
-> - `npm run test:e2e:prod` — against `https://letitrip.in`
-> - `npm run test:e2e:iphone` / `:laptop` / `:monitor` — per-viewport projects
+> 🛑 **There is no automated test suite. This is deliberate.** Do not add one,
+> do not reach for `vitest`/`jest`/`@testing-library`, and do not write a
+> `*.test.ts` — nothing will run it and `npm run check` will not gate on it.
+> Earlier revisions of this file also documented a `npm run test:qa
+> <smoke|pw|audit>` script that has never existed in `package.json`.
 >
-> Specs live in `scripts/qa/playwright/`. `node scripts/deploy.mjs` also runs
-> its own built-in post-deploy smoke test (`/`, `/en/products`,
-> `/api/site-settings`), which is the gate that actually catches a Lambda
-> module-load failure — see Recurrent Root Cause #69.
+> Both suites were **deleted 2026-08-28** — 405 vitest files and 24 Playwright
+> specs, plus `vitest`, `jsdom`, `@testing-library/*` and `@playwright/test`:
+>
+> - **Vitest was 352-red and ungated.** `npm run check` never ran it, so the
+>   red was itself unsignalled, and the failures were stale `vi.mock`
+>   factories rather than real regressions.
+> - **Its mocks asserted against fictions.** `/admin/team`'s test mocked
+>   `buildSieveFilters` as a comma-join — the *correct* behaviour — while the
+>   real helper concatenated, so a live bug that silently emptied the team list
+>   on any filter chip passed its test for as long as it existed. See
+>   Recurrent Root Cause #83.
+> - **Playwright was never wired to anything.** No workflow invoked it, and
+>   `node scripts/deploy.mjs` gates before it in the checklist regardless.
+>
+> **The three gates that remain, all real:**
+> 1. `npm run check` — tsc in both repos, ~60 audits, eslint. The pre-commit
+>    and CI gate.
+> 2. `node scripts/deploy.mjs` — its own post-deploy smoke test of `/`,
+>    `/en/products` and `/api/site-settings`, which is what actually catches a
+>    Lambda module-load failure (Recurrent Root Cause #69).
+> 3. **The tester checklist** — where coverage effort goes instead. Add a case
+>    to `appkit/src/features/tester/seed-data/tester-checklist-seed-data.ts`,
+>    written as an explicit *before → after*: most bugs in this codebase return
+>    HTTP 200 with plausible rows, so a case reading "check X works" passes
+>    *against* the bug.
+>
+> `scripts/qa/roundtrip-diff.mjs` survives and is **not** Playwright — it is a
+> standalone script proving a Zod schema does not silently drop fields.
 
 **Stop hook automation**: `.claude/settings.json` runs the fast audits (`check:audits`) automatically at end of every Claude turn via `scripts/claude-hooks/check-on-stop.mjs`. Failures block the turn and surface to the assistant for fixing. **Every audit is now strict zero-tolerance** — there is no baseline-drift mode; any violation `> 0` fails the audit. Legitimate dynamic patterns are handled by explicit per-line suppression markers (`// audit-inline-style-ok`, `// toast-handled-by-hook`, `// toast-intentionally-silent`, `// reexport-from-internal-ok`, `// audit-sieve-views-ok`, `// audit-client-entry-ok`, `// audit-variant-ok` — primitives whose internal CSS the audit must allow) at the site of the decision, each with a brief reason. tsc + lint are excluded from the Stop hook because they are too slow per-turn; run `npm run check` manually before commits.
 
@@ -1161,6 +1182,7 @@ Each adapter carries a `PUBLIC_*_FIELDS` list and a `PRIVATE_*_FIELDS` list with
 | 80 | **A text character used as an icon can never be sized, and a control that does not derive its glyph size from its own size will eventually pair a 14px glyph with a 44px tap target** | Root-caused 2026-08-27 from "the wishlist icon is very small … this issue is with all icons in general". The count was misleading: 305 of 327 glyph sites were already on a consistent scale, so a blanket rename would have changed zero pixels. The defects were **structural**, in three shapes. (a) **Text glyphs.** `♥`/`♡` were used as the icon in the product list row and both pre-order card layouts, and baked into the product detail page's label STRINGS (`"♥ Saved"`). No width or height utility can size a text character — it renders at the platform font fallback, which is literally the report. (b) **Glyph/control mismatch.** The auction card's heart was a 14px lucide glyph inside a `<Button>` with no `size` prop, i.e. `md`, ~44px tall: the largest tap target in the card carried the smallest glyph. `<Button>`'s own `ActionIcon` hardcoded `h-4 w-4` for **every** button size, so nothing related the two. (c) **The wrong primitive.** `.appkit-button--sm` sets `min-height: 36px`, and under `important: true` a caller's `h-8` (2rem) loses to it — so the product card's `rounded-full` heart rendered as a **32×36 ellipse**. `IconButton` boxes set `width`+`height` with no min and are true squares, which is why icon-only controls belong there. **Fixed** with `ICON_SIZE` (xs 12 / sm 14 / md 16 / lg 20 / xl 24 / 2xl 28) next to the pre-existing-but-unconsumed `icon-registry.ts`, an `<Icon name size tone filled>` primitive, `IconButton size="touch"` (44px), a size-aware `ActionIcon`, and one `WishlistHeartButton` replacing all seven heart sites and their three glyph technologies. **`2xl` exists because ten lightbox/carousel controls had independently and unanimously picked 28px — that agreement is a real tier, not ten mistakes.** Enforced by `scripts/audit-icon-sizing.mjs` (strict-zero, no marker), deliberately **scoped to icons inside interactive controls**: a control's glyph has a tap target to agree with, while decorative section art is a composition choice, and flagging ~40 of those would be the noise that trains people to ignore the audit. |
 | 81 | **Two owners of the canonical host, one hardcoded and one env-driven — the sitemap advertises every URL on a host that redirects, and the site falls out of Google with nothing erroring** | Root-caused 2026-08-27 from "my site is not even showing on Google search anymore". A `site:` query returned exactly ONE result. Nothing in the repo was de-indexing anything: no `noindex`, no `X-Robots-Tag`, no blanket `Disallow: /`, and the root layout explicitly sets `index: true, follow: true`. **The cause was two files disagreeing about the hostname.** `appkit.config.js` hardcoded `siteUrl: "https://letitrip.in"` (apex) while `src/constants/seo.server.ts` read `NEXT_PUBLIC_APP_URL || NEXT_PUBLIC_SITE_URL || <apex>` — and a comment in the first *claimed* the two were "kept in sync". They were not. Once the Vercel env pointed at the www host, the env-driven path (page canonicals, `og:url`, JSON-LD) said **www** and the hardcoded path (robots.txt `Host:`/`Sitemap:`, every sitemap `<loc>`, root `metadataBase`) still said **apex**. All 182 sitemap URLs therefore 307-redirected — and a **307 is TEMPORARY**, which explicitly tells Google *not* to move the index entry — while the destination declared a canonical on a host present in no sitemap. **Compounded by an outage that could not self-heal**: `firebase-admin@14` (Root Cause #69) had 500'd every route *including `/robots.txt`*, and a sustained 5xx on robots.txt makes Google stop crawling the entire host; `vercel.json` sets `git.deploymentEnabled: false`, so committing the fix deployed nothing. **Three more silent defects found in the same sweep**: the root layout set a static absolute `alternates.canonical`, which every page lacking its own inherits — so `/promotions` and `/reviews` declared themselves duplicates of the homepage; `classified`/`digital-codes`/`live` were called without `siteUrl` so their builders returned `alternates: undefined` and those pages shipped **no canonical at all** (and built it from `product.id` while the route is `[slug]`); and `prize-draws` interpolated the raw slug into `<title>`. **The rule: the canonical host has exactly ONE definition and everything derives from it.** Enforced by `scripts/audit-seo-canonical-host.mjs` (strict-zero, no marker). |
 | 82 | **A dynamic API in the ROOT layout makes the entire site uncacheable — and this one was reading a header that nothing has ever set** | Root-caused 2026-08-27 while investigating Vercel credit burn. `src/app/[locale]/layout.tsx` called `await headers()` to read `x-invoke-path` / `x-pathname` for the `disabledRoutes` gate. **Neither header is ever set**: `x-invoke-path` is a Next 12/13 internal that Next 16 no longer emits, `x-pathname` is not a Next header at all, and `src/proxy.ts` never set it — a repo-wide grep finds exactly one occurrence of either string, this line reading them. So `rawPath` was always empty, the gate never ran, and the admin capability (disable a nav item, that route 404s) was **dead**. But `headers()` is a **dynamic API**, and calling it in the root locale layout opts **every page on the site** into dynamic rendering: every response was `Cache-Control: private, no-cache, no-store` with `X-Vercel-Cache: MISS` — verified on `/terms` and `/privacy`, which have no per-request data at all — every request paid a full cold render, and the `export const revalidate = 120` those pages declare was silently overridden. A dead feature was billing a function invocation on every request, including every crawler hit. **Removing `headers()` is necessary but NOT sufficient** — a dynamic segment with no `generateStaticParams` still renders per request, so the `[locale]` segment needs one. The gate moved to `src/proxy.ts`, which has `request.nextUrl.pathname` natively, needs no dynamic API, TTL-caches the settings read at module scope (Edge instances are reused, so ~1 fetch per instance per minute) and **fails open** — a settings fetch that errors must never 404 a working page. **Before adding any `await` in a root layout, ask what it costs the whole tree**; and treat a header read as suspect until you find the code that sets it. |
+| 83 | **A test whose mock does not match the real implementation is NEGATIVE value — it converts a live bug into a green check** | Root-caused 2026-08-28, and the reason both automated suites were deleted rather than repaired. `/admin/team` built its Sieve filter with `buildSieveFilters(["role==employee", rawFilters])`. That helper takes `[expression, value]` pairs and emits `expr + value`, so it **concatenated**: with any filter chip applied the query became `role==employeestatus==active` — one malformed clause matching nothing, and the admin team list silently emptied. Its test mocked `buildSieveFilters` as `args.filter(Boolean).join(",")` — the CORRECT behaviour, not the real one — so the suite asserted against a helper the route did not have, and passed for as long as the bug existed. The bug was found by a **deletion audit**, not by a test: removing the helper and asserting the symbol's absence surfaced five consumers the plan had recorded as zero. **Three compounding failures, each worth recognising separately.** (a) *The mock was the spec.* Once a mock encodes what the author believed, the test measures the belief, never the code — and the more thoroughly a codebase mocks, the more completely it tests its own assumptions. (b) *The suite was red and nobody knew.* `npx vitest run` was **352 failed / 2008 passed**, identical with and without changes (stale `vi.mock` factories missing `parseSieveDateValue`/`BaseRepository`), and `npm run check` never invoked vitest — so the absence of a signal was itself unsignalled. A gate nothing runs is indistinguishable from a gate that passes. (c) *`--passWithNoTests` hides the removal.* Deleting test FILES leaves `npm run test` green; only uninstalling the runner fails it. So deps, scripts and CI must move in the same commit as the files, or the break surfaces on someone else's deploy. **Playwright fell to (b) alone** — 24 specs, a documented End-of-Plan step, and no workflow ever invoked it. **The replacement is the tester checklist**, per `feedback_tester_cases_over_unit_tests`: manual cases written as an explicit *before → after*, because nearly every defect in this codebase returns HTTP 200 with plausible rows, so a case reading "check X works" passes *against* the bug. **When a test fails after a refactor, check which of the two is wrong before fixing the code** — and when a suite has been red long enough that nobody remembers, it is not a safety net, it is a decoration. |
 
 ---
 
@@ -2327,17 +2349,31 @@ FUNCTIONS_DISCOVERY_TIMEOUT=120 npm run firebase deploy -- --only functions
 
 Confirm the log lines read `updating Node.js 22 (2nd Gen) function …` with no deprecation warning, and no `MODULE_NOT_FOUND` in cold-start logs. A deployed HTTPS function returning **401** is healthy — it means the module loaded and the auth gate ran; **500** means it failed to load.
 
-### 5 — Smoke Test
+### 5 — Manual Verification
 
-```bash
-npm run test:e2e:prod      # Playwright against https://letitrip.in
-```
+There is no automated suite to run here — see the callout near the top of this
+file for why both were deleted. Step 6's `node scripts/deploy.mjs` runs the only
+automated post-deploy check (`/`, `/en/products`, `/api/site-settings`) and
+fails the deploy on any non-2xx/3xx, so it gates before anything manual.
 
-Must exit 0. **This step used to read `npm run test:qa smoke`, which is not a
-script that exists** — see the dispatcher note near the top of this file. Note
-that `node scripts/deploy.mjs` (step 6) already runs its own built-in smoke
-test of `/`, `/en/products` and `/api/site-settings` and fails the deploy on
-any non-2xx/3xx, so in practice step 6 gates before this one does.
+What to do instead, in the ~2 minutes after a deploy:
+
+1. **Exercise whatever this session changed, in production.** Not locally —
+   every bug this codebase has paid for reproduced only in prod (the `LISTERS`
+   `baseOpts.search` drop, Root Cause #69's Lambda module-load failure).
+2. **Use a nonsense control on anything that filters.** A search returning
+   plausible rows for a real term proves nothing:
+   ```bash
+   curl -s "https://www.letitrip.in/api/products?q=dranzer"    # >0
+   curl -s "https://www.letitrip.in/api/products?q=zzzznope"   # 0
+   ```
+   Only the second call distinguishes "filtering" from "returning everything".
+3. **Add a tester-checklist case** for the behaviour, written as an explicit
+   *before → after*, so the next person can re-verify without rediscovering
+   what the wrong answer looked like.
+
+Earlier revisions called `npm run test:qa smoke`, which never existed, and then
+`npm run test:e2e:prod`, which existed but nothing ever ran.
 
 ### 6 — Vercel Deploy (only when explicitly asked)
 

@@ -183,11 +183,12 @@ Auth: loginAsAdmin(page) / loginAsSeller(page) / loginAsBuyer(page) from _setup.
 
 ## Quality Gate
 Before marking P-1 done:
-1. npm run check → exits 0 (all 59 audits including new direct-fetch-ui + feature-flags)
-2. npm run test → all Vitest unit tests pass
-3. npm --prefix appkit run test → passes
-4. npm run test:e2e → all Playwright tests pass (3 viewports)
-5. Bump appkit to 3.2.0, build, publish
+1. npm run check → exits 0 (tsc both repos + ~60 audits + eslint)
+2. Manual verification in PRODUCTION, with a nonsense control on anything
+   that filters — see CLAUDE.md End-of-Plan step 5. There is no automated
+   suite; vitest and Playwright were deleted 2026-08-28 (Root Cause #83).
+3. Add a tester-checklist case, written as an explicit before → after
+4. Bump appkit to 3.2.0, build, publish
 6. Firebase indexes + rules + functions deployed
 7. Vercel: all FEATURE_*=false set, vercel --prod
 8. Post-deploy smoke on https://letitrip.in
@@ -246,7 +247,8 @@ Feature flag to flip: FEATURE_COUPONS=true (only set this in Vercel when all tes
 - Admin deactivates coupon → buyer tries again → COUPON_INACTIVE error shown
 
 ## Quality Gate
-npm run check + npm run test + npm run test:e2e → all green
+npm run check → 0, then verify in production and add a tester-checklist case.
+There is no automated suite (Root Cause #83).
 PR from patch/p2-coupons → main → CI green → CEO approves → Deploy via GitHub Actions
 ```
 
