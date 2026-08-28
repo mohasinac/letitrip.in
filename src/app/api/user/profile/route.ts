@@ -78,6 +78,15 @@ const updateProfileSchema = z.object({
   uiPreferences: z
     .object({
       collapsedSections: z.array(z.string()).optional(),
+      /** scope -> ids that are OPEN. Bounded so a client cannot grow the user
+       * document without limit: 200 scopes × 100 ids is far beyond any real
+       * dashboard and still nowhere near Firestore's 1 MiB ceiling. */
+      sectionState: z
+        .record(z.string().max(120), z.array(z.string().max(120)).max(100))
+        .refine((v) => Object.keys(v).length <= 200, {
+          message: "sectionState may hold at most 200 scopes",
+        })
+        .optional(),
       dataViewMode: z.enum(["table", "grid", "list"]).optional(),
       handMode: z.enum(["left", "right"]).optional(),
     })
@@ -118,17 +127,21 @@ export const PATCH = withProviders(createApiHandler<(typeof updateProfileSchema)
     // merged against the current value here (not just the key this request
     // is changing) or a dataViewMode write would silently wipe out
     // collapsedSections and vice versa.
-    if (
-      uiPreferences?.collapsedSections !== undefined ||
-      uiPreferences?.dataViewMode !== undefined ||
-      uiPreferences?.handMode !== undefined
-    ) {
+    if (uiPreferences !== undefined && Object.keys(uiPreferences).length > 0) {
       const existing = (user!.uiPreferences as Record<string, JsonValue>) ?? {};
+      // `sectionState` merges one level deeper than its siblings: a request
+      // carries only the scopes it touched, so a plain overwrite would drop
+      // every OTHER page's saved layout. The scalar keys overwrite as before.
+      const existingSectionState =
+        (existing.sectionState as Record<string, JsonValue> | undefined) ?? {};
       await userRepository.update(user!.uid, {
         uiPreferences: {
           ...existing,
           ...(uiPreferences.collapsedSections !== undefined
             ? { collapsedSections: uiPreferences.collapsedSections }
+            : {}),
+          ...(uiPreferences.sectionState !== undefined
+            ? { sectionState: { ...existingSectionState, ...uiPreferences.sectionState } }
             : {}),
           ...(uiPreferences.dataViewMode !== undefined
             ? { dataViewMode: uiPreferences.dataViewMode }
