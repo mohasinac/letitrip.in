@@ -42,8 +42,14 @@ const OK_RE = /\/\/\s*audit-listing-search-capability-ok\s*:/i;
 /** Fields that are encrypted at rest — a partial-match promise over these is a lie. */
 const PII_WORDS = /\b(email|phone|upi|account\s*number|ifsc|address)\b/i;
 
-/** Report-only until the known dead boxes are triaged; MIGRATE=strict to fail. */
-const STRICT = process.env.MIGRATE === "strict";
+/**
+ * Strict-zero. It shipped report-only with 32 findings; those are triaged (the
+ * boxes were removed, since every one of those collections still lacks
+ * searchTxt), so the rule now blocks rather than reports. A box that renders
+ * and cannot search is the defect — re-adding one is not a regression to
+ * tolerate while someone gets around to wiring it.
+ */
+const STRICT = process.env.MIGRATE !== "report";
 
 function* walk(root) {
   let entries;
