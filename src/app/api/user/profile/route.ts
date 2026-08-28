@@ -24,6 +24,7 @@ export const GET = withProviders(createApiHandler({
       googleLinked: user!.googleLinked ?? false,
       googleLinkedEmail: user!.googleLinkedEmail ?? null,
       uiPreferences: user!.uiPreferences ?? {},
+      slug: user!.slug ?? null,
       role: user!.role,
       disabled: user!.disabled,
       avatarMetadata: user!.avatarMetadata,

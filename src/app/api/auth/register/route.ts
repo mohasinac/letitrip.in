@@ -1,3 +1,4 @@
+import { reserveUserSlug } from "@mohasinac/appkit/server";
 import { normalizeError } from "@mohasinac/appkit";
 /**
  * API Route: User Registration (Backend-Only)
@@ -97,7 +98,11 @@ export async function POST(request: NextRequest) {
     });
 
     // Store user data in Firestore via repository (auto-sets createdAt/updatedAt)
+        // Public profile URL. Never fails the signup: a null slug just means the
+    // profile keeps a uid-shaped URL, which still resolves.
+    const profileSlug = await reserveUserSlug(userRecord.uid, userRecord.displayName, userRecord.email);
     await userRepository.createWithId(userRecord.uid, {
+      ...(profileSlug ? { slug: profileSlug } : {}),
       ...DEFAULT_USER_DATA,
       uid: userRecord.uid,
       email: userRecord.email,

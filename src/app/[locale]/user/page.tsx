@@ -216,7 +216,7 @@ export default function Page() {
                     View / edit profile →
                   </Link>
                   <Link
-                    href={String(ROUTES.PUBLIC.PROFILE(user.uid))}
+                    href={String(ROUTES.PUBLIC.PROFILE(user.slug ?? user.uid))}
                     className="text-[length:var(--appkit-text-xs)] font-medium text-[var(--appkit-color-primary)] hover:underline"
                   >
                     View public profile →
@@ -268,7 +268,7 @@ export default function Page() {
       renderNav={() => (
         <Div layout="grid" gap="3" className="grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
           {(user
-            ? [{ label: "My Public Profile", href: ROUTES.PUBLIC.PROFILE(user.uid), Icon: UserCircle }, ...NAV_LINKS]
+            ? [{ label: "My Public Profile", href: ROUTES.PUBLIC.PROFILE(user.slug ?? user.uid), Icon: UserCircle }, ...NAV_LINKS]
             : NAV_LINKS
           ).map(({ label, href, Icon }) => (
             <Link

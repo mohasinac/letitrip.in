@@ -1,3 +1,4 @@
+import { reserveUserSlug } from "@mohasinac/appkit/server";
 import { normalizeError } from "@mohasinac/appkit";
 /**
  * Session Management API
@@ -60,7 +61,11 @@ export async function POST(request: NextRequest) {
           ? "admin"
           : SCHEMA_DEFAULTS.USER_ROLE;
 
+            // Public profile URL. Never fails the signup: a null slug just means the
+      // profile keeps a uid-shaped URL, which still resolves.
+      const profileSlug = await reserveUserSlug(decodedToken.uid, authUser.displayName, authUser.email);
       await userRepository.createWithId(decodedToken.uid, {
+        ...(profileSlug ? { slug: profileSlug } : {}),
         uid: decodedToken.uid,
         email: authUser.email,
         displayName:

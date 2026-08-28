@@ -1,3 +1,4 @@
+import { reserveUserSlug } from "@mohasinac/appkit/server";
 import { normalizeError } from "@mohasinac/appkit";
 /**
  * GET /api/auth/google/callback
@@ -215,7 +216,11 @@ async function ensureFirestoreProfile(
   const existingProfile = await userRepository.findById(firebaseUid);
   if (!existingProfile) {
     userRole = email === SCHEMA_DEFAULTS.ADMIN_EMAIL ? "admin" : SCHEMA_DEFAULTS.USER_ROLE;
+        // Public profile URL. Never fails the signup: a null slug just means the
+    // profile keeps a uid-shaped URL, which still resolves.
+    const profileSlug = await reserveUserSlug(firebaseUid, name ?? email.split("@")[0] ?? SCHEMA_DEFAULTS.DEFAULT_DISPLAY_NAME, email);
     await userRepository.createWithId(firebaseUid, {
+      ...(profileSlug ? { slug: profileSlug } : {}),
       ...DEFAULT_USER_DATA,
       uid: firebaseUid,
       email,
