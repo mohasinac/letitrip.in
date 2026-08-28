@@ -49,6 +49,8 @@ export const GET = withProviders(createRouteHandler({
     const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
     const paymentReview = getStringParam(searchParams, "paymentReview");
 
+    const searchTerm = getStringParam(searchParams, "q")?.trim() || undefined;
+
     serverLogger.info("Admin orders list requested", {
       filters,
       sorts,
@@ -60,12 +62,18 @@ export const GET = withProviders(createRouteHandler({
     const sieveResult =
       paymentReview && isPaymentReviewQueueMode(paymentReview)
         ? await orderRepository.listPaymentReviewQueue(paymentReview, { page, pageSize })
-        : await orderRepository.listAll({
-            filters,
-            sorts,
-            page,
-            pageSize,
-          });
+        : await orderRepository.listAll(
+            {
+              filters,
+              sorts,
+              page,
+              pageSize,
+            },
+            // Token search rides OUTSIDE `filters` — array-contains is not
+            // expressible in Sieve. Fed by product/store/tracking only; the
+            // three ORDER_PII_FIELDS never reach searchTxt (D1).
+            searchTerm ? { search: searchTerm } : undefined,
+          );
 
     return successResponse({
       orders: sieveResult.items,

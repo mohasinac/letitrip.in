@@ -86,12 +86,33 @@ const MIGRATED = [
     seeds: ["seed/reviews-seed-data.ts"],
     indexCollection: "reviews",
   },
+  {
+    name: "orders",
+    schema: "features/orders/schemas/firestore.ts",
+    repo: "features/orders/repository/orders.repository.ts",
+    seeds: ["seed/orders-seed-data.ts"],
+    indexCollection: "orders",
+  },
+  {
+    name: "coupons",
+    schema: "features/promotions/schemas/firestore.ts",
+    repo: "features/promotions/repository/coupons.repository.ts",
+    seeds: ["seed/coupons-seed-data.ts"],
+    indexCollection: "coupons",
+  },
+  {
+    name: "offers",
+    schema: "features/seller/schemas/firestore.ts",
+    repo: "features/seller/repository/offer.repository.ts",
+    seeds: ["seed/offers-seed-data.ts"],
+    indexCollection: "offers",
+  },
 ];
 
 /** Awaiting migration — reported, not enforced. */
 const PENDING = [
   "categories", "scammers",
-  "coupons", "orders", "supportTickets", "bundles", "sublistingCategories",
+  "supportTickets", "bundles", "sublistingCategories",
   "bids", "payouts", "shipments", "groupedListings", "notifications",
   "users", "adminAuditLog", "jobs", "media", "itemRequests", "catalogue",
 ];

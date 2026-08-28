@@ -61,6 +61,9 @@ const BUILDERS = [
   { collection: "events", file: "appkit/src/utils/search-txt-builders.ts", fn: "buildEventSearchTxt" },
   { collection: "blogPosts", file: "appkit/src/utils/search-txt-builders.ts", fn: "buildBlogSearchTxt" },
   { collection: "reviews", file: "appkit/src/utils/search-txt-builders.ts", fn: "buildReviewSearchTxt" },
+  { collection: "orders", file: "appkit/src/utils/search-txt-builders.ts", fn: "buildOrderSearchTxt" },
+  { collection: "coupons", file: "appkit/src/utils/search-txt-builders.ts", fn: "buildCouponSearchTxt" },
+  { collection: "offers", file: "appkit/src/utils/search-txt-builders.ts", fn: "buildOfferSearchTxt" },
   // faqs predates the shared module and keeps its builder in the repository.
   { collection: "faqs", file: "appkit/src/features/faq/repository/faqs.repository.ts", fn: "buildFaqSearchTxt" },
 ];
