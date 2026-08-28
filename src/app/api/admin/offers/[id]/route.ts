@@ -18,6 +18,7 @@ import {
   cartRepository,
   sendNotification,
   normalizeError,
+  serverLogger,
   recordAdminAction,
   AdminAuditActionValues,
 } from "@mohasinac/appkit";
@@ -103,7 +104,12 @@ export const PATCH = withProviders(
           metadata: { buyerUid: offer.buyerUid, storeId: offer.storeId },
         });
       } catch (err) {
-        void normalizeError(err);
+        const normalized = normalizeError(err);
+        serverLogger.warn("adminAuditLog write failed for offer cancellation", {
+          offerId: offer.id,
+          actorUid: user!.uid,
+          error: normalized.message,
+        });
       }
 
       // Best-effort: the cancellation is already committed, and a failed
@@ -119,8 +125,13 @@ export const PATCH = withProviders(
           relatedType: "offer",
         });
       } catch (err) {
-        void normalizeError(err);
         // Intentionally swallowed — see above. // toast-intentionally-silent
+        const normalized = normalizeError(err);
+        serverLogger.warn("buyer notification failed after offer cancellation", {
+          offerId: offer.id,
+          buyerUid: offer.buyerUid,
+          error: normalized.message,
+        });
       }
 
       return successResponse(null, "Offer cancelled");

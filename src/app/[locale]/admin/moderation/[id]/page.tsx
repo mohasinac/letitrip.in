@@ -19,7 +19,7 @@ const STATUS_VARIANT: Record<string, "success" | "danger" | "secondary" | "warni
 
 export default async function AdminModerationDetailPage({ params }: Props) {
   const { id } = await params;
-  const item = await moderationQueueRepository.findById(id).catch(() => null);
+  const item = await moderationQueueRepository.findById(id);
   if (!item) return notFound();
 
   return (

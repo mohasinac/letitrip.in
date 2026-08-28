@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { JsonValue } from "@mohasinac/appkit";
 import { notFound } from "next/navigation";
 import { EventRaffleWinnerView, couponsRepository } from "@mohasinac/appkit";
+import { safeRead } from "@mohasinac/appkit/server";
 import { EVENT_META } from "../_constants";
 import { getEventCached } from "../_data";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
@@ -40,11 +41,23 @@ export default async function Page({ params }: Props) {
 
   let rafflePrizeCouponCode: string | undefined;
   if (couponId) {
-    const coupon = await couponsRepository.findById(couponId).catch(() => null);
+    // The winner banner is the subject; the coupon code only enriches it with a
+    // one-click Claim CTA, and the winner can still claim from /user/coupons.
+    const coupon = await safeRead(() => couponsRepository.findById(couponId), {
+      route: "/events/[id]/winner",
+      key: "coupons.findById",
+      fallback: null,
+    });
     rafflePrizeCouponCode = coupon?.code;
   }
 
-  const viewer = await getServerSessionUser().catch(() => null);
+  // Anonymous is a legitimate viewer here — the page renders for everyone and
+  // only the "you won" framing depends on knowing who is reading it.
+  const viewer = await safeRead(() => getServerSessionUser(), {
+    route: "/events/[id]/winner",
+    key: "session.getServerSessionUser",
+    fallback: null,
+  });
   const currentUserIsWinner =
     !!viewer && !!winnerUserId && viewer.uid === winnerUserId;
 

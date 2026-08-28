@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getPreOrderForDetail, renderPreOrderOg } from "@mohasinac/appkit/server";
+import { getPreOrderForDetail, renderPreOrderOg, safeRead } from "@mohasinac/appkit/server";
 import { SEO_CONFIG } from "@/constants";
 
 // OG-FIX1: removed `export const runtime = "edge"` — the @mohasinac/appkit/server
@@ -12,7 +12,13 @@ type Props = { params: Promise<{ id: string }> };
 
 export default async function Image({ params }: Props) {
   const { id } = await params;
-  const doc = await getPreOrderForDetail(id).catch(() => null);
+  // An OG endpoint must always return a PNG, so a failed read degrades to the
+  // renderer's generic branded card — but is recorded rather than vanishing.
+  const doc = await safeRead(() => getPreOrderForDetail(id), {
+    route: "/pre-orders/[id]",
+    key: "products.getPreOrderForDetail",
+    fallback: null,
+  });
   return new ImageResponse(
     renderPreOrderOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip", baseUrl: SEO_CONFIG.siteUrl }),
     { ...size },

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { normalizeError, siteSettingsRepository } from "@mohasinac/appkit";
+import { normalizeError, serverLogger, siteSettingsRepository } from "@mohasinac/appkit";
 import type { FAQCategory, FAQCategoryItem } from "@mohasinac/appkit";
 import { getTranslations } from "next-intl/server";
 import { generateMetadata as _gm } from "@/constants/seo.server";
@@ -49,8 +49,13 @@ export default async function Page({ params }: Props) {
     const settings = await siteSettingsRepository.getSingleton();
     contact = { email: settings.contact?.email ?? "", phone: settings.contact?.phone ?? "" };
   } catch (err) {
-    void normalizeError(err);
-    // Firestore unavailable — FAQPageClient still renders with empty contact info.
+    // Firestore unavailable — FAQPageClient still renders with empty contact
+    // info, which is indistinguishable from an admin having never set any.
+    const normalized = normalizeError(err);
+    serverLogger.warn("siteSettings.getSingleton failed — /faqs contact block empty", {
+      category,
+      error: normalized.message,
+    });
   }
 
   return <FAQPageClient initialCategory={initialCategory} categories={categories} contact={contact} />;

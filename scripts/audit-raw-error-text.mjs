@@ -35,18 +35,28 @@
  * audit-no-suppression-comments), and a genuine exception belongs in EXEMPT
  * below with a written reason, where it is reviewable.
  *
- * ## Staging
+ * ## Staging — NOW STRICT
  *
- * REPORT-ONLY by default; `MIGRATE=strict` fails the run. 73 sites exist at
- * introduction, spread across ~40 files at 1–3 each. Landing strict on day one
- * would force either a rushed sweep of every auth, payout and checkout error
- * path in one go, or a marker spray — and marker spray is the anti-pattern, not
- * the fix (Root Cause #22). Burn the count down, then flip it, exactly as
- * audit-silent-degrade is staged and as audit-listing-detail-affordance was
- * before it reached zero and became strict.
+ * 73 sites existed at introduction, spread across ~40 files at 1–3 each, so
+ * this shipped report-only: landing strict on day one would have forced either
+ * a rushed sweep of every auth, payout and checkout error path in one go, or a
+ * marker spray — and marker spray is the anti-pattern, not the fix (Root Cause
+ * #22). The burn-down ran risk-first (auth, then money, then bid, then admin,
+ * then the rest) and reached 0, so the audit is now STRICT: any violation
+ * fails the run. `MIGRATE=report` downgrades it to a warning for a local
+ * sweep, exactly as audit-listing-detail-affordance is staged.
  *
- * Burn-down order is risk-first: auth, then money (payout/payment/checkout/cart),
- * then bid, then admin, then the rest.
+ * Two notes for whoever adds the next call site:
+ *   - `toUserMessage(code, t, { fallback })` with `t` OMITTED returns the
+ *     fallback verbatim. That is the correct shape wherever the only
+ *     translator in scope is namespaced (`useTranslations("mediaEditor")`),
+ *     because the map's keys are absolute (`errors.codes.*`) and a namespaced
+ *     translator cannot resolve them.
+ *   - Consumer (`src/`) code is pinned to the PUBLISHED appkit, so
+ *     `toUserMessage` is only importable there once a release carrying it
+ *     lands. Until then the consumer-side fix is the authored sentence
+ *     directly — runtime-identical to `toUserMessage(code, undefined,
+ *     { fallback })`, and equally free of server text.
  */
 
 import { readFileSync, readdirSync, statSync } from "node:fs";
@@ -86,6 +96,16 @@ const EXEMPT = new Map([
   ["appkit/src/next/components/GlobalError.tsx", "crash boundary — same"],
   ["appkit/src/client/api/surface-error.ts", "the helper that DOES the resolution; its internalMessage is reported, never shown"],
   ["appkit/src/errors/error-display-map.ts", "defines toUserMessage itself"],
+  [
+    "appkit/src/errors/describe-cause.ts",
+    // Its `${err.name}: ${err.message}` is a template literal, not JSX — the
+    // RAW_MESSAGE_IN_JSX pattern cannot tell the two apart. This module is a
+    // pure REPORTING helper: describeCauseChain flattens an Error.cause chain
+    // into the `cause` field of a persisted serverErrors document, and has no
+    // display sink anywhere in its call graph. Raw text is the requirement
+    // here, not the defect.
+    "reporting-only — flattens a cause chain into the persisted serverErrors doc; never rendered",
+  ],
 ]);
 
 /** Display sinks. A raw message reaching one of these is the defect. */
@@ -177,7 +197,7 @@ for (const dir of SCAN_DIRS) {
   }
 }
 
-const STRICT = process.env.MIGRATE === "strict";
+const STRICT = process.env.MIGRATE !== "report";
 
 if (violations.length > 0 && !STRICT) {
   const byRule = new Map();

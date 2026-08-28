@@ -19,6 +19,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { ClientErrorReporterMount } from "@/components";
 import { siteSettingsRepository } from "@mohasinac/appkit";
+import { safeRead } from "@mohasinac/appkit/server";
 import { getFlag } from "@/lib/features";
 import LayoutShellClient from "./LayoutShellClient";
 import QueryProvider from "./QueryProvider";
@@ -28,8 +29,15 @@ import { routing } from "@/i18n/routing";
 import ClientProviderInitializer from "@/app/ClientProviderInitializer";
 import { ScrollToTop } from "@/components";
 
+// Branding/theme/announcement only, and every consumer already has a default —
+// so this must not be allowed to throw, or one Firestore hiccup takes down every
+// page on the site at once. Recorded as a degraded read instead of vanishing.
 const getCachedSiteSettings = cache(() =>
-  siteSettingsRepository.getSingleton().catch(() => null)
+  safeRead(() => siteSettingsRepository.getSingleton(), {
+    route: "/[locale]",
+    key: "siteSettings.getSingleton",
+    fallback: null,
+  }),
 );
 
 /**

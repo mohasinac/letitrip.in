@@ -7,7 +7,10 @@ const __P = {
 } as const;
 
 export default async function Page() {
-  const settings = await siteSettingsRepository.getSingleton().catch(() => null);
+  // NOT swallowed: this seeds an EDITOR. A failed read used to fall through to
+  // `{}` — every action shown at its default — and the next Save would write
+  // that back over the admin's real config (Root Cause #38).
+  const settings = await siteSettingsRepository.getSingleton();
   const initialConfig = (settings?.actionConfig ?? {}) as Record<string, { enabled: boolean }>;
 
   return (

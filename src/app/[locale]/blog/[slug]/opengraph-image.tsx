@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getBlogPostForDetail, renderBlogOg } from "@mohasinac/appkit/server";
+import { getBlogPostForDetail, renderBlogOg, safeRead } from "@mohasinac/appkit/server";
 import { SEO_CONFIG } from "@/constants";
 
 // OG-FIX1: removed `export const runtime = "edge"` — the @mohasinac/appkit/server
@@ -12,7 +12,13 @@ type Props = { params: Promise<{ slug: string }> };
 
 export default async function Image({ params }: Props) {
   const { slug } = await params;
-  const doc = await getBlogPostForDetail(slug).catch(() => null);
+  // An OG endpoint must always return a PNG, so a failed read degrades to the
+  // renderer's generic branded card — but is recorded rather than vanishing.
+  const doc = await safeRead(() => getBlogPostForDetail(slug), {
+    route: "/blog/[slug]",
+    key: "blogPosts.getBlogPostForDetail",
+    fallback: null,
+  });
   return new ImageResponse(
     renderBlogOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip", baseUrl: SEO_CONFIG.siteUrl }),
     { ...size },

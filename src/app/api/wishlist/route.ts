@@ -1,6 +1,7 @@
 import { withProviders } from "@/providers.config";
 import { WISHLIST_MAX, WishlistFullError, createRouteHandler, errorResponse, normalizeError, parseJsonBody, productRepository, successResponse, wishlistRepository } from "@mohasinac/appkit";
 import { wishlistAddSchema } from "@mohasinac/appkit";
+import { safeRead } from "@mohasinac/appkit/server";
 
 export const GET = withProviders(
   createRouteHandler({
@@ -20,7 +21,15 @@ export const GET = withProviders(
 
       const productIds = wishlistItems.map((i) => i.productId);
       const products = await Promise.all(
-        productIds.map((id) => productRepository.findById(id).catch(() => null)),
+        // Hydration only — every field below falls back to the row's own
+        // `productSnapshot`, so a missing product degrades the card, not the list.
+        productIds.map((id) =>
+          safeRead(() => productRepository.findById(id), {
+            route: "/wishlist",
+            key: "products.findById",
+            fallback: null,
+          }),
+        ),
       );
 
       const items = wishlistItems.map((item, idx) => {

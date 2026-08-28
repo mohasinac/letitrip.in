@@ -1,4 +1,5 @@
 import { StoreGuideHubView } from "@mohasinac/appkit";
+import { safeRead } from "@mohasinac/appkit/server";
 import { getSellerStoreAction } from "@/actions/seller.actions";
 
 export const metadata = {
@@ -7,7 +8,13 @@ export const metadata = {
 };
 
 export default async function Page() {
-  const result = await getSellerStoreAction().catch(() => null);
+  // Read-only reference content — the store only tailors which sections are
+  // shown, and the guide is still worth reading without it.
+  const result = await safeRead(() => getSellerStoreAction(), {
+    route: "/store/guide",
+    key: "stores.getSellerStoreAction",
+    fallback: null,
+  });
   const store = result && typeof result === "object" && "ok" in result
     ? (result.ok ? (result as { ok: true; data: unknown }).data : null)
     : (result as unknown);

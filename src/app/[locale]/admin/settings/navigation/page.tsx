@@ -33,7 +33,10 @@ async function handleUpdateNavConfig(navId: string, enabled: boolean): Promise<v
 }
 
 export default async function Page() {
-  const settings = await siteSettingsRepository.getSingleton().catch(() => null);
+  // NOT swallowed: this seeds an EDITOR. A failed read used to fall through to
+  // `{}` — every nav item shown at its default — and the next Save would write
+  // that back over the admin's real config (Root Cause #38).
+  const settings = await siteSettingsRepository.getSingleton();
   const initialConfig = (settings?.navConfig ?? {}) as Record<string, { enabled: boolean }>;
 
   return (

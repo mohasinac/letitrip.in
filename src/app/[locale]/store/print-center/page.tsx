@@ -1,5 +1,6 @@
 import { getSellerStoreAction, listSellerMyProductsAction, listSellerOrdersAction } from "@/actions/seller.actions";
 import { PrintCenterView } from "@mohasinac/appkit/client";
+import { safeRead } from "@mohasinac/appkit/server";
 
 function unwrap<T>(result: unknown, fallback: T): T {
   if (!result || typeof result !== "object") return fallback;
@@ -11,10 +12,25 @@ function unwrap<T>(result: unknown, fallback: T): T {
 }
 
 export default async function Page() {
+  // Three independent label sources — the page is useful with any subset, so
+  // each degrades on its own rather than taking the other two down. Recorded,
+  // because an empty product list here looks exactly like a new seller's.
   const [storeRes, productsRes, ordersRes] = await Promise.all([
-    getSellerStoreAction().catch(() => null),
-    listSellerMyProductsAction({ pageSize: 50 }).catch(() => null),
-    listSellerOrdersAction({ pageSize: 50 }).catch(() => null),
+    safeRead(() => getSellerStoreAction(), {
+      route: "/store/print-center",
+      key: "stores.getSellerStoreAction",
+      fallback: null,
+    }),
+    safeRead(() => listSellerMyProductsAction({ pageSize: 50 }), {
+      route: "/store/print-center",
+      key: "products.listSellerMyProductsAction",
+      fallback: null,
+    }),
+    safeRead(() => listSellerOrdersAction({ pageSize: 50 }), {
+      route: "/store/print-center",
+      key: "orders.listSellerOrdersAction",
+      fallback: null,
+    }),
   ]);
   const store = unwrap(storeRes, null) as any;
   const productsResult = unwrap(productsRes, { items: [] as any[] });

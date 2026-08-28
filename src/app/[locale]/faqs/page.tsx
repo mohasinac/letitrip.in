@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { faqJsonLd, normalizeError, siteSettingsRepository } from "@mohasinac/appkit";
+import { faqJsonLd, normalizeError, serverLogger, siteSettingsRepository } from "@mohasinac/appkit";
 import type { FAQCategory, FAQCategoryItem } from "@mohasinac/appkit";
-import { listPublicFaqs } from "@mohasinac/appkit/server";
+import { listPublicFaqs, safeRead } from "@mohasinac/appkit/server";
 import { getTranslations } from "next-intl/server";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { FAQPageClient } from "@/components";
@@ -34,7 +34,11 @@ export default async function Page() {
 
   // SSR fetch kept only for JSON-LD — the actual rendered/paginated list is
   // now fetched client-side by FAQPageClient via useFaqList.
-  const rawFaqs = await listPublicFaqs(undefined, 200).catch(() => []);
+  const rawFaqs = await safeRead(() => listPublicFaqs(undefined, 200), {
+    route: "/faqs",
+    key: "faqs.listPublicFaqs",
+    fallback: [],
+  });
   const ldFaqs = rawFaqs.map((faq) => ({
     question: faq.question,
     answer: typeof faq.answer === "string" ? faq.answer : faq.answer.text,
@@ -52,8 +56,12 @@ export default async function Page() {
     const settings = await siteSettingsRepository.getSingleton();
     contact = { email: settings.contact?.email ?? "", phone: settings.contact?.phone ?? "" };
   } catch (err) {
-    void normalizeError(err);
-    // Firestore unavailable — FAQPageClient still renders with empty contact info.
+    // Firestore unavailable — FAQPageClient still renders with empty contact
+    // info, which is indistinguishable from an admin having never set any.
+    const normalized = normalizeError(err);
+    serverLogger.warn("siteSettings.getSingleton failed — /faqs contact block empty", {
+      error: normalized.message,
+    });
   }
 
   return (

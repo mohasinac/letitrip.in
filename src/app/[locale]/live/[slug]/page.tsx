@@ -11,7 +11,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getLiveItemForDetail(slug).catch(() => null);
+  const product = await getLiveItemForDetail(slug);
   // `siteUrl` is required for a canonical — without it the builder returns
   // `alternates: undefined` and the page ships none. See classified/[slug].
   return buildLiveItemMetadata(product, {
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
-  const product = await getLiveItemForDetail(slug).catch(() => null);
+  const product = await getLiveItemForDetail(slug);
 
   return (
     <>

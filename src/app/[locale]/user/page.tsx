@@ -114,10 +114,11 @@ export default function Page() {
       });
       await updateProfile.mutateAsync({ photoURL: url });
     } catch (e: unknown) {
+      // Genuinely cannot matter HERE: the failure is already reported by
+      // whichever call produced it — `updateProfile` surfaces its own, and
+      // `upload()` surfaces the upload one. Reporting again made a failed
+      // avatar save say the same thing twice.
       void normalizeError(e);
-      // No toast: `updateProfile` surfaces its own failure, and `upload()`
-      // surfaces the upload one. Toasting here made a failed avatar save say
-      // the same thing twice.
     } finally {
       setUploading(false);
     }

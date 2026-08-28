@@ -30,8 +30,10 @@ export default function Page() {
         );
       }
     } catch (_err) {
+      // Genuinely cannot matter: the opener may already be closed or on another
+      // origin, and postMessage is only the FALLBACK — the RTDB signal channel
+      // is the primary path, so a rejection here loses nothing to report.
       void normalizeError(_err);
-      // opener may be gone or cross-origin — non-fatal
     }
 
     if (error) return;

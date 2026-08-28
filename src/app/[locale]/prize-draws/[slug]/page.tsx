@@ -22,7 +22,7 @@ export async function generateMetadata({
   // `getPrizeDrawForDetail` is React.cache()-wrapped (makeGetListingForDetail),
   // and the page body below already calls it — so this read is deduped and adds
   // no Firestore cost.
-  const product = await getPrizeDrawForDetail(slug).catch(() => null);
+  const product = await getPrizeDrawForDetail(slug);
   if (!product) {
     return _gm({
       title: "Prize draw not found — LetItRip",

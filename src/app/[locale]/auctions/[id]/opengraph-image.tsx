@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getAuctionForDetail, renderAuctionOg } from "@mohasinac/appkit/server";
+import { getAuctionForDetail, renderAuctionOg, safeRead } from "@mohasinac/appkit/server";
 import { SEO_CONFIG } from "@/constants";
 
 // OG-FIX1: removed `export const runtime = "edge"` — the @mohasinac/appkit/server
@@ -12,7 +12,13 @@ type Props = { params: Promise<{ id: string }> };
 
 export default async function Image({ params }: Props) {
   const { id } = await params;
-  const doc = await getAuctionForDetail(id).catch(() => null);
+  // An OG endpoint must always return a PNG, so a failed read degrades to the
+  // renderer's generic branded card — but is recorded rather than vanishing.
+  const doc = await safeRead(() => getAuctionForDetail(id), {
+    route: "/auctions/[id]",
+    key: "products.getAuctionForDetail",
+    fallback: null,
+  });
   return new ImageResponse(
     renderAuctionOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip", baseUrl: SEO_CONFIG.siteUrl }),
     { ...size },

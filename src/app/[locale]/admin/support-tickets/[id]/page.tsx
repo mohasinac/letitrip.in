@@ -13,7 +13,7 @@ interface Props {
 
 export default async function AdminSupportTicketViewPage({ params }: Props) {
   const { id } = await params;
-  const ticket = await supportRepository.getTicketById(id).catch(() => null);
+  const ticket = await supportRepository.getTicketById(id);
   if (!ticket) return notFound();
 
   return (

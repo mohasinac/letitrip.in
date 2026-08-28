@@ -10,7 +10,7 @@ type Props = { params: Promise<{ userId: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { userId } = await params;
-  const user = await getPublicUserProfile(userId).catch(() => null);
+  const user = await getPublicUserProfile(userId);
   if (!user) return { title: "Profile Not Found" };
   if ((user.publicProfile as any)?.isPublic === false) return { title: "Profile Not Found" };
   const meta = generateProfileMetadata({
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { userId } = await params;
-  const user = await getPublicUserProfile(userId).catch(() => null);
+  const user = await getPublicUserProfile(userId);
   if (!user) notFound();
   // Private profile — return 404 so no link crawlers or direct URL visitors can access it
   if ((user.publicProfile as any)?.isPublic === false) notFound();

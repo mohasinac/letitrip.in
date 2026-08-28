@@ -7,6 +7,7 @@ import {
   sortBy,
   EVENT_ENTRY_FIELDS,
 } from "@mohasinac/appkit";
+import { safeRead } from "@mohasinac/appkit/server";
 
 export const GET = withProviders(
   createRouteHandler({
@@ -24,7 +25,17 @@ export const GET = withProviders(
 
       const eventIds = [...new Set(result.items.map((e) => e.eventId))];
       const events = eventIds.length
-        ? await Promise.all(eventIds.map((id) => eventRepository.findById(id).catch(() => null)))
+        ? await Promise.all(
+            // Hydration only — the entry rows are the subject and each renders
+            // with `event: null` when its parent event cannot be resolved.
+            eventIds.map((id) =>
+              safeRead(() => eventRepository.findById(id), {
+                route: "/user/events",
+                key: "events.findById",
+                fallback: null,
+              }),
+            ),
+          )
         : [];
 
       const eventMap = Object.fromEntries(

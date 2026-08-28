@@ -8,7 +8,7 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const { storeSlug } = await params;
-  const store = await storeRepository.findBySlug(storeSlug).catch(() => undefined);
+  const store = await storeRepository.findBySlug(storeSlug);
 
   if (!store) return null;
 

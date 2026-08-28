@@ -8,6 +8,7 @@ import { readFile } from "fs/promises";
 import path from "path";
 import sharp from "sharp";
 import { getAdminStorage, serverLogger, siteSettingsRepository, userRepository } from "@mohasinac/appkit";
+import { safeRead } from "@mohasinac/appkit/server";
 import {
   resolveEffectiveWatermark,
   DEFAULT_WATERMARK_TEXT,
@@ -106,7 +107,13 @@ export async function resolveWatermarkConfig(
   }
   const [displayName, settings] = await Promise.all([
     resolveDisplayName(uploaderUid),
-    siteSettingsRepository.getSingleton().catch(() => null),
+    // Only the site NAME is read here, and DEFAULT_WATERMARK_TEXT is a real
+    // answer when it is unavailable — the image still ships watermarked.
+    safeRead(() => siteSettingsRepository.getSingleton(), {
+      route: "/media/[...slug]",
+      key: "siteSettings.getSingleton",
+      fallback: null,
+    }),
   ]);
   const siteName = settings?.siteName?.trim() || DEFAULT_WATERMARK_TEXT;
   return {

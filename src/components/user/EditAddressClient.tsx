@@ -2,6 +2,7 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { AddressForm, useAddress, useUpdateAddress, useToast, ROUTES, Div } from "@mohasinac/appkit/client";
+import { normalizeError } from "@mohasinac/appkit/client";
 import { Heading, Stack, Text } from "@mohasinac/appkit/client";
 interface Props {
   addressId: string;
@@ -19,7 +20,9 @@ export function EditAddressClient({ addressId }: Props) {
       router.push(String(ROUTES.USER.ADDRESSES));
     },
     onError: (err) => {
-      showToast(err.message ?? "Failed to update address.", "error");
+      void normalizeError(err);
+      // Authored copy only — the rejection's own message is developer text.
+      showToast("Failed to update address.", "error");
     },
   });
 

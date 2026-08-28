@@ -21,7 +21,7 @@ const STATUS_VARIANT: Record<string, "success" | "danger" | "secondary" | "warni
 
 export default async function AdminItemRequestDetailPage({ params }: Props) {
   const { id } = await params;
-  const item = await itemRequestsRepository.findById(id).catch(() => null);
+  const item = await itemRequestsRepository.findById(id);
   if (!item) return notFound();
 
   return (

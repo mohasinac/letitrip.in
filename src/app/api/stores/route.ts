@@ -4,7 +4,7 @@ import {
   storeRepository,
   parseListingParams,
 } from "@mohasinac/appkit";
-import { filterTestDataForViewer, toStoreListItem } from "@mohasinac/appkit/server";
+import { filterTestDataForViewer, safeRead, toStoreListItem } from "@mohasinac/appkit/server";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
@@ -61,7 +61,14 @@ async function _GET(request: Request): Promise<NextResponse> {
   let totalPages: number;
   let hasMore: boolean;
 
-  const viewer = await getServerSessionUser().catch(() => null);
+  // Anonymous is a legitimate viewer for this public listing, so a failed
+  // session read degrades to it — but it must not do so invisibly, or a
+  // tester/admin silently loses their test-data visibility.
+  const viewer = await safeRead(() => getServerSessionUser(), {
+    route: "/stores",
+    key: "session.getServerSessionUser",
+    fallback: null,
+  });
 
   let upstream: ListingProcessorResponse | null = null;
   try {

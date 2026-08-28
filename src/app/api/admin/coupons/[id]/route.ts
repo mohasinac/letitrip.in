@@ -43,7 +43,7 @@ const __GET__g = withProviders(
     roles: [...ROLES_ADMIN_MOD],
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
-      const coupon = await couponsRepository.getCouponByCode(id).catch(() => null);
+      const coupon = await couponsRepository.getCouponByCode(id);
       if (!coupon) return errorResponse("Coupon not found", 404);
       return successResponse(coupon);
     },

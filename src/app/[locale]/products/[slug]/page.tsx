@@ -6,7 +6,7 @@ import {
   loadProductFeaturesForStore,
 } from "@mohasinac/appkit";
 import { getProductForDetail } from "@mohasinac/appkit";
-import { getSiteSettingsGlobal, storeRepository } from "@mohasinac/appkit/server";
+import { getSiteSettingsGlobal, safeRead, storeRepository } from "@mohasinac/appkit/server";
 import { MakeOfferButton, ProductDetailActions, PageViewTracker } from "@mohasinac/appkit/client";
 import { submitProductOffer } from "@/actions/offer.actions";
 import { generateProductMetadata } from "@/constants/seo.server";
@@ -18,7 +18,7 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   // getProductForDetail is wrapped in React.cache() — shared with the page render.
-  const product = await getProductForDetail(slug).catch(() => null);
+  const product = await getProductForDetail(slug);
   if (!product) return { title: "Product Not Found" };
   return generateProductMetadata({
     title: product.title,
@@ -31,13 +31,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
-  const product = await getProductForDetail(slug).catch(() => null);
-  const productFeatures = await loadProductFeaturesForStore(
-    product?.storeId ?? null,
-  ).catch(() => []);
-  const siteSettings = await getSiteSettingsGlobal().catch(() => null);
+  const product = await getProductForDetail(slug);
+  // Everything below is chrome around the product: feature chips, and the two
+  // inputs to the COD/EMI badges. Each degrades to "not shown" rather than
+  // taking the page down with it — but the failure is now recorded.
+  const productFeatures = await safeRead(
+    () => loadProductFeaturesForStore(product?.storeId ?? null),
+    {
+      route: "/products/[slug]",
+      key: "productFeatures.loadProductFeaturesForStore",
+      fallback: [],
+    },
+  );
+  const siteSettings = await safeRead(() => getSiteSettingsGlobal(), {
+    route: "/products/[slug]",
+    key: "siteSettings.getSiteSettingsGlobal",
+    fallback: null,
+  });
   const store = product?.storeId
-    ? await storeRepository.findById(product.storeId).catch(() => null)
+    ? await safeRead(() => storeRepository.findById(product.storeId), {
+        route: "/products/[slug]",
+        key: "stores.findById",
+        fallback: null,
+      })
     : null;
   const codEnabled = siteSettings?.payment?.codEnabled === true;
   // Fully-resolved per-product EMI eligibility: site-wide flag AND the

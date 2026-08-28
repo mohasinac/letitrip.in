@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { redirect } from "@/i18n/navigation";
 import { AdSlot, CouponsIndexListing, Div, Heading, PromotionsHero, Row, Text, getPromotions, productFeaturesRepository } from "@mohasinac/appkit";
 import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
+import { safeRead } from "@mohasinac/appkit/server";
 import { PromotionsProductsClient } from "./PromotionsProductsClient";
 
 const __O = {
@@ -87,13 +88,21 @@ export default async function Page({
     redirect(buildRedirectPath(locale, activeTab));
   }
 
-  const promotions = await getPromotions().catch(() => null);
+  // NOT swallowed: all three lists below come from this one call, so a failed
+  // read rendered an entirely empty promotions page as though nothing were on
+  // offer — the page's whole subject, silently wrong.
+  const promotions = await getPromotions();
   const activeCoupons = promotions?.activeCoupons ?? [];
   const promotedProducts = (promotions?.promotedProducts ?? []) as unknown as { id: string; slug?: string; [key: string]: unknown }[];
   const featuredProducts = (promotions?.featuredProducts ?? []) as unknown as { id: string; slug?: string; [key: string]: unknown }[];
-  const platformFeatures = await productFeaturesRepository
-    .listPlatform()
-    .catch(() => []);
+  const platformFeatures = await safeRead(
+    () => productFeaturesRepository.listPlatform(),
+    {
+      route: "/promotions/[tab]",
+      key: "productFeatures.listPlatform",
+      fallback: [],
+    },
+  );
 
   return (
     <ProductFeaturesProvider features={platformFeatures}>

@@ -1,6 +1,6 @@
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, userRepository, applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
-import { safeFireAndForget } from "@mohasinac/appkit/server";
+import { safeFireAndForget, safeRead } from "@mohasinac/appkit/server";
 
 export const GET = withProviders(
   createRouteHandler({
@@ -33,7 +33,10 @@ export const GET = withProviders(
       // (custom claims may be stale if admin was created before claims were synced)
       let role = profile.role ?? "user";
       if (role === "user") {
-        const firestoreUser = await userRepository.findById(user!.uid).catch(() => null);
+        const firestoreUser = await safeRead(
+          () => userRepository.findById(user!.uid),
+          { route: "/api/auth/me", key: "users.findById", fallback: null },
+        );
         if (firestoreUser?.role && firestoreUser.role !== "user") {
           role = firestoreUser.role;
           // Sync custom claims so next check is fast

@@ -34,6 +34,7 @@ import {
   useCreateAddress,
   useToast,
   useUpdateAddress,
+  normalizeError,
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
@@ -51,7 +52,11 @@ export function AddStoreAddressClient() {
       showToast("Pickup address saved.", "success");
       back();
     },
-    onError: (err) => showToast(err.message ?? "Failed to save address.", "error"),
+    onError: (err) => {
+      void normalizeError(err);
+      // Authored copy only — the rejection's own message is developer text.
+      showToast("Failed to save address.", "error");
+    },
   });
 
   return (
@@ -83,7 +88,11 @@ export function EditStoreAddressClient({ addressId }: { addressId: string }) {
       showToast("Pickup address updated.", "success");
       back();
     },
-    onError: (err) => showToast(err.message ?? "Failed to update address.", "error"),
+    onError: (err) => {
+      void normalizeError(err);
+      // Authored copy only — the rejection's own message is developer text.
+      showToast("Failed to update address.", "error");
+    },
   });
 
   if (isLoading) {

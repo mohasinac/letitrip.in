@@ -1,5 +1,6 @@
 import { withProviders } from "@/providers.config";
 import { createApiHandler as createRouteHandler, successResponse, errorResponse, catalogueRepository, userRepository, productRepository, pluginFor } from "@mohasinac/appkit";
+import { safeRead } from "@mohasinac/appkit/server";
 
 /**
  * Public catalogue item — GET /api/catalogue/[ownerSlug]/[itemId]
@@ -23,7 +24,14 @@ export const GET = withProviders(
       // the client has no listingType field to work with otherwise.
       let linkedProductHref: string | null = null;
       if (item.linkedProductId) {
-        const linkedProduct = await productRepository.findById(item.linkedProductId).catch(() => null);
+        const linkedProduct = await safeRead(
+          () => productRepository.findById(item.linkedProductId!),
+          {
+            route: "/catalogue/[ownerSlug]/[itemId]",
+            key: "products.findById",
+            fallback: null,
+          },
+        );
         if (linkedProduct) {
           linkedProductHref = pluginFor(linkedProduct.listingType ?? "standard").detailRoute(linkedProduct.slug ?? linkedProduct.id);
         }

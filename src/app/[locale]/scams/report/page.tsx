@@ -269,7 +269,9 @@ function ScamReportForm({ userId }: { userId: string }) {
     },
     onError: (err: Error) => {
       void normalizeError(err);
-      setError(err.message ?? "An error occurred. Please try again.");
+      // Authored copy only. `err.message` here is whatever the POST rejected
+      // with — developer text, and the banner is a display sink.
+      setError("An error occurred. Please try again.");
     },
   });
 

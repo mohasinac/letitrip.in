@@ -32,7 +32,7 @@ export const GET = withProviders(
     roles: [...ROLES_ADMIN_MOD],
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
-      const product = await productRepository.findByIdOrSlug(id).catch(() => null);
+      const product = await productRepository.findByIdOrSlug(id);
       if (!product) return errorResponse("Product not found", 404);
       return successResponse(product);
     },

@@ -9,7 +9,7 @@ import {
   serverLogger,
   ERROR_MESSAGES,
 } from "@mohasinac/appkit";
-import { enqueueJob, sendSiteSettingsChangedEmail } from "@mohasinac/appkit/server";
+import { enqueueJob, safeRead, sendSiteSettingsChangedEmail } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_ONLY, SCHEMA_DEFAULTS } from "@/constants";
 import { normalizeError } from "@mohasinac/appkit";
 
@@ -77,7 +77,14 @@ export const PUT = withProviders(
       // Read the pre-update flag so we can detect an off->on transition below —
       // updateSingleton() merges, so body.featureFlags?.smsVerification alone
       // can't tell us whether this request actually flipped the flag.
-      const previousSettings = await siteSettingsRepository.getSingleton().catch(() => null);
+      const previousSettings = await safeRead(
+        () => siteSettingsRepository.getSingleton(),
+        {
+          route: "/api/admin/site",
+          key: "siteSettings.getSingleton",
+          fallback: null,
+        },
+      );
       const wasSmsVerificationOn = previousSettings?.featureFlags?.smsVerification === true;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

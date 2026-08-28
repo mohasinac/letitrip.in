@@ -9,7 +9,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const category = await getCategoryBySlug(slug).catch(() => null);
+  const category = await getCategoryBySlug(slug);
   if (!category) return { title: "Category Not Found" };
   return generateCategoryMetadata({
     name: category.name,

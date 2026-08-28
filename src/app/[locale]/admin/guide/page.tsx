@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { AdminGuideHubView, isAdminUser } from "@mohasinac/appkit";
+import { safeRead } from "@mohasinac/appkit/server";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 
 export const metadata: Metadata = _gm({
@@ -12,7 +13,15 @@ export const metadata: Metadata = _gm({
 export const revalidate = 3600;
 
 export default async function Page() {
-  const user = await getServerSessionUser().catch(() => null);
+  // The RoleGuard layout has already authorised the reader; this read only
+  // decides which sections of the guide are shown, so it degrades to the
+  // narrowest view rather than erroring — visibly, so an admin who suddenly
+  // sees a cut-down guide has something to point at.
+  const user = await safeRead(() => getServerSessionUser(), {
+    route: "/admin/guide",
+    key: "session.getServerSessionUser",
+    fallback: null,
+  });
   const isFullAdmin = isAdminUser(user);
   const permissions: string[] = (user as { permissions?: string[] } | null)?.permissions ?? [];
   return <AdminGuideHubView permissions={permissions} isFullAdmin={isFullAdmin} />;

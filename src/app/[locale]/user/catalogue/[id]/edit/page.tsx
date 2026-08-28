@@ -5,7 +5,9 @@ import { getServerSessionUser } from "@/lib/firebase/auth-server";
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await getServerSessionUser();
-  const item = await catalogueRepository.findById(id).catch(() => null);
+  // NOT swallowed: a failed read reached `notFound()` below, telling the owner
+  // their own catalogue item no longer exists.
+  const item = await catalogueRepository.findById(id);
   if (!item || !user || item.ownerId !== user.uid) notFound();
   return <CatalogueItemEditorView item={item} />;
 }

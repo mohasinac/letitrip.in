@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getLiveItemForDetail, renderLiveItemOg } from "@mohasinac/appkit/server";
+import { getLiveItemForDetail, renderLiveItemOg, safeRead } from "@mohasinac/appkit/server";
 import { SEO_CONFIG } from "@/constants";
 
 // OG-FIX1: removed `export const runtime = "edge"` — the @mohasinac/appkit/server
@@ -12,7 +12,13 @@ type Props = { params: Promise<{ slug: string }> };
 
 export default async function Image({ params }: Props) {
   const { slug } = await params;
-  const doc = await getLiveItemForDetail(slug).catch(() => null);
+  // An OG endpoint must always return a PNG, so a failed read degrades to the
+  // renderer's generic branded card — but is recorded rather than vanishing.
+  const doc = await safeRead(() => getLiveItemForDetail(slug), {
+    route: "/live/[slug]",
+    key: "products.getLiveItemForDetail",
+    fallback: null,
+  });
   return new ImageResponse(
     renderLiveItemOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip", baseUrl: SEO_CONFIG.siteUrl }),
     { ...size },

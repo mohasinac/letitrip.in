@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BugHunterLeaderboardView, normalizeError, ROUTES } from "@mohasinac/appkit";
+import { BugHunterLeaderboardView, normalizeError, ROUTES, serverLogger } from "@mohasinac/appkit";
 import { getBugHunterLeaderboard } from "@mohasinac/appkit/server";
 import { Container, Heading, Section, Text, TextLink } from "@mohasinac/appkit/ui";
 import { generateMetadata as _gm } from "@/constants/seo.server";
@@ -18,7 +18,12 @@ export default async function Page() {
   try {
     entries = await getBugHunterLeaderboard();
   } catch (err) {
-    void normalizeError(err);
+    // `entries` stays [], which renders as "no bug hunters yet" — a claim, not
+    // an error state. Log it so an empty board is attributable.
+    const normalized = normalizeError(err);
+    serverLogger.warn("getBugHunterLeaderboard failed — /bug-hunters rendering empty", {
+      error: normalized.message,
+    });
   }
 
   return (

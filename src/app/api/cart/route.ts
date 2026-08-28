@@ -13,6 +13,7 @@ import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { cartRepository, storeRepository, assertCanAddNewItems } from "@mohasinac/appkit";
 import { productRepository, normalizeListingType } from "@mohasinac/appkit";
+import { safeRead } from "@mohasinac/appkit/server";
 
 import { createRouteHandler } from "@mohasinac/appkit";
 import { ProductStatusValues } from "@mohasinac/appkit";
@@ -41,7 +42,11 @@ export const GET = withProviders(createRouteHandler({
     if (missing.size > 0) {
       const entries = await Promise.all(
         Array.from(missing).map(async (sid) => {
-          const store = await storeRepository.findById(sid).catch(() => null);
+          const store = await safeRead(() => storeRepository.findById(sid), {
+            route: "/api/cart",
+            key: "stores.findById",
+            fallback: null,
+          });
           return [sid, store?.storeName ?? ""] as const;
         }),
       );
@@ -113,7 +118,10 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
     // the storeId slug for the group header.
     let storeName = product.storeName ?? "";
     if (!storeName && product.storeId) {
-      const store = await storeRepository.findById(product.storeId).catch(() => null);
+      const store = await safeRead(
+        () => storeRepository.findById(product.storeId),
+        { route: "/api/cart", key: "stores.findById", fallback: null },
+      );
       storeName = store?.storeName ?? "";
     }
 

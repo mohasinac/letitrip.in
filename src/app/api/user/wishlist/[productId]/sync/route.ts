@@ -21,7 +21,9 @@ export const POST = withProviders(
         return errorResponse("Item not in wishlist", 404, { code: "NOT_FOUND" });
       }
 
-      const product = await productRepository.findById(productId).catch(() => null);
+      // NOT swallowed: a failed read used to fall into `isGone` below and
+      // DELETE the row from the user's wishlist on a transient Firestore error.
+      const product = await productRepository.findById(productId);
       const isGone =
         !product ||
         product.status === ProductStatusValues.ARCHIVED ||

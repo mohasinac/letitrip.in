@@ -2,6 +2,7 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { AddressForm, useCreateAddress, useToast, ROUTES } from "@mohasinac/appkit/client";
+import { normalizeError } from "@mohasinac/appkit/client";
 import { Heading, Stack } from "@mohasinac/appkit/client";
 export function AddAddressClient() {
   const router = useRouter();
@@ -13,7 +14,9 @@ export function AddAddressClient() {
       router.push(String(ROUTES.USER.ADDRESSES));
     },
     onError: (err) => {
-      showToast(err.message ?? "Failed to save address.", "error");
+      void normalizeError(err);
+      // Authored copy only — the rejection's own message is developer text.
+      showToast("Failed to save address.", "error");
     },
   });
 

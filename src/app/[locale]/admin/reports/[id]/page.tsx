@@ -20,7 +20,7 @@ const STATUS_VARIANT: Record<string, "success" | "danger" | "secondary" | "warni
 
 export default async function AdminReportDetailPage({ params }: Props) {
   const { id } = await params;
-  const report = await reportsRepository.findById(id).catch(() => null);
+  const report = await reportsRepository.findById(id);
   if (!report) return notFound();
 
   return (

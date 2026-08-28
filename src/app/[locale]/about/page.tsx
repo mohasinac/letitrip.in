@@ -2,7 +2,7 @@ import { normalizeError } from "@mohasinac/appkit";
 import type { Metadata } from "next";
 import { AboutView } from "@mohasinac/appkit";
 import type { AboutContentDocument } from "@mohasinac/appkit";
-import { siteSettingsRepository } from "@mohasinac/appkit";
+import { serverLogger, siteSettingsRepository } from "@mohasinac/appkit";
 import { getTranslations } from "next-intl/server";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
@@ -24,8 +24,13 @@ export default async function Page() {
     const settings = await siteSettingsRepository.getSingleton();
     aboutContent = settings.aboutContent;
   } catch (_err) {
-    void normalizeError(_err);
-    // Firestore unavailable — use i18n defaults
+    // Firestore unavailable — every field below falls back to its i18n default,
+    // so the page still renders; log it so an operator can see WHY the admin's
+    // authored About copy has silently reverted.
+    const normalized = normalizeError(_err);
+    serverLogger.warn("siteSettings.getSingleton failed — /about using i18n defaults", {
+      error: normalized.message,
+    });
   }
 
   const val = (key: keyof AboutContentDocument, fallback: string) => {

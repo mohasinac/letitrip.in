@@ -99,7 +99,7 @@ export default async function Page({ params }: Props) {
     redirect(canonicalPath);
   }
 
-  const category = await getCategoryBySlug(slug).catch(() => null);
+  const category = await getCategoryBySlug(slug);
   if (!category) notFound();
 
   return (

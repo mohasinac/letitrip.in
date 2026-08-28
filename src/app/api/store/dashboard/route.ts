@@ -19,6 +19,7 @@ import {
   SIEVE_OP,
 } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
+import { safeRead } from "@mohasinac/appkit/server";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 export const GET = withProviders(
@@ -46,12 +47,23 @@ export const GET = withProviders(
 
       const [allProducts, , , ratingAggregate, pendingPayouts] =
         await Promise.all([
-          productRepository.findByStore(storeId).catch(() => []),
+          safeRead(() => productRepository.findByStore(storeId), {
+            route: "/store",
+            key: "products.findByStore",
+            fallback: [],
+          }),
           // listForSeller needs productIds — defer to inline below
           Promise.resolve(null),
           Promise.resolve(null),
           reviewRepository.getApprovedRatingAggregateByStore(storeId).catch(() => ({ count: 0, avgRating: 0 })),
-          payoutRepository.findByStoreAndStatus(storeId, "pending").catch(() => []),
+          safeRead(
+            () => payoutRepository.findByStoreAndStatus(storeId, "pending"),
+            {
+              route: "/store",
+              key: "payouts.findByStoreAndStatus",
+              fallback: [],
+            },
+          ),
         ]);
 
       const productIds = allProducts.map((p) => p.id);

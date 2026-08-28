@@ -25,7 +25,7 @@ export default async function AdminCarouselDetailPage({ params }: Props) {
    * a real document called `new` permanently unreachable, and it is invisible
    * to `audit-dead-route-key`.
    */
-  const result = await carouselsRepository.getCarouselWithSlides(id).catch(() => null);
+  const result = await carouselsRepository.getCarouselWithSlides(id);
   if (!result) return notFound();
 
   const { carousel, slides } = result;

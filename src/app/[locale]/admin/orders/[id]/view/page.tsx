@@ -13,7 +13,7 @@ interface Props {
 
 export default async function AdminOrderViewPage({ params }: Props) {
   const { id } = await params;
-  const order = await orderRepository.findById(id).catch(() => null);
+  const order = await orderRepository.findById(id);
   if (!order) return notFound();
 
   return (

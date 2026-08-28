@@ -6,6 +6,7 @@ import { useRouter } from "@/i18n/navigation"
 import { useParams } from "next/navigation";
 import { Heading, ROUTES, Row, Text } from "@mohasinac/appkit/client";
 import { Div, Button, Form, Label, Input, Textarea, useApiMutation, apiClient } from "@mohasinac/appkit/client";
+import { normalizeError } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { sublistingCategoryFormSchema } from "@mohasinac/appkit/client";
 import { FormErrorSummary } from "@mohasinac/appkit/client";
@@ -44,7 +45,9 @@ export default function Page() {
       router.push(String(ROUTES.STORE.SUBLISTING_CATEGORIES));
     },
     onError: (err: Error) => {
-      setError(err.message ?? "Failed to save changes");
+      void normalizeError(err);
+      // Authored copy only — never the rejection's own message.
+      setError("Failed to save changes.");
     },
   });
   const saving = saveMutation.isPending;

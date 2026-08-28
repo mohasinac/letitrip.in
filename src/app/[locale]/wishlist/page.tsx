@@ -208,8 +208,11 @@ export default function WishlistPage() {
           wl.refetch?.();
         }
       } catch (_err) {
-        void normalizeError(_err);
-        // Best-effort — don't surface errors
+        // Deliberately not toasted — this is a background staleness sweep the
+        // user never asked for, and its only visible output is the "N items
+        // removed" notice. Logged so a sweep that never runs is still findable.
+        const normalized = normalizeError(_err);
+        console.warn("wishlist validate sweep failed", normalized.message);
       }
     })();
   }, [user?.uid, wl.isLoading]); // eslint-disable-line react-hooks/exhaustive-deps

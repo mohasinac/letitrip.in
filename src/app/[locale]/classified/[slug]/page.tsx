@@ -11,7 +11,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getClassifiedForDetail(slug).catch(() => null);
+  const product = await getClassifiedForDetail(slug);
   // `siteUrl` is required for a canonical: the builder returns
   // `alternates: undefined` without it, so omitting it meant these pages shipped
   // NO canonical at all — verified live before this fix.
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
-  const product = await getClassifiedForDetail(slug).catch(() => null);
+  const product = await getClassifiedForDetail(slug);
 
   return (
     <>

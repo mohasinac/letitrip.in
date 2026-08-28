@@ -3,7 +3,10 @@ import type { StorefrontDraft } from "@mohasinac/appkit";
 import { getSellerStoreAction, updateStoreAction } from "@/actions/seller.actions";
 
 export default async function Page() {
-  const storeRes = await getSellerStoreAction().catch(() => null);
+  // NOT swallowed: `initialValues` below seeds the storefront EDITOR, and
+  // `handleSave` writes every one of those fields back. A failed read used to
+  // present the form entirely blank, so the next Save wiped the storefront.
+  const storeRes = await getSellerStoreAction();
   const store: any = storeRes && typeof storeRes === "object" && "ok" in storeRes
     ? (storeRes.ok ? (storeRes as { ok: true; data: any }).data : null)
     : storeRes;

@@ -18,7 +18,7 @@ export default async function Page({ params }: Props) {
   const { id } = await params;
   const user = await getServerSessionUser();
 
-  const product = await productRepository.findById(id).catch(() => null);
+  const product = await productRepository.findById(id);
   if (!product || product.listingType !== "prize-draw") notFound();
 
   if (product.prizeDrawMode === "lottery") {

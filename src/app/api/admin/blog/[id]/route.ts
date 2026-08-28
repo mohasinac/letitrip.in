@@ -47,7 +47,7 @@ const __GET__g = withProviders(
     roles: [...ROLES_ADMIN_MOD],
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
-      const post = await blogRepository.findBySlug(id).catch(() => null);
+      const post = await blogRepository.findBySlug(id);
       if (!post) return errorResponse("Blog post not found", 404);
       return successResponse(post);
     },

@@ -8,7 +8,9 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const { storeSlug } = await params;
-  const store = await storeRepository.findBySlug(storeSlug).catch(() => null);
+  // NOT swallowed: `storeId` is what scopes the listing below, so a failed read
+  // used to render every coupon on the platform under this store's heading.
+  const store = await storeRepository.findBySlug(storeSlug);
   const storeId = (store as any)?.id ?? undefined;
 
   return (

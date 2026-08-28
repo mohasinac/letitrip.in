@@ -13,7 +13,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const data = await getScammerProfilePageData(id).catch(() => null);
+  const data = await getScammerProfilePageData(id);
   if (!data) return { title: "Profile Not Found" };
 
   const { scammer } = data;
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
-  const data = await getScammerProfilePageData(id).catch(() => null);
+  const data = await getScammerProfilePageData(id);
 
   if (!data) notFound();
 

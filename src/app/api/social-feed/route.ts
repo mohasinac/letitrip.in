@@ -6,6 +6,7 @@ import {
   fetchFacebookPosts,
   fetchTikTokPosts,
   fetchDeviantArtPosts,
+  safeRead,
 } from "@mohasinac/appkit/server";
 import type { SocialPlatform, SocialPostType } from "@mohasinac/appkit/server";
 import { withProviders } from "@/providers.config";
@@ -32,7 +33,17 @@ async function socialFeedGetHandler(request: NextRequest) {
     );
   }
 
-  const credentials = await siteSettingsRepository.getDecryptedCredentials().catch(() => null);
+  // A failed credential read is indistinguishable downstream from "no token
+  // configured" (both fall into the 503 branch), so record it as a degraded
+  // read rather than letting the operator chase a phantom config problem.
+  const credentials = await safeRead(
+    () => siteSettingsRepository.getDecryptedCredentials(),
+    {
+      route: "/api/social-feed",
+      key: "siteSettings.getDecryptedCredentials",
+      fallback: null,
+    },
+  );
 
   try {
     switch (platform) {

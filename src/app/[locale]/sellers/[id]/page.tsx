@@ -8,7 +8,7 @@ type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const user = await getPublicUserProfile(id).catch(() => null);
+  const user = await getPublicUserProfile(id);
   if (!user) return { title: "Seller Not Found" };
   return generateProfileMetadata({
     displayName: user.displayName ?? null,

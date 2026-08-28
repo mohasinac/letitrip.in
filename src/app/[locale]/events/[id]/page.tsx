@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Heading, RichText, Stack } from "@mohasinac/appkit/ui";
 import { EventOfferCard, RelatedEventsCarousel, getRelatedEvents } from "@mohasinac/appkit";
+import { safeRead } from "@mohasinac/appkit/server";
 import { EVENT_LABELS } from "./_constants";
 import { eventIsActive } from "./_helpers";
 import { getEventCached } from "./_data";
@@ -36,7 +37,11 @@ export default async function Page({ params }: Props) {
 
   const tags = Array.isArray(event.tags) ? event.tags : [];
   const relatedEvents = tags.length > 0
-    ? await getRelatedEvents(tags, event.id).catch(() => [])
+    ? await safeRead(() => getRelatedEvents(tags, event.id), {
+        route: "/events/[id]",
+        key: "events.getRelatedEvents",
+        fallback: [],
+      })
     : [];
 
   return (

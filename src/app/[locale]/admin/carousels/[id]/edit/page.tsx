@@ -35,7 +35,7 @@ interface Props {
 export default async function AdminCarouselGroupEditPage({ params }: Props) {
   const { id } = await params;
 
-  const existing = await carouselsRepository.findById(id).catch(() => null);
+  const existing = await carouselsRepository.findById(id);
   if (!existing) return notFound();
 
   return (

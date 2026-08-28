@@ -10,7 +10,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getDigitalCodeForDetail(slug).catch(() => null);
+  const product = await getDigitalCodeForDetail(slug);
   // `siteUrl` is required for a canonical — without it the builder returns
   // `alternates: undefined` and the page ships none. See classified/[slug].
   return buildDigitalCodeMetadata(product, {
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
-  const product = await getDigitalCodeForDetail(slug).catch(() => null);
+  const product = await getDigitalCodeForDetail(slug);
 
   return (
     <>

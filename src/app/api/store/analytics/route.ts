@@ -24,7 +24,7 @@ import { callFirebaseFunction } from "@/lib/firebase-gateway";
 // Function isn't configured (dev / preview deploys without the env vars).
 // Bounded to last 30 days + pageSize 50 to respect Vercel Hobby caps.
 async function firestoreFallback(uid: string) {
-  const store = await storeRepository.findByOwnerId(uid).catch(() => null);
+  const store = await storeRepository.findByOwnerId(uid);
   if (!store) {
     return { summary: { revenue: 0, orders: 0, aov: 0 }, revenueByMonth: [], topProducts: [] };
   }

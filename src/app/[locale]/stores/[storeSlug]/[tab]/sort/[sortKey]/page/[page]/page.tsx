@@ -159,7 +159,7 @@ export default async function Page({ params, searchParams }: Props) {
 
   // `bundles` and `about` both land here; bundles has no legacy canonical URL
   // of its own, so it falls through to the store's About view as before.
-  const store = await storeRepository.findBySlug(storeSlug).catch(() => undefined);
+  const store = await storeRepository.findBySlug(storeSlug);
   if (!store) {
     return null;
   }

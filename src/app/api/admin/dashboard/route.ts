@@ -13,6 +13,7 @@ import {
   reviewRepository,
   analyticsRollupRepository,
 } from "@mohasinac/appkit";
+import { safeRead } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const GET = withProviders(createRouteHandler({
@@ -47,7 +48,14 @@ export const GET = withProviders(createRouteHandler({
     // Function into analytics/dashboardRollup — a single-doc read here
     // instead of scanning every delivered order on every dashboard load
     // (CLAUDE.md Rule #6). Falls back to 0 until the first rollup run.
-    const rollup = await analyticsRollupRepository.getDashboardRollup().catch(() => null);
+    const rollup = await safeRead(
+    () => analyticsRollupRepository.getDashboardRollup(),
+    {
+      route: "/api/admin/dashboard",
+      key: "analytics.getDashboardRollup",
+      fallback: null,
+    },
+  );
     const totalRevenue = rollup?.totalRevenue ?? 0;
 
     return successResponse({

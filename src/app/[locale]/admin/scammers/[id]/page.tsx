@@ -13,7 +13,7 @@ interface Props {
 
 export default async function AdminScammerViewPage({ params }: Props) {
   const { id } = await params;
-  const scammer = await scammerRepository.findById(id).catch(() => null);
+  const scammer = await scammerRepository.findById(id);
   if (!scammer) return notFound();
 
   return (

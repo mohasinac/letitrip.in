@@ -22,7 +22,9 @@ export const metadata: Metadata = _gm({
 export const revalidate = 3600;
 
 export default async function Page() {
-  const faqs = await listPublicFaqs("scam_awareness", 20).catch(() => []);
+  // NOT swallowed: this list IS the page, and the empty branch below reads
+  // "0 answers" — indistinguishable from a genuinely unpopulated category.
+  const faqs = await listPublicFaqs("scam_awareness", 20);
 
   const ldFaqs = faqs.map((f) => ({
     question: f.question,

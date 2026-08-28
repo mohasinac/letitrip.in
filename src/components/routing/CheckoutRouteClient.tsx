@@ -1070,8 +1070,11 @@ function useValueOtpCheckout({
       try {
         const result = await sendCheckoutValueOtpAction(channel, channel === "whatsapp" ? selectedAddress?.id : undefined);
         if (!result.ok) {
-          setActionError(result.error);
-          showToast(result.error, "error");
+          // result.error is the server's own sentence. wrapAction already
+          // recorded it; the buyer gets authored copy, not the internal text.
+          const message = "Could not send the verification code. Please try again.";
+          setActionError(message);
+          showToast(message, "error");
           return;
         }
         setValueOtpChannel(channel);
@@ -1376,10 +1379,9 @@ export function CheckoutRouteClient({
         showToast("Address added", "success");
       },
       onError: (err) => {
-        showToast(
-          err instanceof Error ? err.message : "Failed to add address",
-          "error",
-        );
+        void normalizeError(err);
+        // Authored copy only — the rejection's own message is developer text.
+        showToast("Failed to add address.", "error");
       },
     });
   const handleAddressFormSubmit = useCallback(
