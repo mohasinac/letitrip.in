@@ -182,6 +182,80 @@ for (const root of SCAN_ROOTS) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// R4 USER_SLUG_PII — a public profile slug must never be derived from PII.
+//
+// `generateUserId` built `user-{first}-{last}-{emailPrefix8}` from
+// `email.split("@")[0].substring(0, 8)`, putting the local-part of a real email
+// address into a document id and therefore into a public URL. It is deleted.
+//
+// Deleting it was NOT sufficient, which is the whole reason this rule exists:
+// two of the three signup paths set `displayName` to that same local-part as a
+// fallback, so a slug derived from displayName republishes it one hop further
+// along. `userSlugBase` takes the email purely to detect and reject that.
+//
+// R5 SLUG_DERIVATION_DRIFT — `backfill-user-slugs.mjs` MIRRORS `user-slug.ts`
+// (it must survive a stale appkit/dist, same as the searchTxt backfill). If the
+// two drift, a backfilled user and an app-created user get different slugs from
+// the same name, silently — the exact class `audit-search-parity` catches for
+// searchTxt, which had no equivalent here.
+// ---------------------------------------------------------------------------
+{
+  const slugSrc = join(REPO_ROOT, "appkit", "src", "features", "auth", "actions", "user-slug.ts");
+  const slugBackfill = join(REPO_ROOT, "appkit", "scripts", "backfill-user-slugs.mjs");
+
+  let src = "";
+  try { src = stripComments(readFileSync(slugSrc, "utf8")); } catch { /* absent */ }
+
+  if (src) {
+    // The stem may read displayName; email is permitted ONLY inside the guard
+    // that rejects an email-derived display name.
+    const base = src.slice(src.indexOf("export function userSlugBase"));
+    const body = base.slice(0, base.indexOf("\n}"));
+    if (/slugify\(\s*(email|localPart)\b/.test(body) && !/===\s*base|base\s*===/.test(body)) {
+      report("appkit/src/features/auth/actions/user-slug.ts", 1, "USER_SLUG_PII",
+        "userSlugBase appears to derive the stem from email rather than only comparing " +
+        "against it. A profile slug is public; the email local-part must never reach a URL.");
+    }
+    if (/\bphone/i.test(body)) {
+      report("appkit/src/features/auth/actions/user-slug.ts", 1, "USER_SLUG_PII",
+        "userSlugBase references a phone field. Slugs derive from displayName only.");
+    }
+  }
+
+  // R5 — the two derivations must agree on the values that decide a slug.
+  let bf = "";
+  try { bf = readFileSync(slugBackfill, "utf8"); } catch { /* absent */ }
+  if (src && bf) {
+    for (const konst of ["MAX_BASE_LENGTH"]) {
+      const re = new RegExp(`${konst}\\s*=\\s*(\\d+)`);
+      const a = src.match(re)?.[1];
+      const b = bf.match(re)?.[1];
+      if (a !== b) {
+        report("appkit/scripts/backfill-user-slugs.mjs", 1, "SLUG_DERIVATION_DRIFT",
+          `${konst}: user-slug.ts has ${a}, backfill-user-slugs.mjs has ${b}. A backfilled ` +
+          `user and an app-created user would get different slugs from the same name.`);
+      }
+    }
+    // Reserved words are what a slug may NOT be; a word guarded on one side and
+    // not the other means the backfill can mint something signup would refuse.
+    const words = (s) => {
+      const i = s.indexOf("RESERVED");
+      if (i === -1) return null;
+      const open = s.indexOf("[", i), close = s.indexOf("]", open);
+      return new Set([...s.slice(open, close).matchAll(/"([a-z0-9-]+)"/g)].map((m) => m[1]));
+    };
+    const a = words(src), b = words(bf);
+    if (a && b) {
+      for (const w of a) if (!b.has(w)) {
+        report("appkit/scripts/backfill-user-slugs.mjs", 1, "SLUG_DERIVATION_DRIFT",
+          `RESERVED word "${w}" is guarded in user-slug.ts but not in the backfill — the ` +
+          `backfill could mint a slug that signup would refuse.`);
+      }
+    }
+  }
+}
+
 if (violations.length > 0) {
   console.error(`[audit-legacy-search-pii] ${violations.length} violation(s):\n`);
   for (const v of violations) {

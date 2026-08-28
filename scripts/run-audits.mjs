@@ -313,6 +313,15 @@ const AUDITS = [
   // matching rides OUTSIDE `filters` because Sieve cannot express
   // array-contains, so a dropped term returns an unfiltered page with a 200.
   { name: "search-parity",                 script: "scripts/audit-search-parity.mjs" },
+  // Report-only (MIGRATE=strict to fail) until the 34 findings are triaged.
+  // `searchPlaceholder` was REQUIRED on ListingViewConfig and DataListingView
+  // passed `onSearchChange` unconditionally, so a listing view could not be
+  // built WITHOUT a search box — one structural defect, not 34 mistakes. The
+  // box is opt-in now; this blocks it coming back, in both shapes: a box whose
+  // endpoint never reads `q` (types, 200, nothing changes), and a placeholder
+  // promising partial matching over an encrypted field, which resolves an HMAC
+  // blind index and can only ever match exactly.
+  { name: "listing-search-capability",     script: "scripts/audit-listing-search-capability.mjs" },
   // Strict-zero. A sort option whose field isn't `canSort: true` in the target
   // repository's SIEVE_FIELDS — sievejs drops the sort silently, so the option
   // renders and does nothing ("Featured First"/"Promoted First" were dead this
