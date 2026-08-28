@@ -385,6 +385,13 @@ const AUDITS = [
   // strict-zero on day one would force a marker spray, which is the
   // anti-pattern rather than the fix (Root Cause #22). MIGRATE=strict fails.
   { name: "silent-degrade",                 script: "scripts/audit-silent-degrade.mjs" },
+  // PII invariants provable from source: no empty *_PII_FIELDS, no PII-shaped
+  // schema field left undeclared, and a ratchet on the 15 repositories whose
+  // mapDoc decrypts unconditionally. That last one is staged, not lax: their
+  // read methods are consumed by 147+ files (measured across 10 of the 15), so
+  // converting them to ciphertext-by-default means triaging every call site
+  // into plaintext/masked/neither. A 16th repo fails the build today.
+  { name: "pii-coverage",                   script: "scripts/audit-pii-coverage.mjs" },
   // Every admin/seller/user dashboard listing must use the DataListingView
   // config-driven scaffold, not a hand-rolled ListingToolbar/DataTable
   // composition. 22 bypasses found + migrated 2026-08-21; see the script's
