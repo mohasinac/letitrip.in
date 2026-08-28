@@ -12,18 +12,12 @@ import {
   type ErrorTrackerFn,
 } from "@mohasinac/appkit/client";
 import { onAuthStateChanged, type User } from "firebase/auth";
-import { auth } from "./firebase/config";
+import {
+  auth,
+  firebaseConfig,
+  canInitializeRealtimeDb,
+} from "./firebase/config";
 import { clientWarn } from "./client-logger";
-
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
-};
 
 const hasFirebaseConfig = Boolean(firebaseConfig.apiKey);
 
@@ -90,12 +84,31 @@ export function initializeClientProviders() {
 
   // Register Firebase providers with appkit's registry
   registerClientAuthProvider(new FirebaseClientAuthProvider(auth));
-  registerClientRealtimeProvider(
-    new FirebaseClientRealtimeProvider({
-      firebaseConfig,
-      appName: "letitrip-realtime",
-    }),
-  );
+
+  // 🛑 Gated on `databaseURL`, not `apiKey`.
+  //
+  // `FirebaseClientRealtimeProvider`'s constructor calls `getDatabase()`
+  // EAGERLY, which throws `FIREBASE FATAL ERROR: Can't determine Firebase
+  // Database URL` when only the database URL is missing. Thrown from here it is
+  // synchronous and uncaught, so it also takes down the session-adapter
+  // registration below it — a missing optional env var silently breaking auth.
+  //
+  // `config.ts` grew this exact guard; this file rebuilt the config literal
+  // independently and never got it. The literal is now imported from there, so
+  // the two cannot diverge again.
+  if (canInitializeRealtimeDb) {
+    registerClientRealtimeProvider(
+      new FirebaseClientRealtimeProvider({
+        firebaseConfig,
+        appName: "letitrip-realtime",
+      }),
+    );
+  } else {
+    clientWarn(
+      "providers",
+      "NEXT_PUBLIC_FIREBASE_DATABASE_URL missing — realtime provider not registered; live updates are disabled",
+    );
+  }
 
   registerClientSessionAdapter({
     onAuthStateChanged(callback: (user: AdapterAuthUser | null) => void) {

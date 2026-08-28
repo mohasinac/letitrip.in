@@ -37,6 +37,14 @@ const AUDITS = [
   { name: "client-entry-in-server",          script: "scripts/audit-client-entry-in-server.mjs" },
   { name: "relative-runtime-require",        script: "scripts/audit-relative-runtime-require.mjs" },
   { name: "observability-registration",      script: "scripts/audit-observability-registration.mjs" },
+  // The four root Firebase config files are GENERATED from appkit/firebase/base
+  // and are also what firebase.json deploys. They were listed in .gitignore AND
+  // tracked simultaneously (a no-op that trained everyone to ignore them in
+  // `git status`), appkit is a submodule whose bump can change the source with
+  // nothing prompting a regenerate, and no CI step diffed them. A stale copy
+  // means production runs rules the source no longer says — including a
+  // tightening you believed had shipped.
+  { name: "firebase-rules-generated",        script: "scripts/audit-firebase-rules-generated.mjs" },
   { name: "hover-reveal-pointer-events",     script: "scripts/audit-hover-reveal-pointer-events.mjs" },
   { name: "rbac-gate-staleness",             script: "scripts/audit-rbac-gate-staleness.mjs" },
   { name: "a11y",                            script: "scripts/audit-a11y.mjs" },

@@ -54,4 +54,9 @@ const realtimeDb: Database = canInitializeRealtimeDb
   ? getDatabase(app)
   : (null as unknown as Database);
 export { app, auth, storage, realtimeDb };
+// Exported so there is exactly ONE client Firebase config object in the app.
+// `client-providers-init.ts` used to rebuild this literal independently, which
+// is how it ended up missing the `databaseURL` guard added here — see the
+// comment on `canInitializeRealtimeDb` above.
+export { firebaseConfig, canInitializeRealtimeDb };
 
