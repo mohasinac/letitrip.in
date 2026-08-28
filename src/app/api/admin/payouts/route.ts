@@ -13,7 +13,6 @@ import {
   getSearchParams,
   getStringParam,
 } from "@mohasinac/appkit";
-import { buildSieveFilters } from "@mohasinac/appkit";
 import { payoutRepository } from "@mohasinac/appkit";
 import { piiBlindIndex } from "@mohasinac/appkit/server";
 import { serverLogger } from "@mohasinac/appkit";
@@ -106,7 +105,7 @@ const __GET__g = withProviders(createRouteHandler({
       : undefined;
 
     const effectiveFilters =
-      buildSieveFilters(["", filters], ["", qFilter]) || undefined;
+      [filters, qFilter].filter(Boolean).join(",") || undefined;
 
     // Avoid forcing extra composite indices for exact blind-index lookups.
     const effectiveSorts = q ? undefined : sorts;

@@ -5,7 +5,6 @@ import {
   createRouteHandler,
   successResponse,
   userRepository,
-  buildSieveFilters,
   getSearchParams,
   getNumberParam,
   getStringParam,
@@ -19,6 +18,18 @@ import type { UserAdminUpdateInput } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY, ROLES_TRUST_SAFETY } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(USER_FIELDS.CREATED_AT);
+
+/**
+ * The non-negotiable scope of this endpoint. Always present, first.
+ *
+ * This used to be built by `buildSieveFilters(["role==employee", rawFilters])`,
+ * whose entry shape is `[expression, value]` and which therefore CONCATENATED
+ * the two rather than joining them: applying any filter chip produced
+ * `role==employeestatus==active` — one malformed clause matching nothing, so
+ * the team list silently emptied the moment an admin filtered it. It looked
+ * correct only because the fallback path (no chip) never exercised the join.
+ */
+const EMPLOYEE_ONLY = `${USER_FIELDS.ROLE}==employee`;
 
 const inviteSchema = z.object({
   email: z.string().email(),
@@ -40,7 +51,7 @@ export const GET = withProviders(
       const q = (getStringParam(searchParams, "q") || "").trim().toLowerCase();
 
       const effectiveFilters =
-        buildSieveFilters(["role==employee", rawFilters]) || "role==employee";
+        [EMPLOYEE_ONLY, rawFilters].filter(Boolean).join(",");
 
       const result = await userRepository.list({
         filters: effectiveFilters,

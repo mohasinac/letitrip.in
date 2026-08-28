@@ -20,8 +20,6 @@ vi.mock("@/constants", () => ({
 vi.mock("@mohasinac/appkit", () => ({
   reviewRepository: { listAll: mockReviewListAll },
   piiBlindIndex: (s: string) => `hashed:${s}`,
-  buildSieveFilters: (...groups: string[][]) =>
-    groups.flat().filter(Boolean).join(",") || undefined,
   successResponse: (data: unknown) =>
     new Response(JSON.stringify({ ok: true, data }), { status: 200 }),
   createApiHandler: (opts: {

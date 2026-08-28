@@ -38,7 +38,6 @@ vi.mock("@mohasinac/appkit", () => ({
   userRepository: { list: mockUserList, findByEmail: mockUserFindByEmail },
   adminUpdateUser: mockAdminUpdateUser,
   getProviders: mockGetProviders,
-  buildSieveFilters: (...args: string[]) => args.filter(Boolean).join(","),
   sortBy: (field: string) => `-${field}`,
   USER_FIELDS: { CREATED_AT: "createdAt" },
   getNumberParam: (params: URLSearchParams, key: string, def: number) =>

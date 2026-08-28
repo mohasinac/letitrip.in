@@ -76,13 +76,10 @@ const KNOWN_LEGACY = new Set([
   "src/app/api/reviews/route.ts",
   "src/app/api/stores/route.ts",
   "appkit/src/features/blog/api/route.ts",
-  "appkit/src/features/events/api/route.ts",
-  "appkit/src/features/faq/api/route.ts",
   "appkit/src/features/reviews/components/ReviewsIndexPageView.tsx",
   "appkit/src/features/search/actions/search-actions.ts",
   "appkit/src/features/search/repository/search.repository.ts",
   "appkit/src/features/stores/actions/store-query-actions.ts",
-  "appkit/src/features/stores/api/route.ts",
   // list-public.ts came OFF this list in Phase 2 — it was the highest-value
   // entry, covering /products, /auctions, /api/admin/products and
   // /api/store/products. The ratchet tightening is the intended direction.
@@ -112,6 +109,34 @@ function stripComments(src) {
     .replace(/(^|[^:])\/\/[^\n]*/g, (m, p1) => p1 + " ".repeat(m.length - p1.length));
 }
 
+/**
+ * Deleted in step 8. Absence is the assertion.
+ *
+ * `useSellerListingData` names the HOOK only. The four row-shaping helpers in
+ * the same file (toRecordArray/toStringValue/toCurrency/toRelativeDate) are
+ * imported by six seller views and must stay — which is precisely why this
+ * lists a symbol rather than a file.
+ */
+const DELETED_SYMBOLS = [
+  ["addPiiIndices", "returned {...source, ...indices} — spread plaintext back over ciphertext"],
+  ["buildSieveFilters", "utils/filter.helper.ts — a second filter builder, zero consumers"],
+  ["encryptShippingAddress", "zero callers; orders encrypt via ORDER_PII_FIELDS"],
+  ["decryptShippingAddress", "zero callers; orders decrypt via ORDER_PII_FIELDS"],
+  ["CONTAINS_CI", "case-insensitive Sieve operator — the adapter throws, and the throw was silent"],
+  ["STARTS_CI", "same"],
+  ["ENDS_CI", "same"],
+  ["EQ_CI", "same"],
+  ["NEQ_CI", "same"],
+  ["useSellerListingData", "a second listing-fetch engine beside DataListingView, zero call sites"],
+  ["useFAQs", "superseded by useFaqList; /faqs reads Firestore directly"],
+  ["faqGET", "dead route module, zero consumers"],
+  ["storesGET", "dead route module, zero consumers"],
+  ["eventsGET", "dead route module, zero consumers"],
+  ["reviewsGET", "dead route module, zero consumers"],
+  ["buildSearchTokens", "the pre-searchTxt tokeniser"],
+  ["tokenizeQuery", "the pre-searchTxt query splitter"],
+];
+
 const violations = [];
 function report(file, line, rule, message) {
   violations.push({ file, line, rule, message });
@@ -124,6 +149,36 @@ for (const root of SCAN_ROOTS) {
     const code = stripComments(raw);
     const rawLines = raw.split(/\r?\n/);
     const lines = code.split(/\r?\n/);
+
+    // R4 — a deleted symbol must be absent from the tree, not merely uncalled.
+    // The scan runs on comment-stripped source, so the tombstones explaining
+    // why each one is gone survive.
+    // A module SPECIFIER is not a symbol. `useSellerListingData` is still a
+    // real file — the hook was deleted, the four row-shaping helpers beside it
+    // were kept — so `from "../hooks/useSellerListingData"` is correct code and
+    // must not be flagged. Blanking specifiers is what separates "this file is
+    // imported" from "this symbol is used".
+    const scan = code.replace(/(from\s*|require\(\s*)(["'])[^"']*\2/g, (m) =>
+      " ".repeat(m.length),
+    );
+
+    for (const [sym, why] of DELETED_SYMBOLS) {
+      const re = new RegExp(`\\b${sym}\\b`, "g");
+      let m;
+      while ((m = re.exec(scan)) !== null) {
+        const line = scan.slice(0, m.index).split(/\r?\n/).length;
+        const ctx = `${rawLines[line - 2] ?? ""}\n${rawLines[line - 1] ?? ""}`;
+        if (OK_RE.test(ctx)) continue;
+        report(
+          rel,
+          line,
+          "DELETED_SYMBOL",
+          `\`${sym}\` was deleted in step 8 (${why}). It must be ABSENT from the ` +
+            `tree, not merely uncalled — "nothing calls it" was already true of ` +
+            `every one of these on the day it got copied into something new.`,
+        );
+      }
+    }
 
     const suppressed = (i) =>
       OK_RE.test(rawLines[i] ?? "") || OK_RE.test(rawLines[i - 1] ?? "");

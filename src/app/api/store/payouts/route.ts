@@ -16,7 +16,7 @@ import {
   getSearchParams,
   getStringParam,
 } from "@mohasinac/appkit";
-import { buildSieveFilters, sortBy, sieveAnd, sieveFilter, SIEVE_OP, COMMON_FIELDS, ORDER_FIELDS } from "@mohasinac/appkit";
+import { sortBy, sieveAnd, sieveFilter, SIEVE_OP, COMMON_FIELDS, ORDER_FIELDS } from "@mohasinac/appkit";
 import { orderRepository, payoutRepository } from "@mohasinac/appkit";
 import { DEFAULT_PLATFORM_FEE_RATE } from "@mohasinac/appkit";
 import { PayoutStatusValues } from "@mohasinac/appkit";
@@ -77,7 +77,7 @@ const __GET__g = withProviders(createRouteHandler({
     const sorts = getStringParam(searchParams, "sorts") || sortBy(COMMON_FIELDS.CREATED_AT);
     const storeFilter = `storeId==${storeId}`;
     const effectiveFilters =
-      buildSieveFilters(["", storeFilter], ["", filters]) || storeFilter;
+      [storeFilter, filters].filter(Boolean).join(",") || storeFilter;
 
     const [
       payoutResult,

@@ -93,7 +93,7 @@ vi.mock("@mohasinac/appkit", () => ({
     DATE_FROM: "dateFrom",
     DATE_TO: "dateTo",
   },
-  SIEVE_OP: { EQ: "==", GT: ">", GTE: ">=", LTE: "<=", CONTAINS: "@=", CONTAINS_CI: "@=*" },
+  SIEVE_OP: { EQ: "==", GT: ">", GTE: ">=", LTE: "<=", CONTAINS: "@=" },
   sortBy: (field: string) => `${field}:desc`,
   sieveFilter: (field: string, op: string, val: unknown) => `${field}${op}${val}`,
   sieveAnd: (...parts: string[]) => parts.filter(Boolean).join(","),

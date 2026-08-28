@@ -32,8 +32,6 @@ vi.mock("@mohasinac/appkit", () => ({
   PayoutStatusValues: { COMPLETED: "COMPLETED", PENDING: "PENDING", PROCESSING: "PROCESSING" },
   successResponse: (data: unknown) =>
     new Response(JSON.stringify({ ok: true, data }), { status: 200 }),
-  buildSieveFilters: (...groups: (string | undefined)[]) =>
-    groups.flat().filter(Boolean).join(","),
   sortBy: (field: string) => `-${field}`,
   sieveAnd: (...filters: string[]) => filters.join(","),
   sieveFilter: (field: string, _op: string, val: string) => `${field}==${val}`,

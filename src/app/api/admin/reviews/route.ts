@@ -5,7 +5,6 @@ import { withProviders } from "@/providers.config";
  */
 import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
-import { buildSieveFilters } from "@mohasinac/appkit";
 import { piiBlindIndex } from "@mohasinac/appkit/server";
 import {
   REVIEW_FIELDS,
@@ -34,7 +33,7 @@ export const GET = withProviders(createApiHandler({
       ? `${REVIEW_FIELDS.USER_NAME_INDEX}==${piiBlindIndex(q)}`
       : undefined;
     const effectiveFilters =
-      buildSieveFilters(["", filters], ["", qFilter]) || undefined;
+      [filters, qFilter].filter(Boolean).join(",") || undefined;
 
     // Avoid forcing extra composite indices for exact blind-index lookups.
     const effectiveSorts = q ? undefined : sorts;

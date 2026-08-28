@@ -20,8 +20,6 @@ vi.mock("@/constants", () => ({ ROLES_ADMIN_MOD: ["admin", "moderator"] }));
 vi.mock("@mohasinac/appkit", () => ({
   userRepository: { list: mockUserList },
   piiBlindIndex: mockPiiBlindIndex,
-  buildSieveFilters: (...groups: (string | undefined)[]) =>
-    groups.filter(Boolean).join(","),
   getSearchParams: (req: Request) => new URL(req.url).searchParams,
   getNumberParam: (sp: URLSearchParams, key: string, def: number, opts?: { min?: number; max?: number }) => {
     const v = Number(sp.get(key)) || def;

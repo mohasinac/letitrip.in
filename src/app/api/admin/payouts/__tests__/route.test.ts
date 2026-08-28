@@ -25,8 +25,6 @@ vi.mock("@mohasinac/appkit", () => ({
     return v;
   },
   getStringParam: (sp: URLSearchParams, key: string) => sp.get(key) ?? undefined,
-  buildSieveFilters: (...groups: string[][]) =>
-    groups.flat().filter(Boolean).join(",") || undefined,
   sortBy: (field: string, dir = "DESC") => `${dir === "ASC" ? "" : "-"}${field}`,
   sieveFilter: (field: string, op: string, value: string) => `${field}${op}${value}`,
   SIEVE_OP: { EQ: "==" },
