@@ -376,6 +376,15 @@ const AUDITS = [
   // items[] away) and acting blind (Approve/Reject on a catalogue submission
   // whose photos were never shown). 16 of 70 found + 7 fixed 2026-08-21.
   { name: "listing-detail-affordance",      script: "scripts/audit-listing-detail-affordance.mjs" },
+  // A fetch failure converted into a VALUE the caller cannot tell from a
+  // legitimately empty result — Root Cause #59's shape, where a missing
+  // composite index became a bare empty grid on four SSR listing views. Owns
+  // the gap left by empty-catch / console-catch / silent-fetch-catch /
+  // catch-normalize, which each cover a different silent-failure shape.
+  // REPORT-ONLY at 279 findings (224 swallowed fetches, 55 normalize-theatre);
+  // strict-zero on day one would force a marker spray, which is the
+  // anti-pattern rather than the fix (Root Cause #22). MIGRATE=strict fails.
+  { name: "silent-degrade",                 script: "scripts/audit-silent-degrade.mjs" },
   // Every admin/seller/user dashboard listing must use the DataListingView
   // config-driven scaffold, not a hand-rolled ListingToolbar/DataTable
   // composition. 22 bypasses found + migrated 2026-08-21; see the script's
