@@ -63,23 +63,46 @@ function stripComments(src) {
 }
 
 /**
- * Map an endpoint expression to a route file.
- * `ADMIN_ENDPOINTS.USERS` / "/api/admin/users" -> src/app/api/admin/users/route.ts
+ * Every `<GROUP>_ENDPOINTS` constant, resolved to its literal path.
+ *
+ * Built by parsing `api-endpoints.ts` rather than guessing the URL from the key
+ * name. The first version tried `api/admin/{key}`, then `api/store/{key}`, then
+ * `api/{key}` — so `ACCOUNT_ENDPOINTS.ORDERS` (which is `/api/user/orders`,
+ * and DOES read `q`) resolved to `/api/admin/orders`, which does not, and the
+ * rule reported a working search box as dead. A resolver that guesses is a
+ * resolver that fabricates findings.
  */
+const ENDPOINT_MAP = (() => {
+  const file = join(REPO_ROOT, "appkit", "src", "constants", "api-endpoints.ts");
+  const map = new Map();
+  let src = "";
+  try { src = stripComments(readFileSync(file, "utf8")); } catch { return map; }
+
+  for (const m of src.matchAll(/export const ([A-Z0-9_]+_ENDPOINTS)\s*=\s*\{/g)) {
+    const group = m[1];
+    // Slice to the matching close brace so keys are attributed to their group.
+    let depth = 0, i = src.indexOf("{", m.index);
+    const start = i;
+    for (; i < src.length; i++) {
+      if (src[i] === "{") depth++;
+      else if (src[i] === "}") { depth--; if (depth === 0) break; }
+    }
+    const body = src.slice(start, i);
+    for (const k of body.matchAll(/([A-Z0-9_]+):\s*["'`](\/api\/[^"'`?]+)["'`]/g)) {
+      map.set(`${group}.${k[1]}`, k[2]);
+    }
+  }
+  return map;
+})();
+
+/** Map an endpoint expression to its route file, or null if it cannot be resolved. */
 function routeFileFor(endpointExpr) {
-  const literal = endpointExpr.match(/["'`](\/api\/[^"'`?]+)["'`]/)?.[1];
-  const fromConst = endpointExpr.match(/[A-Z_]+_ENDPOINTS\.([A-Z0-9_]+)/)?.[1];
-  const candidates = [];
-  if (literal) candidates.push(literal.replace(/^\//, ""));
-  if (fromConst) {
-    const seg = fromConst.toLowerCase().replace(/_/g, "-");
-    candidates.push(`api/admin/${seg}`, `api/store/${seg}`, `api/${seg}`);
-  }
-  for (const c of candidates) {
-    const p = join(REPO_ROOT, "src", "app", c, "route.ts");
-    if (existsSync(p)) return p;
-  }
-  return null;
+  const literal =
+    endpointExpr.match(/["'`](\/api\/[^"'`?]+)["'`]/)?.[1] ??
+    ENDPOINT_MAP.get(endpointExpr.match(/([A-Z0-9_]+_ENDPOINTS\.[A-Z0-9_]+)/)?.[1] ?? "");
+  if (!literal) return null;
+  const p = join(REPO_ROOT, "src", "app", literal.replace(/^\//, ""), "route.ts");
+  return existsSync(p) ? p : null;
 }
 
 /** Does this route read a search term at all? */
