@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { PreOrdersListView, productFeaturesRepository } from "@mohasinac/appkit";
 import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants/seo.server";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 
 export const metadata: Metadata = _gm({
   title: "Pre-Order Collectibles — LetItRip",
@@ -24,10 +25,13 @@ export default async function Page({
     .listPlatform()
     .catch(() => []);
   return (
-    <Suspense>
-      <ProductFeaturesProvider features={platformFeatures}>
-        <PreOrdersListView searchParams={resolvedSearchParams} />
-      </ProductFeaturesProvider>
-    </Suspense>
+    <>
+      <PageViewTracker entityType="listing" entityId="pre-orders" url="/pre-orders" />
+      <Suspense>
+        <ProductFeaturesProvider features={platformFeatures}>
+          <PreOrdersListView searchParams={resolvedSearchParams} />
+        </ProductFeaturesProvider>
+      </Suspense>
+    </>
   );
 }

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { StoresIndexPageView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 
 export const metadata: Metadata = _gm({
   title: "Verified Collectibles Stores — LetItRip",
@@ -20,8 +21,11 @@ export default async function Page({
 }) {
   const resolvedSearchParams = await searchParams;
   return (
-    <Suspense>
-      <StoresIndexPageView searchParams={resolvedSearchParams} />
-    </Suspense>
+    <>
+      <PageViewTracker entityType="listing" entityId="stores" url="/stores" />
+      <Suspense>
+        <StoresIndexPageView searchParams={resolvedSearchParams} />
+      </Suspense>
+    </>
   );
 }

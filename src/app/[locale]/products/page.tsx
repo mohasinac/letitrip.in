@@ -6,6 +6,7 @@ import {
 } from "@mohasinac/appkit";
 import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants/seo.server";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 
 export const metadata: Metadata = _gm({
   title: "Collectibles for Sale — LetItRip",
@@ -27,10 +28,13 @@ export default async function Page({
     .listPlatform()
     .catch(() => []);
   return (
-    <Suspense>
-      <ProductFeaturesProvider features={platformFeatures}>
-        <ProductsIndexPageView searchParams={resolvedSearchParams} />
-      </ProductFeaturesProvider>
-    </Suspense>
+    <>
+      <PageViewTracker entityType="listing" entityId="products" url="/products" />
+      <Suspense>
+        <ProductFeaturesProvider features={platformFeatures}>
+          <ProductsIndexPageView searchParams={resolvedSearchParams} />
+        </ProductFeaturesProvider>
+      </Suspense>
+    </>
   );
 }
