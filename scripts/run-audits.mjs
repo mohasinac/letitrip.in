@@ -45,6 +45,15 @@ const AUDITS = [
   // means production runs rules the source no longer says — including a
   // tightening you believed had shipped.
   { name: "firebase-rules-generated",        script: "scripts/audit-firebase-rules-generated.mjs" },
+  // An error's own .message is written for a developer; showing it to a user is
+  // at best noise and at worst a leak — a Node require stack with /var/task
+  // paths was rendered inside the bid modal that way (Root Cause #86). The
+  // dominant shape is an INVERTED ternary: `err instanceof Error ? err.message
+  // : "<authored copy>"` shows the authored sentence only when the value is not
+  // an Error, i.e. almost never. REPORT-ONLY at 73 sites; MIGRATE=strict fails.
+  // Burn down risk-first (auth, money, bid, admin) then flip, the way
+  // audit-silent-degrade is staged.
+  { name: "raw-error-text",                  script: "scripts/audit-raw-error-text.mjs" },
   { name: "hover-reveal-pointer-events",     script: "scripts/audit-hover-reveal-pointer-events.mjs" },
   { name: "rbac-gate-staleness",             script: "scripts/audit-rbac-gate-staleness.mjs" },
   { name: "a11y",                            script: "scripts/audit-a11y.mjs" },
