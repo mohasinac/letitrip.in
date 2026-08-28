@@ -45,6 +45,11 @@ const AUDITS = [
   // means production runs rules the source no longer says — including a
   // tightening you believed had shipped.
   { name: "firebase-rules-generated",        script: "scripts/audit-firebase-rules-generated.mjs" },
+  // The other half of that check: generated-matches-source says nothing about
+  // whether the live project is RUNNING it. auction-bids sat `.read: true`
+  // publishing a bidder's name; committing `.read: false` changed nothing until
+  // the deploy actually ran, and no diff or green build would have said so.
+  { name: "firebase-rules-deployed",         script: "scripts/audit-firebase-rules-deployed.mjs" },
   // An error's own .message is written for a developer; showing it to a user is
   // at best noise and at worst a leak — a Node require stack with /var/task
   // paths was rendered inside the bid modal that way (Root Cause #86). The

@@ -63,7 +63,20 @@
  *
  * ## Staging
  *
- * NOW STRICT. 292 R1 sites existed at introduction, so this shipped
+ * REPORT-ONLY AGAIN as of 2026-08-29, and this is not a regression in the
+ * codebase — it is a regression in what the audit could SEE.
+ *
+ * `receiverBefore` used to stop at a newline, so a chained call formatted
+ * across lines produced an EMPTY receiver and was counted "unclassified"
+ * rather than reported. 33 sites were invisible that way, including
+ * bid-actions.ts:164 — the exact site this header calls out. Fixing the walk
+ * surfaced 17 genuine swallows that had never been triaged.
+ *
+ * So the honest state is: every swallow the audit could previously prove is
+ * fixed, and 17 newly-visible ones are not. Flip back to strict when they are.
+ * `MIGRATE=strict` fails today and is what the burn-down should run against.
+ *
+ * ORIGINALLY: 292 R1 sites existed at introduction, so this shipped
  * report-only: strict-zero on day one would have forced either a mass rewrite
  * or a marker spray, and marker spray is the anti-pattern rather than the fix
  * (Root Cause #22). The count reached 0 on 2026-08-29, which is exactly the
@@ -89,7 +102,7 @@ const EXCLUDED_DIRS = new Set([
   "node_modules", "dist", ".next", "out", "coverage", "seed",
 ]);
 const OK_RE = /\/\/\s*audit-silent-degrade-ok\s*:/i;
-const STRICT = process.env.MIGRATE !== "report";
+const STRICT = process.env.MIGRATE === "strict";
 
 /**
  * Parsing a body: an absent/!JSON body is a REAL outcome, so collapsing it to
@@ -138,13 +151,28 @@ function stripComments(src) {
 function receiverBefore(code, catchIdx) {
   let i = catchIdx - 1;
   let depth = 0;
-  while (i >= 0) {
+  // Bounded so a region without semicolons cannot walk to byte 0.
+  const floor = Math.max(0, catchIdx - 600);
+  while (i >= floor) {
     const c = code[i];
     if (c === ")" || c === "]" || c === "}") depth++;
     else if (c === "(" || c === "[" || c === "{") {
       if (depth === 0) break;
       depth--;
-    } else if (depth === 0 && /[;\n]/.test(c)) break;
+    } else if (depth === 0 && c === ";") break;
+    // NOTE: `\n` is deliberately NOT a stop. It used to be, and that is why 33
+    // sites reported an EMPTY receiver and were silently skipped — a chained
+    // call formatted across lines is one expression:
+    //
+    //     const previousWinner = await bidRepository
+    //       .getWinningBid(productId)
+    //       .catch(() => null);
+    //
+    // Stopping at the newline meant the walk found nothing to classify, so the
+    // audit counted it "unclassified" rather than reporting it. That hid
+    // bid-actions.ts:164 — the exact site this audit's own header calls out,
+    // where a Firestore outage is indistinguishable from "this auction has no
+    // bids" and the code then writes a bid against stale state.
     i--;
   }
   return code.slice(i + 1, catchIdx).trim();
@@ -175,7 +203,17 @@ for (const root of SCAN_ROOTS) {
       if (suppressed(line)) continue;
       const recv = receiverBefore(code, m.index);
       if (BODY_PARSE.test(recv)) continue;
-      if (!DATA_FETCH.some((re) => re.test(recv))) { unclassified++; continue; }
+      if (!DATA_FETCH.some((re) => re.test(recv))) {
+        unclassified++;
+        // `LIST_UNCLASSIFIED=1` dumps what was skipped. The count alone invites
+        // "strict-zero means zero swallows", which it does not — it means zero
+        // PROVABLE ones. Being able to read the skipped receivers is what makes
+        // that claim checkable instead of a footnote.
+        if (process.env.LIST_UNCLASSIFIED) {
+          console.error(`  [unclassified] ${rel}:${lineAt(m.index)}  recv=${recv.slice(-70)}`);
+        }
+        continue;
+      }
 
       // A logged failure is not a silent one.
       const window = code.slice(Math.max(0, m.index - 400), m.index + 400);

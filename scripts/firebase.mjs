@@ -18,6 +18,8 @@
  */
 
 import { spawnSync } from "node:child_process";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -44,7 +46,7 @@ function usage(exitCode = 1) {
   process.exit(exitCode);
 }
 
-function run(script, args) {
+function run(script, args, onSuccess) {
   const res = spawnSync(process.execPath, [script, ...args], {
     cwd: ROOT,
     stdio: "inherit",
@@ -53,7 +55,56 @@ function run(script, args) {
     console.error(`✗ spawn error: ${res.error.message}`);
     process.exit(1);
   }
+  if ((res.status ?? 1) === 0 && onSuccess) onSuccess();
   process.exit(res.status ?? 1);
+}
+
+/**
+ * Files whose content is what a `deploy --only <target>` actually pushes.
+ * Keyed by the firebase target token that appears in `--only`.
+ */
+const DEPLOYED_ARTIFACTS = {
+  database: "database.rules.json",
+  "firestore:rules": "firestore.rules",
+  "firestore:indexes": "firestore.indexes.json",
+  storage: "storage.rules",
+};
+
+const DEPLOY_RECORD = join(ROOT, "firebase-deployed.json");
+
+/**
+ * Record what was just deployed, so `audit-firebase-rules-deployed` can tell a
+ * committed-but-never-pushed rules change from a deployed one.
+ *
+ * This is the gap `audit-firebase-rules-generated` does NOT cover: that audit
+ * proves the generated file matches its appkit source, which says nothing about
+ * whether the live project is running it. A rules change can sit correct,
+ * committed and green for weeks while production serves the previous version —
+ * and for a SECURITY change (closing a public `.read`, say) that difference is
+ * the entire point.
+ */
+function recordDeployed(targets) {
+  const record = existsSync(DEPLOY_RECORD)
+    ? JSON.parse(readFileSync(DEPLOY_RECORD, "utf8"))
+    : {};
+  let touched = 0;
+  for (const target of targets) {
+    const file = DEPLOYED_ARTIFACTS[target];
+    if (!file) continue;
+    const abs = join(ROOT, file);
+    if (!existsSync(abs)) continue;
+    record[file] = createHash("sha256")
+      .update(readFileSync(abs, "utf8").replace(/
+/g, "
+"))
+      .digest("hex");
+    touched++;
+  }
+  if (touched === 0) return;
+  record.deployedAt = new Date().toISOString();
+  writeFileSync(DEPLOY_RECORD, JSON.stringify(record, null, 2) + "
+", "utf8");
+  console.log(`  ✓ recorded ${touched} deployed artifact(s) in firebase-deployed.json`);
 }
 
 const [, , subcommand, ...rest] = process.argv;
@@ -75,7 +126,13 @@ if (subcommand === "generate") {
       args.push(rest[i]);
     }
   }
-  run(MERGE_SCRIPT, args);
+  // Which targets actually went out — `--only` may be absent (deploy all).
+  const onlyIdx = args.indexOf("--only");
+  const targets =
+    onlyIdx === -1
+      ? Object.keys(DEPLOYED_ARTIFACTS)
+      : (args[onlyIdx + 1] ?? "").split(",").map((t) => t.trim()).filter(Boolean);
+  run(MERGE_SCRIPT, args, () => recordDeployed(targets));
 } else if (subcommand === "reset") {
   run(RESET_SCRIPT, rest);
 } else {
