@@ -174,6 +174,7 @@ const __GET__g = withProviders(createRouteHandler({
 
     // Build Sieve filter string from named params + raw filters
     const filtersArr: string[] = [];
+    const searchTerm = getStringParam(searchParams, "q")?.trim() || undefined;
     const type = getStringParam(searchParams, "type");
     const status = getStringParam(searchParams, "status");
     const rawFilters = getStringParam(searchParams, "filters");
@@ -190,7 +191,11 @@ const __GET__g = withProviders(createRouteHandler({
 
     serverLogger.info("Admin events list requested", { model });
 
-    const result = await eventRepository.list(model);
+    // Token search rides OUTSIDE `filters` — see the repository.
+    const result = await eventRepository.list(
+      model,
+      searchTerm ? { search: searchTerm } : undefined,
+    );
 
     return successResponse({
       items: result.items,

@@ -30,7 +30,11 @@ export const GET = withProviders(
         url.searchParams.get("sorts") ??
         url.searchParams.get("sort") ??
         "-createdAt";
-      const result = await offerRepository.list({ filters, sorts, page, pageSize });
+      const searchTerm = url.searchParams.get("q")?.trim() || undefined;
+      const result = await offerRepository.list(
+        { filters, sorts, page, pageSize },
+        searchTerm ? { search: searchTerm } : undefined,
+      );
       return successResponse({
         // Admin coordinates offers, so identity is in scope here.
         items: result.items.map((o) => offerDocumentToOffer(o, { includeBuyerIdentity: true })),

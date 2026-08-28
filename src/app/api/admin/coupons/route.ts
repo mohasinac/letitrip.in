@@ -80,12 +80,13 @@ const __GET__g = withProviders(createRouteHandler({
       url.searchParams.get("sorts") ??
       url.searchParams.get("sort") ??
       "-createdAt";
-    const result = await couponsRepository.list({
-      filters,
-      sorts,
-      page,
-      pageSize,
-    });
+    const searchTerm = url.searchParams.get("q")?.trim() || undefined;
+    const result = await couponsRepository.list(
+      { filters, sorts, page, pageSize },
+      // Token search rides OUTSIDE `filters` — array-contains is not
+      // expressible in Sieve, so it travels as an opt.
+      searchTerm ? { search: searchTerm } : undefined,
+    );
     return successResponse({
       items: result.items,
       total: result.total,

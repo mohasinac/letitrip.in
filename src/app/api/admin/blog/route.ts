@@ -84,6 +84,7 @@ const __GET__g = withProviders(createRouteHandler({
     });
     const filters = getStringParam(searchParams, "filters");
     const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
+    const searchTerm = getStringParam(searchParams, "q")?.trim() || undefined;
 
     serverLogger.info("Admin blog posts list requested", {
       filters,
@@ -119,12 +120,13 @@ const __GET__g = withProviders(createRouteHandler({
         pageSize: "1",
       }),
       blogRepository.listAll({ sorts: sortBy(COMMON_FIELDS.CREATED_AT), page: "1", pageSize: "1" }),
-      blogRepository.listAll({
-        filters,
-        sorts,
-        page: String(page),
-        pageSize: String(pageSize),
-      }),
+      // Only THIS call is the list; the four above are pageSize:1 count
+      // probes and must stay unfiltered or the stat tiles would follow the
+      // search box.
+      blogRepository.listAll(
+        { filters, sorts, page: String(page), pageSize: String(pageSize) },
+        searchTerm ? { search: searchTerm } : undefined,
+      ),
     ]);
 
     const published = publishedResult.total;

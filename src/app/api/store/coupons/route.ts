@@ -39,7 +39,11 @@ const __GET__g = withProviders(createRouteHandler({
     const storeFilter = `storeId==${store.id}`;
     const combined = filters ? `${storeFilter},${filters}` : storeFilter;
 
-    const result = await couponsRepository.list({ filters: combined, sorts, page, pageSize });
+    const searchTerm = url.searchParams.get("q")?.trim() || undefined;
+    const result = await couponsRepository.list(
+      { filters: combined, sorts, page, pageSize },
+      searchTerm ? { search: searchTerm } : undefined,
+    );
     return successResponse({ coupons: result.items, total: result.total });
   },
 }));
