@@ -35,6 +35,8 @@ const AUDITS = [
   // root-side
   { name: "client-server-only-leak",         script: "scripts/audit-client-server-only-leak.mjs" },
   { name: "client-entry-in-server",          script: "scripts/audit-client-entry-in-server.mjs" },
+  { name: "relative-runtime-require",        script: "scripts/audit-relative-runtime-require.mjs" },
+  { name: "observability-registration",      script: "scripts/audit-observability-registration.mjs" },
   { name: "hover-reveal-pointer-events",     script: "scripts/audit-hover-reveal-pointer-events.mjs" },
   { name: "rbac-gate-staleness",             script: "scripts/audit-rbac-gate-staleness.mjs" },
   { name: "a11y",                            script: "scripts/audit-a11y.mjs" },

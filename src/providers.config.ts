@@ -5,8 +5,13 @@
  * runs. It is called in `instrumentation.ts → register()` which Next.js
  * awaits before serving the first request.
  *
- * All `@mohasinac/*` packages are listed in `serverExternalPackages`, so
- * webpack loads them as async ESM. A plain `import` side-effect cannot be
+ * `@mohasinac/sievejs` is listed in `serverExternalPackages`, so webpack loads
+ * it as async ESM. (This comment used to claim ALL `@mohasinac/*` packages were
+ * — `@mohasinac/appkit` is NOT, which is why its `dist` is inlined into the SSR
+ * chunk rather than loaded from `node_modules`. That distinction is exactly what
+ * made a relative `module.require` inside appkit resolve against the chunk path
+ * and fail in production; see CLAUDE.md Root Cause #86.)
+ * A plain `import` side-effect cannot be
  * reliably awaited across webpack's async-module boundary. Exporting an
  * explicit async function and awaiting its return value bypasses this
  * limitation: the caller awaits the real Promise, not just the module load.

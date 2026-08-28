@@ -27,6 +27,20 @@ const firebaseConfig = {
 const canInitializeClientFirebase =
   typeof window !== "undefined" && Boolean(firebaseConfig.apiKey);
 
+/**
+ * `getDatabase()` needs `databaseURL` specifically, and throws
+ * `FIREBASE FATAL ERROR: Can't determine Firebase Database URL` when it is
+ * absent — at MODULE SCOPE, uncaught, taking down every client component that
+ * imports this file.
+ *
+ * It used to be gated on `apiKey` alongside everything else, so an install with
+ * an API key but no database URL crashed on import instead of degrading. Auth
+ * and Storage genuinely only need `apiKey`; the RTDB is the one that needs its
+ * own guard.
+ */
+const canInitializeRealtimeDb =
+  canInitializeClientFirebase && Boolean(firebaseConfig.databaseURL);
+
 const app: FirebaseApp = canInitializeClientFirebase
   ? (getApps()[0] ?? initializeApp(firebaseConfig))
   : (null as unknown as FirebaseApp);
@@ -36,7 +50,7 @@ const auth: Auth = canInitializeClientFirebase
 const storage: FirebaseStorage = canInitializeClientFirebase
   ? getStorage(app)
   : (null as unknown as FirebaseStorage);
-const realtimeDb: Database = canInitializeClientFirebase
+const realtimeDb: Database = canInitializeRealtimeDb
   ? getDatabase(app)
   : (null as unknown as Database);
 export { app, auth, storage, realtimeDb };

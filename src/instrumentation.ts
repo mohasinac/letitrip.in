@@ -34,6 +34,46 @@ export async function register(): Promise<void> {
   const { initProviders } = await import("./providers.config");
   await initProviders();
 
+  // -- Server-action error reporting -------------------------------------
+  // `wrapAction` converts every thrown error into an `{ ok: false }` envelope
+  // and returns it, so nothing escapes the action and `onRequestError` below
+  // NEVER fires for a server action. Until this registration existed, all 222
+  // server actions failed completely unobserved — no serverErrors row, no log
+  // line, nothing. That is why the auction bid failure had to be reported from
+  // a screenshot.
+  //
+  // Registered HERE, not in a client bootstrap: `setErrorTracker` was wired up
+  // from a component that a later refactor orphaned, and the loss was invisible
+  // to `tsc` (CLAUDE.md Root Cause #78). `register()` is called by Next.js
+  // itself, so this cannot be orphaned the same way.
+  try {
+    const { setActionErrorReporter, serverErrorsRepository } = await import(
+      "@mohasinac/appkit/server"
+    );
+    setActionErrorReporter((report) => {
+      console.error(`[server-action] ${report.code}: ${report.message}`);
+      // Fire-and-forget by design: `reportActionError` is called synchronously
+      // from a catch block that must return an envelope promptly, and
+      // `record()` is documented never to throw.
+      void serverErrorsRepository().record({
+        source: "vercel",
+        route: "(server-action)",
+        code: report.code,
+        message: report.message,
+        stack: report.stack,
+        cause: report.cause,
+        requestId: "server-action",
+      });
+    });
+  } catch (error) {
+    const { normalizeError } = await import("@mohasinac/appkit");
+    void normalizeError(error);
+    console.error(
+      "[instrumentation] setActionErrorReporter failed (non-fatal):",
+      error,
+    );
+  }
+
   // Deployment digest — one email per deployed version, not per cold start.
   // Vercel runs register() on every lambda cold start, so the send is guarded
   // by a Firestore version marker claimed in a transaction (see
@@ -57,9 +97,15 @@ export async function register(): Promise<void> {
 }
 
 /**
- * Next.js error-reporting hook. Called for every uncaught server-side error —
- * **including RSC render errors and Server Action failures**, which never pass
- * through `createRouteHandler` and were therefore recorded nowhere at all.
+ * Next.js error-reporting hook. Called for every server-side error that
+ * ESCAPES — chiefly RSC render errors, which never pass through
+ * `createRouteHandler` and were therefore recorded nowhere at all.
+ *
+ * 🛑 It does NOT cover Server Actions, despite what this docstring claimed
+ * until 2026-08-28. `wrapAction` catches and RETURNS an envelope, so nothing
+ * ever escapes and Next has no error to hand us. Those are covered by
+ * `setActionErrorReporter` in `register()` above — if you are adding a new
+ * server-action failure path, that is the hook, not this one.
  *
  * Why this matters: in production React replaces the real message with error
  * #441 ("An error occurred in the Server Components render… A digest property
