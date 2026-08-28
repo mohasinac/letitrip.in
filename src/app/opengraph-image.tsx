@@ -16,9 +16,10 @@ export default async function OpengraphImage() {
       path.join(process.cwd(), "public/favicon/android-chrome-512x512.png"),
     );
     logoUrl = `data:image/png;base64,${logoData.toString("base64")}`;
+  // The logo file is optional decoration on a social card; the emoji fallback
+  // below renders a complete image, and a crawler must never get a 500 here.
   } catch (_err) {
     void normalizeError(_err);
-    // fallback to emoji icon if logo file is unavailable
   }
 
   return buildDefaultOgImage({

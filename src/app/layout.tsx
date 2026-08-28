@@ -187,8 +187,11 @@ export default async function RootLayout({
         <script
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
-            __html: `try{if(localStorage.getItem('font-style')==='cursive'){document.documentElement.classList.add('font-cursive');}}catch(e){
- void normalizeError(e);}`,
+            // No normalizeError here: this is a STRING injected as an inline
+            // browser script, where that import does not exist — calling it
+            // would throw a ReferenceError from inside the very catch meant to
+            // keep a blocked localStorage from breaking first paint.
+            __html: `try{if(localStorage.getItem('font-style')==='cursive'){document.documentElement.classList.add('font-cursive');}}catch(e){}`,
           }}
         />
         <script

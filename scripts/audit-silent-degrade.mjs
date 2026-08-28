@@ -63,11 +63,18 @@
  *
  * ## Staging
  *
- * REPORT-ONLY by default; `MIGRATE=strict` fails the run. 292 R1 sites exist at
- * introduction, and strict-zero on day one would force either a mass rewrite or
- * a marker spray — and marker spray is the anti-pattern, not the fix
- * (Root Cause #22). Burn the count down, then flip it, the way
- * audit-listing-detail-affordance was staged.
+ * NOW STRICT. 292 R1 sites existed at introduction, so this shipped
+ * report-only: strict-zero on day one would have forced either a mass rewrite
+ * or a marker spray, and marker spray is the anti-pattern rather than the fix
+ * (Root Cause #22). The count reached 0 on 2026-08-29, which is exactly the
+ * condition this staging was waiting for, so any violation now FAILS the run.
+ * `MIGRATE=report` downgrades it to a warning for a local sweep.
+ *
+ * Note for the next swallow you are tempted to justify with prose: R2's
+ * exemption reads the line immediately ABOVE the `catch`, not the body. That is
+ * deliberate — the reason belongs where you decide to swallow, not buried after
+ * it — and it must be one substantive line, not a wrapped block whose last line
+ * is a short tail.
  *
  * Suppression: `// audit-silent-degrade-ok: <reason>` on the line or the one
  * above. A real reason, not "intentional".
@@ -82,7 +89,7 @@ const EXCLUDED_DIRS = new Set([
   "node_modules", "dist", ".next", "out", "coverage", "seed",
 ]);
 const OK_RE = /\/\/\s*audit-silent-degrade-ok\s*:/i;
-const STRICT = process.env.MIGRATE === "strict";
+const STRICT = process.env.MIGRATE !== "report";
 
 /**
  * Parsing a body: an absent/!JSON body is a REAL outcome, so collapsing it to

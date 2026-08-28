@@ -1646,8 +1646,14 @@ export function CheckoutRouteClient({
       setLocalCoupons((prev) => (prev ?? effectiveCoupons).filter((c) => c.code !== code));
       try {
         await removeCartCoupon(code);
-      } catch (_err) { void normalizeError(_err); /* best-effort */ }
-      showToast("Coupon removed.", "info");
+        showToast("Coupon removed.", "info");
+      } catch (_err) {
+        // Was swallowed, then "Coupon removed." was shown unconditionally — so a
+        // failed removal told the buyer the opposite of what happened and left
+        // the coupon applied to the total they were about to pay.
+        void normalizeError(_err);
+        showToast("Could not remove that coupon. Please try again.", "error");
+      }
     },
     [effectiveCoupons, showToast],
   );

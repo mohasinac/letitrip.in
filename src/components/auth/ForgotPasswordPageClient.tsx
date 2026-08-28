@@ -17,6 +17,10 @@ export function ForgotPasswordPageClient() {
         try {
           await forgot.mutateAsync({ email });
         } catch (err) {
+          // Swallowed ON PURPOSE — security, not laziness. The success toast
+          // below is shown unconditionally so a failed send is indistinguishable
+          // from a successful one; surfacing the error here would turn this form
+          // into an account-enumeration oracle.
           void normalizeError(err);
         } finally {
           showToast("If an account exists for that email, a reset link is on its way.", "success");

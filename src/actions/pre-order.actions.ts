@@ -23,7 +23,10 @@ export async function reservePreOrderAction(productId: string): Promise<void> {
   if (!rl.success)
     throw new AuthorizationError("Too many requests. Please slow down.");
 
-  const product = await productRepository.findByIdOrSlug(productId).catch(() => null);
+  // No catch: a Firestore failure here would surface as "Pre-order product not
+  // found", which is a different thing and sends the buyer looking for a
+  // product that exists. The guard below still handles a genuinely missing one.
+  const product = await productRepository.findByIdOrSlug(productId);
   if (!product) throw new ValidationError("Pre-order product not found.");
 
   const p = product as unknown as Record<string, JsonValue>;

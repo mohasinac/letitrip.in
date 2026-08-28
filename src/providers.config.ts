@@ -111,7 +111,18 @@ export function initProviders(): Promise<void> {
     // Provider resolution — read payment-method toggles once at boot.
     // Shipping has no toggle: manual shipping is the only provider, always
     // registered.
-    const bootSettings = await siteSettingsRepository.getSingleton().catch(() => null);
+    // Degrades to manual-only payments, which is the safe direction — but a
+    // silent degrade here disables Razorpay for the whole process with no
+    // signal, so name it.
+    const bootSettings = await siteSettingsRepository
+      .getSingleton()
+      .catch((err: unknown) => {
+        console.warn(
+          "[providers] siteSettings read failed at boot; Razorpay stays disabled for this process",
+          err,
+        );
+        return null;
+      });
     const razorpayEnabled = bootSettings?.payment?.razorpayEnabled === true;
     const { ManualPaymentProvider, ManualShippingProvider } = await import("@mohasinac/appkit/server");
 

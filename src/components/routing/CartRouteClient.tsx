@@ -475,9 +475,11 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
           );
         }
       }
+    // Pre-validation is an early warning only — checkout re-validates every
+    // line server-side before charging, so a failure here costs the buyer a
+    // later error, never a wrong price.
     } catch (_err) {
       void normalizeError(_err);
-      // Validation is best-effort; don't surface errors
     }
    
   }, [isAuthenticated, cartItems, refetch, guest, guestWishlist, showToast]);

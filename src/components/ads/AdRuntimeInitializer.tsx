@@ -15,9 +15,11 @@ function readAdConsentFromStorage(): boolean | null {
     const value = localStorage.getItem(AD_CONSENT_STORAGE_KEY);
     if (value === "true") return true;
     if (value === "false") return false;
+  // Storage blocked (private mode, cookie policy). Falling through to the
+  // undefined return means "no stored choice", so the consent prompt shows —
+  // the correct outcome when we cannot read a prior answer.
   } catch (_err) {
     void normalizeError(_err);
-    // Ignore storage access errors.
   }
   return null;
 }
@@ -78,9 +80,11 @@ export function AdRuntimeInitializer() {
       const granted = Boolean(customEvent.detail?.granted);
       try {
         localStorage.setItem(AD_CONSENT_STORAGE_KEY, String(granted));
+      // Cannot persist the choice; it still applies for this session. The prompt
+      // reappearing next visit is the correct failure mode — better than assuming
+      // consent we could not record.
       } catch (_err) {
         void normalizeError(_err);
-        // Ignore storage write errors.
       }
       setAdConsentGranted(granted);
     };
