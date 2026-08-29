@@ -7,7 +7,7 @@
 import { createRequire } from "node:module";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { randomBytes, createCipheriv, createHmac } from "node:crypto";
+import { encryptUserForSeed } from "./lib/pii-seed.mjs";
 
 const require = createRequire(import.meta.url);
 const admin = require("firebase-admin");
@@ -137,7 +137,10 @@ async function upsertFirestoreUser(u) {
     createdAt: NOW,
     updatedAt: NOW,
   };
-  const encrypted = encryptPii(base, PII_FIELDS);
+  // Shared path. The local encryptPii derived `${f}Index`, so phoneNumber
+  // produced `phoneNumberIndex` — a name nothing reads — and findByPhone()
+  // missed every test user. The shared helper writes the mapped names.
+  const encrypted = encryptUserForSeed(base);
   await db.collection("users").doc(u.uid).set(encrypted);
   console.log(`  Firestore users/${u.uid} written`);
 }

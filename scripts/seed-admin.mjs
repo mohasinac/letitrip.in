@@ -25,6 +25,7 @@ import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { encryptUserForSeed } from "./lib/pii-seed.mjs";
 
 const require = createRequire(import.meta.url);
 const admin = require("firebase-admin");
@@ -280,12 +281,22 @@ async function main() {
     // 1. Auth user
     await ensureAuthUser(auth);
 
-    // 2. /users/{uid}
+    /*
+     * 2. /users/{uid}
+     *
+     * 🛑 Encrypted. This script writes into PRODUCTION Firestore and had NO
+     * encryption of any kind, so the platform admin's `email` and
+     * `phoneNumber` sat there in cleartext — and with no `emailIndex` /
+     * `phoneIndex`, `findByEmail()` and `findByPhone()` could not resolve the
+     * admin account either. Every other write path in the app encrypts through
+     * `BaseRepository.applyWriteHooks`; this one bypassed the repository layer
+     * entirely by talking to the Admin SDK directly.
+     */
     await upsertDoc(
       db,
       "users",
       ADMIN.uid,
-      {
+      encryptUserForSeed({
         uid: ADMIN.uid,
         email: ADMIN.email,
         phoneNumber: ADMIN.phoneNumber,
@@ -306,7 +317,7 @@ async function main() {
           bio: "LetItRip platform administrator.",
         },
         stats: { totalOrders: 0, auctionsWon: 0, itemsSold: 0, reviewsCount: 0 },
-      },
+      }),
       "admin user document",
     );
 

@@ -9,6 +9,7 @@
 
 import { createRequire } from "node:module";
 import { existsSync, readFileSync } from "node:fs";
+import { encryptUserForSeed } from "./lib/pii-seed.mjs";
 import { resolve } from "node:path";
 import { randomBytes, createCipheriv, createHmac } from "node:crypto";
 
@@ -188,10 +189,16 @@ async function main() {
   await auth.setCustomUserClaims(UID, { role: "admin" });
   console.log("[seed-admin] Custom claims set (role: admin).");
 
-  // 2. Create Firestore user document with PII encryption
-  let docData = { ...adminUser };
-  docData = addPiiIndices(docData, USER_PII_INDEX_MAP);
-  docData = encryptPiiFields(docData, USER_PII_FIELDS);
+  /*
+   * 2. Firestore user document, PII encrypted through the SHARED helper.
+   *
+   * This used to call a local `addPiiIndices` — a copy of a helper appkit
+   * deleted for restoring plaintext — followed by a local `encryptPiiFields`.
+   * It produced the right answer, but only because the two calls happened to be
+   * in the order that makes the deleted helper safe. One reordering away from
+   * writing blind indices over the ciphertext.
+   */
+  const docData = encryptUserForSeed({ ...adminUser });
 
   await db.collection("users").doc(UID).set(docData);
   console.log(`[seed-admin] Firestore document users/${UID} created.`);
