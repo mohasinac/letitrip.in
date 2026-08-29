@@ -162,7 +162,6 @@ const GRANDFATHERED = new Set([
   "appkit/src/features/shipments/components/AdminShipmentLotItemsView.tsx",
   "appkit/src/features/whatsapp-bot/components/SellerWhatsAppSettingsView.tsx",
   "src/app/[locale]/events/[id]/participate/EventParticipateClient.tsx",
-  "src/app/[locale]/scams/report/page.tsx",
   "src/app/[locale]/user/orders/[id]/payment/page.tsx",
   "src/app/[locale]/user/settings/page.tsx",
   "src/app/[locale]/user/support/new/page.tsx",

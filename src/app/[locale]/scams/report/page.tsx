@@ -1,15 +1,25 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit/client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
-import { useSession, ROUTES, SCAM_TYPES, SCAM_PLATFORM_LABELS, Checkbox, Div, Button, Form, Label, Input, Textarea, Select, useApiMutation, apiClient, type FirestoreDocument } from "@mohasinac/appkit/client";
-import { Alert, Stack, Heading, Text, Row, Card, CardBody, Main, Ul, Li } from "@mohasinac/appkit/client";
+import {
+  useSession, ROUTES, SCAM_TYPES, SCAM_PLATFORM_LABELS, Checkbox, Div, Button, Input,
+  useApiMutation, apiClient, type FirestoreDocument,
+} from "@mohasinac/appkit/client";
+import { Alert, Stack, Heading, Text, Row, Main, Ul, Li } from "@mohasinac/appkit/client";
+import {
+  FormShellContext,
+  FormErrorSummary,
+  SectionForm,
+  buildSectionsFromSchema,
+  useSectionFormNav,
+  useFormShellState,
+  applyZodIssues,
+  scamReportFormSchema,
+} from "@mohasinac/appkit/client";
 import { ChevronLeft, Loader2, Plus, X } from "lucide-react";
 import { API_ROUTES } from "@/constants";
-import { scamReportFormSchema } from "@mohasinac/appkit/client";
-import { FormErrorSummary } from "@mohasinac/appkit/client";
 
 const LOGIN_HREF =
   `${String(ROUTES.AUTH.LOGIN)}?redirect=${encodeURIComponent("/scams/report")}` as const;
@@ -105,6 +115,7 @@ function TagInput({
 }
 
 interface FormState {
+  [key: string]: unknown;
   displayName: string;
   phones: string[];
   upiIds: string[];
@@ -118,122 +129,57 @@ interface FormState {
   agreed: boolean;
 }
 
-// ─── Section sub-components ────────────────────────────────────────────────
+/** Shared by all three identifier lists. */
+const TAG_HELP = "Press Enter or comma to add.";
 
-function ScammerIdentitySection({
-  form,
-  field,
+const EMPTY_FORM: FormState = {
+  displayName: "",
+  phones: [],
+  upiIds: [],
+  emails: [],
+  scamType: "",
+  scamPlatform: "",
+  amountLost: "",
+  itemInvolved: "",
+  description: "",
+  reportedByAnon: false,
+  agreed: false,
+};
+
+/** A checkbox whose label is two lines — a claim and its consequence. */
+function DeclarationCheckbox({
+  checked,
+  onChange,
+  title,
+  detail,
+  required,
+  error,
 }: {
-  form: FormState;
-  field: <K extends keyof FormState>(key: K) => (val: FormState[K]) => void;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  title: string;
+  detail: string;
+  required?: boolean;
+  error?: string;
 }) {
   return (
-    <Card variant="outlined" padding="lg">
-      <CardBody>
-        <Stack gap="md">
-          <Heading level={2} size="base" weight="semibold">Section 1 — Scammer Identity</Heading>
-          <Stack gap="xs">
-            <Label htmlFor="displayName" size="sm" weight="medium">
-              Name / Display Name <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
-            </Label>
-            <Input id="displayName" type="text" required value={form.displayName} onChange={(e) => field("displayName")(e.target.value)} placeholder="The name they used to scam you" className={CLS_INPUT} />
+    <Stack gap="none">
+      <Checkbox
+        required={required}
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        label={
+          <Stack gap="none">
+            <Text size="sm" weight="medium">
+              {title}
+              {required ? <Text as="span" color="error"> *</Text> : null}
+            </Text>
+            <Text variant="secondary" size="xs">{detail}</Text>
           </Stack>
-          <TagInput label="Phone Numbers" placeholder="e.g. 9876543210" values={form.phones} onChange={field("phones")} helpText="Add each number and press Enter. 10-digit Indian mobile numbers." />
-          <TagInput label="UPI IDs" placeholder="e.g. name@upi" values={form.upiIds} onChange={field("upiIds")} helpText="Add each UPI ID and press Enter." />
-          <TagInput label="Email Addresses" placeholder="e.g. scammer@gmail.com" values={form.emails} onChange={field("emails")} helpText="Add each email and press Enter." />
-        </Stack>
-      </CardBody>
-    </Card>
-  );
-}
-
-function WhatHappenedSection({
-  form,
-  field,
-}: {
-  form: FormState;
-  field: <K extends keyof FormState>(key: K) => (val: FormState[K]) => void;
-}) {
-  const selectedScamType = SCAM_TYPES.find((t) => t.id === form.scamType);
-  return (
-    <Card variant="outlined" padding="lg">
-      <CardBody>
-        <Stack gap="md">
-          <Heading level={2} size="base" weight="semibold">Section 2 — What Happened</Heading>
-          <Stack gap="xs">
-            <Label htmlFor="scamType" size="sm" weight="medium">
-              Scam Type <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
-            </Label>
-            <Select id="scamType" value={form.scamType} onValueChange={(v) => field("scamType")(v)} options={SCAM_TYPE_OPTIONS} className={CLS_INPUT} />
-            {selectedScamType && (<Alert variant="info" compact><Text className="leading-relaxed" size="xs">{selectedScamType.howItHappens.slice(0, 180)}…</Text></Alert>)}
-          </Stack>
-          <Stack gap="xs">
-            <Label htmlFor="scamPlatform" size="sm" weight="medium">
-              Platform where scam occurred <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
-            </Label>
-            <Select id="scamPlatform" value={form.scamPlatform} onValueChange={(v) => field("scamPlatform")(v)} options={SCAM_PLATFORM_OPTIONS} className={CLS_INPUT} />
-          </Stack>
-          <Row gap="md" wrap>
-            <Stack gap="xs" className="flex-1 min-w-[140px]">
-              <Label htmlFor="amountLost" size="sm" weight="medium">Amount Lost (₹) — optional</Label>
-              <Input id="amountLost" type="number" min="0" step="1" value={form.amountLost} onChange={(e) => field("amountLost")(e.target.value)} placeholder="e.g. 2500" className={CLS_INPUT} />
-            </Stack>
-            <Stack gap="xs" className="flex-1 min-w-[140px]">
-              <Label htmlFor="itemInvolved" size="sm" weight="medium">Item Involved — optional</Label>
-              <Input id="itemInvolved" type="text" value={form.itemInvolved} onChange={(e) => field("itemInvolved")(e.target.value)} placeholder="e.g. Charizard PSA 9" className={CLS_INPUT} />
-            </Stack>
-          </Row>
-          <Stack gap="xs">
-            <Label htmlFor="description" size="sm" weight="medium">
-              What exactly happened? <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
-            </Label>
-            <Textarea id="description" required minLength={100} rows={6} value={form.description} onChange={(e) => field("description")(e.target.value)} placeholder="Describe exactly what happened — dates, amounts promised, what you received, any communication details…" className="w-full resize-y rounded-lg border border-[color:var(--appkit-color-border,theme(colors.zinc.200))] bg-transparent px-[var(--appkit-space-3)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] outline-none focus:ring-2 focus:ring-[color:var(--appkit-color-primary,theme(colors.blue.500))]/40" />
-            <Text variant="secondary" size="xs" align="end">{form.description.length} / 5000 chars (min 100)</Text>
-          </Stack>
-        </Stack>
-      </CardBody>
-    </Card>
-  );
-}
-
-function PrivacyAgreementSection({
-  form,
-  field,
-}: {
-  form: FormState;
-  field: <K extends keyof FormState>(key: K) => (val: FormState[K]) => void;
-}) {
-  return (
-    <Card variant="outlined" padding="lg">
-      <CardBody>
-        <Stack gap="md">
-          <Heading level={2} size="base" weight="semibold">Section 3 — Privacy & Agreement</Heading>
-          <Checkbox
-            checked={form.reportedByAnon}
-            onChange={(e) => field("reportedByAnon")(e.target.checked)}
-            label={
-              <Stack gap="none">
-                <Text size="sm" weight="medium">Keep my identity private</Text>
-                <Text variant="secondary" size="xs">Your name will not appear on the public profile page — shown as "Anonymous reporter".</Text>
-              </Stack>
-            }
-          />
-          <Checkbox
-            required
-            checked={form.agreed}
-            onChange={(e) => field("agreed")(e.target.checked)}
-            label={
-              <Stack gap="none">
-                <Text size="sm" weight="medium">
-                  I confirm this report is truthful to the best of my knowledge. <Text as="span" className="text-[color:var(--appkit-color-danger,theme(colors.red.500))]">*</Text>
-                </Text>
-                <Text variant="secondary" size="xs">False reports may result in account action. All submissions are reviewed before publication.</Text>
-              </Stack>
-            }
-          />
-        </Stack>
-      </CardBody>
-    </Card>
+        }
+      />
+      {error && <Text size="xs" color="error" role="alert">{error}</Text>}
+    </Stack>
   );
 }
 
@@ -243,70 +189,124 @@ function ScamReportForm({ userId }: { userId: string }) {
   void userId;
 
   const router = useRouter();
-  const [form, setForm] = useState<FormState>({
-    displayName: "",
-    phones: [],
-    upiIds: [],
-    emails: [],
-    scamType: "",
-    scamPlatform: "",
-    amountLost: "",
-    itemInvolved: "",
-    description: "",
-    reportedByAnon: false,
-    agreed: false,
-  });
-  const [error, setError] = useState<string | null>(null);
+  const [form, setForm] = useState<FormState>(EMPTY_FORM);
 
-  const field = <K extends keyof FormState>(key: K) => (val: FormState[K]) =>
-    setForm((f) => ({ ...f, [key]: val }));
+  /*
+   * Three identifier lists share one renderer. `kind: "list"` is what the
+   * generator renders as a disabled placeholder, so each needs an entry — and
+   * the draft holds them as ARRAYS, matching the schema, which is what finally
+   * lets the per-entry regex and the "at least one identifier" superRefine run.
+   * They are joined to comma-separated strings only at the wire, because that
+   * is the shape the route parses.
+   */
+  const tagRenderer =
+    (label: string, placeholder: string, helpText: string) =>
+    ({ field, values, onChange, errors }: {
+      field: { name: string };
+      values: FormState;
+      onChange: (partial: Partial<FormState>) => void;
+      errors: Record<string, string>;
+    }) => (
+      <Stack gap="none">
+        <TagInput
+          label={label}
+          placeholder={placeholder}
+          helpText={helpText}
+          values={(values[field.name] as string[]) ?? []}
+          onChange={(v) => onChange({ [field.name]: v } as Partial<FormState>)}
+        />
+        {errors[field.name] && (
+          <Text size="xs" color="error" role="alert">{errors[field.name]}</Text>
+        )}
+      </Stack>
+    );
+
+  const sections = useMemo(
+    () =>
+      buildSectionsFromSchema<FormState>(scamReportFormSchema, {
+        options: {
+          scamType: SCAM_TYPE_OPTIONS,
+          scamPlatform: SCAM_PLATFORM_OPTIONS,
+        },
+        renderers: {
+          phones: tagRenderer("Phone numbers", "+91…", TAG_HELP),
+          upiIds: tagRenderer("UPI IDs", "name@bank", TAG_HELP),
+          emails: tagRenderer("Email addresses", "name@example.com", TAG_HELP),
+          reportedByAnon: ({ values, onChange }) => (
+            <DeclarationCheckbox
+              checked={Boolean(values.reportedByAnon)}
+              onChange={(v) => onChange({ reportedByAnon: v })}
+              title="Keep my identity private"
+              detail={'Your name will not appear on the public profile page — shown as "Anonymous reporter".'}
+            />
+          ),
+          agreed: ({ values, onChange, errors }) => (
+            <DeclarationCheckbox
+              required
+              checked={Boolean(values.agreed)}
+              onChange={(v) => onChange({ agreed: v })}
+              title="I confirm this report is truthful to the best of my knowledge."
+              detail="False reports may result in account action. All submissions are reviewed before publication."
+              error={errors.agreed}
+            />
+          ),
+        },
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
+  const nav = useSectionFormNav(sections, form);
+  const { shellCtx, setFieldError, clearErrors } = useFormShellState(scamReportFormSchema, {
+    sections: nav.sectionMeta,
+    onGoToSection: nav.goToSection,
+    fieldToSectionIndex: nav.fieldToSectionIndex,
+  });
 
   const reportMutation = useApiMutation({
+    // Authored copy on the mutation. It used to be an onError handler writing a
+    // banner, which is the same failure surfaced twice.
+    errorMessage: "Could not submit the report. Please try again.",
     mutationFn: (payload: FirestoreDocument) =>
       apiClient.post(API_ROUTES.SCAMS.REPORTS, payload),
     onSuccess: () => {
       router.push(String(ROUTES.PUBLIC.SCAMS) as Parameters<typeof router.push>[0]);
     },
-    onError: (err: Error) => {
-      void normalizeError(err);
-      // Authored copy only. `err.message` here is whatever the POST rejected
-      // with — developer text, and the banner is a display sink.
-      setError("An error occurred. Please try again.");
-    },
   });
 
   const isSubmitting = reportMutation.isPending;
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!form.agreed) {
-      setError("Please confirm the agreement before submitting.");
+  const onSubmit = () => {
+    clearErrors();
+    /*
+     * The schema replaces three hand-rolled guards (agreed / scamType+platform
+     * / description length). Two of them disagreed with the route — the client
+     * allowed a 30-character description where the route demands 100, and made
+     * the platform optional — so the reward for satisfying them was a 400.
+     */
+    const parsed = scamReportFormSchema.safeParse(form);
+    if (!parsed.success) {
+      applyZodIssues(parsed.error.issues, setFieldError);
       return;
     }
-    if (!form.scamType || !form.scamPlatform) {
-      setError("Please select a scam type and platform.");
-      return;
-    }
-    if (form.description.length < 100) {
-      setError("Description must be at least 100 characters.");
-      return;
-    }
-    setError(null);
 
-    const payload = {
-      displayName: form.displayName,
-      phones: form.phones.join(","),
-      upiIds: form.upiIds.join(","),
-      emails: form.emails.join(","),
-      scamType: form.scamType,
-      scamPlatform: form.scamPlatform,
-      amountLost: form.amountLost ? parseFloat(form.amountLost) : undefined,
-      itemInvolved: form.itemInvolved,
-      description: form.description,
-      reportedByAnon: form.reportedByAnon,
-    };
-    reportMutation.mutate(payload);
-  }
+    reportMutation.mutate({
+      displayName: parsed.data.displayName,
+      // Arrays in the draft, comma-separated on the wire: the route parses it
+      // back with its own parseCommaSeparated.
+      phones: (parsed.data.phones ?? []).join(","),
+      upiIds: (parsed.data.upiIds ?? []).join(","),
+      emails: (parsed.data.emails ?? []).join(","),
+      scamType: parsed.data.scamType,
+      scamPlatform: parsed.data.scamPlatform,
+      amountLost: parsed.data.amountLost,
+      itemInvolved: parsed.data.itemInvolved ?? "",
+      description: parsed.data.description,
+      reportedByAnon: Boolean(parsed.data.reportedByAnon),
+      // The declaration is now RECORDED, not merely required client-side.
+      agreed: parsed.data.agreed,
+    } as FirestoreDocument);
+  };
 
   return (
     <Div className="mx-auto max-w-2xl">
@@ -317,59 +317,46 @@ function ScamReportForm({ userId }: { userId: string }) {
         <ChevronLeft className="h-4 w-4" /> Back to Scam Registry
       </Link>
 
-      <Form schema={scamReportFormSchema} onSubmit={handleSubmit}>
-        <FormErrorSummary />
-        <Stack gap="lg">
-          <Stack gap="xs">
-            <Heading level={1} weight="bold" size="2xl">
-              Report a Scammer
-            </Heading>
-            <Text variant="secondary" size="sm">
-              Your report will be reviewed by our moderation team before appearing publicly. All
-              submissions are confidential — your identity is never shared without consent.
-            </Text>
-          </Stack>
-
-          <Alert variant="warning" title="Before you submit">
-            <Ul marker="disc" spacing="tight" indent="md" size="sm">
-              <Li>Only report genuine scam incidents — false reports can be contested.</Li>
-              <Li>Max 5 pending reports per user. Verified reports are not counted.</Li>
-              <Li>Evidence (screenshots, receipts) significantly speeds up verification.</Li>
-            </Ul>
-          </Alert>
-
-          <ScammerIdentitySection form={form} field={field} />
-          <WhatHappenedSection form={form} field={field} />
-          <PrivacyAgreementSection form={form} field={field} />
-
-          {error && (
-            <Alert variant="error" title="Submission error">
-              {error}
-            </Alert>
-          )}
-
-          <Row justify="between" align="center">
-            <Link
-              href={String(ROUTES.PUBLIC.SCAMS)}
-              className="appkit-button appkit-button--ghost appkit-button--md"
-            >
-              Cancel
-            </Link>
-            <Button gap="md" 
-              type="submit"
-              variant="primary"
-              disabled={isSubmitting || !form.agreed}
-              className="disabled:opacity-60"
-            >
-              {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-              {isSubmitting ? "Submitting…" : "Submit Report"}
-            </Button>
-          </Row>
+      <Stack gap="lg">
+        <Stack gap="xs">
+          <Heading level={1} weight="bold" size="2xl">
+            Report a Scammer
+          </Heading>
+          <Text variant="secondary" size="sm">
+            Your report will be reviewed by our moderation team before appearing publicly. All
+            submissions are confidential — your identity is never shared without consent.
+          </Text>
         </Stack>
-      </Form>
+
+        <Alert variant="warning" title="Before you submit">
+          <Ul marker="disc" spacing="tight" indent="md" size="sm">
+            <Li>Only report genuine scam incidents — false reports can be contested.</Li>
+            <Li>Max 5 pending reports per user. Verified reports are not counted.</Li>
+            <Li>Evidence (screenshots, receipts) significantly speeds up verification.</Li>
+          </Ul>
+        </Alert>
+
+        <FormShellContext.Provider value={shellCtx}>
+          <FormErrorSummary />
+          <SectionForm<FormState>
+            sections={sections}
+            values={form}
+            onChange={(partial) => setForm((prev) => Object.assign({}, prev, partial))}
+            onSubmit={onSubmit}
+            schema={scamReportFormSchema}
+            openIds={nav.openIds}
+            onOpenChange={nav.setOpenIds}
+            isLoading={isSubmitting}
+            submitLabel="Submit Report"
+            onCancel={() => router.push(String(ROUTES.PUBLIC.SCAMS) as Parameters<typeof router.push>[0])}
+            cancelLabel="Cancel"
+          />
+        </FormShellContext.Provider>
+      </Stack>
     </Div>
   );
 }
+
 
 export default function Page() {
   const { user, loading } = useSession();

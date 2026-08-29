@@ -17,6 +17,15 @@ const createReportSchema = z.object({
     .min(100, "Description must be at least 100 characters")
     .max(5000),
   reportedByAnon: z.boolean().default(false),
+  /*
+   * The truthfulness declaration.
+   *
+   * The form has always required it — a `z.literal(true)` and a hard submit
+   * gate — and never sent it, so a direct call to this route bypassed the
+   * attestation entirely and nothing recorded that it had been made. Required
+   * here, not optional: a report that does not carry it should not be created.
+   */
+  agreed: z.literal(true, { message: "You must confirm this report is truthful." }),
 });
 
 function parseCommaSeparated(raw: string): string[] {
@@ -42,6 +51,7 @@ const __POST__g = withProviders(
         itemInvolved,
         description,
         reportedByAnon,
+        agreed,
       } = body!;
 
       const phones = parseCommaSeparated(rawPhones);
@@ -72,6 +82,9 @@ const __POST__g = withProviders(
         evidence: [],
         reportedBy: user!.uid,
         reportedByAnon,
+        // `z.literal(true)` narrows to the widened `Literal` type in zod 4, so
+        // the boolean is asserted at the one place it is known to be `true`.
+        reporterAttested: agreed === true,
       });
 
       return successResponse(
