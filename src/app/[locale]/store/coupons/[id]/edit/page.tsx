@@ -77,10 +77,23 @@ export default function Page() {
         totalLimit: Number(draft.totalLimit) || 0,
         perUserLimit: Number(draft.perUserLimit) || 0,
       },
+      /*
+       * The PATCH payload is nested (validity / usage / discount /
+       * restrictions) where the POST one is flat, so this cannot call
+       * `couponDraftToPayload` — but it must apply the same rule, which is
+       * stated beside the `when` predicates in `coupon-form.ts`: a field the
+       * form hides is a field the payload omits.
+       *
+       * `maxDiscount` used to be sent for every type while its input rendered
+       * only for percentages, so a cap survived a switch to fixed or
+       * free-shipping with nothing on screen to show it.
+       */
       discount: {
         value: draft.type !== "free_shipping" ? Number(draft.value) || 0 : 0,
         ...(draft.minPurchase ? { minPurchase: Math.round(Number(draft.minPurchase) * 100) / 100 } : {}),
-        ...(draft.maxDiscount ? { maxDiscount: Math.round(Number(draft.maxDiscount) * 100) / 100 } : {}),
+        ...(draft.type === "percentage" && draft.maxDiscount
+          ? { maxDiscount: Math.round(Number(draft.maxDiscount) * 100) / 100 }
+          : {}),
       },
       restrictions: {
         applicableProducts: draft.applicableProducts ?? [],
