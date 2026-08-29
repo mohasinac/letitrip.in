@@ -59,8 +59,40 @@ const PRIMITIVE_DIRS = [
   "appkit/src/features/shell/",
 ];
 
-/** Renders a form field. */
-const FIELD_RE = /<Field(?:Input|Select|Textarea|Checkbox)\b|<FormField\b/;
+/**
+ * Renders a form control.
+ *
+ * 🛑 **The narrow version of this regex made the audit's own count a fiction.**
+ * It matched only `<Field*` / `<FormField`, so a form built from the appkit
+ * control primitives — `<Input>`, `<Toggle>`, `<Select>`, `<PaginatedSelect>`,
+ * `<MediaUploadField>` — was INVISIBLE to it. Measured 2026-08-29: **17 such
+ * forms**, none of them on the list, including the two largest surfaces in the
+ * app (`AdminSectionsView`, 207 controls; `AdminSiteSettingsView`, 161). The
+ * audit reported "45 awaiting" against a true 62.
+ *
+ * That is the failure this file was written to prevent, reproduced inside the
+ * file itself: a denominator narrow enough to certify the work done. And it is
+ * not an unlucky regex — `audit-raw-form-input` BANS raw `<input>`, so every
+ * compliant hand-rolled form necessarily uses the primitives this missed.
+ */
+const CONTROL_RE =
+  /<(?:Field(?:Input|Select|Textarea|Checkbox)|FormField|Input|Textarea|Select|Toggle|Checkbox|PaginatedSelect|MediaUploadField|ImageUpload|RichTextEditor)\b/g;
+
+/**
+ * How many controls make a surface a FORM rather than a control that happens to
+ * submit something.
+ *
+ * Widening the regex above brings back exactly the noise the submit-ownership
+ * filter was added to remove: a listing's two filter `<Select>`s, a search box,
+ * a single inline reply `<Textarea>`. None of those has anything to collapse,
+ * so demanding sections of them would be nonsense — and, worse, would put
+ * entries on a shrinking list that can never be removed, which is precisely how
+ * a shrinking list rots into a permanent allow-list.
+ *
+ * Three is where the two populations separate: every genuine editor measured
+ * has ≥4, and every reply-box / filter-bar false positive has ≤2.
+ */
+const MIN_CONTROLS = 3;
 const SECTION_FORM_RE = /<\s*SectionForm\b/;
 /** Quick mode is a sanctioned surface, and has its own schema audit. */
 const QUICK_DRAWER_RE = /<\s*QuickFormDrawer\b/;
@@ -91,51 +123,62 @@ const SUPPRESS_RE = /audit-form-sectionised-ok:/;
  * Generated 2026-08-27 from the tree as it stood. 45 entries (16 dropped once the submit-ownership filter landed).
  */
 const GRANDFATHERED = new Set([
-  "src/app/[locale]/admin/roles/new/page.tsx",
-  "src/app/[locale]/store/listing-templates/new/page.tsx",
-  "src/app/[locale]/store/listing-templates/[id]/edit/page.tsx",
-  "src/app/[locale]/store/payout-methods/new/page.tsx",
-  "src/app/[locale]/user/notifications/page.tsx",
-  "src/app/[locale]/user/orders/[id]/cancel/page.tsx",
-  "src/app/[locale]/user/orders/[id]/payment/page.tsx",
-  "src/app/[locale]/user/support/new/page.tsx",
-  "src/components/homepage/HomepageNewsletterForm.tsx",
-  "src/components/layout/FooterNewsletterSlot.tsx",
-  "src/components/routing/CheckoutRouteClient.tsx",
-  "src/components/user/ProfilePageClient.tsx",
-  "src/components/user/UserAddressesClient.tsx",
+  "appkit/src/_internal/client/features/lottery/LotteryAdminEditView.tsx",
+  "appkit/src/_internal/client/features/lottery/LotteryPullForm.tsx",
   "appkit/src/features/account/components/AddressForm.tsx",
   "appkit/src/features/account/components/UserSupportView.tsx",
+  "appkit/src/features/admin/components/AdminAdEditorView.tsx",
+  "appkit/src/features/admin/components/AdminAddressEditorView.tsx",
+  "appkit/src/features/admin/components/AdminAdsView.tsx",
   "appkit/src/features/admin/components/AdminBrandEditorView.tsx",
   "appkit/src/features/admin/components/AdminBundleEditorView.tsx",
   "appkit/src/features/admin/components/AdminCarouselEditorView.tsx",
-  "appkit/src/features/admin/components/AdminCarouselGroupEditorView.tsx",
   "appkit/src/features/admin/components/AdminCategoryEditorView.tsx",
   "appkit/src/features/admin/components/AdminCouponEditorView.tsx",
+  "appkit/src/features/admin/components/AdminEmployeeEditorView.tsx",
   "appkit/src/features/admin/components/AdminFaqEditorView.tsx",
-  "appkit/src/features/admin/components/AdminPayoutMarkPaidModal.tsx",
+  "appkit/src/features/admin/components/AdminFeatureEditorView.tsx",
+  "appkit/src/features/admin/components/AdminNavEditorView.tsx",
+  "appkit/src/features/admin/components/AdminOrderEditorView.tsx",
+  "appkit/src/features/admin/components/AdminProductEditorView.tsx",
+  "appkit/src/features/admin/components/AdminSectionsView.tsx",
+  "appkit/src/features/admin/components/AdminSiteSettingsView.tsx",
+  "appkit/src/features/admin/components/AdminStoreEditorView.tsx",
   "appkit/src/features/admin/components/AdminSublistingCategoryEditorView.tsx",
+  "appkit/src/features/admin/components/AdminSupportTicketDetailView.tsx",
   "appkit/src/features/admin/components/AdminTesterChecklistItemEditorView.tsx",
-  "appkit/src/features/auctions/components/PlaceBidFormClient.tsx",
-  "appkit/src/features/auth/components/ForgotPasswordView.tsx",
+  "appkit/src/features/admin/components/AdminUserEditorView.tsx",
+  "appkit/src/features/admin/components/BrandQuickCreateForm.tsx",
+  "appkit/src/features/admin/components/CategoryQuickCreateForm.tsx",
   "appkit/src/features/auth/components/LoginForm.tsx",
   "appkit/src/features/auth/components/RegisterForm.tsx",
-  "appkit/src/features/auth/components/ResetPasswordView.tsx",
   "appkit/src/features/catalogue/components/CatalogueItemEditorView.tsx",
   "appkit/src/features/consultation/components/ConsultationForm.tsx",
   "appkit/src/features/corporate/components/CorporateInquiryForm.tsx",
-  "appkit/src/features/events/components/EventRaffleEntryForm.tsx",
-  "appkit/src/features/homepage/components/NewsletterBanner.tsx",
   "appkit/src/features/products/components/GroupSettingsPanel.tsx",
-  "appkit/src/features/products/components/MakeOfferButton.tsx",
+  "appkit/src/features/seller/components/SellerAnalyticsAlertsView.tsx",
+  "appkit/src/features/seller/components/SellerCouponEditorView.tsx",
   "appkit/src/features/seller/components/SellerGoogleReviewsView.tsx",
+  "appkit/src/features/seller/components/SellerOrdersView.tsx",
+  "appkit/src/features/seller/components/SellerReviewsView.tsx",
   "appkit/src/features/shipments/components/AdminShipmentEditorView.tsx",
   "appkit/src/features/shipments/components/AdminShipmentLotItemsView.tsx",
-  "appkit/src/features/shipments/components/ShipmentItemLinkModal.tsx",
-  "appkit/src/features/store-extensions/components/ReviewDecisionModal.tsx",
-  "appkit/src/features/tester/components/TesterHubView.tsx",
-  "appkit/src/_internal/client/features/lottery/LotteryAdminEditView.tsx",
-  "appkit/src/_internal/client/features/lottery/LotteryPullForm.tsx",
+  "appkit/src/features/whatsapp-bot/components/SellerWhatsAppSettingsView.tsx",
+  "src/app/[locale]/admin/roles/[id]/edit/page.tsx",
+  "src/app/[locale]/admin/roles/new/page.tsx",
+  "src/app/[locale]/events/[id]/participate/EventParticipateClient.tsx",
+  "src/app/[locale]/scams/report/page.tsx",
+  "src/app/[locale]/store/listing-templates/[id]/edit/page.tsx",
+  "src/app/[locale]/store/listing-templates/new/page.tsx",
+  "src/app/[locale]/store/payout-methods/new/page.tsx",
+  "src/app/[locale]/store/sublisting-categories/[id]/edit/page.tsx",
+  "src/app/[locale]/store/sublisting-categories/new/page.tsx",
+  "src/app/[locale]/user/orders/[id]/payment/page.tsx",
+  "src/app/[locale]/user/settings/page.tsx",
+  "src/app/[locale]/user/support/new/page.tsx",
+  "src/components/routing/CheckoutRouteClient.tsx",
+  "src/components/user/ProfilePageClient.tsx",
+  "src/components/user/UserAddressesClient.tsx",
 ]);
 
 function walk(dir, out = []) {
@@ -166,7 +209,8 @@ for (const root of SCAN) {
       .replace(/\/\*[\s\S]*?\*\//g, " ")
       .replace(/(^|\s)\/\/[^\n]*/g, "$1 ");
 
-    if (!FIELD_RE.test(src)) continue;
+    CONTROL_RE.lastIndex = 0;
+    if ((src.match(CONTROL_RE) ?? []).length < MIN_CONTROLS) continue;
     if (!OWNS_A_SUBMIT_RE.test(src)) continue;
     if (SECTION_FORM_RE.test(src)) continue;
     if (QUICK_DRAWER_RE.test(src)) continue;
@@ -176,6 +220,19 @@ for (const root of SCAN) {
     if (GRANDFATHERED.has(rel)) continue;
     violations.push(rel);
   }
+}
+
+/*
+ * `--list` prints every surface the RULE currently detects, ready to paste into
+ * GRANDFATHERED. Root Cause #84: a list seeded from a hand-written grep and a
+ * list produced by the rule disagree, and the grep is always the wrong one —
+ * it happened to this very file (see CONTROL_RE) and to the W1a ratchet before
+ * it. There is now no reason to ever hand-write an entry.
+ */
+if (process.argv.includes("--list")) {
+  for (const f of [...seen].sort()) console.log(`  "${f}",`);
+  console.error(`\n${seen.size} surface(s) detected.`);
+  process.exit(0);
 }
 
 const stale = [...GRANDFATHERED].filter((f) => !seen.has(f));
