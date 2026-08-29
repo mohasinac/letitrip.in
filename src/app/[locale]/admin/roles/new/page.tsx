@@ -1,18 +1,37 @@
 "use client";
 
+/**
+ * Create a custom role.
+ *
+ * The fields come from `customRoleCreateSchema`'s annotations. Only
+ * `permissions` needs a `renderers` entry: it is a `z.array` — `kind: "list"`,
+ * which the generator renders as a disabled placeholder rather than guessing at
+ * a list editor — and here it is authored as free text, one permission per line.
+ *
+ * ## The check that matters is on the permission STRINGS
+ *
+ * This form used to grant permissions with no validation of any kind, and the
+ * route spread the body straight into Firestore, so a role could be created
+ * with no name and a permissions list of typos. A permission outside the
+ * catalogue is the quiet failure: it matches nothing, so the role reads as
+ * configured and grants nothing. `isKnownPermission` rejects those by NAME
+ * rather than by array index — the admin typed them into one textarea, and an
+ * index means nothing to them.
+ */
+
 import {
   Container,
   Stack,
   Heading,
-  Button,
-  Row,
   Section,
-  Form,
-  FieldInput,
-  FieldSelect,
   FieldTextarea,
+  FormShellContext,
   FormErrorSummary,
-  Toggle,
+  SectionForm,
+  buildSectionsFromSchema,
+  useSectionFormNav,
+  useFormShellState,
+  applyZodIssues,
   ROUTES,
   useToast,
   ACTIONS,
@@ -22,77 +41,110 @@ import {
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
 import { createAdminRole } from "@/lib/api/admin-client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 function slugify(s: string) {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
+/** The free-text box, as the array the schema and the route expect. */
+function parsePermissions(text: string): string[] {
+  return text
+    .split(/[\n,]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+type Values = {
+  [key: string]: unknown;
+  name: string;
+  slug: string;
+  description: string;
+  permissions: string[];
+  scope: string;
+  isActive: boolean;
+};
+
+const EMPTY: Values = {
+  name: "",
+  slug: "",
+  description: "",
+  permissions: [],
+  scope: "global",
+  isActive: true,
+};
+
 export default function Page() {
   const router = useRouter();
   const { showToast } = useToast();
-  const [form, setForm] = useState({
-    name: "",
-    slug: "",
-    description: "",
-    permissionsText: "",
-    scope: "global",
-    isActive: true,
-  });
+  const [form, setForm] = useState<Values>(EMPTY);
+  const [permissionsText, setPermissionsText] = useState("");
   const [saving, setSaving] = useState(false);
 
-  /** The free-text box, as the array the schema and the route expect. */
-  const parsePermissions = () =>
-    form.permissionsText
-      .split(/[\n,]/)
-      .map((s) => s.trim())
-      .filter(Boolean);
+  const applyPermissionsText = (v: string, onChange: (p: Partial<Values>) => void) => {
+    setPermissionsText(v);
+    onChange({ permissions: parsePermissions(v) });
+  };
 
-  const onSave = async (setFieldError: (name: string, error: string | null) => void) => {
-    const permissions = parsePermissions();
+  const sections = useMemo(
+    () =>
+      buildSectionsFromSchema<Values>(customRoleCreateSchema, {
+        renderers: {
+          permissions: ({ onChange, errors }) => (
+            <FieldTextarea
+              name="permissions"
+              label="Permissions (one per line, or comma-separated)"
+              hint="Each must be a permission this system defines — anything else grants nothing."
+              rows={6}
+              placeholder="admin:products:read&#10;admin:products:write&#10;admin:reviews:read"
+              value={permissionsText}
+              error={errors.permissions}
+              onChange={(v) => applyPermissionsText(v, onChange)}
+            />
+          ),
+        },
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [permissionsText],
+  );
 
-    // Validate BEFORE saving. This form granted permissions with no checks of
-    // any kind, and the route spread the body straight into Firestore — so a
-    // role could be created with no name and a permissions list of typos.
-    //
-    // A permission outside the catalogue is the quiet failure: it never
-    // matches anything, so the role reads as configured and grants nothing.
-    // The offending strings are named rather than reported by array index,
-    // because the admin typed them into one textarea and an index means
-    // nothing to them.
+  const nav = useSectionFormNav(sections, form);
+  const { shellCtx, setFieldError, clearErrors } = useFormShellState(customRoleCreateSchema, {
+    sections: nav.sectionMeta,
+    onGoToSection: nav.goToSection,
+    fieldToSectionIndex: nav.fieldToSectionIndex,
+  });
+
+  const onSubmit = async () => {
+    clearErrors();
+    const permissions = parsePermissions(permissionsText);
+
     const unknown = permissions.filter((perm) => !isKnownPermission(perm));
     if (unknown.length > 0) {
       setFieldError(
-        "permissionsText",
+        "permissions",
         `Not real permissions: ${unknown.join(", ")}. They would grant nothing.`,
       );
       return;
     }
 
-    const parsed = customRoleCreateSchema.safeParse({
+    const payload = {
       name: form.name,
       slug: form.slug || slugify(form.name),
       description: form.description || undefined,
       permissions,
       scope: form.scope,
       isActive: form.isActive,
-    });
+    };
+
+    const parsed = customRoleCreateSchema.safeParse(payload);
     if (!parsed.success) {
-      for (const issue of parsed.error.issues) {
-        setFieldError(String(issue.path[0] ?? "name"), issue.message);
-      }
+      applyZodIssues(parsed.error.issues, setFieldError);
       return;
     }
 
     setSaving(true);
-    const res = await createAdminRole(API_ROUTES.ADMIN.ROLES, {
-      name: form.name,
-      slug: form.slug || slugify(form.name),
-      description: form.description,
-      permissions,
-      scope: form.scope,
-      isActive: form.isActive,
-    });
+    const res = await createAdminRole(API_ROUTES.ADMIN.ROLES, payload);
     setSaving(false);
     if (res.ok) {
       showToast("Role created", "success");
@@ -113,51 +165,22 @@ export default function Page() {
       <Container size="md">
         <Stack gap="lg" padding="y-lg">
           <Heading level={1}>New Custom Role</Heading>
-          <Form schema={customRoleCreateSchema} onSubmit={(e) => e.preventDefault()}>
-            {({ setFieldError, clearErrors }) => (
-              <Stack gap="md">
-                <FormErrorSummary />
-                <FieldInput name="name" label="Name" required value={form.name} onChange={(v) => setForm({ ...form, name: v })} placeholder="e.g. Catalog Editor" />
-                <FieldInput name="slug" label="Slug" value={form.slug} onChange={(v) => setForm({ ...form, slug: v })} placeholder={slugify(form.name) || "auto"} />
-                <FieldTextarea name="description" label="Description" value={form.description} onChange={(v) => setForm({ ...form, description: v })} rows={2} />
-                <FieldSelect
-                  name="scope"
-                  label="Scope"
-                  value={form.scope}
-                  onChange={(v) => setForm({ ...form, scope: String(v) })}
-                  options={[
-                    { value: "global", label: "Global" },
-                    { value: "store", label: "Store-scoped" },
-                  ]}
-                />
-                <FieldTextarea
-                  name="permissionsText"
-                  label="Permissions (one per line, or comma-separated)"
-                  hint="Each must be a permission this system defines — anything else grants nothing."
-                  value={form.permissionsText}
-                  onChange={(v) => setForm({ ...form, permissionsText: v })}
-                  rows={6}
-                  placeholder="admin:products:read&#10;admin:products:write&#10;admin:reviews:read"
-                />
-                <Toggle checked={form.isActive} onChange={(v) => setForm({ ...form, isActive: v })} label="Active" />
-                <Row justify="end" gap="sm">
-                  <Button variant="ghost" type="button" onClick={() => router.back()}>Cancel</Button>
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    disabled={saving}
-                    isLoading={saving}
-                    onClick={() => {
-                      clearErrors();
-                      void onSave(setFieldError);
-                    }}
-                  >
-                    {ACTIONS.ADMIN["save-changes"].label}
-                  </Button>
-                </Row>
-              </Stack>
-            )}
-          </Form>
+          <FormShellContext.Provider value={shellCtx}>
+            <FormErrorSummary />
+            <SectionForm<Values>
+              sections={sections}
+              values={form}
+              onChange={(partial) => setForm((prev) => Object.assign({}, prev, partial))}
+              onSubmit={onSubmit}
+              schema={customRoleCreateSchema}
+              openIds={nav.openIds}
+              onOpenChange={nav.setOpenIds}
+              isLoading={saving}
+              submitLabel={ACTIONS.ADMIN["save-changes"].label}
+              onCancel={() => router.back()}
+              cancelLabel="Cancel"
+            />
+          </FormShellContext.Provider>
         </Stack>
       </Container>
     </Section>
