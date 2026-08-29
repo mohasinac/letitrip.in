@@ -165,8 +165,6 @@ const GRANDFATHERED = new Set([
   "src/app/[locale]/admin/roles/new/page.tsx",
   "src/app/[locale]/events/[id]/participate/EventParticipateClient.tsx",
   "src/app/[locale]/scams/report/page.tsx",
-  "src/app/[locale]/store/listing-templates/[id]/edit/page.tsx",
-  "src/app/[locale]/store/listing-templates/new/page.tsx",
   "src/app/[locale]/user/orders/[id]/payment/page.tsx",
   "src/app/[locale]/user/settings/page.tsx",
   "src/app/[locale]/user/support/new/page.tsx",
