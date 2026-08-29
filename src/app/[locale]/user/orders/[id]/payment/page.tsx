@@ -82,6 +82,18 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       showToast("Please upload your payment screenshot.", "error");
       return;
     }
+    /*
+     * Both declarations, matching the schema and the route.
+     *
+     * `buyerMarkedPaid` is `z.literal(true)` in `paymentProofSchema` and this
+     * handler checked only the fraud agreement — so a buyer could submit with
+     * "I have sent the payment" unticked and the route recorded it as false,
+     * which is the value an admin reviews when deciding to release the order.
+     */
+    if (!buyerMarkedPaid) {
+      showToast("Please confirm that you have sent the payment.", "error");
+      return;
+    }
     if (!fraudAgreementAccepted) {
       showToast("Please confirm this payment is genuine before submitting.", "error");
       return;

@@ -28,6 +28,23 @@ async function _POST(req: Request, { params }: { params: Promise<{ id: string }>
   if (!body.proofUrl) {
     return errorResponse("proofUrl is required", 400, { code: "MISSING_PROOF_URL" });
   }
+  /*
+   * Both declarations are checked, not just one.
+   *
+   * `paymentProofSchema` has always declared `buyerMarkedPaid` as
+   * `z.literal(true)` — "I have sent the payment" — and this route accepted it
+   * as an optional boolean defaulting to FALSE, while the page's submit handler
+   * gated only on `proofUrl` and the fraud agreement. So a proof could be
+   * attached with the payment-sent declaration recorded as false, which is the
+   * value an admin later reviews. Same shape as the scam report's `agreed`.
+   */
+  if (!body.buyerMarkedPaid) {
+    return errorResponse(
+      "Confirm that you have sent the payment before submitting proof",
+      400,
+      { code: "PAYMENT_NOT_MARKED_SENT" },
+    );
+  }
   if (!body.buyerFraudAgreementAccepted) {
     return errorResponse(
       "You must confirm this payment is genuine before submitting proof",
