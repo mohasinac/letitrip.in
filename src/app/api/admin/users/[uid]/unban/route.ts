@@ -35,6 +35,7 @@ export const POST = withProviders(
 
       // Clear ban fields
       await userRepository.update(uid, {
+        disabled: false,
         isDisabled: false,
         hardBanReason: undefined,
         hardBannedAt: undefined,

@@ -69,7 +69,10 @@ export const POST = withProviders(
                 error: err instanceof Error ? err.message : String(err),
               });
             }
-            await userRepository.update(id, { isDisabled: disabled } as never);
+            // BOTH fields — `disabled` is what every session guard reads, and
+            // this route only ever wrote `isDisabled`, so a bulk suspend never
+            // ended an existing session.
+            await userRepository.update(id, { disabled, isDisabled: disabled } as never);
             succeeded.push(id);
           } catch (err) {
             void normalizeError(err);

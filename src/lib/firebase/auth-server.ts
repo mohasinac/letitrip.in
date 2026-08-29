@@ -1,4 +1,5 @@
 import { normalizeError } from "@mohasinac/appkit";
+import { isAccountDisabled } from "@mohasinac/appkit";
 /**
  * letitrip auth-server adapter
  *
@@ -41,7 +42,7 @@ export function requireAuthFromRequest(request: Request): Promise<UserDocument> 
   return _requireAuthFromRequest(
     request,
     findUserById,
-    (u: UserDocument) => u.disabled,
+    (u: UserDocument) => isAccountDisabled(u),
   );
 }
 
