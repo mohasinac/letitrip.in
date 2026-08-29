@@ -136,7 +136,6 @@ const GRANDFATHERED = new Set([
   "appkit/src/features/admin/components/AdminCouponEditorView.tsx",
   "appkit/src/features/admin/components/AdminEmployeeEditorView.tsx",
   "appkit/src/features/admin/components/AdminFeatureEditorView.tsx",
-  "appkit/src/features/admin/components/AdminNavEditorView.tsx",
   "appkit/src/features/admin/components/AdminOrderEditorView.tsx",
   "appkit/src/features/admin/components/AdminProductEditorView.tsx",
   "appkit/src/features/admin/components/AdminSectionsView.tsx",
