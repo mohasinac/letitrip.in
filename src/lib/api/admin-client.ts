@@ -23,14 +23,23 @@ export function applyCheckoutBypass(body: { addressId: string }): Promise<Respon
   });
 }
 
-// ── Feature flags ────────────────────────────────────────────────────────────
-
-export function setFeatureFlags(flags: Record<string, boolean>): Promise<Response> {
-  return fetch(API_ROUTES.ADMIN.FEATURE_FLAGS, {
-    method: "PUT",
+/**
+ * Turn the checkout bypass on or off.
+ *
+ * Goes through the bypass route itself, which is the sole writer that
+ * audit-checkout-bypass rule 1 requires. This used to be `setFeatureFlags`
+ * hitting the generic /api/admin/feature-flags route — both that helper and
+ * that route were deleted 2026-08-29 with the flag group.
+ */
+export function setCheckoutBypassEnabled(
+  enabled: boolean,
+  reason?: string,
+): Promise<Response> {
+  return fetch(API_ROUTES.ADMIN.CHECKOUT_BYPASS, {
+    method: "PATCH",
     headers: JSON_HEADERS,
     credentials: CREDS,
-    body: JSON.stringify({ flags }),
+    body: JSON.stringify({ enabled, reason }),
   });
 }
 

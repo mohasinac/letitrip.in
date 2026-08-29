@@ -298,7 +298,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.CARTS),         "Carts",         "admin:carts:read"),
       adminItem(String(ROUTES.ADMIN.WISHLISTS),     "Wishlists",     "admin:wishlists:read"),
       adminItem(String(ROUTES.ADMIN.HISTORY),       "History",       "admin:sessions:read"),
-      adminItem(String(ROUTES.ADMIN.FEATURE_FLAGS), "Feature Flags", "admin:feature-flags:read"),
       adminItem(String(ROUTES.ADMIN.COPILOT),              "Copilot",             "admin:copilot:view"),
       adminItem(String(ROUTES.ADMIN.TEAM),                 "Team",                "admin:team:read"),
       adminItem(String(ROUTES.ADMIN.ROLES),                "Custom Roles",        "admin:roles:read"),

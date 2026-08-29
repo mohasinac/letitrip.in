@@ -34,7 +34,7 @@ import { normalizeError } from "@mohasinac/appkit";
 const WRITABLE_SITE_GROUPS = [
   "siteName", "tagline", "motto", "logo", "favicon", "background", "contact",
   "payment", "emi", "commissions", "laborRate", "gst", "auctionConfig",
-  "socialLinks", "emailSettings", "seo", "features", "featureFlags",
+  "socialLinks", "emailSettings", "seo", "features", "listings",
   "legalPages", "shipping", "returns", "faq", "aboutContent", "navbarConfig",
   "footerConfig", "announcementBar", "watermark", "credentials", "theme",
   "featuredResults", "notificationChannels", "integrations", "platformLimits",
@@ -85,7 +85,7 @@ export const PUT = withProviders(
           fallback: null,
         },
       );
-      const wasSmsVerificationOn = previousSettings?.featureFlags?.smsVerification === true;
+      const wasSmsVerificationOn = previousSettings?.payment?.smsVerification === true;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const updated = await siteSettingsRepository.updateSingleton(body! as any);
@@ -103,7 +103,7 @@ export const PUT = withProviders(
       // that happened under different rules (or none, if it was off when they
       // signed up) — reset everyone + clear rate-limit state via the async job
       // primitive (bulk fan-out over the users collection, unbounded).
-      const isSmsVerificationOnNow = updated.featureFlags?.smsVerification === true;
+      const isSmsVerificationOnNow = updated.payment?.smsVerification === true;
       if (!wasSmsVerificationOn && isSmsVerificationOnNow) {
         await enqueueJob({
           jobType: "resetOtpVerification",

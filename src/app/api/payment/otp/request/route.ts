@@ -36,7 +36,7 @@ const __POST__g = withProviders(createRouteHandler({
     // it back on resets all users' phoneVerified + clears rate-limit state
     // via the resetOtpVerification job (see PATCH /api/site-settings).
     const settings = await siteSettingsRepository.getSingleton();
-    if (settings.featureFlags?.smsVerification !== true) {
+    if (settings.payment?.smsVerification !== true) {
       return successResponse({ allowed: false, count: 0 }, "SMS verification is currently disabled.");
     }
 

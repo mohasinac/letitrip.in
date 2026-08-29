@@ -24,13 +24,19 @@ export default async function Page() {
 
   const settings = await siteSettingsRepository.getSingleton();
 
-  // Admin bypass is available only when the user is admin AND the feature flag
-  // is explicitly enabled in siteSettings. Computed server-side so the client
-  // never needs a role check or an extra API call.
+  // Admin bypass needs BOTH: the caller is an admin, and the setting is
+  // explicitly on. Computed server-side so the client never needs a role check
+  // or an extra API call.
+  //
+  // The setting moved from `featureFlags` to `payment` on 2026-08-29 rather
+  // than becoming purely a permission. Admins bypass every permission check
+  // (`isEffectiveAdminUser`), so a permission alone would have switched this on
+  // for every admin the moment it shipped — the opposite of what a checkout
+  // bypass wants. The permission gates WHO on the route; this gates WHETHER.
   let adminBypassEnabled = false;
   if (isAdminUser(user)) {
-    const flags = settings?.featureFlags as Record<string, JsonValue> | undefined;
-    adminBypassEnabled = flags?.[ADMIN_CHECKOUT_BYPASS_FLAG_KEY] === true;
+    const paymentSettings = settings?.payment as Record<string, JsonValue> | undefined;
+    adminBypassEnabled = paymentSettings?.[ADMIN_CHECKOUT_BYPASS_FLAG_KEY] === true;
   }
 
   // EMI visibility is controlled entirely by runtime flags — the site-wide

@@ -1,6 +1,6 @@
 "use client";
 import { Row, Stack, normalizeError, DASHBOARD_QUICK_ACTIONS, DASHBOARD_QUICK_ACTION_META, type DashboardQuickActionId } from "@mohasinac/appkit/client";
-import { AdminDashboardView, ROUTES, Span, Text, Div, Grid, Toggle, useToast, DynamicBgDiv, useFeatureFlags, CollapsibleSection, useCollapsedSections } from "@mohasinac/appkit/client";
+import { AdminDashboardView, ROUTES, Span, Text, Div, Grid, Toggle, useToast, DynamicBgDiv, CollapsibleSection, useCollapsedSections } from "@mohasinac/appkit/client";
 import { ADMIN_CHECKOUT_BYPASS_FLAG_KEY } from "@mohasinac/appkit/client";
 import {
   Plus, UserPlus, Store, Tag, Calendar, FileText, Settings,
@@ -10,7 +10,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { fetchAdminResource, getCheckoutBypassStatus, setFeatureFlags } from "@/lib/api/admin-client";
+import { fetchAdminResource, getCheckoutBypassStatus, setCheckoutBypassEnabled } from "@/lib/api/admin-client";
 import { API_ROUTES } from "@/constants";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -132,7 +132,6 @@ const DASHBOARD_SECTION_IDS = [
 
 export default function Page() {
   const { showToast } = useToast();
-  const { flags, isLoading: flagsLoading } = useFeatureFlags();
   const { isCollapsed, toggle } = useCollapsedSections({ sectionIds: DASHBOARD_SECTION_IDS });
   const [adminBypassEnabled, setAdminBypassEnabled] = useState(false);
   const [bypassLoading, setBypassLoading] = useState(false);
@@ -160,11 +159,10 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    // Wait for the flag snapshot before deciding what to fetch — Payouts and
-    // Coupons are both feature-guarded server-side (404 when off); calling
-    // them unconditionally is exactly the bug this rewrite fixes.
-    if (flagsLoading) return;
-
+    // This used to wait on a feature-flag snapshot before deciding what to
+    // fetch, because Payouts and Coupons were env-guarded and 404'd when off.
+    // Both flag systems were deleted 2026-08-29, so there is nothing to wait
+    // for — and one fewer request before the dashboard can start loading.
     const fetchJson = async <T,>(url: string, label: string): Promise<T> => {
       return fetchAdminResource<T>(url).catch((err: unknown) => { throw err instanceof Error ? err : new Error(`${label} failed`); });
     };
@@ -179,14 +177,16 @@ export default function Page() {
     const reviewsPromise = fetchJson<{ data?: { total?: number } }>(
       `${API_ROUTES.ADMIN.REVIEWS}?filters=status==pending&pageSize=1`, "reviews",
     );
-    const payoutsPromise = flags.PAYOUTS
-      ? fetchJson<{ data?: { summary?: { pending?: number } } }>(`${API_ROUTES.ADMIN.PAYOUTS}?pageSize=1`, "payouts")
-      : Promise.resolve(null);
-    const couponsPromise = flags.COUPONS
-      ? fetchJson<{ data?: { total?: number } }>(
-          `${API_ROUTES.ADMIN.COUPONS}?filters=validity.isActive==true&pageSize=1`, "coupons",
-        )
-      : Promise.resolve(null);
+    // Payouts and coupons were gated on FEATURE_PAYOUTS / FEATURE_COUPONS env
+    // flags. Both env flag systems were deleted 2026-08-29 — every flag was
+    // `true` in every environment, and the routes they guarded have their own
+    // RBAC. Fetched unconditionally now.
+    const payoutsPromise = fetchJson<{ data?: { summary?: { pending?: number } } }>(
+      `${API_ROUTES.ADMIN.PAYOUTS}?pageSize=1`, "payouts",
+    );
+    const couponsPromise = fetchJson<{ data?: { total?: number } }>(
+      `${API_ROUTES.ADMIN.COUPONS}?filters=validity.isActive==true&pageSize=1`, "coupons",
+    );
 
     Promise.all([ordersPromise, payoutsPromise, reviewsPromise, couponsPromise])
       .then(([orders, payouts, reviews, coupons]) => {
@@ -214,12 +214,12 @@ export default function Page() {
         const msg = normalizeError(err).message || "Couldn't load recent orders.";
         setLoadError((prev) => prev ?? msg);
       });
-  }, [showToast, flagsLoading, flags.PAYOUTS, flags.COUPONS]);
+  }, [showToast]);
 
   const toggleAdminBypass = useCallback(async (next: boolean) => {
     setBypassLoading(true);
     try {
-      await setFeatureFlags({ [ADMIN_CHECKOUT_BYPASS_FLAG_KEY]: next });
+      await setCheckoutBypassEnabled(next);
       setAdminBypassEnabled(next);
       showToast(next ? "Checkout bypass enabled." : "Checkout bypass disabled.", "success");
     } catch (err) {
@@ -250,11 +250,11 @@ export default function Page() {
           >
             <Grid cols="statTiles" gap="3">
               <StatCard label="Pending Orders" value={stats?.pendingOrders ?? null} href={String(ROUTES.ADMIN.ORDERS)} />
-              {flags.PAYOUTS && (
+              {(
                 <StatCard label="Pending Payouts" value={stats?.pendingPayouts ?? null} href={String(ROUTES.ADMIN.PAYOUTS)} />
               )}
               <StatCard label="Pending Reviews" value={stats?.pendingReviews ?? null} href={String(ROUTES.ADMIN.REVIEWS)} />
-              {flags.COUPONS && (
+              {(
                 <StatCard label="Active Coupons" value={stats?.activeCoupons ?? null} href={String(ROUTES.ADMIN.COUPONS)} />
               )}
             </Grid>
