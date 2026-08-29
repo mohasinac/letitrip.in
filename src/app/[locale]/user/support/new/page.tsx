@@ -1,45 +1,67 @@
 "use client";
-import { normalizeError } from "@mohasinac/appkit/client";
-import { useState } from "react";
-import { useRouter, Link } from "@/i18n/navigation";
+
+/**
+ * Open a support ticket.
+ *
+ * Fields come from `supportTicketCreateSchema`'s annotations, including the
+ * `when` on `orderId` that replaces the hand-written
+ * `{category === "order_issue" && …}` conditional, and its `superRefine` that
+ * makes the id required in that one case.
+ *
+ * The payload is built from `visibleValues`, so an order id typed and then
+ * abandoned by switching category is not submitted with a ticket that has
+ * nothing to do with an order.
+ */
+
+import { useMemo, useState } from "react";
+
 import {
+  Div,
+  FormErrorSummary,
+  FormShellContext,
+  Heading,
+  ROUTES,
+  SectionForm,
+  Stack,
+  Text,
+  applyZodIssues,
+  buildSectionsFromSchema,
+  normalizeError,
+  supportTicketCreateSchema,
+  useFormShellState,
+  useSectionFormNav,
   useSession,
   useToast,
-  ROUTES,
-  Div,
-  Heading,
-  Text,
-  Stack,
-  Row,
-  Button,
-  Form,
-  FieldInput,
-  FieldSelect,
-  FieldTextarea,
-  FormErrorSummary,
-  applyZodIssues,
-  supportTicketCreateSchema,
+  visibleValues,
 } from "@mohasinac/appkit/client";
-import { TICKET_CATEGORIES, type TicketCategory } from "@/constants";
+import { Link, useRouter } from "@/i18n/navigation";
 import { createSupportTicket } from "@/lib/api/support-client";
 
-const __P = {
-  p5: "p-[var(--appkit-space-5)]",
-} as const;
+interface Values {
+  [key: string]: unknown;
+  category: string;
+  subject: string;
+  description: string;
+  orderId: string;
+}
 
-const MIN_SUBJECT = 3;
-const MIN_DESCRIPTION = 10;
+const EMPTY: Values = { category: "general", subject: "", description: "", orderId: "" };
 
 export default function NewSupportTicketPage() {
   const router = useRouter();
   const { user, loading: sessionLoading } = useSession();
   const { showToast } = useToast();
 
-  const [category, setCategory] = useState<TicketCategory>("general");
-  const [subject, setSubject] = useState("");
-  const [orderId, setOrderId] = useState("");
-  const [description, setDescription] = useState("");
+  const [form, setForm] = useState<Values>(EMPTY);
   const [submitting, setSubmitting] = useState(false);
+
+  const sections = useMemo(() => buildSectionsFromSchema<Values>(supportTicketCreateSchema), []);
+  const nav = useSectionFormNav(sections, form, { scope: "user:support-new" });
+  const { shellCtx, setFieldError, clearErrors } = useFormShellState(supportTicketCreateSchema, {
+    sections: nav.sectionMeta,
+    onGoToSection: nav.goToSection,
+    fieldToSectionIndex: nav.fieldToSectionIndex,
+  });
 
   if (!sessionLoading && !user) {
     return (
@@ -49,20 +71,16 @@ export default function NewSupportTicketPage() {
     );
   }
 
-  async function submit(setFieldError: (name: string, error: string | null) => void) {
+  async function onSubmit() {
     if (submitting) return;
+    clearErrors();
 
-    /*
-     * The schema replaces a `canSubmit` boolean that DISABLED the button. A
-     * disabled submit with no explanation is worse than an error: the user
-     * cannot tell whether the subject is too short, the description too
-     * short, or the order id missing — the three things it silently gated on.
-     */
+    const draft = visibleValues(supportTicketCreateSchema, form) as Partial<Values>;
     const parsed = supportTicketCreateSchema.safeParse({
-      category,
-      subject: subject.trim(),
-      description: description.trim(),
-      orderId: orderId.trim() || undefined,
+      category: draft.category,
+      subject: draft.subject?.trim(),
+      description: draft.description?.trim(),
+      orderId: draft.orderId?.trim() || undefined,
     });
     if (!parsed.success) {
       applyZodIssues(parsed.error.issues, setFieldError);
@@ -74,15 +92,16 @@ export default function NewSupportTicketPage() {
       const res = await createSupportTicket(parsed.data);
       const json = await res.json();
       if (!res.ok || !json?.ok) {
-        showToast(json?.error ?? "Could not create ticket.", "error");
+        // On a field, not a toast — the route names what it objected to.
+        setFieldError("subject", json?.error ?? "Could not create ticket.");
         return;
       }
       showToast("Ticket created.", "success");
       const newId = json?.data?.id ?? json?.data?.ticket?.id;
       router.push(String(newId ? ROUTES.USER.SUPPORT_TICKET(newId) : ROUTES.USER.SUPPORT));
-    } catch (e: any) {
-      void normalizeError(e);
-      showToast(e?.message ?? "Network error.", "error");
+    } catch (e: unknown) {
+      const normalized = normalizeError(e);
+      setFieldError("subject", normalized.message ?? "Network error.");
     } finally {
       setSubmitting(false);
     }
@@ -97,87 +116,36 @@ export default function NewSupportTicketPage() {
         >
           ← All tickets
         </Link>
-        <Heading level={1} className="text-[var(--appkit-color-text)] mt-1" size="2xl" weight="semibold">
+        <Heading
+          level={1}
+          className="text-[var(--appkit-color-text)] mt-1"
+          size="2xl"
+          weight="semibold"
+        >
           New support ticket
         </Heading>
         <Text variant="secondary" className="mt-0.5" size="sm">
-          Tell us what happened. Include as much detail as you can — order ids, product names, what you expected and what you got. We typically respond within 24 hours.
+          Tell us what happened. Include as much detail as you can — order ids, product names, what
+          you expected and what you got. We typically respond within 24 hours.
         </Text>
       </Div>
 
-      <Form
-        schema={supportTicketCreateSchema}
-        onSubmit={(e) => e.preventDefault()}
-        className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5} rounded-xl`}
-      >
-        {({ setFieldError, clearErrors }) => (
-        <Stack gap="md">
+      <FormShellContext.Provider value={shellCtx}>
         <FormErrorSummary />
-        <FieldSelect
-          name="category"
-          label="Category"
-          value={category}
-          onChange={(v) => setCategory(v as TicketCategory)}
-          options={[...TICKET_CATEGORIES]}
+        <SectionForm<Values>
+          sections={sections}
+          values={form}
+          onChange={(partial) => setForm((prev) => Object.assign({}, prev, partial))}
+          onSubmit={onSubmit}
+          schema={supportTicketCreateSchema}
+          openIds={nav.openIds}
+          onOpenChange={nav.setOpenIds}
+          isLoading={submitting}
+          submitLabel="Submit ticket"
+          onCancel={() => router.push(String(ROUTES.USER.SUPPORT))}
+          cancelLabel="Cancel"
         />
-
-        {category === "order_issue" && (
-          <FieldInput
-            name="orderId"
-            label="Order ID"
-            placeholder="e.g. order-3-20260508-a1b2c3"
-            value={orderId}
-            onChange={setOrderId}
-            hint="Required for order issues. You can find this on My Orders."
-            required
-          />
-        )}
-
-        <FieldInput
-          name="subject"
-          label="Subject"
-          placeholder="Short summary (e.g. Wrong item delivered)"
-          value={subject}
-          onChange={setSubject}
-          required
-          hint={`${subject.trim().length}/200 — at least ${MIN_SUBJECT} characters`}
-        />
-
-        <FieldTextarea
-          name="description"
-          label="Describe the issue"
-          value={description}
-          onChange={setDescription}
-          rows={8}
-          placeholder="What happened, when, and what would you like us to do? Include screenshots in a follow-up reply if helpful."
-          required
-          hint={`${description.trim().length}/5000 — at least ${MIN_DESCRIPTION} characters`}
-        />
-
-        <Row gap="sm" padding="t-xs">
-          <Button
-            type="submit"
-            variant="primary"
-            onClick={() => {
-              clearErrors();
-              void submit(setFieldError);
-            }}
-            disabled={submitting}
-          >
-            {submitting ? "Submitting…" : "Submit ticket"}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.push(String(ROUTES.USER.SUPPORT))}
-            disabled={submitting}
-          >
-            Cancel
-          </Button>
-        </Row>
-        </Stack>
-        )}
-      </Form>
+      </FormShellContext.Provider>
     </Stack>
   );
 }
