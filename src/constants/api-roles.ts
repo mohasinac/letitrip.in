@@ -24,6 +24,16 @@ export const USER_ROLE = {
   EMPLOYEE: "employee",
   MODERATOR: "moderator",
   SELLER: "seller",
+  /**
+   * QA tester. A peer of SELLER, not a rank above it — a tester owns a real,
+   * auto-approved store, so every tuple that admits SELLER must admit TESTER
+   * or the Tester QA Program cannot reach its own storefront.
+   *
+   * Replaces the `isTester` boolean. Admin-surface access is the separate
+   * `tester:admin-surfaces` permission, which is why TESTER appears in the
+   * store tuples below but in none of the admin ones.
+   */
+  TESTER: "tester",
   USER: "user",
 } as const satisfies Record<string, UserRole>;
 
@@ -50,12 +60,14 @@ export const ROLES_TRUST_SAFETY: readonly UserRole[] = [
 /** Seller dashboard write-paths — own store only; admin escalation. */
 export const ROLES_STORE_WRITE: readonly UserRole[] = [
   USER_ROLE.SELLER,
+  USER_ROLE.TESTER,
   USER_ROLE.ADMIN,
 ];
 
 /** Seller dashboard read-paths — same plus moderators for support review. */
 export const ROLES_STORE_READ: readonly UserRole[] = [
   USER_ROLE.SELLER,
+  USER_ROLE.TESTER,
   USER_ROLE.ADMIN,
   USER_ROLE.MODERATOR,
 ];
@@ -65,6 +77,7 @@ export const ROLES_ANY_STAFF: readonly UserRole[] = [
   USER_ROLE.ADMIN,
   USER_ROLE.MODERATOR,
   USER_ROLE.SELLER,
+  USER_ROLE.TESTER,
 ];
 
 /**
@@ -76,6 +89,7 @@ export const ROLES_ANY_STAFF: readonly UserRole[] = [
 export const ROLES_AUTHENTICATED: readonly UserRole[] = [
   USER_ROLE.USER,
   USER_ROLE.SELLER,
+  USER_ROLE.TESTER,
   USER_ROLE.MODERATOR,
   USER_ROLE.ADMIN,
 ];
