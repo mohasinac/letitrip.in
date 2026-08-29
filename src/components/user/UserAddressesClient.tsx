@@ -230,7 +230,8 @@ export function UserAddressesClient() {
         title="Request Address Unban"
         mode="edit"
         footer={
-          <Row gap="3" justify="end">
+          /* Bare buttons — the SideDrawer footer slot supplies the ActionRow. */
+          <>
             <Button
               type="button"
               variant="outline"
@@ -252,7 +253,7 @@ export function UserAddressesClient() {
             >
               {requestUnban.isPending ? "Submitting…" : "Submit Request"}
             </Button>
-          </Row>
+          </>
         }
       >
         <Stack gap="md">

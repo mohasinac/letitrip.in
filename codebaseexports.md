@@ -212,6 +212,7 @@
 | Alert.tsx | Alert | Component | Alert banner (success/error/warning/info) |
 | Tooltip.tsx | Tooltip | Component | Hover tooltip |
 | Avatar.tsx | Avatar | Component | User avatar with fallback |
+| ActionRow.tsx | ActionRow | Component | The one layout law for every CTA / footer action row. Each action is sized from its own label and only the leftover is shared; labels wrap instead of truncating; the row wraps instead of crushing. `align`: fill (bars, sheets) / end / start; `anchor` slot for left-hand meta, which replaces every justify-between + spacer footer. Adopted by BottomActions, Modal, RecordDetailModal, Drawer + SideDrawer + SideModal footer slots, FormShell, QuickFormDrawer, FormActionBar, FilterDrawer, ListingLayout, QuickCreateModal. NOT for BulkActionBar (fixed 3-control composite) |
 | Accordion.tsx | Accordion, AccordionItem | Component | Expandable accordion panels |
 | Tabs.tsx | Tabs, TabsList, TabsTrigger (badge/label props), TabsContent | Component | Tab navigation — TabsList collapses to a colored dropdown past 5 triggers; canonical primitive for every tab strip in the app (2026-08-19: absorbed CategoryDetailTabs/BrandDetailTabs/DetailPageTabs/TabStrip/FAQCategoryTabs/homepage FAQ tabs) |
 | Pagination.tsx | Pagination | Component | Page navigation controls |

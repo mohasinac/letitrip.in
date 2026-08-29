@@ -1746,7 +1746,6 @@ export function CheckoutRouteClient({
       variant: "ghost" as const,
       disabled: false,
       onClick: handleStepBack,
-      grow: false,
     };
     if (step === "address") {
       return [{
@@ -1755,7 +1754,6 @@ export function CheckoutRouteClient({
         variant: "primary" as const,
         disabled: !selectedAddress || addressesLoading || cartIsEmpty,
         onClick: handleAdvanceToExtras,
-        grow: true,
       }];
     }
     if (step === "extras") {
@@ -1765,7 +1763,6 @@ export function CheckoutRouteClient({
         variant: "primary" as const,
         disabled: !selectedAddress || cartIsEmpty,
         onClick: handleAdvanceToPayment,
-        grow: true,
       }];
     }
     if (step === "value-otp") {
@@ -1775,7 +1772,6 @@ export function CheckoutRouteClient({
         variant: "primary" as const,
         disabled: isVerifyingValueOtp || valueOtpCode.length < 6,
         onClick: () => requireAuth(ACTION_ID.VERIFY_OTP, handleVerifyValueOtp),
-        grow: true,
       }];
     }
     if (step === "processing") return [];
@@ -1793,7 +1789,7 @@ export function CheckoutRouteClient({
       // No enabled payment method means no CTA — the in-page step already says
       // so, and a bar that does nothing is worse than no bar.
       if (!primary) return [backAction];
-      return [backAction, { ...primary, variant: "primary" as const, disabled, grow: true }];
+      return [backAction, { ...primary, variant: "primary" as const, disabled }];
     }
     return [];
 
