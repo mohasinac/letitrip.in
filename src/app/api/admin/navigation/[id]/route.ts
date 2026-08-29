@@ -74,7 +74,7 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:navigation:delete",
+    permission: "admin:navigation:write",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const items = await getNavItems();

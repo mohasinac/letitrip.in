@@ -103,7 +103,7 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:sections:delete",
+    permission: "admin:sections:write",
     handler: async ({ params, user }) => {
       const id = params?.id as string | undefined;
 

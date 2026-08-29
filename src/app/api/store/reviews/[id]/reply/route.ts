@@ -21,7 +21,6 @@ const replySchema = z.object({
 export const POST = withProviders(createApiHandler<{ reply: string }>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
   schema: replySchema,
   handler: async ({ params, body, user }) => {
     const reviewId = (params as Record<string, string>).id;

@@ -49,7 +49,6 @@ const updatePayoutSchema = z.discriminatedUnion("method", [upiSchema, bankSchema
 export const GET = withProviders(createApiHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
   handler: async ({ user }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);
     return successResponse({
@@ -66,7 +65,6 @@ export const GET = withProviders(createApiHandler({
 export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)["_output"]>({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
   schema: updatePayoutSchema,
   handler: async ({ user, body }) => {
     const data = body!;

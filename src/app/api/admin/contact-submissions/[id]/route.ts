@@ -57,7 +57,7 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:contact:delete",
+    permission: "admin:contact:write",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const submission = await contactSubmissionsRepository.findById(id);

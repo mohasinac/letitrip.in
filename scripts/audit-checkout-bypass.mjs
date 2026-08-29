@@ -8,7 +8,7 @@
  *   1. Only `src/app/api/admin/checkout-bypass/route.ts` may read or write
  *      the `adminCheckoutBypass` flag at runtime.
  *   2. That route MUST be wrapped by createRouteHandler with admin-only roles
- *      and the `settings:write` permission.
+ *      and the `admin:checkout:bypass` permission.
  *   3. Every bypass invocation MUST be logged with `actorUid` and `reason`
  *      fields so the audit trail captures who used it and why.
  *
@@ -79,8 +79,12 @@ if (routeSrc === null) {
   if (!/ROLES_ADMIN_ONLY\b/.test(cleaned) && !/roles\s*:\s*\[\s*["']admin["']\s*\]/.test(cleaned)) {
     violations.push(`${relative(ROOT, TARGET_ROUTE)} :: createRouteHandler not gated to ROLES_ADMIN_ONLY`);
   }
-  if (!/permission\s*:\s*["']settings:write["']/.test(cleaned)) {
-    violations.push(`${relative(ROOT, TARGET_ROUTE)} :: createRouteHandler missing permission: "settings:write"`);
+  // `settings:write` until 2026-08-29 — a string that was never a member of the
+  // Permission union, so this rule asserted a gate that could not be granted to
+  // anyone. Now `admin:checkout:bypass`, which is real and replaces the
+  // `featureFlags.adminCheckoutBypass` toggle.
+  if (!/permission\s*:\s*["']admin:checkout:bypass["']/.test(cleaned)) {
+    violations.push(`${relative(ROOT, TARGET_ROUTE)} :: createRouteHandler missing permission: "admin:checkout:bypass"`);
   }
   if (!/\bactorUid\b/.test(cleaned)) {
     violations.push(`${relative(ROOT, TARGET_ROUTE)} :: bypass log missing actorUid field`);

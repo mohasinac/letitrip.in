@@ -10,7 +10,6 @@ import { ROLES_STORE_READ } from "@/constants";
 
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_STORE_READ],
-    permission: "store:api:read",
   handler: async ({ user }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);
     return successResponse({ store: store ?? null });

@@ -11,7 +11,6 @@ import { ROLES_STORE_WRITE } from "@/constants";
 
 export const POST = withProviders(createApiHandler({
   roles: [...ROLES_STORE_WRITE],
-  permission: "store:api:write",
   handler: async ({ request, user, params }) => {
     const reviewId = (params as { id: string }).id;
 

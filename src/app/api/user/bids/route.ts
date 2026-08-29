@@ -18,7 +18,6 @@ const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: ROLES_AUTHENTICATED,
-    permission: "bids:read",
     handler: async ({ user, request }) => {
       const url = new URL(request.url);
       const page = Math.max(1, Number(url.searchParams.get("page")) || 1);

@@ -28,7 +28,6 @@ const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: ROLES_AUTHENTICATED,
-    permission: "bids:read",
     handler: async ({ params, user }) => {
       const id = (params as { id: string }).id;
       const bid = await bidRepository.findById(id);

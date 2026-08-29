@@ -74,7 +74,6 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: ROLES,
-    permission: "store:api:write",
     handler: async ({ params, user }) => {
       const id = (params as { id: string }).id;
       const privileged = isAdminUser(user) || isEmployeeUser(user);

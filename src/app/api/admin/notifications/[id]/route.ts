@@ -11,7 +11,7 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:notifications:delete",
+    permission: "admin:notifications:write",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const existing = await notificationRepository.findById(id);

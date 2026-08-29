@@ -50,7 +50,7 @@ const __DELETE__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:bids:delete",
+    permission: "admin:bids:write",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const bid = await bidRepository.findById(id);

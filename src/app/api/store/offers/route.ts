@@ -11,7 +11,6 @@ import { offerDocumentToOffer } from "@mohasinac/appkit/server";
 
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_STORE_READ],
-    permission: "store:api:read",
   handler: async ({ request, user }) => {
     const url = new URL(request.url);
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);

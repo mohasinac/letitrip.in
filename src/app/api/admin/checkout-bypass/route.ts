@@ -31,7 +31,7 @@ export const GET = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "settings:write",
+    permission: "admin:checkout:bypass",
     handler: async () => {
       const settings = await siteSettingsRepository.getSingleton();
       const enabled = settings?.featureFlags?.adminCheckoutBypass === true;
@@ -50,7 +50,7 @@ export const POST = withProviders(
   createRouteHandler<(typeof bypassSchema)["_output"]>({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "settings:write",
+    permission: "admin:checkout:bypass",
     schema: bypassSchema,
     handler: async ({ user, body }) => {
       // Guard: feature flag must be explicitly enabled server-side.

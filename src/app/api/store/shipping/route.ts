@@ -30,7 +30,6 @@ const updateShippingSchema = z.object({
 export const GET = withProviders(createApiHandler({
   auth: true,
   roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
   handler: async ({ user }) => {
     const config = user!.shippingConfig as SellerShippingConfig | undefined;
     return successResponse({
@@ -45,7 +44,6 @@ export const PATCH = withProviders(createApiHandler<(typeof updateShippingSchema
   {
     auth: true,
     roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
     schema: updateShippingSchema,
     handler: async ({ user, body }) => {
       const data = body!;

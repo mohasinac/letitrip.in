@@ -22,7 +22,6 @@ const DEFAULT_SORT = sortBy(PRODUCT_FIELDS.CREATED_AT, "DESC");
 
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_STORE_READ],
-    permission: "store:api:read",
   handler: async ({ request, user }) => {
     // Resolve the store owned by this user â€” storeId is the public-facing key on products
     const store = await storeRepository.findByOwnerId(user!.uid);

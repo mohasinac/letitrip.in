@@ -15,7 +15,7 @@ import { ROLES_ADMIN_MOD } from "@/constants";
 export const PATCH = withProviders(
   createRouteHandler({
     roles: ROLES_ADMIN_MOD,
-    permission: "orders:manage",
+    permission: "admin:orders:write",
     handler: async ({ params }) => {
       const { id } = params as { id: string };
 

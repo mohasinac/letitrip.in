@@ -6,7 +6,6 @@ const BULK_MAX = 50;
 
 export const PATCH = withProviders(createApiHandler({
   roles: [...ROLES_STORE_WRITE],
-    permission: "store:api:write",
   handler: async ({ request, user }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store) return ApiErrors.forbidden("No store found for this account");

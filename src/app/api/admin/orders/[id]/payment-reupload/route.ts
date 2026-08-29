@@ -23,7 +23,7 @@ const schema = z.object({
 export const PATCH = withProviders(
   createRouteHandler<(typeof schema)["_output"]>({
     roles: ROLES_ADMIN_MOD,
-    permission: "orders:manage",
+    permission: "admin:orders:write",
     schema,
     handler: async ({ params, body }) => {
       const { id } = params as { id: string };

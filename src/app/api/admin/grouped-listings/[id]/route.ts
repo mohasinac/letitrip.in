@@ -64,7 +64,7 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    permission: "admin:content:write",
+    permission: "admin:products:write",
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       await groupedListingsRepository.delete(id);
