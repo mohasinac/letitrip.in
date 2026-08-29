@@ -54,13 +54,39 @@ const SUPPRESSION = "audit-child-wrapper-ok";
  * Every internal element an appkit primitive puts between its root and the
  * consumer's `{children}`.
  *
- * `collapses: true`  — the wrapper is a flex/inline-flex box, so it needs the
- *                      full REQUIRED_RULES set or fill children render blank.
- * `collapses: false` — the wrapper is block-level (`width: auto` fills the
- *                      parent, height grows with content), so a fill child still
- *                      resolves correctly. `reason` records why it is exempt.
+ * `collapses: true`      — the wrapper is a flex/inline-flex box that must be
+ *                          TRANSPARENT: it needs the full REQUIRED_RULES set, or
+ *                          fill children render blank AND the root's own flex
+ *                          props never reach the real children.
+ * `collapses: false`     — the wrapper is block-level (`width: auto` fills the
+ *                          parent, height grows with content), so a fill child
+ *                          still resolves correctly. `reason` records why.
+ * `collapses: "guarded"` — the wrapper IS flex, but it deliberately owns its
+ *                          own layout rather than inheriting (so REQUIRED_RULES
+ *                          would defeat its purpose), AND it gives every direct
+ *                          child an explicit non-zero floor in both axes. That
+ *                          floor is what makes a fill child safe — the same
+ *                          mechanism that made `ImageGallery` immune to Root
+ *                          Cause #68 while twelve of its neighbours collapsed.
+ *
+ *                          It is CHECKED, not asserted in prose: `guardedBy`
+ *                          names the child selector, and GUARD_RULES below
+ *                          require a `min-width` and a `min-height` on it. A
+ *                          prose-only exemption would keep passing on the day
+ *                          somebody deletes that floor.
  */
 const WRAPPERS = [
+  {
+    cls: "appkit-action-row__group",
+    css: join(APPKIT_UI, "ActionRow.style.css"),
+    collapses: "guarded",
+    guardedBy: "appkit-action-row__group > *",
+    reason:
+      "flex, but owns its layout on purpose: `flex-wrap: wrap` + `align-items: stretch` " +
+      "are what give equal button heights when one label wraps and its neighbour does not, " +
+      "so inheriting align-items from the row (which is `center`) would defeat the rule. " +
+      "Safe because every direct child is given a min-width and min-height floor.",
+  },
   {
     cls: "appkit-button__content",
     css: join(APPKIT_UI, "Button.style.css"),
@@ -166,7 +192,82 @@ function ruleBodyFor(css, cls) {
   return bodies.length ? bodies.join("\n") : null;
 }
 
+/**
+ * The body of the rule whose selector is EXACTLY `selector`.
+ *
+ * Deliberately not `ruleBodyFor`, which matches a class anywhere in a selector
+ * and joins every hit. For the guard check that is unsound: a floor declared on
+ * `.x > .icon-only` would satisfy a claim made about `.x > *`, and the audit
+ * would keep passing after the real floor was deleted — which is exactly the
+ * false pass this check was written to avoid.
+ */
+function exactRuleBody(css, selector) {
+  const want = selector.replace(/\s+/g, " ").trim();
+  let cursor = 0;
+  while (true) {
+    const open = css.indexOf("{", cursor);
+    if (open === -1) return null;
+    const close = css.indexOf("}", open);
+    if (close === -1) return null;
+    const commentEnd = css.lastIndexOf("*/", open);
+    const prevBoundary = Math.max(
+      css.lastIndexOf("}", open),
+      css.lastIndexOf("{", open - 1),
+      commentEnd,
+    );
+    // `lastIndexOf("*/")` points at the `*`, so slicing from +1 leaves the `/`
+    // glued to the front of the selector. Harmless for `ruleBodyFor`, which only
+    // regex-tests, and fatal here where the comparison is exact.
+    const selStart = prevBoundary === commentEnd && commentEnd !== -1
+      ? prevBoundary + 2
+      : prevBoundary + 1;
+    const sel = css.slice(selStart, open).replace(/\s+/g, " ").trim();
+    // A selector list — `.a > *, .b > *` — counts if any of its parts match.
+    if (sel.split(",").some((part) => part.replace(/\s+/g, " ").trim() === want)) {
+      return css.slice(open + 1, close);
+    }
+    cursor = close + 1;
+  }
+}
+
+/**
+ * What a `collapses: "guarded"` wrapper must give its direct children. Both
+ * axes, because a fill child collapses in whichever one lacks a floor.
+ */
+const GUARD_RULES = [
+  { prop: "min-width", re: /\bmin-width\s*:\s*(?!0\b)[^;]+/ },
+  { prop: "min-height", re: /\bmin-height\s*:\s*(?!0\b)[^;]+/ },
+];
+
 for (const w of WRAPPERS) {
+  if (w.collapses === "guarded") {
+    const css = existsSync(w.css) ? readFileSync(w.css, "utf8") : null;
+    if (css === null) {
+      violations.push(`${relative(ROOT, w.css)} — stylesheet for .${w.cls} not found`);
+      continue;
+    }
+    const guardBody = exactRuleBody(css, `.${w.guardedBy}`);
+    if (guardBody === null) {
+      violations.push(
+        `${relative(ROOT, w.css)} — .${w.cls} is registered \`guarded\` by ` +
+          `\`.${w.guardedBy}\`, but no such rule exists. The exemption rests on that ` +
+          `rule giving every child a size floor; without it the wrapper is an ` +
+          `ordinary collapsing flex box (Root Cause #68).`,
+      );
+      continue;
+    }
+    for (const rule of GUARD_RULES) {
+      if (!rule.re.test(guardBody)) {
+        violations.push(
+          `${relative(ROOT, w.css)} — \`.${w.guardedBy}\` is missing a non-zero ` +
+            `\`${rule.prop}\`, so .${w.cls} no longer guarantees its children a floor ` +
+            `on that axis. Either restore it or re-register .${w.cls} as ` +
+            `\`collapses: true\` and satisfy the full rule set.`,
+        );
+      }
+    }
+    continue;
+  }
   if (!w.collapses) continue;
   if (!existsSync(w.css)) {
     violations.push(`${relative(ROOT, w.css)} — stylesheet for .${w.cls} not found`);

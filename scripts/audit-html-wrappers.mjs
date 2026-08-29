@@ -17,6 +17,7 @@
  */
 
 import { readFileSync, readdirSync } from "node:fs";
+import { stripComments } from "./lib/strip-comments.mjs";
 import { join, extname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dirname } from "node:path";
@@ -254,12 +255,21 @@ const violations = [];
 
 for (const dir of SCAN_DIRS) {
   for (const file of walk(dir)) {
-    const lines = readFileSync(file, "utf8").split("\n");
+    const raw = readFileSync(file, "utf8");
+    /*
+     * Match against comment-blanked source, not the raw text. The per-line
+     * `startsWith("//" | "*" | "/*")` guard below only ever caught a comment
+     * whose FIRST line it was looking at — a continuation line inside a
+     * multi-line `{/* … *\/}` JSX comment starts with an ordinary word and
+     * sailed through, so prose describing a `<span />` was reported as one.
+     * `stripComments` preserves newlines and byte offsets, so `i + 1` still
+     * points at the real line.
+     */
+    const lines = stripComments(raw).split("\n");
+    const rawLines = raw.split("\n");
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      // Skip comments and import lines
       const trimmed = line.trim();
-      if (trimmed.startsWith("//") || trimmed.startsWith("*") || trimmed.startsWith("/*")) continue;
       if (trimmed.startsWith("import ")) continue;
 
       for (const rule of RULES) {
@@ -269,7 +279,9 @@ for (const dir of SCAN_DIRS) {
           rule: rule.id,
           file: relative(ROOT, file),
           line: i + 1,
-          text: trimmed.slice(0, 100),
+          // Report the ORIGINAL line — the stripped one has comment text
+          // blanked, which would show a violation with half its context gone.
+          text: (rawLines[i] ?? line).trim().slice(0, 100),
           message: rule.message,
           fix: rule.fix,
           baselineDrift: !!rule.baselineDrift,

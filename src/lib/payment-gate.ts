@@ -22,9 +22,7 @@ import { siteSettingsRepository } from "@mohasinac/appkit";
  * is the safe direction for money — the opposite of the fail-open rule that
  * governs display-only settings reads elsewhere.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function withRazorpayEnabled(handler: (...args: any[]) => any) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return async (...args: any[]) => {
     const settings = await siteSettingsRepository.getSingleton();
     if (settings?.payment?.razorpayEnabled !== true) {
