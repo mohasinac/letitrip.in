@@ -144,7 +144,6 @@ const SUPPRESS_RE = /audit-form-sectionised-ok:/;
  */
 const GRANDFATHERED = new Set([
   "appkit/src/_internal/client/features/lottery/LotteryAdminEditView.tsx",
-  "appkit/src/_internal/client/features/lottery/LotteryPullForm.tsx",
   "appkit/src/features/account/components/AddressForm.tsx",
   "appkit/src/features/account/components/UserSupportView.tsx",
   "appkit/src/features/admin/components/AdminAdEditorView.tsx",
@@ -163,7 +162,6 @@ const GRANDFATHERED = new Set([
   "appkit/src/features/admin/components/AdminSupportTicketDetailView.tsx",
   "appkit/src/features/admin/components/AdminTesterChecklistItemEditorView.tsx",
   "appkit/src/features/admin/components/AdminUserEditorView.tsx",
-  "appkit/src/features/auth/components/RegisterForm.tsx",
   "appkit/src/features/products/components/GroupSettingsPanel.tsx",
   "appkit/src/features/seller/components/SellerAnalyticsAlertsView.tsx",
   "appkit/src/features/seller/components/SellerCouponEditorView.tsx",
