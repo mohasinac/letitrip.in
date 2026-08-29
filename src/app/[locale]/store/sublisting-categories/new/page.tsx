@@ -1,46 +1,98 @@
 "use client";
 
-import React, { useState } from "react";
+/**
+ * Create a sub-listing category.
+ *
+ * Follows the recipe worked out on `store/categories/new` — the fields are not
+ * written out at all. `buildSectionsFromSchema` reads the section / row / order
+ * annotations off `sublistingCategoryFormSchema` and produces them, so adding a
+ * field to the schema puts it on this page, in the right section, with no
+ * second edit.
+ *
+ * ## What this replaced
+ *
+ * Three raw `<Label>` + `<Input>` pairs, each carrying an inline copy of the
+ * same ~200-character Tailwind class string, and a submit gated only on
+ * `!name.trim()` — so `itemCode` and `description` had no bounds on the client
+ * at all, and the schema was passed to `<Form>` without anything ever executing
+ * it. `<SectionForm>` parses on every change, so the schema is now load-bearing.
+ *
+ * It also picks up the pinned mobile action bar, which is the real argument for
+ * putting a short form through `<SectionForm>`: on a phone the Create button was
+ * otherwise below the fold.
+ */
 
+import {
+  Div,
+  Heading,
+  Text,
+  ROUTES,
+  FormShellContext,
+  FormErrorSummary,
+  SectionForm,
+  buildSectionsFromSchema,
+  useSectionFormNav,
+  useFormShellState,
+  applyZodIssues,
+  useApiMutation,
+  apiClient,
+  normalizeError,
+  sublistingCategoryFormSchema,
+  useToast,
+} from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
-import { Heading, ROUTES, Row, Text } from "@mohasinac/appkit/client";
-import { Div, Button, Form, Label, Input, Textarea, useApiMutation, apiClient } from "@mohasinac/appkit/client";
-import { normalizeError } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
-import { sublistingCategoryFormSchema } from "@mohasinac/appkit/client";
-import { FormErrorSummary } from "@mohasinac/appkit/client";
+import { useMemo, useState } from "react";
 
-const LBL_CLS = "block text-[length:var(--appkit-text-sm)] font-medium text-[var(--appkit-color-text-muted)] mb-1";
+interface Values {
+  [key: string]: string;
+  name: string;
+  itemCode: string;
+  description: string;
+}
+
+const EMPTY: Values = { name: "", itemCode: "", description: "" };
 
 export default function Page() {
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [itemCode, setItemCode] = useState("");
-  const [description, setDescription] = useState("");
-  const [error, setError] = useState("");
+  const { showToast } = useToast();
+  const [form, setForm] = useState<Values>(EMPTY);
+
+  const sections = useMemo(
+    () => buildSectionsFromSchema<Values>(sublistingCategoryFormSchema),
+    [],
+  );
+
+  const nav = useSectionFormNav(sections, form);
+  const { shellCtx, setFieldError } = useFormShellState(sublistingCategoryFormSchema, {
+    sections: nav.sectionMeta,
+    onGoToSection: nav.goToSection,
+    fieldToSectionIndex: nav.fieldToSectionIndex,
+  });
 
   const createMutation = useApiMutation({
-    mutationFn: (payload: { name: string; itemCode?: string; description?: string }) =>
+    // Authored copy, on the mutation rather than in an onError toast: the
+    // mutation already owns the failure surface, so toasting here too shows the
+    // same failure twice.
+    errorMessage: "Failed to create category.",
+    mutationFn: (payload: Record<string, string | undefined>) =>
       apiClient.post(API_ROUTES.STORE.SUBLISTING_CATEGORIES, payload),
     onSuccess: () => {
+      showToast("Category created.", "success");
       router.push(String(ROUTES.STORE.SUBLISTING_CATEGORIES));
     },
-    onError: (err: Error) => {
-      void normalizeError(err);
-      // Authored copy only — never the rejection's own message.
-      setError("Failed to create category.");
-    },
   });
-  const saving = createMutation.isPending;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) return;
-    setError("");
+  const onSubmit = () => {
+    const parsed = sublistingCategoryFormSchema.safeParse(form);
+    if (!parsed.success) {
+      applyZodIssues(parsed.error.issues, setFieldError);
+      return;
+    }
     createMutation.mutate({
-      name: name.trim(),
-      itemCode: itemCode.trim() || undefined,
-      description: description.trim() || undefined,
+      name: parsed.data.name,
+      itemCode: parsed.data.itemCode || undefined,
+      description: parsed.data.description || undefined,
     });
   };
 
@@ -56,80 +108,22 @@ export default function Page() {
         </Text>
       </Div>
 
-      <Form schema={sublistingCategoryFormSchema} onSubmit={handleSubmit} spacing="md">
-        <>
-
-        <FormErrorSummary />          <Label className={LBL_CLS}>
-            Category name <Text as="span" className="text-error">*</Text>
-          </Label>
-          <Input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            maxLength={120}
-            placeholder="e.g. Base Set Charizard 108/120"
-            className="w-full rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-4)] py-[var(--appkit-space-2-5)] text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
-          />
-        </>
-
-        <>
-          <Label className={LBL_CLS}>
-            Item code
-          </Label>
-          <Input
-            type="text"
-            value={itemCode}
-            onChange={(e) => setItemCode(e.target.value)}
-            maxLength={40}
-            placeholder="e.g. PSA 10, 108/120, WOTC, STH"
-            className="w-full rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-4)] py-[var(--appkit-space-2-5)] text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)]"
-          />
-          <Text className="mt-1" color="faint" size="xs">
-            Grade, card number, set code, or series. Optional but helps buyers find matches.
-          </Text>
-        </>
-
-        <>
-          <Label className={LBL_CLS}>
-            Description
-          </Label>
-          <Textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            maxLength={500}
-            rows={3}
-            placeholder="Brief description shown on the public category page…"
-            className="w-full rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-4)] py-[var(--appkit-space-2-5)] text-[length:var(--appkit-text-sm)] text-[var(--appkit-color-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--appkit-color-primary)] resize-none"
-          />
-        </>
-
-        {error && (
-          <Div textSize="sm" className="border border-error/20" color="error" surface="danger-surface" padding="inline" rounded="xl">
-            {error}
-          </Div>
-        )}
-
-        <Row gap="3" padding="t-xs">
-          <Button rounded="lg"
-            type="submit"
-            variant="primary"
-            disabled={!name.trim() || saving}
-            paddingX="lg" textSize="sm" weight="semibold"
-            paddingY="y-xs-tall" className="hover:opacity-90 transition-opacity disabled:opacity-50"
-          >
-            {saving ? "Creating…" : "Create category"}
-          </Button>
-          <Button rounded="lg" 
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-            className="px-[var(--appkit-space-5)] py-[var(--appkit-space-2-5)] text-[length:var(--appkit-text-sm)] font-medium"
-          >
-            Cancel
-          </Button>
-        </Row>
-      </Form>
+      <FormShellContext.Provider value={shellCtx}>
+        <FormErrorSummary />
+        <SectionForm<Values>
+          sections={sections}
+          values={form}
+          onChange={(partial) => setForm((prev) => Object.assign({}, prev, partial))}
+          onSubmit={onSubmit}
+          schema={sublistingCategoryFormSchema}
+          openIds={nav.openIds}
+          onOpenChange={nav.setOpenIds}
+          isLoading={createMutation.isPending}
+          submitLabel="Create category"
+          onCancel={() => router.back()}
+          cancelLabel="Cancel"
+        />
+      </FormShellContext.Provider>
     </Div>
   );
 }
