@@ -316,14 +316,6 @@ export { listOrdersAction, getOrderByIdAction } from "./order.actions";
 // Cart read (auth required)
 export { getCartAction } from "./cart.actions";
 
-// Chat actions (auth required)
-export {
-  getChatRoomsAction,
-  createOrGetChatRoomAction,
-  sendChatMessageAction,
-  deleteChatRoomAction,
-} from "./chat.actions";
-
 // Profile reads (auth required + public)
 export {
   getMyProfileAction,

@@ -94,16 +94,21 @@ function recordDeployed(targets) {
     const abs = join(ROOT, file);
     if (!existsSync(abs)) continue;
     record[file] = createHash("sha256")
-      .update(readFileSync(abs, "utf8").replace(/
-/g, "
-"))
+      // CRLF -> LF before hashing, so a Windows checkout and a Linux one
+      // produce the same digest for an unchanged file.
+      //
+      // 🛑 This was written with LITERAL newlines inside the regex literal and
+      // the replacement string — `.replace(/<LF>/g, "<LF>")` — which is not
+      // valid JS. `scripts/firebase.mjs` therefore failed to PARSE, so
+      // `npm run firebase -- generate` (the mandatory first step of the
+      // Firebase deploy checklist) could not run at all.
+      .update(readFileSync(abs, "utf8").replace(/\r\n/g, "\n"))
       .digest("hex");
     touched++;
   }
   if (touched === 0) return;
   record.deployedAt = new Date().toISOString();
-  writeFileSync(DEPLOY_RECORD, JSON.stringify(record, null, 2) + "
-", "utf8");
+  writeFileSync(DEPLOY_RECORD, JSON.stringify(record, null, 2) + "\n", "utf8");
   console.log(`  ✓ recorded ${touched} deployed artifact(s) in firebase-deployed.json`);
 }
 

@@ -73,6 +73,23 @@ const BANNED = [
   { rx: /\bFEATURE_FLAG_META\b/, label: "FEATURE_FLAG_META — the admin flag list" },
   { rx: /process\.env\.FEATURE_[A-Z_]+/, label: "a raw process.env.FEATURE_* read" },
   { rx: /\bfeatureFlags\s*[:?.]/, label: "a `featureFlags` property — the deleted settings group" },
+  /*
+   * 🛑 The pattern this audit was NAMED for, and did not have.
+   *
+   * Every rule above targets one of the two systems deleted in W2f, so a bare
+   * `FEATURE_FLAGS` object literal matched none of them — and one was live the
+   * whole time: `appkit/src/core/site-config.ts` exported
+   * `FEATURE_FLAGS = { CHAT_ENABLED: false }` with four readers, gating the
+   * entire chatRooms stack off at runtime, while this audit printed
+   * "clean ✓ (no flag concept in the tree)".
+   *
+   * The recorded definition of done — `git grep featureFlags|withFeatureGuard|
+   * useFeatureFlags|getFlag(` returning zero — was satisfied and still wrong,
+   * because that grep was a restatement of the same narrow list. A rule
+   * narrower than its own claim is the W3-denominator failure (Root Cause #84),
+   * here in the audit written to prevent this exact class.
+   */
+  { rx: /\bFEATURE_FLAGS\b/, label: "a `FEATURE_FLAGS` constant — flags by another name" },
 ];
 
 const violations = [];

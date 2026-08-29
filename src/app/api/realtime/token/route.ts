@@ -16,7 +16,6 @@ import { withProviders } from "@/providers.config";
 import { getAdminAuth } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
-import { chatRepository } from "@mohasinac/appkit";
 import { conversationsRepository } from "@mohasinac/appkit";
 import { storeRepository } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
@@ -31,7 +30,6 @@ function toClaimMap(ids: readonly string[]): Record<string, boolean> {
 export const POST = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user }) => {
-    let chatIds: Record<string, boolean> = {};
     let conversationIds: Record<string, boolean> = {};
 
     try {
@@ -49,21 +47,24 @@ export const POST = withProviders(createRouteHandler({
         });
       const storeIds = ownStore ? [ownStore.id] : [];
 
-      const [userChatIds, userConversationIds] = await Promise.all([
-        chatRepository.getChatIdsForUser(user!.uid),
-        // 🛑 The `chats/$conversationId` RTDB rule requires
-        // `auth.token.conversationIds[...]`, and NOTHING issued that claim —
-        // `chatIds` comes from the separate `chatRooms` collection. The
-        // buyer↔seller live-message channel was permission-denied for every
-        // user, silently, because both subscribing hooks swallow the error.
-        conversationsRepository.getConversationIdsForUser(
-          user!.uid,
-          storeIds,
-          MAX_CLAIM_IDS,
-        ),
-      ]);
+      /*
+       * Only `conversationIds` now. The `chatIds` claim served the `chatRooms`
+       * collection, which was deleted 2026-08-30: it had been gated off by
+       * `FEATURE_FLAGS.CHAT_ENABLED: false` — a `const` literal — so nothing
+       * could reach it at runtime, and it had no UI at all.
+       *
+       * The comment that stood here recorded the related bug: the
+       * `chats/$conversationId` rule requires `auth.token.conversationIds[...]`
+       * and for a long time nothing issued that claim, because `chatIds` came
+       * from the OTHER collection. That is fixed; this removes the half that
+       * was pointing at nothing.
+       */
+      const userConversationIds = await conversationsRepository.getConversationIdsForUser(
+        user!.uid,
+        storeIds,
+        MAX_CLAIM_IDS,
+      );
 
-      chatIds = toClaimMap(userChatIds);
       conversationIds = toClaimMap(userConversationIds);
     } catch (err) {
       void normalizeError(err);
@@ -79,13 +80,11 @@ export const POST = withProviders(createRouteHandler({
     // that exceeded the byte budget produced an unhandled 500.
     const customToken = await getAdminAuth().createCustomToken(user!.uid, {
       role: (user as { role?: string }).role ?? "user",
-      chatIds,
       conversationIds,
     });
 
     serverLogger.info("Realtime DB custom token issued", {
       uid: user!.uid,
-      chatCount: Object.keys(chatIds).length,
       conversationCount: Object.keys(conversationIds).length,
     });
 
