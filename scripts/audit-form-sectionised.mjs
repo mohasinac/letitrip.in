@@ -57,6 +57,26 @@ const SKIP = new Set(["node_modules", "dist", ".next", ".git", "__tests__"]);
 const PRIMITIVE_DIRS = [
   "appkit/src/ui/",
   "appkit/src/features/shell/",
+  /*
+   * Library features this consumer has switched OFF.
+   *
+   * `src/features.config.ts` marks both `false` under "Other projects — not
+   * used here", and `appkit/src/cli/index.ts` registers them in the scaffolding
+   * map beside `loyalty` / `collections` / `before-after`. They have no page and
+   * no route HERE by design — which is the normal state of a disabled library
+   * feature, not evidence of dead code.
+   *
+   * Excluded structurally rather than grandfathered: a form this app cannot
+   * open is not this app's form to migrate, so the entry could never be
+   * removed, and an entry that can never be removed is what turns a shrinking
+   * list into a permanent allow-list.
+   *
+   * 🛑 They were nearly DELETED on this reasoning before `features.config.ts`
+   * was read. "No callsite in src/" is not evidence of dead code in a published
+   * library.
+   */
+  "appkit/src/features/consultation/",
+  "appkit/src/features/corporate/",
 ];
 
 /**
@@ -147,8 +167,6 @@ const GRANDFATHERED = new Set([
   "appkit/src/features/admin/components/CategoryQuickCreateForm.tsx",
   "appkit/src/features/auth/components/RegisterForm.tsx",
   "appkit/src/features/catalogue/components/CatalogueItemEditorView.tsx",
-  "appkit/src/features/consultation/components/ConsultationForm.tsx",
-  "appkit/src/features/corporate/components/CorporateInquiryForm.tsx",
   "appkit/src/features/products/components/GroupSettingsPanel.tsx",
   "appkit/src/features/seller/components/SellerAnalyticsAlertsView.tsx",
   "appkit/src/features/seller/components/SellerCouponEditorView.tsx",
