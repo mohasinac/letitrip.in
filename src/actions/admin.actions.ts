@@ -1,5 +1,6 @@
 "use server";
 
+import { isListingTypeEnabled, siteSettingsRepository } from "@mohasinac/appkit";
 import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 /**
  * Admin Server Actions — Mutations
@@ -13,7 +14,6 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 
 import { z } from "zod";
 import { requireRoleUser } from "@mohasinac/appkit";
-import { getFlag } from "@/lib/features";
 import {
   revokeSession as revokeSessionDomain,
   revokeUserSessions as revokeUserSessionsDomain,
@@ -334,7 +334,12 @@ export async function adminCreateProductAction(
       }
 
       // P-10 — prize-draw listings require legal sign-off before going live.
-      if (validation.data.listingType === "prize-draw" && !getFlag("PRIZE_DRAWS")) {
+      // Gated by the listing-type control an admin can see, not by the deleted
+      // FEATURE_PRIZE_DRAWS env flag. Same switch that hides the type everywhere else.
+      if (
+        validation.data.listingType === "prize-draw" &&
+        !isListingTypeEnabled("prize-draw", await siteSettingsRepository.getSingleton())
+      ) {
         throw new AuthorizationError("Prize draw listings are not currently enabled.");
       }
 

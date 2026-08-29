@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   EVENT_FIELDS,
@@ -277,5 +276,5 @@ const __POST__g = withProviders(createRouteHandler({
   },
 }));
 
-export const GET = withFeatureGuard("EVENTS", __GET__g);
-export const POST = withFeatureGuard("EVENTS", __POST__g);
+export const GET = __GET__g;
+export const POST = __POST__g;

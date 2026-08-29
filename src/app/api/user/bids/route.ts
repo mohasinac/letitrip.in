@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   bidRepository,
@@ -54,4 +53,4 @@ const __GET__g = withProviders(
   }),
 );
 
-export const GET = withFeatureGuard("AUCTIONS", __GET__g);
+export const GET = __GET__g;

@@ -1,6 +1,5 @@
-import { withFeatureGuard } from "@/lib/features";
 import { normalizeError } from "@mohasinac/appkit";
-import { initProviders } from "@/providers.config";
+import { initProviders, withProviders } from "@/providers.config";
 import { getAdminRealtimeDb } from "@mohasinac/appkit";
 
 export const dynamic = "force-dynamic";
@@ -104,4 +103,18 @@ async function __GET__g(
   });
 }
 
-export const GET = withFeatureGuard("AUCTIONS", __GET__g);
+/*
+ * Public by design: bid history is public on every auction page, and this only
+ * relays the same values live.
+ *
+ * It used to be exported as `withFeatureGuard("AUCTIONS", __GET__g)`. That was
+ * never an auth gate — it 404'd when the auctions flag was off — but it did
+ * satisfy audit-route-rbac's wrapper allowlist, which is how a route with no
+ * handler factory at all passed a strict-zero RBAC audit. With the flag systems
+ * deleted, the audit correctly flagged it.
+ *
+ * `withProviders` is the honest wrapper: the handler already calls
+ * `initProviders()` by hand below, so this is the canonical form of what it was
+ * doing anyway.
+ */
+export const GET = withProviders(__GET__g);

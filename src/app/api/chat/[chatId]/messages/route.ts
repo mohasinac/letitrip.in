@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   sendChatMessage,
@@ -25,4 +24,4 @@ const __POST__g = withProviders(
   }),
 );
 
-export const POST = withFeatureGuard("CHAT", __POST__g);
+export const POST = __POST__g;

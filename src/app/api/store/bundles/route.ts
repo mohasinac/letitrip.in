@@ -11,7 +11,6 @@ import {
 } from "@mohasinac/appkit";
 import { resolveBundleOriginalTotal, findBundleMemberStores } from "@mohasinac/appkit/server";
 import { ROLES_STORE_WRITE } from "@/constants";
-import { withFeatureGuard } from "@/lib/features";
 
 /**
  * Seller bundles API — mirrors /api/admin/bundles but scoped to the caller's
@@ -183,5 +182,5 @@ const __POST__g = withProviders(
   }),
 );
 
-export const GET = withFeatureGuard("BUNDLES", __GET__g);
-export const POST = withFeatureGuard("BUNDLES", __POST__g);
+export const GET = __GET__g;
+export const POST = __POST__g;

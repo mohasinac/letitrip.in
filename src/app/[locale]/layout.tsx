@@ -20,7 +20,6 @@ import {
 import { ClientErrorReporterMount } from "@/components";
 import { siteSettingsRepository } from "@mohasinac/appkit";
 import { safeRead } from "@mohasinac/appkit/server";
-import { getFlag } from "@/lib/features";
 import LayoutShellClient from "./LayoutShellClient";
 import QueryProvider from "./QueryProvider";
 import { LOCALE_CONFIG } from "@/constants";
@@ -104,16 +103,6 @@ export default async function Layout({ children, params }: Props) {
   // props (BackgroundRenderer) — admin-configured via Site Settings → Appearance.
   const siteSettingsBackground = siteSettings?.background;
 
-  // P-1: feature flags control which public nav items are visible.
-  const navFeatureFlags = {
-    auctions: getFlag("AUCTIONS"),
-    preOrders: getFlag("PREORDERS"),
-    prizeDraws: getFlag("PRIZE_DRAWS"),
-    events: getFlag("EVENTS"),
-    blog: getFlag("BLOG"),
-    scams: getFlag("SCAM_REGISTRY"),
-  };
-
   return (
     <QueryProvider>
       <NextIntlClientProvider
@@ -134,7 +123,7 @@ export default async function Layout({ children, params }: Props) {
               <DashboardNavProvider>
                 <LayoutClient>
                   <TourProvider>
-                    <LayoutShellClient siteLogoUrl={siteLogoUrl} siteSettingsTheme={siteSettingsTheme} siteSettingsBackground={siteSettingsBackground} navFeatureFlags={navFeatureFlags}><Suspense>{children}</Suspense></LayoutShellClient>
+                    <LayoutShellClient siteLogoUrl={siteLogoUrl} siteSettingsTheme={siteSettingsTheme} siteSettingsBackground={siteSettingsBackground}><Suspense>{children}</Suspense></LayoutShellClient>
                   </TourProvider>
                 </LayoutClient>
               </DashboardNavProvider>

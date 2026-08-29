@@ -14,7 +14,6 @@ import {
   toBuyerFacingFees,
 } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
-import { getFlag } from "@/lib/features";
 
 export default async function Page() {
   const user = await getServerSessionUser();
@@ -62,9 +61,17 @@ export default async function Page() {
     }
   }
 
-  const showRazorpay = getFlag("RAZORPAY");
-  const showCod = getFlag("COD");
-  const showCoupons = getFlag("COUPONS");
+  // Which payment methods to offer. These read the admin-toggleable settings
+  // that already existed alongside the env flags they replace — the env copy
+  // was a second source of truth for "is Razorpay live" that no admin could
+  // see, and `providers.config.ts` was already deciding provider registration
+  // from the Firestore one.
+  const showRazorpay = settings?.payment?.razorpayEnabled === true;
+  const showCod = settings?.payment?.codEnabled === true;
+  // Coupons were gated on FEATURE_COUPONS, which was `true` everywhere and had
+  // no admin-facing equivalent. Always offered; an empty coupon list is its own
+  // answer.
+  const showCoupons = true;
   // Cash/UPI manual payment is always active in P-1. Disabled only if both
   // Razorpay and COD are enabled (future patches where we have online payments).
   const showCashOption = !(showRazorpay && showCod);

@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 /**
@@ -33,4 +32,4 @@ const __POST__g = withProviders(createRouteHandler({
   },
 }));
 
-export const POST = withFeatureGuard("PAYOUTS", __POST__g);
+export const POST = __POST__g;

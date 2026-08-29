@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -73,4 +72,4 @@ const __PUT__g = withProviders(
  * turning the EVENTS flag off must close this door too. Without it the generic
  * event routes 404 while the one route that writes lotteryConfig stayed open.
  */
-export const PUT = withFeatureGuard("EVENTS", __PUT__g);
+export const PUT = __PUT__g;

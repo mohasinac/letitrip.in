@@ -1,4 +1,4 @@
-import { withFeatureGuard } from "@/lib/features";
+import { withRazorpayEnabled } from "@/lib/payment-gate";
 import { withProviders } from "@/providers.config";
 /**
  * Pre-Order Deposit Payment
@@ -172,4 +172,4 @@ const __POST__g = withProviders(createRouteHandler<
   },
 }));
 
-export const POST = withFeatureGuard("RAZORPAY", __POST__g);
+export const POST = withRazorpayEnabled(__POST__g);

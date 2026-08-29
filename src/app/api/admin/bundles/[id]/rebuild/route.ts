@@ -7,7 +7,6 @@ import {
   productRepository,
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY } from "@/constants";
-import { withFeatureGuard } from "@/lib/features";
 
 function isProductAvailable(p: { status?: string; isSold?: boolean; availableQuantity?: number } | null): boolean {
   if (!p) return false;
@@ -48,4 +47,4 @@ const __POST__g = withProviders(
   }),
 );
 
-export const POST = withFeatureGuard("BUNDLES", __POST__g);
+export const POST = __POST__g;

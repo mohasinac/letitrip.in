@@ -5,7 +5,6 @@
  * Plan Â§10 â€” the user's coupon wallet. One indexed read returns active +
  * expired + used buckets so the wallet page renders without further queries.
  */
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
@@ -15,9 +14,7 @@ import {
   type ClaimedCouponDocument,
 } from "@mohasinac/appkit";
 
-export const GET = withFeatureGuard(
-  "COUPONS",
-  withProviders(
+export const GET = withProviders(
   createRouteHandler({
     auth: true,
     handler: async ({ user }) => {
@@ -37,7 +34,6 @@ export const GET = withFeatureGuard(
       });
     },
   }),
-  ),
 );
 
 // Soft-remove is on the [id] subroute. This export keeps Zod imported for

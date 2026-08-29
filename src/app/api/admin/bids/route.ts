@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 /**
  * Admin Bids API Route
@@ -36,4 +35,4 @@ const __GET__g = withProviders(createApiHandler({
   },
 }));
 
-export const GET = withFeatureGuard("AUCTIONS", __GET__g);
+export const GET = __GET__g;

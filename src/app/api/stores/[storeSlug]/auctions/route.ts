@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { normalizeError } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
 import { NextResponse } from "next/server";
@@ -113,4 +112,4 @@ async function _GET(
 
 const __GET__g = withProviders(_GET);
 
-export const GET = withFeatureGuard("AUCTIONS", __GET__g);
+export const GET = __GET__g;

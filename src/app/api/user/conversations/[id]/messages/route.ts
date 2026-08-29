@@ -8,7 +8,6 @@
  * 404 covers both "no such conversation" and "caller has no claim" so we
  * never leak conversation existence.
  */
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
@@ -65,4 +64,4 @@ const __POST__g = withProviders(
   }),
 );
 
-export const POST = withFeatureGuard("CHAT", __POST__g);
+export const POST = __POST__g;

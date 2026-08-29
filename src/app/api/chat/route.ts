@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { normalizeError } from "@mohasinac/appkit";
 /**
  * GET  /api/chat   — list all chat rooms for the authenticated user
@@ -111,5 +110,5 @@ const __POST__g = withProviders(createApiHandler<(typeof createRoomSchema)["_out
   },
 }));
 
-export const GET = withFeatureGuard("CHAT", __GET__g);
-export const POST = withFeatureGuard("CHAT", __POST__g);
+export const GET = __GET__g;
+export const POST = __POST__g;

@@ -109,7 +109,6 @@ export default function LayoutShellClient({
   siteLogoUrl,
   siteSettingsTheme,
   siteSettingsBackground,
-  navFeatureFlags,
 }: {
   children: ReactNode;
   siteLogoUrl?: string;
@@ -123,15 +122,6 @@ export default function LayoutShellClient({
   siteSettingsBackground?: {
     light?: { type: "color" | "image" | "gradient" | "video"; value: string; overlay?: { enabled?: boolean; color?: string; opacity?: number } };
     dark?: { type: "color" | "image" | "gradient" | "video"; value: string; overlay?: { enabled?: boolean; color?: string; opacity?: number } };
-  };
-  /** P-1 feature flags — controls which public nav items are rendered. */
-  navFeatureFlags?: {
-    auctions?: boolean;
-    preOrders?: boolean;
-    prizeDraws?: boolean;
-    events?: boolean;
-    blog?: boolean;
-    scams?: boolean;
   };
 }) {
   const themeRegistry = useMemo(
@@ -175,19 +165,19 @@ export default function LayoutShellClient({
   const navItems = useMemo<MainNavbarItem[]>(
     () =>
       MAIN_NAV_ITEMS
-        // P-1: hide items behind feature flags (env-var gates passed from server layout).
-        // W1-43: also hide listing-type items when the type is disabled in siteSettings.
+        // Hide a listing-type nav item when the site does not offer that type.
+        // This used to AND against six env feature flags passed down from the
+        // server layout; those were deleted 2026-08-29 and every one was `true`,
+        // so what is left is the control an admin can actually see. events /
+        // blog / scams had no equivalent and are now unconditional.
         .filter((item) => {
-          if (item.key === "auctions")   return (navFeatureFlags?.auctions ?? true) && listingTypeFlags.auction;
-          if (item.key === "preOrders")  return (navFeatureFlags?.preOrders ?? true) && listingTypeFlags["pre-order"];
-          if (item.key === "prizeDraws") return (navFeatureFlags?.prizeDraws ?? true) && listingTypeFlags["prize-draw"];
-          if (item.key === "events")     return navFeatureFlags?.events ?? true;
-          if (item.key === "blog")       return navFeatureFlags?.blog ?? true;
-          if (item.key === "scams")      return navFeatureFlags?.scams ?? true;
+          if (item.key === "auctions")   return listingTypeFlags.auction;
+          if (item.key === "preOrders")  return listingTypeFlags["pre-order"];
+          if (item.key === "prizeDraws") return listingTypeFlags["prize-draw"];
           return true;
         })
         .map((item) => ({ ...item, label: tNav(item.key as Parameters<typeof tNav>[0]) })),
-    [tNav, listingTypeFlags, navFeatureFlags],
+    [tNav, listingTypeFlags],
   );
 
   // Sidebar sections: BROWSE (nav items) + SUPPORT

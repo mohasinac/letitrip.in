@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -28,4 +27,4 @@ const __POST__g = withProviders(
   }),
 );
 
-export const POST = withFeatureGuard("PRIZE_DRAWS", __POST__g);
+export const POST = __POST__g;

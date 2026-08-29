@@ -1,4 +1,4 @@
-import { withFeatureGuard } from "@/lib/features";
+import { withRazorpayEnabled } from "@/lib/payment-gate";
 import { normalizeError } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
 /**
@@ -161,4 +161,4 @@ async function __POST__g(request: NextRequest) {
   }
 }
 
-export const POST = withFeatureGuard("RAZORPAY", __POST__g);
+export const POST = withRazorpayEnabled(__POST__g);

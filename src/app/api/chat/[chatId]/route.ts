@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   chatRepository,
@@ -33,5 +32,5 @@ const __DELETE__g = withProviders(
   }),
 );
 
-export const GET = withFeatureGuard("CHAT", __GET__g);
-export const DELETE = withFeatureGuard("CHAT", __DELETE__g);
+export const GET = __GET__g;
+export const DELETE = __DELETE__g;

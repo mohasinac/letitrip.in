@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { createRouteHandler, successResponse, ApiErrors, sortBy, sieveFilter, sieveAnd, SIEVE_OP, BID_FIELDS, PRODUCT_FIELDS, COMMON_FIELDS } from "@mohasinac/appkit";
 import { bidRepository, productRepository, storeRepository } from "@mohasinac/appkit";
@@ -107,4 +106,4 @@ const __GET__g = withProviders(createRouteHandler({
   },
 }));
 
-export const GET = withFeatureGuard("AUCTIONS", __GET__g);
+export const GET = __GET__g;

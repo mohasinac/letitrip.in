@@ -8,11 +8,9 @@ import type { UserNavGroup } from "@mohasinac/appkit/client";
 
 interface UserLayoutClientProps {
   children: ReactNode;
-  /** Feature flags forwarded from the server layout. */
-  flags: { eventsOn: boolean; auctionsOn: boolean; chatOn: boolean };
 }
 
-export function UserLayoutClient({ children, flags }: UserLayoutClientProps) {
+export function UserLayoutClient({ children }: UserLayoutClientProps) {
   const { user } = useSession();
   const isAdmin = isAdminUser(user);
   const isSeller = isSellerUser(user) || isAdmin;
@@ -24,25 +22,13 @@ export function UserLayoutClient({ children, flags }: UserLayoutClientProps) {
         Boolean(user?.isTester) || isAdmin,
         Boolean(user?.canTestAdmin) || isAdmin,
       );
-      return all.map((group): UserNavGroup => {
-        if (group.title === "Account") {
-          return {
-            ...group,
-            items: group.items.filter((item) => item.label !== "Messages" || flags.chatOn),
-          };
-        }
-        if (group.title !== "Shopping") return group;
-        return {
-          ...group,
-          items: group.items.filter((item) => {
-            if (item.label === "My Events") return flags.eventsOn;
-            if (item.label === "My Bids") return flags.auctionsOn;
-            return true;
-          }),
-        };
-      }).filter((group) => group.items.length > 0);
+      // The CHAT / EVENTS / AUCTIONS env flags that filtered "Messages",
+      // "My Events" and "My Bids" out of this sidebar were deleted 2026-08-29;
+      // all three were `true` in every environment. Label-matched filters like
+      // those are replaced wholesale in W6.
+      return all.filter((group) => group.items.length > 0);
     },
-    [isSeller, user?.uid, user?.isTester, user?.canTestAdmin, isAdmin, flags.eventsOn, flags.auctionsOn, flags.chatOn],
+    [isSeller, user?.uid, user?.isTester, user?.canTestAdmin, isAdmin],
   );
 
   return (

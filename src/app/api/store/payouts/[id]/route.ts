@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
@@ -38,7 +37,7 @@ const __GET__g = withProviders(
     },
   }),
 );
-export const GET = withFeatureGuard("PAYOUTS", __GET__g);
+export const GET = __GET__g;
 
 const updateSellerPayoutSchema = z.object({
   sellerReminderFlag: z.boolean(),
@@ -58,4 +57,4 @@ const __PATCH__g = withProviders(
     },
   }),
 );
-export const PATCH = withFeatureGuard("PAYOUTS", __PATCH__g);
+export const PATCH = __PATCH__g;

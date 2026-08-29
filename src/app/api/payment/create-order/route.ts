@@ -1,4 +1,4 @@
-import { withFeatureGuard } from "@/lib/features";
+import { withRazorpayEnabled } from "@/lib/payment-gate";
 import { withProviders } from "@/providers.config";
 /**
  * Payment - Create Razorpay Order
@@ -167,4 +167,4 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
   },
 }));
 
-export const POST = withFeatureGuard("RAZORPAY", __POST__g);
+export const POST = withRazorpayEnabled(__POST__g);

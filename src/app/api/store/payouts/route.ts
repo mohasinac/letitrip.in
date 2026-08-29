@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 /**
  * Seller Payouts API
@@ -130,4 +129,4 @@ const __GET__g = withProviders(createRouteHandler({
   },
 }));
 
-export const GET = withFeatureGuard("PAYOUTS", __GET__g);
+export const GET = __GET__g;

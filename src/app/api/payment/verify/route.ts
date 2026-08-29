@@ -1,4 +1,4 @@
-import { withFeatureGuard } from "@/lib/features";
+import { withRazorpayEnabled } from "@/lib/payment-gate";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { successResponse } from "@mohasinac/appkit";
@@ -65,4 +65,4 @@ const __POST__g = withProviders(createRouteHandler<(typeof verifySchema)["_outpu
   },
 }));
 
-export const POST = withFeatureGuard("RAZORPAY", __POST__g);
+export const POST = withRazorpayEnabled(__POST__g);

@@ -8,6 +8,7 @@
  * directly, no carrier API integration.
  */
 
+import { isListingTypeEnabled, siteSettingsRepository } from "@mohasinac/appkit";
 import { z } from "zod";
 import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
@@ -17,7 +18,6 @@ import {
 } from "@mohasinac/appkit";
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
 import { isAdminUser } from "@mohasinac/appkit";
-import { getFlag } from "@/lib/features";
 import {
   becomeSeller,
   createStore,
@@ -216,7 +216,10 @@ export async function createSellerProductAction(input: unknown): Promise<ActionR
 
     // P-10 — prize-draw listings require legal sign-off before going live;
     // this gate applies to admin too (no bypass), unlike the capability checks below.
-    if ((parsed.data as Record<string, JsonValue>).listingType === "prize-draw" && !getFlag("PRIZE_DRAWS")) {
+    if (
+      (parsed.data as Record<string, JsonValue>).listingType === "prize-draw" &&
+      !isListingTypeEnabled("prize-draw", await siteSettingsRepository.getSingleton())
+    ) {
       throw new AuthorizationError("Prize draw listings are not currently enabled.");
     }
 

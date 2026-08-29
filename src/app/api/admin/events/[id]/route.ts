@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   EVENT_FIELDS,
@@ -109,6 +108,6 @@ const __DELETE__g = withProviders(
   }),
 );
 
-export const GET = withFeatureGuard("EVENTS", __GET__g);
-export const PATCH = withFeatureGuard("EVENTS", __PATCH__g);
-export const DELETE = withFeatureGuard("EVENTS", __DELETE__g);
+export const GET = __GET__g;
+export const PATCH = __PATCH__g;
+export const DELETE = __DELETE__g;

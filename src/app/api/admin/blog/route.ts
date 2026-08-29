@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 /**
  * Admin Blog API Route
@@ -191,5 +190,5 @@ const __POST__g = withProviders(createRouteHandler({
   },
 }));
 
-export const GET = withFeatureGuard("BLOG", __GET__g);
-export const POST = withFeatureGuard("BLOG", __POST__g);
+export const GET = __GET__g;
+export const POST = __POST__g;

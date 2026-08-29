@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   EVENT_FIELDS,
@@ -28,4 +27,4 @@ const __PATCH__g = withProviders(
   }),
 );
 
-export const PATCH = withFeatureGuard("EVENTS", __PATCH__g);
+export const PATCH = __PATCH__g;

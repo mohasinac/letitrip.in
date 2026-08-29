@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
@@ -91,5 +90,5 @@ const __POST__g = withProviders(createRouteHandler<(typeof createCouponSchema)["
   },
 }));
 
-export const GET = withFeatureGuard("COUPONS", __GET__g);
-export const POST = withFeatureGuard("COUPONS", __POST__g);
+export const GET = __GET__g;
+export const POST = __POST__g;

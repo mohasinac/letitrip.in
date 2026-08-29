@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
@@ -94,6 +93,6 @@ const __DELETE__g = withProviders(
   }),
 );
 
-export const GET = withFeatureGuard("SCAM_REGISTRY", __GET__g);
-export const PATCH = withFeatureGuard("SCAM_REGISTRY", __PATCH__g);
-export const DELETE = withFeatureGuard("SCAM_REGISTRY", __DELETE__g);
+export const GET = __GET__g;
+export const PATCH = __PATCH__g;
+export const DELETE = __DELETE__g;

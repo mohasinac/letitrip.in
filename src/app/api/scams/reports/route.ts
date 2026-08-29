@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { createRouteHandler, successResponse } from "@mohasinac/appkit";
@@ -84,4 +83,4 @@ const __POST__g = withProviders(
   }),
 );
 
-export const POST = withFeatureGuard("SCAM_REGISTRY", __POST__g);
+export const POST = __POST__g;

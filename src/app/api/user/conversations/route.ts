@@ -1,7 +1,6 @@
 /**
  * GET /api/user/conversations â€” list the authenticated buyer's conversations.
  */
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -19,4 +18,4 @@ const __GET__g = withProviders(
   }),
 );
 
-export const GET = withFeatureGuard("CHAT", __GET__g);
+export const GET = __GET__g;

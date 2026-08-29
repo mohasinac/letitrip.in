@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -76,7 +75,7 @@ const __GET__g = withProviders(
     },
   }),
 );
-export const GET = withFeatureGuard("AUCTIONS", __GET__g);
+export const GET = __GET__g;
 
 const __DELETE__g = withProviders(
   createRouteHandler({
@@ -107,4 +106,4 @@ const __DELETE__g = withProviders(
     },
   }),
 );
-export const DELETE = withFeatureGuard("AUCTIONS", __DELETE__g);
+export const DELETE = __DELETE__g;

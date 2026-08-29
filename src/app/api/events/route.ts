@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { normalizeError } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
 import { NextResponse } from "next/server";
@@ -108,4 +107,4 @@ async function _GET(request: Request): Promise<NextResponse> {
 
 const __GET__g = withProviders(_GET);
 
-export const GET = withFeatureGuard("EVENTS", __GET__g);
+export const GET = __GET__g;

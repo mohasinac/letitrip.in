@@ -5,7 +5,6 @@
  * so the wallet hides it from the active tab but the audit trail (claim
  * source + dates) is preserved.
  */
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -14,9 +13,7 @@ import {
   claimedCouponsRepository,
 } from "@mohasinac/appkit";
 
-export const DELETE = withFeatureGuard(
-  "COUPONS",
-  withProviders(
+export const DELETE = withProviders(
     createRouteHandler<unknown, { id: string }>({
       auth: true,
       handler: async ({ user, params }) => {
@@ -33,5 +30,4 @@ export const DELETE = withFeatureGuard(
         return successResponse({ id }, "Coupon removed from wallet.");
       },
     }),
-  ),
 );

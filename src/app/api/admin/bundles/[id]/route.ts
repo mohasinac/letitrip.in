@@ -9,7 +9,6 @@ import {
 } from "@mohasinac/appkit";
 import { resolveBundleOriginalTotal, findBundleMemberStores } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
-import { withFeatureGuard } from "@/lib/features";
 
 /**
  * Admin bundle [id] route — S-SBUNI-4 2026-05-13.
@@ -95,6 +94,6 @@ const __DELETE__g = withProviders(
   }),
 );
 
-export const GET = withFeatureGuard("BUNDLES", __GET__g);
-export const PUT = withFeatureGuard("BUNDLES", __PUT__g);
-export const DELETE = withFeatureGuard("BUNDLES", __DELETE__g);
+export const GET = __GET__g;
+export const PUT = __PUT__g;
+export const DELETE = __DELETE__g;

@@ -1,7 +1,6 @@
-import { AdminEventEditorView } from "@mohasinac/appkit";
+import { AdminEventEditorView, isListingTypeEnabled, siteSettingsRepository } from "@mohasinac/appkit";
 import { ALL_EVENT_TYPES } from "@mohasinac/appkit";
 import type { EventType } from "@mohasinac/appkit";
-import { getFlag } from "@/lib/features";
 
 const NON_PRIZE_DRAW_TYPES: EventType[] = ["sale", "offer", "poll", "survey", "feedback"];
 /*
@@ -15,8 +14,13 @@ const NON_PRIZE_DRAW_TYPES: EventType[] = ["sale", "offer", "poll", "survey", "f
  * grow automatically when a type is added.
  */
 
-export default function Page() {
-  const prizeDrawsOn = getFlag("PRIZE_DRAWS");
+export default async function Page() {
+  // Was FEATURE_PRIZE_DRAWS. Now the listing-type control an admin can see —
+  // the same switch that hides prize draws on every other surface.
+  const prizeDrawsOn = isListingTypeEnabled(
+    "prize-draw",
+    await siteSettingsRepository.getSingleton(),
+  );
   return (
     <AdminEventEditorView
       allowedTypes={prizeDrawsOn ? ALL_EVENT_TYPES : NON_PRIZE_DRAW_TYPES}

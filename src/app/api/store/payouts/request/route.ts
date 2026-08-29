@@ -4,7 +4,6 @@
  * Validates no pending payout exists and that earnings are available.
  */
 
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import {
@@ -39,4 +38,4 @@ const __POST__g = withProviders(createRouteHandler<{ paymentMethod: "bank_transf
   },
 }));
 
-export const POST = withFeatureGuard("PAYOUTS", __POST__g);
+export const POST = __POST__g;

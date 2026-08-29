@@ -3,7 +3,6 @@
  * counter and flip `isRead` on inbound messages. Same auth + RTDB ping
  * fan-out as the send-message route.
  */
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import {
   createRouteHandler,
@@ -41,4 +40,4 @@ const __POST__g = withProviders(
   }),
 );
 
-export const POST = withFeatureGuard("CHAT", __POST__g);
+export const POST = __POST__g;

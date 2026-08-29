@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import type { JsonValue } from "@mohasinac/appkit";
 import { createRouteHandler, payoutRepository, sortBy, COMMON_FIELDS } from "@mohasinac/appkit";
@@ -65,4 +64,4 @@ const __GET__g = withProviders(
   }),
 );
 
-export const GET = withFeatureGuard("PAYOUTS", __GET__g);
+export const GET = __GET__g;

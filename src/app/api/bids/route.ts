@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 import type { JsonValue } from "@mohasinac/appkit";
 import { z } from "zod";
@@ -71,5 +70,5 @@ const __POST__g = withProviders(
   }),
 );
 
-export const GET = withFeatureGuard("AUCTIONS", __GET__g);
-export const POST = withFeatureGuard("AUCTIONS", __POST__g);
+export const GET = __GET__g;
+export const POST = __POST__g;

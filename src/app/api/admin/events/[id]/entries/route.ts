@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { withProviders } from "@/providers.config";
 /**
  * Admin Event Entries API Route
@@ -93,4 +92,4 @@ const __GET__g = withProviders(async function GET(
   }));
 });
 
-export const GET = withFeatureGuard("EVENTS", __GET__g);
+export const GET = __GET__g;

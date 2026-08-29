@@ -1,4 +1,3 @@
-import { withFeatureGuard } from "@/lib/features";
 import { SORT_DROPPED_FOR_EXACT_SEARCH, withDegraded } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 /**
@@ -142,4 +141,4 @@ const __GET__g = withProviders(createRouteHandler({
   },
 }));
 
-export const GET = withFeatureGuard("PAYOUTS", __GET__g);
+export const GET = __GET__g;
