@@ -316,6 +316,18 @@ export const AUDITS = [
   // while the real `shippingPaidBy` clause the Free-shipping toggle emitted
   // was thrown away, so the toggle did nothing at all.
   { name: "sieve-field-schema-parity",     script: "scripts/audit-sieve-field-schema-parity.mjs" },
+  // The per-type facets, checked at all three ends. The audit above was clean
+  // while every one of them was broken on the public pages: its emitter check
+  // looks for a LITERAL field in a `sieveFilter(...)` call, and these are built
+  // as `sieveFilter(TYPE_FACET_FIELD[key], …)`; and `classified.meetupArea` was
+  // a real field (an object), so it was not an orphan either. Neither audit can
+  // see a missing composite index, which is what actually emptied the grids.
+  { name: "type-facet-wiring",             script: "scripts/audit-type-facet-wiring.mjs" },
+  // Two filter systems wrote the same URL keys with different separators, and
+  // the coincidence that hid it (a pipe-joined string survives a comma split as
+  // one element) was also what made the active-filter badge report 1 for a
+  // three-value selection. Fixing either half alone would have broken the other.
+  { name: "filter-value-delimiter",        script: "scripts/audit-filter-value-delimiter.mjs" },
   // Guards the SHAPE of searchTxt queries, not the presence of a fix. Two
   // fixes here were silently reverted by a rename that kept the new names and
   // restored the old logic — invisible to tsc and to any grep-for-a-symbol

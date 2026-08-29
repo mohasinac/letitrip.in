@@ -166,6 +166,33 @@ function topLevelKeys(body) {
   return keys;
 }
 
+/**
+ * Contents of the object literal that STARTS at `src[from]` (which must be the
+ * `{`, or whitespace before it).
+ *
+ * The inline-object branch used to call `declarationBody(slice, "")` for this.
+ * That builds the regex `(?:interface\s+\b[^{]*|type\s+\s*=\s*)\{`, which still
+ * demands a literal `interface `/`type ` prefix — so a bare `{` never matched
+ * and the branch returned null EVERY time. Inline nested objects were never
+ * walked at all, in any version of this audit; the dotted paths that did
+ * resolve all came from the named-type branch beside it. That is why
+ * `classified.meetupArea` was known (it is a field ON a named type) while
+ * `classified.meetupArea.city` was not (it is a field on an INLINE one).
+ */
+function inlineObjectBody(src, from) {
+  const start = src.indexOf("{", from);
+  if (start === -1) return null;
+  let depth = 0;
+  for (let i = start; i < src.length; i++) {
+    if (src[i] === "{") depth++;
+    else if (src[i] === "}") {
+      depth--;
+      if (depth === 0) return src.slice(start + 1, i);
+    }
+  }
+  return null;
+}
+
 /** Body of `interface Name { … }` or `type Name = { … }` in `src`. */
 function declarationBody(src, name) {
   const re = new RegExp(`(?:interface\\s+${name}\\b[^{]*|type\\s+${name}\\s*=\\s*)\\{`);
@@ -188,31 +215,65 @@ function declarationBody(src, name) {
  * so children of an inline nested object aren't mistaken for own fields.
  */
 function ownFields(body) {
-  /** @type {[string,string][]} */
+  /**
+   * `[name, typeText, offset]` — offset is where `typeText` starts in `body`.
+   *
+   * The offset is not a convenience. A multi-line nested object declares as
+   * `meetupArea: {`, so `typeText` is the single character `"{"`, and locating
+   * it with `body.indexOf(typeText)` finds the FIRST brace in the whole body
+   * instead of this one — which silently walked the wrong sub-object and made
+   * `classified.meetupArea.city` look absent.
+   *
+   * @type {[string,string,number][]}
+   */
   const out = [];
   let depth = 0;
+  let offset = 0;
   for (const line of body.split("\n")) {
     if (depth === 0) {
-      const m = /^\s*(?:readonly\s+)?([A-Za-z_]\w*)\??\s*:\s*(.*)$/.exec(line);
-      if (m) out.push([m[1], m[2]]);
+      const m = /^(\s*(?:readonly\s+)?[A-Za-z_]\w*\??\s*:\s*)(.*)$/.exec(line);
+      if (m) {
+        const name = /([A-Za-z_]\w*)\??\s*:\s*$/.exec(m[1])?.[1];
+        if (name) out.push([name, m[2], offset + m[1].length]);
+      }
     }
     for (const ch of line) {
       if (ch === "{" || ch === "[") depth++;
       else if (ch === "}" || ch === "]") depth--;
     }
+    offset += line.length + 1;
   }
   return out;
 }
 
 /**
- * Field names declared by a TS interface, plus one level of nested-object
- * fields exposed as dotted paths (`classified.negotiable`).
+ * How many dots a sieve key may carry. `classified.meetupArea.city` is two
+ * levels of nesting, so a one-level walk called it an orphan while the field
+ * was right there on the document — which is exactly the false-positive class
+ * this function's own history is made of (see below).
+ *
+ * Bounded rather than unbounded because a self-referential type (a category
+ * with a `parent` of its own type) would otherwise not terminate, and because
+ * a sieve key deeper than this is not a filter anyone should be writing.
+ */
+const MAX_NEST_DEPTH = 3;
+
+/**
+ * Field names declared by a TS interface, plus nested-object fields exposed as
+ * dotted paths (`classified.negotiable`, `classified.meetupArea.city`).
  *
  * Nested objects reach the schema two ways and BOTH must be followed: written
  * inline (`shipping?: { allowedProviderIds?: string[] }`) or behind a named
  * type (`classified?: ProductClassifiedMeta`). Only handling the inline form
  * made this audit report nine false SIEVE_ORPHANs for the perfectly valid
- * `classified.*` / `digitalCode.*` / `liveItem.*` sieve keys.
+ * `classified.*` / `digitalCode.*` / `liveItem.*` sieve keys — and only
+ * handling ONE level then did the same for `classified.meetupArea.city` and
+ * `liveItem.transport.method`.
+ *
+ * The pattern worth noticing: every version of this resolver has under-walked
+ * the type graph, and each time the audit blamed a correct field rather than
+ * admitting it could not see. A resolver that cannot follow a path should say
+ * so, not accuse.
  */
 function interfaceFields(src, name) {
   const body = declarationBody(src, name);
@@ -221,24 +282,31 @@ function interfaceFields(src, name) {
   /** @type {Set<string>} */
   const fields = new Set(BASE_DOCUMENT_FIELDS);
 
-  for (const [field, typeText] of ownFields(body)) {
-    fields.add(field);
+  /** Walk one interface body, emitting dotted paths under `prefix`. */
+  const walk = (declBody, prefix, depth, seen) => {
+    for (const [field, typeText, at] of ownFields(declBody)) {
+      const path = prefix ? `${prefix}.${field}` : field;
+      fields.add(path);
+      if (depth >= MAX_NEST_DEPTH) continue;
 
-    // Inline object literal — children are in this same body, one depth down.
-    if (typeText.trimStart().startsWith("{")) {
-      const inlineStart = body.indexOf(typeText, 0);
-      const inline = declarationBody(body.slice(inlineStart - 1), "");
-      if (inline) for (const [child] of ownFields(inline)) fields.add(`${field}.${child}`);
-      continue;
+      // Inline object literal — children are in this same body, one depth down.
+      // Sliced from the field's OWN offset, not the first `{` in the body.
+      if (typeText.trimStart().startsWith("{")) {
+        const inline = inlineObjectBody(declBody, at);
+        if (inline) walk(inline, path, depth + 1, seen);
+        continue;
+      }
+      // Named type reference — resolve it in the same file. Strip array/union
+      // decoration so `ProductGrading[]` and `A | undefined` both resolve.
+      const refName = /^([A-Za-z_]\w*)/.exec(typeText.trim())?.[1];
+      if (!refName || seen.has(refName)) continue;
+      const refBody = declarationBody(src, refName);
+      if (!refBody) continue;
+      walk(refBody, path, depth + 1, new Set([...seen, refName]));
     }
-    // Named type reference — resolve it in the same file. Strip array/union
-    // decoration so `ProductGrading[]` and `A | undefined` both resolve.
-    const refName = /^([A-Za-z_]\w*)/.exec(typeText.trim())?.[1];
-    if (!refName) continue;
-    const refBody = declarationBody(src, refName);
-    if (!refBody) continue;
-    for (const [child] of ownFields(refBody)) fields.add(`${field}.${child}`);
-  }
+  };
+
+  walk(body, "", 0, new Set([name]));
   return fields;
 }
 
