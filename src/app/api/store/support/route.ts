@@ -56,7 +56,10 @@ export const GET = withProviders(
         Math.max(1, Number(searchParams.get("pageSize") ?? "20")),
       );
 
-      const result = await supportRepository.getStoreTickets(store.id, page, pageSize);
+      const result = await supportRepository.getStoreTickets(store.id, page, pageSize, {
+        search: searchParams.get("q") ?? undefined,
+        status: searchParams.get("status") ?? undefined,
+      });
       return successResponse(result);
     },
   }),

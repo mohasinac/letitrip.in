@@ -34,6 +34,19 @@ const APPKIT = join(REPO_ROOT, "appkit", "src");
 /** Fully wired — every rule below is enforced. */
 const MIGRATED = [
   {
+    /*
+     * W11. `searchTxt` is built from `subject` ONLY — `description` and every
+     * message body are PII-encrypted at rest, and a plaintext prefix index
+     * over an encrypted field hands back exactly what the encryption was
+     * there to withhold.
+     */
+    name: "supportTickets",
+    schema: "features/support/schemas/firestore.ts",
+    repo: "features/support/repository/support.repository.ts",
+    seeds: ["seed/support-tickets-seed-data.ts"],
+    indexCollection: "supportTickets",
+  },
+  {
     name: "scammerProfiles",
     schema: "features/scams/schemas/firestore.ts",
     repo: "features/scams/repository/scammer.repository.ts",
@@ -141,8 +154,7 @@ const NOT_COLLECTIONS = {
 
 const PENDING = [
   "categories",
-  "supportTickets",
-  "bids", "payouts", "shipments", "groupedListings", "notifications",
+    "bids", "payouts", "shipments", "groupedListings", "notifications",
   "users", "adminAuditLog", "jobs", "mediaAssets", "itemRequests",
   "catalogueItems",
 ];
