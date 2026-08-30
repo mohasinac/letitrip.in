@@ -60,6 +60,7 @@ import type { ProductDocument } from "@mohasinac/appkit";
 import type { FirebaseSieveResult } from "@mohasinac/appkit";
 import { ActionResult, getStoreCapabilities, wrapAction } from "@mohasinac/appkit/server";
 import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
+import { isValidPostalCode, postalLabelFor, DEFAULT_COUNTRY } from "@mohasinac/appkit/server";
 
 // --- Become Seller ------------------------------------------------------------
 
@@ -402,6 +403,14 @@ export async function markEmiInstallmentPaidAction(
 
 // --- Update Seller Shipping ---------------------------------------------------
 
+/*
+ * A courier PICKUP location, not an `AddressDocument` — it carries a
+ * `locationName` and an `email` the address entity does not have, and the
+ * shipping provider takes it in this shape. So the SHAPE stays; only the
+ * postal RULE is shared, which is the half that was wrong: `/^\d{6}$/` is
+ * India-only on a field whose country is user-supplied.
+ */
+// audit-address-shape-ok: a provider pickup payload, not the address entity
 const pickupAddressSchema = z.object({
   locationName: z.string().min(2).max(40),
   name: z.string().min(2).max(100),
@@ -411,8 +420,16 @@ const pickupAddressSchema = z.object({
   address2: z.string().max(200).optional().or(z.literal("")),
   city: z.string().min(2).max(80),
   state: z.string().min(2).max(80),
-  pincode: z.string().regex(/^\d{6}$/, "Pincode must be 6 digits"),
-  country: z.string().default("India"),
+  pincode: z.string().trim().min(1, "A postal code is required."),
+  country: z.string().default(DEFAULT_COUNTRY),
+}).superRefine((v, ctx) => {
+  if (!isValidPostalCode(v.country, v.pincode)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["pincode"],
+      message: `That is not a valid ${postalLabelFor(v.country)}.`,
+    });
+  }
 });
 
 const updateShippingSchema = z.object({

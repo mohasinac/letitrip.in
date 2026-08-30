@@ -3,20 +3,19 @@ import { z } from "zod";
 import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
 import { addressesRepository, storeRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_READ, ROLES_STORE_WRITE } from "@/constants";
+import { addressFormSchema } from "@mohasinac/appkit/server";
 
-const createAddressSchema = z.object({
-  label: z.string().min(1).max(60),
-  fullName: z.string().min(1).max(100),
-  phone: z.string().min(7).max(20),
-  addressLine1: z.string().min(1).max(200),
-  addressLine2: z.string().max(200).optional(),
-  landmark: z.string().max(100).optional(),
-  city: z.string().min(1).max(100),
-  state: z.string().min(1).max(100),
-  postalCode: z.string().min(4).max(10),
-  country: z.string().min(1).max(60).default("India"),
-  isDefault: z.boolean().default(false),
-});
+/*
+ * The SHARED address shape and the SHARED postal rule (W5 / D19).
+ *
+ * This file declared its own eleven fields with `postalCode: z.string().min(4).max(10)`.
+ * There were fifteen such rules across the tree and they disagreed — two of
+ * them, including this one, server-side rules on the same entity. The rule is
+ * now `COUNTRIES[country].postalPattern`, resolved from the country on the
+ * record, which is also what fixes the India-only regex being applied to
+ * addresses that are not in India.
+ */
+const createAddressSchema = addressFormSchema;
 
 export const GET = withProviders(createRouteHandler({
   auth: true,

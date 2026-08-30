@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
 import { addressesRepository, storeRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_READ, ROLES_STORE_WRITE } from "@/constants";
+import { addressUpdateSchema } from "@mohasinac/appkit/server";
 
 /*
  * Hoisted once the GET below made these a third repeat. Same string in three
@@ -11,19 +12,17 @@ import { ROLES_STORE_READ, ROLES_STORE_WRITE } from "@/constants";
 const MSG_NO_STORE = "No store found for this account";
 const MSG_NO_ADDRESS_ID = "Address ID is required";
 
-const updateAddressSchema = z.object({
-  label: z.string().min(1).max(60).optional(),
-  fullName: z.string().min(1).max(100).optional(),
-  phone: z.string().min(7).max(20).optional(),
-  addressLine1: z.string().min(1).max(200).optional(),
-  addressLine2: z.string().max(200).optional(),
-  landmark: z.string().max(100).optional(),
-  city: z.string().min(1).max(100).optional(),
-  state: z.string().min(1).max(100).optional(),
-  postalCode: z.string().min(4).max(10).optional(),
-  country: z.string().min(1).max(60).optional(),
-  isDefault: z.boolean().optional(),
-});
+/*
+ * The SHARED address shape and the SHARED postal rule (W5 / D19).
+ *
+ * This file declared its own eleven fields with `postalCode: z.string().min(4).max(10).optional()`.
+ * There were fifteen such rules across the tree and they disagreed — two of
+ * them, including this one, server-side rules on the same entity. The rule is
+ * now `COUNTRIES[country].postalPattern`, resolved from the country on the
+ * record, which is also what fixes the India-only regex being applied to
+ * addresses that are not in India.
+ */
+const updateAddressSchema = addressUpdateSchema;
 
 /**
  * Read one of THIS store's addresses.

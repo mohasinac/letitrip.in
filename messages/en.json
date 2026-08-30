@@ -902,17 +902,9 @@
     "itemCount": "Item Count",
     "minItemCount": "Min items",
     "maxItemCount": "Max items",
-    "addressType": "Address Type",
-    "addressTypeHome": "Home",
-    "addressTypeWork": "Work",
-    "addressTypeShipping": "Shipping",
-    "addressTypeBilling": "Billing",
-    "addressTypeBusiness": "Business",
-    "addressTypeOther": "Other",
-    "addressVerified": "Verified",
-    "addressActive": "Active",
-    "showVerifiedAddressOnly": "Verified addresses only",
-    "showActiveAddressOnly": "Active addresses only"
+    "addressDefault": "Default",
+    "addressBanStatus": "Standing",
+    "showDefaultAddressOnly": "Default address only"
   },
   "listingLayout": {
     "selectedCount": "{count} selected",

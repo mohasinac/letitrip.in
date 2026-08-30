@@ -23,22 +23,21 @@ import {
 } from "@mohasinac/appkit";
 import type { StoreAddressDocument } from "@mohasinac/appkit";
 import { ERR_RATE_LIMIT, ERR_ADDRESS_ID_REQUIRED } from "./_constants";
+import { addressFormSchema, addressUpdateSchema } from "@mohasinac/appkit/server";
 
 // --- Validation ------------------------------------------------------------
 
-const storeAddressBodySchema = z.object({
-  label: z.string().min(1).max(60),
-  fullName: z.string().min(1).max(120),
-  phone: z.string().min(7).max(20),
-  addressLine1: z.string().min(1).max(200),
-  addressLine2: z.string().max(200).optional(),
-  landmark: z.string().max(100).optional(),
-  city: z.string().min(1).max(100),
-  state: z.string().min(1).max(100),
-  postalCode: z.string().min(4).max(10),
-  country: z.string().min(1).max(80),
-  isDefault: z.boolean().optional().default(false),
-});
+/*
+ * The SHARED address shape and the SHARED postal rule (W5 / D19).
+ *
+ * This file declared its own eleven fields with `postalCode: z.string().min(4).max(10)`.
+ * There were fifteen such rules across the tree and they disagreed — two of
+ * them, including this one, server-side rules on the same entity. The rule is
+ * now `COUNTRIES[country].postalPattern`, resolved from the country on the
+ * record, which is also what fixes the India-only regex being applied to
+ * addresses that are not in India.
+ */
+const storeAddressBodySchema = addressFormSchema;
 
 export type StoreAddressInput = z.infer<typeof storeAddressBodySchema>;
 
@@ -94,7 +93,7 @@ export async function updateStoreAddressAction(
     
       if (!addressId?.trim()) throw new ValidationError(ERR_ADDRESS_ID_REQUIRED);
     
-      const parsed = storeAddressBodySchema.partial().safeParse(input);
+      const parsed = addressUpdateSchema.safeParse(input);
       if (!parsed.success)
         throw new ValidationError(
           parsed.error.issues[0]?.message ?? "Invalid address data",

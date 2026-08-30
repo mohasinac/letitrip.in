@@ -4,9 +4,9 @@ import { useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { Heading, Stack, Text, Badge } from "@mohasinac/appkit/client";
-import { AddressCard, useAddresses, useDeleteAddress, useSetDefaultAddress, useToast, ROUTES, Div, Grid, Row, Input, Button, FieldSelect, SideDrawer, Textarea, useApiMutation } from "@mohasinac/appkit/client";
+import { AddressCard, useAddresses, useDeleteAddress, useSetDefaultAddress, useToast, ROUTES, Div, Grid, Row, Input, Button, FieldSelect, useApiMutation } from "@mohasinac/appkit/client";
+import { AddressUnbanDrawer } from "./AddressUnbanDrawer";
 import type { AddressCardAddress } from "@mohasinac/appkit/client";
-import { requestAddressUnban } from "@/lib/api/user-client";
 
 interface AddressWithBan extends AddressCardAddress {
   banStatus?: "banned" | "unban_requested" | "suspicious";
@@ -25,7 +25,6 @@ export function UserAddressesClient() {
   const [search, setSearch] = useState("");
   const [labelFilter, setLabelFilter] = useState<string>("");
   const [unbanAddressId, setUnbanAddressId] = useState<string | null>(null);
-  const [unbanNote, setUnbanNote] = useState("");
 
   const { data: rawAddresses = [], isLoading, refetch } = useAddresses();
 
@@ -43,22 +42,6 @@ export function UserAddressesClient() {
   const setDefault = useSetDefaultAddress({
     onSuccess: () => showToast("Default address updated.", "success"),
     onError: (err) => showToast((err as Error).message ?? "Failed to update default address.", "error"),
-  });
-
-  const requestUnban = useApiMutation<void, Error, { id: string; note: string }>({
-    mutationFn: async ({ id, note }) => {
-      const res = await requestAddressUnban(id, note);
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({})) as { error?: string };
-        throw new Error(body.error ?? "Failed to submit unban request.");
-      }
-    },
-    successMessage: "Unban request submitted. Our team will review it shortly.",
-    onSuccess: () => {
-      setUnbanAddressId(null);
-      setUnbanNote("");
-      void refetch();
-    },
   });
 
   const handleDeleteRequest = (id: string) => {
@@ -204,7 +187,7 @@ export function UserAddressesClient() {
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => { setUnbanAddressId(addr.id); setUnbanNote(""); }}
+                  onClick={() => setUnbanAddressId(addr.id)}
                   className="text-[length:var(--appkit-text-xs)]"
                 >
                   Request Unban
@@ -224,52 +207,14 @@ export function UserAddressesClient() {
         + Add Address
       </Button>
 
-      <SideDrawer
-        isOpen={!!unbanAddressId}
-        onClose={() => { setUnbanAddressId(null); setUnbanNote(""); }}
-        title="Request Address Unban"
-        mode="edit"
-        footer={
-          /* Bare buttons — the SideDrawer footer slot supplies the ActionRow. */
-          <>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => { setUnbanAddressId(null); setUnbanNote(""); }}
-              disabled={requestUnban.isPending}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              variant="primary"
-              size="sm"
-              disabled={requestUnban.isPending || !unbanNote.trim()}
-              onClick={() => {
-                if (!unbanAddressId || !unbanNote.trim()) return;
-                requestUnban.mutate({ id: unbanAddressId, note: unbanNote });
-              }}
-            >
-              {requestUnban.isPending ? "Submitting…" : "Submit Request"}
-            </Button>
-          </>
-        }
-      >
-        <Stack gap="md">
-          <Text size="sm" color="muted">
-            Explain why this address should be unbanned. Our support team will review your request within 1–3 business days.
-          </Text>
-          <Textarea
-            id="unban-note"
-            label="Reason for unban request"
-            value={unbanNote}
-            onChange={(e) => setUnbanNote(e.target.value)}
-            placeholder="e.g. This is my home address and I made an innocent mistake…"
-            rows={5}
-          />
-        </Stack>
-      </SideDrawer>
+      <AddressUnbanDrawer
+        addressId={unbanAddressId}
+        onClose={() => setUnbanAddressId(null)}
+        onSubmitted={() => {
+          setUnbanAddressId(null);
+          void refetch();
+        }}
+      />
     </Stack>
   );
 }

@@ -143,8 +143,6 @@ const SUPPRESS_RE = /audit-form-sectionised-ok:/;
  * Generated 2026-08-27 from the tree as it stood. 45 entries (16 dropped once the submit-ownership filter landed).
  */
 const GRANDFATHERED = new Set([
-  "appkit/src/features/account/components/AddressForm.tsx",
-  "appkit/src/features/admin/components/AdminAddressEditorView.tsx",
   "appkit/src/features/admin/components/AdminAdsView.tsx",
   "appkit/src/features/admin/components/AdminCarouselEditorView.tsx",
   "appkit/src/features/admin/components/AdminOrderEditorView.tsx",
@@ -161,7 +159,6 @@ const GRANDFATHERED = new Set([
   "appkit/src/features/whatsapp-bot/components/SellerWhatsAppSettingsView.tsx",
   "src/app/[locale]/events/[id]/participate/EventParticipateClient.tsx",
   "src/components/routing/CheckoutRouteClient.tsx",
-  "src/components/user/UserAddressesClient.tsx",
 ]);
 
 function walk(dir, out = []) {

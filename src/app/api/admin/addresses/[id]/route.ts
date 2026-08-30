@@ -9,22 +9,19 @@ import {
   errorResponse,
   addressesRepository,
 } from "@mohasinac/appkit";
+import { adminAddressPatchSchema } from "@mohasinac/appkit/server";
 
-const updateAddressSchema = z.object({
-  label: z.string().min(1).optional(),
-  fullName: z.string().min(1).optional(),
-  phone: z.string().min(1).optional(),
-  addressLine1: z.string().min(1).optional(),
-  addressLine2: z.string().optional(),
-  landmark: z.string().optional(),
-  city: z.string().min(1).optional(),
-  state: z.string().min(1).optional(),
-  postalCode: z.string().min(6).max(6).optional(),
-  country: z.string().optional(),
-  isDefault: z.boolean().optional(),
-  action: z.enum(["ban", "approve_unban", "reject_unban", "flag_suspicious", "clear_ban"]).optional(),
-  banReason: z.string().optional(),
-});
+/*
+ * The SHARED address shape and the SHARED postal rule (W5 / D19).
+ *
+ * This file declared its own eleven fields with `postalCode: z.string().min(6).max(6).optional()`.
+ * There were fifteen such rules across the tree and they disagreed — two of
+ * them, including this one, server-side rules on the same entity. The rule is
+ * now `COUNTRIES[country].postalPattern`, resolved from the country on the
+ * record, which is also what fixes the India-only regex being applied to
+ * addresses that are not in India.
+ */
+const updateAddressSchema = adminAddressPatchSchema;
 
 export const GET = withProviders(
   createRouteHandler({

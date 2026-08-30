@@ -22,43 +22,44 @@ const MAX_ADDRESSES_PER_USER = 10;
  * GET /api/user/addresses
  *
  * Returns addresses for the authenticated user, ordered by createdAt desc.
- * Supports query params: q, addressType (pipe-separated), verified, activeOnly.
+ * Supports query params: q, defaultOnly, banStatus (pipe-separated).
+ *
+ * 🛑 It used to support `addressType`, `verified` and `activeOnly` — three
+ * fields `AddressDocument` has never had. Each was reached through an `as any`
+ * cast, so every comparison was against `""` and the facets could not match a
+ * row. They rendered, they counted toward the filter badge, and they filtered
+ * nothing.
  */
 export const GET = withProviders(createRouteHandler({
   auth: true,
   handler: async ({ user, request }) => {
     const url = new URL(request!.url);
     const q = url.searchParams.get("q")?.trim().toLowerCase() ?? "";
-    const addressTypeParam = url.searchParams.get("addressType") ?? "";
-    const verified = url.searchParams.get("verified");
-    const activeOnly = url.searchParams.get("activeOnly");
+    const defaultOnly = url.searchParams.get("defaultOnly");
+    const banStatusParam = url.searchParams.get("banStatus") ?? "";
 
     let addresses = await addressesRepository.listByOwner("user", user!.uid);
 
+    // No `as any`: every field read below is declared on `AddressDocument`,
+    // which is the whole difference between these filters and the three they
+    // replaced.
     if (q) {
       addresses = addresses.filter((a) => {
-        const line1 = ((a as any).addressLine1 ?? "").toLowerCase();
-        const line2 = ((a as any).addressLine2 ?? "").toLowerCase();
-        const postal = ((a as any).postalCode ?? "").toLowerCase();
-        const label = ((a as any).label ?? "").toLowerCase();
-        return line1.includes(q) || line2.includes(q) || postal.includes(q) || label.includes(q);
+        const haystack = [a.addressLine1, a.addressLine2, a.postalCode, a.label, a.city]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(q);
       });
     }
 
-    if (addressTypeParam) {
-      const types = addressTypeParam.split("|").filter(Boolean);
-      addresses = addresses.filter((a) => {
-        const t = ((a as any).type ?? (a as any).addressType ?? "").toLowerCase();
-        return types.includes(t);
-      });
+    if (defaultOnly === "true") {
+      addresses = addresses.filter((a) => a.isDefault === true);
     }
 
-    if (verified === "true") {
-      addresses = addresses.filter((a) => (a as any).verified === true);
-    }
-
-    if (activeOnly === "true") {
-      addresses = addresses.filter((a) => (a as any).active !== false);
+    if (banStatusParam) {
+      const wanted = new Set(banStatusParam.split("|").filter(Boolean));
+      addresses = addresses.filter((a) => !!a.banStatus && wanted.has(a.banStatus));
     }
 
     return successResponse(addresses);

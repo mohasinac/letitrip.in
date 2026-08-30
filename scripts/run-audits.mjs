@@ -194,6 +194,7 @@ export const AUDITS = [
   { name: "mock-gating",                     script: "scripts/audit-mock-gating.mjs" },
   { name: "form-schema",                     script: "scripts/audit-form-schema.mjs" },
   { name: "form-sectionised",                script: "scripts/audit-form-sectionised.mjs" },
+  { name: "address-shape",                   script: "scripts/audit-address-shape.mjs" },
   { name: "quick-form-drawer-schema",        script: "scripts/audit-quick-form-drawer-schema.mjs" },
   // Every form that owns schema-driven validation must also render the
   // shared <FormErrorSummary> beside its Submit/Save button — closes the
