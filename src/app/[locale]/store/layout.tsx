@@ -1,7 +1,7 @@
 import { Suspense, type ReactNode } from "react";
 import { DashboardLayoutClient, RoleGuard } from "@mohasinac/appkit/client";
 import type { StoreNavGroup } from "@mohasinac/appkit/client";
-import { isAdminUser } from "@mohasinac/appkit";
+import { isAdminUser, navItemId } from "@mohasinac/appkit";
 import { STORE_NAV_GROUPS, ROUTES } from "@/constants";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 
@@ -23,9 +23,18 @@ export default async function StoreLayout({ children }: { children: ReactNode })
       group.title === "Listings"
         ? {
             ...group,
-            // P-1: bundles not in MVP scope. Not a feature flag — a scope
-            // decision, and the only filter here that ever did anything.
-            items: group.items.filter((item) => item.label !== "Bundles"),
+            /*
+             * P-1: bundles not in MVP scope. Not a feature flag — a scope
+             * decision, and the only filter here that ever did anything.
+             *
+             * Keyed on the ID rather than the LABEL since W6. A label match
+             * breaks silently the day someone renames the entry to "Bundle
+             * deals": the filter stops matching, the item reappears, and
+             * nothing says so.
+             */
+            items: group.items.filter(
+              (item) => item.id !== navItemId("store", String(ROUTES.STORE.BUNDLES)),
+            ),
           }
         : group,
     )

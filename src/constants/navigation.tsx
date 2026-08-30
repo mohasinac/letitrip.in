@@ -36,9 +36,12 @@ import type {
   StoreNavGroup,
   UserNavGroup,
   UserNavItem,
+  SidebarNavItem,
+  NavPortal,
   MainNavbarItem,
   AppLayoutShellSidebarLink,
 } from "@mohasinac/appkit/client";
+import { navItemId } from "@mohasinac/appkit/client";
 import { NAV_ICON_COLORS, NAV_ICON_SIZE_SM } from "./styles/nav-icons";
 import { ROUTES } from "./routes";
 
@@ -167,172 +170,505 @@ export const FOOTER_LINK_GROUPS = [
 // Admin dashboard sidebar
 // ---------------------------------------------------------------------------
 
-/** Build an admin nav item without repeating `requiredPermission:` on every line. */
+/**
+ * Extra metadata a nav item may carry.
+ *
+ * `description` is one sentence on what the screen is FOR, in the user's words
+ * rather than the entity's — "Refund a buyer, or check why a payout is late"
+ * finds its screen, while "Payouts" only ever finds itself. `keywords` are the
+ * words someone might search that are not in the label: synonyms, the old name
+ * of a renamed screen, the noun the rest of the industry uses.
+ *
+ * Both feed the sidebar search today and the action index in W7.
+ */
+interface NavMeta {
+  description?: string;
+  keywords?: string[];
+}
+
+/**
+ * Build a nav item, deriving its `id` from its href.
+ *
+ * 🛑 **The `id` is why this helper exists, and it is a behaviour change.**
+ * `filterNavItems` opens with `if (!item.id) return true;`, and no item in
+ * this file had one — so both the admin `navConfig` toggle and the
+ * `requiredPermission` check below it had never executed. Every employee saw
+ * the entire admin sidebar regardless of their permissions.
+ *
+ * Derived rather than hand-written because the id is also the `navConfig` key:
+ * an id that drifts from its href silently un-toggles the item — the admin
+ * hides "Payouts", the toggle writes a key nothing reads, and the entry stays.
+ *
+ * The diff this switches on was measured before it landed:
+ * `node scripts/diff-employee-sidebar.mjs`.
+ */
+function navItem(
+  portal: NavPortal,
+  href: string,
+  label: string,
+  requiredPermission?: string,
+  meta?: NavMeta,
+): SidebarNavItem {
+  return {
+    id: navItemId(portal, href),
+    portal,
+    href,
+    label,
+    ...(requiredPermission ? { requiredPermission } : {}),
+    ...meta,
+  };
+}
+
+/** An admin nav item. `requiredPermission` is mandatory in this portal. */
 function adminItem(
   href: string,
   label: string,
   requiredPermission: string,
-): { href: string; label: string; requiredPermission: string } {
-  return { href, label, requiredPermission };
+  meta?: NavMeta,
+): SidebarNavItem {
+  return navItem("admin", href, label, requiredPermission, meta);
+}
+
+/** A store nav item. The seller owns the store, so no permission gate. */
+function storeItem(href: string, label: string, meta?: NavMeta): SidebarNavItem {
+  return navItem("store", href, label, undefined, meta);
+}
+
+/** A user nav item. */
+function userItem(href: string, label: string, meta?: NavMeta): SidebarNavItem {
+  return navItem("user", href, label, undefined, meta);
 }
 
 export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
   {
     title: "Management",
     items: [
-      adminItem(String(ROUTES.ADMIN.DASHBOARD),       "Dashboard",       "admin:dashboard:view"),
-      adminItem(String(ROUTES.ADMIN.USERS),           "Users",           "admin:users:read"),
-      adminItem(String(ROUTES.ADMIN.PRODUCTS),        "Products",        "admin:products:read"),
-      adminItem(String(ROUTES.ADMIN.CLASSIFIED),      "Classified",      "admin:products:read"),
-      adminItem(String(ROUTES.ADMIN.DIGITAL_CODES),   "Digital Codes",   "admin:products:read"),
-      adminItem(String(ROUTES.ADMIN.LIVE),            "Live Items",      "admin:products:read"),
-      adminItem(String(ROUTES.ADMIN.ART),             "Art",             "admin:products:read"),
-      adminItem(String(ROUTES.ADMIN.STICKERS),        "Stickers",        "admin:products:read"),
-      adminItem(String(ROUTES.ADMIN.ORDERS),          "Orders",          "admin:orders:read"),
+      adminItem(String(ROUTES.ADMIN.DASHBOARD),       "Dashboard",       "admin:dashboard:view", {
+        description: "Today's orders, revenue and anything needing attention.",
+        keywords: ["home", "overview", "kpis"],
+      }),
+      adminItem(String(ROUTES.ADMIN.USERS),           "Users",           "admin:users:read", {
+        description: "Find a buyer or seller, change their role, ban or unban them.",
+        keywords: ["accounts", "customers", "ban", "role"],
+      }),
+      adminItem(String(ROUTES.ADMIN.PRODUCTS),        "Products",        "admin:products:read", {
+        description: "Every listing on the platform, across all sellers.",
+        keywords: ["listings", "catalogue", "inventory"],
+      }),
+      adminItem(String(ROUTES.ADMIN.CLASSIFIED),      "Classified",      "admin:products:read", {
+        description: "Contact-seller listings that never enter the cart.",
+        keywords: ["listings", "meetup", "local"],
+      }),
+      adminItem(String(ROUTES.ADMIN.DIGITAL_CODES),   "Digital Codes",   "admin:products:read", {
+        description: "Listings that deliver a code instead of a parcel.",
+        keywords: ["listings", "keys", "vouchers"],
+      }),
+      adminItem(String(ROUTES.ADMIN.LIVE),            "Live Items",      "admin:products:read", {
+        description: "Live animals and plants, with their jurisdiction checks.",
+        keywords: ["listings", "animals", "plants", "cites"],
+      }),
+      adminItem(String(ROUTES.ADMIN.ART),             "Art",             "admin:products:read", {
+        description: "Art prints, sized and editioned.",
+        keywords: ["listings", "prints", "posters"],
+      }),
+      adminItem(String(ROUTES.ADMIN.STICKERS),        "Stickers",        "admin:products:read", {
+        description: "Sticker sheets.",
+        keywords: ["listings", "decals"],
+      }),
+      adminItem(String(ROUTES.ADMIN.ORDERS),          "Orders",          "admin:orders:read", {
+        description: "Every order, its payment state and where it is.",
+        keywords: ["purchases", "sales", "refund", "shipping"],
+      }),
       // Beside Orders, not with Bids under Content: an offer is a
       // commerce-pipeline object that ends in an order.
-      adminItem(String(ROUTES.ADMIN.OFFERS),          "Offers",          "admin:offers:read"),
-      adminItem(String(ROUTES.ADMIN.FULFILLMENT),     "Fulfillment",     "admin:orders:read"),
-      adminItem(String(ROUTES.ADMIN.RETURN_REQUESTS), "Returns",         "admin:returns:read"),
-      adminItem(String(ROUTES.ADMIN.STORES),          "Stores",          "admin:stores:read"),
-      adminItem(String(ROUTES.ADMIN.STORE_ADDRESSES), "Store Addresses", "admin:store-addresses:read"),
-      adminItem(String(ROUTES.ADMIN.ADDRESSES),       "Addresses",       "admin:addresses:read"),
+      adminItem(String(ROUTES.ADMIN.OFFERS),          "Offers",          "admin:offers:read", {
+        description: "Buyer price offers and the counter-offers sellers made.",
+        keywords: ["negotiation", "bids", "haggle"],
+      }),
+      adminItem(String(ROUTES.ADMIN.FULFILLMENT),     "Fulfillment",     "admin:orders:read", {
+        description: "Orders waiting to be packed, shipped or handed over.",
+        keywords: ["shipping", "dispatch", "packing"],
+      }),
+      adminItem(String(ROUTES.ADMIN.RETURN_REQUESTS), "Returns",         "admin:returns:read", {
+        description: "Return requests and what to refund.",
+        keywords: ["refunds", "rma", "send back"],
+      }),
+      adminItem(String(ROUTES.ADMIN.STORES),          "Stores",          "admin:stores:read", {
+        description: "Approve, suspend or verify a seller's store.",
+        keywords: ["sellers", "shops", "verify", "suspend"],
+      }),
+      adminItem(String(ROUTES.ADMIN.STORE_ADDRESSES), "Store Addresses", "admin:store-addresses:read", {
+        description: "Pickup locations sellers ship from.",
+        keywords: ["warehouse", "pickup", "seller address"],
+      }),
+      adminItem(String(ROUTES.ADMIN.ADDRESSES),       "Addresses",       "admin:addresses:read", {
+        description: "Every delivery address on the platform.",
+        keywords: ["shipping address", "postcode", "pin code"],
+      }),
     ],
   },
   {
     title: "Finance",
     items: [
-      adminItem(String(ROUTES.ADMIN.ANALYTICS), "Analytics", "admin:analytics:view"),
-      adminItem(String(ROUTES.ADMIN.PAYOUTS), "Payouts", "admin:payouts:read"),
-      adminItem(String(ROUTES.ADMIN.AUDIT_LOG), "Audit Log", "admin:audit-log:read"),
+      adminItem(String(ROUTES.ADMIN.ANALYTICS), "Analytics", "admin:analytics:view", {
+        description: "Revenue, orders and traffic over time.",
+        keywords: ["reports", "sales", "charts"],
+      }),
+      adminItem(String(ROUTES.ADMIN.PAYOUTS), "Payouts", "admin:payouts:read", {
+        description: "Pay a seller, or check why a payout is late.",
+        keywords: ["money out", "settlement", "seller payment"],
+      }),
+      adminItem(String(ROUTES.ADMIN.AUDIT_LOG), "Audit Log", "admin:audit-log:read", {
+        description: "Who did what: bans, role changes, coupon edits, payouts.",
+        keywords: ["history", "who changed", "trail"],
+      }),
     ],
   },
   {
     title: "Procurement",
     items: [
-      adminItem(String(ROUTES.ADMIN.SHIPMENTS), "Shipments", "admin:shipments:read"),
-      adminItem(String(ROUTES.ADMIN.SHIPMENTS_PROJECTIONS), "Projections", "admin:shipments:read"),
-      adminItem(String(ROUTES.ADMIN.CATALOGUE_APPROVALS), "Catalogue Approvals", "admin:catalogue:read"),
+      adminItem(String(ROUTES.ADMIN.SHIPMENTS), "Shipments", "admin:shipments:read", {
+        description: "Inbound stock: what was ordered from suppliers and where it is.",
+        keywords: ["procurement", "import", "supplier"],
+      }),
+      adminItem(String(ROUTES.ADMIN.SHIPMENTS_PROJECTIONS), "Projections", "admin:shipments:read", {
+        description: "What an inbound shipment should be worth once it lands.",
+        keywords: ["profit", "forecast", "margin"],
+      }),
+      adminItem(String(ROUTES.ADMIN.CATALOGUE_APPROVALS), "Catalogue Approvals", "admin:catalogue:read", {
+        description: "Users asking to turn a catalogue item into a real listing.",
+        keywords: ["requests", "promote", "approve"],
+      }),
     ],
   },
   {
     title: "Catalog",
     items: [
-      adminItem(String(ROUTES.ADMIN.CATEGORIES),            "Categories",    "admin:categories:read"),
-      adminItem(String(ROUTES.ADMIN.BRANDS),                "Brands",        "admin:brands:read"),
-      adminItem(String(ROUTES.ADMIN.SUBLISTING_CATEGORIES), "Sub-listings",  "admin:categories:read"),
-      adminItem(String(ROUTES.ADMIN.FEATURES),              "Feature Badges","admin:categories:read"),
+      adminItem(String(ROUTES.ADMIN.CATEGORIES),            "Categories",    "admin:categories:read", {
+        description: "The category tree buyers browse by.",
+        keywords: ["taxonomy", "tree", "browse"],
+      }),
+      adminItem(String(ROUTES.ADMIN.BRANDS),                "Brands",        "admin:brands:read", {
+        description: "Brand pages and the products filed under each.",
+        keywords: ["manufacturer", "makers"],
+      }),
+      adminItem(String(ROUTES.ADMIN.SUBLISTING_CATEGORIES), "Sub-listings",  "admin:categories:read", {
+        description: "Tier-4 leaf groups inside a category.",
+        keywords: ["taxonomy", "sets"],
+      }),
+      adminItem(String(ROUTES.ADMIN.FEATURES),              "Feature Badges","admin:categories:read", {
+        description: "The badges shown on a listing — free shipping, authenticity.",
+        keywords: ["labels", "flags", "chips"],
+      }),
       // Own permission since 2026-08-26 (W22). It borrowed
       // `admin:categories:read` because none existed — so a role granted
       // category access silently got storefront curation too, and a role that
       // should curate could not be given it without category rights.
-      adminItem(String(ROUTES.ADMIN.GROUPED_LISTINGS),      "Grouped Listings","admin:grouped-listings:read"),
-      adminItem(String(ROUTES.ADMIN.DEALS),                 "Deals",         "admin:deals:read"),
-      adminItem(String(ROUTES.ADMIN.FEATURED),              "Featured",      "admin:featured:read"),
-      adminItem(String(ROUTES.ADMIN.COUPONS), "Coupons", "admin:coupons:read"),
-      adminItem(String(ROUTES.ADMIN.PRINT_CENTER), "Print Center", "admin:products:read"),
-      adminItem(String(ROUTES.ADMIN.BUNDLES), "Bundles", "admin:categories:read"),
-      adminItem(String(ROUTES.ADMIN.PRIZE_DRAWS), "Prize Draws", "admin:products:read"),
+      adminItem(String(ROUTES.ADMIN.GROUPED_LISTINGS),      "Grouped Listings","admin:grouped-listings:read", {
+        description: "Theme scrollers that appear beside a product.",
+        keywords: ["related", "collections", "you might also like"],
+      }),
+      adminItem(String(ROUTES.ADMIN.DEALS),                 "Deals",         "admin:deals:read", {
+        description: "Discounted listings and the campaigns behind them.",
+        keywords: ["sale", "promotions", "discount"],
+      }),
+      adminItem(String(ROUTES.ADMIN.FEATURED),              "Featured",      "admin:featured:read", {
+        description: "What gets promoted on the homepage and category pages.",
+        keywords: ["homepage", "promoted", "spotlight"],
+      }),
+      adminItem(String(ROUTES.ADMIN.COUPONS), "Coupons", "admin:coupons:read", {
+        description: "Discount codes, their limits and who has used them.",
+        keywords: ["voucher", "promo code", "discount"],
+      }),
+      adminItem(String(ROUTES.ADMIN.PRINT_CENTER), "Print Center", "admin:products:read", {
+        description: "Print labels, invoices and barcodes in a batch.",
+        keywords: ["labels", "invoice", "barcode"],
+      }),
+      adminItem(String(ROUTES.ADMIN.BUNDLES), "Bundles", "admin:categories:read", {
+        description: "Multi-item packs sold at one price.",
+        keywords: ["packs", "sets", "combo"],
+      }),
+      adminItem(String(ROUTES.ADMIN.PRIZE_DRAWS), "Prize Draws", "admin:products:read", {
+        description: "Raffle-style listings and their winners.",
+        keywords: ["raffle", "lottery", "giveaway"],
+      }),
     ],
   },
   {
     title: "Content",
     items: [
-      adminItem(String(ROUTES.ADMIN.REVIEWS), "Reviews", "admin:reviews:read"),
-      adminItem(String(ROUTES.ADMIN.MEDIA),   "Media",   "admin:media:read"),
-      adminItem(String(ROUTES.ADMIN.BLOG),    "Blog",    "admin:blog:read"),
-      adminItem(String(ROUTES.ADMIN.BIDS),    "Bids",    "admin:bids:read"),
+      adminItem(String(ROUTES.ADMIN.REVIEWS), "Reviews", "admin:reviews:read", {
+        description: "Buyer reviews, and any a seller has replied to.",
+        keywords: ["ratings", "feedback", "stars"],
+      }),
+      adminItem(String(ROUTES.ADMIN.MEDIA),   "Media",   "admin:media:read", {
+        description: "Every uploaded image and video.",
+        keywords: ["images", "photos", "uploads", "files"],
+      }),
+      adminItem(String(ROUTES.ADMIN.BLOG),    "Blog",    "admin:blog:read", {
+        description: "Write and publish posts.",
+        keywords: ["articles", "posts", "news"],
+      }),
+      adminItem(String(ROUTES.ADMIN.BIDS),    "Bids",    "admin:bids:read", {
+        description: "Every bid placed on every auction.",
+        keywords: ["auction", "bidding"],
+      }),
     ],
   },
   {
     title: "Testing",
     items: [
-      adminItem(String(ROUTES.ADMIN.TESTER_CHECKLIST), "Test Cases",     "admin:tester-checklist:read"),
-      adminItem(String(ROUTES.ADMIN.TESTER_FEEDBACK),  "Results",        "admin:tester-feedback:read"),
-      adminItem(String(ROUTES.USER.TESTER_HUB),        "Tester Hub",     "admin:tester-checklist:read"),
+      adminItem(String(ROUTES.ADMIN.TESTER_CHECKLIST), "Test Cases",     "admin:tester-checklist:read", {
+        description: "The checklist testers work through.",
+        keywords: ["qa", "checklist", "testing"],
+      }),
+      adminItem(String(ROUTES.ADMIN.TESTER_FEEDBACK),  "Results",        "admin:tester-feedback:read", {
+        description: "What testers answered, and the bugs they found.",
+        keywords: ["qa", "feedback", "bug reports"],
+      }),
+      adminItem(String(ROUTES.USER.TESTER_HUB),        "Tester Hub",     "admin:tester-checklist:read", {
+        description: "The tester's own view of the checklist.",
+        keywords: ["qa", "testing"],
+      }),
     ],
   },
   {
     title: "Site",
     items: [
-      adminItem(String(ROUTES.ADMIN.SITE),                "Site Settings",      "admin:site:read"),
-      adminItem(String(ROUTES.ADMIN.NAVIGATION),          "Navigation",         "admin:navigation:read"),
-      adminItem(String(ROUTES.ADMIN.SECTIONS),            "Sections",           "admin:sections:read"),
-      adminItem(String(ROUTES.ADMIN.CAROUSEL),            "Carousel",           "admin:carousel:read"),
-      adminItem(String(ROUTES.ADMIN.CAROUSELS),           "Carousels",          "admin:carousel:read"),
-      adminItem(String(ROUTES.ADMIN.SETTINGS_ACTIONS),    "Action Permissions", "admin:settings:write"),
-      adminItem(String(ROUTES.ADMIN.SETTINGS_NAVIGATION), "Nav Permissions",    "admin:settings:write"),
-      adminItem(String(ROUTES.ADMIN.ADS),                 "Ads",                "admin:ads:read"),
-      adminItem(String(ROUTES.ADMIN.FAQS),                "FAQs",               "admin:faqs:read"),
-      adminItem(String(ROUTES.ADMIN.NEWSLETTER),          "Newsletter",         "admin:newsletter:read"),
-      adminItem(String(ROUTES.ADMIN.CONTACT),             "Contact",            "admin:contact:read"),
+      adminItem(String(ROUTES.ADMIN.SITE),                "Site Settings",      "admin:site:read", {
+        description: "Branding, fees, integrations, legal pages and feature toggles.",
+        keywords: ["config", "configuration", "options", "maintenance mode"],
+      }),
+      adminItem(String(ROUTES.ADMIN.NAVIGATION),          "Navigation",         "admin:navigation:read", {
+        description: "Show, hide, rename and reorder sidebar entries.",
+        keywords: ["menu", "sidebar", "nav"],
+      }),
+      adminItem(String(ROUTES.ADMIN.SECTIONS),            "Sections",           "admin:sections:read", {
+        description: "The blocks that make up the homepage, in order.",
+        keywords: ["homepage", "layout", "blocks"],
+      }),
+      adminItem(String(ROUTES.ADMIN.CAROUSEL),            "Carousel",           "admin:carousel:read", {
+        description: "The hero slides at the top of the homepage.",
+        keywords: ["hero", "banner", "slider"],
+      }),
+      adminItem(String(ROUTES.ADMIN.CAROUSELS),           "Carousels",          "admin:carousel:read", {
+        description: "Named carousels you can place anywhere.",
+        keywords: ["hero", "banner", "slider"],
+      }),
+      adminItem(String(ROUTES.ADMIN.SETTINGS_ACTIONS),    "Action Permissions", "admin:settings:write", {
+        description: "Which roles may perform which actions.",
+        keywords: ["rbac", "roles", "access"],
+      }),
+      adminItem(String(ROUTES.ADMIN.SETTINGS_NAVIGATION), "Nav Permissions",    "admin:settings:write", {
+        description: "Which roles see which sidebar entries.",
+        keywords: ["rbac", "roles", "menu access"],
+      }),
+      adminItem(String(ROUTES.ADMIN.ADS),                 "Ads",                "admin:ads:read", {
+        description: "Ad placements, schedules and their creatives.",
+        keywords: ["advertising", "banners", "adsense"],
+      }),
+      adminItem(String(ROUTES.ADMIN.FAQS),                "FAQs",               "admin:faqs:read", {
+        description: "Answers shown on the help pages and in search.",
+        keywords: ["help", "questions", "support"],
+      }),
+      adminItem(String(ROUTES.ADMIN.NEWSLETTER),          "Newsletter",         "admin:newsletter:read", {
+        description: "Subscribers, and exporting the list.",
+        keywords: ["email list", "mailing", "subscribers"],
+      }),
+      adminItem(String(ROUTES.ADMIN.CONTACT),             "Contact",            "admin:contact:read", {
+        description: "Messages sent through the contact form.",
+        keywords: ["enquiries", "messages", "inbox"],
+      }),
     ],
   },
   {
     title: "Events",
     items: [
-      adminItem(String(ROUTES.ADMIN.EVENTS),            "Events",       "admin:events:read"),
-      adminItem(String(ROUTES.ADMIN.ALL_EVENT_ENTRIES), "All Entries",  "admin:events:read"),
-      adminItem(String(ROUTES.ADMIN.LOTTERIES),         "Lotteries",    "admin:events:read"),
+      adminItem(String(ROUTES.ADMIN.EVENTS),            "Events",       "admin:events:read", {
+        description: "Sales, polls, raffles and spin-wheels.",
+        keywords: ["campaigns", "promotions", "raffle"],
+      }),
+      adminItem(String(ROUTES.ADMIN.ALL_EVENT_ENTRIES), "All Entries",  "admin:events:read", {
+        description: "Everyone who entered an event, across all events.",
+        keywords: ["participants", "signups"],
+      }),
+      adminItem(String(ROUTES.ADMIN.LOTTERIES),         "Lotteries",    "admin:events:read", {
+        description: "Slot-based lotteries and their prizes.",
+        keywords: ["raffle", "slots", "prizes"],
+      }),
     ],
   },
   {
     title: "Trust & Safety",
     items: [
-      adminItem(String(ROUTES.ADMIN.SUPPORT_TICKETS),       "Support Tickets",    "admin:support-tickets:read"),
-      adminItem(String(ROUTES.ADMIN.MODERATION),            "Moderation",         "admin:moderation:read"),
-      adminItem(String(ROUTES.ADMIN.REPORTS),               "Reports",            "admin:moderation:read"),
-      adminItem(String(ROUTES.ADMIN.ITEM_REQUESTS),         "Item Requests",      "admin:moderation:read"),
-      adminItem(String(ROUTES.ADMIN.BANNED_ADDRESSES),      "Banned Addresses",   "admin:addresses:read"),
-      adminItem(String(ROUTES.ADMIN.ADDRESS_CLUSTERS),      "Address Clusters",   "admin:addresses:read"),
-      adminItem(String(ROUTES.ADMIN.PAYMENT_METHODS),       "Payment Methods",    "admin:addresses:read"),
-      adminItem(String(ROUTES.ADMIN.PAYMENT_METHODS_CLUSTERS), "Payment Clusters", "admin:addresses:read"),
-      adminItem(String(ROUTES.ADMIN.SCAMMERS), "Scam Registry", "admin:scammers:read"),
+      adminItem(String(ROUTES.ADMIN.SUPPORT_TICKETS),       "Support Tickets",    "admin:support-tickets:read", {
+        description: "Tickets buyers and sellers have raised.",
+        keywords: ["help", "complaints", "issues"],
+      }),
+      adminItem(String(ROUTES.ADMIN.MODERATION),            "Moderation",         "admin:moderation:read", {
+        description: "Content queued for review.",
+        keywords: ["review queue", "flagged", "approve"],
+      }),
+      adminItem(String(ROUTES.ADMIN.REPORTS),               "Reports",            "admin:moderation:read", {
+        description: "What users have reported, and why.",
+        keywords: ["flags", "abuse", "complaints"],
+      }),
+      adminItem(String(ROUTES.ADMIN.ITEM_REQUESTS),         "Item Requests",      "admin:moderation:read", {
+        description: "Buyers asking for something nobody lists yet.",
+        keywords: ["wanted", "requests", "sourcing"],
+      }),
+      adminItem(String(ROUTES.ADMIN.BANNED_ADDRESSES),      "Banned Addresses",   "admin:addresses:read", {
+        description: "Addresses blocked from ordering, and unban appeals.",
+        keywords: ["blocklist", "fraud", "ban"],
+      }),
+      adminItem(String(ROUTES.ADMIN.ADDRESS_CLUSTERS),      "Address Clusters",   "admin:addresses:read", {
+        description: "Accounts sharing one address — a fraud signal.",
+        keywords: ["fraud", "duplicates", "linked accounts"],
+      }),
+      adminItem(String(ROUTES.ADMIN.PAYMENT_METHODS),       "Payment Methods",    "admin:addresses:read", {
+        description: "Saved cards and UPI IDs, and any that are blocked.",
+        keywords: ["cards", "upi", "wallets"],
+      }),
+      adminItem(String(ROUTES.ADMIN.PAYMENT_METHODS_CLUSTERS), "Payment Clusters", "admin:addresses:read", {
+        description: "Accounts sharing one payment method.",
+        keywords: ["fraud", "duplicates", "linked accounts"],
+      }),
+      adminItem(String(ROUTES.ADMIN.SCAMMERS), "Scam Registry", "admin:scammers:read", {
+        description: "Known scammers and the reports behind each.",
+        keywords: ["fraud", "blocklist", "report"],
+      }),
     ],
   },
   {
     title: "System",
     items: [
-      adminItem(String(ROUTES.ADMIN.SESSIONS),      "Sessions",      "admin:sessions:read"),
-      adminItem(String(ROUTES.ADMIN.NOTIFICATIONS), "Notifications", "admin:notifications:read"),
-      adminItem(String(ROUTES.ADMIN.CARTS),         "Carts",         "admin:carts:read"),
-      adminItem(String(ROUTES.ADMIN.WISHLISTS),     "Wishlists",     "admin:wishlists:read"),
-      adminItem(String(ROUTES.ADMIN.HISTORY),       "History",       "admin:sessions:read"),
-      adminItem(String(ROUTES.ADMIN.COPILOT),              "Copilot",             "admin:copilot:view"),
-      adminItem(String(ROUTES.ADMIN.TEAM),                 "Team",                "admin:team:read"),
-      adminItem(String(ROUTES.ADMIN.ROLES),                "Custom Roles",        "admin:roles:read"),
-      adminItem(String(ROUTES.ADMIN.PERMISSIONS),          "Permissions",         "admin:roles:read"),
-      adminItem(String(ROUTES.ADMIN.ADMIN_NOTIFICATIONS),  "Admin Notifications", "admin:notifications:read"),
+      adminItem(String(ROUTES.ADMIN.SESSIONS),      "Sessions",      "admin:sessions:read", {
+        description: "Who is signed in, from what device.",
+        keywords: ["logins", "devices", "security"],
+      }),
+      adminItem(String(ROUTES.ADMIN.NOTIFICATIONS), "Notifications", "admin:notifications:read", {
+        description: "Notifications sent to users.",
+        keywords: ["alerts", "messages", "push"],
+      }),
+      adminItem(String(ROUTES.ADMIN.CARTS),         "Carts",         "admin:carts:read", {
+        description: "What buyers have left in their carts.",
+        keywords: ["baskets", "abandoned"],
+      }),
+      adminItem(String(ROUTES.ADMIN.WISHLISTS),     "Wishlists",     "admin:wishlists:read", {
+        description: "What buyers have saved for later.",
+        keywords: ["saved", "favourites"],
+      }),
+      adminItem(String(ROUTES.ADMIN.HISTORY),       "History",       "admin:sessions:read", {
+        description: "What buyers have recently looked at.",
+        keywords: ["recently viewed", "browsing"],
+      }),
+      adminItem(String(ROUTES.ADMIN.COPILOT),              "Copilot",             "admin:copilot:view", {
+        description: "The assistant's settings and its conversation log.",
+        keywords: ["ai", "assistant", "chat"],
+      }),
+      adminItem(String(ROUTES.ADMIN.TEAM),                 "Team",                "admin:team:read", {
+        description: "Invite staff and set what each of them can do.",
+        keywords: ["staff", "employees", "colleagues", "invite"],
+      }),
+      adminItem(String(ROUTES.ADMIN.ROLES),                "Custom Roles",        "admin:roles:read", {
+        description: "Build a role out of individual permissions.",
+        keywords: ["rbac", "groups", "access"],
+      }),
+      adminItem(String(ROUTES.ADMIN.PERMISSIONS),          "Permissions",         "admin:roles:read", {
+        description: "The full list of permissions and what each unlocks.",
+        keywords: ["rbac", "access", "capabilities"],
+      }),
+      adminItem(String(ROUTES.ADMIN.ADMIN_NOTIFICATIONS),  "Admin Notifications", "admin:notifications:read", {
+        description: "Broadcasts sent to staff rather than to users.",
+        keywords: ["internal", "announcements", "staff"],
+      }),
     ],
   },
   {
     title: "Maintenance",
     items: [
-      adminItem("/admin/maintenance",                  "Overview",          "admin:maintenance:view-server-errors"),
-      adminItem("/admin/maintenance/server-errors",    "Server Errors",     "admin:maintenance:view-server-errors"),
-      adminItem("/admin/maintenance/client-errors",    "Client Errors",     "admin:maintenance:view-client-errors"),
-      adminItem("/admin/maintenance/function-errors",  "Function Errors",   "admin:maintenance:view-function-errors"),
-      adminItem("/admin/maintenance/payment-rollbacks","Payment Rollbacks", "admin:maintenance:view-payment-rollbacks"),
-      adminItem("/admin/maintenance/cloud-logs",       "Cloud Logs",        "admin:maintenance:view-cloud-logs"),
-      adminItem("/admin/maintenance/analysis",         "Run Analysis",      "admin:maintenance:run-analysis"),
+      adminItem("/admin/maintenance",                  "Overview",          "admin:maintenance:view-server-errors", {
+        description: "The health of the site's background jobs and errors.",
+        keywords: ["status", "monitoring", "health"],
+      }),
+      adminItem("/admin/maintenance/server-errors",    "Server Errors",     "admin:maintenance:view-server-errors", {
+        description: "Failures that happened on the server.",
+        keywords: ["500", "crashes", "exceptions", "logs"],
+      }),
+      adminItem("/admin/maintenance/client-errors",    "Client Errors",     "admin:maintenance:view-client-errors", {
+        description: "Failures that happened in someone's browser.",
+        keywords: ["javascript", "crashes", "logs"],
+      }),
+      adminItem("/admin/maintenance/function-errors",  "Function Errors",   "admin:maintenance:view-function-errors", {
+        description: "Failures inside the scheduled and triggered jobs.",
+        keywords: ["cloud functions", "cron", "logs"],
+      }),
+      adminItem("/admin/maintenance/payment-rollbacks","Payment Rollbacks", "admin:maintenance:view-payment-rollbacks", {
+        description: "Payments that had to be reversed, and why.",
+        keywords: ["refund", "reversal", "failed payment"],
+      }),
+      adminItem("/admin/maintenance/cloud-logs",       "Cloud Logs",        "admin:maintenance:view-cloud-logs", {
+        description: "Raw infrastructure logs from Google Cloud.",
+        keywords: ["gcp", "logging", "trace"],
+      }),
+      adminItem("/admin/maintenance/analysis",         "Run Analysis",      "admin:maintenance:run-analysis", {
+        description: "Kick off an analysis job by hand.",
+        keywords: ["job", "trigger", "batch"],
+      }),
     ],
   },
   {
     title: "Guides",
     defaultOpen: false,
     items: [
-      adminItem(String(ROUTES.ADMIN.GUIDE),            "All Guides",          "admin:dashboard:view"),
-      adminItem(String(ROUTES.ADMIN.GUIDE_USERS),      "Users & Accounts",    "admin:users:read"),
-      adminItem(String(ROUTES.ADMIN.GUIDE_CATALOG),    "Catalog",             "admin:products:read"),
-      adminItem(String(ROUTES.ADMIN.GUIDE_STORES),     "Stores & Sellers",    "admin:stores:read"),
-      adminItem(String(ROUTES.ADMIN.GUIDE_ORDERS),     "Orders & Finance",    "admin:orders:read"),
-      adminItem(String(ROUTES.ADMIN.GUIDE_CONTENT),    "Content & Marketing", "admin:blog:read"),
-      adminItem(String(ROUTES.ADMIN.GUIDE_SITE),       "Site Configuration",  "admin:site:read"),
-      adminItem(String(ROUTES.ADMIN.GUIDE_TEAM),       "Team & Permissions",  "admin:team:read"),
-      adminItem(String(ROUTES.ADMIN.GUIDE_ANALYTICS),  "Analytics",           "admin:analytics:view"),
-      adminItem(String(ROUTES.ADMIN.GUIDE_TRUST),      "Trust & Safety",      "admin:moderation:read"),
-      adminItem(String(ROUTES.ADMIN.GUIDE_WHATSAPP),   "WhatsApp Integration","admin:site:read"),
-      adminItem(String(ROUTES.ADMIN.GUIDE_PAYMENTS),   "Payments (Razorpay)", "admin:site:read"),
+      adminItem(String(ROUTES.ADMIN.GUIDE),            "All Guides",          "admin:dashboard:view", {
+        description: "Every internal how-to in one place.",
+        keywords: ["docs", "help", "handbook"],
+      }),
+      adminItem(String(ROUTES.ADMIN.GUIDE_USERS),      "Users & Accounts",    "admin:users:read", {
+        description: "How accounts, roles and bans work.",
+        keywords: ["docs", "guide", "handbook"],
+      }),
+      adminItem(String(ROUTES.ADMIN.GUIDE_CATALOG),    "Catalog",             "admin:products:read", {
+        description: "How categories, brands and listings fit together.",
+        keywords: ["docs", "guide", "handbook"],
+      }),
+      adminItem(String(ROUTES.ADMIN.GUIDE_STORES),     "Stores & Sellers",    "admin:stores:read", {
+        description: "How seller onboarding and store status work.",
+        keywords: ["docs", "guide", "handbook"],
+      }),
+      adminItem(String(ROUTES.ADMIN.GUIDE_ORDERS),     "Orders & Finance",    "admin:orders:read", {
+        description: "How an order becomes a payout.",
+        keywords: ["docs", "guide", "handbook"],
+      }),
+      adminItem(String(ROUTES.ADMIN.GUIDE_CONTENT),    "Content & Marketing", "admin:blog:read", {
+        description: "How the homepage, blog and campaigns are run.",
+        keywords: ["docs", "guide", "handbook"],
+      }),
+      adminItem(String(ROUTES.ADMIN.GUIDE_SITE),       "Site Configuration",  "admin:site:read", {
+        description: "What every site setting actually changes.",
+        keywords: ["docs", "guide", "handbook"],
+      }),
+      adminItem(String(ROUTES.ADMIN.GUIDE_TEAM),       "Team & Permissions",  "admin:team:read", {
+        description: "How to give a colleague exactly the access they need.",
+        keywords: ["docs", "guide", "rbac"],
+      }),
+      adminItem(String(ROUTES.ADMIN.GUIDE_ANALYTICS),  "Analytics",           "admin:analytics:view", {
+        description: "Revenue, orders and traffic over time.",
+        keywords: ["reports", "sales", "charts"],
+      }),
+      adminItem(String(ROUTES.ADMIN.GUIDE_TRUST),      "Trust & Safety",      "admin:moderation:read", {
+        description: "How fraud signals, bans and appeals work.",
+        keywords: ["docs", "guide", "fraud"],
+      }),
+      adminItem(String(ROUTES.ADMIN.GUIDE_WHATSAPP),   "WhatsApp Integration","admin:site:read", {
+        description: "How WhatsApp notifications and catalogue sync are set up.",
+        keywords: ["docs", "guide", "meta"],
+      }),
+      adminItem(String(ROUTES.ADMIN.GUIDE_PAYMENTS),   "Payments (Razorpay)", "admin:site:read", {
+        description: "How payments, refunds and settlement are configured.",
+        keywords: ["docs", "guide", "gateway"],
+      }),
     ],
   },
 ];
@@ -347,76 +683,208 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
   {
     title: "Overview",
     items: [
-      { href: String(ROUTES.STORE.DASHBOARD), label: "Dashboard" },
+      storeItem(String(ROUTES.STORE.DASHBOARD), "Dashboard", {
+        description: "Your sales today, and anything waiting on you.",
+        keywords: ["home", "overview"],
+      }),
     ],
   },
   {
     title: "Listings",
     items: [
-      { href: String(ROUTES.STORE.PRODUCTS),               label: "Products"               },
-      { href: String(ROUTES.STORE.ART),                    label: "Art"                    },
-      { href: String(ROUTES.STORE.STICKERS),               label: "Stickers"               },
-      { href: String(ROUTES.STORE.AUCTIONS),               label: "Auctions"               },
-      { href: String(ROUTES.STORE.PRE_ORDERS),             label: "Pre-Orders"             },
-      { href: String(ROUTES.STORE.PRIZE_DRAWS),            label: "Prize Draws"            },
-      { href: String(ROUTES.STORE.BUNDLES),                label: "Bundles"                },
-      { href: String(ROUTES.STORE.CLASSIFIED),             label: "Classified"             },
-      { href: String(ROUTES.STORE.DIGITAL_CODES),          label: "Digital Codes"          },
-      { href: String(ROUTES.STORE.LIVE_ITEMS),             label: "Live Items"             },
-      { href: String(ROUTES.STORE.GROUPED_LISTINGS),       label: "Grouped Listings"       },
-      { href: String(ROUTES.STORE.SUBLISTING_CATEGORIES),  label: "Sub-listing Categories" },
-      { href: String(ROUTES.STORE.FEATURES),                label: "Feature Badges"        },
-      { href: String(ROUTES.STORE.LISTING_TEMPLATES),      label: "Listing Templates"      },
-      { href: String(ROUTES.STORE.STORE_CATEGORIES),       label: "Store Categories"       },
+      storeItem(String(ROUTES.STORE.PRODUCTS), "Products", {
+        description: "Your listings — add, edit, restock or retire them.",
+        keywords: ["inventory", "stock", "catalogue"],
+      }),
+      storeItem(String(ROUTES.STORE.ART), "Art", {
+        description: "Your art prints.",
+        keywords: ["prints", "posters"],
+      }),
+      storeItem(String(ROUTES.STORE.STICKERS), "Stickers", {
+        description: "Your sticker sheets.",
+        keywords: ["decals", "vinyl", "sticker sheet"],
+      }),
+      storeItem(String(ROUTES.STORE.AUCTIONS), "Auctions", {
+        description: "Your auctions and the bids on them.",
+        keywords: ["bidding", "timed sale"],
+      }),
+      storeItem(String(ROUTES.STORE.PRE_ORDERS), "Pre-Orders", {
+        description: "Items buyers can reserve before you have them.",
+        keywords: ["reserve", "preorder", "deposit"],
+      }),
+      storeItem(String(ROUTES.STORE.PRIZE_DRAWS), "Prize Draws", {
+        description: "Raffle-style listings you are running.",
+        keywords: ["raffle", "giveaway"],
+      }),
+      storeItem(String(ROUTES.STORE.BUNDLES), "Bundles", {
+        description: "Multi-item packs at one price.",
+        keywords: ["packs", "combo", "sets"],
+      }),
+      storeItem(String(ROUTES.STORE.CLASSIFIED), "Classified", {
+        description: "Contact-only listings buyers cannot add to a cart.",
+        keywords: ["meetup", "local", "no shipping"],
+      }),
+      storeItem(String(ROUTES.STORE.DIGITAL_CODES), "Digital Codes", {
+        description: "Listings that deliver a code instead of a parcel.",
+        keywords: ["keys", "vouchers"],
+      }),
+      storeItem(String(ROUTES.STORE.LIVE_ITEMS), "Live Items", {
+        description: "Live animals or plants you sell.",
+        keywords: ["animals", "plants"],
+      }),
+      storeItem(String(ROUTES.STORE.GROUPED_LISTINGS), "Grouped Listings", {
+        description: "Theme scrollers shown beside your products.",
+        keywords: ["related", "collections"],
+      }),
+      storeItem(String(ROUTES.STORE.SUBLISTING_CATEGORIES), "Sub-listing Categories", {
+        description: "Your own sub-categories inside a category.",
+        keywords: ["taxonomy", "grouping"],
+      }),
+      storeItem(String(ROUTES.STORE.FEATURES), "Feature Badges", {
+        description: "Badges shown on your listings.",
+        keywords: ["labels", "chips", "flags"],
+      }),
+      storeItem(String(ROUTES.STORE.LISTING_TEMPLATES), "Listing Templates", {
+        description: "Reusable starting points for a new listing.",
+        keywords: ["presets", "boilerplate"],
+      }),
+      storeItem(String(ROUTES.STORE.STORE_CATEGORIES), "Store Categories", {
+        description: "How your storefront is organised for buyers.",
+        keywords: ["shop sections", "taxonomy"],
+      }),
     ],
   },
   {
     title: "Orders & Reviews",
     items: [
-      { href: String(ROUTES.STORE.ORDERS),   label: "Orders"   },
-      { href: String(ROUTES.STORE.MESSAGES), label: "Messages" },
-      { href: String(ROUTES.STORE.REVIEWS),  label: "Reviews"  },
-      { href: String(ROUTES.STORE.BIDS),     label: "Bids"     },
-      { href: String(ROUTES.STORE.OFFERS),   label: "Offers"   },
+      storeItem(String(ROUTES.STORE.ORDERS), "Orders", {
+        description: "Orders to pack, ship and get paid for.",
+        keywords: ["sales", "shipping", "fulfil"],
+      }),
+      storeItem(String(ROUTES.STORE.MESSAGES), "Messages", {
+        description: "Conversations with buyers.",
+        keywords: ["chat", "enquiries", "inbox"],
+      }),
+      storeItem(String(ROUTES.STORE.REVIEWS), "Reviews", {
+        description: "What buyers said, and your replies.",
+        keywords: ["ratings", "feedback", "stars"],
+      }),
+      storeItem(String(ROUTES.STORE.BIDS), "Bids", {
+        description: "Bids placed on your auctions.",
+        keywords: ["auction", "bidding"],
+      }),
+      storeItem(String(ROUTES.STORE.OFFERS), "Offers", {
+        description: "Price offers from buyers — accept, counter or decline.",
+        keywords: ["negotiation", "haggle"],
+      }),
     ],
   },
   {
     title: "Finance",
     items: [
-      { href: String(ROUTES.STORE.ANALYTICS),        label: "Analytics"        },
-      { href: String(ROUTES.STORE.PAYOUTS),          label: "Payouts"          },
-      { href: String(ROUTES.STORE.PAYOUT_METHODS),   label: "Payout Methods"   },
-      { href: String(ROUTES.STORE.PAYOUT_SETTINGS),  label: "Payout Settings"  },
-      { href: String(ROUTES.STORE.ANALYTICS_CARDS),  label: "Analytics Cards"  },
-      { href: String(ROUTES.STORE.ANALYTICS_ALERTS), label: "Analytics Alerts" },
+      storeItem(String(ROUTES.STORE.ANALYTICS), "Analytics", {
+        description: "How your listings and revenue are doing.",
+        keywords: ["reports", "sales", "charts"],
+      }),
+      storeItem(String(ROUTES.STORE.PAYOUTS), "Payouts", {
+        description: "What you have been paid, and what is still due.",
+        keywords: ["money", "settlement", "earnings"],
+      }),
+      storeItem(String(ROUTES.STORE.PAYOUT_METHODS), "Payout Methods", {
+        description: "Where your money goes — bank or UPI.",
+        keywords: ["bank account", "upi", "payment details"],
+      }),
+      storeItem(String(ROUTES.STORE.PAYOUT_SETTINGS), "Payout Settings", {
+        description: "How often you get paid, and the minimum.",
+        keywords: ["schedule", "frequency", "threshold"],
+      }),
+      storeItem(String(ROUTES.STORE.ANALYTICS_CARDS), "Analytics Cards", {
+        description: "The charts on your analytics page.",
+        keywords: ["widgets", "dashboard", "reports"],
+      }),
+      storeItem(String(ROUTES.STORE.ANALYTICS_ALERTS), "Analytics Alerts", {
+        description: "Get told when a number crosses a line.",
+        keywords: ["notifications", "thresholds", "warnings"],
+      }),
     ],
   },
   {
     title: "Store",
     items: [
-      { href: String(ROUTES.STORE.STOREFRONT),       label: "Storefront"      },
-      { href: String(ROUTES.STORE.SHIPPING),         label: "Shipping"        },
-      { href: String(ROUTES.STORE.SHIPPING_CONFIGS), label: "Shipping Configs"},
-      { href: String(ROUTES.STORE.FULFILLMENT),      label: "Fulfillment"     },
-      { href: String(ROUTES.STORE.ADDRESSES),        label: "Addresses"       },
-      { href: String(ROUTES.STORE.COUPONS),          label: "Coupons"         },
-      { href: String(ROUTES.STORE.PRINT_CENTER),     label: "Print Center"    },
-      { href: String(ROUTES.STORE.WHATSAPP),         label: "WhatsApp"        },
-      { href: String(ROUTES.STORE.GOOGLE_REVIEWS),   label: "Google Reviews"  },
-      { href: String(ROUTES.STORE.SLUG),             label: "Store Slug"      },
+      storeItem(String(ROUTES.STORE.STOREFRONT), "Storefront", {
+        description: "Your shop's name, logo, banner and description.",
+        keywords: ["branding", "shop page", "profile"],
+      }),
+      storeItem(String(ROUTES.STORE.SHIPPING), "Shipping", {
+        description: "What you charge to ship, and where you ship to.",
+        keywords: ["delivery", "postage", "rates"],
+      }),
+      storeItem(String(ROUTES.STORE.SHIPPING_CONFIGS), "Shipping Configs", {
+        description: "Named shipping rules you can reuse per listing.",
+        keywords: ["delivery", "rates", "presets"],
+      }),
+      storeItem(String(ROUTES.STORE.FULFILLMENT), "Fulfillment", {
+        description: "Orders waiting to be packed or handed over.",
+        keywords: ["dispatch", "packing", "shipping"],
+      }),
+      storeItem(String(ROUTES.STORE.ADDRESSES), "Addresses", {
+        description: "Where you ship from.",
+        keywords: ["pickup", "warehouse", "return address"],
+      }),
+      storeItem(String(ROUTES.STORE.COUPONS), "Coupons", {
+        description: "Your own discount codes.",
+        keywords: ["voucher", "promo code", "discount"],
+      }),
+      storeItem(String(ROUTES.STORE.PRINT_CENTER), "Print Center", {
+        description: "Print labels, invoices and barcodes in a batch.",
+        keywords: ["labels", "invoice", "barcode"],
+      }),
+      storeItem(String(ROUTES.STORE.WHATSAPP), "WhatsApp", {
+        description: "Send buyers order updates on WhatsApp.",
+        keywords: ["notifications", "messaging", "meta"],
+      }),
+      storeItem(String(ROUTES.STORE.GOOGLE_REVIEWS), "Google Reviews", {
+        description: "Show your Google Business reviews on your shop page.",
+        keywords: ["ratings", "reputation"],
+      }),
+      storeItem(String(ROUTES.STORE.SLUG), "Store Slug", {
+        description: "The web address buyers reach your shop at.",
+        keywords: ["url", "link", "domain"],
+      }),
     ],
   },
   {
     title: "Guides",
     defaultOpen: false,
     items: [
-      { href: String(ROUTES.STORE.GUIDE),               label: "All Guides"          },
-      { href: String(ROUTES.STORE.GUIDE_LISTINGS),      label: "Listings"            },
-      { href: String(ROUTES.STORE.GUIDE_ORDERS),        label: "Orders"              },
-      { href: String(ROUTES.STORE.GUIDE_FINANCE),       label: "Finance"             },
-      { href: String(ROUTES.STORE.GUIDE_SETTINGS),      label: "Settings"            },
-      { href: String(ROUTES.STORE.GUIDE_CAPABILITIES),  label: "Capabilities"        },
-      { href: String(ROUTES.STORE.GUIDE_WHATSAPP),      label: "WhatsApp Catalog Sync" },
+      storeItem(String(ROUTES.STORE.GUIDE), "All Guides", {
+        description: "Every seller how-to in one place.",
+        keywords: ["help", "docs", "handbook"],
+      }),
+      storeItem(String(ROUTES.STORE.GUIDE_LISTINGS), "Listings", {
+        description: "How to list, price and photograph what you sell.",
+        keywords: ["help", "docs", "guide"],
+      }),
+      storeItem(String(ROUTES.STORE.GUIDE_ORDERS), "Orders", {
+        description: "Orders to pack, ship and get paid for.",
+        keywords: ["sales", "shipping", "fulfil"],
+      }),
+      storeItem(String(ROUTES.STORE.GUIDE_FINANCE), "Finance", {
+        description: "How payouts, fees and settlement work.",
+        keywords: ["help", "docs", "guide"],
+      }),
+      storeItem(String(ROUTES.STORE.GUIDE_SETTINGS), "Settings", {
+        description: "How to set up your shop.",
+        keywords: ["help", "docs", "guide"],
+      }),
+      storeItem(String(ROUTES.STORE.GUIDE_CAPABILITIES), "Capabilities", {
+        description: "What your store is allowed to do, and how to unlock more.",
+        keywords: ["permissions", "limits", "access"],
+      }),
+      storeItem(String(ROUTES.STORE.GUIDE_WHATSAPP), "WhatsApp Catalog Sync", {
+        description: "Push your listings into a WhatsApp catalogue.",
+        keywords: ["help", "docs", "meta"],
+      }),
     ],
   },
 ];
@@ -429,43 +897,109 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
   {
     title: "Account",
     items: [
-      { href: String(ROUTES.USER.DASHBOARD),     label: "Dashboard"     },
-      { href: String(ROUTES.USER.PROFILE),       label: "My Profile"    },
-      { href: String(ROUTES.USER.SETTINGS),      label: "Settings"      },
-      { href: String(ROUTES.USER.NOTIFICATIONS), label: "Notifications" },
-      { href: String(ROUTES.USER.MESSAGES),      label: "Messages"      },
+      userItem(String(ROUTES.USER.DASHBOARD), "Dashboard", {
+        description: "Your orders, bids and anything needing attention.",
+        keywords: ["home", "overview"],
+      }),
+      userItem(String(ROUTES.USER.PROFILE), "My Profile", {
+        description: "Your name, photo, bio and whether people can see them.",
+        keywords: ["account", "avatar", "about me"],
+      }),
+      userItem(String(ROUTES.USER.SETTINGS), "Settings", {
+        description: "Email, password, language, theme and notifications.",
+        keywords: ["account", "preferences", "password"],
+      }),
+      userItem(String(ROUTES.USER.NOTIFICATIONS), "Notifications", {
+        description: "What the site has told you.",
+        keywords: ["alerts", "updates", "inbox"],
+      }),
+      userItem(String(ROUTES.USER.MESSAGES), "Messages", {
+        description: "Conversations with sellers.",
+        keywords: ["chat", "enquiries", "inbox"],
+      }),
     ],
   },
   {
     title: "Shopping",
     items: [
-      { href: String(ROUTES.USER.ORDERS),          label: "My Orders"  },
-      { href: String(ROUTES.USER.WISHLIST),         label: "Wishlist"   },
-      { href: String(ROUTES.USER.ADDRESSES),        label: "Addresses"  },
-      { href: String(ROUTES.USER.REVIEWS),          label: "My Reviews" },
-      { href: String(ROUTES.USER.CLAIMED_COUPONS),  label: "My Coupons" },
-      { href: String(ROUTES.USER.EVENTS),           label: "My Events"  },
-      { href: String(ROUTES.USER.BIDS),             label: "My Bids"    },
-      { href: String(ROUTES.USER.OFFERS),           label: "My Offers"  },
-      { href: String(ROUTES.USER.HISTORY),          label: "Recently Viewed" },
-      { href: String(ROUTES.USER.CATALOGUE),        label: "My Catalogue" },
-      { href: String(ROUTES.USER.RETURNS),          label: "My Returns" },
-      { href: String(ROUTES.USER.PRE_ORDERS),       label: "My Pre-Orders" },
-      { href: String(ROUTES.USER.DIGITAL_CODES),    label: "My Digital Codes" },
-      { href: String(ROUTES.USER.PRIZE_DRAWS),      label: "My Prize Draws" },
+      userItem(String(ROUTES.USER.ORDERS), "My Orders", {
+        description: "What you bought, and where it is.",
+        keywords: ["purchases", "tracking", "delivery"],
+      }),
+      userItem(String(ROUTES.USER.WISHLIST), "Wishlist", {
+        description: "Things you saved for later.",
+        keywords: ["saved", "favourites", "watchlist"],
+      }),
+      userItem(String(ROUTES.USER.ADDRESSES), "Addresses", {
+        description: "Where your orders get delivered.",
+        keywords: ["delivery", "shipping", "postcode", "pin code"],
+      }),
+      userItem(String(ROUTES.USER.REVIEWS), "My Reviews", {
+        description: "Reviews you have written.",
+        keywords: ["ratings", "feedback"],
+      }),
+      userItem(String(ROUTES.USER.CLAIMED_COUPONS), "My Coupons", {
+        description: "Discount codes you have claimed.",
+        keywords: ["vouchers", "promo codes", "discounts"],
+      }),
+      userItem(String(ROUTES.USER.EVENTS), "My Events", {
+        description: "Events you entered, and whether you won.",
+        keywords: ["raffles", "competitions", "entries"],
+      }),
+      userItem(String(ROUTES.USER.BIDS), "My Bids", {
+        description: "Auctions you are bidding on.",
+        keywords: ["auctions", "bidding", "watching"],
+      }),
+      userItem(String(ROUTES.USER.OFFERS), "My Offers", {
+        description: "Prices you offered sellers, and their replies.",
+        keywords: ["negotiation", "haggle"],
+      }),
+      userItem(String(ROUTES.USER.HISTORY), "Recently Viewed", {
+        description: "Things you looked at recently.",
+        keywords: ["history", "browsing"],
+      }),
+      userItem(String(ROUTES.USER.CATALOGUE), "My Catalogue", {
+        description: "Your own collection — private, or shown on your profile.",
+        keywords: ["collection", "inventory", "my items"],
+      }),
+      userItem(String(ROUTES.USER.RETURNS), "My Returns", {
+        description: "Returns you asked for, and their refunds.",
+        keywords: ["refunds", "send back", "rma"],
+      }),
+      userItem(String(ROUTES.USER.PRE_ORDERS), "My Pre-Orders", {
+        description: "Items you reserved before release.",
+        keywords: ["reservations", "deposits"],
+      }),
+      userItem(String(ROUTES.USER.DIGITAL_CODES), "My Digital Codes", {
+        description: "Codes you bought, ready to redeem.",
+        keywords: ["keys", "vouchers", "redeem"],
+      }),
+      userItem(String(ROUTES.USER.PRIZE_DRAWS), "My Prize Draws", {
+        description: "Draws you entered, and the results.",
+        keywords: ["raffles", "giveaways"],
+      }),
     ],
   },
   {
     title: "Selling",
     items: [
-      { href: String(ROUTES.USER.BECOME_SELLER), label: "Open a Store" },
+      userItem(String(ROUTES.USER.BECOME_SELLER), "Open a Store", {
+        description: "Start selling your own collectibles on LetItRip.",
+        keywords: ["sell", "become a seller", "my shop"],
+      }),
     ],
   },
   {
     title: "Help",
     items: [
-      { href: String(ROUTES.USER.SUPPORT), label: "Support Tickets" },
-      { href: String(ROUTES.PUBLIC.HELP),  label: "Help Center"     },
+      userItem(String(ROUTES.USER.SUPPORT), "Support Tickets", {
+        description: "Help you have asked for, and the replies.",
+        keywords: ["help", "contact", "complaints"],
+      }),
+      userItem(String(ROUTES.PUBLIC.HELP), "Help Center", {
+        description: "Answers to common questions.",
+        keywords: ["faq", "help", "support"],
+      }),
     ],
   },
   {
@@ -509,18 +1043,27 @@ export function getUserNavGroups(
   isTester?: boolean,
   canTestAdmin?: boolean,
 ): UserNavGroup[] {
-  // NOTE: the `confirm` field is added on the appkit `UserNavItem` interface but
-  // ships with the next appkit publish; cast keeps tsc happy against the
-  // currently-installed dist which doesn't expose it yet.
+  /*
+   * Through the helper like every other item, so it gets an `id` too. It was a
+   * bare literal behind an `as UserNavItem` cast, with a note saying `confirm`
+   * "ships with the next appkit publish" — that publish has happened, and
+   * `UserNavItem extends SidebarNavItem` now, so both the cast and the note
+   * were describing a state that no longer existed.
+   */
   const sellingItem: UserNavItem = isSeller
-    ? ({
-        href: String(ROUTES.STORE.DASHBOARD),
-        label: STORE_DASHBOARD_LABEL,
+    ? {
+        ...userItem(String(ROUTES.STORE.DASHBOARD), STORE_DASHBOARD_LABEL, {
+          description: "Switch to the seller side to manage your listings and orders.",
+          keywords: ["seller", "shop", "my store"],
+        }),
         confirm: {
           message: "Leave your buyer dashboard for the seller dashboard?",
         },
-      } as UserNavItem)
-    : { href: String(ROUTES.USER.BECOME_SELLER), label: BECOME_SELLER_LABEL };
+      }
+    : userItem(String(ROUTES.USER.BECOME_SELLER), BECOME_SELLER_LABEL, {
+        description: "Open a store and start listing your own collectibles.",
+        keywords: ["sell", "open a shop", "become a seller"],
+      });
   return USER_NAV_GROUPS.map((group) => {
     if (group.title === SELLING_GROUP_TITLE) return { ...group, items: [sellingItem] };
     if (group.title === ACCOUNT_GROUP_TITLE && userId) {
