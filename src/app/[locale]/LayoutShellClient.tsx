@@ -39,6 +39,10 @@ import { FOOTER_TRUST_BAR_ITEMS, FOOTER_SOCIAL_LINKS, FOOTER_BOTTOM_LINKS } from
 import { SEARCH_LABELS } from "@/constants/search";
 
 import { Row } from "@mohasinac/appkit/client";
+import { Search as Search2Icon } from "lucide-react";
+import { projectActionIndexForViewer } from "@mohasinac/appkit/client";
+import type { SearchQuickLink } from "@mohasinac/appkit/client";
+import { ACTION_INDEX_BASE } from "@/constants/action-index";
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 /** Map session user to the shape expected by AppLayoutShell. */
@@ -142,6 +146,48 @@ export default function LayoutShellClient({
   const handleTourStart = useCallback(() => startTour(tourRole, pathname), [startTour, tourRole, pathname]);
 
   const searchLabels = SEARCH_LABELS;
+
+  /*
+   * The quick links `Search` has always been able to render and has never been
+   * given.
+   *
+   * Both of its modes were built — the inline filter matches keywords as well
+   * as labels, the overlay renders a labelled band, the keyboard index
+   * arithmetic accounts for it — and `grep "quickLinks="` returned zero. It
+   * was not wired because there was nothing to wire: nav lived in three arrays
+   * with no shared shape and no descriptions. W6 fixed that, and W7 derives
+   * this list from it.
+   *
+   * 🛑 Projected by ROLE before it is rendered. An entry the viewer cannot
+   * reach is one they must not be shown — the labels alone are a site map of
+   * the admin panel (D8). This is a client-side projection over a list the
+   * client already has; when the index moves to a Firestore control document
+   * the projection moves server-side, which is where it has to be.
+   */
+  const quickLinks = useMemo<SearchQuickLink[]>(() => {
+    const visible = projectActionIndexForViewer(ACTION_INDEX_BASE, {
+      role: user?.role,
+      permissions: user?.permissions,
+      isTester: user?.isTester,
+      isAdmin: isAdminUser(user),
+    });
+    return visible.map((entry) => ({
+      href: entry.href,
+      label: entry.label,
+      icon: Search2Icon,
+      /*
+       * `sectionPath` joins the keywords so "admin orders" finds the admin
+       * entry rather than every Orders in every portal — the breadcrumb is the
+       * only thing that distinguishes them, and the inline filter matches
+       * keywords.
+       */
+      keywords: [
+        ...(entry.keywords ?? []),
+        ...(entry.description ? [entry.description.toLowerCase()] : []),
+        ...(entry.sectionPath ? [entry.sectionPath.toLowerCase()] : []),
+      ],
+    }));
+  }, [user]);
   const listingTypeFlags = useListingTypeFlags();
 
   const handleLogout = useCallback(async () => {
@@ -340,6 +386,7 @@ export default function LayoutShellClient({
               router={{ push: (href) => router.push(href) }}
               labels={searchLabels}
               resourceTypes={SEARCH_RESOURCE_TYPES}
+              quickLinks={quickLinks}
               storageKey="letitrip_search_type"
               className="flex-1"
             />
