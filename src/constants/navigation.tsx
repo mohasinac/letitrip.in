@@ -439,9 +439,31 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "Branding, fees, integrations, legal pages and feature toggles.",
         keywords: ["config", "configuration", "options", "maintenance mode"],
       }),
+      /*
+       * One control plane, replacing two editors that reached nothing.
+       *
+       * `/admin/navigation` and `/admin/settings/navigation` both existed and
+       * neither one's data reached a sidebar — `filterNavItems` short-circuits
+       * on a missing `id`, and no nav item had one until W6. This entry is the
+       * one that does.
+       */
+      /*
+       * 🛑 SUPERSEDED, not yet deleted.
+       *
+       * D7 has the action index absorb this editor and
+       * `/admin/settings/navigation`. It keeps its entry until the action-index
+       * screen supports rename, re-describe, retag and authoring — deleting a
+       * screen before its replacement covers it is the unadopted-layer
+       * inversion this plan exists to undo, even when (as here) the screen it
+       * replaces edits data no sidebar reads.
+       */
       adminItem(String(ROUTES.ADMIN.NAVIGATION),          "Navigation",         "admin:navigation:read", {
-        description: "Show, hide, rename and reorder sidebar entries.",
-        keywords: ["menu", "sidebar", "nav"],
+        description: "The older nav editor. Superseded by the Action index.",
+        keywords: ["menu", "sidebar", "nav", "legacy"],
+      }),
+      adminItem(String(ROUTES.ADMIN.ACTION_INDEX),        "Action index",       "admin:navigation:read", {
+        description: "Every page, setting and toggle a user can reach — hide, rename or retag any of them.",
+        keywords: ["navigation", "menu", "sidebar", "search", "shortcuts", "what can i do"],
       }),
       adminItem(String(ROUTES.ADMIN.SECTIONS),            "Sections",           "admin:sections:read", {
         description: "The blocks that make up the homepage, in order.",
