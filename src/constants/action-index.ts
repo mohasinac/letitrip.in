@@ -28,6 +28,7 @@
 import {
   buildActionIndexBase,
   deriveNavEntries,
+  deriveSettingsEntries,
   type ActionIndexEntry,
 } from "@mohasinac/appkit/client";
 import {
@@ -35,6 +36,7 @@ import {
   STORE_NAV_GROUPS,
   USER_NAV_GROUPS,
 } from "./navigation";
+import { ROUTES } from "./routes";
 
 /**
  * The base, in portal order.
@@ -46,6 +48,13 @@ import {
  * server-side before it reaches them.
  */
 export const ACTION_INDEX_BASE: ActionIndexEntry[] = buildActionIndexBase(
+  /*
+   * Settings FIRST, so a control outranks the page it lives on when both
+   * match. Someone searching "maintenance" wants the toggle; the settings page
+   * matches too, on its own description, and would otherwise win on order
+   * alone.
+   */
+  deriveSettingsEntries(String(ROUTES.ADMIN.SITE)),
   deriveNavEntries([
     { portal: "admin", portalLabel: "Admin", groups: ADMIN_NAV_GROUPS },
     { portal: "store", portalLabel: "Seller", groups: STORE_NAV_GROUPS },

@@ -172,7 +172,15 @@ export default function LayoutShellClient({
       isAdmin: isAdminUser(user),
     });
     return visible.map((entry) => ({
-      href: entry.href,
+      /*
+       * 🛑 The deep link, not just the page.
+       *
+       * `?tab=fees#setting-cod-enabled` is the entire difference between
+       * "search for the COD toggle" working and landing the reader on tab 1 of
+       * a nineteen-tab settings screen to find it themselves — which is most
+       * of the way to not having searched at all.
+       */
+      href: `${entry.href}${entry.deepLink ?? ""}`,
       label: entry.label,
       icon: Search2Icon,
       /*
