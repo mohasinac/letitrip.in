@@ -865,6 +865,16 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
         description: "Send buyers order updates on WhatsApp.",
         keywords: ["notifications", "messaging", "meta"],
       }),
+      /*
+       * W11 — the seller's first sight of tickets raised about their own
+       * store. There was no page, no route and no route-map constant, because
+       * `SupportTicketDocument` had no queryable `storeId`: "the tickets about
+       * my store" was not a question the data could answer.
+       */
+      storeItem(String(ROUTES.STORE.SUPPORT), "Support", {
+        description: "Tickets buyers and staff have raised about your store.",
+        keywords: ["tickets", "complaints", "help", "disputes"],
+      }),
       storeItem(String(ROUTES.STORE.GOOGLE_REVIEWS), "Google Reviews", {
         description: "Show your Google Business reviews on your shop page.",
         keywords: ["ratings", "reputation"],
