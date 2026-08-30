@@ -6,7 +6,6 @@ import {
   ROUTES,
   ACTIONS,
   useForgotPassword,
-  useChangeEmail,
   useLinkGoogleAccount,
   useProfile,
   useToast,
@@ -15,9 +14,7 @@ import {
   Row,
   Stack,
   Text,
-  Input,
   Button,
-  Form,
   NotificationPreferencesPanel,
   LinkedAccountsSection,
 } from "@mohasinac/appkit/client";
@@ -26,7 +23,7 @@ import type { AsyncPage, PaginatedSelectOption } from "@mohasinac/appkit/ui";
 import { SUPPORTED_LANGUAGES, LANGUAGES_PAGE_SIZE } from "@/constants";
 import { FontToggleClient, HandModeToggleClient } from "@/components";
 import { API_ROUTES } from "@/constants";
-import { changeEmailSchema, FormErrorSummary } from "@mohasinac/appkit/client";
+import { ChangeEmailForm } from "@/components/user/ChangeEmailForm";
 
 type Tab = "account" | "privacy" | "appearance" | "notifications";
 
@@ -65,12 +62,6 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 function renderAccountTab({
   user,
-  newEmail,
-  setNewEmail,
-  emailPassword,
-  setEmailPassword,
-  handleEmailSubmit,
-  changeEmail,
   handleSendPasswordReset,
   isSendingPasswordReset,
   passwordResetSent,
@@ -80,12 +71,6 @@ function renderAccountTab({
   isLinkingGoogle,
 }: {
   user: ReturnType<typeof useAuth>["user"];
-  newEmail: string;
-  setNewEmail: (v: string) => void;
-  emailPassword: string;
-  setEmailPassword: (v: string) => void;
-  handleEmailSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  changeEmail: ReturnType<typeof useChangeEmail>;
   handleSendPasswordReset: () => void;
   isSendingPasswordReset: boolean;
   passwordResetSent: boolean;
@@ -118,24 +103,7 @@ function renderAccountTab({
 
       <SectionCard>
         <Accordion title="Change Email">
-          <Stack gap="md" padding="t-sm">
-            <Text variant="secondary" size="xs">
-              A verification link will be sent to your new address. Your email updates after you click the link.
-            </Text>
-            <Form schema={changeEmailSchema} onSubmit={handleEmailSubmit} className="grid gap-[1rem] md:grid-cols-[1fr_240px]" align="start">
-              <FormErrorSummary />
-              <Stack gap="sm">
-                <Input id="new-email" type="email" label="New Email Address" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required autoComplete="email" placeholder="new@example.com" />
-                <Input id="email-password" type="password" label="Current Password" value={emailPassword} onChange={(e) => setEmailPassword(e.target.value)} required autoComplete="current-password" />
-                <Div>
-                  <Button type="submit" isLoading={changeEmail.isPending} size="sm">{ACTIONS.USER["send-verification-email"].label}</Button>
-                </Div>
-              </Stack>
-              <Text variant="secondary" className="md:mt-1" size="xs">
-                We will email a confirmation link to your new address. Until you click it, your sign-in email stays the same. The link expires after 24 hours.
-              </Text>
-            </Form>
-          </Stack>
+          <ChangeEmailForm />
         </Accordion>
       </SectionCard>
 
@@ -316,8 +284,6 @@ export default function Page() {
     sendPasswordReset.mutate({ email: user.email });
   };
 
-  const [emailPassword, setEmailPassword] = useState("");
-  const [newEmail, setNewEmail] = useState("");
   const [language, setLanguage] = useState<string>(() => {
     if (typeof window === "undefined") return "en";
     return localStorage.getItem("display-language") ?? "en";
@@ -327,23 +293,6 @@ export default function Page() {
     setLanguage(next);
     if (typeof window !== "undefined") localStorage.setItem("display-language", next);
     showToast("Language preference saved.", "success");
-  };
-
-  const changeEmail = useChangeEmail({
-    onSuccess: () => {
-      showToast(`Verification email sent to ${newEmail}. Click the link in the email to confirm your new address.`, "success");
-      setEmailPassword("");
-      setNewEmail("");
-    },
-    onError: (err) => {
-      showToast("Failed to update email.", "error");
-    },
-  });
-
-  const handleEmailSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!newEmail || !emailPassword) return;
-    changeEmail.mutate({ currentPassword: emailPassword, newEmail });
   };
 
   return (
@@ -361,7 +310,7 @@ export default function Page() {
       </Div>
 
       {activeTab === "account" && renderAccountTab({
-        user, newEmail, setNewEmail, emailPassword, setEmailPassword, handleEmailSubmit, changeEmail,
+        user,
         handleSendPasswordReset,
         isSendingPasswordReset: sendPasswordReset.isPending,
         passwordResetSent,

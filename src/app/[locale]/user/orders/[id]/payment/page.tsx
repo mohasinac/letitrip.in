@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
 import {
@@ -8,12 +8,7 @@ import {
   useToast,
   useMediaUpload,
   ROUTES,
-  Form,
-  FieldInput,
-  FieldCheckbox,
-  Button,
   Div,
-  Row,
   Stack,
   Heading,
   Text,
@@ -26,6 +21,13 @@ import {
   useSiteSettings,
   buildPaymentProofReviewMessage,
   isManualPaymentMethod,
+  applyZodIssues,
+  FormShellContext,
+  useFormShellState,
+  buildSectionsFromSchema,
+  visibleValues,
+  SectionForm,
+  useSectionFormNav,
 } from "@mohasinac/appkit/client";
 import { attachPaymentProof } from "@/lib/api/payment-client";
 import { paymentProofSchema, FormErrorSummary } from "@mohasinac/appkit/client";
@@ -39,6 +41,24 @@ function formatCountdown(msRemaining: number): string {
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
+/** The draft this form edits — flat, matching `paymentProofSchema`. */
+interface ProofValues {
+  [key: string]: unknown;
+  proofUrl: string;
+  transactionId: string;
+  buyerReportedUpiId: string;
+  buyerMarkedPaid: boolean;
+  buyerFraudAgreementAccepted: boolean;
+}
+
+const EMPTY_PROOF: ProofValues = {
+  proofUrl: "",
+  transactionId: "",
+  buyerReportedUpiId: "",
+  buyerMarkedPaid: false,
+  buyerFraudAgreementAccepted: false,
+};
+
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
@@ -47,11 +67,9 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
   const { upload } = useMediaUpload();
   const { data: settings } = useSiteSettings<{ contact?: { whatsappNumber?: string } }>();
 
-  const [proofUrl, setProofUrl] = useState("");
-  const [transactionId, setTransactionId] = useState("");
-  const [buyerReportedUpiId, setBuyerReportedUpiId] = useState("");
-  const [buyerMarkedPaid, setBuyerMarkedPaid] = useState(false);
-  const [fraudAgreementAccepted, setFraudAgreementAccepted] = useState(false);
+  const [form, setForm] = useState<ProofValues>(EMPTY_PROOF);
+  const patch = (partial: Partial<ProofValues>) =>
+    setForm((prev) => Object.assign({}, prev, partial));
   const [isPending, setIsPending] = useState(false);
   const [now, setNow] = useState(() => Date.now());
 
@@ -77,35 +95,59 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
     });
   };
 
+  const sections = useMemo(
+    () =>
+      buildSectionsFromSchema<ProofValues>(paymentProofSchema, {
+        renderers: {
+          proofUrl: ({ values, onChange }) => (
+            <MediaUploadField
+              label="Payment screenshot (JPG/PNG/PDF)"
+              value={values.proofUrl}
+              onChange={(v: string) => onChange({ proofUrl: v })}
+              onUpload={handleUpload}
+              kind="image"
+              accept="image/*,application/pdf"
+              helperText="Upload a screenshot of the payment confirmation from your UPI app."
+            />
+          ),
+        },
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [id, order?.userId],
+  );
+  const nav = useSectionFormNav(sections, form, { scope: "user:payment-proof" });
+  const { shellCtx, setFieldError, clearErrors } = useFormShellState(paymentProofSchema, {
+    sections: nav.sectionMeta,
+    onGoToSection: nav.goToSection,
+    fieldToSectionIndex: nav.fieldToSectionIndex,
+  });
+
   const handleSubmit = async () => {
-    if (!proofUrl) {
-      showToast("Please upload your payment screenshot.", "error");
-      return;
-    }
+    clearErrors();
     /*
-     * Both declarations, matching the schema and the route.
+     * Three toasts became three field errors.
      *
-     * `buyerMarkedPaid` is `z.literal(true)` in `paymentProofSchema` and this
-     * handler checked only the fraud agreement — so a buyer could submit with
-     * "I have sent the payment" unticked and the route recorded it as false,
-     * which is the value an admin reviews when deciding to release the order.
+     * The screenshot, "I have sent the payment" and the fraud agreement were
+     * each gated by a hand-written `if` that fired a toast — a banner that
+     * names a control the user then has to go find, on a form with a running
+     * 15-minute countdown. The schema states all three (`proofUrl` newly, both
+     * declarations as `z.literal(true)`) and reports them on the fields.
      */
-    if (!buyerMarkedPaid) {
-      showToast("Please confirm that you have sent the payment.", "error");
-      return;
-    }
-    if (!fraudAgreementAccepted) {
-      showToast("Please confirm this payment is genuine before submitting.", "error");
+    const parsed = paymentProofSchema.safeParse(
+      visibleValues(paymentProofSchema, form),
+    );
+    if (!parsed.success) {
+      applyZodIssues(parsed.error.issues, setFieldError);
       return;
     }
     setIsPending(true);
     try {
       const result = await attachPaymentProof(id, {
-        proofUrl,
-        transactionId: transactionId.trim() || undefined,
-        buyerMarkedPaid,
-        buyerFraudAgreementAccepted: fraudAgreementAccepted,
-        buyerReportedUpiId: buyerReportedUpiId.trim() || undefined,
+        proofUrl: parsed.data.proofUrl,
+        transactionId: parsed.data.transactionId?.trim() || undefined,
+        buyerMarkedPaid: parsed.data.buyerMarkedPaid,
+        buyerFraudAgreementAccepted: parsed.data.buyerFraudAgreementAccepted,
+        buyerReportedUpiId: parsed.data.buyerReportedUpiId?.trim() || undefined,
       });
       if (!result.ok) {
         if (result.code === "PROOF_ALREADY_ATTACHED") {
@@ -260,70 +302,22 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
       {/* Upload proof */}
       <Stack border="default" padding="md" surface="default" gap="md" rounded="xl">
         <Text size="sm" weight="semibold" color="primary">Step 2 — Upload payment screenshot</Text>
-        <Form schema={paymentProofSchema} onSubmit={(e) => e.preventDefault()}>
-          {() => (
-            <Stack gap="md">
-              <FormErrorSummary />
-              <MediaUploadField
-                label="Payment screenshot (JPG/PNG/PDF)"
-                value={proofUrl}
-                onChange={setProofUrl}
-                onUpload={handleUpload}
-                kind="image"
-                accept="image/*,application/pdf"
-                helperText="Upload a screenshot of the payment confirmation from your UPI app."
-              />
-              <FieldInput
-                name="transactionId"
-                label="UTR / Transaction ID (optional)"
-                value={transactionId}
-                onChange={(value: string) => setTransactionId(value)}
-                placeholder="e.g. 123456789012"
-                hint="Enter the 12-digit UTR number shown in your UPI app."
-              />
-              <FieldInput
-                name="buyerReportedUpiId"
-                label="UPI ID you paid from (optional)"
-                value={buyerReportedUpiId}
-                onChange={(value: string) => setBuyerReportedUpiId(value)}
-                placeholder="e.g. yourname@upi"
-                hint="Shown in your UPI app's payment confirmation — helps us verify faster."
-              />
-              <FieldCheckbox
-                name="buyerMarkedPaid"
-                label="I confirm I have already made this payment"
-                checked={buyerMarkedPaid}
-                onChange={setBuyerMarkedPaid}
-              />
-              <FieldCheckbox
-                name="buyerFraudAgreementAccepted"
-                label="I confirm this payment is genuine — I will not attempt fraudulent chargebacks or submit fake proof"
-                checked={fraudAgreementAccepted}
-                onChange={setFraudAgreementAccepted}
-              />
-              <Row gap="3">
-                <Button
-                  type="button"
-                  variant="primary"
-                  disabled={isPending || !proofUrl || !fraudAgreementAccepted}
-                  onClick={handleSubmit}
-                  paddingX="md"
-                  paddingY="sm"
-                  textSize="sm"
-                  weight="semibold"
-                >
-                  {isPending ? "Submitting…" : "Submit Proof"}
-                </Button>
-                <Link
-                  href={String(ROUTES.USER.ORDER_DETAIL(id))}
-                  className="rounded-xl border border-[var(--appkit-color-border)] px-[var(--appkit-space-4)] py-[var(--appkit-space-2)] text-[length:var(--appkit-text-sm)] font-medium text-[var(--appkit-color-text-muted)] hover:bg-surface-hover transition-colors"
-                >
-                  Cancel
-                </Link>
-              </Row>
-            </Stack>
-          )}
-        </Form>
+        <FormShellContext.Provider value={shellCtx}>
+          <FormErrorSummary />
+          <SectionForm<ProofValues>
+            sections={sections}
+            values={form}
+            onChange={patch}
+            onSubmit={() => void handleSubmit()}
+            schema={paymentProofSchema}
+            openIds={nav.openIds}
+            onOpenChange={nav.setOpenIds}
+            isLoading={isPending}
+            submitLabel="Submit proof"
+            onCancel={() => router.push(String(ROUTES.USER.ORDER_DETAIL(id)))}
+            cancelLabel="Cancel"
+          />
+        </FormShellContext.Provider>
       </Stack>
     </Stack>
   );

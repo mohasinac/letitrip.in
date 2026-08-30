@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { normalizeError } from "@mohasinac/appkit/client";
 import type { ImageCropData } from "@mohasinac/appkit/client";
 
@@ -16,17 +16,18 @@ import {
   CollapsibleSection,
   Div,
   Button,
-  Form,
-  FieldInput,
-  FieldTextarea,
   MediaImage,
-  Toggle,
   updateProfileSchema,
   applyZodIssues,
   useCollapsedSections,
   FormErrorSummary,
+  FormShellContext,
+  useFormShellState,
+  buildSectionsFromSchema,
+  visibleValues,
+  SectionForm,
+  useSectionFormNav,
 } from "@mohasinac/appkit/client";
-import type { UseFormShellStateResult } from "@mohasinac/appkit/client";
 import { Heading, Row, Stack, Text } from "@mohasinac/appkit/client";
 
 const __O = {
@@ -127,6 +128,22 @@ function renderProfileViewMode({
   );
 }
 
+/** The draft this form edits — flat, matching `updateProfileSchema`'s shape. */
+interface ProfileValues {
+  [key: string]: unknown;
+  displayName: string;
+  phoneNumber: string;
+  bio: string;
+  profileIsPublic: boolean;
+}
+
+const EMPTY_PROFILE_FORM: ProfileValues = {
+  displayName: "",
+  phoneNumber: "",
+  bio: "",
+  profileIsPublic: true,
+};
+
 export function ProfilePageClient({ standalone = true }: ProfilePageClientProps) {
   const { user } = useAuth();
   const { showToast } = useToast();
@@ -134,10 +151,9 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
   const [editing, setEditing] = useState(false);
   const { isCollapsed, toggle } = useCollapsedSections({ sectionIds: ["user-profile:details"] });
 
-  const [displayName, setDisplayName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [bio, setBio] = useState("");
-  const [isPublic, setIsPublic] = useState(true);
+  const [form, setForm] = useState<ProfileValues>(EMPTY_PROFILE_FORM);
+  const patch = (partial: Partial<ProfileValues>) =>
+    setForm((prev) => Object.assign({}, prev, partial));
 
   const update = useUpdateProfile({
     errorMessage: "Failed to update profile.",
@@ -152,38 +168,43 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
     onSuccess: () => showToast("Avatar updated", "success"),
   });
 
+  const sections = useMemo(
+    () => buildSectionsFromSchema<ProfileValues>(updateProfileSchema),
+    [],
+  );
+  const nav = useSectionFormNav(sections, form, { scope: "user:profile" });
+  const { shellCtx, setFieldError, clearErrors } = useFormShellState(updateProfileSchema, {
+    sections: nav.sectionMeta,
+    onGoToSection: nav.goToSection,
+    fieldToSectionIndex: nav.fieldToSectionIndex,
+  });
+
   const handleEdit = () => {
     const resolvedName = profile?.displayName || user?.displayName || "";
-    setDisplayName(resolvedName);
-    setPhoneNumber(profile?.phoneNumber ?? "");
-    setBio((profile as any)?.publicProfile?.bio ?? "");
-    setIsPublic((profile as any)?.publicProfile?.isPublic ?? true);
+    patch({
+      displayName: resolvedName,
+      phoneNumber: profile?.phoneNumber ?? "",
+      bio: (profile as any)?.publicProfile?.bio ?? "",
+      profileIsPublic: (profile as any)?.publicProfile?.isPublic ?? true,
+    });
     setEditing(true);
   };
 
-  const handleSaveProfile = async ({
-    setFieldError,
-    clearErrors,
-    validate,
-    markSubmitAttempted,
-  }: Pick<UseFormShellStateResult, "setFieldError" | "clearErrors" | "validate" | "markSubmitAttempted">) => {
-    // Save is a type="button" onClick, so no native submit event fires and
-    // <Form> cannot mark this for us. Unhides <FormErrorSummary>.
-    markSubmitAttempted();
+  const handleSaveProfile = async () => {
     clearErrors();
-    const parsed = validate<{
-      displayName?: string;
-      phoneNumber?: string;
-      bio?: string;
-      profileIsPublic?: boolean;
-    }>({ displayName, phoneNumber, bio, profileIsPublic: isPublic });
-    if (!parsed) return;
+    const parsed = updateProfileSchema.safeParse(
+      visibleValues(updateProfileSchema, form),
+    );
+    if (!parsed.success) {
+      applyZodIssues(parsed.error.issues, setFieldError);
+      return;
+    }
     try {
       await update.mutateAsync({
-        displayName: parsed.displayName?.trim() || undefined,
-        phoneNumber: parsed.phoneNumber?.trim() || undefined,
-        bio: parsed.bio?.trim() ?? "",
-        profileIsPublic: parsed.profileIsPublic,
+        displayName: parsed.data.displayName?.trim() || undefined,
+        phoneNumber: parsed.data.phoneNumber?.trim() || undefined,
+        bio: parsed.data.bio?.trim() ?? "",
+        profileIsPublic: parsed.data.profileIsPublic,
       });
     } catch (err) {
       void normalizeError(err);
@@ -257,80 +278,23 @@ export function ProfilePageClient({ standalone = true }: ProfilePageClientProps)
             />
           </Div>
           <Div surface="card" padding="lg">
-            <Form
-              schema={updateProfileSchema}
-              spacing="md"
-              onSubmit={async (e) => e.preventDefault()}
-            >
-              {({ setFieldError, clearErrors, validate, markSubmitAttempted }) => (
-                <>
-                  <Heading level={2} size="base" weight="semibold" color="primary">Edit Profile</Heading>
-                  <FieldInput
-                    name="displayName"
-                    label="Display Name"
-                    value={displayName}
-                    onChange={setDisplayName}
-                    placeholder="Your full name"
-                  />
-                  <FieldInput
-                    name="phoneNumber"
-                    label="Phone Number"
-                    type="tel"
-                    value={phoneNumber}
-                    onChange={setPhoneNumber}
-                    placeholder="+91 xxxxx xxxxx"
-                  />
-                  <FieldTextarea
-                    name="bio"
-                    label="Bio"
-                    hint="max 500 chars"
-                    value={bio}
-                    onChange={setBio}
-                    maxLength={500}
-                    rows={3}
-                    showCharCount
-                    placeholder="Tell buyers a little about yourself…"
-                  />
-                  <Row padding="inline" align="center" justify="between" rounded="lg" border="default">
-                    <>
-                      <Text size="sm" weight="medium" color="primary">Public profile</Text>
-                      <Text className="mt-0.5" color="muted" size="xs">
-                        When on, your profile is visible to other LetItRip users
-                      </Text>
-                    </>
-                    <Toggle
-                      checked={isPublic}
-                      onChange={(v) => setIsPublic(v)}
-                      size="md"
-                      aria-label="Public profile"
-                    />
-                  </Row>
-                  <FormErrorSummary />
-                  <Row gap="3" padding="t-2xs">
-                    <Button rounded="xl"
-                      type="button"
-                      variant="outline"
-                      onClick={() => setEditing(false)}
-                      disabled={update.isPending}
-                      paddingX="md" paddingY="sm" textSize="sm" weight="medium"
-                      className="disabled:opacity-60 transition-colors"
-                    >
-                      Cancel
-                    </Button>
-                    <Button rounded="xl"
-                      type="button"
-                      variant="primary"
-                      disabled={update.isPending}
-                      paddingX="md" paddingY="sm" textSize="sm" weight="semibold"
-                      className="disabled:opacity-60 transition-colors"
-                      onClick={() => void handleSaveProfile({ setFieldError, clearErrors, validate, markSubmitAttempted })}
-                    >
-                      {update.isPending ? "Saving…" : "Save Changes"}
-                    </Button>
-                  </Row>
-                </>
-              )}
-            </Form>
+            <Heading level={2} size="base" weight="semibold" color="primary">Edit Profile</Heading>
+            <FormShellContext.Provider value={shellCtx}>
+              <FormErrorSummary />
+              <SectionForm<ProfileValues>
+                sections={sections}
+                values={form}
+                onChange={patch}
+                onSubmit={() => void handleSaveProfile()}
+                schema={updateProfileSchema}
+                openIds={nav.openIds}
+                onOpenChange={nav.setOpenIds}
+                isLoading={update.isPending}
+                submitLabel="Save changes"
+                onCancel={() => setEditing(false)}
+                cancelLabel="Cancel"
+              />
+            </FormShellContext.Provider>
           </Div>
         </Stack>
       )}
