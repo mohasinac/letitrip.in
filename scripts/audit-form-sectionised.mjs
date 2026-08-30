@@ -143,13 +143,11 @@ const SUPPRESS_RE = /audit-form-sectionised-ok:/;
  * Generated 2026-08-27 from the tree as it stood. 45 entries (16 dropped once the submit-ownership filter landed).
  */
 const GRANDFATHERED = new Set([
-  "appkit/src/_internal/client/features/lottery/LotteryAdminEditView.tsx",
   "appkit/src/features/account/components/AddressForm.tsx",
   "appkit/src/features/account/components/UserSupportView.tsx",
   "appkit/src/features/admin/components/AdminAdEditorView.tsx",
   "appkit/src/features/admin/components/AdminAddressEditorView.tsx",
   "appkit/src/features/admin/components/AdminAdsView.tsx",
-  "appkit/src/features/admin/components/AdminBundleEditorView.tsx",
   "appkit/src/features/admin/components/AdminCarouselEditorView.tsx",
   "appkit/src/features/admin/components/AdminEmployeeEditorView.tsx",
   "appkit/src/features/admin/components/AdminOrderEditorView.tsx",
@@ -157,7 +155,6 @@ const GRANDFATHERED = new Set([
   "appkit/src/features/admin/components/AdminSectionsView.tsx",
   "appkit/src/features/admin/components/AdminSiteSettingsView.tsx",
   "appkit/src/features/admin/components/AdminSupportTicketDetailView.tsx",
-  "appkit/src/features/admin/components/AdminTesterChecklistItemEditorView.tsx",
   "appkit/src/features/admin/components/AdminUserEditorView.tsx",
   "appkit/src/features/products/components/GroupSettingsPanel.tsx",
   "appkit/src/features/seller/components/SellerAnalyticsAlertsView.tsx",
