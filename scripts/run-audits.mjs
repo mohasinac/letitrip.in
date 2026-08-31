@@ -310,6 +310,7 @@ export const AUDITS = [
   // from most, and the long-dead `bundle` type was still listed in several.
   { name: "listing-type-tab-coverage",     script: "scripts/audit-listing-type-tab-coverage.mjs" },
   { name: "listing-type-view-factory",     script: "scripts/audit-listing-type-view-factory.mjs" },
+  { name: "list-envelope",                script: "scripts/audit-list-envelope.mjs" },
   // Strict-zero. A tab the user can click that has no render branch shows a
   // blank panel — CategoryDetailTabs did exactly this for four listing types.
   { name: "tab-body-coverage",             script: "scripts/audit-tab-body-coverage.mjs" },
