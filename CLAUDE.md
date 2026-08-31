@@ -146,9 +146,24 @@ are listed in the script, do not fail the build, and a NEW one does.
 
 | Audit | Staged rule | Count | Why it is staged |
 |---|---|---|---|
-| [`silent-degrade`](scripts/audit-silent-degrade.mjs) | whole audit report-only | 279 | 224 `.catch(() => null)` on data reads + 55 normalize-theatre |
-| [`pii-coverage`](scripts/audit-pii-coverage.mjs) | `UNCONDITIONAL_MAPDOC_DECRYPT` | 15 repos | their read methods are consumed by **147+ files** (measured across 10 of the 15); ciphertext-by-default means triaging every call site into plaintext / masked / neither |
-| [`listing-delegation`](scripts/audit-listing-delegation.mjs) | `UNDELEGATED_LIST_ROUTE` | 61 routes | each conversion moves the query to an executor whose only failure mode is **silent semantic divergence**, verifiable solely in production |
+| [`silent-degrade`](scripts/audit-silent-degrade.mjs) | whole audit report-only | **17** (+19 unclassifiable) | Was 279 when this row was written. Re-measured 2026-08-31 from a run of the rule: 17 findings, plus 19 `.catch(() => …)` sites whose receiver the audit cannot classify and therefore does **not** count — it reports what it can prove, never what it guesses |
+| [`pii-coverage`](scripts/audit-pii-coverage.mjs) | `UNCONDITIONAL_MAPDOC_DECRYPT` | **14** repos (was 15) | their read methods are consumed by **147+ files** (measured across 10 of the 15); ciphertext-by-default means triaging every call site into plaintext / masked / neither |
+| [`listing-delegation`](scripts/audit-listing-delegation.mjs) | `UNDELEGATED_LIST_ROUTE` | **60** routes (was 61) | each conversion moves the query to an executor whose only failure mode is **silent semantic divergence**, verifiable solely in production |
+
+**Two more ratchets joined this table 2026-08-31**, both seeded from a run of
+their own rule rather than from a survey:
+
+| Audit | Staged rule | Count | Why it is staged |
+|---|---|---|---|
+| [`list-envelope`](scripts/audit-list-envelope.mjs) | `NEW_ITEM_ARRAY_KEY` + `ENVELOPE_PERPAGE` | 34 sites / 30 files | Converging the item-array keys is ~148 route files, and a half-finished rename is worse than none: the view reads the old key, the route emits the new one, and the list renders empty with a 200. The `perPage` half is the `PagedResult` repository CONTRACT, live in 14 repositories |
+| [`listing-search-capability`](scripts/audit-listing-search-capability.mjs) | R1 | 17 views | unchanged this run |
+
+Also re-measured: [`form-sectionised`](scripts/audit-form-sectionised.mjs) is
+**16**, unchanged — W8's C3 was not attempted, and saying so is the point of
+having the number. [`route-schema-registry`](appkit/scripts/audit-route-schema-registry.mjs)
+is **6 of 560 routes adopted**, which is not a backlog draining but a registry
+almost nothing uses; its header used to promise a W8 flip and now states the
+ratio instead.
 
 **The distinction that matters**: a ratchet's list may only shrink. Removing an
 entry is the goal; adding one is the thing being blocked. This is *not* the
