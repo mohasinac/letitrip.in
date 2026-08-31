@@ -14,6 +14,7 @@ import {
   type ListingProcessorResponse,
 } from "@/lib/listing-processor";
 import { validateSieveFilters } from "@/lib/sieve-validators";
+import { SIEVE_OP, sieveFilter, PRODUCT_FIELDS } from "@mohasinac/appkit";
 
 type RouteContext = { params: Promise<{ storeSlug: string }> };
 
@@ -48,7 +49,7 @@ async function _GET(
   const filterParts = [
     `storeId==${store.id}`,
     "status==published",
-    "listingType==auction",
+    sieveFilter(PRODUCT_FIELDS.LISTING_TYPE, SIEVE_OP.EQ, "auction"),
   ];
   if (std.filters) {
     const safe = validateSieveFilters(std.filters, SAFE_STORE_AUCTION_FILTER_FIELDS);
