@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { ScamRegistryView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 
 export const metadata: Metadata = _gm({
   title: "Scam Registry — Verified Collectibles Scammers in India | LetItRip",
@@ -26,8 +27,11 @@ export default async function Page({
 }) {
   const resolvedSearchParams = await searchParams;
   return (
-    <Suspense>
-      <ScamRegistryView searchParams={resolvedSearchParams} />
-    </Suspense>
+    <>
+      <PageViewTracker entityType="listing" entityId="scams" url="/scams" />
+      <Suspense>
+        <ScamRegistryView searchParams={resolvedSearchParams} />
+      </Suspense>
+    </>
   );
 }

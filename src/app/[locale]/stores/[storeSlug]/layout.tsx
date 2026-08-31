@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { getStoreBySlug, productFeaturesRepository } from "@mohasinac/appkit";
-import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
+import { PageViewTracker, ProductFeaturesProvider } from "@mohasinac/appkit/client";
 import { safeRead } from "@mohasinac/appkit/server";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
@@ -53,6 +53,22 @@ export default async function Layout({ children, params }: Props) {
   // so feature badges render uniformly across the whole store surface.
   return (
     <ProductFeaturesProvider features={platformFeatures}>
+      {/*
+        One mount, fourteen pages — the storeSlug root plus every sub-page
+        (products, auctions, pre-orders, art, stickers, classified,
+        digital-codes, live, bundles, prize-draws, coupons, reviews, about, and
+        the combined [tab] browse). Mounted HERE rather than in each page for
+        the same reason ProductFeaturesProvider is: the boundary already resolves
+        the store and already `notFound()`s without one.
+
+        `store` is a declared PageViewEntityType that, until 2026-08-31, nothing
+        emitted — the type existed and no page produced it.
+      */}
+      <PageViewTracker
+        entityType="store"
+        entityId={storeSlug}
+        url={`/stores/${storeSlug}`}
+      />
       {children}
     </ProductFeaturesProvider>
   );

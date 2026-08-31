@@ -13,6 +13,7 @@ import { serverLogger } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY } from "@/constants";
+import { sendNotification } from "@mohasinac/appkit/server";
 
 const createNotificationSchema = z.object({
   userId: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
@@ -79,8 +80,15 @@ export const POST = withProviders(createRouteHandler({
       type: body!.type,
     });
 
-    const notification = await notificationRepository.create(body!);
+    /*
+     * Through `sendNotification`, so an admin-created notification behaves like
+     * every other one: `actionUrl` resolved from relatedType + relatedId, and
+     * the email / WhatsApp fan-out applied subject to the recipient's own
+     * preferences. A direct repository write produced an in-app row and nothing
+     * else — which for an admin broadcast is precisely the wrong half.
+     */
+    const result = await sendNotification(body!);
 
-    return successResponse(notification, SUCCESS_MESSAGES.NOTIFICATION.SENT);
+    return successResponse(result, SUCCESS_MESSAGES.NOTIFICATION.SENT);
   },
 }));

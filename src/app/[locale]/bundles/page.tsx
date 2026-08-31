@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { BundlesListView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { buyBundleAction } from "@/actions/bundle.actions";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 
 export const metadata: Metadata = _gm({
   title: "Collectible Bundles — LetItRip",
@@ -26,8 +27,11 @@ export default async function Page({
 }) {
   const resolvedSearchParams = await searchParams;
   return (
-    <Suspense>
-      <BundlesListView searchParams={resolvedSearchParams} onBuyNow={buyBundleAction} />
-    </Suspense>
+    <>
+      <PageViewTracker entityType="listing" entityId="bundles" url="/bundles" />
+      <Suspense>
+        <BundlesListView searchParams={resolvedSearchParams} onBuyNow={buyBundleAction} />
+      </Suspense>
+    </>
   );
 }

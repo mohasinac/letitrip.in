@@ -11,6 +11,7 @@ import {
   Section,
   ROUTES,
   Skeleton,
+  PageViewTracker,
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { getItemRequests } from "@/lib/api/items-client";
@@ -30,58 +31,61 @@ export default function Page() {
   }, []);
 
   return (
-    <Section>
-      <Container size="2xl">
-        <Stack gap="lg" padding="y-lg">
-          <Row justify="between">
-            <Heading level={1}>Item Requests</Heading>
-            <Button
-              variant="primary"
-              onClick={() => router.push(String(ROUTES.PUBLIC.ITEM_REQUESTS_NEW))}
-            >
-              Post a request
-            </Button>
-          </Row>
-          <Text color="muted">
-            Looking for something specific? Post a request and sellers will reach out.
-          </Text>
-          {loading ? (
-            <Stack gap="sm">
-              <Skeleton variant="rectangular" height="64px" />
-              <Skeleton variant="rectangular" height="64px" />
-              <Skeleton variant="rectangular" height="64px" />
-            </Stack>
-          ) : items.length === 0 ? (
-            <EmptyState
-              title="No open requests yet"
-              description="Be the first to post a buyer request."
-            />
-          ) : (
-            <Stack gap="sm">
-              {items.map((r) => (
-                <Row
-                  key={r.id}
-                  className="cursor-pointer hover:bg-[var(--appkit-color-bg)]" align="start" justify="between" rounded="default" padding="md" border="default"
-                  onClick={() =>
-                    router.push(String(ROUTES.PUBLIC.ITEM_REQUEST_DETAIL(r.id)))
-                  }
-                >
-                  <Stack gap="xs" className="flex-1">
-                    <Text weight="medium">{r.title}</Text>
-                    <Text className="line-clamp-2" color="muted" size="xs">
-                      {r.description}
-                    </Text>
-                    <Text size="xs" color="muted">
-                      by {r.opDisplayName} · {r.replyCount} replies
-                      {r.category ? ` · ${r.category}` : ""}
-                    </Text>
-                  </Stack>
-                </Row>
-              ))}
-            </Stack>
-          )}
-        </Stack>
-      </Container>
-    </Section>
+    <>
+      <PageViewTracker entityType="listing" entityId="item-requests" url="/item-requests" />
+      <Section>
+        <Container size="2xl">
+          <Stack gap="lg" padding="y-lg">
+            <Row justify="between">
+              <Heading level={1}>Item Requests</Heading>
+              <Button
+                variant="primary"
+                onClick={() => router.push(String(ROUTES.PUBLIC.ITEM_REQUESTS_NEW))}
+              >
+                Post a request
+              </Button>
+            </Row>
+            <Text color="muted">
+              Looking for something specific? Post a request and sellers will reach out.
+            </Text>
+            {loading ? (
+              <Stack gap="sm">
+                <Skeleton variant="rectangular" height="64px" />
+                <Skeleton variant="rectangular" height="64px" />
+                <Skeleton variant="rectangular" height="64px" />
+              </Stack>
+            ) : items.length === 0 ? (
+              <EmptyState
+                title="No open requests yet"
+                description="Be the first to post a buyer request."
+              />
+            ) : (
+              <Stack gap="sm">
+                {items.map((r) => (
+                  <Row
+                    key={r.id}
+                    className="cursor-pointer hover:bg-[var(--appkit-color-bg)]" align="start" justify="between" rounded="default" padding="md" border="default"
+                    onClick={() =>
+                      router.push(String(ROUTES.PUBLIC.ITEM_REQUEST_DETAIL(r.id)))
+                    }
+                  >
+                    <Stack gap="xs" className="flex-1">
+                      <Text weight="medium">{r.title}</Text>
+                      <Text className="line-clamp-2" color="muted" size="xs">
+                        {r.description}
+                      </Text>
+                      <Text size="xs" color="muted">
+                        by {r.opDisplayName} · {r.replyCount} replies
+                        {r.category ? ` · ${r.category}` : ""}
+                      </Text>
+                    </Stack>
+                  </Row>
+                ))}
+              </Stack>
+            )}
+          </Stack>
+        </Container>
+      </Section>
+    </>
   );
 }

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { ReviewsIndexPageView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 
 export const revalidate = 120;
 
@@ -24,8 +25,11 @@ export default async function Page({
 }) {
   const resolvedSearchParams = await searchParams;
   return (
-    <Suspense>
-      <ReviewsIndexPageView searchParams={resolvedSearchParams} />
-    </Suspense>
+    <>
+      <PageViewTracker entityType="listing" entityId="reviews" url="/reviews" />
+      <Suspense>
+        <ReviewsIndexPageView searchParams={resolvedSearchParams} />
+      </Suspense>
+    </>
   );
 }

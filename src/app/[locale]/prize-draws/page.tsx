@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { PrizeDrawsListingView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 
 /**
  * Public Prize Draws listing page (SB4-E + SB4-F).
@@ -32,8 +33,11 @@ export default async function Page({
 }) {
   const resolvedSearchParams = await searchParams;
   return (
-    <Suspense>
-      <PrizeDrawsListingView searchParams={resolvedSearchParams} />
-    </Suspense>
+    <>
+      <PageViewTracker entityType="listing" entityId="prize-draws" url="/prize-draws" />
+      <Suspense>
+        <PrizeDrawsListingView searchParams={resolvedSearchParams} />
+      </Suspense>
+    </>
   );
 }

@@ -27,6 +27,7 @@ import { resolveLocale } from "@/i18n/resolve-locale";
 import { routing } from "@/i18n/routing";
 import ClientProviderInitializer from "@/app/ClientProviderInitializer";
 import { ScrollToTop } from "@/components";
+import { AnalyticsScripts } from "@/components/analytics/AnalyticsScripts";
 
 // Branding/theme/announcement only, and every consumer already has a default —
 // so this must not be allowed to throw, or one Firestore hiccup takes down every
@@ -111,6 +112,17 @@ export default async function Layout({ children, params }: Props) {
         timeZone={LOCALE_CONFIG.TIMEZONE}
         now={new Date()}
       >
+        {/*
+          The only consumer of siteSettings.integrations. Renders NOTHING until
+          an ID is set in Site Settings → Integrations, so mounting it does not
+          by itself start tracking anyone — and the three fields stop being
+          settings that change nothing.
+        */}
+        <AnalyticsScripts
+          googleAnalyticsId={siteSettings?.integrations?.googleAnalyticsId}
+          facebookPixelId={siteSettings?.integrations?.facebookPixelId}
+          gtmContainerId={siteSettings?.integrations?.gtmContainerId}
+        />
         <ClientProviderInitializer />
         <ScrollToTop />
         <ZodSetup />

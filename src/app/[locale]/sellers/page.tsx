@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { SellersListView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 
 export const metadata: Metadata = _gm({
   title: "Verified Sellers — LetItRip",
@@ -14,8 +15,11 @@ export const revalidate = 120;
 
 export default function Page() {
   return (
-    <Suspense>
-      <SellersListView />
-    </Suspense>
+    <>
+      <PageViewTracker entityType="listing" entityId="sellers" url="/sellers" />
+      <Suspense>
+        <SellersListView />
+      </Suspense>
+    </>
   );
 }

@@ -9,6 +9,7 @@ import {
   parseJsonBody,
 } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
+import { sendNotification } from "@mohasinac/appkit/server";
 
 export const POST = withProviders(createApiHandler({
   roles: [...ROLES_STORE_WRITE],
@@ -27,16 +28,28 @@ export const POST = withProviders(createApiHandler({
     const message = typeof body.message === "string" ? body.message.trim() : "";
     if (!message) return ApiErrors.badRequest("message is required");
 
-    await notificationRepository.create({
+    /*
+     * 🛑 Three defects in the line this replaces, all hidden by one `as any`.
+     *
+     *   `type: "store_feedback"` is not a member of NOTIFICATION_TYPE_VALUES —
+     *     it filtered as nothing and could never be allow-listed for a channel;
+     *   `body` / `entityId` / `entityType` are not fields on
+     *     NotificationDocument — the real names are `message` / `relatedId` /
+     *     `relatedType`, so the bell showed a title and no body;
+     *   a direct repository write skips `actionUrl` resolution and the whole
+     *     email/WhatsApp fan-out.
+     *
+     * `review_replied` is the real type for a seller responding to a review.
+     */
+    await sendNotification({
       userId: review.userId,
-      type: "store_feedback",
+      type: "review_replied",
       title: `Feedback from ${store.storeName}`,
-      body: message,
-      isRead: false,
-      entityId: reviewId,
-      entityType: "review",
-      createdAt: new Date(),
-    } as any);
+      message,
+      relatedId: reviewId,
+      relatedType: "review",
+      priority: "normal",
+    });
 
     return successResponse({ message: "Feedback sent to buyer" });
   },

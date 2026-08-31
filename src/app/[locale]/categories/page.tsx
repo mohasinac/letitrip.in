@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { CategoriesIndexPageView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 
 export const metadata: Metadata = _gm({
   title: "Browse Collectibles Categories — LetItRip",
@@ -20,8 +21,11 @@ export default async function Page({
 }) {
   const resolvedSearchParams = await searchParams;
   return (
-    <Suspense>
-      <CategoriesIndexPageView searchParams={resolvedSearchParams} />
-    </Suspense>
+    <>
+      <PageViewTracker entityType="listing" entityId="categories" url="/categories" />
+      <Suspense>
+        <CategoriesIndexPageView searchParams={resolvedSearchParams} />
+      </Suspense>
+    </>
   );
 }

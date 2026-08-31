@@ -5,6 +5,7 @@ import { listPublicFaqs, safeRead } from "@mohasinac/appkit/server";
 import { getTranslations } from "next-intl/server";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { FAQPageClient } from "@/components";
+import { PageViewTracker } from "@mohasinac/appkit/client";
 
 export const metadata: Metadata = _gm({
   title: "FAQ — LetItRip Help Centre",
@@ -66,13 +67,16 @@ export default async function Page() {
 
   return (
     <>
-      {ldFaq && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(ldFaq) }}
-        />
-      )}
-      <FAQPageClient categories={categories} contact={contact} />
+      <PageViewTracker entityType="listing" entityId="faqs" url="/faqs" />
+      <>
+        {ldFaq && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(ldFaq) }}
+          />
+        )}
+        <FAQPageClient categories={categories} contact={contact} />
+      </>
     </>
   );
 }
