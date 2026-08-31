@@ -289,6 +289,27 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "Orders waiting to be packed, shipped or handed over.",
         keywords: ["shipping", "dispatch", "packing"],
       }),
+      /*
+       * Moved out of Catalog 2026-08-31. Print Center batches LABELS, INVOICES
+       * and BARCODES — a fulfilment tool, not taxonomy — and the store portal
+       * had it under "Store" while admin had it under "Catalog", so the two
+       * sidebars disagreed about what it is. Both now sit beside Fulfillment.
+       */
+      adminItem(String(ROUTES.ADMIN.PRINT_CENTER),    "Print Center",    "admin:products:read", {
+        description: "Print labels, invoices and barcodes in a batch.",
+        keywords: ["labels", "invoice", "barcode"],
+      }),
+      /*
+       * Moved out of Content 2026-08-31, applying the argument the Offers entry
+       * above already makes: a bid is a commerce-pipeline object that ends in an
+       * order, not an article. Admin had it filed with Media and Blog while the
+       * store portal had it under "Orders & Reviews" — the same object in two
+       * unrelated places.
+       */
+      adminItem(String(ROUTES.ADMIN.BIDS),            "Bids",            "admin:bids:read", {
+        description: "Every bid placed on every auction.",
+        keywords: ["auction", "bidding"],
+      }),
       adminItem(String(ROUTES.ADMIN.RETURN_REQUESTS), "Returns",         "admin:returns:read", {
         description: "Return requests and what to refund.",
         keywords: ["refunds", "rma", "send back"],
@@ -380,10 +401,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "Discount codes, their limits and who has used them.",
         keywords: ["voucher", "promo code", "discount"],
       }),
-      adminItem(String(ROUTES.ADMIN.PRINT_CENTER), "Print Center", "admin:products:read", {
-        description: "Print labels, invoices and barcodes in a batch.",
-        keywords: ["labels", "invoice", "barcode"],
-      }),
       adminItem(String(ROUTES.ADMIN.BUNDLES), "Bundles", "admin:categories:read", {
         description: "Multi-item packs sold at one price.",
         keywords: ["packs", "sets", "combo"],
@@ -408,10 +425,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.BLOG),    "Blog",    "admin:blog:read", {
         description: "Write and publish posts.",
         keywords: ["articles", "posts", "news"],
-      }),
-      adminItem(String(ROUTES.ADMIN.BIDS),    "Bids",    "admin:bids:read", {
-        description: "Every bid placed on every auction.",
-        keywords: ["auction", "bidding"],
       }),
     ],
   },
@@ -469,13 +482,25 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "The blocks that make up the homepage, in order.",
         keywords: ["homepage", "layout", "blocks"],
       }),
-      adminItem(String(ROUTES.ADMIN.CAROUSEL),            "Carousel",           "admin:carousel:read", {
-        description: "The hero slides at the top of the homepage.",
-        keywords: ["hero", "banner", "slider"],
+      /*
+       * 🛑 Two different entities, one letter apart — see the warning in
+       * route-map.ts. Singular `/admin/carousel` is a SLIDE
+       * (`carouselSlides` collection); plural `/admin/carousels` is a named
+       * GROUP of slides (`carousels` collection). They had the labels
+       * "Carousel" and "Carousels", the same permission, and the SAME keyword
+       * array — so sidebar search could not tell them apart at all, and the
+       * descriptions that distinguish them are not shown when collapsed.
+       *
+       * Renamed, never merged. "Named Carousels" is what that page's own
+       * heading already says.
+       */
+      adminItem(String(ROUTES.ADMIN.CAROUSEL),            "Hero Slides",        "admin:carousel:read", {
+        description: "The individual slides at the top of the homepage.",
+        keywords: ["hero", "banner", "slider", "slide"],
       }),
-      adminItem(String(ROUTES.ADMIN.CAROUSELS),           "Carousels",          "admin:carousel:read", {
-        description: "Named carousels you can place anywhere.",
-        keywords: ["hero", "banner", "slider"],
+      adminItem(String(ROUTES.ADMIN.CAROUSELS),           "Named Carousels",    "admin:carousel:read", {
+        description: "Groups of slides you can place on any page.",
+        keywords: ["carousel group", "named", "collection", "placement"],
       }),
       adminItem(String(ROUTES.ADMIN.SETTINGS_ACTIONS),    "Action Permissions", "admin:settings:write", {
         description: "Which roles may perform which actions.",
@@ -651,7 +676,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "How accounts, roles and bans work.",
         keywords: ["docs", "guide", "handbook"],
       }),
-      adminItem(String(ROUTES.ADMIN.GUIDE_CATALOG),    "Catalog",             "admin:products:read", {
+      adminItem(String(ROUTES.ADMIN.GUIDE_CATALOG),    "Catalog Guide",       "admin:products:read", {
         description: "How categories, brands and listings fit together.",
         keywords: ["docs", "guide", "handbook"],
       }),
@@ -675,11 +700,14 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "How to give a colleague exactly the access they need.",
         keywords: ["docs", "guide", "rbac"],
       }),
-      adminItem(String(ROUTES.ADMIN.GUIDE_ANALYTICS),  "Analytics",           "admin:analytics:view", {
-        description: "Revenue, orders and traffic over time.",
-        keywords: ["reports", "sales", "charts"],
+      // Was labelled "Analytics" with the description AND keywords copied
+      // byte-for-byte from the real /admin/analytics screen above, so the two
+      // were indistinguishable in search. A guide is named as a guide.
+      adminItem(String(ROUTES.ADMIN.GUIDE_ANALYTICS),  "Analytics Guide",     "admin:analytics:view", {
+        description: "How to read the revenue, orders and traffic reports.",
+        keywords: ["docs", "guide", "reports"],
       }),
-      adminItem(String(ROUTES.ADMIN.GUIDE_TRUST),      "Trust & Safety",      "admin:moderation:read", {
+      adminItem(String(ROUTES.ADMIN.GUIDE_TRUST),      "Trust & Safety Guide","admin:moderation:read", {
         description: "How fraud signals, bans and appeals work.",
         keywords: ["docs", "guide", "fraud"],
       }),
@@ -845,6 +873,11 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
         description: "Orders waiting to be packed or handed over.",
         keywords: ["dispatch", "packing", "shipping"],
       }),
+      // Beside Fulfillment, matching admin — see the note there.
+      storeItem(String(ROUTES.STORE.PRINT_CENTER), "Print Center", {
+        description: "Print labels, invoices and barcodes in a batch.",
+        keywords: ["labels", "invoice", "barcode"],
+      }),
       storeItem(String(ROUTES.STORE.ADDRESSES), "Addresses", {
         description: "Where you ship from.",
         keywords: ["pickup", "warehouse", "return address"],
@@ -852,10 +885,6 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
       storeItem(String(ROUTES.STORE.COUPONS), "Coupons", {
         description: "Your own discount codes.",
         keywords: ["voucher", "promo code", "discount"],
-      }),
-      storeItem(String(ROUTES.STORE.PRINT_CENTER), "Print Center", {
-        description: "Print labels, invoices and barcodes in a batch.",
-        keywords: ["labels", "invoice", "barcode"],
       }),
       storeItem(String(ROUTES.STORE.WHATSAPP), "WhatsApp", {
         description: "Send buyers order updates on WhatsApp.",
@@ -889,15 +918,18 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
         description: "Every seller how-to in one place.",
         keywords: ["help", "docs", "handbook"],
       }),
-      storeItem(String(ROUTES.STORE.GUIDE_LISTINGS), "Listings", {
+      storeItem(String(ROUTES.STORE.GUIDE_LISTINGS), "Listings Guide", {
         description: "How to list, price and photograph what you sell.",
         keywords: ["help", "docs", "guide"],
       }),
-      storeItem(String(ROUTES.STORE.GUIDE_ORDERS), "Orders", {
-        description: "Orders to pack, ship and get paid for.",
-        keywords: ["sales", "shipping", "fulfil"],
+      // Was labelled "Orders" with the description AND keywords copied
+      // byte-for-byte from the real /store/orders screen, so the seller's own
+      // order list and its documentation were indistinguishable in search.
+      storeItem(String(ROUTES.STORE.GUIDE_ORDERS), "Orders Guide", {
+        description: "How to pack, ship and get paid for an order.",
+        keywords: ["help", "docs", "guide"],
       }),
-      storeItem(String(ROUTES.STORE.GUIDE_FINANCE), "Finance", {
+      storeItem(String(ROUTES.STORE.GUIDE_FINANCE), "Finance Guide", {
         description: "How payouts, fees and settlement work.",
         keywords: ["help", "docs", "guide"],
       }),

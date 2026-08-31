@@ -41,6 +41,10 @@
 import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
+// The shared implementation — `audit-nav-metadata` and others already use it.
+// A local copy here would be a sixth of the same defect this audit exists to
+// stop, one layer up.
+import { stripComments } from "./lib/strip-comments.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const MARKER = "audit-listing-type-view-ok";
@@ -66,47 +70,6 @@ function suppressed(lines, i) {
   return (lines[i] ?? "").includes(MARKER) || (lines[i - 1] ?? "").includes(MARKER);
 }
 
-/**
- * Blank out comments, keeping line numbers.
- *
- * 🛑 Not optional. The first draft of this audit skipped it and reported 20
- * violations, of which six were DOCSTRINGS describing the very pattern being
- * banned — `products.repository.ts` explaining why `listingType==X` clauses
- * replaced boolean combos, `useFeaturedAuctions` narrating a past bug. An audit
- * that flags the explanation of a rule alongside its breach trains people to
- * ignore it. Same defect Root Cause #87 records finding in its own audit.
- */
-function stripComments(src) {
-  let out = "";
-  let i = 0;
-  let mode = "code"; // code | line | block | str | tpl
-  let quote = "";
-  while (i < src.length) {
-    const c = src[i];
-    const n = src[i + 1];
-    if (mode === "code") {
-      if (c === "/" && n === "/") { mode = "line"; out += "  "; i += 2; continue; }
-      if (c === "/" && n === "*") { mode = "block"; out += "  "; i += 2; continue; }
-      if (c === '"' || c === "'") { mode = "str"; quote = c; out += c; i++; continue; }
-      if (c === "`") { mode = "tpl"; out += c; i++; continue; }
-      out += c; i++; continue;
-    }
-    if (mode === "line") {
-      if (c === "\n") { mode = "code"; out += c; i++; continue; }
-      out += " "; i++; continue;
-    }
-    if (mode === "block") {
-      if (c === "*" && n === "/") { mode = "code"; out += "  "; i += 2; continue; }
-      out += c === "\n" ? "\n" : " "; i++; continue;
-    }
-    // str / tpl — copied verbatim, including escapes, so a literal is intact.
-    if (c === "\\") { out += c + (n ?? ""); i += 2; continue; }
-    if (mode === "str" && c === quote) { mode = "code"; out += c; i++; continue; }
-    if (mode === "tpl" && c === "`") { mode = "code"; out += c; i++; continue; }
-    out += c; i++;
-  }
-  return out;
-}
 
 function walk(dir, out = []) {
   if (!existsSync(dir)) return out;

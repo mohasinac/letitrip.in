@@ -125,9 +125,61 @@ for (const m of src.matchAll(CALL)) {
   }
 }
 
+// R4 — two entries a user cannot tell apart.
+//
+// R3 makes every item carry metadata; it says nothing about whether that
+// metadata is DISTINCT. Both failures found on 2026-08-31 were copy-paste: the
+// admin "Analytics" guide carried the real Analytics screen's description AND
+// keywords byte-for-byte, and store "Orders Guide" did the same to /store/orders.
+// Since the collapsed sidebar shows only the label and search ranks on
+// label+keywords+description, those pairs were genuinely indistinguishable —
+// the doc and the live screen scored identically for the same query.
+//
+// A duplicate LABEL within one portal is the same defect one level up:
+// "Carousel" and "Carousels" sat on consecutive rows sharing a keyword array.
+for (const block of navGroupBlocks()) {
+  const seenLabel = new Map();
+  const seenMeta = new Map();
+
+  for (const m of block.text.matchAll(CALL)) {
+    const open = m.index + m[0].length - 1;
+    const args = callArgs(block.text, open);
+    const label = args.match(/,\s*"([^"]+)"/)?.[1];
+    if (!label) continue;
+    const line = lineOf(block.start + m.index);
+    if (suppressed(line)) continue;
+
+    const key = label.trim().toLowerCase();
+    if (seenLabel.has(key)) {
+      report(
+        line,
+        "DUPLICATE_NAV_LABEL",
+        `"${label}" appears twice in ${block.name} (also line ${seenLabel.get(key)}). ` +
+          `A collapsed sidebar shows the label and nothing else, so two entries with one name are one entry to a user.`,
+      );
+    } else {
+      seenLabel.set(key, line);
+    }
+
+    const desc = args.match(/description:\s*"([^"]*)"/)?.[1] ?? "";
+    const kw = args.match(/keywords:\s*\[([^\]]*)\]/)?.[1] ?? "";
+    const metaKey = `${desc}||${kw.replace(/\s+/g, "")}`;
+    if (desc && seenMeta.has(metaKey)) {
+      report(
+        line,
+        "DUPLICATE_NAV_METADATA",
+        `"${label}" has the same description AND keywords as the entry on line ${seenMeta.get(metaKey)}. ` +
+          `Search ranks on exactly those fields, so the two are indistinguishable to it.`,
+      );
+    } else if (desc) {
+      seenMeta.set(metaKey, line);
+    }
+  }
+}
+
 if (violations.length === 0) {
   console.log(
-    `audit-nav-metadata: clean ✓ (${items} nav item(s), all with a derived id, a description and ≥${MIN_KEYWORDS} keywords)`,
+    `audit-nav-metadata: clean ✓ (${items} nav item(s), all with a derived id, a description, ≥${MIN_KEYWORDS} keywords, and no duplicate label or metadata within a portal)`,
   );
   process.exit(0);
 }
