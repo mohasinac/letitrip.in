@@ -145,7 +145,6 @@ const SUPPRESS_RE = /audit-form-sectionised-ok:/;
 const GRANDFATHERED = new Set([
   "appkit/src/features/admin/components/AdminAdsView.tsx",
   "appkit/src/features/admin/components/AdminCarouselEditorView.tsx",
-  "appkit/src/features/admin/components/AdminOrderEditorView.tsx",
   "appkit/src/features/admin/components/AdminProductEditorView.tsx",
   "appkit/src/features/admin/components/AdminSectionsView.tsx",
   "appkit/src/features/admin/components/AdminSiteSettingsView.tsx",
@@ -154,7 +153,6 @@ const GRANDFATHERED = new Set([
   "appkit/src/features/products/components/GroupSettingsPanel.tsx",
   "appkit/src/features/seller/components/SellerOrdersView.tsx",
   "appkit/src/features/seller/components/SellerReviewsView.tsx",
-  "appkit/src/features/whatsapp-bot/components/SellerWhatsAppSettingsView.tsx",
   "src/app/[locale]/events/[id]/participate/EventParticipateClient.tsx",
   "src/components/routing/CheckoutRouteClient.tsx",
 ]);
