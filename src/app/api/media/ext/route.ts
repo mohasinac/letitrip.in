@@ -20,6 +20,7 @@ import {
   loadWatermarkConfig,
 } from "../_watermark";
 import { verifyExtSignature } from "./_signing";
+import { placeholderResponse } from "../_placeholder";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -134,22 +135,41 @@ export async function GET(request: NextRequest): Promise<Response> {
       url: rawUrl,
       error: err instanceof Error ? err.message : String(err),
     });
-    return new NextResponse("Failed to fetch external image.", { status: 502 });
+    /*
+     * 🛑 A tile, not a 502.
+     *
+     * This response goes straight into an `<img src>`, and a 502 with a
+     * text/plain body renders as the browser's broken-image icon. On
+     * 2026-08-31 picsum.photos returned 503 from both its origin and its CDN,
+     * and because 409 seeded image URLs pointed at it, every product card on
+     * the site broke at once — while this proxy, sharp and the Lambda were all
+     * healthy.
+     *
+     * The failure is still logged above and still flagged by
+     * `X-Media-Placeholder`; only the VISITOR sees something neutral. See
+     * `_placeholder.ts` for why this is not a swallowed error.
+     */
+    return placeholderResponse(rawUrl);
   }
 
   if (!fetchRes.ok) {
-    return new NextResponse(`Upstream returned ${fetchRes.status}.`, { status: 502 });
+    serverLogger.warn("media-ext: upstream non-ok", { url: rawUrl, status: fetchRes.status });
+    return placeholderResponse(rawUrl);
   }
 
   const contentType = fetchRes.headers.get("content-type") ?? "";
   if (!contentType.startsWith(IMAGE_MIME_PREFIX)) {
-    return new NextResponse("URL does not point to an image.", { status: 400 });
+    // Also a tile: an upstream serving an error PAGE (text/html) for a missing
+    // image is the same visitor-facing outcome as an upstream that refused.
+    serverLogger.warn("media-ext: upstream not an image", { url: rawUrl, contentType });
+    return placeholderResponse(rawUrl);
   }
 
   // Read body with size guard
   const reader = fetchRes.body?.getReader();
   if (!reader) {
-    return new NextResponse("Empty upstream response.", { status: 502 });
+    serverLogger.warn("media-ext: empty upstream response", { url: rawUrl });
+    return placeholderResponse(rawUrl);
   }
 
   const chunks: Uint8Array[] = [];

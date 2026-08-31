@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600" role="img" aria-label="Image temporarily unavailable">
+  <!--
+    The tile served by /api/media when an upstream image host cannot be reached.
+
+    An ASSET, not a template string in TypeScript, for two reasons that both
+    matter. It is artwork, so it belongs where artwork can be edited and diffed
+    visually — the same call `_watermark.ts` makes for `logo.svg`. And it is the
+    body of an <img> response, where no stylesheet, no :root and no
+    var(--appkit-color-*) is in scope; a colour here HAS to be literal, and the
+    honest place for a literal colour is a design file rather than a source file
+    with an audit suppression stapled to it.
+  -->
+  <rect width="600" height="600" fill="#334155"/>
+  <g fill="#f8fafc" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+    <g fill-opacity="0.34" transform="translate(300 246)">
+      <rect x="-58" y="-44" width="116" height="88" rx="9" fill="none" stroke="#f8fafc" stroke-width="6"/>
+      <circle cx="-22" cy="-14" r="11"/>
+      <path d="M-52 30 L-14 -8 L10 16 L28 -2 L52 30 Z"/>
+    </g>
+    <text x="300" y="352" font-size="27" fill-opacity="0.74">Image unavailable</text>
+    <text x="300" y="390" font-size="18" fill-opacity="0.45">it will reappear on its own</text>
+  </g>
+</svg>

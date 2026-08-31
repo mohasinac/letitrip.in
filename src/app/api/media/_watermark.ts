@@ -18,7 +18,19 @@ import type { WatermarkConfig, WatermarkPosition } from "@/lib/watermark/resolve
 
 export const DAY_SECONDS = 60 * 60 * 24;
 export const WEEK_SECONDS = DAY_SECONDS * 7;
-export const CACHE_CONTROL_IMMUTABLE = `public, max-age=${DAY_SECONDS}, s-maxage=${WEEK_SECONDS}, immutable`;
+/**
+ * `stale-if-error` is the half that matters during an upstream outage.
+ *
+ * Without it, a CDN entry that expires while the origin image host is down
+ * forces a revalidation, the revalidation fails, and a previously-good image
+ * becomes a placeholder. With it, the CDN keeps serving the last good copy for
+ * a day and the outage never reaches the visitor at all.
+ *
+ * Added 2026-08-31, when picsum.photos went down and took ~409 seeded images
+ * with it. The cached copies were the only thing standing between that and a
+ * completely image-less site — so they should be allowed to stand longer.
+ */
+export const CACHE_CONTROL_IMMUTABLE = `public, max-age=${DAY_SECONDS}, s-maxage=${WEEK_SECONDS}, immutable, stale-if-error=${DAY_SECONDS}`;
 /**
  * Used ONLY when `applyWatermark()` throws and a route falls back to serving
  * the original, unwatermarked bytes. Deliberately short-lived and

@@ -311,6 +311,7 @@ export const AUDITS = [
   { name: "listing-type-tab-coverage",     script: "scripts/audit-listing-type-tab-coverage.mjs" },
   { name: "listing-type-view-factory",     script: "scripts/audit-listing-type-view-factory.mjs" },
   { name: "list-envelope",                script: "scripts/audit-list-envelope.mjs" },
+  { name: "seed-media-host",             script: "scripts/audit-seed-media-host.mjs" },
   // Strict-zero. A tab the user can click that has no render branch shows a
   // blank panel — CategoryDetailTabs did exactly this for four listing types.
   { name: "tab-body-coverage",             script: "scripts/audit-tab-body-coverage.mjs" },

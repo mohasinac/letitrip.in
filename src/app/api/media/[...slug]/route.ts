@@ -27,6 +27,7 @@ import {
   applyWatermark,
   resolveWatermarkConfig,
 } from "../_watermark";
+import { placeholderResponse } from "../_placeholder";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -175,9 +176,17 @@ export async function GET(
       storagePath,
       error: err instanceof Error ? err.message : String(err),
     });
-    return new NextResponse(ERROR_MESSAGES.MEDIA.PROXY_FAILED, {
-      status: 500,
-      headers: NOT_FOUND_HEADERS,
-    });
+    /*
+     * A tile, not a 500 — this response is the `src` of an `<img>`.
+     *
+     * 🛑 Deliberately NOT applied to the 404s above. The split is between
+     * transient and permanent: a Storage hiccup or a sharp failure is a
+     * momentary infrastructure problem the visitor should not have to see, and
+     * the 60s placeholder cache lets it heal by itself. A genuinely missing
+     * object is our own data being wrong, and turning THAT into a friendly
+     * placeholder would hide a broken record behind a tile that looks
+     * intentional — the failure this whole plan exists to stop.
+     */
+    return placeholderResponse(storagePath);
   }
 }
