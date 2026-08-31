@@ -25,12 +25,21 @@
  * renamed.
  */
 
+/*
+ * 🛑 `/next`, not `/client` and not the bare entry — see that barrel's note.
+ *
+ * This file CALLS `buildActionIndexBase()` at module scope and is imported by
+ * both `GET /api/action-index` (server) and `LayoutShellClient` (client). The
+ * client entry is "use client", so on the server the binding is a
+ * client-reference proxy and calling it throws (Root Cause #76); the bare entry
+ * would leak into every client component that reaches this file (Root Cause #6).
+ */
 import {
   buildActionIndexBase,
   deriveNavEntries,
   deriveSettingsEntries,
   type ActionIndexEntry,
-} from "@mohasinac/appkit/client";
+} from "@mohasinac/appkit/next";
 import {
   ADMIN_NAV_GROUPS,
   STORE_NAV_GROUPS,

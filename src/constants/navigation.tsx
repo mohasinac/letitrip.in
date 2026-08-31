@@ -41,7 +41,22 @@ import type {
   MainNavbarItem,
   AppLayoutShellSidebarLink,
 } from "@mohasinac/appkit/client";
-import { navItemId } from "@mohasinac/appkit/client";
+/*
+ * 🛑 The BARE entry, not "@mohasinac/appkit/client" — Root Cause #76.
+ *
+ * This module CALLS navItemId at module scope, and it is imported by server
+ * code (the locale layout, the store layout, the action index). `client.ts`
+ * begins with "use client", so from the server that import resolves to a
+ * client-reference proxy and calling it throws. It failed the Vercel build with
+ * "Attempted to call navItemId() from the server but navItemId is on the
+ * client" while passing every local check, because `next build` is the first
+ * thing that evaluates an opengraph-image route.
+ *
+ * navItemId is a pure string function on the shared layer and is exported from
+ * BOTH entries, which is the documented remedy for a symbol server and client
+ * both need.
+ */
+import { navItemId } from "@mohasinac/appkit/next";
 import { NAV_ICON_COLORS, NAV_ICON_SIZE_SM } from "./styles/nav-icons";
 import { ROUTES } from "./routes";
 

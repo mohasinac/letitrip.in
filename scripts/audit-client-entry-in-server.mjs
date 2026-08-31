@@ -130,8 +130,60 @@ const ROUTE_ENTRY_RE =
  */
 function isServerRendered(file, src) {
   if (ROUTE_ENTRY_RE.test(file)) return true;
-  return /export\s+(?:default\s+)?async\s+function\s+[A-Z]/.test(src);
+  if (/export\s+(?:default\s+)?async\s+function\s+[A-Z]/.test(src)) return true;
+  /*
+   * 🛑 R2, added 2026-08-31 after this audit reported clean and the Vercel
+   * build failed anyway with "Attempted to call navItemId() from the server".
+   *
+   * `src/constants/navigation.tsx` is neither a route entry nor an async
+   * component — it is a plain constants module. But it CALLS a client-entry
+   * import at MODULE SCOPE, and it is imported by server code, so the call
+   * runs during a server render and the binding is a client-reference proxy.
+   *
+   * A module-scope call is the tell, and it is checkable without a full import
+   * graph: a file that INVOKES a value from the client entry while its own
+   * top-level code runs cannot be safe unless it is itself "use client".
+   * Rendering such a binding as JSX stays fine — that is the normal RSC
+   * boundary — which is why this looks for a CALL specifically.
+   */
+  return false;
 }
+
+/**
+ * Lines where a client-entry binding is CALLED at module scope (nesting depth
+ * zero) in a file that is not "use client".
+ *
+ * Depth-tracked rather than regexed: a call inside a component body or an event
+ * handler only runs where that component runs, and this file cannot know where
+ * that is. A call at depth zero runs the moment the module is imported —
+ * including on the server.
+ */
+function moduleScopeCalls(src, bindings) {
+  const names = new Set(bindings.map((b) => b.name));
+  if (names.size === 0) return [];
+  const hits = [];
+  let depth = 0;
+  const lines = src.split(/\r?\n/);
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i];
+    if (depth === 0) {
+      for (const name of names) {
+        // `name(` but not `.name(` and not a declaration of the same word.
+        const re = new RegExp(String.raw`(^|[^.\w$])${name}\s*\(`);
+        if (re.test(line) && !new RegExp(String.raw`(function|const|let|var)\s+${name}\b`).test(line)) {
+          hits.push({ name, line: i + 1 });
+        }
+      }
+    }
+    for (const ch of line) {
+      if (ch === "{" || ch === "(" || ch === "[") depth += 1;
+      else if (ch === "}" || ch === ")" || ch === "]") depth = Math.max(0, depth - 1);
+    }
+  }
+  return hits;
+}
+
+const lines0 = (src) => src.split(String.fromCharCode(10));
 
 function hasUseClient(src) {
   // Directive must be within the opening lines, before any real statement.
@@ -211,10 +263,27 @@ for (const dir of SCAN_DIRS) {
     }
     if (!src.includes(CLIENT_ENTRY)) continue;
     if (hasUseClient(src)) continue; // client file — importing the client entry is correct
-    if (!isServerRendered(file, src)) continue; // never executes on the server
-
     const bindings = clientImportBindings(src);
     if (bindings.length === 0) continue;
+
+    /*
+     * Two ways a file reaches server-render time. R1 is what it looks like —
+     * a route entry or an async component. R2 is what it did NOT look like:
+     * a plain module that calls a client-entry binding at MODULE SCOPE, which
+     * runs wherever it is imported, including on the server.
+     */
+    if (!isServerRendered(file, src)) {
+      for (const { name, line } of moduleScopeCalls(stripNoise(src), bindings)) {
+        if (isSuppressed(lines0(src), line)) continue;
+        violations.push({
+          file: relative(ROOT, file).split(String.fromCharCode(92)).join("/"),
+          line,
+          name,
+          how: "called at module scope",
+        });
+      }
+      continue;
+    }
 
     const lines = src.split("\n");
     // Remove the import statements themselves so `X` inside `{ X }` and the
