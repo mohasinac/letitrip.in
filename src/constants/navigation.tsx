@@ -517,13 +517,16 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "Groups of slides you can place on any page.",
         keywords: ["carousel group", "named", "collection", "placement"],
       }),
-      adminItem(String(ROUTES.ADMIN.SETTINGS_ACTIONS),    "Action Permissions", "admin:settings:write", {
-        description: "Which roles may perform which actions.",
-        keywords: ["rbac", "roles", "access"],
-      }),
-      adminItem(String(ROUTES.ADMIN.SETTINGS_NAVIGATION), "Nav Permissions",    "admin:settings:write", {
-        description: "Which roles see which sidebar entries.",
-        keywords: ["rbac", "roles", "menu access"],
+      /*
+       * W8 C2 — "Nav Permissions" is a tab here now. Both toggle platform
+       * surfaces into the same `siteSettings` singleton under the same
+       * `admin:settings:write`, and that shared permission is what made them
+       * mergeable: one page carries one `requiredPermission`, so a merge across
+       * a permission line silently widens or narrows access.
+       */
+      adminItem(String(ROUTES.ADMIN.SETTINGS_ACTIONS),    "Permissions Toggles", "admin:settings:write", {
+        description: "Turn individual actions and nav entries on or off.",
+        keywords: ["rbac", "roles", "access", "menu access", "navigation"],
       }),
       adminItem(String(ROUTES.ADMIN.ADS),                 "Ads",                "admin:ads:read", {
         description: "Ad placements, schedules and their creatives.",
@@ -632,13 +635,14 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "Invite staff and set what each of them can do.",
         keywords: ["staff", "employees", "colleagues", "invite"],
       }),
+      /*
+       * W8 C2 — the permissions catalogue is a tab here now. It is the
+       * reference sheet you consult WHILE building a role, so it belongs on
+       * screen beside the role you are editing; both are `admin:roles:read`.
+       */
       adminItem(String(ROUTES.ADMIN.ROLES),                "Custom Roles",        "admin:roles:read", {
-        description: "Build a role out of individual permissions.",
-        keywords: ["rbac", "groups", "access"],
-      }),
-      adminItem(String(ROUTES.ADMIN.PERMISSIONS),          "Permissions",         "admin:roles:read", {
-        description: "The full list of permissions and what each unlocks.",
-        keywords: ["rbac", "access", "capabilities"],
+        description: "Build a role out of individual permissions, and look up what each one unlocks.",
+        keywords: ["rbac", "groups", "access", "capabilities", "permissions"],
       }),
       adminItem(String(ROUTES.ADMIN.ADMIN_NOTIFICATIONS),  "Admin Notifications", "admin:notifications:read", {
         description: "Broadcasts sent to staff rather than to users.",
@@ -847,17 +851,19 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
         description: "How your listings and revenue are doing.",
         keywords: ["reports", "sales", "charts"],
       }),
+      /*
+       * W8 C2 — "Payout Methods" and "Payout Settings" are tabs here now, so
+       * their keywords move onto this entry: the sidebar search has to keep
+       * finding "upi" and "threshold", which are the words someone actually
+       * types, and the tab labels alone would not.
+       */
       storeItem(String(ROUTES.STORE.PAYOUTS), "Payouts", {
-        description: "What you have been paid, and what is still due.",
-        keywords: ["money", "settlement", "earnings"],
-      }),
-      storeItem(String(ROUTES.STORE.PAYOUT_METHODS), "Payout Methods", {
-        description: "Where your money goes — bank or UPI.",
-        keywords: ["bank account", "upi", "payment details"],
-      }),
-      storeItem(String(ROUTES.STORE.PAYOUT_SETTINGS), "Payout Settings", {
-        description: "How often you get paid, and the minimum.",
-        keywords: ["schedule", "frequency", "threshold"],
+        description: "What you are owed, where it goes, and on what schedule.",
+        keywords: [
+          "money", "settlement", "earnings",
+          "bank account", "upi", "payment details",
+          "schedule", "frequency", "threshold",
+        ],
       }),
       storeItem(String(ROUTES.STORE.ANALYTICS_CARDS), "Analytics Cards", {
         description: "The charts on your analytics page.",
@@ -872,26 +878,22 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
   {
     title: "Store",
     items: [
+      // W8 C2 — absorbs "Store Slug" as a tab; the slug is one field of the
+      // shop's identity and sat two nav groups away from the rest of it.
       storeItem(String(ROUTES.STORE.STOREFRONT), "Storefront", {
-        description: "Your shop's name, logo, banner and description.",
-        keywords: ["branding", "shop page", "profile"],
+        description: "Your shop's name, logo, banner, description and web address.",
+        keywords: ["branding", "shop page", "profile", "url", "link", "domain", "slug"],
       }),
+      // W8 C2 — absorbs "Shipping Configs" as a tab, and its keywords with it.
       storeItem(String(ROUTES.STORE.SHIPPING), "Shipping", {
-        description: "What you charge to ship, and where you ship to.",
-        keywords: ["delivery", "postage", "rates"],
+        description: "What you charge to ship, where you ship to, and reusable presets.",
+        keywords: ["delivery", "postage", "rates", "presets", "shipping configs"],
       }),
-      storeItem(String(ROUTES.STORE.SHIPPING_CONFIGS), "Shipping Configs", {
-        description: "Named shipping rules you can reuse per listing.",
-        keywords: ["delivery", "rates", "presets"],
-      }),
+      // W8 C2 — absorbs "Print Center" as a tab. The nav already said these
+      // two belonged together; now they are one page.
       storeItem(String(ROUTES.STORE.FULFILLMENT), "Fulfillment", {
-        description: "Orders waiting to be packed or handed over.",
-        keywords: ["dispatch", "packing", "shipping"],
-      }),
-      // Beside Fulfillment, matching admin — see the note there.
-      storeItem(String(ROUTES.STORE.PRINT_CENTER), "Print Center", {
-        description: "Print labels, invoices and barcodes in a batch.",
-        keywords: ["labels", "invoice", "barcode"],
+        description: "Orders waiting to be packed, and the paperwork to send them.",
+        keywords: ["dispatch", "packing", "shipping", "labels", "invoice", "barcode", "print"],
       }),
       storeItem(String(ROUTES.STORE.ADDRESSES), "Addresses", {
         description: "Where you ship from.",
@@ -918,10 +920,6 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
       storeItem(String(ROUTES.STORE.GOOGLE_REVIEWS), "Google Reviews", {
         description: "Show your Google Business reviews on your shop page.",
         keywords: ["ratings", "reputation"],
-      }),
-      storeItem(String(ROUTES.STORE.SLUG), "Store Slug", {
-        description: "The web address buyers reach your shop at.",
-        keywords: ["url", "link", "domain"],
       }),
     ],
   },

@@ -12,14 +12,17 @@ import {
   ROUTES,
   Skeleton,
   ACTIONS,
+  PageTabs,
+  ROLES_TABS,
 } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
 import { getAdminRoles } from "@/lib/api/admin-client";
 import { useEffect, useState } from "react";
 import type { CustomRoleDocument } from "@mohasinac/appkit/client";
+import { PermissionsCatalogPanel } from "@/components/admin/PermissionsCatalogPanel";
 
-export default function Page() {
+function RolesPanel() {
   const router = useRouter();
   const [items, setItems] = useState<CustomRoleDocument[]>([]);
   const [loading, setLoading] = useState(true);
@@ -84,5 +87,18 @@ export default function Page() {
         </Stack>
       </Container>
     </Section>
+  );
+}
+
+/** Roles, and the catalogue you consult while building one. */
+export default function Page() {
+  return (
+    <PageTabs
+      tabs={ROLES_TABS}
+      panels={{
+        roles: <RolesPanel />,
+        permissions: <PermissionsCatalogPanel />,
+      }}
+    />
   );
 }

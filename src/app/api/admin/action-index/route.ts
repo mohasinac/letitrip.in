@@ -39,7 +39,15 @@ import {
 } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 import { ACTION_INDEX_BASE } from "@/constants/action-index";
-import { SITE_SETTINGS_TAB_IDS } from "@mohasinac/appkit";
+import {
+  SITE_SETTINGS_TAB_IDS,
+  PAYOUTS_TABS,
+  SHIPPING_TABS,
+  FULFILLMENT_TABS,
+  STOREFRONT_TABS,
+  ROLES_TABS,
+  ADMIN_SETTINGS_TABS,
+} from "@mohasinac/appkit";
 
 /**
  * Every route the app serves, flattened out of the route map.
@@ -80,6 +88,18 @@ const KNOWN_ROUTES = collectRoutes(ROUTES, new Set<string>());
 /** The only route with a declared tab union so far — see W8 for the rest. */
 const KNOWN_TABS: Record<string, ReadonlySet<string>> = {
   [String(ROUTES.ADMIN.SITE)]: new Set(SITE_SETTINGS_TAB_IDS),
+  /*
+   * W8 C2's five hosts. Each absorbed a sibling page as a tab, so a custom
+   * entry may legitimately deep-link into one — and a typo'd tab id would open
+   * the host on its default tab, which reads as the search having missed
+   * rather than as a broken link.
+   */
+  [String(ROUTES.STORE.PAYOUTS)]: new Set(PAYOUTS_TABS.map((t) => t.id)),
+  [String(ROUTES.STORE.SHIPPING)]: new Set(SHIPPING_TABS.map((t) => t.id)),
+  [String(ROUTES.STORE.FULFILLMENT)]: new Set(FULFILLMENT_TABS.map((t) => t.id)),
+  [String(ROUTES.STORE.STOREFRONT)]: new Set(STOREFRONT_TABS.map((t) => t.id)),
+  [String(ROUTES.ADMIN.ROLES)]: new Set(ROLES_TABS.map((t) => t.id)),
+  [String(ROUTES.ADMIN.SETTINGS_ACTIONS)]: new Set(ADMIN_SETTINGS_TABS.map((t) => t.id)),
 };
 
 export const GET = withProviders(

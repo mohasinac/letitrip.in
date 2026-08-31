@@ -38,6 +38,7 @@ import {
   buildActionIndexBase,
   deriveNavEntries,
   deriveSettingsEntries,
+  deriveConsolidatedTabEntries,
   type ActionIndexEntry,
 } from "@mohasinac/appkit/next";
 import {
@@ -64,6 +65,20 @@ export const ACTION_INDEX_BASE: ActionIndexEntry[] = buildActionIndexBase(
    * alone.
    */
   deriveSettingsEntries(String(ROUTES.ADMIN.SITE)),
+  /*
+   * W8 C2 — the seven surfaces that became tabs. Their nav entries were
+   * deleted with the consolidation, and a nav-derived index entry cannot
+   * outlive its nav item, so without these "payout methods" and "print centre"
+   * would stop being findable on the day they became easier to reach.
+   */
+  deriveConsolidatedTabEntries({
+    storePayouts: String(ROUTES.STORE.PAYOUTS),
+    storeShipping: String(ROUTES.STORE.SHIPPING),
+    storeFulfillment: String(ROUTES.STORE.FULFILLMENT),
+    storeStorefront: String(ROUTES.STORE.STOREFRONT),
+    adminRoles: String(ROUTES.ADMIN.ROLES),
+    adminSettings: String(ROUTES.ADMIN.SETTINGS_ACTIONS),
+  }),
   deriveNavEntries([
     { portal: "admin", portalLabel: "Admin", groups: ADMIN_NAV_GROUPS },
     { portal: "store", portalLabel: "Seller", groups: STORE_NAV_GROUPS },

@@ -1,64 +1,9 @@
-import {
-  Container,
-  Section,
-  Stack,
-  Heading,
-  Text,
-  Div,
-  Span,
-} from "@mohasinac/appkit/client";
-// Details/Summary aren't re-exported from client.ts — pull from the root entry.
-import {
-  Details,
-  Summary,
-  PERMISSION_DOMAINS,
-  getPermissionsForDomain,
-  formatPermLabel,
-} from "@mohasinac/appkit";
+import { redirect } from "@/i18n/navigation";
+import { ROUTES } from "@mohasinac/appkit";
 
+// W8 C2 — folded into /admin/roles as a tab. Both are `admin:roles:read`, which
+// is what made them mergeable; the path stays because `navItemId` strips the
+// query, so a nav href carrying `?tab=` would collide with /admin/roles' id.
 export default function Page() {
-  return (
-    <Section>
-      <Container size="2xl">
-        <Stack gap="lg" padding="y-lg">
-          <Heading level={1}>Permissions Catalog</Heading>
-          <Text color="muted">
-            Every permission string available to custom employee roles, grouped by domain.
-            Reference only — assign permissions via Team or Roles.
-          </Text>
-          <Stack gap="sm">
-            {PERMISSION_DOMAINS.map((domain) => {
-              const perms = getPermissionsForDomain(domain.prefix);
-              if (perms.length === 0) return null;
-              return (
-                <Details key={domain.prefix} tone="card" padding="none">
-                  <Summary
-                    paddingX="x-md"
-                    paddingY="y-md"
-                    weight="semibold"
-                    layout="flex"
-                    align="center"
-                    justify="between"
-                  >
-                    <Span>{domain.label}</Span>
-                    <Span size="xs" color="muted">{perms.length} permissions</Span>
-                  </Summary>
-                  <Div padding="md" surface="muted">
-                    <Stack gap="xs">
-                      {perms.map((perm) => (
-                        <Stack key={perm} gap="none">
-                          <Text weight="medium" size="sm">{formatPermLabel(perm)}</Text>
-                          <Text size="xs" color="muted" className="font-mono">{perm}</Text>
-                        </Stack>
-                      ))}
-                    </Stack>
-                  </Div>
-                </Details>
-              );
-            })}
-          </Stack>
-        </Stack>
-      </Container>
-    </Section>
-  );
+  redirect(`${String(ROUTES.ADMIN.ROLES)}?tab=permissions`);
 }

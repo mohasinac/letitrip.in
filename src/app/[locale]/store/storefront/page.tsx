@@ -1,6 +1,8 @@
 import { SellerStorefrontView } from "@mohasinac/appkit";
 import type { StorefrontDraft } from "@mohasinac/appkit";
+import { PageTabs, STOREFRONT_TABS } from "@mohasinac/appkit/client";
 import { getSellerStoreAction, updateStoreAction } from "@/actions/seller.actions";
+import { StoreSlugPanel } from "@/components/store/StoreSlugPanel";
 
 export default async function Page() {
   // NOT swallowed: `initialValues` below seeds the storefront EDITOR, and
@@ -48,10 +50,22 @@ export default async function Page() {
     });
   }
 
+  /*
+   * The shop's identity: how it looks, and the address buyers reach it at.
+   * `/store/slug` is now a redirect onto `?tab=slug`.
+   */
   return (
-    <SellerStorefrontView
-      initialValues={initialValues}
-      onSave={handleSave}
+    <PageTabs
+      tabs={STOREFRONT_TABS}
+      panels={{
+        profile: (
+          <SellerStorefrontView
+            initialValues={initialValues}
+            onSave={handleSave}
+          />
+        ),
+        slug: <StoreSlugPanel />,
+      }}
     />
   );
 }
