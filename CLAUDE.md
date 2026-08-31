@@ -159,8 +159,9 @@ their own rule rather than from a survey:
 | [`listing-search-capability`](scripts/audit-listing-search-capability.mjs) | R1 | 17 views | unchanged this run |
 
 Also re-measured: [`form-sectionised`](scripts/audit-form-sectionised.mjs) is
-**16**, unchanged — W8's C3 was not attempted, and saying so is the point of
-having the number. [`route-schema-registry`](appkit/scripts/audit-route-schema-registry.mjs)
+**0** as of 2026-09-01 — W8's C3 was finished, all 16 forms migrated, and its
+grandfather list is now empty and closed. It is a strict-zero audit like the
+rest; the row above it stands as the record of what the number was for. [`route-schema-registry`](appkit/scripts/audit-route-schema-registry.mjs)
 is **6 of 560 routes adopted**, which is not a backlog draining but a registry
 almost nothing uses; its header used to promise a W8 flip and now states the
 ratio instead.

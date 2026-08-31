@@ -136,14 +136,21 @@ const OWNS_A_SUBMIT_RE =
 const SUPPRESS_RE = /audit-form-sectionised-ok:/;
 
 /**
- * Known hand-rolled forms, awaiting migration. DELETE an entry when its file
- * gains a `<SectionForm>` — the staleness check will tell you.
+ * 🛑 EMPTY, and it stays empty. The audit is now strict zero.
  *
- * Generated 2026-08-27 from the tree as it stood. 45 entries (16 dropped once the submit-ownership filter landed).
+ * It shipped 2026-08-27 with 45 entries (16 dropped immediately once the
+ * submit-ownership filter landed), reached 16 by W8, and the last of those
+ * migrated 2026-09-01. Every hand-rolled form in both trees is now a
+ * `<SectionForm>`.
+ *
+ * Do NOT add an entry to get a new form past this. The list existed to drain a
+ * known backlog, not to admit new ones — a re-populated grandfather list is
+ * exactly the "shrinking list rots into a permanent allow-list" failure the
+ * header warns about, and there is no backlog left for it to be draining.
+ * `PRIMITIVE_DIRS` above is the structural exclusion for files that genuinely
+ * cannot migrate.
  */
-const GRANDFATHERED = new Set([
-  "appkit/src/features/admin/components/AdminSectionsView.tsx",
-]);
+const GRANDFATHERED = new Set([]);
 
 function walk(dir, out = []) {
   let entries;
