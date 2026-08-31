@@ -48,6 +48,9 @@ export const GET = withProviders(createApiHandler({
       storeId: store.id,
       rawFilters: url.searchParams.get("filters") || null,
     }, {
+      // The seller sees their own store's rows including tester fixtures; a
+      // tester's sandbox store is theirs to manage.
+      viewer: user,
       // Same omission as the admin route: no options meant no executor, so a
       // seller's ANY_STATUS inventory query ran inside Vercel rather than in
       // the colocated Function.

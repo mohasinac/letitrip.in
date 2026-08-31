@@ -41,7 +41,7 @@ const DEFAULT_SORT = sortBy(PRODUCT_FIELDS.CREATED_AT, "DESC");
 export const GET = withProviders(createApiHandler({
   roles: [...ROLES_ADMIN_MOD],
   permission: "admin:products:read",
-  handler: async ({ request }) => {
+  handler: async ({ request, user }) => {
     const url = new URL(request.url);
 
     // Same listing query as every public surface — see the seller route for
@@ -55,6 +55,9 @@ export const GET = withProviders(createApiHandler({
       status: ANY_STATUS,
       rawFilters: url.searchParams.get("filters") || null,
     }, {
+      // An admin sees everything, tester fixtures included — that is what the
+      // dashboard is for, and `ANY_STATUS` above already says so for drafts.
+      viewer: user,
       // Was calling listPublicProducts with no options at all, so it fell
       // through to the in-Vercel default executor — an ANY_STATUS query, one of
       // the two heaviest endpoints in the app, running against the 10s ceiling

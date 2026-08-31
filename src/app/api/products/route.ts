@@ -18,6 +18,8 @@ import {
   type PublicProductExecutor,
 } from "@mohasinac/appkit/server";
 import { withProviders } from "@/providers.config";
+import { safeRead } from "@mohasinac/appkit/server";
+import { getServerSessionUser } from "@/lib/firebase/auth-server";
 import { logError } from "@/lib/logger";
 import { listingProcessorFirstExecutor } from "@/lib/listing-processor";
 import { validateSieveFilters } from "@/lib/sieve-validators";
@@ -168,7 +170,27 @@ async function _GET(request: Request): Promise<NextResponse> {
     }
   }
 
+  /*
+   * The viewer decides tester-sandbox visibility, and omitting it means
+   * anonymous — which is why this read is here rather than left out.
+   *
+   * A signed-in tester browsing /products SHOULD see the sandbox fixtures; an
+   * anonymous visitor must not. Before 2026-09-01 this route had no viewer
+   * concept at all and returned 25 tester fixtures in its first 40 rows to an
+   * unauthenticated caller.
+   *
+   * Degrades to anonymous rather than failing: losing sandbox visibility is a
+   * tester inconvenience, publishing it is a public defect, so the failure mode
+   * is chosen deliberately.
+   */
+  const viewer = await safeRead(() => getServerSessionUser(), {
+    route: "/api/products",
+    key: "session.getServerSessionUser",
+    fallback: null,
+  });
+
   const result = await listPublicProducts(input, {
+    viewer,
     executor: listingProcessorFirstExecutor,
     // Strip disabled types only when the caller didn't name any - a named
     // request has already been validated above.
