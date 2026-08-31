@@ -145,8 +145,6 @@ const SUPPRESS_RE = /audit-form-sectionised-ok:/;
 const GRANDFATHERED = new Set([
   "appkit/src/features/admin/components/AdminSectionsView.tsx",
   "appkit/src/features/admin/components/AdminSiteSettingsView.tsx",
-  "src/app/[locale]/events/[id]/participate/EventParticipateClient.tsx",
-  "src/components/routing/CheckoutRouteClient.tsx",
 ]);
 
 function walk(dir, out = []) {

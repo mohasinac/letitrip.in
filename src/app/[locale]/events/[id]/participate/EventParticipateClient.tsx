@@ -1,13 +1,15 @@
 "use client";
 import { Stack, normalizeError } from "@mohasinac/appkit/client";
 import type { FirestoreDocument, FirestoreValue } from "@mohasinac/appkit/client";
-import { useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { Link } from "@/i18n/navigation";
 import { Button, Checkbox, Div, Heading, Icon, Input, RadioGroup, RichText, Row, Select, Span, Text, Textarea } from "@mohasinac/appkit/ui";
 import { Label } from "@mohasinac/appkit/client";
 import { EventParticipateView, useSession, useToast, ROUTES } from "@mohasinac/appkit/client";
 import { SpinWheelView, EventRaffleEntryForm } from "@mohasinac/appkit/client";
 import { LotteryPullForm } from "@mohasinac/appkit/client";
+import { SectionForm, useSectionFormNav } from "@mohasinac/appkit/client";
+import type { SectionDef } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { spinEventWheel, submitEventEntry } from "@/lib/api/events-client";
 
@@ -190,42 +192,40 @@ function renderPollForm({
   );
 }
 
-function renderSubmitAction({
+/**
+ * Why submitting is blocked, if it is. The button itself moved into
+ * `SectionForm`, which owns the action row and the pinned mobile bar; what is
+ * left is the part that has to sit near the fields it refers to.
+ */
+function renderSubmitBlockers({
   error,
   pollConfig,
   isMultiSelect,
   selectedVotes,
   canSubmit,
-  isLoading,
-  handleSubmit,
 }: {
   error: string | null;
   pollConfig: ParticipateEventInput["pollConfig"];
   isMultiSelect: boolean;
   selectedVotes: string[];
   canSubmit: boolean;
-  isLoading: boolean;
-  handleSubmit: () => void;
 }) {
+  const needsChoice =
+    Boolean(pollConfig?.options?.length) && !isMultiSelect && selectedVotes.length === 0;
+  if (!error && !needsChoice) return null;
   return (
     <Stack gap="sm">
       {error ? (
         <Text className="text-error" size="sm">{error}</Text>
       ) : null}
-      {pollConfig?.options?.length && !isMultiSelect && selectedVotes.length === 0 ? (
+      {needsChoice ? (
         <Text size="sm" color="muted">
           Please select an option above.
         </Text>
       ) : null}
-      <Button
-        type="button"
-        variant="primary"
-        disabled={!canSubmit}
-        onClick={handleSubmit}
-        className="w-full"
-      >
-        {isLoading ? "Submitting…" : "Submit Participation"}
-      </Button>
+      {!canSubmit && !error && !needsChoice ? (
+        <Text size="sm" color="muted">Submitting…</Text>
+      ) : null}
     </Stack>
   );
 }
@@ -679,17 +679,60 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
     );
   }
 
+  /*
+   * ONE section, and no `schema` prop.
+   *
+   * The fields here are RUNTIME DATA — `SurveyFormField[]` authored per event in
+   * the admin editor — so there is no static shape for `buildSectionsFromSchema`
+   * to read and never will be. Validation stays where it already is:
+   * `validateForm()` walks the same runtime field list and writes `formErrors`,
+   * which `renderDynamicField` displays per field.
+   *
+   * The section renders whichever of the three shapes this event has, and
+   * always renders SOMETHING: an event with neither a poll nor form fields is a
+   * plain raffle entry, and that still needs its submit.
+   */
+  const sections = React.useMemo<SectionDef<FirestoreDocument>[]>(() => [
+    {
+      id: "entry",
+      label: "Your entry",
+      required: true,
+      fields: [],
+      render: () =>
+        pollConfig?.options?.length
+          ? renderPollForm({ pollConfig, isMultiSelect, selectedVotes, pollComment, toggleVote, setPollComment })
+          : dynamicForm ?? (
+              <Text size="sm" color="muted">
+                No details needed — submit to enter.
+              </Text>
+            ),
+    },
+  ], [pollConfig, isMultiSelect, selectedVotes, pollComment, toggleVote, setPollComment, dynamicForm]);
+
+  const nav = useSectionFormNav(sections, formResponses, { scope: "public:event-participate" });
+
   return (
     <EventParticipateView
       isLoading={isLoading}
       isSubmitted={isSubmitted && atEntryLimit}
       renderEventInfo={embedded ? undefined : () => renderEventInfoBlock(event)}
       renderForm={
-        pollConfig?.options?.length
-          ? () => renderPollForm({ pollConfig, isMultiSelect, selectedVotes, pollComment, toggleVote, setPollComment })
-          : dynamicForm
-            ? () => dynamicForm
-            : undefined
+        atEntryLimit && !isSubmitted
+          ? undefined
+          : () => (
+              <SectionForm<FirestoreDocument>
+                sections={sections}
+                values={formResponses}
+                // Every control writes through `setFieldValue` already; there is
+                // no generic path to route.
+                onChange={() => undefined}
+                onSubmit={handleSubmit}
+                openIds={nav.openIds}
+                onOpenChange={nav.setOpenIds}
+                submitLabel={isLoading ? "Submitting…" : "Submit Participation"}
+                isLoading={isLoading}
+              />
+            )
       }
       renderAction={() =>
         atEntryLimit && !isSubmitted ? (
@@ -699,7 +742,7 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
             </Text>
           </Div>
         ) : (
-          renderSubmitAction({ error, pollConfig, isMultiSelect, selectedVotes, canSubmit, isLoading, handleSubmit })
+          renderSubmitBlockers({ error, pollConfig, isMultiSelect, selectedVotes, canSubmit })
         )
       }
       renderSuccess={() =>

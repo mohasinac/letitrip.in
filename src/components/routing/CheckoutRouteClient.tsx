@@ -1,10 +1,12 @@
 "use client";
 import { normalizeError, checkEmiEligibility, computeBuyerEmiQuote, computeCodHandlingFee, useSiteSettings, CouponHelpDetails } from "@mohasinac/appkit/client";
+import { SectionForm } from "@mohasinac/appkit/client";
+import type { SectionDef } from "@mohasinac/appkit/client";
 import type { JsonValue, BuyerEmiSettings, BuyerFacingFees, OutOfStockPolicy, StoreAddonsValue, PricedCartLine, CartPriceBreakdownStore } from "@mohasinac/appkit/client";
 import { StoreAddonsPicker, CartPriceBreakdown, hasAnyStoreAddon, clientLineTotal } from "@mohasinac/appkit/client";
 import { Banknote } from "lucide-react";
 
-import { useCallback, useState, useEffect, useMemo } from "react";
+import React, { useCallback, useState, useEffect, useMemo } from "react";
 import {
   Alert,
   CART_LANE,
@@ -432,6 +434,30 @@ function renderValueOtpStep({
   handleSendWhatsapp: () => Promise<void>;
 }) {
   const destination = channel === "whatsapp" ? maskedPhone || "your WhatsApp number" : maskedEmail || "your registered email";
+  /*
+   * One field, and no `schema` prop: the six-digit rule is enforced by the
+   * server that issued the code, and a client-side length check that disagreed
+   * with it would be the more confusing of the two failures.
+   */
+  const otpSections = React.useMemo<SectionDef<{ otpCode: string }>[]>(() => [
+    {
+      id: "otp",
+      label: "Verification code",
+      required: true,
+      fields: ["otpCode"],
+      render: ({ values, onChange }) => (
+        <Input
+          type="text"
+          inputMode="numeric"
+          maxLength={6}
+          placeholder="6-digit code"
+          value={values.otpCode}
+          onChange={(e) => onChange({ otpCode: e.target.value })}
+          className="tracking-widest text-center text-[length:var(--appkit-text-xl)]"
+        />
+      ),
+    },
+  ], []);
   return (
     <Div className={STEP_CARD_CLS}>
       <Heading level={2} className="mb-1" color="primary" size="lg" weight="semibold">
@@ -446,26 +472,17 @@ function renderValueOtpStep({
         Enter it below to continue.
       </Text>
       <Stack gap="md">
-        <Input
-          type="text"
-          inputMode="numeric"
-          maxLength={6}
-          placeholder="6-digit code"
-          value={otpCode}
-          onChange={(e) => setOtpCode(e.target.value)}
-          className="tracking-widest text-center text-[length:var(--appkit-text-xl)]"
+        <SectionForm<{ otpCode: string }>
+          sections={otpSections}
+          values={{ otpCode }}
+          onChange={(partial) => setOtpCode(partial.otpCode ?? "")}
+          onSubmit={() => void handleVerify()}
+          submitLabel={isVerifying ? "Verifying…" : "Verify & continue"}
+          isLoading={isVerifying}
         />
         {otpError && (
           <Text className="text-error" size="sm">{otpError}</Text>
         )}
-        <Button
-          type="button"
-          onClick={handleVerify}
-          disabled={isVerifying || otpCode.length < 6}
-          className={PRIMARY_BTN_CLS}
-        >
-          {isVerifying ? "Verifying…" : "Verify & continue"}
-        </Button>
         <Button
           type="button"
           variant="ghost"
@@ -542,6 +559,26 @@ function renderPaymentStep({
   handlePlaceEmiOrder: () => Promise<void>;
   handleAdminBypass: () => Promise<void>;
 }) {
+  /** The one option that applies whichever payment method is chosen. */
+  const policySections = React.useMemo<SectionDef<{ outOfStockPolicy: OutOfStockPolicy }>[]>(() => [
+    {
+      id: "policy",
+      label: CK.OUT_OF_STOCK_POLICY_LABEL,
+      fields: ["outOfStockPolicy"],
+      render: ({ values, onChange }) => (
+        <FieldSelect
+          name="outOfStockPolicy"
+          label={CK.OUT_OF_STOCK_POLICY_LABEL}
+          value={values.outOfStockPolicy}
+          onChange={(v) => onChange({ outOfStockPolicy: v as OutOfStockPolicy })}
+          options={[
+            { value: "skip_items", label: CK.OUT_OF_STOCK_POLICY_SKIP_ITEMS },
+            { value: "cancel_order", label: CK.OUT_OF_STOCK_POLICY_CANCEL_ORDER },
+          ]}
+        />
+      ),
+    },
+  ], []);
   return (
     <Div className={STEP_CARD_CLS}>
       {step !== "processing" && (
@@ -559,15 +596,20 @@ function renderPaymentStep({
           {actionError && (
             <Text className="text-error" size="sm">{actionError}</Text>
           )}
-          <FieldSelect
-            name="outOfStockPolicy"
-            label={CK.OUT_OF_STOCK_POLICY_LABEL}
-            value={outOfStockPolicy}
-            onChange={(v) => setOutOfStockPolicy(v as OutOfStockPolicy)}
-            options={[
-              { value: "skip_items", label: CK.OUT_OF_STOCK_POLICY_SKIP_ITEMS },
-              { value: "cancel_order", label: CK.OUT_OF_STOCK_POLICY_CANCEL_ORDER },
-            ]}
+          <SectionForm<{ outOfStockPolicy: OutOfStockPolicy }>
+            sections={policySections}
+            values={{ outOfStockPolicy }}
+            onChange={(partial) => {
+              if (partial.outOfStockPolicy) setOutOfStockPolicy(partial.outOfStockPolicy);
+            }}
+            onSubmit={() => undefined}
+            /*
+             * 🛑 `hideActions` because this step has FOUR terminal actions -
+             * UPI/cash, Razorpay, COD and EMI - each with its own eligibility
+             * and its own handler. A single Save row would have to claim to be
+             * one of them. The buttons below stay exactly where they are.
+             */
+            hideActions
           />
           {/* The per-store add-on pickers used to live here. They moved to the
               Extras & fees step, which is reachable before payment and shows
