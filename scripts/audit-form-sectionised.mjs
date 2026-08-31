@@ -87,7 +87,6 @@ const PRIMITIVE_DIRS = [
  * control primitives — `<Input>`, `<Toggle>`, `<Select>`, `<PaginatedSelect>`,
  * `<MediaUploadField>` — was INVISIBLE to it. Measured 2026-08-29: **17 such
  * forms**, none of them on the list, including the two largest surfaces in the
- * app (`AdminSectionsView`, 207 controls; `AdminSiteSettingsView`, 161). The
  * audit reported "45 awaiting" against a true 62.
  *
  * That is the failure this file was written to prevent, reproduced inside the
@@ -144,7 +143,6 @@ const SUPPRESS_RE = /audit-form-sectionised-ok:/;
  */
 const GRANDFATHERED = new Set([
   "appkit/src/features/admin/components/AdminSectionsView.tsx",
-  "appkit/src/features/admin/components/AdminSiteSettingsView.tsx",
 ]);
 
 function walk(dir, out = []) {
