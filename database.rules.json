@@ -2,29 +2,6 @@
   "rules": {
     ".read": false,
     ".write": false,
-    "chat": {
-      "$chatId": {
-        ".read": "auth != null && auth.token.chatIds != null && auth.token.chatIds[$chatId] == true",
-        ".write": false,
-        "messages": {
-          "$messageId": {
-            ".validate": "newData.hasChildren(['userId', 'message', 'timestamp'])",
-            "userId": {
-              ".validate": "newData.isString()"
-            },
-            "message": {
-              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 1000"
-            },
-            "timestamp": {
-              ".validate": "newData.isNumber() || newData.val() == '.sv'"
-            }
-          }
-        },
-        "metadata": {
-          ".read": "auth != null && auth.token.chatIds != null && auth.token.chatIds[$chatId] == true"
-        }
-      }
-    },
     "auction-bids": {
       "$productId": {
         ".read": false,
@@ -49,18 +26,6 @@
           "timestamp": {
             ".validate": "newData.isNumber() || newData.val() == '.sv'"
           }
-        }
-      }
-    },
-    "chats": {
-      "$conversationId": {
-        ".read": "auth != null && auth.token.conversationIds != null && auth.token.conversationIds[$conversationId] == true",
-        ".write": false
-      },
-      "user": {
-        "$userId": {
-          ".read": "auth != null && auth.uid == $userId",
-          ".write": false
         }
       }
     },

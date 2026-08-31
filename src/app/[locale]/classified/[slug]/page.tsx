@@ -32,12 +32,14 @@ export default async function Page({ params }: Props) {
         slug={slug}
         initialProduct={product}
         // Same snippet as /products/[slug] — both detail views expose the same
-        // renderOfferAction contract precisely so this can't drift.
-        renderOfferAction={({ productId, price, minOfferPercent }) => (
+        // renderOfferAction contract precisely so this can't drift. `bounds` is
+        // resolved by the view from the one shared rule, so the button never
+        // computes a floor the server would disagree with.
+        renderOfferAction={({ productId, price, bounds }) => (
           <MakeOfferButton
             productId={productId}
             listedPrice={price}
-            minOfferPercent={minOfferPercent}
+            bounds={bounds}
             onMakeOffer={submitProductOffer}
           />
         )}

@@ -118,11 +118,11 @@ export default async function Page({ params }: Props) {
         productFeatures={productFeatures}
         codEnabled={codEnabled}
         emiEnabled={emiEnabled}
-        renderOfferAction={({ productId, price, minOfferPercent }) => (
+        renderOfferAction={({ productId, price, bounds }) => (
           <MakeOfferButton
             productId={productId}
             listedPrice={price}
-            minOfferPercent={minOfferPercent}
+            bounds={bounds}
             onMakeOffer={submitProductOffer}
           />
         )}

@@ -230,7 +230,8 @@ const classifiedMetaSchema = z.object({
     locality: z.string().optional(),
     pincode: z.string().optional(),
   }),
-  contactMethod: z.enum(["chat", "phone", "both"]).optional(),
+  // `contactMethod` removed 2026-08-31 — display-only, never branched on, and
+  // its "phone" value had no phone-number field anywhere to back it.
   acceptsShipping: z.boolean().optional(),
   negotiable: z.boolean().optional(),
 });

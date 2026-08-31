@@ -783,10 +783,6 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
         description: "Orders to pack, ship and get paid for.",
         keywords: ["sales", "shipping", "fulfil"],
       }),
-      storeItem(String(ROUTES.STORE.MESSAGES), "Messages", {
-        description: "Conversations with buyers.",
-        keywords: ["chat", "enquiries", "inbox"],
-      }),
       storeItem(String(ROUTES.STORE.REVIEWS), "Reviews", {
         description: "What buyers said, and your replies.",
         keywords: ["ratings", "feedback", "stars"],
@@ -944,10 +940,6 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
       userItem(String(ROUTES.USER.NOTIFICATIONS), "Notifications", {
         description: "What the site has told you.",
         keywords: ["alerts", "updates", "inbox"],
-      }),
-      userItem(String(ROUTES.USER.MESSAGES), "Messages", {
-        description: "Conversations with sellers.",
-        keywords: ["chat", "enquiries", "inbox"],
       }),
     ],
   },

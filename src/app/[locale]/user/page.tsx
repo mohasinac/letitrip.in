@@ -53,7 +53,6 @@ const NAV_LINKS = [
   { label: "My Catalogue",      href: ROUTES.USER.CATALOGUE,      Icon: Archive },
   { label: "My Coupons",        href: ROUTES.USER.CLAIMED_COUPONS, Icon: Ticket },
   { label: "Addresses",         href: ROUTES.USER.ADDRESSES,      Icon: MapPin },
-  { label: "Messages",          href: ROUTES.USER.MESSAGES,       Icon: MessageCircle },
   { label: "Notifications",     href: ROUTES.USER.NOTIFICATIONS,  Icon: Bell },
   { label: "Support",           href: ROUTES.USER.SUPPORT,        Icon: LifeBuoy },
   { label: "Settings",          href: ROUTES.USER.SETTINGS,       Icon: Settings },

@@ -43,7 +43,6 @@ const SELLER_QUICK_ACTION_HREFS: Partial<Record<DashboardQuickActionId, string>>
   "dqa-seller-payout-request": String(ROUTES.STORE.PAYOUTS),
   "dqa-seller-shipping": String(ROUTES.STORE.SHIPPING),
   "dqa-seller-print-center": String(ROUTES.STORE.PRINT_CENTER),
-  "dqa-seller-messages": String(ROUTES.STORE.MESSAGES),
   "dqa-seller-whatsapp": String(ROUTES.STORE.WHATSAPP),
   "dqa-seller-reviews": String(ROUTES.STORE.REVIEWS),
   "dqa-seller-storefront": String(ROUTES.STORE.STOREFRONT),

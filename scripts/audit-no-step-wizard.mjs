@@ -53,13 +53,12 @@ const PRIMITIVE_FILES = [
  * ever since. A stale entry is not harmless — it is a hole that would let the
  * wizard be reintroduced into that exact file without failing.
  */
-const GRANDFATHERED = [
-  // SellerShippingView and SellerStorefrontView migrated 2026-08-26.
-  // SellerProductShell is the last one: 1583 lines with a TypeSpecificStepDef
-  // map keyed on ProductListingMode, so it is the registry-driven
-  // `formSections` work rather than a mechanical swap.
-  "appkit/src/features/seller/components/SellerProductShell.tsx",
-];
+// Empty, and that is the finished state. SellerShippingView and
+// SellerStorefrontView migrated 2026-08-26; SellerProductShell — the last and
+// largest, with a TypeSpecificStepDef map keyed on ProductListingMode — was
+// removed 2026-08-31 after the audit reported it migrated. Per the note above,
+// leaving it would be a hole allowing a wizard back into that exact file.
+const GRANDFATHERED = [];
 
 const PATTERNS = [
   { re: /<\s*StepForm\b/, what: "<StepForm> — use <SectionForm>" },

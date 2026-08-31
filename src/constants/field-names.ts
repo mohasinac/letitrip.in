@@ -43,8 +43,6 @@ export {
   SESSION_FIELDS,
   // Coupon usage
   COUPON_USAGE_FIELDS,
-  // Conversations
-  CONVERSATION_FIELDS,
   // Scammers (from appkit scams feature)
   SCAMMER_FIELDS,
   // Support tickets (from appkit support feature)

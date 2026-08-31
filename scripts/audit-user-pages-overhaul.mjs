@@ -232,19 +232,15 @@ check(
 
 // ────────────────────────────────────────────────────────────────────────────
 // Cohort 6 — Chat URL deep links + dedicated [id] route
+//
+// Removed 2026-08-31 along with the buyer↔seller messaging feature (W11/D16).
+// Both assertions guarded real properties of a real page — a `[id]` route and
+// `?c=` deep-link state — and both now describe files that do not exist.
+//
+// 🛑 Deleted rather than commented out or made conditional. An assertion that
+// skips when its target is absent passes for a deleted feature and for a broken
+// one identically, which is the failure mode this whole audit exists to catch.
 // ────────────────────────────────────────────────────────────────────────────
-
-requireFile(
-  "Cohort 6 · /user/messages/[id] page exists",
-  join(ROOT, "src/app/[locale]/user/messages/[id]/page.tsx"),
-);
-
-check(
-  "Cohort 6 · Messages page reads activeId from URL ?c= state",
-  join(ROOT, "src/app/[locale]/user/messages/page.tsx"),
-  /table\.get\("c"\)/,
-  "initialActiveId",
-);
 
 check(
   "Cohort 6 · Notifications page has no `tabs` filter (tabs replaced by toolbar)",

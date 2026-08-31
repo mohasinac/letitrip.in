@@ -236,7 +236,6 @@ export { searchProductsAction } from "./search.actions";
 
 
 // Realtime token (auth required)
-export { getRealtimeTokenAction } from "./realtime-token.actions";
 
 // Category reads (public)
 export {
