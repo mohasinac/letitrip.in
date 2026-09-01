@@ -4,6 +4,7 @@ import { PreOrdersListView, productFeaturesRepository } from "@mohasinac/appkit"
 import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { PageViewTracker } from "@mohasinac/appkit/client";
+import { safeRead } from "@mohasinac/appkit/server";
 
 export const metadata: Metadata = _gm({
   title: "Pre-Order Collectibles — LetItRip",
@@ -21,9 +22,14 @@ export default async function Page({
   searchParams?: Promise<Record<string, string | string[]>>;
 }) {
   const resolvedSearchParams = await searchParams;
-  const platformFeatures = await productFeaturesRepository
-    .listPlatform()
-    .catch(() => []);
+  const platformFeatures = await safeRead(
+    () => productFeaturesRepository.listPlatform(),
+    {
+      route: "/pre-orders",
+      key: "productFeatures.listPlatform",
+      fallback: [],
+    },
+  );
   return (
     <>
       <PageViewTracker entityType="listing" entityId="pre-orders" url="/pre-orders" />

@@ -6,6 +6,7 @@ import { Heading, Main, MediaImage, Nav, ROUTES, Row, Span, Stack, Text, categor
 import type { ListingType } from "@mohasinac/appkit";
 import { Div, Grid } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants/seo.server";
+import { safeRead } from "@mohasinac/appkit/server";
 
 
 const __O = {
@@ -23,9 +24,14 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const category = await categoriesRepository
-    .findBySlugAndType(slug, "sublisting")
-    .catch(() => null);
+  const category = await safeRead(
+    () => categoriesRepository.findBySlugAndType(slug, "sublisting"),
+    {
+      route: "/sublisting-categories/[slug]",
+      key: "categories.findBySlugAndType(sublisting)",
+      fallback: null,
+    },
+  );
   if (!category) return _gm({ title: "Sub-listing Category", path: `/sublisting-categories/${slug}` });
   const name = category.name + (category.itemCode ? ` (${category.itemCode})` : "");
   return _gm({
@@ -41,15 +47,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SublistingCategoryPage({ params }: Props) {
   const { slug } = await params;
 
-  const category = await categoriesRepository
-    .findBySlugAndType(slug, "sublisting")
-    .catch(() => null);
+  const category = await safeRead(
+    () => categoriesRepository.findBySlugAndType(slug, "sublisting"),
+    {
+      route: "/sublisting-categories/[slug]",
+      key: "categories.findBySlugAndType(sublisting)",
+      fallback: null,
+    },
+  );
 
+  // A read failure reaches `notFound()` either way — recorded, it is
+  // distinguishable from a slug that genuinely does not exist.
   if (!category) notFound();
 
-  const listings = await categoriesRepository
-    .getSublistingListings(category.id, 40)
-    .catch((): Record<string, JsonValue>[] => []);
+  const listings = await safeRead(
+    () => categoriesRepository.getSublistingListings(category.id, 40),
+    {
+      route: "/sublisting-categories/[slug]",
+      key: "categories.getSublistingListings",
+      fallback: [] as Record<string, JsonValue>[],
+    },
+  );
 
   const displayName = category.name + (category.itemCode ? ` (${category.itemCode})` : "");
 

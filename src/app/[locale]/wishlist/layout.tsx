@@ -1,6 +1,7 @@
 import { Suspense, type ReactNode } from "react";
 import { productFeaturesRepository } from "@mohasinac/appkit";
 import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
+import { safeRead } from "@mohasinac/appkit/server";
 
 /**
  * Wraps the wishlist page in ProductFeaturesProvider so InteractiveProductCard
@@ -19,9 +20,14 @@ import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
 export const dynamic = "force-dynamic";
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  const platformFeatures = await productFeaturesRepository
-    .listPlatform()
-    .catch(() => []);
+  const platformFeatures = await safeRead(
+    () => productFeaturesRepository.listPlatform(),
+    {
+      route: "/wishlist",
+      key: "productFeatures.listPlatform",
+      fallback: [],
+    },
+  );
   return (
     <ProductFeaturesProvider features={platformFeatures}>
       <Suspense>{children}</Suspense>

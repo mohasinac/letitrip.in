@@ -6,6 +6,7 @@
  */
 
 import { API_ENDPOINTS } from "@mohasinac/appkit/client";
+import { reportClientError, normalizeError } from "@mohasinac/appkit/client";
 
 const JSON_HEADERS = { "Content-Type": "application/json" } as const;
 const CREDS = "include" as const;
@@ -53,6 +54,16 @@ export function validateCart(productIds: string[]): Promise<Response> {
   });
 }
 
+/**
+ * Persist which cart items are ticked. Deliberately fire-and-forget — the
+ * checkbox has already moved and the cart works without this — but no longer
+ * SILENT.
+ *
+ * `safeRead` is the server-side equivalent and cannot be used here: it pulls in
+ * the server reporter, and this module is in the client graph. The beacon is
+ * the client's half of the same idea, and it dedupes, so a flapping network
+ * does not turn one broken tick into a thousand rows.
+ */
 export function persistCartSelection(itemIds: string[] | null): Promise<void> {
   return fetch(API_ENDPOINTS.CART.SELECTION, {
     method: "PUT",
@@ -60,8 +71,20 @@ export function persistCartSelection(itemIds: string[] | null): Promise<void> {
     body: JSON.stringify({ itemIds }),
     credentials: CREDS,
   })
-    .catch(() => undefined)
-    .then(() => undefined);
+    .then((res) => {
+      if (!res.ok) {
+        reportClientError({
+          code: "CART_SELECTION_PERSIST_FAILED",
+          message: `PUT ${API_ENDPOINTS.CART.SELECTION} responded ${res.status}`,
+        });
+      }
+    })
+    .catch((err: unknown) => {
+      reportClientError({
+        code: "CART_SELECTION_PERSIST_FAILED",
+        message: normalizeError(err).message,
+      });
+    });
 }
 
 /** Paid add-on selections for ONE store — mirrors CartStoreAddons. */

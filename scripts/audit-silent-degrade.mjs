@@ -72,9 +72,13 @@
  * bid-actions.ts:164 — the exact site this header calls out. Fixing the walk
  * surfaced 17 genuine swallows that had never been triaged.
  *
- * So the honest state is: every swallow the audit could previously prove is
- * fixed, and 17 newly-visible ones are not. Flip back to strict when they are.
- * `MIGRATE=strict` fails today and is what the burn-down should run against.
+ * Those 17 were converted on 2026-09-01 — every one to `safeRead` with the
+ * collection named, except the cart-selection PUT, which is client-side
+ * fire-and-forget and reports through the client beacon instead (`safeRead`
+ * pulls in the server reporter and cannot cross that boundary).
+ *
+ * 🛑 So the audit is STRICT again, which is where it was before the walk was
+ * fixed. It is back to its designed state, not newly tightened.
  *
  * ORIGINALLY: 292 R1 sites existed at introduction, so this shipped
  * report-only: strict-zero on day one would have forced either a mass rewrite
@@ -102,7 +106,11 @@ const EXCLUDED_DIRS = new Set([
   "node_modules", "dist", ".next", "out", "coverage", "seed",
 ]);
 const OK_RE = /\/\/\s*audit-silent-degrade-ok\s*:/i;
-const STRICT = process.env.MIGRATE === "strict";
+/*
+ * Strict by default. `MIGRATE=report` is the local-sweep escape hatch; there is
+ * no staged list, because the burn-down that staging existed for is finished.
+ */
+const STRICT = process.env.MIGRATE !== "report";
 
 /**
  * Parsing a body: an absent/!JSON body is a REAL outcome, so collapsing it to

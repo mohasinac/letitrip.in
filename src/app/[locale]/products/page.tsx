@@ -7,6 +7,7 @@ import {
 import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { PageViewTracker } from "@mohasinac/appkit/client";
+import { safeRead } from "@mohasinac/appkit/server";
 
 export const metadata: Metadata = _gm({
   title: "Collectibles for Sale — LetItRip",
@@ -24,9 +25,14 @@ export default async function Page({
   searchParams?: Promise<Record<string, string | string[]>>;
 }) {
   const resolvedSearchParams = await searchParams;
-  const platformFeatures = await productFeaturesRepository
-    .listPlatform()
-    .catch(() => []);
+  const platformFeatures = await safeRead(
+    () => productFeaturesRepository.listPlatform(),
+    {
+      route: "/products",
+      key: "productFeatures.listPlatform",
+      fallback: [],
+    },
+  );
   return (
     <>
       <PageViewTracker entityType="listing" entityId="products" url="/products" />
