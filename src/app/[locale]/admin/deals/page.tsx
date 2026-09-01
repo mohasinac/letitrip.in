@@ -20,6 +20,8 @@ import type {
 } from "@mohasinac/appkit/client";
 import { useAdminProductFlagMutation } from "@/hooks";
 
+
+
 interface ProductsResponse {
   items?: JsonArray;
   total?: number;
@@ -36,7 +38,7 @@ const SORT_OPTIONS = [
 
 const QUERY_KEY = ["admin", "deals", "listing"] as const;
 
-export default function Page() {
+function PageInner() {
   const router = useRouter();
   const removeFromDealsMutation = useAdminProductFlagMutation("isPromoted", QUERY_KEY);
 
@@ -92,4 +94,20 @@ export default function Page() {
   };
 
   return <DataListingView config={config} />;
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function Page() {
+  return (
+    <React.Suspense>
+      <PageInner />
+    </React.Suspense>
+  );
 }

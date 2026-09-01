@@ -1,7 +1,11 @@
 "use client";
 
+import { Suspense } from "react";
+
 import { Container, Heading, ROUTES, Section, Stack, GroupedListingEditorView } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
+
+
 
 /**
  * Create a grouped listing for THIS seller's store.
@@ -19,7 +23,7 @@ import { useRouter } from "@/i18n/navigation";
  * `storeId` is deliberately NOT sent. The route derives it from the session,
  * which is what stops a seller filing a group under another store.
  */
-export default function StoreGroupedListingNewPage() {
+function StoreGroupedListingNewPageInner() {
   const router = useRouter();
 
   return (
@@ -35,5 +39,21 @@ export default function StoreGroupedListingNewPage() {
         </Stack>
       </Container>
     </Section>
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function StoreGroupedListingNewPage() {
+  return (
+    <Suspense>
+      <StoreGroupedListingNewPageInner />
+    </Suspense>
   );
 }

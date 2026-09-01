@@ -23,8 +23,10 @@ import {
   updateAnalyticsCard,
   createAnalyticsCard,
 } from "@/lib/api/store-client";
-import { useEffect, useState } from "react";
+import {useEffect, useState, Suspense } from "react";
 import type { AnalyticsCardDocument } from "@mohasinac/appkit/client";
+
+
 
 /**
  * Card types come from ANALYTICS_CARD_TYPES, which is derived from a
@@ -36,7 +38,7 @@ const CARD_TYPE_OPTIONS = ANALYTICS_CARD_TYPES.map((value) => ({
   label: value.charAt(0).toUpperCase() + value.slice(1),
 }));
 
-export default function Page() {
+function PageInner() {
   const { showToast } = useToast();
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -167,5 +169,21 @@ export default function Page() {
         ]}
       />
     </Section>
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function Page() {
+  return (
+    <Suspense>
+      <PageInner />
+    </Suspense>
   );
 }

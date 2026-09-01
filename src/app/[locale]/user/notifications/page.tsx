@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import {useEffect, Suspense } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@/i18n/navigation";
 import {
@@ -22,6 +22,8 @@ import {
   deleteUserNotification,
 } from "@/lib/api/user-client";
 import { API_ROUTES } from "@/constants";
+
+
 
 const __P = {
   p4: "p-[var(--appkit-space-4)]",
@@ -143,7 +145,7 @@ function NotifCard({
   );
 }
 
-export default function NotificationsPage() {
+function NotificationsPageInner() {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   const sideTable = useUrlTable({ defaults: { sort: sortBy("createdAt", "DESC") } });
@@ -277,4 +279,20 @@ export default function NotificationsPage() {
   };
 
   return <DataListingView config={config} />;
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function NotificationsPage() {
+  return (
+    <Suspense>
+      <NotificationsPageInner />
+    </Suspense>
+  );
 }

@@ -1,6 +1,6 @@
 "use client";
 import { Row, Stack, normalizeError } from "@mohasinac/appkit/client";
-import { useState, use } from "react";
+import {useState, use, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
 import {
@@ -17,6 +17,8 @@ import {
 import { cancelOrderAction } from "@/actions/order.actions";
 import { Heading, Span, Text } from "@mohasinac/appkit/client";
 import { orderCancelSchema, FormErrorSummary } from "@mohasinac/appkit/client";
+
+
 
 const __P = {
   p5: "p-[var(--appkit-space-5)]",
@@ -38,7 +40,7 @@ function toggleItemSelection(
   return next;
 }
 
-export default function Page({ params }: { params: Promise<{ id: string }> }) {
+function PageInner({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const { showToast } = useToast();
@@ -183,5 +185,21 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
         </Form>
       )}
     </Stack>
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function Page(props: { params: Promise<{ id: string }> }) {
+  return (
+    <Suspense>
+      <PageInner {...props} />
+    </Suspense>
   );
 }

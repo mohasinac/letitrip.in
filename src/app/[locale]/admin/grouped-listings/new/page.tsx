@@ -1,7 +1,11 @@
 "use client";
 
+import { Suspense } from "react";
+
 import { Container, Heading, ROUTES, Section, Stack, GroupedListingEditorView } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
+
+
 
 /**
  * Create a grouped listing on behalf of any store.
@@ -18,7 +22,7 @@ import { useRouter } from "@/i18n/navigation";
  * specifier resolves to the SERVER entry and pulls firebase-admin into the
  * client bundle (the Turbopack trap, Root Cause #6).
  */
-export default function AdminGroupedListingNewPage() {
+function AdminGroupedListingNewPageInner() {
   const router = useRouter();
 
   return (
@@ -34,5 +38,21 @@ export default function AdminGroupedListingNewPage() {
         </Stack>
       </Container>
     </Section>
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function AdminGroupedListingNewPage() {
+  return (
+    <Suspense>
+      <AdminGroupedListingNewPageInner />
+    </Suspense>
   );
 }

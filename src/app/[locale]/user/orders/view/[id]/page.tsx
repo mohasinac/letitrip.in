@@ -1,5 +1,5 @@
 "use client";
-import { use, useState } from "react";
+import {use, useState, Suspense } from "react";
 import { Link } from "@/i18n/navigation";
 import {
   useOrder,
@@ -34,6 +34,8 @@ import { getOrderDigitalCode } from "@/lib/api/user-client";
 import { raiseOrderDispute } from "@/lib/api/payment-client";
 import { API_ROUTES, getCarrierIcon } from "@/constants";
 import { BrandBadgeImage } from "@/components";
+
+
 
 const CLS_BUNDLE_BADGE = "inline-flex items-center rounded-full bg-fuchsia-100 dark:bg-fuchsia-900/30 px-[var(--appkit-space-2)] py-[var(--appkit-space-0-5)] text-[10px] font-semibold text-fuchsia-700 dark:text-fuchsia-300";
 
@@ -439,7 +441,7 @@ function renderOrderActions(order: NonNullable<OrderData>, canTrack: boolean, ca
 
 // ─── Page ───────────────────────────────────────────────────────────────────
 
-export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+function OrderDetailPageInner({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { showToast } = useToast();
   const { order, isLoading } = useOrder(id, {
@@ -549,5 +551,21 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         />
       )}
     </>
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function OrderDetailPage(props: { params: Promise<{ id: string }> }) {
+  return (
+    <Suspense>
+      <OrderDetailPageInner {...props} />
+    </Suspense>
   );
 }

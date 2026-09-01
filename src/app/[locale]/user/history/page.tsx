@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import {useMemo, useState, Suspense } from "react";
 import { Link } from "@/i18n/navigation";
 import {
   useSession,
@@ -17,6 +17,8 @@ import {
   type GuestHistoryItem,
 } from "@mohasinac/appkit/client";
 import { Span } from "@mohasinac/appkit/ui";
+
+
 
 const __O = {
   hidden: "overflow-hidden",
@@ -128,7 +130,7 @@ function HistoryRow({ item, onRemove }: HistoryRowProps) {
   );
 }
 
-export default function UserHistoryPage() {
+function UserHistoryPageInner() {
   const { user } = useSession();
   const { items, remove, clear, isGuest } = useHistory(user?.uid);
   const [filter, setFilter] = useState<FilterKey>("all");
@@ -214,5 +216,21 @@ export default function UserHistoryPage() {
         variant="warning"
       />
     </Stack>
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function UserHistoryPage() {
+  return (
+    <Suspense>
+      <UserHistoryPageInner />
+    </Suspense>
   );
 }

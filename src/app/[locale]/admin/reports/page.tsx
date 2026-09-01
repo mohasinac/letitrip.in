@@ -18,10 +18,12 @@ import {
 import { Link } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
 import { getAdminReports, updateAdminReport } from "@/lib/api/admin-client";
-import { useEffect, useState } from "react";
+import {useEffect, useState, Suspense } from "react";
 import type { ReportDocument } from "@mohasinac/appkit/client";
 
-export default function Page() {
+
+
+function PageInner() {
   const [items, setItems] = useState<ReportDocument[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionTargetId, setActionTargetId] = useState<string | null>(null);
@@ -140,5 +142,21 @@ export default function Page() {
         onConfirm={(values) => action(dismissTargetId!, values)}
       />
     </Section>
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function Page() {
+  return (
+    <Suspense>
+      <PageInner />
+    </Suspense>
   );
 }

@@ -1,8 +1,10 @@
 "use client";
-import { use } from "react";
+import {use, Suspense } from "react";
 import { Link } from "@/i18n/navigation";
 import { useOrder, ROUTES, Div, Row, Span, Stack, Table, Thead, Tbody, Tr, Th, Td, Text, Heading, Button, StickyToolbar, formatCurrency } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
+
+
 
 // ─── Sub-renderers ────────────────────────────────────────────────────────────
 
@@ -166,7 +168,7 @@ function renderInvoiceTotals(order: OrderData) {
 
 // ─── Page ───────────────────────────────────────────────────────────────────
 
-export default function InvoicePage({ params }: { params: Promise<{ id: string }> }) {
+function InvoicePageInner({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { order, isLoading } = useOrder(id, { endpoint: API_ROUTES.USER.ORDER_BY_ID(id) });
 
@@ -215,5 +217,21 @@ export default function InvoicePage({ params }: { params: Promise<{ id: string }
       </Div>
       </Div>
     </>
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function InvoicePage(props: { params: Promise<{ id: string }> }) {
+  return (
+    <Suspense>
+      <InvoicePageInner {...props} />
+    </Suspense>
   );
 }

@@ -1,7 +1,10 @@
 "use client";
+import { Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { SellerAnalyticsView, SellerAnalyticsStats, SellerTopProducts, Div, Text, apiClient, formatCurrency } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
+
+
 
 const __P = {
   p4: "p-[var(--appkit-space-4)]",
@@ -23,7 +26,7 @@ interface AnalyticsData {
   }>;
 }
 
-export default function Page() {
+function PageInner() {
   const { data, isPending, error } = useQuery<AnalyticsData>({
     queryKey: ["store-analytics"],
     queryFn: () => apiClient.get<AnalyticsData>(API_ROUTES.STORE.ANALYTICS),
@@ -64,5 +67,21 @@ export default function Page() {
         ) : null
       }
     />
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function Page() {
+  return (
+    <Suspense>
+      <PageInner />
+    </Suspense>
   );
 }

@@ -4,6 +4,17 @@ import { PageTabs, STOREFRONT_TABS } from "@mohasinac/appkit/client";
 import { getSellerStoreAction, updateStoreAction } from "@/actions/seller.actions";
 import { StoreSlugPanel } from "@/components/store/StoreSlugPanel";
 
+/*
+ * Auth-gated dashboard page behind RoleGuard — it needs the session on every
+ * request, so there is nothing meaningful to prerender. Static export also
+ * throws on any client tree reaching useSearchParams() without a Suspense
+ * boundary (Root Cause #17), and static generation runs 15 parallel workers,
+ * so WHICH page trips it varies between builds — a latent class rather than
+ * one bad page. Dynamic is both the correct semantics and the fix.
+ */
+export const dynamic = "force-dynamic";
+
+
 export default async function Page() {
   // NOT swallowed: `initialValues` below seeds the storefront EDITOR, and
   // `handleSave` writes every one of those fields back. A failed read used to

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import {useState, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { SellerReviewsView } from "@mohasinac/appkit/client";
 import { Heading, Stack, Text, Row, Div } from "@mohasinac/appkit/client";
@@ -8,6 +8,8 @@ import { Button } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { getUserReviewsByRole } from "@/lib/api/user-client";
 import { STORE_REVIEWS_ROLE_TABS, type StoreReviewsRoleTabId } from "@/constants";
+
+
 
 interface ReviewItem {
   id: string;
@@ -96,7 +98,7 @@ function ReviewsTab({ role }: { role: "buyer" | "seller" }) {
   );
 }
 
-export default function StoreReviewsPage() {
+function StoreReviewsPageInner() {
   const [activeTab, setActiveTab] = useState<StoreReviewsRoleTabId>("received");
 
   return (
@@ -130,5 +132,21 @@ export default function StoreReviewsPage() {
         <ReviewsTab role="buyer" />
       )}
     </Stack>
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function StoreReviewsPage() {
+  return (
+    <Suspense>
+      <StoreReviewsPageInner />
+    </Suspense>
   );
 }

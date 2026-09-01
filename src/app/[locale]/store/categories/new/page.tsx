@@ -49,7 +49,9 @@ import {
 import { useRouter } from "@/i18n/navigation";
 import { API_ROUTES } from "@/constants";
 import { createStoreCategory } from "@/lib/api/store-client";
-import { useMemo, useState } from "react";
+import {useMemo, useState, Suspense } from "react";
+
+
 
 function slugify(s: string) {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -63,7 +65,7 @@ type Values = {
   displayOrder: number;
 };
 
-export default function Page() {
+function PageInner() {
   const router = useRouter();
   const { showToast } = useToast();
   const [form, setForm] = useState<Values>({
@@ -149,5 +151,21 @@ export default function Page() {
         </Stack>
       </Container>
     </Section>
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function Page() {
+  return (
+    <Suspense>
+      <PageInner />
+    </Suspense>
   );
 }

@@ -1,15 +1,35 @@
 "use client";
 import { Row, Stack, normalizeError } from "@mohasinac/appkit/client";
-import { useRef, useState } from "react";
-import { UserAccountHubView, useAuth, useOrders, useWishlistCount, useMediaUpload, useUpdateProfile, useToast, useProfile, useLinkGoogleAccount, OrdersList, ROUTES, ACTIONS, Alert, Badge, Button, Div, Grid, DynamicBgDiv, Input, Span } from "@mohasinac/appkit/client";
+import {useRef, useState, Suspense } from "react";
+import {
+  UserAccountHubView,
+  useAuth,
+  useOrders,
+  useWishlistCount,
+  useMediaUpload,
+  useUpdateProfile,
+  useToast,
+  useProfile,
+  useLinkGoogleAccount,
+  OrdersList,
+  ROUTES,
+  ACTIONS,
+  Alert,
+  Badge,
+  Button,
+  Div,
+  DynamicBgDiv,
+  Grid,
+  Input,
+  Span,
+} from "@mohasinac/appkit/client";
 import { useNotifications } from "@mohasinac/appkit/client";
 import {
   ShoppingBag,
   Heart,
   MapPin,
   Settings,
-  MessageCircle,
-  Bell,
+    Bell,
   Star,
   Tag,
   CalendarDays,
@@ -27,6 +47,9 @@ import {
   UserCircle,
 } from "lucide-react";
 import { Link, useRouter } from "@/i18n/navigation";
+import { toUserMessage } from "@mohasinac/appkit/client";
+
+
 
 const __P = {
   p5: "p-[var(--appkit-space-5)]",
@@ -75,7 +98,7 @@ function formatINR(amount: number): string {
   return `₹${amount.toLocaleString("en-IN")}`;
 }
 
-export default function Page() {
+function PageInner() {
   const { user, loading: userLoading } = useAuth();
   const router = useRouter();
   const { orders, isLoading: ordersLoading } = useOrders({ page: 1, perPage: 3 });
@@ -87,8 +110,9 @@ export default function Page() {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
 
+  // No `onError`: `useUpdateProfile` already surfaces the failure, and a second
+  // toast here shows the same error twice — once generic, once raw.
   const updateProfile = useUpdateProfile({
-    errorMessage: "Failed to update photo.",
     onSuccess: () => showToast("Profile photo updated.", "success"),
   });
 
@@ -98,7 +122,13 @@ export default function Page() {
       showToast("Google account connected.", "success");
       void refetchProfile();
     },
-    onError: (err) => showToast("Failed to connect Google account.", "error"),
+    onError: () =>
+      showToast(
+        toUserMessage(undefined, undefined, {
+          fallback: "Failed to connect Google account.",
+        }),
+        "error",
+      ),
   });
 
   async function onPickFile(file: File | null) {
@@ -113,10 +143,9 @@ export default function Page() {
       });
       await updateProfile.mutateAsync({ photoURL: url });
     } catch (e: unknown) {
-      // Genuinely cannot matter HERE: the failure is already reported by
-      // whichever call produced it — `updateProfile` surfaces its own, and
-      // `upload()` surfaces the upload one. Reporting again made a failed
-      // avatar save say the same thing twice.
+      // The MUTATION surfaces its own failure; this catch only stops the upload
+      // rejection escaping and clears the spinner. Recorded, never re-toasted —
+      // two toasts for one failure is how the user ends up reading the raw text.
       void normalizeError(e);
     } finally {
       setUploading(false);
@@ -196,7 +225,7 @@ export default function Page() {
                     View / edit profile →
                   </Link>
                   <Link
-                    href={String(ROUTES.PUBLIC.PROFILE(user.slug ?? user.uid))}
+                    href={String(ROUTES.PUBLIC.PROFILE(user.uid))}
                     className="text-[length:var(--appkit-text-xs)] font-medium text-[var(--appkit-color-primary)] hover:underline"
                   >
                     View public profile →
@@ -248,7 +277,7 @@ export default function Page() {
       renderNav={() => (
         <Grid cols="navTiles" gap="3">
           {(user
-            ? [{ label: "My Public Profile", href: ROUTES.PUBLIC.PROFILE(user.slug ?? user.uid), Icon: UserCircle }, ...NAV_LINKS]
+            ? [{ label: "My Public Profile", href: ROUTES.PUBLIC.PROFILE(user.uid), Icon: UserCircle }, ...NAV_LINKS]
             : NAV_LINKS
           ).map(({ label, href, Icon }) => (
             <Link
@@ -300,5 +329,21 @@ export default function Page() {
         ) : null
       }
     />
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function Page() {
+  return (
+    <Suspense>
+      <PageInner />
+    </Suspense>
   );
 }

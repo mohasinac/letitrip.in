@@ -17,8 +17,10 @@ import type { ListingViewConfig } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { getSublistingCategories, deleteSublistingCategory } from "@/lib/api/store-client";
 import { normalizeError } from "@mohasinac/appkit/client";
-import { useState } from "react";
+import {useState, Suspense } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+
+
 
 const __O = {
   hidden: "overflow-hidden",
@@ -79,7 +81,7 @@ function renderCategoryRow(
   );
 }
 
-export default function Page() {
+function PageInner() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
@@ -157,4 +159,20 @@ export default function Page() {
   };
 
   return <DataListingView config={config} />;
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function Page() {
+  return (
+    <Suspense>
+      <PageInner />
+    </Suspense>
+  );
 }

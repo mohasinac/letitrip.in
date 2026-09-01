@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import {useState, Suspense } from "react";
 import { Link } from "@/i18n/navigation";
 import {
   useAuth,
@@ -24,6 +24,8 @@ import { SUPPORTED_LANGUAGES, LANGUAGES_PAGE_SIZE } from "@/constants";
 import { FontToggleClient, HandModeToggleClient } from "@/components";
 import { API_ROUTES } from "@/constants";
 import { ChangeEmailForm } from "@/components/user/ChangeEmailForm";
+
+
 
 type Tab = "account" | "privacy" | "appearance" | "notifications";
 
@@ -243,7 +245,7 @@ function renderAppearanceTab({
 
 // ─── Page ───────────────────────────────────────────────────────────────────
 
-export default function Page() {
+function PageInner() {
   const { user } = useAuth();
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<Tab>("account");
@@ -326,5 +328,21 @@ export default function Page() {
       {activeTab === "privacy" && renderPrivacyTab()}
       {activeTab === "appearance" && renderAppearanceTab({ language, setLanguage: handleLanguageChange })}
     </Div>
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function Page() {
+  return (
+    <Suspense>
+      <PageInner />
+    </Suspense>
   );
 }

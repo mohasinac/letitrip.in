@@ -1,5 +1,5 @@
 "use client";
-import { use, useState } from "react";
+import {use, useState, Suspense } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@/i18n/navigation";
 import {
@@ -17,6 +17,8 @@ import {
   useToast,
 } from "@mohasinac/appkit/client";
 import { getSupportTicket, getSupportTicketMessages } from "@/lib/api/support-client";
+
+
 
 const __P = {
   p5: "p-[var(--appkit-space-5)]",
@@ -66,7 +68,7 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export default function TicketDetailPage({ params }: PageProps) {
+function TicketDetailPageInner({ params }: PageProps) {
   const { id } = use(params);
   const { user, loading: sessionLoading } = useSession();
   const queryClient = useQueryClient();
@@ -227,5 +229,21 @@ export default function TicketDetailPage({ params }: PageProps) {
         </Stack>
       )}
     </Stack>
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function TicketDetailPage(props: PageProps) {
+  return (
+    <Suspense>
+      <TicketDetailPageInner {...props} />
+    </Suspense>
   );
 }

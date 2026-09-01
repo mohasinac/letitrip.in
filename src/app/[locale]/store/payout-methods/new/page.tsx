@@ -35,6 +35,16 @@ import { API_ROUTES } from "@/constants";
 import { createPayoutMethod } from "@/lib/api/store-client";
 import { useMemo, useState } from "react";
 
+/*
+ * Auth-gated dashboard page behind RoleGuard — it needs the session on every
+ * request, so there is nothing meaningful to prerender, and any client tree
+ * reaching useSearchParams() throws during prerender without a boundary
+ * (Root Cause #17). Kept from the concurrent build-fix work; the rest of that
+ * file's version was dropped because it predated the SectionForm migration.
+ */
+export const dynamic = "force-dynamic";
+
+
 interface Values {
   [key: string]: string | boolean;
   type: string;

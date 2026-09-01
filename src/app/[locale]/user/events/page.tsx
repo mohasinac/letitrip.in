@@ -1,4 +1,6 @@
 "use client";
+
+import { Suspense } from "react";
 import { Link } from "@/i18n/navigation";
 import {
   sortBy,
@@ -15,6 +17,8 @@ import {
 import type { ListingViewConfig } from "@mohasinac/appkit/client";
 import { FieldSelect } from "@mohasinac/appkit/ui";
 import { API_ROUTES } from "@/constants";
+
+
 
 const SORT_OPTIONS = [
   { value: sortBy("submittedAt", "DESC"), label: "Newest" },
@@ -68,7 +72,7 @@ const EVENT_TYPE_LABELS: Record<string, string> = {
   spin_wheel: "Spin Wheel",
 };
 
-export default function UserEventsPage() {
+function UserEventsPageInner() {
   const sideTable = useUrlTable({ defaults: { sort: sortBy("submittedAt", "DESC") } });
 
   const config: ListingViewConfig<EntriesResponse, EntryItem> = {
@@ -196,4 +200,20 @@ export default function UserEventsPage() {
   };
 
   return <DataListingView config={config} />;
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function UserEventsPage() {
+  return (
+    <Suspense>
+      <UserEventsPageInner />
+    </Suspense>
+  );
 }

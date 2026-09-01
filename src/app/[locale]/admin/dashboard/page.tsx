@@ -12,7 +12,9 @@ import {
 import { Link } from "@/i18n/navigation";
 import { fetchAdminResource, getCheckoutBypassStatus, setCheckoutBypassEnabled } from "@/lib/api/admin-client";
 import { API_ROUTES } from "@/constants";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {useCallback, useEffect, useRef, useState, Suspense } from "react";
+
+
 
 const __P = {
   p5: "p-[var(--appkit-space-5)]",
@@ -130,7 +132,7 @@ const DASHBOARD_SECTION_IDS = [
   "admin-dashboard:recent-orders",
 ];
 
-export default function Page() {
+function PageInner() {
   const { showToast } = useToast();
   const { isCollapsed, toggle } = useCollapsedSections({ sectionIds: DASHBOARD_SECTION_IDS });
   const [adminBypassEnabled, setAdminBypassEnabled] = useState(false);
@@ -338,5 +340,21 @@ export default function Page() {
         ) : null
       }
     />
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function Page() {
+  return (
+    <Suspense>
+      <PageInner />
+    </Suspense>
   );
 }

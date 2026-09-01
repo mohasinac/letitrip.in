@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {useEffect, useState, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation"
 import { useParams } from "next/navigation";
 import { Div, ROUTES, Row, SellerCouponEditorView, Text } from "@mohasinac/appkit/client";
 import type { CouponEditorDraft } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { getStoreCoupon, updateStoreCoupon } from "@/lib/api/store-client";
+
+
 
 interface CouponData {
   id: string;
@@ -47,7 +49,7 @@ function toDraftFromCoupon(coupon: CouponData): Partial<CouponEditorDraft> {
   };
 }
 
-export default function Page() {
+function PageInner() {
   const router = useRouter();
   const params = useParams();
   const couponId = String(params.id ?? "");
@@ -131,5 +133,21 @@ export default function Page() {
       onSave={handleSave}
       onCancel={() => router.push(String(ROUTES.STORE.COUPONS))}
     />
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function Page() {
+  return (
+    <Suspense>
+      <PageInner />
+    </Suspense>
   );
 }

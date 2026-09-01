@@ -1,5 +1,7 @@
 "use client";
 
+import { Suspense } from "react";
+
 /**
  * Shareable URL for the user drawer `AdminUsersView` opens inline.
  *
@@ -29,12 +31,14 @@ import { useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
+
+
 type UserDoc = Record<string, JsonValue>;
 
 const str = (v: JsonValue | undefined) => (typeof v === "string" ? v : undefined);
 const bool = (v: JsonValue | undefined) => (typeof v === "boolean" ? v : undefined);
 
-export default function Page() {
+function PageInner() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const uid = params?.id ?? "";
@@ -78,5 +82,21 @@ export default function Page() {
       currentIsHardBanned={bool(data.isHardBanned)}
       currentHardBanReason={str(data.hardBanReason)}
     />
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function Page() {
+  return (
+    <Suspense>
+      <PageInner />
+    </Suspense>
   );
 }

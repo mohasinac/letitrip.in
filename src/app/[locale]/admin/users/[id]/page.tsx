@@ -5,8 +5,10 @@ import type { JsonValue } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { getAdminUser, getAdminUserAddresses } from "@/lib/api/admin-client";
-import { useEffect, useState } from "react";
+import {useEffect, useState, Suspense } from "react";
 import { ADMIN_USER_DETAIL_TABS, API_ROUTES, type AdminUserDetailTabId } from "@/constants";
+
+
 
 interface AdminAddressRow {
   id: string;
@@ -27,7 +29,7 @@ const ROLE_BADGE_VARIANT: Record<string, "admin" | "moderator" | "seller" | "emp
   user: "user",
 };
 
-export default function Page() {
+function PageInner() {
   const params = useParams<{ id: string }>();
   const id = params?.id ?? "";
   const [tab, setTab] = useState<AdminUserDetailTabId>("overview");
@@ -255,5 +257,21 @@ export default function Page() {
         </Stack>
       </Container>
     </Section>
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function Page() {
+  return (
+    <Suspense>
+      <PageInner />
+    </Suspense>
   );
 }

@@ -10,13 +10,15 @@ import { normalizeError } from "@mohasinac/appkit/client";
  * checkout coupon panel reads on mount.
  */
 
-import { useState } from "react";
+import {useState, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSession, ROUTES, ACTIONS, Button, Div, Grid, Heading, Row, Span, Stack, Text } from "@mohasinac/appkit/client";
 import { useToast } from "@mohasinac/appkit/client";
 import type { ClaimedCouponDocument } from "@mohasinac/appkit/client";
 import { getUserCoupons, deleteUserCoupon } from "@/lib/api/user-client";
 import { API_ROUTES } from "@/constants";
+
+
 
 type Tab = "active" | "expired" | "used";
 
@@ -104,7 +106,7 @@ function CouponWalletCard({
   );
 }
 
-export default function ClaimedCouponsPage() {
+function ClaimedCouponsPageInner() {
   const { user, loading: sessionLoading } = useSession();
   const { showToast } = useToast();
   const [tab, setTab] = useState<Tab>("active");
@@ -205,5 +207,21 @@ export default function ClaimedCouponsPage() {
         </Grid>
       )}
     </Stack>
+  );
+}
+
+/*
+ * Page-level Suspense. `export const dynamic` is a SERVER route-segment
+ * config and has NO effect in a "use client" file, so it cannot make this
+ * page dynamic — the client tree below reaches useSearchParams(), which
+ * throws during prerender without a boundary (Root Cause #17). The dashboard
+ * layout wraps {children} in Suspense too, and empirically that is not enough
+ * for a client PAGE component.
+ */
+export default function ClaimedCouponsPage() {
+  return (
+    <Suspense>
+      <ClaimedCouponsPageInner />
+    </Suspense>
   );
 }
