@@ -146,7 +146,7 @@ are listed in the script, do not fail the build, and a NEW one does.
 
 | Audit | Staged rule | Count | Why it is staged |
 |---|---|---|---|
-| [`silent-degrade`](scripts/audit-silent-degrade.mjs) | whole audit report-only | **17** (+19 unclassifiable) | Was 279 when this row was written. Re-measured 2026-08-31 from a run of the rule: 17 findings, plus 19 `.catch(() => …)` sites whose receiver the audit cannot classify and therefore does **not** count — it reports what it can prove, never what it guesses |
+| ~~[`silent-degrade`](scripts/audit-silent-degrade.mjs)~~ | ~~report-only~~ | **0** | **Closed 2026-09-01.** Was 279 at introduction, 17 after its walk was fixed; all 17 converted to `safeRead` (or, for the one client-side write, the client beacon). Strict again — which is where it was designed to be, not newly tightened. The 19 unclassifiable `.catch(() => …)` sites are still not counted: it reports what it can prove, never what it guesses |
 | [`pii-coverage`](scripts/audit-pii-coverage.mjs) | `UNCONDITIONAL_MAPDOC_DECRYPT` | **14** repos (was 15) | their read methods are consumed by **147+ files** (measured across 10 of the 15); ciphertext-by-default means triaging every call site into plaintext / masked / neither |
 | [`listing-delegation`](scripts/audit-listing-delegation.mjs) | `UNDELEGATED_LIST_ROUTE` | **60** routes (was 61) | each conversion moves the query to an executor whose only failure mode is **silent semantic divergence**, verifiable solely in production |
 
