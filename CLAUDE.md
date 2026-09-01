@@ -156,7 +156,7 @@ their own rule rather than from a survey:
 | Audit | Staged rule | Count | Why it is staged |
 |---|---|---|---|
 | [`list-envelope`](scripts/audit-list-envelope.mjs) | `NEW_ITEM_ARRAY_KEY` + `ENVELOPE_PERPAGE` | 34 sites / 30 files | Converging the item-array keys is ~148 route files, and a half-finished rename is worse than none: the view reads the old key, the route emits the new one, and the list renders empty with a 200. The `perPage` half is the `PagedResult` repository CONTRACT, live in 14 repositories |
-| [`listing-search-capability`](scripts/audit-listing-search-capability.mjs) | R1 | 17 views | unchanged this run |
+| ~~[`listing-search-capability`](scripts/audit-listing-search-capability.mjs)~~ | ~~R3~~ | **0** | **Closed 2026-09-01.** All 17 triaged against their real routes; four placeholders were promises the corpus could not keep. `STAGED_RULES` is empty and every rule blocks |
 
 Also re-measured: [`form-sectionised`](scripts/audit-form-sectionised.mjs) is
 **0** as of 2026-09-01 — W8's C3 was finished, all 16 forms migrated, and its

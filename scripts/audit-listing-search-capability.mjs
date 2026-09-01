@@ -249,7 +249,20 @@ for (const root of SCAN_ROOTS) {
  * So R3 reports until the 16 are triaged against their real routes, then
  * moves into STAGED_RULES' complement. `MIGRATE=strict` fails on everything.
  */
-const STAGED_RULES = new Set(["UNDECLARED_SEARCH_FIELDS"]);
+/*
+ * 🛑 EMPTY. Every rule blocks.
+ *
+ * R3 shipped staged with 17 views, because a GUESSED field list is worse than
+ * none — it blesses the promise instead of checking it. All 17 were triaged
+ * against their real routes on 2026-09-01 and four placeholders turned out to
+ * be lies the corpus could not keep: prize-draws, deals and featured each
+ * offered "or seller" over a `searchTxt` carrying no store name, and the admin
+ * store list offered "slugs, or owner names" over a prefix match on the name
+ * alone.
+ *
+ * Adding a name back here would re-open exactly that hole.
+ */
+const STAGED_RULES = new Set([]);
 const FORCE_ALL = process.env.MIGRATE === "strict";
 
 const blocking = findings.filter((f) => FORCE_ALL || !STAGED_RULES.has(f.rule));

@@ -43,7 +43,12 @@ export default function Page() {
   const config: ListingViewConfig<ProductsResponse, AdminListingScaffoldRow> = {
     portal: "admin",
     title: "Deals (Promoted Products)",
-    searchPlaceholder: "Search deals by name or seller…",
+    search: {
+      placeholder: "Search deals by name, brand or tag…",
+      // 🛑 "or seller" was unkeepable — `buildProductSearchTxt` carries no
+      // store name or id. See AdminPrizeDrawsView for the same correction.
+      fields: ["title", "description", "brand", "categoryNames", "tags", "features"],
+    },
     emptyLabel: "No deals found",
     filterKeys: [],
     defaultSort: sortBy("createdAt", "DESC"),

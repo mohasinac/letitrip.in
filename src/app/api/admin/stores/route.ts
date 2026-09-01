@@ -41,8 +41,16 @@ export const GET = withProviders(createRouteHandler({
     }
     const extraFilters = getStringParam(searchParams, "filters");
     if (extraFilters) filtersArr.push(extraFilters);
+    /*
+     * `searchTxt`, not `storeName_=`.
+     *
+     * `stores` has been fully searchTxt-migrated — name, description and
+     * category, prefix-expanded — and `listStores` implements the query. This
+     * route pushed `storeName_=${q}` instead: a STARTS-WITH match on the name
+     * alone, so an admin looking for "Beyblade Arena" found nothing by typing
+     * "arena", and nothing by typing any word from its description.
+     */
     const q = getStringParam(searchParams, "q");
-    if (q) filtersArr.push(`storeName_=${q}`);
 
     const model: SieveModel = {
       filters: filtersArr.join(",") || undefined,
@@ -51,7 +59,7 @@ export const GET = withProviders(createRouteHandler({
       pageSize,
     };
 
-    const result = await storeRepository.listAllStores(model);
+    const result = await storeRepository.listAllStores(model, { search: q || undefined });
 
     const stores = result.items.map((store: StoreDocument) => ({
       id: store.id,

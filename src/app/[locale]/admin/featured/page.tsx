@@ -43,7 +43,11 @@ export default function Page() {
   const config: ListingViewConfig<ProductsResponse, AdminListingScaffoldRow> = {
     portal: "admin",
     title: "Featured Products",
-    searchPlaceholder: "Search featured products by name or seller…",
+    search: {
+      placeholder: "Search featured by name, brand or tag…",
+      // 🛑 "or seller" was unkeepable — see AdminPrizeDrawsView.
+      fields: ["title", "description", "brand", "categoryNames", "tags", "features"],
+    },
     emptyLabel: "No featured products found",
     filterKeys: [],
     defaultSort: sortBy("createdAt", "DESC"),
