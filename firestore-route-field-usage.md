@@ -55,7 +55,7 @@ Scanned 48 views/call-sites (DataListingView configs + repository call sites acr
 | `appkit/src/features/seller/components/SellerStoreCategoriesView.tsx` | storeCategories | — | — |
 | `appkit/src/_internal/server/features/checkout/actions.ts:1699` | users | role== | — |
 | `appkit/src/_internal/server/features/lottery/data.ts:31` | events | — | -startsAt |
-| `appkit/src/_internal/server/features/stores/data.ts:34` | stores | status== | -updatedAt |
+| `appkit/src/_internal/server/features/stores/data.ts:35` | stores | status== | -updatedAt |
 | `appkit/src/_internal/server/jobs/core/adminAnalytics.ts:41` | orders | createdAt>= | -createdAt |
 | `appkit/src/_internal/server/jobs/core/adminAnalytics.ts:69` | products | status== | — |
 | `appkit/src/_internal/server/jobs/core/onScamReportCreate.ts:50` | users | role== | — |

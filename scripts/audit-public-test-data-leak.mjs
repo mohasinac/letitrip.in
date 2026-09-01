@@ -117,9 +117,20 @@ function walk(dir, out = []) {
   return out;
 }
 
-/** Strip comments so a doc-comment mentioning the helper cannot count as using it. */
+/**
+ * Strip comments AND import statements.
+ *
+ * 🛑 The import line matters. `EventRafflesSection` imported
+ * `hidePublicTestData` and never called it — a half-applied edit — and this
+ * audit reported the file clean because the identifier appeared SOMEWHERE in
+ * the source. An unused import is precisely the state a forgotten filter leaves
+ * behind, so it is the one thing that must not count as evidence.
+ */
 function stripComments(src) {
-  return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+  return src
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/^\s*\/\/.*$/gm, "")
+    .replace(/^\s*import\s[\s\S]*?;\s*$/gm, "");
 }
 
 const findings = [];
