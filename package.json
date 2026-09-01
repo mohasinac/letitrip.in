@@ -45,7 +45,7 @@
   "dependencies": {
     "@google-cloud/logging": "^12.0.1",
     "@google/generative-ai": "^0.24.1",
-    "@mohasinac/appkit": "^4.31.1",
+    "@mohasinac/appkit": "^4.32.0",
     "@mohasinac/sievejs": "^1.0.0",
     "@tanstack/react-query": "^5.102.1",
     "@upstash/ratelimit": "^2.0.8",
