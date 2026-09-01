@@ -54,9 +54,14 @@ export const PATCH = withProviders(
         );
       }
 
+      // `config` is MERGED, not replaced — see HomepageSectionsRepository.update.
+      // A key omitted here is preserved; clearing one needs an explicit value.
+      // Do not "optimise" this into a direct Firestore write: that is what
+      // silently erased every config field the admin builder has no input for
+      // (Root Cause #76).
       const input: HomepageSectionUpdateInput = {
         ...validation.data,
-        config: (validation.data.config as any) || undefined,
+        config: (validation.data.config as HomepageSectionUpdateInput["config"]) || undefined,
       };
 
       try {

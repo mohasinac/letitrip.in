@@ -17,6 +17,13 @@
 
 | Date | Task | What was deferred / skipped | Status | Fix target |
 |------|------|-----------------------------|--------|------------|
+| 2026-09-01 | S-homepage-rework | **🛑 The working tree contains an unresolved `git stash pop` — 22 files carry literal `<<<<<<< Updated upstream` / `>>>>>>> Stashed changes` markers and the index has 26 unmerged paths.** Not from this session: the conflicted files have mtime **16:51:22**, before this session's first edit at 17:00:34, and `stash@{0}` is named `claude-build-fix-churn-259-files` (259 files — this session touched ~20). Both a `git stash push` and a `git stash pop` attempted here **failed with `error: could not write index … needs merge`**, which is an error you can only get when unmerged entries *already exist* — so neither command changed anything, and `stash@{0}` is intact and recoverable. None of the 22 files overlap this session's work. **Consequence:** `npm run check` cannot exit 0. **Six audits fail, every one of them on a file whose mtime is ≤ 16:54:20 — i.e. before this session's first edit at 17:00:34 — and four of those files contain literal conflict markers:** `client-entry-in-server` + `client-server-only-leak` (both on `store/slug/page.tsx`, whose "Updated upstream" half imports `ROUTES` from the bare entry), `code-quality/DEEP_NESTING` (`user/orders/[id]/payment/page.tsx`), `server-client-function-props` ×7 (`wishlist/page.tsx`), `silent-degrade` ×3 (`navigation/page.tsx`, `AuthClosePageClient.tsx`, `WishlistPageClient.tsx`), `hardcoded-api-routes` (`appkit/.../admin-actions.ts`, 16:40) and `unknown-leakage` (`AuctionDetailPageView.tsx`, 16:54). **`appkit/src` itself has ZERO conflict markers.** Left untouched — resolving a half-applied stash is destructive and belongs to whoever owns that work. | ⏳ Open — belongs to the concurrent session | Resolve the 22 conflicted files (or `git checkout --theirs/--ours` per file), then re-run `npm run check`. Do NOT drop `stash@{0}` until the 259 files are accounted for |
+| 2026-09-01 | S-homepage-rework | **`audit-functions-bundle-freshness` fails and was deliberately not fixed.** `functions/lib/index.js` (16:53) is older than the newest file in `appkit/dist` (17:03). The gap opened *during* this session because a `npm run watch:appkit` is running in another terminal and rebuilt `dist` — which now contains this session's appkit changes **and** the concurrent session's in-flight work. The audit's fix is `npm --prefix functions run build`, a local build rather than a deploy, but running it would snapshot another session's uncommitted appkit source into a build artifact (the hazard `feedback_concurrent_session_git_hygiene` describes: a build reflects full disk state regardless of what is staged), and the watcher would re-open the gap on its next rebuild anyway. Nothing this session changed is reachable from the Functions bundle — the edits are the homepage renderer, its components/schema/seed, the admin sections builder, `MediaImage` and `BlogFeaturedCard`; the bundle runs `listingProcessor`, jobs and scheduled functions. | ⏳ Open | After the stash conflict is resolved and the watcher is stopped: `npm --prefix functions run build`, then `node -e "require('./functions/lib/index.js')"` |
+| 2026-09-01 | S-homepage-rework | **Nothing was rendered.** Rule #10 — no dev server, no build, no deploy. The rework is verified by appkit `tsc`, 26 audits, a 149/149 config-coverage sweep, and a `level={1}` count — none of which can see a pixel. The two highest-value visual checks: (1) every hero slide must now show a headline + CTA over its background (the whole point of the slide-overlay fix — a slide showing only a photo means the seed did not take); (2) `document.querySelectorAll('h1').length` must be `1` on `/` and stay 1 after clicking through all slides. | ⏳ Open | Next session with a browser, or the tester checklist cases added this session |
+| 2026-09-01 | S-homepage-rework | **The seed has not been run, and two documents must be deleted BY HAND after it is.** `npx appkit-seed load` upserts and never deletes, so dropping `section-brand-takara-tomy` and `section-brand-beyblade` from the seed array does **not** remove them from Firestore — both will keep rendering as Beyblade-specific strips until someone deletes them at `/admin/sections`. Deliberately not run: seeding writes to live Firestore and is its own decision. | ⏳ Open | `npx appkit-seed load --collections homepageSections,carouselSlides,carousels`, then delete the two documents in admin |
+| 2026-09-01 | S-homepage-rework | **`buildFAQConfig` is drifted from `FAQSectionConfig` and was not reconciled.** It emits `expandedByDefault`, which is not on the schema and which no renderer reads, and omits `showCategoryTabs` / `visibleTabs` / `allowMultipleOpen` / `defaultOpenCount`, which are. Under the old replace-on-save semantics an admin saving the FAQ section silently deleted all four; **the repository merge added this session neutralises that destructive half**, so the seeded values now survive. Reconciling the builder's own field set is a UI change (four new controls) rather than a one-line fix, and was out of scope. | ⏳ Open | Add the four missing controls to `renderFaqBuilder`, map or drop `expandedByDefault` |
+| 2026-09-01 | S-homepage-rework | **`ContactForm` keeps a Rule #9 §4 deviation.** `appkit/src/features/contact/components/ContactForm.tsx` uses a local `useState` error map instead of `setFieldError`. Reachable only from `/contact` via a footer link, not rendered on the homepage — fixing it drive-by would widen the diff into a feature this session does not touch. | ⏳ Open | Same treatment as the two newsletter forms: hoist `useFormShellState`, pass `shellCtx`, replace the local map |
+| 2026-09-01 | S-homepage-rework | **`searchBoxJsonLd` in `src/app/layout.tsx` is inert and was left in place.** Google retired the sitelinks search box in **October 2024**; the markup is still valid and produces nothing. A safe one-line delete, but it shares a block with `organizationJsonLd` (which IS still recommended) and removing it was outside the ask. | ⏳ Open | Delete lines ~175–181 + the import, after grepping for other `searchBoxJsonLd` consumers |
 | 2026-08-26 | S-prod-console-errors | **RTDB `presence` + `analytics` client writes are architecturally impossible and were left in place, by explicit decision.** `src/lib/analytics/usePresence.ts` runs on **every route for every visitor** (called unconditionally from `LayoutShellClient.tsx:229`) and fires three browser-side RTDB operations: `set(presence/{clientId})`, `onDisconnect(...).remove()`, and `runTransaction(analytics/pageviews/{date}/{path})` (that last is why the console shows the odd path `…/2026-08-26/|` — `/` is illegal in an RTDB key so it is replaced with `|`). `appkit/firebase/base/database.rules.json` is a **backend-only-write** architecture: root is `.read:false/.write:false`, `presence/$uid` is explicitly `.write:false` (and its `.validate` demands an `online` field the client never sends), and **`analytics` has no rule at all**. The client also uses the default *unauthenticated* Firebase app — `usePresence` never calls `signInWithCustomToken` — so `auth` is `null` even for signed-in users. **These writes have never once succeeded.** The read side is equally broken: `AdminLiveOverviewCard.tsx:28-64` subscribes to `presence` (the collection root, whose `.read` rule lives one level down at `$uid`) and to `analytics/pageviews/{date}`, so the admin Live Overview card renders `—` permanently. Two `permission_denied` warnings per page load will therefore **still appear in the console** after this session — expected, not a regression. | ⏳ Open — user chose "investigate further before deciding" | Own session. Three viable directions: (a) delete the dead client writes and drop/repoint the Live Overview card; (b) move them behind an Admin-SDK API route, preserving the backend-only-write rule but costing ~1 Vercel invocation per page view (a real Rule #6 consideration); (c) authenticate the client via the existing `/api/realtime/token` custom-token flow and add narrowly-scoped `presence`/`analytics` rules |
 | 2026-08-26 | S-prod-console-errors | **`npm run check` does not exit 0, for reasons owned by a concurrent session.** Both the root repo and the `appkit` submodule were already dirty at session start with in-flight lottery/events/reviews/Tabs work. Remaining failures, none of them from this session's diff: 2 tsc errors — `src/actions/review.actions.ts:218` (file is **unmodified**; appkit's `voteReviewHelpfulDomain` changed arity underneath it) and `src/app/api/admin/events/route.ts:223` (`EventType` unknown) — plus `audit-feature-flags` and `audit-direct-fetch-ui`, both pointing at **untracked** lottery files (`api/admin/events/[id]/lottery-config/route.ts`, `admin/lotteries/[id]/edit/LotteryConfigClient.tsx`). Left untouched per concurrent-session git hygiene. Everything from this session is clean: appkit `check:types` passes, lint is 0 errors, and every audit passes except those two. | ⏳ Open — belongs to the lottery/events session | That session finishes its work; re-run `npm run check` before any commit that spans both |
 | 2026-08-26 | S-prod-console-errors | **No real `next build` and no visual pass.** Rule #10 — no dev server or deploy was run. The #441 fix is verified by the RSC digest probe against *production* (which still serves the OLD build), by the new strict-zero audit, by `tsc`, and by a runtime unit-check of `resolveMediaUrl`/`resolveVideoUrl`. It is **not** confirmed against a locally-built bundle, and CLAUDE.md's own Tier-QA note is explicit that `npm run check` cannot catch Turbopack-level boundary regressions — three gates exist (`check` → `build` → post-deploy smoke) and only the first has run. | ⏳ Open | Next session with a browser: `npm run dev`, then re-run the RSC digest probe against `localhost` expecting **0** `:E{"digest":` rows on `/` and `/sell` |
@@ -49,6 +56,109 @@
 ---
 
 ## SESSION LOG (newest first)
+
+### 2026-09-01 — S-homepage-rework: the homepage was configurable in name only
+
+**The ask** was to research best-practice homepages, reseed with proper sections
+and carousel, check the forms work, and make the sections SEO-friendly and
+generic. Reseeding alone would have changed almost nothing, because three
+defects sat underneath the seed data.
+
+**1. `lib/section-renderer.tsx` dropped most section config.** The ENTIRE
+`CarouselSectionConfig` was ignored — the renderer emitted
+`<HeroCarousel initialSlides={slides} />` and nothing else, so height, autoplay
+delay, dots, arrows and pause-on-hover were six inert switches in the admin UI.
+The banner read only `content.title`, discarding its buttons, background image,
+height, subtitle and description, with both CTA labels and hrefs hardcoded.
+`trust-indicators` and `features` ignored their configured lists entirely and
+always rendered a hardcoded fallback. Eight section types accepted a `subtitle`
+that was never passed on — several to components that already had the prop.
+`FeaturedProductsSection` declared `maxItems` and never destructured it, and the
+admin builder wrote `maxProducts` while the renderer read `maxItems`. None of it
+errored: an admin edited a field, saved, got a 200, reloaded, and the page looked
+identical — which reads as "it was already that" rather than as a bug.
+
+**2. Every hero slide rendered as a bare background image.** `HeroCarousel`
+gates slide copy on `slide.overlay` and the card grid on `slide.cards.length`,
+and not one seeded slide had either — all five active slides were photos with no
+headline and no CTA. This also made the multi-`<h1>` problem *latent*: the
+overlay branch that emits `level={1}` per slide had never once fired.
+
+**3. Admin saves silently erased config.** `PATCH /api/admin/sections/[id]`
+types `config` as `z.object({}).passthrough()` and the repository wrote the whole
+`config` key — a Firestore `update()` REPLACES a map field. Every key the admin
+builder does not emit was deleted on first save, HTTP 200, no error. Root Cause
+#76, live, already destroying `products.rows`/`filterByBrand`,
+`banner.backgroundImage`, `categories.cta`/`filters`, and all four FAQ display
+fields.
+
+**Fixed, in order.** The merge went into `HomepageSectionsRepository.update()`
+rather than the route, because BOTH write paths (the route and the
+`updateHomepageSection` server action) funnel through it — CLAUDE.md's "append
+inside the repository's write primitives, not at the call sites". Semantics
+changed: an omitted key is now PRESERVED; clearing one needs an explicit value.
+Then a three-tier de-hardcoding — `constants/section-copy.ts` for generic
+defaults, a new `MarketplaceHomepageViewProps.brand` prop fed from the same
+`appkit.config.js` block the root layout already uses, and optional
+`*SectionConfig` fields for per-section editorial copy. `"India's #1
+Marketplace"`, `"LIR"`, `"Why Buyers Trust LetItRip"`, ten `"View all X →"`
+labels and an announcement-bar fallback advertising a **Pokémon TCG discount
+that does not exist** all left appkit.
+
+**Deleted rather than left inert** (Rule #8): `carouselId` (nothing reads it —
+SSR uses `getActiveSlides()`, the client uses `useHeroCarousel`, neither takes an
+id), `reviews.source`/`placeId` (that section only ever renders platform
+reviews, so picking "Google" did nothing), `banner.clickable`/`clickLink`
+(nested interactives), `banner.backgroundColor`/`gradient` (arbitrary fill under
+fixed white ink is Root Cause #67), `newsletter.placeholder`/`buttonText` (the
+form is the consumer's slot), `featured-bundles` `storeId`/`categorySlug`/
+`sortBy`, and **five** section `background` fields no renderer has ever read.
+Each removal was carried through the builder types, defaults, build/parse and UI
+inputs — the builder is typed `JsonObjectWithUndefined`, so tsc could not see
+any of this.
+
+**Also fixed:** literal types (`maxAuctions: 18`, `itemsPerView: 3`) that made
+those fields unconfigurable by construction; the duplicate `FAQ_CATEGORY_LABELS`
+that existed byte-identically in two files.
+
+**SEO.** `FAQPage` JSON-LD now emitted from the page shim (not from inside
+appkit — that is the encapsulation break `audit-ssr-in-appkit` Rule 3 prevents),
+built from the same `getHomepageFAQs()` the section renders so the markup matches
+what is visible. Deliberately NO `ItemList`/Carousel markup: Google's own doc
+restricts it to summary and category pages. Single `<h1>` restored. Carousel
+slides 2..N drop to `fetchpriority="low"` via a new `MediaImage.fetchPriority`,
+so five full-bleed banners stop racing the one the visitor can see. The homepage
+metadata stopped carrying a third copy of the site description — the existing one
+had drifted to name Pokémon TCG and Hot Wheels, neither of which the catalogue
+stocks.
+
+**Forms.** Homepage newsletter: pressing Enter did nothing — the Button carried
+both `type="submit"` and an `onClick` while the form `preventDefault`ed the
+native submit, so Enter fired `submit` (swallowed) and never the click handler.
+Footer newsletter: declared `newsletterSubscribeSchema` and never ran it, so
+`not-an-email` round-tripped to the server. Both now share one
+`useFormShellState` via `<Form shellCtx>` and validate through `form.validate()`.
+Subscribe itself was already correct end-to-end into `newsletterSubscribers`.
+
+**Seed.** 24 sections → 22 (21 enabled + 1 deliberately disabled), reordered to
+the researched sequence, copy made catalogue-neutral. Two Beyblade brand strips
+dropped — they filtered the shared 12-item featured set client-side and usually
+rendered empty. Five carousel slides gained real overlay copy and CTAs; one
+carries a three-card grid (never both — the two containers are sibling
+`POSITION_FILL` elements and overlap). Fixed the `slide-psa-graded` reference in
+`carousels-seed-data.ts` that has never existed.
+
+**New audit: `homepage-config-coverage`** (strict-zero, registered). Asserts
+every `*SectionConfig` field reaches the renderer; a genuinely unrenderable one
+is triaged with a `// NO-RENDERER: <reason>` marker on its declaration line.
+Verified by injecting a dead field and watching it fail — per Root Cause #87,
+never trust an audit you have not seen fail. It found 25 fields beyond the
+original sweep, including the `maxProducts`/`maxItems` mismatch.
+
+Gate: appkit `tsc` clean, 25 relevant audits + the new one pass, config coverage
+149/149, exactly one `level={1}`. See DEFERRED for what did not run and why.
+
+---
 
 ### 2026-08-27 — S-four-silent-defects: an auth gate that couldn't wait, a Buy Now that swallowed everything, and two design-system holes
 

@@ -438,6 +438,8 @@ export const AUDITS = [
   // anti-pattern rather than the fix (Root Cause #22). MIGRATE=strict fails.
   { name: "silent-degrade",                 script: "scripts/audit-silent-degrade.mjs" },
   { name: "public-test-data-leak", script: "scripts/audit-public-test-data-leak.mjs" },
+  { name: "projection-shadow", script: "scripts/audit-projection-shadow.mjs" },
+  { name: "delegation-drops-options", script: "scripts/audit-delegation-drops-options.mjs" },
   // PII invariants provable from source: no empty *_PII_FIELDS, no PII-shaped
   // schema field left undeclared, and a ratchet on the 15 repositories whose
   // mapDoc decrypts unconditionally. That last one is staged, not lax: their
@@ -476,6 +478,14 @@ export const AUDITS = [
   // 2026 — the sitemap advertised 182 URLs on a host that 307-redirected and
   // the site fell out of Google, with nothing erroring. Strict-zero.
   { name: "seo-canonical-host",             script: "scripts/audit-seo-canonical-host.mjs" },
+  // A homepage `*SectionConfig` field that reaches no component prop is an
+  // admin control that changes nothing. The entire CarouselSectionConfig, the
+  // banner's buttons and background, the trust indicators, the features list
+  // and eight `subtitle`s were all in that state — configurable, saved, and
+  // silently dropped by the renderer. Strict-zero; triage a genuinely
+  // unrenderable field with a `// NO-RENDERER: <reason>` marker on its
+  // declaration line rather than leaving it to look wired.
+  { name: "homepage-config-coverage",       script: "scripts/audit-homepage-config-coverage.mjs" },
   // A sitemap section returning zero URLs is indistinguishable from a site that
   // genuinely has none of that entity. Catches a discriminator literal absent
   // from its own TS union (`categoryType == "listing"` hid ~47 category pages),
