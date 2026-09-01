@@ -67,6 +67,21 @@ const PUBLIC_DIRS = [
   "appkit/src/_internal/server/features/blog",
   "appkit/src/_internal/server/features/events",
   "appkit/src/_internal/server/features/stores",
+  /*
+   * 🛑 `actions/` too, and that was not obvious.
+   *
+   * The first version of this list held only `components/` and
+   * `_internal/server/features/`. It passed clean while the HOMEPAGE was still
+   * leaking 39 sandbox rows, because the homepage does not call a repository —
+   * it calls `listTopLevelCategories`, `listBrandCategories`, `listPublicEvents`
+   * and `getFeaturedBlogPosts`, which live here. A rule that cannot see a path
+   * does not cover it, however green it reports.
+   */
+  "appkit/src/features/categories/actions",
+  "appkit/src/features/events/actions",
+  "appkit/src/features/blog/actions",
+  "appkit/src/features/products/actions",
+  "appkit/src/features/stores/actions",
 ];
 
 /** A repository call that returns MANY rows — the shape that can leak. */
