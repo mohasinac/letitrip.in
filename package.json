@@ -39,6 +39,7 @@
     "tester:purge-sandbox": "node appkit/scripts/purge-tester-sandbox.mjs",
     "tester:export-feedback": "node appkit/scripts/export-tester-feedback.mjs",
     "categories:backfill-metrics": "node appkit/scripts/backfill-category-metrics.mjs",
+    "products:backfill-store-names": "node appkit/scripts/backfill-product-store-names.mjs",
     "storage:cors": "gsutil cors set appkit/firebase/base/storage-cors.json gs://$FIREBASE_STORAGE_BUCKET",
     "stress-test": "node scripts/stress-test.mjs"
   },

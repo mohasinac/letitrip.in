@@ -15,6 +15,7 @@ import { productRepository } from "@mohasinac/appkit";
 import {
   listPublicProducts,
   parsePublicProductParams,
+  resolveStoreFields,
   ANY_STATUS,
 } from "@mohasinac/appkit/server";
 import { serverLogger } from "@mohasinac/appkit";
@@ -121,10 +122,20 @@ export const POST = withProviders(createApiHandler({
       };
     }
 
+    // Resolve the real store instead of stamping the literal "Admin", which is
+    // not a seller and renders as one on every listing card. `storeSlug` is
+    // denormalized alongside so a card can link without a second read — the
+    // public browse query never touches storeRepository, so a card can only
+    // show a seller the document already names.
+    const storeFields = body.storeId
+      ? await resolveStoreFields(body.storeId as string, "/api/admin/products")
+      : null;
+
     const product = await productRepository.create({
       ...data,
       storeId: body.storeId,
-      storeName: body.storeName || "Admin",
+      storeName: body.storeName || storeFields?.storeName,
+      storeSlug: storeFields?.storeSlug,
     } as any);
 
     serverLogger.info("Admin created product", { productId: product.id });

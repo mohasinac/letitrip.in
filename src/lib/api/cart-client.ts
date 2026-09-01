@@ -17,6 +17,21 @@ export function deleteCartItem(itemId: string): Promise<Response> {
   return fetch(API_ENDPOINTS.CART.BY_ITEM_ID(itemId), { method: "DELETE", credentials: CREDS });
 }
 
+/**
+ * Empty the cart in one request.
+ *
+ * The route has existed since the cart was built and had no caller: "Remove all"
+ * looped `deleteCartItem` per row instead. That loop could not express what the
+ * server already knows — a locked line survives, an unknown id 404s — so it
+ * reported success unconditionally over a cart that had not been cleared.
+ *
+ * Returns the raw Response so the caller can read the server's own failure code
+ * rather than guessing at one.
+ */
+export function clearCart(): Promise<Response> {
+  return fetch(API_ENDPOINTS.CART.GET, { method: "DELETE", credentials: CREDS });
+}
+
 export function updateCartItemQty(itemId: string, quantity: number): Promise<Response> {
   return fetch(API_ENDPOINTS.CART.BY_ITEM_ID(itemId), {
     method: "PATCH",

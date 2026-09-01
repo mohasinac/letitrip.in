@@ -1,15 +1,28 @@
 "use client";
 
 import { API_ROUTES } from "@/constants/api";
-import { deleteCartItem, updateCartItemQty, updateCartGroupMembers, validateCart, persistCartSelection, persistCartAddons, addToWishlist } from "@/lib/api/cart-client";
+import { deleteCartItem, clearCart, updateCartItemQty, updateCartGroupMembers, validateCart, persistCartSelection, persistCartAddons, addToWishlist } from "@/lib/api/cart-client";
 import { usePricingPreview } from "@/lib/hooks/usePricingPreview";
 
 const CLS_CHECKOUT_BTN = "w-full";
+/** Shared by all three removal paths: guest, op-queue-only, and server-backed. */
+const MSG_ITEM_REMOVED = "Item removed from cart.";
 
-async function addToWishlistAndRemoveFromCart(item: CartItem, failedIds: string[]) {
+/**
+ * `item.id` is `itemId ?? productId`, so it is not safe as either. A row merged
+ * in from the pending-op queue has no `itemId` at all — DELETE would 404 against
+ * a route that looks up by itemId. Either way the queued op has to go, or
+ * useSyncManager re-POSTs the product within 30s and it reappears in the cart
+ * the buyer just emptied.
+ */
+async function addToWishlistAndRemoveFromCart(
+  item: CartItem & { itemId?: string },
+  failedIds: string[],
+) {
   const res = await addToWishlist(item.productId);
   if (!res.ok) { failedIds.push(item.productId); return; }
-  await deleteCartItem(item.id);
+  if (item.itemId) await deleteCartItem(item.itemId);
+  removeCartOpsFor([item.productId]);
 }
 
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
@@ -17,7 +30,7 @@ import { ChevronDown, ChevronUp, Clock } from "lucide-react";
 import type { JsonValue, JsonArray } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
-import { Alert, Button, CartItemRow, CartGroupLineRow, CartSummary, CartView, Checkbox, Div, Heading, Input, Text, useAuth, useCartQuery, useGuestCart, useGuestCartMerge, useGuestWishlist, useToast, ROUTES, useAuthGate, ACTION_ID, ACTIONS, LoginRequiredModal, useBottomActions, pluginFor, detectListingTypeFromSlug, getCartOps, CART_OPS_CHANGE_EVENT } from "@mohasinac/appkit/client";
+import { Alert, Button, CartItemRow, CartGroupLineRow, CartSummary, CartView, Checkbox, Div, Heading, Input, Text, useAuth, useCartQuery, useGuestCart, useGuestCartMerge, useGuestWishlist, useToast, ROUTES, useAuthGate, ACTION_ID, ACTIONS, LoginRequiredModal, useBottomActions, pluginFor, detectListingTypeFromSlug, getCartOps, clearCartOps, removeCartOpsFor, CART_OPS_CHANGE_EVENT } from "@mohasinac/appkit/client";
 import type { CartItem, CartOp, ListingType, CartLineKind, CartGroupSource, CartLineMember } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 
@@ -437,7 +450,13 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
         if (isAuthenticated) {
           const staleSet = new Set(stale);
           const staleItems = cartItems.filter((i) => staleSet.has(i.productId));
-          await Promise.allSettled(staleItems.map((item) => deleteCartItem(item.id)));
+          await Promise.allSettled(
+            staleItems.filter((i) => i.itemId).map((item) => deleteCartItem(item.itemId!)),
+          );
+          // Covers both halves: a row that was only ever a queued op (no itemId,
+          // nothing to DELETE), and a row deleted server-side whose op would
+          // otherwise be replayed straight back onto the cart.
+          removeCartOpsFor(staleItems.map((i) => i.productId));
           refetch?.();
         } else {
           for (const productId of stale) guest.remove(productId);
@@ -573,6 +592,84 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
     [inStockItems],
   );
 
+  /**
+   * The unavailable half needs the SAME lane gate.
+   *
+   * `oosItems` is split purely on `moveableIds`, with no reference to the lane —
+   * so a won auction or accepted offer that the validate sweep marked
+   * unavailable used to land here and get a DELETE issued against it, which the
+   * server refuses with ERR_CART_ITEM_LOCKED. This is the half of Root Cause #66
+   * that was never migrated when `removableItems` was.
+   */
+  const removableOosItems = useMemo(
+    () => oosItems.filter((i) => laneOf(i) === CART_LANE.STANDARD),
+    [oosItems],
+  );
+
+  /**
+   * Locked lines survive a clear by design — settlement put them there and the
+   * buyer owes payment on them. Counted so the toast can SAY so; a row that
+   * silently outlives "Remove all" reads as a clear that didn't work, which is
+   * the report this whole change came from.
+   */
+  const lockedRemainingCount = useMemo(
+    () => effectiveItems.filter((i) => i.locked).length,
+    [effectiveItems],
+  );
+
+  /**
+   * Everything the removal handlers have to unwind besides the rows themselves.
+   *
+   * `handleRemoveAll` used to reset `selectedIds` alone, leaving the optimistic
+   * maps keyed on ids that no longer exist and — worse — leaving live `undoTimers`
+   * that fire a DELETE five seconds after the cart is already empty.
+   */
+  const resetTransientCartState = useCallback(() => {
+    for (const timer of undoTimers.current.values()) clearTimeout(timer);
+    undoTimers.current.clear();
+    setSelectedIds(null);
+    setPendingRemoveIds(new Set());
+    setOptimisticQty(new Map());
+    setOptimisticMemberQty(new Map());
+    setMoveableIds(new Set());
+  }, []);
+
+  /**
+   * Delete a set of rows server-side and report what actually happened.
+   *
+   * Two things the old `Promise.allSettled` + unconditional success toast could
+   * not do. (1) A row merged in from the pending-op queue has no server
+   * `itemId` — it exists only in localStorage, so `deleteCartItem` would send a
+   * productId to a route that looks up by itemId and 404. Dropping its op IS
+   * the removal. (2) Draining the queue is not bookkeeping: an op left behind is
+   * re-layered onto the next render AND re-POSTed by `useSyncManager` within
+   * 30s, which is why cleared items used to come back permanently.
+   */
+  const removeRowsFromServer = useCallback(
+    async (rows: CartItemWithListingType[]): Promise<{ removed: number; failed: number }> => {
+      const onServer = rows.filter((r) => r.itemId);
+      const opOnly = rows.filter((r) => !r.itemId);
+
+      const results = await Promise.allSettled(
+        onServer.map(async (item) => {
+          const res = await deleteCartItem(item.itemId!);
+          if (!res.ok) throw new Error(String(res.status));
+          return item.productId;
+        }),
+      );
+
+      const deletedProductIds = results
+        .filter((r): r is PromiseFulfilledResult<string> => r.status === "fulfilled")
+        .map((r) => r.value);
+      const failed = results.length - deletedProductIds.length;
+
+      removeCartOpsFor([...deletedProductIds, ...opOnly.map((r) => r.productId)]);
+
+      return { removed: deletedProductIds.length + opOnly.length, failed };
+    },
+    [],
+  );
+
   const handleRemoveSelectedItems = useCallback(async () => {
     if (!effectiveSelected || effectiveSelected.size === 0 || isRemoving) return;
     const toRemove = removableItems.filter((i) => effectiveSelected.has(i.itemId ?? i.id));
@@ -580,11 +677,20 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
     setIsRemoving(true);
     try {
       if (isAuthenticated) {
-        await Promise.allSettled(toRemove.map((item) => deleteCartItem(item.itemId ?? item.id)));
+        const { removed, failed } = await removeRowsFromServer(toRemove);
         refetch?.();
-      } else {
-        toRemove.forEach((item) => guest.remove(item.productId));
+        setSelectedIds(null);
+        if (failed > 0) {
+          showToast(
+            `${removed} removed, ${failed} could not be removed. Please try again.`,
+            "warning",
+          );
+        } else {
+          showToast(`${removed} item${removed !== 1 ? "s" : ""} removed.`, "info");
+        }
+        return;
       }
+      toRemove.forEach((item) => guest.remove(item.productId));
       setSelectedIds(null);
       showToast(`${toRemove.length} item${toRemove.length !== 1 ? "s" : ""} removed.`, "info");
     } catch (_err) {
@@ -593,29 +699,73 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
     } finally {
       setIsRemoving(false);
     }
-  }, [effectiveSelected, removableItems, isAuthenticated, isRemoving, guest, showToast, refetch]);
+  }, [
+    effectiveSelected,
+    removableItems,
+    isAuthenticated,
+    isRemoving,
+    guest,
+    showToast,
+    refetch,
+    removeRowsFromServer,
+  ]);
 
+  /**
+   * Empty the cart in ONE request.
+   *
+   * This used to be a client-side loop of per-item DELETEs — which is not a
+   * clear: it could not see the locked lines the server keeps, it sent
+   * productIds for queue-sourced rows, it never drained the queue those rows
+   * came from, and `Promise.allSettled` plus a hardcoded "Cart cleared (N items)"
+   * hid every one of those failures. `DELETE /api/cart` has existed the whole
+   * time with no caller.
+   */
   const handleRemoveAll = useCallback(async () => {
-    const toRemove = [...removableItems, ...oosItems];
+    const toRemove = [...removableItems, ...removableOosItems];
     if (toRemove.length === 0 || isRemoving) return;
     const count = toRemove.length;
     setIsRemoving(true);
     try {
       if (isAuthenticated) {
-        await Promise.allSettled(toRemove.map((item) => deleteCartItem(item.itemId ?? item.id)));
+        const res = await clearCart();
+        if (!res.ok) {
+          showToast("Could not clear cart. Please try again.", "error");
+          return;
+        }
+        // The server just emptied everything unlocked, so every queued add is
+        // now either applied-and-deleted or was never on the server at all.
+        // Draining fires CART_OPS_CHANGE_EVENT, which is also what corrects the
+        // header badge (it renders itemCount + the queue's pending delta).
+        clearCartOps();
         refetch?.();
       } else {
-        toRemove.forEach((item) => guest.remove(item.productId));
+        guest.clear();
+        clearCartOps();
       }
-      setSelectedIds(null);
-      showToast(`Cart cleared (${count} item${count !== 1 ? "s" : ""}).`, "info");
+      resetTransientCartState();
+      showToast(
+        lockedRemainingCount > 0
+          ? `Cart cleared (${count} item${count !== 1 ? "s" : ""}). ${lockedRemainingCount} item${lockedRemainingCount !== 1 ? "s" : ""} awaiting payment kept.`
+          : `Cart cleared (${count} item${count !== 1 ? "s" : ""}).`,
+        "info",
+      );
     } catch (_err) {
       void normalizeError(_err);
       showToast("Could not clear cart. Please try again.", "error");
     } finally {
       setIsRemoving(false);
     }
-  }, [removableItems, oosItems, isAuthenticated, isRemoving, guest, showToast, refetch]);
+  }, [
+    removableItems,
+    removableOosItems,
+    isAuthenticated,
+    isRemoving,
+    guest,
+    showToast,
+    refetch,
+    resetTransientCartState,
+    lockedRemainingCount,
+  ]);
 
   // ---------------------------------------------------------------------------
   // Move-to-wishlist — per item and called from auto-move on validation
@@ -731,21 +881,40 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
 
   const handleRemove = useCallback(
     (id: string) => {
+      // `onRemove` hands back `item.id`, which is `itemId ?? productId` — so it
+      // is NOT safe to use as either one. Resolve the row to get both.
+      const row = cartItems.find((i) => i.id === id);
+      const productId = row?.productId ?? id;
+
       if (!isAuthenticated) {
-        guest.remove(id);
-        showToast("Item removed from cart.", "info");
+        guest.remove(productId);
+        showToast(MSG_ITEM_REMOVED, "info");
         return;
       }
+
+      // A row with no server `itemId` came from the pending-op queue and exists
+      // only in localStorage. DELETE would send a productId to a route that
+      // looks up by itemId and 404; dropping the op IS the removal.
+      if (!row?.itemId) {
+        removeCartOpsFor([productId]);
+        showToast(MSG_ITEM_REMOVED, "info");
+        return;
+      }
+
       // Optimistic hide + 5s undo window before actual DELETE
       setPendingRemoveIds((prev) => new Set([...prev, id]));
       const timer = setTimeout(async () => {
         undoTimers.current.delete(id);
         try {
-          const res = await deleteCartItem(id);
+          const res = await deleteCartItem(row.itemId!);
           if (!res.ok) {
             setPendingRemoveIds((prev) => { const s = new Set(prev); s.delete(id); return s; });
             showToast("Could not remove item. Please try again.", "error");
           } else {
+            // A product can be BOTH on the server and in the queue (the merge
+            // skips an op whose productId is already present), so the delete
+            // alone would leave an op that useSyncManager re-POSTs 30s later.
+            removeCartOpsFor([productId]);
             refetch?.();
             setPendingRemoveIds((prev) => { const s = new Set(prev); s.delete(id); return s; });
           }
@@ -757,7 +926,7 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
       }, 5000);
       undoTimers.current.set(id, timer);
       showToast(
-        "Item removed from cart.",
+        MSG_ITEM_REMOVED,
         "info",
         5500,
         {
@@ -770,7 +939,7 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
         },
       );
     },
-    [isAuthenticated, guest, showToast, refetch],
+    [isAuthenticated, guest, showToast, refetch, cartItems],
   );
 
   // ---------------------------------------------------------------------------
@@ -1238,7 +1407,12 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
                     {isRemoving ? "Removing…" : `Remove selected (${laneSelectedCount})`}
                   </Button>
                 )}
-                <Button type="button" variant="ghost" onClick={() => { void handleRemoveAll(); }} disabled={isRemoving} className={`ml-auto text-[length:var(--appkit-text-sm)] ${ERROR_TEXT_CLASS} hover:underline underline-offset-2 disabled:opacity-50`}>
+                {/* `action` is what mounts the registry's "Clear your cart?"
+                    confirmation — it has been defined on ACTIONS.CART["clear-cart"]
+                    all along while this button fired straight through, which
+                    Rule #7 forbids for a `kind: "danger"` action. Children still
+                    override the label so the in-flight state can show. */}
+                <Button type="button" variant="ghost" action={ACTIONS.CART["clear-cart"]} onClick={() => { void handleRemoveAll(); }} disabled={isRemoving} className={`ml-auto text-[length:var(--appkit-text-sm)] ${ERROR_TEXT_CLASS} hover:underline underline-offset-2 disabled:opacity-50`}>
                   {isRemoving ? "Clearing…" : "Remove all"}
                 </Button>
               </Row>
