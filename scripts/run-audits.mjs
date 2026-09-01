@@ -437,6 +437,7 @@ export const AUDITS = [
   // strict-zero on day one would force a marker spray, which is the
   // anti-pattern rather than the fix (Root Cause #22). MIGRATE=strict fails.
   { name: "silent-degrade",                 script: "scripts/audit-silent-degrade.mjs" },
+  { name: "public-test-data-leak", script: "scripts/audit-public-test-data-leak.mjs" },
   // PII invariants provable from source: no empty *_PII_FIELDS, no PII-shaped
   // schema field left undeclared, and a ratchet on the 15 repositories whose
   // mapDoc decrypts unconditionally. That last one is staged, not lax: their
