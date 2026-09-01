@@ -9,7 +9,7 @@ Scanned 48 views/call-sites (DataListingView configs + repository call sites acr
 - Filter-field orphans: 0
 - Sort-field orphans: 0
 - Unsatisfiable queries: 0
-- Unused declared indices: 595
+- Unused declared indices: 601
 
 ## Route/view summary
 
