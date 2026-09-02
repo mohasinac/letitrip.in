@@ -2028,6 +2028,7 @@
     "metaDescription": "Terms and conditions governing the use of the LetItRip collectibles marketplace platform, compliant with the IT Act 2000 and Consumer Protection Act 2019.",
     "title": "Terms & Conditions",
     "subtitle": "Please read these terms carefully before using LetItRip",
+    "intro": "These Terms & Conditions govern your use of the LetItRip collectibles marketplace, operated by LetItRip Internet Pvt. Ltd. They apply whether you browse, buy, bid, or sell, and are compliant with the IT Act 2000 and the Consumer Protection Act 2019.",
     "lastUpdated": "Last updated: 1 May 2026",
     "contactTitle": "Questions?",
     "contactText": "For questions about these terms, contact our legal team at legal@letitrip.in.",
@@ -4261,7 +4262,21 @@
     "diagramOutbid": "Outbid",
     "diagramOutbidDesc": "Someone placed a higher bid. You can bid again right away!",
     "diagramForfeit": "Won, didn't pay",
-    "diagramForfeitDesc": "You won but missed the 3-day payment window. Always pay promptly after winning."
+    "diagramForfeitDesc": "You won but missed the 3-day payment window. Always pay promptly after winning.",
+    "diagramStep1Desc": "Browse live auctions and check the current bid, time left, and reserve status.",
+    "diagramStep2Desc": "Check the minimum bid, end time, seller reputation, and condition notes.",
+    "diagramStep3Desc": "Bid above the current minimum — you're notified the moment you're outbid.",
+    "diagramStep4Desc": "Highest bid at the close wins. Pay within 48 hours to secure the item.",
+    "diagramStep5Desc": "The seller ships within their handling time. Track it from your Orders page.",
+    "infoCard1Title": "Reserve Price",
+    "infoCard1Text": "Some auctions have a hidden reserve price set by the seller. If the final bid does not meet the reserve, the item is not sold. You will see '⚠ Reserve not met' if the current bid is below the reserve.",
+    "infoCard2Title": "Anti-Sniping (Auto-Extend)",
+    "infoCard2Text": "If a bid is placed in the final minutes of an auction the timer may extend by a few minutes. This prevents last-second sniping and gives every bidder a fair chance.",
+    "infoCard3Title": "Winning and Outbid Alerts",
+    "infoCard3Text": "While an auction runs you are either winning or outbid, and we notify you either way. Being the highest bidder is not final until the timer ends — anyone can outbid you before it does.",
+    "infoCard4Title": "Pay Within the Window",
+    "infoCard4Text": "Winning starts a 48-hour payment window. Miss it and the bid is forfeited, the item may be offered to the next bidder, and repeated forfeits can affect your account.",
+    "ctaOrders": "How Orders Work"
   },
   "howPreOrdersWork": {
     "metaTitle": "How Pre-Orders Work",
@@ -4714,7 +4729,22 @@
     "ctaTitle": "Share Your Experience",
     "ctaText": "Already bought something? Head to your orders and leave a review to help fellow shoppers.",
     "ctaBrowse": "My Orders",
-    "ctaOrders": "How Orders Work"
+    "ctaOrders": "How Orders Work",
+    "diagramStep1Badge": "Buy Product",
+    "diagramStep1Desc": "Order must be delivered",
+    "diagramStep2Badge": "Write Review",
+    "diagramStep2Desc": "Star rating + text",
+    "diagramStep3Badge": "Pending",
+    "diagramStep3Desc": "Admin moderation",
+    "diagramStep4Badge": "Approved",
+    "diagramStep4Desc": "Publicly visible",
+    "infoCard1Title": "Verified Purchase Badge",
+    "infoCard1Text": "Reviews that link to a confirmed delivered order display a 'Verified Purchase' badge. This badge signals to other buyers that the reviewer actually owns the product.",
+    "infoCard2Title": "Helpful Votes",
+    "infoCard2Text": "Any signed-in user can vote a review as 'Helpful' or 'Unhelpful'. Reviews with more helpful votes are ranked higher on the product page so the most useful feedback is easy to find.",
+    "infoCard3Title": "Editing a Review",
+    "infoCard3Text": "You can edit your review within 30 days of posting it. Editing resets the review back to 'Pending' status — it goes through moderation again before being re-published.",
+    "ctaHowOrders": "How Orders Work"
   },
   "howPayoutsWork": {
     "metaTitle": "How Payouts Work",
@@ -4772,7 +4802,9 @@
     "diagramStep4Desc": "Payout authorised",
     "diagramStep5Desc": "NEFT / UPI to your account",
     "ctaPayoutSettings": "Payout Settings",
-    "ctaFees": "Fees & Commission"
+    "ctaFees": "Fees & Commission",
+    "ctaTitle": "Ready to get paid?",
+    "ctaText": "Add your bank or UPI details once and payouts run automatically after each delivered order."
   },
   "copilot": {
     "title": "AI Copilot",

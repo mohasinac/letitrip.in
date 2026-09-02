@@ -17,6 +17,8 @@
 
 | Date | Task | What was deferred / skipped | Status | Fix target |
 |------|------|-----------------------------|--------|------------|
+| 2026-09-02 | S-no-force-dynamic | **Two `serverErrors` composite indexes had the wrong sort direction — fixed AND deployed.** `(source ASC, occurredAt …)` and `(code ASC, occurredAt …)` were both declared `ASCENDING` while `listServerErrors` orders `desc`, so the query returned `9 FAILED_PRECONDITION`. This was a **live production bug**: `/admin/maintenance/{server-errors,client-errors,function-errors,payment-rollbacks}` were failing for real admins. It was invisible because those pages carried `force-dynamic` and so were never prerendered; removing it surfaced the error at build time within minutes. Deployed 2026-09-02 with explicit approval (`deploy --only indexes`, then `wait-for-indexes.mjs` → `CREATING=0`, 323s). All five maintenance pages are also `safeRead`-wrapped now, so a future index gap degrades to an empty list plus a `DEGRADED_READ` instead of a 500. | ✅ Closed | Remaining check is human: load `/admin/maintenance/server-errors` as an admin and confirm rows appear. Tester case `maintenance-error-lists-have-rows` covers it and explicitly says "the page loads" is not a pass. |
+| 2026-09-02 | S-no-force-dynamic | **`/user/*`, `/wishlist` and `/auth/*` now prerender to a static shell (25 routes flipped `ƒ` → `●`).** This is intended and was verified safe — `<SessionProvider initialUser={null}>` is the only `initialUser` call site in the repo, so no per-user data reaches prerenderable HTML; `/en/user/profile.html` contains the signed-out chrome plus `RoleGuard`'s spinner, and its RSC payload has no uid, email, displayName or storeId. The **behaviour** change is real though: an unauthenticated hit on `/user/profile` now gets a CDN shell and a client-side redirect rather than an SSR pass, so there is a brief loading flash. If that is unwanted, the fix is to give `user/layout.tsx` a real `await getServerSessionUser()` (matching admin/store) — **not** a segment config. Not done here: it costs a function invocation per request on 16 routes (Rule #6) and is a rendering-model decision. | ⏳ Open — needs a human eyeball | Load `/user/profile` signed out and signed in, decide whether the flash is acceptable. |
 | 2026-09-01 | S-homepage-rework | **🛑 The working tree contains an unresolved `git stash pop` — 22 files carry literal `<<<<<<< Updated upstream` / `>>>>>>> Stashed changes` markers and the index has 26 unmerged paths.** Not from this session: the conflicted files have mtime **16:51:22**, before this session's first edit at 17:00:34, and `stash@{0}` is named `claude-build-fix-churn-259-files` (259 files — this session touched ~20). Both a `git stash push` and a `git stash pop` attempted here **failed with `error: could not write index … needs merge`**, which is an error you can only get when unmerged entries *already exist* — so neither command changed anything, and `stash@{0}` is intact and recoverable. None of the 22 files overlap this session's work. **Consequence:** `npm run check` cannot exit 0. **Six audits fail, every one of them on a file whose mtime is ≤ 16:54:20 — i.e. before this session's first edit at 17:00:34 — and four of those files contain literal conflict markers:** `client-entry-in-server` + `client-server-only-leak` (both on `store/slug/page.tsx`, whose "Updated upstream" half imports `ROUTES` from the bare entry), `code-quality/DEEP_NESTING` (`user/orders/[id]/payment/page.tsx`), `server-client-function-props` ×7 (`wishlist/page.tsx`), `silent-degrade` ×3 (`navigation/page.tsx`, `AuthClosePageClient.tsx`, `WishlistPageClient.tsx`), `hardcoded-api-routes` (`appkit/.../admin-actions.ts`, 16:40) and `unknown-leakage` (`AuctionDetailPageView.tsx`, 16:54). **`appkit/src` itself has ZERO conflict markers.** Left untouched — resolving a half-applied stash is destructive and belongs to whoever owns that work. | ⏳ Open — belongs to the concurrent session | Resolve the 22 conflicted files (or `git checkout --theirs/--ours` per file), then re-run `npm run check`. Do NOT drop `stash@{0}` until the 259 files are accounted for |
 | 2026-09-01 | S-homepage-rework | **`audit-functions-bundle-freshness` fails and was deliberately not fixed.** `functions/lib/index.js` (16:53) is older than the newest file in `appkit/dist` (17:03). The gap opened *during* this session because a `npm run watch:appkit` is running in another terminal and rebuilt `dist` — which now contains this session's appkit changes **and** the concurrent session's in-flight work. The audit's fix is `npm --prefix functions run build`, a local build rather than a deploy, but running it would snapshot another session's uncommitted appkit source into a build artifact (the hazard `feedback_concurrent_session_git_hygiene` describes: a build reflects full disk state regardless of what is staged), and the watcher would re-open the gap on its next rebuild anyway. Nothing this session changed is reachable from the Functions bundle — the edits are the homepage renderer, its components/schema/seed, the admin sections builder, `MediaImage` and `BlogFeaturedCard`; the bundle runs `listingProcessor`, jobs and scheduled functions. | ⏳ Open | After the stash conflict is resolved and the watcher is stopped: `npm --prefix functions run build`, then `node -e "require('./functions/lib/index.js')"` |
 | 2026-09-01 | S-homepage-rework | **Nothing was rendered.** Rule #10 — no dev server, no build, no deploy. The rework is verified by appkit `tsc`, 26 audits, a 149/149 config-coverage sweep, and a `level={1}` count — none of which can see a pixel. The two highest-value visual checks: (1) every hero slide must now show a headline + CTA over its background (the whole point of the slide-overlay fix — a slide showing only a photo means the seed did not take); (2) `document.querySelectorAll('h1').length` must be `1` on `/` and stay 1 after clicking through all slides. | ⏳ Open | Next session with a browser, or the tester checklist cases added this session |
@@ -56,6 +58,133 @@
 ---
 
 ## SESSION LOG (newest first)
+
+### 2026-09-02 — S-i18n-orphans: 32 missing translation keys, and the audit that could not see the duplicates causing them
+
+Follow-on from S-no-force-dynamic, from a plain "fix any bugs".
+
+**32 missing i18n keys, on four live public pages.** Every build log — including
+the pre-existing baseline — carried `MISSING_MESSAGE` for
+`howAuctionsWork.*` (14), `howReviewsWork.*` (15), `howPayoutsWork.ctaTitle/Text`
+and `terms.intro`. next-intl logs the miss and **returns the key path**, so
+`/how-auctions-work`, `/how-reviews-work`, `/how-payouts-work` and `/terms` were
+rendering literal strings like `howAuctionsWork.infoCard1Title` to visitors.
+
+Cause: the routed components live in **appkit** and had been rewritten to a new
+key scheme (`diagramStepNDesc`, `infoCardNTitle`), and `messages/en.json` was only
+half migrated — `howPayoutsWork` got the new keys, the other two did not. Fixed by
+adding all 32, mapping from the existing old-key content wherever it existed
+(`diagramS1` → `diagramStep1Badge`, `verifiedTitle` → `infoCard1Title`, …) rather
+than inventing copy. Verified: a build now emits **0** `MISSING_MESSAGE` (was 32).
+
+**`t("intro") &&` is a guard that can never be false.** `PolicyPageView` gates its
+intro paragraph on the translated value's truthiness — but a missing key returns
+the key path, which is truthy. `terms` was the one namespace of six without
+`intro`, so `/terms` printed `terms.intro` as body copy. Now `t.has("intro")`.
+
+**`src/features/about/` was 8 duplicate views, 1564 lines, entirely unreachable.**
+Every route imports the appkit copy; nothing anywhere referenced the consumer one.
+They had drifted — the dead `HowReviewsWorkView` still used the old i18n keys — so
+a grep for the broken keys landed on the dead file **first**, which is exactly how
+an orphan costs you time. Deleted. They were still being touched by mechanical
+sweeps as recently as 2026-08-27, i.e. maintained effort spent on dead code.
+
+**`audit-orphan-view-component` had three defects, and each hid the next.**
+1. `COMPONENT_ROOTS` covered only `appkit/src` — a whole consumer directory of
+   orphans was outside the thing that looks for orphans.
+2. `if (!declared.has(name))` — **first declaration wins**, so a same-named shadow
+   copy was invisible *by construction*. New `SHADOW` rule reports it instead.
+3. The declaration regex was `export (default )?function`, which misses **every**
+   `export async function` — 59 files, i.e. every async server view.
+
+Fixing (3) took the audit from **229 to 280** components in scope and it stayed
+clean, so the widening surfaced no backlog. Verified by restoring the deleted
+directory and watching all 8 shadows get reported, then deleting it again — per
+Root Cause #87, never trust an audit you have not seen fail.
+
+### 2026-09-02 — S-no-force-dynamic: 225 segment configs removed, and the two bugs they were hiding
+
+**The ask** was to stop using `force-dynamic`, on the grounds that the layouts
+already have `<Suspense>` and it works. That turned out to be correct, and the
+reason the previous session concluded otherwise is the interesting part.
+
+**Where they came from.** `817b602df` removed `await headers()` from the root
+locale layout and added `generateStaticParams` — correct, Root Cause #82. Side
+effect: the site prerendered for the **first time**, so every latent unguarded
+`useSearchParams()` surfaced at once. `fccc9a539` answered with `force-dynamic`
+on the three dashboard layouts and was reverted the same day (`b2d205d55`); the
+per-page variant survived in `stash@{0}` ("claude-build-fix-churn-259-files")
+and reached the working tree through a half-applied `git stash pop`. Only 30 of
+the 225 were ever committed.
+
+**197 of them were no-ops.** `admin/layout.tsx` and `store/layout.tsx` both
+`await getServerSessionUser()`, and `throwToInterruptStaticGeneration` sets
+`prerenderStore.revalidate = 0` **before** it throws, so `app-page.js`
+early-returns writing no HTML. Those subtrees can never be static. Verified by
+removing all 222 and rebuilding: **238 admin+store routes, zero non-dynamic.**
+
+**Why a page-level `<Suspense>` looked broken.** The prior commit recorded
+*"admin/moderation still failed with one in place"*. It did — but not because
+the boundary was ignored. `getServerSessionUser` wrapped `await cookies()` in a
+blanket `try/catch`, so at build time the bailout was swallowed, `user` became
+`null`, and the layout ran its own `redirect()`. That throw is in the **layout**,
+above `{children}` — nothing below could ever have caught it. `cookies()` now
+sits outside the `try`, with a comment saying why.
+
+**Two real bugs it was hiding, both surfaced within minutes of removal:**
+
+1. **`serverErrors` composite indexes had the wrong sort direction.** Declared
+   `occurredAt ASCENDING`; `listServerErrors` orders `desc`. All four
+   `/admin/maintenance/*` error pages have been `9 FAILED_PRECONDITION` **in
+   production**. Corrected and deployed (indexes only) with explicit approval.
+2. **`/admin/maintenance/cloud-logs` called a Google Cloud API unguarded**, the
+   only page in the app that does. Build credentials have no log-read scope, so
+   it failed the whole production build with `7 PERMISSION_DENIED`.
+
+All five maintenance pages are now `safeRead`-wrapped. That matters beyond the
+build: Next still **attempts** to prerender a page under a session-reading
+layout — the HTML is discarded, but a throw during the attempt is fatal — and at
+runtime an observability page that 500s on one missing index is worse than one
+that renders empty and records a `DEGRADED_READ`.
+
+**Removed:** 222 `force-dynamic` exports, 193 boilerplate rationale comments,
+and 12 dead `revalidate = 3600` on `admin/guide/*` (inert under a dynamic layout,
+but a latent hour-long cache of an admin surface if that ever changed). Done with
+a splice-only codemod asserting deletion-only output, proven against a snapshot:
+**0 insertions, 1761 deletions, exactly 222 files, none outside the manifest.**
+The 7 rationale blocks were enumerated by grouping all 222 sites by their exact
+preceding text, not guessed — which is what protected the three JSDocs that
+genuinely document their page, and what let `wishlist/layout.tsx` lose its
+rationale JSDoc while keeping the unrelated one above it.
+
+**New audit `no-force-dynamic`** (strict-zero, registered, `PERMITTED` empty).
+Four rules: `FORCE_DYNAMIC`, `DYNAMIC_NON_LITERAL` (the indirection dodge),
+`DYNAMIC_ESCAPE_HATCH` (`revalidate = 0` / `fetchCache` / `unstable_noStore` /
+`connection()`, **scoped to the auth-gated subtrees** so the three honest public
+`revalidate = 0` declarations are untouched), and `REGISTRY_STALE`. Seen to fail
+on every rule before being trusted (Root Cause #87), including a negative
+control confirming a prose mention of the banned string does not trip it. No
+markdown rule — CLAUDE.md has to write the string to document the ban.
+
+**Route table:** 844 → 869 rows. admin+store unchanged at 238/238 dynamic.
+25 `/user/*`, `/wishlist`, `/auth/*` routes flipped to prerendered shells;
+verified no identity data in `/en/user/profile.html` or its RSC payload.
+
+**Also corrected: 54 stale comments.** The `"use client"` dashboard pages that
+use a page-level `<Suspense>` all carried the same block asserting the dashboard
+layout's boundary was *"empirically not enough for a client PAGE component"* —
+the exact belief that produced the 225 exports. Comment bodies only; every added
+non-comment line in the whole `src/` diff is one of the five deliberate
+`safeRead` edits.
+
+**Tester cases added** (source only — they reach Firestore on the next appkit
+build + `npx appkit-seed load`): `maintenance-error-lists-have-rows` (written so
+that "the page loads" is explicitly NOT a pass, because `safeRead` now makes a
+missing index look like an empty list), `maintenance-cloud-logs-degrades`, and
+`user-pages-signed-out-redirect`.
+
+**Gates:** baseline `next build` green before any edit, `next build` green after,
+`npm run check` green, indexes deployed and settled (`CREATING=0`).
 
 ### 2026-09-01 — S-homepage-rework: the homepage was configurable in name only
 

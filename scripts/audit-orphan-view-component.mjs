@@ -45,6 +45,23 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const COMPONENT_ROOTS = [
   join(ROOT, "appkit", "src", "features"),
   join(ROOT, "appkit", "src", "_internal", "client", "features"),
+  /*
+   * The consumer side is scanned too, and it was not until 2026-09-02.
+   *
+   * `src/features/about/` held 8 full view components — 1564 lines — every one
+   * of them a duplicate of an appkit component that every route actually
+   * imports. They were structurally invisible to this audit because it only
+   * ever looked inside appkit, so the very check that exists to find a view
+   * with no consumer could not see a whole directory of them.
+   *
+   * They had also drifted: the consumer `HowReviewsWorkView` still used the old
+   * `diagramS1`/`verifiedTitle` i18n keys while the live appkit one had moved to
+   * `diagramStep1Badge`/`infoCard1Title`, so a grep for the broken keys landed
+   * on the dead file first. That is the real cost of an orphan — not the bytes,
+   * but that it answers questions wrongly. Root Cause #84: a measurement
+   * narrower than the rule it feeds.
+   */
+  join(ROOT, "src", "features"),
 ];
 const SCAN = [join(ROOT, "appkit", "src"), join(ROOT, "src")];
 const SKIP = new Set(["node_modules", "dist", ".next", ".git", "__tests__"]);
@@ -118,6 +135,15 @@ const isBarrel = (f) => BARREL_NAMES.has(basename(f));
 function main() {
   // 1. Every exported *View / *Panel, and the file that declares it.
   const declared = new Map(); // name -> relPath
+  /*
+   * Second and later declarations of the SAME name are recorded rather than
+   * dropped. `!declared.has(name)` alone made a shadow copy invisible by
+   * construction: appkit is scanned first, so the consumer duplicate silently
+   * lost the race and this audit reported the name as healthy. That is how
+   * `src/features/about/` kept 8 duplicate views — every route importing the
+   * appkit one — while the check that exists to find unreachable views passed.
+   */
+  const shadows = []; // { name, declPath, shadowPath }
   for (const root of COMPONENT_ROOTS) {
     try { statSync(root); } catch { continue; }
     for (const file of walk(root)) {
@@ -125,10 +151,23 @@ function main() {
       const raw = readFileSync(file, "utf8");
       if (SUPPRESS.test(raw)) continue;
       const src = stripComments(raw);
-      const re = /export\s+(?:default\s+)?function\s+([A-Za-z0-9_]+)/g;
+      /*
+       * `async` is part of the pattern. Without it this regex matched only
+       * `export function` / `export default function`, so every `export async
+       * function XView()` — i.e. every async server view, 59 files' worth —
+       * was invisible to an audit whose entire job is finding unreachable
+       * views. Root Cause #84 again: the rule was narrower than it read.
+       */
+      const re = /export\s+(?:default\s+)?(?:async\s+)?function\s+([A-Za-z0-9_]+)/g;
       let m;
       while ((m = re.exec(src)) !== null) {
-        if (COMPONENT_NAME.test(m[1]) && !declared.has(m[1])) declared.set(m[1], rel(file));
+        if (!COMPONENT_NAME.test(m[1])) continue;
+        if (declared.has(m[1])) {
+          if (declared.get(m[1]) !== rel(file))
+            shadows.push({ name: m[1], declPath: declared.get(m[1]), shadowPath: rel(file) });
+          continue;
+        }
+        declared.set(m[1], rel(file));
       }
     }
   }
@@ -150,6 +189,12 @@ function main() {
   }
 
   const violations = [];
+  for (const s of shadows) {
+    violations.push(
+      `${s.shadowPath} :: ${s.name} is a SHADOW of ${s.declPath} — two components with one name. ` +
+        "Every importer resolves to exactly one of them, so the other is unreachable and will drift silently.",
+    );
+  }
   const stale = new Set(GRANDFATHERED);
   for (const [name, declPath] of declared) {
     if (referenced.has(name)) { stale.delete(name); continue; }
