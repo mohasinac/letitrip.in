@@ -11,8 +11,6 @@ import {
 import type { SocialPlatform, SocialPostType } from "@mohasinac/appkit/server";
 import { withProviders } from "@/providers.config";
 
-export const dynamic = "force-dynamic";
-
 const CACHE_HEADER = "public, max-age=300, s-maxage=300, stale-while-revalidate=60";
 
 function clamp(n: number, min: number, max: number) {

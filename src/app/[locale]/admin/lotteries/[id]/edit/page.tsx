@@ -32,7 +32,6 @@ import { LotteryConfigClient } from "./LotteryConfigClient";
  * picker was missing `lottery` entirely). This page owns the one thing that
  * editor cannot express.
  */
-export const dynamic = "force-dynamic";
 
 interface Props {
   params: Promise<{ id: string }>;

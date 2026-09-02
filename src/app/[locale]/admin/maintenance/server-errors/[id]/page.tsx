@@ -3,8 +3,6 @@ import { notFound } from "next/navigation";
 import { ServerErrorDetailView } from "@mohasinac/appkit/client";
 import { findRelatedClientErrors, getServerErrorById } from "@mohasinac/appkit/server";
 
-export const dynamic = "force-dynamic";
-
 interface Params {
   id: string;
 }

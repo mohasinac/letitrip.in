@@ -30,7 +30,6 @@ import {
 import { placeholderResponse } from "../_placeholder";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 // ─── Path resolution ───────────────────────────────────────────────────────
 

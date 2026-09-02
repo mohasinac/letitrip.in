@@ -26,7 +26,6 @@ import { Section, Container, Row } from "@mohasinac/appkit/client";
  * `AdminFeatureEditorView` uses `apiClient.put`, and copying it here would have
  * been a silent 405 — `audit-client-verb-match` now blocks that class.
  */
-export const dynamic = "force-dynamic";
 
 interface Props {
   params: Promise<{ id: string }>;

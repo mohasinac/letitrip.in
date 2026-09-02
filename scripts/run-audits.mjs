@@ -492,6 +492,16 @@ export const AUDITS = [
   // a catch that swallows to [] unlogged, and tester fixtures reaching the
   // public sitemap. Strict-zero.
   { name: "seo-sitemap-parity",             script: "scripts/audit-seo-sitemap-parity.mjs" },
+  // `export const dynamic = "force-dynamic"` declares a rendering contract; it
+  // must never be a way to silence a prerender error. 225 of them accumulated
+  // in ~48h after the site first became cacheable, and 197 were no-ops — the
+  // admin/store layouts read the session, so those subtrees can never be
+  // static. Each one costs a cold render and a billed invocation on every
+  // request, including every crawler hit, and nothing reports it. Also blocks
+  // the same thing spelled `revalidate = 0` / `fetchCache` / `unstable_noStore`
+  // inside the auth-gated subtrees, and the indirection dodge. Strict-zero;
+  // the fix is a <Suspense> boundary, or a real dynamic API in the layout.
+  { name: "no-force-dynamic",               script: "scripts/audit-no-force-dynamic.mjs" },
 ];
 function parseArgs(argv) {
   const args = argv.slice(2);

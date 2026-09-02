@@ -6,11 +6,9 @@ import { ROUTES } from "@mohasinac/appkit";
 import { Heading, Section, Container, Row, Div, Text, Badge, Table, Thead, Tbody, Tr, Th, Td } from "@mohasinac/appkit/client";
 import { MAX_SLIDES_PER_CAROUSEL } from "@mohasinac/appkit";
 
-
 const __O = {
   hidden: "overflow-hidden",
 } as const;
-export const dynamic = "force-dynamic";
 
 interface Props {
   params: Promise<{ id: string }>;

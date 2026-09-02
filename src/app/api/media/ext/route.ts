@@ -23,7 +23,6 @@ import { verifyExtSignature } from "./_signing";
 import { placeholderResponse } from "../_placeholder";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 const MAX_BODY_BYTES = 10 * 1024 * 1024; // 10 MB
 

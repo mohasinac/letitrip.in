@@ -25,7 +25,6 @@ import { Section, Container, Row } from "@mohasinac/appkit/client";
  * `ROUTES.ADMIN.CAROUSELS_NEW` (plural) is this page. `CAROUSEL_NEW`
  * (singular, `/admin/carousel/new`) is a SLIDE and is a different entity.
  */
-export const dynamic = "force-dynamic";
 
 export default function AdminCarouselGroupNewPage() {
   return (

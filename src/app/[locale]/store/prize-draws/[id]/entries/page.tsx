@@ -4,8 +4,6 @@ import { getLotteryEntriesForAdmin } from "@mohasinac/appkit/server";
 import { getSellerProductAction } from "@/actions/seller.actions";
 import { notFound } from "@/i18n/navigation";
 
-export const dynamic = "force-dynamic";
-
 interface Props {
   params: Promise<{ locale: string; id: string }>;
 }

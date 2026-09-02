@@ -8,8 +8,6 @@ import {
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 import { notFound } from "@/i18n/navigation";
 
-export const dynamic = "force-dynamic";
-
 interface Props {
   params: Promise<{ locale: string; id: string }>;
 }

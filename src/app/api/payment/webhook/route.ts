@@ -57,7 +57,6 @@ async function signalPaymentEvent(
 
 // Vercel Hobby max is 60 s; RTDB + signature work fits well within that.
 export const maxDuration = 60;
-export const dynamic = "force-dynamic";
 
 async function __POST__g(request: NextRequest) {
   try {

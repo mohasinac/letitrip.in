@@ -7,8 +7,6 @@ const __O = {
   hidden: "overflow-hidden",
 } as const;
 
-export const dynamic = "force-dynamic";
-
 export default async function AdminCarouselsPage() {
   const carousels = await carouselsRepository.listCarousels();
 

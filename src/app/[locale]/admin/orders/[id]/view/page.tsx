@@ -5,8 +5,6 @@ import { ROUTES } from "@mohasinac/appkit";
 import { Section, Container, Row, Text } from "@mohasinac/appkit/client";
 import { OrderViewClient } from "./OrderViewClient";
 
-export const dynamic = "force-dynamic";
-
 interface Props {
   params: Promise<{ id: string }>;
 }

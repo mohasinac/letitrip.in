@@ -5,8 +5,6 @@ import { ROUTES } from "@mohasinac/appkit";
 import { Section, Container, Row, Stack, Heading, Text, Badge } from "@mohasinac/appkit/client";
 import { ModerationDetailActions } from "./ModerationDetailActions";
 
-export const dynamic = "force-dynamic";
-
 interface Props {
   params: Promise<{ id: string }>;
 }

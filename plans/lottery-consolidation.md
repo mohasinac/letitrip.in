@@ -503,7 +503,7 @@ Add "Lotteries" to `ADMIN_NAV_GROUPS` under Promotions group (alongside Events).
 | `/lottery/[id]` active state → `revalidate = 30` (slots change as draws happen) | Keeps slot grid fresh |
 | `Cache-Control: public, s-maxage=120, stale-while-revalidate=600` on `GET /api/events` (non-admin) | CDN absorbs list requests |
 | `Cache-Control: public, s-maxage=30, stale-while-revalidate=300` on `GET /api/events/[id]` (active lottery) | Reduce per-user polling |
-| All admin/store GET routes: `Cache-Control: no-store` (already likely set via `dynamic = "force-dynamic"`, verify) | Prevents stale admin data |
+| All admin/store GET routes: `Cache-Control: no-store` | Prevents stale admin data. Set it on the response — do NOT reach for a route-segment config, which is banned by `audit-no-force-dynamic`. These routes are already per-request because their layout reads the session. |
 | Lottery entry list pages: `pageSize: 20`, never load all 200 at once | Cap Firestore reads per request |
 
 ---

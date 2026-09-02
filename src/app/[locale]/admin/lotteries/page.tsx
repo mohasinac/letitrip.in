@@ -2,8 +2,6 @@ import { Suspense } from "react";
 import { LotteryListView } from "@mohasinac/appkit";
 import { listLotteryEvents } from "@mohasinac/appkit/server";
 
-export const dynamic = "force-dynamic";
-
 export default async function Page() {
   const items = await listLotteryEvents({ pageSize: 100 });
   return (

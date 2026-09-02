@@ -4,17 +4,6 @@ import { PageTabs, ADMIN_SETTINGS_TABS } from "@mohasinac/appkit/client";
 import { updateActionConfigAction } from "@/actions/admin-settings.actions";
 import { NavPermissionsPanel } from "@/components/admin/NavPermissionsPanel";
 
-/*
- * Auth-gated dashboard page behind RoleGuard — it needs the session on every
- * request, so there is nothing meaningful to prerender. Static export also
- * throws on any client tree reaching useSearchParams() without a Suspense
- * boundary (Root Cause #17), and static generation runs 15 parallel workers,
- * so WHICH page trips it varies between builds — a latent class rather than
- * one bad page. Dynamic is both the correct semantics and the fix.
- */
-export const dynamic = "force-dynamic";
-
-
 const __P = {
   p6: "p-[var(--appkit-space-6)]",
 } as const;

@@ -68,8 +68,26 @@ export function requireRoleFromRequest(
  */
 export const getServerSessionUser = cache(
   async (): Promise<SessionUser | null> => {
+    /*
+     * 🛑 `cookies()` stays OUTSIDE the try, deliberately.
+     *
+     * During static prerendering it throws `DynamicServerError` — that throw is
+     * Next's dynamic-bailout signal, not a "session could not be resolved" case.
+     * The bailout itself survives being caught (`throwToInterruptStaticGeneration`
+     * sets `prerenderStore.revalidate = 0` BEFORE throwing), so swallowing it does
+     * not make a route static. What it does is worse and quieter: this function
+     * returns `null`, and the very next line of `admin/layout.tsx` is
+     * `if (!user) redirect(...)` — so a build-time prerender ran the layout's
+     * redirect for all 134 admin routes. Nothing below the layout can catch that;
+     * it is thrown above `{children}`, which is why adding a page-level <Suspense>
+     * appeared not to help and led to ~200 pages being marked force-dynamic.
+     *
+     * At runtime `cookies()` never throws, so this changes no request behaviour.
+     * The only other things it throws for — being called inside `after()`,
+     * `use cache`, or `generateStaticParams` — are misuse that should be loud.
+     */
+    const cookieStore = await cookies();
     try {
-      const cookieStore = await cookies();
       const sessionCookie = cookieStore.get("__session")?.value;
       if (!sessionCookie) return null;
 

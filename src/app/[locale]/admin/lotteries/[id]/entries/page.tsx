@@ -9,8 +9,6 @@ import {
 } from "@mohasinac/appkit/server";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 
-export const dynamic = "force-dynamic";
-
 interface Props {
   params: Promise<{ locale: string; id: string }>;
 }

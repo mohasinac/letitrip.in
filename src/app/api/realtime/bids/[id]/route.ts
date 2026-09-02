@@ -2,8 +2,6 @@ import { normalizeError } from "@mohasinac/appkit";
 import { initProviders, withProviders } from "@/providers.config";
 import { getAdminRealtimeDb } from "@mohasinac/appkit";
 
-export const dynamic = "force-dynamic";
-
 /**
  * Close the stream ourselves before the platform kills it.
  *
