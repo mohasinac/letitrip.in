@@ -2,3 +2,7 @@
 	path = appkit
 	url = https://github.com/mohasinac/appkit.git
 	branch = main
+[submodule "tester"]
+	path = tester
+	url = https://github.com/mohasinac/letitrip-tester.git
+	branch = main

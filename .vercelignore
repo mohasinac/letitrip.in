@@ -7,3 +7,9 @@ react-library/.npmrc
 memory-forensics-*
 *.heapsnapshot
 probe-results.json
+
+# Tester plugin submodule — dev tooling only, never part of the app build.
+# It carries @playwright/mcp + its own node_modules; shipping it inflates the
+# upload, and an oversized bundle fails Vercel's "Deploying outputs..." step
+# (CLAUDE.md Recurrent Root Cause #6).
+tester

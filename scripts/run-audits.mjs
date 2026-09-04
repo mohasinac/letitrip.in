@@ -296,6 +296,13 @@ export const AUDITS = [
   // relocations/deletions silently rot the tester's deep links
   // (Root Cause #31).
   { name: "tester-checklist-hrefs",        script: "scripts/audit-tester-checklist-hrefs.mjs" },
+  // Strict-zero. Guards the tier boundary the tester runner rests on: a run
+  // wipes the seeded catalog from a live project, and only survives contact
+  // with production because users / Auth records / addresses / siteSettings
+  // are preserved. That boundary lives in tester/ — plain JS in a submodule,
+  // outside tsc, eslint and every other audit — so this is its only check.
+  // Skips cleanly when tester/ is not checked out.
+  { name: "tester-plugin-wiring",          script: "scripts/audit-tester-plugin-wiring.mjs" },
   // Strict-zero. A filter-chip `id` in filter-tabs.ts that doesn't match
   // any value its target Firestore field can hold — the chip silently
   // returns zero rows forever. Found live in 8+ places in one sweep

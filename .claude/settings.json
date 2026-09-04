@@ -76,5 +76,16 @@
         ]
       }
     ]
+  },
+  "extraKnownMarketplaces": {
+    "letitrip-tools": {
+      "source": {
+        "source": "directory",
+        "path": "./"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "tester@letitrip-tools": true
   }
 }

@@ -150,3 +150,8 @@ test-results/*
 /tester-feedback-report.md
 scripts/set-razorpay-keys.mjs
 .claude/scheduled_tasks.lock
+
+# Tester plugin run artifacts — live production session cookies, screenshots and
+# the preserve-tier backup (which contains the encrypted siteSettings credentials).
+/tester/.tester-runs/
+/claude-tester-report.md

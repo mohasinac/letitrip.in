@@ -1,0 +1,11 @@
+{
+  "name": "letitrip-tools",
+  "owner": { "name": "letitrip" },
+  "plugins": [
+    {
+      "name": "tester",
+      "source": "./tester",
+      "description": "Drives the LetItRip tester checklist with a real browser and records a verdict per case."
+    }
+  ]
+}

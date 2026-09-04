@@ -199,20 +199,38 @@ Recurrent Root Cause #84.
 > - **Playwright was never wired to anything.** No workflow invoked it, and
 >   `node scripts/deploy.mjs` gates before it in the checklist regardless.
 >
-> **The three gates that remain, all real:**
-> 1. `npm run check` — tsc in both repos, ~60 audits, eslint. The pre-commit
+> **The four gates that exist, all real:**
+> 1. `npm run check` — tsc in both repos, ~150 audits, eslint. The pre-commit
 >    and CI gate.
 > 2. `node scripts/deploy.mjs` — its own post-deploy smoke test of `/`,
 >    `/en/products` and `/api/site-settings`, which is what actually catches a
 >    Lambda module-load failure (Recurrent Root Cause #69).
-> 3. **The tester checklist** — where coverage effort goes instead. Add a case
->    to `appkit/src/features/tester/seed-data/tester-checklist-seed-data.ts`,
+> 3. **The tester checklist** — 943 cases, and still the primary mechanism. Add
+>    a case to `appkit/src/features/tester/seed-data/tester-checklist-seed-data.ts`,
 >    written as an explicit *before → after*: most bugs in this codebase return
 >    HTTP 200 with plausible rows, so a case reading "check X works" passes
 >    *against* the bug.
+> 4. **The Claude tester** (2026-09-04, `tester/` submodule) — drives those same
+>    943 cases with a real browser. See § "Claude Tester" below.
 >
 > `scripts/qa/roundtrip-diff.mjs` survives and is **not** Playwright — it is a
 > standalone script proving a Zod schema does not silently drop fields.
+
+### 🛑 The unit-test prohibition is unchanged; the Claude tester is not a suite
+
+**Still forbidden:** `vitest` / `jest` / `@testing-library`, any `*.test.ts`, any
+`src/**/__tests__/`. The reason is unchanged and is the most valuable paragraph
+above: a mock is a second implementation, and the one you assert against is
+always the one you *believed in*. Root Cause #83.
+
+**What is different about the Claude tester** is that it mocks nothing. It opens
+a browser against the deployed site, performs what a checklist case describes in
+English, and records `yes` / `no` / `null` with evidence. There is no fixture to
+drift from reality, because it *is* reality — which is exactly why it can be
+trusted where a `vi.mock` factory could not.
+
+It is also **wired**, which the deleted Playwright suite never was: `/tester:run-tests`
+in any session, or `npm run tester:claude` unattended.
 
 **Stop hook automation**: `.claude/settings.json` → `hooks.Stop` runs `scripts/claude-hooks/check-on-stop.mjs` at the end of every Claude turn. Failures block the turn (exit 2) and surface to the assistant for fixing.
 
@@ -263,7 +281,7 @@ This project deploys to Vercel **Hobby** with **Fluid Compute enabled** (1 vCPU 
 | Resource | Free tier ceiling | Current usage | Implication |
 |---|---|---|---|
 | Cloud Functions invocations | 2,000,000 / month | Scheduled-function traffic alone is ~50–60K/month across all cron jobs (see inventory below) — nowhere close to the ceiling even before counting real user-triggered invocations. | Not a cost risk at this traffic level. Don't add unbounded per-request Functions triggers (e.g. a Firestore trigger that fires on every write of a hot collection) without checking this stays true. |
-| Cloud Scheduler jobs | **3 free jobs per billing account** (billed per registered job, not per invocation — additional jobs are ~$0.10/job/month) | **28 scheduled functions = 28 Scheduler jobs** (~$2.80/month) — recounted 2026-08-29 (was 27; this row has now drifted three separate times, which is why it says to recount) (this row and `codebaseexports.md` had both drifted, each claiming a different wrong number; recount before quoting it again). Most recent addition: `dailyStatusDigest` (daily 10:00 IST ops digest), added per this row's own accepted-cost policy. | **Known, accepted cost** — the alternative (consolidating same-cadence functions into shared dispatcher functions to shrink job count toward the free 3) was evaluated and explicitly deferred: it touches 27+ working functions for a few dollars/month of savings, more engineering risk than it's worth right now. Don't "discover" this again and churn on it — it's a documented tradeoff, not a bug. Revisit only if Scheduler costs grow materially (e.g. from adding many more distinct-cadence jobs). |
+| Cloud Scheduler jobs | **3 free jobs per billing account** (billed per registered job, not per invocation — additional jobs are ~$0.10/job/month) | **28 scheduled functions = 28 Scheduler jobs** (~$2.80/month) — recounted **2026-09-04** by parsing `scheduled.ts` (was 29; `testerSandboxRefresh` was removed when the Claude tester took over fixture state). This row has now drifted four separate times, which is why it says to **recount rather than quote it** — `node -e "const s=require('fs').readFileSync('appkit/src/_internal/server/functions/scheduled.ts','utf8');console.log((s.match(/export const \w+ = defineFunction\(\{/g)||[]).length)"`. Note the "28" here is a coincidence: the 2026-08-29 recount also said 28, then `dailyStatusDigest` was added (29) and `testerSandboxRefresh` removed (28). | **Known, accepted cost** — the alternative (consolidating same-cadence functions into shared dispatcher functions to shrink job count toward the free 3) was evaluated and explicitly deferred: it touches 27+ working functions for a few dollars/month of savings, more engineering risk than it's worth right now. Don't "discover" this again and churn on it — it's a documented tradeoff, not a bug. Revisit only if Scheduler costs grow materially (e.g. from adding many more distinct-cadence jobs). |
 | Firestore reads/writes/deletes | 50,000 reads / 20,000 writes / 20,000 deletes per day (resets ~midnight Pacific), 1 GiB storage, 10 GiB egress/month | Low at current traffic. | **Prefer pre-computed rollups over per-request full-collection scans** — this is the actual lever that matters more than Functions invocation count. See `revenueRollup` (`appkit/src/_internal/server/jobs/core/revenueRollup.ts`) for the pattern: a daily scheduled Function pre-aggregates into a small singleton doc, and the API route becomes a single-doc read instead of scanning every order on every dashboard load. Apply the same pattern to any other unbounded per-request Firestore scan found in the future. |
 | Realtime Database | 1 GiB stored, 10 GiB downloaded/month (Spark-only free allowance; Blaze is pay-as-you-go beyond a much smaller included amount) | **Four path families** — `auction-bids/*` plus the three short-lived signal channels `auth_events`/`payment_events`/`bulk_events`. All three signal channels are pruned (`cleanupRtdbEvents`, 3/15/15 min); `auction-bids/*` is not, and is `.read: false` (server-relayed over SSE). `bulk_events` payloads are **not** size-capped — `newsletterExport` writes a full CSV there. **Was six until 2026-08-31**: `chat/*` (admin chat) and `chats/*` (conversation pings) went with the messaging feature, and they were the only two families that accumulated with no TTL. | **Client writes are forbidden by the rules** — every node is `.write: false` and all writes go through the Admin SDK; a client-side write is a bug, not a config gap. **Every token is per-event and carries exactly one claim** (`authEventId` \| `paymentEventId` \| `bulkJobId`), minted at the endpoint that creates the node. There is deliberately no general-purpose token route: `/api/realtime/token` minted `{uid, role, chatIds, conversationIds}`, none of which any rule still read, and was deleted with the messaging feature. A broad token is a Firestore fan-out per refresh and a 1000-byte claims ceiling waiting to be hit. This row claimed "used only for the `bulk_events` ping channel — tiny payloads, short-lived" until 2026-08-29; it was never accurate. |
 | Cloud Storage | ~5 GB "Always Free" (separate from Firebase's own quotas, a GCP account-level allowance) | Media uploads (product images, etc.) | Already routed through the watermark/proxy pipeline (Media Architecture rules) — no action needed here specifically for budget, just keep following those existing rules. |
@@ -1847,6 +1865,8 @@ evidence that it is.
 | An unguarded `await someExternalRead()` at the top of a dashboard `page.tsx` | `await safeRead(() => someExternalRead(), { route, key, fallback })`. Next still **attempts** to prerender a page under a session-reading layout — the HTML is discarded, but a throw during the attempt **fails the whole production build**. It is also the runtime guard: an observability page that 500s because one index is missing is worse than one that renders empty and records a `DEGRADED_READ`. |
 | `.where("isTestData", "!=", true)` to hide tester fixtures | Add the field to `.select(...)` and filter **in memory**. A Firestore inequality excludes every document that lacks the field — i.e. all real content — so the query returns ONLY test data. |
 | `z-[50]` arbitrary Tailwind | `var(--appkit-z-modal)` CSS variable |
+| `https://letitrip.in/...` or `/en/products` in a browser-automation script or smoke test | **`https://www.letitrip.in/products`** — the **www** host and an **unprefixed** path. Measured 2026-09-04: the apex **308**s to www, and `/en/products` **307**s to `/products`, so both spellings pay a redirect on every navigation. Checklist `href`s are already unprefixed. (Aside: `scripts/deploy.mjs` smoke-tests `/en/products` and accepts 3xx, so that check currently passes on a redirect rather than a rendered page.) |
+| `new Date(Date.now() + 2 * 60 * 60 * 1000)` for an `auctionEndDate` / `expiresAt` / `checkoutDeadline` in a tester fixture | `windowOffset(fraction)` from `appkit/src/features/tester/seed-data/tester-window.ts`. A hard-coded duration cannot be shortened, so the case that watches it close is untestable in any run shorter than the literal. Use a fraction > 1 (`OUTLASTS_RUN`) for fixtures that must **not** expire mid-run. Enforced by `audit-tester-plugin-wiring` R4. |
 | `as unknown as SomeThing` | Fix the underlying type mismatch — ask if unsure |
 | Skipping `npx tsc --noEmit` | Always run in BOTH `letitrip.in/` and `appkit/` before committing |
 | `@import "@mohasinac/appkit/styles"` in `globals.css` | `import "@mohasinac/appkit/styles"` in `layout.tsx` — Turbopack inlines CSS @imports before PostCSS runs, breaking tailwindcss + autoprefixer with "Unknown AST node type 0". Always import pre-compiled node_modules CSS via JS imports, not CSS @import. |
@@ -2171,13 +2191,170 @@ return successResponse({ jobId, customToken }, "Job started");
 
 **Cleanup — scheduled + manual, one shared core.** `testerSandboxCleanup` (Firebase Function, daily) and `node appkit/scripts/purge-tester-sandbox.mjs` (`npm run tester:purge-sandbox`, immediate force-purge) both call `runTesterSandboxCleanup(ctx, { force })` — never duplicate this logic. It cascades into `bids` referencing a deleted test product (bids hold only a live `productId` FK, no snapshot — an orphaned bid is meaningless). It deliberately leaves `orders`/`reviews`/`wishlists`/`history` untouched even when they reference a deleted test product, because all four denormalize the fields they display (title/price/image) — only the "view product" link 404s, which is acceptable for disposable test data.
 
-**Refresh — every 4 hours, distinct from the daily cleanup above.** `testerSandboxRefresh` (Firebase Function, `appkit/src/_internal/server/jobs/core/testerSandboxRefresh.ts`, `runTesterSandboxRefresh(ctx)`) reverts every *still-live* sandbox fixture (`categories`/`stores`/`products`/`blogPosts`/`events` where `isTestData:true`, plus the sandbox `bids`) back to its canonical seeded shape via `merge:true` upserts, and deletes any `isTestData` doc not in the known seed-id set — i.e. a tester-created extra (cloned product, new bid) rather than an edit to an existing fixture. Added 2026-08-21 because multiple testers sharing one live sandbox could edit or bid on a fixture and pollute it for the next tester until the 7-day TTL cleanup happened to catch it — this closes that gap without waiting on expiry. Scoped to the tester sandbox only; the permanent Beyblade catalog is never touched by either job. The tester-sandbox auction fixtures (`products-tester-seed-data.ts`) are staggered 1h/2h/3h-out (`auction-tester-sandbox-cycle-{1,2,3}`, generated from a loop, plus the always-ended `auction-tester-sandbox-won`) so this 4-hour cycle reliably lets testers watch a live auction actually end mid-session.
+**Refresh — REMOVED 2026-09-04.** `testerSandboxRefresh` (every 4h) used to revert every live sandbox fixture to its canonical seed shape and prune tester-created extras. It is gone, along with its job core, handler and Scheduler registration, because the Claude tester's lifecycle now owns fixture state — it seeds a known catalog at the start of a run and wipes at the end. Two owners of the same documents was not redundancy, it was a race: the job reset `currentBid` and recomputed `auctionEndDate` underneath a test that was mid-assertion. **Do not reinstate it** without first deciding who owns fixture state. Scheduler jobs are now **28** (recounted, was 29 — see the Firebase budget row, which has drifted three times and says to recount rather than quote).
+
+**Time-bound fixtures are window-relative, not hour-literal.** `appkit/src/features/tester/seed-data/tester-window.ts` exposes `windowMinutes()` / `windowOffset(fraction)` / `windowAgo(fraction)`, driven by **`TESTER_WINDOW_MINUTES`** (default **180**, which reproduces the historical 1h/2h/3h auction stagger exactly, so an ordinary `appkit-seed load` behaves as it always has). Auction end dates, offer `expiresAt`/`checkoutDeadline` and the lottery draw window all derive from it, so a run can shorten every deadline together and actually watch an auction close or an offer lapse. A hard-coded duration cannot be shortened, which is what made those cases untestable in any session shorter than the literal. `audit-tester-plugin-wiring`'s R4 blocks a time-bound tester fixture that does not import this helper. **Fixtures that must NOT expire mid-run use a fraction > 1** (`OUTLASTS_RUN = 2`), which is the distinction to preserve when adding one.
 
 **Known gap**: `npm run check` does not run an actual `next build`, so it cannot catch Turbopack-level bundling regressions (e.g. a `node:module`-importing file becoming reachable from a client chunk). If touching anything in this tier's import chain, also run a real `npm run build` before calling a change done.
 
 **And a real `next build` is itself not sufficient** — a bundling-adjacent fault can still be invisible until the code actually *runs* in a Lambda. Root Cause #69 passed `tsc`, `npm run check` and a full production build, then 500'd every route in production. That class is caught only by the post-deploy smoke test in `scripts/deploy.mjs` (§ "Deploy to Vercel Production"). Three gates, each catching what the previous cannot: `check` → `build` → smoke.
 
 **Feedback export — one Markdown report, two consumers.** `TesterChecklistResponseRepository.getMarkdownReport(siteOrigin)` (2026-08-17) is the single source of the export shape: it joins every answered response against the `testerChecklistItems` catalog for readable labels, then groups into an **Issues** section (every `"no"` answer — checkbox list with tester name, comment, screenshot link, deep link, review status) and a **Notes on passing cases** section (every `"yes"` that still left a comment — usually styling/readability feedback). `node appkit/scripts/export-tester-feedback.mjs` (`npm run tester:export-feedback`) mirrors this exact logic as a standalone CLI, writing `tester-feedback-report.md` at the repo root (gitignored) for a human or a future Claude session to `Read` directly — no live Firestore query needed. `GET /api/admin/tester-feedback/export` streams the same Markdown as a download via the "Download Report" button on `AdminTesterFeedbackView` (`ACTIONS.ADMIN["export-tester-feedback"]`). **When changing the report shape, update both** — the CLI script and `getMarkdownReport()` must stay in sync; there is no single shared implementation between the two runtimes (Node CLI vs. an appkit repository method invoked from a Next.js route).
+
+---
+
+## Claude Tester (2026-09-04)
+
+> The `tester/` submodule — a **Claude Code plugin** that drives the 943 checklist
+> cases with a real browser and records a verdict per case. Read this before touching
+> anything under `tester/`, and before adding a collection to the seed.
+
+**Why an LLM and not Playwright specs.** The cases carry **no machine-readable oracle**
+— `CaseInput` is `{ key, label, description?, href? }` and the expected outcome exists
+only as English, usually `BEFORE: … AFTER: …`. Selectors can assert a fraction of that,
+and the deleted suite's habit of asserting presence (`text=/wishlist|saved/i` is
+visible) is the shape that passes *against* a bug. An LLM can read *"BEFORE: Back
+rendered as a ~44px box clipped to 'Ba'. AFTER: each button is as wide as its own label
+needs"* and rule on it from a screenshot. **Playwright drives; Claude judges.**
+
+**Nothing new was needed downstream.** `GET /api/user/tester-checklist` already returns
+every case plus the caller's own answers; `PUT /api/user/tester-checklist/{id}` already
+records one; `getMarkdownReport()` and `/admin/tester-feedback` already report and
+triage. The tester simply signs in as an identity — `user-claude-tester`
+(`isTester` + `canTestAdmin` + **`isBot`**). `canTestAdmin` is required, not
+decorative: 116 cases are `adminOnly` and the route 404s them silently without it.
+`isBot` keeps a runner that works all 943 cases off the **public** Bug Hunters
+leaderboard, which exists to credit people; the credit still lands on the item.
+
+### 🛑 The tier boundary — the whole design rests on this
+
+A run **wipes the seeded catalog from the live project** and re-seeds it. That is only
+tolerable because the wipe is tiered. `tester/scripts/lib/collections.mjs` is the
+declaration; `assertDeletable()` is the gate every destructive call goes through.
+
+| Tier | Collections | Treatment |
+|---|---|---|
+| **PRESERVE** | `users` (Firestore **and** Firebase Auth), `addresses`, `sessions`, `siteSettings` | Never touched. Real accounts, logins, saved addresses, and the AES-encrypted live API keys all survive every run |
+| **SEED_OWNED** | `categories`, `stores`, `products`, `blogPosts`, `events`, `coupons`, `reviews`, `groupedListings`, `carouselSlides`, `homepageSections`, `faqs` | Wiped wholesale, re-seeded to a known state |
+| **CASCADE** | `carts`, `orders`, `bids`, `offers`, `payouts`, `eventEntries`, `couponUsage`, `notifications`; **item-level pruning** in `wishlists` / `history` | Deleted **only where a row references** something in SEED_OWNED |
+
+- **An unclassified collection is PRESERVED, not swept.** `assertDeletable` throws on
+  anything unlisted, so a collection added later is safe by default — the opposite of
+  the usual failure mode. `audit-tester-plugin-wiring` R1 then makes it visible.
+- **`wishlists` and `history` are one document per user.** The cascade prunes their
+  `items[]`; deleting the document to remove one stale entry would destroy a real
+  person's whole list.
+- **This cascade deliberately goes further than `testerSandboxCleanup`'s**, which
+  leaves `orders`/`reviews`/`wishlists`/`history` alone on the reasoning that they
+  denormalize what they display. That is right for a long-lived sandbox and wrong
+  between runs, where a stale order is noise in every listing and every report.
+- **`firebase-reset.mjs` is forbidden here** — it deletes every Auth user. There is no
+  `--full-reset` flag and one must not be added.
+
+### Safety rails
+
+1. **Host guard** — `TESTER_TARGET_PROJECT` is **required, with no default**, and must
+   equal `FIREBASE_ADMIN_PROJECT_ID`. A default would be a project id sitting in the
+   repo that some future clone silently points at.
+2. **Typed confirmation** — `--yes-i-am <projectId>`, not a bare `-y`, so muscle memory
+   cannot approve a run against the wrong project. `lifecycle.mjs plan` never asks and
+   is what you reach for first.
+3. **Post-wipe assertion** — user and Auth counts plus a `siteSettings.credentials`
+   hash are captured before the wipe and re-checked after. Any drop aborts before
+   seeding. This is the check that would catch a cascade bug on the tier that matters.
+4. **`--recover <runId>`** re-runs teardown from the backup. A run dying between wipe
+   and teardown must be one command from fixed.
+
+### 🛑 One-time bootstrap — `users` is preserved, so a run never creates the bot
+
+`user-claude-tester`, `user-employee-blog` and `user-employee-trust` live in `users`,
+which is in the **PRESERVE** tier. A tester run therefore **never seeds them**, and
+`fetch-cases.mjs` will fail its login until they exist. Create them once:
+
+```
+npx appkit-seed load --collections users
+```
+
+Safe against real accounts: the seed upserts only its own 21 uids, and real signups
+carry Firebase-assigned uids that cannot collide. Measured on prod 2026-09-04 —
+**52 Firestore users / 54 Auth records against 21 seeded**, i.e. roughly 31 real
+accounts, which is precisely why `users` is preserved rather than wiped.
+
+**`seed-cli` sets `TempPass123!` only when it CREATES an Auth record.** A re-seed never
+resets an existing password, so an account whose password was changed must be reset
+explicitly or every subsequent run fails to log in.
+
+### Running it
+
+```
+npm run tester:plan                    # dry run — per-collection delete counts, writes nothing
+npm run tester:setup -- --yes-i-am <projectId> --window 90
+npm run tester:claude                  # 88 per-page batches, resumable
+node tester/scripts/record-verdicts.mjs --run <id> --publish
+npm run tester:teardown -- --yes-i-am <projectId>
+```
+
+`TESTER_TARGET_PROJECT` must be set in `.env.local` and must equal
+`FIREBASE_ADMIN_PROJECT_ID`, or every command exits 2 before touching anything.
+
+**What a run actually costs, measured on prod 2026-09-04** (`npm run tester:plan`):
+481 documents deleted — 387 seed-owned plus 94 cascade, including 18 orders, 41 bids
+and 10 carts. Users, Auth records, addresses, sessions and `siteSettings` all show
+`delete: 0`. A non-zero count in that first block is a bug, not a surprise.
+
+Interactively, `/tester:run-tests` runs one page with you watching — the same skill the
+harness invokes, so the contract cannot drift between them.
+
+**Batch by PAGE, not phase.** Phases run 9–91 cases (`assignDefaultPhases` never splits
+a page), too coarse for one context window. A page is ~11 cases sharing a URL, a role
+and a session.
+
+**🛑 Publish BEFORE teardown.** Verdicts live in `testerChecklistResponses`, which the
+teardown wipe deletes. `claude-tester-report.md` is written outside `.tester-runs/` for
+the same reason.
+
+### Verdicts and calibration
+
+`yes` / `no` / `null`, and **`null` ("could not test") is first-class** — the schema
+already allows it and both report generators already skip it. A `no` **must** cite
+evidence; `record-verdicts.mjs` rejects one without. **Guessing is worse than
+abstaining**: a fabricated `yes` is a false green on a case a human would otherwise
+have run, and it is indistinguishable from real coverage.
+
+Every batch carries **two calibration controls** whose answers the harness knows and
+the tester is not told — one that must pass, one that cannot (`/__tester-control-<runId>`).
+**A batch failing either has all its verdicts quarantined**, not just the control: a
+tester that mis-answered a control has not demonstrated it was testing at all. This is
+the LLM equivalent of *never trust an audit you have not seen fail* (Root Cause #87).
+
+### Claude Code plugin mechanics (verified empirically 2026-09-04, not from docs)
+
+- **A nested `tester/.claude/skills/` would NOT load at startup** — nested skills load
+  only once Claude touches a file in that directory, and cannot be invoked by name
+  before that. And `permissions.additionalDirectories` (which `.claude/settings.json`
+  already uses) **grants file access only; it does not load skills.** Hence a plugin.
+- **The marketplace `path` is the repo root, `"./"`** — not `./.claude-plugin`. The CLI
+  appends `.claude-plugin/marketplace.json` itself.
+- **`enabledPlugins` alone does not install it.** A one-time
+  `claude plugin marketplace add ./` + `claude plugin install tester@letitrip-tools` is
+  required; after that it auto-loads in every session.
+- **The MCP server registers as `plugin:tester:playwright`**, not `playwright`. An
+  exact-match check on the name fails every batch while looking correct.
+- **Flags that do NOT exist at Claude Code 2.1.34**: `--bare`, `--max-turns`,
+  `--permission-prompts`, `claude plugin validate --strict`. `--permission-mode` takes
+  `acceptEdits | bypassPermissions | default | delegate | dontAsk | plan` — **not
+  `auto`**.
+- **`--setting-sources user` is what suppresses the Stop hook.** Without it,
+  `scripts/claude-hooks/check-on-stop.mjs` — the whole audit suite, 180s timeout —
+  fires on *every* Claude turn, across all 88 batches. Because it drops project
+  settings, the tester must be supplied as a plugin (`--plugin-dir`), which is a CLI
+  flag and unaffected.
+- **An invalid MCP config is skipped silently and the run still exits 0**, so a sweep
+  can "succeed" having never opened a browser. `run.mjs` gates each batch on
+  `mcp_server_errors` / `plugin_errors` in the `system/init` event instead of on the
+  exit code.
+- OAuth still applies (no `--bare`), so harness runs use the normal subscription and
+  need no `ANTHROPIC_API_KEY`.
 
 ---
 
@@ -2453,10 +2630,21 @@ Confirm the log lines read `updating Node.js 22 (2nd Gen) function …` with no 
 
 ### 5 — Manual Verification
 
-There is no automated suite to run here — see the callout near the top of this
-file for why both were deleted. Step 6's `node scripts/deploy.mjs` runs the only
-automated post-deploy check (`/`, `/en/products`, `/api/site-settings`) and
-fails the deploy on any non-2xx/3xx, so it gates before anything manual.
+There is still no unit-test suite — see the callout near the top of this file for
+why both were deleted. Step 6's `node scripts/deploy.mjs` runs the only automated
+post-deploy check (`/`, `/en/products`, `/api/site-settings`) and fails the deploy
+on any non-2xx/3xx, so it gates before anything manual.
+
+**The Claude tester is available but is Rule #10-gated** — it hits production and
+**wipes the seeded catalog**, so never run it as a side effect of finishing a plan.
+Only when the user asks for it in that message:
+
+```
+npm run tester:plan                                  # dry run, writes nothing
+/tester:run-tests <groupKey>/<pageKey>               # one page, interactively
+```
+
+See § "Claude Tester" for the tier boundary and the safety rails.
 
 What to do instead, in the ~2 minutes after a deploy:
 
