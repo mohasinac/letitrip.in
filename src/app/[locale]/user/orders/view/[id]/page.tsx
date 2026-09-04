@@ -28,6 +28,7 @@ import {
   isManualPaymentMethod,
   PAYMENT_WINDOW_MINUTES,
   OrderAddonBadges,
+  ORDER_RETURN_WINDOW_DAYS,
   type LineOrderGroup,
 } from "@mohasinac/appkit/client";
 import { getOrderDigitalCode } from "@/lib/api/user-client";
@@ -417,7 +418,12 @@ function renderManualPaymentPanel(order: NonNullable<OrderData>) {
   );
 }
 
-function renderOrderActions(order: NonNullable<OrderData>, canTrack: boolean, canCancel: boolean) {
+function renderOrderActions(
+  order: NonNullable<OrderData>,
+  canTrack: boolean,
+  canCancel: boolean,
+  canReturn: boolean,
+) {
   return (
     <Row gap="3" wrap>
       <Button variant="outline" size="sm" asChild>
@@ -428,6 +434,18 @@ function renderOrderActions(order: NonNullable<OrderData>, canTrack: boolean, ca
       {canTrack && (
         <Button variant="outline" size="sm" asChild>
           <Link href={String(ROUTES.USER.ORDER_TRACK(order.id))}>Track Shipment</Link>
+        </Button>
+      )}
+      {/*
+        `ACTIONS.USER["request-return"]` has existed in the registry since the
+        CTA registry was written and had never been rendered anywhere — the
+        whole return path was unreachable from the UI (Root Cause #37).
+      */}
+      {canReturn && (
+        <Button variant="outline" size="sm" asChild>
+          <Link href={String(ROUTES.USER.ORDER_RETURN(order.id))}>
+            {ACTIONS.USER["request-return"].label}
+          </Link>
         </Button>
       )}
       {canCancel && (
@@ -450,6 +468,20 @@ function OrderDetailPageInner({ params }: { params: Promise<{ id: string }> }) {
 
   const canCancel = order?.orderStatus === "pending" || order?.orderStatus === "confirmed";
   const canTrack  = !!order?.trackingNumber;
+  /*
+   * Mirrors `assertReturnWindowOpen`, which is what the server enforces:
+   * delivered, and within ORDER_RETURN_WINDOW_DAYS of the delivery date. This
+   * only decides whether to show the button — the gate itself is server-side.
+   *
+   * Deliberately NOT gated on final sale: a final-sale order can still be
+   * returned for a seller-fault reason, and hiding the entry point would hide
+   * exactly the claims that always remain open.
+   */
+  const canReturn =
+    order?.orderStatus === "delivered" &&
+    !!order?.deliveryDate &&
+    Date.now() - new Date(order.deliveryDate).getTime() <=
+      ORDER_RETURN_WINDOW_DAYS * 24 * 60 * 60 * 1000;
 
   const [disputeOpen, setDisputeOpen] = useState(false);
   const [disputeReason, setDisputeReason] = useState("");
@@ -489,7 +521,7 @@ function OrderDetailPageInner({ params }: { params: Promise<{ id: string }> }) {
         renderItems={() => order ? renderOrderItems(order, setRevealProductId) : null}
         renderAddress={() => order ? renderOrderAddress(order) : null}
         renderPayment={() => order ? renderOrderPayment(order) : null}
-        renderActions={() => order ? renderOrderActions(order, canTrack, canCancel) : null}
+        renderActions={() => order ? renderOrderActions(order, canTrack, canCancel, canReturn) : null}
       />
       {order && renderManualPaymentPanel(order)}
       {order?.autoApproved && (

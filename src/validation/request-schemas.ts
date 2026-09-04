@@ -31,6 +31,7 @@ import {
   MEDIA_URL_MESSAGE,
 } from "@mohasinac/appkit";
 import { addressFormSchema, addressUpdateSchema } from "@mohasinac/appkit/server";
+import { PRODUCT_MAX_IMAGES } from "@mohasinac/appkit";
 
 /**
  * A media reference we are willing to PERSIST. The zod-4 twin of appkit's
@@ -137,13 +138,19 @@ const productBaseSchema = z.object({
   // so making this unconditionally required made those 4 types un-publishable.
   stockQuantity: z.number().int().nonnegative().optional(),
   mainImage: urlSchema,
-  images: z.array(urlSchema).max(5).optional(),
+  images: z.array(urlSchema).max(PRODUCT_MAX_IMAGES).optional(),
   video: videoSchema.optional(),
   specifications: z.array(productSpecificationSchema).max(50).optional(),
   features: z.array(z.string().min(1).max(200)).max(20).optional(),
   tags: z.array(z.string().min(1).max(50)).max(10).optional(),
   shippingInfo: z.string().max(1000).optional(),
   returnPolicy: z.string().max(1000).optional(),
+  // 🛑 Must be named here or it is STRIPPED on every seller and admin write —
+  // this schema has no `.passthrough()` (see the block comment below).
+  // Optional with NO `.default()`: absent means final sale, and defaulting it
+  // to `true` here would write an explicit value the seller never chose,
+  // making "seller opted in" and "seller said nothing" indistinguishable.
+  finalSale: z.boolean().optional(),
   isDraft: z.boolean().default(false),
   condition: z.enum(["new", "used", "refurbished", "broken"]).optional(),
   insurance: z.boolean().optional(),

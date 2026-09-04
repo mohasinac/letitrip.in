@@ -197,6 +197,14 @@ if (!SCHEMAS) process.exit(2);
  * reads, so the first REAL failure would be invisible.
  */
 const DRAFT_SHAPED = new Set([
+  // `product` is the clearest case of all: the form is FLAT
+  // (`classifiedCity`, `liveSpecies`, `printSize`) while the document nests
+  // those under `classified.meetupArea.city` / `liveItem.species` /
+  // `printMeta.size`. `draftToProductInput` translates. Every stored product
+  // therefore fails to parse against the draft, permanently and correctly —
+  // the DROPPED-KEY half is the half worth gating, and it is the half that
+  // would have caught this entity's own bug.
+  "product",
   "blog", "event", "productFeature", "storeCategory",
   "listingTemplate", "payoutMethod", "shippingConfig", "groupedListing",
   "sellerCoupon", "customRole",

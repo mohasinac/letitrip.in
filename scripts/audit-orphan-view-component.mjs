@@ -97,9 +97,10 @@ const GRANDFATHERED = new Set([
   "SellerAuctionsView",
   "SellerPreOrdersView",
   "SellerPrizeDrawsView",
-  // The plan flags this as "confirm overlap with AdminSiteSettingsView, then
-  // delete". Confirmed: nothing outside comments mentions it.
-  "AdminSiteView",
+  // "AdminSiteView" DELETED 2026-09-04 — the decision this entry was holding
+  // open. AdminSiteSettingsView owns the announcement bar; nothing outside
+  // barrels referenced it, and migrating an unreachable view to SectionForm
+  // would have been work nobody could ever verify.
   // The /demo/seed route and SeedPanel were removed; seeding is the
   // appkit-seed CLI now. This is what was left behind.
   "DemoSeedView",
@@ -112,7 +113,10 @@ const GRANDFATHERED = new Set([
   "SellerStoreView",
   "CategoryProductsView",
   "ProductsView",
-  "RefundRequestView",
+  // "RefundRequestView" removed — it now has a real caller at
+  // src/app/[locale]/user/orders/[id]/return/page.tsx. It was orphaned because
+  // no buyer-facing return flow existed at all, not because the component was
+  // speculative.
   "HowItWorksInfoView",
   "AuthStatusPanel",
 ]);

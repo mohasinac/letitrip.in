@@ -216,6 +216,12 @@ export const AUDITS = [
   { name: "raw-img-src",                     script: "scripts/audit-raw-img-src.mjs" },
   { name: "finalize-magic-bytes",            script: "scripts/audit-finalize-magic-bytes.mjs" },
   { name: "media-ext-hmac",                  script: "scripts/audit-media-ext-hmac.mjs" },
+  { name: "media-limit-literals",            script: "scripts/audit-media-limit-literals.mjs" },
+  // Not a static check — it EXECUTES the draft->payload mapper and asserts the
+  // per-type fields arrive. Registered here so it runs in `npm run check`
+  // rather than being a script nobody invokes (the fate of the Playwright
+  // suite, per CLAUDE.md's testing callout). Requires a built appkit/dist.
+  { name: "product-draft-roundtrip",         script: "scripts/qa/product-draft-roundtrip.mjs" },
   { name: "storage-rules-shape",             script: "scripts/audit-storage-rules-shape.mjs" },
   // W6 — error contract / silent-failure gates (workstreams 1, 3, 5)
   { name: "silent-body-parse",               script: "scripts/audit-silent-body-parse.mjs" },

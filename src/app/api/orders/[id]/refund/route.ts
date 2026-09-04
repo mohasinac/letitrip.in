@@ -19,13 +19,14 @@ import {
   orderRepository,
   storeRepository,
 } from "@mohasinac/appkit";
-import { processRefundAction } from "@mohasinac/appkit/server";
+import { processRefundAction, RETURN_REASON } from "@mohasinac/appkit/server";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 const bodySchema = z.object({
   type: z.enum(["full", "partial"]),
   amount: z.number().positive(),
-  reason: z.string().min(3),
+  reasonCode: z.enum(RETURN_REASON),
+  reasonNote: z.string().max(500).optional(),
   itemIds: z.array(z.string()).optional(),
   confirmIrrevocable: z.literal(true),
   method: z.enum(["razorpay", "manual"]),
@@ -59,7 +60,8 @@ export const POST = withProviders(
               orderId: id,
               type: b.type,
               amount: b.amount,
-              reason: b.reason,
+              reasonCode: b.reasonCode,
+              ...(b.reasonNote ? { reasonNote: b.reasonNote } : {}),
               ...(b.itemIds ? { itemIds: b.itemIds } : {}),
               confirmIrrevocable: true as const,
               refundedBy: user!.uid,
@@ -70,7 +72,8 @@ export const POST = withProviders(
               orderId: id,
               type: b.type,
               amount: b.amount,
-              reason: b.reason,
+              reasonCode: b.reasonCode,
+              ...(b.reasonNote ? { reasonNote: b.reasonNote } : {}),
               ...(b.itemIds ? { itemIds: b.itemIds } : {}),
               confirmIrrevocable: true as const,
               refundedBy: user!.uid,

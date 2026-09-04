@@ -18,6 +18,7 @@ import {
 } from "@mohasinac/appkit";
 import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
 import { isAdminUser } from "@mohasinac/appkit";
+import { draftToProductInput } from "@mohasinac/appkit";
 import {
   becomeSeller,
   createStore,
@@ -212,7 +213,21 @@ export async function createSellerProductAction(input: unknown): Promise<ActionR
     const user = await requireRoleUser(["seller", "admin"]);
     const rl = await rateLimitByIdentifier(`create-seller-product:${user.uid}`, RateLimitPresets.API);
     if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-    const parsed = productCreateSchema.safeParse(input);
+    /*
+     * Fold the form's FLAT per-type keys into the nested blocks the schema
+     * names, BEFORE parsing.
+     *
+     * `productCreateSchema` has no `.passthrough()`, so without this every
+     * `classifiedCity` / `liveSpecies` / `digitalCodeDelivery` / `print*` the
+     * seller typed was stripped and the listing saved without the fields that
+     * made it that kind of listing — silently, with a success toast.
+     *
+     * Applied HERE rather than in the ~20 `store/*` new/edit pages that each
+     * spread the draft in: one choke point cannot be forgotten by the next
+     * page somebody adds.
+     */
+    const mapped = draftToProductInput(input as Parameters<typeof draftToProductInput>[0]);
+    const parsed = productCreateSchema.safeParse(mapped);
     if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input", parsed.error);
 
     // P-10 — prize-draw listings require legal sign-off before going live;
@@ -330,7 +345,12 @@ export async function sellerUpdateProductAction(
   return wrapAction(async () => {
     const user = await requireAuthUser();
       if (!id?.trim()) throw new ValidationError("id is required");
-      const parsed = productUpdateSchema.partial().safeParse(input);
+      // Same flat -> nested fold as the create path — an edit that leaves the
+      // per-type fields untranslated strips them just as thoroughly.
+      const mappedUpdate = draftToProductInput(
+        input as Parameters<typeof draftToProductInput>[0],
+      );
+      const parsed = productUpdateSchema.partial().safeParse(mappedUpdate);
       if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? ERR_INVALID_UPDATE, parsed.error);
       const profile = await userRepository.findById(user.uid);
       return sellerUpdateProduct(user.uid, profile?.role ?? "user", id, parsed.data as Record<string, JsonValue>) as any;

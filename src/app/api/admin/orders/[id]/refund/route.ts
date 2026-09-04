@@ -8,10 +8,17 @@ import {
 } from "@mohasinac/appkit";
 import { processRefundAction } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_MOD } from "@/constants";
+import { RETURN_REASON } from "@mohasinac/appkit/server";
 
 const refundSchema = z.object({
   amount: z.number().min(1),
-  reason: z.string().min(1),
+  /**
+   * Coded, not free text. An admin issuing a refund is recording WHY against
+   * the same closed enum the buyer picks from, so the two are comparable and
+   * the final-sale gate can reason about it.
+   */
+  reasonCode: z.enum(RETURN_REASON),
+  reasonNote: z.string().max(500).optional(),
 });
 
 export const POST = withProviders(
@@ -33,7 +40,8 @@ export const POST = withProviders(
               orderId: id,
               type: isFull ? "full" : "partial",
               amount: body!.amount,
-              reason: body!.reason,
+              reasonCode: body!.reasonCode,
+              ...(body!.reasonNote ? { reasonNote: body!.reasonNote } : {}),
               refundedBy: user!.uid,
               confirmIrrevocable: true,
               method: "razorpay",
@@ -43,7 +51,8 @@ export const POST = withProviders(
               orderId: id,
               type: isFull ? "full" : "partial",
               amount: body!.amount,
-              reason: body!.reason,
+              reasonCode: body!.reasonCode,
+              ...(body!.reasonNote ? { reasonNote: body!.reasonNote } : {}),
               refundedBy: user!.uid,
               confirmIrrevocable: true,
               method: "manual",

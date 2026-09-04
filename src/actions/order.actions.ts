@@ -20,6 +20,7 @@ import {
   listOrdersForUser,
   getOrderByIdForUser,
 } from "@mohasinac/appkit";
+import { requestReturnAction as appkitRequestReturnAction } from "@mohasinac/appkit/server";
 import { z } from "zod";
 import type { OrderDocument } from "@mohasinac/appkit";
 
@@ -55,6 +56,39 @@ export async function cancelOrderAction(
   }
 
   return cancelOrderForUser(user.uid, parsed.data.id, parsed.data.reason);
+}
+
+/**
+ * Buyer requests a return on a delivered order.
+ *
+ * Thin entrypoint, matching `cancelOrderAction` above: authenticate,
+ * rate-limit, delegate. The return window, the ownership check and the
+ * final-sale gate all live in `requestReturnAction` — server-side, where a
+ * client cannot skip them.
+ *
+ * STRICT rate limit, same as cancellation: both are irreversible-ish state
+ * changes on someone else's money.
+ */
+export async function requestReturnAction(
+  id: string,
+  reasonCode: string,
+  reasonNote?: string,
+  itemIds?: string[],
+): Promise<ActionResult<unknown>> {
+  const user = await requireAuthUser();
+  const rl = await rateLimitByIdentifier(
+    `order:return:${user.uid}`,
+    RateLimitPresets.STRICT,
+  );
+  if (!rl.success)
+    throw new AuthorizationError("Too many requests. Please slow down.");
+
+  return appkitRequestReturnAction({
+    orderId: id,
+    reasonCode,
+    ...(reasonNote ? { reasonNote } : {}),
+    ...(itemIds?.length ? { itemIds } : {}),
+  });
 }
 
 // --- Read Actions -------------------------------------------------------------

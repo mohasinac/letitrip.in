@@ -1,5 +1,6 @@
 import { ROUTES } from "@mohasinac/appkit";
 import type { SellerProductDraft } from "@mohasinac/appkit";
+import { productToDraft } from "@mohasinac/appkit";
 import { sellerUpdateProductAction, getSellerProductAction } from "@/actions/seller.actions";
 import { redirect, notFound } from "@/i18n/navigation";
 import { StoreEditProductShell } from "@/components";
@@ -14,7 +15,17 @@ export default async function Page({ params }: Props) {
   const product = await getSellerProductAction(id);
   if (!product) notFound();
 
+  /*
+   * `productToDraft` folds the document's NESTED per-type blocks
+   * (classified.meetupArea.city, liveItem.species, digitalCode.*, printMeta.*)
+   * back into the flat keys this form uses, plus finalSale / returnPolicy.
+   *
+   * Spread FIRST so the explicit fields below still win — this only fills in
+   * what the hand-written literal never listed. Without it the edit form
+   * opened blank for every per-type field, which read as "the data was lost".
+   */
   const initialValues: SellerProductDraft = {
+    ...productToDraft(product as any),
     title: (product as any).title,
     slug: (product as any).slug,
     description: (product as any).description,
