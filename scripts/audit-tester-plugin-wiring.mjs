@@ -259,13 +259,10 @@ const UNAUTHORED_PAGES = new Set([
   "buying/wishlist-history",
   "selling/listing-a-product",
   "selling/sectionised-forms",
-  "selling/seller-analytics-payouts",
   "selling/seller-listing-types",
   "selling/seller-marketing-extras",
-  "selling/seller-ops-comms",
   "selling/seller-orders",
   "selling/seller-shipping-payouts-setup",
-  "selling/store-dashboard-navigation",
 ]);
 
 if (existsSync(CATALOGUE)) {
