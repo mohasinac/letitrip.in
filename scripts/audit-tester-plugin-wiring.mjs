@@ -56,10 +56,10 @@ if (!existsSync(collectionsPath)) {
   violations.push(`R1 missing file: tester/scripts/lib/collections.mjs — the tier boundary is undeclared`);
 }
 
-const tiers = { PRESERVE: [], SEED_OWNED: [], CASCADE: [] };
+const tiers = { PRESERVE: [], SEED_OWNED: [], DERIVED: [], CASCADE: [] };
 if (existsSync(collectionsPath)) {
   const src = stripComments(read(collectionsPath));
-  for (const name of ["PRESERVE", "SEED_OWNED"]) {
+  for (const name of ["PRESERVE", "SEED_OWNED", "DERIVED"]) {
     const m = src.match(new RegExp(`export const ${name} = Object\\.freeze\\(\\[([\\s\\S]*?)\\]\\)`));
     if (m) tiers[name] = [...m[1].matchAll(/"([^"]+)"/g)].map((x) => x[1]);
   }
@@ -81,17 +81,34 @@ for (const c of MUST_PRESERVE) {
 
 /* ── R1: every seeded collection is classified ───────────────────────────── */
 
-// Derive collection names from the seed barrel rather than a hand-kept list —
-// a hand-kept list is the drift this audit exists to prevent.
-const seedIndex = resolve(ROOT, "appkit/src/seed/index.ts");
+/**
+ * Derive the collection list from COLLECTION_MAP in appkit/scripts/seed-cli.mjs —
+ * the authoritative registry of what the seeder actually writes.
+ *
+ * 🛑 This rule previously parsed appkit/src/seed/index.ts for `collection: "x"`
+ * pairs, which do not exist in that file. It therefore built an EMPTY set and
+ * passed unconditionally, while four real collections (carousels, productFeatures,
+ * scammerProfiles, conversations) sat unclassified and survived a live clear.
+ * An audit that reports OK because it is looking at nothing is worse than no audit
+ * (Root Cause #84). Hence the explicit emptiness check below.
+ */
+const seedCli = resolve(ROOT, "appkit/scripts/seed-cli.mjs");
 const seededCollections = new Set();
-if (existsSync(seedIndex)) {
-  const src = stripComments(read(seedIndex));
-  for (const m of src.matchAll(/collection:\s*"([a-zA-Z]+)"/g)) seededCollections.add(m[1]);
-  for (const m of src.matchAll(/^\s*([a-zA-Z]+):\s*\w+SeedData/gm)) seededCollections.add(m[1]);
+if (existsSync(seedCli)) {
+  const src = stripComments(read(seedCli));
+  const block = src.match(/const COLLECTION_MAP\s*=\s*\{([\s\S]*?)\n\};/);
+  if (block) for (const m of block[1].matchAll(/^\s*([a-zA-Z][a-zA-Z0-9]*)\s*:/gm)) seededCollections.add(m[1]);
 }
 
-const classified = new Set([...tiers.PRESERVE, ...tiers.SEED_OWNED, ...tiers.CASCADE]);
+if (seededCollections.size === 0) {
+  violations.push(
+    `R1 could not extract any collection names from appkit/scripts/seed-cli.mjs's COLLECTION_MAP. ` +
+      `The rule cannot run, and a rule that silently checks nothing reports OK forever — ` +
+      `fix the parser rather than letting this pass.`,
+  );
+}
+
+const classified = new Set([...tiers.PRESERVE, ...tiers.SEED_OWNED, ...tiers.DERIVED, ...tiers.CASCADE]);
 for (const c of seededCollections) {
   if (!classified.has(c)) {
     violations.push(
@@ -165,6 +182,6 @@ if (violations.length > 0) {
 
 console.log(
   `audit-tester-plugin-wiring: OK — ${tiers.PRESERVE.length} preserved, ` +
-    `${tiers.SEED_OWNED.length} seed-owned, ${tiers.CASCADE.length} cascade.`,
+    `${tiers.SEED_OWNED.length} seed-owned, ${tiers.DERIVED.length} derived, ${tiers.CASCADE.length} cascade.`,
 );
 process.exit(0);
