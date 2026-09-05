@@ -235,14 +235,10 @@ const MONEY_FLOWS = resolve(ROOT, "appkit/src/features/tester/seed-data/_money-f
 const UNAUTHORED_PAGES = new Set([
   "admin/bug-hunter-rewards",
   "buying/cart",
-  "buying/image-tile-layout",
   "buying/my-orders",
   "buying/offers",
-  "buying/return-request",
-  "buying/reviews",
   "buying/reviews-pagination",
   "buying/user-dashboard-extras",
-  "buying/user-dashboard-navigation",
   "buying/wishlist-history",
 ]);
 
