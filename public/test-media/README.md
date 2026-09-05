@@ -10,13 +10,13 @@ garish so nothing here can be mistaken for real product media.
 
 | File | Bytes | Detected | Purpose |
 |---|---|---|---|
+| `sample-video.mp4` | 1128375 | video/mp4 | happy path — video upload, poster frame, and the theater-mode player |
 | `sample-image.png` | 561 | image/png | happy path — PNG upload and preview |
 | `sample-image.jpg` | 160 | image/jpeg | happy path — JPEG, the format most product photos arrive as |
 | `sample-image.webp` | 34 | image/webp | happy path — WebP, which the media proxy converts to |
 | `sample-doc.pdf` | 627 | application/pdf | happy path — the PDF branch (invoices, payout docs, shipping proofs) |
 | `not-really-an-image.png` | 95 | — | rejection — declared PNG, actually text; must return 422 MIME_MISMATCH |
 | `empty.png` | 0 | — | rejection — zero-length file; must fail with a readable message, not a stack trace |
-| `oversized.png` | 11224775 | image/png | rejection — larger than the 10MB image cap |
 
 `oversized.png` is **not committed** — it is >10MB of incompressible noise, reproducible in a
 second with `--with-oversized`, and not worth carrying in git to assert a size check.
