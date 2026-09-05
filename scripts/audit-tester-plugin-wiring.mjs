@@ -235,11 +235,8 @@ const MONEY_FLOWS = resolve(ROOT, "appkit/src/features/tester/seed-data/_money-f
 const UNAUTHORED_PAGES = new Set([
   "admin/bug-hunter-rewards",
   "buying/cart",
-  "buying/my-orders",
   "buying/offers",
-  "buying/reviews-pagination",
   "buying/user-dashboard-extras",
-  "buying/wishlist-history",
 ]);
 
 if (existsSync(CATALOGUE)) {
