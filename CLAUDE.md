@@ -2338,6 +2338,16 @@ the LLM equivalent of *never trust an audit you have not seen fail* (Root Cause 
 - **`enabledPlugins` alone does not install it.** A one-time
   `claude plugin marketplace add ./` + `claude plugin install tester@letitrip-tools` is
   required; after that it auto-loads in every session.
+- **🛑 Installing COPIES the plugin into `~/.claude/plugins/cache/letitrip-tools/tester/<version>/`.**
+  It is a snapshot, not a link to the submodule, so editing `tester/` changes nothing
+  for an installed session until the cache is refreshed — and the failure is silent:
+  a run uses the stale scripts and still exits 0. It cost a batch of verdicts with no
+  labels here, because `${CLAUDE_PLUGIN_ROOT}/scripts/record-verdicts.mjs` resolved
+  into the cache. `claude plugin update` does **not** work for a local-directory
+  marketplace ("Plugin not found"); the working refresh is
+  `claude plugin uninstall tester && claude plugin install tester@letitrip-tools`.
+  Same class as the appkit `node_modules` staleness in Root Cause #28 — verify with
+  `grep` against the cached copy rather than assuming an edit took effect.
 - **The MCP server registers as `plugin:tester:playwright`**, not `playwright`. An
   exact-match check on the name fails every batch while looking correct.
 - **Flags that do NOT exist at Claude Code 2.1.34**: `--bare`, `--max-turns`,

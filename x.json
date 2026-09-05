@@ -1,0 +1,27 @@
+[
+  {
+    "id": "checklist-cta-layout-product-bottom-bar-three-actions-wrap-to-second-row",
+    "answer": "yes",
+    "comment": "On 390px viewport: Wishlist (width 167.5px) and Add to Cart (width 190.5px) share the upper row via flex-grow:1 on both buttons. Buy Now occupies the full-width second row. After tapping Add to Cart the row structure remained 2 rows unchanged.",
+    "evidence": {
+      "screenshot": "tester/.tester-runs/live1/shots/product-bottom-bar-initial.png",
+      "observed": "Row 1: Wishlist (x=12,w=167.5) | Add to Cart (x=187.5,w=190.5) at y=684. Row 2: Buy Now (x=12,w=366) at y=732. Both upper buttons have flex-grow:1 flex-shrink:1."
+    }
+  },
+  {
+    "id": "control-pass-live1",
+    "answer": "yes",
+    "comment": "Homepage rendered a visible header containing 10 links including the LetItRip logo link and Sign in.",
+    "evidence": {
+      "observed": "header element found, headerVisible:true, navLinkCount:10, texts include 'LetItRip', 'Sign in'"
+    }
+  },
+  {
+    "id": "control-fail-live1",
+    "answer": "no",
+    "comment": "The page /__tester-control-live1 returned HTTP 404 and rendered no product listing grid or product cards.",
+    "evidence": {
+      "observed": "HTTP status 404 at https://www.letitrip.in/__tester-control-live1; page title 'LetItRip — India's Collectibles Marketplace' (404 page), no product grid present"
+    }
+  }
+]
