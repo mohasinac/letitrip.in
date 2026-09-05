@@ -48,7 +48,8 @@
     "stress-test": "node scripts/stress-test.mjs",
     "tester:author": "node tester/scripts/author-steps.mjs",
     "tester:media-fixtures": "node tester/scripts/make-media-fixtures.mjs",
-    "tester:purge-media": "node tester/scripts/purge-test-media.mjs"
+    "tester:purge-media": "node tester/scripts/purge-test-media.mjs",
+    "tester:author-queue": "node tester/scripts/author-queue.mjs"
   },
   "dependencies": {
     "@google-cloud/logging": "^12.0.1",
