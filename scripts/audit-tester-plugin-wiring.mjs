@@ -27,14 +27,23 @@
  *       duration cannot be shortened, which is what makes "watch an auction end"
  *       untestable in any run shorter than the literal.
  *
- * And the six-part case contract — role · startPage · steps · expectedBehaviour ·
- * expectedUiState · endResult. `merge-authored.mjs` refuses most of this at
- * authoring time; these are the durable gate, because an authored module's header
- * invites hand edits and a validator you can walk around is a suggestion:
+ * And part of the six-part case contract — role · startPage · steps ·
+ * expectedBehaviour · expectedUiState · endResult.
  *
- *   R5  Every case on a page NOT on the ratchet list has all six parts. Five of six
- *       is a fail — the missing one is always the one that would have caught the
- *       bug. RATCHET, seeded from a run of this rule (90 pages), shrink-only.
+ * 🛑 READ THIS BEFORE TRUSTING R5. These rules do NOT enforce the whole contract.
+ * The per-field presence check, the roles enum, the assertion-opener rejection
+ * ("Confirm/Verify/Ensure/should" belongs in expectedUiState, not in a step) and
+ * the inputs-when-a-step-enters-data rule all lived in `merge-authored.mjs`, which
+ * was deleted 2026-09-06 along with the rest of the authoring scaffolding. They
+ * were never ported here. So a case can carry a `steps:` array of pure assertions,
+ * no `expectedUiState` and an invented role, and this audit stays green. That is a
+ * known, accepted hole — not an oversight to rediscover — and it is why the header
+ * says so instead of continuing to claim to be "the durable gate", which is what it
+ * said while the checks it was crediting itself with lived in another file:
+ *
+ *   R5  Every case on a page NOT on the ratchet list HAS A `steps:` ARRAY, inline or
+ *       in the authored overlay. Existence only. RATCHET, seeded from a run of this
+ *       rule (90 pages), shrink-only.
  *   R6  No mechanical "Open X. Verify Y." scaffold. It reaches 100% while encoding
  *       nothing the label did not already say, turning a visible gap into an
  *       invisible one (Root Cause #83).
@@ -196,12 +205,12 @@ if (existsSync(seedDir)) {
   }
 }
 
-/* ── R5–R10: the six-part case contract ──────────────────────────────────────
+/* ── R5–R10: part of the six-part case contract ──────────────────────────────
  *
- * `merge-authored.mjs` already refuses most of this at authoring time, and that is
- * the fast feedback. These are the DURABLE gate: an authored module's own header
- * says hand edits are safe and expected, so every rule the merge enforces has to
- * hold for a file nobody merged. A validator you can walk around is a suggestion.
+ * These six rules are now the ONLY mechanical check on an authored case, and they
+ * cover the shape of a citation, not the substance of a procedure — see the 🛑 in
+ * this file's header for what is deliberately unchecked since `merge-authored.mjs`
+ * was deleted. Do not read a green run as "the contract holds".
  *
  * Everything below reads the seed SOURCE — the catalogue plus the authored overlay
  * — never Firestore. Firestore is downstream of the seed and a run wipes it.
@@ -224,14 +233,6 @@ const MONEY_FLOWS = resolve(ROOT, "appkit/src/features/tester/seed-data/_money-f
  * Root Cause #84.
  */
 const UNAUTHORED_PAGES = new Set([
-  "account-auth/profile-settings",
-  "account-auth/signup-login",
-  "account-auth/testing-program",
-  "addresses/address-filters",
-  "addresses/postal-lookup",
-  "addresses/postal-validation",
-  "addresses/state-picker",
-  "addresses/unban-request",
   "admin/blog-faqs",
   "admin/bug-hunter-rewards",
   "admin/bundles",
@@ -246,10 +247,6 @@ const UNAUTHORED_PAGES = new Set([
   "admin/prize-draws-lotteries",
   "admin/site-system",
   "admin/users-trust",
-  "buying/bidding",
-  "buying/browsing-search",
-  "buying/buying-checkout",
-  "buying/buying-coupons",
   "buying/cart",
   "buying/image-tile-layout",
   "buying/my-orders",
@@ -260,18 +257,6 @@ const UNAUTHORED_PAGES = new Set([
   "buying/user-dashboard-extras",
   "buying/user-dashboard-navigation",
   "buying/wishlist-history",
-  "community-support/public-profile",
-  "community-support/support-tickets",
-  "content-discovery/blog",
-  "content-discovery/coupons",
-  "content-discovery/events",
-  "content-discovery/faq-help",
-  "content-discovery/notifications",
-  "content-discovery/search",
-  "cta-layout/checkout-bottom-bar",
-  "cta-layout/dialog-footers",
-  "cta-layout/editor-action-bar",
-  "cta-layout/product-bottom-bar",
   "design-ux/back-to-top-button",
   "design-ux/carousel-arrow-bounds",
   "design-ux/dashboard-layout",
@@ -282,20 +267,6 @@ const UNAUTHORED_PAGES = new Set([
   "design-ux/homepage-carousels",
   "design-ux/status-badge-legibility",
   "design-ux/sticky-cta-bar",
-  "page-wiring/data-loss",
-  "page-wiring/detail-pages",
-  "page-wiring/drawer-pages",
-  "page-wiring/reachability",
-  "public-pages/auth-error-pages",
-  "public-pages/bug-hunters",
-  "public-pages/core-listing-pages",
-  "public-pages/help-how-it-works",
-  "public-pages/legal-policy-pages",
-  "public-pages/stores-sellers-directories",
-  "search-and-nav/employee-permissions",
-  "search-and-nav/header-search",
-  "search-and-nav/settings-deep-links",
-  "search-and-nav/sidebar-search",
   "selling/become-seller",
   "selling/final-sale-authoring",
   "selling/listing-a-product",
