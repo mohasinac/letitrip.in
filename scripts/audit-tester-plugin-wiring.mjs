@@ -238,7 +238,6 @@ const UNAUTHORED_PAGES = new Set([
   "admin/catalog-listings",
   "admin/content-marketing",
   "admin/coupons",
-  "admin/events-raffles-spin",
   "admin/orders-fulfillment",
   "admin/site-system",
   "admin/users-trust",
