@@ -21,9 +21,13 @@ const createChecklistItemSchema = z.object({
   // The six-part case contract. Editable by admins because steps name concrete
   // fixtures (product-tester-offerable) and fixtures change — a wrong step must
   // be fixable without a redeploy and a re-seed.
-  role: z.enum(["guest", "buyer", "seller", "admin", "employee"]).optional(),
+  roles: z.array(z.enum(["guest", "buyer", "seller", "admin", "employee"])).max(5).optional(),
   startPage: z.string().max(300).optional(),
-  steps: z.array(z.string().max(500)).max(30).optional(),
+  steps: z.array(z.string().max(500)).max(40).optional(),
+  // Flat scalar maps: the exact values a tester enters, and the values that must
+  // be correct afterwards. Scalars only — a nested shape here is one nobody validates.
+  inputs: z.record(z.union([z.string().max(300), z.number(), z.boolean()])).optional(),
+  expectedData: z.record(z.union([z.string().max(300), z.number(), z.boolean()])).optional(),
   expectedBehaviour: z.string().max(1000).optional(),
   expectedUiState: z.string().max(1000).optional(),
   endResult: z.string().max(1000).optional(),

@@ -460,13 +460,31 @@ if (existsSync(CATALOGUE)) {
     id: m[1],
     body: authoredSrc.slice(m.index ?? 0, i + 1 < entryStarts.length ? entryStarts[i + 1].index : authoredSrc.length),
   }));
+  /*
+   * 🛑 A case now carries a LIST of affected roles, so this asks whether ANY of them
+   * can reach the page — not whether one particular role can.
+   *
+   * The single-role form of this check went inert the moment the field became
+   * `roles`: it matched `role:` and simply `continue`d on every case, reporting
+   * clean. That is the third time a rule in this file has silently checked nothing,
+   * and it is why each is re-probed after every change rather than merely re-run.
+   */
   for (const { body } of blocks) {
-    const role = body.match(/\brole:\s*"(\w+)"/)?.[1];
+    const rolesRaw = body.match(/\broles:\s*\[([^\]]*)\]/)?.[1] ?? "";
+    const roles = [...rolesRaw.matchAll(/"(\w+)"/g)].map((m) => m[1]);
     const page = body.match(/\bstartPage:\s*"([^"]+)"/)?.[1];
-    if (!role || !page) continue;
-    if (page.startsWith("/admin") && role !== "admin" && role !== "employee") {
-      violations.push(`R10 role "${role}" with startPage "${page}" — that case can only ever produce /unauthorized.`);
+    if (!roles.length || !page) continue;
+
+    if (page.startsWith("/admin") && !roles.some((r) => r === "admin" || r === "employee")) {
+      violations.push(
+        `R10 roles [${roles.join(", ")}] with startPage "${page}" — no listed role can reach an admin page, ` +
+          `so the case can only ever produce /unauthorized.`,
+      );
     }
+    // A multi-role case containing a privileged role is fine on a gated page: the
+    // guest half of "guest sees nothing, admin sees the row" is the comparison.
+    const role = roles.length === 1 ? roles[0] : null;
+    if (!role) continue;
     /*
      * A guest on a gated page is usually incoherent — and sometimes the entire point.
      *
