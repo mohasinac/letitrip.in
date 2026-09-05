@@ -10,6 +10,27 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 export const GET = withProviders(createApiHandler({
   auth: true,
   handler: async ({ user }) => {
+    /*
+     * 🛑 isTester / canTestAdmin must come from the USER DOCUMENT, not the session.
+     *
+     * Neither flag is ever minted into the session cookie's claims — only `role` is
+     * — so reading them off `user` yielded `undefined`, and `?? false` turned that
+     * into a confident lie. The effect was a split brain: /api/admin/* accepted a
+     * canTestAdmin account and returned real data, while SessionContext (which is
+     * populated from THIS endpoint) believed canTestAdmin was false, so RoleGuard
+     * redirected every /admin page to /unauthorized. The account had the flag in
+     * Firestore the whole time.
+     *
+     * /api/user/tester-checklist already does exactly this live read, and its own
+     * comment says why. This is the same fix applied one endpoint over.
+     *
+     * It also removes a staleness class (Root Cause #44): an admin granting the flag
+     * now takes effect on the next profile fetch instead of waiting for a re-login.
+     * Cost is one document read on an endpoint that already returns a single user,
+     * well inside Rule #6's per-request budget.
+     */
+    const profile = await userRepository.findById(user!.uid);
+
     return successResponse({
       uid: user!.uid,
       email: user!.email,
@@ -19,8 +40,8 @@ export const GET = withProviders(createApiHandler({
       phoneNumber: user!.phoneNumber,
       phoneVerified: user!.phoneVerified,
       storeId: user!.storeId,
-      isTester: user!.isTester ?? false,
-      canTestAdmin: user!.canTestAdmin ?? false,
+      isTester: profile?.isTester ?? user!.isTester ?? false,
+      canTestAdmin: profile?.canTestAdmin ?? user!.canTestAdmin ?? false,
       googleLinked: user!.googleLinked ?? false,
       googleLinkedEmail: user!.googleLinkedEmail ?? null,
       uiPreferences: user!.uiPreferences ?? {},
