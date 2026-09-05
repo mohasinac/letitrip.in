@@ -28,7 +28,7 @@
  * href or omits the field entirely (it's optional).
  */
 
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -141,6 +141,22 @@ const dynamicRoutePrefixes = new Set();
 const dynamicSubRoutes = new Set();
 collectRoutes(APP_DIR, [], validRoutes, dynamicRoutePrefixes, dynamicSubRoutes);
 validRoutes.add("/");
+
+/*
+ * Metadata routes live OUTSIDE `[locale]` — they are `src/app/<name>.ts` file
+ * conventions rather than a `page.tsx`, and they are deliberately unlocalised.
+ * The walk above cannot see them, so a case linking to one was reported as a
+ * dead href while the route served 200 in production. Register each real file
+ * rather than a fixed list, so deleting one still fails the cases that cite it.
+ */
+const METADATA_ROUTES = [
+  ["sitemap.ts", "/sitemap.xml"],
+  ["robots.ts", "/robots.txt"],
+  ["manifest.ts", "/manifest.webmanifest"],
+];
+for (const [file, route] of METADATA_ROUTES) {
+  if (existsSync(join(ROOT, "src", "app", file))) validRoutes.add(route);
+}
 
 // --- Build a known-id allowlist from seed data (main + tester fixtures) ---
 
