@@ -316,11 +316,22 @@ const UNAUTHORED_PAGES = new Set([
 ]);
 
 if (existsSync(CATALOGUE)) {
+  /*
+   * Comments stripped first.
+   *
+   * Every generated module opens with a header naming its own page and the exact
+   * command that produced it — "…--page buying/product-detail" — so an unstripped
+   * scan reports the page's own name as a cited fixture that does not exist. Same
+   * shape as the observability audit that counted a commented-out registration as
+   * live: a rule reading text it was never meant to judge.
+   */
   const authoredSrc = existsSync(AUTHORED_DIR)
-    ? readdirSync(AUTHORED_DIR)
-        .filter((f) => f.endsWith(".ts") && f !== "index.ts" && !f.startsWith("_"))
-        .map((f) => read(resolve(AUTHORED_DIR, f)))
-        .join("\n")
+    ? stripComments(
+        readdirSync(AUTHORED_DIR)
+          .filter((f) => f.endsWith(".ts") && f !== "index.ts" && !f.startsWith("_"))
+          .map((f) => read(resolve(AUTHORED_DIR, f)))
+          .join("\n"),
+      )
     : "";
   const inlineSrc = read(CATALOGUE) + (existsSync(MONEY_FLOWS) ? read(MONEY_FLOWS) : "");
 
@@ -352,12 +363,44 @@ if (existsSync(CATALOGUE)) {
   const FIXTURE_RE =
     /\b(?:product|auction|preorder|prizedraw|classified|digitalcode|live|art|sticker|category|brand|bundle|offer|event|store|coupon|group)-[a-z0-9][a-z0-9-]{4,}/g;
 
+  /*
+   * Scan the VALUES, never the keys.
+   *
+   * The overlay is keyed by `checklist-<group>-<page>-<caseKey>`, and a case key
+   * routinely begins with a word that looks like a slug prefix —
+   * `product-type-toggles-follow-selection`, `store-tabs-render`. Scanning the raw
+   * file made every such key a phantom "cited fixture that does not exist".
+   *
+   * A first attempt special-cased the handful of shapes the pilot page happened to
+   * produce (`product-detail…`), which held for exactly one page and then failed on
+   * the next. Removing the key lines outright is the rule that generalises.
+   */
+  const authoredValues = authoredSrc.replace(/^\s*"checklist-[^"]+":\s*\{\s*$/gm, "");
+
+  /*
+   * Distinguish a fixture CITATION from a hyphenated English adjective.
+   *
+   * "A category-related error message is shown" is prose; `product-detail` is the
+   * name of a page. Both match the slug shape, and flagging them sends the author
+   * hunting for a fixture that was never cited.
+   *
+   * A real citation satisfies one of two things:
+   *   · it follows a citation character — `/products/product-x`, `(product-x)`,
+   *     `"product-x"` — rather than a space; or
+   *   · it carries at least TWO segments after its prefix, which every real fixture
+   *     in this seed does (`bundle-tester-sandbox`, `store-beyblade-arena`) and
+   *     which no adjective does.
+   *
+   * It fails open: a bare prose mention of a one-segment id escapes. That is the
+   * right direction — R7 exists to catch typos, and a false positive costs more
+   * than a miss because it teaches the author to route around the gate.
+   */
   const unknown = new Set();
-  for (const m of authoredSrc.matchAll(FIXTURE_RE)) {
+  for (const m of authoredValues.matchAll(FIXTURE_RE)) {
     const id = m[0];
-    // The overlay is keyed by `checklist-<group>-<page>-<key>`, whose tail matches
-    // this shape (`product-detail-video-playback`). Those are case ids, not fixtures.
-    if (/^(product|category|event|store|group)-detail/.test(id)) continue;
+    const cited = /[/("'`=]/.test(authoredValues[(m.index ?? 0) - 1] ?? " ");
+    const segmentsAfterPrefix = id.split("-").length - 1;
+    if (!cited && segmentsAfterPrefix < 2) continue;
     if (!idKnown(id)) unknown.add(id);
   }
   for (const id of [...unknown].sort()) {
@@ -378,9 +421,19 @@ if (existsSync(CATALOGUE)) {
     /"[^"]*\b(pick|choose|select) (a|an|any|some) (category|brand|option|date|product|store)\b[^"]*"/i,
     /"[^"]*\bbid (above|below|over|under) the\b[^"]*"/i,
   ];
+  /*
+   * A step is only vague if it names NO value at all.
+   *
+   * "enter an amount that pushes the current bid above ₹5,000 (e.g. 5001)" opens with
+   * the vague phrasing and then supplies the literal — which is a perfectly
+   * repeatable step, and flagging it is the kind of false positive that teaches an
+   * author to route around the gate rather than satisfy it. The digit test is crude
+   * but it fails in the safe direction: it can miss a genuinely vague step that
+   * happens to contain a number, and never rejects one that supplies its value.
+   */
   for (const re of VAGUE) {
-    const m = authoredSrc.match(re);
-    if (m) {
+    for (const m of authoredSrc.matchAll(new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g"))) {
+      if (/\d/.test(m[0])) continue;
       violations.push(
         `R8 step has no literal value: ${m[0].slice(0, 70)} — an unrepeatable case ` +
           `cannot be diffed between runs, so a regression cannot be spotted.`,

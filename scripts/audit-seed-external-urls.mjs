@@ -128,6 +128,38 @@ for (const file of walk(SEED_DIR)) {
   }
 }
 
+/**
+ * 🛑 The catalogue seed may not reach into the QA fixture directory.
+ *
+ * `public/test-media/` holds upload fixtures for the tester — deliberately garish
+ * images plus files that are BROKEN ON PURPOSE (zero-length, text bytes named .png)
+ * so the 422 path can be exercised. Its own README says nothing in it should be
+ * mistakable for real product media.
+ *
+ * The catalogue seed is real demo content. When it points at that directory, the
+ * homepage carousel plays a QA fixture as merchandise, and anyone who later prunes
+ * the fixture folder — reasonably believing it is test-only — silently breaks the
+ * live catalogue. That is exactly what happened on 2026-09-05: the Google sample
+ * bucket started 403ing, every seeded video was repointed at the nearest local file,
+ * and the nearest local file was the QA fixture set.
+ *
+ * Catalogue content lives in `public/demo-media/`. Same bytes today, separate
+ * ownership, and this is the rule that keeps them separate.
+ */
+for (const file of walk(SEED_DIR)) {
+  const lines = readFileSync(file, "utf8").split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    if (SUPPRESS_RE.test(lines[i])) continue;
+    if (!/["'`]\/test-media\//.test(lines[i])) continue;
+    violations.push({
+      file: relative(ROOT, file),
+      line: i + 1,
+      url: "/test-media/… — QA upload fixtures; catalogue content belongs in /demo-media/",
+      snippet: lines[i].trim().slice(0, 140),
+    });
+  }
+}
+
 if (violations.length === 0) {
   console.log("audit-seed-external-urls: clean");
   process.exit(0);

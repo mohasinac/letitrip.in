@@ -1,0 +1,16 @@
+# 🛑 Byte-exact, every one of them.
+#
+# These fixtures are asserted with `fileTypeFromBuffer` — the same detector
+# /api/media/finalize uses — so a single changed byte moves a fixture from the
+# happy path to the 422 rejection path, or the reverse. Either way the case still
+# "passes" while testing something other than what its name says.
+#
+# `sample-doc.pdf` and `not-really-an-image.png` are pure ASCII, so git's autocrlf
+# treats them as text and rewrites their line endings on checkout. For the PDF that
+# is fatal and silent: its xref table stores absolute byte offsets, so a LF→CRLF
+# conversion shifts every one of them and the file stops being a valid PDF on
+# Windows only. Git warned about exactly these two on the commit that added them.
+#
+# The real images carry NUL bytes and git already leaves them alone; they are listed
+# anyway so the rule does not depend on heuristics.
+* -text -diff
