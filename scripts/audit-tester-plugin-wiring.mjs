@@ -254,7 +254,6 @@ const UNAUTHORED_PAGES = new Set([
   "buying/image-tile-layout",
   "buying/my-orders",
   "buying/offers",
-  "buying/product-detail",
   "buying/return-request",
   "buying/reviews",
   "buying/reviews-pagination",
