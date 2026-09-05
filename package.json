@@ -45,7 +45,8 @@
     "categories:backfill-metrics": "node appkit/scripts/backfill-category-metrics.mjs",
     "products:backfill-store-names": "node appkit/scripts/backfill-product-store-names.mjs",
     "storage:cors": "gsutil cors set appkit/firebase/base/storage-cors.json gs://$FIREBASE_STORAGE_BUCKET",
-    "stress-test": "node scripts/stress-test.mjs"
+    "stress-test": "node scripts/stress-test.mjs",
+    "tester:author": "node tester/scripts/author-steps.mjs"
   },
   "dependencies": {
     "@google-cloud/logging": "^12.0.1",

@@ -31,6 +31,13 @@ const SKIP_DIRS = new Set([
   "node_modules",
   ".next",
   "seed",
+  // The tester checklist's fixtures live in `seed-data/`, not `seed/`, and were
+  // scanned only by that naming accident. Fixture copy is DATA, and REPEATED_STRING
+  // is actively wrong here: an authored test step that means the same thing must
+  // READ the same, or a tester starts wondering whether the difference is
+  // significant. Extracting "Sign in as ash@pokemonpalace.in." to a constant makes
+  // the catalogue less reviewable, not more.
+  "seed-data",
   "scripts",
   "__tests__",
   "__mocks__",
