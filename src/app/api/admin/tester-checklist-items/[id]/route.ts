@@ -17,6 +17,15 @@ const updateChecklistItemSchema = z.object({
   pageLabel: z.string().min(1).max(200).optional(),
   label: z.string().min(3).max(500).optional(),
   description: z.string().max(2000).optional(),
+  // The six-part case contract. Editable by admins because steps name concrete
+  // fixtures (product-tester-offerable) and fixtures change — a wrong step must
+  // be fixable without a redeploy and a re-seed.
+  role: z.enum(["guest", "buyer", "seller", "admin", "employee"]).optional(),
+  startPage: z.string().max(300).optional(),
+  steps: z.array(z.string().max(500)).max(30).optional(),
+  expectedBehaviour: z.string().max(1000).optional(),
+  expectedUiState: z.string().max(1000).optional(),
+  endResult: z.string().max(1000).optional(),
   href: z.string().max(300).optional(),
   order: z.number().int().min(0).optional(),
   phase: z.number().int().min(1).optional(),
