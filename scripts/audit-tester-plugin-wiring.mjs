@@ -233,12 +233,9 @@ const MONEY_FLOWS = resolve(ROOT, "appkit/src/features/tester/seed-data/_money-f
  * Root Cause #84.
  */
 const UNAUTHORED_PAGES = new Set([
-  "admin/blog-faqs",
   "admin/bug-hunter-rewards",
-  "admin/bundles",
   "admin/buyer-data-admin",
   "admin/catalog-listings",
-  "admin/classifieds-digitalcodes-live",
   "admin/content-marketing",
   "admin/coupons",
   "admin/events-raffles-spin",
