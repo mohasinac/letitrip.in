@@ -234,9 +234,7 @@ const MONEY_FLOWS = resolve(ROOT, "appkit/src/features/tester/seed-data/_money-f
  */
 const UNAUTHORED_PAGES = new Set([
   "admin/bug-hunter-rewards",
-  "admin/buyer-data-admin",
   "admin/catalog-listings",
-  "admin/content-marketing",
   "admin/orders-fulfillment",
   "admin/site-system",
   "admin/users-trust",
