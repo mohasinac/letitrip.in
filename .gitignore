@@ -155,3 +155,6 @@ scripts/set-razorpay-keys.mjs
 # the preserve-tier backup (which contains the encrypted siteSettings credentials).
 /tester/.tester-runs/
 /claude-tester-report.md
+
+# Stray verdict scratch file from ad-hoc tester diagnostics
+/x.json
