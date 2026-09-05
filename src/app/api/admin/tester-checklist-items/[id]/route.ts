@@ -25,8 +25,8 @@ const updateChecklistItemSchema = z.object({
   steps: z.array(z.string().max(500)).max(40).optional(),
   // Flat scalar maps: the exact values a tester enters, and the values that must
   // be correct afterwards. Scalars only — a nested shape here is one nobody validates.
-  inputs: z.record(z.union([z.string().max(300), z.number(), z.boolean()])).optional(),
-  expectedData: z.record(z.union([z.string().max(300), z.number(), z.boolean()])).optional(),
+  inputs: z.record(z.string(), z.union([z.string().max(300), z.number(), z.boolean()])).optional(),
+  expectedData: z.record(z.string(), z.union([z.string().max(300), z.number(), z.boolean()])).optional(),
   expectedBehaviour: z.string().max(1000).optional(),
   expectedUiState: z.string().max(1000).optional(),
   endResult: z.string().max(1000).optional(),
