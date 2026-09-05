@@ -158,3 +158,8 @@ scripts/set-razorpay-keys.mjs
 
 # Stray verdict scratch file from ad-hoc tester diagnostics
 /x.json
+
+# Generated on demand by tester/scripts/make-media-fixtures.mjs --with-oversized:
+# >10MB of incompressible noise whose only job is to trip the image size cap.
+# Reproducible in a second; not worth carrying in git.
+public/test-media/oversized.png
