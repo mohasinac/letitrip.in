@@ -259,7 +259,6 @@ const UNAUTHORED_PAGES = new Set([
   "buying/wishlist-history",
   "design-ux/hand-mode-layout",
   "design-ux/homepage-carousels",
-  "design-ux/sticky-cta-bar",
   "selling/become-seller",
   "selling/final-sale-authoring",
   "selling/listing-a-product",
