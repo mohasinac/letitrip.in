@@ -467,8 +467,27 @@ if (existsSync(CATALOGUE)) {
     if (page.startsWith("/admin") && role !== "admin" && role !== "employee") {
       violations.push(`R10 role "${role}" with startPage "${page}" — that case can only ever produce /unauthorized.`);
     }
+    /*
+     * A guest on a gated page is usually incoherent — and sometimes the entire point.
+     *
+     * "A signed-out visitor opening /user/profile is redirected and no uid, email or
+     * order data is ever rendered" is a real security invariant, documented in
+     * CLAUDE.md, and role `guest` on `/user/profile` is exactly how you express it.
+     * The first form of this rule refused that case, which would have deleted one of
+     * the more valuable things in the catalogue to satisfy a lint.
+     *
+     * So the rule now asks what the case is ABOUT: if its expectations describe the
+     * refusal, the pairing is deliberate. A case that expects to USE the page while
+     * signed out is still incoherent and still fails.
+     */
     if (role === "guest" && /^\/(admin|store|user|cart|checkout|wishlist)\b/.test(page)) {
-      violations.push(`R10 role "guest" with startPage "${page}" — a signed-out visitor is redirected before the case begins.`);
+      const aboutRefusal = /redirect|sign in|signin|log ?in|unauthori[sz]ed|not signed in|signed[- ]out/i.test(body);
+      if (!aboutRefusal) {
+        violations.push(
+          `R10 role "guest" with startPage "${page}" — a signed-out visitor is redirected before the case begins, ` +
+            `and nothing in the expectations says the redirect IS the case.`,
+        );
+      }
     }
   }
 
