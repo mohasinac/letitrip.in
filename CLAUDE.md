@@ -2306,14 +2306,34 @@ harness invokes, so the contract cannot drift between them.
 
 **Batch by PAGE, then by identity, then by size.** Phases run 9–91 cases
 (`assignDefaultPhases` never splits a page), too coarse for one context window. A page
-is ~11 cases sharing a URL, a role and a session — but a page holding both admin and
-non-admin cases splits into a `--admin` slice (they need different browsing identities),
-and a page over `--max-cases` (default **12**) chunks into `--p01`, `--p02`… Chunking
-runs **before** control injection so every chunk gets its own calibration pair, and
-chunks carry consecutive `order` values because cases within a page can depend on state
-an earlier case left behind. 87 pages → ~130 batches. `buying/cart`'s 71 cases become 6
-chunks plus a 2-case admin slice, ~20 KB each; unchunked, it was ~115 KB and ~30k tokens
-before the first navigation, which is why a 90-batch sweep once produced 2 verdict files.
+is ~11 cases sharing a URL, a role and a session — but a page mixing identities splits
+into `--guest` / `--admin` slices, and a page over `--max-cases` (default **12**) chunks
+into `--p01`, `--p02`… Chunking runs **before** control injection so every chunk gets its
+own calibration pair, and chunks carry consecutive `order` values because cases within a
+page can depend on state an earlier case left behind. Measured on the full catalogue:
+**201 batches — 88 main, 53 guest, 60 admin.** `buying/cart`'s 71 cases become 6 chunks
+plus a 2-case admin slice, ~20 KB each; unchunked, it was ~115 KB and ~30k tokens before
+the first navigation, which is why a 90-batch sweep once produced 2 verdict files.
+
+### 🛑 THREE browsing identities, and `guest` is a real one
+
+`session-bot.json` / `session-admin.json` / **`session-guest.json`** — the last an
+EMPTY storage state, written as a file. The MCP server reads a fixed
+`--storage-state` path, so an identity is selected by copying a file over it;
+"signed out" therefore has to BE a file. Skipping the copy would leave the browser
+holding whatever the previous batch signed in as, and every guest case would then be
+performed signed in and answered as though it had not been — the most misleading
+thing this harness could do.
+
+**304 of 1,162 cases (26%) are authored for a signed-out visitor** — the sign-in
+prompt on a gated action, what a crawler sees, whether a private profile leaks. Until
+2026-09-06 the harness knew two identities, so every one of them ran signed in: the
+case that ran could not be the case that was written, and the skill correctly told the
+tester to answer `null` in exactly that situation. A quarter of the catalogue was
+reported untestable when it was merely unsupported.
+
+`roles: ["guest"]` **alone** gets the guest slice. `["buyer","guest"]` does not — that
+is a contrast the author wanted, and the signed-in half is the harder one to satisfy.
 
 ### 🛑 The run ends at a report, and only if it finished
 
