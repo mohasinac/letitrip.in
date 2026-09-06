@@ -4,6 +4,7 @@ import { MakeOfferButton, PageViewTracker } from "@mohasinac/appkit/client";
 import { buildClassifiedMetadata } from "@mohasinac/appkit/server";
 import { submitProductOffer } from "@/actions/offer.actions";
 import { SEO_CONFIG } from "@/constants";
+import { notFound } from "next/navigation";
 
 export const revalidate = 60;
 
@@ -24,6 +25,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params }: Props) {
   const { slug } = await params;
   const product = await getClassifiedForDetail(slug);
+  // A record that does not exist must answer 404, not 200. Rendering a
+  // "not found" body under a 200 is a soft 404: the URL stays indexable
+  // forever and every stale or mistyped link keeps accumulating.
+  if (!product) notFound();
 
   return (
     <>

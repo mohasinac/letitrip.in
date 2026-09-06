@@ -9,6 +9,7 @@ import {
 import { PageViewTracker } from "@mohasinac/appkit/client";
 import { placeBidAction, buyNowAction } from "@/actions/bid.actions";
 import { generateAuctionMetadata } from "@/constants/seo.server";
+import { notFound } from "next/navigation";
 
 export const revalidate = 30;
 
@@ -35,6 +36,10 @@ export default async function Page({ params }: Props) {
   const { id } = await params;
   // getAuctionForDetail is React.cache() — this reuses the generateMetadata read.
   const auction = await getAuctionForDetail(id);
+  // A record that does not exist must answer 404, not 200. Rendering a
+  // "not found" body under a 200 is a soft 404: the URL stays indexable
+  // forever and every stale or mistyped link keeps accumulating.
+  if (!auction) notFound();
   const productFeatures = await getProductFeaturesForAuction(auction?.storeId ?? null);
 
   const ldAuction = auction

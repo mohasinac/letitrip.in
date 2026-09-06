@@ -7,6 +7,7 @@ import {
 import { PageViewTracker } from "@mohasinac/appkit/client";
 import { reservePreOrderAction } from "@/actions/pre-order.actions";
 import { generateMetadata as _gm } from "@/constants/seo.server";
+import { notFound } from "next/navigation";
 
 export const revalidate = 60;
 
@@ -31,6 +32,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params }: Props) {
   const { id } = await params;
   const product = await getPreOrderForDetail(id);
+  // A record that does not exist must answer 404, not 200. Rendering a
+  // "not found" body under a 200 is a soft 404: the URL stays indexable
+  // forever and every stale or mistyped link keeps accumulating.
+  if (!product) notFound();
   const productFeatures = await getProductFeaturesForPreOrder(product?.storeId ?? null);
   return (
     <>

@@ -303,6 +303,12 @@ export const AUDITS = [
   // outside tsc, eslint and every other audit — so this is its only check.
   // Skips cleanly when tester/ is not checked out.
   { name: "tester-plugin-wiring",          script: "scripts/audit-tester-plugin-wiring.mjs" },
+  // Strict-zero. A seeded cart line with `locked: true` but neither
+  // isAuctionWin/bidId nor isOffer/offerId. laneOf() reads only those two
+  // pairs — never listingType, never locked — so such a line lands in the
+  // STANDARD lane: the Won Auctions tab is empty while an unremovable line
+  // sits in the ordinary cart inflating its total. Found by the tester.
+  { name: "cart-lane-flags",               script: "scripts/audit-cart-lane-flags.mjs" },
   // Strict-zero. A filter-chip `id` in filter-tabs.ts that doesn't match
   // any value its target Firestore field can hold — the chip silently
   // returns zero rows forever. Found live in 8+ places in one sweep

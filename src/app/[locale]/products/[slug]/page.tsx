@@ -10,6 +10,7 @@ import { getSiteSettingsGlobal, safeRead, storeRepository } from "@mohasinac/app
 import { MakeOfferButton, ProductDetailActions, PageViewTracker } from "@mohasinac/appkit/client";
 import { submitProductOffer } from "@/actions/offer.actions";
 import { generateProductMetadata } from "@/constants/seo.server";
+import { notFound } from "next/navigation";
 
 export const revalidate = 60;
 
@@ -32,6 +33,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params }: Props) {
   const { slug } = await params;
   const product = await getProductForDetail(slug);
+  // A record that does not exist must answer 404, not 200. Rendering a
+  // "not found" body under a 200 is a soft 404: the URL stays indexable
+  // forever and every stale or mistyped link keeps accumulating.
+  if (!product) notFound();
   // Everything below is chrome around the product: feature chips, and the two
   // inputs to the COD/EMI badges. Each degrades to "not shown" rather than
   // taking the page down with it — but the failure is now recorded.

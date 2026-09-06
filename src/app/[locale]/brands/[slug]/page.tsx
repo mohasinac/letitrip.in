@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import {
   BrandDetailPageView,
   getBrandForDetail,
@@ -30,6 +31,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params }: Props) {
   const { slug } = await params;
   const initialBrand = await getBrandCategoryForDetail(slug);
+  // A record that does not exist must answer 404, not 200. Rendering a
+  // "not found" body under a 200 is a soft 404: the URL stays indexable
+  // forever and every stale or mistyped link keeps accumulating.
+  if (!initialBrand) notFound();
   return (
     <>
       {/* A brand is a `categories` document with categoryType:"brand", so it
