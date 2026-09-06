@@ -459,6 +459,195 @@ if (existsSync(CATALOGUE)) {
   }
 }
 
+/* ── R11: the batch must carry the whole authored contract ───────────────────
+ *
+ * 🛑 THE RULE THAT MAKES THE WORST DEFECT IN THIS PIPELINE UNREPEATABLE.
+ *
+ * `toBatches()` in fetch-cases.mjs emitted six keys and threw the rest away, so
+ * 1,139 hand-authored procedures reached the tester as a label and a sentence.
+ * Every other hop was intact — the interface, the document, the repository, the
+ * API's `...item` spread all carried them. The last adapter dropped them, and the
+ * symptom was a batch that ran and produced verdicts, i.e. it looked like it was
+ * working (Root Cause #57).
+ *
+ * The expected set is DERIVED from `interface AuthoredCase`, which is the contract
+ * and is hand-maintained. Adding a field there without carrying it here now fails.
+ */
+{
+  const typesPath = resolve(ROOT, "appkit/src/features/tester/seed-data/authored/_types.ts");
+  const fetchPath = resolve(ROOT, "tester/scripts/fetch-cases.mjs");
+  const skillPath = resolve(ROOT, "tester/skills/run-tests/SKILL.md");
+
+  if (!existsSync(typesPath) || !existsSync(fetchPath)) {
+    violations.push("R11 cannot run — _types.ts or fetch-cases.mjs is missing.");
+  } else {
+    const typesSrc = readFileSync(typesPath, "utf8");
+    const ifaceStart = typesSrc.indexOf("interface AuthoredCase");
+    const iface = ifaceStart >= 0 ? typesSrc.slice(ifaceStart, typesSrc.indexOf("\n}", ifaceStart)) : "";
+    const fields = [...iface.matchAll(/^\s{2}(\w+)\??:/gm)].map((m) => m[1]);
+
+    /*
+     * Emptiness check. A regex over another file's formatting is exactly the shape
+     * that went inert twice in this file's own history — a parser that extracts
+     * nothing reports OK forever, which is worse than no rule at all.
+     */
+    if (fields.length < 6) {
+      violations.push(
+        `R11 extracted only ${fields.length} field(s) from AuthoredCase — the parser is broken, ` +
+          `not the contract. Fix this rule before trusting it.`,
+      );
+    } else {
+      const fetchSrc = stripComments(readFileSync(fetchPath, "utf8"));
+      const s = fetchSrc.indexOf("function toBatches(");
+      const body = s >= 0 ? fetchSrc.slice(s, fetchSrc.indexOf("\nfunction ", s + 10)) : "";
+      const dropped = fields.filter((f) => !new RegExp(`\\b${f}\\s*:`).test(body));
+      if (dropped.length) {
+        violations.push(
+          `R11 toBatches() does not carry ${dropped.length} authored field(s): ${dropped.join(", ")}. ` +
+            `Every one of them is written by hand into 1,100+ cases and reaches the tester ONLY through ` +
+            `this function — dropping one makes that work invisible with no other symptom.`,
+        );
+      }
+      /*
+       * `alreadyAuthored` was a boolean projection of `steps`, and it is how the
+       * array got summarised away in the first place. Its return is the exact
+       * regression this rule exists to prevent.
+       */
+      if (/\balreadyAuthored\b/.test(body)) {
+        violations.push(
+          "R11 toBatches() emits `alreadyAuthored` again — that boolean is what replaced `steps` " +
+            "the first time. Carry the array; compute the boolean at the call site if anything needs it.",
+        );
+      }
+      if (existsSync(skillPath)) {
+        const skillSrc = readFileSync(skillPath, "utf8");
+        const unread = fields.filter((f) => !skillSrc.includes(f));
+        if (unread.length) {
+          violations.push(
+            `R11 SKILL.md never mentions ${unread.join(", ")} — a field carried into the batch that ` +
+              `the tester is never told to read is carried for nothing.`,
+          );
+        }
+      }
+    }
+  }
+}
+
+/* ── R12: one owner for the batch/verdict filename transform ─────────────────
+ *
+ * The `/` ↔ `__` transform was hand-rolled at three sites that disagreed, and the
+ * disagreement WAS the split-page collision: record-verdicts wrote groupKey__pageKey
+ * (dropping the `--admin` suffix, so the admin slice overwrote the main one and was
+ * re-run forever) while run.mjs built an exact filename that could never match it.
+ */
+{
+  const owner = "tester/scripts/lib/batch-keys.mjs";
+  if (!existsSync(resolve(ROOT, owner))) {
+    violations.push(`R12 missing ${owner} — the filename transform has no owner.`);
+  }
+  for (const rel of ["tester/scripts/fetch-cases.mjs", "tester/scripts/run.mjs", "tester/scripts/record-verdicts.mjs"]) {
+    const p = resolve(ROOT, rel);
+    if (!existsSync(p)) continue;
+    const src = stripComments(readFileSync(p, "utf8"));
+    if (!/from\s+"\.\/lib\/batch-keys\.mjs"/.test(src)) {
+      violations.push(`R12 ${rel} does not import lib/batch-keys.mjs — it must not spell filenames itself.`);
+    }
+    if (/\$\{[^}]*groupKey[^}]*\}__\$\{[^}]*pageKey[^}]*\}/.test(src)) {
+      violations.push(
+        `R12 ${rel} builds a filename from groupKey+pageKey. That drops the slice suffix, which is ` +
+          `the split-page collision. Use verdictFileName(batch.key).`,
+      );
+    }
+    if (/\.replace(All)?\(\s*"\/"\s*,\s*"__"\s*\)/.test(src)) {
+      violations.push(`R12 ${rel} hand-rolls the "/"→"__" transform. Use batchFileName()/keyFromFileName().`);
+    }
+  }
+}
+
+/* ── R13: no report or publish without the completeness gate ─────────────────
+ *
+ * A report built from part of a run is byte-shaped exactly like a complete one.
+ * The gate is the only thing standing between that and a false green, so it must
+ * be called BEFORE the write, and the override must keep existing and keep being
+ * an override rather than the default.
+ */
+{
+  const p = resolve(ROOT, "tester/scripts/record-verdicts.mjs");
+  if (existsSync(p)) {
+    const src = stripComments(readFileSync(p, "utf8"));
+    for (const fn of ["commandReport", "commandPublish", "commandFinish"]) {
+      const s = src.indexOf(`function ${fn}(`);
+      if (s < 0) {
+        violations.push(`R13 ${fn}() is missing from record-verdicts.mjs.`);
+        continue;
+      }
+      const body = src.slice(s, src.indexOf("\n}", s));
+      if (!body.includes("assertScopeComplete(")) {
+        violations.push(`R13 ${fn}() does not call assertScopeComplete() — it can produce a deliverable from a partial run.`);
+      }
+    }
+    const gate = src.indexOf("assertScopeComplete(");
+    const write = src.indexOf("claude-tester-report.md");
+    if (gate < 0 || write < 0 || gate > write) {
+      violations.push("R13 assertScopeComplete() must be defined and called before the report is written.");
+    }
+    if (!src.includes("force-report")) {
+      violations.push("R13 the --force-report escape hatch is gone. The gate needs a documented override, or people route around it.");
+    }
+    if (/const\s+force\s*=\s*true/.test(src)) {
+      violations.push("R13 --force-report looks hard-coded on. A forced report is never the default.");
+    }
+  }
+}
+
+/* ── R14: the scope manifest is written before any batch runs ────────────────
+ *
+ * A manifest written at the end describes what happened, not what was asked for —
+ * and the gate then cannot detect the one thing it exists to detect.
+ */
+{
+  const p = resolve(ROOT, "tester/scripts/run.mjs");
+  if (existsSync(p)) {
+    const src = stripComments(readFileSync(p, "utf8"));
+    const writeScope = src.indexOf("writeScope()");
+    const loop = src.indexOf("for (const [i, batchName] of pending.entries())");
+    if (writeScope < 0) violations.push("R14 run.mjs never writes scope.json — the completeness gate has nothing to check against.");
+    else if (loop >= 0 && writeScope > loop) {
+      violations.push("R14 scope.json is written after the batch loop. It must record what was ASKED FOR, before anything runs.");
+    }
+  }
+}
+
+/* ── R15: the control answers are never printed ──────────────────────────────
+ *
+ * checkControls used to push `expected "yes", got "no"` and print it. The tester
+ * runs record-verdicts itself, so it read the expected answer off the failure
+ * message, flipped its verdict and re-ran — clearing its own quarantine. The
+ * anti-rubber-stamp mechanism was defeated by a helpful error message.
+ */
+{
+  const p = resolve(ROOT, "tester/scripts/record-verdicts.mjs");
+  if (existsSync(p)) {
+    const src = stripComments(readFileSync(p, "utf8"));
+    const s = src.indexOf("function checkControls(");
+    if (s < 0) violations.push("R15 checkControls() is missing.");
+    else {
+      const body = src.slice(s, src.indexOf("\n}", s));
+      if (/wrong\.push\([^)]*expected\.get\(/.test(body) || /\$\{expected\.get\(/.test(body)) {
+        violations.push(
+          "R15 checkControls() puts the EXPECTED answer into its return value. The tester reads that " +
+            "output and can flip the control to make its own command succeed. Return ids only.",
+        );
+      }
+    }
+    for (const m of src.matchAll(/console\.(?:log|error|warn)\(([^;]*)\)/g)) {
+      if (/expected\.get\(|controlExpectations\(/.test(m[1])) {
+        violations.push("R15 a console call interpolates a control expectation — that leaks the answer to the tester.");
+      }
+    }
+  }
+}
+
 /* ── Report ──────────────────────────────────────────────────────────────── */
 
 if (violations.length > 0) {
