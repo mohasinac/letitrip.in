@@ -2289,8 +2289,7 @@ explicitly or every subsequent run fails to log in.
 ```
 npm run tester:plan                    # dry run — per-collection delete counts, writes nothing
 npm run tester:setup -- --yes-i-am <projectId> --window 90
-npm run tester:claude                  # 88 per-page batches, resumable
-node tester/scripts/record-verdicts.mjs --run <id> --publish
+npm run tester:claude                  # runs, then publishes AND reports — if it finished
 npm run tester:teardown -- --yes-i-am <projectId>
 ```
 
@@ -2305,13 +2304,67 @@ and 10 carts. Users, Auth records, addresses, sessions and `siteSettings` all sh
 Interactively, `/tester:run-tests` runs one page with you watching — the same skill the
 harness invokes, so the contract cannot drift between them.
 
-**Batch by PAGE, not phase.** Phases run 9–91 cases (`assignDefaultPhases` never splits
-a page), too coarse for one context window. A page is ~11 cases sharing a URL, a role
-and a session.
+**Batch by PAGE, then by identity, then by size.** Phases run 9–91 cases
+(`assignDefaultPhases` never splits a page), too coarse for one context window. A page
+is ~11 cases sharing a URL, a role and a session — but a page holding both admin and
+non-admin cases splits into a `--admin` slice (they need different browsing identities),
+and a page over `--max-cases` (default **12**) chunks into `--p01`, `--p02`… Chunking
+runs **before** control injection so every chunk gets its own calibration pair, and
+chunks carry consecutive `order` values because cases within a page can depend on state
+an earlier case left behind. 87 pages → ~130 batches. `buying/cart`'s 71 cases become 6
+chunks plus a 2-case admin slice, ~20 KB each; unchunked, it was ~115 KB and ~30k tokens
+before the first navigation, which is why a 90-batch sweep once produced 2 verdict files.
 
-**🛑 Publish BEFORE teardown.** Verdicts live in `testerChecklistResponses`, which the
-teardown wipe deletes. `claude-tester-report.md` is written outside `.tester-runs/` for
-the same reason.
+### 🛑 The run ends at a report, and only if it finished
+
+`npm run tester:claude` attempts each scoped batch up to `1 + --retries` times (default
+2), then runs `record-verdicts.mjs --finish`, which is **gate → publish → report**.
+
+**If any scoped batch still has no verdicts, no report is written at all** and the exit
+code is non-zero. A report built from 118 of 132 batches is byte-shaped exactly like a
+complete one — same sections, fewer rows — and a case absent from it reads as "fine"
+rather than "never tested". `--force-report` overrides, stamps `🛑 INCOMPLETE` above the
+report's own title, and **still exits 1**: a forced report is never a success.
+
+- **Scope is `scope.json`, written before the first batch runs.** Only `run.mjs` knows
+  what was asked for. `batches/` is *not* the scope — it accumulates across runs and
+  across `--page` scoping, so falling back to it would reintroduce the bug silently.
+- **"Recorded" is stricter than "a file exists"**: it parses, and its verdict ids cover
+  every case in the batch. Same argument as `run.mjs`'s "exit 0 is not evidence".
+- **A quarantined batch counts as recorded.** It *has* verdicts; they are held back from
+  publication and shouted about in the report. Treating it as missing would let a
+  deterministic quarantine block the report forever, and the only escape would be
+  `--force-report` — which trains people to pass it always.
+- **Circuit breaker**: three consecutive batches that never attach a browser aborts the
+  run with exit 2. That is configuration, not flakiness, and ~130 batches × 3 attempts
+  is a day of rate limit spent reproducing it.
+
+**Publishing is automatic on a complete run**, which retires the old "🛑 publish BEFORE
+teardown" footgun — there is no longer a step for a human to forget. `--no-publish`
+reports without writing back. `claude-tester-report.md` still lives outside
+`.tester-runs/` so teardown cannot eat it.
+
+### 🛑 The batch carries the whole six-part procedure — it used to carry none of it
+
+`toBatches()` in `fetch-cases.mjs` emitted six keys and reduced `steps` to a boolean
+`alreadyAuthored`. Every other hop was intact — `AuthoredCase` → `group()` →
+`TesterChecklistItemDocument` → `listActive()` → the API's `...item` spread. **The last
+adapter dropped them, so all 1,139 authored procedures reached the tester as a label and
+a sentence and it improvised.** The symptom was a batch that ran and produced verdicts,
+i.e. it looked like it was working (Root Cause #57). Fixed 2026-09-06; audit rule **R11**
+derives the required field set from `interface AuthoredCase` so it cannot recur, and
+blocks `alreadyAuthored`'s return specifically.
+
+`fetch-cases` now prints **procedure coverage** (`23/23 cases carry steps`) and warns
+below 90% — the procedures live in the seed but batches are built from Firestore, so a
+project that was not re-seeded hands back bare cases, and 1,100 improvised tests are
+shaped exactly like 1,100 procedural ones everywhere except here.
+
+**Never spell a script path with `${CLAUDE_PLUGIN_ROOT}` in `SKILL.md`.** `run.mjs`
+allowlists `Bash(node tester/scripts/<x>.mjs *)`; the absolute form matches nothing, and
+under `--permission-mode dontAsk` the call is **denied silently** — every batch records
+nothing and the run produces no verdicts at all. One repo-relative spelling everywhere;
+audit rule **R16** blocks the drift.
 
 ### Verdicts and calibration
 
