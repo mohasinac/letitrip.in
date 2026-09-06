@@ -2401,6 +2401,21 @@ the LLM equivalent of *never trust an audit you have not seen fail* (Root Cause 
   `claude plugin uninstall tester && claude plugin install tester@letitrip-tools`.
   Same class as the appkit `node_modules` staleness in Root Cause #28 — verify with
   `grep` against the cached copy rather than assuming an edit took effect.
+
+  **🛑 `--plugin-dir ./tester` does NOT override the installed copy. The cache wins.**
+  This row already warned about staleness and it happened again anyway, 2026-09-06:
+  a run started minutes after the split-page collision was fixed still wrote
+  `groupKey__pageKey.json`, because the cached `record-verdicts.mjs` predated the fix
+  and `lib/batch-keys.mjs` did not exist there at all. Two chunks of one page collided
+  into one verdict file — **the bug that had just been fixed, reproduced live by the
+  old code, at full speed, with nothing erroring.**
+
+  A warning in a document is not a mechanism. `run.mjs` now runs a **preflight**
+  (`tester/scripts/lib/plugin-freshness.mjs`) that hashes `scripts/` and `skills/` in
+  the repo and in the cache and **refuses with exit 2** on any difference, naming the
+  files and printing the refresh command. `--skip-freshness-check` opts out when you
+  genuinely intend to run the installed version. Line endings are normalised, or a
+  CRLF checkout makes every file look changed forever.
 - **The MCP server registers as `plugin:tester:playwright`**, not `playwright`. An
   exact-match check on the name fails every batch while looking correct.
 - **Flags that do NOT exist at Claude Code 2.1.34**: `--bare`, `--max-turns`,
