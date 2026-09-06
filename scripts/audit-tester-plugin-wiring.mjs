@@ -648,6 +648,51 @@ if (existsSync(CATALOGUE)) {
   }
 }
 
+/* ── R16: the skill's script paths must match the harness allowlist ──────────
+ *
+ * 🛑 A MISMATCH HERE IS DENIED SILENTLY AND COSTS A WHOLE RUN.
+ *
+ * run.mjs spawns with `--permission-mode dontAsk` and an --allowed-tools list of
+ * `Bash(node tester/scripts/<x>.mjs *)`. The skill used to instruct
+ * `node ${CLAUDE_PLUGIN_ROOT}/scripts/record-verdicts.mjs`, which expands to an
+ * ABSOLUTE path and matches none of those patterns — so under dontAsk the call is
+ * refused with no prompt and no error the harness can see. The batch then records
+ * no verdicts, and every batch fails the same way.
+ *
+ * One spelling, repo-relative, everywhere: run.mjs sets cwd to the repo root, so
+ * it resolves both when the harness spawns it and when a human runs the skill.
+ */
+{
+  const skillPath = resolve(ROOT, "tester/skills/run-tests/SKILL.md");
+  const runPath = resolve(ROOT, "tester/scripts/run.mjs");
+  if (existsSync(skillPath) && existsSync(runPath)) {
+    const skillSrc = readFileSync(skillPath, "utf8");
+    const runSrc = stripComments(readFileSync(runPath, "utf8"));
+
+    if (skillSrc.includes("CLAUDE_PLUGIN_ROOT")) {
+      violations.push(
+        "R16 SKILL.md spells a script path with ${CLAUDE_PLUGIN_ROOT}, which expands to an absolute " +
+          "path and matches none of run.mjs's --allowed-tools patterns. Under --permission-mode dontAsk " +
+          "that call is DENIED SILENTLY and the batch records nothing. Use `node tester/scripts/<x>.mjs`.",
+      );
+    }
+
+    // Every script the skill tells the tester to run must be allowlisted.
+    const invoked = new Set([...skillSrc.matchAll(/node\s+tester\/scripts\/([\w-]+\.mjs)/g)].map((m) => m[1]));
+    if (!invoked.size) {
+      violations.push("R16 found no `node tester/scripts/*.mjs` invocation in SKILL.md — the parser is broken, or the skill no longer records anything.");
+    }
+    for (const script of invoked) {
+      if (!runSrc.includes(`Bash(node tester/scripts/${script} *)`)) {
+        violations.push(
+          `R16 SKILL.md tells the tester to run ${script}, but run.mjs's ALLOWED_TOOLS does not permit it. ` +
+            `Under dontAsk the call is denied with no prompt and no error.`,
+        );
+      }
+    }
+  }
+}
+
 /* ── Report ──────────────────────────────────────────────────────────────── */
 
 if (violations.length > 0) {
