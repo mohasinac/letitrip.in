@@ -39,6 +39,7 @@
     "tester:purge-sandbox": "node appkit/scripts/purge-tester-sandbox.mjs",
     "tester:export-feedback": "node appkit/scripts/export-tester-feedback.mjs",
     "tester:claude": "node tester/scripts/run.mjs",
+    "tester:sweep": "node tester/scripts/sweep.mjs",
     "tester:plan": "node tester/scripts/lifecycle.mjs plan",
     "tester:setup": "node tester/scripts/lifecycle.mjs setup",
     "tester:teardown": "node tester/scripts/lifecycle.mjs teardown",
