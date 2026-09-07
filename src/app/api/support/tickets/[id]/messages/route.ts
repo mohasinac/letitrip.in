@@ -7,12 +7,29 @@ import {
   isAdminUser,
   isEmployeeUser,
   isModeratorUser,
+  normalizeError,
+  sendNotification,
+  serverLogger,
   supportRepository,
 } from "@mohasinac/appkit";
 
 const schema = z.object({
   body: z.string().min(1).max(5000),
   newStatus: z.enum(["open", "in_progress", "waiting_on_user", "resolved", "closed"]).optional(),
+  /**
+   * Staff only: also email the ticket owner about this reply.
+   *
+   * 🛑 Default `false`, and honoured ONLY when the author is staff — enforced
+   * below from the SESSION, never from this field. A user can set this to true
+   * all day; it will not send anything.
+   *
+   * `support_ticket_update` is email-ineligible by design so routine ticket
+   * back-and-forth costs nothing against the 100/day allowance. This is the
+   * deliberate exception for the reply that genuinely has to reach an inbox,
+   * and it is opt-in per reply rather than a standing setting so the cost is
+   * always a decision someone made.
+   */
+  sendEmail: z.boolean().optional(),
 });
 
 export const POST = withProviders(
@@ -53,6 +70,39 @@ export const POST = withProviders(
         },
         ticket,
       );
+
+      /*
+       * The opt-in email, gated on `isStaff` — which is derived from the
+       * session above, not from the request body. A user forcing
+       * `sendEmail: true` gets the `&&` short-circuit and nothing else.
+       *
+       * `eligibilityOverride: "staff_requested"` bypasses
+       * `EMAIL_ELIGIBLE_TYPES` for this one send and NOTHING else: the kill
+       * switch, the daily ceiling and the recipient's own opt-out all still
+       * apply, because a staff tick is a request rather than an override of
+       * the site's posture or of what the user asked for.
+       *
+       * Fire-and-forget: the reply is already saved, and a mail failure must
+       * not make the admin think their reply did not post.
+       */
+      if (isStaff && body!.sendEmail === true && ticket.userId) {
+        void sendNotification({
+          userId: ticket.userId,
+          type: "support_ticket_update",
+          priority: "normal",
+          title: "New reply on your support ticket",
+          message: body!.body.length > 300 ? `${body!.body.slice(0, 300)}…` : body!.body,
+          relatedId: ticketId,
+          relatedType: "support_ticket",
+          eligibilityOverride: "staff_requested",
+        }).catch((err: unknown) => {
+          serverLogger.error("Ticket reply email failed (non-fatal — reply already saved)", {
+            ticketId,
+            error: normalizeError(err).message,
+          });
+        });
+      }
+
       return successResponse(message, "Message sent", 201);
     },
   }),

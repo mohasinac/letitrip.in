@@ -1650,6 +1650,126 @@ field's check on that call, not just the one being worked around. Both are
 declared now, and `resolveNotificationActionUrl`'s `default` branch is an
 exhaustiveness check so the next one cannot compile without a destination.
 
+## Notification Email Eligibility & Send Budget
+
+> Added 2026-09. Read before adding a notification type, before writing
+> anything that sends, and before "helpfully" re-enabling an email.
+
+**Resend free tier is 100 emails/day.** Three call sites could spend all of it
+in one go, and none of them was capped:
+
+| Where | Shape |
+|---|---|
+| `auctionSettlement` | `bid_lost` to every losing bidder, **up to 50 in parallel per auction**, with all expired auctions settling concurrently. Two auctions = the day |
+| `onScamReportCreate` | one `sendNotification` **per employee, up to 100**, per report |
+| `bid_outbid` | one email per bid per bidder on a live auction |
+
+Two more were found by the audit after it was written, both copies of the
+scam-report pattern: the dispute alert in `_internal/server/features/orders/actions.ts`
+and the failed-auto-refund alert in `_internal/server/features/checkout/actions.ts`.
+Root Cause #84 — trust the rule's output over the list you typed.
+
+### The two layers
+
+**1. `EMAIL_ELIGIBLE_TYPES`** (`_internal/shared/features/notifications/email-eligibility.ts`)
+— a `Record<NotificationType, boolean>`, so a new type is a **compile error**
+until someone answers "may this email?". It is checked FIRST in
+`sendNotification`, before the settings read and before the budget counter, so
+the 50 `bid_lost` sends now exit with **zero Firestore operations**. That
+ordering is what lets the daily counter stay a single unsharded document.
+
+The in-app bell row is written *before* any of this, so an ineligible type
+loses only the emailed copy — never the notification.
+
+**12 ineligible** (bell only): `bid_lost`, `bid_outbid`, `bid_placed`,
+`auction_ended`, `promotion`, `product_available`, `review_approved`,
+`review_replied`, `catalogue_images_stale`, `prize_reveal_expired`,
+`support_ticket_update`, `scam_report_update`.
+
+**18 eligible** — money, access, or a deadline: the five `order_*`, `bid_won`
+(the winner forfeits if they miss the payment window), the four `offer_*`,
+`refund_initiated`, `payment_review`, `prize_won`, both `emi_*`,
+`account_action`, `welcome`, `system`.
+
+> 🛑 **Do NOT use the admin allow-list (`notificationChannels.email.types`) for
+> this.** It is a plain array, so a new type joins silently; its EMPTY case
+> means "all types allowed", so an admin clearing the field reopens everything;
+> and it is data, so a reseed restores the old behaviour. The two compose one
+> way only: code decides eligibility, admins may narrow, nobody can widen.
+
+**2. `guardSend`** (`_internal/server/notifications/send-guard.ts`) — env kill
+(`EMAIL_DISABLED`) → admin kill (`siteSettings.messaging.emailEnabled`) → daily
+ceiling. Enforced at exactly two places, `sendEmail()` and `sendNotification()`,
+because those are the only senders that know who and why.
+
+### 🛑 `account_action` means a ban or an unban, and nothing else
+
+It used to also carry support-ticket activity and scam-report outcomes — three
+concerns on one value, which made them impossible to tell apart once email
+became type-gated. There was no way to stop emailing "your ticket got a reply"
+without also silencing "you have been banned", and those have opposite answers.
+Split into `support_ticket_update` and `scam_report_update` (union 28 → 30).
+
+Adding a type touches five maps and **four are compile-checked**, so `tsc`
+enumerates them: `typeToPrefsKey`, `NOTIFICATION_EMAIL_TEMPLATES`,
+`TYPE_AUDIENCE`, `EMAIL_ELIGIBLE_TYPES`. The fifth, `NOTIFICATION_TYPE_TABS`,
+is fully derived from `NOTIFICATION_TYPE_VALUES` and needs nothing.
+
+### Audience decides what the kill switch touches
+
+`staff` (daily digest, payout summary) is **never** suppressed — the digest is
+now the only way a contact message, a new ticket or a stuck payment proof gets
+noticed, and switching off customer email must not blind the operator.
+`transactional` (checkout OTP, order confirmation) ignores the kill switch but
+still counts against the ceiling: suppressing the OTP breaks checkout above
+₹5,000 rather than quietening it.
+
+### The counter is ONE document, and that is conditional
+
+`messageBudget/{channel}_{YYYY-MM-DD}`, reserve-then-send, default ceiling
+**80** of Resend's 100. Not sharded, because after the eligibility gate no
+email-eligible sender fans out concurrently — the four job sweeps
+(`pendingOrderTimeout`, `paymentWindowTimeout`, `paymentReviewAutoApprove`,
+`hardBanReinstatement`) were converted from `Promise.allSettled` to sequential
+loops for exactly this reason.
+
+🛑 **A concurrent fan-out of an email-eligible type must shard the counter
+first.** `Promise.all` / `Promise.allSettled` over a send is the tell, and
+`scripts/audit-unguarded-send.mjs` blocks it.
+
+### Staff signal is a record, not a blast
+
+`adminNotificationsRepository.create({ …, audienceUserIds: [] })` — one durable
+row the admin inbox reads and the digest counts, instead of N personal
+notifications. Used by scam reports, disputes, failed auto-refunds, payment
+proofs and new orders. **Do not copy the `as never` from the older catalogue
+handler**; `BaseRepository.create` omits `createdAt`, and passing it was the
+only reason for a cast that silenced every other field.
+
+### What no longer sends at all
+
+The contact form (a record in `contactSubmissions`, read at `/admin/contact`
+and listed in the digest with a `mailto:` reply link), the per-save
+site-settings email (`adminAuditLog` already records it, queryably), and the
+admin WhatsApp blasts on order-create and payment-proof upload. Deleted with
+them: `sendContactEmail`, `sendSiteSettingsChangedEmail`,
+`sendVerificationEmailWithLink`, `sendPasswordResetEmailWithLink`, and the
+zero-caller `sendContactAction`.
+
+🛑 **`/api/contact` now AWAITS the Firestore write and fails the request on
+error.** It was fire-and-forget with the email as the unspoken backup; with the
+email gone, that write is the only record a customer wrote in.
+
+### Firebase auth mail is outside all of this
+
+Password reset and verification go browser → Firebase with no server hop
+(Root Cause #54/#55), so `guardSend` cannot see them and they cost nothing
+against Resend. `POST /api/auth/mail-gate` gives them a 15-minute Firestore
+cooldown keyed on an **HMAC of the address**, never the address. It is an abuse
+guard, not a security boundary — a console can call Firebase directly — and it
+**fails open**, because a user locked out of their account must not also be
+locked out by our infrastructure.
+
 ## Order Provenance — `sourceContext`
 
 > Added 2026-08-24 (W2). How the buyer earned the right to buy at this price.

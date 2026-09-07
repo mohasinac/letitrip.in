@@ -46,6 +46,12 @@ export const AUDITS = [
   { name: "client-entry-in-server",          script: "scripts/audit-client-entry-in-server.mjs" },
   { name: "relative-runtime-require",        script: "scripts/audit-relative-runtime-require.mjs" },
   { name: "observability-registration",      script: "scripts/audit-observability-registration.mjs" },
+  // Nothing leaves the building unmetered. Guards the two halves of the send
+  // budget — EMAIL_ELIGIBLE_TYPES (which types may email at all) and guardSend
+  // (the kill switch + daily ceiling) — both of which are bypassable by writing
+  // one plausible line. Also blocks the concurrent fan-out that would break the
+  // unsharded daily counter.
+  { name: "unguarded-send",                  script: "scripts/audit-unguarded-send.mjs" },
   // The four root Firebase config files are GENERATED from appkit/firebase/base
   // and are also what firebase.json deploys. They were listed in .gitignore AND
   // tracked simultaneously (a no-op that trained everyone to ignore them in

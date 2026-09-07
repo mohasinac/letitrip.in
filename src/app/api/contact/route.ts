@@ -5,7 +5,6 @@ import { withProviders } from "@/providers.config";
  */
 
 import { z } from "zod";
-import { sendContactEmail } from "@mohasinac/appkit/server";
 import { successResponse, errorResponse } from "@mohasinac/appkit";
 import { ERROR_MESSAGES } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
@@ -33,26 +32,29 @@ export const POST = withProviders(createRouteHandler<(typeof contactSchema)["_ou
     const { name, email, subject, message } = body!;
     serverLogger.info("Contact form submission received", { subject });
 
-    // Persist to Firestore (non-blocking â€” don't fail if it errors)
-    contactSubmissionsRepository.save({ name, email, subject, message }).catch((err) => {
+    /*
+     * 🛑 AWAITED, and a failure fails the request.
+     *
+     * This was fire-and-forget — `.catch()` and carry on — which was survivable
+     * only because an email went out alongside it and served as the backup
+     * copy. That email is gone (a contact message is a record now, read from
+     * /admin/contact and listed in the daily digest), so this write is the ONLY
+     * record of the message.
+     *
+     * Left non-blocking, a Firestore hiccup would return 200 to a customer who
+     * had just typed out a support request, and the message would exist
+     * nowhere. Telling them it failed is strictly better than losing it
+     * silently — they can retry; we cannot recover it.
+     */
+    try {
+      await contactSubmissionsRepository.save({ name, email, subject, message });
+    } catch (err) {
       serverLogger.error("Failed to save contact submission to Firestore", {
         error: normalizeError(err).message,
       });
-    });
-
-    const result = await sendContactEmail({ name, email, subject, message });
-    if (!result.success && process.env.NODE_ENV !== "production") {
-      serverLogger.warn(
-        "Contact email provider failed in non-production; returning mocked success",
-        { subject },
-      );
-      return successResponse(
-        { sent: true, mocked: true },
-        SUCCESS_MESSAGES.CONTACT.SENT,
-      );
-    }
-    if (!result.success)
       return errorResponse(ERROR_MESSAGES.CONTACT.SEND_FAILED, 500);
+    }
+
     return successResponse({ sent: true }, SUCCESS_MESSAGES.CONTACT.SENT);
   },
 }));

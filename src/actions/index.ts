@@ -51,9 +51,15 @@ export {
   deleteNotificationAction,
 } from "./notification.actions";
 
-// Contact (public â€” no auth)
-export { sendContactAction } from "./contact.actions";
-export type { SendContactInput } from "./contact.actions";
+/*
+ * `sendContactAction` was deleted 2026-09. It had ZERO callers — the contact
+ * form posts to `/api/contact` — and it was quietly the more dangerous of the
+ * two paths: it created a support ticket with `userId: null as unknown as string`,
+ * a cast that produces a ticket no user query can ever find.
+ *
+ * The contact form is now a record in `contactSubmissions`, surfaced in
+ * /admin/contact and the daily digest, with no email.
+ */
 
 // Newsletter (public â€” no auth)
 export { subscribeNewsletterAction } from "./newsletter.actions";

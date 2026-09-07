@@ -9,8 +9,8 @@ import {
   serverLogger,
   ERROR_MESSAGES,
 } from "@mohasinac/appkit";
-import { enqueueJob, safeRead, sendSiteSettingsChangedEmail } from "@mohasinac/appkit/server";
-import { ROLES_ADMIN_ONLY, SCHEMA_DEFAULTS } from "@/constants";
+import { enqueueJob, safeRead } from "@mohasinac/appkit/server";
+import { ROLES_ADMIN_ONLY } from "@/constants";
 import { normalizeError } from "@mohasinac/appkit";
 
 /**
@@ -39,6 +39,17 @@ const WRITABLE_SITE_GROUPS = [
   "footerConfig", "announcementBar", "watermark", "credentials", "theme",
   "featuredResults", "notificationChannels", "integrations", "platformLimits",
   "adSettings",
+  /*
+   * The outbound-messaging kill switch and daily ceiling.
+   *
+   * 🛑 Omitting a group from this allow-list does not fail the save — the
+   * schema is `.strict()`, so an unlisted key is REJECTED, but a group the UI
+   * sends and this list omits would be a 400 the admin sees as "save failed"
+   * with no explanation. The inverse mistake (Root Cause #76b) is worse still:
+   * on a `.passthrough()` route the toggle would return 200 and write nothing.
+   * Either way the field must be here for the switch to work at all.
+   */
+  "messaging",
 ] as const;
 
 const siteGroupSchema = z
@@ -124,19 +135,22 @@ export const PUT = withProviders(
         timestamp: new Date().toISOString(),
       });
 
-      // Fire-and-forget: notify all admins about the settings change
-      const adminEmail =
-        process.env.ADMIN_NOTIFICATION_EMAIL || SCHEMA_DEFAULTS.ADMIN_EMAIL;
-      sendSiteSettingsChangedEmail({
-        adminEmails: [adminEmail],
-        changedByEmail: user!.email || adminEmail,
-        changedFields: Object.keys(body!),
-      }).catch((err) =>
-        serverLogger.error(
-          ERROR_MESSAGES.API.SETTINGS_CHANGE_NOTIFICATION_ERROR,
-          { error: normalizeError(err).message },
-        ),
-      );
+      /*
+       * The "notify admins about the settings change" email was removed here
+       * 2026-09.
+       *
+       * It fired on EVERY save, so a session of tuning fees or toggles spent
+       * one of the day's 100 emails per click. What it was for is already
+       * covered better by two things that cost nothing: the `serverLogger`
+       * audit line directly above, and `adminAuditLog`, which records actor,
+       * action and fields for privileged writes and is QUERYABLE at
+       * /admin/audit-log — which an email never was. The daily digest now
+       * carries the 24h admin-action count, so a burst is still visible.
+       *
+       * Worth noting what it actually did, since the name oversold it: it sent
+       * to `[process.env.ADMIN_NOTIFICATION_EMAIL ?? "admin@letitrip.in"]` — a
+       * single hardcoded address, and that env var was set in no runtime.
+       */
 
       // Never echo the encrypted credential blobs back, same as GET.
       const { credentials: _encrypted, ...safe } = updated;
