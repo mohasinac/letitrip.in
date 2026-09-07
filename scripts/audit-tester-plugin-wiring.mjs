@@ -68,7 +68,7 @@
  */
 
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { resolve, dirname } from "node:path";
+import { resolve, dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -689,6 +689,197 @@ if (existsSync(CATALOGUE)) {
             `Under dontAsk the call is denied with no prompt and no error.`,
         );
       }
+    }
+  }
+}
+
+/* ── R17: the harness sweeps the MCP processes it leaks, in the right place ───
+ *
+ * @playwright/mcp shuts down on stdin EOF or POSIX signals only, and Windows
+ * never delivers SIGTERM — so an abruptly-torn-down claude leaves its MCP server
+ * running at ~56 MB private commit. Measured: ~1 per spawn; a 204-batch sweep
+ * projects to ~26 GB against a 27.5 GB commit limit.
+ */
+{
+  const cleanupPath = resolve(ROOT, "tester/scripts/lib/process-cleanup.mjs");
+  const runPath = resolve(ROOT, "tester/scripts/run.mjs");
+  if (!existsSync(cleanupPath)) {
+    violations.push(
+      "R17 tester/scripts/lib/process-cleanup.mjs is missing — the harness leaks one Playwright MCP " +
+        "process per claude spawn (~56 MB commit each) and a full sweep exhausts the commit limit.",
+    );
+  } else if (existsSync(runPath)) {
+    const runSrc = stripComments(readFileSync(runPath, "utf8"));
+    if (!/from\s+"\.\/lib\/process-cleanup\.mjs"/.test(runSrc)) {
+      violations.push("R17 run.mjs does not import lib/process-cleanup.mjs — nothing sweeps the leak.");
+    }
+    const s = runSrc.indexOf("function attemptBatch(");
+    if (s < 0) {
+      violations.push("R17 cannot find attemptBatch() in run.mjs — this rule is checking nothing. Fix it before trusting it.");
+    } else {
+      const body = runSrc.slice(s, runSrc.indexOf("\n}", s));
+      const iSnap = body.indexOf("snapshotPlaywrightProcesses(");
+      const iSpawn = body.indexOf("spawnSync(");
+      const iSweep = body.indexOf("sweepPlaywrightOrphans(");
+      const iLoaded = body.indexOf("assertLoaded(");
+      if (iSnap < 0 || iSweep < 0) {
+        violations.push("R17 attemptBatch() does not snapshot and sweep around its spawn — the per-attempt leak is unhandled.");
+      } else if (!(iSnap < iSpawn && iSpawn < iSweep && (iLoaded < 0 || iSweep < iLoaded))) {
+        violations.push(
+          "R17 the sweep must run AFTER the spawn and BEFORE assertLoaded(). attemptBatch has three early " +
+            "returns and they are exactly the abrupt-teardown paths that leak — a sweep below them skips " +
+            "every case that actually leaks.",
+        );
+      }
+    }
+    // Killing an MCP node without /T strands its chromium tree permanently —
+    // the fix would make the leak an order of magnitude worse.
+    const cleanupSrc = stripComments(readFileSync(cleanupPath, "utf8"));
+    for (const m of cleanupSrc.matchAll(/taskkill[^\n]*/g)) {
+      if (m[0].includes('"/PID"') && !m[0].includes('"/T"')) {
+        violations.push(`R17 a taskkill with /PID lacks /T — that strands chromium with no parent: ${m[0].slice(0, 70)}`);
+      }
+    }
+  }
+}
+
+/* ── R18: the sweep is snapshot- and ownership-scoped, never global ──────────
+ *
+ * 🛑 Every @playwright/mcp process on a developer machine may belong to a LIVE
+ * Claude Code editor session. Measured 2026-09-07: three of them, one being the
+ * session that wrote this rule. A global kill destroys them.
+ */
+{
+  const dir = resolve(ROOT, "tester/scripts");
+  const files = [];
+  const walk = (d) => {
+    if (!existsSync(d)) return;
+    for (const e of readdirSync(d, { withFileTypes: true })) {
+      const p = join(d, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (e.isFile() && e.name.endsWith(".mjs")) files.push(p);
+    }
+  };
+  walk(dir);
+
+  for (const f of files) {
+    const rel = relative(ROOT, f).replace(/\\/g, "/");
+    const src = stripComments(readFileSync(f, "utf8"));
+    if (/taskkill[^\n]*\/IM/i.test(src) || /Stop-Process[^\n]*-Name/i.test(src) || /pkill\s+-f\s+node/.test(src)) {
+      violations.push(
+        `R18 ${rel} kills by image NAME. A global kill would destroy every live Claude Code session on ` +
+          `this machine — measured 2026-09-07 as 3, one of them the session that launched the sweep. ` +
+          `Kill by pid, scoped to a pre-spawn snapshot and a parent-liveness check.`,
+      );
+    }
+    if (/\bwmic\b/.test(src)) {
+      violations.push(
+        `R18 ${rel} uses wmic. It does not exist on Windows 11 26200, so the sweep enumerates nothing, ` +
+          `kills nothing and reports success — the silent-zero failure. Use PowerShell CIM.`,
+      );
+    }
+  }
+
+  const cleanupPath = resolve(ROOT, "tester/scripts/lib/process-cleanup.mjs");
+  if (existsSync(cleanupPath)) {
+    const src = stripComments(readFileSync(cleanupPath, "utf8"));
+    const s = src.indexOf("export function sweepPlaywrightOrphans(");
+    const body = s < 0 ? "" : src.slice(s, src.indexOf("\n}\n", s));
+    if (!body.includes("before") || !body.includes("ParentProcessId")) {
+      violations.push(
+        "R18 sweepPlaywrightOrphans() must consult BOTH its pre-spawn snapshot and parent liveness. " +
+          "The snapshot spares processes that predate us; the parent check spares a session opened " +
+          "mid-sweep, whose MCP always has a live parent while an orphan by definition does not.",
+      );
+    }
+  }
+}
+
+/* ── R19: the orchestrator never finishes a partial sweep ────────────────── */
+{
+  const p = resolve(ROOT, "tester/scripts/sweep.mjs");
+  if (existsSync(p)) {
+    const src = stripComments(readFileSync(p, "utf8"));
+    const finishes = (src.match(/"--finish"/g) ?? []).length;
+    if (finishes !== 1) {
+      violations.push(`R19 sweep.mjs passes --finish ${finishes} time(s); it must be exactly once, at the very end.`);
+    }
+    if (!src.includes('"--no-finish"')) {
+      violations.push("R19 sweep.mjs must pass --no-finish to every per-group child, or each group prints the whole sweep's refusal.");
+    }
+    if (/force-report/.test(src)) {
+      violations.push(
+        "R19 sweep.mjs references force-report. An orchestrator that CAN force a report is one that WILL, " +
+          "at 3 a.m., after forty hours. There must be no route to it from here.",
+      );
+    }
+    const iLoop = src.indexOf("for (const g of plan)");
+    const iFinish = src.indexOf('"--finish"');
+    if (iLoop >= 0 && iFinish >= 0 && iFinish < iLoop) {
+      violations.push("R19 sweep.mjs finishes before its group loop — the gate would run against an unstarted sweep.");
+    }
+  }
+  const runPath = resolve(ROOT, "tester/scripts/run.mjs");
+  if (existsSync(runPath) && !stripComments(readFileSync(runPath, "utf8")).includes("no-finish")) {
+    violations.push("R19 run.mjs has no --no-finish, so a per-group invocation cannot avoid gating the whole sweep.");
+  }
+}
+
+/* ── R20: the scope manifest MERGES, it does not overwrite ────────────────── */
+{
+  const scopePath = resolve(ROOT, "tester/scripts/lib/scope.mjs");
+  const runPath = resolve(ROOT, "tester/scripts/run.mjs");
+  if (!existsSync(scopePath)) {
+    violations.push("R20 tester/scripts/lib/scope.mjs is missing — a phased sweep would overwrite its own manifest.");
+  } else {
+    const src = stripComments(readFileSync(scopePath, "utf8"));
+    const s = src.indexOf("export function mergeScope(");
+    if (s < 0) {
+      violations.push("R20 mergeScope() is missing from lib/scope.mjs.");
+    } else {
+      const body = src.slice(s, src.indexOf("\n}\n", s));
+      if (!/new Map\(\s*existing/.test(body)) {
+        violations.push(
+          "R20 mergeScope() must seed its map from EXISTING rows. Seeding from `incoming` yields a manifest " +
+            "of only this invocation's batches — which is the overwrite bug wearing the name of the fix, and " +
+            "the completeness gate then certifies one group as a finished sweep.",
+        );
+      }
+    }
+    if (existsSync(runPath)) {
+      const runSrc = stripComments(readFileSync(runPath, "utf8"));
+      if (!runSrc.includes("mergeScope(")) {
+        violations.push("R20 run.mjs does not call mergeScope() — its scope write still overwrites.");
+      } else if (runSrc.indexOf("mergeScope(") > runSrc.indexOf("writeScope()")) {
+        violations.push("R20 run.mjs writes the scope before merging it.");
+      }
+    }
+  }
+}
+
+/* ── R21: the memory guard reads a COMMIT counter ─────────────────────────── */
+{
+  const p = resolve(ROOT, "tester/scripts/lib/process-cleanup.mjs");
+  if (existsSync(p)) {
+    const src = stripComments(readFileSync(p, "utf8"));
+    const s = src.indexOf("export function readCommit(");
+    const body = s < 0 ? "" : src.slice(s, src.indexOf("\n}\n", s));
+    /*
+     * Assert on the QUERY, not merely on the token appearing somewhere in the
+     * body. The first form of this rule checked `/FreeVirtualMemory/.test(body)`
+     * and stayed green against a probe that removed the field from the
+     * Select-Object clause — because the field READ still mentioned it, and would
+     * simply have returned undefined. A rule that passes while the thing it
+     * guards is broken is the failure this file's header is about.
+     */
+    const selects = body.match(/Select-Object[^"'`\n]*/g) ?? [];
+    const queriesCommit = selects.some((c) => /FreeVirtualMemory|TotalVirtualMemorySize|CommitLimit/.test(c));
+    if (s < 0 || !queriesCommit) {
+      violations.push(
+        "R21 the memory guard must read a COMMIT counter (FreeVirtualMemory / TotalVirtualMemorySize), " +
+          "not os.freemem(). Measured 2026-09-07: free physical 6.7 GB vs free commit 17 GB — gating on " +
+          "the wrong one fires 10 GB early and teaches everyone to raise the threshold until it never fires.",
+      );
     }
   }
 }
