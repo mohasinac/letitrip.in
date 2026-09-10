@@ -310,6 +310,13 @@ export const AUDITS = [
   // outside tsc, eslint and every other audit — so this is its only check.
   // Skips cleanly when tester/ is not checked out.
   { name: "tester-plugin-wiring",          script: "scripts/audit-tester-plugin-wiring.mjs" },
+  // The harness's own self-checks. Registered as audits rather than left as
+  // scripts someone remembers to run, because both guard properties that are
+  // INVISIBLE when broken: a claim that double-issues and a lane that lets two
+  // batches drive one account produce verdicts shaped exactly like correct ones.
+  // Both use scratch dirs and touch no real state, so they are safe in the gate.
+  { name: "tester-claims",                 script: "tester/scripts/verify-claims.mjs" },
+  { name: "tester-lanes",                  script: "tester/scripts/verify-lanes.mjs" },
   // Strict-zero. A seeded cart line with `locked: true` but neither
   // isAuctionWin/bidId nor isOffer/offerId. laneOf() reads only those two
   // pairs — never listingType, never locked — so such a line lands in the
