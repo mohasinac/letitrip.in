@@ -76,3 +76,34 @@ separate causes, and they want different responses:
    seed-only fixture wastes a case slot and inflates the blocked count. Rig fix:
    `fetch-cases.mjs` should exclude items that carry no `steps`, rather than
    relying on the tester to notice.
+
+---
+
+## Watch item — a batch can run out before it records anything
+
+`admin/bulk-actions` (10 cases, 16KB) ran **159 turns**, ended with
+`result: success`, and recorded **nothing**. The transcript shows it doing real
+work to the end — its last words are *"Verdict for this case: **no** — the
+selection silently carries over hidden rows into the new filter view"* — so
+roughly 18 minutes of genuine testing was discarded.
+
+**Why it cannot partially save.** `validateBatch` requires a verdict for *every*
+case in the batch; a missing one is a hard `no verdict returned` rejection. And
+`record-verdicts.mjs` overwrites rather than merges (it preserves only
+`quarantineHistory`). So the skill's single call at the end is not a style
+choice — it is the only shape the tool accepts, and an early-ended session
+therefore keeps nothing.
+
+**Not being engineered around on n=1.** The retry fired automatically and the
+attempt ledger allows 3, so the cost is wall clock rather than lost correctness.
+
+**What would change that judgement:** several batches failing the same way,
+especially the larger ones. Sizing is not the obvious culprit — the failed batch
+was 10 cases against a max of 12 and a median of 5, and 12-case batches have
+completed — but 8 batches sit at the 12 cap and are the ones to watch.
+
+If it recurs, the fix is a `--partial` mode that records the verdicts a session
+did reach while leaving the batch marked incomplete, so the retry resumes rather
+than restarting. Note that mode must also handle the control check: a partial
+record whose calibration controls are not yet answered must not be treated as
+having failed them.
