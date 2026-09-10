@@ -406,6 +406,65 @@ function renderAddressStep({
   );
 }
 
+/*
+ * 🛑 MODULE SCOPE, NOT `useMemo`, AND THAT IS THE WHOLE POINT.
+ *
+ * `renderValueOtpStep` and `renderPaymentStep` are plain functions called from
+ * CheckoutRouteClient's `renderStep` render prop — they are NOT components. A
+ * hook called inside one is appended to CheckoutRouteClient's OWN hook list,
+ * and only on the steps where that helper runs. Address and extras rendered N
+ * hooks; payment rendered N+1, which is exactly React #310 "Rendered more hooks
+ * than during the previous render" — the crash that made checkout unreachable
+ * past step 2 (9 occurrences recorded in `serverErrors` before this fix).
+ *
+ * Both section arrays had `[]` deps, so they were already constants pretending
+ * to need a hook. At module scope they are strictly MORE stable than the memo
+ * was — one array for the lifetime of the module, no hook slot at all.
+ *
+ * If either ever needs to close over a prop, make the helper a real component
+ * (`<PaymentStep …/>`) so the hook is legal, rather than reintroducing it here.
+ */
+const OTP_SECTIONS: SectionDef<{ otpCode: string }>[] = [
+  {
+    id: "otp",
+    label: "Verification code",
+    required: true,
+    fields: ["otpCode"],
+    render: ({ values, onChange }) => (
+      <Input
+        type="text"
+        inputMode="numeric"
+        maxLength={6}
+        placeholder="6-digit code"
+        value={values.otpCode}
+        onChange={(e) => onChange({ otpCode: e.target.value })}
+        className="tracking-widest text-center text-[length:var(--appkit-text-xl)]"
+      />
+    ),
+  },
+];
+
+/** The one option that applies whichever payment method is chosen. */
+const POLICY_SECTIONS: SectionDef<{ outOfStockPolicy: OutOfStockPolicy }>[] = [
+  {
+    id: "policy",
+    label: CK.OUT_OF_STOCK_POLICY_LABEL,
+    fields: ["outOfStockPolicy"],
+    render: ({ values, onChange }) => (
+      <FieldSelect
+        name="outOfStockPolicy"
+        label={CK.OUT_OF_STOCK_POLICY_LABEL}
+        value={values.outOfStockPolicy}
+        onChange={(v) => onChange({ outOfStockPolicy: v as OutOfStockPolicy })}
+        options={[
+          { value: "skip_items", label: CK.OUT_OF_STOCK_POLICY_SKIP_ITEMS },
+          { value: "cancel_order", label: CK.OUT_OF_STOCK_POLICY_CANCEL_ORDER },
+        ]}
+      />
+    ),
+  },
+];
+
 function renderValueOtpStep({
   maskedEmail,
   maskedPhone,
@@ -439,25 +498,6 @@ function renderValueOtpStep({
    * server that issued the code, and a client-side length check that disagreed
    * with it would be the more confusing of the two failures.
    */
-  const otpSections = React.useMemo<SectionDef<{ otpCode: string }>[]>(() => [
-    {
-      id: "otp",
-      label: "Verification code",
-      required: true,
-      fields: ["otpCode"],
-      render: ({ values, onChange }) => (
-        <Input
-          type="text"
-          inputMode="numeric"
-          maxLength={6}
-          placeholder="6-digit code"
-          value={values.otpCode}
-          onChange={(e) => onChange({ otpCode: e.target.value })}
-          className="tracking-widest text-center text-[length:var(--appkit-text-xl)]"
-        />
-      ),
-    },
-  ], []);
   return (
     <Div className={STEP_CARD_CLS}>
       <Heading level={2} className="mb-1" color="primary" size="lg" weight="semibold">
@@ -473,7 +513,7 @@ function renderValueOtpStep({
       </Text>
       <Stack gap="md">
         <SectionForm<{ otpCode: string }>
-          sections={otpSections}
+          sections={OTP_SECTIONS}
           values={{ otpCode }}
           onChange={(partial) => setOtpCode(partial.otpCode ?? "")}
           onSubmit={() => void handleVerify()}
@@ -559,26 +599,6 @@ function renderPaymentStep({
   handlePlaceEmiOrder: () => Promise<void>;
   handleAdminBypass: () => Promise<void>;
 }) {
-  /** The one option that applies whichever payment method is chosen. */
-  const policySections = React.useMemo<SectionDef<{ outOfStockPolicy: OutOfStockPolicy }>[]>(() => [
-    {
-      id: "policy",
-      label: CK.OUT_OF_STOCK_POLICY_LABEL,
-      fields: ["outOfStockPolicy"],
-      render: ({ values, onChange }) => (
-        <FieldSelect
-          name="outOfStockPolicy"
-          label={CK.OUT_OF_STOCK_POLICY_LABEL}
-          value={values.outOfStockPolicy}
-          onChange={(v) => onChange({ outOfStockPolicy: v as OutOfStockPolicy })}
-          options={[
-            { value: "skip_items", label: CK.OUT_OF_STOCK_POLICY_SKIP_ITEMS },
-            { value: "cancel_order", label: CK.OUT_OF_STOCK_POLICY_CANCEL_ORDER },
-          ]}
-        />
-      ),
-    },
-  ], []);
   return (
     <Div className={STEP_CARD_CLS}>
       {step !== "processing" && (
@@ -597,7 +617,7 @@ function renderPaymentStep({
             <Text className="text-error" size="sm">{actionError}</Text>
           )}
           <SectionForm<{ outOfStockPolicy: OutOfStockPolicy }>
-            sections={policySections}
+            sections={POLICY_SECTIONS}
             values={{ outOfStockPolicy }}
             onChange={(partial) => {
               if (partial.outOfStockPolicy) setOutOfStockPolicy(partial.outOfStockPolicy);

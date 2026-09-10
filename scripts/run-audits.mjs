@@ -46,6 +46,7 @@ export const AUDITS = [
   { name: "client-entry-in-server",          script: "scripts/audit-client-entry-in-server.mjs" },
   { name: "relative-runtime-require",        script: "scripts/audit-relative-runtime-require.mjs" },
   { name: "observability-registration",      script: "scripts/audit-observability-registration.mjs" },
+  { name: "hook-in-render-helper",           script: "scripts/audit-hook-in-render-helper.mjs" },
   // Nothing leaves the building unmetered. Guards the two halves of the send
   // budget — EMAIL_ELIGIBLE_TYPES (which types may email at all) and guardSend
   // (the kill switch + daily ceiling) — both of which are bypassable by writing

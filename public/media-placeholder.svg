@@ -5,10 +5,16 @@
     An ASSET, not a template string in TypeScript, for two reasons that both
     matter. It is artwork, so it belongs where artwork can be edited and diffed
     visually — the same call `_watermark.ts` makes for `logo.svg`. And it is the
-    body of an <img> response, where no stylesheet, no :root and no
-    var(--appkit-color-*) is in scope; a colour here HAS to be literal, and the
+    body of an <img> response, where no stylesheet, no :root and no appkit CSS
+    custom property is in scope; a colour here HAS to be literal, and the
     honest place for a literal colour is a design file rather than a source file
     with an audit suppression stapled to it.
+
+    NOTE: never write a double hyphen in this comment. XML forbids it inside a
+    comment body, and every strict parser rejects the whole document. Naming the
+    token in its real `var(...)` spelling is what broke this file: the browser
+    refused it with "Unexpected token" and the fallback tile for a broken image
+    was itself a broken image, on every unreachable upstream host.
   -->
   <rect width="600" height="600" fill="#334155"/>
   <g fill="#f8fafc" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">

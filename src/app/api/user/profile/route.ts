@@ -31,26 +31,62 @@ export const GET = withProviders(createApiHandler({
      */
     const profile = await userRepository.findById(user!.uid);
 
+    /*
+     * 🛑 THE DOCUMENT WINS FOR EVERY DOCUMENT-BACKED FIELD, NOT JUST THE TWO
+     * THAT WERE DEBUGGED.
+     *
+     * The comment above explains precisely why `isTester`/`canTestAdmin` had to
+     * come from Firestore — and then only those two were changed. Every other
+     * profile field kept reading `user!`, i.e. the session, which carries only
+     * what is minted into the cookie plus Firebase Auth's own view. So:
+     *
+     *   - `displayName` / `photoURL` came from the stale Auth token, so a
+     *     rename or a new avatar saved to Firestore never read back;
+     *   - `bio` and `publicProfile` are not in the session AT ALL, so they were
+     *     `undefined`, and the settings UI rendered its defaults instead. That
+     *     is why "Profile visibility: Public" displayed while the stored value
+     *     was `false` — the page was not showing the user's setting, it was
+     *     showing the fallback.
+     *
+     * Four separate tester failures (display name, bio, avatar, visibility
+     * toggle) were this one line-shape repeated. The writes were always fine.
+     *
+     * Session-only fields stay on `user!` on purpose: `email`,
+     * `emailVerified`, `googleLinked*` and `metadata` are Auth's to own, and a
+     * Firestore copy of them would be the stale one.
+     */
+    /*
+     * Read `bio` from where the PATCH below actually WRITES it — inside
+     * `publicProfile`, alongside `isPublic` — not from a top-level field that
+     * has never existed on `UserDocument`. Mirroring the write is the whole
+     * point; a read that guesses a different shape is the same defect one level
+     * down.
+     */
+    const publicProfile = (profile?.publicProfile ?? user!.publicProfile) as
+      | { bio?: string; isPublic?: boolean }
+      | undefined;
+
     return successResponse({
       uid: user!.uid,
       email: user!.email,
       emailVerified: user!.emailVerified,
-      displayName: user!.displayName,
-      photoURL: user!.photoURL,
-      phoneNumber: user!.phoneNumber,
-      phoneVerified: user!.phoneVerified,
-      storeId: user!.storeId,
+      displayName: profile?.displayName ?? user!.displayName,
+      photoURL: profile?.photoURL ?? user!.photoURL,
+      bio: publicProfile?.bio ?? null,
+      phoneNumber: profile?.phoneNumber ?? user!.phoneNumber,
+      phoneVerified: profile?.phoneVerified ?? user!.phoneVerified,
+      storeId: profile?.storeId ?? user!.storeId,
       isTester: profile?.isTester ?? user!.isTester ?? false,
       canTestAdmin: profile?.canTestAdmin ?? user!.canTestAdmin ?? false,
       googleLinked: user!.googleLinked ?? false,
       googleLinkedEmail: user!.googleLinkedEmail ?? null,
-      uiPreferences: user!.uiPreferences ?? {},
-      slug: user!.slug ?? null,
-      role: user!.role,
-      disabled: user!.disabled,
-      avatarMetadata: user!.avatarMetadata,
-      publicProfile: user!.publicProfile,
-      stats: user!.stats,
+      uiPreferences: profile?.uiPreferences ?? user!.uiPreferences ?? {},
+      slug: profile?.slug ?? user!.slug ?? null,
+      role: profile?.role ?? user!.role,
+      disabled: profile?.disabled ?? user!.disabled,
+      avatarMetadata: profile?.avatarMetadata ?? user!.avatarMetadata,
+      publicProfile,
+      stats: profile?.stats ?? user!.stats,
       metadata: user!.metadata
         ? {
             lastSignInTime:
