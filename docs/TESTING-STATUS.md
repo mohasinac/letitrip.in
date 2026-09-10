@@ -1,6 +1,6 @@
 # Testing status
 
-Generated 2026-09-10T20:26:26.061Z by `scripts/build-testing-status.mjs`.
+Generated 2026-09-10T20:37:29.501Z by `scripts/build-testing-status.mjs`.
 
 > Every number here is computed from the verdict files in
 > `tester/.tester-runs/*/verdicts/`. The FIXED / OPEN / NOT-A-BUG column is
@@ -269,7 +269,39 @@ Reproduced and unfixed. Items marked *deferred* were a deliberate call, not an o
 | 5 | blocked by the checkout crash | **Fixed** — React #310 |
 | 3 | needs a long wait | **Fixed by design** — seed the end state, never wait (plan D5) |
 
-## 6. What the next run should look like
+## 6. Case-catalogue audit (Phase 1)
+
+Changes made to the catalogue itself, so nothing disappears silently.
+
+### Removed
+
+- **`selling/listing-a-product` → `media-upload-images-capped-at-5`** — asserted
+  the gallery caps at "5 images (not 10)". The cap was raised to 10
+  (`PRODUCT_MAX_IMAGES`), and `selling/media-limits` asserts the opposite in its
+  own label: *"The 10th gallery image uploads — the 5th used to fail with a 400"*.
+  The case documented the OLD behaviour as the expectation, so it would fail
+  against correct code and anyone "fixing" the product to satisfy it would
+  re-break ten-image support. Its **id encoded the wrong number**, so correcting
+  the label alone would still have misled. The invariant it really tested —
+  stated limit equals enforced limit — survives in
+  `media-eleventh-image-refused-client-side`, which requires the refusal to name
+  the limit. Overlay entry removed with it; no orphan left behind.
+
+### Numeric sweep — every case asserting a count, checked against its constant
+
+26 cases assert a specific number. All were cross-checked; **one inversion found**
+(above), the rest agree with the code:
+
+| case claims | constant | verdict |
+|---|---|---|
+| wishlist 20-item cap | `WISHLIST_MAX = 20` | agrees |
+| history evicts past 50 | `HISTORY_MAX = 50` | agrees |
+| gallery 10 images + 1 video | `PRODUCT_MAX_IMAGES = 10`, `PRODUCT_MAX_VIDEOS = 1` | agrees |
+| offer-cancel reason ≥ 10 chars | `.min(10)` on the route schema | agrees |
+| store reviews exactly 10 per page | `REVIEWS_DETAIL_PAGE_SIZE = 10` | agrees |
+| up to 4 related carousels | the 4-signal design (category/brand/tags/store) | agrees — `RELATED_DISPLAY_LIMIT = 8` is items *per* carousel, a different number |
+
+## 7. What the next run should look like
 
 A prediction, so the next run can be checked against it rather than admired:
 

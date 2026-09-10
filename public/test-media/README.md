@@ -12,6 +12,9 @@ garish so nothing here can be mistaken for real product media.
 |---|---|---|---|
 | `sample-video.mp4` | 1128375 | video/mp4 | happy path — video upload, poster frame, and the theater-mode player |
 | `sample-image.png` | 561 | image/png | happy path — PNG upload and preview |
+| `sample-image-2.png` | 559 | image/png | gallery ordering / slot collision — must be visually distinct from sample-image.png |
+| `sample-image-3.png` | 708 | image/png | gallery ordering — a third distinct image, different in pattern as well as colour |
+| `sample-vector.svg` | 308 | — | rejection — SVG is outside the allowed image types (a document format that can carry script) |
 | `sample-image.jpg` | 160 | image/jpeg | happy path — JPEG, the format most product photos arrive as |
 | `sample-image.webp` | 34 | image/webp | happy path — WebP, which the media proxy converts to |
 | `sample-doc.pdf` | 627 | application/pdf | happy path — the PDF branch (invoices, payout docs, shipping proofs) |
