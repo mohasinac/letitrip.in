@@ -185,7 +185,21 @@ for (const file of walk(resolve(TESTER_DIR, "scripts"))) {
   }
 }
 
-/* ── R4: time-bound tester fixtures derive from tester-window.ts ─────────── */
+/* ── R4: time-bound fixtures — TWO rules that point opposite ways ───────────
+ *
+ * The long-lived sandbox seed (`*-seed-data.ts`) MUST derive its dates from
+ * tester-window.ts: those rows are written once per run and a hard-coded
+ * duration cannot be shortened, so a case watching one close is untestable in
+ * any run shorter than the literal.
+ *
+ * A per-batch fixture manifest (`fixtures/*.mjs`) MUST NOT. Those rows are
+ * created when the batch starts and deleted when it ends, so they want absolute
+ * offsets from seed time — a live auction two hours out, an ended one an hour
+ * past — and dividing a shared window would reintroduce the very expiry the
+ * manifests exist to remove. 29 blocked answers came from that expiry.
+ *
+ * Same field names, opposite requirement, decided by which directory the file
+ * is in. Writing it as one rule with an exception list would hide that. */
 
 const seedDir = resolve(ROOT, "appkit/src/features/tester/seed-data");
 const TIME_FIELDS = /(auctionEndDate|drawWindowDurationMinutes|expiresAt|checkoutDeadline|spinWindowEnd)\s*:/;
@@ -200,6 +214,29 @@ if (existsSync(seedDir)) {
         `R4 ${name} sets a time-bound fixture field but does not import ./tester-window. ` +
           `A hard-coded duration cannot be shortened, so the case that watches it close ` +
           `is untestable in any run shorter than the literal.`,
+      );
+    }
+  }
+}
+
+const fixturesDir = resolve(seedDir, "fixtures");
+if (existsSync(fixturesDir)) {
+  for (const name of readdirSync(fixturesDir)) {
+    if (!name.endsWith(".mjs")) continue;
+    const src = stripComments(read(resolve(fixturesDir, name)));
+    if (/tester-window|TESTER_WINDOW_MINUTES|windowOffset|windowAgo/.test(src)) {
+      violations.push(
+        `R4 fixtures/${name} uses the window helper. A per-batch fixture is created when ` +
+          `the batch starts and removed when it ends, so it must use absolute seed-time ` +
+          `offsets (at.hoursFromNow / at.hoursAgo). Dividing a shared window here brings ` +
+          `back the expiry that per-batch fixtures exist to remove.`,
+      );
+    }
+    if (TIME_FIELDS.test(src) && !/\bat\.(hoursFromNow|hoursAgo|minutesFromNow|minutesAgo)\s*\(/.test(src)) {
+      violations.push(
+        `R4 fixtures/${name} sets a time-bound field but never calls the absolute-offset ` +
+          `helper. A literal Date in a manifest is a fixture that ages differently from the ` +
+          `batch that owns it.`,
       );
     }
   }
@@ -233,7 +270,9 @@ const MONEY_FLOWS = resolve(ROOT, "appkit/src/features/tester/seed-data/_money-f
  * Root Cause #84.
  */
 const UNAUTHORED_PAGES = new Set([
-  "admin/bug-hunter-rewards",
+  // EMPTY, 2026-09-11 — every page in the catalogue now carries authored
+  // procedures. The ratchet's own header says emptying it is the goal, so this
+  // set stays empty: a new page without procedures must fail, not be added here.
 ]);
 
 if (existsSync(CATALOGUE)) {
@@ -278,11 +317,45 @@ if (existsSync(CATALOGUE)) {
     walk(resolve(ROOT, "appkit/src/seed"));
     walk(resolve(ROOT, "appkit/src/features/tester/seed-data"));
   }
-  const idKnown = (id) =>
-    seedIds.has(id) || [...seedIds].some((s) => s.endsWith("*") && id.startsWith(s.slice(0, -1)));
 
+  /*
+   * PER-BATCH MANIFEST IDS, loaded rather than grepped.
+   *
+   * `walk` above only reads `.ts` and only sees quoted literals — so a manifest
+   * id like `auction-{{w}}-live` was invisible to it, AND the `[a-z0-9]` in
+   * FIXTURE_RE meant the `{` stopped the regex dead. The net effect was a false
+   * negative: a case could cite a manifest fixture that did not exist and R7
+   * would say nothing, which is precisely the failure this rule exists to catch.
+   *
+   * Manifests are importable ES modules whose ids are frequently built by a
+   * helper (`auction-{{w}}-${suffix}`), so a static scan cannot read them
+   * reliably. Importing gives the real list.
+   */
+  const manifestDir = resolve(ROOT, "appkit/src/features/tester/seed-data/fixtures");
+  if (existsSync(manifestDir)) {
+    for (const name of readdirSync(manifestDir)) {
+      if (!name.endsWith(".mjs")) continue;
+      try {
+        const mod = await import(`file://${resolve(manifestDir, name)}`);
+        for (const spec of mod.fixtures ?? []) if (spec?.id) seedIds.add(spec.id);
+      } catch (err) {
+        violations.push(`R7 fixtures/${name} could not be imported: ${err?.message ?? err}`);
+      }
+    }
+  }
+
+  /** `{{w}}` matches any worker slot, so a case may cite the template form. */
+  const normaliseSlot = (id) => id.replace(/\{\{w\}\}|\bw[1-9]\b/g, "{{w}}");
+  const idKnown = (id) => {
+    if (seedIds.has(id)) return true;
+    const n = normaliseSlot(id);
+    if (seedIds.has(n)) return true;
+    return [...seedIds].some((s) => s.endsWith("*") && id.startsWith(s.slice(0, -1)));
+  };
+
+  // `{{w}}` is allowed INSIDE an id so manifest fixtures are actually scanned.
   const FIXTURE_RE =
-    /\b(?:product|auction|preorder|prizedraw|classified|digitalcode|live|art|sticker|category|brand|bundle|offer|event|store|coupon|group)-[a-z0-9][a-z0-9-]{4,}/g;
+    /\b(?:product|auction|preorder|prizedraw|classified|digitalcode|live|art|sticker|category|brand|bundle|offer|event|store|coupon|group)-(?:\{\{w\}\}|[a-z0-9])[a-z0-9{}-]{4,}/g;
 
   /*
    * Scan the VALUES, never the keys.
