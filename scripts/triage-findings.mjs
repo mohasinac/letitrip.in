@@ -241,6 +241,29 @@ for (const [title, group, note] of [
     }
     if (c.members.length > 12) lines.push(`- _…and ${c.members.length - 12} more_`);
     lines.push("");
+    /*
+     * The re-run command, emitted rather than reconstructed by hand.
+     *
+     * Phase 3 step 11 is "re-run only the batches whose cases were fixed" — and
+     * a FIXED row that does not flip to pass is a regression, meaning the fix did
+     * not do what it claims. That check is only worth anything if it is trivial
+     * to run, so the exact invocation lives next to the finding instead of being
+     * derived from a list of case ids at the moment someone is tired.
+     *
+     * The batches must be released from the ledger first: they are already
+     * consolidated, so the pool would otherwise skip every one of them and report
+     * a clean run having executed nothing.
+     */
+    if (c.kind === "FAIL") {
+      lines.push("<details><summary>re-run these batches after fixing</summary>", "");
+      lines.push("```bash");
+      lines.push(`# release them first — they are already consolidated and would otherwise be skipped`);
+      for (const s of spread) {
+        lines.push(`node tester/scripts/release-batch.mjs --run ${RUN} --batch ${s}`);
+      }
+      lines.push(`node tester/scripts/pool.mjs --run ${RUN} --workers ${Math.min(3, spread.length)}`);
+      lines.push("```", "", "</details>", "");
+    }
   }
 }
 
