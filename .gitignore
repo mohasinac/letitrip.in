@@ -167,3 +167,4 @@ scripts/set-razorpay-keys.mjs
 # >10MB of incompressible noise whose only job is to trip the image size cap.
 # Reproducible in a second; not worth carrying in git.
 public/test-media/oversized.png
+docs/TESTING-PROGRESS.md
