@@ -317,6 +317,7 @@ export const AUDITS = [
   // Both use scratch dirs and touch no real state, so they are safe in the gate.
   { name: "tester-claims",                 script: "tester/scripts/verify-claims.mjs" },
   { name: "tester-lanes",                  script: "tester/scripts/verify-lanes.mjs" },
+  { name: "tester-limits",                 script: "tester/scripts/verify-limits.mjs" },
   // Strict-zero. A seeded cart line with `locked: true` but neither
   // isAuctionWin/bidId nor isOffer/offerId. laneOf() reads only those two
   // pairs — never listingType, never locked — so such a line lands in the
