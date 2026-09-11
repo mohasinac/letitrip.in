@@ -107,3 +107,28 @@ did reach while leaving the batch marked incomplete, so the retry resumes rather
 than restarting. Note that mode must also handle the control check: a partial
 record whose calibration controls are not yet answered must not be treated as
 having failed them.
+
+---
+
+## `null` is not one thing — three kinds, wanting three responses
+
+A burst of `null` on one batch is how the offers seeding gap was found, so it is
+worth checking every time. But most nulls are not defects. Measured on
+`account-auth/signup-login--guest`: 3 pass, **8 null**, both controls correct.
+All 8 were structural:
+
+| kind | example | response |
+|---|---|---|
+| **Untestable by design** | "No Google account available in this automated browser session"; "No real email inbox to receive the verification link" | **None.** The case cannot run headlessly and never will. Correct abstention |
+| **Fixture missing** | "the fixture did not seed any offers for this seller" | **Rig fix** — this was Root Cause #90 |
+| **Blocked by another defect** | "blocked by the checkout crash" | **Product fix**, and it disappears when its cause is fixed |
+
+**Only the middle row is a rig fault.** The first is a permanent property of an
+automated runner, and the catalogue carries roughly 13 such cases (3 Google OAuth
++ inbox-dependent verification, reset, sender-identity and single-use-link cases).
+
+**For Phase 3**: these will report `null` in every run forever, which makes a
+raw "blocked" count misleading — it mixes a permanent floor with real blockage.
+Worth a flag on the case itself (`requiresHumanChannel: true` or similar) so the
+report can subtract them, rather than re-triaging the same 13 every run. Not done
+during the run: it is catalogue work, and Phase 2 changes no cases.
