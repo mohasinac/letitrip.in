@@ -318,6 +318,19 @@ export const AUDITS = [
   { name: "tester-claims",                 script: "tester/scripts/verify-claims.mjs" },
   { name: "tester-lanes",                  script: "tester/scripts/verify-lanes.mjs" },
   { name: "tester-limits",                 script: "tester/scripts/verify-limits.mjs" },
+  // The no-op guard in onShipmentAllocationSync is the ONLY thing stopping a
+  // shipment document from becoming an infinite, billed cascade: the function
+  // watches procurementShipments/{id} on documentWritten and writes back to that
+  // same document. A JSON.stringify comparison there was key-ORDER sensitive and
+  // could never report "unchanged" -- 12M invocations against a 2M/month free
+  // quota. Invisible in review, so it gets a permanent check.
+  { name: "shipment-allocation-guard",     script: "scripts/verify-shipment-allocation-guard.mjs" },
+  // The general form of the same defect: ANY documentWritten/Updated trigger that
+  // writes back into the collection it watches. Demands an explicit
+  // `// trigger-self-write-ok: <why>` rather than trying to RECOGNISE a guard --
+  // an earlier version scanned for one and was satisfied by a variable merely
+  // NAMED `totalsUnchanged` while assigned `false`.
+  { name: "trigger-self-write",            script: "scripts/audit-trigger-self-write.mjs" },
   // Strict-zero. A seeded cart line with `locked: true` but neither
   // isAuctionWin/bidId nor isOffer/offerId. laneOf() reads only those two
   // pairs — never listingType, never locked — so such a line lands in the
