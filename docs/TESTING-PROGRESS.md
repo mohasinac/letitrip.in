@@ -12,3 +12,5 @@ Kill the pool at any point and every finished batch is already here.
 | `account-auth/profile-settings--guest` | w1 | 1 | 0 | 0 | no | 1 | 2026-09-10T22:41:35.674Z |
 | `account-auth/signup-login` | w1 | 1 | 0 | 3 | no | 1 | 2026-09-10T22:49:46.636Z |
 | `content-discovery/category-brand-relations` | w3 | 8 | 0 | 0 | no | 1 | 2026-09-10T22:54:42.989Z |
+| `account-auth/signup-login--guest` | w1 | 3 | 0 | 8 | no | 1 | 2026-09-11T11:01:03.073Z |
+| `account-auth/testing-program` | w1 | 0 | 3 | 0 | no | 2 | 2026-09-11T11:11:51.207Z |
