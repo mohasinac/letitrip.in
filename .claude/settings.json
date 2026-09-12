@@ -72,6 +72,12 @@
             "command": "node scripts/claude-hooks/check-on-stop.mjs",
             "timeout": 180,
             "statusMessage": "Running quality gates..."
+          },
+          {
+            "type": "command",
+            "command": "node scripts/claude-hooks/tester-loop-continue.mjs",
+            "timeout": 90,
+            "statusMessage": "Checking the tester phase loop..."
           }
         ]
       }
