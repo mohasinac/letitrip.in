@@ -143,6 +143,11 @@ export const AUDITS = [
   // `danger-*` utilities, which Tailwind never generates for the consumer
   // build and therefore drops silently. Strict-zero.
   { name: "status-color-pairs",              script: "scripts/audit-status-color-pairs.mjs" },
+  // A browser timer is a recurring server bill. Blocks a sub-60s
+  // `refetchInterval` literal and any `new EventSource` outside the one module
+  // that owns the ref-counted channel — the two patterns that produced the
+  // Vercel invocation/CPU overage on 2026-09-14. Strict-zero.
+  { name: "client-poll-cost",                script: "scripts/audit-client-poll-cost.mjs" },
   // Strict-zero, no suppression marker. A `hover:bg-{palette}-{50,100,200}` is a
   // theme-INVARIANT light tint — unreadable behind `dark:hover:text-*` white ink
   // in every dark theme, which is the "white background behind white text on

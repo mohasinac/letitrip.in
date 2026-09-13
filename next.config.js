@@ -93,6 +93,29 @@ module.exports = withNextIntl(
     experimental: {
       serverSourceMaps: false,
 
+      // ── Client router cache ───────────────────────────────────────────
+      //
+      // `dynamic` defaults to 0 in Next 15+, i.e. a dynamically-rendered page
+      // segment is NOT reused at all: every soft navigation back to it refetches
+      // the whole RSC payload, which is an Edge Request plus a function
+      // invocation each time.
+      //
+      // That default is expensive here specifically because this app is mostly
+      // dynamic — verified against .next/prerender-manifest.json, which holds
+      // only 81 static + 75 [locale]-only routes, with every [slug]/[id] content
+      // detail route absent from it (they read searchParams or a session, so
+      // they render per request). Tab bars and card grids make back-and-forth
+      // navigation the normal browsing pattern, so this default was being paid
+      // constantly.
+      //
+      // 180s is a client-side reuse window, not a content-freshness contract:
+      // a hard navigation, a reload, and back/forward caching are all
+      // unaffected, and shared layouts were already not refetched per navigation.
+      staleTimes: {
+        dynamic: 180,
+        static: 300,
+      },
+
       // ── Static-generation worker pool ─────────────────────────────────
       //
       // 🛑 This is the single most important build-memory setting in this file.

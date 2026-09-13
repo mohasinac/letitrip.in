@@ -53,13 +53,20 @@ const RBAC_BYPASS = new Set(["/unauthorized", "/error.html", "/auth/login"]);
 //   2. It must FAIL OPEN. A settings fetch that errors or times out must never
 //      404 a working page — that would turn a transient blip into a site-wide
 //      outage, which is strictly worse than the feature not firing.
-const DISABLED_ROUTES_TTL_MS = 60_000;
+// 10 minutes, not 1. Every expiry costs a BLOCKING same-origin round-trip to a
+// Node function before the page can render, paid once per Edge instance per
+// window — and Vercel runs many instances, so this multiplies by instance count
+// rather than being amortised across all traffic. The gate already fails open
+// and is a nav-visibility toggle, not a security boundary, so the only cost of
+// a longer window is that disabling a route takes up to 10 minutes to
+// propagate. RBAC for /admin is enforced separately above and is unaffected.
+const DISABLED_ROUTES_TTL_MS = 600_000;
 const DISABLED_ROUTES_TIMEOUT_MS = 1_000;
 // Tier-2 prefixes own their own RBAC gating and are never nav-disabled.
 const DISABLED_ROUTES_EXEMPT = ["/admin", "/store", "/user", "/checkout"];
 
 // Module scope: Edge instances are reused across requests, so this is ~1 fetch
-// per instance per minute, not one per request.
+// per instance per TTL window, not one per request.
 let disabledRoutesCache: { at: number; routes: string[] } | null = null;
 
 /** The only part of GET /api/site-settings this gate reads. */

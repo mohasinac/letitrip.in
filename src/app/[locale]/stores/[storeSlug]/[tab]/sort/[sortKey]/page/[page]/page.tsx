@@ -90,24 +90,28 @@ function tabLabel(tab: string): string {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale, storeSlug, tab, sortKey, page } = await params;
+  const { storeSlug, tab } = await params;
   const normalizedTab = normalizeTab(tab);
-  const normalizedSort = normalizeSortKey(sortKey);
-  const normalizedPage = normalizePage(page);
-  const canonicalPath = buildCanonicalPath(
-    locale,
-    storeSlug,
-    normalizedTab,
-    normalizedSort,
-    normalizedPage,
-  );
 
+  // 🛑 Deliberately NO `alternates` here.
+  //
+  // This route is one sort/page permutation of content that already has a
+  // canonical home at `/stores/{storeSlug}` — the URL the sitemap advertises.
+  // It used to self-canonicalise to its own faceted path, which told search
+  // engines that every (tab x sortKey x page) combination was a distinct
+  // canonical page and split the store's link equity across all of them.
+  //
+  // Omitting `alternates` is the fix rather than an oversight: Next MERGES
+  // metadata, so this page inherits the canonical that
+  // `stores/[storeSlug]/layout.tsx` already declares via `_gm({ path })`.
+  // That is the convention recorded in CLAUDE.md (Known TS Patterns) — declare
+  // the canonical once on the parent layout and let the tabs inherit it.
+  //
+  // Title and description stay per-tab: those are genuinely different content
+  // and are what a SERP entry for the tab should read.
   return {
     title: `${formatSlug(storeSlug)} - ${tabLabel(normalizedTab)} - Stores`,
     description: `Explore ${tabLabel(normalizedTab).toLowerCase()} for ${formatSlug(storeSlug)} store.`,
-    alternates: {
-      canonical: canonicalPath,
-    },
   };
 }
 
