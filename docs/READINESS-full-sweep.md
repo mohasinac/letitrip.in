@@ -8,6 +8,18 @@ first time, which is recorded because the correction is the useful part.
 
 ## Shipped this session (verified, not assumed)
 
+> **Status 2026-09-13: committed AND deployed.** `npm run check` exit 0; indexes
+> deployed and settled (27,852 READY, 0 CREATING); app deployed via
+> `scripts/deploy.mjs` with its smoke test, SEO check and canonical check green.
+> `/user/tester` now returns **200** with `X-Matched-Path: /en/user/tester`.
+> Commits: appkit `0f0d8145`, tester `107f65b`, root `7f7a37032`.
+>
+> 🛑 **The seed flags are NOT live yet.** `requiresHumanChannel` and `needsReview`
+> exist in appkit *source* only. `npx appkit-seed` runs from
+> `node_modules/@mohasinac/appkit` (npm-pinned `^4.35.4`), so a reseed today
+> writes the OLD shape. **Publish appkit before reseeding**, or the flags reach
+> Firestore as `undefined` and the run reports the same misleading blocked count.
+
 | | Root cause | How it was confirmed |
 |---|---|---|
 | `/user/tester` 404 | `.vercelignore` carried an **unanchored** `tester`. Gitignore semantics match at any depth, so it stripped `src/app/[locale]/user/tester/` from the Vercel upload — the route never existed in the build. Fixed to `/tester`. | `X-Matched-Path: /404` vs `/en/user/profile` + `X-Nextjs-Prerender: 1`; scratch-repo test proved `tester` excludes both paths and `/tester` only the submodule |
