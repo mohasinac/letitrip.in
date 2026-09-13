@@ -30,13 +30,23 @@ const BYTES_PER_GB = 1024 ** 3;
 // Sync timeout 10 s, background 60 s. Payload + image caps match Hobby
 // across all compute tiers.
 //
-// The 2 GB function memory is also the empirically-derived minimum heap
-// cap for `next dev` (turbopack) on this codebase: probe-dev-heap-cap.mjs
-// 2026-05-12 showed 1024 MB OOMs under load (peak RSS 1457 MB), 1536 MB
-// runs without OOM (peak RSS 1887 MB), and 1536 + 512 MB headroom rounds
-// up to the 2048 MB cap NODE_OPTIONS uses in package.json `dev:only`.
+// 🛑 This block used to also claim MEMORY_MB was "the empirically-derived
+// minimum heap cap for `next dev` (turbopack)", citing probe-dev-heap-cap.mjs
+// 2026-05-12 (1024 MB OOMs / 1536 MB survives / +512 headroom → 2048). That
+// claim was wrong in two ways and is retracted:
+//
+//   1. The probe it cites spawns `next dev --webpack`
+//      (probe-dev-heap-cap.mjs), while this script spawns plain `next dev`
+//      → TURBOPACK (Next 16 default, lib/bundler.js). The comment named one
+//      bundler and the measurement used the other.
+//   2. package.json `dev:only` applies 3072, not 2048. Three places wrote the
+//      number and all three disagreed.
+//
+// These Hobby ceilings are about the deployed FUNCTION runtime. They are not,
+// and never were, a measured dev-server heap cap — do not re-conflate them.
+// Re-derive the dev cap with a Turbopack run before quoting one.
 const HOBBY_LIMITS = {
-  // Function memory (MB) — Fluid Compute Standard. Also the dev heap cap.
+  // Function memory (MB) — Fluid Compute Standard. Runtime ceiling only.
   MEMORY_MB: 2048,
   // Sync function timeout (seconds).
   FUNCTION_TIMEOUT_S: 10,
@@ -47,7 +57,13 @@ const HOBBY_LIMITS = {
   // Image optimization input cap.
   MAX_IMAGE_BYTES: 50 * 1024 * 1024,
   // Build machine memory (MB) — for reference; not enforced locally.
+  // Hobby is fixed at 2 vCPU / 8 GB and cannot be upgraded.
   BUILD_MACHINE_MB: 8 * 1024,
+  // Build machine vCPUs. Load-bearing for `experimental.cpus` in next.config.js:
+  // Node's os.cpus() reports the HOST core count, not the container's cgroup
+  // quota, so Next would otherwise size its static-generation worker pool from
+  // a number that has nothing to do with this container.
+  BUILD_MACHINE_CPUS: 2,
 };
 
 if (!process.env.DEV_SKIP_MEM_CHECK) {
@@ -94,9 +110,30 @@ if (hobbyOn) {
   );
 }
 
+// `--disable-source-maps` is a real memory lever, not a style choice.
+// next/dist/cli/next-dev.js force-adds `--enable-source-maps` to the forked dev
+// server's NODE_OPTIONS unless this flag is passed:
+//
+//     if (options.disableSourceMaps) { delete nodeOptions['enable-source-maps'] }
+//     else                           { nodeOptions['enable-source-maps'] = true }
+//
+// That is a V8 flag, so V8 retains source-map data for every loaded chunk —
+// across 769 route entries that is a first-order retention cost.
+// `experimental.serverSourceMaps: false` in next.config.js does NOT suppress it;
+// that one is a bundler flag and they are unrelated.
+//
+// Cost: dev server stack traces point at compiled output rather than original
+// TS. Set DEV_SOURCE_MAPS=1 for a session where you need them back.
+const wantSourceMaps = process.env.DEV_SOURCE_MAPS === "1";
+const nextArgs = ["node_modules/next/dist/bin/next", "dev"];
+if (!wantSourceMaps) nextArgs.push("--disable-source-maps");
+console.log(
+  `[dev-next] source maps ${wantSourceMaps ? "ON (DEV_SOURCE_MAPS=1)" : "OFF — set DEV_SOURCE_MAPS=1 to restore"}.`,
+);
+
 const child = spawn(
   "node",
-  ["node_modules/next/dist/bin/next", "dev"],
+  nextArgs,
   { stdio: "inherit", env, shell: false },
 );
 

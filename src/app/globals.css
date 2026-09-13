@@ -43,7 +43,14 @@
 
 /* appkit pre-compiles and ships its OWN Tailwind utilities (dist/tailwind-utilities.css, imported
    via @mohasinac/appkit/styles in layout.tsx) — this build must never scan appkit/src itself, same
-   as v3's tailwind.config.js `content` array (above) never included an appkit glob. */
+   as v3's tailwind.config.js `content` array (above) never included an appkit glob.
+
+   Note the path points at the LOCAL appkit/ working tree, which `.vercelignore` now
+   excludes from the upload — so on Vercel this directive resolves to nothing. That is
+   fine and was verified, not assumed: `@source not` is an exclusion, and Tailwind v4.3.3
+   exits 0 on a missing exclusion path. Same outcome either way — there is no appkit/src
+   to scan in the first place. Do not "fix" this by deleting the line; it is still
+   load-bearing for local builds, where the directory does exist. */
 @source not "../../appkit";
 
 @theme {

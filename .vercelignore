@@ -7,6 +7,8 @@ react-library/.npmrc
 memory-forensics-*
 *.heapsnapshot
 probe-results.json
+# Per-run output of scripts/probe-build-memory.mjs.
+/.build-memory
 
 # Tester plugin submodule — dev tooling only, never part of the app build.
 # It carries @playwright/mcp + its own node_modules; shipping it inflates the

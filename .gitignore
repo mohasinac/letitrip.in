@@ -133,6 +133,8 @@ test-results*.txt
 .claude/settings.local.json
 GEMINI.md
 /memory-forensics-*
+# Per-run output of scripts/probe-build-memory.mjs (JSON + teed build log).
+/.build-memory
 .env.vercel-check
 .env.verify-check
 *.heapsnapshot

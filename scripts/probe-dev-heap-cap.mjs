@@ -9,8 +9,19 @@
  * cycled compiled modules. The relevant measurement is therefore *Next
  * dev under light load*, not at pure idle.
  *
+ * 🛑 BUNDLER: this probe used to hard-code `--webpack`, while scripts/dev-next.mjs
+ * spawns plain `next dev` — which is TURBOPACK, the Next 16 default. So its
+ * 2026-05-12 result (1024 OOMs / 1536 survives / recommend 2048) was a WEBPACK
+ * measurement that got quoted in dev-next.mjs as a Turbopack cap, and
+ * package.json meanwhile applies 3072. Three sources, three different numbers,
+ * one of them measuring the wrong bundler.
+ *
+ * It now defaults to matching the real dev server, and records the bundler in
+ * probe-results.json so a number can never be misattributed again. Set
+ * PROBE_BUNDLER=webpack only when you deliberately want the webpack figure.
+ *
  * Strategy per cap:
- *   1. Spawn `next dev --webpack` with --max-old-space-size=CAP.
+ *   1. Spawn `next dev` (PROBE_BUNDLER) with --max-old-space-size=CAP.
  *   2. Wait for "Ready in" up to READY_TIMEOUT_MS.
  *   3. Drive light load: GET a rotating set of routes every PROBE_INTERVAL_MS
  *      so the compiler / HMR / route handlers exercise the heap.
@@ -29,6 +40,7 @@
  *   PROBE_WINDOW_MS      default 120000 (2 min under load)
  *   PROBE_INTERVAL_MS    default 4000   (URL ping cadence)
  *   PROBE_PORT           default 3300   (avoid clashing with a running dev)
+ *   PROBE_BUNDLER        default "turbopack" | "webpack"
  */
 import { spawn, spawnSync, execSync } from "child_process";
 import fs from "fs";
@@ -42,6 +54,15 @@ const SAMPLE_WINDOW_MS = Number(process.env.PROBE_WINDOW_MS ?? 120_000);
 const SAMPLE_INTERVAL_MS = 5_000;
 const PROBE_INTERVAL_MS = Number(process.env.PROBE_INTERVAL_MS ?? 4_000);
 const STABILITY_RATIO = 0.85;
+// Default matches what scripts/dev-next.mjs actually spawns. `next dev` with no
+// flag is Turbopack in Next 16 (next/dist/lib/bundler.js), so "no flag" IS the
+// turbopack case — do not add --turbopack, that would be a second bundler flag
+// and parseBundlerArgs exits 1 on more than one.
+const BUNDLER = (process.env.PROBE_BUNDLER ?? "turbopack").toLowerCase();
+if (BUNDLER !== "turbopack" && BUNDLER !== "webpack") {
+  console.error(`PROBE_BUNDLER must be "turbopack" or "webpack", got "${BUNDLER}".`);
+  process.exit(2);
+}
 const READY_TIMEOUT_MS = 90_000;
 const PORT = Number(process.env.PROBE_PORT ?? 3300);
 const LOAD_ROUTES = [
@@ -92,13 +113,13 @@ async function hit(url) {
 }
 
 async function probeOnce(capMb) {
-  log(`>>> cap=${capMb} MB — booting next dev`);
+  log(`>>> cap=${capMb} MB — booting next dev (${BUNDLER})`);
   const child = spawn(
     process.execPath,
     [
       "node_modules/next/dist/bin/next",
       "dev",
-      "--webpack",
+      ...(BUNDLER === "webpack" ? ["--webpack"] : []),
       "--port",
       String(PORT),
     ],
@@ -203,7 +224,24 @@ async function main() {
 
   fs.writeFileSync(
     "probe-results.json",
-    JSON.stringify({ ts: nowIso(), START_CAP_MB, STEP_MB, HEADROOM_MB, results }, null, 2),
+    JSON.stringify(
+      {
+        ts: nowIso(),
+        // Recorded so a cap can never again be quoted against the wrong bundler.
+        bundler: BUNDLER,
+        // Both change the answer: worker/heap sizing keys off system memory, so
+        // a run started with 4 GB free is not comparable to one with 12 GB.
+        hostCpus: os.cpus().length,
+        totalMemMb: Math.floor(os.totalmem() / 1024 / 1024),
+        freeMemMbAtStart: Math.floor(os.freemem() / 1024 / 1024),
+        START_CAP_MB,
+        STEP_MB,
+        HEADROOM_MB,
+        results,
+      },
+      null,
+      2,
+    ),
   );
 
   if (!stable) {
@@ -212,6 +250,7 @@ async function main() {
   }
   const recommended = Math.ceil((stable.peakRssMb + HEADROOM_MB) / STEP_MB) * STEP_MB;
   log("=================================");
+  log(`bundler        : ${BUNDLER}  <-- a cap is only valid for THIS bundler`);
   log(`stable cap     : ${stable.capMb} MB`);
   log(`peak load RSS  : ${stable.peakRssMb} MB`);
   log(`+ headroom     : ${HEADROOM_MB} MB`);
