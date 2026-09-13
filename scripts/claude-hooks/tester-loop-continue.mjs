@@ -37,9 +37,45 @@ import { budgetStatus, formatDuration, ESTIMATED_READS_PER_BATCH } from "../../t
 const REPO = process.cwd();
 const STATE = resolve(REPO, "tester/.tester-runs/loop-state.json");
 const PROGRESS = resolve(REPO, "docs/TESTING-PROGRESS.md");
+const PHASE_STATUS = "docs/TESTING-PHASE-STATUS.md";
 
-/** Stand down silently. Used for every ambiguous case. */
+/**
+ * Refresh the per-phase status file from the verdict files on disk.
+ *
+ * 🛑 Done HERE, on every fire, and not left to the assistant alone. A status
+ * written as prose in a transcript is unreadable a day later and drifts every
+ * time it is retyped — in one session a hand-kept tally reported 17 failures
+ * where the verdict files held 15, because the prose had been counting
+ * calibration controls. The file this writes counts from disk, so the numbers
+ * cannot drift; the assistant is separately told to write the NARRATIVE at each
+ * phase end, which is the part a script cannot produce.
+ *
+ * Never throws and never blocks: a reporting aid that can fail the loop would be
+ * worse than no reporting aid.
+ */
+function refreshPhaseStatus() {
+  try {
+    const r = spawnSync(process.execPath, ["scripts/build-phase-status.mjs", "--quiet"], {
+      cwd: REPO,
+      encoding: "utf8",
+      timeout: 30_000,
+    });
+    return r.status === 0;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Stand down silently. Used for every ambiguous case.
+ *
+ * 🛑 Refreshes the phase-status file on the way out. The quiet exits — bound
+ * reached, quota paused, production blocked — are precisely when a human comes
+ * looking at the status, so leaving it stale on those paths would be backwards.
+ * Skipped only when there is no state file at all, since then there is no run.
+ */
 function standDown(reason) {
+  if (existsSync(STATE)) refreshPhaseStatus();
   if (reason) console.log(reason);
   process.exit(0);
 }
@@ -97,11 +133,13 @@ function consolidatedCount() {
 
 /* ── Finished? ─────────────────────────────────────────────────────────────── */
 if (nextPhase > totalPhases) {
+  refreshPhaseStatus();
   standDown(
     `✓ tester loop: all ${totalPhases} phases are done.\n` +
       `  Run the final gate, then set active:false in ${STATE}:\n` +
       `    node tester/scripts/record-verdicts.mjs --run ${runId} --finish\n` +
-      `  It must write a report WITHOUT --force-report. Anything less means a batch never recorded.`,
+      `  It must write a report WITHOUT --force-report. Anything less means a batch never recorded.\n` +
+      `  ${PHASE_STATUS} has been refreshed one last time.`,
   );
 }
 
@@ -201,6 +239,7 @@ if (blocked) {
 
 /* ── Normal: tell the assistant exactly what to run next ───────────────────── */
 bump({ blocked: null });
+const statusFresh = refreshPhaseStatus();
 
 console.log(
   `▶ TESTER LOOP ACTIVE — run ${runId}, phase ${nextPhase} of ${totalPhases} (continuation ${continuations + 1})\n` +
@@ -220,11 +259,19 @@ console.log(
     `  4. RE-VERIFY each failure against live production BEFORE fixing it (Rule #4).\n` +
     `     A route that exists in source but 404s in a report is usually the report.\n` +
     `\n` +
-    `  5. Fix the confirmed ones, npm run check, commit. Then set nextPhase=${nextPhase + 1}\n` +
+    `  5. AT THE END OF THE PHASE, write the status — both halves:\n` +
+    `       node scripts/build-phase-status.mjs        # counted; ${PHASE_STATUS}\n` +
+    `     then append this phase's NARRATIVE to docs/TESTING-STATUS-${runId}.md:\n` +
+    `       what broke and why it matters, which blocked answers were rig vs product,\n` +
+    `       and any case-text defect found. The script counts answers; only you can\n` +
+    `       say which of them mattered. Do not retype the numbers — cite the file.\n` +
+    `\n` +
+    `  6. Fix the confirmed ones, npm run check, commit. Then set nextPhase=${nextPhase + 1}\n` +
     `     in ${STATE}.\n` +
     `\n` +
     (healthLine ? healthLine + "\n" : "") +
     `  Progress: ${consolidatedCount()} batch rows consolidated\n` +
+    `  Status:   ${statusFresh ? `✓ ${PHASE_STATUS} refreshed from disk` : `⚠ could not refresh ${PHASE_STATUS}`}\n` +
     `  Off switch: set active:false in the state file, or delete it.\n`,
 );
 process.exit(2);

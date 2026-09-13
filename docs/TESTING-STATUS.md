@@ -1,6 +1,6 @@
 # Testing status
 
-Generated 2026-09-10T20:37:29.501Z by `scripts/build-testing-status.mjs`.
+Generated 2026-09-13T15:35:45.670Z by `scripts/build-testing-status.mjs`.
 
 > Every number here is computed from the verdict files in
 > `tester/.tester-runs/*/verdicts/`. The FIXED / OPEN / NOT-A-BUG column is
@@ -16,6 +16,9 @@ Generated 2026-09-10T20:37:29.501Z by `scripts/build-testing-status.mjs`.
 | `live1` | 2026-09-05 | 3 | 2 | 0 | 4 |
 | `v2` | 2026-09-06 | 3 | 3 | 3 | 17 |
 | `sweep1` | 2026-09-07 | 25 | 63 | 32 | 59 |
+| `full0911` | 2026-09-10 | 9 | 22 | 8 | 18 |
+| `run-1789263312493` | 2026-09-13 | 19 | 74 | 18 | 34 |
+| `run-1789300124915` | 2026-09-13 | 35 | 89 | 15 | 136 |
 
 **39 distinct cases have failed at least once.** `sweep1` was stopped
 at 25 of 206 batches — not because it was failing, but because ~40% of its
@@ -255,17 +258,17 @@ Reproduced and unfixed. Items marked *deferred* were a deliberate call, not an o
 - **Evidence** — Signed in as tester@letitrip.in. /user/bids shows 'Won' badge and 'Pay now →' link for 'Test Auction — Already Won'. Clicking 'Pay now' goes to /checkout?lane=auction, which shows ₹0.00 total with no line items. /cart is empty with no 'Won Auctions' tab. The won auction does not appear as a payable locked cart line.
 - **Note** — Winning an auction should create a payable locked cart line. Needs re-verification now that checkout works again.
 
-## 5. Why cases could not be tested — 103 blocked answers
+## 5. Why cases could not be tested — 291 blocked answers
 
 | count | cause | addressed by |
 |---|---|---|
-| 29 | time-bound fixture expired | **Fixed by design** — per-batch fixtures, no windows (plan D5) |
-| 14 | other | — |
-| 13 | fixture missing | — |
-| 13 | needs a real Google account or inbox | Dropped — not automatable |
-| 12 | tester account refused (no admin / no seller) | Plan D1 — raise the tester's powers |
-| 8 | needs two concurrent sessions | Plan D2 — five tester accounts makes this reachable |
-| 6 | INCONCLUSIVE — the case does not define a verdict | **Plan B** — these are the cases to enrich; the tester reached the page and the case did not say what a pass looks like |
+| 100 | other | — |
+| 61 | time-bound fixture expired | **Fixed by design** — per-batch fixtures, no windows (plan D5) |
+| 52 | needs a real Google account or inbox | Dropped — not automatable |
+| 34 | fixture missing | — |
+| 15 | tester account refused (no admin / no seller) | Plan D1 — raise the tester's powers |
+| 13 | needs two concurrent sessions | Plan D2 — five tester accounts makes this reachable |
+| 8 | INCONCLUSIVE — the case does not define a verdict | **Plan B** — these are the cases to enrich; the tester reached the page and the case did not say what a pass looks like |
 | 5 | blocked by the checkout crash | **Fixed** — React #310 |
 | 3 | needs a long wait | **Fixed by design** — seed the end state, never wait (plan D5) |
 
