@@ -875,6 +875,11 @@ When the user says "publish appkit" or "release appkit":
 5. Update letitrip/package.json  "@mohasinac/appkit": "^X.Y.Z"
 6. Remove appkit/src/** lines from tsconfig.json  (see tsconfig rule below)
 7. Delete package-lock.json + npm install  (lockfile must resolve from npm, not file:)
+   🛑 `npm publish` RETURNS BEFORE THE VERSION IS INSTALLABLE. Running step 7
+   immediately fails with `ETARGET / No matching version found` — that is
+   registry propagation, not a failed publish, and must NOT be answered by
+   republishing or bumping again. Measured ~3.5 min for 4.38.0. Poll first:
+   `for i in $(seq 1 20); do npm view @mohasinac/appkit@X.Y.Z version && break; sleep 15; done`
 8. npx tsc --noEmit  (both repos, must be 0 errors)
 9. Commit appkit/package.json + letitrip/package.json + package-lock.json + tsconfig.json
 ```
@@ -3044,6 +3049,20 @@ Pre-flight checks: lockfile resolves from npm registry, `tsconfig.json` excludes
 This exists because **a green build is not proof the site runs**. Recurrent Root Cause #69: a deployment Vercel reported as `readyState: READY` served 500 on *every* route, because the failure was at Lambda module load — after the build, invisible to `npm run check` and to `next build`. It was caught only by requesting a page. Never treat `READY` as success; the smoke test now enforces that automatically.
 
 To point it at a preview deployment instead: `SMOKE_ORIGIN=https://<deployment>.vercel.app node scripts/deploy.mjs`.
+
+**The smoke test is bounded in BOTH dimensions** — `SMOKE_ATTEMPTS = 3` (with linear backoff, because the alias can take a moment to repoint) **and** `SMOKE_TIMEOUT_MS = 20_000` per request. The timeout is not belt-and-braces: a retry limit bounds *attempts*, not *wall-clock*, and `fetch()` has no default timeout — so a server that HANGS rather than errors (a Lambda stuck at module load, Root Cause #69) would park every probe indefinitely and the deploy would never return a verdict at all. A hung smoke test is worse than a failing one: a red result tells you to roll back, a hung one tells you nothing. 20s is chosen against the real ceiling — a sync Vercel function is capped at 10s (Rule #6), so a response still absent at 20s is not coming.
+
+### 🛑 A build with no log output is a STALL — cancel it, do not tune the config
+
+**Normal is ~3–4 minutes.** `next.config.js` records 7 measured cold builds: compile **70–122s**, static-generation **26–58s**. Judge every build against that number.
+
+Observed 2026-09-14: a production build sat at `● Building` for **28 minutes** having printed nothing since `Creating an optimized production build ...`. The same commit built locally in **3m03s, exit 0, clean** — so it was a Vercel-side stall, not the code.
+
+**Two wrong turns worth not repeating**, both of which reasoned instead of measuring:
+1. "Cold cache on `cpus: 2` explains it" — contradicted by the measurements in the very file being quoted. `cpus: 2` / `staticGenerationMaxConcurrency: 2` are a deliberate **memory** control (`os.cpus()` reports the HOST core count, not the container quota, so the default asks for ~15 workers), and they are NOT the lever for a stall.
+2. "A new barrel export widened the client graph" — an import trace showed the path already existed.
+
+**The procedure**: if a build has produced no output for materially longer than the measured compile phase, run `npx next build` locally. If it completes normally, the build is stalled remotely — `npx vercel remove <deployment-url> --yes`, then redeploy. Production keeps serving the previous deployment throughout, so there is no outage and no reason to rush a config change.
 
 ### 7 — Update Index Files
 

@@ -258,15 +258,45 @@ const SMOKE_ORIGIN = process.env.SMOKE_ORIGIN ?? CANONICAL_ORIGIN;
 const SMOKE_PATHS = ["/", "/en/products", "/api/site-settings"];
 const SMOKE_ATTEMPTS = 3;
 const SMOKE_BACKOFF_MS = 5000;
+// 🛑 A RETRY LIMIT IS NOT A TIME LIMIT.
+//
+// `SMOKE_ATTEMPTS` bounds how many probes are made; it bounds nothing about how
+// long one takes. `fetch()` has no default timeout, so a production server that
+// HANGS rather than errors — the exact shape of a Lambda stuck at module load
+// (Root Cause #69) — parks each probe indefinitely and the three retries park
+// three times. The deploy then never returns a verdict at all, which is worse
+// than a failing one: a red smoke test tells you to roll back, a hung one tells
+// you nothing while you wait.
+//
+// Sized against the real ceiling rather than a round number: a Vercel function
+// is capped at 10s for a sync handler (Rule #6), so a response still absent at
+// 20s is not slow, it is not coming. Worst case is therefore
+// 3 paths x 3 attempts x 20s + backoff ≈ 3.5 min, bounded.
+const SMOKE_TIMEOUT_MS = 20_000;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function probe(url) {
   try {
-    const res = await fetch(url, { redirect: "follow" });
+    const res = await fetch(url, {
+      redirect: "follow",
+      signal: AbortSignal.timeout(SMOKE_TIMEOUT_MS),
+    });
     return { status: res.status, ok: res.status >= 200 && res.status < 400 };
   } catch (err) {
-    return { status: 0, ok: false, error: err instanceof Error ? err.message : String(err) };
+    // A timeout arrives here as an AbortError/TimeoutError. Name it explicitly:
+    // "no response" reads as a network blip, and this is a hung server.
+    const timedOut =
+      err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
+    return {
+      status: 0,
+      ok: false,
+      error: timedOut
+        ? `no response within ${SMOKE_TIMEOUT_MS / 1000}s — the server is hanging, not erroring`
+        : err instanceof Error
+          ? err.message
+          : String(err),
+    };
   }
 }
 
