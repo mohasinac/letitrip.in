@@ -21,3 +21,21 @@ probe-results.json
 # repo since 2026-08-17, so nothing local could reproduce it. Anchor every
 # pattern here that names a root-level path.
 /tester
+
+# appkit source submodule — 2,359 files / 356 KLOC plus a 27 MB dist/ and its own
+# node_modules, uploaded on every deploy for no reason. package.json pins
+# "@mohasinac/appkit" to the npm REGISTRY, so `npm ci` installs the published
+# tarball into node_modules and nothing in the build ever reads appkit/ itself:
+#   - tsconfig.json deliberately excludes appkit/src/** (Root Cause #23 — it OOMs
+#     Vercel's Linux builder), and scripts/deploy.mjs Check 2 enforces that.
+#   - next.config.js used to `require("./appkit/package.json")` for a footer
+#     version string. That single line was the whole coupling; it now reads the
+#     installed copy under node_modules instead.
+#
+# 🛑 Leading slash, same reason as /tester above — a bare `appkit` would also
+# match any nested directory named appkit.
+#
+# 🛑 If you switch the pin back to "file:./appkit" for local development, this
+# line MUST come out or `npm ci` on Vercel has nothing to install from. See
+# CLAUDE.md "Appkit Local Dev vs Publish Rules".
+/appkit
