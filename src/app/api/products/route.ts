@@ -126,6 +126,13 @@ async function _GET(request: Request): Promise<NextResponse> {
   const input = parsePublicProductParams(url.searchParams, {
     // No page-level span: this route serves every listing type. The caller's
     // own `listingType` param (if any) is what narrows it.
+    //
+    // 🛑 Deliberately NOT scoped to GENERIC_PRODUCT_LISTING_TYPES. That constant
+    // is the /products PAGE's span; this is the general products API, and the
+    // per-type browse pages, related-items and search all call it for types the
+    // general catalogue excludes. Both /products callers (SSR + client) send
+    // their types explicitly, so narrowing here would buy nothing and silently
+    // empty /auctions, /pre-orders, /art and /prize-draws.
     listingTypes: requestedTypeParts.length > 0 ? requestedTypeParts : undefined,
   });
   input.rawFilters = validateSieveFilters(

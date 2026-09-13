@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {
   ProductDetailPageView,
   productJsonLd,
+  gatedPriceWebPageJsonLd,
   breadcrumbJsonLd,
   loadProductFeaturesForStore,
 } from "@mohasinac/appkit";
@@ -111,10 +112,24 @@ export default async function Page({ params }: Props) {
     <>
       <PageViewTracker entityType="product" entityId={slug} url={`/products/${slug}`} />
       {ldProduct && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(ldProduct) }}
-        />
+        <>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(ldProduct) }}
+          />
+          {/* Paired with the offer above, never emitted alone: the price is
+              gated for signed-out visitors, and Googlebot crawls signed out, so
+              this declares the gap rather than leaving it as an undeclared
+              structured-data mismatch. */}
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(
+                gatedPriceWebPageJsonLd(`/products/${product?.slug ?? slug}`),
+              ),
+            }}
+          />
+        </>
       )}
       {ldBreadcrumb && (
         <script

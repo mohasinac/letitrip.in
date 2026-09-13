@@ -4,6 +4,7 @@ import {
   getAuctionForDetail,
   getProductFeaturesForAuction,
   auctionJsonLd,
+  gatedPriceWebPageJsonLd,
   breadcrumbJsonLd,
 } from "@mohasinac/appkit";
 import { PageViewTracker } from "@mohasinac/appkit/client";
@@ -76,10 +77,20 @@ export default async function Page({ params }: Props) {
     <>
       <PageViewTracker entityType="auction" entityId={id} url={`/auctions/${id}`} />
       {ldAuction && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(ldAuction) }}
-        />
+        <>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(ldAuction) }}
+          />
+          {/* Paired with the offer above — `auctionJsonLd` emits the CURRENT BID
+              as `offers.price`, and that is gated for signed-out visitors. */}
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(gatedPriceWebPageJsonLd(`/auctions/${id}`)),
+            }}
+          />
+        </>
       )}
       <script
         type="application/ld+json"

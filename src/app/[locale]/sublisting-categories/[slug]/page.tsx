@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { Heading, Main, MediaImage, Nav, ROUTES, Row, Span, Stack, Text, categoriesRepository, isAuctionListing, isPreOrderListing, normalizeListingType, pluginFor, formatCurrency } from "@mohasinac/appkit";
 import type { ListingType } from "@mohasinac/appkit";
-import { Div, Grid } from "@mohasinac/appkit/client";
+import { Div, GatedPrice, Grid } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { safeRead } from "@mohasinac/appkit/server";
 
@@ -186,7 +186,7 @@ export default async function SublistingCategoryPage({ params }: Props) {
                       {title}
                     </Text>
                     <Text size="sm" weight="bold" color="primary">
-                      {formatCurrency(price, currency)}
+                      <GatedPrice>{formatCurrency(price, currency)}</GatedPrice>
                     </Text>
                   </Stack>
                 </Link>
