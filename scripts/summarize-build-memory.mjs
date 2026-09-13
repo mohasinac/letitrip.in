@@ -84,8 +84,23 @@ console.log("");
 // So: n=1 is not a measurement. This block reports the spread so a single run
 // can never again be quoted as a result, and flags any comparison whose delta
 // is smaller than the observed within-variant noise.
+// 🛑 FAILED RUNS ARE NOT DATA. A build that dies in the compile phase never
+// reaches prerender, so its "peak" is the peak of a fraction of the work — and
+// it is systematically LOWER, which makes a broken run look like a win. This
+// happened for real on 2026-09-13: two runs died when a concurrent `npm install`
+// re-extracted node_modules/@mohasinac/appkit underneath them
+// ("Cannot find module .../dist/configs/index.js"), and the first version of
+// this summary averaged them in.
+const failed = runs.filter((r) => r.exitCode !== 0);
+const ok = runs.filter((r) => r.exitCode === 0);
+if (failed.length) {
+  console.log(`⚠ EXCLUDED ${failed.length} failed run(s) from all statistics below:`);
+  for (const r of failed) console.log(`    ${r.variant} (${r.cacheMode}) exit ${r.exitCode} — see ${r.file.replace(/\.json$/, ".log")}`);
+  console.log("");
+}
+
 const groups = new Map();
-for (const r of runs) {
+for (const r of ok) {
   const key = `${r.variant}|${r.cacheMode}`;
   if (!groups.has(key)) groups.set(key, []);
   groups.get(key).push(r);

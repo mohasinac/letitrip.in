@@ -123,16 +123,22 @@ module.exports = withNextIntl(
 
       // ── Compile-phase memory ──────────────────────────────────────────
       //
-      // MEASURED 2026-09-13, cold build, cpus=2 (.build-memory/):
-      //   compile           122s  main 7057 MB   <-- the peak, by far
-      //   type-checking       8s  main 5118 MB
-      //   static-generation  33s  tree 2311 MB
-      //   MACHINE PEAK 7153 MB working set / 8525 MB private commit
-      //
+      // MEASURED 2026-09-13 across 7 valid cold builds (.build-memory/):
+      // the compile phase dominates, consistently and by ~3x —
+      //   compile            70-122s   6.5-8.4 GB, almost all of it MAIN process
+      //   static-generation   26-58s   1.8-3.0 GB
       // So the prerender worker pool above was NOT the binding constraint once
-      // capped — the compile phase is, and it lives in the MAIN process because
+      // capped. The compile phase is, and it lives in the MAIN process because
       // Turbopack runs in a worker thread (`isolatedMemory: false`), sharing
       // that address space. Its Rust arena is invisible to --max-old-space-size.
+      //
+      // 🛑 THE PHASE ORDERING IS SOLID; THE PER-KNOB DELTAS BELOW ARE NOT.
+      // Repeated runs of a byte-identical config measured 6563 / 8398 / 8426 MB
+      // peak — a 1.9 GB spread, wider than any effect being hunted. Treat every
+      // memory number here as an order of magnitude, never as a comparison, and
+      // do not quote a single run as a result. Wall time is the less noisy
+      // metric. See scripts/summarize-build-memory.mjs, which now prints the
+      // within-config spread as an explicit noise floor and excludes failed runs.
       //
       // turbopackSourceMaps is separate from the three sourcemap flags above:
       // those control emission/consumption, this controls whether Turbopack
@@ -141,10 +147,22 @@ module.exports = withNextIntl(
       // stacks are already unmapped, and triage here is digest-driven
       // (src/instrumentation.ts records error.digest as the join key).
       //
-      // BUILD_TP_SOURCEMAPS=1 restores generation — that is this knob's
-      // negative control, and it is needed because the flag's default is not
-      // verifiable from JS (it appears only in the zod schema; the default
-      // lives on the Rust side).
+      // What the measurement actually supports, n=3 valid cold runs each:
+      //   OFF  compile 70/81/89s   peak WS median 8398 MB
+      //   ON   compile 78/111/122s peak WS median 8307 MB
+      // i.e. NO memory benefit — the medians are indistinguishable and OFF is
+      // marginally higher. The compile-TIME median is 30s better, but the ranges
+      // overlap (one ON run beat two OFF runs), so even that is suggestive
+      // rather than established.
+      //
+      // Kept anyway, because the cost side is zero rather than because the win
+      // is proven: productionBrowserSourceMaps and serverSourceMaps are already
+      // false, so these maps are generated and then never applied to anything.
+      // Turning off work whose output is discarded needs no memory argument.
+      //
+      // BUILD_TP_SOURCEMAPS=1 restores generation — the negative control, needed
+      // because the default is not verifiable from JS (the key appears only in
+      // the zod schema; the default lives on the Rust side).
       turbopackSourceMaps: process.env.BUILD_TP_SOURCEMAPS === "1",
 
       // Turbopack's persistent build cache (Next 16.3). Kept ON — this is the
@@ -152,12 +170,10 @@ module.exports = withNextIntl(
       // intuition against it turned out to be wrong.
       //
       // The worry was that it inflates the compile peak, since the cache is held
-      // in memory and flushed at shutdown. Measured 2026-09-13, matched RAM:
-      //   cache ON   compile 81s  peak 6563 MB  commit 6889 MB  total 133s
-      //   cache OFF  compile 82s  peak 6614 MB  commit 7367 MB  total 118s
-      // It is flushed AFTER the peak, so disabling it saves no memory and costs
-      // 478 MB more commit; the only gain is 15s of skipped flush, against
-      // giving up the 5.5x speedup on warm repeat builds.
+      // in memory and flushed at shutdown. Measured: compile time was identical
+      // (81s on / 82s off) and peak memory was inside the noise floor. The flush
+      // happens AFTER the peak, so there is nothing to reclaim by disabling it —
+      // and doing so forfeits the 5.5x speedup on warm repeat builds.
       // BUILD_TP_FSCACHE=0 disables it.
       turbopackFileSystemCacheForBuild: process.env.BUILD_TP_FSCACHE !== "0",
 
@@ -165,10 +181,10 @@ module.exports = withNextIntl(
       // Next's docstring says it "should use less memory and CPU" than the
       // default childProcesses. On THIS app it is a regression, measured
       // 2026-09-13 at matched RAM:
-      //   childProcesses (default)  compile 81s  peak 6563 MB  commit 6889 MB
-      //   workerThreads             compile 94s  peak 8345 MB  commit 8884 MB
-      //                                     +13s      +1782 MB      +1995 MB
-      // — and 8884 MB puts it back OVER Hobby's 8192 MB container.
+      // Measured once at compile 94s, against 70-89s for the default. No
+      // benefit observed. Same caveat as above: the noise floor makes the
+      // memory column unusable, so this is a "did not help" not a quantified
+      // regression.
       //
       // Why the docstring's advice inverts here: worker threads share one heap.
       // This build's peak is already main-process-dominated (Turbopack's Rust
@@ -179,13 +195,10 @@ module.exports = withNextIntl(
       // 🛑 DO NOT add `optimizePackageImports: ["@mohasinac/appkit"]`.
       // It was measured 2026-09-13 and it is a REGRESSION, not a win:
       //
-      //   1c only (barrel opt off)  compile  81s  peak 6563 MB  commit 6889 MB
-      //   1c + barrel opt           compile 119s  peak 8088 MB  commit 9420 MB
-      //                                      +38s      +1525 MB      +2531 MB
-      //
-      // The barrel-opt run had the MOST free RAM of any run in the series
-      // (8.5 GB vs 7.0), so it was the least likely to be trimmed — the
-      // regression is real, not a measurement artifact.
+      // Measured once at compile 119s, against 70-89s for the same config
+      // without it. Given the noise floor above, read that as "no benefit
+      // observed, and the only signal points the wrong way" rather than as a
+      // precise regression figure.
       //
       // Why it backfires here: the SWC transform rewrites named imports to deep
       // imports, but appkit's exports["."] resolves to dist/server-entry.js,
