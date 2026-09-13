@@ -12,4 +12,12 @@ probe-results.json
 # It carries @playwright/mcp + its own node_modules; shipping it inflates the
 # upload, and an oversized bundle fails Vercel's "Deploying outputs..." step
 # (CLAUDE.md Recurrent Root Cause #6).
-tester
+#
+# 🛑 The leading slash is load-bearing. .vercelignore uses gitignore semantics,
+# so a bare `tester` matches a directory of that name at ANY depth — which also
+# matched `src/app/[locale]/user/tester/`, stripping the Tester Hub page from
+# the upload. The build then had no such route and /user/tester returned a hard
+# 404 in production (X-Matched-Path: /404) while the page sat committed in the
+# repo since 2026-08-17, so nothing local could reproduce it. Anchor every
+# pattern here that names a root-level path.
+/tester
