@@ -104,7 +104,29 @@ for (const dir of DIRS) {
   const files = walkFiles(dir);
   for (const file of files) {
     const content = readFileSync(file, "utf-8");
-    const lines = content.split("\n");
+    /*
+     * 🛑 STRIP THE CARRIAGE RETURN, or this audit's verdict depends on how the
+     * repo was checked out.
+     *
+     * Every rule here matches `<tag` followed by whitespace-or-`>`, and a
+     * carriage return IS whitespace. So on a CRLF working tree a line ending in
+     * a bare `<input` MATCHES, and on an LF one it does not — while the whole
+     * codebase writes primitives as `<input` with its props on the next line.
+     * Net effect: the same source flags ~0 violations on Linux/CI and every
+     * multi-line form element on a Windows checkout. A rule that changes meaning
+     * with the machine is Root Cause #84's shape.
+     *
+     * Caught when a brand-new file (CRLF, git had not yet normalised it) was
+     * flagged while Input.tsx two directories away — same construct, LF — was
+     * not.
+     *
+     * KNOWN LIMIT, stated rather than papered over: with the CR gone, a
+     * multi-line opening tag is invisible to a single-line regex. That is what
+     * every primitive relies on today. Closing it properly needs the
+     * brace/quote-aware JSX walk Root Cause #29 required, plus a
+     * primitive-directory allowlist — a real change, not a regex tweak.
+     */
+    const lines = content.split("\n").map((l) => l.replace(/\r$/, ""));
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       if (isInsideComment(line)) continue;
