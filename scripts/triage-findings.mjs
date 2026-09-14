@@ -255,13 +255,20 @@ for (const [title, group, note] of [
      * a clean run having executed nothing.
      */
     if (c.kind === "FAIL") {
-      lines.push("<details><summary>re-run these batches after fixing</summary>", "");
+      lines.push("<details><summary>re-work these batches after fixing</summary>", "");
+      lines.push("");
+      lines.push("Delete the recorded verdict first — `next-batch.mjs` treats a batch");
+      lines.push("with verdicts as done, so a stale file would skip it silently.");
+      lines.push("");
       lines.push("```bash");
-      lines.push(`# release them first — they are already consolidated and would otherwise be skipped`);
       for (const s of spread) {
-        lines.push(`node tester/scripts/release-batch.mjs --run ${RUN} --batch ${s}`);
+        lines.push(`rm tester/.tester-runs/${RUN}/verdicts/${s.replace(/\//g, "__")}.json`);
       }
-      lines.push(`node tester/scripts/pool.mjs --run ${RUN} --workers ${Math.min(3, spread.length)}`);
+      lines.push("");
+      lines.push(`# then work each one in-session: fetch, drive the browser here, record.`);
+      lines.push(`# There is no runner to call — run.mjs/pool.mjs/sweep.mjs were deleted`);
+      lines.push(`# 2026-09-14 because each spawned a Claude session per batch.`);
+      lines.push(`node tester/scripts/next-batch.mjs --run ${RUN}`);
       lines.push("```", "", "</details>", "");
     }
   }

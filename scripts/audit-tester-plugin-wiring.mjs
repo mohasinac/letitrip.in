@@ -618,9 +618,12 @@ if (existsSync(CATALOGUE)) {
   if (!existsSync(resolve(ROOT, owner))) {
     violations.push(`R12 missing ${owner} — the filename transform has no owner.`);
   }
-  for (const rel of ["tester/scripts/fetch-cases.mjs", "tester/scripts/run.mjs", "tester/scripts/record-verdicts.mjs"]) {
+  for (const rel of ["tester/scripts/fetch-cases.mjs", "tester/scripts/next-batch.mjs", "tester/scripts/record-verdicts.mjs"]) {
     const p = resolve(ROOT, rel);
-    if (!existsSync(p)) continue;
+    if (!existsSync(p)) {
+      violations.push(`R12 missing ${rel} — this rule cannot check a file that is not there.`);
+      continue;
+    }
     const src = stripComments(readFileSync(p, "utf8"));
     if (!/from\s+"\.\/lib\/batch-keys\.mjs"/.test(src)) {
       violations.push(`R12 ${rel} does not import lib/batch-keys.mjs — it must not spell filenames itself.`);
@@ -673,20 +676,52 @@ if (existsSync(CATALOGUE)) {
   }
 }
 
-/* ── R14: the scope manifest is written before any batch runs ────────────────
+/* ── R14: fetch-cases owns BOTH manifests, and writes them in the right order ─
  *
- * A manifest written at the end describes what happened, not what was asked for —
- * and the gate then cannot detect the one thing it exists to detect.
+ * Re-pointed 2026-09-14. This rule used to read run.mjs, which was the scope
+ * writer until it was deleted for spawning one Claude session per batch. That
+ * deletion removed the ONLY producer of scope.json — and because the rule was
+ * wrapped in existsSync(run.mjs), it would have gone silently green while
+ * record-verdicts' --report/--publish/--finish all hard-failed for want of a
+ * manifest. So the rule now hard-fails on a missing file instead of skipping.
+ *
+ * The two manifests answer different questions and their ORDER encodes that:
+ *   catalogue.json — everything there is, written BEFORE any filter
+ *   scope.json     — what this invocation ASKED FOR, written after filtering
+ * A scope written from the unfiltered set certifies batches nobody requested;
+ * a catalogue written from the filtered set makes a --page run look complete.
  */
 {
-  const p = resolve(ROOT, "tester/scripts/run.mjs");
-  if (existsSync(p)) {
+  const p = resolve(ROOT, "tester/scripts/fetch-cases.mjs");
+  if (!existsSync(p)) {
+    violations.push("R14 tester/scripts/fetch-cases.mjs is missing — nothing writes scope.json, so the completeness gate has nothing to check against.");
+  } else {
     const src = stripComments(readFileSync(p, "utf8"));
-    const writeScope = src.indexOf("writeScope()");
-    const loop = src.indexOf("for (const [i, batchName] of pending.entries())");
-    if (writeScope < 0) violations.push("R14 run.mjs never writes scope.json — the completeness gate has nothing to check against.");
-    else if (loop >= 0 && writeScope > loop) {
-      violations.push("R14 scope.json is written after the batch loop. It must record what was ASKED FOR, before anything runs.");
+
+    if (!/from\s+"\.\/lib\/scope\.mjs"/.test(src)) {
+      violations.push("R14 fetch-cases.mjs does not import lib/scope.mjs — it is the scope writer now that run.mjs is gone.");
+    }
+
+    const iCatalogue = src.indexOf('"catalogue.json"');
+    const iWrite = src.indexOf("writeScopeFile(");
+    const iMerge = src.indexOf("mergeScope(");
+
+    if (iWrite < 0) {
+      violations.push("R14 fetch-cases.mjs never calls writeScopeFile() — record-verdicts --finish will refuse every run for want of a manifest.");
+    }
+    if (iMerge < 0) {
+      violations.push(
+        "R14 fetch-cases.mjs does not call mergeScope(). Fetching a second page would OVERWRITE the " +
+          "manifest with only that page's batches, and the gate would then certify one page as a whole run.",
+      );
+    } else if (iWrite >= 0 && iMerge > iWrite) {
+      violations.push("R14 fetch-cases.mjs writes the scope before merging it — the merge must feed the write.");
+    }
+    if (iCatalogue >= 0 && iWrite >= 0 && iCatalogue > iWrite) {
+      violations.push(
+        "R14 catalogue.json is written after scope.json. The catalogue records everything there is and must " +
+          "precede any filtering; the scope records what was asked for and follows it.",
+      );
     }
   }
 }
@@ -721,92 +756,131 @@ if (existsSync(CATALOGUE)) {
   }
 }
 
-/* ── R16: the skill's script paths must match the harness allowlist ──────────
+/* ── R16: every script the skill invokes must be permitted, and must EXIST ────
  *
  * 🛑 A MISMATCH HERE IS DENIED SILENTLY AND COSTS A WHOLE RUN.
  *
- * run.mjs spawns with `--permission-mode dontAsk` and an --allowed-tools list of
- * `Bash(node tester/scripts/<x>.mjs *)`. The skill used to instruct
- * `node ${CLAUDE_PLUGIN_ROOT}/scripts/record-verdicts.mjs`, which expands to an
- * ABSOLUTE path and matches none of those patterns — so under dontAsk the call is
- * refused with no prompt and no error the harness can see. The batch then records
- * no verdicts, and every batch fails the same way.
+ * The skill once instructed `node ${CLAUDE_PLUGIN_ROOT}/scripts/record-verdicts.mjs`,
+ * which expands to an ABSOLUTE path and matched none of the allowlist patterns — so
+ * the call was refused with no prompt and no error, and every batch recorded nothing.
  *
- * One spelling, repo-relative, everywhere: run.mjs sets cwd to the repo root, so
- * it resolves both when the harness spawns it and when a human runs the skill.
+ * Re-pointed 2026-09-14. The allowlist used to live in run.mjs's ALLOWED_TOOLS;
+ * run.mjs is deleted, and this whole rule was wrapped in existsSync(run.mjs) — so
+ * the ${CLAUDE_PLUGIN_ROOT} check, the one that cost that run, would have gone
+ * silently green. The authority is now SKILL.md's own `allowed-tools` frontmatter,
+ * which is what actually gates the skill in an interactive session.
+ *
+ * The EXISTS half is new and is the lesson of this deletion: the skill named
+ * scripts that were about to stop existing, and nothing would have said so.
  */
 {
   const skillPath = resolve(ROOT, "tester/skills/run-tests/SKILL.md");
-  const runPath = resolve(ROOT, "tester/scripts/run.mjs");
-  if (existsSync(skillPath) && existsSync(runPath)) {
+  if (!existsSync(skillPath)) {
+    violations.push("R16 tester/skills/run-tests/SKILL.md is missing — the in-session flow has no instructions.");
+  } else {
     const skillSrc = readFileSync(skillPath, "utf8");
-    const runSrc = stripComments(readFileSync(runPath, "utf8"));
 
     if (skillSrc.includes("CLAUDE_PLUGIN_ROOT")) {
       violations.push(
         "R16 SKILL.md spells a script path with ${CLAUDE_PLUGIN_ROOT}, which expands to an absolute " +
-          "path and matches none of run.mjs's --allowed-tools patterns. Under --permission-mode dontAsk " +
-          "that call is DENIED SILENTLY and the batch records nothing. Use `node tester/scripts/<x>.mjs`.",
+          "path and matches no allowed-tools pattern. Under --permission-mode dontAsk that call is " +
+          "DENIED SILENTLY and the batch records nothing. Use `node tester/scripts/<x>.mjs`.",
       );
     }
 
-    // Every script the skill tells the tester to run must be allowlisted.
+    // The frontmatter is the authority. Accept the glob or an exact per-script entry.
+    const frontmatter = skillSrc.slice(0, skillSrc.indexOf("\n---", 4) + 1);
+    const hasGlob = /Bash\(node tester\/scripts\/\*\)/.test(frontmatter);
+
     const invoked = new Set([...skillSrc.matchAll(/node\s+tester\/scripts\/([\w-]+\.mjs)/g)].map((m) => m[1]));
     if (!invoked.size) {
       violations.push("R16 found no `node tester/scripts/*.mjs` invocation in SKILL.md — the parser is broken, or the skill no longer records anything.");
     }
     for (const script of invoked) {
-      if (!runSrc.includes(`Bash(node tester/scripts/${script} *)`)) {
+      if (!hasGlob && !frontmatter.includes(`tester/scripts/${script}`)) {
         violations.push(
-          `R16 SKILL.md tells the tester to run ${script}, but run.mjs's ALLOWED_TOOLS does not permit it. ` +
-            `Under dontAsk the call is denied with no prompt and no error.`,
+          `R16 SKILL.md tells the tester to run ${script}, but its own allowed-tools frontmatter does not ` +
+            `permit it. Under dontAsk the call is denied with no prompt and no error.`,
+        );
+      }
+      if (!existsSync(resolve(ROOT, `tester/scripts/${script}`))) {
+        violations.push(
+          `R16 SKILL.md tells the tester to run tester/scripts/${script}, which does not exist. ` +
+            `The instruction fails at the first step and the batch records nothing.`,
         );
       }
     }
   }
 }
 
-/* ── R17: the harness sweeps the MCP processes it leaks, in the right place ───
+/* ── R17: NOTHING under tester/scripts MAY SPAWN THE CLAUDE BINARY ────────────
  *
- * @playwright/mcp shuts down on stdin EOF or POSIX signals only, and Windows
- * never delivers SIGTERM — so an abruptly-torn-down claude leaves its MCP server
- * running at ~56 MB private commit. Measured: ~1 per spawn; a 204-batch sweep
- * projects to ~26 GB against a 27.5 GB commit limit.
+ * 🛑 This is the rule the harness needed and did not have.
+ *
+ * run.mjs spawned one headless `claude` per batch; pool.mjs fanned that across
+ * five workers by default; the Stop hook re-issued the pool command every turn.
+ * The loop re-created itself and produced ~300 sessions in a day. All three are
+ * deleted (2026-09-14) and batches are now worked in-session, one at a time.
+ *
+ * The old form of this rule asserted that attemptBatch() bracketed its
+ * `spawnSync(` with an orphan sweep — i.e. it took the spawn as a GIVEN and
+ * policed its hygiene. It also lived inside `existsSync(run.mjs)`, so deleting
+ * run.mjs would have retired it in silence, taking the unrelated taskkill check
+ * below with it. That check is now unconditional.
+ *
+ * Matching a spawn TARGET, not the token `spawnSync`: lifecycle.mjs and
+ * process-cleanup.mjs legitimately spawn node, npx and taskkill. The forbidden
+ * thing is re-entering Claude, however it is spelled — `claude`, `claude.exe`,
+ * a CLAUDE_BIN indirection, or @anthropic-ai/claude-code/cli.js.
  */
 {
-  const cleanupPath = resolve(ROOT, "tester/scripts/lib/process-cleanup.mjs");
-  const runPath = resolve(ROOT, "tester/scripts/run.mjs");
-  if (!existsSync(cleanupPath)) {
-    violations.push(
-      "R17 tester/scripts/lib/process-cleanup.mjs is missing — the harness leaks one Playwright MCP " +
-        "process per claude spawn (~56 MB commit each) and a full sweep exhausts the commit limit.",
-    );
-  } else if (existsSync(runPath)) {
-    const runSrc = stripComments(readFileSync(runPath, "utf8"));
-    if (!/from\s+"\.\/lib\/process-cleanup\.mjs"/.test(runSrc)) {
-      violations.push("R17 run.mjs does not import lib/process-cleanup.mjs — nothing sweeps the leak.");
+  const dir = resolve(ROOT, "tester/scripts");
+  const files = [];
+  const walkScripts = (d) => {
+    for (const e of readdirSync(d, { withFileTypes: true })) {
+      const p = resolve(d, e.name);
+      if (e.isDirectory()) walkScripts(p);
+      else if (e.isFile() && e.name.endsWith(".mjs")) files.push(p);
     }
-    const s = runSrc.indexOf("function attemptBatch(");
-    if (s < 0) {
-      violations.push("R17 cannot find attemptBatch() in run.mjs — this rule is checking nothing. Fix it before trusting it.");
-    } else {
-      const body = runSrc.slice(s, runSrc.indexOf("\n}", s));
-      const iSnap = body.indexOf("snapshotPlaywrightProcesses(");
-      const iSpawn = body.indexOf("spawnSync(");
-      const iSweep = body.indexOf("sweepPlaywrightOrphans(");
-      const iLoaded = body.indexOf("assertLoaded(");
-      if (iSnap < 0 || iSweep < 0) {
-        violations.push("R17 attemptBatch() does not snapshot and sweep around its spawn — the per-attempt leak is unhandled.");
-      } else if (!(iSnap < iSpawn && iSpawn < iSweep && (iLoaded < 0 || iSweep < iLoaded))) {
+  };
+  if (existsSync(dir)) walkScripts(dir);
+
+  for (const f of files) {
+    const rel = relative(ROOT, f).replace(/\\/g, "/");
+    const src = stripComments(readFileSync(f, "utf8"));
+
+    /*
+     * Assert on what is being LAUNCHED. A string mentioning claude in a log line
+     * is not a spawn; `spawn(CLAUDE_BIN.cmd, …)` is, and so is a bare
+     * "claude"/"claude.exe" or a claude-code cli.js path in the command slot.
+     */
+    for (const m of src.matchAll(/\b(?:spawnSync|spawn|execFileSync|execFile|execSync|exec)\s*\(\s*([^,)]+)/g)) {
+      const target = m[1];
+      if (/CLAUDE_BIN|claude-code[/\\]cli\.js|["'`]claude(\.exe)?["'`]/.test(target)) {
         violations.push(
-          "R17 the sweep must run AFTER the spawn and BEFORE assertLoaded(). attemptBatch has three early " +
-            "returns and they are exactly the abrupt-teardown paths that leak — a sweep below them skips " +
-            "every case that actually leaks.",
+          `R17 ${rel} spawns the claude binary (${target.trim().slice(0, 48)}). The harness spawned one ` +
+            `session per batch and produced ~300 in a day. Batches are worked in-session now; nothing here ` +
+            `may re-enter Claude.`,
         );
       }
     }
-    // Killing an MCP node without /T strands its chromium tree permanently —
-    // the fix would make the leak an order of magnitude worse.
+
+    // The same shape one level of indirection out: a resolver that hands back a claude path.
+    if (/function\s+resolveClaudeBin\s*\(/.test(src)) {
+      violations.push(`R17 ${rel} defines resolveClaudeBin() — that exists only to locate a claude binary to spawn.`);
+    }
+  }
+
+  /*
+   * Unconditional, and deliberately no longer nested under the deleted run.mjs:
+   * killing an MCP node without /T strands its chromium tree permanently, which
+   * makes the leak an order of magnitude worse than the one being fixed. The
+   * Playwright MCP still runs in-session, so this still guards something live.
+   */
+  const cleanupPath = resolve(ROOT, "tester/scripts/lib/process-cleanup.mjs");
+  if (!existsSync(cleanupPath)) {
+    violations.push("R17 tester/scripts/lib/process-cleanup.mjs is missing — nothing sweeps the Playwright MCP processes an in-session run leaks (~56 MB commit each).");
+  } else {
     const cleanupSrc = stripComments(readFileSync(cleanupPath, "utf8"));
     for (const m of cleanupSrc.matchAll(/taskkill[^\n]*/g)) {
       if (m[0].includes('"/PID"') && !m[0].includes('"/T"')) {
@@ -868,42 +942,54 @@ if (existsSync(CATALOGUE)) {
   }
 }
 
-/* ── R19: the orchestrator never finishes a partial sweep ────────────────── */
+/* ── R19: only the reporter may reach --force-report ─────────────────────────
+ *
+ * Re-pointed 2026-09-14, same intent, surviving subject. This rule used to say
+ * "sweep.mjs passes --finish exactly once and has no route to force-report at
+ * all", because an orchestrator that CAN force a report is one that WILL, at
+ * 3 a.m., after forty hours. sweep.mjs and run.mjs are deleted, so the rule now
+ * generalises: the override lives in record-verdicts.mjs and nowhere else.
+ *
+ * That matters more, not less, without an orchestrator: the in-session flow is
+ * driven by a human reading output, and a helper script that quietly passed
+ * --force-report would hand back an INCOMPLETE report shaped exactly like a
+ * complete one.
+ */
 {
-  const p = resolve(ROOT, "tester/scripts/sweep.mjs");
-  if (existsSync(p)) {
-    const src = stripComments(readFileSync(p, "utf8"));
-    const finishes = (src.match(/"--finish"/g) ?? []).length;
-    if (finishes !== 1) {
-      violations.push(`R19 sweep.mjs passes --finish ${finishes} time(s); it must be exactly once, at the very end.`);
+  const dir = resolve(ROOT, "tester/scripts");
+  const files = [];
+  const walkForce = (d) => {
+    for (const e of readdirSync(d, { withFileTypes: true })) {
+      const p = resolve(d, e.name);
+      if (e.isDirectory()) walkForce(p);
+      else if (e.isFile() && e.name.endsWith(".mjs")) files.push(p);
     }
-    if (!src.includes('"--no-finish"')) {
-      violations.push("R19 sweep.mjs must pass --no-finish to every per-group child, or each group prints the whole sweep's refusal.");
-    }
+  };
+  if (existsSync(dir)) walkForce(dir);
+
+  for (const f of files) {
+    const rel = relative(ROOT, f).replace(/\\/g, "/");
+    if (rel.endsWith("/record-verdicts.mjs")) continue; // the reporter owns its own override
+    const src = stripComments(readFileSync(f, "utf8"));
     if (/force-report/.test(src)) {
       violations.push(
-        "R19 sweep.mjs references force-report. An orchestrator that CAN force a report is one that WILL, " +
-          "at 3 a.m., after forty hours. There must be no route to it from here.",
+        `R19 ${rel} references force-report. Only record-verdicts.mjs may know about the override — a ` +
+          `script that can force a report produces an INCOMPLETE one shaped exactly like a complete one.`,
       );
     }
-    const iLoop = src.indexOf("for (const g of plan)");
-    const iFinish = src.indexOf('"--finish"');
-    if (iLoop >= 0 && iFinish >= 0 && iFinish < iLoop) {
-      violations.push("R19 sweep.mjs finishes before its group loop — the gate would run against an unstarted sweep.");
-    }
-  }
-  const runPath = resolve(ROOT, "tester/scripts/run.mjs");
-  if (existsSync(runPath) && !stripComments(readFileSync(runPath, "utf8")).includes("no-finish")) {
-    violations.push("R19 run.mjs has no --no-finish, so a per-group invocation cannot avoid gating the whole sweep.");
   }
 }
 
-/* ── R20: the scope manifest MERGES, it does not overwrite ────────────────── */
+/* ── R20: the scope manifest MERGES, it does not overwrite ──────────────────
+ *
+ * The caller half moved to R14 (fetch-cases.mjs) when run.mjs was deleted; what
+ * remains here is the property of the merge function itself, which is where the
+ * subtle version of the bug lives.
+ */
 {
   const scopePath = resolve(ROOT, "tester/scripts/lib/scope.mjs");
-  const runPath = resolve(ROOT, "tester/scripts/run.mjs");
   if (!existsSync(scopePath)) {
-    violations.push("R20 tester/scripts/lib/scope.mjs is missing — a phased sweep would overwrite its own manifest.");
+    violations.push("R20 tester/scripts/lib/scope.mjs is missing — fetching a second page would overwrite its own manifest.");
   } else {
     const src = stripComments(readFileSync(scopePath, "utf8"));
     const s = src.indexOf("export function mergeScope(");
@@ -915,16 +1001,8 @@ if (existsSync(CATALOGUE)) {
         violations.push(
           "R20 mergeScope() must seed its map from EXISTING rows. Seeding from `incoming` yields a manifest " +
             "of only this invocation's batches — which is the overwrite bug wearing the name of the fix, and " +
-            "the completeness gate then certifies one group as a finished sweep.",
+            "the completeness gate then certifies one page as a finished run.",
         );
-      }
-    }
-    if (existsSync(runPath)) {
-      const runSrc = stripComments(readFileSync(runPath, "utf8"));
-      if (!runSrc.includes("mergeScope(")) {
-        violations.push("R20 run.mjs does not call mergeScope() — its scope write still overwrites.");
-      } else if (runSrc.indexOf("mergeScope(") > runSrc.indexOf("writeScope()")) {
-        violations.push("R20 run.mjs writes the scope before merging it.");
       }
     }
   }

@@ -462,8 +462,17 @@ blockWith(
     `     state file and wait; do not test):\n` +
     `       node tester/scripts/verify-prod-health.mjs\n` +
     `\n` +
-    `  2. Run the phase, ONE session at a time:\n` +
-    `       node tester/scripts/pool.mjs --run ${runId} --phase ${nextPhase} --workers 1\n` +
+    `  2. Work the NEXT BATCH YOURSELF, in THIS session. There is no runner to\n` +
+    `     call: run.mjs / pool.mjs / sweep.mjs were deleted 2026-09-14 because\n` +
+    `     each spawned one headless Claude session per batch (~300 in one day).\n` +
+    `     Nothing under tester/scripts/ may spawn the claude binary again.\n` +
+    `       node tester/scripts/next-batch.mjs --run ${runId}\n` +
+    `       node tester/scripts/fetch-cases.mjs --run ${runId} --page <key> --out <file>\n` +
+    `       node tester/scripts/seed-batch-fixtures.mjs --batch <key>     # if it has one\n` +
+    `     then drive the browser HERE via the tester:run-tests skill and the\n` +
+    `     Playwright MCP, and record:\n` +
+    `       node tester/scripts/record-verdicts.mjs --run ${runId} --batch <f> --verdicts <f>\n` +
+    `       node tester/scripts/seed-batch-fixtures.mjs --batch <key> --teardown\n` +
     `\n` +
     `  3. Triage by ROOT CAUSE, not per symptom:\n` +
     `       node scripts/triage-findings.mjs --run ${runId} --out docs/TRIAGE-${runId}.md\n` +

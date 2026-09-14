@@ -316,14 +316,17 @@ export const AUDITS = [
   // outside tsc, eslint and every other audit — so this is its only check.
   // Skips cleanly when tester/ is not checked out.
   { name: "tester-plugin-wiring",          script: "scripts/audit-tester-plugin-wiring.mjs" },
-  // The harness's own self-checks. Registered as audits rather than left as
-  // scripts someone remembers to run, because both guard properties that are
-  // INVISIBLE when broken: a claim that double-issues and a lane that lets two
-  // batches drive one account produce verdicts shaped exactly like correct ones.
-  // Both use scratch dirs and touch no real state, so they are safe in the gate.
-  { name: "tester-claims",                 script: "tester/scripts/verify-claims.mjs" },
-  { name: "tester-lanes",                  script: "tester/scripts/verify-lanes.mjs" },
-  { name: "tester-limits",                 script: "tester/scripts/verify-limits.mjs" },
+  // REMOVED 2026-09-14 with the spawning harness: tester-claims / tester-lanes /
+  // tester-limits were self-tests of pool.mjs's concurrency machinery — batch
+  // claims, worker lanes, rate-limit classification. pool.mjs spawned one Claude
+  // session per batch and is deleted, so all three assert on a thing that can no
+  // longer run. Keeping their libs alive purely to keep the tests green would be
+  // ~600 lines of unreachable code preserved to satisfy a test of it.
+  // verify-fixtures.mjs REPLACES them in the gate. It was never registered, and
+  // it is now the harness self-check that still guards something live: per-batch
+  // fixture seeding, which three batches depend on and which the in-session flow
+  // drives via seed-batch-fixtures.mjs. Scratch dirs only, no real state.
+  { name: "tester-fixtures",               script: "tester/scripts/verify-fixtures.mjs" },
   // The no-op guard in onShipmentAllocationSync is the ONLY thing stopping a
   // shipment document from becoming an infinite, billed cascade: the function
   // watches procurementShipments/{id} on documentWritten and writes back to that
