@@ -67,8 +67,41 @@ export const GET = withProviders(
       }
 
       const raw = snap.docs[0].data() as Omit<ProductCodeDocument, "id">;
+      const contentKind = raw.contentKind ?? "code";
+      /*
+       * 🛑 `assetPath` IS NEVER RETURNED. It is a raw Firebase Storage path, and
+       * a caller who knows one has nothing useful — every read goes through the
+       * Admin SDK — but publishing it would leak the private layout and invite
+       * exactly the "just fetch it directly" shortcut this design exists to
+       * prevent. `downloadUrl` points at the authenticated sibling route
+       * instead, which re-checks ownership on every hit.
+       *
+       * `contentKind` defaults to "code" so a document written before digital
+       * content existed answers exactly as it always did.
+       */
+      /*
+       * The seller's redemption instructions ride along on the reveal.
+       *
+       * `CodeRevealPanel` has always had a `redemptionInstructions` prop and
+       * NEITHER of its two mount sites has ever passed it — the branch that
+       * renders it was dead code. It could not easily be threaded either: the
+       * text lives on the PRODUCT's `digitalCode` block, while both pages build
+       * their rows from the ORDER. Returning it here costs one document read,
+       * paid only when a buyer actually clicks Reveal.
+       */
+      const productSnap = await db.collection(PRODUCT_COLLECTION).doc(productId).get();
+      const redemptionInstructions = (
+        productSnap.data() as { digitalCode?: { redemptionInstructions?: string } } | undefined
+      )?.digitalCode?.redemptionInstructions;
+
       return successResponse({
-        code: raw.code,
+        contentKind,
+        redemptionInstructions,
+        code: contentKind === "code" ? raw.code : undefined,
+        downloadUrl:
+          contentKind === "code" ? undefined : `/api/orders/${orderId}/code/asset`,
+        fileName: raw.fileName,
+        contentType: raw.contentType,
         orderId: raw.orderId,
         claimedAt: raw.claimedAt,
         expiresAt: raw.expiresAt,
