@@ -45,7 +45,10 @@ export const LETITRIP_SEO: SeoConfig = createSeoConfig({
   defaultTitle: "LetItRip — India's Collectibles Marketplace",
   defaultDescription:
     "Buy, sell & auction action figures, trading cards, spinning tops, model kits and more. India's largest collectibles marketplace.",
-  defaultImage: `${SITE_URL}/media/site-og-image`,
+  // Absolutized from SEO_CONFIG, not hardcoded — a second literal here is the
+  // same two-owners defect the siteUrl note above records, one field over.
+  // `new URL` keeps an already-absolute override working unchanged.
+  defaultImage: new URL(SEO_CONFIG.defaultImage, SITE_URL).toString(),
   locale: "en_IN",
 });
 

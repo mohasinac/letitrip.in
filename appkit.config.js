@@ -42,7 +42,15 @@ const config = {
     defaultTitle: "LetItRip — India's Collectibles Marketplace",
     defaultDescription:
       "Buy, sell & auction action figures, trading cards, spinning tops, model kits and more. India's largest collectibles marketplace.",
-    defaultImage: "/media/site-og-image",
+    // 🛑 Root-relative, and the ONLY definition — src/constants/seo.server.ts
+    // absolutizes this against `siteUrl` rather than hardcoding its own copy.
+    //
+    // This read `/media/site-og-image` until 2026-09-14. No such media asset
+    // has ever existed: `/media/<slug>` resolves a real row, so the URL 404'd
+    // and EVERY social card the site has ever produced was imageless. A slug
+    // nobody uploaded is not a default — point this at something that renders.
+    // `/opengraph-image` is src/app/opengraph-image.tsx, prerendered at build.
+    defaultImage: "/opengraph-image",
     siteName: "LetItRip",
     locale: "en_IN",
   },

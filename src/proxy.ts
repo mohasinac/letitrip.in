@@ -178,7 +178,14 @@ export const config = {
   // which 404'd against the app router instead of reaching the media proxy —
   // every image on the site was affected. Confirmed via x-middleware-rewrite
   // response header showing the unwanted /en/ prefix. 2026-08-17.
+  //
+  // `opengraph-image` is excluded for the SAME reason and it is the same class
+  // of bug: `src/app/opengraph-image.tsx` is a ROOT-segment metadata route (the
+  // build manifest carries `/opengraph-image/route`), it is extensionless, and
+  // next-intl was rewriting it to `/en/opengraph-image` — a path no file backs,
+  // so the site's default social card 404'd. It is not a localized page and
+  // must never be locale-prefixed. 2026-09-14.
   matcher: [
-    "/((?!api|media|_next|_vercel|.*\\..*).*)",
+    "/((?!api|media|opengraph-image|_next|_vercel|.*\\..*).*)",
   ],
 };
