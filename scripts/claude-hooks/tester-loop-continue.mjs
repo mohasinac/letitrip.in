@@ -2,9 +2,12 @@
 /*
  * Stop hook: keep the sequential tester phase loop going.
  *
- * Exit 0 -> the turn ends normally.
- * Exit 2 -> the turn is BLOCKED and this script's stdout is fed back to the
- *           assistant as its next instruction.
+ * Exit 0 -> the turn ends normally; anything printed goes to the human on stdout.
+ * Exit 2 -> the turn is BLOCKED and this script's **stderr** is fed back to the
+ *           assistant as its next instruction. Use `blockWith()`, never
+ *           `console.log`. This header said "stdout" and was wrong for the whole
+ *           life of the file, which is exactly how five messages ended up on the
+ *           stream nobody reads.
  *
  * 🛑 WHY THIS EXISTS. Across one session the user had to type "continue", "why
  * stop?" and "do not stop" repeatedly, because the assistant treats writing a
@@ -27,6 +30,23 @@
  * assistant does not have to remember which phase it is on, because the hook
  * tells it. That is the difference between a loop that resumes and one that
  * restarts from the beginning.
+ *
+ * 🛑 THERE IS DELIBERATELY NO `stop_hook_active` GUARD HERE, and it must stay that
+ * way. Its sibling `check-on-stop.mjs` has one and needs it — an audit gate that
+ * re-fires on its own block would spin. But for a CONTINUATION hook, firing on the
+ * stop after its own block IS the mechanism; exiting 0 there would kill the loop on
+ * its first iteration. `maxContinuations` is the bound that replaces it.
+ *
+ * ── MODES ─────────────────────────────────────────────────────────────────────
+ * `mode` in the state file selects what is being continued. Default "tester", so a
+ * state file written before plan mode behaves exactly as it always did.
+ *
+ *   "tester"  the phase loop (original behaviour)
+ *   "plan"    a plan's ordered step list, read from a snapshot in the run dir
+ *   "both"    both tracks, with the quota and health checks acting as a ROUTER:
+ *             test while there is budget and production is healthy, otherwise
+ *             advance the plan — code work reads no Firestore, so it is exactly
+ *             what should continue when testing cannot.
  */
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -80,6 +100,25 @@ function standDown(reason) {
   process.exit(0);
 }
 
+/**
+ * Block the stop and hand the assistant its next instruction.
+ *
+ * 🛑 THE MESSAGE MUST GO TO STDERR. Exit 2 surfaces **stderr** to the model —
+ * `check-on-stop.mjs` has always done this correctly (`process.stderr.write`), and
+ * this file did not: every one of its five messages used `console.log`, so for its
+ * entire life the loop blocked the turn and delivered NOTHING. The harness reported
+ * it plainly — "[tester-loop-continue.mjs]: No stderr output" — a blocked turn with
+ * no instruction, which is the worst of both behaviours.
+ *
+ * Exists as one function so the next message added cannot reintroduce it. Exit 0
+ * paths (`standDown`) keep using stdout: those are for the human reading the
+ * terminal, not instructions for the model.
+ */
+function blockWith(message) {
+  process.stderr.write(message.endsWith("\n") ? message : message + "\n");
+  process.exit(2);
+}
+
 if (!existsSync(STATE)) standDown();
 
 let state;
@@ -98,8 +137,30 @@ const totalPhases = Number(state.totalPhases ?? 35);
 const continuations = Number(state.continuations ?? 0);
 const maxContinuations = Number(state.maxContinuations ?? 500);
 
-if (!runId || !Number.isFinite(nextPhase) || nextPhase < 1) {
+/*
+ * Mode. "tester" is the original behaviour and stays the default, so a state file
+ * written before plan mode existed behaves exactly as it did.
+ *
+ *   tester -> drive the phase loop (unchanged)
+ *   plan   -> drive the plan's step list; no quota gate, because code work reads
+ *             no Firestore and must keep moving while a run is paused
+ *   both   -> the two tracks in the plan. Test when there is quota and production
+ *             is healthy; otherwise advance the plan. That is the same decision a
+ *             human would make, and it is why the budget check is a ROUTER here
+ *             rather than a stop.
+ */
+const mode = String(state.mode ?? "tester");
+const planStep = String(state.planStep ?? "");
+const planSteps = Array.isArray(state.planSteps) ? state.planSteps.map(String) : [];
+const planPath = String(state.planPath ?? "tester/.tester-runs/plan-snapshot.md");
+
+const testerModeUsable = Boolean(runId) && Number.isFinite(nextPhase) && nextPhase >= 1;
+
+if (mode === "tester" && !testerModeUsable) {
   standDown("tester loop: state file has no usable runId/nextPhase — standing down.");
+}
+if ((mode === "plan" || mode === "both") && !planStep) {
+  standDown(`tester loop: mode "${mode}" but no planStep in the state file — standing down.`);
 }
 
 if (continuations >= maxContinuations) {
@@ -122,6 +183,122 @@ function bump(extra = {}) {
   }
 }
 
+/**
+ * Pull ONE step out of the plan snapshot.
+ *
+ * 🛑 Deliberately returns only the matching line and the lines indented under it.
+ * A Stop hook that dumps a 1,400-line plan into stderr on every fire is worse than
+ * no hook — the instruction that matters gets buried in the one place the assistant
+ * is guaranteed to read.
+ *
+ * Falls back to the bare step id: a missing or renamed snapshot must not stop the
+ * loop, it just makes the reminder less useful.
+ */
+function planStepDetail(stepId) {
+  try {
+    const lines = readFileSync(resolve(REPO, planPath), "utf8").split("\n");
+    /*
+     * Anchored match first — that is the step's own line in a single-column list.
+     *
+     * Then a MID-LINE fallback, because the execution block lays the two tracks out
+     * side by side ("A2  work them…   B2  the known 500s…"). Anchoring alone found
+     * every A-track step and no B-track one, so the hook reported
+     * "(not found in the snapshot)" for exactly half the plan — an instruction-less
+     * block, which is the same failure as writing to the wrong stream.
+     */
+    /*
+     * 🛑 ESCAPE the step id before it becomes a regex. `L+` is a real step name
+     * and `+` is a quantifier — unescaped it compiles to "one or more L", which
+     * matches the wrong line or throws. Every id goes through here.
+     */
+    const id = stepId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    /*
+     * Strip the markdown a step id is DECORATED with before matching. The plan
+     * writes steps three ways — `| **G2** | …` in the stage table, `**G2 — …**`
+     * as a paragraph lead, and bare `G2  …` in a two-column block — and an
+     * anchor of `^\s{0,4}G2\b` sees none of the first two. That silently
+     * produced "(not found in the snapshot)", i.e. a block with no instruction,
+     * which is the same failure mode as writing to the wrong stream (RC #97).
+     */
+    const bare = (l) => l.replace(/^[\s|*_>#-]+/, "");
+    const anchored = new RegExp(`^${id}\\b`);
+    const midline = new RegExp(`\\s${id}\\s{2,}\\S`);
+    const starts = [];
+    lines.forEach((l, i) => {
+      if (anchored.test(bare(l)) || midline.test(l)) starts.push(i);
+    });
+    if (!starts.length) return null;
+
+    /*
+     * A step id appears MORE THAN ONCE — once as a one-line row in the stage
+     * table, once as the paragraph that actually explains it. `findIndex` takes
+     * the first, and the table always comes first, so the reminder used to be
+     * the summary rather than the instructions. Take whichever match yields the
+     * most prose; a table row yields exactly one line and always loses.
+     */
+    const blockAt = (start) => {
+      const isTableRow = lines[start].trimStart().startsWith("|");
+      const indent = lines[start].match(/^\s*/)[0].length;
+      const out = [lines[start].trim()];
+      for (let i = start + 1; i < lines.length; i++) {
+        const l = lines[i];
+        if (!l.trim()) break;
+        // A paragraph's continuation lines are NOT indented in this plan, so an
+        // indent test alone would stop at line one. Stop at the next heading,
+        // the next table row, or the next bolded step lead instead.
+        if (isTableRow) break;
+        if (/^\s*(#|\||```|---)/.test(l)) break;
+        if (l.match(/^\s*/)[0].length < indent) break;
+        out.push("    " + l.trim());
+      }
+      return out;
+    };
+    let best = blockAt(starts[0]);
+    for (const s of starts.slice(1)) {
+      const b = blockAt(s);
+      if (b.length > best.length) best = b;
+    }
+    return best.join("\n");
+  } catch {
+    return null;
+  }
+}
+
+/** Emit the plan-mode instruction and block the stop. Never returns. */
+function planContinue(why) {
+  const idx = planSteps.indexOf(planStep);
+  const position = idx >= 0 ? `step ${idx + 1} of ${planSteps.length}` : "step";
+  const nextUp = idx >= 0 && idx + 1 < planSteps.length ? planSteps[idx + 1] : null;
+  const detail = planStepDetail(planStep);
+
+  bump({ blocked: null });
+  blockWith(
+    `▶ PLAN LOOP ACTIVE — ${planStep} (${position}, continuation ${continuations + 1})\n` +
+      (why ? `  Routed here because: ${why}\n` : "") +
+      `\n` +
+      `  Do NOT end the turn. The plan is not finished.\n` +
+      `\n` +
+      `  CURRENT STEP — ${planStep}:\n` +
+      (detail ? detail.split("\n").map((l) => "    " + l).join("\n") + "\n" : `    (not found in ${planPath})\n`) +
+      `\n` +
+      `  When it is genuinely done, set planStep=${nextUp ?? "(last — set active:false)"} in\n` +
+      `  ${STATE}. The hook never infers completion: it reports what the state says,\n` +
+      `  because a hook that guesses skips work, and skipped work here means an\n` +
+      `  unfixed data-loss bug.\n` +
+      `\n` +
+      `  Every code change carries its CLAUDE.md edit in the SAME change — the plan's\n` +
+      `  documentation table says which section.\n` +
+      `\n` +
+      `  🛑 STOP AND ASK instead of continuing if: a question to the user is pending,\n` +
+      `  or the next action is a publish, deploy, reseed or any Firestore write.\n` +
+      `  Permission to deploy is not permission to deploy unattended.\n` +
+      `\n` +
+      `  Full plan: ${planPath}\n` +
+      `  Off switch: set active:false in the state file, or delete it.\n`,
+  );
+  process.exit(2);
+}
+
 /** Consolidated batch rows, read from the progress document. */
 function consolidatedCount() {
   try {
@@ -129,6 +306,23 @@ function consolidatedCount() {
   } catch {
     return 0;
   }
+}
+
+/* ── Pure plan mode ────────────────────────────────────────────────────────
+ *
+ * Straight to the plan step. No quota gate and no production-health gate: code
+ * work reads no Firestore and is exactly what SHOULD continue while a run is
+ * paused — the loop's own blocked message already says "prepare fixes" as the
+ * useful thing to do meanwhile.
+ */
+if (mode === "plan") {
+  if (planSteps.length && planSteps.indexOf(planStep) === planSteps.length - 1) {
+    standDown(
+      `✓ plan loop: ${planStep} is the last step in planSteps.\n` +
+        `  Set active:false in ${STATE} once it is done.`,
+    );
+  }
+  planContinue();
 }
 
 /* ── Finished? ─────────────────────────────────────────────────────────────── */
@@ -156,9 +350,20 @@ if (nextPhase > totalPhases) {
  * visitors, scheduled Functions and the admin surfaces.
  */
 const budget = budgetStatus(state);
+if (budget.exhausted && mode === "both") {
+  /*
+   * Two tracks, and one of them costs no quota. Testing is out of budget for the
+   * day, so advance the plan instead of idling — this is the router the plan's
+   * "Track A / Track B" split exists for.
+   */
+  planContinue(
+    `testing is out of daily quota (${budget.used}/${budget.limit} batches, ` +
+      `resets in ${formatDuration(budget.resetInMs)}) — code work costs none`,
+  );
+}
 if (budget.exhausted) {
   bump({ blocked: "daily-quota-budget" });
-  console.log(
+  blockWith(
     `⏸ TESTER LOOP PAUSED — daily free-tier budget reached
 ` +
       `
@@ -209,6 +414,13 @@ if (blocked) {
   if (healthy) {
     blocked = null;
     healthLine = "  Health:   ✓ RECOVERED — the block has cleared, resume testing";
+  } else if (mode === "both") {
+    /*
+     * Production is degraded, so testing would record evidenced-and-wrong verdicts
+     * — but the code track is unaffected and is the right thing to do while
+     * waiting. Route rather than idle.
+     */
+    planContinue(`production is still degraded (${blocked}) — testing now would record wrong verdicts`);
   } else {
     bump({ blocked });
     /*
@@ -216,7 +428,7 @@ if (blocked) {
      * WAIT rather than test — a tight spin here would burn turns and rate limit
      * for hours while production is down.
      */
-    console.log(
+    blockWith(
       `⏸ TESTER LOOP BLOCKED — ${blocked}\n` +
         `\n` +
         `  Production is still degraded. DO NOT run a phase: every verdict recorded\n` +
@@ -241,7 +453,7 @@ if (blocked) {
 bump({ blocked: null });
 const statusFresh = refreshPhaseStatus();
 
-console.log(
+blockWith(
   `▶ TESTER LOOP ACTIVE — run ${runId}, phase ${nextPhase} of ${totalPhases} (continuation ${continuations + 1})\n` +
     `\n` +
     `  Do NOT end the turn. The loop is not finished.\n` +

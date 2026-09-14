@@ -12,7 +12,17 @@ interface Props {
 export default async function Page({ params }: Props) {
   const { id } = await params;
 
-  const product = await getSellerProductAction(id);
+  /*
+   * getSellerProductAction returns an ActionResult ENVELOPE, not a product.
+   * `if (!product)` on `{ ok, data }` is always false, so notFound() never
+   * fired and the envelope was spread into initialValues below — every real
+   * field undefined, which is what rendered the editor blank. Worse, the
+   * `status === "published" ? "published" : "draft"` line then read undefined,
+   * so saving wrote "draft" over a live listing. Unwrap, exactly as
+   * prize-draws/[id]/entries/page.tsx always did.
+   */
+  const result = await getSellerProductAction(id);
+  const product = result.ok ? result.data : null;
   if (!product) notFound();
 
   /*

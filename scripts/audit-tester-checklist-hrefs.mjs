@@ -220,18 +220,55 @@ function collectSeedIds() {
 
 const { ids: knownSeedIds, templateRegexes: knownSeedIdTemplates } = collectSeedIds();
 
-// --- Extract every seeded href with its line number ---
+// --- Extract every seeded href AND startPage, with file + line ---
 
-const text = readFileSync(SEED_FILE, "utf8");
-const lines = text.split("\n");
-const HREF_RE = /href:\s*"([^"]*)"/g;
+/*
+ * 🛑 BOTH FIELDS, AND BOTH LOCATIONS. This audit validated `href` in the seed file
+ * only, and reported `clean ✓ (981 hrefs checked)` while two cases carried a
+ * `startPage` of "/admin/support" — a route with no page.tsx. Every automated run
+ * sent those two straight to a 404 and recorded "could not test".
+ *
+ * `startPage` is the MORE load-bearing of the pair: the merge rule in
+ * tester-checklist-seed-data.ts is
+ *   startPage: c.startPage ?? authored?.startPage ?? c.href ?? page.href
+ * so an overlay `startPage` OVERRIDES the case's own href — it is where the tester
+ * actually lands. Validating only the field it overrides is measuring the wrong
+ * one (Root Cause #84: a measurement narrower than the rule it feeds).
+ *
+ * The overlays live in ./authored/*.ts, which this audit never opened.
+ */
+const AUTHORED_DIR = join(ROOT, "appkit", "src", "features", "tester", "seed-data", "authored");
+
+const ROUTE_FIELD_RE = /\b(?:href|startPage):\s*"([^"]*)"/g;
+
+function collectSources() {
+  const out = [{ path: SEED_FILE, label: "tester-checklist-seed-data.ts" }];
+  try {
+    for (const entry of readdirSync(AUTHORED_DIR, { withFileTypes: true })) {
+      if (!entry.isFile() || !entry.name.endsWith(".ts")) continue;
+      if (entry.name.startsWith("_")) continue; // _types.ts et al carry no cases
+      out.push({ path: join(AUTHORED_DIR, entry.name), label: `authored/${entry.name}` });
+    }
+  } catch {
+    /* no overlays is valid — the seed file alone is still checked */
+  }
+  return out;
+}
 
 const seeded = [];
-for (const match of text.matchAll(HREF_RE)) {
-  const href = match[1];
-  const before = text.slice(0, match.index ?? 0);
-  const lineIdx = before.split("\n").length - 1;
-  seeded.push({ href, line: lineIdx + 1 });
+for (const src of collectSources()) {
+  let text;
+  try {
+    text = readFileSync(src.path, "utf8");
+  } catch {
+    continue;
+  }
+  for (const match of text.matchAll(ROUTE_FIELD_RE)) {
+    const href = match[1];
+    const before = text.slice(0, match.index ?? 0);
+    const lineIdx = before.split("\n").length - 1;
+    seeded.push({ href, line: lineIdx + 1, file: src.label });
+  }
 }
 
 // --- Validate ---
@@ -283,24 +320,25 @@ function matchesKnownFixture(href) {
 }
 
 const violations = [];
-for (const { href, line } of seeded) {
+for (const { href, line, file } of seeded) {
   if (validRoutes.has(href)) continue;
   if (matchesKnownFixture(href)) continue;
-  violations.push({ href, line, suggestion: nearestSuggestion(href) });
+  violations.push({ href, line, file, suggestion: nearestSuggestion(href) });
 }
 
 if (violations.length === 0) {
-  console.log(`audit-tester-checklist-hrefs: clean ✓ (${seeded.length} hrefs checked)`);
+  console.log(
+    `audit-tester-checklist-hrefs: clean ✓ (${seeded.length} href/startPage values checked across the seed and its authored overlays)`,
+  );
   process.exit(0);
 }
 
 console.error(
-  `audit-tester-checklist-hrefs: REGRESSION — ${violations.length} seeded href(s) don't resolve to a real page under src/app/[locale]/**.\n`,
+  `audit-tester-checklist-hrefs: REGRESSION — ${violations.length} seeded href/startPage value(s) don't resolve to a real page under src/app/[locale]/**.\n`,
 );
 for (const v of violations) {
-  const rel = relative(ROOT, SEED_FILE).replace(/\\/g, "/");
   const suggestion = v.suggestion ? ` (did you mean "${v.suggestion}"?)` : "";
-  console.error(`  ${rel}:${v.line}  href="${v.href}"${suggestion}`);
+  console.error(`  ${v.file}:${v.line}  "${v.href}"${suggestion}`);
 }
 console.error(
   "\n  Fix: point href at a real, existing page path, or remove the field entirely (it's optional).",

@@ -46,7 +46,7 @@ import {
   type RequestPayoutInput,
   type BulkSellerOrderResult,
 } from "@mohasinac/appkit";
-import { userRepository } from "@mohasinac/appkit";
+import { userRepository, storeRepository } from "@mohasinac/appkit";
 import { mediaUrlSchema } from "@/validation/request-schemas";
 import {
   productCreateSchema,
@@ -333,7 +333,22 @@ export async function getSellerProductAction(id: string): Promise<ActionResult<P
       const product = await productRepository.findById(id);
       if (!product) return null;
       const profile = await userRepository.findById(user.uid);
-      if (!isAdminUser(profile) && (product as any).storeId !== user.uid) return null;
+      /*
+       * 🛑 `product.storeId` is the store SLUG, never the seller's Firebase UID.
+       *
+       * This compared `storeId !== user.uid` — two different namespaces (see
+       * CLAUDE.md § "Store Identity Architecture"), so the condition was true for
+       * every non-admin seller and the read returned null unconditionally. The
+       * WRITE path 500 lines away in appkit's `sellerUpdateProduct` already had
+       * this right, comment and all; the read path disagreed with it.
+       *
+       * Resolve the caller's store the same way the write path and
+       * /api/store/products do — by ownerId — and compare slug to slug.
+       */
+      if (!isAdminUser(profile)) {
+        const store = await storeRepository.findByOwnerId(user.uid);
+        if (!store || (product as any).storeId !== store.id) return null;
+      }
       return product as unknown as ProductDocument;
   });
 }
