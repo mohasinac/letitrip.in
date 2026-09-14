@@ -35,7 +35,7 @@
  */
 
 import { readFileSync, readdirSync } from "node:fs";
-import { join, relative } from "node:path";
+import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dirname } from "node:path";
 
@@ -50,7 +50,21 @@ const BARE_VIEWS = {
 };
 
 // Files that are allowed to import/render these views directly.
-const ALLOWLISTED_PATHS = new Set([]);
+/*
+ * 🛑 THE WRAPPER ITSELF. This audit's own header says "The SellerProductFormShell
+ * wrapper itself is excluded (it imports the views legitimately)" — and the set
+ * was EMPTY, so it never was. The wrapper is the one file that MUST render the
+ * bare views: it is what injects the render props every other call site is being
+ * told to go through. Telling it to use itself is not a fix anyone can apply.
+ *
+ * Compared against a forward-slash-normalised relative path, because
+ * `relative()` yields backslashes on Windows and a literal here would silently
+ * match nothing on the machine this is developed on — the failure mode being a
+ * rule that quietly stops applying (Root Cause #84).
+ */
+const ALLOWLISTED_PATHS = new Set([
+  "src/components/store/SellerProductFormShell.tsx",
+]);
 
 // Directories that should never be scanned (source definitions live here)
 const SKIP_DIRS = new Set(["node_modules", ".next", "dist", "appkit"]);
@@ -79,7 +93,7 @@ const violations = [];
 for (const absPath of walk(join(ROOT, "src"))) {
   const rel = relative(ROOT, absPath);
 
-  if (ALLOWLISTED_PATHS.has(rel)) continue;
+  if (ALLOWLISTED_PATHS.has(rel.split(sep).join("/"))) continue;
 
   const content = readFileSync(absPath, "utf8");
 
