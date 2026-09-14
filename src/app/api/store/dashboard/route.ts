@@ -45,16 +45,44 @@ export const GET = withProviders(
 
       const storeId = store.id;
 
-      const [allProducts, , , ratingAggregate, pendingPayouts] =
+      const pendingProcessingFilter = [
+        sieveFilter("status", SIEVE_OP.EQ, "pending"),
+        sieveFilter("status", SIEVE_OP.EQ, "processing"),
+      ].join("|");
+
+      /*
+       * The two order queries are scoped by `storeId`, which is what lets them
+       * join this round at all.
+       *
+       * They used to sit in a SECOND await below, because they needed the
+       * product-id list from the first — `.where(productId, "in", productIds)`.
+       * Firestore caps `in` at 30 values and nothing bounded that array, so for
+       * any store past its 30th listing both queries threw, and both
+       * `.catch(() => ({items:[]}))` handlers turned the throw into a dashboard
+       * reporting zero orders and ₹0 revenue with no error anywhere. Root Cause
+       * #59's swallow, on the seller's own headline numbers. Measured: the only
+       * real seller has 65 products.
+       *
+       * Dropping the dependency also halves the round trips, which Rule #6
+       * budgets at ~3 sequential Firestore hops per request.
+       */
+      const [allProducts, ordersResult, pendingOrdersResult, ratingAggregate, pendingPayouts] =
         await Promise.all([
           safeRead(() => productRepository.findByStore(storeId), {
             route: "/store",
             key: "products.findByStore",
             fallback: [],
           }),
-          // listForSeller needs productIds — defer to inline below
-          Promise.resolve(null),
-          Promise.resolve(null),
+          orderRepository
+            .listForSeller(storeId, { page: 1, pageSize: 500 })
+            .catch(() => ({ items: [], total: 0 })),
+          orderRepository
+            .listForSeller(storeId, {
+              filters: pendingProcessingFilter,
+              page: 1,
+              pageSize: 500,
+            })
+            .catch(() => ({ items: [], total: 0 })),
           reviewRepository.getApprovedRatingAggregateByStore(storeId).catch(() => ({ count: 0, avgRating: 0 })),
           safeRead(
             () => payoutRepository.findByStoreAndStatus(storeId, "pending"),
@@ -66,31 +94,7 @@ export const GET = withProviders(
           ),
         ]);
 
-      const productIds = allProducts.map((p) => p.id);
       const activeListings = allProducts.filter((p) => (p as any).status === "published").length;
-
-      const pendingProcessingFilter = [
-        sieveFilter("status", SIEVE_OP.EQ, "pending"),
-        sieveFilter("status", SIEVE_OP.EQ, "processing"),
-      ].join("|");
-
-      const [ordersResult, pendingOrdersResult] = await Promise.all([
-        productIds.length > 0
-          ? orderRepository.listForSeller(productIds, { page: 1, pageSize: 500 }).catch(() => ({
-              items: [],
-              total: 0,
-            }))
-          : Promise.resolve({ items: [], total: 0 }),
-        productIds.length > 0
-          ? orderRepository
-              .listForSeller(productIds, {
-                filters: pendingProcessingFilter,
-                page: 1,
-                pageSize: 500,
-              })
-              .catch(() => ({ items: [], total: 0 }))
-          : Promise.resolve({ items: [], total: 0 }),
-      ]);
 
       // Sum revenue from delivered + processing orders (non-cancelled)
       const revenueOrders = (ordersResult.items as any[]).filter(

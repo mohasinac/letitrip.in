@@ -3,11 +3,17 @@ import { withProviders } from "@/providers.config";
  * Seller Orders API Route
  *
  * GET /api/store/orders
- * Returns all orders for products owned by the authenticated seller.
- * Strategy: fetch seller's products → get product IDs → filter all orders
+ * Returns the authenticated seller's store's orders.
+ *
+ * Strategy: resolve the caller's store → one `storeId ==` query. `storeId` is
+ * the field a cart is SPLIT on, so it is exactly "this store's orders".
+ *
+ * It used to fetch every product first and pass their ids as a
+ * `productId in [...]` clause; Firestore caps `in` at 30 values, so this route
+ * was a permanent 500 for any store past its 30th listing.
  */
 
-import { orderRepository, productRepository, storeRepository } from "@mohasinac/appkit";
+import { orderRepository, storeRepository } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
 import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
 import {
@@ -65,23 +71,16 @@ export const GET = withProviders(createRouteHandler({
       });
     }
 
-    // Step 1: Get only this store's products (indexed query, not findAll)
-    const sellerProducts = await productRepository.findByStore(store.id);
-    const sellerProductIds = sellerProducts.map((p) => p.id);
-
-    if (sellerProductIds.length === 0) {
-      return successResponse({
-        orders: [],
-        meta: {
-          page,
-          limit: pageSize,
-          total: 0,
-          totalPages: 0,
-          hasMore: false,
-        },
-      });
-    } // Step 2: Firestore-native Sieve query — no full orders scan
-    const sieveResult = await orderRepository.listForSeller(sellerProductIds, {
+    /*
+     * Scope by `storeId` — the field a cart is SPLIT on, so it is exactly "this
+     * store's orders". This used to fetch every product first and pass the ids
+     * as a `productId in [...]` clause, which Firestore caps at 30 values: with
+     * 65 products in the only real seller's store, this route was a permanent
+     * 500 for them (and fine for every small store, which is why it survived).
+     * The store is already resolved above, so this also deletes a whole
+     * Firestore query from the request.
+     */
+    const sieveResult = await orderRepository.listForSeller(store.id, {
       filters,
       sorts,
       page,
