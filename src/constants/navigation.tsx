@@ -115,18 +115,43 @@ export const SIDEBAR_SUPPORT_LINKS: AppLayoutShellSidebarLink[] = [
 // ---------------------------------------------------------------------------
 
 export const FOOTER_LINK_GROUPS = [
+  /*
+   * 🛑 EVERY listing type's browse page belongs here.
+   *
+   * Six of them shipped with a real page, a real `ROUTES.PUBLIC` constant and
+   * NO link from anywhere on the site — reachable only by typing the URL:
+   * /classified, /digital-codes, /live, /lottery, /brands and /sellers. That is
+   * Root Cause #37's shape (a page with no nav entry is exactly as incomplete
+   * as a feature with no backend) and it is also an SEO hole: an unlinked page
+   * has no internal inbound link for a crawler to follow.
+   *
+   * `audit-nav-page-wiring` is strict-zero on the OTHER direction (a nav href
+   * with no page) and deliberately report-only on this one, because legitimate
+   * sub-routes like `new/` and `[id]/edit` are expected to have no nav entry.
+   * So nothing was going to fail the build over these; they had to be found by
+   * sweeping.
+   */
   {
     heading: "Shop",
     links: [
       { label: "Products",    href: String(ROUTES.PUBLIC.PRODUCTS)    },
       { label: "Auctions",    href: String(ROUTES.PUBLIC.AUCTIONS)    },
       { label: "Pre-Orders",  href: String(ROUTES.PUBLIC.PRE_ORDERS)  },
+      { label: "Classifieds", href: String(ROUTES.PUBLIC.CLASSIFIED)  },
+      { label: "Digital Codes", href: String(ROUTES.PUBLIC.DIGITAL_CODES) },
+      { label: "Live Items",  href: String(ROUTES.PUBLIC.LIVE)        },
       { label: "Bundles",     href: String(ROUTES.PUBLIC.BUNDLES)     },
       { label: "Prize Draws", href: String(ROUTES.PUBLIC.PRIZE_DRAWS) },
+      { label: "Lotteries",   href: String(ROUTES.PUBLIC.LOTTERIES)   },
       { label: "Art & Stickers", href: String(ROUTES.PUBLIC.ART)      },
       { label: "Promotions",  href: String(ROUTES.PUBLIC.PROMOTIONS)  },
       { label: "Stores",      href: String(ROUTES.PUBLIC.STORES)      },
+      // Distinct from Stores: /stores lists shopfronts, /sellers lists the
+      // verified sellers behind them. Labelled explicitly so the two entries do
+      // not read as the same destination.
+      { label: "Verified Sellers", href: String(ROUTES.PUBLIC.SELLERS) },
       { label: "Categories",  href: String(ROUTES.PUBLIC.CATEGORIES)  },
+      { label: "Brands",      href: String(ROUTES.PUBLIC.BRANDS)      },
     ],
   },
   {
