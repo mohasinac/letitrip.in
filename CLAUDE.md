@@ -47,6 +47,7 @@
 - [Status History](#status-history)
 - [Order Provenance — `sourceContext`](#order-provenance--sourcecontext)
 - [Coupon Scoping & Stacking](#coupon-scoping--stacking)
+- [Digital Content Delivery](#digital-content-delivery)
 - [Manual Payment Review Flow](#manual-payment-review-flow)
 - [Error Observability](#error-observability)
 - [Known TS Patterns to Avoid](#known-ts-patterns-to-avoid)
@@ -608,7 +609,7 @@ Traditional dev server with webpack HMR + file watchers. Uses ~3.5 GB. Best for 
 | **notifications** (23 seeded) | id (`notif-`), userId, type (10 types), title, body, isRead, entityId, entityType, createdAt | — | userId, type, isRead, entityId, createdAt | Covers all 10 notification types, mixed read/unread. `AdminNotificationsView` gained a "View details" row action (2026-08-21) → `ViewNotificationModal` — was list-only before, no way to see full body/payload/link. |
 | **adminAuditLog** (0 seeded — grows organically from real admin actions) | id (Firestore auto-ID), actorUid, actorName?, action (closed enum — see below), targetType, targetId, targetLabel?, reason?, metadata?, createdAt | — | actorUid, action, targetType, createdAt | Added 2026-08-21 (Admin Audit Log MVP). Queryable record of high-value privileged admin actions — NOT an exhaustive every-write-path audit trail. Single write-site: `recordAdminAction()` (`appkit/src/_internal/server/features/audit-log/actions.ts`), best-effort/non-blocking (a failed audit write never fails the underlying action). Instrumented actions (`AdminAuditActionValues`): `user_hard_ban` (hardBanCascade.ts), `user_soft_ban`/`user_unban` (soft-ban/unban routes), `checkout_bypass` (admin checkout-bypass route), `coupon_update` (adminUpdateCoupon), `payout_mark_paid` (adminUpdatePayout, only when status→paid), `store_status_change` (admin store PATCH route), `user_role_change` (adminUpdateUser, only when role actually changes). Admin-only list UI at `/admin/audit-log` (`AdminAuditLogView` + `ViewAuditLogEntryModal`), nav entry under Finance. The only "logs" surface before this (`/admin/maintenance/cloud-logs`) is raw Google Cloud Logging infra output — not actor/action semantics — and still exists unchanged for that purpose. |
 | **sessions** (5 seeded) | id, userId, isActive, expiresAt, lastActivity, deviceInfo.{browser, os, device, ip (masked)}, location.country | deviceInfo.ip | userId, isActive, expiresAt, lastActivity, createdAt | IP masked — never returned to client |
-| **siteSettings** (1 doc) | Singleton doc at `siteSettings/global` — note the collection is camelCase `siteSettings`, **not** `site_settings` (this row and `AdminSiteConfigGuideView` both said `site_settings/global` until 2026-08-21; the real path is `SITE_SETTINGS_COLLECTION` in `appkit/src/features/admin/schemas/firestore.ts` + `SINGLETON_ID = "global"`). Groups: branding, appearance, announcementBar, seoDefaults, contactSocial, watermark, fees, `credentials` (**encrypted** API keys), `integrations` (analytics/tag IDs — GA / FB Pixel / GTM; a REAL, separate field, *not* a synonym for `credentials`, which is what this row claimed until 2026-08-24), shipping, auctionConfig, platformLimits, adSettings, legalPages. Feature flags. Carousel + section defaults. **`aboutContent`** (2026-08-19, typed via `AboutContentDocument` in `appkit/src/features/about/schemas/firestore.ts` — no longer a loose `Record<string,string>`): hero title/subtitle, mission, `howItems[]`, `valueItems[]`, `milestones[]`, and a `teamMembers[]` "Meet the Team" section (name/role/bio/photo + `isFounder`/`isDeveloper` flags) — admin-editable via Site Settings → About tab, rendered by `<AboutView>` at `/about`. **`announcementBar.message` is canonical** (`link`/`backgroundColor` optional) — the main admin editor saved the copy under `text` until 2026-08-24, a key no renderer has ever read, so admin-authored announcements saved successfully and never appeared. | credentials.* (all API keys) | — | Single doc. **`adSettings`, `integrations`, `platformLimits`, `tagline` and `favicon` were written by the admin form but undeclared on `SiteSettingsDocument` until 2026-08-24** — see Recurrent Root Cause #70 for why that made them publicly readable. Most seeded API keys are `*_PLACEHOLDER` **strings**, not empty — code that falls back to an env var when Firestore has no key must test for the `PLACEHOLDER` substring, not just emptiness (`resolveEmailProvider()` in `appkit/src/features/contact/email.tsx` is the reference). **The exceptions are deliberate**: the real Meta secrets and `googleMapsApiKey`/`googlePlaceId` are seeded as `""`, because their consumers read them directly and would treat a placeholder as a usable credential — producing a failed (billed, for Google Places) call instead of skipping cleanly. Every `credentials.*` value is AES-256-GCM encrypted with an `enc:v1:` prefix via `encryptSecret()`, which **throws** when `SETTINGS_ENCRYPTION_KEY` is unset — see § "Secrets & Runtime Env Parity". This document is never returned wholesale: the public read is the allow-list projection `toPublicSiteSettings()`, the admin read is `GET /api/admin/site` (which strips the raw `credentials` blob and returns `credentialsMasked` instead). |
+| **siteSettings** (1 doc) | Singleton doc at `siteSettings/global` — note the collection is camelCase `siteSettings`, **not** `site_settings` (this row and `AdminSiteConfigGuideView` both said `site_settings/global` until 2026-08-21; the real path is `SITE_SETTINGS_COLLECTION` in `appkit/src/features/admin/schemas/firestore.ts` + `SINGLETON_ID = "global"`). Groups: branding, appearance, announcementBar, seoDefaults, contactSocial, watermark, fees, `credentials` (**encrypted** API keys), `integrations` (analytics/tag IDs — GA / FB Pixel / GTM; a REAL, separate field, *not* a synonym for `credentials`, which is what this row claimed until 2026-08-24), shipping, auctionConfig, platformLimits, adSettings, legalPages. Feature flags. Carousel + section defaults. **`aboutContent`** (2026-08-19, typed via `AboutContentDocument` in `appkit/src/features/about/schemas/firestore.ts` — no longer a loose `Record<string,string>`): hero title/subtitle, mission, `howItems[]`, `valueItems[]`, `milestones[]`, and a `teamMembers[]` "Meet the Team" section (name/role/bio/photo + `isFounder`/`isDeveloper` flags) — admin-editable via Site Settings → About tab, rendered by `<AboutView>` at `/about`. **`announcementBar.message` is canonical** (`link`/`backgroundColor` optional) — the main admin editor saved the copy under `text` until 2026-08-24, a key no renderer has ever read, so admin-authored announcements saved successfully and never appeared. | credentials.* (all API keys) | — | Single doc. **`adSettings`, `integrations`, `platformLimits`, `tagline` and `favicon` were written by the admin form but undeclared on `SiteSettingsDocument` until 2026-08-24** — see Recurrent Root Cause #70 for why that made them publicly readable. Most seeded API keys are `*_PLACEHOLDER` **strings**, not empty — code that falls back to an env var when Firestore has no key must test for the `PLACEHOLDER` substring, not just emptiness (`resolveEmailProvider()` in `appkit/src/features/contact/email.tsx` is the reference). **The exceptions are deliberate**: the real Meta secrets and `googleMapsApiKey`/`googlePlaceId` are seeded as `""`, because their consumers read them directly and would treat a placeholder as a usable credential — producing a failed (billed, for Google Places) call instead of skipping cleanly. 🛑 **`credentials.*` is SUPPOSED to be AES-256-GCM encrypted with an `enc:v1:` prefix via `encryptSecret()` — and on production, measured 2026-09-14, **0 of 26 values carry that prefix**.** 13 are `*_PLACEHOLDER`, 5 are empty, and 8 are WhatsApp template names, so nothing sensitive is currently exposed — but the invariant this row asserted is not true of the live document, and the first real key saved through a path that skips `encryptSecret()` would sit there in plaintext. `encryptSecret()` **throws** when `SETTINGS_ENCRYPTION_KEY` is unset (see § "Secrets & Runtime Env Parity"), so a save cannot silently half-encrypt — which means the plaintext values got there another way (the seed writes placeholders directly). **Re-measure before trusting this row**: `enc:v1:` prefix count over `siteSettings/global.credentials`. This document is never returned wholesale: the public read is the allow-list projection `toPublicSiteSettings()`, the admin read is `GET /api/admin/site` (which strips the raw `credentials` blob and returns `credentialsMasked` instead). |
 
 ---
 
@@ -1181,7 +1182,15 @@ baseQuery.where(PRODUCT_FIELDS.CATEGORY_SLUGS, "array-contains-any", categoriesI
 
 `array-contains-any` caps at **30 values**. `[self, ...allDescendants]` on a 47-node tree is 48, Firestore throws `INVALID_ARGUMENT`, and every caller wraps the query in `.catch(() => null)` — so the root category page would render **blank, with no error anywhere** (Root Cause #59). The repository truncates and warns loudly if a caller ever passes more than 30, but the correct fix is to pass one id.
 
-**Nothing appends ancestors on write yet.** No create/update path derives `categorySlugs` from the chosen category's `parentIds` — the convention is maintained by hand in the seed. A seller picking a tier-3 category through the form today produces a single-slug array and a product invisible on every ancestor page. **This is the outstanding follow-up**; until it lands, treat the chain as a seed-only invariant.
+**The chain is derived on write, in the repository** (2026-09-14 — this paragraph used to say "nothing appends ancestors on write yet … the outstanding follow-up"). `ProductRepository.deriveTaxonomy()` resolves the leaf's `parentIds` and writes `categorySlugs = [leaf, ...parentIds.reverse()]` plus `categoryNames`, from **`create` and `update`** — the only two methods all ~14 write paths funnel through. It also resolves a brand **id → display name**, because `BrandInlineSelect`'s option value is the brand row's id while products are matched by `brand` NAME.
+
+Three things about it are load-bearing:
+
+- **It reads `categories` through `this.db`, not `categoriesRepository`.** No repository in this codebase imports another feature's, and the reason is the Turbopack import-chain trap (Root Cause #6/#18); a raw collection read has neither problem.
+- **`update` only re-derives when the write names a taxonomy field** (`categorySlugs` / `category` / `brand` / `brandSlug`). Every stock decrement and status flip would otherwise pay two extra reads against Rule #6's ~3-round-trip budget.
+- **A leaf that does not resolve to a real category is left alone and warned about.** Blanking a chain we cannot improve on would turn a data problem into a data loss.
+
+The defect this closed was wider than the ancestor half recorded here: `productCreateSchema` declares only the scalar `category` and has no `.passthrough()`, so an inbound `categorySlugs` was **stripped**, and `mapDoc` backfills it on READ only — which a query cannot see. A UI-created listing was therefore unreachable from its own **leaf** category too. It stayed invisible because all 95 production products came from the seed, which hand-writes the chain. See Root Cause #101.
 
 **Stores are different.** `StoreDocument.storeCategory` is a single slug with no ancestor chain, so the category page's Stores tab genuinely does need the descendant list — it pipe-joins them into `in` queries chunked at 30. It used `getChildren` (direct children only) until 2026-08-24, so a store filed under a tier-3 category was invisible on its root.
 
@@ -1456,6 +1465,10 @@ signed-in-only surfaces.
 | 97 | **A Stop hook that exits 2 but writes to STDOUT blocks the turn and delivers nothing — the worst of both behaviours** | Found 2026-09-14 the moment `tester-loop-continue.mjs` was first exercised for real: the harness reported `[tester-loop-continue.mjs]: No stderr output`. Exit 2 surfaces **stderr** to the model — its sibling `check-on-stop.mjs` has always done this correctly (`process.stderr.write` at L128/L130) — but the loop hook used `console.log` for **all five** of its messages, and its own header documented the stream as "stdout". So for the entire life of the file every continuation blocked the turn while handing the assistant no instruction at all; the loop appeared to work only because a blocked turn re-invokes regardless. **The tell is the absence of a symptom**: exit codes were right, the state file advanced, `continuations` incremented — everything observable from inside the script was correct, and the one thing that was broken is invisible unless you diff the two streams. Fixed by routing every exit-2 emitter through one `blockWith()` that writes to stderr, so a sixth message cannot reintroduce it, and by correcting the header that taught the mistake. **Verify a hook by reading the stream the consumer reads, not by reading its exit code** — I had already tested this hook's exit codes and its stand-down path and called it verified, which is Root Cause #87's lesson (never trust a gate you have not seen work) applied one layer further out: seeing it FIRE is not seeing it DELIVER. |
 | 98 | **An `ActionResult` envelope spread as if it were the payload — the form renders blank, and SAVING IT DESTROYS THE RECORD** | Root-caused 2026-09-14 from "the seller product editor opens blank", after a first hypothesis (`SellerProductShell.tsx:1338`'s `useState(initialValues ?? {status:"draft"})` fallback) was **disproven in source** — `initialValues` is never undefined. The real fault is one layer up and was repeated in **nine** pages. `getSellerProductAction` returns `ActionResult<T>` = `{ ok: true, data: T }`, and every seller edit page did `const product = await getSellerProductAction(id); if (!product) notFound();` — **an envelope is always truthy, so `notFound()` could never fire**, and the envelope was then spread into `initialValues`. Every real field resolves `undefined`, because `product.categorySlug` does not exist on `{ok,data}`. That is the blank form. **The destructive part is one line further down**: `status: product.status === "published" ? "published" : "draft"` evaluates `undefined === "published"` -> **`"draft"`**, so pressing Save writes draft over a live listing and removes it from every public surface. Confirmed by doing exactly that to a seeded published product during a tester run. **A correct sibling existed the whole time** — `prize-draws/[id]/entries/page.tsx` does `const product = result.ok ? result.data : null` — so this was nine copies of a mistake beside one copy of the fix, which is the tell that it was never a convention. **A second, masked bug rode along**: the same action gated ownership on `product.storeId !== user.uid`, comparing a store SLUG to an Auth UID — different namespaces by design (§ "Store Identity Architecture"), so it returned null for every non-admin seller. It was invisible only because bug one meant nobody read the value; fixing the unwrap alone would have turned all nine pages into hard 404s. appkit's own `sellerUpdateProduct` had the correct check 500 lines away **with a comment saying `storeId` is the slug** — the write path and the read path disagreed. **Both `as any` and `as unknown as X` are what let an envelope typecheck as a product; a cast at a boundary is where this class of bug lives** (same family as #57 and #70). |
 | 99 | **An SSR listing view that never reads `q` — the search box filters nothing, and `staleTime: Infinity` makes it permanent** | Found 2026-09-14 on `/stores`, then the identical omission on `/blog`. `StoresIndexPageView` read `sort`, `page` and `pageSize` and simply **never read `q`**, calling `listStores(model, true)` while `/api/stores` calls `listStores(model, true, { search: q })`. `BlogIndexPageView` was worse: it calls `listPublished`, which **had no search parameter at all**, while `blogGET` searches through a different method entirely (`listAll(model, { search })`). **Neither could self-correct on the client**, which is what makes this permanent rather than transient: both hand their result to the listing component as `initialData`, and every public listing hook sets `staleTime: Infinity` when given SSR data (Root Cause #30), so the unfiltered first paint is frozen for that query key and no refetch ever repairs it. **The symptom is invisible to a normal test**: a real search term returns plausible rows either way — measured, `/stores?q=zzzznope` returned two real store cards and no empty state. Only a nonsense control separates "filtering" from "returning everything". **Both are Root Cause #59's shape**: the blog API route's own header documents having already fixed this exact bug on its side (with a recorded control, `q=beyblade -> 6, q=zzzznope -> 0, no q -> 18`) and the SSR view that duplicates its job never got the back-port. Fixed by mirroring the API's call exactly for stores, and by giving `listPublished` the same `planSearchTxt` / `refineSearchTxt` push-down `listAll` already had — extending the method the view calls rather than swapping which method it calls, so ordering, page caps and index shape are unchanged. **When fixing a filter in an API route, grep for an SSR view that queries the same collection** — it is a second implementation, and it does not get the fix for free. |
+| 100 | **`orderBy` on an OPTIONAL field silently drops every document that lacks it — the query returns nothing and the endpoint answers 200** | Root-caused 2026-09-14 from `/api/stores/{slug}/reviews` returning `totalReviews: 0` for every store while **79 approved reviews** sat in Firestore. The route selected "the store's top 20 published products by `itemsSold`" and fanned out one review query per product. **0 of 95 products carry `itemsSold`** — nothing has ever written it — and Firestore's `orderBy` excludes a document that does not have the ordering field, exactly like the documented `!=` trap (§ Known TS Patterns: *"a Firestore inequality excludes every document that lacks the field"*). So the product query returned an empty array and therefore so did the endpoint. **Two layers hid it.** A missing composite index made the route 500 first, so the 500 was fixed (index declared + deployed) and the underlying zero-rows query was still there behind it — a fix that makes the symptom *better-shaped* rather than gone. And the remaining symptom was "this store has no reviews yet", which reads as a fact about the store rather than a defect; there is nothing to report. **Fixed by deleting the products hop entirely**: `ReviewDocument` carries `storeId`, so the store's reviews are one equality away — 21 queries become 1, and the average rating and distribution now cover the whole store instead of an arbitrary 20-product sample (those two numbers are what a buyer judges a seller on). **The rule: before ordering by a field, confirm every document HAS it.** An optional field in an `orderBy` is a silent `WHERE field IS NOT NULL`. Found alongside, same route: review search read `r.body`, and the stored field is `comment` — verified across all 79 documents, none has `body` — so searching a store's reviews never matched a word the reviewer wrote. |
+| 101 | **A schema that strips a field, plus a `mapDoc` that backfills it ON READ, equals a field that is never persisted and no query can see** | Root-caused 2026-09-14 while adding ancestor derivation. `ProductDocument.categorySlugs` is the FULL ancestor chain and is what every category page matches on (`array-contains-any`). But `productCreateSchema` declares only the scalar `category`, with no `.passthrough()`, so an inbound `categorySlugs` array is **stripped before it reaches Firestore** — and `ProductRepository.mapDoc` then backfills `categorySlugs = [category]` **on read**. That backfill is why nothing ever looked wrong in a debugger or a detail page: the field is present on every object anyone inspects. It is absent from the stored document, which is the only copy a query examines. So a listing created through the seller or admin UI was unreachable from its own leaf category AND from every ancestor. **It is LATENT, and that is the interesting part**: all 95 production products came from the seed, which hand-writes the chain, so a live-data check says 95/95 correct and the bug is invisible until a human creates a listing. CLAUDE.md had recorded only the *ancestor* half as an outstanding follow-up; the leaf half had never been noticed. **Fixed in `ProductRepository.create`/`update`** — the only two methods all ~14 write paths funnel through, because deriving at each call site is Root Cause #75's shape. **Two tells for this class**: a read-side normaliser (`mapDoc`, an adapter, a `??` default) that has no write-side counterpart; and a "verify against live data" result of 100% on a field whose only writer is the seed. |
+| 102 | **A nightly reconciler that CANNOT EXPRESS the distinction it is reconciling — it overwrites the live trigger's correct values every night** | Root-caused 2026-09-14 measuring category counts: **19 of 65 rows disagreed with a recount, every one low** (the root read 56 against a true 65). `categoriesRepository.setMetrics` took ONE pair of numbers and wrote it to both `metrics.productCount` (items filed directly under a row) and `metrics.totalProductCount` (own + every descendant) — so the nightly job could not represent the distinction `updateMetricsInBatch`, thirty lines above it, carefully maintains. On a leaf it was accidentally right; on an ancestor it wrote the descendant sum into both, losing that row's own items from its own rollup; on a row that is both leaf and ancestor `setMetrics` was called twice and last-write-won. A row whose last product was deleted was **never visited at all**, because the map was built from products that exist rather than from categories that exist. **Nothing errored, ever.** A wrong number is simply a number, and the job logged "reconciliation complete" with a count of rows it had updated. **Fixed** by giving `setMetrics` separate own/rollup arguments, seeding the tally from the CATEGORY list so empty rows reset, paginating instead of `.limit(1000)` (a truncated recount is indistinguishable from a correct one), skipping no-op writes, and logging `drifted` — which on a quiet day is now a real signal that the live trigger missed something. **Two general rules**: a reconciler must be able to represent every state the thing it reconciles can be in; and it must enumerate the ENTITIES, not the events, or it can only ever add. Found alongside: brand rows' `metrics.productCount` is read by `BrandDetailPageView` and had **no writer at all**. |
+| 103 | **A feature complete in every direction except the one that puts data in — the 501 that made every purchase deliver nothing** | Root-caused 2026-09-14. The digital-code pool at `products/{id}/codes` had a claim path (`claimDigitalCodeForOrder` at checkout), a reveal API, a refund-revocation path, an email, a buyer panel, seller list columns and an availability predicate. **It had no writer.** The one seller-facing route answered `501 "Digital code management is not implemented yet."`, with an honest comment explaining that inventing the data model there would be an unreviewed design decision — so the pool was empty in every environment, always. Consequence: every digital-code purchase hit `serverLogger.warn("code pool exhausted")`, **returned silently**, completed the order normally, and left the buyer's reveal panel answering 404. The seller form's "Code Pool Size" field made the listing page advertise stock that had never existed. `digitalCode.codesAvailable` had no writer either — the claim flips a code to `claimed` and never decremented it — so the availability predicate that reads it could not notice a sell-out. And `CodeRevealPanel`'s `redemptionInstructions` prop was passed by **neither** of its two mount sites, so that branch was dead code. **The tell is a subcollection with readers and no writers** — greppable, and worth doing for any collection whose UI shows a count. **The access decision is the durable part**: delivered assets must never reach `/api/media/[...slug]`, which applies NO authentication and sits over a bucket whose storage rule is `allow read: if true`, while media filenames here are content-derived and therefore guessable. See § "Digital Content Delivery". |
 
 
 ---
@@ -2020,6 +2033,84 @@ An unpaid buyout lapses to **`cancelled`**, not `forfeited`, and the seller is d
 **The three add-on `*FeeEnabled` flags default to `true`** (schema, seed, and `CHECKOUT_DEFAULT_COMMISSIONS`, which mirrors them). `undefined` still means **disabled** everywhere, matching the four `compute*Fee` helpers — do not add an `undefined → true` default on the client, or the buyer gets a checkbox that bills ₹0. Changing the defaults does not touch an existing `siteSettings/global` document: an install that predates this enables them once at Admin → Site Settings → Commissions.
 
 **`usePricingPreview` returns a `status`, and `null` is not a total.** An empty lane comes back as a fully-zeroed but **truthy** `EMPTY_PRICING_PREVIEW`, so `preview ? preview.total : fallback` rendered a confident ₹0.00 for it. Gate on `status === "ready" && preview.stores.length > 0`; `status === "error"` keeps the last good figures and surfaces `errorNote` rather than blanking to zero.
+
+---
+
+## Digital Content Delivery
+
+> Added 2026-09-14 (Root Cause #103). A `digital-code` listing delivers digital
+> CONTENT — a redemption string is only its commonest shape. Read this before
+> touching `products/{id}/codes`, the reveal API, or anything that serves bytes
+> a buyer paid for.
+
+`ProductCodeDocument.contentKind` is `"code" | "image" | "file"`, **absent means
+`"code"`**, so every document written before this existed keeps its meaning and
+no migration was needed.
+
+| | Where |
+|---|---|
+| Pool (read/add/remove) | `_internal/server/features/digital-code/pool.ts` → `POST/GET/DELETE /api/store/products/[id]/codes` |
+| Upload (sign / finalize) | `…/digital-code/upload.ts` → `POST /api/store/products/[id]/codes/upload` |
+| Download | `…/digital-code/download.ts` → `GET /api/orders/[id]/code/asset` |
+| Seller UI | `<DigitalContentPoolManager>`, mounted by `SellerProductShell` in **edit mode only** |
+
+### 🛑 A delivered asset must NEVER reach `/api/media/[...slug]`
+
+Two facts, either of which alone is disqualifying:
+
+1. `storage.rules` is `allow read: if true` for **every object in the bucket**.
+   That is fine — the rules are a safety net and all real access goes through
+   the Admin SDK — but Storage itself protects nothing.
+2. `GET /api/media/[...slug]` applies **no authentication at all**. It is a bare
+   exported handler with no session read, deliberately, because its job is to
+   serve public product photography through a watermarker. It also resolves
+   legacy multi-segment slugs as raw storage paths.
+
+And media filenames in this codebase are **content-derived, therefore
+guessable** (§ Media Filename Slug Patterns). A purchased QR living there is a
+paid good at a predictable public URL.
+
+So the bytes live under **`private/digital-content/{productId}/{uuid}-{name}`**,
+mint **no `mediaAssets` row** — the row *is* the `/media/{shortId}` slug, so no
+row means no public URL — and carry a **random** object name, against the
+SEO-slug convention used everywhere else, precisely because guessable is the one
+property a paid good must not have.
+
+`assetPath` is a raw Storage path and **is never returned by any API**, including
+the reveal. The reveal returns a `downloadUrl` pointing at the authenticated
+route, which re-checks ownership on every hit.
+
+### The access model
+
+| Asset | Upload | Read |
+|---|---|---|
+| images / video in the catalogue | seller / admin, as today | anyone |
+| a QR **image** on a listing | seller or staff | **the buyer of that order**, or staff |
+| any **other file** | **staff only** | **the buyer of that order**, or staff |
+
+The upload split is checked at **both** `sign` and `finalize`, or finalize is an
+unguarded second door onto the same path. Read is a different axis entirely:
+whoever may upload, only the buyer who paid (or staff, for support) may
+download — "admin-only" as an absolute would lock a buyer out of their own
+purchase.
+
+`Content-Disposition: attachment` **always**, even for an image where `inline`
+would be friendlier: magic bytes prove what a file IS, not that rendering it is
+safe, and an HTML document served inline from this origin is stored XSS against
+a signed-in buyer. Plus `nosniff`, and `private, no-store` because the URL is
+identical for every caller and only the session distinguishes them.
+
+The declared MIME is not evidence — `finalize` verifies magic bytes and
+**deletes** the object on a mismatch. Video is refused outright: per-download
+egress on a 50 MB file is a different product with different economics.
+
+### Both counters are DERIVED, never typed
+
+`digitalCode.codesAvailable` and `codePoolSize` are recomputed from the
+subcollection by `recountPool()` on every add, remove and claim. The seller form
+lets a human type a pool size, so treating that number as authoritative is how a
+listing advertises stock that does not exist — which is exactly what it did for
+the entire time the pool had no writer.
 
 ---
 
@@ -2784,6 +2875,45 @@ because `tester/` is a submodule that ships via pointer bumps and an un-ignored
 credential there is one `git add -A` from being published. `loadEnvLocal()` reads
 the consumer `.env.local` first and then `tester/.env`, preserving its existing
 contract that anything already in `process.env` wins.
+
+### 🛑 A run that covered half the catalogue must SAY half
+
+Two mechanisms, both added 2026-09-14 after run-1789300124915 recorded 103
+batches and reported exactly that — while **ten of fourteen groups had zero
+coverage** (527 cases, including all 233 admin ones), because it stopped at
+phase 17 of 34. Every number in that report was true and the run read as
+broadly complete; its operator spent several turns hunting a permissions bug
+that did not exist.
+
+- **`catalogue.json`**, written by `fetch-cases` **before any filter**: every
+  group, its pages, its batch keys and its case count. The report's
+  "Coverage by group" table and the `--finish` gate's "never opened" list are
+  both computed against it. 🛑 It must **never** fall back to `scope.json` —
+  scope is what the run ASKED FOR, so a phase-scoped run would show 100% of its
+  own scope while whole groups sat untouched. With no manifest the table is
+  omitted and says so.
+- The percentage is **case-based**, not batch-based. A page chunks (`--p01`) and
+  slices by identity (`--guest`/`--admin`) at run time, so batches-run routinely
+  exceeds pages-in-catalogue — 55 against 17 on `buying`, which first rendered
+  as "324% covered". A number over 100 tells the reader the denominator is
+  wrong, and then the 0% rows beside it stop being believed.
+- 🛑 Enumerate groups from the **catalogue**, never from `seed-data/authored/*.ts`
+  filenames: `money-flows` lives in `_money-flows.ts`, so an underscore filter
+  skips it — which is how nine zero-coverage groups got reported when there were
+  ten.
+
+**Phases interleave across groups.** `assignDefaultPhases` round-robins pages,
+largest group first within each round. It used to pack in catalogue order, which
+made a group's phase number an accident of where its `...group(...)` spread sat
+in a 6,200-line literal — `admin` landed at 25–32, so any short run lost it
+whole. Simulated against the real catalogue: a half-run now touches **all 14
+groups** (was 4). Takes effect on the next reseed.
+
+**Resume by computing, not remembering.** `--phase from:N` runs N onward;
+`--resume-from-here` derives N from the verdict files — the same source the
+report counts from — as the first phase with any unrecorded batch. "Every one of
+its batches" is load-bearing: a phase with 6 of 7 recorded is not done, and
+skipping it would be permanent.
 
 ### Verdicts and calibration
 
