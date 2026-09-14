@@ -367,6 +367,23 @@ it is set to 180 in `next.config.js`.
 
 > The Firebase-side equivalent of Rule #6's Vercel table. This project runs on the **Blaze** (pay-as-you-go) plan — required for Cloud Functions — but stays within Blaze's *included free quota* wherever practical, since this is a low-traffic hobby/demo site, not a funded business. "Free" below means "covered by the standing Google Cloud free tier that persists on Blaze," not Spark-only limits.
 
+### 🛑 ALL scheduled work is a Firebase scheduled function. No Vercel crons.
+
+`vercel.json` has **no `crons` key**, there is no `/api/cron*` route and no
+`CRON_SECRET` — verified 2026-09-14 — and it stays that way. Every recurring job
+is one of the 28 entries in
+[`scheduled.ts`](appkit/src/_internal/server/functions/scheduled.ts).
+
+Why, beyond preference: a Vercel cron is a **billed function invocation on the
+Hobby quota** that Rule #6 exists to protect, and it is capped at that plan's
+sync-function ceilings — the 10s timeout and 2048 MB that make every heavy job
+here belong in `functions/` in the first place. Splitting the schedule across two
+providers would also mean two places to look when something did not run, and the
+one you check first is always the wrong one.
+
+Adding a recurring job means adding a `defineFunction({ trigger: { kind:
+"schedule" } })`, nothing else.
+
 | Resource | Free tier ceiling | Current usage | Implication |
 |---|---|---|---|
 | Cloud Functions invocations | 2,000,000 / month | Scheduled-function traffic alone is ~50–60K/month across all cron jobs (see inventory below) — nowhere close to the ceiling even before counting real user-triggered invocations. | Not a cost risk at this traffic level. Don't add unbounded per-request Functions triggers (e.g. a Firestore trigger that fires on every write of a hot collection) without checking this stays true. |
