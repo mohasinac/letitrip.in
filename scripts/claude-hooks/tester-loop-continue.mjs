@@ -154,10 +154,17 @@ const planStep = String(state.planStep ?? "");
 const planSteps = Array.isArray(state.planSteps) ? state.planSteps.map(String) : [];
 const planPath = String(state.planPath ?? "tester/.tester-runs/plan-snapshot.md");
 
-const testerModeUsable = Boolean(runId) && Number.isFinite(nextPhase) && nextPhase >= 1;
+/*
+ * A runId is the only requirement now. `nextPhase` used to be part of this gate,
+ * back when the loop counted phases and the assistant hand-incremented one after
+ * each. Batches are worked in-session one at a time, so "what is left" is read
+ * from the run itself — see outstandingBatches() — and a phase number is neither
+ * needed nor trustworthy.
+ */
+const testerModeUsable = Boolean(runId);
 
 if (mode === "tester" && !testerModeUsable) {
-  standDown("tester loop: state file has no usable runId/nextPhase — standing down.");
+  standDown("tester loop: state file has no runId — standing down.");
 }
 if ((mode === "plan" || mode === "both") && !planStep) {
   standDown(`tester loop: mode "${mode}" but no planStep in the state file — standing down.`);
@@ -325,15 +332,154 @@ if (mode === "plan") {
   planContinue();
 }
 
-/* ── Finished? ─────────────────────────────────────────────────────────────── */
-if (nextPhase > totalPhases) {
-  refreshPhaseStatus();
+/* ── What is still pending? ──────────────────────────────────────────────────
+ *
+ * The loop's whole job is "do not end the turn while cases are pending", so the
+ * gate has to be PENDING CASES — not a phase counter that someone increments by
+ * hand and that says nothing about whether a batch actually recorded.
+ *
+ * Delegated to `next-batch.mjs` rather than reimplemented here, because that
+ * script already owns the definition of "recorded", and it is deliberately
+ * stricter than "a verdict file exists": the file must parse AND its verdict ids
+ * must cover every case in the batch. Two copies of that rule would drift, and
+ * the copy that drifted would be the one silently skipping batches.
+ *
+ * It spawns nothing (that is its stated purpose), so calling it from a hook that
+ * runs every turn costs one short node process and carries no session risk.
+ */
+function outstandingBatches() {
+  const r = spawnSync(
+    process.execPath,
+    ["tester/scripts/next-batch.mjs", "--run", runId, "--all"],
+    { cwd: REPO, encoding: "utf8", timeout: 60_000 },
+  );
+  /*
+   * stdout is one batch key per line and nothing else — next-batch.mjs sends all
+   * commentary to stderr for exactly this reason.
+   *
+   * Matched on SHAPE (`group/page`, optionally `--guest`/`--p02`, optionally the
+   * `[has fixtures]` marker) rather than by skipping known prefixes. The prefix
+   * approach is what broke this: the "nothing outstanding" hint line
+   * `node tester/scripts/record-verdicts.mjs …` has no ✓, so it counted as a
+   * pending batch and a finished run could never release the loop. A positive
+   * shape test cannot be fooled by a line nobody anticipated.
+   */
+  const keys = String(r.stdout ?? "")
+    .split("\n")
+    .map((l) => l.trim().replace(/\s*\[has fixtures\]\s*$/, ""))
+    .filter((l) => /^[a-z0-9-]+\/[a-z0-9-]+(--[a-z0-9]+)*$/.test(l));
+  return { keys, failed: r.status !== 0 && keys.length === 0, stderr: String(r.stderr ?? "") };
+}
+
+const pending = outstandingBatches();
+
+/*
+ * ── The SECOND half of the loop's job: a fix cycle every N batches ───────────
+ *
+ * "Finish every batch" alone produces a run that discovers fifty bugs and ships
+ * none of them, and every batch after the first keeps retesting a known-broken
+ * build. So the gate is BOTH: do not end the turn while cases are pending, and
+ * do not keep testing while findings are unshipped.
+ *
+ * `recorded` is DERIVED — total scope minus what next-batch still lists — never
+ * a counter anyone increments. A hand-maintained counter is precisely what the
+ * old `nextPhase` bookkeeping got wrong: it drifted from the verdicts it claimed
+ * to describe, and nothing reported the drift.
+ *
+ * `lastFixAtRecorded` is the only stored half, and it moves exactly once per
+ * cycle — when the fixes are shipped and re-verified.
+ */
+function scopeTotal() {
+  try {
+    const p = resolve(REPO, "tester/.tester-runs", runId, "scope.json");
+    return (JSON.parse(readFileSync(p, "utf8")).batches ?? []).length;
+  } catch {
+    return 0;
+  }
+}
+
+const fixCycleEvery = Number(state.fixCycleEvery ?? 5);
+const lastFixAtRecorded = Number(state.lastFixAtRecorded ?? 0);
+const recorded = Math.max(0, scopeTotal() - pending.keys.length);
+const sinceLastFix = recorded - lastFixAtRecorded;
+/*
+ * Due on the cadence — OR at the end of the run with anything at all unfixed.
+ *
+ * The second half is not a detail. Without it a run whose last batches land
+ * mid-cadence (say 2 short of 5) stands down with those findings never triaged
+ * and never shipped: the cadence says "not yet", and then there is no "later".
+ * Caught by writing the expected exit code for that state before the code.
+ */
+const fixCycleDue =
+  fixCycleEvery > 0 &&
+  (sinceLastFix >= fixCycleEvery || (pending.keys.length === 0 && sinceLastFix > 0));
+
+/*
+ * A scope we cannot read is NOT "nothing left to do". Standing down here would
+ * silently end the run on a typo'd runId or a missing manifest, which reads
+ * exactly like success. Block and say so instead.
+ */
+if (pending.failed) {
+  bump({ blocked: null });
+  blockWith(
+    `▶ TESTER LOOP — could not determine what is pending for run ${runId}.\n\n` +
+      `  next-batch.mjs did not return a batch list. That is NOT the same as\n` +
+      `  "the run is finished" — fix it before ending the turn.\n\n` +
+      (pending.stderr ? pending.stderr.trim().split("\n").map((l) => "    " + l).join("\n") + "\n\n" : "") +
+      `    node tester/scripts/next-batch.mjs --run ${runId} --all\n\n` +
+      `  Off switch: set active:false in ${STATE}.\n`,
+  );
+}
+
+/* ── Finished? ───────────────────────────────────────────────────────────────
+ *
+ * Only once the LAST fix cycle has been run. Standing down with findings still
+ * unshipped would end the run on exactly the work it exists to produce.
+ */
+if (pending.keys.length === 0 && !fixCycleDue) {
   standDown(
-    `✓ tester loop: all ${totalPhases} phases are done.\n` +
+    `✓ tester loop: every batch in run ${runId} has recorded verdicts.\n` +
       `  Run the final gate, then set active:false in ${STATE}:\n` +
       `    node tester/scripts/record-verdicts.mjs --run ${runId} --finish\n` +
-      `  It must write a report WITHOUT --force-report. Anything less means a batch never recorded.\n` +
-      `  ${PHASE_STATUS} has been refreshed one last time.`,
+      `  It must write a report WITHOUT --force-report. Anything less means a batch never recorded.`,
+  );
+}
+
+/* ── Fix cycle due? ────────────────────────────────────────────────────────── */
+if (fixCycleDue) {
+  bump({ blocked: null });
+  blockWith(
+    `▶ FIX CYCLE DUE — run ${runId} · ${recorded} batch(es) recorded, ${sinceLastFix} since the last fix\n` +
+      `\n` +
+      `  Do NOT test another batch. ${pending.keys.length} remain, and they will keep\n` +
+      `  re-finding whatever is already broken until it ships.\n` +
+      `\n` +
+      `  1. Collect this cycle's failures:\n` +
+      `       node scripts/triage-findings.mjs --run ${runId} --out docs/TRIAGE-${runId}.md\n` +
+      `\n` +
+      `  2. ROOT-CAUSE each one to a file and line — not a symptom. RE-VERIFY it\n` +
+      `     against live production first (Rule #4): a route that 404s in a report\n` +
+      `     is usually the report.\n` +
+      `\n` +
+      `  3. Fix it. Add the audit or the tester case if the class can recur.\n` +
+      `\n` +
+      `  4. npm run check must exit 0.\n` +
+      `\n` +
+      `  5. SHIP what the fix needs:\n` +
+      `       src/ only        → node scripts/deploy.mjs\n` +
+      `       appkit/          → commit, bump, build, npm publish, POLL npm until\n` +
+      `                          installable (4-7 min is propagation, NOT a failed\n` +
+      `                          publish — never republish), repin, rebuild\n` +
+      `                          functions/lib, then deploy\n` +
+      `       function/trigger → FUNCTIONS_DISCOVERY_TIMEOUT=120 npm run firebase deploy -- --only functions\n` +
+      `\n` +
+      `  6. RE-DRIVE the failed case against production and confirm it now passes.\n` +
+      `     A fix nobody re-tested is a hypothesis.\n` +
+      `\n` +
+      `  7. Then, and only then, set lastFixAtRecorded=${recorded} in ${STATE}.\n` +
+      `     That marker is what releases this gate — nothing else advances it.\n` +
+      `\n` +
+      `  Off switch: set active:false in the state file, or delete it.\n`,
   );
 }
 
@@ -453,42 +599,45 @@ if (blocked) {
 bump({ blocked: null });
 const statusFresh = refreshPhaseStatus();
 
+const nextKey = pending.keys[0];
+
 blockWith(
-  `▶ TESTER LOOP ACTIVE — run ${runId}, phase ${nextPhase} of ${totalPhases} (continuation ${continuations + 1})\n` +
+  `▶ TESTER LOOP ACTIVE — run ${runId} · ${pending.keys.length} batch(es) PENDING (continuation ${continuations + 1})\n` +
     `\n` +
-    `  Do NOT end the turn. The loop is not finished.\n` +
+    `  Do NOT end the turn. Cases are still pending.\n` +
+    `\n` +
+    `  NEXT BATCH:  ${nextKey}\n` +
     `\n` +
     `  1. Health gate (FATAL — if it exits 1, set blocked:"firestore-quota" in the\n` +
     `     state file and wait; do not test):\n` +
     `       node tester/scripts/verify-prod-health.mjs\n` +
     `\n` +
-    `  2. Work the NEXT BATCH YOURSELF, in THIS session. There is no runner to\n` +
-    `     call: run.mjs / pool.mjs / sweep.mjs were deleted 2026-09-14 because\n` +
-    `     each spawned one headless Claude session per batch (~300 in one day).\n` +
+    `  2. Work that batch YOURSELF, in THIS session. There is no runner to call:\n` +
+    `     run.mjs / pool.mjs / sweep.mjs were deleted 2026-09-14 because each\n` +
+    `     spawned one headless Claude session per batch (~300 in one day).\n` +
     `     Nothing under tester/scripts/ may spawn the claude binary again.\n` +
-    `       node tester/scripts/next-batch.mjs --run ${runId}\n` +
-    `       node tester/scripts/fetch-cases.mjs --run ${runId} --page <key> --out <file>\n` +
-    `       node tester/scripts/seed-batch-fixtures.mjs --batch <key>     # if it has one\n` +
-    `     then drive the browser HERE via the tester:run-tests skill and the\n` +
-    `     Playwright MCP, and record:\n` +
+    `       node tester/scripts/fetch-cases.mjs --run ${runId} --page ${nextKey ?? "<key>"} --out <file>\n` +
+    `       node tester/scripts/seed-batch-fixtures.mjs --batch ${nextKey ?? "<key>"}   # if it has one\n` +
+    `     then drive the browser HERE with the Playwright MCP, and record:\n` +
     `       node tester/scripts/record-verdicts.mjs --run ${runId} --batch <f> --verdicts <f>\n` +
-    `       node tester/scripts/seed-batch-fixtures.mjs --batch <key> --teardown\n` +
+    `       node tester/scripts/seed-batch-fixtures.mjs --batch ${nextKey ?? "<key>"} --teardown\n` +
     `\n` +
-    `  3. Triage by ROOT CAUSE, not per symptom:\n` +
-    `       node scripts/triage-findings.mjs --run ${runId} --out docs/TRIAGE-${runId}.md\n` +
+    `     🛑 The INSTALLED plugin copy is stale — its SKILL.md predates this flow and\n` +
+    `     its scripts/ still contains the deleted harness. Read the repo's\n` +
+    `     tester/skills/run-tests/SKILL.md for the procedure; do not invoke the skill.\n` +
+    `\n` +
+    `  3. A verdict is yes / no / null. "null — could not test" is FIRST CLASS and is\n` +
+    `     always better than a guess: a fabricated pass is a false green on a case a\n` +
+    `     human would otherwise have run. Every "no" cites evidence.\n` +
     `\n` +
     `  4. RE-VERIFY each failure against live production BEFORE fixing it (Rule #4).\n` +
     `     A route that exists in source but 404s in a report is usually the report.\n` +
     `\n` +
-    `  5. AT THE END OF THE PHASE, write the status — both halves:\n` +
-    `       node scripts/build-phase-status.mjs        # counted; ${PHASE_STATUS}\n` +
-    `     then append this phase's NARRATIVE to docs/TESTING-STATUS-${runId}.md:\n` +
-    `       what broke and why it matters, which blocked answers were rig vs product,\n` +
-    `       and any case-text defect found. The script counts answers; only you can\n` +
-    `       say which of them mattered. Do not retype the numbers — cite the file.\n` +
+    `  5. Triage by ROOT CAUSE, not per symptom:\n` +
+    `       node scripts/triage-findings.mjs --run ${runId} --out docs/TRIAGE-${runId}.md\n` +
     `\n` +
-    `  6. Fix the confirmed ones, npm run check, commit. Then set nextPhase=${nextPhase + 1}\n` +
-    `     in ${STATE}.\n` +
+    `  Nothing to hand-increment: this loop ends when every batch in scope.json has\n` +
+    `  recorded verdicts, and it recomputes that each turn.\n` +
     `\n` +
     (healthLine ? healthLine + "\n" : "") +
     `  Progress: ${consolidatedCount()} batch rows consolidated\n` +
