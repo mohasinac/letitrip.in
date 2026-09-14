@@ -41,7 +41,19 @@ export default async function Page({ params }: Props) {
     title: (product as any).title,
     slug: (product as any).slug,
     description: (product as any).description,
-    category: (product as any).categorySlug ?? (product as any).category,
+    /*
+     * 🛑 `categorySlug` (singular) IS NOT A FIELD on ProductDocument — the real
+     * one is `categorySlugs: string[]`, whose FIRST entry is the leaf. This read
+     * therefore always yielded undefined and fell through to the @deprecated
+     * `category` scalar; for any product written by the seed, the catalogue
+     * promoter or an admin PATCH (all of which write `categorySlugs` and may
+     * omit `category`) BOTH sides were undefined, so the edit form opened with
+     * an empty Category — and saving that blank re-submitted it. Same family as
+     * the ActionResult envelope bug these nine files carried (Root Cause #98):
+     * a form that silently loses the field it was opened to edit.
+     */
+    category:
+      (product as any).categorySlugs?.[0] ?? (product as any).category,
     brand: (product as any).brandSlug ?? (product as any).brand,
     condition: (product as any).condition,
     tags: (product as any).tags,
