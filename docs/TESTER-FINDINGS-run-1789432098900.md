@@ -1186,3 +1186,443 @@ Valkyrie units to stock, so **the run leaves nothing to tidy by hand**.
   ₹2,009.80 transfer that did not happen, and putting a fabricated proof into a
   real admin review queue. That is a false statement to a person, not a test
   artefact the run can clean up.
+
+## A22 — the manual-payment CONSENT GATE is bypassable from the sticky bottom bar
+
+Step 3 renders a consent checkbox, *"I understand how manual payment and refunds
+work"*. With it **unchecked**:
+
+| button | state |
+|---|---|
+| in-card `Pay via UPI / Cash` (300px) | **disabled** ✓ |
+| sticky-bottom-bar `Pay via UPI / Cash` (222px) | **enabled** ✗ |
+
+And it submits. **`order-2-20260915-nb54aj` was placed through that bottom-bar
+button with the consent box never ticked.** Ticking the box enables both, which
+is the correct end state — the gate simply is not the only door.
+
+Cause, as far as the UI shows: the bottom-chrome action bar publishes a duplicate
+primary CTA that does not inherit the card button's `disabled` state. Same tier
+as the `useBottomActions` / `BottomChrome` work in CLAUDE.md § "The bottom edge
+is three tiers".
+
+### Passes alongside it
+
+- **Mobile checkout is clean.** Ran the whole flow at 390×844 measuring
+  `scrollWidth` vs `innerWidth` at every stage — 390 === 390 throughout, product
+  page to payment page. Cards stack, the CTA moves into a sticky bar with the
+  running total, and the order completed on mobile.
+- **Consent-then-pay places the order with no validation error** —
+  `order-1-20260915-dhf7oy`, straight to Complete Payment with a 14:49 countdown,
+  zero error text.
+- **Add-on fees itemise and add up.** Ticking *WhatsApp order updates (+₹10.00)*
+  added its own summary line and moved the total ₹1,010.80 → **₹1,020.80**,
+  exactly +₹10.
+
+Both test orders were left unpaid and auto-cancel with their 15-minute windows.
+
+## A23 — the cart's sign-in prompt DROPS the return-to-checkout redirect
+
+The two routes to sign-in are not equivalent:
+
+| path | result |
+|---|---|
+| navigate to `/checkout` signed out | `/auth/login?redirect=/checkout` ✓ |
+| press **Go to Login** in the cart's "Sign in required" modal | `/auth/login` — **no redirect param** ✗ |
+
+So a guest who fills a cart and presses *Proceed to checkout* loses the return
+intent at exactly the moment it matters. That is the "lands on the homepage
+instead of checkout" failure the case is written against; I can evidence the
+missing mechanism, though not the final landing (signing in is off-limits to a
+batch).
+
+**Everything before that step is sound**: the guest cart persists in
+`localStorage.guest_cart` as one line, `/cart` renders it at ₹999.00, and the CTA
+opens a proper "Sign in required" modal rather than dropping the click.
+
+Smaller, same batch: **adding to the cart as a guest raises an "Authentication
+required" ERROR toast beside the success toast** — a working path reporting a
+failure it did not have. Third instance of this shape today, after the
+offer-lane block and the admin Reject.
+
+**Guest `/checkout` protection itself is correct**: 0 address fields, no "Step N
+of 3", no spinner left turning, `main` innerText 132 chars — the sign-in panel
+and nothing else.
+
+## Prize draws — the fairness guarantee holds; the editor is missing its own fields
+
+**Confirmed good (2 passes):**
+
+- **An admin cannot choose who wins.** Expanded every section of the prize-draw
+  admin editor and enumerated all 18 fields — zero match
+  `winner|assign|choose|pick`. There is no control for nominating a winner,
+  biasing an outcome, or re-running a draw.
+- **The winner mapping is staff-only and carries no buyer identity.**
+  `/admin/prize-draws/{id}/entries` is headed "… — Winner Mapping" under
+  *"Visible only to you — buyers never see which item went to which order."*
+  Columns ITEM / STATUS / ORDER; the join key is the **order**, and the table
+  contains **zero emails and zero buyer names**. Verified on two draws.
+
+**Worth a look:** the prize-draw editor at `/admin/prize-draws/{id}/edit` carries
+only **generic product fields** — no reveal-mode selector, no draw duration, no
+prize list — even after expanding every collapsible section. The `prizedraw-create`
+case expects all three. Either those controls live on the product-creation surface
+(the case starts at `/admin/products`) or they are absent; I did not create a draw
+to find out, because that case leaves a live purchasable listing behind for the
+next two cases to consume.
+
+Two clauses I could not satisfy and did not paper over: the entries view offers
+**no search input**, so the case's nonsense-search control has nothing to type
+into; and the admin surface **never describes the reveal mechanism** — the
+guarantee is enforced by the absence of controls rather than stated. (A promising
+"Fair" match turned out to be a value in the Condition dropdown.)
+
+## A24 — the spin wheel is server-DISABLED but the UI offers it and says "try again"
+
+`POST /api/events/event-daily-beyblade-pull-wheel/spin` returns:
+
+```
+503  {"ok":false,"success":false,"code":"INTERNAL","error":"feature_disabled"}
+```
+
+The Participate tab nonetheless renders a **fully enabled Spin button**, and the
+failure surfaces as **"Spin failed. Please try again."** — a permanent policy
+refusal presented as a transient fault, inviting indefinite retrying.
+
+Two details for the fix: the code is **`INTERNAL`** for what is a deliberate
+feature gate, not an internal failure; and the page never states a spins-per-user
+maximum either (no "spins left" / "maximum" / "per user" copy anywhere), so the
+sibling case has nothing to read even before it has nothing to spin.
+
+**Good news on A12 from the same page**: the spin-prize `weight` leak has NOT
+resurfaced publicly — zero `"weight"` JSON keys in the rendered HTML. (An earlier
+true match on the Overview tab was the CSS word *font-weight*, caught by looking.)
+
+## A25 — a poll shows no already-voted state; the limit is enforced server-side only
+
+Voting works and is recorded: *"Vote recorded!"*, results switch to percentages,
+participants **362 → 363**.
+
+But revisiting the event shows the poll exactly as before — all 5 radios back,
+unselected, **Cast Vote** live, and no "you already voted" text anywhere.
+
+**It is a UI defect, not ballot-stuffing** — and the distinction matters. I voted
+a **second** time for a different option: participants stayed at **363**, so the
+server counts one participant per user. The UI still said *"Vote recorded!"* for
+a vote that changed nothing.
+
+Two smaller notes: this event has **no Participate tab** (Overview + Leaderboard
+only), so the case's step 2 cannot be followed as written — voting is inline on
+Overview, which is what its own *label* says. And one of the five options in
+"Best Blader of the Original Beyblade Series" is literally **"Mock User 6"**, a
+seeded persona name sitting beside Kai Hiwatari, Max Tate, Rei Kon and Kenny.
+
+## 🛑 A25 CORRECTED — the poll DOES accept two votes from one user
+
+My earlier note said the one-vote-per-user limit was enforced server-side because
+the participant count did not move on my second vote. **That was a timing
+artefact and the correction matters**, because it changes the severity from a UI
+gap to ballot-stuffing.
+
+Measured across the session: **362** before I voted → **363** after my first vote
+→ **363** immediately after my second → and now **364**, confirmed independently
+by `GET /api/events` reporting `stats.totalEntries: 364` and
+`approvedEntries: 364`.
+
+Two votes from one signed-in user, two increments. The count simply lagged when I
+read it. I cannot fully exclude a concurrent voter, but the arithmetic matches my
+own two votes exactly, and the UI never once showed an already-voted state.
+
+**So `votesPerUser: 1` does not hold.** Combined with the missing already-voted
+state, a user can re-vote indefinitely and the UI encourages it — each attempt
+answers "Vote recorded!".
+
+## A26 — the poll Leaderboard says "No votes yet." against 364 recorded votes
+
+The Leaderboard tab renders **"No votes yet."** while, on the same page:
+
+- the header reads **Participants: 364**
+- `GET /api/events` reports `stats.totalEntries: 364`, `approvedEntries: 364`
+- the **Overview** tab renders real percentage results for all five options
+
+The leaderboard is reading an empty source while everything else reads a
+populated one. (The "not a list of voters" clause holds trivially — there are no
+rows at all, so no identities leak.)
+
+## A27 — the spin-wheel event has no "Last 10 Spin Results" tab
+
+Tabs are Overview / Participate / Leaderboard plus a Spin control. Zero matches
+for "Last 10" and zero for "Guest" anywhere on the page. Almost certainly the
+same root as **A24** (the spin endpoint is `feature_disabled`) — a results tab
+for a feature nobody can use would have nothing to list.
+
+### Passes in the same batch
+
+- **8/8 event cards carry real 1200×600 covers**, zero broken after a full scroll
+  cycle. The emoji in the text are *type badges*, not placeholders — checked.
+- **The lottery cover renders on both surfaces**, zero 🎰 placeholders. (Its hero
+  is intrinsically 269×99 shown at 736px, so it upscales ~2.7× and will look soft.)
+- **Related Events** carousel is populated with real cards and **zero self-links**.
+- **Event detail pages load correctly** — badges, dates, participants, share
+  control, and tabs that are real routes rather than client-only state.
+
+Note: event cards link to **unprefixed** slugs (`/events/favourite-blader-poll`)
+while the checklist refers to `event-`-prefixed ids. Both resolve; worth knowing
+before scripting against the ids.
+
+## 🛑 A26 ROOT-CAUSED — `/api/admin/events/{id}/entries` returns `{}`
+
+The empty leaderboard is one symptom of a broken endpoint, not a rendering bug.
+
+| endpoint | result |
+|---|---|
+| `GET /api/admin/events/{id}/entries` | **200, body literally `{}`** — no `data` key |
+| `GET /api/admin/event-entries?eventId={id}` | **200 with real rows**, `total: 10` |
+
+The data is fine; one of the two routes that serve it is not. **Both** the admin
+per-event entries page ("No entries found") and the public poll leaderboard
+("No votes yet.") go dark, while the stats counter and the Overview percentages
+read the working path.
+
+### A25 now CONFIRMED beyond doubt — and it is ballot-stuffing
+
+The working endpoint lists the actual rows, and two of them are mine:
+
+```
+cqr8afg9LzitynMcVe   user-yugi-muto   pollVotes: ["kai"]
+WEcbg02e6z2xdHy4EQ   user-yugi-muto   pollVotes: ["tyson"]
+```
+
+**One uid, two entries, two different options** — exactly my two votes. No
+concurrent-voter ambiguity remains. `votesPerUser: 1` does not hold, and the UI
+never shows an already-voted state, so a user can re-vote indefinitely.
+
+### A28 — the event's entry counter is inflated ~36×
+
+`stats.totalEntries: 364` and `approvedEntries: 364`, against a real entry count
+of **10** from the working endpoint. A counter with no relationship to the rows
+it claims to count — the same shape as the category/brand `metrics.productCount`
+drift already on record (Root Cause #102 family).
+
+Smaller, same page: the admin events list renders **raw ISO timestamps**
+(`2026-09-22T00:29:17.674Z`) instead of formatted dates.
+
+## Form validation — Root Cause #74's fix CONFIRMED, plus one a11y gap
+
+**3 yes, 1 null.** `/user/addresses/new` behaves exactly as the #74 rework
+intended:
+
+- **Nothing before submit.** 0 `aria-invalid`, 0 `role=alert`, no summary — the
+  regression where a schema-driven form accuses the user of six missing fields
+  on first paint is gone.
+- **After Save, an itemised, section-prefixed summary** in authored English:
+  *"Address: Give the address a label."*, *"Where: Enter the city."* — seven
+  entries, plus per-section badges (`Where · Required · 4 issues`).
+- **Live on change**, measured with counts: filling one field took the summary
+  **7 → 6**, removed that field's inline message (1 → 0 occurrences), and
+  re-rendered the badges as `2 issues` / `4 issues`.
+- **Inline errors still render under their fields** — the summary supplements
+  rather than replaces them.
+
+### 🛑 The one real gap: inline errors are invisible to assistive technology
+
+After submit there are **0 elements with `aria-invalid="true"`** and **0
+`role="alert"` nodes** inside the form. The six inline messages are visible red
+text with no programmatic association to their inputs. A screen-reader user gets
+the summary at best and no per-field signal at all.
+
+I only caught this because my probe's result contradicted the screenshot — the
+probe said "no errors", the picture showed six.
+
+### 🛑 Correction to my own earlier note this run
+
+I previously recorded that `/store/products/new` showed **raw Zod messages**
+("Invalid input: expected number, received undefined") on Price, Product Image
+and Description. **That is not what it does.** I searched the rendered page for
+`Invalid input:` and for `expected … received …` and matched **neither**. Every
+message is authored copy: *"Title must be at least 3 characters"*,
+*"Category is required"*, *"Price is required"*, *"Product image is required"*.
+
+Also: that route is **not a multi-step wizard** — it is a "Quick add" modal with
+four fields and no step indicator, so the step-tagging case cannot be tested
+there. Section tagging clearly exists in the codebase (the address form does it);
+the case needs re-pointing at a real wizard.
+
+## 🛑 A29 — a seller cannot publish a product: Publish fails with a bare "Invalid URL"
+
+Filled the Quick-add form completely — title, price 499, stock 5, description, a
+category from the real picker, and an image uploaded from disk through the form's
+own control — then pressed **Publish**.
+
+The only response is a toast reading **"Invalid URL"**. No field highlighted, no
+summary, modal stays open. `GET /api/products?q=QA%20Product` returns **0**, so
+nothing was persisted.
+
+**It is almost certainly the image** — the only URL-shaped value on the form, and
+the cropper hands back a locally-generated blob/data URL. That makes this the
+same family as **A15** (storefront settings rejecting every save with *"Must be a
+stored media reference (`/media/<slug>`) or a URL on an approved CDN domain"*): a
+media value the app itself produced, failing the app's own media validation.
+
+The difference is that this toast does not name the field or the expected shape,
+so a seller has no way to act on it.
+
+### The upload path itself is sound — the failure is at validation
+
+- **`media-upload` passes**: file chooser arms correctly (`accept="image/*"`), the
+  file attaches, and a **Crop Image** step opens showing the real uploaded bitmap
+  (intrinsic 256×128). Saving the crop clears the image field's error.
+- **`media-upload-preview-no-white-box` passes**: real preview inside ~1s, and
+  **zero** images anywhere with `naturalWidth === 0` above 40px wide.
+
+### A30 — the crop tool has no aspect lock
+
+The Crop Image modal offers reposition + zoom only. Enumerated every button:
+`×, 50%, 100%, 150%, 200%, Reset, Save Crop, Cancel` — **zero** aspect presets
+(no 1:1, 4:3, 16:9 or free). The crop frame measures 384×280, i.e. **1.37:1**,
+not square. The case asserts a working 1:1 lock.
+
+### Scope notes for the four untestable media cases
+
+Quick-add has a **single** image slot: its file input is not `multiple`, there is
+no gallery or add-more control, and it declares `accept="image/*"` with the hint
+*"JPG PNG GIF WebP — max 10MB"*. So multi-image upload, per-image removal and
+video-duration capture cannot be exercised here at all — those cases need the
+full product editor, not this modal.
+
+One measurement correction worth keeping: my first probe reported a 561-byte
+"preview" of 374×132 — that was the **UPI payment icon in the footer**, not the
+upload. The screenshot settled it.
+
+## Seller product editor loads POPULATED — the blank-form defect is not present
+
+Worth recording as a confirmed-good, because it was a live concern: opening
+`/store/products/product-beyblade-burst-valkyrie/edit` renders **18 populated
+fields** with `title` = "Beyblade Burst B-01 Valkyrie". The Root Cause #98-family
+blank editor (an `ActionResult` envelope spread as if it were the payload) does
+**not** reproduce on this route today.
+
+It also carries the video plumbing the checklist expects: a **Media** section with
+**Upload / YouTube / External URL** tabs, plus `externalVideoUrl` and `youtubeId`
+fields.
+
+## Video sources — partial verification, no save performed
+
+The YouTube-sourced fixture renders its video slide correctly: a 3-thumbnail
+strip whose third entry is **800×450** (16:9 poster) with a play badge, and
+selecting it advances the gallery to **3 / 3** with a large play overlay.
+
+Crucially **zero** occurrences of *"No video with supported format and MIME type
+found"*, and **no `<video>` element carrying a YouTube watch URL** — the Root
+Cause #49 regression is absent.
+
+Playback itself is unverified (the lightbox did not open from my click), and I
+**declined the save** the case's procedure requires: this run has already shown
+seller publishes failing with "Invalid URL" and a documented path where a save
+writes `draft` over a published listing. Saving a real live product to satisfy a
+test is the one irreversible step available here.
+
+## The seller quick-add is a centred MODAL, not a side drawer
+
+`New Listing` → `/store/products/new` renders a modal measured **1024×800, left
+edge x128, right edge x1152** in a 1280 viewport — inset on both sides, attached
+to neither edge, close control top-left.
+
+So `seller-quick-add-drawer-flips` has nothing to measure: a centred modal has no
+edge for Left-hand mode to flip. I did **not** toggle the preference — it is a
+write to a real account's settings, and with the premise already false it could
+not have changed the outcome. The case needs re-pointing at a real `SideDrawer`
+surface, or rewriting to describe the modal.
+
+## A31 — Site Settings renders NO fields for any section (admin)
+
+**Surface** `/admin/site` as `admin@letitrip.in`.
+
+**Symptom.** The section dropdown offers nineteen entries (⓪ About … ⑱ Listings)
+and switching it changes the heading, but the panel below it is empty. With
+`③ Announcement` selected, `<main>` contains one heading ("Site Settings"),
+**0 labels, 0 `role="switch"`, and 2 inputs — both page chrome** (the sidebar's
+"Search navigation…" box and the footer newsletter email). `① Branding`, which
+is what renders on load, is identically empty.
+
+**Why it matters beyond one case.** `Save all changes` sits under the empty
+panel. Site Settings is PRESERVE tier; a save from a form that rendered no
+fields is how the settings document gets blanked. Not pressed.
+
+**Blocks** `cta-layout/navbar-ctas--admin → announcement-bar-message-renders`
+(recorded `no`, failedAtStep 2 — the control is absent, not refused), and every
+other case that configures anything through Site Settings.
+
+**Evidence** `shots/admin-site-announcement-empty.png`.
+
+## A32 — Public nav marks no section on detail pages
+
+**Surface** any `/products/<slug>`, signed out.
+
+`/products` marks **Products** with `aria-current="page"` and `/events` marks
+**Events**; `/products/product-beyblade-metal-dark-bull-video-demo` marks
+**nothing at all**. The match is exact-pathname rather than section-prefix. The
+page knows where it sits — its own breadcrumb reads Home / Products / … — so the
+information exists and does not reach the navigation. Browser-back is not
+implicated (it restores the URL correctly and the mark is absent for the same
+reason).
+
+**Evidence** `shots/nav-active-detail-unmarked.png`.
+
+## A33 — Guest cart shows "SOLD BY UNKNOWN"
+
+Two Beyblade Arena products added to a signed-out cart render under a seller
+header reading **UNKNOWN**. The signed-in cart names the store correctly, so the
+store name is lost specifically on the guest path. Aside, found while testing the
+header badge (which itself passed cleanly: `(none)→1→2` live, and `/cart` agreed
+at 2 lines / 2 units / ₹1,998).
+
+**Evidence** `shots/header-cart-badge-guest.png`.
+
+## A34 — Help/how-it-works pages state things the product does not do
+
+Five separate doc-vs-reality defects, all guest-visible, all money- or
+support-facing:
+
+| Page | Says | Reality |
+|---|---|---|
+| `/how-orders-work` | **"Out for Delivery"** is an order status, with its own icon and description | No such status. `/user/orders` shows Processing / Confirmed / Shipped / Return Requested; the page never names Refunded, Return Requested or Returned |
+| `/how-offers-work` | counter "within **20%** (above or below)" | Form on a ₹999 listing enforces `min=699.3` (**30% below**) and `max=998.99` — **above list is refused outright** |
+| `/how-checkout-works` | 5 stages: cart → address → payment → **Confirm Your Order** → confirmed | Checkout is "Step 1 of 3": address → **Add-ons & fees** → payment. The add-ons step — WhatsApp ₹10, gift wrap ₹49, shipment protection ₹61.94 — is **not mentioned anywhere**, and the promised Confirm step does not exist |
+| `/how-auctions-work` | "you have **48 hours** to complete payment. If you do not pay within **3 days**…" — one paragraph | Self-contradictory. Also promises a reserve indicator and a minimum-bid figure on every listing; a real live auction shows neither |
+| `/fees` | "**Buyer Fee 0%** — Buyers pay no platform fee" | The cart charges the buyer **"Platform fee ₹10.00"** + "GST ₹1.80" |
+
+## A35 — `/track` invites an action it does not provide
+
+The page renders "Enter your order ID or tracking number to get real-time
+updates on your shipment" and contains **no order-ID or tracking input** — the
+only input in the document is the footer newsletter email. A guest is offered
+Sign In / View My Orders instead. Its explainer also introduces a third status
+vocabulary ("In Transit").
+
+**Evidence** `shots/track-no-input.png`.
+
+## A36 — `/help` promises search it does not have, and links 4 of 7 guides
+
+Intro reads "Browse our help topics **or search** for answers"; zero search
+inputs on the page. Links `how-auctions-work`, `how-offers-work`,
+`how-payouts-work`, `how-pre-orders-work` — **not** `how-checkout-works`,
+`how-orders-work`, `how-reviews-work`, all three of which exist and render.
+
+**Evidence** `shots/help-page.png`.
+
+## A37 — No way to leave a review from a product page
+
+Searched every button and link on `product-beyblade-burst-valkyrie` for
+write/leave/add review: **none**, and no eligibility message either. The account
+carries 20 reviews, so a route exists — just not the one `/how-reviews-work`
+implies.
+
+## 🛑 Harness note — identity swaps need TWO `browser_close` calls
+
+The MCP server writes the live storage state back to `session.json` on teardown,
+so `close → cp → navigate` silently clobbers the file you just copied and the
+next batch browses as the PREVIOUS identity. Twice this session a batch opened
+as the buyer when admin/guest had been copied. Working sequence:
+**`browser_close` → `browser_close` → `cp` → navigate → verify the account name
+on the page before touching anything.**
