@@ -762,3 +762,427 @@ This also un-blocks the tester case
 `checklist-admin-events-raffles-spin-spin-wheel-create`, whose whole assertion is
 "no weight values anywhere on the page or in its source" — it was recorded `null`
 earlier in this run, and the thing it was written to catch was live at the time.
+
+**A12 VERIFIED IN PRODUCTION** (appkit 4.41.6, deployed 2026-09-15):
+`grep -c '"weight"'` on `GET /api/events?pageSize=20` is now **0**, down from 1.
+The spin-prize odds are no longer public.
+
+## A13 — an offer event still publishes an internal `couponId` (NOT fixed)
+
+Same verification run found one remaining `couponId` in the events payload, on a
+**different** field from the one A12 addressed:
+
+```
+"displayCode":"BUYNOW10","couponId":"coupon-buynow10"
+```
+
+This is an offer event's own promo block, not `spinPrizes`. Lower severity — no
+odds are exposed and `displayCode` is a code the page shows buyers on purpose —
+but it is still an internal document id on an unauthenticated endpoint, and it is
+the same deny-list-spread cause.
+
+**Deliberately not fixed in this pass.** Recorded for the pass-2 fix cycle. When
+it is fixed, the right move is to extend `toPublicEvent` rather than add a third
+projection site.
+
+## Store directory findings (batch: public-pages/stores-sellers-directories)
+
+Three defects on `/stores`, all measured against `GET /api/stores`:
+
+1. **The rating facet is inert.** `?rating=5` returns both stores, whose real
+   `averageRating` values are **4.1** and **3.6**. The filter badge increments to
+   1 and the result set does not change — the exact failure shape the sibling
+   `store-classified-live-facets-filter` case describes.
+2. **`isVerified` is absent from the public store payload**, so no card can
+   render a verified badge. Both seeded stores carry the flag in Firestore.
+3. **`totalProducts: 0` on both stores**, including Beyblade Arena, which holds
+   essentially the entire catalogue. A counter with no writer — the same shape as
+   Root Cause #102's brand `metrics.productCount`.
+
+Store SEARCH is correct and this re-confirms the Root Cause #99 fix:
+`?q=zzzznope` returns 0 with a named "No stores found." empty state.
+
+### Two more from the same batch, neither previously recorded
+
+- **A suspended store is publicly browsable and badged "✓ Verified Safe".**
+  `/stores/store-vintage-vault-co` renders in full to a signed-out visitor, with
+  a green Verified Safe badge, while its own description reads *"Currently
+  suspended pending a listing-authenticity review."*
+- **Money sorts are offered to guests on store tabs.** The auctions tab's Sort
+  dropdown offers a signed-out visitor "Lowest Current Bid", "Highest Current
+  Bid" and "Buy It Now: Low–High" while the same cards read "Sign in to see
+  price". Ranking hidden amounts is exactly the control § Guest price gating
+  says is withheld (`withoutPriceSorts` / `MONEY_SORT_FIELDS`) — it appears the
+  store-tab sort list does not go through that filter.
+- **Store tab badges are all-statuses counts over available-only views.** Eight
+  of eight mismatch on Beyblade Arena. Worst: "Prize Draws (1)" opens to
+  "No prize draws found."
+- **`/pre-orders` defaults to Newest First while the store's Pre-Orders tab
+  defaults to Earliest Delivery** — the Root Cause #63 disagreement, present
+  again with the two defaults swapped.
+
+## Two blank/inert public pages (batch: stores-sellers-directories p2)
+
+- **`/sellers` renders nothing.** HTTP 200, correct `<title>`, breadcrumb — and
+  a completely empty content area. No heading, no cards, no empty state. Zero
+  seller links in the DOM. `/api/sellers` returns HTML, not JSON, so there is no
+  API behind the route. This is one of only four routes carrying a short ISR
+  window, so it is a real prerendered page that prerenders to nothing.
+- **The scam registry's search is inert.** `?q=zzzznope` and
+  `?q=Bey_King_India` (an exact alias of one of the three profiles) both return
+  all 3 rows. The page's own subtitle advertises "Search by name, phone, or
+  UPI". Root Cause #99's shape, on the page where lookup IS the feature.
+  There is also no status filter, only a scam-type dropdown and a sort.
+
+## A14 — `/sell` logs the user out (BLOCKING for the whole seller-onboarding funnel)
+
+Reproduced with both signed-in identities the harness holds.
+
+| step | seller (tyson@beybladearena.in) | buyer (rehan.sheikh@gmail.com) |
+|---|---|---|
+| dashboard before | `/store` → Store Dashboard ✓ | `/user/orders` → renders ✓ |
+| second nav (control) | `/store/addresses` → renders ✓ | — |
+| **`/sell`** | → `/auth/login`, signed-out chrome | → `/auth/login`, signed-out chrome |
+| dashboard after | `/store` → **bounces to `/auth/login`** | `/user/orders` → **bounces** |
+
+The second dashboard navigation is the control that rules out "the session was
+just flaky": it worked, then `/sell` broke it.
+
+`curl /sell` returns **200 with no Location header**, so the redirect is
+client-side. Root Cause #76 recorded `/sell` as *"returned HTTP 200 carrying an
+error instead of redirecting"* because it read `ROUTES.USER.BECOME_SELLER` off
+the `"use client"` entry. It now returns 200 carrying a page that **signs you
+out** — a different failure on the same route, and still a 200 that no
+monitoring flags.
+
+Guest behaviour is correct (`/sell` → `/auth/login`).
+
+**Consequence**: `/user/become-seller` is effectively unreachable from the
+advertised entry point, which is why `apply-seller` could not be exercised.
+
+## A15 — the storefront form can never be saved
+
+`/store/storefront` loads fully populated for a real seller, and pressing
+**Save Storefront** is rejected with:
+
+> Please fix the following:
+> **Branding:** Must be a stored media reference (`/media/<slug>`) or a URL on an approved CDN domain
+> **Branding:** Must be a stored media reference (`/media/<slug>`) or a URL on an approved CDN domain
+
+The store's seeded logo and banner are
+`/api/media/ext?url=https%3A%2F%2Fplacehold.co%2F…` — neither a `/media/<slug>`
+reference nor an approved CDN host. **And the form renders no logo, banner,
+image or URL input at all** (enumerated every input on the page), so the seller
+cannot correct the value that is blocking them.
+
+Net effect: **no storefront change of any kind can be saved** — name, category,
+bio or description — because an untouched, unreachable field fails validation.
+
+Verified nothing persisted: description unchanged in the dashboard and in
+`GET /api/stores/store-beyblade-arena` after reload.
+
+Two candidate causes for pass 2, not yet distinguished: either the validator
+should accept `/api/media/ext?url=…` (it is this app's own proxy), or the seed
+should store branding as `/media/<slug>`. Either way the missing input is a
+separate gap — a form must be able to edit the field it validates.
+
+## A16 — leftover tester data in the PRESERVE-tier `addresses` collection
+
+`rehan.sheikh@gmail.com` has **three** addresses and two are QA artefacts from an
+earlier run, both labelled `QA Address buying-checkout-shipping-address-inline-add`
+at "1 Test Street, Mumbai, Maharashtra 400001", differing only in phone
+(9876543210 / 9999999999). That case's cleanup step evidently did not run.
+
+`addresses` is PRESERVE tier, so nothing in the wipe removes them and they will
+accumulate with every run of any address or checkout case. They also pollute the
+Label dropdown, which derives its options from the labels present.
+
+**Not deleted deliberately** — a wrong delete in a preserve-tier collection is
+irreversible, and this is the user's call, not mine. Removing them needs a
+targeted delete of exactly those two rows.
+
+Related: `/user/addresses` offers **no filter drawer at all** — a Search box and
+a Label dropdown, nothing else — against a case expecting Default and Standing
+facets. The search itself is correct (`zzzznope` → 0, `Stadium` → only the
+Stadium Lane address).
+
+## A17 — admin "Reject" unpublishes a listing with NO confirmation (Rule #7)
+
+`/admin/products` row menu → **Reject** fires immediately. No modal, no
+`[role="dialog"]` in the DOM, just a toast reading **"Product updated."**
+
+Verified it is not a no-op: `art-original-series-anniversary-print` went
+`published` → `rejected` and vanished from `GET /api/products`. **Restored** via
+Approve (also unconfirmed) and re-verified: status `published`, back in the
+public list, detail page 200, `isFeatured` never touched.
+
+This is exactly what Rule #7 / Root Cause #16 exist to prevent — a
+status-changing action with no `confirmation` on its ActionDef. The generic
+"Product updated." toast compounds it: nothing tells the admin the listing was
+just taken off sale.
+
+Smaller, same page: every row reads **"Unknown seller · No SKU"** — the
+unresolved-identity shape already recorded on the seller orders list.
+
+## Note for anyone automating the admin bundle editor
+
+The member picker (`PaginatedSelect`) **only re-queries on genuine keyboard
+events**. Setting `input.value` through the native setter and dispatching
+`input` populates the visible field and returns **zero** options; a single real
+`Backspace` keystroke immediately brings the matching products back.
+
+That cost most of a batch. Use real keystrokes (`browser_press_key`) for this
+control, and do open → type → select inside ONE evaluate, because any
+intervening MCP call (including a screenshot) blurs the dropdown shut.
+
+**Unresolved, flagged rather than scored:** with name, price and two members all
+visibly populated, `Create bundle` returned *"Bundle name is required / Bundle
+price must be a positive number / Bundle members: This field is required"*. That
+would be a Root Cause #98-family defect (validator reading different state than
+the inputs show) — but my inputs were synthetic, so it could equally be my own
+artefact. **Needs one clean real-keystroke run to settle.** The cross-store guard
+itself was never reached.
+
+Counts so far this session: 81 of 226 batches recorded.
+
+## A18 — `/store/grouped-listings` renders every row blank
+
+Ten rows, each showing only a placeholder link icon, an em-dash and Edit/Delete.
+No title, no member count. `GET /api/store/grouped-listings` returns all ten
+titles, so the data is there and the row mapper never reads it — Root Cause #52's
+shape.
+
+**Not cosmetic.** With every row blank there is no way to tell which row is
+which. The first row's Edit resolved to "App Unlock Codes" — a seeded group — so
+deleting by guess would have destroyed real content. I had to match by index
+against the API and verify through Edit before deleting my own test row.
+
+Same page: **Delete fires with no confirmation dialog** — the second Rule #7 gap
+found this session, after the admin products Reject (A17).
+
+Also on the grouped-listing create form: `coverImage` is a **plain text field**
+and the page has **zero file inputs**, so the "attach an image" step several
+cases describe cannot be performed there at all.
+
+The feature itself works — a group created with 2 members and `minActiveMembers: 2`
+reloads with both intact.
+
+## A19 — `/seller-guide` is the SECOND completely empty public page
+
+Same shape as `/sellers`: HTTP 200, correct `<title>`, breadcrumb, then nothing.
+`main`'s innerText is **0 characters** after a 7-second wait.
+
+Its children are fine — `/seller-guide/bundles` renders "Bundles Guide" and
+`/seller-guide/prize-draws` renders "Prize Draws Guide". Only the index is blank.
+
+### Full public link sweep (52 distinct header + footer destinations)
+
+- **All 52 return HTTP 200. None redirects back to the homepage.**
+- **2 render nothing**: `/sellers`, `/seller-guide`.
+- 4 look broken in raw HTML and are not — `/classified`, `/digital-codes`,
+  `/live` and `/promotions` are client-side redirect stubs (to
+  `/products?listingType=…` and `/promotions/deals`) with real content once
+  hydrated. A crawl-style check that reads SSR HTML flags them as h1-less; they
+  are fine.
+- `/cart`, `/user/profile`, `/user/become-seller`, `/store` show sign-in chrome
+  to a guest, as they should.
+
+Correction to my own first pass: I flagged `/brands` as empty from a zero-anchor
+probe. It renders four real brand cards. Reading the screenshot caught it.
+
+## A20 — the carousel editor opens BLANK, and saving would unpublish the hero
+
+`/admin/carousels` correctly lists **Homepage Hero · active · 5 slides** (this is
+the 4.41.3 `extractCarouselRows` fix holding). Clicking **Edit carousel** opens
+`/admin/carousels/carousel-hero-default/edit` with:
+
+| field | editor shows | actual value |
+|---|---|---|
+| Carousel name * | **empty** (placeholder only) | Homepage Hero |
+| Status | **Draft** | active |
+
+Re-read after a further 8s — unchanged. The page knows the record: the breadcrumb
+reads "Carousel hero default / Edit" and the back-link reads "← Homepage Hero".
+
+**The Status default is the dangerous part.** Save is disabled while the required
+name is empty, so it cannot be saved blank — but an admin who types a name to
+satisfy that field and saves **also flips the site's hero carousel to Draft**,
+having never touched the status control. The homepage carousel would go dark.
+
+Nothing was saved; the carousel is still `Homepage Hero / active / 5 slides`.
+Note the case's own last step ("set both back to their original values") is
+impossible here — the editor cannot show what they were.
+
+Root Cause #98 family: an editor seeded from the wrong source, or not seeded.
+
+### Confirmed still-fixed this batch
+
+- **Lottery is in the event type picker** — all 8 real `EventType` values, no
+  invented ones. `lotteryInTypePicker: true`.
+- **A non-tester's `/user` sidebar has no Testing group** — Profile, Orders,
+  Shopping, Selling, Account, Browse, Support; the word "Testing" appears
+  nowhere, zero tester-hub links.
+
+## A21 — Site Settings renders ZERO input fields on every tab
+
+`/admin/site` routes correctly — `?tab=fees` → Fees, `?tab=themes` → Themes, no
+param → Branding, `?tab=nonsense` and `?tab=` both fall back to Branding with no
+error. The URL is genuinely read.
+
+**But every tab renders a heading, one collapsed accordion labelled with the tab
+name, and "Save all changes" — and nothing else.** Input elements (excluding the
+sidebar search and newsletter box): **0 on Fees, 0 on Themes, 0 on Branding**,
+each after a 9-second wait. Clicking the Fees accordion header directly did not
+change the count.
+
+The selector offers **20 tabs** — branding, appearance, themes, announcement,
+seo, contact, watermark, fees, integrations, shipping, auction, limits, legal,
+whatsapp, notifications, procurement, emi, gst, listings, about — so on this
+evidence none of the site's configuration is editable through the UI, while a
+Save button invites the attempt. I did not press it.
+
+**Possibly the same root cause as A15** (storefront form): both are settings
+surfaces where the section chrome renders and the fields do not reach the user.
+Worth triaging together.
+
+## OG images — Root Cause #93's fix CONFIRMED in production
+
+`seo/og-images`: **5 yes, 0 no, 1 null.** No rupee symbol on any of the six cards
+the case names (product, bundle, classified, digital code, live item, prize
+draw), nor on the auction or brand cards.
+
+The evidence is exact rather than visual: every one of those `og:image` URLs is
+the record's own image proxied through `/api/media/ext`, and what such an image
+renders is fully determined by its `placehold.co` `text=` parameter. Decoded,
+they read only titles. **Structurally there is no longer a surface a price could
+be burned into** — these are photographs, not composited price cards.
+
+Homepage card renders properly (200, image/png, 121 KB, 1200×630, brand gradient
++ wordmark + strapline). Brand cards carry their cover image, not an empty slot.
+All four OG tags present on product/store/blog, absolute, on the canonical host.
+
+### Two observations that did not fail a case
+
+- **Product OG images are 900×900 (1:1)** while pages declare
+  `twitter:card=summary_large_image`, which wants ~1.91:1. Platforms will crop or
+  letterbox. The homepage and brand cards are correctly 1200×630.
+- **The store page's `og:image` carries an `/en` prefix**
+  (`/en/stores/store-beyblade-arena/opengraph-image?<hash>`) while its canonical
+  is the unprefixed path. Still absolute and on the canonical host, so no case
+  fails — but `/en/...` is the spelling that pays a 307, and a crawler fetching
+  the card follows that hop.
+- The product card's *title* is legible only because seed images are
+  `placehold.co` text placeholders. Real photography would carry no title.
+
+## 🛑 A10 ROOT-CAUSED — the accepted-offer lane is a dead end, and it blocks the whole buying funnel
+
+The cart's lane tabs read **`Cart (1) | Won Auctions | Accepted Offers (1)`**.
+The Accepted Offers lane holds *Beyblade Burst Valkyrie* at ₹780 with a padlock
+reading **"🔒 Offer accepted — payment required"**, above a banner:
+
+> **"Accepted offers must be paid. These items cannot be removed from your cart."**
+
+That directly contradicts the documented rule in CLAUDE.md § Checkout Lanes:
+
+> **Accepted offers are NOT locked** — declining to buy is the buyer's right; the
+> offer lapses at its `checkoutDeadline` instead.
+
+### Why it is a dead end, not an inconvenience
+
+The offer lane **outranks** the standard lane (`CART_LANE_PRIORITY`), so:
+
+- every **Add to Cart** is refused — *"Complete your accepted offer first — you
+  can add other items once it's paid for."*
+- the standard lane's **"Proceed to checkout" is disabled**, even though that
+  lane holds a real line (Valkyrie ×1, ₹999.00, fee ₹10.00, GST ₹1.80, total
+  ₹1,010.80)
+- and the buyer **cannot remove the offer line to escape**, because the UI has
+  made it non-removable
+
+So the buyer can neither shop nor check out, and the only exits are paying the
+offer or waiting for `checkoutDeadline` to lapse. The fix is to restore
+removability on offer lines — the lock belongs on won-auction lines only.
+
+**Blast radius, measured:** it blocked **10 of 12** cases in
+`buying/buying-checkout--p1` alone. Every case beginning "Add to Cart" is
+unreachable while any accepted offer is pending, which is most of the buying
+funnel.
+
+### Two smaller things seen alongside
+
+- **A generic error rides along with the real message.** Add to Cart raises BOTH
+  *"Complete your accepted offer first…"* AND *"Something went wrong. Please try
+  again."* — a refusal by design should not also report a fault.
+- **A raw field name leaks into buyer copy.** The cart line renders the literal
+  string `storeName: Beyblade Arena` beneath the product title.
+
+### A10 — unblocked via the documented admin escalation (state change recorded)
+
+To stop A10 blocking the rest of the buying catalogue I cancelled the offending
+offer through the admin UI — the escalation CLAUDE.md § Offer Lifecycle
+describes for exactly this ("a leftover locked line keeps the buyer's offer lane
+non-empty, and since that lane outranks the standard one it blocks their ENTIRE
+cart").
+
+- **Offer cancelled**: `offer-yugi-burst-valkyrie-pending` (Beyblade Burst
+  Valkyrie, ₹780, Mock User 3 → Beyblade Arena), `accepted` → **`expired`**.
+- Reason given: *"QA run: clearing a stuck accepted-offer lane that blocks the
+  buyer cart."*
+- **Verified unblocked**: Add to Cart as the buyer now succeeds —
+  *"Beyblade Burst B-01 Valkyrie" added to cart — 2 items, ₹1,998.00 total*.
+
+The cancel dialog's own copy confirms the intended design, and contradicts the
+cart UI's banner: *"The offer will be expired and **removed from the buyer's
+cart**."* So the server-side path does remove offer lines; it is the cart that
+wrongly presents them as non-removable by the buyer.
+
+**Seed-state note for later batches**: a second accepted offer remains —
+`offer-kaiba-dranzer-s-accepted` (₹1,250, Mock User 2) — so the `accepted`
+fixture is still represented. All 7 offer statuses are still present in the data
+(accepted / pending / countered / withdrawn / expired / declined / paid).
+
+**This does NOT close A10.** The defect is the cart's refusal to let a buyer
+remove an accepted-offer line; that is still live. Only this run's blockage was
+cleared.
+
+## Manual-payment flow is ALIVE — Root Cause #57 confirmed fixed end-to-end
+
+With the offer lane cleared, a full checkout ran through:
+
+`/cart` → **Step 1 of 3: Shipping Address** → **Step 2 of 3: Extras & fees** →
+**Step 3 of 3: Payment** → order `order-2-20260915-nb54aj` →
+`/user/orders/{id}/payment`.
+
+That last page is the one Root Cause #57 recorded as dead — every buyer used to
+be told *"This order does not require manual payment upload."* It now renders in
+full:
+
+- **"Time remaining: 14:50"**, ticking (read 14:30 twenty seconds later)
+- *"Pay and upload proof before the window closes, or the item returns to stock
+  and your order is cancelled."*
+- **Step 1** — a real UPI payee to transfer to
+- **Step 2** — screenshot upload, `transactionId` (UTR), `buyerReportedUpiId`,
+  and the two declarations (`buyerMarkedPaid`, `buyerFraudAgreementAccepted`),
+  plus **Submit Proof**
+
+Totals check out along the way: Subtotal ₹1,998.00, **Platform fee ₹10.00**
+(once per checkout, matching the documented ₹10 cap even with 2 items),
+GST ₹1.80, Total ₹2,009.80. No OTP interstitial at that value, correct for the
+₹5,000 threshold.
+
+### Left deliberately unpaid — it is this run's cleanup mechanism
+
+`order-2-20260915-nb54aj` was left unpaid on purpose. It is the natural fixture
+for `payment-window-expiry`, and the 15-minute sweep cancels it and returns both
+Valkyrie units to stock, so **the run leaves nothing to tidy by hand**.
+
+### Two things worth a look
+
+- **The payment-screenshot uploader offers "YouTube" and "External URL" tabs.**
+  A YouTube tab on a payment-proof control is hard to justify and widens what a
+  buyer may submit as evidence to a human reviewer.
+- I **declined to submit proof**. Doing so means ticking *"I confirm I have
+  already made this payment"* and *"I confirm this payment is genuine"* for a
+  ₹2,009.80 transfer that did not happen, and putting a fabricated proof into a
+  real admin review queue. That is a false statement to a person, not a test
+  artefact the run can clean up.
