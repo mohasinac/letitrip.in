@@ -21,7 +21,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   // getProductForDetail is wrapped in React.cache() — shared with the page render.
   const product = await getProductForDetail(slug);
-  if (!product) return { title: "Product Not Found" };
+  // A missing product still answers 200 (the view renders its own not-found
+  // state rather than throwing), so without an explicit robots directive this
+  // page inherits the root layout's `index: true` — and /products/<anything> is
+  // an unbounded URL space, every member of which would be an indexable soft
+  // 404. /auctions/<missing> and /stores/<missing> already serve noindex; this
+  // brings the product route in line with them.
+  if (!product) {
+    return { title: "Product Not Found", robots: { index: false, follow: false } };
+  }
   return generateProductMetadata({
     title: product.title,
     description: product.description ?? "",
