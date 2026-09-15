@@ -476,3 +476,289 @@ displayed number is wrong. Fix the metric, not the query.
 
 Working on the same page: highlights render as bullets under "Why shop here", and
 the FAQ accordion holds 2 questions that expand to real answers.
+
+---
+
+## FIX CYCLE 1 — shipped and re-verified in production (appkit 4.41.3)
+
+Three fixes, each re-tested against production after deploy rather than assumed.
+
+### 1. Admin categories + carousel listings rendered empty (largest cluster, 3 cases)
+
+**Cause was not where the evidence pointed.** Four hypotheses were checked and
+disproved first — wrong endpoint, a malformed URL from appending params to a
+query string that already had one, a bad `sorts=name` param, a wrong envelope
+key. The exact URL the page requests returns 200 with a 50-element array.
+
+The break was between a successful fetch and `mapRows`: **`ApiClient.ts:170` is
+`return data.data as T`**, so `apiClient.get()` unwraps the envelope.
+`/api/categories` puts rows directly in `data`, so `mapRows` receives the ARRAY
+— and `.data` on an array is `undefined`, the `.items` fallback likewise, so
+`toRecordArray(undefined)` gave `[]`.
+
+`AdminCarouselView` had the identical pattern against `/api/carousel`, which
+also returns a bare array. Both fixed with a strictly additive
+`Array.isArray(response)` branch ahead of the existing checks.
+
+**Verified after deploy**: 50 rows render, empty state gone, and "Takara-Tomy"
+(a `categoryType:"brand"` row) is listed — so the brands third of the cluster is
+fixed by the same change.
+
+### 2. `/bundles` showed a discount % to signed-out visitors
+
+Every card carried a 20–35% OFF badge beside a correctly-gated
+"Sign in to see the bundle price". Wrapped in `PricesOnly` in both
+`MarketplaceBundleCard` and `FeaturedBundlesSection` — `BundleDetailView`
+already had it right, and in both fixed files the struck-through original total
+was *already* wrapped while the badge beside it was not, so this aligned two
+renderers with the third rather than inventing a rule.
+
+**Verified after deploy**: 0 badges visible to a guest, price still gated, all 5
+cards still render.
+
+### 3. Missing product pages told crawlers to index the soft 404
+
+`/products/<missing>` answers 200 and `generateMetadata` returned only a title,
+inheriting the root layout's `index: true`. `/products/<anything>` is unbounded,
+so every member was an indexable soft 404.
+
+**Verified after deploy**: missing product now `noindex`; the REAL product page
+still serves `index, follow`, so it is an exclusion on the not-found branch and
+not a blanket rule.
+
+### 🛑 Parked deliberately: the Classified badge contrast (B-classified-dark)
+
+The fix is not a one-liner and needs a decision I should not make alone.
+`classified` is `bg-secondary text-white`, and `--appkit-color-secondary`
+inverts between themes (magenta → cyan) — hence 2.43:1 in dark.
+
+There is **no `secondary-solid` token**, and `secondary` is a FLAT string in
+`tailwind.cjs`, so `bg-secondary-solid` would silently fail to compile — which
+is precisely the Root Cause #67(c) trap (`danger` has the same shape). The real
+options are (a) add a brand `-solid`/`-on-solid` family, touching `tokens.css`,
+the Tailwind config and `audit-theme-drift`'s invariant-token allowlist, or
+(b) move classified onto an existing status solid, which costs it its identity
+colour and collides with pre-order's `info`.
+
+Three other badges share the same shape — `prize-draw`, `art` and `stickers` all
+pair a theme-relative brand fill with a literal `text-white` — so whichever
+option is chosen should cover all four at once.
+
+## A7. `/user/addresses/new` — "Address line 2" and "Landmark" are required EMPTY dropdowns
+
+Found while testing the state picker (batch 61), and it is worse than the case
+it turned up under.
+
+Both fields render as real `<select>` elements with **zero options**, and both
+are marked required (`*`). A buyer cannot satisfy a required field that offers
+nothing to choose, so the add-address form appears uncompletable — the section
+badge already reads "4 issues" on a form nobody has touched.
+
+They should be text inputs: a landmark and a second address line are free text.
+
+**Not a labelling illusion** — the page renders a correct Country picker
+("India ▾") and a correct State / region picker right below them, so the two
+option-less selects are genuinely the wrong control for those two fields rather
+than mislabelled country/state controls.
+
+**The state picker itself is fine** (both cases in that batch passed): it is a
+constrained searchable dropdown, "karn" narrows it to Karnataka alone, changing
+the country to Canada clears the state, and switching back to India does NOT
+restore the previous selection.
+
+No address was saved during this test — `addresses` is PRESERVE tier.
+
+## A8. Raw Zod type errors are shown to sellers on `/store/products/new`
+
+At 375px (and dirty), the Quick-add form renders three developer-facing
+messages as field errors:
+
+- Price → **"Invalid input: expected number, received undefined"**
+- Product Image → **"Invalid input: expected string, received undefined"**
+- Description → **"Invalid input: expected string, received undefined"**
+
+These are Zod's default type messages, not authored copy, and they sit under
+fields the seller has not filled in yet. The schema needs real messages
+(`z.number({ message: "Enter the price." })` etc.) the way the address schema
+already does ("Enter the street address.", "Enter the city.").
+
+Worth pairing with the known rule that a validation summary must not accuse a
+user before they have done anything — here the individual fields are doing it.
+
+## A9. `/store/products/new` at 375px offers only 2 of 4 editor actions
+
+The route serves a **"Quick add"** form on mobile — Product Name / Category /
+Price / Product Image / Description — whose action bar has only **Save Draft**
+and **Publish**. No Discard and no Preview exist anywhere on the page, with the
+form dirty and after a full-page scroll.
+
+The layout itself is fine: both buttons fit inside 375px on one line, nothing is
+clipped, `scrollWidth === clientWidth === 375`. So this is a missing-affordance
+question (is Quick-add *meant* to drop Discard/Preview?) rather than an overflow
+bug — the case as written assumes the full editor.
+
+## A10 (BLOCKING). The accepted-offer lane cannot be checked out — it is refused by its own guard
+
+Buyer `rehan.sheikh@gmail.com`, cart holding exactly **one accepted offer**.
+
+Checkout walks all three steps normally and Step 3 says:
+
+> "You're paying for your accepted offers. The price is already agreed, so
+> coupons don't apply and the rest of your cart stays where it is."
+
+Tick "I understand how manual payment and refunds work" → "Pay via UPI / Cash"
+enables → click. **Nothing is created.** The page stays on `/checkout` at Step 3
+and prints, above the payment method:
+
+> **"Complete your 1 accepted offer first — the agreed price is only held for a
+> limited time."**
+
+Clicked twice, the second time after confirming the checkbox was ticked and
+scrolling the button into view. Same result both times, no order id anywhere.
+
+So the page presents the offer lane as the thing being paid for, and the submit
+is refused *because an accepted offer exists* — the lane guard is blocking the
+lane it exists to protect. The buyer is deadlocked: they cannot pay for the
+offer, and because the offer lane outranks standard they also cannot add or
+check out anything else.
+
+**Blast radius in this batch alone**: it took out `cod-order-places` (no order
+placed), and made `manual-payment-proof-upload` and `payment-page-reachable-later`
+untestable for want of an order awaiting payment.
+
+### Clean on the same batch
+
+- **Platform fee**: exactly one `Platform fee ₹10.00` line at Step 2 and Step 3
+  (Subtotal ₹780.00, GST ₹1.80, Total ₹791.80). ₹10 is the documented cap, not a
+  percentage of ₹780, so the cap is applied; single store, so no `× N` qualifier.
+- **Manual-payment copy** is accurate — UPI id, 15-minute window, upload of
+  UTR + screenshot, auto-cancel and stock release on lapse.
+- **Coupons in the offer lane** are correctly absent, and the UI says why.
+- **`/user/orders` maps rows properly** — "Order #9-CASH01, Beyblade Original
+  Dranzer S ×1, ₹1,799.00, Processing" — in direct contrast to `/store/orders`
+  (A5), which showed "Unknown buyer" and no product name on all 25 rows. Same
+  collection, different mapper, so A5 is a seller-side mapping defect rather
+  than purely a data-shape one.
+
+### Test pollution noted, not removed
+
+`/checkout` Step 1 lists **two "QA Address buying-checkout-shipping-address-inline-add"**
+entries (1 Test Street, Mumbai 400001) left by earlier runs. `addresses` is
+PRESERVE tier, so I did not delete them.
+
+## A11 (PRIVACY). `GET /api/events/{id}` returns RAW lottery slots to anonymous callers
+
+Verified signed out — `fetch(..., { credentials: 'omit' })`, HTTP 200. Each slot
+of `event-pokemon-number-draw-july-2026` comes back with **all nine stored
+fields**:
+
+```
+slotNumber, name, image, price, weight,
+isBooked, bookedByUserId, bookedByDisplayName, bookedByUserLotteryNumber
+```
+
+A guest therefore receives, for every booked slot: the **buyer's display name**
+(e.g. `"Ravi K"`), their **internal user id**, and their **lottery number** —
+plus the per-slot **`price`** and **`weight`**, where weight is how the odds are
+set.
+
+The documented contract is the opposite. `toClientLotterySlot` is an **allow-list**
+and the only slot field beyond `slotNumber` / `name` / `isBooked` that is meant
+to reach a client is `image`; `price` and `weight` are explicitly "never
+exposed". So this endpoint is serving the stored document rather than the
+projection — the Root Cause #70 shape (raw document on a public surface), on the
+events route.
+
+Two distinct harms: PII (a uid paired with a display name and a lottery number is
+identity linkage, not just a nickname) and business data (per-slot pricing and
+weighting).
+
+**Not the admin view leaking** — I checked as admin first, then repeated with
+credentials omitted and got the identical payload.
+
+### Also on this batch
+
+- **Grouped-listing title edits DO persist** (changed → saved → reloaded → new
+  value present; description untouched). The admin-PATCH-strips-unknown-keys
+  defect does not reproduce. Title restored afterwards.
+- **The booked-slot delete guard is untested** — the editor shows no booking
+  state (by design; the write shape cannot express bookings), my row-targeting
+  did not land, and I reloaded rather than save an unverified slot list onto a
+  lottery holding five real bookings. Confirmed afterwards: 25 slots, bookings
+  1-5 intact, nothing written.
+
+🛑 **METHOD**: `document.querySelector('[name="description"]')` matches the
+`<meta name="description">` in `<head>` before any form field. Its `.value` is
+`undefined`, which reads exactly like a wiped field. Scope form selectors to the
+form.
+
+---
+
+## A12 — `spinPrizes[].weight` and `.couponId` published to anonymous callers
+
+**Found**: 2026-09-15, while *verifying* the A11 fix rather than from a case.
+**Severity**: same class as A11 — outcome-deciding data on an unauthenticated,
+edge-cached endpoint.
+
+`GET /api/events` returned, for `event-daily-beyblade-pull-wheel`:
+
+```json
+"spinPrizes": [
+  {"id":"spin-10pct","label":"10% Off Coupon","couponId":"coupon-rehan10","weight":15,"isActive":true},
+  {"id":"spin-5pct","label":"5% Off Coupon","weight":25,"isActive":true},
+  {"id":"spin-grip","label":"Free Launcher Grip Tape","weight":10,"isActive":true},
+  ...
+]
+```
+
+`weight` IS the odds — anyone could compute each prize's exact probability
+before spinning. `couponId` names an internal coupon document id.
+
+### Why it was missed the first time
+
+The A11 fix projected `lotteryConfig` and nothing else, because that was the
+structure the original report named. `spinPrizes` is a *sibling* field on the
+same document with the same problem, and the deny-list spread published it for
+the same reason. **Root Cause #84 again**: I fixed what I had enumerated by
+hand rather than what the rule would have found.
+
+The verification is what caught it — the post-deploy check greps the response
+for `"weight"` rather than only re-reading the field I had just fixed.
+
+### The type was lying, which is the durable lesson
+
+`EventItem.lotteryConfig` is declared as `ClientLotteryConfig` — the
+**already-projected** type. The repository hands back the stored document with
+`price`, `weight` and `bookedByUserId` still on every slot. So the type asserted
+the projection had happened while nothing performed it, and any reviewer reading
+the route saw a correctly-typed public payload.
+
+`toClientLotterySlot`/`Config` now accept either shape precisely so the adapter
+can be applied to a value whose type is lying — which is where it is needed.
+
+### Fix (appkit 4.41.6)
+
+- `appkit/src/_internal/server/features/events/adapters.ts` — new
+  `toPublicEvent()` / `toClientSpinPrize()`. Allow-list, not a spread.
+- Both public event routes call it, so they cannot drift (Root Cause #75).
+- `toClientSpinPrize` keeps `id`/`label`/`isActive` — verified to be the only
+  three fields `SpinWheelView` reads. The winning prize is still resolved
+  server-side in `assignSpinPrize` and returned as a coupon CODE.
+- The return TYPE is narrowed, so a future caller reaching for `slot.weight`
+  is a compile error rather than `undefined` at runtime.
+
+### Verify after deploy
+
+```bash
+curl -s "https://www.letitrip.in/api/events?pageSize=20" | grep -c '"weight"'   # expect 0
+curl -s "https://www.letitrip.in/api/events?pageSize=20" | grep -c 'couponId'   # expect 0
+```
+
+**A11 status**: the lottery half is CONFIRMED FIXED in production — slot keys are
+now `slotNumber,name,image,isBooked,bookedByUserLotteryNumber,bookedByDisplayName`
+with no `price`, `weight` or `bookedByUserId`.
+
+This also un-blocks the tester case
+`checklist-admin-events-raffles-spin-spin-wheel-create`, whose whole assertion is
+"no weight values anywhere on the page or in its source" — it was recorded `null`
+earlier in this run, and the thing it was written to catch was live at the time.
