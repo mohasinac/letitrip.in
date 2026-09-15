@@ -247,7 +247,36 @@ in any session, or `npm run tester:claude` unattended.
 
 ## 🛑 RULE #6 — CODE WITHIN VERCEL HOBBY (FLUID COMPUTE) TIER LIMITS
 
-This project deploys to Vercel **Hobby** with **Fluid Compute enabled** (1 vCPU Standard, 2 GB function memory, Node 22.x, region `iad1`). Every API route, server action, and Server Component you write must respect the ceilings below. Local dev (`npm run dev:hot`) enforces these via `VERCEL_HOBBY_TIER=1` in `scripts/dev-next.mjs`. The default `npm run dev` (build+start) runs a production server that matches Vercel's runtime behavior.
+This project deploys to Vercel. Every API route, server action, and Server Component you write must respect the ceilings below. Local dev (`npm run dev:hot`) enforces these via `VERCEL_HOBBY_TIER=1` in `scripts/dev-next.mjs`. The default `npm run dev` (build+start) runs a production server that matches Vercel's runtime behavior.
+
+> 🛑 **CORRECTED 2026-09-15 — Fluid Compute is OFF, and the region is `bom1`.**
+> This paragraph read "Hobby with **Fluid Compute enabled** (1 vCPU Standard,
+> 2 GB function memory, Node 22.x, region `iad1`)". Measured against the live
+> project (`GET /v9/projects/{projectId}?teamId={orgId}` → `resourceConfig`):
+>
+> ```
+> { "fluid": false, "functionDefaultRegions": ["iad1"],
+>   "functionDefaultTimeout": 15, "functionDefaultMemoryType": "standard",
+>   "elasticConcurrencyEnabled": true }
+> ```
+>
+> and `vercel.json` pins `"regions": ["bom1"]`, which is what functions actually
+> deploy to. **The site serves fine without Fluid** — verified 200 on `/`,
+> `/products` and `/api/site-settings` with `fluid: false`.
+>
+> 🛑 **Do not assume the 2 GB figure below.** It was the *Fluid* Standard
+> allowance. With Fluid off, `functionDefaultMemoryType: "standard"` may be
+> lower, so treat the memory row as unverified until someone measures it rather
+> than quoting it as a ceiling.
+>
+> **Turning Fluid ON is worth considering, and would likely REDUCE spend**, which
+> is counter-intuitive after a limits block. Its value is in-function
+> concurrency: one instance serves several concurrent requests, so time spent
+> waiting on I/O is shared rather than billed per request. This app is
+> unusually well suited to that — `/api/realtime/bids/[id]` holds a function open
+> for its full 45s SSE TTL (Root Cause #94), and an auction page opens several;
+> without Fluid each of those pins a whole instance. Nearly every other route is
+> awaiting Firestore.
 
 > 🛑 **Build-memory status, 2026-09-13.** Work is underway to get back onto Hobby
 > (fixed at **2 vCPU / 8 GB**, not upgradable). Landed: the worker-pool caps in
@@ -297,7 +326,7 @@ Turbopack's build-time peak RSS for this app (~5.7–6.2 GB, verified locally) d
 
 | Limit | Ceiling | Env var | Implication for new code |
 |------|---------|---------|--------------------------|
-| Function memory | **2048 MB** (Fluid Standard) | `VERCEL_FUNCTION_MEMORY_MB` | Don't buffer entire collections into memory. Stream Firestore results, paginate, never load > a few MB at once. 🛑 **This row also used to claim 2048 was "the empirically-derived dev-server heap cap" from probe-dev-heap-cap.mjs. Retracted 2026-09-13 — that probe spawned `next dev --webpack` while the dev server runs Turbopack, so it measured the wrong bundler; and `package.json` `dev:only` actually applies 3072, not 2048, so all three places that wrote the number disagreed.** This is a *function runtime* ceiling and nothing else. The probe now takes `PROBE_BUNDLER` and records it in the results. Note `cli/next-dev.js` defaults the dev heap to `floor(totalmem × 0.5)` when NODE_OPTIONS carries no cap, so on a 16 GB box the 3072 is a **reduction**, and it lowers the `used_heap_size > 0.8 × heap_size_limit` self-restart trip point (`server/lib/utils.js`) accordingly. |
+| Function memory | **UNVERIFIED — was "2048 MB (Fluid Standard)", but Fluid is OFF as of 2026-09-15, so that allowance does not apply. Live config says `functionDefaultMemoryType: "standard"`; measure before quoting a number.** | `VERCEL_FUNCTION_MEMORY_MB` | Don't buffer entire collections into memory. Stream Firestore results, paginate, never load > a few MB at once. 🛑 **This row also used to claim 2048 was "the empirically-derived dev-server heap cap" from probe-dev-heap-cap.mjs. Retracted 2026-09-13 — that probe spawned `next dev --webpack` while the dev server runs Turbopack, so it measured the wrong bundler; and `package.json` `dev:only` actually applies 3072, not 2048, so all three places that wrote the number disagreed.** This is a *function runtime* ceiling and nothing else. The probe now takes `PROBE_BUNDLER` and records it in the results. Note `cli/next-dev.js` defaults the dev heap to `floor(totalmem × 0.5)` when NODE_OPTIONS carries no cap, so on a 16 GB box the 3072 is a **reduction**, and it lowers the `used_heap_size > 0.8 × heap_size_limit` self-restart trip point (`server/lib/utils.js`) accordingly. |
 | Sync function timeout | **10 s** | `VERCEL_FUNCTION_TIMEOUT_S` | A request that fans out to many Firestore reads must batch + early-return. No N+1 loops over hundreds of docs in one handler. Offload long work to a Firebase Function. |
 | Background function timeout | **60 s** | `VERCEL_BACKGROUND_TIMEOUT_S` | The hard ceiling for any handler we mark `runtime: "nodejs"` and let run async. Anything heavier belongs in `functions/`. |
 | Request payload | **4.5 MB** | `VERCEL_MAX_PAYLOAD_BYTES` | Never accept raw image bytes in JSON. Use the `/api/media` signed-URL upload flow. |
