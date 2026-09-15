@@ -5,6 +5,7 @@ import {
   eventRepository,
   parseListingParams,
 } from "@mohasinac/appkit";
+import { toClientLotteryConfig } from "@mohasinac/appkit/server";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
 import {
@@ -96,6 +97,26 @@ async function _GET(request: Request): Promise<NextResponse> {
       );
     }
   }
+
+  // 🛑 Applied to BOTH branches above, deliberately.
+  //
+  // The fallback strips only `createdBy` with a deny-list spread, and the
+  // listingProcessor branch returns `upstream.items` untouched — so a lottery
+  // event's stored `lotteryConfig` was published whole to anonymous callers,
+  // including each slot's `price`, its `weight` (the weighting is how the odds
+  // are set) and the internal `bookedByUserId`. Projecting here covers both
+  // paths at the single point where the response is built, rather than
+  // patching one branch and leaving its twin.
+  items = items.map((item) => {
+    const record = item as Record<string, JsonValue>;
+    if (!record || typeof record !== "object" || !record.lotteryConfig) return item;
+    return {
+      ...record,
+      lotteryConfig: toClientLotteryConfig(
+        record.lotteryConfig as unknown as Parameters<typeof toClientLotteryConfig>[0],
+      ),
+    };
+  });
 
   const response = NextResponse.json({
     success: true,
