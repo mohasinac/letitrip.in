@@ -8595,3 +8595,31 @@ is a red herring.
 
 That experiment is cheap and decisive, and it is the right next move rather than
 reading more of the write path.
+
+### 🛑 CORRECTION — A204 is FIXED. My "still broken" reading used the wrong toggle.
+
+The page has **six** `role="switch"` elements. My selector tried to match the
+label and fell through to `?? toggles[0]`, which is **"Mark as Featured"** — so
+the test flipped a different switch entirely and then reported the returns
+toggle as reverting. The fallback silently made the test measure something else.
+
+Retested against the toggle by index, in both directions:
+
+| write | persisted after reload |
+|---|---|
+| `finalSale: true` (returns OFF) | ✅ |
+| `finalSale: false` (returns ON) | ✅ |
+| `allowOffers: false` — a FALSY value | ✅ |
+| `allowOffers: true` | ✅ |
+
+So the **falsy-strip hypothesis is disproven**, and A204 needed no separate fix:
+it was the media-schema bug all along. Every A121-family symptom shared that one
+cause, which is what the family always looked like.
+
+**Lesson, and it is the same one twice in this session**: a selector with a
+`??` fallback does not fail when it misses — it quietly measures the wrong
+thing and returns a confident answer. The inline-confirm miss on A201 Delete was
+the same shape. Prefer an explicit index or a selector that throws when it
+matches nothing, and state which element was actually operated on.
+
+Product restored to its seeded state: returns ON, offers ON, original title.
