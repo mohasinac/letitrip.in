@@ -8643,3 +8643,79 @@ probe validated against a known positive before it is believed**, which is the
 same rule as never trusting an audit you have not seen fail.
 
 Product restored: title, returns and offers all back to seeded values.
+
+---
+
+# A206 — row selection was a DOUBLE-TOGGLE, not a dead control
+
+`AdminViewCards` wired the toggle **twice** on the same click:
+
+```tsx
+<Div onClick={(e) => { e.stopPropagation(); onToggleSelect(row.id); }}>   // wrapper
+  <Checkbox checked={selected} onChange={() => onToggleSelect(row.id)} /> // input
+```
+
+A click on the checkbox fires the input's `onChange` **and** bubbles to the
+wrapper's `onClick`. The row is selected and immediately deselected — net zero,
+which presents as a completely inert control: no checkmark, no bulk bar, nothing
+to report but *"clicking does nothing"*. Same double-fire shape as Root Cause #13,
+on the selection axis.
+
+It affected **every card-view admin listing**, not just products — which is why
+`/admin/featured` failed the same probe despite pass 1 recording it as working.
+
+The wrapper exists to enlarge the hit area, so it must still toggle. Guarding on
+`e.target === e.currentTarget` keeps that (a click on the padding IS the wrapper)
+while letting the input own its own clicks.
+
+# A209 — two separate money/count bugs on the seller dashboard
+
+**1. The pending count silently dropped every `processing` order.**
+
+```ts
+[sieveFilter("status", EQ, "pending"), sieveFilter("status", EQ, "processing")].join("|")
+// → status==pending|status==processing
+```
+
+The pipe belongs on the **values**, not between two whole clauses — so the value
+parsed was `pending` OR the literal string `status==processing`, which matches no
+document. Comma is not the alternative either: `sieveMultiEq` joins with `,`,
+which is an AND of two equalities on one field and can never match (Root Cause
+#59). Same-field OR is one clause with piped values (Root Cause #35).
+
+**2. Headline revenue counted cancelled and refunded orders.**
+
+```ts
+(o) => o.status !== "CANCELLED" && o.status !== "REFUNDED"
+```
+
+`OrderStatusValues` is **lowercase** and always has been, so both comparisons
+were true for every order — the exclusion never excluded anything. Now compared
+against the constants, so the next casing drift is a compile error rather than
+silently inflated revenue.
+
+Swept for the same uppercase shape across 3,472 files: **0 others**.
+
+## 🛑 Three of my sweeps this session were VACUOUS, and I nearly reported all three
+
+Each printed a confident "0 violations" while being structurally incapable of
+finding anything:
+
+1. `execSync("grep …")` — on Windows `execSync` uses **cmd.exe**, where `grep`
+   does not exist. `|| true` swallowed the error and returned an empty file list,
+   so the loop never ran.
+2. A regex built in a **template literal** lost its backslashes: `\s*` reached
+   `new RegExp` as `s*`, so it could never match. Verified by printing
+   `regex.source` — `s*"CANCELLED"`.
+3. The same escaping eaten again by a shell heredoc.
+
+**The fix is procedural, not clever**: every sweep now runs a POSITIVE CONTROL
+against the known-bad string and a NEGATIVE CONTROL against the known-good one,
+and **aborts if the rule cannot see the bug it was written for**. Writing the
+script with the Write tool instead of a heredoc removes the shell from the path
+entirely.
+
+This is Root Cause #87 (never trust a gate you have not seen fail) and #92
+(a check a variable name satisfies is decoration) arriving as my own tooling. A
+sweep that reports 0 is indistinguishable from a sweep that is blind — the only
+thing separating them is a control.

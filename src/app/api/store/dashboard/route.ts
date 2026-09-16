@@ -17,6 +17,7 @@ import {
   payoutRepository,
   sieveFilter,
   SIEVE_OP,
+  OrderStatusValues,
 } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { safeRead } from "@mohasinac/appkit/server";
@@ -45,10 +46,24 @@ export const GET = withProviders(
 
       const storeId = store.id;
 
-      const pendingProcessingFilter = [
-        sieveFilter("status", SIEVE_OP.EQ, "pending"),
-        sieveFilter("status", SIEVE_OP.EQ, "processing"),
-      ].join("|");
+      /*
+       * 🛑 The pipe joins the VALUES, not two whole clauses.
+       *
+       * `[sieveFilter(s,EQ,"pending"), sieveFilter(s,EQ,"processing")].join("|")`
+       * produces `status==pending|status==processing`, so the value parsed is
+       * `pending` OR the literal string `status==processing` — which matches no
+       * document. The count silently lost every processing order.
+       *
+       * Comma is not the alternative: `sieveMultiEq` joins with "," which is an
+       * AND of two equalities on one field and can never match anything
+       * (Root Cause #59). Same-field OR is one clause with piped values
+       * (Root Cause #35).
+       */
+      const pendingProcessingFilter = sieveFilter(
+        "status",
+        SIEVE_OP.EQ,
+        `${OrderStatusValues.PENDING}|${OrderStatusValues.PROCESSING}`,
+      );
 
       /*
        * The two order queries are scoped by `storeId`, which is what lets them
@@ -96,9 +111,19 @@ export const GET = withProviders(
 
       const activeListings = allProducts.filter((p) => (p as any).status === "published").length;
 
-      // Sum revenue from delivered + processing orders (non-cancelled)
+      /*
+       * 🛑 Lowercase. `OrderStatusValues` is lowercase and always has been, so
+       * `o.status !== "CANCELLED"` was true for EVERY order including the
+       * cancelled ones — the exclusion never excluded anything and the seller's
+       * headline revenue counted cancelled and refunded orders.
+       *
+       * Compared against the constants rather than string literals so the next
+       * casing drift is a compile error instead of silently inflated revenue.
+       */
       const revenueOrders = (ordersResult.items as any[]).filter(
-        (o) => o.status !== "CANCELLED" && o.status !== "REFUNDED",
+        (o) =>
+          o.status !== OrderStatusValues.CANCELLED &&
+          o.status !== OrderStatusValues.REFUNDED,
       );
       const totalRevenue = revenueOrders.reduce(
         (sum: number, o: any) => sum + (Number(o.totalAmount ?? o.totalPrice ?? 0) || 0),
