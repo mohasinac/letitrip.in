@@ -51,6 +51,7 @@ export function usePricingPreview({
   lane,
   addonSignal = "",
   couponSignal = "",
+  itemsSignal = "",
 }: {
   /** False for signed-out carts and for steps that shouldn't fetch yet. */
   enabled: boolean;
@@ -62,6 +63,18 @@ export function usePricingPreview({
   addonSignal?: string;
   /** Serialized applied-coupon state, so applying/removing a coupon refetches. */
   couponSignal?: string;
+  /**
+   * Serialized cart contents — item ids with their quantities, including a
+   * grouped line's per-member quantities.
+   *
+   * 🛑 Without this the summary NEVER refetched on a quantity change. Add-ons
+   * and coupons each had a signal; the thing the buyer changes most often had
+   * none. The line total still moved, because that is local arithmetic, and the
+   * header badge moved, because it counts items — so two of the three numbers
+   * on screen updated and the one carrying the money did not. That is worse
+   * than all three freezing: it reads as a working page with a wrong total.
+   */
+  itemsSignal?: string;
 }): UsePricingPreviewResult {
   const [preview, setPreview] = useState<CheckoutPricingPreview | null>(null);
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
@@ -110,7 +123,7 @@ export function usePricingPreview({
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [enabled, addressId, paymentMethod, lane, addonSignal, couponSignal]);
+  }, [enabled, addressId, paymentMethod, lane, addonSignal, couponSignal, itemsSignal]);
 
   return { preview, isLoadingPreview, status, error };
 }

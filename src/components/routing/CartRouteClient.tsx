@@ -1160,6 +1160,22 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
     lane: activeTabLane,
     addonSignal,
     couponSignal: String(effectiveSelected?.size ?? "all"),
+    /*
+     * Quantities, including a grouped line's per-member quantities — a group
+     * line's own `quantity` is pinned to 1, so member edits would otherwise be
+     * invisible to this signal and the summary would freeze for exactly the
+     * lines that are hardest to reason about.
+     */
+    itemsSignal: cartItems
+      .map((i) => {
+        const base = `${i.itemId ?? i.productId}:${i.quantity}`;
+        return isMultiMemberLine(i as never)
+          ? `${base}[${getCartLineMembers(i as never)
+              .map((m) => `${m.productId}:${m.quantity}`)
+              .join("|")}]`
+          : base;
+      })
+      .join(","),
   });
 
   /** This store's slice of the preview, for its card footer. */

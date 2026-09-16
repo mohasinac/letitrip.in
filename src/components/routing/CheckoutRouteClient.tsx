@@ -1569,6 +1569,12 @@ export function CheckoutRouteClient({
     lane: checkoutLane ?? undefined,
     addonSignal,
     couponSignal,
+    // Quantities are not editable on this page, so this is not the fix the cart
+    // needed — it is the same dependency for the same reason: a cart mutated in
+    // another tab would otherwise leave these figures stale while looking live.
+    itemsSignal: laneScopedItems
+      .map((i) => `${i.itemId ?? i.productId}:${i.quantity}`)
+      .join(","),
   });
   /**
    * True only when the server priced at least one store. An empty lane returns

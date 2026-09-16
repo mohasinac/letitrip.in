@@ -166,6 +166,36 @@ session — the rule is now simply *never trust a sweep you have not watched fai
 `src/components/routing/CartRouteClient.tsx` · `appkit/src/client.ts` ·
 `scripts/audit-guest-price-leak.mjs`
 
+### C4 — the summary had no dependency on the cart ✅
+
+`usePricingPreview`'s effect depended on
+`[enabled, addressId, paymentMethod, lane, addonSignal, couponSignal]` — **no
+signal for cart contents at all.** Changing a quantity therefore never refetched
+the server-computed summary.
+
+The signal pattern was already there and correct: add-ons have one, coupons have
+one. The thing a buyer changes most often had none.
+
+**Why it presented as it did**: the line total moved (local arithmetic) and the
+header badge moved (it counts items), so two of the three numbers on screen
+updated and the one carrying the money did not. That is worse than all three
+freezing — it reads as a working page with a wrong total, and the buyer has no
+cue that anything is stale.
+
+**Fixed** with an `itemsSignal` of item ids and quantities, including a grouped
+line's **per-member** quantities — a group line's own `quantity` is pinned to 1
+by the cart invariant, so member edits would otherwise be invisible to the
+signal and the summary would freeze for precisely the lines that are hardest to
+reason about.
+
+Swept the other caller: `CheckoutRouteClient` had the same missing dependency.
+Quantities are not editable there, so it is not the same defect — but a cart
+mutated in another tab would leave those figures stale while looking live, so it
+gets the same signal.
+
+`src/lib/hooks/usePricingPreview.ts` · `CartRouteClient.tsx` ·
+`CheckoutRouteClient.tsx`
+
 ---
 
 ## Tests run
