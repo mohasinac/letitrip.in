@@ -89,21 +89,36 @@ been a lie and `unknown` was a dodge. It is left undeclared, with the reason
 written down, since `AvailabilityRow` is `Record<string, FirestoreValue>` and the
 predicate reads it off the document anyway.
 
-### C2 — in progress, not yet found
+### C2 — cart validation deleted every grouped and bundle line ✅
 
-Eliminated so far, so the next pass does not re-walk them:
+**Root cause**: `runCartValidation` sends every line's `productId` to
+`POST /api/cart/validate`, which answers by calling
+`productRepository.findById` on each one. But **a multi-member line's
+`productId` is not a product id** — a group line carries the GROUP's id, a
+bundle line carries the bundle CATEGORY's id, by design, because the line stands
+for a selection rather than for one product.
 
-- `GET /api/cart` does **not** drop items — it only enriches `storeName`.
-- `cartRepository.pruneForItems` prunes selection / coupons / add-ons only,
-  never `items`.
-- `getCartForUser` is a bare `findByUserId` with a deliberate no-catch.
-- `addGroupLineToCart` is the ADD path; its stock check throws rather than deletes.
+Neither resolves. Both came back `stale` — "no longer published" — and the very
+next block `deleteCartItem`s them.
 
-Still to check: the cart PAGE's own client/SSR reconciliation, and any
-"validate the cart" sweep that resolves `item.productId` — the strongest
-hypothesis remains that a product-existence sweep drops both line kinds, because
-a **group** line's `productId` is a group id and a **bundle** line's is a
-category id, so neither resolves as a product.
+So the line was built perfectly (right members, right discounted price; the
+tester confirmed `lineKind: "bundle"` at price 2999 rather than the ₹4,597 sum
+of its members) and then **destroyed the instant /cart rendered**. Every grouped
+and bundle cart case was testing a cart that had silently emptied itself, which
+is why several read as "the feature does not exist".
+
+**Fixed** at the caller, where the line kind is known: a multi-member line now
+contributes its MEMBERS' product ids instead of its own. Those are real products
+and are what actually has to stay purchasable.
+
+The apply-side needed no guard and that is by construction, not luck: a
+multi-member line's own id is never sent, so it can never appear in `stale` or
+`moveable`, so it can never be matched and deleted.
+
+`src/components/routing/CartRouteClient.tsx` · `appkit/src/client.ts`
+(exports `isMultiMemberLine` / `getCartLineMembers` — reading `groupMembers`
+directly would miss carts written before that field existed; the fallback lives
+inside those accessors).
 
 ---
 

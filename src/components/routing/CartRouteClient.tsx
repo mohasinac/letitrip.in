@@ -30,6 +30,7 @@ import { ChevronDown, ChevronUp, Clock } from "lucide-react";
 import type { JsonValue, JsonArray } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
+import { isMultiMemberLine, getCartLineMembers } from "@mohasinac/appkit/client";
 import { Alert, Button, CartItemRow, CartGroupLineRow, CartSummary, CartView, Checkbox, Div, Heading, Input, Text, useAuth, useCartQuery, useGuestCart, useGuestCartMerge, useGuestWishlist, useToast, ROUTES, useAuthGate, ACTION_ID, ACTIONS, LoginRequiredModal, useBottomActions, pluginFor, detectListingTypeFromSlug, getCartOps, clearCartOps, removeCartOpsFor, CART_OPS_CHANGE_EVENT } from "@mohasinac/appkit/client";
 import type { CartItem, CartOp, ListingType, CartLineKind, CartGroupSource, CartLineMember } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
@@ -438,7 +439,34 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
   const [moveableIds, setMoveableIds] = useState<Set<string>>(new Set());
 
   const runCartValidation = useCallback(async () => {
-    const productIds = cartItems.map((i) => i.productId);
+    /*
+     * 🛑 A MULTI-MEMBER LINE'S `productId` IS NOT A PRODUCT ID.
+     *
+     * A group line carries the GROUP's id and a bundle line carries the bundle
+     * CATEGORY's id — by design, because the line stands for a selection rather
+     * than for one product. `/api/cart/validate` answers by calling
+     * `productRepository.findById` on whatever it is sent, so both came back
+     * `stale` ("no longer published") and were DELETED.
+     *
+     * The line was therefore built correctly — right members, right discounted
+     * price — and destroyed the moment /cart rendered. Every grouped- and
+     * bundle-cart case failed on a cart that had silently emptied itself.
+     *
+     * Validate the MEMBERS instead: those are real product ids, and they are
+     * what actually has to still be purchasable. `isMultiMemberLine` /
+     * `getCartLineMembers` are the shared accessors — reading `groupMembers`
+     * directly would miss carts written before that field existed, which is
+     * why the fallback lives inside them.
+     */
+    const productIds = [
+      ...new Set(
+        cartItems.flatMap((i) =>
+          isMultiMemberLine(i as never)
+            ? getCartLineMembers(i as never).map((m) => m.productId)
+            : [i.productId],
+        ),
+      ),
+    ];
     try {
       const res = await validateCart(productIds);
       if (!res.ok) return;
