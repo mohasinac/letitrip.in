@@ -8434,3 +8434,115 @@ holds for A121. It simply did not apply here, and I applied it too eagerly.
 `QA Address buying-checkout-…`) have been deleted through the repaired UI. The
 buyer account is back to its seeded address only. Nothing is left on the
 PRESERVE tier.
+
+---
+
+# A121 — THE REAL ROOT CAUSE, and a correction to my own fix
+
+## 🛑 Correction first: I fixed the wrong schema
+
+`src/actions/seller.actions.ts` imports `productUpdateSchema` from
+**`@/validation/request-schemas`** — the *consumer's* schema. The one I widened
+in cycle 1 lives in appkit (`_internal/shared/features/products/schema.ts`) and
+is used by a **different** action (`updateProductAction`).
+
+So that fix is real and the 38→1 measurement stands — for the path it governs.
+It was never on the seller edit path. **Root Cause #53 exactly**: two symbols
+with the same name, and the one you fix is not the one that runs. I had even
+read the correct import line earlier and did not register that it pointed
+somewhere else.
+
+## The actual cause: `mainImage: urlSchema`
+
+Captured from the server action's own response body:
+
+```
+"ok":false   "code":"VALIDATION_FAILED"   "error":"Invalid URL"
+```
+
+`urlSchema` is `z.string().url()`, which demands an **absolute** URL. **Every**
+media form this platform mints is relative:
+
+| form | minted by | `z.string().url()` |
+|---|---|---|
+| `/media/<slug>` | `/api/media/finalize` | ✗ Invalid URL |
+| `/api/media/ext?url=…` | `seedExtMedia` | ✗ Invalid URL |
+
+The product's own `mainImage` is `/api/media/ext?url=…`, so **every seller
+listing edit has always failed** — rejected because of a value the seller never
+typed, could not see, and did not choose. The UI then reported it as "Fix the
+highlighted errors" with nothing highlighted.
+
+The file itself documents the trap: its `mediaUrlSchema` comment says the two
+copies "refine on the SAME predicate … instead of each re-deriving the rule.
+**That re-derivation is what let both copies be wrong in the same way.**" The
+helper was fixed. The fields that needed it were not.
+
+**Fixed** with `listingMediaUrlSchema` on `mainImage`, `images`, `video.thumbnailUrl`
+and `display.coverImage` — deliberately wider than `isStoredMediaRef` (which
+rejects the `ext` form) because a listing legitimately carries platform-minted
+`ext` refs, while an arbitrary user avatar should not. Widening at the listing
+schema rather than loosening `isStoredMediaRef` keeps the stricter rule for
+every other consumer.
+
+Verified against real values, negative controls included:
+
+```
+accept  /media/product-abc-image-1.webp        (canonical upload)
+accept  /api/media/ext?url=…placehold.co…      (THE failing value)
+accept  https://res.cloudinary.com/…           (approved CDN)
+REJECT  https://evil.example.com/x.png         (unapproved host)
+```
+
+## Two more bugs found in the same block
+
+- **`video.url` rejected YouTube.** The refine required a `.mp4/.webm/.ogg/.mov/.m4v`
+  extension, and a YouTube watch URL has none — so a video source
+  `MediaUploadField` deliberately offers its own tab for could be authored and
+  then never saved. Root Cause #49, on the write side this time.
+- **`video.thumbnailUrl: urlSchema`** — it is an image, and the seed wraps it
+  through the ext proxy, so it was relative and rejected too.
+
+## And the message that hid all of it
+
+`toUserMessage(code, undefined, {fallback})` short-circuits on
+`if (!t) return generic` — **with no translator it returns the fallback for
+every code and never consults it**. Passing the validation sentence as that
+fallback made every refusal look like a validation problem.
+
+**22 of 28 call sites pass `undefined` for `t`**, so the whole error-code→message
+mapping is inert nearly everywhere and every distinct server error renders as
+one string. Fixed at the seller shell (`saveFailureMessage` names the code when
+there are no issues); the other 21 sites are queued, not done.
+
+---
+
+# Stop hook: fix-then-test
+
+`mode: "fix-then-test"` in `loop-state.json`, added to
+`scripts/claude-hooks/tester-loop-continue.mjs`.
+
+- **Phase `fix`** — while `fixQueue` is non-empty, the hook names the next
+  defect and explicitly forbids running batches.
+- **Phase `test`** — once the queue empties, it switches to re-driving the
+  superset: the 237 `no` ids **and** the 554 `null` ids.
+
+Blocked cases are in the superset deliberately: many were blocked *by* the
+defects being fixed — a save that writes nothing blocks every case downstream of
+it — so re-testing only the failures would leave that coverage unrecovered.
+
+The flip is mechanical (empty queue ⇒ test), so the phase cannot be declared
+done early or forgotten. An entry leaves the queue only by explicit edit; the
+hook never infers that something is fixed.
+
+**Verified by running it**, both phases and a negative control:
+
+| | result |
+|---|---|
+| queue of 9 | `▶ FIX PHASE — 9 defect(s) outstanding`, names the next one, exit 2 |
+| queue emptied | `▶ TEST PHASE — fixQueue is empty`, points at both id files, exit 2 |
+| `fixQueue` **absent** | stands down with a reason, exit 0 — does **not** flip to testing |
+
+That last row is the one that matters: an absent queue is not an empty one, and
+treating it as empty would start testing with every defect unfixed. Root Cause
+#87 — never trust a gate you have not seen fail.

@@ -163,6 +163,14 @@ const planPath = String(state.planPath ?? "tester/.tester-runs/plan-snapshot.md"
  */
 const testerModeUsable = Boolean(runId);
 
+if (mode === "fix-then-test" && !Array.isArray(state.fixQueue)) {
+  standDown(
+    `tester loop: mode "fix-then-test" but no fixQueue array in the state file — standing down.\n` +
+      `  An ABSENT queue is not an empty one: absent means nobody wrote the list, and\n` +
+      `  treating it as empty would flip straight to testing with every defect unfixed.`,
+  );
+}
+
 if (mode === "tester" && !testerModeUsable) {
   standDown("tester loop: state file has no runId — standing down.");
 }
@@ -313,6 +321,85 @@ function consolidatedCount() {
   } catch {
     return 0;
   }
+}
+
+/* ── fix-then-test mode ──────────────────────────────────────────────────────
+ *
+ * Two phases, in order, driven entirely from the state file:
+ *
+ *   phase "fix"   drain `fixQueue` — every known defect — and do NOT test.
+ *   phase "test"  re-drive the recorded failures AND the blocked cases.
+ *
+ * 🛑 The phases are separate ON PURPOSE, and the ordering is the whole point.
+ * Interleaving them is what made the previous cycle expensive: a fix shipped
+ * mid-run is not exercised by the batches already recorded, so the run ends
+ * carrying failures whose fix nobody re-drove, and the next run re-finds them.
+ * Fix everything first, deploy once, then test once against a build that has
+ * all of it.
+ *
+ * The flip is MECHANICAL — `fixQueue` empty means phase "test" — so the
+ * assistant cannot declare itself done early, and cannot forget to move on.
+ * The hook never infers that an entry is fixed; removing it from the queue is
+ * an explicit edit, for the same reason `planStep` is.
+ */
+function fixThenTestContinue() {
+  const queue = Array.isArray(state.fixQueue) ? state.fixQueue.map(String) : [];
+  const phase = queue.length > 0 ? "fix" : "test";
+
+  if (phase === "fix") {
+    const head = queue[0];
+    bump({ blocked: null, phase: "fix" });
+    blockWith(
+      `▶ FIX PHASE — ${queue.length} defect(s) outstanding (continuation ${continuations + 1})\n` +
+        `\n` +
+        `  Do NOT end the turn, and do NOT run tester batches yet. Testing happens\n` +
+        `  only once the queue is empty, against a build that carries every fix.\n` +
+        `\n` +
+        `  NEXT: ${head}\n` +
+        `\n` +
+        `  Remaining: ${queue.slice(1).join(" · ") || "(none — this is the last one)"}\n` +
+        `\n` +
+        `  For each: find the ROOT CAUSE, fix it, and sweep for the same shape\n` +
+        `  elsewhere — every defect this run has produced more than one instance.\n` +
+        `  Record it in the findings md file as you go.\n` +
+        `\n` +
+        `  When one is genuinely fixed, REMOVE it from fixQueue in ${STATE}.\n` +
+        `  The hook never infers completion — an entry leaves the queue only when\n` +
+        `  you take it out, because a hook that guesses skips an unfixed bug.\n` +
+        `\n` +
+        `  🛑 A fix is not done because it typechecks. It is done when the failing\n` +
+        `  behaviour has been re-driven, or when you have said plainly that it has\n` +
+        `  not been.\n` +
+        `\n` +
+        `  Off switch: set active:false in the state file.\n`,
+    );
+  }
+
+  bump({ blocked: null, phase: "test" });
+  blockWith(
+    `▶ TEST PHASE — fixQueue is empty (continuation ${continuations + 1})\n` +
+      `\n` +
+      `  Every queued fix is done. Now re-drive the SUPERSET:\n` +
+      `    • every case recorded "no"    → tester/.tester-runs/pass2-failed-ids.txt\n` +
+      `    • every case recorded null    → tester/.tester-runs/pass2-blocked-ids.txt\n` +
+      `\n` +
+      `  Blocked cases are included deliberately. Many were blocked BY the defects\n` +
+      `  just fixed — a save that wrote nothing blocks every case downstream of it —\n` +
+      `  so a run that re-tests only the failures leaves that coverage unrecovered.\n` +
+      `\n` +
+      `  Rules that do not change: drive the UI, screenshot every verdict, a "no"\n` +
+      `  needs evidence, and null stays first-class. A case that still cannot be\n` +
+      `  tested is null again with the reason — not a guess.\n` +
+      `\n` +
+      `  Prerequisite: production must carry the fixes. If it does not, deploy\n` +
+      `  first — testing a build without them re-records the same failures.\n` +
+      `\n` +
+      `  Off switch: set active:false in the state file.\n`,
+  );
+}
+
+if (mode === "fix-then-test") {
+  fixThenTestContinue();
 }
 
 /* ── Pure plan mode ────────────────────────────────────────────────────────

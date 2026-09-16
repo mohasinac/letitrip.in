@@ -29,6 +29,8 @@ import {
   isStoredMediaRef,
   MEDIA_URL_MAX_LENGTH,
   MEDIA_URL_MESSAGE,
+  MEDIA_ENDPOINTS,
+  getYouTubeVideoId,
 } from "@mohasinac/appkit";
 import { addressFormSchema, addressUpdateSchema } from "@mohasinac/appkit/server";
 import { PRODUCT_MAX_IMAGES } from "@mohasinac/appkit";
@@ -47,6 +49,35 @@ export const mediaUrlSchema = z
   .string()
   .max(MEDIA_URL_MAX_LENGTH)
   .refine(isStoredMediaRef, { message: MEDIA_URL_MESSAGE });
+
+/**
+ * What a LISTING's own media may be, on the way into Firestore.
+ *
+ * 🛑 Never `urlSchema` for a media field. `z.string().url()` demands an
+ * absolute URL, and **every** form this platform actually mints is relative:
+ * `/media/<slug>` from `/api/media/finalize`, and `/api/media/ext?url=…` from
+ * `seedExtMedia`. `mainImage` was declared `urlSchema`, so it rejected the
+ * product's OWN stored image and **every seller listing edit failed** with a
+ * bare "Invalid URL" — for a value the seller never typed and could not see.
+ * appkit's twin of `mediaUrlSchema` carries a comment about having already
+ * fixed this exact mistake for avatars; the fix was made to the helper here and
+ * never applied to the fields that needed it.
+ *
+ * This is deliberately WIDER than `isStoredMediaRef`, which rejects the `ext`
+ * proxy form. That rejection is right for a user-supplied avatar — an arbitrary
+ * third-party image should not be persisted as if it were ours — but a listing
+ * legitimately carries `ext` refs, because the platform itself mints them and
+ * the endpoint validates and watermarks what it serves. Widening here rather
+ * than loosening `isStoredMediaRef` keeps the stricter rule for every other
+ * consumer of it.
+ */
+const isPersistableListingMedia = (value: string): boolean =>
+  isStoredMediaRef(value) || value.startsWith(MEDIA_ENDPOINTS.EXT);
+
+export const listingMediaUrlSchema = z
+  .string()
+  .max(MEDIA_URL_MAX_LENGTH)
+  .refine(isPersistableListingMedia, { message: MEDIA_URL_MESSAGE });
 
 export function validateRequestBody<T>(
   schema: z.ZodSchema<T>,
@@ -85,16 +116,38 @@ const productSpecificationSchema = z.object({
 
 const ALLOWED_VIDEO_EXTENSIONS = [".mp4", ".webm", ".ogg", ".mov", ".m4v"];
 
+/**
+ * A listing video's source.
+ *
+ * Three shapes are legitimate and the previous `urlSchema` + extension refine
+ * accepted only one of them:
+ *   1. an uploaded file — `/media/<slug>`, relative, so `urlSchema` rejected it;
+ *   2. a raw external file — absolute, with a video extension;
+ *   3. a **YouTube** watch URL — which `MediaUploadField` deliberately mints
+ *      from its own "YouTube" tab, and which has no video extension, so the
+ *      refine rejected it. A YouTube-sourced listing could be authored in the
+ *      picker and then never saved (Root Cause #49, on the write side).
+ */
+const isPersistableVideoSource = (u: string): boolean => {
+  if (isPersistableListingMedia(u)) return true;
+  if (getYouTubeVideoId(u)) return true;
+  return ALLOWED_VIDEO_EXTENSIONS.some((ext) =>
+    u.toLowerCase().split("?")[0].endsWith(ext),
+  );
+};
+
 const videoSchema = z
   .object({
-    url: urlSchema.refine(
-      (u) =>
-        ALLOWED_VIDEO_EXTENSIONS.some((ext) =>
-          u.toLowerCase().split("?")[0].endsWith(ext),
-        ),
-      { message: "Video must be mp4, webm, ogg, mov, or m4v format" },
-    ),
-    thumbnailUrl: urlSchema,
+    url: z
+      .string()
+      .max(2048)
+      .refine(isPersistableVideoSource, {
+        message:
+          "Video must be an uploaded file, a YouTube link, or a direct mp4/webm/ogg/mov/m4v URL",
+      }),
+    // An image, and the seed wraps it through the ext proxy — so it is a media
+    // ref, not an absolute URL.
+    thumbnailUrl: listingMediaUrlSchema,
     duration: z.number().positive().max(600),
     trimStart: z.number().min(0).optional(),
     trimEnd: z.number().positive().optional(),
@@ -137,8 +190,8 @@ const productBaseSchema = z.object({
   // Auction/pre-order/prize-draw/digital-code listings have no stock input,
   // so making this unconditionally required made those 4 types un-publishable.
   stockQuantity: z.number().int().nonnegative().optional(),
-  mainImage: urlSchema,
-  images: z.array(urlSchema).max(PRODUCT_MAX_IMAGES).optional(),
+  mainImage: listingMediaUrlSchema,
+  images: z.array(listingMediaUrlSchema).max(PRODUCT_MAX_IMAGES).optional(),
   video: videoSchema.optional(),
   specifications: z.array(productSpecificationSchema).max(50).optional(),
   features: z.array(z.string().min(1).max(200)).max(20).optional(),
@@ -351,7 +404,7 @@ const categoryBaseSchema = z.object({
   display: z
     .object({
       icon: z.string().max(100).optional(),
-      coverImage: urlSchema.optional(),
+      coverImage: listingMediaUrlSchema.optional(),
       color: z
         .string()
         .regex(/^#[0-9A-Fa-f]{6}$/)
