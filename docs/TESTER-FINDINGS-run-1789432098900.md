@@ -8401,3 +8401,36 @@ left the symptom looking unchanged.
 1 Test Street). `addresses` is **PRESERVE tier**, so no wipe removes them, and
 the only UI affordance for removing them is the Delete button that does not
 work. They will persist until Delete is fixed.
+
+### 🛑 CORRECTION — A201 Delete is fixed too. My "inert Delete" was a measurement error.
+
+Retested properly: Delete **works end to end**. Clicking it renders
+*"Delete this address? This cannot be undone."*, and confirming removes the row
+— the QA Probe disappeared from the list and a "deleted" toast fired.
+
+**What I got wrong**: I searched for the confirmation with
+`[role="dialog"], .appkit-modal, .appkit-confirm-modal`. This confirm is
+**inline JSX** inside the list component, not a modal, so my selector matched
+nothing and I read "no dialog appeared" as "the button is inert". The button was
+working the whole time; my probe was looking for the wrong shape.
+
+Source confirms the wiring was never in doubt: `AddressCard` renders Delete only
+when `onDelete` is defined (`{onDelete && ...}`), so a *visible* Delete button is
+itself proof the handler was attached. I had that evidence on screen — four
+rendered Delete buttons — and reasoned past it.
+
+**So A201 is fully fixed, both halves**, by the one `params` change. The table
+in the previous section is wrong on its second row and is superseded by this:
+
+| | server side | client side |
+|---|---|---|
+| A121 | schema stripped 38 fields — **fixed** | Save flow — **still open** |
+| A201 | `params` read off `request` — **fixed** | *(no client defect — my error)* |
+
+The generalisation about "does nothing" vs "succeeds and changes nothing" still
+holds for A121. It simply did not apply here, and I applied it too eagerly.
+
+✅ **Residue cleared.** All three QA addresses (`QA Probe` + two
+`QA Address buying-checkout-…`) have been deleted through the repaired UI. The
+buyer account is back to its seeded address only. Nothing is left on the
+PRESERVE tier.
