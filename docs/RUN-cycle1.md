@@ -431,6 +431,25 @@ existed; the case asks the tester to "select the city Mumbai", which cannot be
 performed. Adding a facet is a product decision, not a defect repair, so it is
 recorded for C12 triage rather than invented here.
 
+### C11 — an empty state that named the next action without offering it ✅
+
+`/cart` empty read "Your cart is empty" / "Add products from the marketplace to
+continue." with **zero anchors in the region**. Copy that names the next action
+and does not provide it is a dead end, on the one screen a buyer reaches with
+intent to spend.
+
+Two destinations, not one: **Browse products** for someone still deciding, and
+**View your wishlist** for someone who already chose and would otherwise leave
+to go find it again.
+
+Swept all 1,423 `.tsx` files for other `renderEmpty` blocks whose copy names an
+action ("Add…", "Browse…", "Start…") with no link or button in it. One hit — this
+file, a false positive: the rule reads 20 lines from `renderEmpty={` and the new
+buttons sit at offset 22, past the window. Verified by reading the block. No
+genuine dead ends remain.
+
+`src/components/routing/CartRouteClient.tsx`
+
 ---
 
 ## Tests run

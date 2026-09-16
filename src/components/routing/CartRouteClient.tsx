@@ -30,6 +30,7 @@ import { ChevronDown, ChevronUp, Clock } from "lucide-react";
 import type { JsonValue, JsonArray } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
+import { TextLink } from "@mohasinac/appkit/client";
 import { GatedPrice, PricesOnly, useCanSeePrices } from "@mohasinac/appkit/client";
 import { isMultiMemberLine, getCartLineMembers } from "@mohasinac/appkit/client";
 import { Alert, Button, CartItemRow, CartGroupLineRow, CartSummary, CartView, Checkbox, Div, Heading, Input, Text, useAuth, useCartQuery, useGuestCart, useGuestCartMerge, useGuestWishlist, useToast, ROUTES, useAuthGate, ACTION_ID, ACTIONS, LoginRequiredModal, useBottomActions, pluginFor, detectListingTypeFromSlug, getCartOps, clearCartOps, removeCartOpsFor, CART_OPS_CHANGE_EVENT } from "@mohasinac/appkit/client";
@@ -1677,9 +1678,31 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
           >
             Your cart is empty
           </Heading>
-          <Text color="muted">
+          <Text className="mb-4" color="muted">
             Add products from the marketplace to continue.
           </Text>
+          {/*
+            The copy said "add products from the marketplace" and gave no way to
+            reach it — zero anchors in the whole region. An empty state that
+            names the next action without offering it is a dead end on the one
+            screen a buyer lands on with intent to spend.
+
+            Two destinations rather than one: the catalogue for someone still
+            deciding, and the wishlist for someone who already chose and will
+            otherwise leave to go looking for it.
+          */}
+          <Row gap="sm" wrap>
+            <Button asChild variant="primary">
+              <TextLink href={String(ROUTES.PUBLIC.PRODUCTS)}>
+                Browse products
+              </TextLink>
+            </Button>
+            <Button asChild variant="outline">
+              <TextLink href={String(ROUTES.USER.WISHLIST)}>
+                View your wishlist
+              </TextLink>
+            </Button>
+          </Row>
         </Div>
       )}
     />
