@@ -8779,3 +8779,33 @@ sites: it is a wide change with no user-visible gain over the copy already there
 and picking that up unprompted late in a session is how regressions get made. It
 is worth doing deliberately, as its own piece of work — flagging rather than
 starting it.
+
+---
+
+# POST-DEPLOY VERIFICATION — appkit 4.41.9
+
+| finding | production result |
+|---|---|
+| **A206** selection | ✅ one click → `checked = 1`, **"1 selected"**, bulk bar renders; clicking again deselects cleanly |
+| **A207** SVG picker | ✅ `accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"` — the `image/*` wildcard that matched `image/svg+xml` is gone |
+| **A121** seller save | ✅ verified earlier this cycle — "Saved.", survives reload |
+| **A204** returns toggle | ✅ both directions persist, including a falsy value |
+| **A185** return-requests | ✅ renders instead of white-screening |
+| **A201** address edit + delete | ✅ both |
+| **A196** ciphertext names | ⏳ **write-time fix — cannot be verified without a NEW order.** The 383 existing rows keep their ciphertext because the message was baked at write time. Deferred to the test phase, where an order-placement case exercises it |
+
+A196 is deliberately **not** marked verified. The code change is right and the
+mechanism is understood, but nothing on production proves it yet, and a fix
+nobody re-drove is a hypothesis.
+
+## FIX PHASE COMPLETE — queue drained 9 → 0
+
+Six real defects fixed and five of them verified live; three entries turned out
+to be my own measurement errors; one (`toUserMessage`) was reclassified from 22
+defects to one.
+
+**Next is the TEST PHASE**, which the stop hook will now select on its own:
+re-drive `pass2-failed-ids.txt` (237) **and** `pass2-blocked-ids.txt` (554).
+The blocked set matters as much as the failed set — a save that wrote nothing
+blocked every case downstream of it, and that coverage comes back only by
+re-running them.
