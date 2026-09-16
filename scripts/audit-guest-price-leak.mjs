@@ -48,7 +48,7 @@
  * Strict zero.
  */
 
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -186,8 +186,18 @@ for (const file of walk(join(ROOT, OG_GLOB_DIR))) {
 }
 
 // ── R2 — public surfaces format money only through the gate ──────────────────
-for (const dir of PUBLIC_DIRS) {
-  for (const file of walk(join(ROOT, dir))) {
+/*
+ * Guest-reachable surfaces that live outside the feature dirs above. Listed as
+ * FILES rather than a directory: `src/components/routing` also holds
+ * dashboard-only clients, and sweeping the folder would bury a real finding in
+ * signed-in noise.
+ */
+const GUEST_REACHABLE_FILES = ["src/components/routing/CartRouteClient.tsx"];
+
+for (const dir of [...PUBLIC_DIRS, ...GUEST_REACHABLE_FILES]) {
+  const target = join(ROOT, dir);
+  const files = existsSync(target) && statSync(target).isFile() ? [target] : walk(target);
+  for (const file of files) {
     const base = file.split(sep).pop();
     if (PUBLIC_DIR_EXCEPTIONS.has(base)) continue;
     const raw = readFileSync(file, "utf8");

@@ -30,6 +30,7 @@ import { ChevronDown, ChevronUp, Clock } from "lucide-react";
 import type { JsonValue, JsonArray } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
+import { GatedPrice, PricesOnly, useCanSeePrices } from "@mohasinac/appkit/client";
 import { isMultiMemberLine, getCartLineMembers } from "@mohasinac/appkit/client";
 import { Alert, Button, CartItemRow, CartGroupLineRow, CartSummary, CartView, Checkbox, Div, Heading, Input, Text, useAuth, useCartQuery, useGuestCart, useGuestCartMerge, useGuestWishlist, useToast, ROUTES, useAuthGate, ACTION_ID, ACTIONS, LoginRequiredModal, useBottomActions, pluginFor, detectListingTypeFromSlug, getCartOps, clearCartOps, removeCartOpsFor, CART_OPS_CHANGE_EVENT } from "@mohasinac/appkit/client";
 import type { CartItem, CartOp, ListingType, CartLineKind, CartGroupSource, CartLineMember } from "@mohasinac/appkit/client";
@@ -381,6 +382,10 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
     return () => window.removeEventListener(CART_OPS_CHANGE_EVENT, onChange);
   }, []);
 
+  // Three states, not two: SessionProvider mounts initialUser=null so `loading`
+  // starts true on every hard load for signed-in users too. Only
+  // !canSeePrices && !isAuthResolving is a confirmed guest (Root Cause #93).
+  const { canSeePrices } = useCanSeePrices();
   const isAuthenticated = !!user?.uid;
   const cartItems = isAuthenticated
     ? mergePendingCartOps(serverItemsToCartItems(serverCart?.cart?.items ?? []), getCartOps())
@@ -1187,7 +1192,9 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
     (storeId: string) => {
       const storePreview = previewByStore.get(storeId);
       const hasSelected = laneSelectedStoreIds.has(storeId);
-      const money = (v: number) => `₹${v.toFixed(2)}`;
+      // Same reasoning as infoLabel: these are built as strings for
+      // per-store fee rows, so the gate is read rather than wrapped.
+      const money = (v: number) => (canSeePrices ? `₹${v.toFixed(2)}` : "—");
       return (
         <Stack gap="xs" className="min-w-0">
           {storePreview && (
@@ -1309,7 +1316,11 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
           secondaryLabel: laneBlocked
             ? (laneReason ?? undefined)
             : `${CART_LANE_LABELS[activeTabLane]} only`,
-          infoLabel: `Total: ₹${(pricingPreview?.total ?? laneDisplayTotal).toFixed(2)} · ${
+          // A STRING prop cannot be wrapped in <GatedPrice>, so the gate is read
+          // as a value here — the documented third case alongside GatedPrice and
+          // PricesOnly. Without it the mobile bar published the total a guest
+          // could not see on the desktop summary.
+          infoLabel: `${canSeePrices ? `Total: ₹${(pricingPreview?.total ?? laneDisplayTotal).toFixed(2)} · ` : ""}${
             activeTabLane === CART_LANE.STANDARD ? laneSelectedCount : laneBucket.length
           } item${
             (activeTabLane === CART_LANE.STANDARD ? laneSelectedCount : laneBucket.length) !== 1 ? "s" : ""
@@ -1519,7 +1530,7 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
                     : `${laneBucket.length} ${CART_LANE_LABELS[activeTabLane].toLowerCase()}`}
                 </Text>
                 <Text size="sm" color="muted">
-                  ₹{laneDisplayTotal.toFixed(2)}
+                  <GatedPrice>₹{laneDisplayTotal.toFixed(2)}</GatedPrice>
                 </Text>
               </Row>
               {/* Expands BELOW on desktop; the mobile bar opens the same
@@ -1574,7 +1585,7 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
                     : `${CART_LANE_LABELS[activeTabLane]} total`}
                 </Text>
                 <Text weight="semibold" color="primary">
-                  ₹{(pricingPreview?.total ?? laneDisplayTotal).toFixed(2)}
+                  <GatedPrice>₹{(pricingPreview?.total ?? laneDisplayTotal).toFixed(2)}</GatedPrice>
                 </Text>
               </Row>
             </Div>
@@ -1865,7 +1876,9 @@ function SellerGroupSection({
         {/* Per-group subtotal */}
         {!isOutOfStock && group.items.length > 0 && (
           <Text size="xs" color="muted" className="flex-shrink-0 tabular-nums">
-            ₹{group.items.reduce((s, i) => s + i.meta.price * i.quantity, 0).toFixed(2)}
+            <PricesOnly>
+              ₹{group.items.reduce((s, i) => s + i.meta.price * i.quantity, 0).toFixed(2)}
+            </PricesOnly>
           </Text>
         )}
       </Row>

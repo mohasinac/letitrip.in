@@ -120,6 +120,52 @@ multi-member line's own id is never sent, so it can never appear in `stale` or
 directly would miss carts written before that field existed; the fallback lives
 inside those accessors).
 
+### C3 — guest prices on /cart, and the audit that was told not to look ✅
+
+**Root cause (two halves).** `/cart` rendered the amount in five places with no
+gate, while `/products` correctly showed "Sign in to see price". And
+`audit-guest-price-leak` reported clean throughout — because its own header
+asserted that *"admin, seller, **cart**, checkout and order surfaces … are
+signed-in by definition"*.
+
+**That premise is false.** `useGuestCart` exists, `useGuestCartMerge` merges a
+guest cart on login, and the tester observed the amounts while signed out. The
+audit was not broken; it had been told the cart could not leak.
+
+Why gating the cart is right rather than merely case-compliance: a guest who can
+add any item and read its price **has a price oracle that bypasses the gate
+entirely** — the same reasoning that already withholds the price facet and the
+money sorts.
+
+**Fixed**, matching the documented three-way split:
+- `<GatedPrice>` — the lane subtotal and the lane total (primary amounts)
+- `<PricesOnly>` — the per-group subtotal (secondary, beside a gated primary)
+- `useCanSeePrices()` — the bottom-bar `infoLabel` and the per-store `money()`
+  helper, because **a string prop cannot be wrapped in a slot**
+
+**Audit corrected too**, or this regresses the moment someone adds a sixth
+amount: the false premise is replaced with the reason it was false, and
+`GUEST_REACHABLE_FILES` adds the cart client to R2's scan — as a FILE, since
+`src/components/routing` also holds dashboard-only clients and sweeping the
+folder would bury a real finding in signed-in noise.
+
+**Verified by breaking it.** With every gate reference stripped, R2 reports:
+
+```
+FAIL: 5 violation(s).   CartRouteClient.tsx:1197, 1323, 1533, 1588, 1880
+```
+
+Five — exactly the count the tester reported seeing. Restored, it passes.
+
+🛑 **My first attempt at this audit change was blind**, and only the control
+caught it: one of two string replacements silently failed to match, so the loop
+still iterated `PUBLIC_DIRS` alone and the cart file was never opened. It
+printed a confident `OK: 0 violations`. That is the fourth vacuous sweep this
+session — the rule is now simply *never trust a sweep you have not watched fail*.
+
+`src/components/routing/CartRouteClient.tsx` · `appkit/src/client.ts` ·
+`scripts/audit-guest-price-leak.mjs`
+
 ---
 
 ## Tests run
