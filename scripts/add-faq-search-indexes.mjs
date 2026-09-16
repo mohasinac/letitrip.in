@@ -43,6 +43,25 @@ const WANTED = [
     { fieldPath: "isActive", order: "ASCENDING" },
     { fieldPath: "question", order: "ASCENDING" },
   ],
+  /*
+   * 🛑 THE PUBLIC PAGE'S OWN DEFAULT SORT.
+   *
+   * /faqs sends `sorts=-stats.helpful,-priority,order`, and searching there
+   * returned 409 with the box pre-filled and zero questions rendered — a page
+   * that looks like "no matches" rather than like a failure.
+   *
+   * It survived the earlier round of this fix because I verified the API with
+   * a sort I composed (`-createdAt`) instead of the one the page actually
+   * sends. Root Cause #84: a measurement narrower than the thing it certifies.
+   * Firestore named this index itself, decoded from the console URL.
+   */
+  [
+    { fieldPath: "searchTxt", arrayConfig: "CONTAINS" },
+    { fieldPath: "isActive", order: "ASCENDING" },
+    { fieldPath: "stats.helpful", order: "DESCENDING" },
+    { fieldPath: "priority", order: "DESCENDING" },
+    { fieldPath: "order", order: "ASCENDING" },
+  ],
 ];
 
 const sig = (fields) =>
