@@ -152,9 +152,21 @@ async function _GET(request: Request): Promise<NextResponse> {
    */
   if (minRating !== undefined) {
     const before = items.length;
+    /*
+     * Read the PROJECTED shape. `toPublicStore` has already run by this point
+     * and flattens the rating to a top-level `averageRating`, dropping `stats`
+     * entirely — so filtering on `stats.averageRating` here resolved undefined
+     * for every row and removed the whole list. Measured: rating=3 returned 0
+     * when both stores (4.1 and 3.6) qualify.
+     *
+     * Both spellings are accepted because this filter sits downstream of two
+     * executors whose projections need not agree — checking one and trusting
+     * the other to match is what produced the bug above.
+     */
     items = (items as Array<Record<string, JsonValue>>).filter((s) => {
-      const stats = s.stats as { averageRating?: number } | undefined;
-      return Number(stats?.averageRating ?? 0) >= minRating;
+      const flat = s.averageRating;
+      const nested = (s.stats as { averageRating?: number } | undefined)?.averageRating;
+      return Number(flat ?? nested ?? 0) >= minRating;
     });
     if (items.length !== before) total = items.length;
   }
