@@ -75,17 +75,74 @@ if (!guards(KNOWN_GOOD)) {
 }
 console.log("✓ control: rule distinguishes the known-bad shim from the known-good guard\n");
 
+/*
+ * 🛑 RATCHET — NOT A BASELINE. The distinction matters (see CLAUDE.md
+ * "Staged audits — a ratchet is not a baseline").
+ *
+ * These 17 are NAMED, and the list may only SHRINK. Removing an entry is the
+ * goal; adding one is the thing being blocked. A baseline tolerates N
+ * violations without saying which; this refuses the eighteenth by name.
+ *
+ * Seeded from a RUN OF THIS RULE, never from a hand-written grep — the
+ * hand-written list while designing the codemod said 10, the rule found 27
+ * (Root Cause #84).
+ *
+ * They are staged rather than fixed in the same change because they are two
+ * shapes needing different repairs, and mixing them into one codemod is how a
+ * half-migration ships:
+ *   - a "use client" page must distinguish LOADING from NOT-FOUND (today it
+ *     returns <PageLoader/> for both, so a bad id spins forever rather than
+ *     404ing) — that is a behaviour change per page, not a wrapper;
+ *   - five have no obvious repository (ads live inside siteSettings; roles,
+ *     navigation and shipment lots are nested or synthetic).
+ *
+ * MIGRATE=strict fails on all of them.
+ */
+const RATCHET = new Set([
+  "src/app/[locale]/admin/ads/[id]/edit/page.tsx",
+  "src/app/[locale]/admin/bids/[id]/view/page.tsx",
+  "src/app/[locale]/admin/event-entries/[id]/view/page.tsx",
+  "src/app/[locale]/admin/events/[id]/edit/page.tsx",
+  "src/app/[locale]/admin/features/[id]/edit/page.tsx",
+  "src/app/[locale]/admin/grouped-listings/[id]/edit/page.tsx",
+  "src/app/[locale]/admin/navigation/[id]/edit/page.tsx",
+  "src/app/[locale]/admin/payouts/[id]/view/page.tsx",
+  "src/app/[locale]/admin/prize-draws/[id]/edit/page.tsx",
+  "src/app/[locale]/admin/roles/[id]/edit/page.tsx",
+  "src/app/[locale]/admin/shipments/[id]/edit/page.tsx",
+  "src/app/[locale]/admin/shipments/[id]/lots/[lotId]/items/page.tsx",
+  "src/app/[locale]/admin/stores/[id]/view/page.tsx",
+  "src/app/[locale]/admin/team/[id]/edit/page.tsx",
+  "src/app/[locale]/admin/tester-checklist/[id]/edit/page.tsx",
+  "src/app/[locale]/admin/users/[id]/edit/page.tsx",
+  "src/app/[locale]/admin/users/[id]/page.tsx",
+]);
+
+const STRICT = process.env.MIGRATE === "strict";
+const norm = (f) => f.replace(/\\/g, "/");
+
 const pages = walk(ROOT).filter(isDetailPage);
 const unguarded = pages.filter((f) => !guards(readFileSync(f, "utf8")));
+const staged = unguarded.filter((f) => !STRICT && RATCHET.has(norm(f)));
+const blocking = unguarded.filter((f) => STRICT || !RATCHET.has(norm(f)));
 
-for (const f of unguarded) {
-  console.log(`  ${f}`);
+for (const f of blocking) {
+  console.log(`  ${norm(f)}`);
   console.log("    renders a detail view with no notFound() — an invented id gets an editor");
 }
 
+// A ratchet entry that has been FIXED must be removed from the list, or the
+// list quietly stops meaning what it says.
+const stale = [...RATCHET].filter((f) => !unguarded.some((u) => norm(u) === f));
+for (const f of stale) {
+  console.log(`  ${f}`);
+  console.log("    is in the ratchet but is now GUARDED — delete it from RATCHET (the list may only shrink)");
+}
+
+const failures = blocking.length + stale.length;
 console.log(
-  unguarded.length === 0
-    ? `\naudit-admin-detail-notfound: clean ✓ (${pages.length} admin detail page(s) checked)`
-    : `\naudit-admin-detail-notfound: ${unguarded.length} of ${pages.length} admin detail page(s) unguarded.`,
+  failures === 0
+    ? `\naudit-admin-detail-notfound: clean ✓ (${pages.length} checked, ${staged.length} staged)`
+    : `\naudit-admin-detail-notfound: ${failures} blocking (${pages.length} checked, ${staged.length} staged).`,
 );
-process.exit(unguarded.length === 0 ? 0 : 1);
+process.exit(failures === 0 ? 0 : 1);
