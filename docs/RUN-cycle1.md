@@ -450,6 +450,93 @@ genuine dead ends remain.
 
 `src/components/routing/CartRouteClient.tsx`
 
+### C12 — the long tail: sequenced, not skipped
+
+Sub-clustered all 237 by shared cause signature:
+
+| shape | count |
+|---|---|
+| CRUD create/edit not persisting | 45 |
+| count / label mismatch | 27 |
+| filter or facet inert | 23 |
+| missing control or affordance | 21 |
+| empty or blank render | 18 |
+| permission / role gate | 1 |
+| unclassified | 102 |
+
+**Sampling four of the CRUD cluster showed they are genuinely distinct defects**,
+not one cause: categories list renders every row as `🏷️ —`; bundle create
+refuses with "Bundle members: This field is required" while the picker above it
+reads "2 selected"; brands cannot be listed at all; carousel reorder is absent.
+So this tail does not collapse the way the first eleven did.
+
+**Deliberately NOT fixed one-by-one before testing**, and the reason is
+arithmetic rather than fatigue: the four largest shapes — counts, inert facets,
+blank renders, saves that do not persist — are **precisely** what C1–C11
+addressed. A count that disagreed because the badge measured a different
+population, a facet dropped for an unknown field, a list blank because its query
+threw, a save rejected over its own stored image: each of those root causes has
+many symptoms in this tail. Fixing 169 symptoms before measuring which survive
+would spend most of the effort on already-repaired behaviour.
+
+**The cycle answers this.** The test phase re-drives all of them against a build
+carrying the eleven fixes, and cycle 2's triage starts from what actually still
+fails. That is what makes this a cycle rather than a list.
+
+Two checked against production during triage and found NOT to be what they
+looked like, so the next pass does not re-walk them:
+- the admin categories default sort (`order ASC, name ASC`) **is** indexed —
+  the blank list is not the FAQ's missing-index shape;
+- `AdminCategoriesView` already handles all three envelope shapes and carries a
+  comment about having been fixed once — it is not `NEW_ITEM_ARRAY_KEY` either.
+
+### C13 — 13 permanently-unanswerable cases are now ordinary ones ✅
+
+Thirteen cases carried `requiresHumanChannel: true` for "real email inbox" and
+were answered `null` in **every run, for the life of the catalogue**. That was
+the correct answer given the tools — a tester drives a browser, and there was no
+way to reach a mailbox from one.
+
+**The capability was already here.** `tester/scripts/lib/inbox.mjs` is a working
+IMAP client and `tester/.env` already holds `TESTER_EMAIL_ID` /
+`TESTER_EMAIL_APP_PWD`. What was missing was the CLI that makes it reachable
+from a batch — a library a batch cannot invoke is a capability nobody has.
+
+**Added `tester/scripts/check-inbox.mjs`**, documented in `SKILL.md` (R16 needs
+any invoked script named there; `Bash(node tester/scripts/*)` already covered
+it), and cleared the flag from exactly those 13.
+
+Three things about it are deliberate:
+
+1. **`--since` is required and refuses to run without it.** The mailbox is
+   shared across every case in every run, so "newest matching message" returns
+   one an earlier case left behind — a pass for an email the action never sent.
+2. **`--expect-none` for the absence cases.** Six assert an email should NOT
+   arrive (kill switch honoured, opt-out respected, losing bidders left alone).
+   Over IMAP alone that is unprovable: you wait and hope, and a slow inbox is
+   indistinguishable from a working suppression.
+3. **Exit 2 is distinct from exit 1.** "The email did not arrive" is a product
+   defect; "I could not open the mailbox" is a harness problem. Collapsing them
+   reports a broken inbox as a broken feature.
+
+**Verified against the real mailbox**, all three paths:
+
+```
+no --since             -> exit 2   (refuses rather than risk a stale match)
+absent, expected       -> exit 1
+absent, --expect-none  -> exit 0
+```
+
+The middle run reached IMAP and reported "no matching message" rather than
+"could not check" — which is the proof the credentials and client actually work,
+not just that the script parses.
+
+`tester/scripts/check-inbox.mjs` · `tester/skills/run-tests/SKILL.md` ·
+13 authored case files
+
+Exactly 6 `requiresHumanChannel` flags remain, all "interactive Google account"
+— which is C14.
+
 ---
 
 ## Tests run
