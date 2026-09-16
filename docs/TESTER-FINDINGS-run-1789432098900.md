@@ -8809,3 +8809,41 @@ re-drive `pass2-failed-ids.txt` (237) **and** `pass2-blocked-ids.txt` (554).
 The blocked set matters as much as the failed set — a save that wrote nothing
 blocked every case downstream of it, and that coverage comes back only by
 re-running them.
+
+---
+
+# TEST PHASE — run-1789569547644
+
+**Superset built**: 237 failed + 554 blocked, deduped to **791 cases → 192 batches**.
+Every id validated against the catalogue; procedure coverage 791/791 (100%).
+Production health gate passed (`q=dranzer → 4`, `q=zzzznope → 0` — it answers
+AND filters).
+
+## First result: `admin/admin-detail-round-trips` — coupon edit round-trip **PASSES**
+
+A previously-failing case, re-driven end to end:
+
+```
+edit "name" → Save → toast "updated" → reload
+name:            "…Bundle" → "…Bundle [rt]"   ✅ persisted
+12 other fields: code, type, value, description, minPurchase, maxDiscount,
+                 totalLimit, perUserLimit, startDate, endDate, isActive, email
+                 → ALL unchanged                ✅ nothing lost
+```
+
+That is both halves of the original defect cleared at once: Root Cause #40 (a
+PATCH that returned 200 and never called `.update()`) and Root Cause #38 (a
+narrower list projection re-saving absent fields as their defaults). The
+round-trip check is what distinguishes them — a save that persists the edited
+field while quietly resetting others looks identical to a clean save unless you
+diff every field.
+
+Coupon restored to its seeded name.
+
+## 🛑 Batch deliberately NOT recorded
+
+I completed 1 of 3 real cases before running out of room. Per the harness's own
+rule I am **not** writing a partial verdict file: `null` counts as recorded, so a
+null-padded batch is marked done and **its cases never run again**. An
+unrecorded batch is picked up whole next session; a padded one is silently lost
+coverage. Leaving it unrecorded is the safe failure.
