@@ -275,6 +275,38 @@ here publishes every profile to someone who searched a stop-word.
 — that is a Firebase deploy, separate from the Vercel one, and until it runs the
 FAQ list stays empty in production.
 
+### C7 — the seed wrote a shape no order surface reads ✅
+
+Root Cause #52 was fixed in the VIEWS — they read `items[0].productTitle` for
+the row label. The rows still showed `🧾 Order order-1-20260822-aucwon` on 22 of
+25, because **44 of the 50 seeded orders have no `items[]` at all**.
+
+The generator that produces most of them writes the LEGACY flat shape —
+`productId`, `productTitle`, `quantity`, `unitPrice` at the top level — and
+never the canonical array. So the product was known the whole time; it simply
+was not where any reader looks.
+
+Same family as Root Cause #60 (a writer producing a shape no reader can render),
+except the writer is the **seed**, which is exactly why it survived a fix aimed
+at the readers.
+
+**Fixed on both sides, deliberately:**
+
+1. **The seed** now emits a proper `items[]` alongside the legacy flat fields —
+   the root cause.
+2. **The readers** fall back to the flat shape when `items[]` is absent
+   (`AdminOrdersView`, `SellerOrdersView`). Root Cause #42's rule: prefer making
+   the reader resilient over fixing only today's seed data, because the next
+   hand-written fixture or legacy document lands in the same shape.
+
+🛑 **Needs a reseed to take effect** — the fix is to data the seed produces, so
+existing production orders keep their flat shape until re-seeded. That is what
+the reader fallback is for: those rows render correctly either way.
+
+`appkit/src/seed/orders-seed-data.ts` ·
+`appkit/src/features/admin/components/AdminOrdersView.tsx` ·
+`appkit/src/features/seller/components/SellerOrdersView.tsx`
+
 ---
 
 ## Tests run
