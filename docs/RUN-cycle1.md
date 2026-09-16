@@ -222,6 +222,59 @@ comment documents `isFeatured` having been found the same way two fixes ago.
 `appkit/src/features/stores/repository/store.repository.ts` ·
 `src/app/[locale]/sellers/page.tsx`
 
+### C6 — two unrelated causes behind one symptom ✅
+
+The tester reported "search inert" on three surfaces. They are **two different
+bugs**, and the FAQ one is not a search bug at all.
+
+#### /faqs and /faqs/[category] — a MISSING INDEX, not a broken filter
+
+Measured against production, which settled it in three requests:
+
+```
+?search=refund&sorts=-priority,order   → total 12    (the SIDEBAR's query)
+?search=refund&sorts=-createdAt        → 9 FAILED_PRECONDITION: requires an index
+?category=returns_refunds&sorts=-createdAt → 9 FAILED_PRECONDITION
+```
+
+`FAQPageContent` runs **two** queries: the list (default sort `-createdAt`) and
+a count query for the sidebar (sorted `priority,order`). Only the second sort
+was indexed. So the sidebar counted 14 real matches while the list threw and
+rendered zero — two numbers from two queries, one of which had died silently.
+
+Both missing composite indexes added to `appkit/firebase/base/firestore.indexes.json`
+and regenerated into the root file (both are tracked and must ship together):
+
+- `isActive + category + createdAt DESC`
+- `searchTxt CONTAINS + isActive + createdAt DESC`
+
+**And the silence is closed too**: the list now renders an error state instead
+of an empty one. A failed query is not an empty result, and rendering it as one
+is precisely what let this sit behind a plausible "no questions found".
+
+#### /scams — the search box never reached the query
+
+`ScamRegistryView` reads `q` and `listVerifiedScammers` **never passed it on**,
+building filters from `scamType` and `scamPlatform` only. So `?q=zzzznope`
+returned every verified profile and the counter still read the full total —
+invisible to any real search term, because a real term also returns rows. Same
+shape as the `/stores` SSR search fixed earlier: parsed, then not used.
+
+The repository already had the machinery — its sibling `listAll` takes
+`opts.search` with `planSearchTxt`/`refineSearchTxt`. `listVerified` now mirrors
+it exactly, **including the empty-plan guard**: a search narrowing to no usable
+token must return nothing rather than the whole registry, because failing open
+here publishes every profile to someone who searched a stop-word.
+
+`appkit/src/features/faq/components/FAQPageContent.tsx` ·
+`appkit/src/features/scams/repository/scammer.repository.ts` ·
+`appkit/src/features/scams/actions/scam-actions.ts` ·
+`appkit/firebase/base/firestore.indexes.json` + regenerated root
+
+🛑 **The indexes need deploying** (`npm run firebase -- deploy --only indexes`)
+— that is a Firebase deploy, separate from the Vercel one, and until it runs the
+FAQ list stays empty in production.
+
 ---
 
 ## Tests run
