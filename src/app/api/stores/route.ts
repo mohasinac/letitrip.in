@@ -55,6 +55,24 @@ async function _GET(request: Request): Promise<NextResponse> {
   // listStores() adds status==active + isPublic==true as Firestore .where() — don't duplicate.
   const filtersForRepo = userParts.join(",");
 
+  /*
+   * 🛑 The rating facet travels as an OPT, not a filter clause — same reasoning
+   * as token search two lines above.
+   *
+   * The client emitted `averageRating>=N`, which is not a field on the document
+   * (it nests as `stats.averageRating`), so sievejs dropped it silently and the
+   * facet returned every store — `?rating=5` listed stores rated well below 5.
+   *
+   * It is NOT re-emitted as `stats.averageRating>=N`: a GTE inequality forces
+   * Firestore to order by that field first, so pairing it with any other sort
+   * demands a composite index nobody declares (Root Cause #59). The repository
+   * refines the threshold in memory instead, which composes with every sort.
+   */
+  const ratingRaw = param(url, "rating");
+  const minRating = ratingRaw
+    ? Math.max(...ratingRaw.split("|").map(Number).filter((n) => Number.isFinite(n)))
+    : undefined;
+
   let items: unknown[];
   let total: number;
   let resultPage: number;
@@ -97,7 +115,9 @@ async function _GET(request: Request): Promise<NextResponse> {
       const result = await storeRepository.listStores(
         { filters: filtersForRepo, sorts, page, pageSize },
         true,
-        std.q ? { search: std.q } : undefined,
+        std.q || minRating !== undefined
+          ? { ...(std.q ? { search: std.q } : {}), ...(minRating !== undefined ? { minRating } : {}) }
+          : undefined,
       );
       items = filterTestDataForViewer(result.items as unknown as Array<Record<string, JsonValue>>, viewer).map(toPublicStore);
       total = result.total;

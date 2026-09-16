@@ -391,6 +391,46 @@ One hit: this file, matching on the fallback I deliberately kept. No others.
 
 `src/app/api/admin/coupons/[id]/route.ts`
 
+### C10 — the rating facet filtered on a field that does not exist ✅
+
+The store directory emitted `averageRating>=N`. The document nests it as
+**`stats.averageRating`**, so sievejs — running `throwExceptions: false` —
+dropped the clause and the facet returned every store. Measured by the tester:
+`?rating=5` listed both stores, neither rated 5.
+
+**Correcting the name alone would have been worse.** `stats.averageRating` is
+declared `canFilter: false`, and enabling it makes the clause a GTE inequality —
+which forces Firestore to order by that field first, so pairing it with any of
+the four offered sorts demands a composite index nobody declares. That is Root
+Cause #59, and it is precisely the FAILED_PRECONDITION the FAQ list was throwing
+two fixes ago. Trading a silent wrong answer for a silent empty one is not
+progress.
+
+**Fixed** by carrying `rating` as its own URL param — the same shape token
+search already uses — and refining the threshold in memory in `listStores`. No
+index, and it composes with every sort.
+
+Applied in **three** places on purpose: the hook (so the param is sent), the API
+route (so it reaches the repository), and the **SSR view** — because the result
+is handed to `<StoresIndexListing initialData=…>` and public listing hooks set
+`staleTime: Infinity` when given SSR data, so an unfiltered first paint would be
+frozen for that query key and never self-correct (Root Cause #30).
+
+**This is the third inert-filter instance in this one repository file** —
+`isFeatured` (found previously, its comment still in place), `isVerified`
+(C5, this cycle) and now the rating facet. All three are the same defect: a
+facet that renders, toggles, and changes nothing.
+
+`appkit/src/features/stores/repository/store.repository.ts` ·
+`.../StoresIndexListing.tsx` · `.../StoresIndexPageView.tsx` ·
+`.../hooks/useStores.ts` · `.../types/index.ts` · `src/app/api/stores/route.ts`
+
+**The classified CITY facet is NOT fixed** — and it is not a bug. The drawer
+offers Negotiable, Shipping and Asking Price, and no city facet has ever
+existed; the case asks the tester to "select the city Mumbai", which cannot be
+performed. Adding a facet is a product decision, not a defect repair, so it is
+recorded for C12 triage rather than invented here.
+
 ---
 
 ## Tests run
