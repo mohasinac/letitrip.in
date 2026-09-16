@@ -8283,3 +8283,17 @@ fixed a typo.
   `userName` coming from the session's `displayName`, a PII field. Display-only:
   nothing is lost and nothing leaks. Deferred.
 - **A145, A206, A209** — untouched this cycle.
+
+## Leads for fix cycle 2 (traced, not yet fixed)
+
+- **A206** (row selection inert on `/admin/products`, `/admin/offers`) —
+  `AdminProductsView` *does* wire `buildBulkActions` (line 275), so the config is
+  present and the fault is below it. Next step is `DataListingView`'s row
+  checkbox render path, not the view's config.
+- **A209** (Pending Orders 0 in the strip, 1 in the tile) — two independent
+  sources confirmed: `AdminDashboardView` reads `query.data?.orders?.pending`
+  into `DashboardStats`, while the store page renders `stats?.pendingOrders`
+  from its own stats call. Two reads of one number, which is the shape of Root
+  Cause #73. Reconcile at the source rather than at either renderer.
+- **A196** — `userName` originates from the session `displayName`; check whether
+  the session builder decrypts PII before the notification is composed.
