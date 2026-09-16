@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { SellersListView } from "@mohasinac/appkit";
+import { StoresIndexPageView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { PageViewTracker } from "@mohasinac/appkit/client";
 
@@ -13,12 +13,31 @@ export const metadata: Metadata = _gm({
 
 export const revalidate = 120;
 
-export default function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[]>>;
+}) {
+  const resolvedSearchParams = await searchParams;
   return (
     <>
       <PageViewTracker entityType="listing" entityId="sellers" url="/sellers" />
       <Suspense>
-        <SellersListView />
+        {/*
+          Was `<SellersListView />` with no render props. Every slot on
+          `SlottedListingView` is optional, so it rendered the header and
+          breadcrumb and then a blank region — Root Cause #8, and that shell's
+          only consumer was this page.
+
+          Reuses the store index scoped to verified stores rather than filling
+          the shell in, so /sellers inherits the SSR `q` push-down, sandbox
+          hiding and the shared listing instead of becoming a second copy.
+        */}
+        <StoresIndexPageView
+          searchParams={resolvedSearchParams}
+          verifiedOnly
+          heading="Verified Sellers"
+        />
       </Suspense>
     </>
   );

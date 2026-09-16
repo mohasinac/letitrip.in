@@ -196,6 +196,32 @@ gets the same signal.
 `src/lib/hooks/usePricingPreview.ts` · `CartRouteClient.tsx` ·
 `CheckoutRouteClient.tsx`
 
+### C5 — /sellers was a slot shell with no slots filled ✅
+
+`<SellersListView />` was rendered with **zero render props**. Every slot on
+`SlottedListingView` is optional, so it produced a correct `<h1>`, a correct
+breadcrumb and then a blank region — which is exactly what the tester measured
+(200, right title, zero cards, not even an empty state). **Root Cause #8**, and
+that shell's only consumer anywhere was this one page.
+
+**Fixed by reuse, not by filling the shell in.** `/sellers` now renders
+`StoresIndexPageView` scoped to verified stores, so it inherits what `/stores`
+already got right: the SSR `q` push-down (whose own comment records a live
+`?q=zzzznope` returning two real cards), sandbox hiding, the ad slots and the
+shared listing component. Filling in `SellersListView` would have created a
+second store directory to fix twice.
+
+**A second defect found on the way**: `isVerified` was **not in
+`listStores`'s sieve field map**, and sievejs runs with
+`throwExceptions: false` — so a filter on it is dropped *silently*. A "Verified
+Sellers" page would have listed every store while claiming to list verified
+ones. That is Root Cause #62's EMITTED_BUT_UNFILTERABLE, and the map's own
+comment documents `isFeatured` having been found the same way two fixes ago.
+
+`appkit/src/features/stores/components/StoresIndexPageView.tsx` ·
+`appkit/src/features/stores/repository/store.repository.ts` ·
+`src/app/[locale]/sellers/page.tsx`
+
 ---
 
 ## Tests run
