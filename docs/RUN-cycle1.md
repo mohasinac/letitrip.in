@@ -607,6 +607,89 @@ because it typechecks. Had I gone straight from the first deploy into 192
 batches, the tester would have re-found C10 and I would have had a "fix" with a
 green gate behind it.
 
+### 🛑 Found DURING the test phase: order ids moved with the calendar
+
+The first batch named order `order-1-20260721-11joon` and it did not exist.
+Not a missing fixture — **the id had changed**.
+
+`generateOrderId` embeds a `yyyymmdd` derived from `NOW`, evaluated at module
+import. So every order's id changed on every calendar day:
+
+- `appkit-seed load` **created 50 fresh documents** instead of upserting the
+  same 50;
+- `status` and `delete` computed ids that had never been written;
+- every checklist case naming an order by id was authored against one day's ids
+  and could never resolve again.
+
+**Measured, and the two numbers are the proof**: immediately after a load that
+reported `created 50, errors 0`, `appkit-seed status` answered
+**`orders 50 seed / 0 in db`**. Both correct — about different sets of ids.
+
+This is precisely the case **Root Cause #25** names: *"`Date.now()` used as an
+ID component (as opposed to just a display timestamp)"*. The distinction is the
+entire fix:
+
+| | anchor | why |
+|---|---|---|
+| **ids** | `SEED_EPOCH` (fixed) | reproducible forever, so `load` upserts |
+| **display dates** (`orderDate`, `createdAt`, shipping) | `NOW` | a reseeded catalogue still looks recent and time-bound fixtures re-arm |
+
+Swept all 202 seed files for other id builders anchored to `NOW`, controls
+passing first: **0 others**.
+
+`appkit/src/seed/orders-seed-data.ts`
+
+**This is what the test phase is for.** No amount of reading found it; running
+the first batch did, in its second step.
+
+### The blast radius was 17 references, not one case
+
+Repointing the blocked case surfaced the rest: **17 references across two
+authored files** named orders that had not existed since the day they were
+written. `buying/order-detail-actions` — seven cases covering invoices,
+returns, cancellation and cross-account access — was **unworkable in its
+entirety**, and had been reporting as blocked rather than as broken.
+
+The suffix is a deterministic hash of the fixture's natural key and never
+moved, so it is the join key between a stale reference and the live document:
+
+| stale | now | still fits its case? |
+|---|---|---|
+| `order-1-20260721-11joon` | `order-1-20251107-11joon` | yes — still `delivered`, which its return case requires |
+| `order-1-20260718-aevnlw` | `order-1-20251104-aevnlw` | yes — still `shipped` |
+
+Custom-id fixtures (`buyout`, `aucwon`, `prizedr`, …) never moved and needed
+nothing. Ids are stable from here, so this is a one-time repair — and a
+checklist case may now legitimately name an order by id, which it could not
+before.
+
+**Known cosmetic residue**: the date inside a generated id no longer matches
+the order's own `orderDate`, because ids anchor to `SEED_EPOCH` while display
+dates stay relative to now so the catalogue looks current and time-bound
+fixtures re-arm. The id is an opaque identifier; that trade buys reproducibility
+and is the right way round.
+
+`scripts/remap-checklist-order-ids.mjs` · `tester/scripts/remap-order-ids.mjs`
+
+### And a second, larger gap in the items[] fix
+
+`items[]` coverage was **36 of 50**, not 50 — the earlier fix taught the
+GENERATOR to emit it, and the 14 hand-written fixtures never go through the
+generator. Root Cause #84's shape: a fix scoped to the population I happened to
+be looking at.
+
+Patching 14 fixtures by hand leaves the 15th to the next author, so the
+derivation moved to `withOrderImages()`, which every fixture already passes
+through. It only fills a gap — a fixture declaring its own multi-line
+`items[]` is untouched. **50/50** after.
+
+🛑 **Both of these were found by the same shell mistake I had already been
+bitten by**: writing markdown through a bash heredoc, where backticks are
+command substitution. The section above was published with every code term
+silently deleted, and a stray script ran mid-document. Same lesson as the four
+vacuous sweeps — **use the Write/Edit tool, never a shell heredoc**, for
+anything containing backticks or backslashes.
+
 ---
 
 ## Tests run
