@@ -8623,3 +8623,23 @@ the same shape. Prefer an explicit index or a selector that throws when it
 matches nothing, and state which element was actually operated on.
 
 Product restored to its seeded state: returns ON, offers ON, original title.
+
+### A121b — not a defect either. Both Save buttons work.
+
+`FormShell` renders its save/publish pair **twice by design**: once in the header
+toolbar (viewport top) and once in the bottom bar. Retested after the media fix:
+clicking the HEADER button returns **"Saved."** and persists.
+
+The earlier "the first button is inert" reading was the pre-fix validation
+failure whose toast I missed, not a dead control. Removing that "duplicate"
+would have deleted a working affordance.
+
+**Three of my own findings in this family were measurement errors** — A201
+Delete, A204, and this one — and all three shared a shape: I inferred a negative
+("nothing happened") from a probe that could not have observed the positive. A
+missing confirmation dialog I searched for as a modal; a toggle reached through a
+`??` fallback; a toast polled after it had gone. **A negative result needs its
+probe validated against a known positive before it is believed**, which is the
+same rule as never trusting an audit you have not seen fail.
+
+Product restored: title, returns and offers all back to seeded values.
