@@ -570,6 +570,43 @@ case is phrased as a bug. `classified.meetupArea.city` is on the document and
 `extraFacetKeys` is the mechanism, so building it is straightforward — but
 adding a public filter is a product decision.
 
+### 🛑 C10 shipped WRONG twice, and only production verification caught it
+
+Both failures were invisible to `tsc`, to `npm run check`, and to reading the
+code. Worth recording because the second one would have been worse than the bug.
+
+**Attempt 1 — fixed the path production does not use.** `/api/stores` prefers
+the colocated `listingProcessor` Function and only falls back to the repository.
+I passed `minRating` to the repository. Deployed, then measured: `?rating=5`
+still returned both stores, rated **4.1 and 3.6**. The two-executor trap of Root
+Cause #85 (and #64 before it) — the same request answered by two
+implementations, and the one exercised locally is not the one that serves.
+
+**Attempt 2 — filtered on a shape that no longer existed at that point.** Moving
+the filter after both executors converge put it *downstream of `toPublicStore`*,
+which flattens the rating to a top-level `averageRating` and drops `stats`
+entirely. So `stats.averageRating` resolved `undefined` for every row and the
+filter removed the whole list: `rating=3` returned **0** when both stores
+qualify.
+
+That second state is strictly worse than the original bug — a facet that returns
+everything is visibly wrong, a facet that returns nothing reads as "no matches".
+
+**Verified across the boundary**, which is the only check that separates
+filtering from passing or blocking everything:
+
+```
+rating=5 → 0   (both below 5)
+rating=4 → 1   Beyblade Arena 4.1
+rating=3 → 2   Beyblade Arena 4.1, LetItRip Official 3.6
+unfiltered → 2
+```
+
+**The lesson is the run's own rule, applied to myself**: a fix is not done
+because it typechecks. Had I gone straight from the first deploy into 192
+batches, the tester would have re-found C10 and I would have had a "fix" with a
+green gate behind it.
+
 ---
 
 ## Tests run
