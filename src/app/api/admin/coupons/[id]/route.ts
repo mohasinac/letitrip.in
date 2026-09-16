@@ -42,7 +42,27 @@ const __GET__g = withProviders(
     roles: [...ROLES_ADMIN_MOD],
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
-      const coupon = await couponsRepository.getCouponByCode(id);
+      /*
+       * 🛑 `findById` FIRST. This route received a DOC ID and called
+       * `getCouponByCode`, which upper-cases its argument and matches on the
+       * `code` field — so `/api/admin/coupons/coupon-arena25` looked for a
+       * coupon whose code is "COUPON-ARENA25", found nothing, and 404'd.
+       *
+       * The editor seeds itself from this response and returns early when it
+       * is absent, so the form stayed at its defaults and its validator
+       * reported three "required" issues on a record the admin had not
+       * touched — including "A discount value is required" on a coupon that
+       * has one. The sibling PATCH twenty lines below has always used
+       * `findById`, which is why saving worked while opening did not.
+       *
+       * The by-code lookup is kept as a FALLBACK rather than deleted: the
+       * route's own param is named `id`, but a human-typed code is the obvious
+       * thing to paste into this URL, and answering both costs one read only
+       * when the first misses.
+       */
+      const coupon =
+        (await couponsRepository.findById(id)) ??
+        (await couponsRepository.getCouponByCode(id));
       if (!coupon) return errorResponse("Coupon not found", 404);
       return successResponse(coupon);
     },

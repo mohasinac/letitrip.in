@@ -364,6 +364,33 @@ a fallback for documents with no items.
 `appkit/src/_internal/server/features/orders/adapters.ts` ·
 `src/components/routing/CheckoutRouteClient.tsx`
 
+### C9 — the editor never loaded the record it was accusing ✅
+
+`GET /api/admin/coupons/[id]` called `getCouponByCode(id)`. That helper
+upper-cases its argument and matches the `code` field — so
+`/api/admin/coupons/coupon-arena25` searched for a coupon whose code is
+`"COUPON-ARENA25"`, found nothing and returned 404.
+
+The editor seeds from that response and **returns early when it is absent**, so
+the form sat at its defaults and its validator reported three "required" issues
+on a record the admin had not touched — including *"A discount value is
+required"* on a coupon that plainly has one.
+
+**The sibling `PATCH` twenty lines below has always used `findById`**, which is
+the whole shape of it: saving worked while opening did not, so the editor looked
+broken in a way that pointed at validation rather than at a 404.
+
+**Fixed** with `findById` first, keeping the by-code lookup as a **fallback**
+rather than deleting it — the route's param is named `id`, but a human-typed
+code is the obvious thing to paste into this URL, and answering both costs one
+extra read only when the first misses.
+
+Swept all **378** route files for the same GET/PATCH asymmetry (a non-id lookup
+on `id` in a file that elsewhere resolves the same segment with `findById`).
+One hit: this file, matching on the fallback I deliberately kept. No others.
+
+`src/app/api/admin/coupons/[id]/route.ts`
+
 ---
 
 ## Tests run
