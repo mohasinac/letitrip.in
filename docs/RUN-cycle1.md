@@ -307,6 +307,63 @@ the reader fallback is for: those rows render correctly either way.
 `appkit/src/features/admin/components/AdminOrdersView.tsx` ·
 `appkit/src/features/seller/components/SellerOrdersView.tsx`
 
+### C8 — the money one. Two defects, and the tester's arithmetic located both ✅
+
+Evidence: a cart quoted **₹2,319.80** on the cart page and on all three checkout
+steps produced an order recording **₹2,549.60** — and the ₹2,319.80 was still on
+screen at the instant the buyer committed.
+
+#### C8a — the quote priced a payment method the buyer did not choose
+
+`previewPaymentMethod` is derived from which options are **offered**, not which
+is **selected**:
+
+```ts
+showCashOption ? "cash" : showCod ? "cod" : showRazorpay ? "online" : "emi"
+```
+
+So whenever cash is on offer the summary is priced as cash — and
+`computeCodHandlingFee` returns 0 unless `paymentMethod === "cod"`. The ₹229.80
+gap is exactly that fee.
+
+**The tester attributed it to the 10% COD deposit, and that reading is wrong in
+a way worth recording**: server-side the deposit is a **split** of the total
+(`deposit + remaining = total`), not an extra charge. Both quantities are 10% of
+the same subtotal, so they are numerically identical here and the evidence
+cannot separate them. The code can: `codHandlingFee` is added "on top of the
+order total", the deposit is not.
+
+**There is no selected-method state to price instead** — each button places the
+order with a hardcoded method, so choosing COD and committing are one click.
+Turning checkout into select-then-confirm is a product decision, not a bug fix,
+so it is **not** done here.
+
+What is done: the COD block now shows the **COD-inclusive total**. The addition
+is exact rather than a re-estimate, because `cod` and `cash` differ server-side
+by this fee alone — every other line is identical — so the COD total is the
+previewed total plus the handling fee.
+
+#### C8b — the order page printed the grand total on the Subtotal row
+
+```ts
+const subtotal = doc.totalPrice - shippingCost + discount;   // ✗
+```
+
+It backs the subtotal out of the total by removing shipping and restoring the
+discount — and ignores the platform fee, GST, COD handling and all three add-ons.
+With shipping and discount both zero it returns the grand total unchanged, which
+is why the page read "Subtotal ₹2,549.60 / Total ₹2,549.60" above items summing
+to ₹2,298.00. A page that visibly does not add up, on the document a buyer opens
+when they think they were overcharged.
+
+**Fixed by summing the items**, which are on the document and carry their own
+price and quantity. They cannot drift out of step with the fee list the way a
+subtraction must every time a fee is added — the old derivation survives only as
+a fallback for documents with no items.
+
+`appkit/src/_internal/server/features/orders/adapters.ts` ·
+`src/components/routing/CheckoutRouteClient.tsx`
+
 ---
 
 ## Tests run

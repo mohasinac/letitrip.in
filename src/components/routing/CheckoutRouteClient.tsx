@@ -566,6 +566,8 @@ function renderPaymentStep({
   setOutOfStockPolicy,
   codSettings,
   subtotal,
+  /** Previewed grand total, or null while loading/errored. COD adds its handling fee to this. */
+  previewedTotal,
   manualPaymentConsent,
   setManualPaymentConsent,
   handlePayOnline,
@@ -591,6 +593,8 @@ function renderPaymentStep({
   setOutOfStockPolicy: (v: OutOfStockPolicy) => void;
   codSettings: BuyerFacingFees | null;
   subtotal: number;
+  /** Previewed grand total, or null while loading/errored — COD adds its handling fee on top. */
+  previewedTotal: number | null;
   manualPaymentConsent: boolean;
   setManualPaymentConsent: (v: boolean) => void;
   handlePayOnline: () => Promise<void>;
@@ -693,13 +697,47 @@ function renderPaymentStep({
                 const depositAmount = Math.round(subtotal * ((codSettings.codDepositPercent ?? 0) / 100) * 100) / 100;
                 const payNow = depositAmount + codHandlingFee;
                 const payOnDelivery = Math.max(0, subtotal - depositAmount);
+                /*
+                 * 🛑 The Order Summary above does NOT include this fee.
+                 *
+                 * `previewPaymentMethod` is derived from which options are
+                 * OFFERED, not which the buyer picks — `showCashOption ? "cash"
+                 * : showCod ? "cod" : …` — so whenever cash is on offer the
+                 * summary is priced as cash, where `computeCodHandlingFee`
+                 * returns 0. There is no selected-method state to price
+                 * instead: each button places the order with a hardcoded
+                 * method, so choosing COD and committing are the same click.
+                 *
+                 * Measured: a cart quoted ₹2,319.80 on the cart page and on all
+                 * three checkout steps produced an order recording ₹2,549.60 —
+                 * ₹229.80 more, which is exactly this fee, and the ₹2,319.80
+                 * was still on screen at the instant the buyer committed.
+                 *
+                 * The addition is exact rather than a re-estimate: server-side,
+                 * `cod` and `cash` differ ONLY by this fee (the deposit is a
+                 * SPLIT of the total — deposit + remaining = total — not an
+                 * extra charge), so the COD total is the previewed total plus
+                 * the handling fee, with every other line identical.
+                 */
+                const codInclusiveTotal =
+                  previewedTotal !== null ? previewedTotal + codHandlingFee : null;
                 return (
-                  <Row gap="xs" align="center" className="mb-2">
-                    <Banknote size={14} className="text-[var(--appkit-color-text-muted)]" />
-                    <Text size="sm" color="muted">
-                      {CK.COD_HANDLING_FEE_LABEL}: {formatEmiRupees(codHandlingFee)} · {CK.COD_PAY_NOW_LABEL}: {formatEmiRupees(payNow)} · {CK.COD_PAY_ON_DELIVERY_LABEL}: {formatEmiRupees(payOnDelivery)}
-                    </Text>
-                  </Row>
+                  <Stack gap="none" className="mb-2">
+                    <Row gap="xs" align="center">
+                      <Banknote size={14} className="text-[var(--appkit-color-text-muted)]" />
+                      <Text size="sm" color="muted">
+                        {CK.COD_HANDLING_FEE_LABEL}: {formatEmiRupees(codHandlingFee)} · {CK.COD_PAY_NOW_LABEL}: {formatEmiRupees(payNow)} · {CK.COD_PAY_ON_DELIVERY_LABEL}: {formatEmiRupees(payOnDelivery)}
+                      </Text>
+                    </Row>
+                    {codInclusiveTotal !== null && codHandlingFee > 0 && (
+                      <Text size="sm" weight="semibold" color="primary">
+                        Total if you pay on delivery: {formatEmiRupees(codInclusiveTotal)}
+                        <Text as="span" size="xs" color="muted">
+                          {" "}— the summary above excludes the COD handling fee
+                        </Text>
+                      </Text>
+                    )}
+                  </Stack>
                 );
               })()}
               <Button
@@ -1933,7 +1971,7 @@ export function CheckoutRouteClient({
                   at auction or negotiated on an offer, so stacking a discount
                   on top would re-open a settled number. */}
               {showCoupons && !isLockedCheckoutLane && renderCouponSection({ couponCode, setCouponCode, couponError, isCouponLoading, effectiveCoupons, handleApplyCoupon, handleRemoveCoupon })}
-              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showRazorpay, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, manualPaymentConsent, setManualPaymentConsent, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
+              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showRazorpay, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, previewedTotal: hasPayableFigures && pricingPreview ? pricingPreview.total : null, manualPaymentConsent, setManualPaymentConsent, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
             </Stack>
           );
         }}
