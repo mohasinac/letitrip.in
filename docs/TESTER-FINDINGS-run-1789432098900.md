@@ -8546,3 +8546,52 @@ hook never infers that something is fixed.
 That last row is the one that matters: an absent queue is not an empty one, and
 treating it as empty would start testing with every defect unfixed. Root Cause
 #87 — never trust a gate you have not seen fail.
+
+---
+
+# ✅ A121 FIXED AND VERIFIED IN PRODUCTION (appkit 4.41.8 + consumer schema)
+
+Re-driven through the UI on production:
+
+```
+toast:            "Saved."            ← first time in this entire run
+after reload:     "Beyblade Burst B-01 Valkyrie [FIXED-4418]"   PERSISTED: true
+```
+
+The seller listing editor now saves. `mainImage: listingMediaUrlSchema` was the
+fix — `urlSchema` had been rejecting the product's own `/api/media/ext?url=…`
+image as "Invalid URL", which is why **every** seller edit had always failed.
+
+Title restored to `Beyblade Burst B-01 Valkyrie` afterwards; no residue.
+
+# ❌ A204 CONFIRMED — and now isolated to ONE FIELD
+
+The same save that persisted the title did **not** persist `finalSale`:
+
+| field | in the same request | after reload |
+|---|---|---|
+| `title` | `"Beyblade Burst B-01 Valkyrie"` | ✅ persisted |
+| `finalSale` | `false` (toggle clicked ON = accepts returns) | ❌ reverted |
+
+`aria-checked` went `false → true` on click, the save returned **"Saved."**, and
+the reload shows `false` again. So this is no longer "the save is broken" — the
+save works, and one field in the payload is being lost.
+
+**What it is NOT** (checked, so the next person does not re-check):
+
+- not the schema stripping it — `productBaseSchema` names `finalSale` explicitly,
+  with a comment warning that it must be named or it is stripped;
+- not `compact()` in the draft mapper — that drops `undefined` only, never `false`;
+- not the media/`urlSchema` bug — the title proves the write path now works.
+
+**The live hypothesis** is that the lost value is specifically `false`, not
+`finalSale`. The toggle is inverted (`onChange({ finalSale: !checked })`), so
+turning returns ON writes `finalSale: false` — and a falsy value is exactly what
+a "only copy truthy fields" merge would drop. The next step is one experiment,
+not more reading: set the toggle the OTHER way so the payload carries
+`finalSale: true`, save, reload. If `true` survives and `false` does not, the bug
+is falsy-stripping somewhere between the action and Firestore, and the field name
+is a red herring.
+
+That experiment is cheap and decisive, and it is the right next move rather than
+reading more of the write path.
