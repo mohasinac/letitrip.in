@@ -1,5 +1,5 @@
 "use client";
-import { Row, Stack, normalizeError } from "@mohasinac/appkit/client";
+import { Row, Stack, normalizeError, IMAGE_ACCEPT_ATTR } from "@mohasinac/appkit/client";
 import {useRef, useState, Suspense } from "react";
 import {
   UserAccountHubView,
@@ -205,7 +205,7 @@ function PageInner() {
               <Input
                 ref={fileRef}
                 type="file"
-                accept="image/*"
+                accept={IMAGE_ACCEPT_ATTR}
                 hidden
                 bare
                 onChange={(e) => onPickFile(e.target.files?.[0] ?? null)}

@@ -3667,3 +3667,4619 @@ My first probe on `/admin/scammers` reported **"no status filter chips exist"** 
 drawer simply isn't marked `role="dialog"`, so the query missed it. The screenshot showed all five
 chips, including `Removed`. Had I filed from the measurement alone I would have reported the exact
 opposite of the truth, on a case whose whole subject is that chip.
+
+## A117 — Every category page renders a breadcrumb whose links 404
+**Where:** every `/categories/{id}` page (8 checked) · **Severity:** high
+
+The page chrome renders a breadcrumb built mechanically from the URL:
+
+> Home / Categories / **Category spinning tops** / **Products** / **Sort** / **Relevance** / Page
+
+**All four middle entries are clickable `<a>` elements, and three of them return HTTP 404** —
+confirmed by opening them directly, not just from the console:
+
+| href | status |
+|---|---|
+| `/categories/category-spinning-tops/products` | **404** |
+| `/categories/category-spinning-tops/products/sort` | **404** |
+| `/categories/category-spinning-tops/products/sort/relevance` | **404** |
+| `…/products/sort/relevance/page/1` | 200 — the form the page itself redirects to |
+
+The working URL is the same path **plus a trailing `/page/1`**. So the routes exist only in their
+paginated form while the breadcrumb links the unsuffixed ones.
+
+The first crumb also labels the category with its **raw slug** — "Category spinning tops" — while
+the page's *own* breadcrumb immediately below correctly reads "Home / Categories / Spinning Tops".
+There are two breadcrumbs on the page and only one is right.
+
+## A118 — A signed-out visitor polls an authenticated endpoint twice per page
+**Where:** every page · **Severity:** medium (cost)
+
+`GET /api/notifications?limit=1` → **401**, fired **twice on every page load while signed out**.
+Reproduced on all eight category pages plus both brand pages.
+
+That is two billed function invocations per anonymous page view for a call that cannot succeed —
+the same class of standing cost as Root Cause #94's client timers, and the reason the
+`consoleErrors: 0` expectation can never be met by a guest.
+
+## A119 — A category advertises "2 stores" and there is no way to see them
+**Where:** `/categories/{id}` · **Severity:** medium
+
+The Spinning Tops hero renders four count pills: `15 products · 9 auctions · 7 pre-orders ·
+**2 stores**`. The store count is resolved and displayed — and then:
+
+- the **"2 stores" pill is not a link** (no anchor/button ancestor, `cursor: auto`)
+- there is **no Stores tab** — scoped to `<main>`, the only category-scoped hrefs are the three
+  `/products…` ones; all four elements reading "Stores" are site chrome pointing at the global
+  `/stores`
+- **`GET /categories/category-spinning-tops/stores` → 404**
+
+So the comparison the case wanted (stores on a deep category vs. its root) cannot be made in
+either direction, because the tab exists nowhere.
+
+## ✅ The category-tree rebuild works — four passes worth recording
+- **Four tiers, three clicks**, no typed URLs: Spinning Tops → Beyblade Burst → Burst Parts →
+  Layers, each parent rendering its children as Subcategory chips, the leaf rendering none.
+- **Both roots reachable**, and the second one is no longer a dead branch: Living Collectibles
+  walks down through Bonsai → Juniper Bonsai to a real live-item listing. The whole subtree carries
+  counts (Companion Animals 2, Live Plants 2, Dogs 1, Reptiles 1, Bonsai 2, Juniper 2,
+  Retrievers 1, Lizards 1).
+- **The ancestor chain is honoured at the root**, exactly: root `15 products` = Burst 4 + Metal
+  Fight 3 + X 4 + Original 4 + Battle Gear 0. No truncation, no blank grid — the
+  `array-contains-any` cap failure is not happening.
+- **Mid-tier scoping is real**: Burst (4) is strictly smaller than the root (15), and none of Metal
+  Fight's three products appears on the Burst page.
+
+🛑 **Caveat on the ancestor result**: all 95 products came from the seed, which hand-writes the
+chain. This does **not** prove a listing created through the seller form gets its ancestors
+appended on write — that still needs a UI-created listing to test.
+
+## ✅ Brand vs category rendering is correct
+`/brands/brand-takara-tomy` shows **About this brand** with Website `takaratomy.co.jp`, Country
+Japan, Founded 2006 — the brand-only fields that were seeded and rendered nowhere for a long time.
+`/brands/brand-beyblade` likewise (Founded 1999). `/categories/category-beyblade-burst` shows
+**none** of them, and the strings "Website", "Country", "Founded" are absent entirely — no empty
+labelled slots left behind. Both kinds render the shared "Why shop here" and FAQ sections.
+
+Brand matching by display name also holds: `product-beyblade-x-knife-shinobi` names its brand
+**"Takara-Tomy"**, character for character identical to the brand page's `h1`.
+
+## A120 — A live item has two working detail pages and the category links to the wrong one
+**Where:** `/categories/category-bonsai-juniper` → listing card · **Severity:** medium
+
+The leaf links its listing to **`/products/live-bonsai-juniper-10yr`**. Both routes return 200 and
+they are *different pages*:
+
+- `/live/live-bonsai-juniper-10yr` → *"Juniper Bonsai — 10 Years Trained **(Juniper (Juniperus
+  procumbens))**"* — the live-item page, with species
+- `/products/live-bonsai-juniper-10yr` → *"Juniper Bonsai — 10 Years Trained"* — the generic page
+
+Nothing errors; the visitor just never reaches the page built for the type. Same shape as the
+documented `detailRoute` defect. Minor, found alongside: the `/live/` page's title ends
+**"— LetItRip | LetItRip"**.
+
+### Method notes from this batch (two probes that were wrong)
+1. An unscoped search for a "Stores tab" found one and clicking it navigated to `/stores` — that
+   was the **site nav**. Scoping to `<main>` is what showed no category Stores tab exists.
+2. A page-wide regex for "Metal Fight" on the Burst page returns **true** — from the
+   related-categories strip, not a product. Only the product titles settle the scoping question.
+
+## ✅ The carousel component is sound — 11 of 12 pass, 0 defects
+`design-ux/carousel-arrow-bounds`, guest, measured at 1280 / 768 / 640 / 390 across the homepage,
+a product page, two category pages and a brand page.
+
+**The arrow bounds are guaranteed structurally, not by luck.** The scroll container is
+`overflow-x: auto` with a box of `108 → 1172` at 1280; the arrows sit at `68–104` and `1176–1212`,
+entirely outside it with a 4px gutter each side. **Across every width and page tested, the count of
+arrows whose rect intersects a rail's rect was ZERO.** A card physically cannot render under an
+arrow because the rail clips it first.
+
+| Claim | Result |
+|---|---|
+| Arrows never cover cards | rail 108–1172, arrows 68–104 / 1176–1212, **0 intersections** |
+| No overlap mid-scroll | at `scrollLeft 540/1080` cards cut flush at 108; arrows never moved |
+| No arrows on mobile | 390: **16 in DOM, 0 rendered**; visible at 640/768/1280 → the `sm` breakpoint |
+| Card not clipped at 390 | rail `36–354`, card 318px at `l:36 rt:354`; page `scrollWidth === clientWidth` |
+| Swipe & snap | stride 334; target 477 → rests **334**, target 1081 → rests **1002** (3×334) |
+| No white fade smear | parent `::before`/`::after` both `none`; **zero** gradient children; clean in both themes |
+| Tall-rail arrows centred | 429px and 447px rails: both arrows `offsetFromRailMid = **0**` |
+| Dark-mode arrows | hover goes **lighter** (`#334155`) than base (`#1f2937`), chevron stays near-white |
+| Resize across breakpoint | clean both directions, 0 overlaps at every width, never scrolls sideways |
+| Product-page rails | same `appkit-hscroller__arrow`, rails 172–1108, 0 intersections, 0 arrows at 390 |
+| Category/brand rails | Spinning Tops renders **8** grouped rails, 0 intersections; brand page 6, same |
+
+### The one non-pass is a premise mismatch, not a defect
+**`arrow-end-state-no-jump` → `null`.** The case is explicitly about *"a carousel that does not
+loop"* — **this one loops**. Measured on a rail with max scroll 1080: Next from 0 gives
+`810 → 1080 → 0 → 810`, wrapping at the end; Previous at 0 jumps to 1080, wrapping the other way.
+Neither arrow ever disables, which is *correct* for a looping rail. Someone should decide whether
+looping is intended, since the case's author clearly expected otherwise.
+
+### 🛑 Four measurements that were wrong, and what corrected each
+This batch was unusually rich in traps. Recording them because each would have been a confident,
+evidenced, **false** finding.
+
+1. **"Cards slide under the arrow mid-scroll."** `getBoundingClientRect` on scrolled-out children
+   returns `l:-162 rt:92`, which enters the left arrow strip (68–104) by 24px. That is **layout**
+   geometry of an element `overflow:auto` **clips**. The screenshot shows paint stopping dead at
+   108. → *Rect math does not know about clipping.*
+2. **"Next at the end does nothing — six clicks, no movement."** It was six *wraps* through a
+   three-position cycle that happened to land back where it started. Re-running one click at a
+   time revealed the loop. → *Sample every step, not just the endpoints.*
+3. **"The dark hover rule can't match — it's `.dark` and this app uses `data-theme`."** `<html>`
+   carries **both**; my earlier 60-character read of `className` had truncated before `dark`.
+   → *A truncated string is not evidence of absence.*
+4. **"Category pages don't render grouped carousels — the brand page has six and the category page
+   has none."** True of `/categories/category-beyblade-burst`, and it reads exactly like an
+   unwired variant. `/categories/category-spinning-tops` renders **eight**. → *One negative case
+   is data, not behaviour; check a second before generalising.*
+
+## A121 — 🛑 A seller's listing edit is silently discarded. CONFIRMED TWICE.
+**Where:** `/store/products/{slug}/edit` · **Severity:** critical · **Root Cause #40's shape**
+
+Pressing **Update →** issues `POST /store/products/product-beyblade-burst-valkyrie/edit` → **200**,
+with no toast, no error and no navigation. **After a reload the edit is gone and every other field
+is byte-identical.**
+
+Run twice, by two different input methods, because one technique is not enough for a claim this
+size:
+
+| Attempt | Method | After reload |
+|---|---|---|
+| description + `" QA-EDIT-MARKER"` | native value setter + input/change events | marker **absent** |
+| title + `"X"` | a **real browser keystroke** — the field visibly showed `…ValkyrieX` | title back to `Beyblade Burst B-01 Valkyrie` |
+
+**The good news is in the case's own data key: `unintendedFieldChanges: 0`.** Nothing emptied
+itself, no image was dropped, no type-specific field blanked. This is not corruption — it is total
+inertness. The seller's work is discarded while the UI behaves exactly as it would on success.
+
+Nothing needed restoring, because nothing was ever written.
+
+### The method correction that nearly buried this
+My first reading was **"zero network requests fired"**, from a `window.fetch` hook — which would
+have matched the previously-recorded symptom exactly. It was **wrong**: the POST is a **Next.js
+Server Action**, invisible to a fetch wrapper but plain in the browser's own request log. Reporting
+"the button is wired to nothing" would have sent someone hunting a missing handler when the handler
+runs and returns 200.
+
+**The reload is the oracle. The network panel is not.**
+
+## A122 — `/store/products/new` is a flat "Quick add", not the sectionised form
+**Where:** `/store/products/new` · **Severity:** informational — but it blocked 4 cases
+
+The drawer reads *"Quick add — fill the essentials and publish. You can add more details later."*
+and has **six flat fields** (Product Name · Category · Price · Product Image · Description · Stock
+Quantity), **zero sections**, no error summary and no issues badge.
+
+The sectionised form is the **edit** view — seven sections (Basic Info · Media · Pricing ·
+Shipping · Returns · Publish · SEO) — and **all of them are permanently open**. So "collapse two
+sections and publish" has no home on either surface, and four cases in this batch are `null` for
+that reason rather than for a defect.
+
+**It also renders `This field is required` in red under an empty, untouched Product Name on first
+paint** — the **sixth** form in this run with that behaviour. `aria-invalid` null on 6/6 inputs.
+
+## A123 — No pinned action bar on mobile; Discard and the issue sheet don't exist
+**Where:** `/store/products/new` at 390 · **Severity:** medium
+
+`--bottom-chrome-height` reads **0px** and a scan for fixed elements near the bottom edge returns
+**none** — the actions sit at the foot of the scrolling content. Before scrolling, Publish and Save
+Draft measure `bottom: 926` against an 844px viewport; after scrolling they are at `800–844`, fully
+visible and unclipped. So they are reachable, but only by scrolling the whole form.
+
+Missing entirely: **no Discard control** (the desktop editor has one; this drawer offers only the
+✕), **no error sheet**, and **no "N issues" label** — so the case's central assertion, that the
+count falls as fields are fixed, has nothing to test.
+
+## ✅ Two section behaviours that are correct
+- **No dead chevrons.** All seven section headings: not a button, not inside one, `cursor: auto`,
+  no `aria-expanded`. The six svgs beside headings are section *icons*. An always-open section
+  showing no chevron is exactly what was asked for.
+- **Pickers are not clipped by their section.** The address picker in **Shipping** opens a 113px
+  popover ending at y=531 in an 800px viewport, with **no clipping ancestor** in six levels — the
+  only `overflow: hidden` is the list's own scroll body.
+
+## Site Settings save — DECLINED, not failed
+**`/admin/site`** · recorded `null`
+
+The case asks for a Fees field to be changed and saved on the live settings singleton, hunting a
+defect whose symptom is that **saving one tab blanks the others**. Three reasons I did not:
+
+1. If the defect is present, **performing the test is what causes the damage** — and the restore
+   step is the same save that just proved itself broken.
+2. `siteSettings` is **PRESERVE tier**, alongside `users` / `addresses` / `sessions`. The tester's
+   own post-wipe assertion hashes `siteSettings.credentials` to confirm it survived.
+3. The risk is asymmetric: a pass tells us little; a failure destroys branding, fees, integrations
+   and legal copy on production.
+
+### What read-only work did establish
+**The blast radius is real** — 20 groups behind a single **"Save all changes"**:
+
+| Group | Fields | Populated |
+|---|---|---|
+| About | 44 | **39** — hero copy, mission, how-it-works, values, milestones, team |
+| Fees | 17 | **16** — platform fee 5%, GST 18%, gateway 2%, max platform fee ₹10, payout hold 2d, min payout ₹100, featured ₹999, promoted ₹499, COD deposit 10%, WhatsApp addon ₹10 |
+| Integrations | 19 | Razorpay key/secret/webhook, SMTP, Maps, GA, FB Pixel, GTM, Meta tokens |
+| Limits / Notifications | 4 / ~15 | — |
+
+**Navigating between groups does not lose data.** About (39 filled) → Fees (16 filled) → back to
+About: still 39 filled, identical values. That is the most reassuring signal obtainable without
+submitting. **Credential fields render as `type=password`**, masked on screen.
+
+**What remains unknown is the only thing that matters:** whether "Save all changes" serialises the
+whole document from state or only the touched group. No amount of read-only probing settles it.
+
+**Recommendation:** run this on staging, or capture the outgoing payload from one save on a
+throwaway project and diff it against the stored document — not against production.
+
+## ✅ The offer lifecycle works end to end — and pins down A49 exactly
+`buying/offers--p1` · 5 yes, 1 no, 6 blocked.
+
+**Buyer → seller, inside a minute.** Made a real offer of **₹1,450** on a **₹1,799** listing:
+modal states *"Minimum offer: ₹1,259.3"*, the submit button relabels live to *"Send offer of
+₹1,450"*, confirmation *"Offer sent!"*, and it lands on `/user/offers` as
+*"Driger V · 0m ago · Pending · LISTED ₹1,799 · YOUR OFFER ₹1,450"*. The seller's notification
+reads *"New offer received — Mock User 3 offered ₹1450 on 'Beyblade Original — Driger V'"* with a
+**Respond** link to `/store/offers` — the store's list, not the buyer's, exactly as required.
+
+**`/user/offers` is one of the better surfaces in the app.** Six offers, five statuses (Pending /
+Countered / Withdrawn / Declined / Expired), each with a labelled money row and — the half most
+likely to be dropped — **the seller's note**: *"Best I can do is ₹1,150."* above an
+**Accept ₹1,150** button, and on the declined one *"Sorry, we cannot go below ₹1,300 for this
+piece."*
+
+**The seller's detail panel is the Root Cause #56 repair done right.** "View details" sits *first*
+in the row menu, above Accept/Counter/Reject, and shows the buyer's note, both prices, the expiry
+and an **Offer history** block — all before any decision. **Counter opens a real form**
+(`counterAmount` + rule text + optional note), and its empty submit raises the error **on the field
+AND in a correctly-gated "Please fix the following:" summary** — the one form this run that gets
+that right.
+
+## A124 — `Unknown buyer` on every offer row, while the notification names them
+**Where:** `/store/offers` · **Severity:** high · **Cluster:** A49
+
+Every row and the detail panel read **"Unknown buyer"**. The same offer's seller notification says
+**"Mock User 3"**.
+
+So the identity reaches the notification layer and is **lost by the offers adapter** — that narrows
+A49 from "several surfaces say Unknown" to a specific adapter, with a working counterexample on the
+same record. A seller judging ₹1,450 against a ₹1,799 listing cannot see who is asking.
+
+## A125 — A two-minute-old offer says "Offer expires 1m ago"
+**Where:** `/store/offers` → View details · **Severity:** medium
+
+The panel for an offer created at 07:35:30 — and displayed as *"pending"*, with *"Offer made
+16/09/2026, 07:35:30"* in its own history — renders **`Offer expires: 1m ago`**.
+
+Either the deadline is computed from the wrong timestamp, or a future date is being fed to a
+past-tense relative formatter. The seller is told a brand-new pending offer has already lapsed.
+
+## A126 — Two different accounts of why one offer ended
+**Where:** `/user/offers` vs `/user/notifications` · **Severity:** low
+
+The Valkyrie offer badges **`Expired`** in the list, while the buyer's notification for the same
+record says it was **"cancelled by an administrator"** with a reason. Both are terminal, but the
+buyer is shown two different stories. There is no offer-expiry notification as such — the only
+expiry entries on the page are *"Payment window expired"*, which are order-related.
+
+*(Consistent with `adminCancelOffer` calling `expireMany`, so `expired` is the stored status while
+the notification describes the cause.)*
+
+## ✅ An expired accepted offer is correctly locked out
+`Beyblade Burst Valkyrie` — Expired, LISTED ₹999, YOUR OFFER ₹780, **AGREED PRICE ₹780**. In the
+cart the **Accepted Offers** tab reads *"No accepted offers in your cart."*, its summary is
+lane-scoped (*"This total covers your accepted offers only"*), and **Proceed to checkout is
+disabled** with the reason spelled out — *"There's nothing in this tab yet."* The line is gone and
+checkout is genuinely unavailable rather than failing later.
+
+### Six cases blocked, all for reasons already evidenced
+- **4 type-specific field round trips** (classified city, live species/CITES/jurisdictions,
+  digital-code delivery method, prize-draw entry price) — all blocked by **A121**: the seller save
+  writes nothing, so an emptied field is indistinguishable from the blanket failure. **Prioritise
+  the live-item one** when saves are fixed; an emptied permitted-jurisdictions list has real-world
+  consequences.
+- **accept → checkout charges the agreed price**, and **offer flips to paid** — not attempted. It
+  needs a real order placed on production, on a payment step that **commits on the first method
+  click** (A70), on a money path with **two recorded quote-vs-order mismatches** (A71, A105). Worth
+  doing by someone who can watch each step and stop.
+
+*Two state changes I declined on shared fixture data: Decline on a pending offer, and submitting a
+real counter — both would have moved offers the later cases in this same batch read.*
+
+## A127 — The address form greets you with "Fix 7 issues" before you type a character
+**Where:** `/user/addresses/new` · **Severity:** medium · **Cluster:** A85 · **Seventh form**
+
+On first paint, untouched: the **Address Required** header carries a red **"3 issues"** badge, the
+**Where Required** header carries **"4 issues"**, and two `role="alert"` messages render — *"Enter
+the state or region."* and *"Enter the postal code."* `errorsBeforeSubmit` expected **0**,
+observed **7**.
+
+**The summary IS correctly gated** — "Please fix the following" is absent before Save and appears
+after — so the gate exists and the **per-section badges and per-field messages sit outside it**.
+That is the cleanest statement of this cluster yet.
+
+*The fields are not red-bordered (I measured a false positive on all ten; the screenshot shows
+ordinary grey). `aria-invalid` is null on 10/10 inputs before and after a failed submit.*
+
+### And the flip side makes the fix obvious
+The **live recomputation is correct and already running**. From a failed empty Save:
+
+| action | badges |
+|---|---|
+| after empty Save | `3 issues / 4 issues` |
+| fill Label | `2 issues / 4 issues` |
+| fill Full name | **`1 issue`** `/ 4 issues` — singular handled |
+| fill Phone | `4 issues` — the Address badge **disappears** rather than showing "0 issues" |
+
+No second Save needed. So the machinery works; it simply **also runs on mount** and paints its
+result before the user has done anything.
+
+## A128 — A notification's "Track Order" link 404s
+**Where:** `/user/notifications` · **Severity:** medium · `notFoundCount: 1`, expected 0
+
+`Track Order` points at **`/user/orders/order-1-20260515-abc123`** → **HTTP 404**.
+
+**It is the route shape, not a dead id**: the sibling *Re-upload proof* notification points at
+`/user/orders/order-4-20260825-upiman/**payment**` and that **loads fine**. So
+`/user/orders/{id}/…` exists while the bare `/user/orders/{id}` does not.
+
+Everything else routes correctly — offer → `/user/offers` (the list, correct since no per-offer
+page exists), bid → `/auctions/{slug}`, product → `/products/{slug}`, and the seller's offer entry
+→ `/store/offers`. Scope the fix to the one href.
+
+## ✅ The mobile form chrome is right
+At 390: a pinned bar with **Cancel + Save Address** above the user tab strip — **exactly two bars**,
+no overlap. And it honours the layout contract rather than just looking right:
+**`--bottom-chrome-height` reads 57px with the bar alone and grows to 91px** when a failed Save adds
+the issues sheet to the same tier.
+
+The sheet reads **"Fix 7 issues"** (= 3 + 4), lists the real failures (*"Enter the recipient /
+street address / city / state or region"*), and **stays closed through ordinary typing** while the
+label falls to "Fix 6 issues".
+
+*Two steps I could not do honestly: the soft keyboard (a resized desktop browser has none, so
+`--keyboard-inset-height` stays 0), and reopen-on-second-Save — the count reverted 6 → 7, which is
+consistent with my programmatic field value not surviving the re-render, so I could not tell a
+genuine reopen from a reset. Both want a human on a real device.*
+
+### Seven blocked, each with a named reason
+- **4 type-specific field round-trips** — blocked by **A121** (seller saves write nothing).
+- **2 email cases** — no inbox exists for this harness, and *"no email arrived"* cannot be
+  established by waiting.
+- **`address-routes-normalised`** — **declined**: it creates then deletes an address, and
+  `addresses` is PRESERVE tier. With two known save paths that return 200 and write nothing, I
+  would not create a record whose deletion I could not guarantee. *The read-only half — do old URL
+  shapes resolve? — is safe and is the valuable part, especially given A128.*
+
+## A129 — The buyer cannot open an offer at all; the seller can
+**Where:** `/user/offers` · **Severity:** medium · Fails 2 cases outright, blocks a 3rd
+
+Each offer renders as a card carrying **only action buttons** — *Withdraw Offer* on the pending
+one, *Accept ₹1,150* / *Withdraw* on the countered one, and **nothing at all** on the expired,
+declined and withdrawn ones. There is no View, no Details, no History, no Timeline.
+
+Nor are the cards click-through: the title is **not inside an anchor**, the card computes
+**`cursor: auto`**, and the whole page contains no *"timeline"*, *"history"*, *"Offer made"* or
+*"Superseded"* text.
+
+**The asymmetry is the finding.** `/store/offers`' row menu opens a **View details** modal with the
+buyer's note, both prices, the expiry and an **Offer history** block of timestamped rounds — all
+before acting. The buyer, whose money is at stake, gets two amounts and a button.
+
+The legacy-timestamp case is blocked by this too, and its fixture is *sitting right there unusable*:
+`Beyblade Burst Valkyrie`, Expired, LISTED ₹999 / OFFER ₹780 / **AGREED ₹780** — exactly the
+pre-history record wanted, on a card with zero controls. That matters because a **fabricated
+timestamp cannot be detected later** — a plausible date is indistinguishable from a real one once
+stored.
+
+## A130 — "Must be at least 1" on a text field (second raw-validator leak)
+**Where:** `/store/features` → Add Feature · **Severity:** medium · **Cluster:** A109
+
+**What this editor gets right**, and it is worth saying because seven other forms do not: it opens
+with **zero errors on first paint**, the **Create feature button is enabled** rather than greyed
+out, the empty submit is **refused** with errors on the fields *and* in a **correctly-gated**
+"Please fix the following:" summary, and a **whitespace-only** label (three spaces) is refused too.
+The case's named failure — a permanently disabled button with no explanation — does not occur.
+
+**What fails is the wording.** The error on a text *label* field reads **"Must be at least 1"** — no
+field name, no units, no human phrasing. The summary compounds it by prefixing the **section**
+rather than the field: **"Feature: Must be at least 1"**, twice, so a seller cannot tell which of
+the two failing fields is which. `aria-invalid` is null after the failed submit.
+
+Same family as **A109** (*"Invalid input: expected number, received undefined"* on the admin product
+form). Two confirmed instances of raw validator text reaching users.
+
+### Nine blocked — and what each is actually waiting on
+| Case | Waiting on |
+|---|---|
+| cross-store template access | a **second seller account** (`meera.blader@gmail.com`); the interesting half is whether contents render *before* refusal |
+| payout blank details · bad IFSC | not reached. **The IFSC case's value is step 6** — are stored bank details *masked* after reload |
+| shipping rateless rule | pre-empted by **A84** (Save issues no write). **The client-side half still works**: is **zero accepted as free shipping**, or swept up by a truthiness check |
+| grouped-listing count | needs a **hand-crafted request** — the UI by design cannot produce the mismatch |
+| feature create · feature edit page | **declined** — creating a record I might not be able to delete, given several seller write paths that report success and write nothing. *Create renders a real form at `?panel=create`* — note it is a **drawer**, which is a hint the edit-on-its-own-URL claim may fail |
+| store category rejects empty | not reached; the sibling editor validates correctly, but "probably" is not a verdict |
+| three-round chain | **doubly blocked** — 3 rounds × 2 identities to build, and then A129 means the buyer cannot read it. **Re-scope it to the seller**, whose modal does have the history block |
+
+## A131 — The offer detail modal fetches nothing; it renders the list's cache
+**Where:** `/store/offers` → View details · **Severity:** high
+
+Loading the page fires **one** data request — `GET /api/store/offers?page=1&pageSize=25&sorts=-createdAt`.
+Opening a row's **View details** modal then fires **nothing**: no `/api/store/offers/{id}`, no server
+action, nothing in the browser's own network log. The modal paints instantly from data the list
+already held.
+
+So there is **no code path** by which the detail could show anything but what the list last cached —
+exactly the failure the case names: *"a detail served from a stale list shows the seller a
+superseded amount, and accepting from that view accepts a price that no longer stands."*
+
+I could not stage the two-window setup (one browser, identity selected by swapping a session file),
+so I measured the **mechanism** rather than the symptom. **Checked with two instruments** — a
+`window.fetch` hook *and* the browser's own request log — because earlier in this run a fetch hook
+missed a Next.js Server Action and nearly produced a false "no requests" finding. Both agree.
+
+**This pairs badly with A132 below**: a seller can accept a superseded amount from a stale modal in
+two clicks with nothing in between.
+
+## A132 — Accept has no confirmation step
+**Where:** `/store/offers` row menu · **Severity:** medium · **Cluster:** A70
+
+One click on a menu item committed this store to selling at **₹1,450 instead of ₹1,799** — a ₹349
+concession — with **no dialog in between**. Same shape as A70 (clicking a payment *method* places
+the order outright). CLAUDE.md Rule #7 requires a `confirmation` config on committing actions.
+
+## ✅ The seller's own actions survived the admin surface, and Accept really writes
+Row menu offers **View details · Accept · Counter · Reject**. I accepted the QA offer I had created
+(Driger V, ₹1,450 vs ₹1,799) and it persisted through a full reload **on both sides**:
+
+- seller — *"Offer: ₹1,450.00 · Listed: ₹1,799.00 · **accepted**"*
+- buyer — *"Driger V · **Accepted** · LISTED ₹1,799 · YOUR OFFER ₹1,450 · **AGREED PRICE ₹1,450**"*
+  with a **Checkout at Agreed Price** button
+
+The agreed price is stored as the negotiated figure, not the listing price.
+
+**Two precision notes.** The third action is labelled **Reject**, not *Decline* as the checklist
+words it — align one or the other. And acceptance does **not** auto-create the buyer's cart line:
+immediately afterwards the Accepted Offers tab still read *"No accepted offers in your cart."* with
+checkout disabled. The buyer's route in is the explicit **Checkout at Agreed Price** button, which
+matches the documented design where the line is written by an offer-checkout *action*. Recorded as
+a **wording mismatch in the case**, not a defect — but a seller reading it would expect the line to
+appear on its own.
+
+## A133 — An admin order has no History block at all
+**Where:** `/admin/orders/{id}/view` and the row menu's "View full details" · **Severity:** medium
+
+Both routes into an order were checked. **"View full details"** opens an *edit drawer* (a Status
+select and Save changes) carrying items, add-ons and the coupon line — **no history**.
+**"Open full page"** lands on `/admin/orders/{id}/view`, and searching the rendered page for
+*"Status history"*, *"History"* and *"Timeline"* returns **nothing**.
+
+**The anti-fabrication intent is satisfied**, and the distinction matters: nothing invented appears
+either — no step dresses up the record's `createdAt`/`updatedAt` as a transition, because no steps
+are shown. This is a **missing surface, not a lying one**, which is much the better failure. But an
+admin looking at an order cannot see what happened to it.
+
+**The component exists and simply isn't wired here** — the store detail page renders a proper
+History block (below).
+
+## ✅ The store suspension timeline names who, when and why
+`/admin/stores/store-vintage-vault-co/view`:
+
+> **Suspended** · **Admin** · 06/09/2026, 05:59:17 · *"Three listings flagged as possible
+> reproductions; suspended while authenticity documentation is reviewed."*
+> **Created** · 07/02/2026, 05:59:17
+
+All three facts present, plus a second transition in order rather than only the latest.
+
+## ✅ History carries no PII — `piiInHistory: 0`
+The actor renders as **"Admin"** — a *role*, not a person. Checked the rendered text **and the page
+source**: the only email in the rendered page is `admin@letitrip.in` (my own session, in the sidebar
+chrome), and the source adds only site-wide chrome — the `you@example.com` / `your@email.com`
+newsletter placeholders and the footer's `legal@` / `support@` / `privacy@`. Zero phone matches.
+
+**Two limits, stated plainly:** this is solid for the **store** leg, which is the surface that
+actually renders history today. The **order** leg has no block to inspect, so it contributes no
+evidence either way — and the offer and payout legs were not reached.
+
+## A134 — The homepage-section validation case has no authoring path to test
+**Where:** `/admin/sections` · **Extends A113**
+
+Step 2 — *"start a new section"* — cannot be performed. No create control exists (the only
+`new|add|create` match is a false positive: the sidebar's `/admin/**new**sletter` link), there is no
+`<select>`, and the rows are inert (first row: 0 buttons, 0 links, `cursor: auto`). So there is
+nowhere to type malformed JSON or a negative order — **the validation being tested cannot exist for
+a user.**
+
+### Eight blocked — and one of them is a decline, not an omission
+- **`catalogue-rejection-reason-survives` — DECLINED.** It requires rejecting a real user's
+  submission **twice** with written reasons, and the surface holds exactly one: a ₹12,000
+  "played"-condition Charizard from `user-rohit-collector`. Step 3 ("have the owner resubmit it") is
+  something I cannot do at all, so I could not finish the case even after causing that. And per
+  A114 that detail view shows **no photos** — a rejection there would be issued without seeing the
+  item.
+- **payout UTR · store approval** — both are live writes (money-movement record; publishing a store
+  to the marketplace) whose cleanup depends on a second write, on a build with several admin paths
+  that report success and write nothing.
+- **ticket resolution timestamp** — the queue is empty. One of ~13 cases blocked by the empty
+  moderation / reports / tickets / item-requests / banned-addresses / payment-methods fixtures.
+- **notification type filters** — 🛑 note for whoever runs it: **the real union is 30 values, not
+  the 28 in the case label** (it grew when `account_action` split into `support_ticket_update` and
+  `scam_report_update`). Counting against 28 would mark a correct list wrong.
+- **payout failure reasons** — this is a *snapshot-diff detector*, and it fails invisibly: if
+  history is built by diffing against one earlier snapshot rather than appending per transition,
+  only the latest reason survives and the page still looks reasonable. **Counting entries against
+  attempts is the assertion that catches it**, not reading them for plausibility.
+
+## A135 — 🛑 The blog editor opens EMPTY on an existing post
+**Where:** `/admin/blog?panel=edit&id=…` · **Severity:** critical · **Same shape as A98**
+
+Opened the published post *"Collector Spotlight: Building India's Largest Gundam Collection"* and
+read every field's **value**, not its appearance:
+
+| field | value | length |
+|---|---|---|
+| Title | `""` | **0** |
+| Slug | `""` | **0** |
+| Excerpt | `""` | **0** |
+| Content (rich text) | — | **0** |
+
+**What is visible in those boxes is `placeholder` text** — *"e.g. How to Grade Pokémon Cards"*,
+*"blog-how-to-grade-pokemon-cards"*, *"Short summary shown in listings and cards"* — which reads
+exactly like real data at a glance. That is why this is easy to miss. **The list row behind the
+drawer still shows the real title**, so the record is intact; the editor fails to load it.
+
+**The red "3 issues" badge is a symptom, not the finding** — the form believes its required fields
+are empty because it never populated them.
+
+🛑 **I did not press Save, deliberately.** This is the shape of **A98**, where an `ActionResult`
+envelope was spread as if it were the payload and saving wrote a published listing back as a draft.
+Here a Save would overwrite a published post's **title, slug, excerpt and body with empty strings**.
+That is the next thing to check — **from a staging copy, not this one**.
+
+*On the case's literal question there is no slug-specific error and no `role="alert"` anywhere — so
+a tester reading only the slug field would score this a pass.*
+
+## ✅ The bottom-bar contract holds on admin listings
+- **Bulk bar survives a drawer.** Ticked two rows → *"2 selected"* + Toggle Featured/Promoted/On
+  Sale + Apply. Quick edit drawer open → **still "2 selected"**. Cancel → still there, no empty
+  flash. *Mechanism note:* they never compete — `--bottom-chrome-height` is `0px` throughout because
+  this bulk bar is **inline at the top of the list**, not bottom-pinned. The case passes
+  structurally rather than by a correctly-maintained stack.
+- **No second bar inside a modal**, at either width. 1280: modal footer `Cancel` / `Save →`,
+  `--bottom-chrome-height` `0px`. 390: full-screen modal, footer inside it, **nothing below**.
+  `screenBottomBars: 0`.
+  ⚠️ At 390 that variable reads **64px** while the modal is open — that is the **modal's own
+  footer** registering in the tier, not a duplicate. Don't read it as evidence of a second bar.
+- **The blog editor is sections, not steps** — Content and Media rendered at once, no *"Step N of
+  M"*, no gate on reaching Media before filling the title.
+
+### Eight blocked — with the reason each is worth running
+- **3 role cases** — create/delete writes on an **authorisation surface**, on a build with admin
+  saves that report success and write nothing. Staging.
+- **2 bid cases** — need **three identities** in sequence. Prioritise `bid-detail-hides-bidder`: it
+  is a PII assertion whose step 2 requires searching the **page source**, because a masked display
+  over an unmasked payload looks identical to a fix from the screen.
+- **`admin-bid-view-before-cancel`** — cheap and read-only; good first pick next pass. Its real
+  question is whether Cancel's confirmation **names the consequence**, and A132 found a committing
+  action with no confirmation at all.
+- **`blog-new-post-url`** — publishes to the live blog. *Read-only half worth doing:* check existing
+  post URLs for a doubled `blog-` segment. The editor's own hint (*"Must start with `blog-`"*) means
+  a doubling bug would come from re-prefixing an already-prefixed slug.
+- **`blog-readtime-updates`** — **blocked by A135, dangerously.** "Add paragraphs and save, then
+  restore the original body" is impossible when the body loads empty: following it literally would
+  replace a published post's entire content with only what was typed, and there would be nothing to
+  restore from.
+
+## ✅ The admin/seller offer boundary holds exactly — `adminActions: 2`
+`/admin/offers` row menu = **View · Cancel Offer**. No Accept, no Counter, no Decline. The seller
+side was separately confirmed this run to still hold all three of its own actions, so the
+capability was **moved, not duplicated** — an admin coordinates, the store prices its own goods.
+No bulk cancel appears either.
+
+### This also sharpens A124
+The admin row reads **"Mock User 1 → Beyblade Arena"** — *the buyer is named here.* `/store/offers`
+shows **"Unknown buyer"** for the same kind of record. So the identity is available and **is**
+rendered — by this adapter and not by that one. That is now two independent counterexamples
+(notification layer, admin list) against one failing adapter.
+
+## ✅ The Cancel-Offer dialog is the reference for validation copy
+> *"Cancel this offer?"* — **Reason for cancelling** — *"The offer will be expired and removed from
+> the buyer's cart, and they'll be notified. **This cannot be undone** — the buyer would need to
+> make a new offer. **The buyer sees this reason, and it is recorded in the audit log.**"*
+
+Empty submit → refused, field error **and** gated summary:
+**"Give a reason of at least 10 characters — the buyer sees this."**
+`"Too short"` (9 chars) → refused identically, typed text preserved.
+
+**That message states the rule *and why the rule exists*.** Compare A109 (*"Invalid input: expected
+number, received undefined"*) and A130 (*"Must be at least 1"*). Point the message-quality fixes at
+this one.
+
+**Recorded `null`, not pass:** I verified the refusals and **declined step 5**. The only pending
+offers belong to real buyers — the one I opened is Mock User 1's ₹950 offer on a ₹1,199 listing —
+and the dialog's own copy says it cannot be undone. The audit-log, history and buyer-notification
+assertions remain untested; the offer is still pending.
+
+## A136 — The new-event form shows "3 issues" before you type (eighth instance)
+`/admin/events/new` · **Cluster:** A85
+
+The **Details Required** section carries a red **"3 issues"** badge on first paint of a *brand-new*
+event form. Eighth surface in this cluster, after the address form, seller quick-add, admin product
+editor, `/store/shipping`, `/report`, `/item-requests/new` and the blog editor.
+
+*The case this appeared under passes on its own terms:* Details, Media, Settings and Raffle are all
+present at once, there is **no "Step N of M"**, and **zero** of the visible controls are disabled —
+so Raffle is reachable without completing Details.
+
+### Two blocked, both by A135 — and one is actively dangerous
+- **`blog-error-summary-jumps-to-section`** — step 2 is *"clear its title"*, but every field is
+  **already empty**. There is nothing to clear, and step 4's Save would blank a published post.
+- **`blog-media-survives-collapse`** — ends *"Remove the media and restore the post"*, impossible
+  when the editor loads nothing to restore from. *The premise is worth keeping though:* an upload
+  aborted by collapsing its section would present as a file that simply isn't attached — looking
+  like a slow network rather than a bug.
+
+## ✅ VERIFIED FIXED — Root Cause #70, the public site-settings leak
+`GET /api/site-settings` anonymous is **1,431 bytes over exactly 11 allow-listed keys**:
+
+`contact · payment · listings · notificationChannels · announcementBar · navConfig · actionConfig ·
+background · watermark · disabledRoutes · effectiveWatermark`
+
+- **No `featureFlags` block at all** → `adminCheckoutBypass` and the mock-provider flags cannot be
+  in it. `operationalFlagsInPublicResponse: 0`
+- **No `credentials` block**
+- Searched for `razorpayKeySecret`, `webhookSecret`, `accessToken`, `apiKey`, `smtpPass`,
+  `resendApiKey`, `gstin`, `gatewayFeePercent`, `payoutHoldDays`, `minPayoutAmount`,
+  `surchargeSellerSharePercent` — **none present**
+
+That response previously carried the whole settings document minus three deleted keys. The
+allow-list projection is doing its job.
+
+*It also answers half of the ads case for free: a provider credential stored in ad settings has no
+route into that response.*
+
+## ✅ The media library renders, proxies and filters correctly
+200 items, **24 tiles, 0 broken** (all complete, `naturalWidth > 0`). **Zero raw bucket URLs** —
+checked for `firebasestorage.googleapis.com` and `storage.googleapis.com`, found none; all six
+sampled srcs are `/api/media/…` proxy paths.
+
+**The search control pair works both ways:** `avatar` → one matching tile;
+**`zzzznope` → "No files found."**, zero tiles. `nonsenseResultCount: 0`.
+
+### A137 — 23 of 24 media paths live under `/api/media/tmp/`
+The only non-`tmp` item is an external placeholder via `/api/media/ext`. `tmp/` is the prefix
+uploads *start* in before `finalize` moves them to a permanent path — and which `mediaTmpCleanup`
+prunes. **If finalize isn't moving files, the library is living in a folder something else is
+designed to delete.** Worth a look.
+
+*Minor, same page:* the header still reads **"200 Items"** when the search returns none — the total
+isn't recomputed against the active filter.
+
+### 🛑 Method correction — I had the wrong search box
+My first run reported **"the media search does not filter"** — 24 tiles before and after
+`zzzznope`. **Wrong.** The page has *two* search inputs and my selector grabbed the sidebar's
+**"Search navigation…"** rather than the grid's **"Search filename…"**. I had typed into the wrong
+box entirely. That is the eleventh near-false finding this run from an over-broad selector.
+
+### Six blocked, each with the reason and the cheapest next step
+- **ads CRUD** — creates a record holding a **provider credential** on a build with saves that
+  report success and write nothing. *Untested half: is it masked on reload.*
+- **newsletter export** — 🛑 *do step 3 first, it needs no export:* **are subscriber emails shown in
+  full or masked?** A masking helper elsewhere in this run turned out to be a no-op.
+- **contact submissions** — worth more than it looks: the confirmation email was removed, so the
+  admin surface is now **the only place a customer's message can be read**.
+- **navigation editor** — mutates the **live public header**; cleanup needs both a delete *and* a
+  reorder-restore. Run it with the dead-`href` validation case, since this run has already found
+  404ing links shipped in two other places.
+- **settings navigation/actions** — cheap and read-only, good first pick. 🛑 *`/admin/site` is a
+  **20-group select**, not a tab strip* — a select-driven panel is exactly the pattern that tends
+  not to write its state into the URL, which is what the case asks about.
+- **feature flags** — the public half is verified above; the toggle half is a **PRESERVE-tier
+  write** with a public behaviour change in between.
+
+## A138 — 🛑 "Featured first" and "Promoted first" return HTTP 500 and empty the seller's list
+**Where:** `/store/products` sort dropdown · **Severity:** high
+
+Selecting either sort replaces a **25-row list** with **"No products listed yet."** The console gives
+the cause:
+
+```
+GET /api/store/products?page=1&pageSize=25&sorts=-featured&availability=available     => 500  (x2)
+GET /api/store/products?page=1&pageSize=25&sorts=-isPromoted&availability=available   => 500  (x2)
+```
+
+**The shape points at a missing composite index.** Every other sort on the same dropdown works —
+Newest, Oldest, Title A–Z, Title Z–A, Price High, Price Low all return rows — and the two that fail
+are exactly the two whose fields had to be made *sortable* for this feature to exist. A field
+flipped to `canSort: true` without deploying the index for the query shape it runs in produces
+precisely this: a `FAILED_PRECONDITION` surfacing as a 500, on that sort and no other.
+
+🛑 **Note the failing URL carries `availability=available` alongside the sort** — the index needed
+is the *combined* shape, not the sort field alone.
+
+**The user-visible cost is worse than a dead control.** A seller who picks "Featured first" is told
+**they have no products at all**, with no error message and no retry — from the UI it is
+indistinguishable from an empty store.
+
+## ✅ All nine listing types are in the seller dropdown *and every one filters*
+`typeOptionCount: 9` — Product · Auction · Pre-Order · Prize Draw · Classified · Digital Code ·
+Live Item · Art Print · Stickers. **No "Bundle".**
+
+The half that matters is that **none returns the unfiltered 25**:
+
+| option | rows | option | rows |
+|---|---|---|---|
+| All listings | 25 | Classified | 7 |
+| Product | 13 | Digital Code | 6 |
+| Auction | 7 | Live Item | 3 |
+| Pre-Order | 5 | Art Print | 4 |
+| Prize Draw | **0** | Stickers | 5 |
+
+And the rows are genuinely of their type, not merely a different count — Auction shows *"7 bids ·
+Ends 19 Sept"*, Classified shows Mumbai/Hyderabad, Live Item shows *"Juniper Bonsai"* and *"Bearded
+Dragon"*. **Prize Draw returns a proper empty state** (*"No prize-draw listings found"*) rather than
+falling back to the full list — the exact shape of the alias-map bug where an unrecognised token
+made the whole clause vanish. **Art and Stickers both filter**, which is the other half of that fix.
+
+### 🛑 Method note — twelfth selector miss
+My first count returned **0 rows for every option**. The seller products list renders as **cards,
+not a table**, so `tbody tr` measured nothing. Counting the per-row **Edit** buttons gave the real
+numbers. Had I filed from that, I would have reported every type as broken.
+
+### Ten blocked — and for eight of them there is a read-only half worth extracting
+The coupon/bundle/classified CRUD cases all create records on a build with a **documented
+non-persisting seller save**, so a create-then-verify result could not be attributed. But each has a
+cheap sub-claim that needs no writes:
+
+- **auto-scoped** and **cannot-be-site-wide** → *does the form offer a store/scope control at all?*
+  A seller cannot create what the form cannot express — an absent control is the strongest form of
+  the guarantee.
+- **no-stacking-toggle** → read-only. The subtle half is whether help copy **implies the seller
+  controls stacking** rather than stating the platform rule.
+- **coupons-crud** → *does any money field's label name a sub-unit?* This run already found an admin
+  coupon field labelled in paise.
+- **classified-crud** → the public panel must offer Make Offer / Request to Buy and **no cart
+  control** — the type's defining capability.
+- **bundles-crud** → step 5, the **cross-store member refusal**, has purpose-built fixtures.
+- **stacks-with-admin-coupon** → ⚠️ pre-empted: its paired coupon `FREESHIP499` was already observed
+  applying at **−₹0.00**, so "the total falls by the sum" would be ambiguous. Re-run with a
+  percentage-based admin coupon.
+
+## A139 — The seller sees how many bids, but not what they are worth
+**Where:** `/store/auctions` (→ `/store/products?listingType=auction`) · **Severity:** medium
+
+Every auction row carries real auction-specific data rather than product boilerplate — an `auction`
+badge plus *"7 bids · Ends 19 Sept"*, *"0 bids · Ends 20 Sept"*, and on the reserve auction
+*"Reserve ₹4,000 · 4 bids · Ends 18 Sept"*. **Bid count and end date on all 7 rows; reserve price
+where set.**
+
+**The current bid is absent from every row.** The comparison is what makes this a finding rather
+than a preference — the *same* auction on its public page reads:
+
+> **Current bid ₹1,650.00** · 7 bids · Ends in 2d 21h 22m
+
+The bid **count matches exactly** (7 and 7), so the row is reading the same record and simply omits
+the amount. **A visitor can see this seller's item is at ₹1,650; the seller, on their own dashboard,
+cannot.**
+
+*Two things the row gets right:* the ended auction reads **"Ended"** rather than a negative or
+frozen countdown — the specific failure the case names — and the date/countdown presentations are
+consistent rather than contradictory.
+
+## ✅ Both seller dashboards open populated, with type-appropriate scope labels
+`/store/products` (no params) → **Available**, 25 rows. `/store/auctions` → redirects to
+`/store/products?listingType=auction` → **Available**, 7 rows.
+
+Both carry the three-tab scope bar, **correctly labelled per type**:
+`Available / Sold & Ended / All` on products, `Available / **Ended** / All` on auctions. That label
+is derived rather than hardcoded, and getting it right on a type-filtered view is the detail most
+likely to be missed.
+
+*Owed:* I did not switch to **All** and compare counts, so the case's own proof — that All returns
+more than the default — is not recorded. Worth doing: the admin listing partitions 25 Available /
+12 Sold & Ended, so the scopes do separate there.
+
+### Four CRUD cases blocked — each has a read-only half worth extracting
+All four create listings on a build with the **documented non-persisting seller save**, so
+create-then-reload can't be attributed. But:
+
+- **digital-codes** → does the **public page's availability follow the pool**, on an existing seeded
+  listing? ⚠️ Note both counters are **derived by recount**, not stored, so a plausible pool count
+  proves less than it looks.
+- **live-item** → *"the videoless save is refused inline with the typed values preserved"* needs **no
+  successful save**. If the refusal clears the form, that is a finding by itself.
+- **prize-draws** → entirely public: does the purchase panel **name an entry and its per-entry
+  price**, rather than presenting the prize as the thing being bought? A panel that reads like the
+  latter is how a draw starts looking like a sale.
+- **art/stickers** → the seller-side filters return only their own types (Art 4, Stickers 5, titles
+  all genuine). But `ordinaryProductsInTab` is **not recorded** — the public
+  `/stores/{slug}/art` tab is a *different query*, and that is exactly where a type leak would show.
+
+## A140 — Event leaderboards don't reflect their participants, and the one row scores zero
+**Where:** `/events/{slug}/leaderboard` · **Severity:** medium
+
+| event | header | leaderboard |
+|---|---|---|
+| Win a Sealed Beyblade Burst Regalia Genesis (raffle) | **Participants: 247** | **`#1 Mock User 3 — 0 pts`** — one row |
+| Vote: Best Blader of the Original Beyblade Series (poll) | **Participants: 364** | **"No votes yet."** |
+
+The single row on the raffle board is **my own account** (sidebar: Mock User 3 /
+rehan.sheikh@gmail.com), so 246 other participants are absent and the only score shown is **0**. The
+case names all-zero scores as a finding in its own right; this is that, plus the row count.
+
+**I confirmed it's a pattern, not one odd event** — a single empty instance is data rather than
+behaviour, which is a mistake I made earlier in this run with category carousels. Two events, both
+with hundreds of participants in the header, neither showing them on the board.
+
+**On masking I give no verdict, deliberately.** The only row rendered is my own, and a name shown in
+full to its owner is correct. Whether *other* participants' names are masked cannot be established
+until the board lists them. What I can report: no other participant's name, email or identifier
+appeared in the rendered text **or the page source** on either page — the only email is the
+signed-in account's, in the sidebar chrome.
+
+*Three further cases are blocked by this one defect:* own-row-findable is satisfied only trivially
+(`#1` of 1), ordering-and-ties has no descent to verify and no tie to observe, and both would be
+scored wrong if taken at face value.
+
+## ✅ The empty leaderboard states that it is empty
+The poll's Leaderboard tab renders **"No votes yet."** — not a blank area, and not column headings
+over nothing, which are the two failures the case names. The chrome stays correct around it: the tab
+remains selected, and the `Poll` / `Active` chips, dates and share control persist above. The
+wording is **type-appropriate** — *"No votes yet"* on a poll rather than a generic "no entries" —
+which suggests the copy is chosen per event type.
+
+### A141 — No ended, cancelled or paused event exists to test against
+`/events` lists **8 events, every one Active or Live**. Searching the index for *ended*,
+*cancelled*, *paused* and *draft* as statuses returns none.
+
+So all three legs of the closed-event case are unreachable. **Fixture gap, not a defect** — and the
+same shape as several others this run: the seeded event data covers the active states well and the
+terminal ones not at all. Seeding one of each would make that case testable in a single pass.
+
+*Runnable right now, unlike most of this batch:* the spin-wheel fixture (**"Daily Beyblade Pull!
+Spin for a Prize"**) exists and is active. Worth doing carefully — the case checks the second spin
+is refused **both before and after a reload**, which is exactly what separates a client-side guard
+from a server-enforced limit.
+
+## Raffle draw — DECLINED, and it would not have produced a verdict anyway
+`content-discovery/event-participation--admin` · recorded `null`
+
+Three reasons, in order of weight:
+
+1. **I cannot complete the case.** Steps 3–6 require signing in **as the winning participant**, then
+   as a non-winning one. The harness browses as one of four fixed session files, and the winner
+   would be whichever of this raffle's **247 participants** the draw picks — almost certainly none
+   of them. The announcement, the winner's notification and the other-participant visibility are
+   *all* unobservable to me regardless of whether I draw. **Drawing would be pure cost.**
+2. **It is irreversible.** A draw settles the raffle and writes its winner; there is no undraw.
+3. **It is premature.** The raffle reads **Active, End: 29 Sept 2026** — drawing now settles a live
+   event thirteen days early, in front of 247 real entrants.
+
+### What read-only work established
+**No event on the site has a drawn raffle**, so there was no already-settled example to check the
+announcement against:
+
+| event | type | status | detail |
+|---|---|---|---|
+| Win a Sealed Beyblade Burst Regalia Genesis | Raffle | **Active** | ends 29 Sept 2026 · 247 participants · no winner text · Overview/Participate/Leaderboard |
+| Pokémon Number Draw — July 2026 | **Lottery** *(despite the name)* | **Active** | ends 20 Sept 2026 · 5 participants · 25 slots · no winner text · Overview/Participate |
+
+The entry path itself exists — both expose a **Participate** tab.
+
+**Recommendation:** run this on staging where the winner's account can be signed into, or **seed an
+already-drawn raffle** so the announcement half becomes a read-only check. The case's own reasoning
+is why it matters — *"a result that exists only in the admin screen means the winner never learns
+they won"* — and that is precisely the half an admin session cannot verify.
+
+## `admin/site-system--p1` — 12 blocked, and that is the correct outcome
+Almost every case in this batch is a **save-and-reload against `siteSettings`** — the PRESERVE-tier
+singleton whose credentials hash the harness checks after every wipe, and which I have now declined
+to write to three times this run. Several also need a real inbox.
+
+**Two declines have consequences beyond the document, and are worth naming:**
+- **`messaging-daily-ceiling-blocks`** sets the daily email ceiling to **1**, which suppresses every
+  user-facing email **site-wide for the rest of the day** — not just the test's two. A buyer placing
+  an order during that window silently gets no confirmation, and nothing tells them or the operator
+  why.
+- **`kill-switch-suppresses-user-mail`** turns production email off, then requires a **seller to
+  mark a real buyer's order shipped**.
+
+### `site-settings-admin` — partial, and I stopped rather than guess
+**5 of 20 groups verified rendering real fields** across this session: About 44, Fees 17,
+Integrations 19, Limits 4, Notifications ~15. **Zero `enc:v1:` ciphertext** in any group opened, and
+Integrations' credential fields render as `type=password`.
+
+🛑 **My programmatic walk of all 20 groups expanded only the first and reported "0 fields" for the
+other 19.** That is my interaction failing, not the page — I know at least four of those 19 *do*
+render fields, because I opened them individually earlier. Filing it would have produced a
+spectacular false finding ("18 tabs open empty"). **Thirteenth instance of this class.** A human
+clicking the 20 groups finishes this case in two minutes.
+
+### Read-only halves worth extracting from the blocked cases
+- **`auction-bid-tiers`** → steps 1–3 need no save: are the tier **price bands contiguous, with no
+  gap and no overlap**? A gap means an auction in that range has no defined increment; an overlap
+  means two rules claim it. Neither needs a write to detect.
+- **`daily-digest-on-deploy`** → steps 2–4 are **entirely read-only**. The case's own framing is
+  *"an option whose behaviour is not stated"* — so the assertion is about the **copy**, not about
+  firing anything. Cheapest case in the batch.
+- **`daily-digest-recipients`** → typing `not-an-email` and checking it is rejected **on the field
+  before any request** needs no save. So does confirming **no CC field exists**.
+- **`whatsapp-order-announcement`** → step 2 (*are real credentials configured, or are the fields
+  empty?*) is read-only and **changes what the rest of the case should expect**.
+- **`whatsapp-credentials-persist`** → the public half is **already verified**:
+  `tokenInPublicSurfaces: 0` by construction, since `/api/site-settings` is an 11-key allow-list
+  with no credentials block. Only the masked-on-reload half is open.
+
+## A142 — Two admin pages report different TOTAL REVENUE for the same site
+**Where:** `/admin/dashboard` vs `/admin/analytics` · **Severity:** high
+
+| page | TOTAL ORDERS | TOTAL REVENUE |
+|---|---|---|
+| `/admin/dashboard` | **54** | **₹31,586.00** |
+| `/admin/analytics` | **54** | **206109.2** |
+
+**The order count agrees exactly.** That is what makes this a real inconsistency rather than two
+pages measuring different populations — they are counting the same 54 orders and arriving at
+₹31,586 versus 206,109. Neither page qualifies its figure.
+
+**The formatting diverges too, and may be the clue:** the dashboard renders **₹31,586.00** — symbol,
+separator, two decimals — while analytics renders the bare float **206109.2**. A headline money
+figure that skips the shared currency formatter may also be skipping whatever the other page applies
+to it.
+
+I am not guessing which is correct. What's reportable is that an admin reading both surfaces gets
+two answers.
+
+## ✅ Analytics is healthy, and its console is completely clean
+Every card carries a real figure — *Page views today 54*, a **Top tracked pages today** list with
+real paths and counts, and a Revenue block with totals, a Revenue/Page Views tab pair, From/To range
+and a monthly axis. **Zero em-dashes** anywhere, so the "card stuck on a placeholder, indistinguishable
+from still-loading" failure does not occur.
+
+**`permissionDeniedMessages: 0`** — after a 12-second settle, the console holds **zero messages of
+any kind**. That matters more than it looks: the failure it guards against is a client subsystem
+attempting reads the database rules refuse, which historically denied on every navigation while
+surfacing nothing, leaving cards showing em-dashes that read as "still loading". A clean console
+*beside* fully-populated cards is consistent with that subsystem being genuinely gone.
+
+**Pageview tracking is demonstrably live, not seeded** — the top-pages list is showing *my own*
+browsing from earlier in this session (`/categories/category-spinning-tops` at 5 views is a page I
+opened repeatedly during the category batch).
+
+### Nine blocked — the one I'd most want run on staging
+**`credentials-partial-save-keeps-others`.** Its assertion — saving one credential must not wipe the
+others — is the settings-singleton form of a defect this run has already confirmed elsewhere: an
+editor seeded from a partial read that re-sends its blanks on save. **The consequence here is the
+worst available**, because a cleared credential is indistinguishable from one that was never set,
+and would surface only when a payment or an email silently stops working. Its method is also right
+and worth preserving: **write down which credentials are SET versus empty before touching anything**,
+because afterwards there is no way to tell what was lost.
+
+**Read-only halves worth extracting from the rest:**
+- **`site-settings-save-sends-no-email`** → step 3 reads `/admin/audit-log` against existing saves.
+  High value: the audit log *replaced* the per-save email, so if it isn't recording settings saves,
+  removing the email left **no record at all**.
+- **`themes-tab`** → are the two built-ins present, and are their **delete controls absent or
+  refused**? The built-ins are the fallback the whole theming system rests on — a deletable built-in
+  is a sharper finding than a duplicate that fails to save.
+- **`notifications-non-digest`** → steps 1–4 are read-only. 🛑 **The union is 30 values, not the 28
+  these cases keep citing** — counting against 28 would misgrade a correct list.
+- **`pageviews-report-listing-standard`** → the listing-chrome half (search box, entity-type filter
+  drawer, Most/Fewest-views sort, pagination) needs **no browsing at all**. Apply the nonsense
+  control to that search box — this run has repeatedly found search boxes that don't filter.
+
+---
+
+## Batch `admin/site-system--p3` — 6 yes, 5 no, 1 blocked
+
+Recorded 181/226. This batch spends most of its value on the **maintenance tooling**,
+and the tooling works — which is how it produced the largest single haul of live
+production defects in the run so far. Those are filed as A143 because they are what
+the tool *reported*, not what it did wrong.
+
+### A143 — FIVE live production failures, read straight off `/admin/maintenance`
+
+The observability stack is healthy: 269 errors in 24h, 48 server rows, 200 client
+rows, a detail page carrying code / source / route / message / request-ID / user-agent
+/ full stack. Every one of the following is a real, currently-failing production path,
+and each deserves its own fix:
+
+| Code | Route | Message | n |
+|---|---|---|---|
+| `RSC_route` | **every** `opengraph-image` (bundles, categories, scams) | `failed to pipe response` | **30** |
+| `PRECONDITION_FAILED` | `/api/faqs` | `9 FAILED_PRECONDITION: The query requires an index` | **10** |
+| `INTERNAL` | `/api/store/products/digitalcode-.../codes` | `Invalid time value` | 4 |
+| digest `1000849518` | `/admin/bids/[id]/view` | `Functions cannot be passed directly to Client Components` | 1 |
+| digest `3017944782` | `/admin/return-requests` | `Cannot read properties of undefined (reading 'title')` | 1 |
+| digest `1095480341` | `/groups/[slug]`, `/prize-draws/[slug]` | `Aborted, errored or already flushed boundaries...` | 2 |
+
+Three of these are worth more than their row count:
+
+1. **The OG-image failures have a named caller.** The detail page's user-agent field
+   reads `meta-externalagent/1.1` — Facebook's crawler. So this is not an idle route:
+   **every Facebook/WhatsApp link preview for a bundle, category or scam page is
+   currently failing to render.** 30 of 48 server errors are this one bug.
+2. **`/api/faqs` is missing a composite index.** Same shape as the `serverErrors`
+   index defect that Root Cause #89 surfaced — invisible until something prerenders
+   or crawls it.
+3. **`/admin/bids/[id]/view` and `/admin/return-requests` are admin pages that
+   crash.** Both were recorded as untested elsewhere in this run; this is independent
+   evidence they are broken, obtained without opening them.
+
+Plus a 194x repeat, from the client list: **React #418 (hydration mismatch) on
+essentially every page** — `/admin/dashboard`, `/admin/maintenance`, `/admin/site`,
+`/products`. One defect, 194 rows, 97% of all client errors.
+
+**Screenshot**: `admin-server-errors-live-defects.png`.
+
+### A144 — `/admin/maintenance/analysis` "Run analysis" outputs the two characters `200`
+
+The card on the overview promises *"Run the maintenance analyzer + recommendations."*
+Clicking **Run analysis** renders, as the entire result, the literal string **`HTTP 200`**.
+No grouping, no recommendation, no error. Re-read after a 4s wait: unchanged.
+`admin-maintenance-analysis-http200-only.png`
+
+### A145 — the Edit-Carousel form opens EMPTY with status pre-set to `draft`
+
+`/admin/carousels/carousel-hero-default/edit`, measured after 9 seconds:
+
+```
+input[name="name"].value    = ""        (length 0; "e.g. Homepage Hero" is the PLACEHOLDER)
+select[name="status"].value = "draft"
+```
+
+The record is **`Homepage Hero`**, status **`active`**, and the breadcrumb one line
+above the empty field reads `<- Homepage Hero`.
+
+**I did not press Save**, and nobody should until this is fixed: it would write
+`name: ""` + `status: "draft"` over the only carousel on the site — which is the
+**live homepage hero**. That is a one-click silent deactivation of the top surface of
+the marketplace. Same family as the lottery editor (Root Cause #76): a form that can
+express state it never loaded.
+
+**The sibling is the counterexample, which makes this precise** — the *slide* editor
+at `/admin/carousel/slide-hero-homepage/edit` loads its real values (`title: "Three
+ways to shop"`, order 1, height medium, autoplay 6000). One component, not a family.
+
+Third instance of the empty-editor cluster after A98 and A135 (blog).
+`admin-carousel-editor-empty-status-draft.png`
+
+> **Fixed, and worth recording**: `/admin/carousels` now renders a real **named-carousel
+> list** (`Homepage Hero / active / 5 slides / View` + `+ New Carousel`). Root Cause #37
+> recorded it rendering the flat slide editor instead. That half is closed.
+
+### A146 — tester-checklist: no Edit at all, and the one row action is DISABLED
+
+Established entirely read-only.
+
+- **Create offers 7 fields**: `label`, `description`, `href`, `groupLabel`, `groupKey`,
+  `pageLabel`, `pageKey`. **Absent**: `roles`, `startPage`, `steps`, `inputs`,
+  `expectedBehaviour`, `expectedUiState`, `expectedData`, `endResult`, `adminOnly`.
+  So an admin-authored case **structurally cannot carry the six-part procedure** every
+  case in this catalogue is supposed to have — it can only be the pre-procedure
+  one-liner shape.
+- **Edit does not exist.** The row menu on every row holds exactly one item,
+  *"Reopen as New Test Case"*, and `button.disabled === true`.
+
+All three verbs in the case's own title fail: create is partial, edit is absent,
+`adminOnly` is unreachable. Root Cause #56's shape, one turn worse — the row has a
+menu, and the menu does nothing. `admin-tester-checklist-no-edit-disabled-action.png`
+
+### A147 — `/admin/tester-feedback` says "Total test cases: 2" against a ~1,300-case catalogue
+
+Three problems, one screen:
+
+1. **`Total test cases: 2`** is derived from the *answered responses*, not the
+   catalogue — which I had counted minutes earlier on `/admin/tester-checklist` as
+   **52 pages x 25 = ~1,300**. The `Pass rate 0%` beside it then reads as *everything
+   fails* when it means *two seeded demo rows, both No*. A figure covering 0.15% of
+   the catalogue must not be labelled the total. (Same lesson as the run report's own
+   coverage table: *a run that covered half the catalogue must say half*.)
+2. **The column headed `Tester / Case` renders the COMMENT, not the case label.** The
+   row reads `Mock User 3 / Phase 1 — admin / bug-hunter-rewards — Seed fixture — a
+   fresh No on the reopened v2 case...`; the real label (`Demo fixture — reported bug,
+   already confirmed and reopened (v2, active)`) appears **only in the export**. An
+   admin scanning the page cannot tell which case failed.
+3. **The page and its own export disagree on the phase** for the same two records —
+   rows say `Phase 1`, the downloaded report groups them under `## Phase 32`.
+
+**The export itself is correct and complete** and should not be touched: both sections
+present, `_No notes on passing cases._` rendered rather than omitted, every entry
+naming tester / label / comment / screenshot / deep link / status.
+`admin-tester-feedback-total-2-and-phase-mismatch.png`
+
+### A148 — the admin Copilot returns 502 and the message names nothing
+
+Typed *"How many orders were placed this week?"*, pressed Send. The thread answers
+**"An error occurred. Please try again."**
+
+Cause: `POST /api/copilot/chat` -> **502**
+`{"code":"GENERATION_FAILED","error":"An internal error occurred","requestId":"1769ff7a-..."}`
+
+**The security half passes cleanly** and is worth saying so: no provider key, no raw
+upstream body, no stack trace — the 5xx is scrubbed and carries a `requestId` instead,
+exactly as Rule #9 requires. What fails is the case's own alternative — it allows *"a
+readable message names what is missing"*, and this names nothing. The page also never
+states which model or provider it uses. `admin-copilot-502-generation-failed.png`
+
+### A149 — three quotable wrong sentences in `/admin/guide/catalog`
+
+The guides load and are distinct (12 of them, not the 8 the case's label claims;
+index 1899 chars, catalog 2645, team 2119 — nothing duplicated or empty). Their
+*content* is stale:
+
+1. *"Listing types: standard (prefix `product-`), auction (prefix `auction-`),
+   pre-order (prefix `preorder-`)."* — there are **nine**; this omits prize-draw,
+   classified, digital-code, live, art and stickers. This site's own seller filter
+   returns 4 Art Print rows and 5 Stickers rows.
+2. *"3-tier system: Root (tier 1) -> Subcategory (tier 2) -> Leaf (tier 3)."* — the
+   taxonomy is **4 tiers with two roots**. The guide index repeats it on its Catalog
+   card as *"categories (3-tier taxonomy)"*.
+3. *"Key fields: `parentId` points to the direct parent."* — the field is
+   **`parentIds[]`**, the full ancestor chain. This one is load-bearing: an admin
+   debugging a miscategorised product would be hunting a field that does not exist.
+
+I sampled 3 of 12 guides against reality, so there are likely more.
+`admin-guide-catalog-stale-3tier.png`
+
+### A150 — a real user's display name in `adminAuditLog.targetLabel`
+
+`user_role_change` renders target **`user: SAGAR R`**. CLAUDE.md states this collection
+is deliberately *not* PII-encrypted and that its metadata therefore carries a uid
+*"only, never a name"*. No emails and no phone numbers appear anywhere in the table, so
+the main exposure is closed; this is the stated invariant not holding, admin-only and
+low severity. Recorded as `piiInAuditEntries: 1` rather than failing the case.
+
+### Ninth form in the A85 first-paint-errors cluster
+
+`/admin/team/new` renders **"Required / 1 issue"** before anything is typed.
+
+### Confirmed working (with evidence, so pass 2 can skip them)
+
+- **Root Cause #83 is FIXED.** `/admin/team`'s permission-group filter no longer
+  concatenates its Sieve clauses: `group=blog_poster` -> 1 row (Mock Employee 1, Blog
+  Poster), `group=trust_and_safety` -> 1 row (Mock Employee 2), `group=finance_manager`
+  -> *"No employees found"* + a `1` filter badge. `admin-team-group-filter-works.png`
+- **`/admin/audit-log`** — actor search is exact (`user-admin-letitrip` -> 6,
+  `zzzznope` -> none), action chips narrow (`offer_cancel` -> 2 of 6), and the chip
+  vocabulary is the **full** closed enum plus `offer_cancel`: 9 values, no dead ones.
+- **`/admin/notifications`** — placeholder *states* the rule (`Search by user ID
+  (exact)`), exact -> 25 rows **none** of which belong to another user, partial
+  `user-yugi` -> none, `zzzznope` -> none.
+- **Download Report** on `/admin/tester-feedback` — 1,103 bytes, both sections, every
+  field.
+- **All six maintenance pages + the detail page**; `/admin/team/new` opens by URL with
+  its form visible and Close returns to `/admin/team`.
+
+### Methodology notes (both nearly cost a false finding)
+
+- **A two-step `.click()` inside ONE `browser_evaluate` races.** Clicking a filter chip
+  and `Apply Filters` in a single evaluate produced `?page=1` with **no filter param**
+  and zero chips pressed — which reads exactly like *"the filter does nothing."* Done
+  as two separate real clicks, the same chips wrote `?group=blog_poster` and filtered
+  correctly. One action per call.
+- **Reading a row via `tr.innerText` dropped a whole column.** `/admin/audit-log` rows
+  looked to be missing their timestamp; reading `[...tr.cells]` directly showed the
+  `Updated` column holding `2h ago`. Prove against cells, not a text slice — the same
+  correction A111 needed.
+
+### Fixture-thin, not defective
+
+20 permission-group chips against **2 employees**, and 9 audit-action chips against
+**3 action types present**, mean most chips are empty by arithmetic. Both render
+*"No ... found"* correctly. `emptyChipCount` recorded as **18**, not 0, with the reason —
+reading it as a failure would file a bug against a filter I watched work twice.
+
+---
+
+## Batch `admin/site-system--p4` — 4 yes, 1 no, 0 blocked
+
+Recorded 182/226. A quiet batch: the admin **detail affordances** are in good shape,
+and the one failure is a scanning defect rather than a broken feature.
+
+### A151 — roles are not badges, and the only admin is indistinguishable from a buyer
+
+`/admin/users`, 25 rows. Comparing the admin row against a user row computed-style by
+computed-style:
+
+| | background | colour | border-radius |
+|---|---|---|---|
+| `· admin` | `rgba(0, 0, 0, 0)` | `rgb(91, 91, 99)` | `0px` |
+| `· user` | `rgba(0, 0, 0, 0)` | `rgb(91, 91, 99)` | `0px` |
+
+**Byte-identical.** Role is not a column at all — it is plain text appended to the
+email inside the name cell (`qa-signup-4@mailnull.com · user`). So on a list of 25
+accounts the platform's single administrator reads exactly like any buyer, which is
+the scanning failure this case exists to prevent.
+
+**Status badges, by contrast, are correct** and `/admin/stores` proves the
+"distinct per value, by meaning" claim cleanly:
+
+| status | colour | |
+|---|---|---|
+| `pending` | `rgb(255, 251, 235)` | amber-50 |
+| `active` | `rgb(240, 253, 244)` | green-50 |
+| `suspended` | `rgb(254, 242, 242)` | red-50 |
+
+**Avatars pass too**: 25/25 rows have one and **none is an empty box** — 10 real
+photos proxied through `/api/media/ext`, 15 fallback glyphs.
+
+> **Secondary, and it is Root Cause #80's exact shape**: those 15 fallbacks are the
+> emoji character **👤**. A text character cannot be sized by any width/height
+> utility — it renders at the platform font fallback — so those avatars are not the
+> same size as the 10 real images beside them.
+
+At **390px** the table is correctly replaced by cards (0 visible tables) with
+`document.scrollWidth === 390`, i.e. **no horizontal overflow**. Clean.
+`admin-users-390-cards-role-plain-text.png`, `admin-stores-three-distinct-status-badges.png`
+
+### A147.2 NARROWED — the comment-instead-of-label defect is the TABLE, not the page
+
+Filed last batch as *"the column headed `Tester / Case` renders the COMMENT"*. The
+**Main Issues** tab on the same page renders the real case label correctly
+(`Demo fixture — reported bug, already confirmed and reopened (v2, active)`) above
+the tester, the path and the full comment. So the defect belongs to the
+**All Submissions table** alone. One component to fix, not the screen.
+
+### A152 — the notification action-link is present for some types and absent for others
+
+`offer_responded` → modal carries **`Open link →`**.
+`scam_report_update` → modal carries **no anchor at all** (`linkHref: null`), although
+its related entity is `scammer: scammer-fake-lob-seller`, which has a real public
+route. `admin-notification-detail-modal-second-row.png`
+
+### Confirmed working (evidence recorded, so pass 2 can skip them)
+
+- **`/admin/audit-log` detail modal** — row click opens `Audit Log Entry` with a FULL
+  timestamp (`16/09/2026, 06:26:29`, more precise than the list's `2h ago`), Actor,
+  Target, the **Reason in full** (*"QA run: clearing a stuck accepted-offer lane that
+  blocks the buyer cart."*) and **Metadata as JSON**
+  (`{"buyerUid":"user-yugi-muto","storeId":"store-beyblade-arena"}` — buyerUid and no
+  name, exactly the documented invariant). A second row shows its own entry.
+  Sidebar link present. `admin-audit-log-detail-modal-reason-metadata.png`
+- **`/admin/notifications` detail modal** — type, read state, full timestamp, title,
+  complete body, recipient, related entity with full id. Second row shows its own
+  notification; the list is unchanged behind it.
+- **Tester-feedback Main Issues** — the tester's entire comment is readable
+  **before** any action, with the case label beside it. No literal "View details"
+  affordance and the card is not click-openable, but rendering it inline serves the
+  case's purpose better than a modal would.
+- **Sidebar log-out, all four legs.** A visible `Log out` at the **bottom of the
+  dashboard sidebar**, distinct from the header's profile control (an `<a
+  href="/user/profile">`, not a dropdown). Click → `/auth/login`. `/admin` →
+  `/auth/login?next=%2Fadmin`; `/admin/site` → `/auth/login?next=%2Fadmin%2Fsite`
+  — the destination is preserved. Back button → still the login form.
+  **The "not even briefly" clause was checked explicitly**: the whole document body
+  was scanned after the redirect *and* after the back navigation for
+  `admin@letitrip`, `Mock User 1`, `Admin Dashboard`, `TOTAL REVENUE` and
+  `user-admin-letitrip` — **zero matches on all three pages**.
+  `admin-logout-redirect-and-back-button.png`
+
+### Methodology — two more near-false findings, both caught
+
+1. **`getBoundingClientRect` reports layout geometry for elements parked OUTSIDE the
+   viewport.** Both log-out controls measured off-screen at 1280 *and* 1600
+   (`left: 1626` against a 1600 viewport) with `document.scrollWidth === innerWidth`,
+   so no scroll could reach them — which reads exactly like *"the log-out button is
+   unreachable"*. They are off-canvas because the dashboard **drawer is closed**.
+   Enumerating every on-screen control in the header found its opener:
+   `button[aria-label="Open dashboard navigation"]`, `aria-expanded="false"`. Same
+   lesson as the carousel arrows: **clipped ≠ absent**.
+2. **Cards, not a table, again.** `tbody tr` returned **0** on the Main Issues tab
+   and I nearly recorded "no rows"; the tab renders cards. Third time this shape has
+   appeared (seller products list, this page, and the tester-feedback tabs).
+
+### Fixture gap
+
+Neither tester-feedback fixture carries a screenshot (`Screenshot: (none)` in the
+export), so the *"open the attachment at full size"* half of that case is untestable
+until one exists.
+
+---
+
+## Batch `buying/reviews` — 0 yes, 2 no, 0 blocked
+
+Recorded 183/226. Both real cases fail, and **both are the same shape**: the review
+subsystem's backend works and its user-facing surfaces were never wired.
+
+### A153 — a buyer cannot leave a review ANYWHERE in the product
+
+Signed in as `rehan.sheikh@gmail.com`. I checked every surface the control could
+plausibly live on:
+
+| Surface | What is there |
+|---|---|
+| Delivered order detail (`/user/orders/view/order-1-20260818-stdctx`) | **`Download Invoice` + `Track Shipment`, nothing else.** Scanning all of `main` for *review* / *rate* / *rating* returns **one** hit: the sidebar nav link `My Reviews` |
+| Order list (`?orderScope=all`) | 25 orders, all 8 statuses, **4 Delivered** — no per-row review action |
+| `/user/reviews` | lists the buyer's own reviews with filters + sort. **No** Write / New / Add / Leave / Create control |
+| Public product page → Reviews tab | lists the 4 reviews with masking and a sort toolbar. **No "Write a review" CTA** — and I was signed in as a *verified purchaser of that exact item* |
+
+So the case dies at step 3 and every downstream assertion is unreachable: the
+empty-submit validation, the 4-star rating, the photo upload, the reload, the
+verified-purchase badge, the public appearance.
+
+**The backend exists.** `useCreateReview`, `review-actions.ts` with
+`finalizeStagedMediaArray`, and a `ReviewModal` component are all documented in this
+repo. Root Cause #37's shape — a fully-built feature with no entry point.
+`product-reviews-tab-no-write-cta.png`
+
+### 🛑 A154 — a seller reply SAVES, PERSISTS, and is invisible to every buyer
+
+As `tyson@beybladearena.in` on `/store/reviews`, replied to a review marked
+*Awaiting store reply* (Beyblade Original Dranzer S · 4★ · by Mock User 11 ·
+"Good but overpriced").
+
+**The dashboard half is correct**, and worth recording because it is a *counterexample
+to A121*: the card flipped to `Store replied`, rendered the reply text, changed its
+button to `Edit Reply` — and **survived a full reload**. So the seller review-reply
+write path works where the seller *listing* save returns 200 and writes nothing.
+
+**The public half fails.** Signed out on `/products/product-beyblade-original-dranzer-s`:
+
+- the review itself is present and correct — same title, same body, `Verified` badge,
+  reviewer masked as `M*** U*** 1***`
+- the reply is **absent from the raw HTML**, not merely from the rendered text. I
+  re-checked on a cache-busted URL after a 9-second wait.
+- and `/store repl|seller repl/i` matches **nothing anywhere in that list**, across all
+  19 reviews on the product — so it is not *my* reply that is missing. **The public
+  renderer has no seller-response slot at all.**
+
+A seller response no buyer can read is the whole feature failing quietly.
+`public-review-missing-seller-reply.png`
+
+**Masking passes on both sides**: `Mock User 11` in the seller's own dashboard,
+`M*** U*** 1***` publicly.
+
+### A155 — a seller reply cannot be deleted
+
+`Edit Reply` offers only `Cancel` and `Update Reply` — no delete, no clear. Submitting
+an empty reply is refused (*"Store reply: Write a reply before posting it."*),
+correctly. So the case's own `endResult` — *"the response is deleted so the seeded
+review is left as it was"* — **cannot be carried out through the UI**.
+
+> **Residue, declared:** one seeded review on `product-beyblade-original-dranzer-s`
+> still carries the test reply. It is invisible to buyers (that is A154), and `reviews`
+> is SEED_OWNED so the next reseed clears it.
+
+**One thing the edit dialog does right**: it loads the existing reply into the
+textarea — unlike the carousel (A145) and blog (A135) editors, which open blank.
+`store-reviews-reply-persisted-no-delete.png`
+
+### Tenth form in the A85 first-paint-errors cluster
+
+The Reply dialog opens showing **`Store reply / Required / 1 issue`** before anything
+is typed. The live recount is correct — the badge cleared and the helper text changed
+from *"Write a reply before posting it."* to *"Shown publicly beneath the buyer's
+review."* the moment text was entered — and the **post-submit** summary
+(*"Please fix the following:"*) only appeared after a real submit attempt, which is
+the gate working as designed. It is purely the first-paint state that is wrong.
+
+### 🛑 Methodology — the closest call of the run so far
+
+I nearly filed **"every review renders as 1 star"** as a defect. On `/user/reviews` I
+sampled the first 12 star glyphs — gold, grey, grey, grey, grey, repeating — and
+separately read the row labels, which came back
+`Terrible, Terrible, Terrible, Excellent, Excellent, …`. Gold-star-count from one
+window compared against labels from a *different* window reads as "the widget is stuck
+at 1 while the label knows the real rating."
+
+Grouping the stars **five at a time and reading each group's own label** gives:
+
+```
+{gold:1, label:"Terrible"}  {gold:5, label:"Excellent"}  {gold:3, label:"Average"}
+```
+
+**Perfect agreement — no defect.** The three 1★ reviews simply happen to sit at the top
+of the list. *Never compare two samples drawn from different windows.* Same error class
+as the carousel-arrow and audit-log-timestamp near-misses, and it would have been the
+most confident-looking wrong finding of the run.
+
+> Minor seed-data note while there: those three 1★ reviews carry **glowing body text**
+> ("*This is my third purchase and every time the quality and service is outstanding*"
+> at 1★). Bodies and ratings disagree in the fixture. Cosmetic, not a code defect.
+
+---
+
+## Batch `buying/reviews--guest` — 3 yes, 0 no, 0 blocked
+
+Recorded 184/226. **The first clean batch in a while**, and it is the mirror image of
+`buying/reviews`: every surface a signed-out visitor can *read* works correctly, while
+everything a signed-in user needs to *write* (A153–A155) does not.
+
+### Confirmed working — review READ surfaces
+
+**Store reviews are masked properly, and I checked the source rather than the screen.**
+`/stores/store-beyblade-arena/reviews` signed out: every row carries a rating, title,
+body and date, reviewers render as `M*** U*** 1***` (24 masked tokens), and across
+**595 KB of raw HTML there are ZERO occurrences of `Mock User N`** — the real display
+name of every seeded reviewer. Names are masked *before serialisation*, not hidden by
+CSS, which is the difference between privacy and the appearance of it. No real email
+either (the only address in source is the newsletter placeholder `your@email.com`).
+Aggregate is consistent: tab `Reviews (74)` vs header `4.1 / 5 · 74 reviews`.
+`store-reviews-masked-guest.png`
+
+**Review permalinks and their related rails are correct.** `/reviews/review-53` renders
+both `More reviews for Beyblade Burst Valkyrie` (the product's other 3) and
+`More reviews for this store` (6 more) — neither is the empty rail the case names as
+the failure. **Self-exclusion verified on two different reviews**, not one: `review-53`
+and `review-39` each contain zero links to themselves. And the entry opens what it
+names — I read the card's text first (`Mint condition! · Card came in a hard top-loader
+…`), then clicked, and the page that opened is titled `Mint condition!` with that same
+body. `review-permalink-related-sections.png`
+
+### Root Cause #45 is FIXED — review photos render, measured not eyeballed
+
+The test that separates a rendered image from a fallback icon is
+`naturalWidth`/`naturalHeight`: a placeholder reports `0×0` or the icon's own intrinsic
+size, never the source's. Three surfaces, all **800×800 natural**:
+
+| Surface | Displayed | Natural |
+|---|---|---|
+| Photo grid — `/reviews/review-dranzer-deep-13`, `PHOTOS (1)` | 179×179 | **800×800** |
+| Related-rail thumbnails on `review-dranzer-deep-14` (4 of them) | 62×62 | **800×800** |
+| Lightbox (`1 / 1`, `alt="Review photo 1"`) | 1088×680 | **800×800** |
+
+`placeholderTiles: 0` everywhere. All served through `/api/media/ext`.
+`review-photo-lightbox-renders.png`
+
+**Two surfaces I did not reach, stated rather than assumed**: the admin "View review"
+modal needs an admin session (this batch browses signed out), and I did not open a
+public profile's reviews tab.
+
+### A156 — every review photo carries `alt="Review image 1"`
+
+The index is never incremented, so in a multi-photo grid a screen-reader user hears
+*"Review image 1"* for every tile. Cosmetic, one-line fix.
+
+### Fixture gaps
+
+- **No review carries more than one photo.** Both photo-bearing reviews I found show
+  `PHOTOS (1)`, so the lightbox correctly renders `1 / 1` with no thumbnail strip —
+  and that strip is therefore **untestable** until a 2+ photo fixture exists.
+- The Valkyrie product's 4 reviews carry no photos at all, which is why the case's
+  own `startPage` does not lead to a testable photo grid; the Dranzer S reviews do.
+
+### Methodology — a PII regex hit vector artwork
+
+Sweeping the raw HTML for Indian mobile numbers matched **`7451171875`**, which looks
+exactly like one. It is a fragment of an SVG path coordinate inside the site logo —
+`translate(54.7451171875,132.32373046875)` — and appears nowhere in the rendered text.
+**A naive PII regex over raw HTML will hit float coordinates in vector artwork.** Locate
+every match before reporting it.
+
+---
+
+## Batch `selling/seller-catalog-org` — 1 yes, 6 no, 0 blocked
+
+Recorded 185/226. The worst batch of the run. **Every create path works; almost every
+edit path is broken**, each in a different way, and the seller-facing taxonomy tools are
+effectively unusable.
+
+### 🛑 A157 — `/store/categories`: renders no names, cannot rename, cannot delete
+
+Three defects on one page.
+
+1. **Every row renders `🏷️ —`.** I first read the single `🏷️ —` as a broken empty
+   state. Creating a category turned it into **two** `🏷️ —` cards — which is what
+   settled it. These are real rows whose label cell shows an em-dash. The data is fine:
+   the edit form holds `label: "QA Category catalog-org"`, `slug:
+   "qa-category-catalog-org"`. **The list is reading a property the document does not
+   have.** A seller sees an anonymous list of dashes.
+2. **Rename is impossible.** Save produces `Please fix the following: Category: Save
+   failed` — no reason given. Cause:
+   **`PUT /api/store/categories/{id}` → HTTP 405**, `content-length: 0`,
+   `x-matched-path: /api/store/categories/[id]`. The route file exists and matched; it
+   **exports no PUT**. The client sends a verb the route does not implement.
+3. **There is no delete.** The row menu contains exactly one item, `Edit`.
+
+`store-category-rename-405-save-failed.png`
+
+> **Residue declared:** one category `QA Category catalog-org` remains and cannot be
+> renamed or removed through the UI. `categories` is SEED_OWNED; a reseed clears it.
+
+### 🛑 A158 — sublisting category EDIT is unreachable for every row, seeded included
+
+Create works (name *and* description render correctly, unlike A157) and survives reload.
+Delete works and is correctly scoped. But the Edit link **the list itself renders** loads
+a page whose entire body is **`Category not found`** — zero fields, no save button.
+
+**I did not stop at the first failure.** My hypothesis was the slug, and it was wrong:
+opening a **seeded** row's editor, `/store/sublisting-categories/sublisting-dranzer-s-a-5/edit`,
+fails **identically**. So the edit route resolves *no* sublisting category. Not a data
+problem with my row. `sublisting-edit-category-not-found.png`
+
+**A158b — slug prefix drift.** The new row was minted `category-qa-sublisting-catalog-org`
+while both seeded rows use the `sublisting-` prefix the slug convention specifies. Real,
+separate, and **not** the cause of the above.
+
+**A158c — double confirmation, the second one banned.** Delete fires the styled dialog
+*and then* a native **`window.confirm`**: *"Delete "QA Sublisting catalog-org"? All
+linked listings will be unlinked."* Rule #7 forbids `window.confirm` outright, and asking
+twice trains people to click through both.
+
+### 🛑 A159 — a listing template cannot store any defaults
+
+Established read-only; nothing created. The form offers **Name, Description, Listing
+Type, Visibility** — and a section headed **`Default field values` with ZERO inputs
+beneath it**. The only named fields on the page are `name` and `description`.
+
+So the case's step 3 (*"with a category, a condition and a description filled in"*) is
+unperformable, and the feature's own empty-state promise — *"Templates pre-fill the
+create form with your defaults"* — cannot be kept by anything it can store.
+`listing-template-empty-defaults-section.png`
+
+### 🛑 A160 — `/api/admin/categories` accepts `q` and ignores it
+
+The category picker on `/store/products/new` does not filter. Typing
+`QA Category inline-create` leaves the full catalogue on screen; re-tested with **real
+keystrokes** and a term matching exactly one option (`Dranzer`), 4-second wait — Bonsai,
+Lizards and Juniper Bonsai all still listed.
+
+**The client is correct.** It sends
+`GET /api/admin/categories?q=QA+Category+inline-create&page=1&pageSize=20&flat=true`
+and the route answers **200 with `total: 58`** — the entire collection, first page
+unfiltered. Root Cause #99's shape, one layer over: the parameter arrives and is dropped.
+
+Consequence beyond this case: **step 4 of the case has no reachable state** ("read what
+the picker offers when nothing matches" — nothing ever matches nothing), and the admin
+categories screen very likely shares the defect.
+`category-picker-search-does-not-filter.png`
+
+> **Separate, worth a look:** a **seller's** picker reads `/api/admin/categories`, and
+> creating from it **POSTs to the same admin route** — a seller writing global taxonomy
+> through an admin endpoint.
+
+### 🛑 A161 — a duplicate category is silently refused and reported as success
+
+Typed `Beyblade Burst` (already exists) into the inline-create drawer. The drawer closed,
+**no message of any kind appeared**, and the picker then read `Beyblade Burst ▾` as
+though a new category had been made and selected.
+
+**My first reading was that a duplicate had been created** — `POST /api/admin/categories`
+returned **200** — and that was wrong. Counting settles it: total **58** before, **59**
+after creating `QA Category inline-create`, **still 59** after the duplicate POST, and
+enumerating all 59 names finds **exactly one** `Beyblade Burst`.
+
+So the server correctly refused and returned 200 anyway, and the UI treated that as
+success. That is *precisely* the failure the case names — its wording is *"not a generic
+failure **or a silent no-op**"*. The seller is left believing they created a category
+they did not create. `category-inline-create-duplicate-silent.png`
+
+### Confirmed working
+
+- **Inline create itself** — `+ Create new category` opens a proper drawer
+  (Name/Description/Is Active) and the new category is **created and auto-selected**;
+  the picker reads `QA Category inline-create ▾`.
+- **It persists**: present exactly once after a full reload, total 58 → 59.
+- **The sublisting toolbar matches products' control-for-control** (the only difference
+  is products' extra `Table view`), and its search genuinely filters:
+  `q=Dranzer` → 1 of 2, `q=zzzznope` → 0.
+- **Both `/store/categories` and `/store/sublisting-categories` edit forms load their
+  real stored values** — unlike the carousel (A145) and blog (A135) editors.
+
+### A162 — the zero-results state is the no-data state
+
+`q=zzzznope` on sublisting categories renders *"🏷️ **No sub-listing categories yet** /
+Create your first category to group listings of the same item. / **Create Category**"*.
+The seller has two. Telling them they have none, with a create CTA, is misleading — a
+no-results state should name the query. `sublisting-search-wrong-empty-state.png`
+
+### Eleventh and twelfth entries in the A85 first-paint cluster
+
+`/store/listing-templates/new` (`Template / Required / 1 issue`) and the inline
+Create Category drawer (`Details / Required / 1 issue`).
+
+### Not attempted, and why
+
+`categoryLinksShown` is **not recorded**. It needs a product published against the new
+category — and this run already established that **a seller listing save returns 200 and
+writes nothing** (A121, reproduced twice by two input methods), so a publish here could
+not be attributed either way. Worth running the moment that save is fixed: the
+ancestor-chain half is exactly where a UI-assigned category has historically gone
+missing.
+
+### Methodology
+
+**Counting the collection beat believing the status code.** A `200` on the duplicate
+POST looked like "a duplicate was created"; the row count proved it created nothing. And
+**checking a seeded row was what disproved the slug hypothesis** on A158 — one failing
+row is a data problem, two failing rows from different origins is a broken route.
+
+---
+
+## Batch `admin/buyer-data-admin` — 4 yes, 7 no, 1 blocked
+
+Recorded 186/226. Two genuine defects, one structural gap repeated across four pages,
+and three security/coverage expectations confirmed **closed**.
+
+### 🛑 A163 — `/admin/reviews` says "No reviews found" while 79 reviews exist
+
+On the bare URL the list is empty. **Nothing on screen explains why**: the Filters button
+carries no count badge, the URL has no parameter, and the filter drawer shows the status
+chips `All / Approved / Pending / Rejected` **all with `aria-pressed="false"`** — the
+drawer says nothing is selected.
+
+The request tells a different story:
+
+```
+GET /api/admin/reviews?page=1&pageSize=25&sorts=-createdAt&filters=status%3D%3Dpending
+```
+
+**A `status==pending` filter is applied by default and surfaced nowhere.** Every seeded
+review is `approved`, so the moderation queue is genuinely empty — and the empty-state
+copy *"No reviews found"* is simply false.
+
+**I proved the list works rather than assuming**: ticking Approved gives `?status=approved`
+and **25 rows**, each with rating, product, reviewer and status.
+
+Two more things on that page: the **admin list renders no review images at all** (`img`
+elements inside `tbody`: **0**, including for reviews I had already confirmed carry
+photos publicly) — a missing rendering, not a broken one. And the search is correct and
+matches its placeholder: `Mock User 11` → 16 rows all that reviewer, partial `Mock User`
+→ 0. `admin-reviews-hidden-pending-default.png`
+
+### A164 — four buyer-data listings have no search box, and every owner is a raw uid
+
+`/admin/carts`, `/admin/wishlists` and `/admin/history` each ship a toolbar with **no
+search input** (Filters · Sort? · Grid · List · Table · Hide Toolbar), so every one of
+these cases' nonsense controls is unrunnable. I recorded `nonsenseResultCount` as **null**
+rather than inventing a `0`.
+
+On all three the owner renders as a bare user id. For seeded personas that reads fine
+(`user-yugi-muto`); for real signups it is an opaque Firebase uid —
+`mvFWieACMad1Q4VYzWzwWPXZRxh1`, `D7EIOemAHiYzF5kgfElOaO2DOul1`. The name and email are
+one join away, and **the row click proves the link exists**.
+
+### A165 — the cart detail modal shows a slug where a title belongs, and no thumbnail
+
+`Cart Details` opens and **does list the items** — `Items in cart (1)`, `Qty: 1`,
+`₹1,399.00` — so Root Cause #56's "count computed, array discarded" defect is fixed. But
+the title is the **slug** `product-beyblade-burst-regalia-genesis`, not
+*Beyblade Burst B-59 Regalia Genesis*, and there is **no thumbnail** (img elements inside
+the dialog: **0**; a 📦 glyph stands in — the same text-as-icon pattern as A151).
+
+**Fixture gap**: no cart in the system holds more than one item (checked all 25), so the
+modal's multi-line rendering is untested.
+
+### A166 — `/admin/addresses` is a lookup form, not a listing, and never shows the landmark
+
+The page is *"Look up a user's or store's saved addresses by owner ID"* — an Owner type
+toggle, an id field, Search, and `+ New address`. **Zero tables.** So "read every column",
+"use the owner-type filter", and "click a store-owned row" all have no surface. Designing
+a PII-bearing collection as a lookup is defensible; the case's checks simply have nowhere
+to land.
+
+The lookup itself works — `user-yugi-muto` returns 3 addresses with label, contact name
+and a full street/city/state/postcode line. **The landmark is never displayed**
+(`/landmark/i` matches nothing on the page), nor is the phone. That matters because
+`landmark` is a field this codebase has already lost once between a form and a route.
+
+> **Residue in a PRESERVE-tier collection.** Two of that user's three addresses are
+> leftovers from earlier tester runs — `QA Address buying-checkout-shipping-address-inline-add`
+> and `QA Address shipping-address-inline-add`, both at *1 Test Street, Mumbai*. `addresses`
+> is never cleared by the between-run wipe, so test addresses **accumulate permanently**
+> in real users' address books. That is the argument for declining the CRUD case below,
+> not for repeating it.
+
+### Confirmed working — three expectations closed with evidence
+
+- **Root Cause #70's store-token leak is closed on `/admin/stores/[id]/view`.** I scanned
+  the **raw HTML** for all three shapes a leaked credential would take — a Meta token
+  (`EAA…`), an `enc:v1:` ciphertext blob, and an `accessToken":"…` property — and got
+  **zero matches**. `rawTokenShown: 0`. The page itself is complete: name, status chip,
+  slug, owner uid, id, description, review note, 6 tabs, counters, Capabilities, History
+  rail, Created. `admin-store-view-page-no-token.png`
+- **The notification type filter covers the full 30-value union with no dead entries** —
+  including the five that were historically unfilterable (`emi_installment_due_soon`,
+  `emi_installment_overdue`, `payment_review`, `support_ticket_update`,
+  `scam_report_update`). `admin-notifications-30-type-chips.png`
+- **Wishlist and history rows both open the owning USER's page** (`/admin/users/user-yugi-muto`,
+  populated: Mock User 3, email, uid, 7 tabs, Orders 30 / Auctions won 5 / Reviews 20).
+  That is the honest resolution for listings whose API returns only summaries — route to
+  the record that *has* the data rather than invent an empty detail page.
+- **`/admin/stores` status badges are real and distinct**, read off computed style:
+  `pending` amber-50, `active` green-50, `suspended` red-50.
+
+### Declined — `addresses` is PRESERVE tier
+
+The address CRUD case would create and edit a saved address. That is one of the four
+things this harness must never touch, and the residue above is the evidence for why.
+**Worth running on a non-production project**: the postcode-validation half (`abcdef`)
+needs no successful save — if the refusal clears the typed values, that is a finding on
+its own.
+
+### Methodology
+
+**I measured the actual entry counts, not the cap.** My first regex over
+`"14 of 50 items"` matched the **50** and reported a maximum of 50 — i.e. it found the
+ceiling and called it the reading. Parsing the pair gives actuals
+`[14,2,0,1,0,0,0,0,1,1,0,0]` against a uniform cap of 50, so the real maximum is **14**
+and **no row exceeds the cap**. Third time this run that grabbing the wrong number out of
+a two-number string nearly produced a wrong finding.
+
+---
+
+## Batch `buying/reviews-pagination--p1` — 8 yes, 1 no, 3 blocked
+
+Recorded 187/226. The review pagination machinery is **solid** — page size, ordering,
+page-2 difference, URL semantics, rating filter and summary stability all check out.
+One sort option is a 500.
+
+### 🛑 A167 — "Oldest First" returns HTTP 500 and renders "No reviews yet"
+
+Selecting **Oldest First** on a product with **19 reviews** empties the list and shows
+*"No reviews yet — be the first to review this product."*
+
+```
+GET /api/reviews?productId=product-beyblade-original-dranzer-s
+    &status=approved&page=1&pageSize=10&sort=createdAt   →  500
+    {"success":false,"error":"Failed to fetch reviews"}
+```
+
+The same URL with `sort=-rating` returns **200**.
+
+**It is NOT "ascending sorts are broken"** — that was my first guess and it is wrong:
+`sort=rating` (Lowest Rated) is also ascending and works fine (returns 1,1,…). The
+failure is specific to **`sort=createdAt`**.
+
+This is worse than the *inert* sort the case is written against. An inert sort leaves
+the list intact; this one destroys it and then reports the destruction as
+*"no reviews yet"* — which a shopper reads as a product nobody has reviewed.
+`reviews-oldest-first-500-empty.png`
+
+### Confirmed working — the rest of the pagination surface
+
+| Claim | Evidence |
+|---|---|
+| Page size 10, real pager | 19 reviews → **10** shown, pager `« ‹ 1 2 › »`, page 2 holds **9**. 10+9=19 |
+| Newest-first by default | p1 `31→22 Aug` descending; p2 continues `21 Aug → 23 Jun`. Sort value `-createdAt` |
+| Page 2 differs | p1 titles ∩ p2 titles = **0** |
+| In-product URL unchanged | identical across load / tab open / page 2 / rating filter |
+| Rating filter narrows | 5 Stars → **6 rows**, distinct star values **{5}**, pager correctly gone |
+| Summary is global | with 6 rows showing, section still `3.4 / 5 · 19 reviews`, hero still `3.4 (19 reviews)` |
+| Store reviews paginate | 12/page of **74**, pager `« ‹ 1..7 › »`, p1∩p2 = 0, dates continuous across the join |
+| Store reviews URL state | page 2 → `?page=2` — the deliberate contrast with the in-product tab |
+
+**Two orderings were checked across the page boundary, not just within a page.** That is
+the check that catches a per-page sort, which looks correct on every individual page and
+only breaks where the pages meet. Both the product tab (`22 Aug` → `21 Aug`) and the
+store tab (`20 Aug` → `20 Aug`) join cleanly.
+
+### Fixture note — the case's own `startPage` cannot test its own claim
+
+`product-beyblade-burst-valkyrie` has **4 reviews**. It correctly shows all 4 with no
+pager, which proves nothing about pagination. I ran the pagination cases on
+`product-beyblade-original-dranzer-s` (19 reviews) and **declared the substitution in
+each verdict** rather than passing a case on a page that cannot exercise it. Worth
+repointing those cases' `startPage` — a reviewer reading a green result on Valkyrie would
+reasonably believe pagination had been tested.
+
+### Three left blocked, with what the next run needs
+
+- **`filters-all-work`** — the drawer has exactly two controls, Rating and Date Range. I
+  verified Rating is not inert (19→6, all genuinely 5★) and did **not** exercise Date
+  Range, so `inertFilters: 0` is not something I can report. Recorded `null` rather than
+  rounding one-of-two up to a pass.
+- **`date-range-sort-options`** — the control exists (collapsed group beside Rating), so
+  this is immediately runnable. Note it interacts with A167: if narrowing the dropdown to
+  date-based sorts leaves **Oldest First** among the survivors, the date-range view
+  inherits a 500.
+- **`other-listing-types-paginate`** — its **label says digital-code and live-item while
+  its steps say auction and pre-order**; test all four rather than pick a reading. And
+  check the stated total first: most seeded products have fewer than 10 reviews, so a
+  missing pager may be a small fixture rather than a defect.
+
+### Methodology — two counting traps
+
+1. **`found this helpful` undercounts rows.** A review with zero helpful votes does not
+   render that line, so counting it gave **7** for a 9-row page. Dates are the reliable
+   row marker on these lists.
+2. **One empty selector is not an empty list.** My first read of the 5-star filtered
+   result used `img[alt$="out of 5 stars"]` and returned **zero** — which looked exactly
+   like *"the 5-star filter returns nothing"*. Reading the rendered text showed six real
+   reviews sitting there. (Related: `[].every(...)` is **vacuously true**, so an
+   "is it sorted?" check over an empty array reports success — that is how the 500 nearly
+   passed as an ascending sort.)
+
+---
+
+## Batch `buying/reviews-pagination--p2` — 0 yes, 2 no, 0 blocked
+
+Recorded 188/226. Both failures are narrow — the surrounding machinery is in good shape.
+
+### 🛑 A167 WIDENED — the broken sort is in the SHARED reviews query, not the product tab
+
+`sort=createdAt` ("Oldest First") reproduces on the **site-wide `/reviews` index**: zero
+rows, an empty state, and two fresh console errors — on a query that had just returned
+results one option earlier.
+
+So this is not a product-page defect. **Every "Oldest First" across the reviews feature
+is broken**, and the fix belongs in the shared query path.
+`reviews-index-oldest-first-also-empty.png`
+
+### A168 — the empty reviews state keeps its Sort and Filters controls
+
+On `product-beyblade-burst-spryzen-video-demo` (no seeded reviews) the tab renders
+**exactly** the specified sentence — *"No reviews yet — be the first to review this
+product."* — with **no pager** and no invented `0.0` hero rating. Both correct.
+
+But the **Sort dropdown (all four options) and the Filters button still render over the
+empty list.** The case asks whether *"a pager, filters or a sort control"* appear over
+nothing; one of three is suppressed and two are not. Offering a shopper four ways to sort
+zero reviews is the same class of thing as the stray pager the case was written to catch.
+`reviews-empty-state-sort-filters-remain.png`
+
+> **The observation that matters more than the case.** This is the *legitimate* home of
+> that sentence — and I saw the **identical string** on a product with **19 reviews** when
+> Oldest First 500'd. The copy is doing double duty: *"nobody has reviewed this"* and
+> *"the query failed"*. A shopper cannot tell them apart, and that is what makes A167
+> dangerous rather than merely annoying.
+
+### Confirmed working — `/reviews` is in good shape
+
+| Control | Evidence |
+|---|---|
+| Search filters | `q=Dranzer` → **one** distinct product across every card; pager collapses **7 pages → 2** |
+| Nonsense control | `q=zzzznope` → 0 rows + **"No reviews found."** — the correct *no-matches* state, unlike A162/A163 |
+| Paging + URL | page 2 → `?page=2`, content differs (`31,30,29 Aug` vs `20,19,19 Aug`) |
+| **State restoration** | `?q=Dranzer&page=2` opened **cold** → 6 rows, one product, search box repopulated `Dranzer`, page 2 carries `aria-current="page"` |
+| Grid/list toggle | List view takes `gridTemplateColumns` from `346.656px 346.672px 346.656px` → `none`, writes `view=list`, and **preserves `q` and `page`** |
+
+### Methodology — the default is not a no-op
+
+I nearly filed the grid/list toggle as dead. Clicking **"Grid view"** changed nothing —
+because the page was **already in grid**. The no-op was the default state, not a broken
+control; clicking **"List view"** produced a real single-column layout. **When a toggle
+appears to do nothing, check which state it was already in before calling it inert.**
+
+---
+
+## Batch `selling/seller-custom-brands` — 0 yes, 3 no, 1 blocked
+
+Recorded 189/226. The brand picker is the category picker's twin, and it fails the same
+way — which turns two findings into one fix.
+
+### 🛑 A160 WIDENED — the admin taxonomy lookups ignore `q`, on BOTH routes
+
+Typed `Hasbro` into the brand picker with **real keystrokes**, waited 4 seconds: all four
+brands still listed.
+
+```
+GET /api/admin/brands?q=Hasbro&page=1&pageSize=20  →  200, total 4, all four names
+```
+
+The client sends `q` correctly; **the route drops it** — exactly as
+`/api/admin/categories` does (A160, previous batch). So this is not one broken route but
+the **admin taxonomy lookup pattern**, and the consequence is the same on both: the
+case's *"read what the picker offers when nothing matches"* step has no reachable state,
+because nothing ever matches nothing.
+
+### 🛑 A169 — a rejected duplicate brand surfaces RAW ZOD OUTPUT on three unrelated fields
+
+Typing an existing brand name and pressing **Create brand**:
+
+- **The data is safe.** I measured the collection rather than trusting the response —
+  **5 brands before, 5 after**, exactly **one** `QA Brand inline-create`. The server
+  refuses correctly.
+- **The drawer says nothing.** It stays open with **no error on its Name field** and no
+  "already exists" message anywhere.
+- **Three `role="alert"` messages appear instead — from the PRODUCT form:**
+
+  | Field | Message |
+  |---|---|
+  | Title | `Invalid input: expected string, received undefined` |
+  | Description | `Invalid input: expected string, received undefined` |
+  | Price | `Invalid input: expected number, received undefined` |
+
+A failed *brand* creation surfaces validator internals about three fields the seller never
+touched. That is worse than A161's silent no-op — it is a silent no-op **plus** a
+misleading error — and raw validator text reaching a user is precisely what Rule #9
+forbids (`toUserMessage`, pinned to the field it concerns).
+`brand-duplicate-raw-zod-wrong-fields.png`
+
+### A170 — the Brand field is not on the product form as it opens
+
+`/store/products/new` opens a **Quick add** form — Product Name, Category, Price, Image,
+Description, Stock Quantity. I searched the entire dialog text for *brand*: **absent.**
+It appears only behind **"Show all fields (advanced)"**. Defensible for a quick-add flow,
+but the case's step *"find the brand picker"* needs a step the case does not mention.
+
+### Confirmed working
+
+- **Inline create + auto-select**: the drawer saves and the picker reads
+  `QA Brand inline-create ▾`.
+- **It persists**: total 5 after a full reload, present exactly once.
+- **The slug prefix is CORRECT** — `brand-qa-brand-inline-create`, `categoryType: "brand"`.
+  That is a real contrast with **A158b**, where a seller-created *sublisting* category was
+  minted `category-…` instead of `sublisting-…`. The brand path gets its prefix right, so
+  whatever is wrong in the sublisting create path is **local to it**, not shared.
+
+### Blocked — and the reason is the interesting part
+
+`seller-brand-product-saves-with-new-brand` needs a product published against the new
+brand. **A121 makes that unattributable**: a seller listing save returns 200 and writes
+nothing, so a missing brand on reopen could be the brand association failing *or* the
+whole save failing, and a present one would prove nothing.
+
+**Worth running the moment A121 is fixed**, because there is a real defect to catch: this
+codebase matches products to brands by **display NAME**, while the picker's option value
+is the brand record's **id**. That mismatch is exactly where a newly created brand would
+silently fail to associate — and it would look identical to a save that simply did not
+persist.
+
+### Residue declared
+
+`QA Brand inline-create` remains. There is **no delete for brands or store categories** in
+the seller UI (A157), so it cannot be removed from here; `categories` is SEED_OWNED and a
+reseed clears it.
+
+---
+
+## Batch `selling/seller-custom-brands--guest` — 0 yes, 1 no, 0 blocked
+
+Recorded 190/226.
+
+### 🛑 A171 — two routes render a brand, and `/brands` links every card to the worse one
+
+Signed out, `/brands` lists all five brands **including `QA Brand inline-create`**, the
+one created through the seller product form minutes earlier. So a seller-created brand
+reaches the public index immediately, with no approval step. That half works.
+
+**The defect is where the cards point.** Every card on `/brands` links to
+`/categories/brand-<slug>` — enumerated: `brand-beyblade`, `brand-hasbro`,
+`brand-independent-keepers`, `brand-qa-brand-inline-create`, `brand-takara-tomy`. But a
+dedicated `/brands/<slug>` route also exists, and it is plainly the better page:
+
+| | `/categories/brand-…` (what the index links) | `/brands/brand-…` (the dedicated route) |
+|---|---|---|
+| Breadcrumb | Home / **Categories** / … | Home / **Brands** / … |
+| `<title>` | `Brand Qa Brand Inline Create Collectibles \| LetItRip` — **name mangled to title case** | `QA Brand inline-create Collectibles — LetItRip` — **name preserved** |
+| Empty state | "This **category** has no active listings" | "This **brand** has no active listings" |
+| Related rail | — | **Related Brands** |
+| Console errors | **5** | 2 |
+
+**The product detail page gets it right** — its brand chip links `/brands/brand-beyblade`
+— so the index is the odd one out, sending visitors to a category-rendered version of a
+brand with the wrong breadcrumb and a mangled tab title.
+
+`brand-two-routes-brands-vs-categories.png`, `public-brand-page-new-brand.png`
+
+### `productsOnBrandPage: 0` is NOT a defect here
+
+The case expects **1**, and the product it expects — `QA Product custom-brand` — was
+never published, because the sibling case that creates it is blocked by **A121** (a
+seller listing save returns 200 and writes nothing). The brand page renders the correct
+empty state for a brand with no listings, which is right for the data that exists.
+Recording the observed **0** with that reason rather than letting it read as a missing
+product.
+
+### Cleanup remains impossible
+
+The case's last step is *"delete the QA product, then the QA brand"*. There is **no
+delete control for brands or store categories anywhere in the seller UI** (A157), so the
+residue stands until a reseed.
+
+---
+
+## Batch `admin/media-watermark` — 0 yes, 3 no, 2 blocked
+
+Recorded 191/226. One finding accounts for the whole batch.
+
+### 🛑 A172 — the entire Watermark settings panel is EMPTY, while the feature works server-side
+
+Selecting **⑥ Watermark** on `/admin/site` renders a heading reading `Watermark` and a
+`Save all changes` button. **That is the whole panel.** Measured after an eleven-second
+wait across two reads:
+
+- `input[type="range"]` on the page: **0**
+- visible form controls in the entire document: **2** — the sidebar's *navigation* search
+  box and the tab `<select>` itself
+
+No size slider, no opacity slider, no position presets, no offset fields, no image
+override. `admin-watermark-tab-empty.png`
+
+**The settings exist and are well-formed**, which is what makes this a missing *UI* rather
+than a missing feature. `GET /api/site-settings` and `GET /api/admin/site` both return:
+
+```json
+watermark: { "type":"text", "text":"letitrip.in", "size":10, "opacity":10,
+             "position":"center", "offsetX":0, "offsetY":0, "imageUrl":"" }
+```
+
+**Every field this batch's five cases want to change is present in the data and editable
+by nothing.** Root Cause #37's shape, on a settings panel.
+
+> **Note for whoever fixes it**: the live values are `size: 10` / `opacity: 10`. On a
+> percentage scale that is close to invisible — so a tester who looks at a product image,
+> sees no watermark, and concludes the pipeline is broken would be wrong. The pipeline is
+> fine; the numbers are tiny and unchangeable.
+
+### The fallback chain and theme recolouring ARE working — established read-only
+
+`effectiveWatermark` resolves to:
+
+```json
+{ "type":"image", "imageUrl":"/logo.svg", "size":10, "opacity":10, "position":"center",
+  "offsetX":0, "offsetY":0,
+  "themeGradientStops":["rgb(15, 118, 110)","rgb(20, 184, 166)","rgb(232, 121, 249)"] }
+```
+
+Three things follow, all without writing anything:
+
+1. **Fallback tier 2 is reached correctly** — stored watermark is `type:"text"` with an
+   empty `imageUrl`, and the effective one resolved to the bundled brand mark at
+   `/logo.svg`. That is exactly the documented behaviour when no admin override is set —
+   which is also the theme-recolour case's own stated precondition, so **I can confirm
+   that precondition holds**.
+2. **`themeGradientStops` is populated** with three real colours rather than absent or
+   empty, so the mark is coloured from theme tokens rather than a hardcoded value.
+3. Those stops are **teal / teal / fuchsia**, not the default light theme's cobalt-and-lime
+   — so the active theme is already non-default and the recolouring has demonstrably
+   happened at least once.
+
+That is not the same as *watching* it change, so the theme case is recorded `null`, not
+`yes`.
+
+### Blocked, and why
+
+- **Theme recolour** — needs a theme switch, i.e. a Site Settings write. `siteSettings` is
+  one of the four things this harness must never modify: a preserved singleton holding
+  live configuration and encrypted credentials. Changing it would alter production for
+  every visitor.
+- **Video overlay parity** — the video never mounted. Three gallery thumbnails; clicking
+  the last one left **0 `<video>` elements and 0 iframes** after 5s (the 800×450 media item
+  is the poster, not the video).
+
+> **A note that should go into that case's steps.** There is no watermark element in the
+> DOM on the *image* side either — I searched every element in `main` and found none. That
+> is expected: the image mark is composited **server-side by sharp** inside `/api/media`,
+> so it is burned into the bytes, while the video overlay is applied **client-side**. The
+> comparison therefore cannot be made by reading the DOM on both sides — the image half
+> needs eye or pixel inspection of the returned image.
+
+### What this means for the other four cases
+
+All of them begin *"open the watermark settings and change X"*. With no controls, three
+are hard failures at step 2 and the remaining two are blocked for the reasons above. The
+whole batch is one fix.
+
+---
+
+## Batch `buying/user-dashboard-extras--p1` — 2 yes, 3 no, 7 blocked
+
+Recorded 192/226. Three real defects, one genuinely excellent surface, and a lot of
+fixture gaps.
+
+### 🛑 A173 — the order timeline is not on the order page, and stamps no actor
+
+**Location.** The order *detail* page has **no timeline at all** — I read a Delivered and
+a Refunded order and searched both for the words *timeline* and *history*: neither
+appears. It lives on the separate `/user/orders/{id}/track` page. **A buyer who opens
+their order does not see its history.**
+
+**The events themselves are genuine**, which is worth recording as a known-fixed defect:
+
+```
+Order placed  03/09/2026, 06:00:02
+Shipped       06/09/2026, 06:00:02
+Delivered     09/09/2026, 06:00:02
+Carrier Delhivery · Tracking number LIR-TRK-88213004
+```
+
+Three real transitions, three distinct timestamps from the record — not a fabricated or
+evenly-spaced sequence.
+
+**The failure: no entry carries an actor.** The case asks for each transition *"stamped
+with who made it"* and not one of the three names anyone. A buyer cannot tell whether the
+seller marked it shipped or a job did. `order-track-timeline-no-actor.png`
+
+> **A good behaviour not to mistake for a bug**: the Refunded order reads
+> `Order placed 09/08/2026 · Refunded —` with an **em-dash** where the date would be.
+> That is the documented correct rendering for a step with no recorded timestamp rather
+> than an invented one. It should stay.
+
+### 🛑 A174 — every order shows `addr-yugi-home India` as the delivery address
+
+Under **Delivery Address**, both orders render the address document's **raw id** followed
+by the country — no street, no city, no state, no postcode. Two different orders, same
+output, so it is systematic.
+
+The buyer cannot read back where their order is going. Third instance of this family this
+run, after cart items showing a product **slug** instead of a title (A165) and store
+categories rendering `—` instead of a label (A157).
+`order-refunded-payment-pending-raw-address.png`
+
+### 🛑 A175 — a REFUNDED order shows a "Payment pending" panel asking the buyer to pay
+
+Order `9-LUZWNG`, status chip **Refunded**, renders:
+
+> *"Payment pending — Transfer the amount via UPI and upload your payment screenshot
+> within 15 minutes, or the item returns to stock."* + a **Complete payment** button.
+
+The Delivered order on the same template correctly reads *"Payment verified"*, so the
+panel is gating on something that a refund does not clear.
+
+### Confirmed working
+
+- **`/user/offers` is the best-built surface in this batch**, and the only one this run
+  has seen that explains itself in a sentence rather than leaving the reader to infer
+  state from chips. Four statuses present (Accepted / Expired / Countered / Withdrawn),
+  and every row carries the whole negotiation:
+  `LISTED ₹1,799 · YOUR OFFER ₹1,450 · AGREED PRICE ₹1,450`, the seller's own words in
+  quotes (*"Best I can do is ₹1,150."*), a plain-English explanation, and only the actions
+  that status permits. `user-offers-rich-list.png`
+- **No money churn in the timeline** — exactly three status entries plus carrier and
+  tracking; no coupon, add-on, discount or fee lines. `pricingEntriesInTimeline: 0`.
+- **No PII in the timeline** — zero emails and zero occurrences of the buyer's display
+  name across both orders' track pages. `piiInTimeline: 0`.
+
+### Declined — two PRESERVE-tier writes
+
+- **addresses-crud** — `addresses` is preserved, and A166's residue is the evidence for
+  why: two of this user's three saved addresses are already `QA Address …` leftovers from
+  earlier runs. Read-only, I confirmed **exactly one** is flagged Default, so
+  `defaultAddressCount: 1` holds.
+- **settings-page** — writes to the signed-in user's own document. Its
+  `unintendedFieldChanges` check is the collateral-damage test, and this run has already
+  found that exact class twice on the admin side (a list endpoint omitting fields its
+  editor then re-sent as wrong defaults). Worth running on a non-production project.
+
+### Fixture gaps — three cases have nothing to test
+
+| Case | State |
+|---|---|
+| `my-prize-draws` | zero entries — correct empty state, but **outcomes** (won/lost) are what the case is about and cannot be seen |
+| `my-digital-codes` | zero codes — and note the **pool has no writer**, so this page is the visible end of a supply chain with no source. Seed the *pool* first, then a purchase |
+| `order-auction-won-vs-bought-out` | no bought-out order identified among 25 to pair against a win |
+
+`order-offer-shows-what-was-saved` is the cheapest of the remaining: the accepted offer on
+`/user/offers` carries a **Checkout at Agreed Price** action that would produce exactly the
+order the case needs.
+
+---
+
+## Batch `buying/user-dashboard-extras--p2` — 0 yes, 3 no, 0 blocked
+
+Recorded 193/226. Three failures — and one of them **corrects an earlier finding of mine**.
+
+### 🛑 A167 NARROWED — "Oldest First" is NOT broken everywhere
+
+I recorded last batch that *"every Oldest First across the reviews feature is broken"*.
+**That was too wide.** `/user/reviews?sort=createdAt` works perfectly: **16 rows, ascending
+— 17 Jun, 22 Jun, 27 Jun, 2 Jul 2026 — no errors, no empty state.**
+
+So the buyer's own review list sorts ascending correctly while `/api/reviews` 500s. The
+defect is specific to the **public reviews query path**, not to the sort:
+
+| Surface | `sort=createdAt` |
+|---|---|
+| `/user/reviews` | ✅ 16 rows ascending |
+| `/api/reviews?productId=…` (product tab) | ❌ **HTTP 500** |
+| `/reviews` site-wide index | ❌ empty |
+
+A much tighter target for whoever fixes it.
+
+### 🛑 A176 — `/user/returns` names no reason, opens nothing, and its Filters drawer is empty
+
+Two returns list correctly — order id, date, `Return Requested`, item ×qty, total. Three
+things the case asks for are absent:
+
+1. **The reason.** `/reason/i` matches **nowhere** on the page. A buyer cannot see what
+   they said when they raised the return.
+2. **Any way to open one.** No View, no Open, no row link — the only action-shaped
+   elements are sidebar nav items. Root Cause #56's dead-end shape, and `UserReturnsView`
+   was on that list's unfixed nine.
+3. **Status filters.** I clicked the toolbar's Filters button with a real click: the
+   drawer contains **zero status chips and no Apply Filters** — one unlabelled control,
+   its own close button.
+
+The rest of the toolbar is complete and correct (`Search by order id…`, Sort with three
+options, Grid/List), which makes the empty drawer read as unfinished rather than
+deliberate. `user-returns-no-reason-no-detail.png`
+
+### 🛑 A177 — `/user/reviews` renders no photos, no edit, and no seller response
+
+The list itself is accurate — 16 rows with product, star row, `(N★)` and date — and the
+**search is good**: `Dranzer` → 4 rows all Dranzer S, `zzzznope` → 0.
+
+But:
+
+- **Zero photos.** Non-avatar images on the page: **0**. `placeholderPhotos: 0` is
+  satisfied only because nothing renders at all — which is not the pass the expectation
+  wants. Review photos **do** render at full 800×800 on the public product page and the
+  permalink, so the images exist and this surface just does not show them. Same as
+  `/admin/reviews` (A163).
+- **No edit affordance** on any row, so *"open one and check it can be edited"* has
+  nothing to act on.
+- **No seller response** anywhere — consistent with A154, where a seller's reply saves
+  and is never shown to any buyer.
+
+`user-reviews-oldest-works-no-photos.png`
+
+### A178 — third instance of the wrong empty state
+
+Searching `zzzznope` on `/user/reviews` renders **"You haven't written any reviews yet."**
+to a buyer who has **20**. After A162 (sublisting categories) and A163 (`/admin/reviews`),
+this is the **third** surface confusing *no matches* with *nothing exists*. It is now a
+pattern worth one shared fix rather than three.
+
+### Confirmed working
+
+- **The standard toolbar is on both pages** and its search filters correctly on the one
+  with data, verified with a real term **and** a nonsense control.
+- **The sort dropdown is not inert** — `inertSortOptions: 0` on `/user/reviews`, and I
+  exercised the option most likely to be broken rather than the safest one.
+
+### Fixture note
+
+Two of the four pages the search-and-sort case names — `/user/digital-codes` and
+`/user/prize-draws` — are genuinely empty for this account, so their search boxes have
+nothing to narrow and only `/user/reviews` was exercisable.
+
+---
+
+## Batch `admin/bug-hunter-rewards` — 0 yes, 2 no, 2 blocked
+
+Recorded 194/226.
+
+### 🛑 A160 WIDENED AGAIN — a THIRD `/api/admin/*` route ignores `q`
+
+The tester-checklist catalogue's search does not filter. Typing the case title returned
+25 unrelated rows; I re-tested with a plain ASCII term in case the **em-dash** in the
+title was the culprit:
+
+```
+q=invoice  →  25 rows, only 2 containing "invoice", pager still 52 pages
+GET /api/admin/tester-checklist-items?page=1&pageSize=25&sorts=order
+    &filters=isActive==true&q=invoice   →  200, unfiltered
+```
+
+Identical page size and pager to the unfiltered view. The client sends `q` correctly;
+the route drops it — after `/api/admin/categories` (A160) and `/api/admin/brands`
+(A160-widened). **Three routes, one pattern**, and one fix.
+
+### ✅ The default-filter disclosure here is CORRECT — and it is A163's counterexample
+
+Worth describing because it is the *right* pattern, in the same admin, one page over:
+
+| | `/admin/tester-checklist` | `/admin/reviews` (A163) |
+|---|---|---|
+| Default filter | `isActive==true` | `status==pending` |
+| Filters button | **`Filters 1`** — visible count badge | no badge |
+| Drawer state | Status **Active pressed**, Bug-status **All pressed** | **every chip unpressed** |
+| Result | 52 pages of Active cases, explained | *"No reviews found"* against 79 real reviews, unexplained |
+
+Switching Status to Inactive gives `?isActive=false` and returns **exactly one row** — the
+bug-confirmed v1 fixture, absent from the default view. `defaultViewHidesBugConfirmed: true`.
+`tester-checklist-inactive-bug-confirmed.png`
+
+### A179 — the case's own expectation names the wrong tester
+
+`confirm-bug-idempotent` expects the already-confirmed fixture to be credited to
+**`Mock User 18`**. It is credited to **`Mock User 3`**:
+
+> `Demo fixture — reported bug, already confirmed and reopened (v1, disabled) ·
+>  🐛 found by Mock User 3 (v1) · Bug Confirmed`
+
+A tester following the case literally would look for Mock User 18, not find it, and
+reasonably conclude the credit had been **lost or overwritten** — a false positive on a
+case whose entire subject is whether a credit moves when it should not. Fix the
+expectation (or the seed) before running it.
+
+### Blocked — and the reason generalises
+
+Both write cases were declined for the same structural reason, which is worth stating
+once: **`testerChecklistItems` is in none of the wipe's tiers, so it is PRESERVED by
+default**, and A146 established the admin UI has **no edit and no delete** — the row
+menu's single item, `Reopen as New Test Case`, is `disabled`.
+
+So a confirmation or a reopen is **irreversible by hand and by reseed**. One run would
+consume a fixture built for repeated use, leaving the next tester with nothing to test.
+
+**Most of what those cases assert is already observable on the seeded pair**, because the
+seed contains both halves of a completed reopen:
+
+- **v1**: inactive, `Bug Confirmed`, credit retained (`🐛 found by Mock User 3 (v1)`),
+  hidden from the default view → `originalStaysDisabled: true`, `originalKeepsCredit: true`
+- **v2**: active and answerable
+
+So the **data model supports everything the cases assert**; what is missing is the
+admin's ability to perform the transition at all.
+
+---
+
+## Batch `selling/seller-ops-comms` — 0 yes, 2 no, 2 blocked
+
+Recorded 195/226.
+
+### 🛑 A180 — the seller's fulfillment queue shows 25 rows with only 6 distinguishable labels
+
+Every row's primary label reads **`🧾 Order order-1-202609`** — the order id truncated
+**mid-date** (the real form is `order-1-20260916-rhj4nf`). Counting across the page:
+
+> **25 rows · 6 DISTINCT id strings**
+
+`order-1-202609` and `order-1-202608` each appear several times. **A seller cannot tell
+which row is which order**, let alone which product to pull off the shelf.
+
+The case's step 3 asks whether the row names the **item** rather than only an order id.
+It names **neither** — no product title appears on any row, even though `items[].productTitle`
+is denormalised onto the order document precisely so lists need no extra fetch.
+
+**And every row's second label is `Unknown buyer`.** All 25. That is the same defect
+found earlier this run on the seller's **offers** list (A124) — where the notification and
+the admin list both name the buyer correctly — so it is **not offer-specific**, and the
+two together point at one shared adapter rather than two screens.
+
+**What does work**, and it matters for the dead-end-listing check: rows are click-openable
+(`cursor: pointer`) with a real action set — `Mark as shipped`, `View order details`,
+`Open full page` — and the toolbar is complete (search, Filters, three view modes,
+Active/Closed/All scope, page sizes). **The chrome is fine; the content is unreadable.**
+`store-orders-truncated-ids-unknown-buyer.png`
+
+### ✅ Root Cause #37's print-surface duplicate is FIXED, and cleanly
+
+`/store/inventory/print` now returns **HTTP 404**. It used to exist as a degraded duplicate
+of the print centre — same component rendered with a **null store**, so no store context
+and no data.
+
+**The removal was finished properly**: I searched the store dashboard for any anchor
+pointing at it and found **zero**, with the only print-related nav link being
+`/store/fulfillment`. No dead nav entry left behind — which is the usual failure mode of a
+deletion like this.
+
+The surviving surface is the good one: `/store/print-center` → `/store/fulfillment?tab=print`
+renders **`Print Center — Beyblade Arena`** with the store's real inventory listed by
+title, including sold and ended items correctly labelled.
+
+> **The `seller-inventory-print` case should be RETIRED, not fixed.** Its literal claim is
+> false and the comparison it asks for has one side gone — but two print surfaces *was*
+> the defect, and one is the fix. `store-print-center-store-context.png`
+
+### Blocked
+
+- **`seller-addresses-crud`** — a store address is still a row in the **`addresses`**
+  collection (discriminated by `ownerType`, not a separate collection), so it is PRESERVE
+  tier and lands exactly where a buyer's delivery address does. A166's residue is the
+  evidence. **Worth targeting on a non-production project**: this case names a
+  **landmark** and asks for it back after a reload, and the admin address surface never
+  renders a landmark at all — so it is the field most likely to be accepted and then
+  silently dropped.
+- **`seller-print-center`** — the page and its store context are confirmed, but I did not
+  generate the printable output. That is the half the case protects: **a label missing its
+  return address is useless in a way that is invisible until something is posted.**
+
+---
+
+## Batch `buying/user-dashboard-navigation` — 6 yes, 1 no, 1 blocked
+
+Recorded 196/226. **The best-scoring batch of the run.** The user dashboard's navigation
+is in genuinely good shape; one accessibility defect.
+
+### 🛑 A181 — `aria-current` is pinned to `/user` on every dashboard page
+
+Two signals, and they disagree. On `/user/support` the **visual** highlight correctly
+marks Support — but `aria-current="page"` sits on **`/user`**, the dashboard home. I
+checked a **second** page before recording it: on `/user/coupons`, `aria-current="page"`
+is **again** on `/user`.
+
+Two different sections, the same misplaced marker — it is pinned to the home rather than
+tracking the route.
+
+The consequence is specific: a sighted user sees the right item highlighted, and **a
+screen-reader user is told on every page of the dashboard that they are on the dashboard
+home**. `aria-current` is the only programmatic signal of location a non-visual user has,
+so this is not a cosmetic duplicate of the styling — it is the accessible half being
+wrong while the visible half is right, which is the combination least likely to be
+noticed. `user-sidebar-logout-and-aria-current.png`
+
+### Confirmed working — measured, not sampled
+
+| Check | Evidence |
+|---|---|
+| **All links resolve** | **21 enumerated** sidebar destinations, **all HTTP 200**, zero 404s, **zero redirects**. Render-checked `/user/support`, `/user/coupons`, `/user/orders/view/{id}` — no error boundaries. `brokenLinks: 0` |
+| **Mobile collapse** | At 390px: **exactly one** fixed bottom bar (`<nav class="fixed bottom-0 left-0 right-0 lg:hidden">`, 65px, 5 links), `--bottom-nav-height: calc(4rem + 0px)` **published**, on-screen `<aside>` count **0**, `scrollWidth === 390` so no overflow |
+| **Deep-link direct load** | `/user/orders/view/order-1-20260818-stdctx` cold → full order content + 21 sidebar links |
+| **Cross-nav** | Buyer with no store sees **exactly one** of the pair: `Become a Seller`, not `Go to my Store` |
+| **Back button** | order detail → coupons → back → order detail with content **and** chrome intact |
+| **Sidebar log out** | exists at the bottom of the dashboard sidebar and is reachable once the drawer is opened |
+
+The bottom-nav measurements are worth keeping: **one** bar is the number that matters
+(two would put two bars on the same pixels with a height nobody owns), and the published
+`--bottom-nav-height` is the layout contract being honoured rather than every other
+surface guessing.
+
+### Breadcrumbs — absent by design, not broken
+
+The case says *"where present"*, so the honest answer is that they are **not**. No
+`Home / …` trail on `/user/support` or `/user/coupons`; nested pages use a single back
+link instead (`← My Orders`). Reasonable for a two-level tree, and **not** recorded as a
+defect.
+
+> Breadcrumb accuracy *is* worth testing on this site — just not here. The public brand
+> page reached from `/brands` breadcrumbs as **Categories** rather than **Brands**, which
+> is A171.
+
+### Two method notes
+
+1. **A derived boolean disagreed with the rendered text, and the text was right.** My
+   deep-link check computed `false` while the page plainly showed `ORDER #8-STDCTX … Delivered`
+   — most likely a non-breaking space in the heading. **Record what the page says, not
+   what your expression concluded.**
+2. **Off-viewport is not absent — again.** Both log-out controls measured outside the
+   1280px viewport with the drawer closed, identical to the admin trap earlier in this
+   run. Opening `button[aria-label="Open dashboard navigation"]` brings it on screen at
+   x=1089. `getBoundingClientRect` reports layout coordinates for parked elements; check
+   whether a container is **closed** before calling a control unreachable.
+
+---
+
+## Batch `buying/user-dashboard-navigation--guest` — 0 yes, 1 no, 0 blocked
+
+Recorded 197/226.
+
+### ✅ The privacy half is clean — and I sampled rather than glanced
+
+`/user`, `/user/orders` and `/user/addresses` signed out all land on `/auth/login` with
+the sign-in form. **I watched each for 5–6 seconds in one-second samples** rather than
+reading once, because these routes render a static shell and decide client-side — a flash
+of real content is exactly what a single read would miss. Across every sample the path
+stayed `/auth/login` and no email, name or order id ever appeared.
+
+Then a **516 KB source scan**: **zero** personal emails, **zero** `Mock User N`, **zero**
+uids, **zero** order ids, **zero** seeded address fragments. `userDataInSource: 0`.
+
+### 🛑 A182 — the signed-out redirect drops the destination
+
+The redirect lands on a **bare `/auth/login`** with **no `next` parameter**, from all
+three routes. Nothing records where the visitor was trying to go, so the label's second
+clause — *"then returns to the originally requested page after signing in"* — cannot
+happen. A buyer following an emailed link to their own order is dropped on the login page
+and has to find the order again by hand.
+
+**The admin dashboard does this correctly**, which is what makes it a defect rather than a
+design choice — verified earlier this run:
+
+| Route | Redirect |
+|---|---|
+| `/admin` | `/auth/login?next=%2Fadmin` |
+| `/admin/site` | `/auth/login?next=%2Fadmin%2Fsite` |
+| `/user`, `/user/orders`, `/user/addresses` | `/auth/login` — **no `next`** |
+
+Same codebase, same situation, two behaviours. `user-signed-out-redirect-no-next.png`
+
+### Methodology — a PII sweep that includes your own domain finds your own email
+
+My first source scan reported **13 hits**, which looked alarming. They were
+`legal@letitrip.in`, `support@letitrip.in`, `privacy@letitrip.in` and
+`conduct@letitrip.in` — the site's **own published contact addresses** in the footer,
+caught because my domain pattern included `letitrip.in`. Re-scanning for personal domains
+only (`gmail`, `mailnull`, `beybladearena`) returned **zero**.
+
+Second time this run a PII regex has produced a confident false positive, after the SVG
+path coordinate that looked like an Indian mobile number. **Locate every match before
+reporting a count.**
+
+---
+
+## Batch `selling/seller-marketing-extras` — 0 yes, 2 no, 7 blocked
+
+Recorded 198/226. Five of the seven blocked share one cause, and it is **not** a defect.
+
+### 🛑 A124 QUANTIFIED, and it is not offer-specific
+
+`/store/offers` lists 11 offers and the **money is right on every row**:
+`Beyblade Original — Driger V · Offer: ₹1,450.00 · Listed: ₹1,799.00 · accepted · 3h ago`.
+Four distinct statuses appear (accepted / expired / pending / countered), so states are
+not being collapsed either.
+
+**Every one of the 11 rows reads `Unknown buyer`.** A seller deciding whether to accept
+₹1,450 against a ₹1,799 listing cannot see who is asking.
+
+**The data exists** — the buyer's own view names the same offers, the seller's
+notification names the buyer, the admin offer list names them. **And it is not
+offer-specific**: `/store/orders` shows `Unknown buyer` on all **25** of its rows too
+(A180). Two seller surfaces dropping the same field points at **one shared mapper**.
+`store-offers-11-unknown-buyer.png`
+
+### 🛑 A154 restated with its full evidence — a seller reply that no buyer can read
+
+Viewing and replying both work, including the part that usually fails here: the reply
+posted, the card flipped to `Store replied`, and **it survived a full reload** — worth
+stating because the seller *listing* save on the same dashboard returns 200 and writes
+nothing (A121). This write path genuinely persists.
+
+Signed out on the product page, the reply is **absent from the raw HTML** (cache-busted,
+9-second wait), and `/store repl|seller repl/i` matches **nothing across all 19 reviews**
+on that product. So it is not *my* reply that is missing — **the public renderer has no
+seller-response slot at all.**
+
+### ✅ Root Cause #70 closed on the PUBLIC store page too
+
+I had confirmed this on the admin store view earlier; this closes the other half.
+`/stores/store-beyblade-arena`, **647 KB of source**, scanned for seven leak shapes:
+
+| Pattern | Hits |
+|---|---|
+| Meta token (`EAA…`) | **0** |
+| `enc:v1:` ciphertext | **0** |
+| `accessToken":"…` | **0** |
+| `wabaId` / `catalogId` | **0** |
+| `adminNotes` / `suspensionReason` / `customCommissionRate` | **0** |
+
+`tokenInPublicSource: 0`. That is precisely where the defect used to live — a raw store
+document passed into a client component, publishing a decrypted WhatsApp token into the
+page HTML. `public-store-no-token-leak.png`
+
+### The five WhatsApp cases are blocked by a CORRECTLY BUILT capability gate
+
+`/store/whatsapp` returns 200 and renders exactly one thing:
+
+> *"WhatsApp catalog sync is not enabled for your store. Contact LetItRip support to
+> request access to the WhatsApp Business integration."*
+
+**Zero form fields, zero buttons.** That is the right way to gate a capability — it names
+what is unavailable, says who to ask, and leaves no half-wired form to fill in and watch
+fail. Recorded as blocked, **not** as failures. `store-whatsapp-capability-gate.png`
+
+> If the integration is meant to be demonstrable in this environment, this is the store
+> that needs the flag — it is the main seeded seller.
+
+### Also noted
+
+- **Google Reviews has no surface at all** — `/store` never mentions it, and
+  `/store/settings`, `/store/integrations`, `/store/profile` are **all 404**. Its
+  credentials are seeded **empty on purpose** so the integration skips rather than making
+  a failed, billed Places call — so there is nothing to authenticate with either.
+- **`/store/features` is well built**: `0 of 20 used`, the cap shown beside the count, one
+  sentence explaining how custom badges relate to platform ones, and a coherent create
+  form (Label*, Description, Icon*, Icon Colour). **I did not create one** — the list is
+  empty so no row actions are visible, and this run has twice found seller taxonomy with
+  no way back (store categories have no delete; the checklist's one row action is
+  disabled). Residue on a live store is already accumulating elsewhere.
+
+### A caution about the 404 probe
+
+Fetching `/store/settings` and grepping the body for *"whatsapp"* returns **true** — on a
+**404 page**. The not-found response still ships the full app shell, so a word-presence
+test against it means nothing. Only the **status code** was load-bearing there.
+
+---
+
+## Batch `admin/category-brand-authoring` — 1 yes, 2 no, 5 blocked
+
+Recorded 199/226. One new defect that **blocks three cases at once**, and a clean pass on
+the derived-fields model.
+
+### 🛑 A183 — the parent picker returns "No categories found" for a category that EXISTS
+
+Worse than A160, and a different failure. Typing `Bonsai` (real keystrokes, 4-second wait)
+into the Add Category form's **Parent category** picker renders **`No categories found`**
+— offering `+ Create new Category` as the only way forward, which would duplicate a
+category that already exists.
+
+**The server returned the row.** `GET /api/admin/categories?page=1&pageSize=25&q=Bonsai`
+answers **200, total 60, 25 rows** — unfiltered as always — and **`Bonsai` is among them,
+at index 8**. So the route ignored the query *and then the client discarded the result*.
+
+| | Seller-side pickers (A160) | This picker (A183) |
+|---|---|---|
+| Route honours `q` | no | no |
+| Picker shows | **everything** — user can scroll to it | **nothing** |
+| User's way out | pick the right option | create a **duplicate** |
+
+**This blocks three cases**: creating a child under a parent, re-parenting a subtree, and
+by extension anything needing a parent chosen.
+`admin-parent-picker-no-categories-found.png`
+
+### 🛑 A184 — the category editor neither shows nor sets the row's KIND
+
+Four kinds of row share the `categories` collection — ordinary listing category, brand,
+sub-listing group, pricing bundle — discriminated by an **optional** field that a plain
+category **omits entirely**. That makes an explicit control *more* important, not less:
+the absence of a value is itself meaningful.
+
+The form has **no type or kind input** — its named fields are `name`, `slug`,
+`description`, `parent` — and searching its text for *brand*, *sub-listing* and *bundle*
+matches **nothing**. So an admin cannot author a brand, sub-listing or bundle here, and
+cannot see which kind an existing row is while editing it.
+
+### ✅ The derived-field model is exactly right
+
+The editor exposes **four** inputs and no structural ones. I enumerated every named field
+and checked for the eight this project forbids hand-writing — `tier`, `path`, `ancestors`,
+`children`, `subtreeSize`, `position`, `isLeaf`, `rootId` — and found **zero**.
+
+Depth comes from the parent alone, and the form **says so in words**: *"Leave empty to
+create a root category."* The slug helper is right too — *"Auto-generated from the name
+until you edit it. Used in URLs."*
+
+### The ancestor READ path works; the CREATE path is the untested half
+
+`/categories/category-spinning-tops` states **"15 products"** and renders cards from
+*deeper* levels (`art-original-series-anniversary-print`,
+`product-beyblade-metal-dark-bull-video-demo`), so root pages do aggregate their subtree.
+
+**But every one of those products came from the seed**, which writes the chain by hand.
+The case asks about a product created **through the form** — precisely the path where the
+chain has historically gone missing, because the create schema strips an inbound chain and
+a read-side backfill re-adds a single-element one on the way out. The product then looks
+correctly categorised in **every screen that displays it** while being absent from the
+stored value a **query** examines. `categoryPagesListingIt` not recorded.
+
+### Five blocked — and two deliberately so
+
+- **`brand-rename-orphan-check`** — the one write here whose failure mode is
+  catalogue-wide. Brands match products by **display NAME**, so a rename silently detaches
+  every product and recovery means retyping the exact old string. Confirmed read-only that
+  brand rows *do* carry a stable `brand-` slug and `categoryType: "brand"` — so
+  name-matching is a **live choice**, not a legacy artefact, and the case's premise holds.
+  **Watch the product count on the brand page**, not the brand row, which looks fine
+  either way.
+- **`delete-category-with-children-refused`** — the most destructive operation on the
+  screen; if the refusal is missing, the test *is* the damage. Worth knowing before
+  someone runs it: **the row action menu on `/admin/categories` did not open on click**,
+  so where deletion even lives is unestablished.
+- `reparent-moves-whole-subtree`, `product-created-…`, `brand-cover-image-is-the-hero` —
+  blocked by A183, by the create-path caveat above, and by budget respectively.
+
+> **For the re-parent case when A183 is fixed**: its real subject is the *second* clause —
+> that descendants stay **reachable**. Products carry their ancestor chain denormalised,
+> so a re-parent must rewrite every descendant's chain. If that rewrite is missing, the
+> category looks moved while its products quietly vanish from the new parent's page — a
+> 200 and an empty grid.
+
+---
+
+## Batch `buying/return-request` — 1 yes, 0 no, 5 blocked
+
+Recorded 200/226. **No defects.** One case passes on evidence I nearly got wrong, and one
+fixture gap blocks the other five.
+
+### ✅ The return window is a real server-side gate — and I nearly filed it as missing
+
+No return affordance appears on any of the 25 orders in the list, nor on a **Delivered**
+order's detail page — which offers only `Download Invoice` and `Track Shipment`, with the
+word *return* absent from the order body entirely. **On its own that reads like a missing
+feature.**
+
+**It is not.** `/user/orders/{id}/return` exists, returns **200**, and renders:
+
+> *"Return this order · Order #order-1-20260818-stdctx · **The 7-day return window for this
+> order has closed.** · ← Back to order"*
+
+So the window is checked **on the route itself**, not merely by omitting a button — the
+difference between a gate and a hidden control, and it means a buyer holding an old link
+cannot slip past it. The refusal also **names the rule and the reason in one sentence**.
+
+**The absent button is correct here**: this account's four Delivered orders are dated
+3 Sept / 18 Aug / 16 Aug / 1 Aug 2026, the most recent delivered `09/09/2026` per its own
+timeline — all at or beyond the seven-day boundary. There is currently no order for which
+the control *should* appear. `returnControlOnDeliveredOnly: true`.
+`return-window-closed-gate.png`
+
+> **Small inconsistency while someone is in there**: the page titles the order with its
+> **raw document id** — `Order #order-1-20260818-stdctx` — where every other surface shows
+> `#8-STDCTX`. Same raw-id family as A174 and A180.
+
+### One fixture change would unblock four cases
+
+Every delivered order is outside the window, so **no return form can be opened at all** —
+the reason picker never renders. That blocks `not-received-on-final-sale`,
+`change-of-mind-refused-by-name`, `partial-gates-selected-lines-only` and
+`terms-snapshotted-at-purchase`.
+
+**A delivered order dated within the last few days fixes all four.** It must be computed
+**relative to run time**, not a fixed calendar date, or it goes stale the moment the seed
+ages — the same reasoning this project already applies to auction end dates.
+
+Two more fixtures are needed beyond that: a **mixed** order (one returnable + one
+final-sale line — the delivered orders each hold a single item) and a **prize-draw** order
+(`/user/prize-draws` reports *"You haven't entered any prize draws yet"*).
+
+### The assertions worth keeping sharp when someone runs them
+
+- **`not-received` on a final-sale order must be ACCEPTED.** A final-sale term governs
+  whether a buyer may change their mind, not whether a seller may keep the money for
+  something never delivered. A system that lets the flag block a non-delivery claim is not
+  enforcing a policy, it is refusing a refund.
+- **`change-of-mind` must not be OFFERED**, not merely rejected — and the panel must say
+  why. Offering then rejecting wastes the buyer's time; omitting silently leaves them
+  hunting. Both halves are required. The window gate's copy is the pattern to imitate.
+- **A final-sale line must not BLOCK a returnable line** in the same order. The tempting
+  implementation gates the whole order if *any* line is final sale — simpler, passes on a
+  single-line order, and silently traps a returnable purchase behind an unrelated item.
+- **`terms-snapshotted`** is **doubly** blocked: the seller listing save returns 200 and
+  writes nothing (A121), so the policy edit is unattributable *even if* the window allowed
+  the read-back. The principle is invisible in normal operation and only appears when a
+  seller **tightens** a policy — at which point every past order silently inherits it.
+
+---
+
+## Batch `buying/return-request--admin` — 0 yes, 1 no
+
+Recorded 201/226. One case, and it fails for a reason already on record — which is
+the point of opening it.
+
+### A185 — staff cannot see returns at all: `/admin/return-requests` crashes, and two real returns are sitting behind it
+
+The case asks whether the reason a buyer picks is stored and **visible to staff**.
+It cannot be, because the staff page does not render. `/admin/return-requests`
+replaces itself with the error boundary:
+
+> *"Something went wrong · An unexpected error occurred. Please try again. · Try again"*
+
+Zero rows. The console names the cause, twice — once raw, once through the app's own
+reporter tagged `[high][unknown]` with `component: ErrorView`:
+
+```
+TypeError: Cannot read properties of undefined (reading 'title')
+```
+
+**This is the live re-verification of one of A143's five findings, and the order
+matters.** Earlier in this run I read that route and that exact message out of
+`/admin/maintenance` — a report. Opening the page and watching the error boundary
+replace it is the verification. Both now agree, so Rule #4 is satisfied and this can
+be fixed without first re-proving it exists.
+
+**There is data for it to render, so this is not an empty state.** The buyer account
+holds **two** orders in `Return Requested` status — `1-T9MI9F` and `3-MH8B2X`. Those
+are real customers waiting on real returns, and no member of staff can see that they
+exist. `admin-return-requests-crashes.png`
+
+### What I could not answer, and why that is separate from the crash
+
+Whether the **reason** itself persists is **unanswered** — `notePersisted` is recorded
+as `null` rather than guessed. Three independent paths to it are all closed:
+
+1. **Staff side** — the page crashes (above).
+2. **Buyer side** — `/user/returns` lists both returns and shows **no reason** at all
+   (A176).
+3. **Round trip** — a fresh return cannot be filed: every delivered order on this
+   account is outside the seven-day window, and the return route refuses before any
+   reason picker renders (previous batch).
+
+So the reason is invisible on the buyer surface, invisible on the staff surface
+because it crashes, and unverifiable by round trip. On a data-persistence question
+that is exactly where a guessed `yes` does the most damage.
+
+### The fix-pass note
+
+A143's `/admin/return-requests` entry moves up: it is not a log line about a route
+nobody visits, it is a **support queue with real work in it that staff are locked out
+of**. The `(reading 'title')` shape suggests a row mapper reaching into a field that is
+absent on these particular documents — the same family as A180/A124's shared mapper,
+worth checking together.
+
+---
+
+## Batch `selling/seller-guide` — 0 yes, 1 no
+
+Recorded 202/226. Two defects, and the second is the kind the case itself says matters
+most: *"a guide describing a screen that has since changed is worse than no guide,
+because the seller trusts it and then cannot find what it names."*
+
+### A186 — `/seller-guide`, the index, is completely empty
+
+It returns **200**, titles itself *"Seller Guide — LetItRip"*, renders the header and
+the breadcrumb `Home / Seller guide`, and then a **blank white band** where the content
+belongs — straight into the trust-badge strip and the footer.
+
+`main.innerText.length` is **0**. No `h1`, no `h2`, no paragraph, no link.
+
+**It is not slow hydration.** I waited 7s across two loads, and there are **zero console
+errors** — the page is succeeding at rendering nothing, which is the signature of a
+slot-shell mounted with no render props (Root Cause #8) rather than a failed fetch.
+
+This is the **main** seller guide and it is reachable two ways: the footer's
+`FOR SELLERS` column links it as *Seller Guide*, and the store sidebar has a whole
+`GUIDES` group pointing at it. A seller who follows either lands on a blank page.
+`seller-guide-overview-empty.png`
+
+### A187 — the Bundles Guide's first instruction names a path that does not exist
+
+Verbatim, step 1 of *Creating a Bundle*:
+
+> *"Go to Store Dashboard → **Listings → Bundles** → New Bundle."*
+
+The store sidebar's `LISTINGS` group holds **fifteen** entries — Products, Art,
+Stickers, Auctions, Pre-Orders, Prize Draws, Classified, Digital Codes, Live Items,
+Grouped Listings, Sub-listing Categories, Feature Badges, Listing Templates, Store
+Categories — **and Bundles is not one of them.** A seller following the guide opens the
+group it names, finds no Bundles entry, and stops.
+`store-listings-group-no-bundles.png`
+
+**The page is real and works.** `/store/bundles` returns 200, renders, and carries a
+`+ New Bundle` button — so the guide's *terminology* is right and only the **route to
+it** is missing. That makes this a missing nav entry, not a missing feature: Root Cause
+#37, and the cheaper of the two possible fixes.
+
+### What is genuinely fine
+
+Both sub-guides render properly and are **distinct** — neither repeats the other, and
+the prose is specific and good:
+
+| Page | `h1` | Sections |
+|---|---|---|
+| `/seller-guide/bundles` | Bundles Guide | What are Bundles · Creating a Bundle · Stock Sync · Tips |
+| `/seller-guide/prize-draws` | Prize Draws Guide | What are Prize Draws · Creating a Prize Draw · The Reveal Flow · Rules and Policies · Tips |
+
+`brokenGuideLinks: 0` — but **that number flatters the feature rather than describing
+it**. There are no broken links because there are **no links at all**, including none
+back to the index.
+
+### The case's own label is wrong
+
+It promises *"the 5 seller guide pages"* and then names **six** (overview, capabilities,
+finance, listings, orders, settings). **Three exist.** Every one of
+`/seller-guide/{capabilities,finance,listings,orders,settings}` returns **404**. Worth
+correcting the case while someone is fixing the pages.
+
+### One claim I could not check — flag it for the fix pass
+
+The prize-draw guide says:
+
+> *"Upload your prize codes (CSV or one-per-line). Codes are encrypted and never shown
+> until reveal."*
+
+This seller has **no prize draws** (*"No prize-draw listings found"*), so no editor
+could be opened to confirm the upload control exists, and creating one is blocked by the
+seller listing save writing nothing (A121). **Re-check this specifically once A121 is
+fixed** — an instruction telling a seller to upload something the UI cannot accept is
+the same failure shape as A187, and Root Cause #103 is the precedent: a code pool with
+readers and no writer.
+
+---
+
+## Batch `buying/order-status-lifecycle` — 5 yes, 5 no, 1 blocked
+
+Recorded 203/226. The richest batch of the run: five real defects, and **three of them
+are the same bug wearing different clothes.**
+
+### A188 — the buyer's Cancel Order button fires nothing at all
+
+The cancel page is right in every respect *except* the one that matters. It renders a
+required *Reason for cancellation* textarea with a live counter, a `Cancel Order` button
+and a `Keep Order` link. I typed the case's exact text and watched the counter move to
+**46/500**, so the field's own state had the value.
+
+Clicking `Cancel Order` produced **no network request of any kind** — the entire request
+log after the click is GETs, with no POST, no PATCH, and not even a server-action post
+back to the page URL. No error appeared, there is **no `role="alert"` node** on the page,
+the button is not disabled, and nothing navigated. After a reload the order is still
+**Pending** with no reason recorded.
+
+**The button's own accessible name points at the cause.** Its visible label is
+`Cancel Order`; its `aria-label` is **`Cancel Selected Items`** — and the page contains
+**zero checkboxes**. It reads as a partial-cancellation control mounted on a whole-order
+page: the handler asks which items were selected, gets none, and returns silently. That
+also makes it an accessibility defect on its own, since a screen-reader user is told they
+are cancelling a selection that does not exist. `cancel-order-button-dead.png`
+
+### A189 — the seller's scope tabs at `/store/orders` do not filter
+
+I selected **Closed**, confirmed the tab carried `aria-selected="true"` and the URL read
+`?orderScope=closed&page=1`, then **hard-navigated to that URL** to rule out a stale
+client render. It returns 25 rows:
+
+| Under "Closed" | |
+|---|---|
+| **pending 1 · processing 6 · confirmed 3 · shipped 4 · return_requested 1** | **15 active orders** |
+| cancelled 5 · delivered 4 · returned 1 | 10 genuinely closed |
+
+`Active` and `All` return the **identical 25 rows** with the identical mix. Nothing is
+being scoped.
+
+**The Closed tab is worse than absent** — it asserts that fifteen orders needing work are
+finished, in the seller's only view of their own queue.
+`seller-orders-scope-tabs-inert.png`
+
+### A190 — the seller's status picker is a static list, so a delivered order can be sent back to Confirmed
+
+Proved by comparing two orders at opposite ends of the lifecycle. **Shipped** order
+`order-1-20260806-481j4x` offers: *keep current, Confirmed, Processing, Shipped,
+Delivered, Cancelled*. **Delivered** order `order-1-20260818-stdctx` offers the
+**identical six**.
+
+Confirmed and Processing move the order **backwards**. But the sharper problem is
+`Cancelled`, because **the same platform refuses it to the other party in the same
+transaction**: a buyer navigating to the cancel route on a shipped order is told, in
+those words, *"This order cannot be cancelled because it is already shipped."* The seller
+is offered Cancelled on that same shipped order, and on a delivered one.
+
+Whatever the intended rule is, it is enforced against the buyer and not the seller.
+`seller-status-options-static-delivered.png`
+
+### A191 — the order timeline omits unreached steps instead of drawing them as upcoming
+
+A pending order's whole timeline is **one dot** — *"Order placed 16/09/2026, 06:03:05"* —
+followed by the chip *"No tracking details yet"*. Confirmed, Processing, Shipped and
+Delivered are simply absent. A buyer who has just paid is shown what has happened and
+nothing about what happens next. `timeline-no-upcoming-steps.png`
+
+**The delivered order passes — for the wrong reason.** It shows no upcoming steps, but
+not because the timeline knows the order is finished; it never draws anything ahead, and
+delivered is the one state where that happens to be correct.
+
+**Same root as an unreachable assertion in the sibling case**: the timeline is driven by
+*which dates exist* rather than by the known lifecycle, so it cannot render a step with
+no date — whether that step is ahead of the order or merely undated behind it. That is
+why `status-timeline-real-dates` has no em-dash branch to inspect.
+
+### A192 — the seller order save does not persist (and it is now three surfaces)
+
+Chose **Confirmed** on a pending order with a real click, confirmed the picker had taken
+the value, clicked **Save**. No error, no confirmation. Reload → **`pending`**.
+
+I deliberately did **not** go on to check the buyer's side. With no change committed, a
+buyer view still reading Pending would be indistinguishable from a buyer view that failed
+to pick the change up, and those need opposite fixes.
+
+**Three surfaces now share this shape** — seller listing edit (A121), buyer order cancel
+(A188), seller order status (A192). A form that accepts input, reports nothing, and
+writes nothing. Worth hunting one shared cause before writing three fixes.
+
+### Smaller findings recorded against their cases
+
+- **The seller list renders raw stored statuses** — `pending`, `processing`, …, and
+  literally **`return_requested`** with the underscore. That is exactly the failure
+  `all-statuses-render` describes, on the other side of the same order. The buyer's side
+  is correct.
+- **The buyer's status filter offers 7 of 9 statuses** — `Confirmed` and `Returned` are
+  missing, and this account holds 3 Confirmed and 2 Returned orders. Orders that exist
+  and cannot be filtered for (Root Cause #72's coverage shape).
+- **The seller's order total reads ₹0.00** on both orders inspected, where the buyer sees
+  ₹2,299.00 and a full payment summary for the same orders.
+- **Some orders show the buyer a raw address document id** — order `6-481J4X` renders its
+  Delivery Address as `addr-yugi-home`, while `6-RHJ4NF` renders a real address.
+- **Raw order ids persist on every guard and track surface** — `Order #order-1-20260806-481j4x`
+  on the cancel page, `Order order-1-20260818-stdctx` on the seller detail, and the
+  breadcrumb *"Order 1 20260916 rhj4nf"*. Same family as A174/A180.
+
+### What passed, and one near-miss worth recording
+
+`active-closed-all-tabs` **reconciles exactly** — and I nearly recorded the opposite. My
+first measurement read All 25, Active 15, Closed 16, i.e. 31 against 25. **The 25 was the
+page size, not the total.** All carries a pager; Active and Closed do not. Page 2 holds 6
+more rows, so 25 + 6 = **31** = 15 + 16, `ordersInNeitherTab: 0`, and the two status sets
+partition the nine-value union cleanly.
+
+`cancel-allowed-only-before-shipping` is **the pattern the rest of the app should copy**:
+the control is absent past shipping *and* the route refuses independently, naming the
+rule and the reason in one sentence. A buyer with an old link cannot slip past it.
+
+`order-scope-filter-and-status-filter` passes on the decisive half — `status=delivered`
+on the **Active** tab returns 5 delivered orders rather than the empty list two equalities
+on one field would produce.
+
+---
+
+## Batch `buying/order-status-lifecycle--admin` — 0 yes, 1 no, 2 blocked
+
+Recorded 204/226. One finding that **points at the writers rather than the reader**, and
+two cases blocked by a missing control.
+
+### A193 — the order-row builder works; five order-creation lanes never wrote what it reads
+
+The three surfaces give three different answers and only the buyer's is right.
+
+| Surface | Result |
+|---|---|
+| **Buyer** `/user/orders` | ✅ Item title + thumbnail + quantity per row, id de-emphasised. A multi-item order lists **both** items in full — more than the case asks for |
+| **Seller** `/store/orders` | ❌ **No item at all.** `Order order-1-202609 · Unknown buyer · pending` beside a receipt emoji. The truncated id is the only thing identifying the row, and several rows render as the same visible string |
+| **Admin** `/admin/orders` | ⚠️ **Mixed** — and the split is the finding |
+
+On the admin list some rows are correct — `Beyblade Burst B-59 Regalia Genesis`, and one
+reading `Beyblade Burst B-59 Regalia Genesis +1 more`, which is exactly the overflow
+indication the case wants. Others fall back to the raw id with a receipt emoji:
+
+```
+Order order-1-20260822-aucwon
+Order order-1-20260729-cash01
+Order order-1-20260821-prizedr
+Order order-1-20260820-buyout
+Order order-1-20260819-preordr
+```
+
+**Read the suffixes.** `aucwon` · `cash` · `prizedr` · `buyout` · `preordr`. Every
+fallback row is an order created by a **non-standard lane** — auction win, cash payment,
+prize draw, buy-now, pre-order. Every row that names its item is an ordinary checkout
+order.
+
+So this is **not** a row builder that forgot to read fields already on the record (Root
+Cause #52's shape). It is a set of **order-creation paths that never wrote the
+denormalised title and image** the row builder expects. That moves the fix from one
+mapper to five writers, and it explains why the same list looks correct and broken at
+once. `admin-orders-mixed-item-vs-rawid.png`
+
+Alongside it: `Unknown buyer` on **every** staff row (A124, now confirmed on a third
+surface), a truncated id plus a bare `-` on every secondary line, and admin thumbnails
+that render as empty dark circles rather than product images.
+
+### A194 — the admin scope tabs are inert too
+
+Same defect as A189, on the other staff surface. `/admin/orders?orderScope=closed`
+returns pending 1, processing 6, confirmed 3, shipped 2, return_requested 1 — **13 active
+orders under "Closed"** — alongside cancelled 6, delivered 4, returned 1, refunded 1.
+
+**Both staff surfaces are inert; only the buyer's tabs work.** That is worth knowing
+before anyone fixes one of them: the working implementation is the buyer's.
+
+### A195 — there is no refund control anywhere on the admin order surfaces
+
+The admin order detail for a delivered order renders only a Status picker, a Shipping
+section, Cancel and Save changes, plus *"Payment Proof: No proof uploaded yet"*. The word
+**refund does not occur anywhere on the page**. The row action menu offers exactly three
+items — *View full details*, *Open full page*, *Update status*.
+
+An admin cannot return money to a buyer through the UI.
+
+### The two blocked cases, and why I did not take the available shortcut
+
+**`refund-appears-in-timeline`** is blocked by A195. Order `order-1-20260809-luzwng` is
+already in `refunded` status, so I could have read its timeline instead of issuing one —
+and that would have been **the wrong test**. A *full* refund moves the order's status
+field, so it appears through the ordinary status diff whether or not refunds are
+contributed explicitly. The case is about the **partial** refund, which changes no tracked
+field and therefore produces nothing at all from a plain before-and-after difference.
+Passing the full-refund version would be a false green on precisely the distinction the
+case exists to protect.
+
+**`status-history-actor-recorded`** is blocked by A192 — the seller's save does not
+persist, so step 2 cannot happen, and an admin-only entry cannot demonstrate that *two*
+roles are attributed *differently*.
+
+Worth recording from the timelines that do exist: **not one entry names an actor** —
+every one is a step label and a timestamp. That sounds damning until you notice those
+timelines are derived from the order's **scalar dates**, not from recorded history
+entries, and a date has no actor. Answering `no` on that basis would blame the wrong
+mechanism. The half I *can* confirm cleanly is the leak half: **no email address or
+personal name appears in any timeline entry.**
+
+---
+
+## Batch `admin/uncovered-admin-pages--p1` — 8 yes, 2 no, 2 blocked
+
+Recorded 205/226. The healthiest batch of the run — **eight of twelve pages work** — and
+one of the passes materially narrows an earlier finding.
+
+### A196 — every admin new-order alert prints raw ciphertext where the buyer's name goes
+
+`/admin/admin-notifications` renders fine. The **message body** is the defect:
+
+> 🛍️ New order! `enc:v1:IcDCk1u6SYeI735k:ViULfKfmBCvdE0M=:x0Urzrt3dWI72SUAAetWzQ==`
+> purchased an item for ₹3,998. Order #order-2-20260727-t9mi9f
+
+That is this codebase's own AES envelope format, so the notification was composed by
+**interpolating an encrypted field without decrypting it**.
+
+**I counted rather than sampled: 383 occurrences of `enc:v1:` against 383
+`🛍️ New order!` messages.** Every single one. The alert cannot serve the purpose it
+exists for — an admin cannot tell which customer placed the order.
+`admin-notifications-ciphertext-names.png`
+
+Secondary: the only per-row control is `Mark read`. There is no detail affordance and no
+link to the referenced order, so the case's steps 4–6 have no control to use.
+
+### A197 — the Action Index is a blank shell, and it is not indexing what its name suggests
+
+`/admin/action-index` renders a toolbar, a table header (`Entry · Kind · Portal · Goes to
+· Needs · Shown`) and help text, then **"No entries match."**
+
+Not a stale filter: **no query string, no filter count badge, one `tbody` row** (the
+empty-state one). With nothing filtered, it lists nothing.
+
+Its own help text describes a **navigation** index — *"Hiding an entry removes it from
+the sidebar, the header search and the command palette at once"* — not the CTA registry
+the case names. And **the CTA registry has a working surface**: `/admin/settings/actions`
+lists 41 actions with categories, auth requirements, permissions and a toggle each. So
+the registry is fine; this page is the one that is empty.
+`admin-action-index-no-entries.png`
+
+### The pass that narrows an earlier finding — the admin product save DOES persist
+
+`/admin/featured` round-tripped completely. Selecting a row reveals `1 selected ·
+Remove from Featured`; applying it took the list 16 → 15, **and a hard reload still
+showed 15** with the product gone. Opening that product's editor showed its `Featured`
+checkbox unticked — so the write landed on the product document itself. I re-ticked it,
+saved, and the list is back to **16** with the product present. **Original state
+restored.**
+
+**This matters beyond the case.** Three save paths in this run report success and write
+nothing (A121, A188, A192), and it would have been easy to assume the defect was
+universal. It is not — **the admin product editor saves correctly**, which narrows that
+hunt considerably.
+
+One genuine gap: the page can only take things *out*. Its `+ Add Product` button goes to
+`/admin/products/new`, a create-a-new-product form, not a picker for featuring an
+existing one.
+
+### The "Unknown seller" mapper, pinned down
+
+Every row on `/admin/stickers` reads **Unknown seller** — but the *same product*,
+`Beyblade X Glow-in-the-Dark Sticker Pack`, renders as **Beyblade Arena** on
+`/admin/deals` **and** on `/admin/featured`.
+
+**The store is on the record and two other admin lists resolve it.** That narrows this to
+the stickers row mapper rather than the product data — the same family as `Unknown buyer`
+on every staff order surface (A124/A193).
+
+### Observability pages: all three work, with one caveat worth stating
+
+`/admin/maintenance/client-errors` is the standout. `200 of 200 (source=client)`, and I
+verified the ordering across **all 200 rows** — strictly descending, `2026-09-16 06:33:22`
+down to `2026-09-15 08:08:26`. The convincing part: **the top two rows were errors I had
+caused myself seconds earlier**, on `/admin/maintenance/analysis` and
+`/admin/admin-notifications`. Browser → beacon → store → UI, demonstrated end to end.
+
+It also reports something loudly: **196 of the 200 entries are the same React #418
+hydration mismatch**, drowning out everything else.
+
+`function-errors` and `payment-rollbacks` both render explicit empty states
+(*"No errors in the selected window."*) rather than blank areas — which is what the case
+asks. **But a reader should not conclude the functions are healthy.** Zero looks
+identical whether nothing failed or nothing writes to that source at all; an empty
+observability surface is only reassuring once someone has confirmed the producer exists.
+
+### Two abstentions, both deliberate
+
+**`settings/actions`** — the page renders 41 actions with a toggle each, and I declined
+to save. Its own warning reads *"Changes take effect immediately for all users."* This is
+live production, and **the restore step cannot be relied on** when three save paths in
+this same run write nothing. Disabling `Add to cart` with no working undo is not a trade
+worth a small amount of information.
+
+**`shipments/projections`** — renders *"No lots to project yet."*, and I traced why rather
+than stopping there. `/admin/shipments` holds **four real shipments** (SH-2026-0001…0004),
+but `SH-2026-0004` reads **`Lots (0/10)`** — the shipments were seeded and their **lots
+were not**. The empty state is truthful; the feature is unfixtured. That also blocks the
+case's most interesting assertion — *no figure inflated by a factor of a hundred* — which
+is a currency-unit check with not a single figure to inspect. Run it the moment lot
+fixtures exist.
+
+---
+
+## Batch `admin/uncovered-admin-pages--p2` — 1 yes, 1 no
+
+Recorded 206/226.
+
+### A198 — the Catalog guide documents 3 listing types; the system has 9
+
+All twelve guide pages return **200** and all eleven sub-guides are linked from the index
+(`guidePagesNotFound: 0`), so the mechanical half is clean. The index even opens with a
+genuinely useful disclaimer: *"These guides describe expected platform behaviour. Real
+access to each section is enforced independently by the permission system — this page is
+reference only."*
+
+**The content is what fails.** `/admin/guide/catalog` states, verbatim:
+
+> *"Listing types: standard (prefix `product-`), auction (prefix `auction-`), pre-order
+> (prefix `preorder-`)."*
+
+**Three.** The live system has **nine** — and I did not take that from documentation. I
+read **the admin product editor's own listing-type picker** earlier in this same session
+and it offers *Standard · Auction · Pre-order · Prize Draw · Classified · Digital Code ·
+Live Item*, while `/admin/stickers` lists five sticker listings and `/admin/deals` lists
+art prints.
+
+So an admin who reads this guide to learn what they can create **will not discover that
+prize draws, classifieds, digital codes, live items, art or stickers exist at all**. Six
+of nine types are invisible to the documentation.
+`admin-guide-catalog-stale-3-types.png`
+
+A second claim in the same guide — *"Category Taxonomy — 3-tier system: Root (tier 1) →
+Subcategory (tier 2) → Leaf (tier 3)"*, echoed on the index as *"categories (3-tier
+taxonomy)"* — is recorded with **less confidence**: I believe the tree is deeper, but I
+did not find a cheap way to confirm the live depth in this batch. Treat the listing-type
+finding as the evidenced one and check this alongside it.
+
+The case's own reasoning is exactly right and worth repeating: *a guide has no compiler
+behind it, so it rots silently* — and one that omits six listing types is worse than no
+guide, because an admin trusts it and stops looking.
+
+### The pass — `/admin/features` round-trips cleanly, delete included
+
+10 platform features listed with their scope pairs. Created **QA Feature Probe** →
+present after a **hard navigation**, `1m ago`, `platform — all`, Active → deleted →
+gone, back to 10. **Nothing left behind.**
+
+The delete showed a real confirmation dialog whose copy is honest about its own failure
+mode rather than generic:
+
+> *"Delete Feature — Delete this feature? It will fail if any product still references
+> it. — Cancel / Delete"*
+
+Two small things worth passing on, neither of which fails the case:
+
+- **My first submit was correctly refused** — `Icon` is required and I had left it empty
+  — and the summary appeared only *after* I pressed Create, not on first paint (Root
+  Cause #74's fix working). But it reads **"Feature: Must be at least 1"**, and `Feature`
+  is the *section* name; the field that failed was `Icon`. The admin is pointed at a step
+  rather than an input, and "Must be at least 1" is a raw length constraint that reads
+  like a numeric minimum on a text field.
+- **The edit panel of the record I had just successfully created reports
+  `Visibility — 1 issue`.** The create form accepted something the edit form considers
+  incomplete — a create-versus-edit schema asymmetry (Root Cause #39's family).
+
+---
+
+## Batch `selling/store-dashboard-navigation` — 5 yes, 2 no, 1 blocked
+
+Recorded 207/226. The store dashboard's navigation is in good shape — **38 routes, zero
+broken** — and the two failures are both narrow and precise.
+
+### A199 — the seller's product search is down, and the page tells them their catalogue is empty
+
+`/store/products?q=Dranzer&sort=price&page=1` renders, verbatim:
+
+> **"Product search is temporarily unavailable."**
+> "No products listed yet"
+
+The banner is honest — a failing search that says so is better than one that silently
+returns everything. **The sentence underneath it is not.** *"No products listed yet"*
+tells this seller they have no products at all, and they do: the same page without a
+query listed *Beyblade X Glow-in-the-Dark Sticker Pack*, *Original Series 25th
+Anniversary — Glossy Art Print*, *Beyblade X BX-08 Booster* and more, minutes earlier.
+
+So a transient outage is reported as an empty catalogue, and **the two messages
+contradict each other on the same screen**. Same family as A162/A163/A178 (a no-data
+state shown for a no-matches result) but worse, because the banner directly above it
+already says what actually happened. `store-search-unavailable-wrong-empty.png`
+
+**The deep link itself is fine** — pasting `/store/products/{slug}/edit` cold opens the
+editor populated on the right record, and the filtered URL restores both the search term
+and the sort on first paint.
+
+> **A correction to my own first reading**: I initially recorded the search box as empty.
+> It was not — I had matched the sidebar's `Search navigation…` input instead of the
+> listing's `Search by name, description, brand or tag…` box, which did carry `Dranzer`.
+
+### A200 — `aria-current="page"` is set on two entries at once, on every `/store/*` page
+
+The section highlight is **correct**: Products on `/store/products`, Orders on
+`/store/orders`, and — importantly — Products stays highlighted on the nested
+`/store/products/{slug}/edit`.
+
+The defect is that **`Dashboard` → `/store` is marked current on all of them too**. On
+`/store/orders`, `aria-current="page"` is on *Orders* (right), *Dashboard* → `/store`
+(wrong) and *Store Dashboard* → `/store` (wrong). That shape — every `/store/*` path
+matching the `/store` entry — is what a **prefix test rather than an exact match**
+produces.
+
+**It hides in plain sight**: the wrongly-marked entry lives inside the `OVERVIEW` group,
+which is collapsed while you are in another section, so you rarely *see* two highlights.
+It is in the accessibility tree on every page regardless, so a screen-reader user is told
+the current page twice with two different answers.
+
+### What works, including one I nearly filed as broken
+
+**The sidebar is complete.** Enumerated group by group — it is an accordion, so only one
+group's children are in the DOM at a time and a single scan undercounts. 38 routes, all
+**200**: 1 overview · 14 listings · 4 orders/reviews · 4 finance · 8 store · 7 guides.
+`brokenLinks: 0`.
+
+**All nine listing types are present** — Products (standard), Art, Stickers, Auctions,
+Pre-Orders, Prize Draws, Classified, Digital Codes, Live Items — and each resolves to
+*that type's* filtered view (`Auctions → /store/products?listingType=auction`). The five
+neighbours (Grouped Listings, Sub-listing Categories, Feature Badges, Listing Templates,
+Store Categories) are management surfaces, not types, so the count isn't inflated.
+
+**Bundles' absence here is correct** and should not be "fixed": a bundle is a category row
+with a bundle discriminator, not a listing type. The real problem nearby is A187 — the
+`/store/bundles` page exists and has no nav entry at all, while the Bundles Guide tells
+sellers to reach it via *Listings → Bundles*.
+
+**Mobile is a proper bottom sheet — and I almost filed the opposite.** My geometry probe
+put the panel at `x=390` on a 390-wide viewport, entirely off-screen, and I was about to
+report *"opening the menu dims the screen and shows nothing"*. **The screenshot disproved
+it**: I had measured a different, closed panel (`#secondary-sidebar`, the account drawer),
+not the Store Panel. The real sheet has a drag handle, a title, a search field and all six
+groups, and it closes on navigation. One fixed bottom bar (65px),
+`--bottom-nav-height: calc(4rem + 0px)`, `--bottom-chrome-height: 0px`, no horizontal
+scroll. *One element's bounding box is not the feature's state.*
+
+**Logout is thorough.** The sidebar's own `Log out` (distinct from the account drawer's)
+redirects to `/auth/login`; returning to `/store` redirects again; and the **browser back
+button lands on the login form, not a cached dashboard**.
+
+### The one I declined to answer
+
+`store-user-crossnav` is **not tested**, and I would rather say so than infer it. The
+panel links `My Profile → /user/profile` and `Stores → /stores`, both 200 — but the case
+asks for a round trip: click through to `/user`, confirm the **sidebar changes** to the
+buyer portal, find the way back, and separately open the store's **public** page and
+confirm it is the public view rather than the editor. None of that follows from a link
+existing. Three navigations would settle it.
+
+---
+
+## Batch `selling/store-dashboard-navigation--guest` — 1 yes, 0 no
+
+Recorded 208/226. **No defects.** The store dashboard's signed-out gate holds, and the
+way it was verified matters more than the verdict.
+
+### ✅ `storeDataShownToGuest: 0` — checked on the wire, not just on the screen
+
+Browsing with a genuinely empty session (**0 cookies, 0 origins**), all three of `/store`,
+`/store/products` and `/store/payouts` end on the sign-in page. Eleven DOM samples over
+five seconds on `/store`: every one already `/auth/login`, `main` 132 characters, **no
+spinner**, nothing matching a store name, seller identity, order or money figure at any
+point. No flash, no hung loader.
+
+Then I read the **response bodies**, because what renders is not the whole story — a
+payload can carry data the page never paints. Across all three routes: **zero**
+occurrences of the store slug `store-beyblade-arena`, zero of the seller's email, zero of
+`Beyblade Arena`, zero order ids, zero product titles.
+
+### The near-miss, and what actually settled it
+
+My first scan flagged **`₹9`** and **`Payout`** as leaks. Reading the surrounding context
+killed both — the `₹` hits are the footer's *"On orders above ₹999"* plus the site's own
+fee and EMI thresholds, and `Payout` is the footer's *How Payouts Work* link and
+component names in the RSC payload.
+
+**The decisive test was not the regex but a comparison**: the set of `₹` amounts is
+**byte-identical on all three routes**. A payouts page carrying real figures would differ
+from the products page; identical means public configuration, not this seller's money.
+That is a cheaper and far more reliable oracle than context-reading every hit, and worth
+reusing for any "is this data leaking?" question.
+
+### Two things worth knowing, neither of which is a leak
+
+**The gate is not an HTTP redirect.** All three routes return **200** with a ~490KB
+document that renders the Sign In form. The case's phrasing — *"redirected before any
+store data is rendered"* — holds in effect, but the mechanism is render-level rather than
+a 3xx, which is worth knowing before anyone tries to assert on a status code.
+
+**The guest still receives the full store-dashboard component tree** in that payload:
+component names (`SellerPayoutsView`, `SellerPayoutMethodsView`), every `/store/*` nav
+entry with its label and description, and API base paths such as `/api/store/payouts` and
+`/api/store/payout-settings`. That discloses the internal surface, not anyone's records —
+a payload-size and disclosure observation, not a data leak.
+
+Cosmetic: the breadcrumb renders `Payouts` with `aria-current="page"` above a login form.
+
+---
+
+## Batch `buying/user-uncovered-pages` — 1 yes, 2 no, 1 blocked
+
+Recorded 209/226. One of the more consequential batches: a buyer **cannot correct or
+remove a delivery address**, and their pre-orders page denies a pre-order they hold.
+
+### A201 — addresses are create-only: Edit renders "Address not found.", Delete does nothing
+
+**Create works.** `/user/addresses/add` redirects to `/new`, opens with the form already
+rendered *including the landmark field*, and the PIN code `560001` auto-resolved the state
+to **Karnataka** — a nice touch. Saving landed on the list and the entry survived a hard
+reload: `QA PROBE / 221B Test Street / Bengaluru, Karnataka 560001 / 9876543210`.
+
+**Edit fails.** Clicking Edit navigates to `/user/addresses/{id}/edit` and renders exactly
+two words — **"Address not found."** — with zero fields, on an address that existed
+seconds earlier and renders in full one click away.
+
+**I did not stop at one row**, because a single failing record is a data problem while two
+from different origins is a broken route. I opened Edit on the **seeded default**
+`addr-yugi-home` — a slug id, written by the seed rather than by me — and it renders
+**"Address not found."** too. Two rows, two id shapes, two origins, same result.
+`user-address-edit-not-found.png`
+
+**Delete does nothing.** No confirmation dialog, no error, no change; after a hard reload
+the row is still there. `user-address-delete-does-nothing.png`
+
+**The consequence is visible in the data itself.** The list also holds **two leftover
+`QA ADDRESS BUYING-CHECKOUT-SHIPPING-ADDRESS-INLINE-ADD` rows** from earlier test runs. I
+had read those as a previous tester's sloppy cleanup. They are not — **they are rows that
+cannot be deleted.**
+
+> 🛑 **My own residue, stated plainly**: the `QA Probe` address remains on the account.
+> `addresses` is a **preserved** collection that the between-run wipe does not clean, so
+> it will persist. I attempted the deletion the case asks for and the feature refused it.
+
+### A202 — `/user/pre-orders` says "You haven't placed any pre-orders yet" to a buyer who has one
+
+The page renders a toolbar and that empty state. It is not true: `order-1-20260819-preordr`
+sits on the same account — **10 September 2026, Confirmed, "Beyblade X BX-08 Wave
+(Pre-Order)" ×1, ₹799**. The id ends `-preordr` and the item names itself a pre-order.
+
+Every later assertion in the case is therefore unreachable: no production status, no
+expected delivery date, no link back to the listing, no deposit-versus-full-price
+distinction — there is nothing listed to read them from. `user-preorder-order-exists.png`
+
+**Three corroborations on that one order**, each matching a finding from elsewhere:
+
+- Display id **`Order #-PREORDR`** — a dash with **nothing before it**. The item-count
+  segment is missing, so this is not merely a raw id, it is a **broken** one.
+- Delivery address renders as **`addr-yugi-home`** — the second order seen doing this.
+- A payment panel reading *"…upload your payment screenshot **within 15 minutes**, or the
+  item returns to stock"* — on an order placed **six days ago**. Same stale countdown
+  already recorded against a *Refunded* order, now on a *Confirmed* one, which suggests
+  the panel renders on payment status without consulting the deadline at all.
+
+### A203 — three buyer forms accuse the user before they have typed anything
+
+| Page | On first paint, nothing typed |
+|---|---|
+| `/user/support/new` | `What do you need help with? Required` + a red **`2 issues`** pill |
+| `/user/addresses/new` | **`3 issues`** on *Address*, **`4 issues`** on *Where* |
+| `/user/catalogue/new` | **`2 issues`**, plus **"Invalid value"** under the untouched Condition dropdown |
+
+The catalogue one is the worst-worded: telling a user their untouched select holds an
+*invalid value* implies data is present and wrong rather than simply absent.
+
+**This is not universal in the codebase** — the admin Product Features form gets it right,
+showing its summary only after Create is pressed. So these three are inconsistent with a
+form that already does it correctly, which is where the fix should be copied from.
+
+### The pass
+
+`/user/support/new` satisfies both of its assertions: the form is **already open** when
+reached directly by URL (Category defaulted to General, Subject, Description, Cancel,
+Submit ticket, a `← All tickets` link and genuinely good guidance copy), and **Cancel
+lands on `/user/support`** — the real ticket list with its own toolbar and a proper empty
+state, not a dead route.
+
+### The abstention
+
+`/user/catalogue/new` is **half verified and I am not claiming the other half**. The form
+opens already-open with Title, Description, Condition, Quantity, Value, Photos
+(`+ Add Files (0/8)`), Visibility, Filing and `Add to Catalogue`. I did not fill, upload,
+save, reload and delete — and persistence is the half that catches real defects, so
+answering `yes` on the render alone would be a false pass on exactly the part that matters.
+A second reason for caution: **delete is completely broken on the sibling addresses
+surface in this same batch**, so a created item is not reliably removable.
+
+---
+
+## Batch `admin/bans-and-trust` — 2 yes, 0 no, 10 blocked
+
+Recorded 210/226. **Ten abstentions, and they are a decision rather than a shortfall.**
+
+### 🛑 Why I did not ban anyone
+
+Six of these cases require applying a ban. Three facts make that the wrong action here:
+
+1. **`users` is a PRESERVED collection** — the between-run wipe does not touch it, so a
+   ban persists indefinitely rather than being cleaned up.
+2. **It holds real people.** The list includes **Kavyansh** (`radhadanu61@gmail.com`),
+   **King Of Tech** (`kingoftech332@gmail.com`) and **SAGAR R** alongside the seed
+   personas. Any account I pick is either someone's real login or a persona every other
+   batch depends on.
+3. **The undo cannot be trusted.** This run has found **four** write paths that report
+   success and change nothing — the seller listing save (A121), the buyer's cancel-order
+   button (A188), the seller's order status save (A192) and address delete (A201). If
+   unban behaves the same way, I would have permanently locked out an account with no
+   working means of restoring it.
+
+`unban-restores-access` is the sharpest version: **unban *is* the undo**, so testing it
+requires first applying the ban whose reversal I cannot rely on. When the failure mode is
+irreversible, performing the action is not a test — it is the incident.
+
+**One fixture change makes all six runnable**: a dedicated disposable ban-target persona,
+referenced by no other fixture and resettable wholesale.
+
+### ✅ The session IP never leaves the server — stronger than masked
+
+On screen, `/admin/sessions` shows no IP: the device line reads `Unknown · Unknown ·
+Desktop · —`. That alone only proves the UI does not print it, so I read the payload,
+which is where a masked-looking screen usually hides an unmasked value.
+
+`GET /api/admin/sessions` returns `deviceInfo` with exactly four keys —
+`userAgent, browser, os, device`. **There is no `ip` field.** Checked across **100**
+sessions, not a sample: zero IP-shaped strings anywhere, identical key set on every row.
+Not a display mask over data the browser holds — the field is never serialised, which is
+the only implementation that survives someone opening devtools.
+
+### ✅ The Disabled filter is genuinely applied — with a caveat I want on the record
+
+The drawer offers `STATUS: All / Active / Disabled` and `ROLE: All / Admin / Seller /
+Buyer / Moderator / Employee`. Applying **Disabled** produces `?page=1&status=Disabled`
+and the list goes **50 → 0**, rendering *"No users found"*. An ignored filter returns
+everyone, which is the failure three other admin lookups in this run exhibit.
+
+**The caveat is exactly the trap this case exists to catch**: the URL carries the
+**display label** `Disabled`, capital D, not a stored value. With zero disabled users,
+*correctly empty* and *empty because the value never matches* produce the identical
+screen. The confident claim is the narrower one — the filter changed the result set, so
+it is wired and reaching the query.
+
+### What the read-only checks turned up anyway
+
+**The audit log works and is populated** — `store_status_change`, `offer_cancel` and a
+real `user_role_change` on *SAGAR R*, each naming the acting admin and the target. Zero
+ban entries, consistent with zero bans ever. Two observations: the actor renders as the
+raw uid `user-admin-letitrip` rather than a display name, and **no entry visibly carries a
+reason**, which is half of what `hard-ban-recorded-in-audit-log` asserts.
+
+**The users list payload carries `disabled` but no `banType` and no `bannedAt`** — so a
+soft ban and a hard ban would be **indistinguishable** in the list, and a temporary ban's
+expiry invisible. That is a product decision someone should make deliberately rather than
+discover while looking at a real banned account.
+
+**A previously-reported gap is closed**: `isTester` and `canTestAdmin` *are* present in
+the list payload now. An earlier finding recorded them as missing, which caused an editor
+seeded from a list row to silently strip a tester's flags on save.
+
+**A fixture gap worth one line of seed data**: every session in the system —
+**100 of 100**, seeded ones included — carries `userAgent: "node"`, so browser and OS read
+`Unknown` everywhere. I cannot tell a broken parser from a parser handed nothing to parse,
+and neither could a human. One session with a real Chrome user-agent makes
+`sessions-list-device-details` answerable at a glance.
+
+---
+
+## Batch `selling/final-sale-authoring` — 1 yes, 1 no, 1 blocked
+
+Recorded 211/226. The **authoring surface is genuinely well built**; the save underneath
+it throws the edit away.
+
+### ✅ Final sale is the default on all four listing types — and the copy is the best in the app
+
+Checked each creation form's Returns step without touching the control: **standard**
+(`/store/products/new`), **auction**, **pre-order** and **classified**. In every one,
+`Accept change-of-mind returns` carries **`aria-checked="false"`** — returns off, final
+sale on — and every one offers a `Return policy (optional)` textarea.
+`defaultFinalSale: true`. `final-sale-default-on-classified.png`
+
+**The explanatory copy gets right the exact distinction the return-request batch flagged
+as most likely to be got wrong:**
+
+> *"This is a FINAL SALE — the default. Buyers cannot return it for changing their mind.
+> They can still claim if the item never arrived, arrived damaged, was the wrong item, was
+> not as described, or was counterfeit."*
+
+A final-sale term governs whether a buyer may change their mind, not whether a seller may
+keep the money for something never delivered — and this says so in the place a seller will
+actually read it. The policy field's caveat is equally careful: *"This is your own wording;
+it does not change what the platform allows above."*
+
+**One structural note**, not a failure: the standard form opens on a **Quick add** step
+that does not include the control — it lives behind *"Show all fields (advanced)"*. The
+stored default is still final sale, so a Quick-add seller is protected; they are just
+protected without ever being shown the term they are applying. Auction, pre-order and
+classified have no Quick add step.
+
+### A204 — the Returns edit is discarded (A121 re-verified on a named field)
+
+The editor for *Beyblade Burst B-01 Valkyrie* loaded the right record with
+`Accept change-of-mind returns` already **ON**. I flipped it **OFF**, confirmed the switch
+read `aria-checked="false"`, pressed **`Update →`** — no error — and after a hard
+navigation it reads **`true`** again. `final-sale-toggle-reverts-on-reload.png`
+
+**The case's own reasoning is why this is unambiguous**, and it is the sharpest
+methodological note in the checklist:
+
+> *"Off is the only testable direction: a field that never saves reads back as its on
+> default, so a case that only ever turns it ON passes against a completely broken save."*
+
+This product already had returns ON, so had I followed the literal step of turning them
+**on**, the broken save would have **looked like a pass**. Turning it the other way is
+what makes the result mean anything.
+
+**A note on the recorded data, because it misleads at a glance**: `finalSale: false`
+matches `expectedData` exactly — and it matches **for the wrong reason**. The stored value
+was already "returns accepted" and simply survived my edit being thrown away. A screen
+that agrees with the expectation while the behaviour beneath it failed is the shape this
+run keeps finding.
+
+### The blocked one, and the half nobody has tested
+
+`return-policy-authorable-by-seller` — **the field exists**, which is the new part: a
+`returnPolicy` textarea on every creation form and on the editor, currently empty.
+
+I did not type and save, because I had just proved **on this exact form, one step
+earlier**, that a Returns change does not persist. Watching a policy come back empty would
+add nothing, and it would leave a probe string on a real listing I could not then remove.
+
+**The half that matters most is completely untested** — whether the seller's wording
+actually **reaches the buyer** on the public listing page. The case states the stake
+better than I can: *a policy that saves in the dashboard but never renders publicly is
+worse than no field, because the seller believes they have disclosed something the buyer
+never sees.* Run it the moment the seller save is repaired, and check the **public page in
+a signed-out window**, not the editor.
+
+---
+
+## Batch `selling/final-sale-authoring--guest` — 0 yes, 1 no
+
+Recorded 212/226.
+
+### A205 — the final-sale term vanishes in the cart, and the page contradicts it there
+
+**Two surfaces of three are exemplary.** The third — the one immediately before payment —
+says nothing, and contradicts itself while doing so.
+
+**On the card**, `/products` shows a `Final Sale` pill on all 21 final-sale listings. I
+measured it rather than eyeballing: **white `rgb(255,255,255)` on `bg-zinc-900/90`**, a
+near-black solid at 90% opacity. That is exactly the **solid pairing** the case asks for
+rather than a pale tint, and because it is a fixed dark scrim rather than a
+theme-inverting surface token it stays legible over whatever artwork sits behind it —
+confirmed unchanged in dark mode. `final-sale-card-badge-light.png`
+
+**On the detail page** it appears twice and better: a `⊘ Final Sale` chip in the spec row,
+and a plain-language line — *"Final sale — no change-of-mind returns"*. That line is
+properly **themed** rather than fixed: `rgb(180,83,9)` amber-700 in light inverting to
+`rgb(251,191,36)` amber-400 in dark. Readable in both, which is the specific failure the
+case warns about and this avoids. `final-sale-detail-dark.png`
+
+**In the cart it vanishes.** I added the sticker pack as a guest and opened `/cart`: the
+item is there at ₹229.00, and the string *final sale* appears **zero** times on the page.
+
+**And the page actively contradicts it.** The footer trust strip on that same cart screen
+reads **"Easy Returns — 7-day hassle-free returns"**, directly beneath a cart whose only
+item is explicitly no-change-of-mind. A buyer reading that page would reasonably conclude
+the opposite of the truth.
+
+**That is worse than silence**: silence leaves them to check, a contradiction tells them
+not to bother. And the term is one they cannot undo after paying — the case puts it
+exactly right, *stating it only after purchase is too late*.
+`final-sale-absent-in-cart.png`
+
+### One more, from a family now confirmed on a public surface
+
+The cart line reads **`SOLD BY UNKNOWN`**. This is the same mapper failure as
+`Unknown buyer` on the staff order surfaces and `Unknown seller` on `/admin/stickers` —
+but it is the **first time it has appeared on a buyer-facing public page** rather than an
+internal one.
+
+---
+
+## Batch `selling/final-sale-authoring--admin` — 1 yes, 0 no
+
+Recorded 213/226. **No defects**, and the way around the blocker is worth recording.
+
+### ✅ The admin override is the same stored field — proved by inverting the test
+
+Step 1 asks the **seller** to set the flag and save. That is impossible: A204 established one
+batch earlier that the seller listing save discards the change. Rather than skip the case, I
+inverted it — the real assertion is that an admin override reaches **the same field the
+seller edits**, and that can be proved from the admin side, which *does* save.
+
+| Step | Observed |
+|---|---|
+| Start | Seller editor **and** admin editor both show `Accept change-of-mind returns` = **true** — already evidence both read one value |
+| Admin flips OFF, saves | Admin editor after a **hard reload** = **false**. The write landed |
+| **Public page** | `/products/product-beyblade-burst-valkyrie` now carries the final-sale badge and *"no change-of-mind returns"* — **22** occurrences where the product previously accepted returns and showed none |
+| **Seller editor** | Reopened as `tyson@beybladearena.in` → **false**, without the seller touching anything |
+
+That last row is the case's **named failure condition** — *"a seller editor still reading on
+is the failure"* — and it does not occur. Admin editor, seller editor and the buyer-facing
+page all agree afterwards, and the buyer's view is the one that binds.
+`final-sale-admin-override-same-field.png`
+
+**Restored.** Flipped back ON as admin, saved, confirmed `true` by hard reload. The product
+is in its original state.
+
+### The third confirmation of the split that matters
+
+This incidentally confirms, for the **third** time, that **the admin product editor saves
+correctly while the seller's does not** — same field, same form family, two different
+outcomes.
+
+That makes the admin editor the **known-good reference** to diff the seller's save against,
+which is the cheapest available lead on the silent-save family (A121, A188, A192, A201's
+delete, A204).
+
+---
+
+## Batch `admin/bulk-actions` — 0 yes, 1 no, 9 blocked
+
+Recorded 214/226. **One root cause blocks almost the whole batch.**
+
+### A206 — row selection is inert on `/admin/products` and `/admin/offers`, so the bulk bar never appears
+
+`/admin/products` renders 25 per-row checkboxes. Clicking the first with a real browser
+click does not check it — no tick, no `1 selected`, no bulk bar.
+
+**I did not accept that on one attempt**, because a failed click is usually my own
+selector. I tried it **four ways**: two real Playwright clicks (by position and by the
+element's id), a direct `element.click()`, and a dispatched bubbling `MouseEvent`. All four
+left `checked === false`. The input is **neither disabled nor readOnly**, which rules out
+the obvious explanations.
+
+That is what a React **controlled** checkbox does when its `checked` prop never changes:
+the DOM flips for an instant and the component resets it because the state handler never
+updated.
+
+**Confirmed on a second surface** rather than generalised from one page: `/admin/offers`
+behaves identically — 11 checkboxes, a real click, still zero checked, no bar.
+`admin-offers-selection-inert.png`
+
+**The contrast is the useful part.** Earlier in this same run, on `/admin/featured`,
+selecting a row **did** work — it produced `1 selected` with `Remove from Featured`, and I
+completed the action and its undo. Same bulk-bar component, same admin listing family,
+opposite outcome. **So the component is fine and these two lists' selection wiring is not.**
+
+### What the blocked cases still tell us
+
+Nine cases are unreachable without a selection. Three notes worth keeping for whoever runs
+them once it works:
+
+- **Confirmation behaviour is not uniform in this codebase**, so it cannot be assumed from
+  one example. The admin Features delete shows a proper dialog that names its own failure
+  mode (*"It will fail if any product still references it"*); the `/admin/featured` bulk
+  action applied **immediately with no dialog at all**.
+- **The one bulk action I did run reported nothing** — the list went 16 → 15 with no
+  success message. So `bulk-action-reports-result` should be checked **per surface**, not
+  once.
+- **`bulk-no-dead-actions` points at `/admin/offers`, and that page has form**: an earlier
+  finding in this project recorded a destructively-labelled bulk action there whose handler
+  only called `clearSelection()` — it looked like it worked and did nothing. It was deleted
+  rather than wired up. That is exactly the defect this case exists to catch.
+
+And **`select-all-count-matches-page` is a `null` rather than a `no` on purpose**: there is
+no select-all control on this list at all, and *"the control is missing"* and *"the control
+is wrong"* are different findings with different fixes. I checked only the **list** view —
+the toolbar offers grid and table modes too, and a header select-all is exactly the kind of
+thing that exists in one and not the others.
+
+### The one I declined
+
+**`bulk-users-actions` — not attempted by choice**, separately from the selection problem.
+`users` is **PRESERVE tier** and holds real accounts; a bulk mutation there is the same
+irreversible-with-no-trustworthy-undo shape that made me decline to ban anyone, multiplied
+by the selection size. Five write paths in this run report success and change nothing.
+
+Its audit-log half is worth preserving too: the log demonstrably records **single**
+privileged actions with actor and target, but whether a **bulk** action writes one entry
+per affected user or a single lumped one is exactly what nobody checks until they need the
+trail.
+
+---
+
+## Batch `selling/product-upload-details` — 1 yes, 1 no, 4 blocked
+
+Recorded 215/226. **The size check works beautifully; the type check does not exist.**
+
+### ✅ An oversize image is refused before any bytes leave the browser
+
+I built a 12 MB PNG and selected it through the real file chooser. The field refused it
+with:
+
+> **"File size must be less than 10MB (current: 12.00MB)"**
+
+That message does the two things such a message usually fails to do — it states **the
+limit** *and* **the actual size**, so the seller knows what is wrong and by how much
+without going to check the file.
+
+**The half that matters is the network, and I checked it rather than assuming**: no
+`/api/media/sign`, no upload POST anywhere in the log after selection — all GETs.
+`signRequestsMade: 0`. The browser never asked for a signed URL, which is the whole point:
+an oversize file that reaches the sign step has already cost a round trip and, on a slow
+connection, a long upload that ends in a rejection. `upload-oversize-refused.png`
+
+### A207 — an SVG is not refused; it is accepted and opens the crop editor
+
+I selected `sample-vector.svg` through the real file chooser. No error appeared, and **my
+first reading of the DOM was that the file had been silently dropped** — no alert beyond
+the pre-existing "This field is required", no blob preview.
+
+**That reading was wrong, and the screenshot corrected it.** A modal titled **"Crop Image"**
+is open, **rendering the SVG's content** — the purple-and-yellow *TEST SVG* graphic — with
+a zoom slider, a position readout, Reset, Cancel and a primary **Save Crop**. The file was
+neither dropped nor refused: it went straight into the image editor and is **one click from
+being saved as the product's main image**. `upload-svg-opens-cropper.png`
+
+**How it gets through**: the field's hint says *"JPG PNG GIF WebP — max 10MB"*, but the
+underlying input carries **`accept="image/*"`**, and `image/svg+xml` matches that pattern.
+Nothing downstream rejects it either.
+
+**This is not purely cosmetic.** SVG is an executable document format rather than a raster
+image, which is presumably why the hint lists four raster types and omits it. The media
+pipeline is documented as verifying magic bytes at finalize, so the upload may well be
+stopped later — but the seller is not told that here, and a control offering to *Save Crop*
+on a file the system intends to reject produces a confusing failure at the worst moment.
+
+**The case's second half is unverified**: because the file was *accepted*, there was no
+refusal to recover from, so *"the field still works immediately afterwards"* has no failure
+state to test against. Re-run it once the type is actually rejected.
+
+### The four blocked, and why
+
+All four need a **published listing** — the crop must be read back from the stored image,
+the gallery order from a re-opened editor, the main-vs-gallery collision from the saved
+record, and the video from a player that actually renders. Publishing creates a real
+product I could not reliably remove: **five write paths in this run report success and
+change nothing, one of them a delete.**
+
+Two structural notes from what I could see:
+
+- **Quick add has one file input** — `accept="image/*"`, `multiple=false`. No gallery and
+  no video panel at all; both live behind *"Show all fields (advanced)"* in the wizard's
+  Media step.
+- **The crop editor itself is real and functional** (zoom, position, Reset, Save Crop). So
+  the *preview* half of `main-image-crop-applies` is clearly built — it is specifically the
+  *upload* half, the half the case exists to check, that has no evidence either way.
+
+---
+
+## Batch `admin/content-deletes--p1` — 0 yes, 0 no, 12 blocked
+
+Recorded 216/226. **All twelve declined**, and the reason is the same one that has governed
+every destructive case in this run: these edit the **live production homepage**, and this
+run has found **five write paths that report success and change nothing** — one of them a
+delete. Where the undo cannot be trusted, performing the action is not a test.
+
+### What I could establish read-only
+
+`/admin/sections` renders clearly: every section with its position and state written out —
+*Welcome — Order: 1 • Enabled — Active*, then Carousel, Trust indicators, Categories,
+Products, Auctions, Pre orders, Featured bundles, Stores, Reviews, Events, Event raffles.
+All **Enabled** and **Active**, so any change there is live for every visitor immediately.
+
+The only action word on the page is **`Reorder`**, and there are **zero toggle switches** —
+no Delete, no Disable, no Enable at list level. So `homepage-section-disable-vs-delete` is
+recorded as **not tested rather than failed**: *"the controls live one level deeper"* and
+*"the controls are confusable"* are different findings, and I have evidence only for the
+first. `admin-sections-list.png`
+
+### 🛑 The carousel cases are actively dangerous, not merely irreversible
+
+A145 established earlier in this run that the carousel editor **opens with an empty name
+and `status: draft`** against a record that is really `Homepage Hero` and **active**. I did
+not press Save then and did not now: saving that form writes the empty draft state over a
+live slide and **takes the homepage hero down**.
+
+`carousel-slide-edit-persists` cannot be tested at all until that is fixed — its very first
+step already loads the wrong values, so anything typed would be saved alongside them.
+
+### The ordering the next run should use
+
+1. **`blog-edit-persists`** — the most tractable of the twelve and the right place to start:
+   a blog post is a single public URL rather than a shared front-page band, `blogPosts` is
+   seed-owned and restored by the wipe, and the check is a plain edit → save → reload →
+   compare. **If it persists it also gives a second known-good write path** to diff the
+   broken seller save against.
+2. **`listing-delete-with-orders-refused-or-archived`** — the **safest destructive case in
+   the batch**, because its expected outcome is a *refusal*: if the system behaves, nothing
+   is destroyed. That is also why it should go early. If the refusal is missing, **the test
+   IS the damage** — a hard delete orphans real orders, and every surface reading the
+   product through the order starts rendering around a hole.
+3. **`homepage-section-reorder`** — the most reversible of the four section cases, and the
+   one to run in a maintenance window.
+
+### Assertions worth preserving from the ones I could not run
+
+- **`blog-delete-removes-public-page`** names its own failure mode: the page must return a
+  **404, not a blank article**. Those have different causes — a 404 means the route
+  correctly found nothing; a blank article means a shell rendered around a missing record.
+  A tester who only checks "it left the list" misses it entirely.
+- **`carousel-active-limit-enforced`** guards a *silent* failure: extra activations accepted
+  and then quietly ignored downstream, so the admin believes six slides are live and sees
+  five. Invisible from the admin screen by definition.
+- **`homepage-section-delete`**'s ordering half matters because positions are explicit
+  integers (`Order: 1`…`12`) — a delete that removes the row without renumbering leaves a
+  gap; one that renumbers carelessly reshuffles the page.
+- **`listing-delete-removes-public-page`**'s second half is the work: a product can appear
+  in a category page, a brand page, a store page, a related-items carousel and the homepage
+  at once, and a delete that clears the detail route while leaving stale cards behind
+  survives a casual check.
+
+---
+
+## Batch `admin/content-deletes--p2` — 0 yes, 1 no, 1 blocked
+
+Recorded 217/226.
+
+### A208 — the one delete confirmation seen in this entire run does not name the record
+
+On the admin **Product Features** editor earlier in this session I deleted a feature I had
+just created. The dialog read, in full:
+
+> **"Delete Feature — Delete this feature? It will fail if any product still references it.
+> — Cancel / Delete"**
+
+That is a **good** dialog in one respect and the failing one in another. It is honest about
+its own failure mode, which is more than most confirmations manage. But it says **"this
+feature"**, not *"QA Feature Probe"* — exactly the generic prompt the case names. The
+case's reasoning is right and worth keeping: *the most common delete mistake is the right
+action on the wrong row, and only the name catches it.*
+
+**Two of the four named surfaces offer no row delete at all**, which is why coverage is
+partial and I want that stated rather than implied:
+
+| Surface | Row actions |
+|---|---|
+| `/admin/products` | **Approve · Reject · Quick edit** — no Delete |
+| `/admin/blog` | **no row action menus at all** — zero action/menu-labelled buttons in the list |
+| `/admin/carousel`, `/admin/categories` | not reached |
+
+So the verdict rests on a **real, quoted instance** rather than on an absence — and that
+instance is from a fourth surface the case does not list. Someone should still read the
+carousel and categories dialogs; one generic prompt does not prove the others are generic
+too, but it does establish that at least one is, which is what the case asks to record.
+`admin-blog-no-row-actions.png`
+
+### The blocked one is **safe to run** — say so plainly
+
+`delete-reflected-immediately` was not reached, and it should not be mistaken for another
+declined destructive case. **It creates its own subject** (*QA Delete Refresh Probe* at 199)
+and then removes it, so nothing pre-existing is at risk; products are seed-owned and
+restored by the wipe; and the admin product editor is one of the two write paths this run
+has **proven** to save correctly. **Run it early.**
+
+Two things the case sets up well:
+
+- The failure it names is specific — a row that disappears and then **returns** a moment
+  later, because a cached copy re-hydrated over the deletion. *The delete did happen; the
+  screen contradicts it.* That is why it asks for **three** reads (immediately, after ten
+  seconds, after a reload), and the ten-second read is the one that catches it.
+- The **second-tab** step matters from the other side: a second tab holding its own cache
+  is where a stale row survives longest.
+
+And if the delete turns out **not to persist at all**, that is a larger finding than the one
+this case is hunting — it would join the five write paths already reporting success and
+changing nothing, and on this surface it would mean **admin deletes are cosmetic**.
+
+---
+
+## Batch `selling/quick-add-minimum-details` — 2 yes, 0 no, 4 blocked
+
+Recorded 218/226. **No defects.** The short-form design is sound where it can be checked
+without publishing.
+
+### ✅ The short form is the default, and it is exactly six fields
+
+`/store/products/new` opens on a step headed *"Quick add — fill the essentials and publish.
+You can add more details later."* with **Product Name\*, Category, Price (₹)\*, Product
+Image \*, Description, Stock Quantity** — six, matching the expected count. Three carry a
+required asterisk, three do not, which is a sensible minimum for a buyable listing.
+
+**The full form is genuinely one click away**: `Show all fields (advanced)` sits directly
+beneath Publish / Save Draft and expands into the wizard (Media, Shipping, Returns,
+Publish). Not hidden behind a setting or a different route.
+
+The intro copy deserves credit too — *"you can add more details later"* tells a seller the
+decision is not final, which is what makes a short form feel safe rather than like a trap.
+
+### ✅ All four values survive the flip — and I nearly filed the opposite
+
+Typed four values into the quick form, pressed `Show all fields (advanced)`, read them back.
+**My first probe reported three of four**, with `description` missing — which would have
+been a clean-looking finding, since a long description dropped on the way into the advanced
+form is exactly what makes a seller retype work.
+
+**It was my probe that was wrong.** Reading the textarea directly shows the description
+intact in full. The first check had searched the page's rendered `innerText`, and **a
+textarea's value is not part of `innerText`** — the text was in the field and absent from
+the string I searched. `valuesPreserved: 4`.
+`quick-add-advanced-flip-keeps-values.png`
+
+> That is the **third** near-miss of this shape in the session. When a probe says a value is
+> missing, confirm against the element that holds it before concluding the application lost
+> it.
+
+### The four blocked — all on one dependency
+
+Each needs a **published, live listing**, and no reliable self-service removal exists in
+this run. Two are worth running early once someone can clean up after them:
+
+- **`publish-with-the-minimum`** is the only case that proves the short form is a *real
+  path* rather than a demo. A six-field form producing a listing that is not actually
+  **buyable** — no price on the card, no add-to-cart, invisible in the catalogue — would
+  look completely correct in the editor and fail the moment a buyer arrived. The assertion
+  is not *"did it save"* but *"can a signed-out visitor find it and add it to a cart"*.
+- **`description-requirement-is-honest`** is **half-answered, and the half I have points the
+  right way**: on the quick form, Name, Price and Image carry asterisks and **Description
+  does not** — the form promises it is optional. Whether the save agrees is untested. Both
+  directions of disagreement are bad: a field marked optional that the save rejects wastes
+  the seller's time, and a field marked required that the save accepts empty trains sellers
+  to ignore asterisks.
+
+Also noted: **Condition is not on the quick form at all** — it is in the advanced wizard —
+and a related instance is already on record from this run, where the admin catalogue form
+shows *"Invalid value"* beneath an **untouched** Condition dropdown on first paint. That
+suggests the option set and the validator disagree before anything is even chosen.
+
+---
+
+## Batch `admin/firebase-function-effects--p1` — 1 yes, 1 no, 10 blocked
+
+Recorded 219/226. Most of this batch asks about **scheduled-function side effects** that
+cannot be triggered from a browser inside one session — but two were answerable, and one of
+them is new.
+
+### A209 — the admin dashboard shows Pending Orders twice, with two different answers
+
+`/admin` renders a **Stats** strip reading `Pending Orders 0 · Pending Payouts 2 · Pending
+Reviews 0 · Active Coupons 11`, and immediately below it a tile grid reading
+`TOTAL ORDERS 54 · TOTAL REVENUE ₹31,586.00 · TOTAL USERS 67 · TOTAL PRODUCTS 70 ·
+**PENDING ORDERS 1** · PENDING REVIEWS 0`.
+
+**Same page, same metric, same moment — `0` in the strip and `1` in the tile.** One is
+wrong and a reader has no way to tell which.
+
+On a dashboard whose whole job is to be glanced at, a metric that disagrees with itself is
+worse than one that is merely stale: a stale number at least tells a consistent story. It
+also undermines its neighbours — having seen one pair disagree, an admin has no reason to
+trust that `TOTAL ORDERS` and `TOTAL REVENUE` came from the same source as each other.
+`admin-dashboard-pending-orders-disagree.png`
+
+**The revenue figure itself is fine**: ₹31,586 across 54 orders is ~₹585 each — the right
+order of magnitude, and neither zero nor inflated by a factor of a hundred, which are the
+two failure modes worth checking on a money rollup.
+
+**Being honest about the case's other half**: whether the page reads a single pre-computed
+rollup rather than scanning every order is not observable from the browser. It renders
+fast, which is *consistent* with a rollup but does not prove one. The `no` rests on the
+contradiction, which is unambiguous — not on the read pattern, which I did not measure.
+
+### ✅ The function-errors page is a known gap, not a clean bill of health
+
+The case's claim is exactly right, and I reached the same conclusion **independently**
+earlier in this run before reading it: `/admin/maintenance/function-errors` renders
+`0 of 0 (source=function)` and *"No errors in the selected window."*, and I noted at the
+time that a reader should **not** conclude the functions are healthy, because zero looks
+identical whether nothing failed or nothing writes to that source at all.
+
+The page is well built and honest about what it holds. **It cannot be honest about what
+never arrives.** Until the producer is confirmed, read it as *"no data path"*, not *"no
+errors"* — anyone using it to sign off a deploy is reading a blank instrument.
+
+### Two blocked cases where I already have circumstantial evidence
+
+- **`payment-window-timeout-effect`** — a pre-order placed **10 September** (Confirmed)
+  still renders *"…upload your payment screenshot **within 15 minutes**…"* **six days
+  later**, neither resolved nor showing an expired state. That is the shape the case hunts.
+  I recorded `null` rather than a failure because the buyer's view cannot distinguish *"the
+  sweep never ran"* from *"the sweep ran and the panel is stale"* — and those need different
+  fixes.
+- **`order-create-trigger-effect-staff-signal`** — the signal **does** exist:
+  `/admin/admin-notifications` holds **383** *"New order placed"* entries, so the trigger
+  fires and produces something staff-visible rather than only a table row. **But it is
+  unusable as delivered** — all 383 render the buyer's name as raw `enc:v1:…` ciphertext.
+  An admin learns an order happened and cannot tell who placed it.
+
+### The rest, and why they resist a browser
+
+Four need **scheduled functions to fire** (auction settlement, offer expiry, product-write
+triggers). Three need **surfaces the product does not render** — the Firebase console's
+per-function invocation counts, the deployed HTTPS endpoints, and the RTDB nodes. One
+(`media-tmp-cleanup`) needs the storage `tmp/` prefix, which the admin media page does not
+show.
+
+Three assertions worth preserving from them:
+
+- **A 401 from an unauthenticated HTTPS function is *healthy*** — it proves the module
+  loaded and the auth gate ran. A **500** means it failed before reaching its own logic.
+  Both read as "broken" to a casual glance, and the difference is the entire signal.
+- **The offer-expiry case's second half is the expensive one**: a lapsed offer must not
+  leave a **locked line** in the cart. The offer lane outranks the ordinary one, so a
+  leftover line does not clutter the cart — it **blocks checkout entirely**.
+- **`counters-reconcile`** should check **ancestor** categories separately from leaves. A
+  known past defect in this project overwrote ancestor rollups nightly while leaves looked
+  correct, so spot-checking one leaf would miss it precisely.
+
+---
+
+## Batch `admin/firebase-function-effects--p2` — 0 yes, 0 no, 2 blocked
+
+Recorded 220/226. Both blocked, and **the reason the first one is blocked is itself worth
+acting on**.
+
+### A210 — the no-op guard cannot be verified from the product, because its oracle is never rendered
+
+Step 3 asks me to note the shipment's computed totals and *"the timestamp showing when
+those totals were last computed"*, then Save unchanged and watch whether it moves.
+
+**There is no such timestamp on the page.** `SH-2026-0004`'s editor shows Shipment number,
+Supplier, Origin country, Status, Notes, a **Landed cost** block (Customs total, Shipping
+total, Labour hours, Labour rate), a **Tracking & dates** block, Save changes, Lots and
+History. No computed-totals block, no computed-at stamp.
+
+The only time on screen is a relative **`2d ago`** on the list row — an ordinary
+last-updated stamp that would move on *any* save, including a legitimate one. It cannot
+distinguish a recomputation from a plain write, so using it would answer a different
+question confidently. `shipment-no-computed-at-shown.png`
+
+**And there is nothing to recompute on this record**: it reads `Lots (0/10) — No lots yet.`
+Totals derive from lots, so a working guard and a broken one would both produce no visible
+change. Any result would be uninformative in both directions.
+
+**Why this is worth recording rather than abstaining quietly.** This case exists because a
+trigger once watched the collection it wrote back to, with a no-op comparison that could
+never return true — **over a million invocations in a day**, which then blocked deploys and
+degraded production. The guard has since been repaired.
+
+But the product surfaces **no way to confirm it is still holding**. The one field that
+would show it is not displayed, so a regression would be invisible from the UI and would
+announce itself exactly as it did last time: **as a billing page.** Rendering that timestamp
+on the shipment editor turns this from an untestable case into a ten-second check.
+
+To run it as written, someone needs a shipment **with lots**, and either that timestamp
+surfaced or a direct read of the document.
+
+### The other one is a calendar task, not a harness task
+
+`scheduled-job-count-matches-registry` compares the **GCP Cloud Scheduler** job list against
+the **Firebase Functions** list. Neither is a surface this application renders, and the case
+says so itself: *"nothing in the product reports either."*
+
+Worth keeping as a human check, because **both failure directions are silent and cost
+different things**:
+
+- A Scheduler job with **no matching function** is *billed* — Scheduler charges per
+  registered job, not per invocation — so it is money spent on something that cannot run.
+- A scheduled function with **no job** simply **never fires**, and nothing reports it. The
+  function exists in the codebase, reviews clean, and its work silently does not happen.
+
+The second is the more dangerous, because every other signal says the feature is present.
+
+---
+
+## Batch `selling/media-limits` — 2 yes, 0 no, 4 blocked
+
+Recorded 221/226. **No defects.** The gallery's design is sound where it can be read
+without performing ten uploads.
+
+### ✅ One gallery takes both, with a live per-type count
+
+The Media step heads the section **"Gallery (up to 10 images + 1 video)"** and shows two
+readouts at once: a combined **`+ Add Files (0/11)`** and a split
+**`0/10 images · 0/1 video`**. A seller sees not just how much room is left but how much of
+it is *image* room and how much is *video* room — the distinction that matters when the two
+caps differ.
+
+The control is genuinely one input rather than two dressed as one: `accept="image/*,video/*"`
+with `multiple=true`.
+
+**The copy does real work too.** *"Show multiple angles, grading details, or box contents. A
+video can go here too."* tells a seller what to put there rather than what is permitted. And
+the separate **"Video options — YouTube, external URL, trim and poster"** panel explains its
+own reason for existing: *"The gallery above accepts a video file directly. Use this panel
+for a YouTube or external URL, or to trim and pick a poster frame."* That is the sentence
+that stops someone hunting for a second uploader.
+
+Worth knowing though the case does not ask: external video links carry *"queued for
+moderation and become visible to buyers after admin approval"* — so a YouTube URL is not
+immediately live, and the form says so up front rather than letting the seller find out from
+a buyer.
+
+### ✅ The caps are flat across types — byte-identical, no per-type table
+
+I read the Media step on `/store/auctions/new` and `/store/pre-orders/new` and compared the
+three strings each renders. **Identical, character for character** — heading, `+ Add Files
+(0/11)`, and `0/10 images · 0/1 video`. `media-gallery-caps-preorder.png`
+
+**That is the right shape**: a per-type media table looks harmless when written and then
+drifts — one type gets raised to 12, another keeps 10, and a seller who learned the rule on
+auctions is refused on pre-orders with no explanation. A flat cap cannot drift because there
+is only one of it.
+
+**Scope stated rather than implied**: I checked the two types the case names. Classified,
+digital-code, live, art and sticker were not opened. If someone wants certainty across the
+whole union, those five are quick — open each Media step and compare the same three strings.
+
+### The four blocked, and the assertion each protects
+
+All need either ten sequential uploads or a live publish. Three are worth preserving
+precisely:
+
+- **`media-eleventh-image-refused-client-side`** asks for `uploadRequestsForEleventh: 0` —
+  the refusal must happen in the **form**, before any signed-URL request leaves the browser.
+  *"An error appeared"* is not the same check: a server-side refusal produces an error too,
+  and from the seller's chair they look identical while costing very different things.
+  **The good news is this app already proves it can do this** — the 12 MB file earlier in
+  this run was refused with zero `/api/media/sign` calls. The size limit follows the
+  discipline; this case asks whether the count limit does.
+- **`media-second-video-refused-first-kept`** — the second half is the one that comes apart.
+  A refusal implemented by clearing the field and re-validating would refuse the second video
+  **and silently drop the first**, leaving the seller with no video and an error about the one
+  they just added. Checking only "was the second refused" passes against exactly that. **Read
+  the counter afterwards: it must still say `1/1 video`, not `0/1`.**
+- **`media-live-listing-still-requires-video`** — not an arbitrary rule. A live listing is an
+  animal or a plant, and a video is the only practical way a buyer can judge the condition of
+  something alive before paying. A still can be months old and cannot show the animal is
+  moving and alert. A publish that slips through without one lets somebody sell a living thing
+  sight-unseen.
+
+---
+
+## Batch `selling/listing-type-fields-roundtrip` — 0 yes, 0 no, 5 blocked
+
+Recorded 222/226. **All five blocked on one dependency** — four are save round-trips, and
+the seller listing save was established in this run to accept input, report nothing and
+write nothing (A204).
+
+**Running them anyway would have produced five guaranteed failures that say nothing about
+the per-type fields.** The values would come back unchanged because the edit never landed,
+not because the round-trip is broken — re-finding a known bug while burying five unknown
+ones underneath it.
+
+### What I did confirm
+
+The edit form **opens populated**. `/store/products/classified-beyblade-burst-parts-mumbai/edit`
+loads the right record — title reads *"Spare Burst Parts Bundle — Mumbai, Ships Too"* — and
+the per-type classified section is genuinely rendered: **Meetup**, **Locality**, **Contact
+Method** and **negotiable** appear as labels, with **Mumbai** present as a value.
+`classified-editor-populated.png`
+
+**But I recorded it `null`, not a pass.** A name-based probe for `city`, `locality`,
+`pincode`, `contactMethod`, `negotiable` and `acceptsShipping` returned nothing — on this
+form that means those inputs live in a wizard step not yet mounted (the same pattern as
+Returns), rather than that the values are missing. *"Mumbai is somewhere in the rendered
+text"* is real evidence but weaker than *"the city field contains Mumbai"*, and on a case
+about round-tripping that difference is the whole point. The `fieldsChangedByNoOpSave: 0`
+half is untested for the same reason as the rest.
+
+### Three notes worth more than the verdicts
+
+- **`roundtrip-live-species-jurisdictions`** is the consequential one. The
+  permitted-jurisdictions list decides where a living animal or plant may legally be sent.
+  The failure that matters is not the count returning 0 — that is visible and someone would
+  notice — but it returning a **different two**, or silently widened. **Check identity of
+  the set, not its size.**
+- **`roundtrip-digital-code-delivery`** has a second, independent obstacle: `codesAvailable`
+  is **derived from the code pool**, not typed into the form, and this run established the
+  pool had no seller-facing writer (the route answered 501). Confirm a writer exists before
+  running, then check the counter follows the **pool** rather than the form field — a form
+  that lets a seller type a pool size while the counter derives from actual codes is exactly
+  how a listing advertises stock it does not have.
+- **`roundtrip-print-meta`** covers **two** types in one assertion (art and stickers) sharing
+  one metadata shape. Cheapest to run, and most likely to expose a per-type divergence.
+  Compare the **field sets** across the two before comparing values.
+
+The fixtures are ready: `/api/products?listingType=classified` returns three real listings
+across Mumbai and Hyderabad, and the case's expected shape (`city: Mumbai`,
+`acceptsShipping: false`, `negotiable: true`) is one those fixtures can express. **The batch
+is runnable the moment the seller save works.**
+
+---
+
+## Batch `selling/listing-lifecycle--p1` — 1 yes, 0 no, 11 blocked
+
+Recorded 223/226. Eleven are full create→publish→transact lifecycles running through the
+seller create/publish path — the one that accepts input, reports nothing and writes nothing
+— and each ends with a live public listing I have no reliable way to remove. Running them
+would produce eleven failures that all say the same thing about the save rather than
+anything about the lifecycles.
+
+### ✅ The digital-code availability predicate reads the pool, not the stock number
+
+The seed contains exactly the fixture that proves it.
+`digitalcode-beyblade-x-app-launch-codes-depleted`: **`stockQuantity: 5`,
+`digitalCode.codesAvailable: 0`, `isSold: false`.** That combination is the whole point —
+a naive check on the stock number would call this buyable, because 5 is not 0.
+
+**It is not shown.** And I checked three rows rather than one, because the contrast is what
+makes it conclusive rather than coincidental:
+
+| Listing | stock | pool | In Available view |
+|---|---|---|---|
+| Launch Bonus Code (depleted) | **5** | **0** | **absent** |
+| Anniversary Pack Code (sold out) | 0 | 0 | absent |
+| Legendary Pack Code (partial) | 40 | **6** | **present** |
+
+A non-empty pool is included and an empty pool is excluded **independently of stock** —
+only possible if the rule reads the nested `digitalCode.codesAvailable`. The counts agree
+too: the API returns 8 digital-code listings and the Available view renders 6 cards, the
+two missing being exactly those rows. `digitalcode-depleted-excluded.png`
+
+**Why this field deserves its own case**: `codesAvailable` is nested under `digitalCode`,
+and a read of the top-level name returns `undefined` rather than throwing — so a wrong
+reference does not fail loudly, it **silently never matches**, and the listing stays buyable
+with nothing to deliver. That is the most expensive shape a bug can take on a digital good:
+the buyer pays and there is no code.
+
+### The assertions worth keeping from the eleven
+
+- **`auction-reserve-respected-at-close`** is the one I would most want run. The reserve has
+  history here: it was displayed, editable and promised to sellers while settlement awarded
+  the top bid unconditionally and never consulted it. A seller sets a floor, the interface
+  accepts it, and the item sells below it. **Check the winner is absent, not that a notice
+  appeared.**
+- **`preorder-create-publish-deposit`** — the buyer must be charged the **deposit**, not the
+  full price. Taking the whole sum would look like a successful purchase to every automated
+  check and surface only on someone's bank statement.
+- **`live-create-publish-jurisdiction`** — the purchase must be **blocked**, not warned
+  about. A warning a buyer can click past is not a jurisdiction check.
+- **`digitalcode-create-publish-claim`** carries a **second** blocker: creating a listing
+  *with a code pool* needs the pool writer that answered **501**. Clear that first, or it
+  fails for a reason unrelated to the claim flow.
+- **`art-` and `sticker-create-publish-sell`** are deliberately parallel — both assert
+  checkout happens through the **standard** flow rather than a bespoke one. **Run them
+  together and diff**, which is a comparison neither can make alone.
+
+Two also have observable halves on seeded data, worth splitting out: pre-order **production
+status rendering** (fixtures span all three values) and classified **contact-not-cart**
+(three fixtures across Mumbai and Hyderabad). Confirming those first narrows any later
+failure to the create path rather than the type's capability wiring.
+
+---
+
+## Batch `selling/listing-lifecycle--p2` — 0 yes, 0 no, 2 blocked
+
+Recorded 224/226. Both are save round-trips against the seller save that writes nothing.
+
+### `type-survives-edit` — blocked twice, and the second blocker is mine
+
+**First**: it is a save round-trip. A type that came back unchanged would prove only that
+the edit never landed.
+
+**Second, and I want this stated separately rather than folded in**: I attempted the half
+that *is* readable without saving — opening an existing classified's editor to check the
+listing type loads correctly, since a form showing the wrong type on load would convert the
+listing on save regardless of what the seller changed. The page **redirected to
+`/auth/login`**. My seller session had expired mid-batch, almost certainly because I
+exercised the sidebar **Log out** earlier in this run, which correctly invalidated the
+session server-side while the session file on disk stayed behind. **That is my harness
+state, not a product defect.**
+
+**The case names two distinct mechanisms and both are real here.** A row builder that
+collapses several types into one on the way *into* a form, and a form that defaults the
+type when the field is absent from the payload, would each silently convert a listing on
+save. This run has already seen the first shape — a seller row-mapper collapsing five
+listing types down to `standard` with a four-branch ternary — so the concern is not
+hypothetical.
+
+**When it is run, check the type on the PUBLIC page too**, not just the editor: the editor
+is where a wrong default is invisible, and the public route and badge are where a converted
+listing shows itself.
+
+### `unpublish-removes-from-public` — and why the *editable* half is the point
+
+Two save round-trips (unpublish, then republish), with the public catalogue changing in
+between. With the save writing nothing, an unpublish that appeared to do nothing would be
+indistinguishable from one that worked while the public grid failed to update — **opposite
+findings**.
+
+The case makes a point worth keeping: unpublish is the **reversible** half of a pair whose
+irreversible half is delete, and it is only useful as an alternative to deleting **if the
+listing stays fully editable while hidden** — a seller pulls something down precisely
+because they intend to fix it. An unpublish that hides the listing from the seller's *own*
+list, or makes it read-only, quietly turns the safe option into a worse version of the
+dangerous one, and they find out only when they go looking.
+
+So the check is not *"did it disappear publicly"* but **"is it still in MY list, and can I
+still open and change it"**. And run the direct-URL step: a listing removed from the grids
+but still served on its own public URL is unpublished in name only.
+
+---
+
+## Batch `selling/listing-lifecycle--guest` — 2 yes, 0 no, 2 blocked
+
+Recorded 225/226. **No defects** — and one "blocked" is a case that needs rewriting rather
+than a product that needs fixing.
+
+### ✅ Every type links to its own detail route — a regression check that passes
+
+`wrongRoutes: 0`. On `/products` the card links resolve to **four distinct route families**:
+`/products/` (standard), `/classified/`, `/digital-codes/` and `/live/`. On `/auctions`
+every card links to `/auctions/{slug}`.
+
+**This is worth more than a routine pass**, because those three types — classified,
+digital-code and live — are exactly the ones whose `detailRoute` was once hardcoded to the
+standard product page despite each having a working dedicated route, so every card,
+carousel and related-items link sent them to the wrong page. What I see now is the corrected
+behaviour, holding on the surface where the bug was most visible.
+
+**Scope stated**: five of nine types verified — standard, classified, digital-code, live
+(from `/products`) and auction (from `/auctions`). Pre-order, prize-draw, art and stickers
+browse on their own nav-linked pages and need checking there.
+
+### ✅ An ended auction's detail page loads and states its outcome
+
+`notFoundPages: 0`. `/auctions/auction-beyblade-burst-spriggan-requiem-bought-out` returns
+**5,522 characters**, no 404, no not-found text. The outcome is spelled out in three places:
+the `h1` reads *"Beyblade Burst B-128 Spriggan Requiem (Ended — Bought Out)"*, an **Ended**
+badge renders, and the page carries the real close time — *"Ended 9/11/2026, 12:29:17 AM"*.
+Even the tab title says it. `ended-auction-detail-loads.png`
+
+**The alternative is why this matters.** A closed listing that 404s destroys every link
+anyone ever shared to it — a bidder's bookmark, a notification email, a search result — at
+exactly the moment somebody wants to check what happened. The listing page agrees too:
+`/auctions` shows `Ended` badges on closed rows, so the state is visible *before* clicking.
+
+### A211 — `type-badge-correct-on-card` asks for a number the design forbids
+
+`expectedData` wants **`distinctBadges: 9`** on `/products`. The page carries **three** type
+badges — Classified, Digital Code, Live Item — plus standard listings which correctly show
+**no** badge, since standard is the default and badging it would add noise to the majority
+of cards. Four types, which is **exactly right**: `/products` is the **general catalogue**
+and deliberately spans four. The other five each have their own nav-linked browse page, and
+putting them in the general grid too would make one item reachable from two places with two
+different chromes.
+
+I confirmed the other badges exist rather than assuming: `/auctions` renders its own
+**Auction** badge, distinct from anything on `/products`.
+
+**So the case cannot pass on `/products`, and should not.** Nine distinct badges there would
+mean the catalogue had absorbed five types that deliberately live elsewhere. The
+`expectedData` and the design disagree, and the design is the one with a stated reason.
+Recorded `null`, not `no` — **the case needs rewriting**: either count badges across all nine
+browse pages, or assert four on `/products`.
+
+### The one I would not round up
+
+`sold-listing-leaves-available-tab` — the tab machinery is plainly there and is **per-type**:
+`/products` offers *Available · All*, `/auctions` offers *Available · Ended · All*, the
+middle label varying with the types each page spans. And I have direct evidence from earlier
+in this run that Available genuinely **excludes** unavailable rows rather than relabelling
+them (the digital-codes view: 8 API rows, 6 cards, pool-empty absent, partially-claimed
+present).
+
+But I did not do the three-way follow the case asks for — take **one identified listing**,
+confirm it in Available, then find it in Sold & Ended **and confirm it is still in All**.
+That third part carries the case: a listing that leaves Available and does not reappear in
+All has not moved, it has **vanished**. Counting tabs is not following a row across them.
+
+---
+
+## Batch `selling/store-uncovered-pages` — 1 yes, 0 no, 5 blocked
+
+Recorded 226/226. **Pass 1 is complete.**
+
+### ✅ All seven seller guide routes resolve, and the index renders real, personalised content
+
+`/store/guide` plus `/listings`, `/orders`, `/finance`, `/settings`, `/capabilities` and
+`/whatsapp` all return **200** — none 404s. The index is not a shell: it opens
+*"SELLER GUIDE — **Beyblade Arena** — Everything you need to know about selling on
+LetItRip"* and lists guide cards, each with a real description and a `Read guide →` link:
+
+> *Listings: Add products, auctions, and pre-orders. Learn condition grades, media tips, and
+> pricing.* · *Orders: Process, ship, and handle returns.* · *Finance: Payout cycles,
+> commissions, coupons, and promoted listings explained.*
+
+Written for a seller, not generated from route names — and **personalised with the store's
+own name**, which makes it read as part of that seller's dashboard rather than documentation
+bolted on. `store-guide-index-renders.png`
+
+**The contrast is the finding worth carrying forward**, and I would not have seen it without
+testing both families: this dashboard guide works well, while the **public `/seller-guide`
+index renders completely empty** (A186) — 200, correct title, header and breadcrumb, then a
+blank band into the footer. Same product, two guide families, opposite outcomes. Anyone
+fixing the empty one has a working implementation twenty lines away.
+
+### A212 — `store-analytics-cards-renders` points at the wrong page
+
+`/store/analytics/cards` renders correctly — but it is a **configuration** surface, not a
+figures surface: *"Analytics Cards · New custom card · Built-in cards ship by default. Toggle
+visibility or add custom cards."* then *"No cards — Add a custom analytics card to your
+dashboard."*
+
+The case expects *"real figures rather than an empty or placeholder set"*. **The empty state
+here is honest rather than placeholder-ish** — an accurate statement about a seller who has
+added no *custom* cards, which tells them what the page is for in the same breath. I checked
+for the two failure shapes and found neither: no ₹ amounts, no stray numerals, no
+coming-soon text. The page's own copy places the built-in figures elsewhere.
+
+**Second case-versus-page mismatch in this run's final stretch** (after A211). Either point
+the case at `/store/analytics`, or assert what this page actually does. Recording `no` would
+blame a page for not being a different page.
+
+### Four routes confirmed, content not read — with the useful half noted
+
+`/store/stickers`, `/store/pre-orders`, `/store/support` and
+`/store/listing-templates/new` all return **200**, and every store route resolved in the
+earlier 38-route sweep. What went untested is each case's *second* half — the create or
+open-a-ticket path, which is where this run has repeatedly found the real defects.
+
+Each has a working reference nearby, which narrows any future search:
+
+- **Stickers** — `/admin/stickers` works: five real listings, tabs reconciling 5 + 1 = 6. The
+  data exists and one surface reads it correctly.
+- **Pre-orders** — seeded pre-orders span all three production-status values, so an empty
+  list here would be a query or rendering fault, not missing fixtures.
+- **Support** — the buyer's `/user/support/new` opens with the form already rendered and
+  cancels to a real ticket list. A working reference implementation for the seller side.
+- **Listing templates** — the *"saved template is usable when creating a listing"* half
+  depends on the seller save that writes nothing, so it would fail for a borrowed reason.
+  **Run the first half anyway**: does the page show the form already open, the way
+  `/user/support/new` and `/user/catalogue/new` do? That is independent, cheap, and a blank
+  page there would be a finding with nothing to do with saving.
+
+---
+
+# FIX CYCLE 1 — root causes found and shipped (appkit 4.41.7)
+
+Five defects fixed. Four of them were **one line each**, and every one of them
+was invisible to `tsc`, to `npm run check` and to a 200 response.
+
+## F1 — the silent-save family: a Zod schema that stripped 38 of 55 fields
+
+**Blocked seven whole batches** (A121, A188, A192, and the per-type round-trip
+cases that could never pass).
+
+`productInputSchema` (`_internal/shared/features/products/schema.ts`) declares
+**24** fields. `PRODUCT_UPDATABLE_FIELDS` — the codebase's own declaration of
+what a seller may change — lists **55**. `z.object()` strips what it does not
+declare, and **the parse SUCCEEDS**, so nothing surfaced anywhere: the seller
+got a success toast and Firestore got 24 fields.
+
+Measured against the real compiled schema, before and after:
+
+| | dropped from a realistic seller draft |
+|---|---|
+| before | **38** — incl. `status`, `listingType`, `classified`, `digitalCode`, `liveItem`, `printMeta` |
+| after | **1** — `isPromoted`, correctly: it is a paid placement flag |
+
+`status` being among them is why **Publish wrote nothing at all**, and why
+`draftToProductInput` carefully assembling four nested per-type blocks was
+wasted work — they were discarded one function later.
+
+### Why not `.passthrough()`, which is what the three sibling routes do
+
+That was the obvious fix and it is wrong here. `sellerUpdateProduct` hands its
+parsed input **straight to the repository with no field filter**. The sibling
+product-update routes get away with passthrough because they are admin-gated;
+this path is not. Verified against the shipped schema: of `currentBid`,
+`bidCount`, `viewCount`, `storeId`, `slug`, `createdAt`, **0 survive**. Under
+passthrough all six would have, and a seller could have forged a bid count or
+moved a product into someone else's store.
+
+Deriving the allowed set from the existing constant also means the two cannot
+drift — hand-maintained enumerations drifting is Root Cause #61.
+
+This is the **update-side sibling of Root Cause #101**, whose create-side half
+(`categorySlugs` stripped on the way in) is already documented.
+
+## F2 — `/admin/return-requests` crashed on a missing confirmation block
+
+`approve-return` had **no `confirmation`** in the action registry while its
+sibling `reject-return` did. The view reads `confirmation!.title`, so the
+non-null assertion threw *"Cannot read properties of undefined (reading
+'title')"* during render and **the page never painted at all**.
+
+Fixed in the registry, not by softening the assertion — Rule #7 requires a
+confirmation here regardless, because approving a return starts a real refund.
+Swept all 7 `ACTIONS[...].confirmation!` sites against the registry: this was
+the only one.
+
+## F3 — addresses and payment methods: `params` read off the wrong object
+
+A201's two halves — *"Edit says Address not found"* and *"Delete does nothing"*
+— were **one bug**, and not the one the symptoms suggested.
+
+```ts
+const { id } = await (request as unknown as RouteContext).params;   // ✗
+```
+
+A `Request` has no `params`. `createRouteHandler` awaits `context.params` and
+passes it to the handler as its own argument. So this destructured `undefined`
+and threw on every call — GET, PUT and DELETE alike. The 500 surfaced to the
+client as no data, which the page renders as *"Address not found."*
+
+**The sweep is the finding.** The same pattern existed at 5 sites across 2
+files, and the second file was `user/payment-methods/[id]` — so **editing and
+deleting a saved payment method were broken identically**, which no case in the
+run had covered.
+
+## F4 — the SVG the picker offered and the server was always going to refuse
+
+`ALLOWED_IMAGE_MIMES` excludes SVG deliberately (XSS surface) and the server
+does enforce it — `classifyMime` returns null and finalize 422s. But every
+picker said `accept="image/*"`, and **that wildcard matches `image/svg+xml`**.
+So the file chooser offered it, the crop editor opened on it, the user framed
+and cropped — and the refusal arrived at the very end, reading as a failure
+rather than a rule.
+
+`IMAGE_ACCEPT_ATTR`, derived from the allowlist, now replaces the wildcard at
+all 8 pickers.
+
+> **A measurement mistake worth recording.** I grepped for consumers of
+> `ALLOWED_IMAGE_MIMES`, excluded the defining file from the results, got zero,
+> and briefly concluded nothing enforced it — i.e. that SVG was accepted
+> end-to-end. The enforcement is `classifyMime`, in that same excluded file.
+> Excluding the definition from a usage search inverts the answer.
+
+## F5 — auction terms can no longer move under a live bidder
+
+Not a reported defect — a hole the F1 fix would otherwise have opened. Restoring
+`startingBid` / `auctionEndDate` to the writable set makes them writable
+mid-auction, so `assertAuctionTermsMutable` freezes them once a real bid exists.
+
+It compares **values, not key presence**. The editor round-trips the whole
+draft, so every save resubmits those fields unchanged; rejecting on presence
+would have made a live auction entirely unsaveable — the seller could not have
+fixed a typo.
+
+## Not fixed, and why
+
+- **A204** (`finalSale` reverting) — `finalSale` was always in the schema and
+  survives the parse, so F1 does not explain it. I eliminated the client
+  handler, the page, the draft mapper, the ownership check and the repository
+  by reading each one. Static reading is exhausted; pass 2 against production
+  will settle whether F1 resolved it as a side effect. Recorded rather than
+  guessed at.
+- **A196** (ciphertext instead of buyer names in admin order alerts) — traced to
+  `userName` coming from the session's `displayName`, a PII field. Display-only:
+  nothing is lost and nothing leaks. Deferred.
+- **A145, A206, A209** — untouched this cycle.

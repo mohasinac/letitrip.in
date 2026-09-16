@@ -10,15 +10,14 @@ import { savedPaymentMethodsRepository } from "@mohasinac/appkit";
 import { successResponse, errorResponse } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 
-type RouteContext = { params: Promise<{ id: string }> };
 
 /**
  * DELETE /api/user/payment-methods/[id]
  */
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
-  handler: async ({ user, request }) => {
-    const { id } = await (request as unknown as RouteContext).params;
+  handler: async ({ user, params }) => {
+    const { id } = params as { id: string };
     const method = await savedPaymentMethodsRepository.findById(id);
     if (!method || method.userId !== user!.uid) {
       return errorResponse("Payment method not found", 404);
@@ -38,8 +37,8 @@ export const DELETE = withProviders(createRouteHandler({
  */
 export const PUT = withProviders(createRouteHandler({
   auth: true,
-  handler: async ({ user, request }) => {
-    const { id } = await (request as unknown as RouteContext).params;
+  handler: async ({ user, request, params }) => {
+    const { id } = params as { id: string };
     const method = await savedPaymentMethodsRepository.findById(id);
     if (!method || method.userId !== user!.uid) {
       return errorResponse("Payment method not found", 404);

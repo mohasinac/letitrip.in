@@ -13,7 +13,6 @@ import { createRouteHandler } from "@mohasinac/appkit";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 
-type RouteContext = { params: Promise<{ id: string }> };
 const ADDRESS_NOT_FOUND = "Address not found";
 
 /**
@@ -21,8 +20,8 @@ const ADDRESS_NOT_FOUND = "Address not found";
  */
 export const GET = withProviders(createRouteHandler({
   auth: true,
-  handler: async ({ user, request }) => {
-    const { id } = await (request as unknown as RouteContext).params;
+  handler: async ({ user, params }) => {
+    const { id } = params as { id: string };
     const address = await addressesRepository.findById(id);
     if (!address || address.ownerType !== "user" || address.ownerId !== user!.uid) {
       return errorResponse(ADDRESS_NOT_FOUND, 404);
@@ -40,8 +39,8 @@ export const GET = withProviders(createRouteHandler({
  */
 export const PUT = withProviders(createRouteHandler({
   auth: true,
-  handler: async ({ user, request }) => {
-    const { id } = await (request as unknown as RouteContext).params;
+  handler: async ({ user, request, params }) => {
+    const { id } = params as { id: string };
     const address = await addressesRepository.findById(id);
     if (!address || address.ownerType !== "user" || address.ownerId !== user!.uid) {
       return errorResponse(ADDRESS_NOT_FOUND, 404);
@@ -85,8 +84,8 @@ export const PUT = withProviders(createRouteHandler({
  */
 export const DELETE = withProviders(createRouteHandler({
   auth: true,
-  handler: async ({ user, request }) => {
-    const { id } = await (request as unknown as RouteContext).params;
+  handler: async ({ user, params }) => {
+    const { id } = params as { id: string };
     const address = await addressesRepository.findById(id);
     if (!address || address.ownerType !== "user" || address.ownerId !== user!.uid) {
       return errorResponse(ADDRESS_NOT_FOUND, 404);
