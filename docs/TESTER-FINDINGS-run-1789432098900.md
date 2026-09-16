@@ -8719,3 +8719,28 @@ This is Root Cause #87 (never trust a gate you have not seen fail) and #92
 (a check a variable name satisfies is decoration) arriving as my own tooling. A
 sweep that reports 0 is indistinguishable from a sweep that is blind — the only
 thing separating them is a control.
+
+# A145 — the carousel editor unwrapped the payload twice
+
+```ts
+const doc = (existing.data as { data?: { name?, status? } })?.data;   // ✗ one hop too many
+if (!doc) return;                                                     // always returned
+```
+
+`apiClient` already unwraps the envelope — it ends `return data.data as T` — so
+`existing.data` **is** the carousel. The extra `.data` resolved `undefined`, the
+effect bailed, and the form kept its initial state: an **empty name** and
+**`status: "draft"`**.
+
+That is the dangerous half. The editor then PATCHed those defaults over a live
+record, so opening **"Homepage Hero"** and pressing save renamed it to `""` and
+took it off the homepage. **An editor seeded from nothing is worse than one that
+fails to open** — a blank form looks like a new record, and saving it is the
+natural next action.
+
+Exact mirror of Root Cause #98: that was a raw envelope treated as the payload,
+this is a payload unwrapped a second time. Both typecheck, because `as` asserts
+the shape instead of checking it — which is the real lesson about casts at a
+boundary.
+
+Swept 3,472 files with controls: **0 other sites**.
