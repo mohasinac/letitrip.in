@@ -537,6 +537,39 @@ not just that the script parses.
 Exactly 6 `requiresHumanChannel` flags remain, all "interactive Google account"
 — which is C14.
 
+### C14 — the 6 Google cases: a decision, not a repair ⏸
+
+These need an **interactive Google account**. There is no credential for one and
+no headless path to it, so unlike C13 there is no latent capability to switch on.
+
+Two honest options, and they are not equivalent:
+
+1. **A real Google test account** in `tester/.env`, the way `TESTER_EMAIL_ID`
+   already works. Fully restores coverage. Needs an account somebody owns and is
+   willing to automate against, and Google actively resists headless sign-in.
+2. **Rewrite them to the observable half** — the Connect button exists and
+   targets `accounts.google.com` with the right `client_id`/`redirect_uri`.
+   Answerable `yes`/`no` today, but it **changes what the case tests**: one of
+   them asserts a green "Google account connected" confirmation that only exists
+   *after* a real link, and its own `expectedUiState` says "an empty space where
+   the alert used to be is a fail, not a pass". Asserting the button instead
+   would quietly stop covering the thing it was written for.
+
+**Not chosen unilaterally.** Option 2 looks like progress on a null count while
+reducing what is actually verified, and that is the trade the run has been
+avoiding everywhere else. Left flagged, with both options costed.
+
+🛑 **So the "zero `null`" terminal condition is not reachable for these 6
+without option 1.** Flagged when the condition was set; repeating it here so the
+cycle's end state is not a surprise.
+
+### C10b — classified city facet ⏸
+
+Same character: the facet has never existed, so this is a feature request the
+case is phrased as a bug. `classified.meetupArea.city` is on the document and
+`extraFacetKeys` is the mechanism, so building it is straightforward — but
+adding a public filter is a product decision.
+
 ---
 
 ## Tests run
