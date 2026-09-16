@@ -22,10 +22,27 @@ export const GET = withProviders(
     handler: async ({ user, params }) => {
       const id = (params as { id: string }).id;
       const order = await orderRepository.findById(id);
-      if (!order) return ApiErrors.notFound("Not found");
-      if (order.userId !== user!.uid && !["admin", "moderator"].includes(user!.role ?? "")) {
-        return ApiErrors.forbidden("Not your order");
-      }
+      /*
+       * 🛑 404 FOR BOTH "does not exist" AND "not yours" — NEVER 403.
+       *
+       * An order id is short and guessable, so 403 vs 404 is a membership
+       * oracle: 403 confirms an order with that id EXISTS, and an attacker can
+       * enumerate the id space without ever seeing a byte of order data.
+       *
+       * This route answered `403 {"code":"FORBIDDEN","error":"Not your order"}`
+       * while its own sibling GET /api/user/orders/[id] answered 404 for the
+       * identical condition — measured live against a real foreign order. Two
+       * endpoints over the same record disagreeing is the tell; the stricter
+       * one is right.
+       *
+       * The two branches are deliberately collapsed into one indistinguishable
+       * response. Keeping them separate but both 404 would still leak through
+       * timing and message text.
+       */
+      const mayRead =
+        !!order &&
+        (order.userId === user!.uid || ["admin", "moderator"].includes(user!.role ?? ""));
+      if (!mayRead) return ApiErrors.notFound("Not found");
       const fnUrl = process.env.NEXT_PUBLIC_INVOICE_PDF_FUNCTION_URL;
       const secret = process.env.LETITRIP_INTERNAL_SECRET;
       if (fnUrl && secret) {
