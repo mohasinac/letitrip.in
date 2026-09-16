@@ -8744,3 +8744,38 @@ the shape instead of checking it — which is the real lesson about casts at a
 boundary.
 
 Swept 3,472 files with controls: **0 other sites**.
+
+# `toUserMessage` — one bug, not twenty-two. Reclassified after looking.
+
+`toUserMessage(code, t, {fallback})` short-circuits on `if (!t) return generic`,
+and **22 of 28 call sites pass `undefined` for `t`** — so at those sites the error
+code is never consulted.
+
+My first reading called that 22 defects. Reading the actual fallback strings says
+otherwise:
+
+```
+"Failed to save the group."      "Failed to update location."
+"Failed to delete shipping config."   t("trimError")   REFUND_COPY.request.errorFallback
+```
+
+Each is **domain-appropriate copy for its own surface**. The user sees a sensible
+message; what they do not get is the *specific* cause. That is a quality ceiling,
+not a lie.
+
+**Exactly one of the 22 was harmful**, and it is the one already fixed: the seller
+shell passed *"Fix the highlighted errors and try again."* — a fallback that
+**asserts UI state the page cannot guarantee**. When the failure was not a
+validation error, nothing was highlighted, and the message sent the seller
+hunting for a field error that did not exist while the real refusal went unnamed.
+
+**The rule worth keeping**: a fallback may describe the *outcome* ("Failed to save
+the group") but must never describe the *page* ("fix the highlighted errors") —
+because the fallback fires precisely when the code is unknown, which is exactly
+when you cannot know what is on screen.
+
+**Not doing** the larger refactor of threading `useTranslations` through 21 call
+sites: it is a wide change with no user-visible gain over the copy already there,
+and picking that up unprompted late in a session is how regressions get made. It
+is worth doing deliberately, as its own piece of work — flagging rather than
+starting it.
