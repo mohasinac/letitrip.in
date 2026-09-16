@@ -8297,3 +8297,107 @@ fixed a typo.
   Cause #73. Reconcile at the source rather than at either renderer.
 - **A196** — `userName` originates from the session `displayName`; check whether
   the session builder decrypts PII before the notification is composed.
+
+---
+
+# POST-DEPLOY VERIFICATION — 4.41.7 in production
+
+Re-driven through the real UI against production. **This is why a fix nobody
+re-tested is only a hypothesis** — one of the two I checked is confirmed, and
+the other proved my diagnosis incomplete.
+
+## ✅ A185 confirmed fixed
+
+`/admin/return-requests` renders: breadcrumb, working toolbar (Filters, Sort,
+three view toggles) and an honest *"No return requests"* empty state. No error
+boundary, no `Cannot read properties of undefined`. Previously the page never
+painted at all. `fix-verify-a185-return-requests.png`
+
+## ❌ A121 NOT fixed — the schema strip was real but was NOT the only cause
+
+The schema fix is proven correct in isolation (38 dropped fields → 1, measured
+against the compiled output). It is **not sufficient**: a seller edit still does
+not persist. Three distinct defects sit on this one path, and only now is the
+third visible, because fixing the first two stopped masking it.
+
+### 1. There are TWO "Save Changes" buttons and the first one is inert
+
+Both are `type="submit"` with **no `<form>` ancestor** — they live in
+`div.bottom-0`, the fixed bottom chrome, which is a *sibling* of the form under
+`main#main-content`. Clicking the first fires nothing at all: no request, no
+toast, no error. That is precisely the *"Save Changes issues no request"* half
+of the original report, and it is a genuine second bug.
+
+Clicking the **second** does issue `POST /store/products/<slug>/edit → 200`.
+
+So the run's original observation was accurate and I had mis-attributed it: the
+tester had been clicking a decorative duplicate.
+
+### 2. The 200 is a lie — the action returns `{ok: false}`
+
+A server action always returns HTTP 200; the envelope carries the outcome. After
+the POST the value does not survive a reload.
+
+### 3. The error message tells the user to fix something invisible
+
+The toast reads **"Fix the highlighted errors and try again."** and **nothing is
+highlighted** — `aria-invalid` matches zero elements and `FormErrorSummary`
+renders no issues.
+
+That string is `handleSave`'s *fallback*, used when `toUserMessage(result.code)`
+cannot map the code. `applyZodIssues` received an empty list. So **this is not a
+validation failure at all** — a Zod rejection would carry issues and highlight
+its field. It is a thrown non-validation error (the path can raise
+`NotFoundError` or `AuthorizationError`), reported through a message written for
+a completely different failure.
+
+**This is the worst of the three**, because it actively misdirects: it tells the
+seller their input is wrong when the server is refusing for an unrelated reason,
+and gives them nothing to act on.
+
+### Next step for cycle 2
+
+Surface the real `code` rather than falling back to the validation wording, then
+read it. The two candidates on this path are the product lookup and the
+ownership comparison in `sellerUpdateProduct` — note the seller's own
+`/store/products` list *does* include this product, so a naive "they don't own
+it" reading is already in tension with observed behaviour and must be measured,
+not assumed.
+
+**No residue**: every save attempt failed, so the product is unchanged.
+
+## ✅ A201 Edit confirmed fixed · ❌ A201 Delete is a SEPARATE bug, still open
+
+**Edit works.** `/user/addresses/{id}/edit` now loads the real record — "Edit
+Address" with every field populated (`QA Probe`, `QA Address Probe`,
+`9876543210`, `221B Test Street`, `Opposite the QA park`, `Bengaluru`,
+`560001`), where it previously rendered only *"Address not found."*
+`fix-verify-a201-address-edit.png`
+
+Note `landmark` is among the restored fields — one of the values the old
+`params` bug made unreachable.
+
+**Delete is not fixed, and my route fix was never going to fix it.** Clicking
+Delete produces **no confirmation dialog, no request and no removal**; the row
+survives a reload and the Delete-button count is unchanged at 4.
+
+So A201 splits the same way A121 does, and I had merged two causes into one
+report both times:
+
+| | server side | client side |
+|---|---|---|
+| A121 | schema stripped 38 fields — **fixed** | Save button inert / wrong error — **open** |
+| A201 | `params` read off `request` — **fixed** | Delete button inert — **open** |
+
+**The generalisation worth keeping**: in this codebase a control that "does
+nothing" is a *client* defect, and a control that "succeeds and changes nothing"
+is a *server* defect. They present almost identically to a tester — the only
+distinguishing evidence is whether a request appears in the network panel at
+all. Both of these reports contained one of each, and fixing the server half
+left the symptom looking unchanged.
+
+🛑 **Residue I could not clear.** Three QA addresses remain on the buyer account
+(`QA Probe` at 221B Test Street, and two `QA Address buying-checkout-...` rows at
+1 Test Street). `addresses` is **PRESERVE tier**, so no wipe removes them, and
+the only UI affordance for removing them is the Delete button that does not
+work. They will persist until Delete is fixed.
