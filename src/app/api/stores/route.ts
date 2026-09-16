@@ -134,6 +134,31 @@ async function _GET(request: Request): Promise<NextResponse> {
     }
   }
 
+  /*
+   * 🛑 APPLIED HERE, AFTER BOTH EXECUTORS CONVERGE — not inside the repository
+   * branch alone.
+   *
+   * This route prefers the colocated `listingProcessor` Function and only falls
+   * back to `storeRepository`. Passing `minRating` to the repository therefore
+   * fixed the path that almost never runs: measured on production right after
+   * deploying it, `?rating=5` still returned both stores — rated 4.1 and 3.6.
+   *
+   * That is the two-executor trap of Root Cause #85, and #64 before it: the
+   * same request answered by two different implementations, with the one you
+   * exercised locally being the one production does not use.
+   *
+   * The repository keeps its own `minRating` (the fallback must filter too),
+   * and this is the belt that covers whichever path actually served.
+   */
+  if (minRating !== undefined) {
+    const before = items.length;
+    items = (items as Array<Record<string, JsonValue>>).filter((s) => {
+      const stats = s.stats as { averageRating?: number } | undefined;
+      return Number(stats?.averageRating ?? 0) >= minRating;
+    });
+    if (items.length !== before) total = items.length;
+  }
+
   const response = NextResponse.json({
     success: true,
     data: { items, total, page: resultPage, pageSize, totalPages, hasMore },
