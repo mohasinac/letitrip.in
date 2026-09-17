@@ -53,7 +53,7 @@
  */
 import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { readRun, FAIL, BLOCKED, PASS, RUNS_DIR } from "./lib/tester-runs.mjs";
+import { readRun, listRuns, FAIL, BLOCKED, PASS, RUNS_DIR } from "./lib/tester-runs.mjs";
 
 function flag(name, fallback) {
   const i = process.argv.indexOf(`--${name}`);
@@ -77,14 +77,47 @@ if (records.length === 0) {
   process.exit(1);
 }
 
+/*
+ * 🛑 ONCE PASSED, NEVER RE-RUN — BUT ON THE *LATEST* VERDICT, NOT ANY VERDICT.
+ *
+ * Checking only run N is too weak: a case that passed in run 2 and was carried
+ * for an unrelated reason would return in run 4 and the suite would stop
+ * shrinking. So the whole ledger is consulted.
+ *
+ * But "passed ANYWHERE in its history" is too strong, and the difference is not
+ * academic. Measured here: 552 cases have a PASS somewhere, while Test Run 1
+ * recorded only 495 — the extra ~50 come from two older PARTIAL runs. Some of
+ * those passed early and then FAILED in Test Run 1, which is later and better
+ * evidence. Retiring them on the strength of a stale pass would drop currently
+ * broken cases out of the cycle and call it convergence.
+ *
+ * So: runs are walked newest-first and only the MOST RECENT verdict counts —
+ * the same rule the traceability ledger's Final column uses.
+ *
+ * The cost, stated once rather than discovered later: a retired case is never
+ * re-checked, so a future regression in it will not be caught by this cycle.
+ * That is the deliberate trade for a suite that converges. `--include-pass`
+ * still gives a full sweep on demand.
+ */
+const latestStatus = new Map();
+for (const prior of listRuns()) {
+  // listRuns() is oldest-first, so a later run overwrites an earlier verdict.
+  for (const rec of readRun(prior).records) latestStatus.set(rec.id, rec.status);
+}
+const everPassed = new Set(
+  [...latestStatus.entries()].filter(([, s]) => s === PASS).map(([id]) => id),
+);
+
 const carried = [];
 const skippedAccepted = [];
+const skippedEverPassed = [];
 let passSkipped = 0;
 
 for (const r of records) {
   // Accepted exception === human channel AND blocked. A human-channel FAIL is
   // a real finding and falls through to the carry rule below.
   if (r.requiresHumanChannel && r.status === BLOCKED) { skippedAccepted.push(r.id); continue; }
+  if (!includePass && everPassed.has(r.id)) { skippedEverPassed.push(r.id); continue; }
   if (r.status === FAIL || r.status === BLOCKED) { carried.push(r.id); continue; }
   if (r.status === PASS) {
     if (includePass) carried.push(r.id);
@@ -113,6 +146,11 @@ try {
     }
     for (const c of batch.cases ?? []) {
       if (c.id.startsWith("control-")) continue;
+      // A case that has passed before is retired even if THIS run never reached
+      // it — otherwise the never-answered path quietly readmits it and the
+      // cumulative rule above is defeated by the very guard meant to protect
+      // coverage.
+      if (!includePass && everPassed.has(c.id)) continue;
       if (!answered.has(c.id)) unanswered.push(c.id);
     }
   }
@@ -144,7 +182,24 @@ console.log(`✓ ${out}`);
 console.log(`  carried : ${unique.length} case id(s)`);
 console.log(`    · failed or blocked : ${new Set(carried).size}`);
 console.log(`    · scoped but never answered : ${uniqueUnanswered}`);
-console.log(`  dropped : ${passSkipped} passing · ${skippedAccepted.length} accepted exception`);
+console.log(
+  `  dropped : ${passSkipped} passing this run · ${new Set(skippedEverPassed).size} passed in an earlier run · ${skippedAccepted.length} accepted exception`,
+);
+
+// The suite must converge. If it did not shrink, say so plainly.
+const priorScope = (() => {
+  try {
+    const s = JSON.parse(readFileSync(join(RUNS_DIR, runId, "scope.json"), "utf8"));
+    return (s.batches ?? []).reduce((n, b) => n + (b.cases ?? 0), 0);
+  } catch { return null; }
+})();
+if (priorScope !== null) {
+  const delta = priorScope - unique.length;
+  console.log(`  scope   : ${priorScope} → ${unique.length} (${delta >= 0 ? "-" : "+"}${Math.abs(delta)})`);
+  if (delta <= 0) {
+    console.log(`\n⚠ the next run is NOT smaller. Nothing passed, or something readmitted retired cases.`);
+  }
+}
 if (uniqueUnanswered > 0) {
   console.log(
     `\n⚠ ${uniqueUnanswered} case(s) were in scope and never tested. They are carried, not dropped —\n` +
