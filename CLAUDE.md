@@ -805,6 +805,35 @@ npx appkit-seed delete --yes --collections orders      # purge a subset
 
 Flags: `--collections a,b`, `--dry-run`, `--yes`, `--verbose`, `--service-account <path>`. There is no `brands` collection — see the note at the top of [Seed Data Reference](#seed-data-reference).
 
+### 🛑 `load` cannot REMOVE a field — deleting one from seed data never propagates
+
+`seed-cli.mjs` writes with `set(docData, { merge: true })`. A merge-write only
+adds and overwrites the keys **present in the payload**; a key the payload no
+longer carries is left exactly as it was in Firestore. So removing a field from
+a `appkit/src/seed/*.ts` fixture changes nothing in the database, on any number
+of `load` runs, forever.
+
+Measured 2026-09-17: `requiresHumanChannel` was deliberately cleared from 13
+tester-checklist cases when `check-inbox.mjs` made them automatable. The seed
+source declared **6** such cases (all `interactive Google account`) and
+production held **19** — the 13 stale `true` values had survived every reseed
+since. Those cases were reported as un-automatable in every run for no reason.
+
+**To drop a field, purge the collection first**:
+
+```
+npx appkit-seed delete --yes --collections <coll>
+npx appkit-seed load  --collections <coll>
+```
+
+Safe only for a **SEED_OWNED** collection (see § "Claude Tester" → the tier
+boundary). Never do this to `users`, `addresses`, `sessions` or `siteSettings`.
+
+**The tell**: a field you removed from the seed still shows up in a query, and
+`appkit-seed status` reports the collection as perfectly in sync — because it
+counts documents by id, and the ids did not change. `status` cannot see content
+drift at all.
+
 **Windows `file:./appkit` gotcha** (hit 2026-08-19): `npm install` does not reliably resync `node_modules/@mohasinac/appkit` with local `appkit/` source changes on this machine — it can silently keep serving a stale cached copy of `appkit/scripts/*.mjs` and `appkit/dist/*` even after `npm install` reports "up to date" and even after `rm -rf node_modules/@mohasinac/appkit && npm install`. If a fix to `appkit/scripts/seed-cli.mjs` or a `appkit/src/seed/*.ts` change doesn't seem to take effect after `cd appkit && npm run build`, verify with `diff node_modules/@mohasinac/appkit/scripts/seed-cli.mjs appkit/scripts/seed-cli.mjs` (and same for `dist/`) — if they differ, manually resync: `rm -rf node_modules/@mohasinac/appkit/scripts node_modules/@mohasinac/appkit/dist && cp -r appkit/scripts node_modules/@mohasinac/appkit/scripts && cp -r appkit/dist node_modules/@mohasinac/appkit/dist`.
 
 ---
