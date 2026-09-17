@@ -707,3 +707,27 @@ _(ids + why, at cycle close)_
 ## Residue
 
 _(data left behind, fixture gaps opened)_
+
+### An audit I wrote and then deleted
+
+`audit-blank-empty-state.mjs` was meant to generalise the blank-FAQ finding.
+It does not survive contact with this codebase, and shipping it would have been
+worse than shipping nothing:
+
+1. Its first version was a **false negative on the exact bug it was written
+   for**. `FAQPageContent` already contained `faqs.length > 0 ?` — ten lines
+   BELOW the list, gating a contact CTA. Unrelated concern, same tokens, rule
+   silent. I only caught it by running the rule against the real pre-fix file
+   instead of trusting my own synthetic control (Root Cause #87).
+2. Scoping it backward-only fixed that and then produced a **false positive**:
+   it flagged `UserBidsView`, which renders a perfectly good
+   *"You haven't placed any bids yet. Browse auctions"* — supplied through
+   `DataListingView`'s `emptyLabel` config prop, structurally invisible to any
+   rule that looks near the render site.
+
+Both failure directions in one afternoon. An empty branch can live in a config
+object three files away, so "is the empty case handled" is not decidable by
+proximity — and an audit with false positives is the kind people learn to skip.
+
+**The reliable detector here was the checklist case itself**, which named the
+surfaces and made me look at each one.
