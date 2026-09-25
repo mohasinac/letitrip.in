@@ -112,28 +112,31 @@ export function initProviders(): Promise<void> {
     // Shipping has no toggle: manual shipping is the only provider, always
     // registered.
     // Degrades to manual-only payments, which is the safe direction — but a
-    // silent degrade here disables Razorpay for the whole process with no
+    // silent degrade here disables PhonePe for the whole process with no
     // signal, so name it.
     const bootSettings = await siteSettingsRepository
       .getSingleton()
       .catch((err: unknown) => {
         console.warn(
-          "[providers] siteSettings read failed at boot; Razorpay stays disabled for this process",
+          "[providers] siteSettings read failed at boot; PhonePe stays disabled for this process",
           err,
         );
         return null;
       });
-    const razorpayEnabled = bootSettings?.payment?.razorpayEnabled === true;
+    const phonepeEnabled = bootSettings?.payment?.phonepeEnabled === true;
     const { ManualPaymentProvider, ManualShippingProvider } = await import("@mohasinac/appkit/server");
 
     let paymentProvider: IPaymentProvider;
-    if (razorpayEnabled) {
-      const { RazorpayProvider, resolveKeys } = await import("@mohasinac/appkit/server");
+    if (phonepeEnabled) {
+      const { PhonePeProvider, resolveKeys } = await import("@mohasinac/appkit/server");
       const keys = await resolveKeys();
-      paymentProvider = new RazorpayProvider({
-        keyId: keys.razorpayKeyId,
-        keySecret: keys.razorpayKeySecret,
-        webhookSecret: keys.razorpayWebhookSecret,
+      paymentProvider = new PhonePeProvider({
+        clientId: keys.phonepeClientId,
+        clientSecret: keys.phonepeClientSecret,
+        clientVersion: keys.phonepeClientVersion,
+        environment: keys.phonepeEnvironment === "production" ? "production" : "sandbox",
+        webhookUsername: keys.phonepeWebhookUsername,
+        webhookPassword: keys.phonepeWebhookPassword,
       });
     } else {
       paymentProvider = new ManualPaymentProvider();
@@ -164,8 +167,8 @@ export function initProviders(): Promise<void> {
           return resolved.isAdmin;
         },
       },
-      // payment/shipping are always populated — manual by default, Razorpay
-      // when siteSettings.payment.razorpayEnabled is true.
+      // payment/shipping are always populated — manual by default, PhonePe
+      // when siteSettings.payment.phonepeEnabled is true.
       payment: paymentProvider,
       shipping: shippingProvider,
     });

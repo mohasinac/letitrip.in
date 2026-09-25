@@ -2,16 +2,16 @@ import { NextResponse } from "next/server";
 import { siteSettingsRepository } from "@mohasinac/appkit";
 
 /**
- * 404 a Razorpay route unless `siteSettings.payment.razorpayEnabled` is on.
+ * 404 a PhonePe route unless `siteSettings.payment.phonepeEnabled` is on.
  *
  * Replaces `withFeatureGuard("RAZORPAY", …)`. The env flag system was deleted
  * on 2026-08-29, and this is the one guard from it that could not simply be
  * unplugged: six payment routes — including the webhook — had NO gate of their
  * own, so `FEATURE_RAZORPAY=false` was the only thing keeping them closed.
  *
- * Moved rather than removed because Razorpay already has a canonical, admin
+ * Moved rather than removed because PhonePe already has a canonical, admin
  * -toggleable control that `providers.config.ts` reads to decide whether to
- * register the provider at all. Two sources of truth for "is Razorpay live"
+ * register the provider at all. Two sources of truth for "is PhonePe live"
  * — one in the environment, one in Firestore — is exactly the split this wave
  * exists to remove, and the env one was the copy no admin could see.
  *
@@ -22,10 +22,10 @@ import { siteSettingsRepository } from "@mohasinac/appkit";
  * is the safe direction for money — the opposite of the fail-open rule that
  * governs display-only settings reads elsewhere.
  */
-export function withRazorpayEnabled(handler: (...args: any[]) => any) {
+export function withPhonePeEnabled(handler: (...args: any[]) => any) {
   return async (...args: any[]) => {
     const settings = await siteSettingsRepository.getSingleton();
-    if (settings?.payment?.razorpayEnabled !== true) {
+    if (settings?.payment?.phonepeEnabled !== true) {
       return NextResponse.json({ error: "Not Found" }, { status: 404 });
     }
     return handler(...args);

@@ -1,34 +1,29 @@
-import { withRazorpayEnabled } from "@/lib/payment-gate";
+import { withPhonePeEnabled } from "@/lib/payment-gate";
 import { withProviders } from "@/providers.config";
 /**
  * Pre-Order Deposit Payment
  *
  * POST /api/payment/preorder
  *
- * Verifies a Razorpay deposit payment for a pre-order product and creates
+ * Confirms a PhonePe deposit payment for a pre-order product and creates
  * an order document with orderType "preorder".
  *
  * The caller first hits /api/payment/create-order with the depositAmount,
- * opens the Razorpay modal, then posts the resulting payment credentials
- * here together with productId and addressId.
+ * opens the PhonePe checkout, then posts the resulting merchantOrderId
+ * here together with productId and addressId. There is no client-side
+ * signature to verify — PhonePe's Order Status API is the source of truth.
  *
  * Body:
- *   razorpay_order_id    â€” Razorpay order ID from create-order step
- *   razorpay_payment_id  â€” Payment ID returned by Razorpay checkout
- *   razorpay_signature   â€” HMAC-SHA256 signature from Razorpay
- *   productId            â€” Pre-order product being reserved
- *   addressId            â€” User's selected shipping address ID
- *   notes                â€” Optional order notes
+ *   merchantOrderId      — our order id returned by /api/payment/create-order
+ *   productId             — Pre-order product being reserved
+ *   addressId             — User's selected shipping address ID
+ *   notes                 — Optional order notes
  *
  * Returns: { orderId }
  */
 
 import { z } from "zod";
-import {
-  verifyPaymentSignatureWithKeys,
-  fetchRazorpayOrder,
-  paiseToRupees,
-} from "@mohasinac/appkit";
+import { getProviders, paiseToRupees } from "@mohasinac/appkit";
 import {
   orderRepository,
   productRepository,
@@ -45,9 +40,7 @@ import { getDefaultCurrency } from "@mohasinac/appkit";
 import { normalizeError } from "@mohasinac/appkit";
 
 const preorderDepositSchema = z.object({
-  razorpay_order_id: z.string().min(1),
-  razorpay_payment_id: z.string().min(1),
-  razorpay_signature: z.string().min(1),
+  merchantOrderId: z.string().min(1),
   productId: z.string().min(1),
   addressId: z.string().min(1),
   notes: z.string().max(500).optional(),
@@ -59,33 +52,21 @@ const __POST__g = withProviders(createRouteHandler<
   auth: true,
   schema: preorderDepositSchema,
   handler: async ({ user, body }) => {
-    const {
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-      productId,
-      addressId,
-      notes,
-    } = body!;
+    const { merchantOrderId, productId, addressId, notes } = body!;
 
-    // 1. Verify Razorpay signature
-    const isValid = await verifyPaymentSignatureWithKeys({
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-    });
-
-    if (!isValid) {
+    // 1. Confirm the PhonePe order actually completed — Order Status API is
+    // the sole source of truth, there is no client-side signature here.
+    const phonepeOrder = await getProviders().payment!.getOrder(merchantOrderId);
+    if (phonepeOrder.status !== "paid") {
       serverLogger.warn(
-        `Pre-order deposit signature verification failed for user ${user!.uid}`,
-        { razorpay_order_id },
+        `Pre-order deposit not completed for user ${user!.uid}`,
+        { merchantOrderId, state: phonepeOrder.status },
       );
-      throw new ValidationError("Payment signature verification failed");
+      throw new ValidationError("Payment verification failed");
     }
 
-    // 2. Fetch Razorpay order to know the actual charged amount
-    const razorpayOrder = await fetchRazorpayOrder(razorpay_order_id);
-    const depositPaidAmount = paiseToRupees(razorpayOrder.amount);
+    // 2. Actual charged amount, from the confirmed order.
+    const depositPaidAmount = paiseToRupees(phonepeOrder.amount);
 
     // 3. Fetch product for order line-item data
     const product = await productRepository.findById(productId);
@@ -93,7 +74,7 @@ const __POST__g = withProviders(createRouteHandler<
     if (!isPreOrderListing(product))
       throw new ValidationError("Product is not a pre-order item");
 
-    // 4. Fetch user address (SB-UNI-A 2026-05-13 â€” unified addresses w/ ownerType guard)
+    // 4. Fetch user address (SB-UNI-A 2026-05-13 — unified addresses w/ ownerType guard)
     const addressDoc = await addressesRepository.findById(addressId);
     const address =
       addressDoc &&
@@ -132,8 +113,8 @@ const __POST__g = withProviders(createRouteHandler<
       currency: product.currency ?? getDefaultCurrency(),
       status: OrderStatusValues.CONFIRMED,
       paymentStatus: PaymentStatusValues.PAID,
-      paymentId: razorpay_payment_id,
-      paymentMethod: PaymentMethodValues.RAZORPAY,
+      paymentId: merchantOrderId,
+      paymentMethod: PaymentMethodValues.ONLINE,
       shippingAddress,
       depositAmount: depositPaidAmount,
       codRemainingAmount: product.price - depositPaidAmount,
@@ -157,7 +138,7 @@ const __POST__g = withProviders(createRouteHandler<
       totalPrice: depositPaidAmount,
       currency: product.currency ?? getDefaultCurrency(),
       shippingAddress,
-      paymentMethod: PaymentMethodValues.RAZORPAY,
+      paymentMethod: PaymentMethodValues.ONLINE,
     }).catch((err) =>
       serverLogger.warn("Pre-order confirmation email failed", {
         error: normalizeError(err).message,
@@ -165,11 +146,11 @@ const __POST__g = withProviders(createRouteHandler<
     );
 
     serverLogger.info(
-      `Pre-order deposit placed: order ${order.id} for product ${productId} by user ${user!.uid} â€” deposit â‚¹${depositPaidAmount}`,
+      `Pre-order deposit placed: order ${order.id} for product ${productId} by user ${user!.uid} — deposit ₹${depositPaidAmount}`,
     );
 
     return successResponse({ orderId: order.id });
   },
 }));
 
-export const POST = withRazorpayEnabled(__POST__g);
+export const POST = withPhonePeEnabled(__POST__g);

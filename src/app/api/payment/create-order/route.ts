@@ -1,26 +1,29 @@
-import { withRazorpayEnabled } from "@/lib/payment-gate";
+import { withPhonePeEnabled } from "@/lib/payment-gate";
 import { withProviders } from "@/providers.config";
 /**
- * Payment - Create Razorpay Order
+ * Payment - Create PhonePe Order
  *
  * POST /api/payment/create-order
  *
- * Creates a Razorpay order. Amount is computed server-side from the user's live
- * cart + current Firestore product prices â€” the client MUST NOT supply an amount.
+ * Creates a PhonePe order. Amount is computed server-side from the user's live
+ * cart + current Firestore product prices — the client MUST NOT supply an amount.
  * This prevents price-manipulation attacks where a client sends a lower amount.
  *
  * Body: { currency?: string, receipt?: string }
- * Returns: { razorpayOrderId, amount (paise), currency, keyId, baseAmount, platformFee, gstOnFee } (audit-money-units-ok: Razorpay's own order-object field, natively paise)
+ * Returns: { merchantOrderId, amount (paise), currency, redirectUrl, expireAt, baseAmount, platformFee, gstOnFee } (audit-money-units-ok: PhonePe's own order-object field, natively paise)
  */
 
 import { z } from "zod";
-import { createRazorpayOrder, rupeesToPaise, computeWhatsAppNotifyFee, computeGiftWrapFee, computeShipmentProtectionFee, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, splitCartIntoOrderGroups, resolveShippingCost, lineTotalFor } from "@mohasinac/appkit";
+import { computeWhatsAppNotifyFee, computeGiftWrapFee, computeShipmentProtectionFee, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, splitCartIntoOrderGroups, resolveShippingCost, lineTotalFor, rupeesToPaise } from "@mohasinac/appkit";
+import { getProviders } from "@mohasinac/appkit";
 import { siteSettingsRepository, unitOfWork, productRepository } from "@mohasinac/appkit";
 import { successResponse, ApiErrors } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
 import { getDefaultCurrency } from "@mohasinac/appkit";
 import { isCheckoutValueOtpVerified } from "@mohasinac/appkit/server";
+import { SEO_CONFIG } from "@/constants";
+import { ROUTES } from "@mohasinac/appkit";
 
 /**
  * Add-on selections are deliberately NOT accepted here. They live on the cart
@@ -37,10 +40,7 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
   auth: true,
   schema: createOrderSchema,
   handler: async ({ user, body }) => {
-    const keyId = process.env.RAZORPAY_KEY_ID;
-    if (!keyId) throw ApiErrors.internalError("Razorpay is not configured on this server");
-
-    const { currency, receipt } = body!;
+    const { currency } = body!;
     const uid = user!.uid;
 
     // --- Server-side amount computation from live cart + current product prices ---
@@ -50,7 +50,7 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
       throw ApiErrors.badRequest("Your cart is empty.");
     }
 
-    // Fetch current product prices in parallel â€” never trust client-supplied price.
+    // Fetch current product prices in parallel — never trust client-supplied price.
     const selectedIds = cart.selectedItemIds?.length ? new Set(cart.selectedItemIds) : null;
     const activeItems = selectedIds
       ? cartItems.filter((item) => selectedIds.has(item.itemId))
@@ -77,19 +77,19 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
       }
       // What this line costs is decided in exactly one place. This route used to
       // hand-roll the rule and reproduced only the bundle branch, silently
-      // omitting the locked-price one — so Razorpay CAPTURED the seller's list
+      // omitting the locked-price one — so the gateway CAPTURED the seller's list
       // price for an accepted offer or a won auction while the cart displayed
       // the negotiated amount. See `unitPriceFor` in order-math.ts.
       subtotalRs += lineTotalFor(item, product);
     }
 
-    // --- Platform fee + GST (same as verifyAndPlaceRazorpayOrderAction) ---
+    // --- Platform fee + GST (same as verifyAndPlacePhonePeOrderAction) ---
     const siteSettings = await siteSettingsRepository.getSingleton();
 
     // Tier PP — OTP gate for high-value checkouts. Must run here, BEFORE the
-    // Razorpay order is created and payment captured — verifying inside
-    // verifyAndPlaceRazorpayOrderAction (post-payment) would mean charging
-    // the card without ever collecting the OTP.
+    // PhonePe order is created and payment captured — verifying inside
+    // verifyAndPlacePhonePeOrderAction (post-payment) would mean charging
+    // the buyer without ever collecting the OTP.
     const otpThreshold = siteSettings?.payment?.otpCheckoutThreshold;
     if (typeof otpThreshold === "number" && otpThreshold > 0 && subtotalRs >= otpThreshold) {
       const verified = await isCheckoutValueOtpVerified(uid);
@@ -106,7 +106,7 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
     const { platformFee, gstOnFee } = computeCheckoutFees(subtotalRs, commissionRates);
 
     // Shipping is charged per resulting order (one per seller-group the cart
-    // splits into at order-creation time), same as createRazorpayGroupOrder /
+    // splits into at order-creation time), same as createPhonePeGroupOrder /
     // createOrderForGroup — reuses the same resolveShippingCost the order
     // that gets placed after payment actually charges/records, so the amount
     // captured here can't fall short of what's later recorded as owed.
@@ -118,7 +118,7 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
 
     // Add-ons are per store, read off the cart doc — this route used to charge
     // each add-on ONCE for the whole cart while the orders it later produced
-    // charged per store, so Razorpay collected less than the orders recorded.
+    // charged per store, so the gateway collected less than the orders recorded.
     const addonFees = orderGroups.reduce((sum, group) => {
       const storeId = group.items[0].item.storeId;
       const addons = cart.storeAddons?.[storeId] ?? {};
@@ -139,22 +139,28 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
 
     const amountInPaise = rupeesToPaise(totalAmount);
 
-    const razorpayOrder = await createRazorpayOrder({
-      amount: amountInPaise,
-      currency,
-      receipt: receipt ?? `rcpt_${uid}_${Date.now()}`,
-      notes: { userId: uid },
+    // PhonePe's `merchantUrls.redirectUrl` is only a fallback destination for
+    // the rare case the IFRAME degrades to a full-page redirect — the real
+    // confirmation path is the client calling /api/payment/verify (or the
+    // webhook, if the buyer's tab is gone by then). See CLAUDE.md's Checkout
+    // Lanes / PhonePe integration notes.
+    const redirectUrl = `${SEO_CONFIG.siteUrl}${String(ROUTES.USER.CHECKOUT_SUCCESS)}`;
+
+    const phonepeOrder = await getProviders().payment!.createOrder(amountInPaise, currency, {
+      uid,
+      redirectUrl,
     });
 
     serverLogger.info(
-      `Payment order created: ${razorpayOrder.id} for user ${uid} â€” base â‚¹${subtotalRs} + fee â‚¹${platformFee} + GST â‚¹${gstOnFee} = â‚¹${totalAmount}`,
+      `Payment order created: ${phonepeOrder.id} for user ${uid} — base ₹${subtotalRs} + fee ₹${platformFee} + GST ₹${gstOnFee} = ₹${totalAmount}`,
     );
 
     return successResponse({
-      razorpayOrderId: razorpayOrder.id,
-      amount: razorpayOrder.amount,
-      currency: razorpayOrder.currency,
-      keyId,
+      merchantOrderId: phonepeOrder.id,
+      amount: phonepeOrder.amount,
+      currency: phonepeOrder.currency,
+      redirectUrl: phonepeOrder.checkoutUrl,
+      expireAt: phonepeOrder.expiresAt,
       platformFee,
       gstOnFee,
       // One figure now, not three: add-ons are per store, so the individual
@@ -167,4 +173,4 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
   },
 }));
 
-export const POST = withRazorpayEnabled(__POST__g);
+export const POST = withPhonePeEnabled(__POST__g);

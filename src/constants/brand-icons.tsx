@@ -38,11 +38,11 @@ export function MastercardIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-export function RazorpayIcon(props: SVGProps<SVGSVGElement>) {
+export function PhonePeIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <Icon
-      title="Razorpay"
-      path="M22.436 0l-11.91 7.773-1.174 4.276 6.625-4.297L11.65 24h4.391l6.395-24zM14.26 10.098L3.389 17.166 1.564 24h9.008l3.688-13.902Z"
+      title="PhonePe"
+      path="M7 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H7zm5 18a1 1 0 1 1 0-2 1 1 0 0 1 0 2zM17 17H7V5h10v12z"
       {...props}
     />
   );

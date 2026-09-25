@@ -15,7 +15,7 @@ export const PAYMENT_ICONS = {
 } as const;
 
 export const TECH_ICONS = {
-  razorpay: "/icons/tech/razorpay.svg",
+  phonepe: "/icons/tech/phonepe.svg",
   vercel: "/icons/tech/vercel.svg",
   nextjs: "/icons/tech/nextjs.svg",
   firebase: "/icons/tech/firebase.svg",

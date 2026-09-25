@@ -2,9 +2,11 @@
 /**
  * audit-money-units — every monetary field in this codebase stores decimal
  * rupees directly (e.g. `price: 3499.00`). Integer-paise conversion happens
- * ONLY at the two Razorpay boundaries (order/refund creation via the
- * `razorpay` npm package, and the RazorpayX payout REST call) — see
- * CLAUDE.md's "Recurrent Root Cause Patterns" for the migration writeup.
+ * ONLY at the PhonePe boundary (order/refund creation via the official
+ * `phonepe-pg-sdk-node` package) — see CLAUDE.md's "Recurrent Root Cause
+ * Patterns" for the migration writeup. The RazorpayX payout REST call this
+ * allowlist used to also cover was deleted outright when Razorpay was
+ * removed — seller payouts are fully manual now, no automated dispatch.
  *
  * Detects regressions of the pre-migration paise convention:
  *
@@ -16,7 +18,7 @@
  * 2. `* 100` / `/ 100` arithmetic adjacent to a money-sounding identifier
  *    (price, amount, fee, cost, revenue, profit, discount, deposit, total,
  *    bid, budget, payout, refund, threshold) — the paise-conversion pattern
- *    this migration eliminated everywhere except the Razorpay boundary.
+ *    this migration eliminated everywhere except the PhonePe boundary.
  *
  * 3. `.int()` chained onto a `z.number()` field declaration whose name is
  *    money-sounding — decimal rupees need fractional precision (₹1,499.50),
@@ -36,9 +38,8 @@
  *    and a plain case-insensitive `\bpaise\b` word check.
  *
  * Allowlist (the only legitimate paise-conversion sites):
- *   - appkit/src/providers/payment-razorpay/index.ts (rupeesToPaise/paiseToRupees)
- *   - appkit/src/_internal/server/jobs/core/payoutBatch.ts (RazorpayX payout REST call)
- *   - appkit/src/schemas/webhooks/razorpay.ts (Razorpay's own webhook wire format — natively paise)
+ *   - appkit/src/core/money.ts (rupeesToPaise/paiseToRupees — gateway-neutral)
+ *   - appkit/src/providers/payment-phonepe/index.ts (PhonePe SDK calls, natively paise)
  *
  * Suppress a specific line with `// audit-money-units-ok: <reason>` on the
  * same line or the line above (e.g. a percentage divisor the heuristic
@@ -62,17 +63,14 @@ const SKIP_DIRS = new Set(["node_modules", ".next", "dist", ".git", "__tests__"]
 const SCAN_EXTS = new Set([".ts", ".tsx"]);
 
 const ALLOWLIST_FILES = [
-  join("appkit", "src", "providers", "payment-razorpay", "index.ts"),
-  join("appkit", "src", "_internal", "server", "jobs", "core", "payoutBatch.ts"),
-  // Razorpay's own webhook wire format — their entities are natively paise,
-  // not our internal storage convention. Mirroring their shape verbatim.
-  join("appkit", "src", "schemas", "webhooks", "razorpay.ts"),
+  join("appkit", "src", "core", "money.ts"),
+  join("appkit", "src", "providers", "payment-phonepe", "index.ts"),
 ];
 
 const MONEY_WORD = /(price|amount|fee|cost|revenue|profit|discount|deposit|total|bid|budget|payout|refund|threshold)/i;
-// rupeesToPaise/paiseToRupees are the permanent, intentional Razorpay boundary
+// rupeesToPaise/paiseToRupees are the permanent, intentional PhonePe boundary
 // conversion functions — legitimate to import/call anywhere, not just the
-// two allowlisted files. Only flag OTHER *Paise/InPaise identifiers.
+// allowlisted files. Only flag OTHER *Paise/InPaise identifiers.
 const PAISE_IDENTIFIER = /\b(?!rupeesToPaise\b|paiseToRupees\b)\w*(?:Paise|InPaise)\b/;
 // SCREAMING_SNAKE_CASE constants ending in `_PAISE` (e.g.
 // AUCTION_MIN_BID_INCREMENT_PAISE) — underscore is a \w character, so no
@@ -144,7 +142,7 @@ for (const dir of SCAN_DIRS) {
     }
     const lines = content.split("\n");
     // A file that calls the boundary conversion function is, by definition,
-    // Razorpay-boundary-adjacent code — local variables named e.g.
+    // PhonePe-boundary-adjacent code — local variables named e.g.
     // `amountInPaise` holding that call's result are the intended,
     // correct "this value is now paise for the external API" convention.
     const fileTouchesBoundary = /\b(?:rupeesToPaise|paiseToRupees)\s*\(/.test(content);
@@ -218,7 +216,7 @@ if (violations.length === 0) {
 }
 
 console.error(`audit-money-units: ${violations.length} violation(s) found.\n`);
-console.error("Money is stored as decimal rupees everywhere except the two Razorpay");
+console.error("Money is stored as decimal rupees everywhere except the PhonePe");
 console.error("boundary files. See CLAUDE.md's paise->rupees migration writeup.\n");
 console.error("Suppress a genuinely irreducible line with:");
 console.error("  // audit-money-units-ok: <reason>\n");

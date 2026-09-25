@@ -3,12 +3,12 @@
  * audit-payment-provider-import — strict-zero.
  *
  * Enforces the Track H invariant: no source file outside the payment-provider
- * directory may import the `razorpay` npm package or instantiate
- * `new Razorpay(...)`. Every consumer flows through
- * `getProviders().payment.{createOrder,verifyWebhook,capturePayment,refund}`.
+ * directory may import the `phonepe-pg-sdk-node` package or instantiate
+ * `StandardCheckoutClient.getInstance(...)`. Every consumer flows through
+ * `getProviders().payment.{createOrder,verifyWebhook,capturePayment,refund,getOrder}`.
  *
  * Allowed locations:
- *   - appkit/src/providers/payment-razorpay/**
+ *   - appkit/src/providers/payment-phonepe/**
  *   - appkit/src/_internal/server/providers/payment/**
  *
  * Exit 0 — clean
@@ -24,7 +24,7 @@ const ROOT = join(__dirname, "..");
 
 const SCAN = [join(ROOT, "src"), join(ROOT, "appkit", "src")];
 const ALLOW = [
-  join("appkit", "src", "providers", "payment-razorpay") + sep,
+  join("appkit", "src", "providers", "payment-phonepe") + sep,
   join("appkit", "src", "_internal", "server", "providers", "payment") + sep,
 ];
 const SKIP = new Set(["node_modules", "dist", ".next", ".git"]);
@@ -51,11 +51,11 @@ for (const root of SCAN) {
     const src = readFileSync(file, "utf8")
       .replace(/\/\*[\s\S]*?\*\//g, " ")
       .replace(/(^|\s)\/\/[^\n]*/g, "$1 ");
-    if (/from\s+["']razorpay["']/.test(src) || /\brequire\s*\(\s*["']razorpay["']\s*\)/.test(src)) {
-      violations.push(`${rel} :: imports the "razorpay" package`);
+    if (/from\s+["']phonepe-pg-sdk-node["']/.test(src) || /\brequire\s*\(\s*["']phonepe-pg-sdk-node["']\s*\)/.test(src)) {
+      violations.push(`${rel} :: imports the "phonepe-pg-sdk-node" package`);
     }
-    if (/\bnew\s+Razorpay\s*\(/.test(src)) {
-      violations.push(`${rel} :: instantiates new Razorpay(...) directly`);
+    if (/\bStandardCheckoutClient\.getInstance\s*\(/.test(src)) {
+      violations.push(`${rel} :: instantiates StandardCheckoutClient.getInstance(...) directly`);
     }
   }
 }

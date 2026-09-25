@@ -92,7 +92,7 @@ const SITE_SETTINGS_DEFAULTS = {
   },
   fees: {
     platformCommissionPercent: 5,
-    razorpayFeePercent: 2,
+    phonepeFeePercent: 2,
   },
   platformLimits: {
     maxWishlistItems: 20,
@@ -101,7 +101,7 @@ const SITE_SETTINGS_DEFAULTS = {
   },
   featureFlags: {
     seedPanel: true,
-    razorpay: true,
+    phonepe: true,
     cod: true,
     auctions: true,
     preOrders: true,

@@ -24,8 +24,9 @@
  *   featureFlags.listingTypes / .categoryTypes -> siteSettings.listings.*
  *   featureFlags.smsVerification               -> siteSettings.payment.*
  *   featureFlags.adminCheckoutBypass           -> siteSettings.payment.*
- *   FEATURE_RAZORPAY                           -> siteSettings.payment.razorpayEnabled
- *                                                 (via withRazorpayEnabled)
+ *   FEATURE_RAZORPAY                           -> siteSettings.payment.phonepeEnabled
+ *                                                 (via withPhonePeEnabled — PhonePe replaced
+ *                                                 Razorpay entirely, same gate mechanism)
  *   FEATURE_COD                                -> siteSettings.payment.codEnabled
  *
  * ## What it checks now

@@ -63,7 +63,7 @@ export async function createCheckoutOrder(body: unknown): Promise<Response> {
   });
 }
 
-// ── Razorpay ─────────────────────────────────────────────────────────────────
+// ── PhonePe ──────────────────────────────────────────────────────────────────
 
 /**
  * Add-on selections are no longer part of any checkout request body — they live
@@ -125,7 +125,7 @@ export async function fetchCheckoutPricingPreview(body: CheckoutPricingPreviewBo
  * The server computes the amount from the live cart — `amount` is sent for
  * logging parity only and is never trusted. Add-ons come from the cart doc.
  */
-export async function createRazorpayOrder(amount: number): Promise<Response> {
+export async function createPhonePeOrder(amount: number): Promise<Response> {
   return fetch(API_ENDPOINTS.PAYMENT.CREATE_ORDER, {
     method: "POST",
     headers: JSON_HEADERS,
@@ -135,15 +135,13 @@ export async function createRazorpayOrder(amount: number): Promise<Response> {
 }
 
 /** Add-ons come from the cart doc server-side — see CheckoutPricingPreviewBody. */
-export interface RazorpayVerifyBody {
-  razorpay_order_id: string;
-  razorpay_payment_id: string;
-  razorpay_signature: string;
+export interface PhonePeVerifyBody {
+  merchantOrderId: string;
   addressId: string;
   outOfStockPolicy: "cancel_order" | "skip_items";
 }
 
-export async function verifyRazorpayPayment(body: RazorpayVerifyBody): Promise<Response> {
+export async function verifyPhonePePayment(body: PhonePeVerifyBody): Promise<Response> {
   return fetch(API_ENDPOINTS.PAYMENT.VERIFY, {
     method: "POST",
     headers: JSON_HEADERS,

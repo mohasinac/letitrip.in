@@ -133,7 +133,7 @@ export { PAYMENT_ICONS, TECH_ICONS, SOCIAL_ICONS, getCarrierIcon } from "./icons
 export {
   VisaIcon,
   MastercardIcon,
-  RazorpayIcon,
+  PhonePeIcon,
   VercelIcon,
   NextJsIcon,
   FirebaseIcon,

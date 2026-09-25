@@ -4,7 +4,7 @@ import {
   VisaIcon,
   MastercardIcon,
   CashIcon,
-  RazorpayIcon,
+  PhonePeIcon,
   VercelIcon,
   NextJsIcon,
   FirebaseIcon,
@@ -33,7 +33,7 @@ export function FooterBadgesSlot() {
           Powered By
         </Text>
         <Row gap="sm" align="center" wrap>
-          <RazorpayIcon className={TECH_ICON_CLS} />
+          <PhonePeIcon className={TECH_ICON_CLS} />
           <NextJsIcon className={TECH_ICON_CLS} />
           <FirebaseIcon className={TECH_ICON_CLS} />
           <VercelIcon className={TECH_ICON_CLS} />

@@ -50,14 +50,14 @@ import {
   sendCheckoutValueOtpAction,
   verifyCheckoutValueOtpAction,
 } from "@/actions/checkout.actions";
-import { API_ROUTES, UI_LABELS, PAYMENT_ICONS, CashIcon, RazorpayIcon } from "@/constants";
+import { API_ROUTES, UI_LABELS, PAYMENT_ICONS, CashIcon, PhonePeIcon } from "@/constants";
 // Deep import (not the @/components barrel): CheckoutRouteClient is itself
 // re-exported from that barrel, so importing it back would be circular.
 import { BrandBadgeImage } from "@/components/layout/BrandBadgeImage";
 import {
   createCheckoutOrder,
-  createRazorpayOrder,
-  verifyRazorpayPayment,
+  createPhonePeOrder,
+  verifyPhonePePayment,
   type CheckoutPricingPreview,
 } from "@/lib/api/payment-client";
 import { usePricingPreview, type PricingPreviewStatus } from "@/lib/hooks/usePricingPreview";
@@ -71,52 +71,37 @@ const __P = {
 
 const CK = UI_LABELS.CHECKOUT;
 
-// --- Razorpay helpers --------------------------------------------------------
+// --- PhonePe helpers ----------------------------------------------------------
 
-interface RazorpayResponse {
-  razorpay_order_id: string;
-  razorpay_payment_id: string;
-  razorpay_signature: string;
+/** Non-authoritative — the SDK's IFRAME `callback` just signals close/conclude, never a verifiable proof of payment. The server (via /api/payment/verify, calling PhonePe's Order Status API) is always the source of truth. */
+interface PhonePeCallbackResponse {
+  code?: string;
 }
 
-function loadRazorpayScript(): Promise<boolean> {
+function loadPhonePeScript(): Promise<boolean> {
   return new Promise((resolve) => {
-    if (typeof window !== "undefined" && (window as unknown as Record<string, JsonValue>).Razorpay) {
+    if (typeof window !== "undefined" && (window as unknown as Record<string, JsonValue>).PhonePeCheckout) {
       resolve(true);
       return;
     }
     const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.src = "https://mercury.phonepe.com/web/bundle/checkout.js";
     script.onload = () => resolve(true);
     script.onerror = () => resolve(false);
     document.body.appendChild(script);
   });
 }
 
-function openRazorpayModal(opts: {
-  keyId: string;
-  razorpayOrderId: string;
-  amount: number;
-  currency: string;
-  name: string;
-  prefill?: { email?: string; name?: string };
-}): Promise<RazorpayResponse> {
-  return new Promise((resolve, reject) => {
-     
-    const Rzp = (window as any).Razorpay;
-    const rzp = new Rzp({
-      key: opts.keyId,
-      order_id: opts.razorpayOrderId,
-      amount: opts.amount,
-      currency: opts.currency,
-      name: opts.name,
-      prefill: opts.prefill ?? {},
-      handler: (response: RazorpayResponse) => resolve(response),
+/** Opens PhonePe's hosted checkout in an in-page overlay (closest match to the previous modal-based UX). Resolves once the overlay closes — regardless of outcome; the caller must still ask the server what actually happened. */
+function openPhonePeCheckout(opts: { tokenUrl: string }): Promise<PhonePeCallbackResponse> {
+  return new Promise((resolve) => {
+
+    const PhonePeCheckout = (window as any).PhonePeCheckout;
+    PhonePeCheckout.transact({
+      tokenUrl: opts.tokenUrl,
+      type: "IFRAME",
+      callback: (response: PhonePeCallbackResponse) => resolve(response ?? {}),
     });
-    rzp.on("payment.failed", (res: { error: { description: string } }) => {
-      reject(new Error(res.error?.description ?? "Payment failed"));
-    });
-    rzp.open();
   });
 }
 
@@ -242,7 +227,7 @@ function useEmiCheckout({
   setStep: (step: CheckoutStep) => void;
   setActionError: (msg: string) => void;
   setIsProcessingPayment: (v: boolean) => void;
-  ensureValueOtpGate: (method: "razorpay" | "cash" | "emi") => boolean;
+  ensureValueOtpGate: (method: "phonepe" | "cash" | "emi") => boolean;
 }) {
   const [emiTenure, setEmiTenure] = useState<number>(emiSettings?.tenureOptions?.[0] ?? 3);
   const emiEligible = useMemo(
@@ -555,7 +540,7 @@ function renderPaymentStep({
   cartIsEmpty,
   adminBypassEnabled,
   showCashOption,
-  showRazorpay,
+  showPhonePe,
   showCod,
   emiVisible,
   emiSettings,
@@ -582,7 +567,7 @@ function renderPaymentStep({
   cartIsEmpty: boolean;
   adminBypassEnabled: boolean;
   showCashOption: boolean;
-  showRazorpay: boolean;
+  showPhonePe: boolean;
   showCod: boolean;
   emiVisible: boolean;
   emiSettings: BuyerEmiSettings | null;
@@ -629,7 +614,7 @@ function renderPaymentStep({
             onSubmit={() => undefined}
             /*
              * 🛑 `hideActions` because this step has FOUR terminal actions -
-             * UPI/cash, Razorpay, COD and EMI - each with its own eligibility
+             * UPI/cash, PhonePe, COD and EMI - each with its own eligibility
              * and its own handler. A single Save row would have to claim to be
              * one of them. The buttons below stay exactly where they are.
              */
@@ -677,7 +662,7 @@ function renderPaymentStep({
               </Button>
             </Stack>
           )}
-          {showRazorpay && (
+          {showPhonePe && (
             <Button
               type="button"
               onClick={handlePayOnline}
@@ -685,7 +670,7 @@ function renderPaymentStep({
               className={PRIMARY_BTN_CLS}
             >
               <Row gap="xs" align="center" justify="center">
-                <RazorpayIcon className="h-4 w-4" />
+                <PhonePeIcon className="h-4 w-4" />
                 <Span>{CK.PAYMENT_ONLINE_BTN}</Span>
               </Row>
             </Button>
@@ -1229,7 +1214,7 @@ function useValueOtpCheckout({
    * once verified, and the buyer just clicks the payment button again.
    */
   const ensureValueOtpGate = useCallback(
-    (_method: "razorpay" | "cash" | "emi"): boolean => {
+    (_method: "phonepe" | "cash" | "emi"): boolean => {
       if (!requiresValueOtp || valueOtpVerified) return true;
       setStep("value-otp");
       void handleSendValueOtp();
@@ -1324,36 +1309,53 @@ function usePaymentHandlers({
   setStep: (step: CheckoutStep) => void;
   setActionError: (msg: string) => void;
   setIsProcessingPayment: (v: boolean) => void;
-  ensureValueOtpGate: (method: "razorpay" | "cash" | "emi") => boolean;
+  ensureValueOtpGate: (method: "phonepe" | "cash" | "emi") => boolean;
 }) {
   const handlePayOnline = useCallback(async () => {
     if (!selectedAddress || !user) return;
-    if (!ensureValueOtpGate("razorpay")) return;
+    if (!ensureValueOtpGate("phonepe")) return;
     setIsProcessingPayment(true);
     setActionError("");
     setStep("processing");
     try {
-      const createRes = await createRazorpayOrder(subtotal);
+      const createRes = await createPhonePeOrder(subtotal);
       if (!createRes.ok) {
         const err = await createRes.json().catch(() => ({}));
         throw new Error((err as { error?: string }).error ?? "Failed to create order");
       }
-      const createData = (await createRes.json()) as { data: { razorpayOrderId: string; amount: number; currency: string; keyId: string } };
-      const { razorpayOrderId, amount, currency, keyId } = createData.data;
-      const loaded = await loadRazorpayScript();
+      const createData = (await createRes.json()) as { data: { merchantOrderId: string; redirectUrl: string } };
+      const { merchantOrderId, redirectUrl } = createData.data;
+      const loaded = await loadPhonePeScript();
       if (!loaded) throw new Error("Failed to load payment gateway");
-      const rzpResponse = await openRazorpayModal({
-        keyId, razorpayOrderId, amount, currency,
-        name: process.env.NEXT_PUBLIC_SITE_NAME ?? "LetItRip",
-        prefill: { email: user.email ?? undefined, name: (user as unknown as Record<string, JsonValue>).displayName as string | undefined },
-      });
-      const verifyRes = await verifyRazorpayPayment({
-        razorpay_order_id: rzpResponse.razorpay_order_id,
-        razorpay_payment_id: rzpResponse.razorpay_payment_id,
-        razorpay_signature: rzpResponse.razorpay_signature,
+      // The overlay's own callback is not authoritative (PhonePe never hands
+      // the browser a verifiable proof of payment) — it only tells us the
+      // buyer is done interacting, regardless of outcome. /api/payment/verify
+      // is what actually asks PhonePe's Order Status API what happened.
+      await openPhonePeCheckout({ tokenUrl: redirectUrl });
+
+      // A genuine race against the async webhook (buyer closed the overlay
+      // just as PhonePe's own confirmation landed) resolves within a couple
+      // seconds — one bounded retry covers it without a full live-status
+      // subscription.
+      let verifyRes = await verifyPhonePePayment({
+        merchantOrderId,
         addressId: selectedAddress.id,
         outOfStockPolicy,
       });
+      if (!verifyRes.ok) {
+        const err = await verifyRes.json().catch(() => ({}));
+        // Kept as a literal (not an import of the shared ERROR_MESSAGES
+        // constant) — this is a "use client" component and that constant's
+        // module chain is not guaranteed client-bundle-safe.
+        if ((err as { error?: string }).error === "Your payment is still being confirmed — please wait a moment and refresh.") {
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          verifyRes = await verifyPhonePePayment({
+            merchantOrderId,
+            addressId: selectedAddress.id,
+            outOfStockPolicy,
+          });
+        }
+      }
       if (!verifyRes.ok) {
         const err = await verifyRes.json().catch(() => ({}));
         throw new Error((err as { error?: string }).error ?? "Payment verification failed");
@@ -1437,7 +1439,7 @@ function usePaymentHandlers({
 export function CheckoutRouteClient({
   adminBypassEnabled = false,
   showCashOption = true,
-  showRazorpay = false,
+  showPhonePe = false,
   showCod = false,
   showCoupons = false,
   showEmi = false,
@@ -1446,7 +1448,7 @@ export function CheckoutRouteClient({
 }: {
   adminBypassEnabled?: boolean;
   showCashOption?: boolean;
-  showRazorpay?: boolean;
+  showPhonePe?: boolean;
   showCod?: boolean;
   showCoupons?: boolean;
   showEmi?: boolean;
@@ -1584,7 +1586,7 @@ export function CheckoutRouteClient({
   // charges/records (see usePricingPreview above). Falls back to the plain
   // subtotal-minus-coupon estimate while the preview hasn't loaded yet.
   const previewPaymentMethod: "cod" | "online" | "upi_manual" | "cash" | "emi" =
-    showCashOption ? "cash" : showCod ? "cod" : showRazorpay ? "online" : "emi";
+    showCashOption ? "cash" : showCod ? "cod" : showPhonePe ? "online" : "emi";
   const couponSignal = effectiveCoupons.map((c) => `${c.code}:${c.discountAmount}`).join(",");
   const {
     preview: pricingPreview,
@@ -1835,9 +1837,9 @@ export function CheckoutRouteClient({
    * Mobile bottom bar — one explicit branch per step.
    *
    * This used to END in an un-guarded `return [PAY_ONLINE]`, reached by every
-   * step that wasn't address/value-otp/processing. Since `showRazorpay`
-   * defaults to false, that offered "Pay Online (Razorpay)" — wired to the
-   * Razorpay handler — on a site where Razorpay is switched off. The payment
+   * step that wasn't address/value-otp/processing. Since `showPhonePe`
+   * defaults to false, that offered "Pay Online (PhonePe)" — wired to the
+   * PhonePe handler — on a site where PhonePe is switched off. The payment
    * branch now picks the CTA that matches an ENABLED method, and an
    * unrecognised step gets no bar at all rather than a plausible-looking wrong
    * one.
@@ -1885,7 +1887,7 @@ export function CheckoutRouteClient({
       const disabled = isProcessingPayment || cartIsEmpty;
       const primary = showCashOption
         ? { id: ACTION_ID.PAY_COD, label: "Pay via UPI / Cash", onClick: handlePlaceCashOrder }
-        : showRazorpay
+        : showPhonePe
           ? { id: ACTION_ID.PAY_ONLINE, label: CK.PAYMENT_ONLINE_BTN, onClick: handlePayOnline }
           : showCod
             ? { id: ACTION_ID.PAY_COD, label: CK.PAYMENT_COD_BTN, onClick: handlePlaceCodOrder }
@@ -1899,7 +1901,7 @@ export function CheckoutRouteClient({
     }
     return [];
 
-  }, [step, selectedAddress, addressesLoading, handleAdvanceToExtras, handleAdvanceToPayment, handleStepBack, isProcessingPayment, isVerifyingValueOtp, valueOtpCode.length, handleVerifyValueOtp, cartIsEmpty, handlePayOnline, handlePlaceCashOrder, handlePlaceCodOrder, handlePlaceEmiOrder, showCashOption, showRazorpay, showCod, emiVisible, requireAuth]);
+  }, [step, selectedAddress, addressesLoading, handleAdvanceToExtras, handleAdvanceToPayment, handleStepBack, isProcessingPayment, isVerifyingValueOtp, valueOtpCode.length, handleVerifyValueOtp, cartIsEmpty, handlePayOnline, handlePlaceCashOrder, handlePlaceCodOrder, handlePlaceEmiOrder, showCashOption, showPhonePe, showCod, emiVisible, requireAuth]);
 
   useBottomActions(
     bottomActions.length > 0
@@ -1971,7 +1973,7 @@ export function CheckoutRouteClient({
                   at auction or negotiated on an offer, so stacking a discount
                   on top would re-open a settled number. */}
               {showCoupons && !isLockedCheckoutLane && renderCouponSection({ couponCode, setCouponCode, couponError, isCouponLoading, effectiveCoupons, handleApplyCoupon, handleRemoveCoupon })}
-              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showRazorpay, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, previewedTotal: hasPayableFigures && pricingPreview ? pricingPreview.total : null, manualPaymentConsent, setManualPaymentConsent, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
+              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showPhonePe, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, previewedTotal: hasPayableFigures && pricingPreview ? pricingPreview.total : null, manualPaymentConsent, setManualPaymentConsent, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
             </Stack>
           );
         }}

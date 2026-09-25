@@ -30,9 +30,12 @@ const REQUIRED_VARS = [
   // list required it and seed-cli accepted it as a substitute for the real
   // key — while holding a DIFFERENT value. A seeder could pass the presence
   // check and then throw at the first encrypt. See DEAD_REQUIRED_VAR below.
-  "RAZORPAY_KEY_ID",
-  "RAZORPAY_KEY_SECRET",
-  "RAZORPAY_WEBHOOK_SECRET",
+  "PHONEPE_CLIENT_ID",
+  "PHONEPE_CLIENT_SECRET",
+  "PHONEPE_CLIENT_VERSION",
+  "PHONEPE_ENVIRONMENT",
+  "PHONEPE_WEBHOOK_USERNAME",
+  "PHONEPE_WEBHOOK_PASSWORD",
   "EMAIL_FROM",
   "EMAIL_FROM_NAME",
 ];

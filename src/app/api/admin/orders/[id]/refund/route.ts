@@ -32,10 +32,10 @@ export const POST = withProviders(
       if (!order) return errorResponse("Order not found", 404);
 
       const isFull = body!.amount >= order.totalPrice;
-      const usesRazorpay = order.paymentMethod !== "cod" && !!order.paymentId;
+      const usesPhonePe = order.paymentMethod !== "cod" && !!order.paymentId;
 
       const result = await processRefundAction(
-        usesRazorpay
+        usesPhonePe
           ? {
               orderId: id,
               type: isFull ? "full" : "partial",
@@ -44,8 +44,8 @@ export const POST = withProviders(
               ...(body!.reasonNote ? { reasonNote: body!.reasonNote } : {}),
               refundedBy: user!.uid,
               confirmIrrevocable: true,
-              method: "razorpay",
-              razorpayPaymentId: order.paymentId!,
+              method: "phonepe",
+              phonepeOrderId: order.paymentId!,
             }
           : {
               orderId: id,

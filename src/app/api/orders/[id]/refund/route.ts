@@ -29,8 +29,8 @@ const bodySchema = z.object({
   reasonNote: z.string().max(500).optional(),
   itemIds: z.array(z.string()).optional(),
   confirmIrrevocable: z.literal(true),
-  method: z.enum(["razorpay", "manual"]),
-  razorpayPaymentId: z.string().optional(),
+  method: z.enum(["phonepe", "manual"]),
+  phonepeOrderId: z.string().optional(),
   manualTransactionId: z.string().optional(),
   proofDocumentUrl: z.string().optional(),
   proofDocumentMimeType: z.string().optional(),
@@ -55,7 +55,7 @@ export const POST = withProviders(
       const b = body!;
       // Type-safe union narrowing for the discriminated union in processRefundAction.
       const refundInput =
-        b.method === "razorpay"
+        b.method === "phonepe"
           ? {
               orderId: id,
               type: b.type,
@@ -65,8 +65,8 @@ export const POST = withProviders(
               ...(b.itemIds ? { itemIds: b.itemIds } : {}),
               confirmIrrevocable: true as const,
               refundedBy: user!.uid,
-              method: "razorpay" as const,
-              razorpayPaymentId: b.razorpayPaymentId ?? order.paymentId ?? "",
+              method: "phonepe" as const,
+              phonepeOrderId: b.phonepeOrderId ?? order.paymentId ?? "",
             }
           : {
               orderId: id,
