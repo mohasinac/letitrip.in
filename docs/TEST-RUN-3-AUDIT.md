@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**38 / 130 pages** · 1330 cases · 15 groups
+**40 / 130 pages** · 1331 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -53,7 +53,7 @@ case — the audits do not check per-field presence.
 | `buying/bidding` | Bidding | 23 | rewritten | 23 cases. FIXED bid-history-shows-date-time-and-masked-name: it forbade 'Meera Bey'/'Rohit Collector'/'Ananya Collector', which occur ZERO times in the seed (those personas' displayName is 'Mock User 11'/'14'/'9'), so the PII assertion passed vacuously whether masking worked or not. Also corrected the masked shape from 'M*** B***' to 'M*** U*** 11***' — maskName keeps each word's first char. maskPublicBid does genuinely mask now (RC #50 fixed). Bidder uids were correct. |
 | `buying/wishlist-history` | Wishlist & History | 22 | audited | 22 cases, NO change needed. Verified against source: WISHLIST_MAX=20 (hard, 409 WISHLIST_FULL) and HISTORY_MAX=50 (soft FIFO) both match the cases, and the file header documents the distinction correctly. /wishlist, /user/history and /api/user/history/merge all exist. Both sweeps clean. Found a product-side oddity instead: two guest-history storage keys, the publicly exported one dead — recorded in OUTOFSCOPE. |
 | `buying/cart` | Cart | 75 | rewritten | 75 cases. FIXED one label: 'WhatsApp order updates' -> 'WhatsApp updates' under 'Add-ons' (StoreAddonsPicker's real label; CartPriceBreakdown's fee line agrees). Verified the core grouped-line invariant against cart.repository.ts:370 — a group line rejects a quantity change ('Change the quantities of the individual items in this group instead.') and the cases correctly assert no line-level stepper on a group vs one on a bundle. 'Sign in to see shipping & fees' is real (CartRouteClient:1355). 'QA Group cross-store' is a record the case creates — absent by design. |
-| `buying/buying-coupons` | Coupons — Scoping & Stacking | 20 | audited | 20 cases, NO change needed. All 6 cited codes (ARENA25/ARENAVIP/BLADER50/FREESHIP499/OFFICIAL10/SEALED20) are really seeded. The no-coupon-input-on-/cart assertion is correct — CartRouteClient:575 redirects a ?coupon= param to checkout. All three COUPON_HELP section titles quoted exactly. eligibleSubtotal in coupon-actions.ts confirms min-spend is measured against eligible items, not the cart total. Both sweeps clean; 'Invalid coupon' is the case forbidding a GENERIC error shape, which is right — the real messages are specific. |
+| `buying/buying-coupons` | Coupons — Scoping & Stacking | 20 | audited | 20 cases, no change needed (see prior note). LEAD for re-check: startPage /promotions is a redirect-only shim to /promotions/deals. |
 | `buying/offers` | Offers | 67 | rewritten | 66 cases. FIXED 6 occurrences of the button label 'Decline' -> 'Reject': SellerOffersView renders ACTIONS.STORE[accept|counter|reject-offer] = Accept/Counter/Reject. The STATUS is 'declined' and CLAUDE.md says 'decline', which is what made this plausible — but a case names the button. Verified ADMIN_ROW_ACTIONS.offers is really [VIEW, CANCEL]. Noted: ADMIN_BULK_ACTIONS.offers=[CANCEL] still exists in the registry though AdminOffersView renders no bulk bar — the case is correctly hedged about it. Page scope defect (13 of 66 cases are about offers) recorded in OUTOFSCOPE. |
 | `buying/reviews` | Reviews | 5 | rewritten | 5 cases. Both sweeps clean; schema traps already fixed in source (comment not body per RC #100, images:string[] per RC #45). FOUND: no UI writes a review — createReviewAction/useCreateReview/UI_TEXT.WRITE_REVIEW all exist but no .tsx consumes them, and ReviewModal is ViewReviewModal (read-only). Case KEPT and its step sharpened so a missing control records as a FAILURE with evidence rather than 'could not test'. Product gap in OUTOFSCOPE. |
 | `buying/reviews-pagination` | Reviews — Pagination, Sort & Filter | 14 | rewritten | 14 cases. MAJOR: all of them opened product-beyblade-burst-valkyrie, which has FOUR reviews against a page size of 12 — so nine cases about paginating, comparing page 2 and filtering by rating could never perform what they describe. Repointed to product-beyblade-original-dranzer-s (19 reviews), which reviews-seed-data.ts builds for exactly this via its DEEP_REVIEW_PRODUCT loop: ratings cycle 1..5 so every star bucket is filled, and dates interleave with the main loop so 'newest first' is checkable by eye. RC #100 verified fixed in source (one storeId query; the PII leak it exposed is closed too). empty-state correctly uses spryzen-video-demo, which has 0. |
@@ -63,7 +63,7 @@ case — the audits do not check per-field presence.
 | `buying/order-status-lifecycle` | Order statuses & transitions | 14 | audited | 14 cases, NO change needed. Scope assertions match STATUS_SCOPE exactly: Active+Closed=All (total mapping), return_requested is Active, and Delivered is used as an example of a NON-active status — all correct. Fixture adequacy computed from the generator (not grepped): the expanded loop gives rehan 2 orders in EVERY one of the 9 statuses, so the case's claim that the seed carries an order in each status is true. Both sweeps clean; 'QA1234567890' is a tracking number the case types. |
 | `buying/user-uncovered-pages` | Buyer pages with no other coverage | 4 | rewritten | 4 cases. All 4 routes exist. FIXED user-addresses-add-renders: /user/addresses/add is a 3-line LEGACY REDIRECT to /new, so the case was implicitly testing the shim while only asserting 'the form is open' — which passes whether the redirect works or not. Now reads the address bar explicitly, which is the one thing this URL covers that its /new sibling does not. Verified the landmark field really exists in AddressForm (RC #76c closed), so the round-trip the case turns on is testable. |
 
-## Selling `selling` — 24 pages, 180 cases
+## Selling `selling` — 24 pages, 181 cases
 
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
@@ -78,9 +78,9 @@ case — the audits do not check per-field presence.
 | `selling/seller-shipping-payouts-setup` | Seller Shipping & Payout Setup | 10 | rewritten | 10 cases. Both sweeps clean, all 5 referenced /store URLs exist. FIXED consolidated-tabs-old-urls: it said 'open each of the pre-consolidation URLs' and named NONE, so a tester had to guess which existed — and a guess that misses the regressed one reports a clean pass. Enumerated the 8 real redirect shims found by scanning /store for redirect-only page.tsx files, and named each one's destination in the expectation, including the two that carry a tab: payout-settings appends ?tab=settings and print-center forwards its query onto /store/fulfillment. |
 | `selling/sectionised-forms` | Forms — sections, error summary and the mobile bar | 9 | rewritten | 9 cases. audit-form-sectionised confirmed at 0 — the migration really is complete. RC #74 verified fixed and guarded: FormErrorSummary returns null unless ctx.submitAttempted. FOUND a live gap: FormErrorList's click handler is goToStep only — no focus, no scrollIntoView — so it opens the section and stops, which is exactly what two cases call the failure. Cases KEPT asserting the stronger behaviour rather than softened, since softening would turn a real UX gap into a pass; one now states explicitly that landing on the heading is a FAILURE with evidence. Recorded in OUTOFSCOPE. |
 | `selling/seller-listing-types` | Seller — All Listing Types (Coupons, Bundles, Classifieds, Digital Codes, Live, Prize Draws, Art, Stickers) | 18 | rewritten | 18 cases (7 of them on /store/coupons — mild scope drift, same shape as buying/offers, not restructured). Verified the type-dropdown case correctly asserts 'bundle' must NOT be offered (it stopped being a listingType in SB-UNI-D). FIXED two startPages that are now REDIRECTS: /store/auctions and /store/prize-draws both forward to /store/products?listingType=<type>, so the steps now say landing there is correct rather than a wrong turn — otherwise a tester finds themselves on the products page and records 'could not test'. Also refined my own enumeration on selling/seller-shipping-payouts-setup, which listed those three as going to /store/products without the type parameter they carry. |
-| `selling/seller-catalog-org` | Seller Categories, Sublisting Categories & Listing Templates | 7 | pending |  |
+| `selling/seller-catalog-org` | Seller Categories, Sublisting Categories & Listing Templates | 8 | rewritten | 8 cases (was 7). Fixed a STALE CLAIM that would have produced false bug reports: header and inline-create-persists said the ancestor chain is not derived on write; deriveTaxonomy() has done so from create+update since Root Cause #101. Also: /store/categories is STOREFRONT shelves (storeCategoriesRepository, field 'Label') not global taxonomy — the crud case described the wrong object and the wrong field name. Verified the inline-create picker legitimately reaches the admin categories endpoint (ROLES_STORE_WRITE, commented as being for this picker) and that quick-create sends no parent, so its 1 link is arithmetic not a defect. NEW gap case deep-category-chain-derived files a product under Heavy Metal System (tier 3) and asserts 4 links + presence on the root page — the only assertion that can catch a regression of #101, since every seeded product already carries the chain. |
 | `selling/seller-custom-brands` | Seller — Custom Brands | 5 | pending |  |
-| `selling/seller-ops-comms` | Seller Addresses, Fulfillment & Print | 4 | pending |  |
+| `selling/seller-ops-comms` | Seller Addresses, Fulfillment & Print | 4 | pending | LEAD (redirect sweep): startPage /store/print-center is a redirect-only shim to /store/fulfillment — a NAME change, not just a path change, so a tester may think they are lost. |
 | `selling/seller-marketing-extras` | Seller Offers, Features, Google Reviews & WhatsApp Catalog | 9 | pending |  |
 | `selling/seller-guide` | Seller Guide Pages | 1 | pending |  |
 | `selling/store-dashboard-navigation` | Store Dashboard Navigation | 9 | pending |  |
@@ -89,8 +89,8 @@ case — the audits do not check per-field presence.
 | `selling/quick-add-minimum-details` | Quick add — the short form, and what WhatsApp shows | 6 | pending |  |
 | `selling/media-limits` | Media \u2014 ten images and one video, on every listing type | 6 | pending |  |
 | `selling/listing-type-fields-roundtrip` | Per-type fields survive a save \u2014 all nine listing types | 5 | pending |  |
-| `selling/listing-lifecycle` | Listing lifecycle, per type | 18 | pending |  |
-| `selling/store-uncovered-pages` | Seller pages with no other coverage | 6 | pending |  |
+| `selling/listing-lifecycle` | Listing lifecycle, per type | 18 | pending | LEAD (redirect sweep): startPage /digital-codes is a redirect-only shim. |
+| `selling/store-uncovered-pages` | Seller pages with no other coverage | 6 | pending | LEAD (redirect sweep): startPage /store/pre-orders redirects to /store/products?listingType=pre-order. |
 
 ## Content & Discovery `content-discovery` — 11 pages, 103 cases
 
@@ -101,7 +101,7 @@ case — the audits do not check per-field presence.
 | `content-discovery/store-reviews-aggregate` | Store reviews tab — aggregate and privacy | 4 | pending |  |
 | `content-discovery/blog` | Blog | 5 | pending |  |
 | `content-discovery/events` | Events, Raffles & Spin Wheel | 19 | pending |  |
-| `content-discovery/coupons` | Coupons | 6 | pending | LEAD (vacuous-negative sweep): forbids 'This coupon has expired' — absent from seed and source. Find the real expiry message. |
+| `content-discovery/coupons` | Coupons | 6 | pending | LEADS: (1) forbids 'This coupon has expired' — absent from seed and source; find the real expiry message. (2) startPage /promotions is a redirect-only shim to /promotions/deals. |
 | `content-discovery/notifications` | Notifications | 10 | pending |  |
 | `content-discovery/faq-help` | FAQ & Help | 3 | pending |  |
 | `content-discovery/search` | Search | 20 | pending |  |
@@ -125,17 +125,17 @@ case — the audits do not check per-field presence.
 | `design-ux/status-badge-legibility` | Listing Tags & Status Chips — Light vs Dark Mode | 13 | pending |  |
 | `design-ux/back-to-top-button` | Back-to-Top Button | 5 | pending |  |
 | `design-ux/form-validation-errors` | Form Validation & Error Summary | 4 | pending |  |
-| `design-ux/dashboard-layout` | Dashboards — Collapsible Sections & Mobile Tables | 9 | pending |  |
+| `design-ux/dashboard-layout` | Dashboards — Collapsible Sections & Mobile Tables | 9 | pending | LEAD (redirect sweep): startPage /admin is a redirect-only shim to the admin dashboard. Benign but confirm the case does not assert being ON /admin. |
 | `design-ux/hand-mode-layout` | Left-Hand Mode | 18 | pending |  |
 | `design-ux/footer-theme` | Footer & Dark Mode | 6 | pending |  |
-| `design-ux/homepage-carousels` | Homepage Carousels | 26 | pending |  |
+| `design-ux/homepage-carousels` | Homepage Carousels | 26 | pending | LEAD (redirect sweep): startPage /admin is a redirect-only shim to the admin dashboard. Benign but confirm the case does not assert being ON /admin. |
 | `design-ux/carousel-arrow-bounds` | Carousel Arrows — Card Boundaries | 12 | pending |  |
 
 ## Public & Marketing Pages `public-pages` — 9 pages, 96 cases
 
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
-| `public-pages/newly-wired-browse-indexes` | Classifieds, Digital Codes, Live, Lotteries, Brands, Sellers | 8 | pending |  |
+| `public-pages/newly-wired-browse-indexes` | Classifieds, Digital Codes, Live, Lotteries, Brands, Sellers | 8 | pending | LEAD (redirect sweep): /classified, /digital-codes and /live are ALL redirect-only shims — a page whose whole point is that these browse indexes are wired needs to state where each one lands. |
 | `public-pages/store-tabs` | Store page tabs — products, reviews, and the per-type tabs | 6 | pending |  |
 | `public-pages/core-listing-pages` | Homepage & Core Listing Pages | 16 | pending |  |
 | `public-pages/stores-sellers-directories` | Store & Seller Directories | 16 | pending |  |
@@ -149,7 +149,7 @@ case — the audits do not check per-field presence.
 
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
-| `seo/canonical-and-host` | Canonical host & redirects | 7 | pending |  |
+| `seo/canonical-and-host` | Canonical host & redirects | 7 | pending | LEAD (redirect sweep): startPage /promotions redirects to /promotions/deals — directly relevant to a canonical-URL page. |
 | `seo/sitemap-and-robots` | Sitemap & robots | 6 | pending |  |
 | `seo/page-metadata` | Per-page titles & descriptions | 7 | pending |  |
 | `seo/og-images` | Social preview cards | 6 | pending |  |
@@ -159,7 +159,7 @@ case — the audits do not check per-field presence.
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
 | `admin/admin-detail-round-trips` | Admin detail pages — view and edit round-trips | 7 | pending |  |
-| `admin/catalog-listings` | Catalog & Listings | 17 | pending |  |
+| `admin/catalog-listings` | Catalog & Listings | 17 | pending | LEAD (STALE CLAIM): admin-crud case's expectedBehaviour/expectedUiState repeat 'nothing on the write side derives that chain', telling the tester ONE category link 'is the known gap rather than a surprise'. False since Root Cause #101. No expectedData on the link count so it misleads rather than mis-scores. Fix the prose; see selling/seller-catalog-org header. |
 | `admin/coupons` | Coupons | 11 | pending |  |
 | `admin/events-raffles-spin` | Events, Raffles & Spin Wheel | 8 | pending |  |
 | `admin/prize-draws-lotteries` | Prize Draws / Lotteries | 5 | pending |  |
@@ -167,18 +167,18 @@ case — the audits do not check per-field presence.
 | `admin/classifieds-digitalcodes-live` | Classifieds, Digital Codes & Live Listings | 3 | pending |  |
 | `admin/blog-faqs` | Blog & FAQs | 3 | pending |  |
 | `admin/orders-fulfillment` | Orders & Fulfillment | 20 | pending | LEAD (vacuous-negative sweep): forbids 'Has a proof' — absent from seed and source; filter-tabs.ts uses 'awaiting_proof'. Verify the real chip label. |
-| `admin/users-trust` | Users & Trust | 33 | pending |  |
+| `admin/users-trust` | Users & Trust | 33 | pending | LEAD (redirect sweep): startPage /admin is a redirect-only shim to the admin dashboard. Benign but confirm the case does not assert being ON /admin. |
 | `admin/content-marketing` | Content & Marketing | 7 | pending |  |
 | `admin/site-system` | Site & System | 43 | pending | LEAD: carries a 'turn it OFF' first mutation followed by a reload check — verify the control does not ALREADY default off, or the persistence check passes trivially (same defect fixed in selling/seller-analytics-payouts). |
 | `admin/buyer-data-admin` | Buyer-Data Admin Views | 12 | pending |  |
 | `admin/media-watermark` | Media Watermark Settings | 5 | pending |  |
 | `admin/bug-hunter-rewards` | bug-hunter-rewards | 4 | pending |  |
-| `admin/category-brand-authoring` | Category & Brand Authoring | 8 | pending |  |
+| `admin/category-brand-authoring` | Category & Brand Authoring | 8 | rewritten | 8 cases, 3 rewritten against source. (1) ancestor-chain probe was INVERTED — expectedData.categoryPagesListingIt: 1 demanded the pre-#101 bug, so correct behaviour scored a fail; burst-parts is tier 2 so the answer is 3. (2) delete-category-with-children-refused asserted a 409 refusal that no longer exists: the handler CASCADES to the parent (children re-parent to the grandparent, products re-filed through the repository so chains rebuild). Key kept, content and catalogue label rewritten; the case now builds its own QA subtree rather than deleting seeded Beyblade Burst, which would have re-parented the whole Burst tree under every other case in the same run. (3) category-type-not-guessable asserted a kind dropdown the editor does not have and by design should not — the kind comes from WHICH surface authored the row (/admin/brands filters categoryType==brand); rewritten to test that the two surfaces stay disjoint. Verified as correct and left alone: structural-fields-derived-not-typed (editor exposes only name/slug/description/parentId/order/isActive/showInMenu — no tier/path/ancestors), brand-rename-orphan-check, brand-cover-image (brand-hasbro IS seeded; /test-media/sample-image.png exists). |
 | `admin/uncovered-admin-pages` | Admin pages with no other coverage | 14 | pending |  |
 | `admin/bans-and-trust` | Bans, Unbans & Trust | 12 | pending |  |
 | `admin/bulk-actions` | Bulk Actions | 10 | pending |  |
 | `admin/content-deletes` | Editing & Deleting Content | 14 | pending |  |
-| `admin/firebase-function-effects` | Firebase Functions — observable effects | 14 | pending |  |
+| `admin/firebase-function-effects` | Firebase Functions — observable effects | 14 | pending | LEAD (redirect sweep): startPage /admin is a redirect-only shim to the admin dashboard. Benign but confirm the case does not assert being ON /admin. |
 
 ## Page Wiring & Reachability `page-wiring` — 4 pages, 14 cases
 
@@ -214,8 +214,8 @@ case — the audits do not check per-field presence.
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
 | `search-and-nav/header-search` | Header search | 4 | pending |  |
-| `search-and-nav/sidebar-search` | Sidebar search | 1 | pending |  |
-| `search-and-nav/employee-permissions` | Employee sidebar | 2 | pending |  |
+| `search-and-nav/sidebar-search` | Sidebar search | 1 | pending | LEAD (redirect sweep): startPage /admin is a redirect-only shim to the admin dashboard. Benign but confirm the case does not assert being ON /admin. |
+| `search-and-nav/employee-permissions` | Employee sidebar | 2 | pending | LEAD (redirect sweep): startPage /admin is a redirect-only shim to the admin dashboard. Benign but confirm the case does not assert being ON /admin. |
 | `search-and-nav/settings-deep-links` | Settings deep links | 2 | pending |  |
 
 ## Money Flows (end to end) `money-flows` — 4 pages, 29 cases
