@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**26 / 130 pages** · 1330 cases · 15 groups
+**27 / 130 pages** · 1330 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -61,7 +61,7 @@ case — the audits do not check per-field presence.
 | `buying/user-dashboard-navigation` | User Dashboard Navigation | 9 | rewritten | 9 cases, essentially current. The bottom-bar case is ALREADY rewritten for the 2026-09-28 unification and DashboardBottomNav is confirmed gone from source. 'More' is real (BottomNavbar), 'Logout' is real (AppLayoutShell sidebarProfileLabels), Breadcrumbs components exist. Both sweeps clean. Only change: named the 'Logout' label in its step instead of 'the log-out control', per the name-the-control rule. |
 | `buying/return-request` | Requesting a return \u2014 and what final sale actually blocks | 7 | rewritten | 7 cases. FIXED the two reason labels: steps said 'the not-received reason' and 'the change-of-mind reason', but RETURN_REASON_LABEL renders 'It never arrived' and 'I changed my mind' — neither paraphrase is on screen. Also removed a misleading hunt: both cases told the tester to FIND a final-sale order, when finalSale is absent on every seeded product and the schema says absent means true, so any delivered order qualifies. Recorded in OUTOFSCOPE that no non-final-sale fixture exists. |
 | `buying/order-status-lifecycle` | Order statuses & transitions | 14 | audited | 14 cases, NO change needed. Scope assertions match STATUS_SCOPE exactly: Active+Closed=All (total mapping), return_requested is Active, and Delivered is used as an example of a NON-active status — all correct. Fixture adequacy computed from the generator (not grepped): the expanded loop gives rehan 2 orders in EVERY one of the 9 statuses, so the case's claim that the seed carries an order in each status is true. Both sweeps clean; 'QA1234567890' is a tracking number the case types. |
-| `buying/user-uncovered-pages` | Buyer pages with no other coverage | 4 | pending |  |
+| `buying/user-uncovered-pages` | Buyer pages with no other coverage | 4 | rewritten | 4 cases. All 4 routes exist. FIXED user-addresses-add-renders: /user/addresses/add is a 3-line LEGACY REDIRECT to /new, so the case was implicitly testing the shim while only asserting 'the form is open' — which passes whether the redirect works or not. Now reads the address bar explicitly, which is the one thing this URL covers that its /new sibling does not. Verified the landmark field really exists in AddressForm (RC #76c closed), so the round-trip the case turns on is testable. |
 
 ## Selling `selling` — 24 pages, 180 cases
 
