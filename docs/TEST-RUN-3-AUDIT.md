@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**48 / 130 pages** · 1331 cases · 15 groups
+**49 / 130 pages** · 1331 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -44,7 +44,7 @@ case — the audits do not check per-field presence.
 
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
-| `buying/order-detail-actions` | Order detail — cancel, return, track, invoice, payment | 7 | rewritten | All 5 order sub-routes (cancel/invoice/payment/return/track) exist and /user/returns exists. FIXED track-shows-real-dates: it cited order-1-20251104-aevnlw, which no seeded order resolves to — replaced with order-1-20251122-481j4x, the shipped order rehan actually owns. Order ids are GENERATED, so no text scan of the seed could see the dead one; R7 now recomputes them. |
+| `buying/order-detail-actions` | Order detail — cancel, return, track, invoice, payment | 7 | rewritten | LEAD (dead route in STEP TEXT — invisible to audit-tester-checklist-hrefs, which only checks href/startPage): a case navigates to /user/orders/{id} to prove a FOREIGN order is refused. That route does not exist — there is no /user/orders/[id]/page.tsx, only view/[id] plus the cancel|invoice|payment|return|track sub-routes. So the tester gets a 404 and records a pass, and the case would keep passing with the ownership check removed entirely. Repoint to /user/orders/view/{id}, which is the real detail page and the one that can actually refuse. |
 | `buying/browsing-search` | Browsing & Search | 42 | rewritten | LEAD (identity sweep): 1 guest-only case(s) containing a Sign-in step - a guest batch gets NO session, so those steps cannot be performed at all. fetch-cases assigns ONE identity per batch: roles exactly [guest] -> guest, any admin -> admin, all-seller -> seller, else buyer. So an [admin,buyer] case runs entirely AS ADMIN and its buyer half tests the wrong person, usually silently because the admin can perform it. This run is interactive, so the per-case fix is an explicit step: close the browser, swap the session file, reopen (the MCP reads it at context creation). |
 | `buying/product-detail` | Product / Auction / Pre-order Detail | 26 | rewritten | 26 cases. Three stale tester-sandbox literals fixed (titles/prices for live item, pre-order, Regalia Genesis B-59). ALSO fixed the digital-code case: it forbade 'Pending delivery'/'Waiting for seller', neither of which CodeRevealPanel renders — so it would have passed straight through Root Cause #103, where the pool had no writer and every purchase delivered nothing. Now asserts the panel is present and headed 'Your Digital Code', and names the real error string. |
 | `buying/image-tile-layout` | Image Tiles & Collages | 6 | rewritten | 6 cases (was 7). DELETED concern-card-icon-above-label: ConcernCard renders only via ConcernGrid, which has NO consumer in src/ or appkit/src/ — the case pointed at /categories and / and the component is on neither, so it could only ever return 'could not test'. Dead component recorded in OUTOFSCOPE. Remaining 6 cases target Root Cause #68 (collapsed tiles) and #80 (icon sizing) and all resolve: MediaPickerModal does have an existingFiles grid, bundle/prizedraw fixtures are real. |
