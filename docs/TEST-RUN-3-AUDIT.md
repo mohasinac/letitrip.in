@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**42 / 130 pages** · 1331 cases · 15 groups
+**43 / 130 pages** · 1331 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -121,7 +121,7 @@ case — the audits do not check per-field presence.
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
 | `design-ux/general-design` | Colors, Styles, Readability, Mobile | 12 | pending |  |
-| `design-ux/sticky-cta-bar` | Sticky Buy/Bid Bar on Scroll | 17 | pending | LEAD: 'Sign in to see the bid · 1 bid' is assembled, likely fine — confirm when auditing. |
+| `design-ux/sticky-cta-bar` | Sticky Buy/Bid Bar on Scroll | 17 | rewritten | 17 cases, 2 corrected, both phantom literals a tester could never match. (1) auction-countdown-in-bar asserted the gated label reads 'Sign in to see the bid · 1 bid'; the real label is built in ONE branch of ListingBottomActions and is exactly 'Sign in to see price', with the infoSuffix DROPPED. Noted the suffix loss as an observation rather than pass/fail — a bid count is deliberately excluded from the money-sort list on the grounds that a count is not an amount, so hiding it here is inconsistent, but that is a feature question. (2) 'Test Gadget — Standard Listing #1' exists in no seed; the cases use product-beyblade-burst-valkyrie, whose real title is 'Beyblade Burst Valkyrie' at 1899. Verified correct and left alone: the unavailable branch really does publish {} so ended/closed listings get no bar; desktop 'after-scroll'; no-bar-on-non-listing-pages is guest-only on public pages so the ~70 admin DataListingView claimants are out of its scope. |
 | `design-ux/status-badge-legibility` | Listing Tags & Status Chips — Light vs Dark Mode | 13 | pending |  |
 | `design-ux/back-to-top-button` | Back-to-Top Button | 5 | pending |  |
 | `design-ux/form-validation-errors` | Form Validation & Error Summary | 4 | pending |  |
@@ -141,7 +141,7 @@ case — the audits do not check per-field presence.
 | `public-pages/stores-sellers-directories` | Store & Seller Directories | 16 | pending |  |
 | `public-pages/help-how-it-works` | Help & How-It-Works Pages | 13 | pending |  |
 | `public-pages/legal-policy-pages` | Legal & Policy Pages | 7 | pending |  |
-| `public-pages/auth-error-pages` | Remaining Auth & Error Pages | 7 | pending |  |
+| `public-pages/auth-error-pages` | Remaining Auth & Error Pages | 7 | pending | LEAD (phantom fixture): quotes 'Test Gadget — Standard Listing #1' at ₹199.00 as the order contents. No such product exists in any seed — it is a leftover from an older fixture set. The same phantom was in design-ux/sticky-cta-bar and is now 'Beyblade Burst Valkyrie' at ₹1,899.00 (product-beyblade-burst-valkyrie). Pick whatever product the order fixture actually contains. |
 | `public-pages/help-scams-guides-subpages` | Help, Scams & Seller-Guide sub-pages | 20 | pending |  |
 | `public-pages/bug-hunters` | Bug Hunters Leaderboard | 3 | rewritten | FIXED (found by the vacuous-negative sweep): cited 'Mock User 18' as the seeded bug hunter with 1 confirmed bug. No such persona — the seed runs Mock User 1-17 plus 2 Mock Employees. The demo fixture's bugHunterName is 'Mock User 3' (bugHunterId user-yugi-muto). Rest of the page not yet read against source. |
 

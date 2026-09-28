@@ -198,7 +198,18 @@ if (typeof setTarget === "string") {
   for (let i = 0; i < lines.length; i++) {
     const m = lines[i].match(/^\|\s*`([^`\/]+\/[^`]+)`\s*\|([^|]*)\|([^|]*)\|([^|]*)\|(.*)\|\s*$/);
     if (!m || m[1] !== setTarget) continue;
-    const keptNote = typeof note === "string" ? note : m[5].trim();
+    /*
+     * An EMPTY --note leaves the existing note alone; only a non-empty one
+     * replaces it. `--note ""` used to clear the cell, which silently destroyed
+     * a lead staged from an earlier page's audit — the exact thing the notes
+     * column exists to carry forward. To clear deliberately, pass `--note -`.
+     */
+    const keptNote =
+      typeof note === "string" && note.trim() !== ""
+        ? note.trim() === "-"
+          ? ""
+          : note
+        : m[5].trim();
     lines[i] = `| \`${m[1]}\` |${m[2]}|${m[3]}| ${status} | ${keptNote} |`;
     hit = true;
     break;
