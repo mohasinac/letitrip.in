@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**35 / 130 pages** · 1330 cases · 15 groups
+**36 / 130 pages** · 1330 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -75,7 +75,7 @@ case — the audits do not check per-field presence.
 | `selling/seller-bids-bundles-filters` | Seller — Bids & Bundles Filtering | 4 | rewritten | 4 cases. FIXED seller-bundles-active-filter: /store/bundles filters on createdByStoreId, which appears ZERO times in every seed file — all 11 seeded bundles are createdByType admin, so the page is empty for every seller and the case could only ever return 'could not test'. It now creates two bundles (one Active, one Inactive) and deletes them; categories is SEED_OWNED so a leftover is cleared by the next wipe. Corrected its endResult, which still claimed read-only. Bids fixtures verified adequate: 6 auctions carry bids, all Beyblade Arena's. |
 | `selling/seller-orders` | Seller Order Management & Shipping/Tracking | 11 | rewritten | 11 cases. Lead about confirm-payment/request-reupload/reject-fraud signing in as a SELLER was WRONG — those are deliberate authorization cases asserting the seller has NO verify control, then cross-checking the admin view. Correct as written; the routes really are ROLES_ADMIN_MOD. FIXED whatsapp-admin-share: no share control exists anywhere (SELLER_ROW_ACTIONS.orders is [VIEW,EDIT,TRACK,RESEND]; the registry's WhatsApp actions are store setup; every wa.me link is on contact/chat/buyer-payment). Kept rather than deleted because it guards a real PII risk if one is added — rewritten so absence PASSES and a leaky implementation FAILS. |
 | `selling/seller-analytics-payouts` | Seller Analytics & Payouts | 6 | rewritten | 6 cases. Fixtures verified adequate: 5 payouts for store-beyblade-arena across all 4 statuses. FIXED payouts-reminder-toggle on four counts — the toggle is inside a SELECTED payout's detail panel not on the page, is labelled 'Remind me' (nothing reads 'reminder'), saves immediately via PATCH with no save button, and starts OFF because no seeded payout sets sellerReminderFlag, so the case's 'turn it OFF first' was a no-op that made the reload check pass trivially. Now toggles ON, names the 'Reminder set.' toast, and reopens the same payout after reload. |
-| `selling/seller-shipping-payouts-setup` | Seller Shipping & Payout Setup | 10 | pending |  |
+| `selling/seller-shipping-payouts-setup` | Seller Shipping & Payout Setup | 10 | rewritten | 10 cases. Both sweeps clean, all 5 referenced /store URLs exist. FIXED consolidated-tabs-old-urls: it said 'open each of the pre-consolidation URLs' and named NONE, so a tester had to guess which existed — and a guess that misses the regressed one reports a clean pass. Enumerated the 8 real redirect shims found by scanning /store for redirect-only page.tsx files, and named each one's destination in the expectation, including the two that carry a tab: payout-settings appends ?tab=settings and print-center forwards its query onto /store/fulfillment. |
 | `selling/sectionised-forms` | Forms — sections, error summary and the mobile bar | 9 | pending |  |
 | `selling/seller-listing-types` | Seller — All Listing Types (Coupons, Bundles, Classifieds, Digital Codes, Live, Prize Draws, Art, Stickers) | 18 | pending |  |
 | `selling/seller-catalog-org` | Seller Categories, Sublisting Categories & Listing Templates | 7 | pending |  |
@@ -169,7 +169,7 @@ case — the audits do not check per-field presence.
 | `admin/orders-fulfillment` | Orders & Fulfillment | 20 | pending | LEAD (vacuous-negative sweep): forbids 'Has a proof' — absent from seed and source; filter-tabs.ts uses 'awaiting_proof'. Verify the real chip label. |
 | `admin/users-trust` | Users & Trust | 33 | pending |  |
 | `admin/content-marketing` | Content & Marketing | 7 | pending |  |
-| `admin/site-system` | Site & System | 43 | pending |  |
+| `admin/site-system` | Site & System | 43 | pending | LEAD: carries a 'turn it OFF' first mutation followed by a reload check — verify the control does not ALREADY default off, or the persistence check passes trivially (same defect fixed in selling/seller-analytics-payouts). |
 | `admin/buyer-data-admin` | Buyer-Data Admin Views | 12 | pending |  |
 | `admin/media-watermark` | Media Watermark Settings | 5 | pending |  |
 | `admin/bug-hunter-rewards` | bug-hunter-rewards | 4 | pending |  |
