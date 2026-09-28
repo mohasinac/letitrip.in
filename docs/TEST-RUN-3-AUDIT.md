@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**27 / 130 pages** · 1330 cases · 15 groups
+**28 / 130 pages** · 1330 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -67,7 +67,7 @@ case — the audits do not check per-field presence.
 
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
-| `selling/listing-edit-roundtrip` | Editing an Existing Listing (round-trip) | 6 | pending |  |
+| `selling/listing-edit-roundtrip` | Editing an Existing Listing (round-trip) | 6 | rewritten | 6 cases. RC #98 verified FULLY fixed in source: all 10 seller edit pages unwrap the ActionResult envelope, and the slug-vs-uid ownership comparison is corrected with a documented note. FIXED edit-other-sellers-listing-404s: it signed in as ADMIN, who getSellerProductAction exempts by design, so it tested the exemption while claiming to test the gate — it would have reported a working ownership check as broken. Now uses meera (store-blader-bazaar) with a step to separate an ownership refusal from her store's PENDING status. Fixture gap recorded: no second ACTIVE non-admin seller exists. |
 | `selling/digital-content-delivery` | Digital Content — codes, QR images and files | 8 | pending |  |
 | `selling/seller-orders-at-scale` | Seller orders — at a store with many listings | 3 | pending |  |
 | `selling/become-seller` | Become a Seller & Store Setup | 4 | pending |  |
