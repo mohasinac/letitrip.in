@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**31 / 130 pages** · 1330 cases · 15 groups
+**32 / 130 pages** · 1330 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -71,7 +71,7 @@ case — the audits do not check per-field presence.
 | `selling/digital-content-delivery` | Digital Content — codes, QR images and files | 8 | audited | 8 cases, NO change needed. RC #103 verified fully fixed: all 3 pool routes exist, the 501 survives only as a historical comment, and DigitalContentPoolManager is mounted via SellerProductFormShell's renderDigitalContentPool slot. Every asserted detail matches source — the labels really are 'Upload QR image' vs 'Upload QR or file' keyed on canUploadFiles=isStaff, the picker really is restricted via IMAGE_ACCEPT_ATTR, and listPoolEntries' typed projection genuinely omits both code and assetPath, so pool-list-never-shows-the-code is a real assertion. Case ORDER is also right: add-codes-bulk stocks the pool before buy-then-reveal-code needs it. |
 | `selling/seller-orders-at-scale` | Seller orders — at a store with many listings | 3 | rewritten | 3 cases. Fixture is genuinely 'at scale' — ~37 orders for store-beyblade-arena (26 generated + 11 literal), computed from the buyerStoreMatrix. Revenue is computed LIVE from orders, not a rollup, so no scheduled-job confound. STRENGTHENED dashboard-revenue-not-zero: it only asserted '> ₹0', which catches the swallowed-query bug but passes cheerfully against the OTHER documented bug in the same route — a lowercase-vs-uppercase CANCELLED comparison that made the exclusion never exclude, counting cancelled and refunded orders as revenue. Now also asserts revenue is strictly LESS than the all-orders sum; the store has 2 cancelled + 3 refunded to make that checkable. |
 | `selling/become-seller` | Become a Seller & Store Setup | 4 | rewritten | 4 cases. /sell redirect is fixed (RC #76 closed — it imports ROUTES from the bare appkit entry, not /client). FOUND the chain is ONE-SHOT: it permanently makes karthik a seller, and because users is PRESERVE while stores is SEED_OWNED, a second run finds role=seller with NO store — a half-state neither case is written for. A users reseed restores role but cannot remove the leftover storeStatus (merge writes only overwrite keys they carry). Header now states the one-shot nature and the exact two-step reset; fixture decision recorded in OUTOFSCOPE. |
-| `selling/listing-a-product` | Listing a Product | 14 | pending |  |
+| `selling/listing-a-product` | Listing a Product | 14 | audited | 14 cases, NO change needed. All 4 cited media fixtures exist on disk (empty.png, not-really-an-image.png, sample-image.png, sample-video.mp4). RC #101 verified fixed in source — deriveTaxonomy is called from BOTH create and update — and although no case here guards the ancestor chain, happy-path/seller-listing/listing-is-publicly-reachable does, so the coverage exists cross-group. The video case cites no hard-coded duration, so nothing can drift. Both sweeps clean; 'Sold by Beyblade Arena' is interpolated. |
 | `selling/seller-bids-bundles-filters` | Seller — Bids & Bundles Filtering | 4 | pending |  |
 | `selling/seller-orders` | Seller Order Management & Shipping/Tracking | 11 | pending |  |
 | `selling/seller-analytics-payouts` | Seller Analytics & Payouts | 6 | pending |  |
