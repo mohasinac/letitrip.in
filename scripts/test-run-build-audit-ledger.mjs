@@ -227,7 +227,24 @@ if (typeof setTarget === "string") {
           ? ""
           : note
         : m[5].trim();
-    const keptStatus = status ?? (m[4].trim() || "pending");
+    /*
+     * 🛑 WARN WHEN RE-CLAIMING A FINISHED PAGE. Claiming in-flight over an
+     * `audited`/`rewritten` row is almost always a mis-pick — the page was done
+     * in an earlier sitting and the ledger already says so. It has happened
+     * twice (buying/cart, selling/seller-shipping-payouts-setup), and both
+     * times the only signal was the done-count failing to advance afterwards,
+     * which is easy to read as an off-by-one in my own head rather than as a
+     * repeated page.
+     *
+     * A warning rather than a refusal: re-auditing is sometimes deliberate, and
+     * both of those re-runs did find real defects the first pass had missed.
+     */
+    const priorStatus = m[4].trim();
+    if (status === "in-flight" && (priorStatus === "audited" || priorStatus === "rewritten")) {
+      console.error(`⚠ ${setTarget} was already ${priorStatus} — re-auditing a finished page.`);
+      console.error("  If that is not what you meant, pick a `pending` row instead.");
+    }
+    const keptStatus = status ?? (priorStatus || "pending");
     lines[i] = `| \`${m[1]}\` |${m[2]}|${m[3]}| ${keptStatus} | ${keptNote} |`;
     hit = true;
     break;
