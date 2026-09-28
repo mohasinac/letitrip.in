@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**11 / 130 pages** · 1331 cases · 15 groups
+**12 / 130 pages** · 1330 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -40,14 +40,14 @@ case — the audits do not check per-field presence.
 | `account-auth/signup-login` | Signup & Login | 15 | audited | Verified against current source: the server routes api/auth/send-verification and forgot-password are GONE (RC #54/#55) and all 3 reset/verify cases already describe the client-SDK flow. 5 startPages resolve. 6 requiresHumanChannel are all Google OAuth — correctly flagged; no email case is stale-flagged now check-inbox exists. password-reset mutates PRESERVE-tier neha.op@ and already documents the mandatory restore. email-signup's run-stamped address is deliberate. No change needed. |
 | `account-auth/profile-settings` | Profile & Settings | 9 | rewritten | All 9 startPages resolve; avatar/bio/displayName/isPublic exist in ProfilePageClient, HandModeToggleClient is in settings:220, 'Change Password'/'Update Password'/'Save preferences' are real strings. password-change-reset-link correctly describes the Firebase reset-link flow (RC #55). FIXED notification-prefs: the panel renders two independent lists, so 'the Email switch' was ambiguous, and the channels section is conditional on an admin enabling one — now named by section with the precondition stated. |
 
-## Buying `buying` — 18 pages, 403 cases
+## Buying `buying` — 18 pages, 402 cases
 
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
 | `buying/order-detail-actions` | Order detail — cancel, return, track, invoice, payment | 7 | rewritten | All 5 order sub-routes (cancel/invoice/payment/return/track) exist and /user/returns exists. FIXED track-shows-real-dates: it cited order-1-20251104-aevnlw, which no seeded order resolves to — replaced with order-1-20251122-481j4x, the shipped order rehan actually owns. Order ids are GENERATED, so no text scan of the seed could see the dead one; R7 now recomputes them. |
 | `buying/browsing-search` | Browsing & Search | 42 | rewritten | 42 cases. Type-filter cases correctly describe the drawer ('Filters'/tick/'Apply'/'Reset all' all real; one case asserts no chip row exists). FIXED show-sold-toggle-reveals-items: it clicked a 'Live' tab, an 'Open' tab and a 'Closed' tab. availabilityTabsFor builds exactly Available / <Sold|Ended|Sold & Ended> / All, and prize-draw's hideDefault 'closed' maps to the noun 'Ended' — so three of its steps named controls that render under different names. |
 | `buying/product-detail` | Product / Auction / Pre-order Detail | 26 | rewritten | 26 cases. FIXED three stale product literals left from the deleted tester-sandbox catalogue: 'Test Live Item — Golden Retriever Puppy' at 1500 (real: 'Golden Retriever Puppy — 6 Months, Vaccinated' at 25000), 'Test Pre-order — Reserve Me!' at 299/74.75 (real: 'Beyblade X BX-08 Booster — Next Wave' at 799, 25% deposit = 199.75), and 'B-135 Regalia Genesis' (real: B-59). The guest-price-gate half of each was migrated correctly; only the literals lagged. Also fixed the catalogue LABEL+DESCRIPTION of show-sold-toggle-reveals-items, which still described the removed toggle and three dead fixtures. |
-| `buying/image-tile-layout` | Image Tiles & Collages | 7 | pending |  |
+| `buying/image-tile-layout` | Image Tiles & Collages | 6 | rewritten | 6 cases (was 7). DELETED concern-card-icon-above-label: ConcernCard renders only via ConcernGrid, which has NO consumer in src/ or appkit/src/ — the case pointed at /categories and / and the component is on neither, so it could only ever return 'could not test'. Dead component recorded in OUTOFSCOPE. Remaining 6 cases target Root Cause #68 (collapsed tiles) and #80 (icon sizing) and all resolve: MediaPickerModal does have an existingFiles grid, bundle/prizedraw fixtures are real. |
 | `buying/buying-checkout` | Buying & Checkout | 32 | pending |  |
 | `buying/my-orders` | My Orders — List & Dashboard | 14 | pending |  |
 | `buying/bidding` | Bidding | 23 | pending |  |
