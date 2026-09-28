@@ -170,7 +170,12 @@ function scrapeExternalPageSets() {
 }
 
 /*
- * `--set <group/page> --status <s> [--note "…"]` — record a page's progress.
+ * `--set <group/page> [--status <s>] [--note "…"]` — record a page's progress.
+ *
+ * Both --status and --note are OPTIONAL and omitting either leaves that cell
+ * alone. Staging a cross-page lead is a NOTE operation; it must never be able to
+ * revert a finished page to pending, which is what a defaulted status did to four
+ * of them in one sweep.
  *
  * A flag rather than hand-editing the table, because this is done ~130 times and
  * a hand edit is where a status lands in the Notes column, or on the wrong row,
@@ -182,10 +187,21 @@ function scrapeExternalPageSets() {
  */
 const setTarget = flag("set");
 if (typeof setTarget === "string") {
-  const status = String(flag("status", "audited"));
-  const note = flag("note");
+  /*
+   * `--status` is OPTIONAL: omitting it keeps whatever the page already has.
+   *
+   * It used to default to "audited", so staging a LEAD on a page had to name a
+   * status — and passing `--status pending` to stage one silently REVERTED four
+   * already-finished pages in a single sweep on 2026-09-29. A cross-page lead
+   * is about the note; it should never be able to undo progress.
+   *
+   * Same argument as the --note rule below: a field you did not mean to set
+   * must not be set for you.
+   */
+  const statusArg = flag("status");
+  const status = typeof statusArg === "string" ? statusArg : null;
   const VALID = ["pending", "in-flight", "audited", "rewritten"];
-  if (!VALID.includes(status)) {
+  if (status !== null && !VALID.includes(status)) {
     console.error(`✗ --status must be one of: ${VALID.join(", ")}`);
     process.exit(2);
   }
@@ -210,7 +226,8 @@ if (typeof setTarget === "string") {
           ? ""
           : note
         : m[5].trim();
-    lines[i] = `| \`${m[1]}\` |${m[2]}|${m[3]}| ${status} | ${keptNote} |`;
+    const keptStatus = status ?? (m[4].trim() || "pending");
+    lines[i] = `| \`${m[1]}\` |${m[2]}|${m[3]}| ${keptStatus} | ${keptNote} |`;
     hit = true;
     break;
   }
@@ -220,7 +237,7 @@ if (typeof setTarget === "string") {
     process.exit(2);
   }
   writeFileSync(AUDIT_DOC, lines.join("\n"), "utf8");
-  console.log(`✓ ${setTarget} -> ${status}`);
+  console.log(`✓ ${setTarget}${status ? ` -> ${status}` : " (status unchanged)"}`);
   process.exit(0);
 }
 
