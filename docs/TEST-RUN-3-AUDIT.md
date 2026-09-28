@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**23 / 130 pages** · 1330 cases · 15 groups
+**24 / 130 pages** · 1330 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -58,7 +58,7 @@ case — the audits do not check per-field presence.
 | `buying/reviews` | Reviews | 5 | rewritten | 5 cases. Both sweeps clean; schema traps already fixed in source (comment not body per RC #100, images:string[] per RC #45). FOUND: no UI writes a review — createReviewAction/useCreateReview/UI_TEXT.WRITE_REVIEW all exist but no .tsx consumes them, and ReviewModal is ViewReviewModal (read-only). Case KEPT and its step sharpened so a missing control records as a FAILURE with evidence rather than 'could not test'. Product gap in OUTOFSCOPE. |
 | `buying/reviews-pagination` | Reviews — Pagination, Sort & Filter | 14 | rewritten | 14 cases. MAJOR: all of them opened product-beyblade-burst-valkyrie, which has FOUR reviews against a page size of 12 — so nine cases about paginating, comparing page 2 and filtering by rating could never perform what they describe. Repointed to product-beyblade-original-dranzer-s (19 reviews), which reviews-seed-data.ts builds for exactly this via its DEEP_REVIEW_PRODUCT loop: ratings cycle 1..5 so every star bucket is filled, and dates interleave with the main loop so 'newest first' is checkable by eye. RC #100 verified fixed in source (one storeId query; the PII leak it exposed is closed too). empty-state correctly uses spryzen-video-demo, which has 0. |
 | `buying/user-dashboard-extras` | User Dashboard — Addresses, Catalogue, Settings, My Orders-by-Type | 15 | audited | 15 cases, NO change needed. The blanket-startPage bug CLAUDE.md records for this page is genuinely repointed — 9 distinct startPages, all resolving. Fixture adequacy checked by computing the seed's generators rather than grepping: catalogueItems/supportTickets/offers are registered in COLLECTION_MAP (RC #90 fixed), and the expanded-order loop gives rehan 2 return_requested + 2 returned orders, so /user/returns has data. Both sweeps clean; 'Opposite the arena' is a landmark the case types. |
-| `buying/user-dashboard-navigation` | User Dashboard Navigation | 9 | pending |  |
+| `buying/user-dashboard-navigation` | User Dashboard Navigation | 9 | rewritten | 9 cases, essentially current. The bottom-bar case is ALREADY rewritten for the 2026-09-28 unification and DashboardBottomNav is confirmed gone from source. 'More' is real (BottomNavbar), 'Logout' is real (AppLayoutShell sidebarProfileLabels), Breadcrumbs components exist. Both sweeps clean. Only change: named the 'Logout' label in its step instead of 'the log-out control', per the name-the-control rule. |
 | `buying/return-request` | Requesting a return \u2014 and what final sale actually blocks | 7 | pending |  |
 | `buying/order-status-lifecycle` | Order statuses & transitions | 14 | pending |  |
 | `buying/user-uncovered-pages` | Buyer pages with no other coverage | 4 | pending |  |
