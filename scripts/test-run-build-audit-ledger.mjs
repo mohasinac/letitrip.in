@@ -200,6 +200,7 @@ if (typeof setTarget === "string") {
    */
   const statusArg = flag("status");
   const status = typeof statusArg === "string" ? statusArg : null;
+  const note = flag("note");
   const VALID = ["pending", "in-flight", "audited", "rewritten"];
   if (status !== null && !VALID.includes(status)) {
     console.error(`✗ --status must be one of: ${VALID.join(", ")}`);
