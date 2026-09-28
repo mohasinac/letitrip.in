@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**15 / 130 pages** · 1330 cases · 15 groups
+**16 / 130 pages** · 1330 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -46,13 +46,13 @@ case — the audits do not check per-field presence.
 |---|---|---|---|---|
 | `buying/order-detail-actions` | Order detail — cancel, return, track, invoice, payment | 7 | rewritten | All 5 order sub-routes (cancel/invoice/payment/return/track) exist and /user/returns exists. FIXED track-shows-real-dates: it cited order-1-20251104-aevnlw, which no seeded order resolves to — replaced with order-1-20251122-481j4x, the shipped order rehan actually owns. Order ids are GENERATED, so no text scan of the seed could see the dead one; R7 now recomputes them. |
 | `buying/browsing-search` | Browsing & Search | 42 | rewritten | 42 cases. Type-filter cases correctly describe the drawer ('Filters'/tick/'Apply'/'Reset all' all real; one case asserts no chip row exists). FIXED show-sold-toggle-reveals-items: it clicked a 'Live' tab, an 'Open' tab and a 'Closed' tab. availabilityTabsFor builds exactly Available / <Sold|Ended|Sold & Ended> / All, and prize-draw's hideDefault 'closed' maps to the noun 'Ended' — so three of its steps named controls that render under different names. |
-| `buying/product-detail` | Product / Auction / Pre-order Detail | 26 | rewritten | 26 cases. FIXED three stale product literals left from the deleted tester-sandbox catalogue: 'Test Live Item — Golden Retriever Puppy' at 1500 (real: 'Golden Retriever Puppy — 6 Months, Vaccinated' at 25000), 'Test Pre-order — Reserve Me!' at 299/74.75 (real: 'Beyblade X BX-08 Booster — Next Wave' at 799, 25% deposit = 199.75), and 'B-135 Regalia Genesis' (real: B-59). The guest-price-gate half of each was migrated correctly; only the literals lagged. Also fixed the catalogue LABEL+DESCRIPTION of show-sold-toggle-reveals-items, which still described the removed toggle and three dead fixtures. |
+| `buying/product-detail` | Product / Auction / Pre-order Detail | 26 | rewritten | 26 cases. Three stale tester-sandbox literals fixed (titles/prices for live item, pre-order, Regalia Genesis B-59). ALSO fixed the digital-code case: it forbade 'Pending delivery'/'Waiting for seller', neither of which CodeRevealPanel renders — so it would have passed straight through Root Cause #103, where the pool had no writer and every purchase delivered nothing. Now asserts the panel is present and headed 'Your Digital Code', and names the real error string. |
 | `buying/image-tile-layout` | Image Tiles & Collages | 6 | rewritten | 6 cases (was 7). DELETED concern-card-icon-above-label: ConcernCard renders only via ConcernGrid, which has NO consumer in src/ or appkit/src/ — the case pointed at /categories and / and the component is on neither, so it could only ever return 'could not test'. Dead component recorded in OUTOFSCOPE. Remaining 6 cases target Root Cause #68 (collapsed tiles) and #80 (icon sizing) and all resolve: MediaPickerModal does have an existingFiles grid, bundle/prizedraw fixtures are real. |
 | `buying/buying-checkout` | Buying & Checkout | 32 | rewritten | 32 cases. FIXED both out-of-stock-policy cases: they told the tester to sign in as ADMIN and set 'Site Settings -> Checkout -> Out-of-stock policy'. No such setting exists — outOfStockPolicy is a POLICY_SECTIONS field the BUYER picks on the checkout payment step, absent from the admin feature entirely. Both option labels were also wrong ('Cancel whole order' is 'Cancel my whole order'; 'Skip unavailable items' is 'Ship what's available and refund the rest'), and dranzer-s was priced 149 instead of 1499. Verified real: 'Pay via UPI / Cash', 'Proceed to checkout', 'Continue to payment', the low-stock message, and the Step N of 3 indicator (assembled in JSX). |
 | `buying/my-orders` | My Orders — List & Dashboard | 14 | rewritten | 14 cases. ORDER_LANE_TABS labels (All/Normal/Auction wins/Offer wins) all verified correct. FIXED order-lifecycle-emails-arrive: 'an account whose inbox you can open' hid a real constraint — both check-inbox.mjs and the emailEvents recorder key on TESTER_EMAIL_ID, and NO seeded persona uses it, so an order as any seeded buyer is invisible to both. Now registers a plus-addressed signup on the harness mailbox and names check-inbox with its three exit codes. Purge gap recorded in OUTOFSCOPE. |
 | `buying/bidding` | Bidding | 23 | rewritten | 23 cases. FIXED bid-history-shows-date-time-and-masked-name: it forbade 'Meera Bey'/'Rohit Collector'/'Ananya Collector', which occur ZERO times in the seed (those personas' displayName is 'Mock User 11'/'14'/'9'), so the PII assertion passed vacuously whether masking worked or not. Also corrected the masked shape from 'M*** B***' to 'M*** U*** 11***' — maskName keeps each word's first char. maskPublicBid does genuinely mask now (RC #50 fixed). Bidder uids were correct. |
 | `buying/wishlist-history` | Wishlist & History | 22 | pending |  |
-| `buying/cart` | Cart | 75 | pending |  |
+| `buying/cart` | Cart | 75 | pending | LEAD: 'QA Group cross-store' is a record the case creates — expected absent. |
 | `buying/buying-coupons` | Coupons — Scoping & Stacking | 20 | pending |  |
 | `buying/offers` | Offers | 67 | pending |  |
 | `buying/reviews` | Reviews | 5 | pending |  |
@@ -101,7 +101,7 @@ case — the audits do not check per-field presence.
 | `content-discovery/store-reviews-aggregate` | Store reviews tab — aggregate and privacy | 4 | pending |  |
 | `content-discovery/blog` | Blog | 5 | pending |  |
 | `content-discovery/events` | Events, Raffles & Spin Wheel | 19 | pending |  |
-| `content-discovery/coupons` | Coupons | 6 | pending |  |
+| `content-discovery/coupons` | Coupons | 6 | pending | LEAD (vacuous-negative sweep): forbids 'This coupon has expired' — absent from seed and source. Find the real expiry message. |
 | `content-discovery/notifications` | Notifications | 10 | pending |  |
 | `content-discovery/faq-help` | FAQ & Help | 3 | pending |  |
 | `content-discovery/search` | Search | 20 | pending |  |
@@ -121,7 +121,7 @@ case — the audits do not check per-field presence.
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
 | `design-ux/general-design` | Colors, Styles, Readability, Mobile | 12 | pending |  |
-| `design-ux/sticky-cta-bar` | Sticky Buy/Bid Bar on Scroll | 17 | pending |  |
+| `design-ux/sticky-cta-bar` | Sticky Buy/Bid Bar on Scroll | 17 | pending | LEAD: 'Sign in to see the bid · 1 bid' is assembled, likely fine — confirm when auditing. |
 | `design-ux/status-badge-legibility` | Listing Tags & Status Chips — Light vs Dark Mode | 13 | pending |  |
 | `design-ux/back-to-top-button` | Back-to-Top Button | 5 | pending |  |
 | `design-ux/form-validation-errors` | Form Validation & Error Summary | 4 | pending |  |
@@ -143,7 +143,7 @@ case — the audits do not check per-field presence.
 | `public-pages/legal-policy-pages` | Legal & Policy Pages | 7 | pending |  |
 | `public-pages/auth-error-pages` | Remaining Auth & Error Pages | 7 | pending |  |
 | `public-pages/help-scams-guides-subpages` | Help, Scams & Seller-Guide sub-pages | 20 | pending |  |
-| `public-pages/bug-hunters` | Bug Hunters Leaderboard | 3 | pending |  |
+| `public-pages/bug-hunters` | Bug Hunters Leaderboard | 3 | rewritten | FIXED (found by the vacuous-negative sweep): cited 'Mock User 18' as the seeded bug hunter with 1 confirmed bug. No such persona — the seed runs Mock User 1-17 plus 2 Mock Employees. The demo fixture's bugHunterName is 'Mock User 3' (bugHunterId user-yugi-muto). Rest of the page not yet read against source. |
 
 ## SEO & Metadata `seo` — 4 pages, 26 cases
 
@@ -166,7 +166,7 @@ case — the audits do not check per-field presence.
 | `admin/bundles` | Bundles / Grouped Listings | 4 | pending |  |
 | `admin/classifieds-digitalcodes-live` | Classifieds, Digital Codes & Live Listings | 3 | pending |  |
 | `admin/blog-faqs` | Blog & FAQs | 3 | pending |  |
-| `admin/orders-fulfillment` | Orders & Fulfillment | 20 | pending |  |
+| `admin/orders-fulfillment` | Orders & Fulfillment | 20 | pending | LEAD (vacuous-negative sweep): forbids 'Has a proof' — absent from seed and source; filter-tabs.ts uses 'awaiting_proof'. Verify the real chip label. |
 | `admin/users-trust` | Users & Trust | 33 | pending |  |
 | `admin/content-marketing` | Content & Marketing | 7 | pending |  |
 | `admin/site-system` | Site & System | 43 | pending |  |
