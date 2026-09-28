@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**14 / 130 pages** · 1330 cases · 15 groups
+**15 / 130 pages** · 1330 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -38,7 +38,7 @@ case — the audits do not check per-field presence.
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
 | `account-auth/signup-login` | Signup & Login | 15 | audited | Verified against current source: the server routes api/auth/send-verification and forgot-password are GONE (RC #54/#55) and all 3 reset/verify cases already describe the client-SDK flow. 5 startPages resolve. 6 requiresHumanChannel are all Google OAuth — correctly flagged; no email case is stale-flagged now check-inbox exists. password-reset mutates PRESERVE-tier neha.op@ and already documents the mandatory restore. email-signup's run-stamped address is deliberate. No change needed. |
-| `account-auth/profile-settings` | Profile & Settings | 9 | rewritten | All 9 startPages resolve; avatar/bio/displayName/isPublic exist in ProfilePageClient, HandModeToggleClient is in settings:220, 'Change Password'/'Update Password'/'Save preferences' are real strings. password-change-reset-link correctly describes the Firebase reset-link flow (RC #55). FIXED notification-prefs: the panel renders two independent lists, so 'the Email switch' was ambiguous, and the channels section is conditional on an admin enabling one — now named by section with the precondition stated. |
+| `account-auth/profile-settings` | Profile & Settings | 9 | rewritten | Re-opened: same vacuous-assertion class as buying/bidding — edit-profile forbade a revert to 'Rehan Sheikh', which is nowhere in the seed; user-yugi-muto's displayName is 'Mock User 3'. Plus the earlier fix naming the section for each notification switch. |
 
 ## Buying `buying` — 18 pages, 402 cases
 
@@ -50,7 +50,7 @@ case — the audits do not check per-field presence.
 | `buying/image-tile-layout` | Image Tiles & Collages | 6 | rewritten | 6 cases (was 7). DELETED concern-card-icon-above-label: ConcernCard renders only via ConcernGrid, which has NO consumer in src/ or appkit/src/ — the case pointed at /categories and / and the component is on neither, so it could only ever return 'could not test'. Dead component recorded in OUTOFSCOPE. Remaining 6 cases target Root Cause #68 (collapsed tiles) and #80 (icon sizing) and all resolve: MediaPickerModal does have an existingFiles grid, bundle/prizedraw fixtures are real. |
 | `buying/buying-checkout` | Buying & Checkout | 32 | rewritten | 32 cases. FIXED both out-of-stock-policy cases: they told the tester to sign in as ADMIN and set 'Site Settings -> Checkout -> Out-of-stock policy'. No such setting exists — outOfStockPolicy is a POLICY_SECTIONS field the BUYER picks on the checkout payment step, absent from the admin feature entirely. Both option labels were also wrong ('Cancel whole order' is 'Cancel my whole order'; 'Skip unavailable items' is 'Ship what's available and refund the rest'), and dranzer-s was priced 149 instead of 1499. Verified real: 'Pay via UPI / Cash', 'Proceed to checkout', 'Continue to payment', the low-stock message, and the Step N of 3 indicator (assembled in JSX). |
 | `buying/my-orders` | My Orders — List & Dashboard | 14 | rewritten | 14 cases. ORDER_LANE_TABS labels (All/Normal/Auction wins/Offer wins) all verified correct. FIXED order-lifecycle-emails-arrive: 'an account whose inbox you can open' hid a real constraint — both check-inbox.mjs and the emailEvents recorder key on TESTER_EMAIL_ID, and NO seeded persona uses it, so an order as any seeded buyer is invisible to both. Now registers a plus-addressed signup on the harness mailbox and names check-inbox with its three exit codes. Purge gap recorded in OUTOFSCOPE. |
-| `buying/bidding` | Bidding | 23 | pending |  |
+| `buying/bidding` | Bidding | 23 | rewritten | 23 cases. FIXED bid-history-shows-date-time-and-masked-name: it forbade 'Meera Bey'/'Rohit Collector'/'Ananya Collector', which occur ZERO times in the seed (those personas' displayName is 'Mock User 11'/'14'/'9'), so the PII assertion passed vacuously whether masking worked or not. Also corrected the masked shape from 'M*** B***' to 'M*** U*** 11***' — maskName keeps each word's first char. maskPublicBid does genuinely mask now (RC #50 fixed). Bidder uids were correct. |
 | `buying/wishlist-history` | Wishlist & History | 22 | pending |  |
 | `buying/cart` | Cart | 75 | pending |  |
 | `buying/buying-coupons` | Coupons — Scoping & Stacking | 20 | pending |  |
