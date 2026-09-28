@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**12 / 130 pages** · 1330 cases · 15 groups
+**13 / 130 pages** · 1330 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -48,7 +48,7 @@ case — the audits do not check per-field presence.
 | `buying/browsing-search` | Browsing & Search | 42 | rewritten | 42 cases. Type-filter cases correctly describe the drawer ('Filters'/tick/'Apply'/'Reset all' all real; one case asserts no chip row exists). FIXED show-sold-toggle-reveals-items: it clicked a 'Live' tab, an 'Open' tab and a 'Closed' tab. availabilityTabsFor builds exactly Available / <Sold|Ended|Sold & Ended> / All, and prize-draw's hideDefault 'closed' maps to the noun 'Ended' — so three of its steps named controls that render under different names. |
 | `buying/product-detail` | Product / Auction / Pre-order Detail | 26 | rewritten | 26 cases. FIXED three stale product literals left from the deleted tester-sandbox catalogue: 'Test Live Item — Golden Retriever Puppy' at 1500 (real: 'Golden Retriever Puppy — 6 Months, Vaccinated' at 25000), 'Test Pre-order — Reserve Me!' at 299/74.75 (real: 'Beyblade X BX-08 Booster — Next Wave' at 799, 25% deposit = 199.75), and 'B-135 Regalia Genesis' (real: B-59). The guest-price-gate half of each was migrated correctly; only the literals lagged. Also fixed the catalogue LABEL+DESCRIPTION of show-sold-toggle-reveals-items, which still described the removed toggle and three dead fixtures. |
 | `buying/image-tile-layout` | Image Tiles & Collages | 6 | rewritten | 6 cases (was 7). DELETED concern-card-icon-above-label: ConcernCard renders only via ConcernGrid, which has NO consumer in src/ or appkit/src/ — the case pointed at /categories and / and the component is on neither, so it could only ever return 'could not test'. Dead component recorded in OUTOFSCOPE. Remaining 6 cases target Root Cause #68 (collapsed tiles) and #80 (icon sizing) and all resolve: MediaPickerModal does have an existingFiles grid, bundle/prizedraw fixtures are real. |
-| `buying/buying-checkout` | Buying & Checkout | 32 | pending |  |
+| `buying/buying-checkout` | Buying & Checkout | 32 | rewritten | 32 cases. FIXED both out-of-stock-policy cases: they told the tester to sign in as ADMIN and set 'Site Settings -> Checkout -> Out-of-stock policy'. No such setting exists — outOfStockPolicy is a POLICY_SECTIONS field the BUYER picks on the checkout payment step, absent from the admin feature entirely. Both option labels were also wrong ('Cancel whole order' is 'Cancel my whole order'; 'Skip unavailable items' is 'Ship what's available and refund the rest'), and dranzer-s was priced 149 instead of 1499. Verified real: 'Pay via UPI / Cash', 'Proceed to checkout', 'Continue to payment', the low-stock message, and the Step N of 3 indicator (assembled in JSX). |
 | `buying/my-orders` | My Orders — List & Dashboard | 14 | pending |  |
 | `buying/bidding` | Bidding | 23 | pending |  |
 | `buying/wishlist-history` | Wishlist & History | 22 | pending |  |
