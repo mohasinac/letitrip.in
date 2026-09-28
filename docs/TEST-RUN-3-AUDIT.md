@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**72 / 130 pages** · 1334 cases · 15 groups
+**73 / 130 pages** · 1334 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -113,7 +113,7 @@ case — the audits do not check per-field presence.
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
 | `community-support/support-tickets` | Support Tickets | 6 | audited | 3 cases, 4 steps strengthened — a well-built page that needed grounding rather than repair. VERIFIED FIRST, because this page could easily have had no data at all: supportTickets was one of the six collections found earlier in this run holding ZERO documents (registered for PII but missing from the loader's COLLECTION_MAP). It is now in both COLLECTION_MAP and the DATA map, and 8 tickets seed. STATED THE UNSTATED DEPENDENCY: the search case looks for 'QA Ticket', which exists only if create-ticket has already run in the same batch; it now says so and offers a fallback. GROUNDED THE ASSERTIONS in the real fixture, which turns out to fit unusually well — the actor rehan.sheikh (user-yugi-muto) owns FIVE seeded tickets spanning all five statuses, so 'select each status in turn' has a row everywhere and a status returning nothing is a finding rather than an empty corner; and because one is resolved and one closed, the 'Hide resolved/closed' toggle must drop the count by at least two, which converts a vague 'read the rows' into an inert-control check. The nonsense control (zzzznope) was already present. |
-| `community-support/contact-inbox` | Contact messages (admin inbox) | 3 | pending |  |
+| `community-support/contact-inbox` | Contact messages (admin inbox) | 3 | rewritten | 3 cases, 5 fixes — and this page has NO overlay file: its six-part procedures are inline in the catalogue, which is why it needed auditing there rather than in authored/. WRONG IDENTITY: contact-saves-without-email lists roles [guest, admin], which resolves to ADMIN (admin wins whenever present), so the batch opens SIGNED IN on a step reading 'open the public contact page as a signed-out visitor'. Both swaps now explicit, including the guest one — session-guest.json is an empty storage state by design, so signed-out has to BE a file. UNPERFORMABLE STEP: the same case ended 'check the inbox of whatever address used to receive support mail'. There is no such address — EMAIL_SUPPORT was never configured in any runtime, which is half the reason the email path was removed — so the step had nowhere to go. Now check-inbox.mjs --expect-none, which waits the full window and succeeds only on silence; without it, nothing-arrived is unprovable. NO UI PATH: contact-digest-mailto-reply said 'as admin, trigger the daily digest'. There is no button — Site Settings carries only a toggle for the schedule — so it now names the console fetch to /api/admin/daily-digest/trigger, matching the instruction the other digest case already uses. UN-AUTOMATABLE, now declared: contact-save-failure-is-loud needs the Firestore write forced to fail, which a browser cannot do; it now carries requiresHumanChannel so a tester answers null immediately instead of burning turns, and the reason records why the case is still worth keeping — with the email gone, that write is the only record a customer wrote in. |
 | `community-support/public-profile` | Public Profiles & Stores | 2 | pending |  |
 
 ## Design & UX `design-ux` — 10 pages, 122 cases
