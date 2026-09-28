@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**41 / 130 pages** · 1331 cases · 15 groups
+**42 / 130 pages** · 1331 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -101,7 +101,7 @@ case — the audits do not check per-field presence.
 | `content-discovery/store-reviews-aggregate` | Store reviews tab — aggregate and privacy | 4 | pending |  |
 | `content-discovery/blog` | Blog | 5 | pending |  |
 | `content-discovery/events` | Events, Raffles & Spin Wheel | 19 | pending |  |
-| `content-discovery/coupons` | Coupons | 6 | pending | LEADS: (1) forbids 'This coupon has expired' — absent from seed and source; find the real expiry message. (2) startPage /promotions is a redirect-only shim to /promotions/deals. |
+| `content-discovery/coupons` | Coupons | 6 | rewritten | 6 cases, 3 corrected. VACUOUS ASSERTION closed: coupon-expired-rejected demanded the literal 'This coupon has expired', which exists NOWHERE in the codebase — so the check could neither be satisfied nor fail informatively. The real string is 'Coupon is not currently valid', returned from ONE branch gated on isCouponValid(), which folds isActive / date window / total-limit-exhausted into a single message; only some of those are permanent. Case kept asserting the stronger behaviour and now quotes the real string, so the failure is actionable; recorded in OUTOFSCOPE. Same treatment for coupon-below-min-purchase: 'Minimum purchase requirement not met' names the reason but not the amount, and no .tsx outside the admin editor reads minPurchase — the case now splits the two assertions so the verdict says which half failed. /promotions is a redirect-only shim to /promotions/deals; the coupon-claim step now says so and names /promotions/coupons. Verified correct and left alone: coupon-not-combinable (detectCouponConflict does name the blocking code — 'A coupon for this store is already applied (ARENA25). Remove it first.'), coupon-per-user-limit ('You have reached the usage limit for this coupon'), view-claimed-coupons. |
 | `content-discovery/notifications` | Notifications | 10 | pending |  |
 | `content-discovery/faq-help` | FAQ & Help | 3 | pending |  |
 | `content-discovery/search` | Search | 20 | pending |  |
