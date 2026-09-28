@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**63 / 130 pages** · 1331 cases · 15 groups
+**64 / 130 pages** · 1331 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -96,7 +96,7 @@ case — the audits do not check per-field presence.
 
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
-| `content-discovery/event-detail-subroutes` | Event detail — participate, leaderboard, winner, spin results | 8 | pending |  |
+| `content-discovery/event-detail-subroutes` | Event detail — participate, leaderboard, winner, spin results | 8 | rewritten | 8 cases -> 9, with 8 steps corrected. EVERY case started at /events, the index, on a page whose whole subject is event DETAIL subroutes — and one of them (participate-twice-is-refused) opened with 'Open the Leaderboard tab', a tab that does not exist on the index. All seven repointed at the route actually under test. NEW GAP CASE: the page is named 'participate, leaderboard, winner, spin results' and /events/{id}/spin-results had no coverage at all, despite a real fixture existing — event-daily-beyblade-pull-wheel is SPIN_WHEEL, active, with real spinPrizes and spinMaxPerUser of 2, so the per-user cap is testable: spin twice, be refused on the third, and confirm the list still holds two. The results list is what proves the spins were recorded, since a spin that animates, names a prize and stores nothing looks identical to one that worked. VERIFIED, no change needed: all four existing fixtures match their case descriptions exactly — event-favourite-blader-poll is POLL/ACTIVE, event-win-burst-regalia-genesis is RAFFLE/ACTIVE with no winner, event-won-original-set-raffle is RAFFLE/ENDED carrying raffleWinnerUserId, and event-x-launch-raffle-cancelled is RAFFLE/CANCELLED. That is unusually good fixture discipline and worth recording as verified rather than silently passed over. |
 | `content-discovery/category-counts-and-rollup` | Category counts and the listing they promise | 8 | pending |  |
 | `content-discovery/store-reviews-aggregate` | Store reviews tab — aggregate and privacy | 4 | pending |  |
 | `content-discovery/blog` | Blog | 5 | pending |  |
