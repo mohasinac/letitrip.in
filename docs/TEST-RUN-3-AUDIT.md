@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**28 / 130 pages** · 1330 cases · 15 groups
+**29 / 130 pages** · 1330 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -68,7 +68,7 @@ case — the audits do not check per-field presence.
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
 | `selling/listing-edit-roundtrip` | Editing an Existing Listing (round-trip) | 6 | rewritten | 6 cases. RC #98 verified FULLY fixed in source: all 10 seller edit pages unwrap the ActionResult envelope, and the slug-vs-uid ownership comparison is corrected with a documented note. FIXED edit-other-sellers-listing-404s: it signed in as ADMIN, who getSellerProductAction exempts by design, so it tested the exemption while claiming to test the gate — it would have reported a working ownership check as broken. Now uses meera (store-blader-bazaar) with a step to separate an ownership refusal from her store's PENDING status. Fixture gap recorded: no second ACTIVE non-admin seller exists. |
-| `selling/digital-content-delivery` | Digital Content — codes, QR images and files | 8 | pending |  |
+| `selling/digital-content-delivery` | Digital Content — codes, QR images and files | 8 | audited | 8 cases, NO change needed. RC #103 verified fully fixed: all 3 pool routes exist, the 501 survives only as a historical comment, and DigitalContentPoolManager is mounted via SellerProductFormShell's renderDigitalContentPool slot. Every asserted detail matches source — the labels really are 'Upload QR image' vs 'Upload QR or file' keyed on canUploadFiles=isStaff, the picker really is restricted via IMAGE_ACCEPT_ATTR, and listPoolEntries' typed projection genuinely omits both code and assetPath, so pool-list-never-shows-the-code is a real assertion. Case ORDER is also right: add-codes-bulk stocks the pool before buy-then-reveal-code needs it. |
 | `selling/seller-orders-at-scale` | Seller orders — at a store with many listings | 3 | pending |  |
 | `selling/become-seller` | Become a Seller & Store Setup | 4 | pending |  |
 | `selling/listing-a-product` | Listing a Product | 14 | pending |  |
