@@ -105,7 +105,20 @@ for (const m of caseSrc.matchAll(/'([^']{3,40})'/g)) {
 }
 
 /* Everything a label could legitimately live in. */
-const ROOTS = [resolve(REPO, "src"), resolve(REPO, "appkit/src")];
+/*
+ * 🛑 `messages/` IS A SOURCE OF LABELS AND WAS MISSING. Plenty of user-facing
+ * text is not a literal in a component — `AboutView` renders
+ * `labels.valuesLinkLabel`, and the actual words live in `messages/en.json` as
+ * "How we hold ourselves to this →".
+ *
+ * Without that root the checker reported the string as found NOWHERE, which is
+ * its loudest verdict, on a label that is real and correct. This file's own
+ * closing note already admitted "i18n strings live outside these files" — but
+ * an admitted blind spot still costs a lookup every time it fires, and here it
+ * nearly cost a correct case being rewritten to match a string I would have
+ * gone looking for instead.
+ */
+const ROOTS = [resolve(REPO, "src"), resolve(REPO, "appkit/src"), resolve(REPO, "messages")];
 /*
  * `appkit/src/seed` is deliberately NOT skipped: a case legitimately quotes a
  * seeded product title ('Beyblade X BX-34 Dran Buster (Sold Out)'), and
