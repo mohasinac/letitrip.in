@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**55 / 130 pages** · 1331 cases · 15 groups
+**56 / 130 pages** · 1331 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -137,7 +137,7 @@ case — the audits do not check per-field presence.
 |---|---|---|---|---|
 | `public-pages/newly-wired-browse-indexes` | Classifieds, Digital Codes, Live, Lotteries, Brands, Sellers | 8 | pending | LEAD (redirect sweep): /classified, /digital-codes and /live are ALL redirect-only shims — a page whose whole point is that these browse indexes are wired needs to state where each one lands. |
 | `public-pages/store-tabs` | Store page tabs — products, reviews, and the per-type tabs | 6 | pending |  |
-| `public-pages/core-listing-pages` | Homepage & Core Listing Pages | 16 | pending |  |
+| `public-pages/core-listing-pages` | Homepage & Core Listing Pages | 16 | rewritten | 16 cases, 2 corrected, and one of them I got wrong first. about-values-expanded asserts SIX values with subtitles; the seed ships THREE with no detail field, so I changed the case to 3 — then read the catalogue description and found the case is named 'expanded' and exists precisely to assert the 3->6 change made on 2026-08-24. Reverted. The real finding is that the expansion shipped in the UI and never in the content: AboutView destructures detail and renders the /ethics link, while site-settings-seed-data.ts still has three valueItems and zero detail fields. aboutContent lives in siteSettings, which is PRESERVE-tier and NEVER reseeded, so a freshly-seeded environment shows three and production shows whatever an admin last saved — the case now says to expect three on a fresh seed, record which environment was seen, and call it a content gap rather than a UI failure. Recorded in OUTOFSCOPE. Also fixed the WhatsApp community CTA: the case said 'Join the Community', the default label is 'Join our WhatsApp community'. TOOLING: 'How we hold ourselves to this →' reported as found NOWHERE — it is real, in messages/en.json, which the label checker did not scan. Added messages/ as a third root; that blind spot would have had me rewrite a correct case to match a string I went looking for. |
 | `public-pages/stores-sellers-directories` | Store & Seller Directories | 16 | pending |  |
 | `public-pages/help-how-it-works` | Help & How-It-Works Pages | 13 | pending | LEAD (identity sweep): 1 guest-only case(s) containing a Sign-in step - a guest batch gets NO session, so those steps cannot be performed at all. fetch-cases assigns ONE identity per batch: roles exactly [guest] -> guest, any admin -> admin, all-seller -> seller, else buyer. So an [admin,buyer] case runs entirely AS ADMIN and its buyer half tests the wrong person, usually silently because the admin can perform it. This run is interactive, so the per-case fix is an explicit step: close the browser, swap the session file, reopen (the MCP reads it at context creation). |
 | `public-pages/legal-policy-pages` | Legal & Policy Pages | 7 | pending |  |
