@@ -158,15 +158,38 @@ function appearsAsLabel(s) {
   return new RegExp(`(["'\`])${esc}\\1|>\\s*${esc}\\s*<`).test(haystack);
 }
 
-const missing = [...candidates].filter((s) => !appearsAsLabel(s)).sort();
+/*
+ * A NEAR match: the literal occurs in source but not as a complete delimited
+ * label. That is almost always trailing punctuation ("No confirmed bugs yet."
+ * vs the case's "No confirmed bugs yet") or a prefix of a longer label ("Bug
+ * Hunters" inside "Bug Hunters Leaderboard — LetItRip"). Both cost a source
+ * lookup to dismiss, and both were dismissed on 2026-09-29 — so separate them
+ * from the literals that occur NOWHERE, which are the ones worth reading.
+ *
+ * Deliberately still reported rather than passed: a near match can also be a
+ * real drift, e.g. a label that gained a word the case does not expect.
+ */
+function occursAnywhere(s) {
+  return haystack.includes(s);
+}
+
+const unmatched = [...candidates].filter((s) => !appearsAsLabel(s)).sort();
+const missing = unmatched.filter((s) => !occursAnywhere(s));
+const near = unmatched.filter(occursAnywhere);
 
 console.log(`${target}: ${candidates.size} quoted label(s) checked`);
-if (missing.length === 0) {
+if (unmatched.length === 0) {
   console.log("  ✓ every one appears somewhere in src/ or appkit/src/");
   process.exit(0);
 }
-console.log(`  ${missing.length} not found — READ EACH against the source before changing anything:`);
-for (const s of missing) console.log(`    '${s}'`);
+if (missing.length) {
+  console.log(`  ${missing.length} not found ANYWHERE — READ EACH against the source before changing anything:`);
+  for (const s of missing) console.log(`    '${s}'`);
+}
+if (near.length) {
+  console.log(`  ${near.length} near match (present in source, but not as a complete label — usually punctuation or a longer label):`);
+  for (const s of near) console.log(`    ~ '${s}'`);
+}
 console.log("");
 console.log("  Absent is not wrong: interpolated labels, i18n strings and seeded");
 console.log("  titles all live outside these files, and a step may quote prose.");
