@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**71 / 130 pages** · 1334 cases · 15 groups
+**72 / 130 pages** · 1334 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -112,7 +112,7 @@ case — the audits do not check per-field presence.
 
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
-| `community-support/support-tickets` | Support Tickets | 6 | pending |  |
+| `community-support/support-tickets` | Support Tickets | 6 | audited | 3 cases, 4 steps strengthened — a well-built page that needed grounding rather than repair. VERIFIED FIRST, because this page could easily have had no data at all: supportTickets was one of the six collections found earlier in this run holding ZERO documents (registered for PII but missing from the loader's COLLECTION_MAP). It is now in both COLLECTION_MAP and the DATA map, and 8 tickets seed. STATED THE UNSTATED DEPENDENCY: the search case looks for 'QA Ticket', which exists only if create-ticket has already run in the same batch; it now says so and offers a fallback. GROUNDED THE ASSERTIONS in the real fixture, which turns out to fit unusually well — the actor rehan.sheikh (user-yugi-muto) owns FIVE seeded tickets spanning all five statuses, so 'select each status in turn' has a row everywhere and a status returning nothing is a finding rather than an empty corner; and because one is resolved and one closed, the 'Hide resolved/closed' toggle must drop the count by at least two, which converts a vague 'read the rows' into an inert-control check. The nonsense control (zzzznope) was already present. |
 | `community-support/contact-inbox` | Contact messages (admin inbox) | 3 | pending |  |
 | `community-support/public-profile` | Public Profiles & Stores | 2 | pending |  |
 
