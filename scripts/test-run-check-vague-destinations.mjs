@@ -58,8 +58,19 @@ const ROUTES = existsSync(APP) ? routes() : [];
  */
 const IN_PAGE = /\b(tab|panel|drawer|modal|dialog|dropdown|picker|menu|row|card|accordion|step|field|toggle|sheet|banner|column|filter|chip)\b/i;
 
+/*
+ * 🛑 THE POSSESSIVE FORM IS THE COMMON ONE, and the first version of this
+ * pattern could not see it. `selling/seller-marketing-extras` had FIVE cases
+ * reading "Open the store's WhatsApp catalog surface" — all five rooted on the
+ * dashboard index with no route named anywhere — and this sweep reported the
+ * page clean, because it only matched "Open the <noun> surface".
+ *
+ * So allow an optional possessive owner: "the store's X", "a seller's X".
+ * Same lesson as Root Cause #84 — a measurement narrower than the rule it
+ * feeds reports the backlog it can see, not the one that exists.
+ */
 const VAGUE =
-  /"(?:Open|Go to|Navigate to|Visit) the ([a-z][a-z0-9 '\-]{3,45}?) (surface|page|editor|queue|list|screen|section|settings|form|view)\b[^"]*"/g;
+  /"(?:Open|Go to|Navigate to|Visit) (?:the|a) (?:[A-Za-z]+'s )?([A-Za-z][A-Za-z0-9 '\-]{3,45}?) (surface|page|editor|queue|list|screen|section|settings|form|view)\b[^"]*"/g;
 
 function suggest(phrase) {
   const words = phrase.toLowerCase().split(/[\s'-]+/).filter((w) => w.length > 3);
