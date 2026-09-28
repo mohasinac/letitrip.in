@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**7 / 130 pages** · 1331 cases · 15 groups
+**9 / 130 pages** · 1331 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -38,13 +38,13 @@ case — the audits do not check per-field presence.
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
 | `account-auth/signup-login` | Signup & Login | 15 | audited | Verified against current source: the server routes api/auth/send-verification and forgot-password are GONE (RC #54/#55) and all 3 reset/verify cases already describe the client-SDK flow. 5 startPages resolve. 6 requiresHumanChannel are all Google OAuth — correctly flagged; no email case is stale-flagged now check-inbox exists. password-reset mutates PRESERVE-tier neha.op@ and already documents the mandatory restore. email-signup's run-stamped address is deliberate. No change needed. |
-| `account-auth/profile-settings` | Profile & Settings | 9 | pending |  |
+| `account-auth/profile-settings` | Profile & Settings | 9 | rewritten | All 9 startPages resolve; avatar/bio/displayName/isPublic exist in ProfilePageClient, HandModeToggleClient is in settings:220, 'Change Password'/'Update Password'/'Save preferences' are real strings. password-change-reset-link correctly describes the Firebase reset-link flow (RC #55). FIXED notification-prefs: the panel renders two independent lists, so 'the Email switch' was ambiguous, and the channels section is conditional on an admin enabling one — now named by section with the precondition stated. |
 
 ## Buying `buying` — 18 pages, 403 cases
 
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
-| `buying/order-detail-actions` | Order detail — cancel, return, track, invoice, payment | 7 | pending |  |
+| `buying/order-detail-actions` | Order detail — cancel, return, track, invoice, payment | 7 | rewritten | All 5 order sub-routes (cancel/invoice/payment/return/track) exist and /user/returns exists. FIXED track-shows-real-dates: it cited order-1-20251104-aevnlw, which no seeded order resolves to — replaced with order-1-20251122-481j4x, the shipped order rehan actually owns. Order ids are GENERATED, so no text scan of the seed could see the dead one; R7 now recomputes them. |
 | `buying/browsing-search` | Browsing & Search | 42 | pending |  |
 | `buying/product-detail` | Product / Auction / Pre-order Detail | 26 | pending |  |
 | `buying/image-tile-layout` | Image Tiles & Collages | 7 | pending |  |

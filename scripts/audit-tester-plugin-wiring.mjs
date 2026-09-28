@@ -460,6 +460,44 @@ if (existsSync(CATALOGUE)) {
   };
 
   // `{{w}}` is allowed INSIDE an id so manifest fixtures are actually scanned.
+  /*
+   * 🛑 ORDER IDS ARE GENERATED, SO A TEXT SCAN OF THE SEED CANNOT SEE THEM.
+   *
+   * `order-` is absent from FIXTURE_RE below because an order id is not written
+   * in the seed — `orders-seed-data.ts` builds 7 of its 15 with
+   * `generateOrderId(itemCount, daysBack, seed)`. So R7 had no opinion on order
+   * ids at all, and a case naming a dead one produced "could not test" rather
+   * than a violation. One such citation was live when this was written:
+   * `order-1-20251104-aevnlw`, which no run has ever been able to open.
+   *
+   * Recomputing the generator here rather than adding `order` to FIXTURE_RE and
+   * hoping: the ids must MATCH, and only the arithmetic can say whether they do.
+   * The anchor is SEED_EPOCH and not `NOW` on purpose — an id whose date moves
+   * with the calendar never upserts, which is the bug that comment records.
+   *
+   * If `generateOrderId` changes shape, this goes red rather than quiet, which
+   * is the correct direction: a mirrored implementation that silently diverges
+   * would vouch for ids that do not exist.
+   */
+  {
+    const ordersSrc = read(resolve(ROOT, "appkit/src/seed/orders-seed-data.ts"));
+    const epoch = ordersSrc.match(/SEED_EPOCH\s*=\s*new Date\("([^"]+)"\)/)?.[1];
+    if (epoch) {
+      const base = new Date(epoch).getTime();
+      const suffix = (s) => {
+        let h = 0;
+        for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+        return (h >>> 0).toString(36).padStart(6, "0").slice(0, 6);
+      };
+      for (const m of ordersSrc.matchAll(/generateOrderId\((\d+),\s*(\d+),\s*"([^"]+)"\)/g)) {
+        const [, count, daysBack, seed] = m;
+        const d = new Date(base - Number(daysBack) * 86_400_000);
+        seedIds.add(`order-${count}-${d.toISOString().slice(0, 10).replace(/-/g, "")}-${suffix(`${count}-${daysBack}-${seed}`)}`);
+      }
+      for (const m of ordersSrc.matchAll(/id:\s*"(order-[^"]+)"/g)) seedIds.add(m[1]);
+    }
+  }
+
   const FIXTURE_RE =
     /\b(?:product|auction|preorder|prizedraw|classified|digitalcode|live|art|sticker|category|brand|bundle|offer|event|store|coupon|group)-(?:\{\{w\}\}|[a-z0-9])[a-z0-9{}-]{4,}/g;
 
@@ -523,6 +561,20 @@ if (existsSync(CATALOGUE)) {
      * column of false ones.
      */
     .replace(/(^|[{,\s])(?:href|startPage):\s*"[^"]*"/gm, "$1");
+
+  /*
+   * Order ids, checked here because `authoredValues` does not exist any earlier.
+   * The ids themselves were computed further up, where `seedIds` is built.
+   */
+  for (const m of authoredValues.matchAll(/\border-\d+-\d{8}-[a-z0-9]{6}\b/g)) {
+    if (!seedIds.has(m[0])) {
+      violations.push(
+        `R7 authored steps cite order "${m[0]}", which no seeded order resolves to. Order ids are ` +
+          `GENERATED from (itemCount, daysBack, seed) against SEED_EPOCH — never hand-write one; ` +
+          `compute it or copy it from a run of the generator.`,
+      );
+    }
+  }
 
   /*
    * Distinguish a fixture CITATION from a hyphenated English adjective.
