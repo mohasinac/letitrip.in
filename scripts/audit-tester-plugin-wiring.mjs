@@ -81,7 +81,68 @@ if (!existsSync(TESTER_DIR)) {
 }
 
 const read = (p) => readFileSync(p, "utf8");
-const stripComments = (s) => s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
+/**
+ * Remove comments WITHOUT reading string contents as code.
+ *
+ * 🛑 THE REGEX FORM OF THIS SILENTLY DELETED 13% OF THE CATALOGUE.
+ *
+ * It was `s.replace(/\/\*[\s\S]*?\*\//g, "")` — and a checklist case legitimately
+ * says `"every /user/* route was server-rendered"`. That `/*` inside a STRING
+ * opened a phantom block comment which ran to the next real `*​/` thousands of
+ * lines away, taking `...group("buying", …)` with it. R5 then attributed all 403
+ * buying cases to the previous group and reported them as unauthored — 60+
+ * confident, evidenced, wrong violations, none of which named the real cause.
+ *
+ * A scanner is the only correct answer here: the distinction between a comment
+ * and a string is not expressible as a regex over a language that has both. It
+ * handles `"…"`, `'…'`, template literals and escapes, which is the whole of
+ * what this file's inputs contain.
+ */
+function stripComments(s) {
+  let out = "";
+  let i = 0;
+  const n = s.length;
+  while (i < n) {
+    const c = s[i];
+    const next = s[i + 1];
+
+    /* A string — copy it verbatim, comments inside it are not comments. */
+    if (c === '"' || c === "'" || c === "`") {
+      const quote = c;
+      out += c;
+      i += 1;
+      while (i < n) {
+        if (s[i] === "\\") {
+          out += s[i] + (s[i + 1] ?? "");
+          i += 2;
+          continue;
+        }
+        out += s[i];
+        if (s[i] === quote) {
+          i += 1;
+          break;
+        }
+        i += 1;
+      }
+      continue;
+    }
+
+    if (c === "/" && next === "*") {
+      const end = s.indexOf("*/", i + 2);
+      i = end === -1 ? n : end + 2;
+      continue;
+    }
+    if (c === "/" && next === "/") {
+      const end = s.indexOf("\n", i);
+      i = end === -1 ? n : end;
+      continue;
+    }
+
+    out += c;
+    i += 1;
+  }
+  return out;
+}
 
 /* ── Load the tier declarations ──────────────────────────────────────────── */
 
@@ -255,7 +316,41 @@ if (existsSync(fixturesDir)) {
 
 const CATALOGUE = resolve(ROOT, "appkit/src/features/tester/seed-data/tester-checklist-seed-data.ts");
 const AUTHORED_DIR = resolve(ROOT, "appkit/src/features/tester/seed-data/authored");
-const MONEY_FLOWS = resolve(ROOT, "appkit/src/features/tester/seed-data/_money-flows.ts");
+const SEED_DATA_DIR = resolve(ROOT, "appkit/src/features/tester/seed-data");
+
+/*
+ * 🛑 EVERY INLINE-AUTHORED PAGE SET, NOT JUST money-flows.
+ *
+ * This named `_money-flows.ts` as a single hardcoded path, which was correct for
+ * exactly as long as it was the only page set authored inline. The moment a
+ * second one existed (`_happy-path.ts`, 2026-09-28) its 36 cases were exempt
+ * from R5-R10 — no steps check, no scaffold check, no fixture-id check, no
+ * roles/startPage coherence check — while the audit still reported OK.
+ *
+ * A rule that silently stops applying to new work is worse than one that never
+ * applied: the green run is read as coverage. Root Cause #84, on the
+ * which-files-do-I-read axis.
+ *
+ * The non-page modules are named, so a new `_*.ts` page set is picked up
+ * automatically and a new non-page module is a one-line addition here.
+ */
+const SEED_DATA_NON_PAGE_FILES = new Set([
+  "index.ts",
+  "tester-checklist-seed-data.ts",
+  "tester-responses-seed-data.ts",
+  "tester-ttl.ts",
+  "tester-window.ts",
+]);
+
+function inlinePageSetFiles() {
+  try {
+    return readdirSync(SEED_DATA_DIR)
+      .filter((f) => f.endsWith(".ts") && !SEED_DATA_NON_PAGE_FILES.has(f))
+      .map((f) => resolve(SEED_DATA_DIR, f));
+  } catch {
+    return [];
+  }
+}
 
 /**
  * 🛑 A RATCHET, NOT A BASELINE. This list may only ever SHRINK.
@@ -293,7 +388,18 @@ if (existsSync(CATALOGUE)) {
           .join("\n"),
       )
     : "";
-  const inlineSrc = read(CATALOGUE) + (existsSync(MONEY_FLOWS) ? read(MONEY_FLOWS) : "");
+  /*
+   * 🛑 COMMENTS STRIPPED, exactly as authoredSrc is a few lines above.
+   *
+   * They were not, and the first comment written to EXPLAIN an R7 fix — quoting
+   * the offending `offer-to-purchase-…` id — became a fresh R7 violation. A rule
+   * that reads its own documentation as evidence cannot be satisfied: fixing it
+   * correctly and describing the fix are mutually exclusive.
+   *
+   * Same failure the header already records for the observability audit, which
+   * counted a commented-out registration as live.
+   */
+  const inlineSrc = stripComments(read(CATALOGUE) + inlinePageSetFiles().map((f) => read(f)).join("\n"));
 
   /* R7 — every fixture id an authored step cites must be a real seed id. */
   const seedIds = new Set();
@@ -369,7 +475,54 @@ if (existsSync(CATALOGUE)) {
    * produce (`product-detail…`), which held for exactly one page and then failed on
    * the next. Removing the key lines outright is the rule that generalises.
    */
-  const authoredValues = authoredSrc.replace(/^\s*"checklist-[^"]+":\s*\{\s*$/gm, "");
+  /*
+   * 🛑 INLINE CASES ARE SUBJECT TO THESE RULES TOO.
+   *
+   * R6, R7, R8 and R10 read `authoredSrc` alone, so every case authored INLINE
+   * was exempt from four of the six rules — including all 29 in `_money-flows.ts`,
+   * the file this project's own docs call THE REFERENCE that every other page is
+   * authored against. The reference was the one file nobody checked, which is the
+   * worst possible place for the gap: it is what gets copied.
+   *
+   * Verified by injecting a mechanical "Open X. Verify Y." step into an inline
+   * page set and watching the audit report OK.
+   *
+   * An inline case's own `key: "…"` is an identifier, not a fixture citation —
+   * the same reason the overlay's `"checklist-…":` key lines are stripped here.
+   */
+  /*
+   * 🛑 STRIP BOTH FORMATTING STYLES. The catalogue writes a case either
+   * multi-line (`key:` alone on its line) or compact (`{ key: "x", label: "y" }`),
+   * and an own-line-anchored strip leaves every compact key standing — which R7
+   * then reports as ~60 "cited fixtures that do not exist", all of them case
+   * identifiers. A wall of false positives is worse than no rule: it is the
+   * output people learn to scroll past.
+   */
+  /*
+   * `description` is CATALOGUE prose and has NO counterpart on AuthoredCase, so
+   * including it would hold inline cases to a stricter rule than overlay ones.
+   * Descriptions legitimately refer to sibling cases by key ("see
+   * classified-offer-is-the-purchase-path") and narrate a BEFORE/AFTER in
+   * sentences — neither is an instruction a tester follows, and both trip R7 and
+   * R8. The overlay is exempt by construction; inline must be exempt by rule.
+   */
+  const inlineValues = inlineSrc
+    .replace(/(^|[{,\s])(?:key|pageKey|pageLabel|groupKey|groupLabel):\s*"[^"]*"/gm, "$1")
+    .replace(/(^|[{,\s])description:\s*(?:"(?:[^"\\]|\\.)*"|\s*\n\s*"(?:[^"\\]|\\.)*")/gm, "$1")
+    .replace(/^\s*,?\s*$/gm, "");
+  const authoredValues = (authoredSrc.replace(/^\s*"checklist-[^"]+":\s*\{\s*$/gm, "") + "\n" + inlineValues)
+    /*
+     * 🛑 A ROUTE IS NOT A FIXTURE CITATION. `/admin/event-entries` and
+     * `/admin/store-addresses` are real pages, but their last segment is
+     * slug-shaped and preceded by `/`, which is exactly R7's "this is a
+     * citation" signal — so every such route read as a dangling fixture id.
+     *
+     * Routes are audit-tester-checklist-hrefs's job, and it validates them
+     * against real page.tsx files, which is a stronger check than R7 could make.
+     * Two rules claiming the same field is how a real finding gets lost in a
+     * column of false ones.
+     */
+    .replace(/(^|[{,\s])(?:href|startPage):\s*"[^"]*"/gm, "$1");
 
   /*
    * Distinguish a fixture CITATION from a hyphenated English adjective.
@@ -404,8 +557,17 @@ if (existsSync(CATALOGUE)) {
     );
   }
 
+  /*
+   * The PROCEDURE text of every case, overlay and inline alike — which is what
+   * R6 and R8 judge. `inlineValues` rather than raw `inlineSrc`, so catalogue
+   * descriptions are excluded for the same reason R7 excludes them: a BEFORE/AFTER
+   * sentence is not a step, and judging it produces findings an author cannot act
+   * on without deleting prose that is doing its job.
+   */
+  const stepSrc = authoredSrc + "\n" + inlineValues;
+
   /* R6 — the mechanical scaffold, which reaches 100% while encoding nothing. */
-  for (const m of authoredSrc.matchAll(/"(Open|Go to|Navigate to)[^"]*\.\s*Verify[^"]*"/gi)) {
+  for (const m of stepSrc.matchAll(/"(Open|Go to|Navigate to)[^"]*\.\s*Verify[^"]*"/gi)) {
     violations.push(`R6 mechanical "Open X. Verify Y." step: ${m[0].slice(0, 70)}`);
   }
 
@@ -426,7 +588,7 @@ if (existsSync(CATALOGUE)) {
    * happens to contain a number, and never rejects one that supplies its value.
    */
   for (const re of VAGUE) {
-    for (const m of authoredSrc.matchAll(new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g"))) {
+    for (const m of stepSrc.matchAll(new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g"))) {
       if (/\d/.test(m[0])) continue;
       violations.push(
         `R8 step has no literal value: ${m[0].slice(0, 70)} — an unrepeatable case ` +
@@ -454,6 +616,21 @@ if (existsSync(CATALOGUE)) {
     id: m[1],
     body: authoredSrc.slice(m.index ?? 0, i + 1 < entryStarts.length ? entryStarts[i + 1].index : authoredSrc.length),
   }));
+
+  /*
+   * Inline cases split on their own `key: "…"` anchor rather than on the
+   * overlay's `"checklist-…": {`, which they do not have. Without this, R10
+   * never saw an inline case at all — a `roles: ["buyer"]` case starting at
+   * /admin/orders would pass, which is precisely the pairing R10 exists to
+   * refuse.
+   */
+  const inlineStarts = [...inlineSrc.matchAll(/(?:^|[{,\s])key:\s*"([^"]+)"/g)];
+  for (const [i, m] of inlineStarts.entries()) {
+    blocks.push({
+      id: m[1],
+      body: inlineSrc.slice(m.index ?? 0, i + 1 < inlineStarts.length ? inlineStarts[i + 1].index : inlineSrc.length),
+    });
+  }
   /*
    * 🛑 A case now carries a LIST of affected roles, so this asks whether ANY of them
    * can reach the page — not whether one particular role can.
@@ -469,7 +646,43 @@ if (existsSync(CATALOGUE)) {
     const page = body.match(/\bstartPage:\s*"([^"]+)"/)?.[1];
     if (!roles.length || !page) continue;
 
-    if (page.startsWith("/admin") && !roles.some((r) => r === "admin" || r === "employee")) {
+    /*
+     * 🛑 THE SAME ESCAPE AS THE GUEST CHECK BELOW, FOR THE SAME REASON.
+     *
+     * This check had none, so "a signed-out visitor cannot reach /admin/orders"
+     * — a case whose entire point is the refusal — was indistinguishable from
+     * an author who paired the wrong role with the wrong page by accident. The
+     * check twenty lines down already encodes exactly this exemption; having it
+     * on one and not the other meant the rule contradicted itself, and the only
+     * ways to satisfy it were to delete a valuable case or to add a privileged
+     * role the case does not actually test. Both are worse than the bug.
+     *
+     * A guest-on-/admin case whose expectations say nothing about a redirect
+     * still fails, which is the mistake this was written to catch.
+     */
+    /*
+     * Scoped to the EXPECTATIONS, not the whole body — which is what the rule's
+     * own message claims ("nothing in the expectations says the redirect IS the
+     * case"). Testing the whole body lets a STEP satisfy it, and every guest
+     * case has a step reading "Open /x signed out", so the escape would be
+     * granted automatically to exactly the cases it is meant to judge. Verified
+     * by stripping the refusal language from the expectations and watching this
+     * fire.
+     */
+    const expectationText = [
+      /\bexpectedBehaviour:\s*((?:"(?:[^"\\]|\\.)*"\s*\+?\s*)+)/,
+      /\bexpectedUiState:\s*((?:"(?:[^"\\]|\\.)*"\s*\+?\s*)+)/,
+      /\bendResult:\s*((?:"(?:[^"\\]|\\.)*"\s*\+?\s*)+)/,
+    ]
+      .map((re) => body.match(re)?.[1] ?? "")
+      .join(" ");
+    const aboutRefusalHere =
+      /redirect|sign in|signin|log ?in|unauthori[sz]ed|not signed in|signed[- ]out/i.test(expectationText);
+    if (
+      page.startsWith("/admin") &&
+      !roles.some((r) => r === "admin" || r === "employee") &&
+      !aboutRefusalHere
+    ) {
       violations.push(
         `R10 roles [${roles.join(", ")}] with startPage "${page}" — no listed role can reach an admin page, ` +
           `so the case can only ever produce /unauthorized.`,

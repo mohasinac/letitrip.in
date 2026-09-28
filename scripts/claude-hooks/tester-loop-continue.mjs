@@ -56,8 +56,19 @@ import { budgetStatus, formatDuration, ESTIMATED_READS_PER_BATCH } from "../../t
 
 const REPO = process.cwd();
 const STATE = resolve(REPO, "tester/.tester-runs/loop-state.json");
-const PROGRESS = resolve(REPO, "docs/TESTING-PROGRESS.md");
-const PHASE_STATUS = "docs/TESTING-PHASE-STATUS.md";
+
+/*
+ * Test Run 3's documents. The three this used to point at — TESTING-PROGRESS.md,
+ * TESTING-PHASE-STATUS.md and the TRIAGE-*.md family — were deleted with the
+ * older runs' artifacts on 2026-09-28, along with the four scripts that wrote
+ * them. A hook that names a deleted script fails silently in a try/catch and
+ * reports "⚠ could not refresh", which reads as a transient glitch forever.
+ */
+const CHECKLIST_DOC = "docs/TEST-RUN-3.md";
+const AUDIT_DOC = resolve(REPO, "docs/TEST-RUN-3-AUDIT.md");
+const STATUS_SCRIPT = "scripts/test-run-status.mjs";
+const BATCHES_PER_CYCLE = 5;
+const DEPLOY_EVERY_BATCHES = 25;
 
 /**
  * Refresh the per-phase status file from the verdict files on disk.
@@ -75,7 +86,7 @@ const PHASE_STATUS = "docs/TESTING-PHASE-STATUS.md";
  */
 function refreshPhaseStatus() {
   try {
-    const r = spawnSync(process.execPath, ["scripts/build-phase-status.mjs", "--quiet"], {
+    const r = spawnSync(process.execPath, [STATUS_SCRIPT, "--quiet"], {
       cwd: REPO,
       encoding: "utf8",
       timeout: 30_000,
@@ -83,6 +94,49 @@ function refreshPhaseStatus() {
     return r.status === 0;
   } catch {
     return false;
+  }
+}
+
+/**
+ * The run, counted from disk. Never from prose, and never from this file.
+ *
+ * 🛑 An earlier run's hand-kept tally reported 17 failures where the verdict
+ * files held 15 — it had been counting calibration controls, and nothing could
+ * catch it, because the only other copy of the number WAS the prose. Every
+ * figure the hook prints comes through here.
+ *
+ * Returns null rather than throwing: a reporting aid that can kill the loop
+ * would be worse than no reporting aid.
+ */
+function runTally() {
+  try {
+    const r = spawnSync(process.execPath, [STATUS_SCRIPT, "--json"], {
+      cwd: REPO,
+      encoding: "utf8",
+      timeout: 30_000,
+    });
+    if (r.status !== 0) return null;
+    return JSON.parse(String(r.stdout ?? "null"));
+  } catch {
+    return null;
+  }
+}
+
+/** Phase 1 progress, read straight off the ledger's own rows. */
+function auditProgress() {
+  try {
+    if (!existsSync(AUDIT_DOC)) return null;
+    const rows = readFileSync(AUDIT_DOC, "utf8")
+      .split("\n")
+      .filter((l) => /^\|\s*`[^`/]+\/[^`]+`\s*\|/.test(l));
+    if (rows.length === 0) return null;
+    const done = rows.filter((l) => /\|\s*(audited|rewritten)\s*\|/.test(l)).length;
+    const inFlight = rows.find((l) => /\|\s*in-flight\s*\|/.test(l));
+    const nextPending = rows.find((l) => /\|\s*pending\s*\|/.test(l));
+    const keyOf = (l) => l?.match(/^\|\s*`([^`]+)`/)?.[1] ?? null;
+    return { total: rows.length, done, inFlight: keyOf(inFlight), next: keyOf(nextPending) };
+  } catch {
+    return null;
   }
 }
 
@@ -314,10 +368,19 @@ function planContinue(why) {
   process.exit(2);
 }
 
-/** Consolidated batch rows, read from the progress document. */
+/**
+ * Batch rows recorded, counted from the VERDICT FILES rather than the document.
+ *
+ * 🛑 This read `docs/TESTING-PROGRESS.md` and counted its table rows until
+ * 2026-09-28 — i.e. it counted the prose, which is the artifact most likely to
+ * be wrong and the one a human edits by hand. Counting the document to report on
+ * the document is circular: it can only ever confirm what someone typed.
+ */
 function consolidatedCount() {
+  const t = runTally();
+  if (t) return t.batchesDone;
   try {
-    return readFileSync(PROGRESS, "utf8").split("\n").filter((l) => /^\|\s*`/.test(l)).length;
+    return readFileSync(resolve(REPO, CHECKLIST_DOC), "utf8").split("\n").filter((l) => /^\|\s*`/.test(l)).length;
   } catch {
     return 0;
   }
@@ -400,6 +463,77 @@ function fixThenTestContinue() {
 
 if (mode === "fix-then-test") {
   fixThenTestContinue();
+}
+
+/* ── audit mode — Test Run 3 Phase 1 ────────────────────────────────────────
+ *
+ * Drive the page-by-page catalogue audit from docs/TEST-RUN-3-AUDIT.md.
+ *
+ * 🛑 THE LEDGER IS THE STATE, NOT THIS FILE. The next page is read off the
+ * document every fire, so a compaction loses nothing and there is no counter to
+ * hand-increment — the same argument as tester mode reading pending batches from
+ * the verdict files rather than from a phase number somebody typed.
+ *
+ * No quota gate and no health gate: the audit reads source, not Firestore, and
+ * is exactly what should continue while a run is paused for either reason.
+ */
+if (mode === "audit") {
+  const a = auditProgress();
+  if (!a) {
+    standDown(
+      `tester loop: mode "audit" but docs/TEST-RUN-3-AUDIT.md has no page rows.\n` +
+        `  Generate it: node scripts/test-run-build-audit-ledger.mjs`,
+    );
+  }
+  if (!a.inFlight && !a.next) {
+    standDown(
+      `✓ audit loop: all ${a.total} pages are audited or rewritten.\n` +
+        `  Phase 1 exit gate:\n` +
+        `    npm run check\n` +
+        `    npx appkit-seed delete --yes --collections testerChecklistItems\n` +
+        `    npx appkit-seed load  --collections testerChecklistItems\n` +
+        `    node tester/scripts/fetch-cases.mjs --run ${runId || "run-3"}\n` +
+        `  Then switch mode to "tester" in ${STATE} and Phase 2 begins.`,
+    );
+  }
+  bump({ blocked: null });
+  const page = a.inFlight ?? a.next;
+  blockWith(
+    `▶ AUDIT LOOP ACTIVE — ${a.done}/${a.total} pages done (continuation ${continuations + 1})\n` +
+      `\n` +
+      `  Do NOT end the turn. ${a.total - a.done} page(s) remain. A status summary is\n` +
+      `  not a turn boundary — end on a tool call that advances disk state.\n` +
+      `\n` +
+      (a.inFlight
+        ? `  🛑 RESUME: ${page} is marked in-flight — a previous turn stopped inside it.\n` +
+          `     Re-read it from the top rather than trusting a partial pass.\n\n`
+        : `  NEXT PAGE: ${page}\n\n`) +
+      `  1. Mark it in-flight in docs/TEST-RUN-3-AUDIT.md.\n` +
+      `\n` +
+      `  2. Read the overlay and its catalogue entries:\n` +
+      `       appkit/src/features/tester/seed-data/authored/${String(page).replace("/", "__")}.ts\n` +
+      `\n` +
+      `  3. Read THE ACTUAL SOURCE it tests — the route under src/app/[locale]/**, its\n` +
+      `     view component, its API route. Not the old docs, and not CLAUDE.md's\n` +
+      `     description of the feature: those being out of date is WHY this phase exists.\n` +
+      `\n` +
+      `  4. Per case, check the six parts against what the code does — startPage\n` +
+      `     resolves, steps name controls that still exist, inputs are literal and\n` +
+      `     their fixture ids still seeded, expectedBehaviour/expectedUiState quote\n` +
+      `     text the code actually renders, expectedData is readable off the screen,\n` +
+      `     endResult names what survives a reload. Rewrite what drifted, in place.\n` +
+      `\n` +
+      `  5. npm run check green — tsc is the real per-field gate, since AuthoredCase\n` +
+      `     declares its six fields non-optional and the audits do not check presence.\n` +
+      `\n` +
+      `  6. Mark audited or rewritten, with a one-line note on what changed.\n` +
+      `\n` +
+      `  🛑 A PRODUCT defect noticed here goes to docs/TEST-RUN-3-OUTOFSCOPE.md and is\n` +
+      `     NOT fixed. Phase 1 changes cases, not features.\n` +
+      `\n` +
+      `  Procedure: .claude/skills/test-run-loop/SKILL.md\n` +
+      `  Off switch: set active:false in ${STATE}, or delete it.\n`,
+  );
 }
 
 /* ── Pure plan mode ────────────────────────────────────────────────────────
@@ -542,7 +676,7 @@ if (fixCycleDue) {
       `  re-finding whatever is already broken until it ships.\n` +
       `\n` +
       `  1. Collect this cycle's failures:\n` +
-      `       node scripts/triage-findings.mjs --run ${runId} --out docs/TRIAGE-${runId}.md\n` +
+      `       node ${STATUS_SCRIPT}          # lists every open defect, computed from disk\n` +
       `\n` +
       `  2. ROOT-CAUSE each one to a file and line — not a symptom. RE-VERIFY it\n` +
       `     against live production first (Rule #4): a route that 404s in a report\n` +
@@ -674,7 +808,8 @@ if (blocked) {
         `      until node tester/scripts/verify-prod-health.mjs >/dev/null 2>&1; do sleep 600; done; echo RECOVERED\n` +
         `\n` +
         `  While waiting, useful work that needs NO quota:\n` +
-        `    - re-read suspect findings in docs/TRIAGE-${runId}.md against source\n` +
+        `    - re-read the open defects (node ${STATUS_SCRIPT}) against source\n` +
+        `    - continue the Phase 1 page audit — it reads no Firestore at all\n` +
         `    - prepare (do not apply) fixes for the confirmed-real ones\n` +
         `    - keep npm run check green\n`,
     );
@@ -687,48 +822,102 @@ bump({ blocked: null });
 const statusFresh = refreshPhaseStatus();
 
 const nextKey = pending.keys[0];
+const t = runTally();
+
+/*
+ * Milestone awareness. The cycle is 5 batches and the deploy is every 25, and
+ * both are computed from the recorded count rather than tracked by hand — the
+ * same argument as everything else here: a counter kept in prose is a counter
+ * that has already drifted.
+ */
+const doneCount = t?.batchesDone ?? 0;
+const openDefects = t?.open ?? 0;
+const sinceCycle = doneCount % BATCHES_PER_CYCLE;
+const cycleDue = doneCount > 0 && sinceCycle === 0;
+const deployDue = doneCount > 0 && doneCount % DEPLOY_EVERY_BATCHES === 0;
+
+const milestone = deployDue
+  ? `  🛑 DEPLOY MILESTONE DUE — ${doneCount} batches recorded.\n` +
+    `       node scripts/test-run-milestone.mjs\n` +
+    `     Standing authorisation for this run only. Do it BEFORE the next batch, so\n` +
+    `     later batches test the fixed code.\n\n`
+  : cycleDue
+    ? `  ▸ CYCLE COMPLETE — ${doneCount} batches. Append the rows to ${CHECKLIST_DOC},\n` +
+      `    then: node ${STATUS_SCRIPT}\n` +
+      `    Never type a count into the document; the block is rewritten from disk.\n\n`
+    : "";
+
+/*
+ * An open defect outranks the next batch. The run's rule is "fix everything
+ * before advancing", and G5 is what keeps that from stalling: six turns per
+ * defect, then it goes to state.fixQueue and the cycle moves on.
+ */
+const defectLine =
+  openDefects > 0
+    ? `  🛑 ${openDefects} OPEN DEFECT(S) — no batch advances until they are fixed and re-driven.\n` +
+      `     node ${STATUS_SCRIPT}          # lists them\n` +
+      `     Stuck 6+ turns on one? Write it to state.fixQueue with its evidence,\n` +
+      `     record the case deferred-to-milestone, and advance. The escape is\n` +
+      `     automatic so it does not depend on noticing you are stuck.\n\n`
+    : "";
 
 blockWith(
   `▶ TESTER LOOP ACTIVE — run ${runId} · ${pending.keys.length} batch(es) PENDING (continuation ${continuations + 1})\n` +
     `\n` +
-    `  Do NOT end the turn. Cases are still pending.\n` +
+    `  Do NOT end the turn. Cases are still pending. A status summary is not a turn\n` +
+    `  boundary — end on a tool call that advances disk state.\n` +
     `\n` +
+    defectLine +
+    milestone +
     `  NEXT BATCH:  ${nextKey}\n` +
     `\n` +
-    `  1. Health gate (FATAL — if it exits 1, set blocked:"firestore-quota" in the\n` +
-    `     state file and wait; do not test):\n` +
-    `       node tester/scripts/verify-prod-health.mjs\n` +
+    `  0. FIRST, always — a batch may have died mid-flight:\n` +
+    `       node scripts/test-run-inflight.mjs --check\n` +
+    `     Non-zero means tear down and RESTART that batch from case 1. Never resume:\n` +
+    `     nothing on disk can establish the fixtures are in the state case N expects.\n` +
+    `\n` +
+    `  1. Preflight (FATAL — health, stale plugin cache, read budget, check):\n` +
+    `       node scripts/test-run-preflight.mjs\n` +
     `\n` +
     `  2. Work that batch YOURSELF, in THIS session. There is no runner to call:\n` +
     `     run.mjs / pool.mjs / sweep.mjs were deleted 2026-09-14 because each\n` +
     `     spawned one headless Claude session per batch (~300 in one day).\n` +
     `     Nothing under tester/scripts/ may spawn the claude binary again.\n` +
     `       node tester/scripts/fetch-cases.mjs --run ${runId} --page ${nextKey ?? "<key>"} --out <file>\n` +
+    `       node scripts/test-run-inflight.mjs --start ${nextKey ?? "<key>"} --identity <role>\n` +
     `       node tester/scripts/seed-batch-fixtures.mjs --batch ${nextKey ?? "<key>"}   # if it has one\n` +
     `     then drive the browser HERE with the Playwright MCP, and record:\n` +
     `       node tester/scripts/record-verdicts.mjs --run ${runId} --batch <f> --verdicts <f>\n` +
     `       node tester/scripts/seed-batch-fixtures.mjs --batch ${nextKey ?? "<key>"} --teardown\n` +
-    `\n` +
-    `     🛑 The INSTALLED plugin copy is stale — its SKILL.md predates this flow and\n` +
-    `     its scripts/ still contains the deleted harness. Read the repo's\n` +
-    `     tester/skills/run-tests/SKILL.md for the procedure; do not invoke the skill.\n` +
+    `       node scripts/test-run-inflight.mjs --done\n` +
     `\n` +
     `  3. A verdict is yes / no / null. "null — could not test" is FIRST CLASS and is\n` +
     `     always better than a guess: a fabricated pass is a false green on a case a\n` +
-    `     human would otherwise have run. Every "no" cites evidence.\n` +
+    `     human would otherwise have run. Every "no" cites evidence, and EVERY\n` +
+    `     verdict — passes included — carries a screenshot that exists on disk.\n` +
     `\n` +
     `  4. RE-VERIFY each failure against live production BEFORE fixing it (Rule #4).\n` +
     `     A route that exists in source but 404s in a report is usually the report.\n` +
+    `     Any "this whole page is empty" claim is re-driven from a fresh navigation\n` +
+    `     first — a previous run recorded two brand pages as empty and they held 20\n` +
+    `     and 8 products.\n` +
     `\n` +
-    `  5. Triage by ROOT CAUSE, not per symptom:\n` +
-    `       node scripts/triage-findings.mjs --run ${runId} --out docs/TRIAGE-${runId}.md\n` +
+    `  5. A fix must NAME the case that found it, and is appended to\n` +
+    `     tester/.tester-runs/${runId}/fixes.jsonl. Anything noticed that no case\n` +
+    `     found goes to docs/TEST-RUN-3-OUTOFSCOPE.md and is NOT chased.\n` +
+    `\n` +
+    `  Procedure: tester/skills/run-tests/SKILL.md (batch) ·\n` +
+    `             .claude/skills/test-run-loop/SKILL.md (cycle)\n` +
     `\n` +
     `  Nothing to hand-increment: this loop ends when every batch in scope.json has\n` +
     `  recorded verdicts, and it recomputes that each turn.\n` +
     `\n` +
     (healthLine ? healthLine + "\n" : "") +
-    `  Progress: ${consolidatedCount()} batch rows consolidated\n` +
-    `  Status:   ${statusFresh ? `✓ ${PHASE_STATUS} refreshed from disk` : `⚠ could not refresh ${PHASE_STATUS}`}\n` +
+    (t
+      ? `  Progress: ${t.batchesDone}/${t.batchesTotal || "?"} batches · ${t.casesDone}/${t.casesTotal || "?"} cases · ` +
+        `pass ${t.pass} fail ${t.fail} null ${t.abstain}\n`
+      : `  Progress: ${consolidatedCount()} batch(es) recorded\n`) +
+    `  Status:   ${statusFresh ? `✓ ${CHECKLIST_DOC} counter refreshed from disk` : `⚠ could not refresh ${CHECKLIST_DOC}`}\n` +
     `  Off switch: set active:false in the state file, or delete it.\n`,
 );
 process.exit(2);

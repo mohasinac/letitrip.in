@@ -177,6 +177,12 @@ const SEED_ID_TEMPLATE_RE = /id:\s*`([^`]*)`/g;
 // /blog/[slug] route actually reads) — scan slug fields too so a checklist
 // href using the real route param isn't flagged as unknown.
 const SEED_SLUG_STRING_RE = /slug:\s*"([\w-]+)"/g;
+/*
+ * Per-batch fixture manifests (`fixtures/*.mjs`) declare their id as a module
+ * constant — `const ID = "auction-money-flows-closing"` — and then reference it
+ * as `id: ID`, which no `id:\s*"…"` pattern can see.
+ */
+const SEED_CONST_ID_RE = /^\s*const\s+[A-Z][A-Z0-9_]*\s*=\s*"([\w-]+)"/gm;
 
 function templateToRegex(template) {
   const parts = template.split(/\$\{[^}]*\}/);
@@ -207,11 +213,28 @@ function collectSeedIds() {
           stack.push(join(current, f.name));
           continue;
         }
-        if (!f.isFile() || !f.name.endsWith(".ts")) continue;
+        /*
+         * 🛑 .mjs TOO — PER-BATCH FIXTURES ARE REAL IDS.
+         *
+         * `seed-data/fixtures/*.mjs` create rows at batch time rather than at
+         * seed time, and a case may legitimately link to one: money-flows sends
+         * the tester to /auctions/auction-money-flows-closing, an auction that
+         * exists only while that batch is running.
+         *
+         * Scanning `.ts` alone made those look like dangling hrefs. R7 of
+         * audit-tester-plugin-wiring already treats them as known ids by
+         * importing each manifest, so a `.ts`-only scan here meant the two
+         * audits disagreed about what exists — and this one would have been
+         * believed, because a route audit reporting a 404 is exactly the kind of
+         * finding nobody re-checks.
+         */
+        if (!f.isFile() || !(f.name.endsWith(".ts") || f.name.endsWith(".mjs"))) continue;
         const fileText = readFileSync(join(current, f.name), "utf8");
         for (const m of fileText.matchAll(SEED_ID_STRING_RE)) ids.add(m[1]);
         for (const m of fileText.matchAll(SEED_SLUG_STRING_RE)) ids.add(m[1]);
         for (const m of fileText.matchAll(SEED_ID_TEMPLATE_RE)) templateRegexes.push(templateToRegex(m[1]));
+        /* A manifest names its id once, as `const ID = "…"`, then reuses it. */
+        for (const m of fileText.matchAll(SEED_CONST_ID_RE)) ids.add(m[1]);
       }
     }
   }
@@ -241,8 +264,47 @@ const AUTHORED_DIR = join(ROOT, "appkit", "src", "features", "tester", "seed-dat
 
 const ROUTE_FIELD_RE = /\b(?:href|startPage):\s*"([^"]*)"/g;
 
+const SEED_DATA_DIR = join(ROOT, "appkit", "src", "features", "tester", "seed-data");
+
+/* Not page sets — no cases, therefore no routes to validate. */
+const SEED_DATA_NON_PAGE_FILES = new Set([
+  "index.ts",
+  "tester-checklist-seed-data.ts",
+  "tester-responses-seed-data.ts",
+  "tester-ttl.ts",
+  "tester-window.ts",
+]);
+
 function collectSources() {
   const out = [{ path: SEED_FILE, label: "tester-checklist-seed-data.ts" }];
+
+  /*
+   * 🛑 INLINE-AUTHORED PAGE SETS LIVE IN THE SEED-DATA ROOT, NOT IN authored/.
+   *
+   * This audit scanned the catalogue and `authored/*.ts` and nothing else, so
+   * `_money-flows.ts` — 29 cases, and the file CLAUDE.md calls THE REFERENCE for
+   * the six-part contract — had never had a single startPage validated. The
+   * reference nobody checks is the worst possible file to leave unchecked: it is
+   * the one other pages are copied from.
+   *
+   * The `_` prefix is skipped inside `authored/` because `_types.ts` carries no
+   * cases. In THIS directory the same prefix means the opposite — it marks a
+   * page set authored inline rather than through an overlay — so the rule is
+   * inverted here: scan `_`-prefixed files and skip the known non-page modules
+   * by name. A name-based skip list fails LOUDLY when a new module is added
+   * (it gets scanned and, carrying no routes, contributes nothing), whereas a
+   * prefix rule fails silently by skipping real cases.
+   */
+  try {
+    for (const entry of readdirSync(SEED_DATA_DIR, { withFileTypes: true })) {
+      if (!entry.isFile() || !entry.name.endsWith(".ts")) continue;
+      if (SEED_DATA_NON_PAGE_FILES.has(entry.name)) continue;
+      out.push({ path: join(SEED_DATA_DIR, entry.name), label: entry.name });
+    }
+  } catch {
+    /* handled by the SEED_FILE existence check above */
+  }
+
   try {
     for (const entry of readdirSync(AUTHORED_DIR, { withFileTypes: true })) {
       if (!entry.isFile() || !entry.name.endsWith(".ts")) continue;
