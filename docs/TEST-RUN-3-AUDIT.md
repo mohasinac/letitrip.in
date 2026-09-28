@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**9 / 130 pages** · 1331 cases · 15 groups
+**10 / 130 pages** · 1331 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -45,7 +45,7 @@ case — the audits do not check per-field presence.
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
 | `buying/order-detail-actions` | Order detail — cancel, return, track, invoice, payment | 7 | rewritten | All 5 order sub-routes (cancel/invoice/payment/return/track) exist and /user/returns exists. FIXED track-shows-real-dates: it cited order-1-20251104-aevnlw, which no seeded order resolves to — replaced with order-1-20251122-481j4x, the shipped order rehan actually owns. Order ids are GENERATED, so no text scan of the seed could see the dead one; R7 now recomputes them. |
-| `buying/browsing-search` | Browsing & Search | 42 | pending |  |
+| `buying/browsing-search` | Browsing & Search | 42 | rewritten | 42 cases. Type-filter cases correctly describe the drawer ('Filters'/tick/'Apply'/'Reset all' all real; one case asserts no chip row exists). FIXED show-sold-toggle-reveals-items: it clicked a 'Live' tab, an 'Open' tab and a 'Closed' tab. availabilityTabsFor builds exactly Available / <Sold|Ended|Sold & Ended> / All, and prize-draw's hideDefault 'closed' maps to the noun 'Ended' — so three of its steps named controls that render under different names. |
 | `buying/product-detail` | Product / Auction / Pre-order Detail | 26 | pending |  |
 | `buying/image-tile-layout` | Image Tiles & Collages | 7 | pending |  |
 | `buying/buying-checkout` | Buying & Checkout | 32 | pending |  |
