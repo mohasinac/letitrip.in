@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**40 / 130 pages** · 1331 cases · 15 groups
+**41 / 130 pages** · 1331 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -159,7 +159,7 @@ case — the audits do not check per-field presence.
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
 | `admin/admin-detail-round-trips` | Admin detail pages — view and edit round-trips | 7 | pending |  |
-| `admin/catalog-listings` | Catalog & Listings | 17 | pending | LEAD (STALE CLAIM): admin-crud case's expectedBehaviour/expectedUiState repeat 'nothing on the write side derives that chain', telling the tester ONE category link 'is the known gap rather than a surprise'. False since Root Cause #101. No expectedData on the link count so it misleads rather than mis-scores. Fix the prose; see selling/seller-catalog-org header. |
+| `admin/catalog-listings` | Catalog & Listings | 17 | rewritten | 17 cases, 9 corrected. THIRD copy of the stale ancestor-chain claim (header + products-crud) — told the tester ONE category link was 'the known gap rather than a surprise'; false since Root Cause #101. products-crud now pins the category to Burst Parts and asserts 3 links plus a working brand link (brand is matched by DISPLAY NAME while the picker's value is the row id — also resolved on write). DEAD POINTERS: admin-per-type-pages-have-filters sent the tester to /admin/auctions and /admin/pre-orders, neither of which exists — there are exactly six per-type pages and only /admin/classified is in the sidebar, so all six are now named by URL and the two absent ones are asserted absent. ASSERTED A GUARD THAT DOES NOT EXIST: carousel-crud expected a sixth active CAROUSEL to be refused; the cap of five is on active SLIDES, enforced at write with a 409, and there is no carousel cap — also noted the seed already ships five active slides, so the refusal can arrive on the first one activated. VAGUENESS: five cases said 'the admin X surface' or 'the public art tab' instead of a URL; brands-crud and sublisting-categories-crud additionally had startPage /admin/categories while their first step opened a different page. sections-crud started at /admin, a redirect-only shim. deals-featured-crud never opened /admin/deals or /admin/featured despite its name; both are real DataListingView pages and are now in the procedure. Verified correct and left alone: the nine-chip assertion (ADMIN_PRODUCT_LISTING_TYPE_TABS stays all-nine, audit-enforced), carousel list renders Named Carousels (Root Cause #37 fixed), art-stickers alias-map case. |
 | `admin/coupons` | Coupons | 11 | pending |  |
 | `admin/events-raffles-spin` | Events, Raffles & Spin Wheel | 8 | pending |  |
 | `admin/prize-draws-lotteries` | Prize Draws / Lotteries | 5 | pending |  |
