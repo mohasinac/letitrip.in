@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**87 / 130 pages** · 1334 cases · 15 groups
+**89 / 130 pages** · 1334 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -149,7 +149,7 @@ case — the audits do not check per-field presence.
 
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
-| `seo/canonical-and-host` | Canonical host & redirects | 7 | pending | LEAD (redirect sweep): startPage /promotions redirects to /promotions/deals — directly relevant to a canonical-URL page. |
+| `seo/canonical-and-host` | Canonical host & redirects | 7 | audited | 7 cases, 4 steps corrected — a strong page on the defect that once took the site out of Google, and mostly needing precision rather than repair. FIXED: no-inherited-homepage-canonical had startPage /promotions while its first step opens /reviews; repointed. Its last step said 'open two more pages unlikely to declare their own metadata' — named /sellers and /brands, since an unbounded 'two more' cannot be compared between testers. And it read /promotions' canonical without saying what to expect: NONE, because a bare redirect deliberately carries no metadata at all (redirect() fires before a document is produced, so a crawler reads the canonical of the page it LANDS on). An absent canonical there is correct; the homepage's URL appearing there is the defect the case hunts. GROUNDED: canonical-matches-visited-host now names the single definition — appkit.config.js seo.siteUrl, defaulting to https://www.letitrip.in and overridable by NEXT_PUBLIC_SITE_URL — and says to compare against the host in the address bar rather than a remembered value, because that override is exactly how the two definitions drifted apart. LEAD RESOLVED, already covered: the /promotions redirect has its own dedicated case, redirect-only-page-no-canonical, which correctly opens the network panel and checks the canonical names the LANDING page. VERIFIED: apex-redirects-to-www already distinguishes 301/308 from 307/302, which is the whole point — a temporary redirect tells a search engine not to move the index entry. |
 | `seo/sitemap-and-robots` | Sitemap & robots | 6 | pending |  |
 | `seo/page-metadata` | Per-page titles & descriptions | 7 | pending |  |
 | `seo/og-images` | Social preview cards | 6 | pending |  |
