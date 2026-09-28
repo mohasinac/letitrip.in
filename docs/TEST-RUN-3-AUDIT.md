@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**44 / 130 pages** · 1331 cases · 15 groups
+**45 / 130 pages** · 1331 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -79,7 +79,7 @@ case — the audits do not check per-field presence.
 | `selling/sectionised-forms` | Forms — sections, error summary and the mobile bar | 9 | rewritten | 9 cases. audit-form-sectionised confirmed at 0 — the migration really is complete. RC #74 verified fixed and guarded: FormErrorSummary returns null unless ctx.submitAttempted. FOUND a live gap: FormErrorList's click handler is goToStep only — no focus, no scrollIntoView — so it opens the section and stops, which is exactly what two cases call the failure. Cases KEPT asserting the stronger behaviour rather than softened, since softening would turn a real UX gap into a pass; one now states explicitly that landing on the heading is a FAILURE with evidence. Recorded in OUTOFSCOPE. |
 | `selling/seller-listing-types` | Seller — All Listing Types (Coupons, Bundles, Classifieds, Digital Codes, Live, Prize Draws, Art, Stickers) | 18 | rewritten | 18 cases (7 of them on /store/coupons — mild scope drift, same shape as buying/offers, not restructured). Verified the type-dropdown case correctly asserts 'bundle' must NOT be offered (it stopped being a listingType in SB-UNI-D). FIXED two startPages that are now REDIRECTS: /store/auctions and /store/prize-draws both forward to /store/products?listingType=<type>, so the steps now say landing there is correct rather than a wrong turn — otherwise a tester finds themselves on the products page and records 'could not test'. Also refined my own enumeration on selling/seller-shipping-payouts-setup, which listed those three as going to /store/products without the type parameter they carry. |
 | `selling/seller-catalog-org` | Seller Categories, Sublisting Categories & Listing Templates | 8 | rewritten | 8 cases (was 7). Fixed a STALE CLAIM that would have produced false bug reports: header and inline-create-persists said the ancestor chain is not derived on write; deriveTaxonomy() has done so from create+update since Root Cause #101. Also: /store/categories is STOREFRONT shelves (storeCategoriesRepository, field 'Label') not global taxonomy — the crud case described the wrong object and the wrong field name. Verified the inline-create picker legitimately reaches the admin categories endpoint (ROLES_STORE_WRITE, commented as being for this picker) and that quick-create sends no parent, so its 1 link is arithmetic not a defect. NEW gap case deep-category-chain-derived files a product under Heavy Metal System (tier 3) and asserts 4 links + presence on the root page — the only assertion that can catch a regression of #101, since every seeded product already carries the chain. |
-| `selling/seller-custom-brands` | Seller — Custom Brands | 5 | pending |  |
+| `selling/seller-custom-brands` | Seller — Custom Brands | 5 | rewritten |  |
 | `selling/seller-ops-comms` | Seller Addresses, Fulfillment & Print | 4 | pending | LEAD (redirect sweep): startPage /store/print-center is a redirect-only shim to /store/fulfillment — a NAME change, not just a path change, so a tester may think they are lost. |
 | `selling/seller-marketing-extras` | Seller Offers, Features, Google Reviews & WhatsApp Catalog | 9 | pending |  |
 | `selling/seller-guide` | Seller Guide Pages | 1 | pending |  |
