@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**25 / 130 pages** · 1330 cases · 15 groups
+**26 / 130 pages** · 1330 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -60,7 +60,7 @@ case — the audits do not check per-field presence.
 | `buying/user-dashboard-extras` | User Dashboard — Addresses, Catalogue, Settings, My Orders-by-Type | 15 | audited | 15 cases, NO change needed. The blanket-startPage bug CLAUDE.md records for this page is genuinely repointed — 9 distinct startPages, all resolving. Fixture adequacy checked by computing the seed's generators rather than grepping: catalogueItems/supportTickets/offers are registered in COLLECTION_MAP (RC #90 fixed), and the expanded-order loop gives rehan 2 return_requested + 2 returned orders, so /user/returns has data. Both sweeps clean; 'Opposite the arena' is a landmark the case types. |
 | `buying/user-dashboard-navigation` | User Dashboard Navigation | 9 | rewritten | 9 cases, essentially current. The bottom-bar case is ALREADY rewritten for the 2026-09-28 unification and DashboardBottomNav is confirmed gone from source. 'More' is real (BottomNavbar), 'Logout' is real (AppLayoutShell sidebarProfileLabels), Breadcrumbs components exist. Both sweeps clean. Only change: named the 'Logout' label in its step instead of 'the log-out control', per the name-the-control rule. |
 | `buying/return-request` | Requesting a return \u2014 and what final sale actually blocks | 7 | rewritten | 7 cases. FIXED the two reason labels: steps said 'the not-received reason' and 'the change-of-mind reason', but RETURN_REASON_LABEL renders 'It never arrived' and 'I changed my mind' — neither paraphrase is on screen. Also removed a misleading hunt: both cases told the tester to FIND a final-sale order, when finalSale is absent on every seeded product and the schema says absent means true, so any delivered order qualifies. Recorded in OUTOFSCOPE that no non-final-sale fixture exists. |
-| `buying/order-status-lifecycle` | Order statuses & transitions | 14 | pending |  |
+| `buying/order-status-lifecycle` | Order statuses & transitions | 14 | audited | 14 cases, NO change needed. Scope assertions match STATUS_SCOPE exactly: Active+Closed=All (total mapping), return_requested is Active, and Delivered is used as an example of a NON-active status — all correct. Fixture adequacy computed from the generator (not grepped): the expanded loop gives rehan 2 orders in EVERY one of the 9 statuses, so the case's claim that the seed carries an order in each status is true. Both sweeps clean; 'QA1234567890' is a tracking number the case types. |
 | `buying/user-uncovered-pages` | Buyer pages with no other coverage | 4 | pending |  |
 
 ## Selling `selling` — 24 pages, 180 cases
