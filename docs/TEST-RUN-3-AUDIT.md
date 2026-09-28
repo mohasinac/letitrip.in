@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**19 / 130 pages** · 1330 cases · 15 groups
+**20 / 130 pages** · 1330 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -54,7 +54,7 @@ case — the audits do not check per-field presence.
 | `buying/wishlist-history` | Wishlist & History | 22 | audited | 22 cases, NO change needed. Verified against source: WISHLIST_MAX=20 (hard, 409 WISHLIST_FULL) and HISTORY_MAX=50 (soft FIFO) both match the cases, and the file header documents the distinction correctly. /wishlist, /user/history and /api/user/history/merge all exist. Both sweeps clean. Found a product-side oddity instead: two guest-history storage keys, the publicly exported one dead — recorded in OUTOFSCOPE. |
 | `buying/cart` | Cart | 75 | rewritten | 75 cases. FIXED one label: 'WhatsApp order updates' -> 'WhatsApp updates' under 'Add-ons' (StoreAddonsPicker's real label; CartPriceBreakdown's fee line agrees). Verified the core grouped-line invariant against cart.repository.ts:370 — a group line rejects a quantity change ('Change the quantities of the individual items in this group instead.') and the cases correctly assert no line-level stepper on a group vs one on a bundle. 'Sign in to see shipping & fees' is real (CartRouteClient:1355). 'QA Group cross-store' is a record the case creates — absent by design. |
 | `buying/buying-coupons` | Coupons — Scoping & Stacking | 20 | audited | 20 cases, NO change needed. All 6 cited codes (ARENA25/ARENAVIP/BLADER50/FREESHIP499/OFFICIAL10/SEALED20) are really seeded. The no-coupon-input-on-/cart assertion is correct — CartRouteClient:575 redirects a ?coupon= param to checkout. All three COUPON_HELP section titles quoted exactly. eligibleSubtotal in coupon-actions.ts confirms min-spend is measured against eligible items, not the cart total. Both sweeps clean; 'Invalid coupon' is the case forbidding a GENERIC error shape, which is right — the real messages are specific. |
-| `buying/offers` | Offers | 67 | pending |  |
+| `buying/offers` | Offers | 67 | rewritten | 66 cases. FIXED 6 occurrences of the button label 'Decline' -> 'Reject': SellerOffersView renders ACTIONS.STORE[accept|counter|reject-offer] = Accept/Counter/Reject. The STATUS is 'declined' and CLAUDE.md says 'decline', which is what made this plausible — but a case names the button. Verified ADMIN_ROW_ACTIONS.offers is really [VIEW, CANCEL]. Noted: ADMIN_BULK_ACTIONS.offers=[CANCEL] still exists in the registry though AdminOffersView renders no bulk bar — the case is correctly hedged about it. Page scope defect (13 of 66 cases are about offers) recorded in OUTOFSCOPE. |
 | `buying/reviews` | Reviews | 5 | pending |  |
 | `buying/reviews-pagination` | Reviews — Pagination, Sort & Filter | 14 | pending |  |
 | `buying/user-dashboard-extras` | User Dashboard — Addresses, Catalogue, Settings, My Orders-by-Type | 15 | pending |  |
