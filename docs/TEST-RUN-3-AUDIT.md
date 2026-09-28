@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**74 / 130 pages** · 1334 cases · 15 groups
+**75 / 130 pages** · 1334 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -120,7 +120,7 @@ case — the audits do not check per-field presence.
 
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
-| `design-ux/general-design` | Colors, Styles, Readability, Mobile | 12 | pending |  |
+| `design-ux/general-design` | Colors, Styles, Readability, Mobile | 12 | audited | 12 cases, 4 steps corrected — all the same class, but one of them mattered much more than the rest. clickable-image-tiles-not-blank is the case guarding the 0x0-collapse defect, and it said 'open a product page that has reviews with photos'. Which product has them is not guessable: review images are generated, not literal, so the answer is in the loop rather than the data. It is product-beyblade-original-dranzer-s — the seed's deep-review fixture, 14 reviews with every fourth carrying images, so FOUR have photos. Any other product risks having no photo grid at all, and an ABSENT grid is indistinguishable from the COLLAPSED one this case exists to find, which would turn the run's clearest visual defect into a shrug. Three other 'a product page' steps named. Worth recording how nearly I got this wrong: my first regex reported ZERO products with review photos, because images is computed as hasImage ? Array.from(...) : [] rather than written as an array — a direct grep found the two occurrences and the i%6 and i%4 rules behind them. Fifth time this run a multi-line regex has produced a wrong count that would have supported a false conclusion. |
 | `design-ux/sticky-cta-bar` | Sticky Buy/Bid Bar on Scroll | 17 | rewritten | 17 cases, 2 corrected, both phantom literals a tester could never match. (1) auction-countdown-in-bar asserted the gated label reads 'Sign in to see the bid · 1 bid'; the real label is built in ONE branch of ListingBottomActions and is exactly 'Sign in to see price', with the infoSuffix DROPPED. Noted the suffix loss as an observation rather than pass/fail — a bid count is deliberately excluded from the money-sort list on the grounds that a count is not an amount, so hiding it here is inconsistent, but that is a feature question. (2) 'Test Gadget — Standard Listing #1' exists in no seed; the cases use product-beyblade-burst-valkyrie, whose real title is 'Beyblade Burst Valkyrie' at 1899. Verified correct and left alone: the unavailable branch really does publish {} so ended/closed listings get no bar; desktop 'after-scroll'; no-bar-on-non-listing-pages is guest-only on public pages so the ~70 admin DataListingView claimants are out of its scope. |
 | `design-ux/status-badge-legibility` | Listing Tags & Status Chips — Light vs Dark Mode | 13 | pending |  |
 | `design-ux/back-to-top-button` | Back-to-Top Button | 5 | pending |  |
