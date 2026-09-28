@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**0 / 130 pages** · 1331 cases · 15 groups
+**7 / 130 pages** · 1331 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -22,11 +22,22 @@ A page is not `audited` until `npm run check` is green. `AuthoredCase` declares
 its six fields non-optional, so `tsc` is what actually catches a half-rewritten
 case — the audits do not check per-field presence.
 
+## Happy Path (core flows) `happy-path` — 6 pages, 36 cases
+
+| Page | Label | Cases | Status | Notes |
+|---|---|---|---|---|
+| `happy-path/guest-browse` | Guest: browse the catalogue | 8 | rewritten | Authored 2026-09-28 against current source: 20 routes verified to exist, CheckoutRouteClient read for the payment lanes (PhonePe replaced Razorpay; cash reaches ORDER_PAYMENT), every fixture id checked against the regenerated fixture reference. |
+| `happy-path/buyer-purchase` | Buyer: cart to paid order (manual payment) | 8 | rewritten | Authored 2026-09-28 against current source: 20 routes verified to exist, CheckoutRouteClient read for the payment lanes (PhonePe replaced Razorpay; cash reaches ORDER_PAYMENT), every fixture id checked against the regenerated fixture reference. |
+| `happy-path/buyer-addresses` | Buyer: addresses | 5 | rewritten | Authored 2026-09-28 against current source: 20 routes verified to exist, CheckoutRouteClient read for the payment lanes (PhonePe replaced Razorpay; cash reaches ORDER_PAYMENT), every fixture id checked against the regenerated fixture reference. |
+| `happy-path/seller-listing` | Seller: list a standard product | 5 | rewritten | Authored 2026-09-28 against current source: 20 routes verified to exist, CheckoutRouteClient read for the payment lanes (PhonePe replaced Razorpay; cash reaches ORDER_PAYMENT), every fixture id checked against the regenerated fixture reference. |
+| `happy-path/seller-fulfil` | Seller: fulfil an order | 5 | rewritten | Authored 2026-09-28 against current source: 20 routes verified to exist, CheckoutRouteClient read for the payment lanes (PhonePe replaced Razorpay; cash reaches ORDER_PAYMENT), every fixture id checked against the regenerated fixture reference. |
+| `happy-path/admin-verify` | Admin: verify a manual payment | 5 | rewritten | Authored 2026-09-28 against current source: 20 routes verified to exist, CheckoutRouteClient read for the payment lanes (PhonePe replaced Razorpay; cash reaches ORDER_PAYMENT), every fixture id checked against the regenerated fixture reference. |
+
 ## Account & Auth `account-auth` — 2 pages, 24 cases
 
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
-| `account-auth/signup-login` | Signup & Login | 15 | pending |  |
+| `account-auth/signup-login` | Signup & Login | 15 | audited | Verified against current source: the server routes api/auth/send-verification and forgot-password are GONE (RC #54/#55) and all 3 reset/verify cases already describe the client-SDK flow. 5 startPages resolve. 6 requiresHumanChannel are all Google OAuth — correctly flagged; no email case is stale-flagged now check-inbox exists. password-reset mutates PRESERVE-tier neha.op@ and already documents the mandatory restore. email-signup's run-stamped address is deliberate. No change needed. |
 | `account-auth/profile-settings` | Profile & Settings | 9 | pending |  |
 
 ## Buying `buying` — 18 pages, 403 cases
@@ -206,17 +217,6 @@ case — the audits do not check per-field presence.
 | `search-and-nav/sidebar-search` | Sidebar search | 1 | pending |  |
 | `search-and-nav/employee-permissions` | Employee sidebar | 2 | pending |  |
 | `search-and-nav/settings-deep-links` | Settings deep links | 2 | pending |  |
-
-## Happy Path (core flows) `happy-path` — 6 pages, 36 cases
-
-| Page | Label | Cases | Status | Notes |
-|---|---|---|---|---|
-| `happy-path/guest-browse` | Guest: browse the catalogue | 8 | pending |  |
-| `happy-path/buyer-purchase` | Buyer: cart to paid order (manual payment) | 8 | pending |  |
-| `happy-path/buyer-addresses` | Buyer: addresses | 5 | pending |  |
-| `happy-path/seller-listing` | Seller: list a standard product | 5 | pending |  |
-| `happy-path/seller-fulfil` | Seller: fulfil an order | 5 | pending |  |
-| `happy-path/admin-verify` | Admin: verify a manual payment | 5 | pending |  |
 
 ## Money Flows (end to end) `money-flows` — 4 pages, 29 cases
 

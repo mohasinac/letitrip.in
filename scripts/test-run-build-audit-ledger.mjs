@@ -169,6 +169,50 @@ function scrapeExternalPageSets() {
   return out;
 }
 
+/*
+ * `--set <group/page> --status <s> [--note "…"]` — record a page's progress.
+ *
+ * A flag rather than hand-editing the table, because this is done ~130 times and
+ * a hand edit is where a status lands in the Notes column, or on the wrong row,
+ * or with the pipe count off — and the ledger then silently stops parsing, which
+ * looks exactly like no progress having been made.
+ *
+ * Writes in place and returns; it deliberately does NOT regenerate, so recording
+ * progress can never be the thing that reshuffles the table under you.
+ */
+const setTarget = flag("set");
+if (typeof setTarget === "string") {
+  const status = String(flag("status", "audited"));
+  const note = flag("note");
+  const VALID = ["pending", "in-flight", "audited", "rewritten"];
+  if (!VALID.includes(status)) {
+    console.error(`✗ --status must be one of: ${VALID.join(", ")}`);
+    process.exit(2);
+  }
+  if (!existsSync(AUDIT_DOC)) {
+    console.error(`✗ ${AUDIT_DOC} does not exist — generate it first.`);
+    process.exit(2);
+  }
+  const lines = readFileSync(AUDIT_DOC, "utf8").split("\n");
+  let hit = false;
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/^\|\s*`([^`\/]+\/[^`]+)`\s*\|([^|]*)\|([^|]*)\|([^|]*)\|(.*)\|\s*$/);
+    if (!m || m[1] !== setTarget) continue;
+    const keptNote = typeof note === "string" ? note : m[5].trim();
+    lines[i] = `| \`${m[1]}\` |${m[2]}|${m[3]}| ${status} | ${keptNote} |`;
+    hit = true;
+    break;
+  }
+  if (!hit) {
+    console.error(`✗ no ledger row for "${setTarget}".`);
+    console.error("  Page keys are `group/page`; run with no flags to list them.");
+    process.exit(2);
+  }
+  writeFileSync(AUDIT_DOC, lines.join("\n"), "utf8");
+  console.log(`✓ ${setTarget} -> ${status}`);
+  process.exit(0);
+}
+
 const rows = merge([...scrape(CATALOGUE), ...scrapeExternalPageSets()]);
 
 /* Preserve status + notes from an existing ledger, keyed on group/page. */
@@ -193,6 +237,26 @@ for (const r of rows) {
   g.pages.push(r);
   g.cases += r.cases;
 }
+
+/*
+ * Priority groups lead the ledger, mirroring PRIORITY_GROUPS in
+ * appkit/src/features/tester/utils/phases.ts.
+ *
+ * 🛑 THE AUDIT MUST BE ORDERED LIKE THE RUN. The run tests happy-path first
+ * because a half-finished run should have answered "can anyone buy anything"
+ * before it answered anything about SEO metadata. An audit ordered differently
+ * puts those same pages LAST — so an interrupted Phase 1 hands Phase 2 a
+ * priority group whose cases were never checked against source, which is the
+ * one combination neither phase's ordering was meant to allow.
+ *
+ * Kept as a literal rather than imported: this is a .mjs script and phases.ts is
+ * TypeScript. audit-tester-plugin-wiring has no rule cross-checking the two, so
+ * the comment is the link — if PRIORITY_GROUPS changes, change this.
+ */
+const PRIORITY_GROUPS = ["happy-path"];
+const ordered = new Map();
+for (const key of PRIORITY_GROUPS) if (groups.has(key)) ordered.set(key, groups.get(key));
+for (const [key, g] of groups) if (!ordered.has(key)) ordered.set(key, g);
 
 if (flag("check") === true) {
   const missing = rows.filter((r) => !prior.has(`${r.group}/${r.page}`));
@@ -235,7 +299,7 @@ body.push("its six fields non-optional, so `tsc` is what actually catches a half
 body.push("case — the audits do not check per-field presence.");
 body.push("");
 
-for (const [key, g] of groups) {
+for (const [key, g] of ordered) {
   body.push(`## ${g.label} \`${key}\` — ${g.pages.length} pages, ${g.cases} cases`);
   body.push("");
   body.push("| Page | Label | Cases | Status | Notes |");
