@@ -76,6 +76,19 @@ if (!caseSrc) {
 }
 
 /*
+ * 🛑 STRIP COMMENTS FIRST. A fix to a wrong label is normally documented beside
+ * it — "this said 'Cancel whole order', the app says 'Cancel my whole order'" —
+ * and an uncommented scan then re-reports the quoted OLD label on every
+ * subsequent run. The helper would grow noisier with every defect it helped
+ * fix, which is precisely backwards.
+ *
+ * Same failure the wiring audit had: a rule that reads its own documentation as
+ * evidence cannot be satisfied, because fixing something correctly and
+ * describing the fix become mutually exclusive.
+ */
+caseSrc = caseSrc.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+
+/*
  * Single-quoted runs inside a double-quoted TS string are the project's
  * convention for QUOTING THE SCREEN — 'Add to Cart', 'Sold & Ended'. That makes
  * them a far better signal than every double-quoted string, most of which are
