@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**34 / 130 pages** · 1330 cases · 15 groups
+**35 / 130 pages** · 1330 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -74,7 +74,7 @@ case — the audits do not check per-field presence.
 | `selling/listing-a-product` | Listing a Product | 14 | audited | 14 cases, NO change needed. All 4 cited media fixtures exist on disk (empty.png, not-really-an-image.png, sample-image.png, sample-video.mp4). RC #101 verified fixed in source — deriveTaxonomy is called from BOTH create and update — and although no case here guards the ancestor chain, happy-path/seller-listing/listing-is-publicly-reachable does, so the coverage exists cross-group. The video case cites no hard-coded duration, so nothing can drift. Both sweeps clean; 'Sold by Beyblade Arena' is interpolated. |
 | `selling/seller-bids-bundles-filters` | Seller — Bids & Bundles Filtering | 4 | rewritten | 4 cases. FIXED seller-bundles-active-filter: /store/bundles filters on createdByStoreId, which appears ZERO times in every seed file — all 11 seeded bundles are createdByType admin, so the page is empty for every seller and the case could only ever return 'could not test'. It now creates two bundles (one Active, one Inactive) and deletes them; categories is SEED_OWNED so a leftover is cleared by the next wipe. Corrected its endResult, which still claimed read-only. Bids fixtures verified adequate: 6 auctions carry bids, all Beyblade Arena's. |
 | `selling/seller-orders` | Seller Order Management & Shipping/Tracking | 11 | rewritten | 11 cases. Lead about confirm-payment/request-reupload/reject-fraud signing in as a SELLER was WRONG — those are deliberate authorization cases asserting the seller has NO verify control, then cross-checking the admin view. Correct as written; the routes really are ROLES_ADMIN_MOD. FIXED whatsapp-admin-share: no share control exists anywhere (SELLER_ROW_ACTIONS.orders is [VIEW,EDIT,TRACK,RESEND]; the registry's WhatsApp actions are store setup; every wa.me link is on contact/chat/buyer-payment). Kept rather than deleted because it guards a real PII risk if one is added — rewritten so absence PASSES and a leaky implementation FAILS. |
-| `selling/seller-analytics-payouts` | Seller Analytics & Payouts | 6 | pending |  |
+| `selling/seller-analytics-payouts` | Seller Analytics & Payouts | 6 | rewritten | 6 cases. Fixtures verified adequate: 5 payouts for store-beyblade-arena across all 4 statuses. FIXED payouts-reminder-toggle on four counts — the toggle is inside a SELECTED payout's detail panel not on the page, is labelled 'Remind me' (nothing reads 'reminder'), saves immediately via PATCH with no save button, and starts OFF because no seeded payout sets sellerReminderFlag, so the case's 'turn it OFF first' was a no-op that made the reload check pass trivially. Now toggles ON, names the 'Reminder set.' toast, and reopens the same payout after reload. |
 | `selling/seller-shipping-payouts-setup` | Seller Shipping & Payout Setup | 10 | pending |  |
 | `selling/sectionised-forms` | Forms — sections, error summary and the mobile bar | 9 | pending |  |
 | `selling/seller-listing-types` | Seller — All Listing Types (Coupons, Bundles, Classifieds, Digital Codes, Live, Prize Draws, Art, Stickers) | 18 | pending |  |
