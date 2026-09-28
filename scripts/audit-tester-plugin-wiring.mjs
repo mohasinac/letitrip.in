@@ -594,12 +594,53 @@ if (existsSync(CATALOGUE)) {
    * right direction — R7 exists to catch typos, and a false positive costs more
    * than a miss because it teaches the author to route around the gate.
    */
+  /*
+   * 🛑 AN ID THE CASE ITSELF CREATES IS A THIRD CATEGORY, and R7 had only two.
+   *
+   * `admin/bundles` creates a bundle in step 2 and visits it in step 7. The route
+   * derives the slug — slugify(name) under a `bundle-` prefix — so the URL is
+   * knowable and naming it is exactly what the six-part contract asks for. But it
+   * is not a seed id, and it follows a `/`, which is R7's "this is a citation"
+   * signal. The rule fired on a step no tester could be misled by: they will find
+   * the record they made five steps earlier.
+   *
+   * The alternative was to leave the step saying "/bundles/{slug}" — vaguer than
+   * the code allows, which is the defect class this whole audit exists to remove.
+   * So: an explicit marker, the idiom used for every other suppression here, and
+   * checkable with certainty rather than guessed from the step's wording.
+   *
+   * Deliberately NOT inferred by pattern. A rule that tried to recognise "this
+   * step creates a record" from prose would be the check-a-name-satisfies shape
+   * (Root Cause #92) — and a wrong guess here re-opens the typo hole R7 exists
+   * to close.
+   *
+   * 🛑 READ FROM THE RAW FILES, NOT `authoredSrc`. That one is comment-stripped
+   * (deliberately, a few hundred lines up — a rule that reads its own
+   * documentation as evidence cannot be satisfied), so a marker written as a
+   * comment is invisible to it. The first version of this exemption did exactly
+   * that and changed nothing, while printing no complaint: the violation simply
+   * stayed. Caught only by removing the marker and watching the count NOT move,
+   * which is the same lesson as never trusting an audit you have not seen fail
+   * (Root Cause #87).
+   */
+  const createdByCase = new Set(
+    existsSync(AUTHORED_DIR)
+      ? readdirSync(AUTHORED_DIR)
+          .filter((f) => f.endsWith(".ts"))
+          .flatMap((f) => [
+            ...read(resolve(AUTHORED_DIR, f)).matchAll(/audit-tester-created-id:\s*([a-z0-9-]+)/g),
+          ])
+          .map((m) => m[1])
+      : [],
+  );
+
   const unknown = new Set();
   for (const m of authoredValues.matchAll(FIXTURE_RE)) {
     const id = m[0];
     const cited = /[/("'`=]/.test(authoredValues[(m.index ?? 0) - 1] ?? " ");
     const segmentsAfterPrefix = id.split("-").length - 1;
     if (!cited && segmentsAfterPrefix < 2) continue;
+    if (createdByCase.has(id)) continue;
     if (!idKnown(id)) unknown.add(id);
   }
   for (const id of [...unknown].sort()) {
