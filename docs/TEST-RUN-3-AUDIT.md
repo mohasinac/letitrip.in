@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**17 / 130 pages** · 1330 cases · 15 groups
+**18 / 130 pages** · 1330 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -52,7 +52,7 @@ case — the audits do not check per-field presence.
 | `buying/my-orders` | My Orders — List & Dashboard | 14 | rewritten | 14 cases. ORDER_LANE_TABS labels (All/Normal/Auction wins/Offer wins) all verified correct. FIXED order-lifecycle-emails-arrive: 'an account whose inbox you can open' hid a real constraint — both check-inbox.mjs and the emailEvents recorder key on TESTER_EMAIL_ID, and NO seeded persona uses it, so an order as any seeded buyer is invisible to both. Now registers a plus-addressed signup on the harness mailbox and names check-inbox with its three exit codes. Purge gap recorded in OUTOFSCOPE. |
 | `buying/bidding` | Bidding | 23 | rewritten | 23 cases. FIXED bid-history-shows-date-time-and-masked-name: it forbade 'Meera Bey'/'Rohit Collector'/'Ananya Collector', which occur ZERO times in the seed (those personas' displayName is 'Mock User 11'/'14'/'9'), so the PII assertion passed vacuously whether masking worked or not. Also corrected the masked shape from 'M*** B***' to 'M*** U*** 11***' — maskName keeps each word's first char. maskPublicBid does genuinely mask now (RC #50 fixed). Bidder uids were correct. |
 | `buying/wishlist-history` | Wishlist & History | 22 | audited | 22 cases, NO change needed. Verified against source: WISHLIST_MAX=20 (hard, 409 WISHLIST_FULL) and HISTORY_MAX=50 (soft FIFO) both match the cases, and the file header documents the distinction correctly. /wishlist, /user/history and /api/user/history/merge all exist. Both sweeps clean. Found a product-side oddity instead: two guest-history storage keys, the publicly exported one dead — recorded in OUTOFSCOPE. |
-| `buying/cart` | Cart | 75 | pending | LEAD: 'QA Group cross-store' is a record the case creates — expected absent. |
+| `buying/cart` | Cart | 75 | rewritten | 75 cases. FIXED one label: 'WhatsApp order updates' -> 'WhatsApp updates' under 'Add-ons' (StoreAddonsPicker's real label; CartPriceBreakdown's fee line agrees). Verified the core grouped-line invariant against cart.repository.ts:370 — a group line rejects a quantity change ('Change the quantities of the individual items in this group instead.') and the cases correctly assert no line-level stepper on a group vs one on a bundle. 'Sign in to see shipping & fees' is real (CartRouteClient:1355). 'QA Group cross-store' is a record the case creates — absent by design. |
 | `buying/buying-coupons` | Coupons — Scoping & Stacking | 20 | pending |  |
 | `buying/offers` | Offers | 67 | pending |  |
 | `buying/reviews` | Reviews | 5 | pending |  |
