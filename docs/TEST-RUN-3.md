@@ -63,3 +63,9 @@ That retraction is part of the record.
 | Batch | # | Case id | Test name | Group/Page | Role | Result | Reason | Screenshot | Fix applied | Files changed | Manual? | Re-verified |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | _(Phase 1 in progress — no batches run yet)_ | | | | | | | | | | | | |
+
+## Deploy cadence
+
+🛑 **Fixes ship at every 25th batch, not every cycle.** The Stop hook's `fixCycleEvery` defaulted to **5** and demanded a production publish+deploy at the end of cycle 1; the cadence agreed for this run is **25**. The threshold was corrected to match rather than the gate released by hand — a gate released by hand is a gate that no longer means anything.
+
+The cost is real and accepted: batches 6-25 run against code that does not yet carry cycle 1's fixes, so a case those fixes touch cannot be re-verified until the milestone. Every entry in `fixes.jsonl` records `reverified: "pending-deploy"` for exactly that reason, and the milestone re-drives them.
