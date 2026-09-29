@@ -67,6 +67,7 @@ const STATE = resolve(REPO, "tester/.tester-runs/loop-state.json");
 const CHECKLIST_DOC = "docs/TEST-RUN-3.md";
 const AUDIT_DOC = resolve(REPO, "docs/TEST-RUN-3-AUDIT.md");
 const STATUS_SCRIPT = "scripts/test-run-status.mjs";
+const TABLE_SCRIPT = "scripts/test-run-table.mjs";
 const BATCHES_PER_CYCLE = 5;
 const DEPLOY_EVERY_BATCHES = 25;
 
@@ -87,6 +88,25 @@ const DEPLOY_EVERY_BATCHES = 25;
 function refreshPhaseStatus() {
   try {
     const r = spawnSync(process.execPath, [STATUS_SCRIPT, "--quiet"], {
+      cwd: REPO,
+      encoding: "utf8",
+      timeout: 30_000,
+    });
+    /*
+     * 🛑 The TABLE is refreshed here too, for the same reason the counter is.
+     *
+     * The hook told the assistant to "append the rows" at each cycle boundary
+     * and nothing did — five batches and 26 cases went by with a live counter
+     * above an empty document. Appending by hand was never going to hold
+     * anyway: a second append doubles every row, and a verdict corrected later
+     * sits next to its own stale copy.
+     *
+     * `test-run-table.mjs` REPLACES the block from the verdict files, so it is
+     * idempotent and cannot drift from them. Failure is deliberately not fatal:
+     * a hook that blocks the turn because a document could not be rewritten
+     * stops the run over its own bookkeeping.
+     */
+    spawnSync(process.execPath, [TABLE_SCRIPT], {
       cwd: REPO,
       encoding: "utf8",
       timeout: 30_000,
