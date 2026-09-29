@@ -195,9 +195,22 @@ if (flag("skip-check") === true) {
     shell: true,
   });
   const ok = r.status === 0;
+  /*
+   * 🛑 Match the FAILURE MARKER, not the word "error".
+   *
+   * This filtered on /error|fail|✗/i, and audit NAMES contain those words:
+   * audit-api-error-envelope, audit-usemutation-onerror, audit-console-catch.
+   * So a refused preflight printed three PASSING audits as its explanation and
+   * buried the one real line — "✗ functions-bundle-freshness failed" — three
+   * entries further up. The reader is then told the tree is red and shown
+   * evidence that it is green.
+   *
+   * `✗` is the marker every audit in this repo prints on failure, and no
+   * passing line carries it.
+   */
   const tail = String(r.stdout ?? "")
     .split("\n")
-    .filter((l) => /error|fail|✗/i.test(l))
+    .filter((l) => l.includes("✗"))
     .slice(-3)
     .join(" | ");
   add("npm run check", ok, ok ? "green" : tail || `exit ${r.status}`, "Fix the tree before testing. Never start a cycle red.");
