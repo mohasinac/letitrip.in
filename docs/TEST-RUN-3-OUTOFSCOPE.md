@@ -433,3 +433,26 @@ three patches where one writer is missing. `₹0 Total spent` beside 13 orders i
 most suspicious, because it suggests the aggregate is being computed from a field the
 orders do not carry — the same shape as the `totalAmount`-vs-`totalPrice` divergence
 recorded from batch 10.
+
+## A correctly-refused add-to-cart shows two toasts, one of them meaningless
+
+**Found during** batch 21, `checklist-money-flows-offer-to-purchase-offer-lane-blocks-other-items`.
+
+With an accepted offer's locked line in the cart, clicking "Add to Cart" on an
+unrelated product is correctly refused — and fires **two** toasts on the one click:
+
+1. `Complete your accepted offer first — you can add other items once it's paid for.`
+   — correct, specific, actionable. This is the `assertCanAddNewItems` /
+   `CART_LANE_BLOCKED` guard doing exactly its job.
+2. `Something went wrong. Please try again.` — `GENERIC_USER_MESSAGE`, telling the
+   buyer nothing and implying a fault where the system behaved correctly.
+
+Notable because `audit-usemutation-onerror` is described as asserting that every
+mutation goes through `useApiMutation` and **each failure has exactly one surface** —
+and it passes. So this path escapes that audit, which makes it worth a look beyond
+the cosmetic fix: if one add-to-cart failure can surface twice, others can.
+
+**Why not fixed here:** I could not isolate which handler emits the generic message
+within the batch's budget, and a blind suppression risks silencing the good message
+instead of the redundant one. The fix wants tracing which of the two surfaces is the
+un-audited one, not a guess at the toast layer.

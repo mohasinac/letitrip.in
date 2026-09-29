@@ -15,14 +15,14 @@ of what was tested, what failed, what was fixed, and what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **20 / 255** |
-| Cases | **100 / 1847** (5%) |
+| Batches | **21 / 255** |
+| Cases | **105 / 1847** (6%) |
 | Cycle | 5 of 51 |
 | Next deploy | batch 25 |
-| Last updated | 2026-09-29 13:50 UTC |
+| Last updated | 2026-09-29 14:08 UTC |
 
 ```
-pass 58 · fail 22 · null 20
+pass 61 · fail 22 · null 22
 fixed 20/22 · deferred 2 · open 0 · needs-human 6
 ```
 
@@ -176,5 +176,10 @@ The cost is real and accepted: batches 6-25 run against code that does not yet c
 | 20 | 98 | `checklist-account-auth-signup-login-google-link-different-email` | Linking a Google account whose email differs from your original signup email requires the  | account-auth/signup-login | main | ⬜ null | requiresHumanChannel is true and it is the real blocker: step 5 needs a Google account whose email differs from vivaan.kapoor@gmail.com, selected in a live OAuth popup, and this browser has no Google credential to choose. WHAT I COULD CO… | [shot](../tester/.tester-runs/run-3/shots/auth-dashboard-unlinked.png) | — | — | yes | — |
 | 20 | 99 | `checklist-account-auth-signup-login-google-link-confirmation-shown` | After Google is connected, the My Account dashboard shows a "Google account connected" con | account-auth/signup-login | main | ⬜ null | requiresHumanChannel is true. This case reads the CONNECTED confirmation — a 'Google account connected' alert with a Connected badge and the linked email — and no account available to me has Google linked, nor can I link one without the … | [shot](../tester/.tester-runs/run-3/shots/auth-dashboard-unlinked.png) | — | — | yes | — |
 | 20 | 100 | `checklist-account-auth-signup-login-google-link-conflict-rejected` | Trying to link a Google account whose email is already used by a DIFFERENT existing accoun | account-auth/signup-login | main | ⬜ null | requiresHumanChannel is true, and this case needs the popup TWICE with the same Google account — once to link it to rehan.sheikh@gmail.com and again to attempt the conflicting link from vivaan.kapoor@gmail.com. No Google credential is av… | [shot](../tester/.tester-runs/run-3/shots/auth-dashboard-unlinked.png) | — | — | yes | — |
+| 21 | 101 | `checklist-money-flows-offer-to-purchase-accepted-offer-locks-price` | 🛑 Checkout bills the AGREED price, never the listing price | money-flows/offer-to-purchase | main | ✅ pass | 🛑 The agreed price is what gets billed — Root Cause #75's regression test passes. Signed in as vivaan.kapoor@gmail.com through the real login form. /user/offers shows the accepted offer as 'Accepted / LISTED ₹1,499 / YOUR OFFER ₹1,250 /… | [shot](../tester/.tester-runs/run-3/shots/offer-locked-price-cart.png) | — | — | no | — |
+| 21 | 102 | `checklist-money-flows-offer-to-purchase-offer-lane-blocks-other-items` | An accepted offer in the cart blocks unrelated items from being checked out alongside it | money-flows/offer-to-purchase | main | ✅ pass | The lane holds, and more strictly than the case asks. With the accepted offer's locked line in the cart, /cart shows three tabs — Cart \| Won Auctions \| Accepted Offers (1) — the offer line carries '🔒 Offer accepted — payment required' u… | [shot](../tester/.tester-runs/run-3/shots/offer-lane-blocks-add.png) | — | — | no | — |
+| 21 | 103 | `checklist-money-flows-offer-to-purchase-expired-offer-cannot-checkout` | An offer past its window can no longer be paid | money-flows/offer-to-purchase | main | ✅ pass | The expired offer cannot be paid and says so. /user/offers lists 'Beyblade X Wizard Arrow / 9d ago / Expired / LISTED ₹899 / YOUR OFFER ₹700' — the status badge reads Expired and names the age. It offers NO checkout control: the only 'Ch… | [shot](../tester/.tester-runs/run-3/shots/offer-locked-price-cart.png) | — | — | no | — |
+| 21 | 104 | `checklist-money-flows-offer-to-purchase-buyer-makes-offer` | A buyer can make an offer on a seller's product and it appears in their own offers list | money-flows/offer-to-purchase | main | ⬜ null | Could not perform step 1 safely. The case requires ash@pokemonpalace.in, which is a seeded persona but not one of the four identities the harness mints (bot / buyer / seller / admin), so I have no session for it. Substituting the harness… | [shot](../tester/.tester-runs/run-3/shots/offer-locked-price-cart.png) | — | — | no | — |
+| 21 | 105 | `checklist-money-flows-offer-to-purchase-duplicate-offer-refused` | A second offer on the same listing while one is still pending is refused | money-flows/offer-to-purchase | main | ⬜ null | Depends entirely on the previous case: its step 1 requires 'the buyer ash@pokemonpalace.in, holding the pending 815 offer from the previous case', and that offer was never created. Testing the duplicate guard against a different buyer's … | [shot](../tester/.tester-runs/run-3/shots/offer-locked-price-cart.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
