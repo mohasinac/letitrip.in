@@ -129,7 +129,20 @@ const add = (name, ok, detail, fix) => results.push({ name, ok, detail, fix });
 
   let version = null;
   if (existsSync(cacheRoot)) {
-    const versions = readdirSync(cacheRoot).filter((d) => statSync(join(cacheRoot, d)).isDirectory());
+    /*
+     * 🛑 Only semver-shaped directories are versions.
+     *
+     * This took every directory and did `.sort().pop()`, so ANY sibling that
+     * sorts after the version wins — and the obvious sibling is a backup taken
+     * before refreshing the cache. Parking `0.1.0.bak-20260929` next to `0.1.0`
+     * made the check hash the backup and report the exact drift it was there to
+     * detect, with byte-identical hashes before and after a resync that had in
+     * fact worked. A check that reads the wrong directory does not fail loudly;
+     * it keeps answering the previous question.
+     */
+    const versions = readdirSync(cacheRoot)
+      .filter((d) => /^\d+\.\d+\.\d+$/.test(d))
+      .filter((d) => statSync(join(cacheRoot, d)).isDirectory());
     version = versions.sort().pop() ?? null;
   }
 
