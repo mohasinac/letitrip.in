@@ -37,6 +37,15 @@ export const EVENT_LABELS = {
   COVER_ALT_FALLBACK: "Event cover",
   SPIN_RESULTS_HEADING: "Last 10 Spin Results",
   SPIN_RESULTS_EMPTY: "No spins yet — be the first!",
+  /*
+   * The viewer-scoped block. `MY_SPINS_EMPTY` is deliberately about YOU, not
+   * about the event — the whole defect this section fixes was that someone who
+   * had never spun saw three strangers' prizes and no indication that none of
+   * them were theirs. "No spins yet" would have been equally misleading here.
+   */
+  MY_SPINS_HEADING: "Your Spins",
+  MY_SPINS_EMPTY: "You have not spun on this event yet.",
+  MY_SPINS_SIGNED_OUT: "Sign in to see your own spins and the prizes you have won.",
 } as const;
 
 export const EVENT_META = {

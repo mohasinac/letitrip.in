@@ -1,6 +1,6 @@
 import { cache } from "react";
 import type { JsonValue } from "@mohasinac/appkit";
-import { getPublicEventById, getEventLeaderboard, getEventPollResults, getEventSpinResults } from "@mohasinac/appkit";
+import { getPublicEventById, getEventLeaderboard, getEventPollResults, getEventSpinResults, getUserSpinResultsForEvent } from "@mohasinac/appkit";
 import { safeRead } from "@mohasinac/appkit/server";
 
 // The event itself is the subject of every route under /events/[id] — a failed
@@ -87,3 +87,38 @@ export const getSpinResultsCached = cache(async (id: string) => {
 });
 
 export type SpinResultRow = Awaited<ReturnType<typeof getSpinResultsCached>>[number];
+
+/**
+ * The viewer's OWN spins for an event, newest first.
+ *
+ * Separate from `getSpinResultsCached`, which is the public masked feed of
+ * everyone's recent spins and cannot answer "what did I win". Cached on
+ * `(id, userId)` so the page body and anything else in the same render share
+ * one read — and keyed on the userId explicitly rather than reading the
+ * session inside, because `React.cache` memoises per ARGUMENT LIST and a
+ * function that hides its real input dedupes nothing (CLAUDE.md, React.cache
+ * discipline).
+ *
+ * `safeRead` with an empty fallback: a spin history that fails to load must
+ * degrade to "none shown" on a public event page, never take the route down —
+ * and the failure is recorded as a DEGRADED_READ rather than swallowed.
+ */
+export const getUserSpinResultsCached = cache(async (id: string, userId: string) => {
+  const raw = (await safeRead(() => getUserSpinResultsForEvent(id, userId), {
+    route: "/events/[id]/spin-results",
+    key: "eventEntries.getUserSpinResultsForEvent",
+    fallback: [],
+  })) as Array<{
+    id: JsonValue;
+    spinPrizeTitle?: JsonValue;
+    spinWonAt?: JsonValue;
+  }>;
+  return raw.map((entry) => ({
+    id: String(entry.id ?? ""),
+    spinPrizeTitle:
+      typeof entry.spinPrizeTitle === "string" ? entry.spinPrizeTitle : undefined,
+    spinWonAt: typeof entry.spinWonAt === "string" ? entry.spinWonAt : undefined,
+  }));
+});
+
+export type MySpinResultRow = Awaited<ReturnType<typeof getUserSpinResultsCached>>[number];

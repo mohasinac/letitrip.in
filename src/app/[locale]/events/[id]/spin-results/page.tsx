@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Div, Heading, Row, Stack, Text } from "@mohasinac/appkit/ui";
 import { EVENT_LABELS, EVENT_META, EVENT_TYPE } from "../_constants";
-import { getEventCached, getSpinResultsCached } from "../_data";
+import { getEventCached, getSpinResultsCached, getUserSpinResultsCached } from "../_data";
+import { getServerSessionUser } from "@/lib/firebase/auth-server";
+import { safeRead } from "@mohasinac/appkit/server";
 
 export const revalidate = 0;
 
@@ -42,17 +44,82 @@ export default async function Page({ params }: Props) {
   // Only meaningful for spin_wheel events — matches the layout's tab gate.
   if (event.type !== EVENT_TYPE.SPIN_WHEEL) notFound();
 
-  const results = await getSpinResultsCached(id);
+  /*
+   * 🛑 TWO SECTIONS, and the distinction is the whole point of this page.
+   *
+   * "Your Spins" answers what did I win; "Last 10 Spin Results" is the public
+   * masked feed of everyone's recent spins. The page used to be only the second
+   * one while a checklist case asserted it was the first, and the failure mode
+   * was quiet: read by someone who had never spun, it listed three strangers'
+   * prizes with no empty state, because from the feed's point of view nothing
+   * was empty. A visitor had no way to tell that none of those rows were theirs.
+   *
+   * The session read is free here — this route is already `revalidate = 0`, so
+   * it was never cached — and it is wrapped in `safeRead` like the sibling
+   * winner page's, so a session failure degrades to the signed-out prompt
+   * rather than taking down a public page.
+   */
+  const viewer = await safeRead(() => getServerSessionUser(), {
+    route: "/events/[id]/spin-results",
+    key: "session.getServerSessionUser",
+    fallback: null,
+  });
+
+  const [results, mySpins] = await Promise.all([
+    getSpinResultsCached(id),
+    viewer?.uid ? getUserSpinResultsCached(id, viewer.uid) : Promise.resolve([]),
+  ]);
+
+  const mySpinsSection = (
+    <Stack gap="sm">
+      <Heading level={2} size="lg" weight="semibold" color="primary">
+        {EVENT_LABELS.MY_SPINS_HEADING}
+      </Heading>
+      {!viewer?.uid ? (
+        <Div className="text-center" paddingY="y-lg" paddingX="x-lg" rounded="xl" border="default">
+          <Text color="muted">{EVENT_LABELS.MY_SPINS_SIGNED_OUT}</Text>
+        </Div>
+      ) : mySpins.length === 0 ? (
+        <Div className="text-center" paddingY="y-lg" paddingX="x-lg" rounded="xl" border="default">
+          <Text color="muted">{EVENT_LABELS.MY_SPINS_EMPTY}</Text>
+        </Div>
+      ) : (
+        mySpins.map((entry) => (
+          <Row
+            key={entry.id}
+            paddingY="y-xs"
+            paddingX="x-md"
+            align="center"
+            justify="between"
+            rounded="lg"
+            border="default"
+          >
+            <Text size="sm" weight="semibold" color="primary">
+              {entry.spinPrizeTitle ?? "—"}
+            </Text>
+            <Text size="xs" color="muted">
+              {relativeTime(entry.spinWonAt)}
+            </Text>
+          </Row>
+        ))
+      )}
+    </Stack>
+  );
 
   if (results.length === 0) {
     return (
-      <Div className="text-center" paddingY="y-2xl" paddingX="x-lg" rounded="xl" border="default">
-        <Text color="muted">{EVENT_LABELS.SPIN_RESULTS_EMPTY}</Text>
-      </Div>
+      <Stack gap="lg">
+        {mySpinsSection}
+        <Div className="text-center" paddingY="y-2xl" paddingX="x-lg" rounded="xl" border="default">
+          <Text color="muted">{EVENT_LABELS.SPIN_RESULTS_EMPTY}</Text>
+        </Div>
+      </Stack>
     );
   }
 
   return (
+    <Stack gap="lg">
+      {mySpinsSection}
     <Stack gap="sm">
       <Heading level={2} size="lg" weight="semibold" color="primary">
         {EVENT_LABELS.SPIN_RESULTS_HEADING}
@@ -80,6 +147,7 @@ export default async function Page({ params }: Props) {
           </Row>
         </Row>
       ))}
+    </Stack>
     </Stack>
   );
 }
