@@ -134,7 +134,24 @@ export function tally() {
   const verdicts = readVerdicts();
   const fixes = readFixes();
 
-  const scopeRows = Array.isArray(scope?.rows) ? scope.rows : [];
+  /*
+   * 🛑 `fetch-cases` writes `scope.batches`, not `scope.rows`.
+   *
+   * This read `scope?.rows` and nothing else, so both totals were always 0 and
+   * the counter block rendered "0 / ?" no matter how much had been recorded.
+   * Found at the Phase 1 exit gate, before the run started: it would otherwise
+   * have shown no denominator for all 255 batches, in the one file whose whole
+   * job is to be the durable record of progress.
+   *
+   * `rows` is kept as a fallback rather than replaced, because a tally that
+   * silently reports zero is worse than one that errors, and this is the shape
+   * a future writer might reasonably emit.
+   */
+  const scopeRows = Array.isArray(scope?.batches)
+    ? scope.batches
+    : Array.isArray(scope?.rows)
+      ? scope.rows
+      : [];
   const batchesTotal = scopeRows.length;
   const casesTotal = scopeRows.reduce((n, r) => n + (Number(r.cases) || 0), 0);
 

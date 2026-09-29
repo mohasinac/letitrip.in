@@ -15,11 +15,11 @@ of what was tested, what failed, what was fixed, and what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **0 / ?** |
-| Cases | **0 / ?** (0%) |
-| Cycle | 1 of 1 |
+| Batches | **0 / 255** |
+| Cases | **0 / 1847** (0%) |
+| Cycle | 1 of 51 |
 | Next deploy | batch 25 |
-| Last updated | 2026-09-28 16:55 UTC |
+| Last updated | 2026-09-29 03:38 UTC |
 
 ```
 pass 0 · fail 0 · null 0

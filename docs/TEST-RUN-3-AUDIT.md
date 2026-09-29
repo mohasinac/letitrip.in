@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**129 / 130 pages** · 1337 cases · 15 groups
+**130 / 130 pages** · 1337 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
