@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**125 / 130 pages** · 1337 cases · 15 groups
+**126 / 130 pages** · 1337 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -222,7 +222,7 @@ case — the audits do not check per-field presence.
 
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
-| `money-flows/offer-to-purchase` | Offer → accept → pay | 7 | pending |  |
+| `money-flows/offer-to-purchase` | Offer → accept → pay | 7 | rewritten | 7 cases, authored INLINE in _money-flows.ts rather than in an overlay (there is no money-flows__offer-to-purchase.ts). Two real collisions, both from the same cause: the seed already ships an offer on the product the first case offers on. THE AMOUNT COLLIDED. Case 1 had the buyer offer 780 on product-beyblade-burst-valkyrie, and `offer-yugi-burst-valkyrie-pending` is a seeded PENDING offer at exactly 780 on that same product from a different buyer — so after case 1 the seller's list holds two pending 780 rows on one listing, tellable apart only by buyer name, and case 3 then says to "find the row for offer-yugi-burst-valkyrie-pending, offered 780". Changed case 1 to 815 and taught case 3 to name the buyer (Mock User 3) as well as the id, with a note that an 815 row may also be present. THE IDENTITY COLLIDED, and this is the sharper one: that seeded 780 belongs to rehan.sheikh@gmail.com, which is TESTER_BUYER_EMAIL — the harness's default buyer. The case signs in as ash@pokemonpalace.in, but a tester who stays on the harness default trips the guard that allows only one active offer per listing, Make Offer is refused, and it reads as a broken control rather than as the wrong identity. Added an explicit confirm-the-account step saying so. VERIFIED RATHER THAN ASSUMED, three times, and each check changed the outcome: ash@pokemonpalace.in IS seeded (I expected a dangling Pokemon-era persona and was wrong); `offer-kaiba-dranzer-s-accepted` really does belong to vivaan.kapoor@gmail.com despite the kaiba in its id, because buyerUid is the legacy uid and buyerEmail is the real one, so case 4 is correct as written; and the same holds for `offer-kaiba-x-wizard-arrow-expired`, so case 7 is fine too. Finally, R7 caught my own wording: writing "one-active-offer-per-listing" made "offer-per-listing" read as a fixture citation, which is the exact trap this file's existing comment documents. Rephrased rather than suppressed — the rule was right. |
 | `money-flows/auction-win-to-payment` | Win an auction → get notified → pay | 5 | pending |  |
 | `money-flows/payment-methods` | Making payments | 12 | pending |  |
 | `money-flows/blockers` | Blockers and refusals | 5 | pending |  |
