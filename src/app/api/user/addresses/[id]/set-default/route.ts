@@ -1,100 +1,70 @@
 import { withProviders } from "@/providers.config";
 /**
- * User Addresses API â€” Collection
+ * User Addresses API — Set default
  *
- * GET  /api/user/addresses   â€” List current user's addresses
- * POST /api/user/addresses   â€” Create a new address
+ * POST /api/user/addresses/[id]/set-default — make this address the default
  *
- * Max addresses per user: 10
+ * 🛑 THIS FILE USED TO BE A COPY OF THE COLLECTION ROUTE.
+ *
+ * Every line of it — the header, a `GET` that listed the user's addresses, and
+ * a `POST` that validated `userAddressCreateSchema` and called
+ * `addressesRepository.createForOwner(...)` — belonged to
+ * `/api/user/addresses/route.ts` and had been pasted into this directory. There
+ * was no set-default logic anywhere in it, so "Set default" has never once
+ * worked: the hook posts an empty body, the create schema rejected it, and the
+ * buyer got a silent **400** and a list where the badge had not moved.
+ *
+ * The 400 was the only thing that made it merely broken. A caller that sent a
+ * valid address body would have **created a duplicate address** at a URL that
+ * says set-default, and returned 201 while the default stayed where it was.
+ *
+ * `addressesRepository.setDefault()` already existed and does the whole job —
+ * it verifies the address belongs to this owner, clears the previous default
+ * and sets the new one. It had simply never been called.
  */
 
 import { addressesRepository } from "@mohasinac/appkit";
 import { successResponse, errorResponse } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit";
-import { userAddressCreateSchema } from "@/validation/request-schemas";
-
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 
-const MAX_ADDRESSES_PER_USER = 10;
+const ADDRESS_NOT_FOUND = "Address not found";
 
 /**
- * GET /api/user/addresses
+ * POST /api/user/addresses/[id]/set-default
  *
- * Returns addresses for the authenticated user, ordered by createdAt desc.
- * Supports query params: q, defaultOnly, banStatus (pipe-separated).
+ * No request body. `useSetDefaultAddress` posts `{}`, and there is nothing for
+ * the caller to say beyond the id already in the path — accepting a body here
+ * is how the previous version ended up able to create records.
  *
- * 🛑 It used to support `addressType`, `verified` and `activeOnly` — three
- * fields `AddressDocument` has never had. Each was reached through an `as any`
- * cast, so every comparison was against `""` and the facets could not match a
- * row. They rendered, they counted toward the filter badge, and they filtered
- * nothing.
+ * Ownership is checked twice on purpose: here, so a stranger's id answers 404
+ * rather than a 500 from a thrown `DatabaseError`; and again inside
+ * `setDefault`, which is the real boundary and must not depend on its callers
+ * remembering.
  */
-export const GET = withProviders(createRouteHandler({
+export const POST = withProviders(createRouteHandler({
   auth: true,
-  handler: async ({ user, request }) => {
-    const url = new URL(request!.url);
-    const q = url.searchParams.get("q")?.trim().toLowerCase() ?? "";
-    const defaultOnly = url.searchParams.get("defaultOnly");
-    const banStatusParam = url.searchParams.get("banStatus") ?? "";
+  handler: async ({ user, params }) => {
+    const { id } = params as { id: string };
 
-    let addresses = await addressesRepository.listByOwner("user", user!.uid);
-
-    // No `as any`: every field read below is declared on `AddressDocument`,
-    // which is the whole difference between these filters and the three they
-    // replaced.
-    if (q) {
-      addresses = addresses.filter((a) => {
-        const haystack = [a.addressLine1, a.addressLine2, a.postalCode, a.label, a.city]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-        return haystack.includes(q);
-      });
+    const address = await addressesRepository.findById(id);
+    if (!address || address.ownerType !== "user" || address.ownerId !== user!.uid) {
+      return errorResponse(ADDRESS_NOT_FOUND, 404);
     }
 
-    if (defaultOnly === "true") {
-      addresses = addresses.filter((a) => a.isDefault === true);
-    }
+    const updated = await addressesRepository.setDefault("user", user!.uid, id);
 
-    if (banStatusParam) {
-      const wanted = new Set(banStatusParam.split("|").filter(Boolean));
-      addresses = addresses.filter((a) => !!a.banStatus && wanted.has(a.banStatus));
-    }
-
-    return successResponse(addresses);
-  },
-}));
-
-/**
- * POST /api/user/addresses
- *
- * Creates a new address.
- * Enforces a maximum of 10 addresses per user.
- * If isDefault is true, clears the default flag from all existing addresses.
- */
-export const POST = withProviders(createRouteHandler<
-  (typeof userAddressCreateSchema)["_output"]
->({
-  auth: true,
-  schema: userAddressCreateSchema,
-  handler: async ({ user, body }) => {
-    // Enforce address limit
-    const currentCount = await addressesRepository.countByOwner("user", user!.uid);
-    if (currentCount >= MAX_ADDRESSES_PER_USER) {
-      return errorResponse(
-        `You can only store up to ${MAX_ADDRESSES_PER_USER} addresses`,
-        422,
-      );
-    }
-
-    const address = await addressesRepository.createForOwner("user", user!.uid, body!);
-
-    serverLogger.info("Address created via API", {
+    serverLogger.info("Default address set via API", {
       userId: user!.uid,
-      addressId: address.id,
+      addressId: id,
     });
 
-    return successResponse(address, SUCCESS_MESSAGES.ADDRESS.CREATED, 201);
+    /*
+     * `DEFAULT_SET`, not `UPDATED`. The constant has existed since addresses
+     * were written and had no caller — which is its own small evidence that
+     * this endpoint never ran.
+     */
+    return successResponse(updated, SUCCESS_MESSAGES.ADDRESS.DEFAULT_SET);
   },
 }));
