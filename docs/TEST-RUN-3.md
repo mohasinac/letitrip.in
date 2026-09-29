@@ -15,15 +15,15 @@ of what was tested, what failed, what was fixed, and what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **16 / 255** |
-| Cases | **75 / 1847** (4%) |
+| Batches | **17 / 255** |
+| Cases | **77 / 1847** (4%) |
 | Cycle | 4 of 51 |
 | Next deploy | batch 25 |
-| Last updated | 2026-09-29 13:05 UTC |
+| Last updated | 2026-09-29 13:16 UTC |
 
 ```
-pass 48 · fail 19 · null 8
-fixed 19/19 · open 0 · needs-human 0
+pass 49 · fail 20 · null 8
+fixed 20/20 · open 0 · needs-human 0
 ```
 
 > No open defects.
@@ -151,5 +151,7 @@ The cost is real and accepted: batches 6-25 run against code that does not yet c
 | 16 | 73 | `checklist-design-ux-general-design-clickable-image-tiles-not-blank` | Every CLICKABLE image tile across the site shows its picture, not an empty box — check all | design-ux/general-design--guest | guest | ✅ pass | ZERO collapsed tiles across every surface I could reach — the Root Cause #68 failure is not present. Measured each clickable tile's rendered box and its img's naturalWidth, after scrolling the full page so lazy images load. Product detai… | [shot](../tester/.tester-runs/run-3/shots/design-mobile-390.png) | — | — | no | — |
 | 16 | 74 | `checklist-design-ux-general-design-section-cta-buttons-visible` | Homepage section "View all →" / "Go to…" buttons use a solid primary-colored fill so they' | design-ux/general-design--guest | guest | ❌ fail | SectionCarousel renders the canonical treatment (bg-primary text-white hover:bg-primary-600) and the sections that route through it inherit it, but four sections hand-roll their own header markup with a plain Link or TextLink. FIXED thos… | [shot](../tester/.tester-runs/run-3/shots/design-dark-home.png) | Homepage section CTAs were inconsistent: of eleven, six carried the solid primary fill SectionCarousel renders and five were plain teal text links with a transparent background, so the same affordance read as two different kinds of contr… | `BrandsSection.tsx` `CustomerReviewsSection.tsx` `ShopByCategorySection.tsx` `FeaturedBundlesSection.tsx` | no | pending |
 | 16 | 75 | `checklist-design-ux-general-design-mobile-search-bar-proportions` | On mobile, the global header search bar's resource-type dropdown (Products/Auctions/etc.)  | design-ux/general-design--guest | guest | ✅ pass | The proportions are right and the dropdown is genuinely capped. At 390px the header search input measures 206px against the resource-type select's 92px — the input takes 69% of the pair. At 320px the input narrows to 136px while the sele… | [shot](../tester/.tester-runs/run-3/shots/design-mobile-320.png) | — | — | no | — |
+| 17 | 76 | `checklist-design-ux-general-design-empty-states` | Empty states (no results, empty cart) look correct | design-ux/general-design | main | ❌ fail | both empty branches in UserOrdersView hard-coded the never-placed-an-order sentence, and renderCards' signature (rows, view, selection, isLoading) carries no filter state to distinguish the two cases. FIXED by deriving the message from t… | [shot](../tester/.tester-runs/run-3/shots/design-main-control-pass.png) | A FILTERED empty result was reported as an empty account. Both empty branches in UserOrdersView hard-coded 'You haven't placed any orders yet.', which is right for a new account and false the moment a search or status chip is what emptie… | `UserOrdersView.tsx` | no | pending |
+| 17 | 77 | `checklist-design-ux-general-design-icon-button-label-spacing` | Buttons that show an icon next to their text have a normal gap between the icon and the wo | design-ux/general-design | main | ✅ pass | Measured the CSS contract that Root Cause #68 actually broke rather than eyeballing the gap, and it is intact on every appkit button carrying both an icon and a label: the button computes columnGap 8px and — the part that regressed — .ap… | [shot](../tester/.tester-runs/run-3/shots/design-icon-gaps.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
