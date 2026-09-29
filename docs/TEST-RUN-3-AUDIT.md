@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**111 / 130 pages** · 1337 cases · 15 groups
+**112 / 130 pages** · 1337 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -193,7 +193,7 @@ case — the audits do not check per-field presence.
 
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
-| `cta-layout/checkout-bottom-bar` | Checkout — bottom action bar | 2 | pending |  |
+| `cta-layout/checkout-bottom-bar` | Checkout — bottom action bar | 2 | rewritten | 2 cases, both layout checks, and both had a precondition that does not hold on a fresh project. THE PAYMENT STEP DOES NOT OFFER PhonePe BY DEFAULT: CheckoutRouteClient defaults are showCashOption true, showPhonePe FALSE, showCod false, and the payment branch picks the first enabled method in that order — so the primary CTA reads 'Pay via UPI / Cash'. The second case asserted that 'Pay Online (PhonePe)' is shown complete, which on a default site means asserting a button that is not rendered at all; a tester would either report it missing or stall. It now reads whichever CTA the enabled method produces and lists all four labels so the tester can say which one they got, and it explicitly says NOT to record the absence of PhonePe as a defect, since a separate admin case covers switching it on. Happily the correction also strengthens the case: 'Pay via UPI / Cash' is the LONGEST of the four labels and therefore the one most likely to clip at 320px, which is the whole point. THE BUYER HAS NO SAVED ADDRESS: three addresses are seeded, owned by user-yugi-muto, user-seto-kaiba and user-admin-letitrip, and rehan.sheikh has none — so 'select the first saved address' cannot be followed. Because addresses is PRESERVE tier one may survive from an earlier run, so the step now covers both branches rather than assuming either. Verified the literal labels against src/constants/ui.ts rather than trusting the quoted strings: EXTRAS_BACK_BTN is 'Back', EXTRAS_CONTINUE_BTN is 'Continue to payment', PAYMENT_ONLINE_BTN is 'Pay Online (PhonePe)', PAYMENT_COD_BTN is 'Cash on Delivery', PAYMENT_EMI_BTN is 'Pay in EMI', and 'Pay via UPI / Cash' is hard-coded at the call site rather than coming from that constants file. Also named the three-step sequence (Address, Extras and fees, Payment) in the step that walks it. |
 | `cta-layout/product-bottom-bar` | Product detail — three-action bar | 1 | pending |  |
 | `cta-layout/editor-action-bar` | Editor bar — four actions | 1 | pending |  |
 | `cta-layout/dialog-footers` | Dialog & drawer footers | 2 | pending |  |
