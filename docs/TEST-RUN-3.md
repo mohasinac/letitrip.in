@@ -15,15 +15,15 @@ of what was tested, what failed, what was fixed, and what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **14 / 255** |
-| Cases | **60 / 1847** (3%) |
-| Cycle | 3 of 51 |
+| Batches | **15 / 255** |
+| Cases | **65 / 1847** (4%) |
+| Cycle | 4 of 51 |
 | Next deploy | batch 25 |
-| Last updated | 2026-09-29 12:24 UTC |
+| Last updated | 2026-09-29 12:37 UTC |
 
 ```
-pass 37 · fail 17 · null 6
-fixed 17/17 · open 0 · needs-human 0
+pass 41 · fail 18 · null 6
+fixed 18/18 · open 0 · needs-human 0
 ```
 
 > No open defects.
@@ -136,5 +136,10 @@ The cost is real and accepted: batches 6-25 run against code that does not yet c
 | 14 | 58 | `checklist-content-discovery-event-detail-subroutes-participate-records-an-entry` | Participating records an entry that is still there after a reload | content-discovery/event-detail-subroutes | main | ❌ fail | PollInlineClient tracks submission in local isSubmitted state only; nothing fetches whether the current user already has an entry, so a reload starts from scratch. PROCEDURE NOTE: step 3 says to open the Participate tab, and a poll has n… | [shot](../tester/.tester-runs/run-3/shots/event-poll-vote-not-reflected.png) | Event status badge showed the STORED status, not the effective one. eventIsActive already requires status==active AND endsAt in the future, and is what gates the Participate tab - but the badge rendered event.status raw, so an event whos… | `layout.tsx` | no | pending |
 | 14 | 59 | `checklist-content-discovery-event-detail-subroutes-participate-twice-is-refused` | Participating a second time is refused with a reason, not silently duplicated | content-discovery/event-detail-subroutes | main | ❌ fail | enterEvent has three entry paths and only two guarded. A guest is deduped by hashed IP; a survey enforces maxEntriesPerUser; a poll had no per-user check at all, so the one trivially abusable case — an authenticated voter clicking again … | [shot](../tester/.tester-runs/run-3/shots/event-poll-vote-not-reflected.png) | A signed-in user could vote in a poll repeatedly and every vote counted. enterEvent has three entry paths and only two guarded: a GUEST is deduped by hashed IP, a SURVEY enforces maxEntriesPerUser, and a poll had no per-user check at all… | `event-actions.ts` | no | pending |
 | 14 | 60 | `checklist-content-discovery-event-detail-subroutes-cancelled-event-refuses-participation` | A cancelled event cannot be participated in, and says why | content-discovery/event-detail-subroutes | main | ✅ pass | The cancelled raffle refuses participation and says why. The header badge reads 'Raffle Cancelled', there is no Participate tab (the only tab is Overview), the only button on the page is Copy Link, and the body gives a real reason: 'Canc… | [shot](../tester/.tester-runs/run-3/shots/event-cancelled-refuses-pass.png) | — | — | no | — |
+| 15 | 61 | `checklist-content-discovery-event-detail-subroutes-detail-tabs-match-event-type` | An event's tabs match its TYPE — a poll shows no spin results, a sale shows no leaderboard | content-discovery/event-detail-subroutes--guest | guest | ✅ pass | Tabs match the event TYPE across all three, with no tab present that has nothing behind it. Poll (event-favourite-blader-poll): Overview + Leaderboard — no spin-results, and no Participate either, because a poll votes inline on Overview … | [shot](../tester/.tester-runs/run-3/shots/event-guest-control-pass.png) | — | — | no | — |
+| 15 | 62 | `checklist-content-discovery-event-detail-subroutes-leaderboard-ranks-by-a-real-number` | The leaderboard ranks by a real score and shows the same entry count the event reports | content-discovery/event-detail-subroutes--guest | guest | ❌ fail | getEventPollResults gates on pollConfig.resultsVisibility — it returns rows only when that is 'always', or 'after_end' once the event has genuinely ended — and otherwise returns an EMPTY ARRAY. This poll has no resultsVisibility set, so … | [shot](../tester/.tester-runs/run-3/shots/event-leaderboard-hidden-vs-empty.png) | A hidden poll tally was rendered as an empty one. getEventPollResults gates on pollConfig.resultsVisibility and returns an EMPTY ARRAY both when nobody has voted and when the tally is not public yet - so the leaderboard printed 'No votes… | `page.tsx` `_constants.ts` | no | pending |
+| 15 | 63 | `checklist-content-discovery-event-detail-subroutes-winner-page-before-draw` | The winner page on an undrawn event says so — it must not show a blank or a fabricated win | content-discovery/event-detail-subroutes--guest | guest | ✅ pass | The undrawn raffle's Winner tab says so plainly: 'The raffle has not been drawn yet.' No name is shown and none is fabricated — grepped the rendered page for every seeded persona name and for 'Guest' and found none. The event header stil… | [shot](../tester/.tester-runs/run-3/shots/event-guest-control-pass.png) | — | — | no | — |
+| 15 | 64 | `checklist-content-discovery-event-detail-subroutes-winner-page-after-draw` | An ended raffle's winner page names the real winner recorded on the event | content-discovery/event-detail-subroutes--guest | guest | ✅ pass | The ended raffle names a real recorded winner and a real prize: 'WINNER Mock User 3 / PRIZE Complete Original Series Collectors Set — 5 beyblades + stadium, all sealed or NM / Entries in pool: 1892 / 9/24/2026, 11:48:57 AM'. Step 4 compa… | [shot](../tester/.tester-runs/run-3/shots/event-guest-control-pass.png) | — | — | no | — |
+| 15 | 65 | `checklist-content-discovery-event-detail-subroutes-guest-sees-event-but-is-prompted` | A signed-out visitor can read an event but is prompted to sign in to take part | content-discovery/event-detail-subroutes--guest | guest | ✅ pass | A signed-out visitor reads the event fully and is told to sign in when they try to take part. Session was genuinely empty (0 cookies, 0 origins) and the header showed Sign in / Register. On the raffle the guest reads the title, descripti… | [shot](../tester/.tester-runs/run-3/shots/event-guest-control-pass.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->

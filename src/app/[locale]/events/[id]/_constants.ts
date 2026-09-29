@@ -28,6 +28,19 @@ export const EVENT_LABELS = {
   LEADERBOARD_EMPTY: "No entries on the leaderboard yet.",
   POLL_RESULTS_HEADING: "Poll Results",
   POLL_RESULTS_EMPTY: "No votes yet.",
+  /*
+   * 🛑 A hidden tally is NOT an empty one, and saying so contradicts the page.
+   *
+   * `getEventPollResults` returns `[]` both when nobody has voted and when
+   * `pollConfig.resultsVisibility` says the tally is not public yet — so the
+   * leaderboard printed "No votes yet." on a poll whose own header, two lines
+   * above, read "Participants: 365". Measured on event-favourite-blader-poll,
+   * where `resultsVisibility` is unset so `canShow` is false.
+   *
+   * This wording matches what the inline vote block on the Overview already
+   * tells a voter after they submit, so the two surfaces stop disagreeing.
+   */
+  POLL_RESULTS_HIDDEN: "Results will be shown after the poll closes.",
   VOTES_SUFFIX: "votes",
   TOTAL_VOTES_SUFFIX: "total votes",
   ENDED_MESSAGE: "This event has ended.",

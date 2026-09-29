@@ -34,10 +34,33 @@ export default async function Page({ params }: Props) {
     const pollResults = await getPollResultsCached(id);
 
     if (pollResults.length === 0) {
+      /*
+       * 🛑 Distinguish HIDDEN from EMPTY before choosing the message.
+       *
+       * `getEventPollResults` returns `[]` for both, deliberately — it gates on
+       * `resultsVisibility` and refuses to leak a tally early. But an empty
+       * array then means two different things, and this page was reading it as
+       * one: it printed "No votes yet." on a poll whose header two lines above
+       * read "Participants: 365". Measured on event-favourite-blader-poll,
+       * where `resultsVisibility` is unset so `canShow` is false and the tally
+       * is withheld from everybody.
+       *
+       * The same `canShow` rule is re-derived here rather than plumbed through
+       * the data layer, because the alternative is widening the action's return
+       * type to carry a reason — and every other caller of it only wants rows.
+       * Keep the two in step: "always", or "after_end" once genuinely ended.
+       */
+      const visibility = event.pollConfig?.resultsVisibility;
+      const resultsHidden = !(
+        visibility === "always" ||
+        (visibility === "after_end" && event.status === "ended")
+      );
       return (
         <Div className="text-center" paddingY="y-2xl" paddingX="x-lg" rounded="xl" border="default">
           <Text color="muted">
-            {EVENT_LABELS.POLL_RESULTS_EMPTY}
+            {resultsHidden
+              ? EVENT_LABELS.POLL_RESULTS_HIDDEN
+              : EVENT_LABELS.POLL_RESULTS_EMPTY}
           </Text>
         </Div>
       );
