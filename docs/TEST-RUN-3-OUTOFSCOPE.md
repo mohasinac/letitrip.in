@@ -400,3 +400,36 @@ the accumulation and to allow resetting one nominated seeded account's password.
 The mailbox capability is NOT the blocker — `tester/scripts/check-inbox.mjs` plus
 `TESTER_EMAIL_ID` already work, and `--since` makes the assertions sound. Four of
 these cases become automatable the moment the account question is answered.
+
+## Denormalised counters disagree with reality in four places now
+
+**Found across** batches 18 and 20, by four different cases.
+
+A pattern rather than four bugs, worth fixing as one:
+
+| Surface | Shows | Reality |
+|---|---|---|
+| `/brands` tile (Beyblade) | `28 items` | its brand page lists **0** |
+| `/brands` tile (Hasbro) | `0 items` | unverified, but products carry `brand: "Hasbro"` |
+| `/sellers` row (Beyblade Arena) | `📦 1 products` | the store holds roughly **22** listings |
+| `/user` dashboard (vivaan) | `13 Orders` · **`₹0 Total spent`** | thirteen real orders with real totals |
+
+Each is a denormalised roll-up read straight onto a card or tile. CLAUDE.md already
+records the shape twice: Root Cause #102 (a nightly reconciler that could not express
+the distinction it was reconciling, and brand rows' `metrics.productCount` having **no
+writer at all**) and Root Cause #42 (a mirror field that drifts the moment one write
+path forgets it).
+
+🛑 **None of these errors is visible as an error.** A wrong number is just a number —
+nothing throws, nothing logs, and the page looks finished. That is why they survive:
+the only way to catch one is to compare it against the thing it summarises, which is
+exactly what these four cases did.
+
+**Why not fixed in this run:** the brand one is already deferred with its own next
+step (`loop-state.fixQueue`), and until that is settled I cannot tell whether these
+share a cause — a single missing writer, a reconciler that skips empty rows, or four
+independent read-side bugs. Fixing the three cosmetic ones separately would risk
+three patches where one writer is missing. `₹0 Total spent` beside 13 orders is the
+most suspicious, because it suggests the aggregate is being computed from a field the
+orders do not carry — the same shape as the `totalAmount`-vs-`totalPrice` divergence
+recorded from batch 10.

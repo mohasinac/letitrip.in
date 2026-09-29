@@ -15,15 +15,15 @@ of what was tested, what failed, what was fixed, and what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **19 / 255** |
-| Cases | **96 / 1847** (5%) |
-| Cycle | 4 of 51 |
+| Batches | **20 / 255** |
+| Cases | **100 / 1847** (5%) |
+| Cycle | 5 of 51 |
 | Next deploy | batch 25 |
-| Last updated | 2026-09-29 13:46 UTC |
+| Last updated | 2026-09-29 13:50 UTC |
 
 ```
-pass 57 · fail 22 · null 17
-fixed 20/22 · deferred 2 · open 0 · needs-human 3
+pass 58 · fail 22 · null 20
+fixed 20/22 · deferred 2 · open 0 · needs-human 6
 ```
 
 > No open defects.
@@ -172,5 +172,9 @@ The cost is real and accepted: batches 6-25 run against code that does not yet c
 | 19 | 94 | `checklist-account-auth-signup-login-google-oauth` | Sign up / log in with Google works | account-auth/signup-login--guest | guest | ⬜ null | requiresHumanChannel is true on this case and the reason holds: completing it needs an interactive Google account chosen in a real OAuth popup, and this browser has no Google credential to select. Per the run's own rule I went as far as … | [shot](../tester/.tester-runs/run-3/shots/auth-login-pass.png) | — | — | yes | — |
 | 19 | 95 | `checklist-account-auth-signup-login-google-link-existing` | Signing in with Google using the SAME email as an existing password account logs into that | account-auth/signup-login--guest | guest | ⬜ null | requiresHumanChannel is true. This case needs a Google account I control AND a password account created on that same address, so it compounds both blockers: the interactive Google popup and the PRESERVE-tier account creation. The propert… | [shot](../tester/.tester-runs/run-3/shots/auth-login-pass.png) | — | — | yes | — |
 | 19 | 96 | `checklist-account-auth-signup-login-google-popup-blocked-fallback` | If the Google sign-in popup is blocked, the fallback (RTDB signal + postMessage) still com | account-auth/signup-login--guest | guest | ⬜ null | requiresHumanChannel is true, and there is a second blocker on top: the case requires setting the browser to BLOCK popups for the site, which is a browser-preference change the Playwright MCP surface here does not expose. So neither half… | [shot](../tester/.tester-runs/run-3/shots/auth-login-pass.png) | — | — | yes | — |
+| 20 | 97 | `checklist-account-auth-signup-login-logout` | Log out works and clears the session | account-auth/signup-login | main | ✅ pass | Logout works and genuinely clears the session. Signed in as vivaan.kapoor@gmail.com (carried over from the login case), confirmed /user rendered the real dashboard — 'Mock User 2', the email, and stats reading 13 Orders / 188 Unread aler… | [shot](../tester/.tester-runs/run-3/shots/auth-logout-pass.png) | — | — | no | — |
+| 20 | 98 | `checklist-account-auth-signup-login-google-link-different-email` | Linking a Google account whose email differs from your original signup email requires the  | account-auth/signup-login | main | ⬜ null | requiresHumanChannel is true and it is the real blocker: step 5 needs a Google account whose email differs from vivaan.kapoor@gmail.com, selected in a live OAuth popup, and this browser has no Google credential to choose. WHAT I COULD CO… | [shot](../tester/.tester-runs/run-3/shots/auth-dashboard-unlinked.png) | — | — | yes | — |
+| 20 | 99 | `checklist-account-auth-signup-login-google-link-confirmation-shown` | After Google is connected, the My Account dashboard shows a "Google account connected" con | account-auth/signup-login | main | ⬜ null | requiresHumanChannel is true. This case reads the CONNECTED confirmation — a 'Google account connected' alert with a Connected badge and the linked email — and no account available to me has Google linked, nor can I link one without the … | [shot](../tester/.tester-runs/run-3/shots/auth-dashboard-unlinked.png) | — | — | yes | — |
+| 20 | 100 | `checklist-account-auth-signup-login-google-link-conflict-rejected` | Trying to link a Google account whose email is already used by a DIFFERENT existing accoun | account-auth/signup-login | main | ⬜ null | requiresHumanChannel is true, and this case needs the popup TWICE with the same Google account — once to link it to rehan.sheikh@gmail.com and again to attempt the conflicting link from vivaan.kapoor@gmail.com. No Google credential is av… | [shot](../tester/.tester-runs/run-3/shots/auth-dashboard-unlinked.png) | — | — | yes | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
