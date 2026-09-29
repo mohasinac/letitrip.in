@@ -15,14 +15,14 @@ of what was tested, what failed, what was fixed, and what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **4 / 255** |
-| Cases | **25 / 1847** (1%) |
-| Cycle | 1 of 51 |
+| Batches | **5 / 255** |
+| Cases | **26 / 1847** (1%) |
+| Cycle | 2 of 51 |
 | Next deploy | batch 25 |
-| Last updated | 2026-09-29 05:55 UTC |
+| Last updated | 2026-09-29 06:15 UTC |
 
 ```
-pass 18 · fail 7 · null 0
+pass 18 · fail 7 · null 1
 fixed 7/7 · open 0 · needs-human 0
 ```
 
