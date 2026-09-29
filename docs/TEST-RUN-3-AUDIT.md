@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**121 / 130 pages** · 1337 cases · 15 groups
+**122 / 130 pages** · 1337 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -213,7 +213,7 @@ case — the audits do not check per-field presence.
 
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
-| `search-and-nav/header-search` | Header search | 4 | pending |  |
+| `search-and-nav/header-search` | Header search | 4 | rewritten | 4 cases, ALL FOUR on the wrong surface. Every one said to open / and click into the header search. The public header's Search is a CATALOGUE search — resource-type dropdown, navigates to a listing URL with ?q= — so it never returns a settings toggle or an admin screen; and on / there is no admin sidebar at all. The search these cases actually describe is `useSidebarSearch`, mounted in each portal's sidebar, and its own header states verbatim what they assert: "refund found nothing, because the screen is called Payouts. postcode found nothing, because the field is called PIN code. maintenance found nothing, because that toggle lives inside Site Settings." All four steps and all four startPages repointed to /admin, or /user for the buyer case. THREE FACTUAL CORRECTIONS ON TOP. (a) There IS a nav group titled "Maintenance" — Overview, Server Errors, Client Errors, Function Errors — so the first case's claim that no nav item is called Maintenance and that a label search returns nothing for the word is false. The corrected case uses that: the query must return BOTH the Maintenance group (a label hit) AND the Site Settings entry (a keyword-only hit), and returning only the former is precisely the finding, because it means keyword matching is not running. (b) The Maintenance mode toggle really is on the Branding tab — verified at the `setting-maintenance-mode` anchor — but that is tab TWO of TWENTY, not one of nineteen. (c) RANKING IS WITHIN A GROUP, not across one flat list: groups keep their declared order deliberately so the sidebar does not rearrange itself under the reader while they type, so the exact-match case now says Orders must outrank description-only matches inside its own group rather than being first overall, which it never will be. Finally, reframed case 4: a buyer cannot surface an admin entry by CONSTRUCTION rather than by a permission filter — each portal builds its sidebar from its own nav groups, so there are no admin items in a buyer's list to match against. That is a stronger guarantee than filtering, and the case now says so instead of implying a runtime check the code does not make. |
 | `search-and-nav/sidebar-search` | Sidebar search | 1 | pending | LEAD (redirect sweep): startPage /admin is a redirect-only shim to the admin dashboard. Benign but confirm the case does not assert being ON /admin. |
 | `search-and-nav/employee-permissions` | Employee sidebar | 2 | pending | LEAD (redirect sweep): startPage /admin is a redirect-only shim to the admin dashboard. Benign but confirm the case does not assert being ON /admin. |
 | `search-and-nav/settings-deep-links` | Settings deep links | 2 | pending |  |
