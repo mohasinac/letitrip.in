@@ -31,7 +31,26 @@
 import { existsSync, unlinkSync } from "node:fs";
 import { INFLIGHT_PATH, RUN_ID, ensureRunDirs, flag, readInflight, writeJson } from "./lib/test-run.mjs";
 
-const IDENTITIES = new Set(["guest", "buyer", "seller", "admin", "bot"]);
+/*
+ * 🛑 `main` is here because `next-batch.mjs` EMITS it, and leaving it out meant
+ * every unsliced batch silently failed to claim.
+ *
+ * The five session names are what a claim ideally records. But a batch key is
+ * only suffixed `--guest` / `--admin` when a page SPLITS by identity; the
+ * unsliced remainder is reported as `identity: main`, and that is what you read
+ * off `next-batch` and type into `--start`. So `--identity main` was rejected
+ * with exit 2 — and because the reject happens before anything is written, the
+ * batch then ran with NO inflight file at all. G1's whole purpose is that a
+ * compaction mid-batch is visible rather than silent, and for the ~88 main
+ * batches it was doing nothing. Caught only when `--done` answered "nothing in
+ * flight — nothing to release" after a batch had plainly been worked.
+ *
+ * `main` means "not identity-sliced": the session to use is whichever the
+ * cases' own `roles` call for, which for these batches is read per case rather
+ * than fixed for the batch. The claim still records the batch and the timestamp,
+ * which is what recovery actually needs; it just cannot promise one session.
+ */
+const IDENTITIES = new Set(["guest", "buyer", "seller", "admin", "bot", "main"]);
 
 function minutesSince(iso) {
   const t = Date.parse(iso ?? "");
