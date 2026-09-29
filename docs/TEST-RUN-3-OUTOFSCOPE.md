@@ -159,3 +159,57 @@ harness's existing seller session with no new identity.
 
 **Why not done in this run:** reseeding mid-run mutates the catalogue that in-flight batches
 are asserting against. This belongs at a milestone, alongside the pending-deploy fixes.
+
+## `OrderDocument.totalAmount` vs the stored `totalPrice`
+
+**Found during** batch 10, `checklist-happy-path-seller-fulfil-seller-order-detail-opens`.
+
+`OrderDocument` declares `totalAmount`, and CLAUDE.md's seed table documents it as
+the order total. Measured against `/api/store/orders/[id]` for two orders — one
+seeded, one placed through real checkout in this run — **`totalAmount` is
+`undefined` on both**, while the flat `totalPrice` carries the real figure
+(`997.8` = 899 item + 77 shipping + 10 platform + 10 WhatsApp).
+
+The documents also carry a full set of flat top-level fields alongside `items[]`:
+`productId`, `productTitle`, `userId`, `userName`, `quantity`, `unitPrice`,
+`totalPrice`. So the stored shape is the flat legacy one plus the array.
+
+`SellerOrdersView`'s list mapper already knows this — it does
+`totalAmount: Number(item.totalPrice ?? 0)` under a comment stating that
+`totalAmount`/`total` are "four spellings the order document has never carried".
+The drawer had not been back-ported and read the phantom field directly, which is
+what this run fixed (Root Cause #59's shape).
+
+**Why not fixed here:** whether `totalAmount` should be written by the order write
+paths, or whether the type should be corrected to `totalPrice`, is a schema
+decision spanning every order producer and consumer — and the answer changes what
+every reader should do. Deciding it from one seller drawer would be guessing.
+Note `shippingAddress` diverges the same way: a pre-formatted **string** in stored
+orders where the type declares an object.
+
+## The seller's single-order endpoint returns the raw order document
+
+**Found during** batch 10, `checklist-happy-path-seller-fulfil-seller-sees-no-payment-screenshot`.
+
+The **UI is correct** and that case passes: `SellerOrdersView` never renders
+`paymentProofUrl`. It reads the field only inside `sellerPaymentBadge`, to choose
+a label ("Awaiting verification"), and there is no image element for it anywhere
+in the seller drawer — which is what CLAUDE.md's Manual Payment Review Flow
+requires ("No screenshot (bank/UPI capture)").
+
+The **endpoint** is the gap. `GET /api/store/orders/[id]` ends in
+`return successResponse(order)` — the whole document, with no projection. So on an
+order that has a proof, the seller's own API response would carry
+`paymentProofUrl` even though nothing renders it. A bank or UPI screenshot is
+exactly the class of field § "Public Data Projections" says must be named public
+before it travels (Root Cause #70: a narrow render does not strip anything at
+runtime).
+
+🛑 **Not observed with a real proof present** — none of this run's orders has one
+uploaded, so this is read off the route source, not measured. Confirming it needs
+a buyer to upload a proof and then a seller fetch of that order.
+
+**Why not fixed here:** the fix is a `toSellerOrder()` projection with every
+`OrderDocument` field triaged public/private, which is the pattern that section
+prescribes and a change every seller order surface reads through. It is its own
+piece of work, not a drive-by during a fulfilment case.
