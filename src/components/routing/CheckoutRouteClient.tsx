@@ -819,14 +819,12 @@ function SellerFeeLine({ label, amount }: { label: string; amount: number }) {
  */
 function renderSellerExtrasCard({
   store,
-  multiStore,
   addons,
   onStoreAddonsChange,
   codSettings,
   previewFailed,
 }: {
   store: CheckoutAddonStore;
-  multiStore: boolean;
   addons: StoreAddonsValue;
   onStoreAddonsChange: (storeId: string, next: StoreAddonsValue) => void;
   codSettings: BuyerFacingFees | null;
@@ -840,8 +838,26 @@ function renderSellerExtrasCard({
   return (
     <Div key={store.storeId} surface="card" padding="md" rounded="lg" border="default">
       <Row align="center" justify="between" gap="sm" className="min-w-0 mb-2">
+        {/*
+         * Always name the seller when we know it.
+         *
+         * This read `multiStore ? store.storeName : CK.EXTRAS_FEES_HEADING`, so a
+         * single-seller cart got the generic "What you'll pay" and the seller
+         * appeared NOWHERE on the step — while every charge on this card is
+         * per-store (shipping, COD handling, WhatsApp, gift wrap, protection are
+         * all keyed on storeId, Root Cause #65). The card's own docstring says it
+         * shows the add-ons the buyer can choose "for THEM specifically", and this
+         * heading is the only thing that says who THEM is.
+         *
+         * Suppressing it saved nothing: the seller name is one short line, and
+         * "whose fees am I agreeing to" is a fair question even when the answer is
+         * only one seller. The `multiStore` prop existed ONLY for this ternary and
+         * was removed with it - the intro copy above reads `addonStores.length > 1`
+         * directly, so a prop kept 'in case' would have been received and silently
+         * discarded, which is the defect audit-dead-underscore-prop exists for.
+         */}
         <Text size="sm" weight="semibold" color="primary" truncate={1} className="min-w-0">
-          {multiStore ? store.storeName : CK.EXTRAS_FEES_HEADING}
+          {store.storeName || CK.EXTRAS_FEES_HEADING}
         </Text>
         <Text size="sm" color="primary" className="flex-shrink-0 tabular-nums">
           {formatEmiRupees(store.subtotal)}
@@ -922,7 +938,6 @@ function renderExtrasStep({
           {addonStores.map((store) =>
             renderSellerExtrasCard({
               store,
-              multiStore: addonStores.length > 1,
               addons: storeAddons[store.storeId] ?? {},
               onStoreAddonsChange,
               codSettings,

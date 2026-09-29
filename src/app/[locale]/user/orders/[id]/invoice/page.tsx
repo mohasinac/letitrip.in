@@ -1,7 +1,7 @@
 "use client";
 import {use, Suspense } from "react";
 import { Link } from "@/i18n/navigation";
-import { useOrder, ROUTES, Div, Row, Span, Stack, Table, Thead, Tbody, Tr, Th, Td, Text, Heading, Button, StickyToolbar, formatCurrency } from "@mohasinac/appkit/client";
+import { useOrder, ROUTES, Div, Row, Span, Stack, Table, Thead, Tbody, Tr, Th, Td, Text, Heading, Button, StickyToolbar, formatCurrency, shortOrderRef } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
 
@@ -40,7 +40,7 @@ function renderInvoiceHeader(order: OrderData, orderDate: string) {
           Invoice
         </Text>
         <Text variant="secondary" className="mt-0.5 print:text-[var(--appkit-color-text-muted)]" size="xs">
-          #{order.id.slice(-8).toUpperCase()}
+          #{shortOrderRef(order.id)}
         </Text>
         {orderDate && (
           <Text variant="secondary" className="print:text-[var(--appkit-color-text-muted)]" size="xs">{orderDate}</Text>

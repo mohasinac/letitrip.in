@@ -255,6 +255,19 @@ function PageInner({ params }: { params: Promise<{ id: string }> }) {
           {() => (
             <Stack gap="md">
               <FormErrorSummary />
+              {/*
+               * 🛑 `showYoutube` and `showExternal` default to TRUE, so this field
+               * offered "YouTube" and "External URL" as ways to supply proof of
+               * payment until they were turned off here.
+               *
+               * `accept` does NOT close that: it constrains the file picker only,
+               * so the attribute above reads like a guarantee and is not one. A
+               * buyer could submit a YouTube link as their payment proof, and the
+               * admin reviewing it — who approves real money against this artefact
+               * — would get a video URL where a screenshot belongs. An external URL
+               * is the same hazard slower: proof has to be something we hold, not a
+               * link that can change or 404 after it was approved.
+               */}
               <MediaUploadField
                 label="Payment screenshot (JPG/PNG/PDF)"
                 value={proofUrl}
@@ -262,6 +275,8 @@ function PageInner({ params }: { params: Promise<{ id: string }> }) {
                 onUpload={handleUpload}
                 kind="image"
                 accept="image/*,application/pdf"
+                showYoutube={false}
+                showExternal={false}
                 helperText="Upload a screenshot of the payment confirmation from your UPI app."
               />
               <FieldInput

@@ -18,6 +18,7 @@ import {
   Textarea,
   MediaImage,
   formatCurrency,
+  shortOrderRef,
 } from "@mohasinac/appkit/client";
 import {
   groupOrderItemsByLine,
@@ -201,7 +202,7 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
         <Div>
           <Text className="tracking-wider" color="muted" size="xs" transform="uppercase">Order</Text>
           <Text className="mt-0.5" color="primary" size="base" weight="semibold">
-            #{order.id.slice(-8).toUpperCase()}
+            #{shortOrderRef(order.id)}
           </Text>
           {date && <Text variant="secondary" className="mt-0.5" size="xs">{date}</Text>}
         </Div>
@@ -513,7 +514,7 @@ function OrderDetailPageInner({ params }: { params: Promise<{ id: string }> }) {
   return (
     <>
       <OrderDetailView
-        labels={{ title: order ? `Order #${order.id.slice(-8).toUpperCase()}` : "Order Details" }}
+        labels={{ title: order ? `Order #${shortOrderRef(order.id)}` : "Order Details" }}
         isLoading={isLoading}
         isNotFound={!isLoading && !order}
         renderBack={renderBack}

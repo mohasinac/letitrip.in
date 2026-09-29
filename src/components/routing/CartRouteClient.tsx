@@ -222,7 +222,7 @@ function groupBySeller(items: CartItemWithListingType[]): SellerGroup[] {
     const meta = item.meta as unknown as Record<string, JsonValue>;
     const sid = (meta.storeId as string | undefined) ?? "unknown";
     const sname =
-      (item.meta.attributes?.storeName as string | undefined) ||
+      item.meta.storeName ||
       (sid !== "unknown" ? humanizeStoreSlug(sid) : sid);
     // storeId IS the store slug (memory: project_store_identity) — link target.
     const sslug = sid !== "unknown" ? sid : undefined;
@@ -271,9 +271,13 @@ function serverItemsToCartItems(
       price: item.lockedPrice ?? item.price,
       currency: item.currency ?? "INR",
       storeId: item.storeId,
-      attributes: {
-        storeName: item.storeName ?? "",
-      },
+      /*
+       * A NAMED field, never an `attributes` entry. `CartItemRow` renders every
+       * attribute as `${key}: ${value}`, so this used to print the literal
+       * `storeName: Beyblade Arena` under the title on /cart — directly beneath
+       * the same value already rendered as `SOLD BY BEYBLADE ARENA`.
+       */
+      storeName: item.storeName ?? "",
     },
   }));
 }
@@ -313,7 +317,7 @@ function mergePendingCartOps(
         price: op.price ?? 0,
         currency: "INR",
         storeId: op.storeId,
-        attributes: { storeName: op.storeName ?? "" },
+        storeName: op.storeName ?? "",
       },
     });
   }
@@ -987,7 +991,7 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
       if (!normalizedQuery) return true;
       const q = normalizedQuery;
       if ((item.meta.title ?? "").toLowerCase().includes(q)) return true;
-      const store = ((item.meta.attributes?.storeName as string | undefined) ?? "").toLowerCase();
+      const store = (item.meta.storeName ?? "").toLowerCase();
       if (store.includes(q)) return true;
       const price = item.meta.price;
       if (String(Math.round(price)).includes(q) || price.toFixed(2).includes(q)) return true;
