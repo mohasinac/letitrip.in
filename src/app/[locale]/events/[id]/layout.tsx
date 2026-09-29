@@ -51,9 +51,32 @@ export default async function Layout({ children, params }: Props) {
   const coverImage = resolveEventCoverImage(event as unknown as Record<string, FirestoreValue>) ?? null;
 
   const eventType = (event.type as string | undefined) ?? "";
-  const eventStatus = (event.status as string | undefined) ?? "";
+  const storedStatus = (event.status as string | undefined) ?? "";
   const totalEntries = (event as { stats?: { totalEntries?: number } }).stats?.totalEntries;
   const isActive = eventIsActive(event);
+
+  /*
+   * 🛑 The badge must show the EFFECTIVE status, not the stored one.
+   *
+   * `eventIsActive` already gets this right — it requires `status === "active"`
+   * AND `endsAt` in the future — and it is what gates the Participate tab two
+   * lines down. The badge was rendering the raw `event.status`, so an event whose
+   * stored status is still `active` but whose end date has passed announced
+   * itself as **Active** while its own body said "This poll has ended" and no
+   * Participate tab was offered. Measured on
+   * /events/event-favourite-blader-poll: badge "Poll Active", header "End: 25
+   * Sept 2026", read on 2026-09-29, with the ended copy rendering underneath.
+   *
+   * Nothing sweeps `status` to `ended` when `endsAt` passes, so the stored value
+   * is not a reliable display value and deriving here is the fix rather than a
+   * patch. `ended` is a real `EventStatus` member, so the badge colour map and
+   * the status filter chips already understand it.
+   *
+   * Only the active-but-expired case is rewritten. `draft`, `paused`, `ended`
+   * and `cancelled` are deliberate states and are passed through untouched — a
+   * cancelled event must keep saying cancelled, not be relabelled by a date.
+   */
+  const eventStatus = storedStatus === "active" && !isActive ? "ended" : storedStatus;
 
   const isPoll = eventType === "poll";
   const isSpinWheel = eventType === "spin_wheel";

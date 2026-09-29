@@ -213,3 +213,70 @@ a buyer to upload a proof and then a seller fetch of that order.
 `OrderDocument` field triaged public/private, which is the pattern that section
 prescribes and a change every seller order surface reads through. It is its own
 piece of work, not a drive-by during a fulfilment case.
+
+## The poll page does not show that you have already voted
+
+**Found during** batch 14, `checklist-content-discovery-event-detail-subroutes-participate-records-an-entry`.
+
+`PollInlineClient` tracks submission in local `isSubmitted` state only, so after a
+reload the full voting form is offered again — five radios and a Cast Vote button —
+as though nothing had happened. The entry HAS persisted (the event's Participants
+counter moved), it simply is not read back.
+
+With the duplicate guard added in this run the second attempt is now refused with a
+real message instead of silently duplicating, which removes the data-integrity
+problem. The remaining gap is presentational: the page should open in a
+"you voted for X" state rather than inviting a vote that will be rejected.
+
+**Why not fixed here:** it needs a new per-user entry read on the event page
+(`countUserEntries` or a find-by-event-and-user) threaded into the layout and down
+to the client component. That is a data-fetch addition on a public, cached route,
+so it wants its own look at cost and caching under Rule #6 — not a drive-by.
+
+## Poll leaderboard says "No votes yet." while the header counts 364 participants
+
+**Found during** the same batch, reading the Leaderboard tab for the entry count.
+
+`/events/event-favourite-blader-poll/leaderboard` renders **"No votes yet."** while
+the page header immediately above it reads **"Participants: 364"** — measured right
+after two votes that moved the counter from 362. Two numbers for the same thing on
+one screen, which is the shape CLAUDE.md's Root Cause #72 describes.
+
+The header count comes from `stats.totalEntries` on the event document; the
+leaderboard panel is fed by the layout's own `leaderboard` fetch. One of the two is
+wrong and I did not establish which: it could be the leaderboard query missing poll
+entries, or `stats.totalEntries` being inflated by something other than real votes.
+
+**Why not fixed here:** deciding which source is authoritative is the whole question,
+and guessing would mean "fixing" whichever one I looked at first. Needs the two
+queries compared against the raw `eventEntries` rows for this event.
+
+## `/events/{id}/spin-results` is a public feed, but its case asserts a private one
+
+**Found during** batch 14, `checklist-content-discovery-event-detail-subroutes-spin-results-subroute`.
+
+The case's label says the route "lists **this account's own** spins with the prize
+each won", and its `expectedData` is the caller's own spin count. The route is not
+viewer-scoped: `getSpinResultsCached(id)` takes only the event id and calls
+`getEventSpinResults(id, 10)`, returning the ten most recent spins across all users.
+Read as the harness buyer, who has never spun, the page listed **other people's**
+results — "Mock User 3 / Free Launcher Grip Tape / 15d ago", "Mock User 2 / 10% Off
+Coupon", "Guest / 5% Off Coupon".
+
+🛑 **I did not "fix" either side, and the reason matters.** The implementation looks
+deliberate, not accidental: the renderer has distinct `GUEST_FALLBACK` and
+`PARTICIPANT_FALLBACK` labels for identities that are not the viewer's, which a
+self-scoped page would never need, and the 10-row cap with `revalidate = 0` reads
+like an activity feed. So the likely defect is the CASE, not the code — but
+rewriting a case to assert whatever the code happens to do turns it into a
+tautology, and the author plainly believed something different. That disagreement is
+for a human to settle.
+
+Two questions it needs to settle:
+
+1. **Is a public feed intended at all?** If so the case should be re-authored to
+   assert that, and a separate "my spins" view may be wanted.
+2. **If public, should the names be masked?** Root Cause #50 is the precedent: a
+   real bidder's display name was being published on public bid history until
+   `maskPublicBid` was made to actually call `maskName`. A prize-winner feed showing
+   full display names beside what each person won is the same shape.
