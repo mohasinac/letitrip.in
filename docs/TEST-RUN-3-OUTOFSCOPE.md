@@ -358,3 +358,45 @@ link to a filtered view.
 
 **Why not chased here:** no case in this batch covers OG images or the error
 surface, and the brand defect it was blocking is queued with its own next step.
+
+## Auth cases need a throwaway-account policy — 9 of 11 are unrunnable without one
+
+**Found during** batch 19, `account-auth/signup-login--guest`.
+
+Two cases passed (email+password login; forgot-password non-enumeration). The other
+nine abstained, and they fall into three groups — only one of which is a real
+capability gap.
+
+**1. Forbidden: two cases mutate a real seeded account's password.**
+`password-reset` sets a new password on `neha.op@gmail.com` and
+`auth-email-links-single-use` on `divya.funko@gmail.com`, each relying on a final
+step to put `TempPass123!` back. Changing a password IS modifying a login, which
+this run forbids outright — and it is not recoverable, because `appkit-seed` sets
+`TempPass123!` **only when it creates an Auth record**, so a re-seed never restores
+an existing one. A half-finished run leaves a real account locked out of its
+documented credential. `auth-email-links-single-use` has no safe prefix either: its
+step 5 *is* the mutation.
+
+**2. Blocked on account accumulation: four cases need a signup.**
+`email-signup`, `email-verify`, `signup-verification-email-arrives` and
+`auth-emails-sender-identity-and-inbox`. Signing up writes a Firebase Auth record
+and a `users` row, and `users` is **PRESERVE** tier — the lifecycle never wipes it,
+which is exactly what protects the ~31 real accounts. So every run of these cases
+leaves another `qa-signup+run-…` account behind permanently, with nothing to reap
+them. Additive rather than destructive, so not forbidden, but a standing cost.
+
+**3. Genuinely needs a human: three Google cases.** `google-oauth`,
+`google-link-existing`, `google-popup-blocked-fallback` — all
+`requiresHumanChannel`. No Google credential to select in the popup, and the
+popup-blocked variant additionally needs a browser-preference change the MCP
+surface does not expose.
+
+**What would unblock groups 1 and 2 together:** a disposable identity tier. Either a
+`qa-throwaway-*` uid prefix the tester lifecycle is permitted to delete (it would
+need adding to `collections.mjs` alongside the PRESERVE/SEED_OWNED/CASCADE tiers,
+which currently has no such concept for `users`), or a documented decision to accept
+the accumulation and to allow resetting one nominated seeded account's password.
+
+The mailbox capability is NOT the blocker — `tester/scripts/check-inbox.mjs` plus
+`TESTER_EMAIL_ID` already work, and `--since` makes the assertions sound. Four of
+these cases become automatable the moment the account question is answered.
