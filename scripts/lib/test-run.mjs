@@ -78,7 +78,21 @@ export function readInflight() {
   return readJson(INFLIGHT_PATH, null);
 }
 
-/** Every recorded fix, newest last. Absent file is zero fixes, not an error. */
+/**
+ * Every recorded fix, newest last. Absent file is zero fixes, not an error.
+ *
+ * 🛑 `caseId` is normalised from either spelling, because both have been written.
+ *
+ * The first real entry in this run was hand-authored as `{"case": "..."}` while
+ * `tally()` read `f.caseId`, so a fix that was genuinely made, committed and
+ * sitting on disk was reported as `fixed 0/1 · open 1` — the counter said the
+ * cycle could not advance, and it was right about the file and wrong about the
+ * world. That is the worst failure available to a number whose whole job is to
+ * be trusted over my memory.
+ *
+ * The real repair is `test-run-record-fix.mjs`, so no entry is hand-authored
+ * again. This tolerant read is what keeps the rows already written countable.
+ */
 export function readFixes() {
   if (!existsSync(FIXES_PATH)) return [];
   return readFileSync(FIXES_PATH, "utf8")
@@ -92,7 +106,9 @@ export function readFixes() {
         return null;
       }
     })
-    .filter(Boolean);
+    .filter(Boolean)
+    .map((f) => ({ ...f, caseId: f.caseId ?? f.case ?? null }))
+    .filter((f) => f.caseId);
 }
 
 /** Batch key -> its parsed batch file. */
