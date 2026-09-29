@@ -9,7 +9,7 @@ scrapes the seed source.** Status and notes are preserved across regeneration.
 Do not hand-add a page row — add the page to the seed and regenerate, or the
 ledger will claim coverage the catalogue does not have.
 
-**107 / 130 pages** · 1336 cases · 15 groups
+**108 / 130 pages** · 1336 cases · 15 groups
 
 | Status | Meaning |
 |---|---|
@@ -184,7 +184,7 @@ case — the audits do not check per-field presence.
 
 | Page | Label | Cases | Status | Notes |
 |---|---|---|---|---|
-| `page-wiring/drawer-pages` | Editors that are also pages | 3 | pending | LEAD (identity sweep): 1 case(s) that sign in as MORE THAN ONE identity. fetch-cases assigns ONE identity per batch: roles exactly [guest] -> guest, any admin -> admin, all-seller -> seller, else buyer. So an [admin,buyer] case runs entirely AS ADMIN and its buyer half tests the wrong person, usually silently because the admin can perform it. This run is interactive, so the per-case fix is an explicit step: close the browser, swap the session file, reopen (the MCP reads it at context creation). |
+| `page-wiring/drawer-pages` | Editors that are also pages | 3 | rewritten | 3 cases (the header said 2). The page's premise was that an editor-as-a-page is a drawer mounted permanently open, and that is only true of some of them. Checked route by route: /admin/team/new and /admin/navigation/new really are drawer-as-page, with the editor hard-rendering SideDrawer and onClose wired to navigate back. But /admin/tester-checklist/new is a StackedViewShell plus SectionForm, /admin/carousels/new is a Section/Container with a back Link, and /store/stickers/new is a product shell. None of those has a panel, so a step reading 'close it' cannot be performed and a tester hunting a drawer on /store/stickers/new would report a defect that is really a second, equally valid shape. Both cases now ask for the two things that actually matter on every one of these routes — the form is usable on arrival, and there is a way back to its list — and say which routes have a panel. Also corrected case 3's claim that 'three of these were already covered by name': the three named in case 1 are NOT in case 3's list of sixteen, so the sentence pointed at an overlap that does not exist. VERIFIED ALL 19 ROUTES NAMED IN STEP PROSE EXIST, which is the check nothing else makes: the hrefs audit validates href and startPage only, so a route named inside a step is checked by nobody. TOOLING LESSON, and it cost several turns: I read a repr() of the file in terminal output, saw a mangled em dash, and concluded the file held corrupted bytes. It did not. Two independent scans with a pure-ASCII script built on chr() found zero U+FFFD anywhere in the seed tree — the mangling was in my view of the output, not on disk. What actually failed was the opposite direction: an em dash typed into a match anchor does not survive the path from my output into a script file, so it silently matches nothing. The rule is to anchor on ASCII-only fragments and build any non-ASCII with chr(), which is what the final scripts do. |
 | `page-wiring/detail-pages` | Record detail pages | 2 | pending |  |
 | `page-wiring/data-loss` | Saves that used to destroy data | 4 | pending |  |
 | `page-wiring/reachability` | Everything built is reachable | 5 | pending |  |
