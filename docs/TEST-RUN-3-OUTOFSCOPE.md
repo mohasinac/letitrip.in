@@ -330,3 +330,31 @@ palette, not a drive-by, and it wants checking against both built-in themes.
 
 Nothing measured here is *unreadable*; this is an accessibility-standard gap, not a
 legibility bug, which is why the contrast case still passed on its own terms.
+
+## The server-error log is saturated by one recurring OG-image failure
+
+**Found during** batch 18, while trying to settle the brand-page defect.
+
+`/admin/maintenance/server-errors` reads **"200 of 200 (source=vercel)"** — its cap —
+and every visible row is the same thing: `RSC_route failed to pipe response` with
+request id `rsc-no-digest`, on `opengraph-image` routes
+(`/[locale]/categories/[slug]/opengraph-image`, `/[locale]/scams/[id]/opengraph-image`),
+several per hour through 2026-09-29.
+
+Two consequences:
+
+1. **A recurring OG-image render failure is going unnoticed.** Every entry in the
+   last-7-days error log is this one fault, so something is failing continuously
+   when a crawler or social card fetches an OG image.
+2. **It makes the log useless for anything else.** I went there to look for a
+   swallowed `DEGRADED_READ` on the brand product query, and could not: any other
+   error is pushed beyond the 200-row cap. The absence of a row there is therefore
+   not evidence that the error did not happen — which is exactly the trap this
+   surface exists to prevent.
+
+Also noted: `?code=DEGRADED_READ` in the URL does not filter the list (still 200 of
+200), so the Code control is not URL-driven — worth knowing before anyone tries to
+link to a filtered view.
+
+**Why not chased here:** no case in this batch covers OG images or the error
+surface, and the brand defect it was blocking is queued with its own next step.

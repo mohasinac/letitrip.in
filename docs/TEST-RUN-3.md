@@ -15,18 +15,18 @@ of what was tested, what failed, what was fixed, and what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **17 / 255** |
-| Cases | **77 / 1847** (4%) |
+| Batches | **18 / 255** |
+| Cases | **85 / 1847** (5%) |
 | Cycle | 4 of 51 |
 | Next deploy | batch 25 |
-| Last updated | 2026-09-29 13:16 UTC |
+| Last updated | 2026-09-29 13:30 UTC |
 
 ```
-pass 49 · fail 20 · null 8
-fixed 20/20 · open 0 · needs-human 0
+pass 55 · fail 22 · null 8
+fixed 20/22 · open 2 · needs-human 0
 ```
 
-> No open defects.
+> 🛑 **2 failure(s) not yet fixed.** No batch advances with an open defect.
 
 <!-- COUNTER:END -->
 
@@ -153,5 +153,13 @@ The cost is real and accepted: batches 6-25 run against code that does not yet c
 | 16 | 75 | `checklist-design-ux-general-design-mobile-search-bar-proportions` | On mobile, the global header search bar's resource-type dropdown (Products/Auctions/etc.)  | design-ux/general-design--guest | guest | ✅ pass | The proportions are right and the dropdown is genuinely capped. At 390px the header search input measures 206px against the resource-type select's 92px — the input takes 69% of the pair. At 320px the input narrows to 136px while the sele… | [shot](../tester/.tester-runs/run-3/shots/design-mobile-320.png) | — | — | no | — |
 | 17 | 76 | `checklist-design-ux-general-design-empty-states` | Empty states (no results, empty cart) look correct | design-ux/general-design | main | ❌ fail | both empty branches in UserOrdersView hard-coded the never-placed-an-order sentence, and renderCards' signature (rows, view, selection, isLoading) carries no filter state to distinguish the two cases. FIXED by deriving the message from t… | [shot](../tester/.tester-runs/run-3/shots/design-main-control-pass.png) | A FILTERED empty result was reported as an empty account. Both empty branches in UserOrdersView hard-coded 'You haven't placed any orders yet.', which is right for a new account and false the moment a search or status chip is what emptie… | `UserOrdersView.tsx` | no | pending |
 | 17 | 77 | `checklist-design-ux-general-design-icon-button-label-spacing` | Buttons that show an icon next to their text have a normal gap between the icon and the wo | design-ux/general-design | main | ✅ pass | Measured the CSS contract that Root Cause #68 actually broke rather than eyeballing the gap, and it is intact on every appkit button carrying both an icon and a label: the button computes columnGap 8px and — the part that regressed — .ap… | [shot](../tester/.tester-runs/run-3/shots/design-icon-gaps.png) | — | — | no | — |
+| 18 | 78 | `checklist-public-pages-newly-wired-browse-indexes-all-six-reachable-from-footer` | All six pages are reachable by clicking the footer, not only by typing the URL | public-pages/newly-wired-browse-indexes | guest | ✅ pass | All six are in the footer with sensible labels: Classifieds (/classified), Digital Codes (/digital-codes), Live Items (/live), Lotteries (/lottery), Brands (/brands) and Verified Sellers (/sellers). The footer's SHOP column carries all s… | [shot](../tester/.tester-runs/run-3/shots/browse-brand-empty.png) | — | — | no | — |
+| 18 | 79 | `checklist-public-pages-newly-wired-browse-indexes-classified-lists-only-classifieds` | /classified lists classified listings and nothing of another type | public-pages/newly-wired-browse-indexes | guest | ✅ pass | /classified redirects to /products?listingType=classified, which is the folding this case exists to confirm. Seven cards render and EVERY one leads with the 'Classified' badge — zero cards of another type. The content is real classified … | [shot](../tester/.tester-runs/run-3/shots/browse-control-pass.png) | — | — | no | — |
+| 18 | 80 | `checklist-public-pages-newly-wired-browse-indexes-digital-codes-lists-only-digital` | /digital-codes lists digital-code listings and nothing of another type | public-pages/newly-wired-browse-indexes | guest | ✅ pass | /digital-codes redirects to /products?listingType=digital-code as described. Six cards render and all six lead with the 'Digital Code' badge — zero foreign types. | [shot](../tester/.tester-runs/run-3/shots/browse-control-pass.png) | — | — | no | — |
+| 18 | 81 | `checklist-public-pages-newly-wired-browse-indexes-live-lists-only-live` | /live lists live-item listings and nothing of another type | public-pages/newly-wired-browse-indexes | guest | ✅ pass | /live redirects to /products?listingType=live. Three cards, all badged 'Live Item', zero foreign types — and they are exactly the three deliberately off-catalogue fixtures CLAUDE.md documents for this type: 'Juniper Bonsai — 10 Years Tra… | [shot](../tester/.tester-runs/run-3/shots/browse-control-pass.png) | — | — | no | — |
+| 18 | 82 | `checklist-public-pages-newly-wired-browse-indexes-lottery-lists-active-lotteries` | /lottery lists active lottery events with their slot counts | public-pages/newly-wired-browse-indexes | guest | ✅ pass | /lottery is a real page headed 'Active Lotteries' and lists one: 'Pokémon Number Draw — July 2026', marked active, with genuine slot information on the tile — '20 slots left', '25 slots available' and '5/25 slots claimed', which are mutu… | [shot](../tester/.tester-runs/run-3/shots/browse-control-pass.png) | — | — | no | — |
+| 18 | 83 | `checklist-public-pages-newly-wired-browse-indexes-brands-tiles-open-their-brand` | Each /brands tile opens that brand's page and lists that brand's products | public-pages/newly-wired-browse-indexes | guest | ❌ fail | SYMPTOM: the tile count and the brand page disagree completely. /brands renders five tiles with real counts — Beyblade 28 items, Takara-Tomy 29, Independent Keepers 4, Hasbro 0, QA Brand inline-create 0 — and opening the first one lands … | [shot](../tester/.tester-runs/run-3/shots/browse-brand-empty.png) | — | — | no | — |
+| 18 | 84 | `checklist-public-pages-newly-wired-browse-indexes-sellers-is-not-a-copy-of-stores` | /sellers shows verified sellers and is visibly a different page from /stores | public-pages/newly-wired-browse-indexes | guest | ✅ pass | /sellers is visibly its own page, headed 'Verified Sellers', and each row leads with seller-trust information that /stores' cards do not: a star rating (★ 4.1 for Beyblade Arena, ★ 3.6 for LetItRip Official) and a review count (74 review… | [shot](../tester/.tester-runs/run-3/shots/browse-sellers.png) | — | — | no | — |
+| 18 | 85 | `checklist-public-pages-newly-wired-browse-indexes-guest-can-browse-all-six` | A signed-out visitor can browse all six, with prices gated rather than the page broken | public-pages/newly-wired-browse-indexes | guest | ❌ fail | Five of the six are fine for a signed-out visitor and the sixth is the brands page already recorded above. Session was genuinely empty (0 cookies, 0 origins) and every page showed guest chrome (Sign in / Register). /classified, /digital-… | [shot](../tester/.tester-runs/run-3/shots/browse-brand-empty.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
