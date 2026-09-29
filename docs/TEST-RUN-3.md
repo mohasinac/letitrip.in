@@ -15,14 +15,14 @@ of what was tested, what failed, what was fixed, and what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **12 / 255** |
-| Cases | **55 / 1847** (3%) |
+| Batches | **13 / 255** |
+| Cases | **56 / 1847** (3%) |
 | Cycle | 3 of 51 |
 | Next deploy | batch 25 |
-| Last updated | 2026-09-29 11:35 UTC |
+| Last updated | 2026-09-29 11:38 UTC |
 
 ```
-pass 35 · fail 14 · null 6
+pass 36 · fail 14 · null 6
 fixed 14/14 · open 0 · needs-human 0
 ```
 
@@ -131,5 +131,6 @@ The cost is real and accepted: batches 6-25 run against code that does not yet c
 | 12 | 53 | `checklist-happy-path-admin-verify-manual-payment-queue-filters` | The manual-payment filter narrows the list, proven against the unfiltered count | happy-path/admin-verify--admin | admin | ✅ pass | Proven with three distinct counts rather than one. Unfiltered: 25 rows. Applying Manual payment > 'Awaiting verification' (via the Filters panel, then Apply Filters) puts ?paymentReview=awaiting_verification in the URL and returns 0 rows… | [shot](../tester/.tester-runs/run-3/shots/admin-verify-filter-pass.png) | — | — | no | — |
 | 12 | 54 | `checklist-happy-path-admin-verify-admin-sees-payment-proof` | The admin can open the order and see the buyer's uploaded proof | happy-path/admin-verify--admin | admin | ⬜ null | Could not perform step 4's real check: no order in this run has a payment proof uploaded, so there is nothing for the admin to see. The cash order placed earlier (order-1-20260929-lip8jy, cash/UPI manual) was cancelled by the cancel-flow… | [shot](../tester/.tester-runs/run-3/shots/admin-verify-drawer.png) | — | — | no | — |
 | 12 | 55 | `checklist-happy-path-admin-verify-verify-payment-marks-paid` | 🛑 Verifying the proof marks the order paid, and the buyer sees it | happy-path/admin-verify--admin | admin | ⬜ null | Blocked by the same missing precondition as the previous case, at step 4: there is no proof to verify, so no verify control is offered. The drawer's action set on the cash order is Status (a select), Shipping (Tracking Number, Carrier, N… | [shot](../tester/.tester-runs/run-3/shots/admin-verify-drawer.png) | — | — | no | — |
+| 13 | 56 | `checklist-happy-path-admin-verify-admin-cannot-be-bypassed-by-url` | A signed-out visitor cannot reach the admin orders list | happy-path/admin-verify--guest | guest | ✅ pass | Session was genuinely empty (0 cookies, 0 origins). /admin/orders redirected to /auth/login?next=%2Fadmin%2Forders and rendered the Sign In form with signed-out header chrome. Zero admin data appeared: no order ids, no rupee amounts, no … | [shot](../tester/.tester-runs/run-3/shots/admin-guest-blocked-pass.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
