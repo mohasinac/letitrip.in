@@ -200,7 +200,25 @@ if (typeof setTarget === "string") {
    */
   const statusArg = flag("status");
   const status = typeof statusArg === "string" ? statusArg : null;
-  const note = flag("note");
+  /*
+   * 🛑 `--note-file <path>` exists because `--note "…"` is a shell argument and
+   * these notes are prose about code.
+   *
+   * A note naming a field in backticks — the ordinary way to write one — is
+   * command substitution: bash runs it and splices the (usually empty) output
+   * into the sentence. It has happened twice in one session. The first time it
+   * left "has  and no count check" mid-clause; the second swallowed a field
+   * name and printed `text: command not found`, which is easy to read as
+   * unrelated noise from some other command in the same line.
+   *
+   * Both were caught by reading the row back, which is not a mechanism. A file
+   * removes the class: nothing between the text and the disk interprets it.
+   */
+  const noteFile = flag("note-file");
+  const note =
+    typeof noteFile === "string" && noteFile
+      ? readFileSync(resolve(REPO, noteFile), "utf8").trim()
+      : flag("note");
   const VALID = ["pending", "in-flight", "audited", "rewritten"];
   if (status !== null && !VALID.includes(status)) {
     console.error(`✗ --status must be one of: ${VALID.join(", ")}`);
