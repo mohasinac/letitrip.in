@@ -114,6 +114,23 @@ function renderInvoiceItemsTable(order: OrderData) {
   );
 }
 
+/**
+ * One fee row, rendered only when the buyer was actually charged it.
+ *
+ * A shared helper rather than six copies of the same conditional: the six
+ * differ only in label and field, and the one that was hand-written (GST) is
+ * the one that silently stopped working.
+ */
+function feeRow(label: string, amount: number | undefined, currency: string | undefined) {
+  if (amount === undefined || amount <= 0) return null;
+  return (
+    <Row textSize="sm" justify="between" key={label}>
+      <Text variant="secondary">{label}</Text>
+      <Text>{formatCurrency(amount, currency)}</Text>
+    </Row>
+  );
+}
+
 function renderInvoiceTotals(order: OrderData) {
   return (
     <Stack gap="xs" className="ml-auto max-w-xs">
@@ -147,12 +164,27 @@ function renderInvoiceTotals(order: OrderData) {
               </Text>
             </Row>
           )}
-      {order.tax !== undefined && order.tax > 0 && (
-        <Row textSize="sm" justify="between">
-          <Text variant="secondary">Tax (GST)</Text>
-          <Text>{formatCurrency(order.tax, order.currency)}</Text>
-        </Row>
-      )}
+      {/*
+        * 🛑 EVERY FEE THE BUYER PAID GETS A LINE, or the invoice does not add up.
+        *
+        * It listed Subtotal and Shipping only. Measured on a real order:
+        * ₹899.00 + ₹77.00 against a stated Total of ₹997.80, leaving ₹21.80
+        * with nothing to explain it — the ₹10 platform fee, ₹10 WhatsApp
+        * updates and ₹1.80 GST were all in the total and none had a row. The GST
+        * row below existed but could never render, because the order adapter
+        * never mapped `gstAmount` onto `tax` (fixed there).
+        *
+        * An invoice whose own lines do not sum to its own total is a GST
+        * document that cannot be reconciled, so this is correctness rather
+        * than presentation. Each row is conditional on a non-zero value, so an
+        * order that was never charged a fee still shows a clean invoice.
+        */}
+      {feeRow("COD handling", order.codHandlingFee, order.currency)}
+      {feeRow("WhatsApp updates", order.whatsappNotifyFee, order.currency)}
+      {feeRow("Gift wrap", order.giftWrapFee, order.currency)}
+      {feeRow("Shipment protection", order.shipmentProtectionFee, order.currency)}
+      {feeRow("Platform fee", order.platformFee, order.currency)}
+      {feeRow("Tax (GST)", order.tax, order.currency)}
       <Row textWeight="semibold" textSize="sm" border="default" 
         justify="between"
         className="border-t print:border-gray-300 mt-1" padding="t-xs"

@@ -101,6 +101,35 @@ function PageInner({ params }: { params: Promise<{ id: string }> }) {
   const cancellable = CANCELLABLE_STATUSES.includes(order.orderStatus);
   const activeItems = order.items.filter((i) => i.cancelledQuantity == null);
 
+  /*
+   * 🛑 The button's ActionDef must match what the click will actually DO.
+   *
+   * It was unconditionally `cancel-order-items` — the PARTIAL one — while the
+   * visible label was unconditionally the string "Cancel Order". Two defects
+   * fell out of that, and both are only visible on a single-item order, which
+   * is the common case:
+   *
+   * 1. The accessible name came from the ActionDef ("Cancel Selected Items")
+   *    while the visible text read "Cancel Order". A speech-input user saying
+   *    "click Cancel Order" matches nothing (WCAG 2.5.3 Label in Name).
+   * 2. `cancel-order-items`'s confirmation body promises "The rest of your
+   *    order will continue as normal." On a single-item order there is no
+   *    rest — the whole order is cancelled — so the dialog told the buyer the
+   *    opposite of what the button was about to do.
+   *
+   * The checkbox list only renders when `activeItems.length > 1`, so on a
+   * single-item order nothing was ever selectable in the first place.
+   *
+   * `isPartialCancel` mirrors `handleSubmit`'s own `isWholeOrder` exactly
+   * (inverted), so the label, the dialog and the request can no longer
+   * disagree about which of the two operations this is.
+   */
+  const selectedCount = selectedItemIds ? selectedItemIds.size : activeItems.length;
+  const isPartialCancel = selectedCount > 0 && selectedCount < activeItems.length;
+  const cancelAction = isPartialCancel
+    ? ACTIONS.USER["cancel-order-items"]
+    : ACTIONS.USER["cancel-order"];
+
   return (
     <Stack className="w-full max-w-lg" gap="lg">
       <>
@@ -165,7 +194,7 @@ function PageInner({ params }: { params: Promise<{ id: string }> }) {
 
           <Row gap="3">
             <Button
-              action={ACTIONS.USER["cancel-order-items"]}
+              action={cancelAction}
               type="button"
               disabled={isPending}
               onClick={handleSubmit}
@@ -173,7 +202,11 @@ function PageInner({ params }: { params: Promise<{ id: string }> }) {
               paddingX="md" paddingY="sm" textSize="sm" weight="semibold"
               className="disabled:opacity-60 transition-colors"
             >
-              {isPending ? "Cancelling…" : "Cancel Order"}
+              {isPending
+                ? "Cancelling…"
+                : isPartialCancel
+                  ? "Cancel Selected Items"
+                  : "Cancel Order"}
             </Button>
             <Link
               href={String(ROUTES.USER.ORDER_DETAIL(id))}
