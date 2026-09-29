@@ -104,3 +104,58 @@ Recording it costs one line. Chasing it costs a cycle.
 - **Seeded order ids encode a date their own timestamps disagree with.** `order-1-20251122-481j4x` tracks as placed **08/08/2026** and shipped **09/09/2026**, both at the same time-of-day — the seed generates now-relative dates (so fixtures re-arm on reseed) while the id string is fixed. Harmless to the product, but an id that looks like it carries a date and does not will mislead anyone debugging from a customer's order reference. Found while testing track-shows-real-dates, which passed.
 - **🛑 The return-refusal message is backwards for the one state it names.** `/user/orders/{id}/return` on an order already in `return_requested` says: "This order can't be returned yet because it is **return_requested**. Returns open once it has been delivered." But `return_requested` only exists AFTER delivery — the guard is lumping it in with the not-yet-delivered statuses, so a buyer who has already requested a return is told to wait for the delivery that already happened. The correct message is that a request is already open, with a link to it. Found while testing return-request-round-trip.
 - **A previous run left a seeded order in `return_requested` and nothing reset it.** `order-1-20260818-stdctx` is the fixture `return-request-round-trip` depends on being DELIVERED, and it now cannot run at all. `orders` is CASCADE-tier so a tester wipe restores it, but this run does not wipe. The case needs either its own throwaway order or a reset step — the same shape as the seller-listing delete case destroying the fixture the guest case needed.
+
+## Two visible breadcrumb trails on every detail page
+
+**Found during** batch 9, `checklist-selling-listing-edit-roundtrip-edit-category-preselected`
+step 3 ("open its public page and read which category it is filed under").
+
+**Evidence** — `tester/.tester-runs/run-3/shots/listing-edit-double-breadcrumb-slug.png`,
+`/products/product-beyblade-burst-valkyrie`. Two elements match
+`nav[aria-label="Breadcrumb"]`, both visible, stacked at y=124 and y=231:
+
+| | Renderer | Renders |
+|---|---|---|
+| 1 | `AutoBreadcrumbs` (global page chrome) | `Home / Products / Product beyblade burst valkyrie` — the URL slug de-hyphenated by `capitalize()`, not the product title |
+| 2 | `ProductDetailPageView`'s own `renderBreadcrumb` | `Home / Products / Superking` — real data |
+
+Two problems, neither fixed here:
+
+1. **Duplicate landmark.** Two navs share `aria-label="Breadcrumb"`, so a screen-reader
+   user gets two identically-named landmarks with different contents.
+2. **`AutoBreadcrumbs` cannot do better on a dynamic segment.** It derives labels from
+   the path alone, so on `[slug]`/`[id]` routes the last crumb is always a prettified
+   slug. Its `segments` filter already drops hex ids and pure numbers; a product slug is
+   neither.
+
+**Why not fixed in this run:** the only correct fix is deciding which breadcrumb owns a
+detail route and suppressing the other, which is page-chrome architecture across every
+`[slug]`/`[id]` route on the site — not a change this case's scope justifies. The
+category-label half (crumb 2 rendering the raw slug `category-burst-superking`) WAS in
+scope and is fixed.
+
+## Fixture gap: no second store owns a listing, so cross-seller ownership is untestable
+
+**Found during** batch 9, `checklist-selling-listing-edit-roundtrip-edit-other-sellers-listing-404s`.
+
+That case needs seller A to open seller B's listing for edit. Two independent blockers:
+
+1. **No session for the seller it names.** The case signs in as `meera.blader@gmail.com`;
+   the harness mints exactly four identities (bot / buyer / seller / admin) and the seller
+   one is `tyson@beybladearena.in`. A tester cannot sign in for themselves.
+2. **Testing it from tyson's side is also impossible.** `/stores` lists exactly two public
+   stores — `store-beyblade-arena` (tyson's own, which holds every real product) and
+   `store-letitrip-official` (**0 products**, matching the seed). `store-blader-bazaar` and
+   `store-vintage-vault-co` are deliberately `pending`/`suspended` and so not public, and
+   `store-tester-qa-seller` returned **"Store Not Found"**.
+
+So there is no listing anywhere that tyson does not own, and the guard cannot be exercised
+in either direction.
+
+**What would fix it:** give `store-letitrip-official` one published standard product in the
+seed. It is already `active` + `isVerified`, so it introduces none of the pending-store
+confound the case itself warns about, and it would make the guard testable from the
+harness's existing seller session with no new identity.
+
+**Why not done in this run:** reseeding mid-run mutates the catalogue that in-flight batches
+are asserting against. This belongs at a milestone, alongside the pending-deploy fixes.

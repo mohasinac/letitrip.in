@@ -13,6 +13,20 @@ import { ROLES_ANY_STAFF, ROLES_STORE_WRITE } from "@/constants";
 
 const DEFAULT_SORTS = [sortBy(COMMON_FIELDS.ORDER, "ASC"), sortBy(CATEGORY_FIELDS.NAME, "ASC")].join(",");
 
+/*
+ * The one bounded read a `q=` search scans before filtering in memory.
+ *
+ * 🛑 100 is not a preference, it is the real ceiling: `SIEVE_DEFAULTS.maxPageSize`
+ * is 100 and `sieveQuery` clamps to it, so asking for more returns 100 anyway and
+ * the constant would simply be a number that never happens. Measured today the
+ * taxonomy is ~58 seeded rows (47 listing categories + 2 sublisting + 4 brand +
+ * 5 bundle) plus whatever has been created since, so one scan still covers all of
+ * it — but that headroom is thin. If the taxonomy passes 100 rows this search
+ * silently stops seeing the tail, and the fix then is a real push-down (a prefix
+ * range on `name`, or a search-token array), NOT a bigger number here.
+ */
+const CATEGORY_SEARCH_SCAN_LIMIT = 100;
+
 function slugify(str: string): string {
   return str
     .toLowerCase()
@@ -54,6 +68,65 @@ export const GET = withProviders(
       );
       const sorts = url.searchParams.get("sorts") || DEFAULT_SORTS;
       const filters = url.searchParams.get("filters") ?? undefined;
+      const q = (url.searchParams.get("q") ?? "").trim();
+
+      /*
+       * 🛑 `q` IS READ. It was not, and `CategoryInlineSelect` has always sent it.
+       *
+       * `loadAdminCategoryOptions` builds `?q=<query>&page=…&pageSize=20&flat=true`,
+       * and this handler read only page / pageSize / sorts / filters — so the
+       * search box in every inline category picker returned the SAME unfiltered
+       * first page for every term. Measured in the seller listing editor: typing
+       * "Plastic" and then the control term "zzzznope" both returned the identical
+       * alphabetical list, and "Plastic Generation" — a real category that renders
+       * fine at /categories/category-original-plastic-gen — was unreachable except
+       * by pressing Load more until it happened to appear. Root Cause #62's shape:
+       * a parameter the client emits and the route never reads, failing silently.
+       *
+       * Filtered IN MEMORY over a bounded scan rather than pushed into the query,
+       * because Firestore has no substring operator — a `name` equality would only
+       * match someone typing a category's full name, which is not what a search box
+       * is for. The bound is what makes it safe under Rule #6: this taxonomy is a
+       * 47-node forest plus a handful of brand/bundle rows, so one capped read
+       * covers all of it and there is no unbounded scan here to grow into one.
+       */
+      if (q) {
+        const scan = await categoriesRepository.list({
+          filters,
+          sorts,
+          page: "1",
+          pageSize: String(CATEGORY_SEARCH_SCAN_LIMIT),
+        });
+        const needle = q.toLowerCase();
+        const matched = scan.items.filter((c) => {
+          const name = typeof c.name === "string" ? c.name.toLowerCase() : "";
+          const slug = typeof c.slug === "string" ? c.slug.toLowerCase() : "";
+          return name.includes(needle) || slug.includes(needle);
+        });
+        const start = (page - 1) * pageSize;
+        const pageItems = matched.slice(start, start + pageSize);
+        /*
+         * `truncated` is not optional (CLAUDE.md, Availability & Order-Scope Tabs).
+         * If the scan SATURATED then rows beyond it were never examined, so
+         * `matched.length` is a FLOOR and not a total — say so rather than
+         * asserting a count that quietly depends on the taxonomy having stayed
+         * under the scan limit. `hasMore` stays true in that case so a caller
+         * paging through is never told it has reached a last page it has not.
+         */
+        const truncated = scan.items.length >= CATEGORY_SEARCH_SCAN_LIMIT;
+        const exhausted = start + pageItems.length >= matched.length;
+        return successResponse({
+          data: pageItems,
+          total: matched.length,
+          truncated,
+          page,
+          pageSize,
+          totalPages: truncated
+            ? page + 1
+            : Math.max(1, Math.ceil(matched.length / pageSize)),
+          hasMore: truncated ? true : !exhausted,
+        });
+      }
 
       const result = await categoriesRepository.list({
         filters,
