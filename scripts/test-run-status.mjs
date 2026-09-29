@@ -55,7 +55,9 @@ const block = [
   "",
   `\`\`\``,
   `pass ${t.pass} · fail ${t.fail} · null ${t.abstain}`,
-  `fixed ${verified} · open ${t.open} · needs-human ${t.manual}`,
+  `fixed ${verified}`
+    + (t.deferred ? ` · deferred ${t.deferred}` : "")
+    + ` · open ${t.open} · needs-human ${t.manual}`,
   `\`\`\``,
   "",
   t.open > 0
@@ -85,7 +87,11 @@ if (next !== doc) writeFileSync(CHECKLIST_DOC, next, "utf8");
 
 if (flag("quiet") !== true) {
   console.log(`${t.runId}: ${t.batchesDone}/${t.batchesTotal || "?"} batches · ${t.casesDone}/${t.casesTotal || "?"} cases`);
-  console.log(`  pass ${t.pass} · fail ${t.fail} · null ${t.abstain} · fixed ${verified} · open ${t.open}`);
+  console.log(
+    `  pass ${t.pass} · fail ${t.fail} · null ${t.abstain} · fixed ${verified}`
+      + (t.deferred ? ` · deferred ${t.deferred}` : "")
+      + ` · open ${t.open}`,
+  );
   if (t.open > 0) {
     console.log("");
     console.log("  OPEN (no batch advances with one of these outstanding):");

@@ -18,7 +18,7 @@
  *     --case <caseId> \
  *     --summary "what was wrong and what changed" \
  *     --files "a/b.tsx,c/d.ts" \
- *     [--reverified pending-deploy|pass|fail] \
+ *     [--reverified pending|pending-deploy|deferred-to-milestone|pass|fail] \
  *     [--force]                 # append even if no recorded `no` names this case
  *
  * Exit: 0 appended · 1 refused · 2 bad usage.
@@ -33,7 +33,7 @@ const filesRaw = flag("files");
 const reverified = flag("reverified", "pending");
 
 if (typeof caseId !== "string" || !caseId || typeof summary !== "string" || !summary) {
-  console.error("usage: --case <caseId> --summary <text> [--files a,b] [--reverified pending|pending-deploy|pass|fail]");
+  console.error("usage: --case <caseId> --summary <text> [--files a,b] [--reverified pending|pending-deploy|deferred-to-milestone|pass|fail]");
   process.exit(2);
 }
 if (isControlId(caseId)) {

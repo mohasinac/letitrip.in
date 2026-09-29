@@ -205,9 +205,34 @@ export function tally() {
     }
   }
 
-  const fixedIds = new Set(fixes.map((f) => f.caseId));
+  /*
+   * 🛑 THREE states, not two: fixed, DEFERRED, and open.
+   *
+   * `open` used to be "failed minus anything in the fix ledger", which left no
+   * way to record a defect that has been diagnosed, evidenced and scheduled but
+   * genuinely not repaired — G5's escape hatch had nowhere to write its result.
+   * The only way to clear the blocker was to author a fix entry for a fix that
+   * does not exist, which is exactly the lie `test-run-record-fix.mjs` was built
+   * to make impossible (see its header, and the `case`-vs-`caseId` incident that
+   * reported a real fix as unfixed).
+   *
+   * So a ledger entry carrying `reverified: "deferred-to-milestone"` counts as
+   * DEFERRED: it stops blocking the cycle, and it is reported separately from
+   * `fixed` so nobody can read the tally as "20 of 22 repaired" when two of
+   * those are still outstanding work with a next step attached.
+   */
+  const DEFERRED = "deferred-to-milestone";
+  const deferredIds = new Set(
+    fixes.filter((f) => f.reverified === DEFERRED).map((f) => f.caseId),
+  );
+  const fixedIds = new Set(
+    fixes.filter((f) => f.reverified !== DEFERRED).map((f) => f.caseId),
+  );
   const fixed = failedCases.filter((f) => fixedIds.has(f.id)).length;
-  const open = failedCases.length - fixed;
+  const deferred = failedCases.filter(
+    (f) => !fixedIds.has(f.id) && deferredIds.has(f.id),
+  ).length;
+  const open = failedCases.length - fixed - deferred;
 
   const cycle = Math.floor(batchesDone / BATCHES_PER_CYCLE) + 1;
   const totalCycles = Math.max(1, Math.ceil(batchesTotal / BATCHES_PER_CYCLE));
@@ -223,6 +248,7 @@ export function tally() {
     fail,
     abstain,
     fixed,
+    deferred,
     manual,
     open,
     cycle,
