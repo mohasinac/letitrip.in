@@ -15,14 +15,14 @@ of what was tested, what failed, what was fixed, and what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **11 / 255** |
-| Cases | **51 / 1847** (3%) |
+| Batches | **12 / 255** |
+| Cases | **55 / 1847** (3%) |
 | Cycle | 3 of 51 |
 | Next deploy | batch 25 |
-| Last updated | 2026-09-29 09:23 UTC |
+| Last updated | 2026-09-29 11:35 UTC |
 
 ```
-pass 33 · fail 14 · null 4
+pass 35 · fail 14 · null 6
 fixed 14/14 · open 0 · needs-human 0
 ```
 
@@ -127,5 +127,9 @@ The cost is real and accepted: batches 6-25 run against code that does not yet c
 | 10 | 49 | `checklist-happy-path-seller-fulfil-seller-sees-no-payment-screenshot` | The seller sees the payment status but NOT the buyer's payment screenshot | happy-path/seller-fulfil--seller | seller | ✅ pass | The drawer's Payment section shows status and method only — 'Awaiting payment / Cash' on one order and 'Cod' on the other — and no image. Confirmed in the component: paymentProofUrl is referenced only inside sellerPaymentBadge, to pick a… | [shot](../tester/.tester-runs/run-3/shots/seller-fulfil-drawer.png) | — | — | no | — |
 | 10 | 50 | `checklist-happy-path-seller-fulfil-mark-shipped-with-tracking` | Marking an order shipped with a carrier and tracking number persists | happy-path/seller-fulfil--seller | seller | ❌ fail | SYMPTOM: two of the three values persist and the carrier comes back empty. Opened the pending COD order, set New status to Shipped, typed carrier 'QA Carrier' and tracking 'QA123456789', pressed Save. After reloading /store/orders the ro… | [shot](../tester/.tester-runs/run-3/shots/seller-fulfil-drawer.png) | Carrier read-back, not a lost write. The drawer wrote payload.shippingCarrier (correct - that is the field OrderDocument declares) but read o.carrier, which the document does not have, in both the initial load and the post-save re-seed. … | `SellerOrdersView.tsx` | no | pending |
 | 11 | 51 | `checklist-happy-path-seller-fulfil-buyer-sees-shipped-status` | The buyer's own order page reflects the shipped status and tracking | happy-path/seller-fulfil | main | ✅ pass | Signed in as rehan.sheikh@gmail.com (verified on the page). /user/orders shows the order the seller shipped in batch 10 as 'Order #8-WEF45I / 28 Sept 2026 / Shipped' with its three items, and a Track link. The track page reads 'Shipped' … | [shot](../tester/.tester-runs/run-3/shots/buyer-sees-shipped-pass.png) | orderDocumentToOrder silently dropped every date that was not a Date INSTANCE. toIsoOrUndefined was 'value instanceof Date ? value.toISOString() : undefined' with its parameter typed Date \| undefined, so tsc had no reason to object - Ord… | `adapters.ts` | no | pending |
+| 12 | 52 | `checklist-happy-path-admin-verify-admin-orders-list-loads` | The admin orders list loads and names the products ordered | happy-path/admin-verify--admin | admin | ✅ pass | Signed in as admin@letitrip.in (verified in the sidebar, full ADMIN PANEL nav present). /admin/orders renders a table of 25 rows across 3 pages, newest first, and each row names the product ordered with its buyer, total, order id and der… | [shot](../tester/.tester-runs/run-3/shots/admin-verify-drawer.png) | — | — | no | — |
+| 12 | 53 | `checklist-happy-path-admin-verify-manual-payment-queue-filters` | The manual-payment filter narrows the list, proven against the unfiltered count | happy-path/admin-verify--admin | admin | ✅ pass | Proven with three distinct counts rather than one. Unfiltered: 25 rows. Applying Manual payment > 'Awaiting verification' (via the Filters panel, then Apply Filters) puts ?paymentReview=awaiting_verification in the URL and returns 0 rows… | [shot](../tester/.tester-runs/run-3/shots/admin-verify-filter-pass.png) | — | — | no | — |
+| 12 | 54 | `checklist-happy-path-admin-verify-admin-sees-payment-proof` | The admin can open the order and see the buyer's uploaded proof | happy-path/admin-verify--admin | admin | ⬜ null | Could not perform step 4's real check: no order in this run has a payment proof uploaded, so there is nothing for the admin to see. The cash order placed earlier (order-1-20260929-lip8jy, cash/UPI manual) was cancelled by the cancel-flow… | [shot](../tester/.tester-runs/run-3/shots/admin-verify-drawer.png) | — | — | no | — |
+| 12 | 55 | `checklist-happy-path-admin-verify-verify-payment-marks-paid` | 🛑 Verifying the proof marks the order paid, and the buyer sees it | happy-path/admin-verify--admin | admin | ⬜ null | Blocked by the same missing precondition as the previous case, at step 4: there is no proof to verify, so no verify control is offered. The drawer's action set on the cash order is Status (a select), Shipping (Tracking Number, Carrier, N… | [shot](../tester/.tester-runs/run-3/shots/admin-verify-drawer.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
