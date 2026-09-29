@@ -280,3 +280,53 @@ Two questions it needs to settle:
    real bidder's display name was being published on public bid history until
    `maskPublicBid` was made to actually call `maskName`. A prize-winner feed showing
    full display names beside what each person won is the same shape.
+
+## Harness: `session.json` accumulates cookies DURING a batch
+
+**Found during** batch 16 setup, checking the identity before starting.
+
+`session-guest.json` is pristine (36 bytes, 0 cookies) but the live
+`tester/.tester-runs/session.json` had grown to 1,470 bytes with two real
+`__session` / `__session_id` cookies for `www.letitrip.in` — acquired while batch
+15 was browsing as a guest. The Playwright MCP writes storage state back to the
+file it was pointed at, so the identity file mutates under you mid-batch.
+
+**Consequence, and it is a live footgun:** copying the identity file once and then
+trusting `session.json` across several batches is not safe. A later batch that
+skips the copy inherits whatever the previous one accumulated — which is exactly
+the failure the skill's `browser_close`-before-swap rule exists to prevent, one
+level further out.
+
+**Batch 15's verdicts are unaffected.** Its identity was verified behaviourally on
+every page judged, not just from the file: the header showed Sign in / Register
+throughout, `/admin/orders` redirected to `/auth/login`, and the raffle entry was
+refused with a 403.
+
+**Mitigation in use:** re-copy `session-<role>.json` over `session.json` at the
+START of every batch, after `browser_close`, and verify the count — not once per
+identity change. Worth folding into `test-run-preflight.mjs` as a per-batch check
+rather than left to discipline.
+
+## `bg-primary` is too light for white text at small sizes (AA)
+
+**Found during** batch 16, `checklist-design-ux-general-design-contrast-readability`
+and `…-section-cta-buttons-visible`.
+
+Measured over 391 light-mode text nodes on the homepage: 61 fall below the WCAG AA
+4.5:1 threshold, worst **3.41:1**, and they cluster on 13px controls coloured with
+the primary teal `rgb(13,148,136)`.
+
+🛑 **The obvious fix does not work.** Contrast is symmetric, so putting white text
+on a solid `bg-primary` fill gives the *same* 3.41:1 as teal text on white. The
+section-CTA fix landed in this run makes those controls consistent and obviously
+clickable; it does not move the ratio. Clearing AA needs a **darker primary shade**
+behind white text (`primary-700`-ish reaches ~4.8:1).
+
+**Why not fixed here:** `--appkit-color-primary` is theme-substitutable — admins
+author themes through Site Settings → Themes — so hard-coding a darker shade at one
+call site fights the token system, and changing the token itself restyles every
+solid primary control in the app. That is a deliberate design decision about the
+palette, not a drive-by, and it wants checking against both built-in themes.
+
+Nothing measured here is *unreadable*; this is an accessibility-standard gap, not a
+legibility bug, which is why the contrast case still passed on its own terms.
