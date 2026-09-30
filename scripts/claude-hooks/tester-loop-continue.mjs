@@ -652,6 +652,19 @@ function scopeTotal() {
  */
 const fixCycleEvery = Number(state.fixCycleEvery ?? 25);
 const lastFixAtRecorded = Number(state.lastFixAtRecorded ?? 0);
+/*
+ * 🛑 The deploy gate needs its own marker, for the same reason the fix gate has
+ * one. `deployDue` below is pure arithmetic — `doneCount % 25 === 0` — with no
+ * memory of whether a deploy actually happened, so at batch 50 it re-fired on
+ * every turn until batch 51 was recorded, long after the milestone shipped.
+ *
+ * That is not merely noise: `test-run-milestone.mjs` opens with
+ * `npm version patch` on appkit, so obeying a stale prompt publishes a version
+ * with NO source change behind it. At milestone 2 the deploy was done by hand
+ * (appkit 4.42.3 + scripts/deploy.mjs, smoke and SEO green) and the prompt kept
+ * demanding it — one compliant re-run would have shipped 4.42.4 for nothing.
+ */
+const lastDeployAtRecorded = Number(state.lastDeployAtRecorded ?? 0);
 const recorded = Math.max(0, scopeTotal() - pending.keys.length);
 const sinceLastFix = recorded - lastFixAtRecorded;
 /*
@@ -877,13 +890,20 @@ const doneCount = t?.batchesDone ?? 0;
 const openDefects = t?.open ?? 0;
 const sinceCycle = doneCount % BATCHES_PER_CYCLE;
 const cycleDue = doneCount > 0 && sinceCycle === 0;
-const deployDue = doneCount > 0 && doneCount % DEPLOY_EVERY_BATCHES === 0;
+const deployDue =
+  doneCount > 0 &&
+  doneCount % DEPLOY_EVERY_BATCHES === 0 &&
+  lastDeployAtRecorded < doneCount;
 
 const milestone = deployDue
   ? `  🛑 DEPLOY MILESTONE DUE — ${doneCount} batches recorded.\n` +
     `       node scripts/test-run-milestone.mjs\n` +
     `     Standing authorisation for this run only. Do it BEFORE the next batch, so\n` +
-    `     later batches test the fixed code.\n\n`
+    `     later batches test the fixed code.\n` +
+    `     Then set lastDeployAtRecorded=${doneCount} in ${STATE} — that marker is what\n` +
+    `     releases this prompt, exactly as lastFixAtRecorded releases the fix gate.\n` +
+    `     Without it the gate re-fires every turn, and obeying a stale one publishes\n` +
+    `     an appkit patch with no source change behind it.\n\n`
   : cycleDue
     ? `  ▸ CYCLE COMPLETE — ${doneCount} batches. Append the rows to ${CHECKLIST_DOC},\n` +
       `    then: node ${STATUS_SCRIPT}\n` +
