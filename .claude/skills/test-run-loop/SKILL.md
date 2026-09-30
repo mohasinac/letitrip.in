@@ -124,28 +124,70 @@ node tester/scripts/seed-batch-fixtures.mjs --batch <key> --teardown
 node scripts/test-run-inflight.mjs --done
 ```
 
-### Fixing — the rules that keep the run from wandering
+### Fixing — one phase every 25 batches, NOT inside a batch
 
-**Fix every defect before advancing.** Then:
+🛑 **Changed 2026-09-29, at the user's direction. A batch RECORDS; it does not
+fix.** The earlier rule was "no batch advances with an open defect", and it is
+gone.
 
-1. **Re-verify against live production first.** A route that 404s in a report
+**Why, since the old rule sounds stricter and therefore better.** An `appkit`
+fix is not live on production until the publish at the deploy milestone, so a
+fix made during batch 3 could not be re-driven during batch 3 — it was recorded
+`reverified: pending-deploy` and verified at batch 25 regardless. The per-batch
+gate bought nothing the milestone was not already buying, and it cost the thing
+the run exists to produce: a batch became two cases of testing followed by a
+defect traced through four layers, an appkit rebuild, and a full `npm run check`.
+
+**So: test batches 1–25, then one fix phase at the milestone**, where the
+publish and deploy make every fix re-drivable in the same pass.
+`fixCycleEvery === deployEveryBatches === 25` in `loop-state.json`, and **the
+two must stay equal** — a fix phase without a deploy produces fixes nobody can
+verify, which is the exact state this change removes.
+
+**What is given up, stated plainly:** batches 2–25 run against code that does
+not carry batch 1's fixes, so a later batch can rediscover a defect an earlier
+one already found. That duplication is accepted. Every ledger entry carries its
+batch number and `reverified: pending-deploy`, so the re-drive list at the
+milestone is *computed*, never remembered.
+
+**During a batch**, a defect is written down and nothing else: verdict `no`,
+evidence, screenshot, and the cause if one turn of looking finds it. Then the
+next case. Do not open an editor.
+
+**At the milestone**, in this order:
+
+1. **Collect from three places**, not one — `node scripts/test-run-status.mjs`
+   (open defects), `state.fixQueue` (G5 overflows, each with a recorded
+   `nextStep`), and `docs/TEST-RUN-3-OUTOFSCOPE.md` (findings no case owned —
+   decide per entry; an untouched list is one nobody reads by milestone three).
+2. **Re-verify against live production first.** A route that 404s in a report
    usually exists in source (CLAUDE.md Rule #4).
-2. **Fix at the root.** If the bug has copies — the recurring shape here — fix
-   all of them in the same cycle.
-3. **`npm run check` green** before the cycle closes.
-4. **Re-drive the failing case.** A fix nobody re-tested is a hypothesis.
-5. **Record it**: append to `tester/.tester-runs/run-3/fixes.jsonl` as
-   `{"caseId","batchKey","summary","files":[],"reVerified":true,"at":"…"}`.
+3. **Fix at the root.** If the bug has copies — the recurring shape here — fix
+   every copy in the same pass.
+4. **`npm run check` green.**
+5. **Ship** — `node scripts/test-run-milestone.mjs`.
+6. **Re-drive** every failed case AND every prior `pending-deploy` entry. A fix
+   nobody re-tested is a hypothesis.
+7. **Then** set `lastFixAtRecorded` to the recorded count. That marker is the
+   only thing that releases the gate.
+
+Record each fix with `node scripts/test-run-record-fix.mjs --case … --summary …
+--files … --reverified pending-deploy|pass`. Never hand-author a row in
+`fixes.jsonl`: the first one was written as `{"case": …}` while the tally read
+`caseId`, so a real, committed fix was reported as unfixed.
 
 **G4 — a fix must name the case that found it.** Anything noticed that no case
 found goes to `docs/TEST-RUN-3-OUTOFSCOPE.md`, one line with evidence, **not
 chased**. This is the main way a long run stops producing coverage.
 
-**G5 — a defect gets 6 turns.** If it is still unfixed, write it to
-`state.fixQueue` in `loop-state.json` with its evidence, record the case as
-`❌ fail / deferred-to-milestone`, and **advance**. The milestone drains the
-queue, where a schema change or Function redeploy is legal anyway. The escape is
+**G5 — a defect gets 6 turns.** Now scoped to the **fix phase**, which is the
+only place fixing happens: if a defect is still unfixed after six turns *there*,
+write it to `state.fixQueue` in `loop-state.json` with its evidence and a
+concrete `nextStep`, record the case `❌ fail / deferred-to-milestone`, and move
+to the next defect. The following milestone drains the queue. The escape is
 automatic so it does not depend on noticing you are stuck.
+
+Within a batch the budget is now **zero turns** — see the fixing section above.
 
 **G6 — re-drive a contradiction before recording it.** Any `no` whose claim is
 "this whole page is empty/missing", or that contradicts an earlier `yes` on the

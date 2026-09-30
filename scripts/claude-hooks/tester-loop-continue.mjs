@@ -639,7 +639,18 @@ function scopeTotal() {
   }
 }
 
-const fixCycleEvery = Number(state.fixCycleEvery ?? 5);
+/*
+ * 🛑 Default 25, and it MUST equal `deployEveryBatches`.
+ *
+ * It defaulted to 5, which is the cycle length rather than the milestone
+ * interval — so the gate demanded a fix-and-ship after five batches while the
+ * agreed publish cadence was twenty-five, and the state file had to override it
+ * by hand. Since 2026-09-29 the two are one event by design: fixes land in a
+ * single phase AT the deploy, because an appkit fix is not live on production
+ * until then and cannot be re-driven before it. A fix phase on any other
+ * cadence produces fixes nobody can verify.
+ */
+const fixCycleEvery = Number(state.fixCycleEvery ?? 25);
 const lastFixAtRecorded = Number(state.lastFixAtRecorded ?? 0);
 const recorded = Math.max(0, scopeTotal() - pending.keys.length);
 const sinceLastFix = recorded - lastFixAtRecorded;
@@ -695,8 +706,20 @@ if (fixCycleDue) {
       `  Do NOT test another batch. ${pending.keys.length} remain, and they will keep\n` +
       `  re-finding whatever is already broken until it ships.\n` +
       `\n` +
-      `  1. Collect this cycle's failures:\n` +
-      `       node ${STATUS_SCRIPT}          # lists every open defect, computed from disk\n` +
+      `  1. Collect EVERYTHING outstanding — three sources, not one:\n` +
+      `       node ${STATUS_SCRIPT}          # open defects, computed from disk\n` +
+      `       state.fixQueue in ${STATE}\n` +
+      `         └─ G5 overflows: diagnosed, evidenced, each with a recorded nextStep.\n` +
+      `            These are the ones a per-batch gate could never have cleared.\n` +
+      `       docs/TEST-RUN-3-OUTOFSCOPE.md\n` +
+      `         └─ real findings no case owned. Promote to a gap case or leave\n` +
+      `            standing — but DECIDE, per entry. An untouched list is a list\n` +
+      `            nobody reads by milestone three.\n` +
+      `\n` +
+      `     Also re-drive every ledger entry marked reverified:pending-deploy —\n` +
+      `     those fixes are on disk and were never verifiable, because an appkit\n` +
+      `     change is not live until this deploy. That list is the whole reason\n` +
+      `     fixing waits for this phase.\n` +
       `\n` +
       `  2. ROOT-CAUSE each one to a file and line — not a symptom. RE-VERIFY it\n` +
       `     against live production first (Rule #4): a route that 404s in a report\n` +
@@ -868,17 +891,40 @@ const milestone = deployDue
     : "";
 
 /*
- * An open defect outranks the next batch. The run's rule is "fix everything
- * before advancing", and G5 is what keeps that from stalling: six turns per
- * defect, then it goes to state.fixQueue and the cycle moves on.
+ * 🛑 CHANGED 2026-09-29, at the user's direction: an open defect NO LONGER
+ * blocks the next batch. Testing and fixing are separate phases.
+ *
+ * This used to read "no batch advances until they are fixed and re-driven",
+ * which is the rule the run started with. In practice it made every batch a
+ * mixed workload — drive two cases, then spend the rest of the turn tracing a
+ * defect through four layers, rebuilding appkit, and re-running the gate — and
+ * the fixes could not be verified anyway, because an appkit change is not live
+ * on production until the deploy milestone. So each one was recorded
+ * `pending-deploy` and re-driven at batch 25 regardless. The per-batch gate was
+ * buying nothing that the milestone was not already going to buy.
+ *
+ * Now: a batch RECORDS. Batches 1–25 accumulate verdicts, then one fix phase
+ * clears the whole backlog at the milestone, where the publish and deploy make
+ * the fixes re-drivable in the same pass. `fixCycleEvery === deployEveryBatches
+ * === 25` is what ties the two together, and the two must stay equal — a fix
+ * phase without a deploy leaves every fix unverifiable, which is the state this
+ * change exists to stop paying for.
+ *
+ * WHAT IS GIVEN UP, stated plainly: batches 2–25 run against code that does not
+ * carry batch 1's fixes, so a later batch can rediscover a defect an earlier one
+ * already found. That is why every ledger entry carries the batch number and
+ * `reverified: pending-deploy` — the re-drive list at the milestone is computed,
+ * not remembered.
+ *
+ * The defect count is still surfaced on every continuation, because a number
+ * nobody sees is a number that drifts (G2). It is now information, not a gate.
  */
 const defectLine =
   openDefects > 0
-    ? `  🛑 ${openDefects} OPEN DEFECT(S) — no batch advances until they are fixed and re-driven.\n` +
-      `     node ${STATUS_SCRIPT}          # lists them\n` +
-      `     Stuck 6+ turns on one? Write it to state.fixQueue with its evidence,\n` +
-      `     record the case deferred-to-milestone, and advance. The escape is\n` +
-      `     automatic so it does not depend on noticing you are stuck.\n\n`
+    ? `  ▸ ${openDefects} open defect(s) recorded — NOT a blocker. Fixes happen in one\n` +
+      `    phase at the batch-${fixCycleEvery} milestone, together with the deploy that\n` +
+      `    makes them re-drivable. Keep testing; do not start fixing mid-batch.\n` +
+      `     node ${STATUS_SCRIPT}          # lists them\n\n`
     : "";
 
 blockWith(

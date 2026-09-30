@@ -456,3 +456,725 @@ the cosmetic fix: if one add-to-cart failure can surface twice, others can.
 within the batch's budget, and a blind suppression risks silencing the good message
 instead of the redundant one. The fix wants tracing which of the two surfaces is the
 un-audited one, not a guess at the toast layer.
+
+## `RowActionMenu` cannot consume an ActionDef's `confirmation` — every destructive row action fires immediately
+
+**Found by** `checklist-money-flows-offer-to-purchase-seller-sees-and-accepts`
+(batch 22) while checking its step 6, "Confirm in the dialog".
+
+**Evidence.** `RowAction` (`appkit/src/ui/components/RowActionMenu.tsx:9-16`)
+declares `{ label, onClick, destructive?, disabled?, icon?, separator? }` — it
+has **no `action` and no `confirmation` field**, so there is no way to pass an
+ActionDef to it. `SellerOffersView.tsx:126-128` therefore wires Reject as
+`{ label: ACTIONS.STORE["reject-offer"].label, destructive: true, onClick }`:
+the label is read from the registry and the `confirmation` block sitting beside
+it in that same ActionDef — `{ title: "Reject this offer?", body: "The buyer
+will be notified that their offer was declined." }` — is discarded. Rejecting a
+buyer's offer executes on one click.
+
+`<Button action={…}>` already implements the whole mechanism
+(`Button.tsx:329-333` defers the click, `:363` portals the dialog), so this is
+a gap in one primitive, not a missing capability.
+
+**Why the audit does not catch it.** `appkit/scripts/audit-action-confirmation.mjs`
+walks `action-registry.ts` and asserts every `kind: "danger"` ActionDef **has**
+a `confirmation`. It never asks whether anything **consumes** one. So a config
+that exists and is thrown away passes clean — Root Cause #92's lesson ("a check
+a name satisfies is decoration") one layer further out.
+
+**Scope.** 16 `destructive: true` call sites across 27 `RowActionMenu` files.
+Rule #7.4 says a destructive action without confirmation "= immediate
+irreversible execution" — here the configs exist and are unreachable, which is
+the same outcome with none of the warning signs.
+
+**Not fixed here, deliberately.** The honest fix is a shared confirm primitive
+extracted from `Button` plus `action?: ActionDef` on `RowAction`, then 16 call
+sites migrated — architectural, and larger than the case that found it (G4).
+Doing it badly would mean duplicating Button's dialog JSX, which the Duplication
+Framework would then have to unpick.
+
+**Next step, for the batch-25 milestone review:** extract Button's confirm
+dialog into `appkit/src/ui/components/ActionConfirmDialog.tsx`, consume it from
+both `Button` and `RowActionMenu`, add `action?: ActionDef` to `RowAction`,
+migrate the 16 destructive sites, then extend
+`audit-action-confirmation.mjs` with a second rule asserting that a
+`destructive: true` row action passes an ActionDef rather than a bare label —
+so the gap cannot reopen.
+
+## Two gap cases owed, and one clipped nav item
+
+**1. An auction purchasable at `/products/{auction-slug}`** — found by
+`checklist-seo-canonical-and-host-gated-price-is-declared-in-structured-data`
+(batch 23) while reading the offers object its step 3 requires. The defect is
+**already fixed** (see the ledger entry, forced because the finding case passed),
+but no case in the catalogue asserts the property, so nothing would catch a
+regression. A grep for `products/auction-` across all 130 authored files returns
+nothing.
+
+*Owed:* a case that lands on `/products/{auction-slug}` as a guest and asserts a
+**permanent** redirect to `/auctions/{slug}`, plus one that reads the auction's
+`offers.url` and asserts it names `/auctions/`. Both would have failed against
+the old behaviour, which is the bar — a case that passes either way is decoration.
+The same shape applies to the other five types with dedicated routes
+(`preorder-`, `prizedraw-`, `classified-`, `digitalcode-`, `live-`); one
+parametrised case covering all six is better than six.
+
+**2. `redirect-only-page-no-canonical` contradicts `tab-family-single-canonical`.**
+Both are in `seo/canonical-and-host`. The tab-family case asserts a tab family
+shares ONE canonical — the base URL the sitemap advertises — and the code does
+exactly that for `/promotions/*`. The redirect-only case then demands the landing
+page's canonical name the **landing page** (`/promotions/deals`), which is the
+opposite. Measured: the canonical is `/promotions` and the sitemap carries
+exactly one promotions entry, so the code is right and the case is wrong.
+Recorded `yes` against the design rather than `no` against a mistaken
+expectation.
+
+*Owed:* rewrite that case's `expectedUiState` to assert what it is really about —
+the redirecting **page** carries no metadata of its own — and drop the clause
+about where the canonical points, which the sibling case already owns. Left as
+is, every future run records a false failure here.
+
+**3. The main nav's first item is clipped.** Renders as `ucts` instead of
+`Products`, on `/`, `/products` and `/products/{slug}` — seen in three separate
+screenshots this batch (e.g. `shots/seo-control-pass.png`). The strip appears to
+start already horizontally scrolled. Not chased: a design/layout case should own
+it, and `design-ux/general-design` is the natural home.
+
+---
+
+# Milestone 1 review (batch 25) — decisions
+
+Every entry above triaged. An undecided list is one nobody reads by milestone
+three, so each gets an outcome here rather than being left standing silently.
+
+## 1. `RowActionMenu` cannot consume a confirmation → **SCHEDULED, milestone 2**
+
+Not left standing. 16 destructive row actions execute on one click while their
+ActionDefs carry perfectly good `confirmation` blocks that the primitive has no
+prop to accept — Rule #7.4's stated outcome ("immediate irreversible execution")
+with none of its warning signs, because the config exists and reads as wired.
+
+Scheduled rather than done now because the honest fix extracts Button's confirm
+dialog into a shared primitive and then migrates 16 call sites; done carelessly
+it duplicates that dialog's JSX, which the Duplication Framework would have to
+unpick later. It is additive and cannot half-land: adding `action?: ActionDef` to
+`RowAction` changes nothing for the 15 sites that do not pass it.
+
+**Also owed with it**: a second rule in `audit-action-confirmation.mjs` asserting
+a `destructive: true` row action passes an ActionDef rather than a bare label.
+The current rule checks the registry HAS confirmations and never that anything
+consumes one, so it passes today — the same "a check a name satisfies is
+decoration" shape as Root Cause #92.
+
+## 2. Auction purchasable at `/products/{auction-slug}` → **FIXED; gap case owed**
+
+The defect is fixed and shipped this milestone (permanent redirect via
+`pluginFor().detailRoute()`, plus `detailPath` on the JSON-LD builders). What
+remains is coverage: no case asserts the property, so nothing would catch a
+regression.
+
+**Owed, milestone 2**: one parametrised case covering all six listing types with
+a dedicated route (`auction-`, `preorder-`, `prizedraw-`, `classified-`,
+`digitalcode-`, `live-`) that lands on `/products/{slug}` as a guest and asserts
+a **permanent** redirect to the type's own route, plus an assertion that the
+type's `offers.url` names that route. Six separate cases would be six chances to
+drift; one parametrised case is the right shape. Both halves must fail against
+the pre-fix behaviour — a case that passes either way is decoration.
+
+## 3. `redirect-only-page-no-canonical` contradicts its sibling → **REWRITE the case, milestone 2**
+
+Confirmed by measurement, not opinion: the canonical is `/promotions` and the
+sitemap carries exactly one promotions entry, so the code is right and the case
+is wrong. Its `expectedUiState` demands the landing page's canonical name the
+landing page, which is the opposite of what `tab-family-single-canonical`
+asserts in the same batch.
+
+**Owed**: narrow that case to what it is actually about — the redirecting *page*
+carries no metadata of its own — and delete the clause about where the canonical
+points, which the sibling already owns. Left as is, every future run records a
+false failure here, and a recurring false failure is how a checklist stops being
+believed.
+
+## 4. Main nav's first item clipped (`ucts`) → **LEFT STANDING, assigned**
+
+Real and reproducible on `/`, `/products` and `/products/{slug}` — the strip
+renders already horizontally scrolled. Left standing deliberately: it is a
+layout defect with no data or money consequence, and `design-ux/general-design`
+is a batch this run will reach on its own with cases written for exactly this.
+Recorded here so that batch's tester knows it is already sighted rather than new.
+
+## 5. An orphaned cloud function blocks every `firebase deploy --only functions` → **NEEDS A HUMAN DECISION**
+
+Surfaced by the batch-25 milestone, not by a case. `node scripts/test-run-milestone.mjs`
+got through check, publish (appkit 4.42.2), repin, relock, typecheck and the
+functions rebuild, then the functions deploy aborted:
+
+```
+Error: The following functions are found in your project but do not exist in
+your local source code:
+        payoutBatch (asia-south1)
+Aborting because deletion cannot proceed in non-interactive mode. To fix,
+manually delete the functions by running:
+        firebase functions:delete payoutBatch --region asia-south1
+```
+
+**It is pre-existing drift, not caused by this run.** `payoutBatch` appears
+nowhere as a `defineFunction` — the only matches in the repo are string labels
+inside `appkit/src/seed/payouts-seed-data.ts` status-history entries
+(`"payoutBatch:dispatch"`, `"payoutBatch:failedRetrying"`). So it was deployed
+at some point, removed from source later, and the cloud still runs it.
+
+**I did not delete it, and deliberately so.** Deleting a deployed cloud function
+is destructive and outward-facing: it is authorised nowhere by this run's remit,
+the standing milestone authorisation covers *deploying* rather than removing
+cloud resources, and a function still in the cloud may still be firing on a
+schedule against production data. `--force` would have made the deploy pass and
+silently destroyed it.
+
+**The functions deploy was also not needed for this milestone.** Verified rather
+than assumed: `git diff HEAD~1 --stat -- src/_internal/server/functions
+src/_internal/server/jobs` in appkit is **empty**, so this milestone changed no
+function definition and no trigger. Every fix shipped here lands in `src/` or in
+appkit UI/adapters consumed by Vercel. The functions bundle was rebuilt anyway
+so `audit-functions-bundle-freshness` stays green.
+
+**The decision owed**, and it is genuinely a judgement call, not a cleanup task:
+either delete it (after checking Cloud Scheduler for a job still invoking it, and
+its recent invocation count — a function with live traffic is doing something
+somebody wants), or restore a definition for it if the removal was accidental.
+Until one of those happens, `--only functions` cannot be deployed at any
+milestone, so this blocks the *next* function change rather than this one.
+
+## 6. Floating controls overlap the in-page checkout CTA → **LEFT STANDING, assigned**
+
+Seen at 320px on `/checkout` step 2 while running
+`checklist-cta-layout-checkout-bottom-bar-back-not-squeezed` (batch 27), which
+asserts the BOTTOM BAR and is unaffected — so no case owns this.
+
+The floating back-to-top pill and a second circular control sit **on top of** the
+in-page "Continue to payment" button inside the Order Summary card, obscuring the
+right-hand end of its label. Visible in
+`shots/cta-back-not-squeezed-pass.png`.
+
+Root Cause #71's family: a fixed control that does not clear what is beneath it.
+That entry's fix made `BackToTop` clear the `--bottom-chrome-height` tier, which
+is why the BOTTOM bar is clean — but an IN-PAGE primary CTA is not part of that
+tier and nothing reserves space for it.
+
+**Left standing, not chased**: it is cosmetic, the bottom-bar CTA duplicates the
+action and is unobstructed, and `design-ux/general-design` is a batch this run
+will reach with cases written for exactly this. Recorded so that tester knows it
+is already sighted.
+
+## 7. The checkout address option is a `div`, not a radio → **LEFT STANDING, accessibility**
+
+Also from batch 27. The saved-address card on `/checkout` step 1 is a plain
+`<div>` with `cursor: pointer` and **no ARIA role, no `tabindex`, no
+`aria-checked`** — the accessibility snapshot renders it as `generic`. So it is
+not keyboard-reachable and a screen reader does not announce it as a selectable
+option, on the one control that gates the entire checkout.
+
+Found because a `label`/`button` selector could not match it and a programmatic
+`.click()` did not register — it needed a real pointer event on the div.
+
+Not chased here (no case owns it and the fix is a shared primitive question:
+these should be `role="radio"` in a `role="radiogroup"`, or actual inputs via the
+Rule #9 field primitives). Worth a gap case, since "cannot complete checkout by
+keyboard" is a real exclusion rather than a polish item.
+
+## 8. Two console errors on a guest `/products` load → **LEFT STANDING, both real**
+
+Seen while running `checklist-buying-browsing-search-listing-no-missing-message`
+(batch 31), which asserts only the ABSENCE of MISSING_MESSAGE — so neither of
+these is that case's claim, and neither is chased.
+
+**(a) `401` on `/api/notifications?limit=1`, twice, signed out.** A guest page is
+calling an auth-only endpoint. Harmless to the visitor, but it is a wasted
+authenticated request on every guest page load, and Rule #6's whole concern is
+that per-visitor requests are billed compute. Cheap to fix — gate the poll on a
+resolved session — and it belongs with the `audit-client-poll-cost` family.
+
+**(b) React error #418 — a hydration mismatch.** "Text content does not match
+server-rendered HTML". This is the more interesting of the two: it means the
+server render and the client render disagreed, which is how subtly wrong content
+ships while nothing visibly breaks. Worth a case of its own rather than a
+drive-by fix, since the cause could be anything from a date formatted in two
+timezones to a value read from a client-only source during SSR.
+
+## 9. The listing filter trigger has NO accessible name → **a11y defect, worth a gap case**
+
+Found in batch 31 on `/products`, at both 375px and 1440px. It is the only
+control in the listing toolbar without an accessible name:
+
+| toolbar control | accessible name |
+|---|---|
+| search icon | `aria-label="Search"` |
+| **filter icon** | **none — no text, no `aria-label`, no `title`** |
+| grid view | `aria-label="Grid view"` |
+| list view | `aria-label="List view"` |
+| free shipping | text label |
+
+It is an icon-only `<button>` containing only an `<svg>`. The control **works**
+— clicking it opens a right-side "Filters" panel with Listing type (Standard,
+Classifieds, Digital Codes, Live Items), Category, Condition, Brand, and
+Reset all / Apply. So this is not a broken filter; it is an unnameable one.
+
+**Consequences:** a screen reader announces it as an unlabelled button, so the
+only route to every facet on the catalogue is undiscoverable to assistive tech;
+and it cannot be targeted by name in any automated check, which is the second
+cost — it defeats exactly the kind of test that would catch a regression here.
+
+**🛑 It also cost me two false findings, which is the strongest argument for
+fixing it.** Because the trigger is unnameable I concluded, twice and with
+evidence, that there was no filter control at all — first on mobile, then
+"nowhere in the document" after enumerating 269 interactive elements at 1440px.
+Both were wrong, and both were only caught by *reading a screenshot*. An
+unlabelled control on the primary catalogue page is a trap for every future
+tester, human or otherwise.
+
+**Fix:** `aria-label="Filters"` on that button (and ideally
+`aria-expanded`/`aria-controls` pointing at the panel). One attribute. A gap
+case should assert the toolbar has no unnamed icon buttons, which generalises
+past this one control.
+
+## 10. `/products` filter panel is an OVERLAY, not a reflowing sidebar → **the case's premise, not the code, is wrong**
+
+`checklist-buying-browsing-search-grid-follows-sidebar-not-viewport` (batch 31)
+expects that opening the desktop filter sidebar "drops ONE column and keeps the
+card width similar" — i.e. that the grid measures its container rather than the
+viewport.
+
+Measured: the panel opens as a **right-hand overlay** above the page. The grid
+behind it is completely unchanged — 4 cards per row at 262px before and 4 at
+262px after. No column is dropped because no reflow happens; the grid is simply
+covered.
+
+That is a coherent design choice, not a defect, and it means the case describes
+a UI that does not exist. **Owed:** rewrite that case to assert what the overlay
+should actually do (grid untouched, panel dismissible by Escape and by the X,
+Apply re-queries) — or, if a reflowing sidebar is genuinely wanted, the case
+should be re-scoped as a feature request rather than a regression check. Left
+as is, it records a permanent false failure.
+
+## 11. `shippingPaidBy` is set on NO product → the Free shipping toggle can only ever empty the grid
+
+Found by `checklist-buying-browsing-search-free-shipping-toggle-actually-filters`
+(batch 33), so it is owned by a case and is recorded here only because the fix
+lands in **seed data** rather than in product code.
+
+Measured on production: `/products` baseline 8 cards; clicking Free shipping
+writes `?freeShipping=true&page=1` and the grid becomes **0 cards / "No products
+found"**. Asking the API for 50 products returns `shippingPaidBy` **absent on
+all 50** — tally `{"(absent)": 50}`. `grep -rn shippingPaidBy appkit/src/seed/`
+returns **zero** hits.
+
+**The query side is correct and was fixed deliberately.**
+`products.repository.ts:670-675` registers `shippingPaidBy: { canFilter: true }`
+with a comment recording Root Cause #62, where this same toggle was inert
+because Sieve dropped the clause.
+
+**Why this is worth its own entry.** #62's fix traced UI → params → route
+safelist → clause builder → SIEVE_FIELDS and every link is right. Nobody asked
+whether a single *document* carried the field. A filter is not reachable until
+its data exists, and to a user an always-empty control is indistinguishable from
+the inert one it replaced — so the regression test that case represents has been
+passing against a filter that cannot match anything.
+
+**Implied second-order effect, not separately verified:** the detail pages derive
+their "Free shipping" badge from the same field
+(`AuctionDetailPageView.tsx:367-368`, `PreOrderDetailPageView.tsx:477-478`), so
+that badge can never render either.
+
+**Fix:** set `shippingPaidBy` on a subset of seeded products — some `"seller"`
+(free shipping) and some `"buyer"` — so the toggle has rows to match, the badge
+has something to show, and both the positive and negative sides of the filter
+are testable. A nonsense-control pairing (toggle on → fewer but non-zero; toggle
+off → all) is what would have caught this.
+
+## Seller product cards are unreadable at 375px — titles overlapped by row actions
+
+Found while driving `buying/browsing-search--seller` (batch 35). Not what that
+case asks, so recorded here rather than chased.
+
+`/store/products` at 375px renders each product card with its Edit / Duplicate /
+Delete buttons **on top of** the product title and price. Of four visible cards,
+the surviving title text is `s`, `s`, `Order` and `a` — the rest is covered. The
+row is a flex row that does not wrap at mobile width, so the action cluster
+claims the space the title needs.
+
+Evidence: `tester/.tester-runs/run-3/shots/toolbar-collapsed-before.png`.
+
+A seller on a phone cannot tell which listing they are about to delete. Likely
+the same family as Root Cause #29 — a caller's sizing utility not reaching the
+element that is actually the flex child.
+
+## Two bulk-action bars render at once on `/store/products`
+
+Same batch, same page, verified by walking ancestors so a nested element cannot
+double-count: one inline at `y=350` under the availability tabs, one at `y=672`
+above the bottom nav. Both read `1 selected / Print Labels / Apply`.
+
+One of the two is presumably meant to be the mobile presentation of the other.
+Recorded with the toolbar defect it was found beside, but it is a separate
+question — which of them is intended.
+
+## Seller bulk actions offer only Print Labels and Set Location
+
+Same page. The bulk-action listbox has exactly two options. No Delete, no
+Publish, no Archive — although every row carries inline Edit / Duplicate /
+Delete. Worth confirming against `SELLER_BULK_ACTIONS` whether that preset is
+being passed at all on this surface, since CLAUDE.md Rule #7 requires the bar's
+actions to come from it.
+
+## Case defect: `product-filter-status-labels` targets a facet `/products` cannot render
+
+Found in batch 36. Recorded as `null` (step 4 unperformable) rather than a
+product defect, because source proves the facet is unreachable there by design:
+`ProductFilters.tsx` gates it on `shouldShowStatus`, and **no caller anywhere
+passes `showStatus`** to that component.
+
+**Repoint the case at `/admin/products`**, whose drawer genuinely has a STATUS
+section — verified, not assumed: `All / Pending / Published / Draft / Archived`,
+all readable. Two edits needed when it is repointed:
+
+- `startPage` → `/admin/products`
+- `expectedUiState` should quote **`Pending`**, not `In Review` — the admin chip
+  is labelled "Pending" even though the stored value is `in_review`
+  (Root Cause #33 fixed the *id*, not the label)
+
+Its anti-regression half is currently satisfied on both surfaces: 0
+`MISSING_MESSAGE`, 0 raw-key-shaped strings.
+
+## `/admin/products` shows "Unknown seller" — but `/admin/featured` resolves the same products
+
+**Sharpened in batch 38.** The earlier entry below recorded the symptom. The
+decisive comparison is that two admin listings render the SAME product
+differently:
+
+| listing | row subtitle for `Beyblade X Glow-in-the-Dark Sticker Pack` |
+|---|---|
+| `/admin/products` | `Unknown seller · No SKU` |
+| `/admin/featured`  | `Beyblade Arena · ₹229` |
+
+So the seller and price are resolvable — `/admin/featured` resolves them for 15
+of its 16 rows, and shows a price on every one. `/admin/products` resolves
+neither for any seeded row. This is a row-mapper gap in one listing, not missing
+data, which makes it cheap to fix and easy to localise: diff the two views'
+`mapRows`.
+
+(One `/admin/featured` row does read `Unknown store` — `Beyblade Original
+Remaster Set — Announced` — so that listing is not perfect either, but 15/16
+against 0/41 is the contrast that matters.)
+
+## `/admin/products` shows "Unknown seller" on seeded catalogue rows
+
+Same batch. Of the six rows visible on page 1, four read **`Unknown seller`** —
+including `Beyblade X BX-08 Booster`, `Beyblade Burst Xcalius X2` and both video-
+demo fixtures. The two that resolve correctly (`Tyson Granger`) are QA listings
+created through the UI during this run.
+
+So the seeded products — which all belong to `store-beyblade-arena`, owner
+`user-tyson-blader` — are the ones failing to resolve a seller name, while
+UI-created ones succeed. That inversion is the useful clue.
+
+Same family as the offers list reading "Unknown buyer" for all 13 rows (batch 27,
+fixed): a denormalised display name that no write path populates. Evidence:
+`tester/.tester-runs/run-3/shots/admin-products-status.png`.
+
+## `/admin/products` renders status as a lowercase raw enum
+
+Same screenshot. The per-row status badge reads `published` / `draft` in
+lowercase, rather than the `Published` / `Draft` labels its own filter drawer
+uses for the identical values. Cosmetic, but the drawer and the rows disagree
+about how to spell the same thing.
+
+## 🛑 `/admin/products` unfiltered Available list under-reports by 14 rows
+
+Found in batch 37 while cross-checking the type chips. No case in that batch
+asserts this, so it is recorded here rather than chased — but it is the most
+consequential thing the batch turned up.
+
+**Measured.** The unfiltered Available listing reaches **41** products (25 + 16
+across exactly 2 pages, identical at `pageSize=25` and `pageSize=100`, and
+confirmed by three independent row counts). The nine per-type chips, each run in
+that same Available scope, sum to **55**:
+
+| chip | rows | | chip | rows |
+|---|---|---|---|---|
+| Products | 12 | | Digital Codes | 6 |
+| Auctions | 7 | | Live Items | 3 |
+| Pre-orders | 5 | | Art | 5 |
+| Prize Draws | 5 | | Stickers | 5 |
+| Classifieds | 7 | | **total** | **55** |
+
+**Named, not just arithmetic.** The prize-draw chip returns 5; only 3 appear in
+the unfiltered list. The two that do not appear anywhere across either page are
+**`Beyblade Champion's Draw — Prize Draw`** and **`Beyblade Mystery Box — Prize
+Draw`**. Both are published and available. An admin paging the default listing
+cannot reach them, and the pager stops at 2 pages as though that is everything.
+
+**Mechanism, consistent with CLAUDE.md's own description.** "Available" is
+negation-shaped and cannot be expressed as a query, so it is a per-row predicate
+over ONE bounded window. A mixed window of ~50 raw documents yields 41
+survivors; a type-scoped window of ~50 documents *of that type* yields more per
+type. So the unfiltered count is a **floor**, not a total.
+
+**The precise defect is where truncation is judged.** CLAUDE.md requires that a
+saturated bounded fetch set `truncated`, render `total` as "50+", and make
+`totalPages` be `page + 1` so the pager offers Next. Here nothing looks saturated
+because the post-predicate count (41) is below the cap — the saturation happened
+to the **raw window** before the predicate ran. Truncation has to be judged on
+the raw fetch size, not on what survives filtering.
+
+Not verified: whether the same shortfall affects the public `/products`
+listing, which shares `listPublicProducts`. It is the obvious next question.
+
+## Second, independent confirmation of the Available under-report
+
+Batch 38. `Beyblade Mystery Box — Prize Draw` — one of the two products named in
+the entry above as unreachable by paging `/admin/products` — **does** appear in
+`/admin/deals`, which lists the 6 promoted products. So the document exists, is
+published, is promoted, and is reachable from two other admin surfaces while
+being absent from the one listing meant to hold everything.
+
+That rules out "the product is in some odd state" and leaves the bounded-window
+truncation as the explanation.
+
+## `/admin/art` is headed "Art & Stickers" but holds art only
+
+Batch 38. The page renders 5 rows, all genuinely art prints and posters, and
+none of the 5 sticker listings — while its heading reads `Art & Stickers`. The
+sidebar carries a separate `Stickers` entry, so the filter is probably right and
+the heading wrong. Cosmetic, but it makes the page look like it is dropping half
+its contents.
+
+## `/store/digital-codes` list rows have NO TITLE at all
+
+Batch 39. Every row on the seller's own digital-code listing renders exactly 13
+characters of text: a 🔑 emoji, an empty line, and a status badge. Measured on
+all 6 rows — no title, no link, no `img alt`, nothing identifying. At 1280px
+desktop, not a clipping artifact.
+
+The row menu offers **Edit** and **Delete**, so a seller can delete a listing
+they cannot identify.
+
+**The data is available** — the editor's header shows
+`Beyblade X Regional Tournament — Digital Entry Pass` for the same record, and
+the Edit action navigates to a slug-bearing URL. So this is the row mapper, the
+same class as the `/admin/products` "Unknown seller" gap: one view resolves the
+field, another drops it.
+
+Evidence: `tester/.tester-runs/run-3/shots/store-digital-codes.png`.
+
+## Two fixture notes from batch 39
+
+- `digitalcode-beyblade-x-manual-tournament-pass` now holds **3 `TEST-` codes**
+  added while proving the pool-read defect, and its pool read 500s as a result.
+  It cannot be cleaned through the UI (no rows render, so no Remove is
+  reachable); reseeding `products` is the only cleanup.
+- An RSC prefetch 404s on every digital-code editor visit:
+  `/store/digital-codes/{slug}?_rsc=…` → 404. There is no detail route at that
+  path, only `/edit`, so something is prefetching a page that does not exist.
+  Harmless today, but it is one 404 per row hover.
+
+## Reveal button offered on an unpaid order, then says "Please try again"
+
+Batch 40. `/user/digital-codes` shows a **Reveal Code** button for a COD order
+whose payment is not yet confirmed. Pressing it renders:
+
+> Could not retrieve your code. Please try again.
+
+The server had supplied an accurate, actionable reason —
+`400 VALIDATION_FAILED "Code is only available after payment is confirmed"` —
+and it is discarded in favour of advice that can never succeed until payment
+clears.
+
+CLAUDE.md Rule #9.6 requires a server code be mapped through `toUserMessage`
+rather than replaced with a generic fallback. Either hide the button until
+payment is confirmed, or say why it is unavailable.
+
+## Six seeded digital-code listings advertise codes that do not exist
+
+Batch 40, and independent of any payment question. `Beyblade Burst App — Avatar
+Skin Bundle Code` renders **"41 available"** on its public page while its own
+pool endpoint returns `200 {entries: []}` — an empty subcollection.
+
+**The two surfaces contradict each other on screen, for the same listing.**
+Batch 41 read the seller's own editor for `burst-app-avatar-skins`: it shows
+**"0 available · 0 already delivered · Nothing in the pool yet."** The public
+buyer page for that same listing shows **"41 available."** The editor reads the
+real subcollection; the public page reads the stale `codesAvailable`. That is the
+clearest single statement of this defect and the quickest way to confirm it.
+
+`recountPool()` demonstrably works: on the listing where I added 3 codes it set
+both `codesAvailable` and `codePoolSize` to a true 3. But it only runs on
+add / remove / claim, so the six untouched seeded listings still carry the
+number the seed typed. `codePoolSize` vs the real pool:
+
+| listing | codePoolSize | codesAvailable | real entries |
+|---|---|---|---|
+| burst-app-avatar-skins | 60 | 41 | 0 |
+| x-app-launch-codes-depleted | 30 | 0 | 0 |
+| x-manual-tournament-pass (touched) | 3 | 3 | 3 |
+
+Add to Cart and Buy Now are both enabled on the 41-advertised listing. The fix
+belongs in the seed (write real pool entries, or seed the counters to 0), not in
+the query.
+
+## "Pay via UPI / Cash" is disabled on a digital-code cart — reason unknown
+
+Batch 40. At checkout step 3 with a digital-code item in the cart, the manual
+payment button is **disabled** and Cash on Delivery is the only enabled method.
+
+That matters more than it looks: the manual lane's proof upload is what
+*confirms* payment, and the code reveal is gated on confirmed payment. If UPI is
+unavailable for digital-code carts, there may be no route by which a buyer can
+reach a revealable code at all.
+
+Not diagnosed — it could be the digital item, a cart-composition rule, or an
+unconfigured UPI VPA in Site Settings. Worth answering before re-running
+`buy-then-reveal-code`, which is otherwise untestable.
+
+## Checkout address card is mouse-only
+
+Batch 40. The saved-address card on checkout step 1 is a `<div>` with an
+`onclick` and `cursor: pointer`, carrying **no `role` and no `tabindex`** and no
+radio inside it. Continue stays disabled until it is clicked, so a keyboard-only
+buyer cannot select an address and cannot check out.
+
+Also worth noting for testers: clicking the inner `<p>` did not select it; only
+clicking the handler `<div>` did.
+
+## Fixture state left behind by batch 40
+
+Order **`order-2-20260930-qzh331`** (COD, ₹1,148, two lines — a standard product
+and the avatar-skin digital code) exists against the buyer account. `orders` is
+CASCADE-tier so a run teardown removes it; no action needed, recorded so nobody
+is surprised by it.
+
+## Sticky bar's wishlist control does not seed its saved state on load
+
+Batch 46. Clicking the wishlist control in the sticky bar works — the label goes
+`Wishlist` → `Saved` and `/wishlist` confirms "1 saved item". But after a **full
+reload** of the same product page, the bar's control reads `Wishlist` again
+while the item is still in the wishlist.
+
+**I separated the two possible causes before recording this**, because they are
+very different bugs: a failed write, versus a write that succeeded with a
+control that does not reflect it. `/wishlist` shows
+`product-beyblade-burst-valkyrie` present, so the write is fine — the bar simply
+does not seed from the server on mount.
+
+Consequence: a returning buyer is invited to save an item they have already
+saved, and pressing it again either toggles it off or re-adds it. Not verified
+which. Not asserted by any case in this batch.
+
+## Case data: `desktop-buttons-work` expects ₹1,899.00, fixture is ₹999.00
+
+Same batch. The case asserts `/cart` holds "Beyblade Burst Valkyrie" at
+**₹1,899.00**. The listing page, the sticky bar and the cart line all read
+**₹999.00** — three independent surfaces agreeing, so the product is
+self-consistent and the case's figure is stale.
+
+The name is ambiguous in this catalogue, which may be the origin: there is a
+separate `Beyblade Burst Valkyrie — Holographic Art Print (Limited /100)` at
+₹1,299.00. Neither is ₹1,899.00.
+
+Update the case to ₹999.00 (and ideally to the unambiguous title
+`Beyblade Burst B-01 Valkyrie`).
+
+## 🛑 DECISION NEEDED: `account-auth/profile-settings` is unrunnable as written
+
+Batch 47. **All 8 cases on this page mutate a `users` document**, and `users` is
+in the frozen `PRESERVE` list in `tester/scripts/lib/collections.mjs` — *"never
+touched. Real accounts, their logins, their saved addresses"*. The batch skill
+is equally plain: *"never delete or modify a user account, a login, a saved
+address, or Site Settings — damage there is the only permanent damage you can
+do."*
+
+Nothing restores a `users` document: `appkit-seed load` is a merge write that
+cannot remove a field, and the collection is never wiped. **An edit here is
+permanent.**
+
+So 7 of 8 were recorded `null` on the rule, and the 8th only to step 10.
+
+### The damage is not hypothetical — a previous run already did it
+
+`rehan.sheikh@gmail.com`'s display name, read off `/user/profile` today, is:
+
+```
+QA Profile account-auth-profile-settings-edit-profile
+```
+
+That is character-for-character the `inputs.displayName` of the `edit-profile`
+case on this page. An earlier run performed it and never restored the persona's
+name; it has survived every reseed since, and the public profile `h1` renders it.
+
+It also makes sibling cases self-inconsistent: `avatar-upload` expects to
+replace *"the round initial-letter placeholder (R for Rehan)"* — the initial is
+now **Q**.
+
+(One point in the catalogue's favour: `/user/profile` reads
+`Profile visibility: Public`, so if `public-profile-toggle` was ever run, its
+restore step did work.)
+
+### The password case is in a different class again
+
+`password-change-reset-link` changes the real Auth password on
+`karthik.new@gmail.com` and relies on a later step to set it back. CLAUDE.md:
+`appkit-seed` sets `TempPass123!` **only when it creates an Auth record** and
+*"never resets an existing password"*. An interruption between its step 8 and
+step 11 — a rate limit, a mail delay, a context boundary — locks that account
+out of **every future run**, recoverable only by a manual Firebase reset.
+
+It also needs a sign-out/sign-in round trip, which hits the forbidden
+`/api/auth/login|session|me` (one shared 10-req/min IP bucket).
+
+### Three ways out, for the user to choose
+
+1. **A throwaway identity outside the PRESERVE tier** — e.g. a
+   `user-qa-mutable` persona in a new `testUsers` collection classified
+   `SEED_OWNED`, with these cases repointed at it. Highest value, most work.
+2. **Harness-performed restore** — capture the document before, write it back
+   after, and fail loudly if the restore fails. Keeps the cases on the real
+   persona; still leaves a window.
+3. **Reclassify these 8 as `requiresHumanChannel`** — a human on a disposable
+   account. Cheapest, and honest about what the automation may not touch.
+
+Worth doing either way: **restore `rehan.sheikh@gmail.com`'s display name**, so
+the next run does not inherit a persona named after a test case.
+
+The read-only half of `password-change-reset-link` is worth salvaging
+independently — `passwordFieldsOnSettingsPage: 0` is the regression guard for
+Root Cause #46/#55 and needs no mutation at all, only the karthik identity.
+
+## Store header stat reads "1 products" where the tab says 14
+
+Batch 50. `/stores/store-beyblade-arena` renders a header stat line reading
+**"1 products · 74 reviews"**, while the listing-type select's selected option
+reads **"Products (14)"**. The reviews figure matches its tab exactly (74/74);
+the products figure does not.
+
+**I ruled out the innocent explanation first.** 14-vs-12-rendered is benign —
+the tab count is an unscoped total while the default view is the Available
+scope, proven on the Auctions tab (tab says 9, Available renders 7, All renders
+exactly 9). So "1" is not a scope artifact; it is wrong. It is also
+ungrammatical.
+
+Same family as the stale category counters in batch 42: a denormalised store
+stat with nothing keeping it current.
+
+Inconsistent between stores too: `/stores/store-letitrip-official` shows
+**"5 reviews"** and no product figure at all.
+
+## Store tab counts are unscoped while the list is scoped
+
+Same batch, recorded separately because it is a design question rather than a
+bug. Every type tab's count exceeds its rendered list by exactly the number of
+unavailable items: Auctions (9) → 7 under the default Available scope, and 9
+under All. Same for Pre-Orders (7→5), Digital Codes (8→6), Art & Stickers
+(12→10).
+
+So the count and the list answer different questions while sitting side by side
+— the same "two kinds of number, identical styling" shape as the category chips
+in batch 42. Either scope the counts, or label them as totals.

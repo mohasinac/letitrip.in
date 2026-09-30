@@ -32,6 +32,38 @@ const summary = flag("summary");
 const filesRaw = flag("files");
 const reverified = flag("reverified", "pending");
 
+/*
+ * 🛑 A CLOSED set, checked — not a documented suggestion.
+ *
+ * The usage line has always listed five values and nothing enforced them, so
+ * `--reverified deferred` was accepted twice. `tally()` recognised only
+ * `deferred-to-milestone` as a deferral, so those two entries counted as
+ * FIXED and the counter reported two genuinely-unfixed defects as repaired.
+ *
+ * `deferred` is accepted as a permitted alias rather than rejected, because two
+ * rows on disk already use it and rewriting history to satisfy a validator is
+ * how a ledger stops being a record. The reader treats both as deferred; this
+ * check only stops a SIXTH spelling appearing.
+ */
+const REVERIFIED_VALUES = new Set([
+  "pending", // fixed, not yet re-driven
+  "pending-deploy", // fixed in appkit; not live until the milestone publish
+  "deferred", // alias of the below — two pre-existing rows use it
+  "deferred-to-milestone", // diagnosed, evidenced, NOT fixed; in state.fixQueue
+  "pass", // re-driven against production and confirmed
+  "fail", // re-driven and still broken
+]);
+if (!REVERIFIED_VALUES.has(String(reverified))) {
+  console.error(
+    `🛑 --reverified "${reverified}" is not a recognised state.\n` +
+      `   Allowed: ${[...REVERIFIED_VALUES].join(" | ")}\n` +
+      `   A new spelling silently changes what the counter reports: an\n` +
+      `   unrecognised value is treated as FIXED, which is how two open\n` +
+      `   defects came to be counted as repaired.`,
+  );
+  process.exit(2);
+}
+
 if (typeof caseId !== "string" || !caseId || typeof summary !== "string" || !summary) {
   console.error("usage: --case <caseId> --summary <text> [--files a,b] [--reverified pending|pending-deploy|deferred-to-milestone|pass|fail]");
   process.exit(2);

@@ -221,13 +221,28 @@ export function tally() {
    * `fixed` so nobody can read the tally as "20 of 22 repaired" when two of
    * those are still outstanding work with a next step attached.
    */
-  const DEFERRED = "deferred-to-milestone";
-  const deferredIds = new Set(
-    fixes.filter((f) => f.reverified === DEFERRED).map((f) => f.caseId),
-  );
-  const fixedIds = new Set(
-    fixes.filter((f) => f.reverified !== DEFERRED).map((f) => f.caseId),
-  );
+  /*
+   * 🛑 BOTH deferral spellings count, and the omission was live.
+   *
+   * This matched the single literal `"deferred-to-milestone"`, while the ledger
+   * held two entries written as plain `"deferred"` — the two admin round-trip
+   * defects, which are genuinely unfixed and sitting in `state.fixQueue` with a
+   * recorded `nextStep`. They therefore fell into `fixedIds` and the counter
+   * read **fixed 22/24 · deferred 2 · open 0** when the truth was fixed 20,
+   * deferred 4. Two open pieces of work reported as repaired, in the one file
+   * whose entire job is to be trusted over anybody's memory.
+   *
+   * Same disease as the `case`-vs-`caseId` incident recorded above, one field
+   * over: a tolerant WRITER and a strict READER. The reader is widened here so
+   * the rows already on disk count correctly, and
+   * `test-run-record-fix.mjs` now REFUSES an unrecognised value so a fifth
+   * spelling cannot be introduced — the write side is where this is actually
+   * closed.
+   */
+  const DEFERRED_VALUES = new Set(["deferred", "deferred-to-milestone"]);
+  const isDeferred = (f) => DEFERRED_VALUES.has(f.reverified);
+  const deferredIds = new Set(fixes.filter(isDeferred).map((f) => f.caseId));
+  const fixedIds = new Set(fixes.filter((f) => !isDeferred(f)).map((f) => f.caseId));
   const fixed = failedCases.filter((f) => fixedIds.has(f.id)).length;
   const deferred = failedCases.filter(
     (f) => !fixedIds.has(f.id) && deferredIds.has(f.id),
