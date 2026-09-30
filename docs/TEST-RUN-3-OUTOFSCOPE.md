@@ -1178,3 +1178,56 @@ under All. Same for Pre-Orders (7→5), Digital Codes (8→6), Art & Stickers
 So the count and the list answer different questions while sitting side by side
 — the same "two kinds of number, identical styling" shape as the category chips
 in batch 42. Either scope the counts, or label them as totals.
+
+---
+
+# Milestone-2 decisions (batch 50) — every entry added since batch 36
+
+Per the fix-phase rule: each entry gets a verdict, not another read. Format is
+**PROMOTE** (becomes a gap case), **FIX** (queued into a named fix session),
+**LEFT STANDING** (real, recorded, not chased), or **CASE FIX** (the catalogue
+is wrong, not the product).
+
+| # | Entry | Decision |
+|---|---|---|
+| 12 | Seller product cards unreadable at 375px | **FIX** — mobile layout; batch with the other appkit UI fixes |
+| 13 | Two bulk-action bars on `/store/products` | **FIX** — same session as 12; decide which bar is intended first |
+| 14 | Seller bulk actions offer only Print Labels / Set Location | **PROMOTE** — assert `SELLER_BULK_ACTIONS` is actually passed (Rule #7) |
+| 15 | `product-filter-status-labels` targets an unrenderable facet | **CASE FIX** — repoint to `/admin/products`, quote "Pending" |
+| 16 | `/admin/products` "Unknown seller" vs `/admin/featured` resolving it | **FIX** — highest-value of this group: one row mapper diff, data proven present |
+| 17 | `/admin/products` lowercase raw enum status | **LEFT STANDING** — cosmetic; fold into 16 if touching that view |
+| 18 | 🛑 Available list under-reports by 14 rows | **FIX** — severe; truncation judged post-predicate instead of on the raw window |
+| 19 | Independent confirmation of 18 | merged into 18 |
+| 20 | `/admin/art` headed "Art & Stickers", holds art only | **LEFT STANDING** — heading copy |
+| 21 | `/store/digital-codes` rows have NO title | **FIX** — a seller can Delete a listing they cannot identify |
+| 22 | Batch-39 fixture notes | **LEFT STANDING** — informational; reseed clears |
+| 23 | Reveal button on an unpaid order says "Please try again" | **FIX** — Rule #9.6, map through `toUserMessage` |
+| 24 | Six digital-code listings advertise codes that do not exist | **FIX (SEED)** — write real pool entries or seed the counters to 0 |
+| 25 | "Pay via UPI / Cash" disabled on a digital-code cart | **NEEDS DIAGNOSIS** — may make the reveal unreachable by any route; answer before re-running `buy-then-reveal-code` |
+| 26 | Checkout address card is mouse-only | **PROMOTE** — a11y; keyboard-only buyer cannot check out |
+| 27 | Batch-40 fixture state (`order-2-…`) | **LEFT STANDING** — CASCADE tier, teardown removes it |
+| 28 | Sticky bar wishlist does not seed saved state | **FIX** — batch with 12/13 |
+| 29 | `desktop-buttons-work` expects ₹1,899 | **CASE FIX** — set ₹999.00 and the unambiguous title |
+| 30 | 🛑 `profile-settings` unrunnable (PRESERVE tier) | **NEEDS A HUMAN DECISION** — three options written up at that entry; blocks 7 cases permanently |
+| 31 | Store header "1 products" vs tab 14 | **FIX** — same denormalised-counter family as the category metrics |
+| 32 | Store tab counts unscoped while the list is scoped | **LEFT STANDING** — design question: scope the counts or label them totals |
+
+## What shipped at this milestone, and what did not
+
+**Shipped** (appkit 4.42.3 + `node scripts/deploy.mjs`, all smoke and SEO
+checks green): the admin support queue, the buyer support list, ticket creation
+and reply, offer buyer-identity masking, the direction-aware relative dates, the
+self-offer server guard, and the non-standard-listing redirect with its
+JSON-LD canonical.
+
+**Re-driven against production and confirmed passing**: the admin queue (6 rows
+where it showed none), offers (`Unknown buyer` 13 → 0, properly masked), and the
+self-offer guard (Make Offer absent for the owning seller).
+
+**Not fixed, and honestly so.** The twelve `deferred-to-milestone` ledger
+entries are diagnosed to a file and line with evidence, and nearly all are
+`appkit/` changes — the digital-code pool 500, the sold live-item purchase path,
+the brand page listing zero products, the category metrics, `StickyToolbar`'s
+missing `forceExpanded`. Batching them into one publish is strictly better than
+spending a publish cycle per fix, so they are queued for a dedicated fix session
+rather than half-started here. Each already carries its own `nextStep`.
