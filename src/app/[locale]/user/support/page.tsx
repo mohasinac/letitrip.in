@@ -35,7 +35,35 @@ interface TicketItem {
   unreadByUser?: number;
 }
 
+/**
+ * 🛑 The item array is `items`. It was declared as `tickets` and there is no
+ * such key, so this list was EMPTY for every user, always.
+ *
+ * `GET /api/support/tickets` answers `{ success, data: { items, total, page,
+ * pageSize, totalPages, hasMore } }` and `apiClient` unwraps `data`, so what
+ * arrives here is `{ items, total, … }`. `mapRows` read `response.tickets ?? []`,
+ * which is permanently `[]` — every filter, the search box, the status chips and
+ * the hide-resolved toggle then ran over nothing, and the page rendered
+ * "You haven't opened any support tickets yet." with a 200.
+ *
+ * Measured as rehan.sheikh@gmail.com, who owns five seeded tickets: the API
+ * returned `total: 6` while the page showed none, and polling for 12s at 400ms
+ * never changed it, so it was not a hydration race.
+ *
+ * **Nothing could have caught this but a human looking at the page.** The type
+ * below was the only specification of the key and it was wrong, so `tsc` was
+ * satisfied, the route was satisfied, and the two disagreed in the middle —
+ * exactly the `list-envelope` audit's NEW_ITEM_ARRAY_KEY rule, whose own note
+ * says "the view reads the old key, the route emits the new one, and the list
+ * renders empty with a 200".
+ *
+ * `tickets` is kept as a fallback rather than deleted: this file is evidence
+ * that the two spellings coexist in this codebase, and reading both costs
+ * nothing while a wrong guess costs the whole list.
+ */
 interface TicketsResponse {
+  items?: TicketItem[];
+  /** @deprecated legacy spelling — never emitted by the route. Read via the `??` chain. */
   tickets?: TicketItem[];
   total?: number;
 }
@@ -90,7 +118,7 @@ function UserSupportPageInner() {
       const q = (sideTable.get("q") || "").trim().toLowerCase();
       const status = sideTable.get("status") || "";
       const sort = sideTable.get("sort") || SORT_OPTIONS[0].value;
-      const all = response.tickets ?? [];
+      const all = response.items ?? response.tickets ?? [];
       const filtered = all
         .filter((t) => (status ? t.status === status : true))
         .filter((t) => (status || !hideClosed ? true : !CLOSED_STATUSES.has(t.status)))

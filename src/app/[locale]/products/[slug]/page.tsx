@@ -5,13 +5,18 @@ import {
   gatedPriceWebPageJsonLd,
   breadcrumbJsonLd,
   loadProductFeaturesForStore,
+  // Runtime values in a Server Component, so the BARE entry — never
+  // `@mohasinac/appkit/client`, whose bindings become client-reference proxies
+  // that throw as an opaque React #441 when called (Root Cause #76).
+  pluginFor,
+  normalizeListingType,
 } from "@mohasinac/appkit";
 import { getProductForDetail } from "@mohasinac/appkit";
 import { getSiteSettingsGlobal, safeRead, storeRepository } from "@mohasinac/appkit/server";
 import { MakeOfferButton, ProductDetailActions, PageViewTracker } from "@mohasinac/appkit/client";
 import { submitProductOffer } from "@/actions/offer.actions";
 import { generateProductMetadata } from "@/constants/seo.server";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 
 export const revalidate = 60;
 
@@ -51,6 +56,37 @@ export default async function Page({ params }: Props) {
   // Before this, the page rendered its OWN "not found" body with no noindex at
   // all - a genuine soft 404 that stayed indexable forever.
   if (!product) notFound();
+
+  /*
+   * 🛑 A NON-STANDARD listing must not be served here — it gets its own route.
+   *
+   * This page fetched by slug and rendered the standard product view for
+   * whatever came back, with no check on `listingType`. Measured live:
+   * `/products/auction-beyblade-metal-lightning-l-drago` returned **200** with
+   * a full standard page — "Buy Now", "Add to Cart", "Add to Wishlist" and
+   * **no bid controls at all** — while the real auction lives at
+   * `/auctions/{slug}`. It also declared ITSELF canonical, so one item had two
+   * indexable URLs each claiming to be the original.
+   *
+   * And a crawler was actively pointed at the wrong one: `productJsonLd` builds
+   * `offers.url` from `/products/{slug}` unconditionally, so the auction page's
+   * own structured data advertised the offer at this path. That is Root Cause
+   * #48 (a listing "reverting to standard") surviving in the one place nobody
+   * clicks — a machine-readable URL.
+   *
+   * `pluginFor().detailRoute()` is the single owner of where a type lives, so
+   * the comparison stays correct as types are added. `standard`, `art` and
+   * `stickers` resolve to this very path (deliberately — art and stickers use
+   * the standard checkout flow and have no dedicated route), so they fall
+   * through and nothing changes for them.
+   *
+   * PERMANENT, not temporary: a 307 explicitly tells a search engine to KEEP
+   * the old address indexed, which is the whole failure mode the apex→www
+   * redirect exists to avoid. Same reasoning, one path down.
+   */
+  const canonicalRoute = pluginFor(normalizeListingType(product)).detailRoute(slug);
+  if (canonicalRoute !== `/products/${slug}`) permanentRedirect(canonicalRoute);
+
   // Everything below is chrome around the product: feature chips, and the two
   // inputs to the COD/EMI badges. Each degrades to "not shown" rather than
   // taking the page down with it — but the failure is now recorded.
@@ -151,11 +187,12 @@ export default async function Page({ params }: Props) {
         productFeatures={productFeatures}
         codEnabled={codEnabled}
         emiEnabled={emiEnabled}
-        renderOfferAction={({ productId, price, bounds }) => (
+        renderOfferAction={({ productId, price, bounds, listingStoreId }) => (
           <MakeOfferButton
             productId={productId}
             listedPrice={price}
             bounds={bounds}
+            listingStoreId={listingStoreId}
             onMakeOffer={submitProductOffer}
           />
         )}

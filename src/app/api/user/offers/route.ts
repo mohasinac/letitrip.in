@@ -15,11 +15,12 @@ export const GET = withProviders(createRouteHandler({
   handler: async ({ user }) => {
     const result = await offerRepository.findByBuyer(user!.uid);
     // Adapt: the repository returns live `Date` objects, which arrive at the
-    // client as strings that no longer satisfy the type. `includeBuyerIdentity`
-    // is on because these are the buyer's OWN offers.
+    // client as strings that no longer satisfy the type. `buyerIdentity` is
+    // "full" because these are the buyer's OWN offers — masking someone from
+    // their own name would be theatre.
     return successResponse({
       ...result,
-      items: result.items.map((o) => offerDocumentToOffer(o, { includeBuyerIdentity: true })),
+      items: result.items.map((o) => offerDocumentToOffer(o, { buyerIdentity: "full" })),
     });
   },
 }));

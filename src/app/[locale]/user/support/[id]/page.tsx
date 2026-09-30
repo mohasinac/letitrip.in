@@ -90,7 +90,24 @@ function TicketDetailPageInner({ params }: PageProps) {
     mutationFn: (body: string) =>
       getSupportTicketMessages(id, { body }).then(async (r) => {
         const j = await r.json();
-        if (!r.ok || !j?.ok) throw new Error(j?.error ?? "Could not send reply.");
+        /*
+         * 🛑 `success`, not `ok` — the third copy of this mistake in one feature.
+         *
+         * `successResponse()` emits `{ success, data, message }` and never an
+         * `ok` key, so `!j?.ok` was ALWAYS true and this threw on every
+         * SUCCESSFUL reply. The consequence was not a visible error but silence:
+         * `onSuccess` never ran, so `invalidateQueries` never fired and the
+         * thread was never refetched. Measured — POST returned **201**, the
+         * reply was stored, and the page still read "No replies yet." with no
+         * toast of any kind for 7 seconds; it appeared only after a manual
+         * reload. A buyer's reasonable conclusion is that their reply was lost.
+         *
+         * `r.ok` is authoritative; the body may only override it explicitly.
+         */
+        const explicitlyFailed = j?.success === false || j?.ok === false;
+        if (!r.ok || explicitlyFailed) {
+          throw new Error(j?.error ?? j?.message ?? "Could not send reply.");
+        }
         return j.data;
       }),
     onSuccess: () => {

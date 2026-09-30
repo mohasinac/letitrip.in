@@ -5,7 +5,7 @@ import { withProviders } from "@/providers.config";
  */
 import { createApiHandler } from "@mohasinac/appkit";
 import { successResponse } from "@mohasinac/appkit";
-import { offerRepository, storeRepository, maskOfferForSeller } from "@mohasinac/appkit";
+import { offerRepository, storeRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_READ } from "@/constants";
 import { offerDocumentToOffer } from "@mohasinac/appkit/server";
 
@@ -44,14 +44,21 @@ export const GET = withProviders(createApiHandler({
       pageSize,
     }, { search });
 
-    // The sibling server action (`listSellerOffers`) already masks; this route
-    // did not, so the seller's own list leaked every buyer's full name and
-    // email. Same helper, same guarantee, both read paths.
+    /*
+     * 🛑 `buyerIdentity: "masked"` — ONE mechanism, not two.
+     *
+     * This was `offerDocumentToOffer(maskOfferForSeller(o))` with the old
+     * `includeBuyerIdentity` flag left off, and the two halves cancelled: the
+     * mask produced "M*** U***" and the adapter then dropped the key, so all
+     * 13 rows here rendered "Unknown buyer" and the seller could not tell two
+     * offers on one listing apart. The masking now lives inside the adapter,
+     * so there is no longer a way to apply half of it.
+     *
+     * The seller sees a masked name on purpose: enough to distinguish two
+     * buyers and to address them, not enough to contact them off-platform.
+     */
     return successResponse({
-      // Mask FIRST, adapt second. Reversing these would adapt the unmasked
-      // document and then mask a shape the masker does not know.
-      // `includeBuyerIdentity` stays off: the seller is masked from it.
-      items: result.items.map((o) => offerDocumentToOffer(maskOfferForSeller(o))),
+      items: result.items.map((o) => offerDocumentToOffer(o, { buyerIdentity: "masked" })),
       total: result.total,
       page: result.page,
       pageSize: result.pageSize,

@@ -91,9 +91,33 @@ export default function NewSupportTicketPage() {
     try {
       const res = await createSupportTicket(parsed.data);
       const json = await res.json();
-      if (!res.ok || !json?.ok) {
+      /*
+       * 🛑 The envelope flag is `success`, not `ok`. This read `!json?.ok`.
+       *
+       * `successResponse()` emits `{ success, data, message }` — there is no `ok`
+       * key at any level — so `!json?.ok` was ALWAYS true and this early return
+       * was unconditional. Every successful creation was reported to the buyer as
+       * "Could not create ticket." while the POST returned **201** and the ticket
+       * was written. The success path, its toast and its redirect were all
+       * unreachable code.
+       *
+       * The user-visible cost is duplicates, and they are already in production:
+       * measured as rehan.sheikh@gmail.com, /api/support/tickets holds TWO
+       * identical "QA Ticket create-ticket" rows — one from 2026-09-17 and one
+       * from this run — because a buyer told their submission failed submits it
+       * again. Nothing errored on either occasion.
+       *
+       * `res.ok` is treated as authoritative and the body may only OVERRIDE it by
+       * saying so explicitly. A body that carries neither flag (or fails to parse
+       * to an object) must not be read as failure — that is the bug, inverted.
+       * Both spellings are accepted because both exist in this codebase, and
+       * reading one key too many costs nothing while reading the wrong one cost
+       * the whole feature.
+       */
+      const explicitlyFailed = json?.success === false || json?.ok === false;
+      if (!res.ok || explicitlyFailed) {
         // On a field, not a toast — the route names what it objected to.
-        setFieldError("subject", json?.error ?? "Could not create ticket.");
+        setFieldError("subject", json?.error ?? json?.message ?? "Could not create ticket.");
         return;
       }
       showToast("Ticket created.", "success");

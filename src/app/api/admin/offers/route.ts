@@ -37,7 +37,7 @@ export const GET = withProviders(
       );
       return successResponse({
         // Admin coordinates offers, so identity is in scope here.
-        items: result.items.map((o) => offerDocumentToOffer(o, { includeBuyerIdentity: true })),
+        items: result.items.map((o) => offerDocumentToOffer(o, { buyerIdentity: "full" })),
         total: result.total,
         page: result.page,
         pageSize: result.pageSize,

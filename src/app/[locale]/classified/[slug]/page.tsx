@@ -45,11 +45,12 @@ export default async function Page({ params }: Props) {
         // renderOfferAction contract precisely so this can't drift. `bounds` is
         // resolved by the view from the one shared rule, so the button never
         // computes a floor the server would disagree with.
-        renderOfferAction={({ productId, price, bounds }) => (
+        renderOfferAction={({ productId, price, bounds, listingStoreId }) => (
           <MakeOfferButton
             productId={productId}
             listedPrice={price}
             bounds={bounds}
+            listingStoreId={listingStoreId}
             onMakeOffer={submitProductOffer}
           />
         )}
