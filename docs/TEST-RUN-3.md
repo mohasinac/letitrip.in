@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **97 / 255** |
-| Cases | **417 / 1847** (23%) |
+| Batches | **98 / 255** |
+| Cases | **420 / 1847** (23%) |
 | Cycle | 20 of 51 |
 | Next deploy | batch 100 |
-| Last updated | 2026-10-01 15:56 UTC |
+| Last updated | 2026-10-01 16:13 UTC |
 
 ```
-pass 179 · fail 60 · null 178
+pass 180 · fail 60 · null 180
 fixed 24/60 · deferred 28 · open 8 · needs-human 7
 ```
 
@@ -532,5 +532,8 @@ untouched list is one nobody reads by milestone three.
 | 96 | 415 | `checklist-money-flows-blockers-cross-store-group-refused` | A bundle whose members span two stores is refused when saved | money-flows/blockers--admin | admin | ❌ fail | The cross-store guard NEVER RAN, and the reason is worse than the case anticipated: the admin bundle editor cannot save ANY bundle at all. This is step 5's trap in a form the case did not predict - it warned that a minimum-members refusa… | [shot](../tester/.tester-runs/run-3/shots/bundle-create-blocked.png) | Admin bundle CREATION is impossible, so the cross-store guard is unreachable and UNVERIFIED. dynamicRule (bundle-form.ts:117) wraps a non-optional z.object (line 58) with only a UI-level when: ruleType==='dynamic'; hidden controls are no… | `bundle-form.ts` | no | deferred-to-milestone |
 | 97 | 416 | `checklist-money-flows-blockers-guest-gated-action-prompts-signin` | A gated action while signed out prompts sign-in and then completes the original action | money-flows/blockers--guest | guest | ⬜ null | THE GATE ITSELF WORKS - the half of this case with a real failure mode. Signed out on /products/product-beyblade-burst-valkyrie (confirmed guest: a 'Sign in' header link, and prices showing 'Sign in to see price'). Clicked the page's 'Ad… | [shot](../tester/.tester-runs/run-3/shots/guest-wishlist-signin-prompt.png) | — | — | no | — |
 | 97 | 417 | `checklist-money-flows-blockers-banned-account-blocked` | A disabled account cannot sign in and is told why | money-flows/blockers--guest | guest | ⬜ null | NO FIXTURE EXISTS, and creating one is the single thing this run must not do. MEASURED, not assumed: of the 19 seeded users, `disabled: true` appears ZERO times and `disabled: false` appears 19 times. I also grepped every seed file and e… | [shot](../tester/.tester-runs/run-3/shots/guest-wishlist-signin-prompt.png) | — | — | no | — |
+| 98 | 418 | `checklist-page-wiring-reachability-lottery-can-be-created-without-seeding` | An admin can create a lottery end to end, with no seed script | page-wiring/reachability--admin | admin | ⬜ null | THREE OF THE FOUR CLAUSES PASS, and the fourth is unreachable as the steps are written - not broken. LOTTERY IS IN THE PICKER, which is the documented gap and the expectedData: /admin/events/new offers all eight EventType values - Sale, … | [shot](../tester/.tester-runs/run-3/shots/lottery-created-with-slots.png) | — | — | no | — |
+| 98 | 419 | `checklist-page-wiring-reachability-carousel-can-be-renamed` | A named carousel can be renamed after it is created | page-wiring/reachability--admin | admin | ✅ pass | Full pass including the restore, verified by reload at every step. editControlPresent is true. THE LIST IS A NAMED-CAROUSEL LIST, not a bare slide editor - /admin/carousels renders a 'Named Carousels' table with Name \| Status \| Slides \| … | [shot](../tester/.tester-runs/run-3/shots/carousel-renamed-restored.png) | — | — | no | — |
+| 98 | 420 | `checklist-page-wiring-reachability-user-tester-hub-reachable-from-user-sidebar` | A tester reaches the Tester Hub from their OWN sidebar | page-wiring/reachability--admin | admin | ⬜ null | The non-tester half PASSES and is the case's expectedData; the tester half is refused on the run's safety rule. testingGroupVisibleForNonTester is FALSE, measured: signed in as a buyer who does not carry the tester flag, /user renders si… | [shot](../tester/.tester-runs/run-3/shots/carousel-renamed-restored.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->

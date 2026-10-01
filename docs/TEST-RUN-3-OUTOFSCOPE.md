@@ -1580,3 +1580,24 @@ run's teardown wipes it; it is draft and therefore not live to buyers.
 
 FIX: add a delete row action (with the `confirmation` config Rule #7 requires) and a
 row-level detail affordance to the admin events list.
+
+## The harness's seller session is not the seller the cases name
+Found while performing `page-wiring/reachability--seller` — it nearly produced a false
+"the seller product picker is broken" finding.
+
+Seller cases are written against **`tyson@beybladearena.in`** (store-beyblade-arena,
+whose catalogue is the Beyblade standard products). The harness's `session-seller.json`
+signs in as a different seeded seller whose `/store/products` holds **prize draws** and
+contains no Valkyrie and no Wizard Arrow.
+
+Two things make this hard to notice:
+- The profile chip reads **"Mock User 1"** — the *same* display name the admin session
+  shows, so the account name cannot distinguish them.
+- The symptom is a picker returning "No results" for slugs that resolve fine in the
+  admin picker, which reads exactly like a broken seller-scoped search.
+
+Any seller case naming specific product slugs is unrunnable as written.
+
+FIX: point `session-seller.json` at `tyson@beybladearena.in`, or re-write the seller
+cases against slugs the harness's actual seller owns. Also worth giving seeded accounts
+distinct display names so the identity is readable off any page.
