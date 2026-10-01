@@ -1231,3 +1231,80 @@ the brand page listing zero products, the category metrics, `StickyToolbar`'s
 missing `forceExpanded`. Batching them into one publish is strictly better than
 spending a publish cycle per fix, so they are queued for a dedicated fix session
 rather than half-started here. Each already carries its own `nextStep`.
+
+## PIN-code error renders without `aria-invalid` on the field
+
+Batch 52. On `/user/addresses/new`, submitting `abcdef` as the PIN correctly
+renders *"That is not a valid PIN code for India."* directly under the field and
+inside a `role="alert"` — but the input's **`aria-invalid` is `null`**.
+
+CLAUDE.md Rule #9.4 states that `FieldInput` wires `aria-invalid` **and** the
+error `<Text role="alert">` block together. Here only the alert half is wired,
+so a screen-reader user hears the message while the field itself is not marked
+invalid.
+
+Not this case's claim — it asserts *where* the error appears, and that passes —
+so recorded rather than failed. Worth checking whether the gap is in
+`FieldInput` itself or in how this form mounts it, since the former would affect
+every form in the app.
+
+## `addresses/postal-validation` — 2 of 3 cases blocked by the PRESERVE tier
+
+Same shape as the `profile-settings` entry above, one collection over.
+`country-decides-the-rule` and `unknown-country-never-blocks` both have
+expectedData requiring codes to **save** (`canadaAccepted: true`,
+`bothCodesAccepted: true`), and `addresses` is in the frozen PRESERVE list.
+
+Unlike the profile batch, the third case IS runnable and passes — its whole
+purpose is that nothing persists (`saved: false`), which I confirmed by
+instrumenting `window.fetch` and seeing zero address requests after Save.
+
+**This strengthens the throwaway-account case.** The same fix unblocks both
+pages: a mutable identity outside the PRESERVE tier would make 2 more cases
+here and 7 on `profile-settings` runnable — 9 cases from one decision.
+
+Verified without writing, so a permitted run is quick: the country control
+exists (a button reading "India ▾" with a `Country *` label) and a separate
+`State / region *` picker exists. The blocker is policy, not a missing control.
+
+## `contactSubmissions` is UNCLASSIFIED — tester rows accumulate forever
+
+Batch 53. `contactSubmissions` appears nowhere in
+`tester/scripts/lib/collections.mjs`, so it is **preserved by default** —
+`assertDeletable` throws on it and teardown never touches it.
+
+The consequence is visible right now: `/admin/contact` holds two rows, both test
+data. Mine from this batch, and **`QA checklist probe` / `QA Tester ·
+qa.probe@example.com` dated 16 Sept 2026** from an earlier run. Every run that
+exercises the contact form adds one permanently.
+
+`audit-tester-plugin-wiring`'s R1 exists to catch exactly this gap — a
+collection the harness writes to but never classifies. Classify it
+`SEED_OWNED` (there is no real customer mail to protect in this project yet) or
+`CASCADE`, and the accumulation stops.
+
+Note this is the same mechanism that put three QA-created entities in the public
+sitemap (batch 51) — UI-created rows carry no `isTestData` marker, so nothing
+downstream can filter them.
+
+## Dark-mode: "Pre-order now" pill is pale-on-pale (contrast 1.63)
+
+Found while measuring `design-ux/status-badge-legibility--guest`; **no case covers it**
+(the listing-type cases name the 8 type badges, and this is an availability pill).
+
+`/pre-orders?availability=all`, dark theme, signed out. 4 instances visible.
+
+- class: `bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300`
+- computed text  -> `lab(74.02 8.54 -41.61)` = **indigo-300** — dark variant **applied**
+- computed bg    -> `lab(91.66 1.05 -12.72)` = **indigo-100** — dark variant **NOT applied**
+- contrast **1.63** — pill shape clearly visible, text essentially not
+
+So the pair split: `dark:text-*` won, `dark:bg-*` lost. That is Root Cause #79's
+mechanism — with `important: true` in both Tailwind configs the two `bg` rules tie on
+specificity *and* on `!important`, so **build-time emission order** decides, and the
+opacity-modified `bg-indigo-900/40` loses to the plain `bg-indigo-100`.
+
+Per CLAUDE.md the fix is to **remove the light class** and use one theme-inverting
+token — never to add another `dark:` variant, which cannot break the tie.
+
+Screenshot: `tester/.tester-runs/run-3/shots/badge-dark-preorder-now.png`
