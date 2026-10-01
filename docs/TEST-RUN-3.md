@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **107 / 255** |
-| Cases | **468 / 1847** (25%) |
+| Batches | **108 / 255** |
+| Cases | **475 / 1847** (26%) |
 | Cycle | 22 of 51 |
 | Next deploy | batch 125 |
-| Last updated | 2026-10-01 20:33 UTC |
+| Last updated | 2026-10-01 20:39 UTC |
 
 ```
-pass 195 · fail 65 · null 208
+pass 199 · fail 65 · null 211
 fixed 25/65 · deferred 30 · open 10 · needs-human 7
 ```
 
@@ -583,5 +583,12 @@ untouched list is one nobody reads by milestone three.
 | 107 | 466 | `checklist-admin-prize-draws-lotteries-prizedraw-create` | Admin can create a prize-draw listing, choosing instant or scheduled reveal mode and a 1–1 | admin/prize-draws-lotteries | admin | ⬜ null | NOT DRIVEN, and there is a structural obstacle worth recording before anyone tries. Step 3 is 'Define at least two prizes with names and save', and the prize-draw editor has no prize-list field: /admin/prize-draws/{id}/edit renders the g… | [shot](../tester/.tester-runs/run-3/shots/lottery-bookings-preserved.png) | — | — | no | — |
 | 107 | 467 | `checklist-admin-prize-draws-lotteries-prizedraw-reveal-winner` | Winners are assigned automatically via crypto.randomInt (on payment confirmation for insta | admin/prize-draws-lotteries | admin | ⬜ null | NOT DRIVEN - it spans two identities and a purchase, and its admin half has no control to use. The buyer must buy an entry in the prize draw created by the sibling case (which I could not create, see that verdict), then an admin must tri… | [shot](../tester/.tester-runs/run-3/shots/lottery-bookings-preserved.png) | — | — | no | — |
 | 107 | 468 | `checklist-admin-prize-draws-lotteries-prizedraw-lock-on-reveal` | Lock-on-reveal correctly blocks further entries after the draw | admin/prize-draws-lotteries | admin | ⬜ null | NOT DRIVEN - it depends on the two cases before it. It opens 'QA Prize Draw admin-create' after a prize has been revealed, and neither the creation nor the reveal could be performed (no prize-list field and no reveal control on the prize… | [shot](../tester/.tester-runs/run-3/shots/lottery-bookings-preserved.png) | — | — | no | — |
+| 108 | 469 | `checklist-content-discovery-events-view-event` | Viewing an event detail page works | content-discovery/events--guest | guest | ✅ pass | Everything the case asks for renders, and the tabs are real routes rather than client-side state. /events/favourite-blader-poll shows the title 'Vote: Best Blader of the Original Beyblade Series', status 'Active', dates 'Start: 24 Sept 2… | [shot](../tester/.tester-runs/run-3/shots/lottery-prizes-collage.png) | — | — | no | — |
+| 108 | 470 | `checklist-content-discovery-events-events-listing-cards-images` | The events listing page shows each event's real cover image (not a generic icon placeholde | content-discovery/events--guest | guest | ⬜ null | The image half passes outright; the status-filter half has no control to exercise, so I am recording null rather than claiming a pass on half the case. IMAGES: /events renders 8 event cards and 10 images, with ZERO broken. I tested with … | [shot](../tester/.tester-runs/run-3/shots/lottery-prizes-collage.png) | — | — | no | — |
+| 108 | 471 | `checklist-content-discovery-events-lottery-cover-image` | A lottery's cover image renders on both the lottery listing card and its detail page — not | content-discovery/events--guest | guest | ✅ pass | Both surfaces show the real photograph; the 🎰 is a type badge beside it, not a placeholder standing in for it. THE CARD on /events: a real image with naturalWidth 269, complete, alt 'Pokémon Number Draw — July 202…', served through /api… | [shot](../tester/.tester-runs/run-3/shots/lottery-prizes-collage.png) | — | — | no | — |
+| 108 | 472 | `checklist-content-discovery-events-lottery-prize-previews` | A lottery detail page shows a "Prizes" collage of prize photos above the numbered "Slots"  | content-discovery/events--guest | guest | ✅ pass | blankCollageTiles is 0, the collage is deliberately shorter than the grid, and no slot price or weight reaches the client. THE COLLAGE holds exactly EIGHT tiles, every one a real photograph (naturalWidth 600, complete): Charizard Base Se… | [shot](../tester/.tester-runs/run-3/shots/lottery-prizes-collage.png) | — | — | no | — |
+| 108 | 473 | `checklist-content-discovery-events-related-events-section` | An event's Overview tab shows a "Related Events" carousel of other active events sharing a | content-discovery/events--guest | guest | ✅ pass | selfLinkCount is 0, the carousel holds a real card, and clicking it opens that event. THE SECTION reads 'RELATED EVENTS / Related Events / ✶ Original Series Clearance Sale — 20% Off' and contains exactly one card, linking to /events/orig… | [shot](../tester/.tester-runs/run-3/shots/lottery-prizes-collage.png) | — | — | no | — |
+| 108 | 474 | `checklist-content-discovery-events-poll-leaderboard-shows-tally` | A poll event's Leaderboard tab shows option labels with vote counts/percentages, not a lis | content-discovery/events--guest | guest | ⬜ null | Cannot be evaluated on this fixture, and the reason is a deliberate product decision rather than a defect. The Leaderboard tab of event-favourite-blader-poll renders no rows at all. It states: 'Results will be shown after the poll closes… | [shot](../tester/.tester-runs/run-3/shots/lottery-prizes-collage.png) | — | — | no | — |
+| 108 | 475 | `checklist-content-discovery-events-spin-results-tab` | A spin_wheel event shows a "Last 10 Spin Results" tab listing recent winners (or "Guest" f | content-discovery/events--guest | guest | ⬜ null | The tab the case names does not exist. /events/daily-beyblade-pull-wheel offers four tabs - Overview, Participate, Leaderboard, Spin - and there is no 'Last 10 Spin Results' among them; I searched every visible link and button for 'spin … | [shot](../tester/.tester-runs/run-3/shots/lottery-prizes-collage.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->

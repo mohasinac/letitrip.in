@@ -1783,3 +1783,38 @@ it correctly ("Spin the Wheel", verified in batch 98), so the mapping exists and
 public badge simply isn't using it.
 
 FIX: run the public badge through the same label map the admin picker uses.
+
+## FIX: a poll option renders a user's display name instead of its label
+Found driving `content-discovery/events` → `poll-vote-inline`.
+
+On `/events/favourite-blader-poll` ("Who is the greatest blader of the original 1999
+series?") the five options are:
+
+| radio value | label rendered |
+|---|---|
+| `tyson` | **"Mock User 6"** ← a seeded user's display name |
+| `kai` | "Kai Hiwatari" |
+| `max` | "Max Tate" |
+| `rei` | "Rei Kon" |
+| `kenny` | "Kenny (Chief)" |
+
+Four of five resolve to the character name; the `tyson` option resolves to a platform
+account instead. The seed contains **`user-tyson-blader`** (the Beyblade Arena owner),
+so something is resolving the option id against the `users` collection rather than using
+the poll's own option label.
+
+Two consequences: the poll offers a nonsense answer, and a **user's display name is
+published into a public poll** by a lookup nobody asked for.
+
+FIX: render the poll option's stored label; never resolve an option id as a user id.
+
+## The poll form forgets a cast vote after a reload
+Same case. The one-vote rule is correctly enforced **server-side** — a second attempt
+with a different option was refused with *"You have already submitted an entry for this
+event"*. But after a reload the form returns with all five radios **enabled** and no
+indication a vote was cast; the refusal only appears once the user submits again.
+
+The tally is safe. The user is invited to re-vote and then told off for it.
+
+FIX: render the user's existing vote on load (selected + disabled, or a "you voted for X"
+summary), as the post-submit state already does.
