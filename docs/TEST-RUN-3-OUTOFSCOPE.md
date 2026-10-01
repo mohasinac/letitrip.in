@@ -1448,3 +1448,25 @@ Worth noting this is the store with essentially all the content: 14 products, 9 
 7 pre-orders, 74 reviews. A buyer searching the store directory for it finds nothing.
 
 Screenshot: `tester/.tester-runs/run-3/shots/stores-arena-not-found.png`
+
+## Filter trigger on listing pages has no accessible name
+Found while performing step 3 of `cta-layout/dialog-footers--guest` →
+`filter-drawer-footer-stacks-when-narrow` (that case's own assertion passes).
+
+At 320px, `/products` collapses its toolbar behind a **"Show Toolbar"** button. Once
+expanded, the filter trigger is an **icon-only 38×30 button** with empty `innerText`,
+**no `aria-label`, no `title`, and no `<title>` inside its SVG** — its only identity is
+`class="lucide lucide-sliders-horizontal"`. The case's step says "Click 'Filters'"; no
+element on the page is named that.
+
+- **Unnamed to assistive tech.** A screen reader announces an unlabelled button.
+- **Invisible to name-based queries.** Two scans over `innerText` + `aria-label` across
+  every `button`, `a` and `[role="button"]` returned **0 candidates** on a page that has
+  one. Located only by enumerating the toolbar's controls positionally.
+- **38×30 is under the 44px touch target**, on the one viewport width where it matters most.
+
+Same shape as the missing `role="alertdialog"` on the bundle delete modal
+(`cta-layout/dialog-footers--admin`): an unnamed control that produced a false negative
+in the harness's own measurement before it could produce one in a user's.
+
+FIX: give the trigger an `aria-label` (e.g. "Filters"); consider `IconButton size="touch"`.

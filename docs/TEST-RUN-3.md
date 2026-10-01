@@ -33,15 +33,15 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **92 / 255** |
-| Cases | **410 / 1847** (22%) |
+| Batches | **94 / 255** |
+| Cases | **412 / 1847** (22%) |
 | Cycle | 19 of 51 |
 | Next deploy | batch 100 |
-| Last updated | 2026-10-01 15:25 UTC |
+| Last updated | 2026-10-01 15:37 UTC |
 
 ```
-pass 176 · fail 58 · null 176
-fixed 24/58 · deferred 26 · open 8 · needs-human 7
+pass 177 · fail 59 · null 176
+fixed 24/59 · deferred 27 · open 8 · needs-human 7
 ```
 
 > ▸ **8 failure(s) not yet fixed.** Fixes land in one phase at the
@@ -525,5 +525,7 @@ untouched list is one nobody reads by milestone three.
 | 91 | 408 | `checklist-selling-become-seller-store-setup` | Setting up store name/description/logo works | selling/become-seller--seller | seller | ❌ fail | The dashboard loads fine, but the seller CANNOT SAVE a storefront edit - validation rejects branding values the seller never typed. WHAT PASSES: /store loads a real dashboard with no pending-approval gate (the case's first assertion), an… | [shot](../tester/.tester-runs/run-3/shots/storefront-branding-blocks-save.png) | the store's seeded logo/banner are placehold.co URLs wrapped by seedExtMedia through /api/media/ext - neither a /media/<slug> reference nor an approved CDN domain - and the branding rule is applied to values LOADED FROM THE DB rather tha… | `storefront` `seller` | no | deferred-to-milestone |
 | 91 | 409 | `checklist-selling-become-seller-store-address` | Adding a pickup address for the store works | selling/become-seller--seller | seller | ⬜ null | Not driven. It creates a store pickup address, and store addresses are written into the same top-level `addresses` collection as buyer addresses (ownerType 'store') - PRESERVE tier, never wiped, never restored, and appkit-seed load is a … | [shot](../tester/.tester-runs/run-3/shots/storefront-branding-blocks-save.png) | — | — | no | — |
 | 92 | 410 | `checklist-addresses-address-filters-filters-actually-filter` | Every filter in the drawer changes the list | addresses/address-filters | main | ✅ pass | The search genuinely filters and the nonsense control is clean - both expectedData values match. MEASURED on /user/addresses as rehan.sheikh@gmail.com, counting rendered addresses by their pincode: unfiltered 1, searching 'Indore' leaves… | [shot](../tester/.tester-runs/run-3/shots/addr-filter-control.png) | — | — | no | — |
+| 93 | 411 | `checklist-cta-layout-dialog-footers-modal-footer-stays-compact-on-desktop` | A dialog's buttons stay compact and right-aligned at 1280px | cta-layout/dialog-footers--admin | admin | ❌ fail | All three of the case's assertions fail, measured rather than eyeballed. Opened /admin/bundles/bundle-burst-battlers-pack/edit as admin@letitrip.in at 1280px and clicked 'Delete bundle'. The confirmation panel spans left 455 to right 825… | [shot](../tester/.tester-runs/run-3/shots/dialog-footer-stretched.png) | The bundle delete confirmation fails all three footer assertions, plus an a11y gap. Panel 370px (455-825). (1) Title reads 'Delete this bundle?' - the record name 'Burst Battlers Pack' appears nowhere, so an admin cannot tell which bundl… | `components` `bundles` | no | deferred-to-milestone |
+| 94 | 412 | `checklist-cta-layout-dialog-footers-filter-drawer-footer-stacks-when-narrow` | Filter drawer's Reset all / Apply stack rather than shrink when narrow | cta-layout/dialog-footers--guest | guest | ✅ pass | The footer holds up at 320px - both buttons fully readable, neither truncated, and the layout has a real mechanism for stacking rather than relying on luck. Measured signed out at a 320x720 viewport on /products with the filter drawer op… | [shot](../tester/.tester-runs/run-3/shots/filter-drawer-footer-320.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
