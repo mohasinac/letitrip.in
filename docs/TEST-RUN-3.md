@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **89 / 255** |
-| Cases | **405 / 1847** (22%) |
-| Cycle | 18 of 51 |
+| Batches | **90 / 255** |
+| Cases | **407 / 1847** (22%) |
+| Cycle | 19 of 51 |
 | Next deploy | batch 100 |
-| Last updated | 2026-10-01 15:14 UTC |
+| Last updated | 2026-10-01 15:17 UTC |
 
 ```
-pass 174 · fail 57 · null 174
+pass 175 · fail 57 · null 175
 fixed 24/57 · deferred 25 · open 8 · needs-human 7
 ```
 
@@ -520,5 +520,7 @@ untouched list is one nobody reads by milestone three.
 | 89 | 403 | `checklist-public-pages-stores-sellers-directories-seller-detail-page` | An individual seller's public detail page loads correctly | public-pages/stores-sellers-directories--p2 | guest | ⬜ null | Not driven. Batch room went on the sellers-directory PII scan, which is the assertion with a real failure history on this route family - Root Cause #70 records a raw StoreDocument reaching a Client Component and publishing a decrypted Me… | [shot](../tester/.tester-runs/run-3/shots/sellers-no-pii.png) | — | — | no | — |
 | 89 | 404 | `checklist-public-pages-stores-sellers-directories-scams-registry` | The scams registry page and an individual scam detail page load correctly | public-pages/stores-sellers-directories--p2 | guest | ⬜ null | Not driven. Batch room went on the sellers-directory PII scan, which is the assertion with a real failure history on this route family - Root Cause #70 records a raw StoreDocument reaching a Client Component and publishing a decrypted Me… | [shot](../tester/.tester-runs/run-3/shots/sellers-no-pii.png) | — | — | no | — |
 | 89 | 405 | `checklist-public-pages-stores-sellers-directories-scam-related-profiles-sections` | A scammer profile page shows a "Related Profiles" section (explicit same-person cross-link | public-pages/stores-sellers-directories--p2 | guest | ⬜ null | Not driven. Batch room went on the sellers-directory PII scan, which is the assertion with a real failure history on this route family - Root Cause #70 records a raw StoreDocument reaching a Client Component and publishing a decrypted Me… | [shot](../tester/.tester-runs/run-3/shots/sellers-no-pii.png) | — | — | no | — |
+| 90 | 406 | `checklist-selling-become-seller-sell-redirect` | Visiting /sell redirects to the Become a Seller page — it must NOT show "Something went wr | selling/become-seller | main | ✅ pass | A signed-out visitor is redirected to the sign-in page and gets a real form - no 404, no error, not left stranded on /sell. Drove /sell in the browser with no session: it lands on /auth/login rendering h1 'Sign In' with Email address and… | [shot](../tester/.tester-runs/run-3/shots/sell-redirects-login.png) | — | — | no | — |
+| 90 | 407 | `checklist-selling-become-seller-apply-seller` | Applying to become a seller works | selling/become-seller | main | ⬜ null | REFUSED ON THE RUN'S SAFETY RULE. It signs in as karthik.new@gmail.com and submits a seller application, and becomeSeller writes to the USER document - CLAUDE.md is explicit that becomeSeller and createStore branch BOTH UserDocument.stor… | [shot](../tester/.tester-runs/run-3/shots/sell-redirects-login.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
