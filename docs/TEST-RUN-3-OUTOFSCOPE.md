@@ -1470,3 +1470,18 @@ Same shape as the missing `role="alertdialog"` on the bundle delete modal
 in the harness's own measurement before it could produce one in a user's.
 
 FIX: give the trigger an `aria-label` (e.g. "Filters"); consider `IconButton size="touch"`.
+
+## Classified detail page duplicates the brand in its <title>
+Noticed while performing `money-flows/blockers` → `classified-has-no-cart`
+(that case's assertion passes).
+
+`/classified/classified-beyblade-stadium-set` serves:
+
+    Used Beyblade Stadium Set — Local Pickup Only — LetItRip | LetItRip
+
+The brand suffix is appended twice — once by the page's own title builder (which
+already ends `— LetItRip`) and again by a template applying `| LetItRip`. Visible in
+the browser tab and in SERP results.
+
+FIX: the per-page builder should emit the bare listing title and let the template add
+the brand once, as the other detail families do.
