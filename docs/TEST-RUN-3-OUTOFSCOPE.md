@@ -1683,3 +1683,28 @@ spellings — `classified-`, `digitalcode-`, `live-`, `auction-`, `preorder-`,
 `prizedraw-` all have their own routes.
 
 FIX: change the URL to `/live/live-golden-retriever-puppy`.
+
+## FIX (money path): the manual-payment page shows ₹999 where ₹1,146.80 is owed
+Found driving `buying/buying-checkout--p3` → `checkout-cash-payment-no-validation-error`
+(that case passes — this is a defect on the page it lands on).
+
+`/user/orders/{id}/payment` instructs the buyer to *"Open any UPI app (GPay, PhonePe,
+Paytm) and pay to: mohsin0502@okicici"* and gives them a 15-minute deadline — but
+**never states the amount owed**. Scanning the *entire document* for rupee figures
+returns exactly one: **₹999**, the item's price. The word "total" appears nowhere.
+
+The order's real total is **₹1,146.80** — 999 + 77 shipping + 10 WhatsApp updates +
+49 gift wrap + 10 platform fee + 1.80 GST, all four add-on/fee lines confirmed on the
+order detail page.
+
+So a buyer following these instructions transfers **₹999** and is **₹147.80 short**,
+then uploads a UTR for the wrong amount — which the admin must reject or chase, inside
+a 15-minute window. The order page itself says *"Transfer the amount via UPI"* while
+the page where you actually do it omits that amount.
+
+This is the manual lane's equivalent of the question
+`checkout-phonepe-charge-includes-shipping` asks of the gateway lane: does the amount
+the buyer is asked to pay include shipping and fees? Here it does not.
+
+FIX: render the order's grand total prominently beside the UPI ID — and ideally encode
+it in a UPI deep link (`upi://pay?pa=…&am=1146.80`) so the amount cannot be mistyped.
