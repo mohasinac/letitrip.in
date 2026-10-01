@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **81 / 255** |
-| Cases | **372 / 1847** (20%) |
+| Batches | **83 / 255** |
+| Cases | **377 / 1847** (20%) |
 | Cycle | 17 of 51 |
 | Next deploy | batch 100 |
-| Last updated | 2026-10-01 14:49 UTC |
+| Last updated | 2026-10-01 14:55 UTC |
 
 ```
-pass 163 · fail 57 · null 152
+pass 165 · fail 57 · null 155
 fixed 24/57 · deferred 25 · open 8 · needs-human 7
 ```
 
@@ -487,5 +487,10 @@ untouched list is one nobody reads by milestone three.
 | 81 | 370 | `checklist-admin-events-raffles-spin-raffle-draw-winner` | Drawing a raffle winner correctly populates raffleWinnerUserId and raffleTriggeredAt | admin/events-raffles-spin | admin | ⬜ null | Not driven - it creates an event (and in some cases then drives a public surface as a buyer). I spent this batch's room on the three read-only cases, two of which found a defect, rather than on creating four or five QA events. Recorded a… | [shot](../tester/.tester-runs/run-3/shots/entries-11-vs-none.png) | — | — | no | — |
 | 81 | 371 | `checklist-admin-events-raffles-spin-spin-wheel-create` | Admin can create a spin_wheel event with weighted prizes | admin/events-raffles-spin | admin | ⬜ null | Not driven - it creates an event (and in some cases then drives a public surface as a buyer). I spent this batch's room on the three read-only cases, two of which found a defect, rather than on creating four or five QA events. Recorded a… | [shot](../tester/.tester-runs/run-3/shots/entries-11-vs-none.png) | — | — | no | — |
 | 81 | 372 | `checklist-admin-events-raffles-spin-spin-wheel-limits-enforced` | spinMaxPerUser and spinWindowStart/End are correctly enforced once configured by admin | admin/events-raffles-spin | admin | ⬜ null | Not driven - it creates an event (and in some cases then drives a public surface as a buyer). I spent this batch's room on the three read-only cases, two of which found a defect, rather than on creating four or five QA events. Recorded a… | [shot](../tester/.tester-runs/run-3/shots/entries-11-vs-none.png) | — | — | no | — |
+| 82 | 373 | `checklist-buying-image-tile-layout-bundle-member-thumbnails` | A bundle's member tiles show the real product photo, filling the whole square tile — not a | buying/image-tile-layout--guest | guest | ✅ pass | Three member tiles, all present, all the same width, none blank - blankTiles is 0. Measured on /bundles/bundle-original-collectors-set signed out: exactly three member images at 133x133 pixels each, carrying alt text 'Beyblade Original -… | [shot](../tester/.tester-runs/run-3/shots/tiles-collage.png) | — | — | no | — |
+| 82 | 374 | `checklist-buying-image-tile-layout-prizedraw-collage-stacked` | Prize-draw collage tiles stack the image ABOVE the title/value caption at full card width  | buying/image-tile-layout--guest | guest | ✅ pass | No tile is squeezed beside its caption, and none is collapsed - the failure the case names does not occur. Measured on /prize-draws/prizedraw-beyblade-mystery-box signed out: four prize tiles at 171x171 each, equal width, with alt text '… | [shot](../tester/.tester-runs/run-3/shots/tiles-collage.png) | — | — | no | — |
+| 82 | 375 | `checklist-buying-image-tile-layout-bundle-badge-position` | The #1 / #2 / #3 badge sits at the TOP-LEFT corner of each bundle tile, not floating in th | buying/image-tile-layout--guest | guest | ⬜ null | Not driven. Batch room went on the two collage cases, which are the ones Root Cause #68 names as having rendered blank or squeezed, and both now measure clean. Recorded as pending rather than omitted. Its assertion needs both widths AND … | [shot](../tester/.tester-runs/run-3/shots/tiles-collage.png) | — | — | no | — |
+| 82 | 376 | `checklist-buying-image-tile-layout-bundle-tile-opens-lightbox` | Clicking a bundle tile opens the lightbox at that item and cycles through the others; the  | buying/image-tile-layout--guest | guest | ⬜ null | Not driven. Batch room went on the two collage cases, which are the ones Root Cause #68 names as having rendered blank or squeezed, and both now measure clean. Recorded as pending rather than omitted. Its failure modes are specific and w… | [shot](../tester/.tester-runs/run-3/shots/tiles-collage.png) | — | — | no | — |
+| 83 | 377 | `checklist-buying-image-tile-layout-media-picker-existing-grid` | In any media field, "Choose existing" shows each file as a square thumbnail with the filen | buying/image-tile-layout--seller | seller | ⬜ null | Step 3 has no target: there is no existing-files grid on this form to switch to. Signed in as tyson@beybladearena.in on /store/products/new and enumerated every media control, on the quick form AND after expanding 'Show all fields (advan… | [shot](../tester/.tester-runs/run-3/shots/media-picker-no-existing.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
