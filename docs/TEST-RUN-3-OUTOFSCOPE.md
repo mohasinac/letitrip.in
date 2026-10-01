@@ -1485,3 +1485,26 @@ the browser tab and in SERP results.
 
 FIX: the per-page builder should emit the bare listing title and let the template add
 the brand once, as the other detail families do.
+
+## Bundle member picker advertises slug search but only matches titles
+Found while performing step 4 of `money-flows/blockers--admin` →
+`cross-store-group-refused` (the case instructs adding members *by slug*).
+
+The picker's own placeholder reads **"Type title or slug…"**. Searching the slug
+`product-beyblade-burst-valkyrie` returns **"No results"**, after waiting out the
+debounce. Searching the title `Valkyrie` returns 2 matches including that same
+product ("Beyblade Burst B-01 Valkyrie"). Same for the other two members.
+
+An admin following a slug from the catalogue or a tracker — the normal way one
+identifies a specific listing — is told it does not exist.
+
+FIX: either match `slug` alongside `title` in the picker's query, or correct the
+placeholder to "Type a title…".
+
+## Bundle editor renders a developer placeholder as admin copy
+Seen on `/admin/bundles/{slug}/edit` and `/admin/bundles/new`:
+
+    Provide a renderer for "coverImage" — this field needs a cus…
+
+Visible UI copy addressed to a developer. (First noted in
+`cta-layout/dialog-footers--admin`; repeated here as it is on the create form too.)

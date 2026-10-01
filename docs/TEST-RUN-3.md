@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **94 / 255** |
-| Cases | **412 / 1847** (22%) |
-| Cycle | 19 of 51 |
+| Batches | **95 / 255** |
+| Cases | **414 / 1847** (22%) |
+| Cycle | 20 of 51 |
 | Next deploy | batch 100 |
-| Last updated | 2026-10-01 15:38 UTC |
+| Last updated | 2026-10-01 15:42 UTC |
 
 ```
-pass 177 · fail 59 · null 176
+pass 179 · fail 59 · null 176
 fixed 24/59 · deferred 27 · open 8 · needs-human 7
 ```
 
@@ -527,5 +527,7 @@ untouched list is one nobody reads by milestone three.
 | 92 | 410 | `checklist-addresses-address-filters-filters-actually-filter` | Every filter in the drawer changes the list | addresses/address-filters | main | ✅ pass | The search genuinely filters and the nonsense control is clean - both expectedData values match. MEASURED on /user/addresses as rehan.sheikh@gmail.com, counting rendered addresses by their pincode: unfiltered 1, searching 'Indore' leaves… | [shot](../tester/.tester-runs/run-3/shots/addr-filter-control.png) | — | — | no | — |
 | 93 | 411 | `checklist-cta-layout-dialog-footers-modal-footer-stays-compact-on-desktop` | A dialog's buttons stay compact and right-aligned at 1280px | cta-layout/dialog-footers--admin | admin | ❌ fail | All three of the case's assertions fail, measured rather than eyeballed. Opened /admin/bundles/bundle-burst-battlers-pack/edit as admin@letitrip.in at 1280px and clicked 'Delete bundle'. The confirmation panel spans left 455 to right 825… | [shot](../tester/.tester-runs/run-3/shots/dialog-footer-stretched.png) | The bundle delete confirmation fails all three footer assertions, plus an a11y gap. Panel 370px (455-825). (1) Title reads 'Delete this bundle?' - the record name 'Burst Battlers Pack' appears nowhere, so an admin cannot tell which bundl… | `components` `bundles` | no | deferred-to-milestone |
 | 94 | 412 | `checklist-cta-layout-dialog-footers-filter-drawer-footer-stacks-when-narrow` | Filter drawer's Reset all / Apply stack rather than shrink when narrow | cta-layout/dialog-footers--guest | guest | ✅ pass | The footer holds up at 320px - both buttons fully readable, neither truncated, and the layout has a real mechanism for stacking rather than relying on luck. Measured signed out at a 320x720 viewport on /products with the filter drawer op… | [shot](../tester/.tester-runs/run-3/shots/filter-drawer-footer-320.png) | — | — | no | — |
+| 95 | 413 | `checklist-money-flows-blockers-out-of-stock-blocked` | A sold-out item cannot be added to the cart or checked out | money-flows/blockers | main | ✅ pass | A sold-out product cannot be bought, and the page says why. Signed in as a buyer at 1280px on /products/product-beyblade-burst-valtryek-v3-sold-out. BOTH purchase controls are REPLACED, not merely greyed: the two buttons that would be Ad… | [shot](../tester/.tester-runs/run-3/shots/blockers-sold-out.png) | — | — | no | — |
+| 95 | 414 | `checklist-money-flows-blockers-classified-has-no-cart` | A classified listing offers contact, never Add to Cart | money-flows/blockers | main | ✅ pass | A classified offers exactly one way to act and no way to buy - the capability contract holds. Signed in as a buyer at 1280px on /classified/classified-beyblade-stadium-set ('Used Beyblade Stadium Set — Local Pickup Only'). PRESENT: exact… | [shot](../tester/.tester-runs/run-3/shots/blockers-classified-no-cart.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
