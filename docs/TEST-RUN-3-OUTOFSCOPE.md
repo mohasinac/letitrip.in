@@ -1357,3 +1357,32 @@ not the one the case was written against.
 
 **The cheap fix** is to re-point these 11 cases at `rehan.sheikh@gmail.com`, or to add
 an `ash` session to the harness. Either makes the page runnable as written.
+
+## Buyer's order detail renders the delivery address as a raw document ID
+
+Found while running `money-flows/payment-methods`; **no case covers it**.
+
+`/user/orders/view/order-1-20260729-cash01`, signed in as the buyer who owns it.
+The Delivery Address block reads, in full:
+
+```
+Delivery Address
+addr-yugi-home
+India
+```
+
+No name, no street, no city, no PIN — just the address document's **id** and the
+country. The buyer cannot confirm where their own order is going.
+
+Same family as Root Cause #52 (a list row showing `Order {guid}` instead of the
+denormalised item data sitting on the same document): the id is being rendered where
+the resolved record should be. `OrderDocument.shippingAddress` carries fullName /
+phone / addressLine1 / city / postalCode, so the data exists — it is the resolution
+or the renderer that is missing, not the record.
+
+Two things noted honestly: I saw this on **one** order, not a sweep, so I do not know
+whether it affects every order or only ones whose address was seeded by id. And my
+first automated check reported `hasStreetish: true` — a false positive, matching the
+digits of `₹1,799.00` inside the scan window rather than any street.
+
+Screenshot: `tester/.tester-runs/run-3/shots/order-cash01-address.png`
