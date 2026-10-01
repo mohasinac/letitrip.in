@@ -1621,3 +1621,28 @@ three types whose only discovery path is the general catalogue (see CLAUDE.md
 "inGeneralCatalogue"), which makes their SERP presence matter more, not less.
 
 FIX: give each a `generateMetadata`/`metadata` title, as the sibling listing routes have.
+
+## FIX: the bundle detail page declares canonical + og:url on the APEX host
+Found while sweeping OG tags across 10 pages in `seo/og-images` →
+`og-tags-present-and-absolute`.
+
+`/bundles/bundle-every-generation-starter-pack` serves:
+
+    <link rel="canonical" href="https://letitrip.in/bundles/bundle-every-generation-starter-pack">
+    <meta property="og:url" content="https://letitrip.in/bundles/...">
+
+Every other page checked (`/`, product, classified, digital-code, live, prize-draw,
+both brands, store) uses **`https://www.letitrip.in/`**. The apex **308-redirects**
+to www — verified by this session's own deploy SEO check — and the sitemap puts all
+**209** URLs on www.
+
+So the bundle page advertises itself at a URL that redirects, while the sitemap names
+a different one. That is **Root Cause #81's exact shape** — two owners of the canonical
+host — recurring on the bundles route, and `audit-seo-canonical-host.mjs` evidently
+does not cover whatever this route uses to build its URL.
+
+Note `og:url` and `canonical` *agree with each other* here, so the per-page assertion
+passes; what fails is host consistency with the rest of the site.
+
+FIX: derive the bundle route's URL from `SEO_CONFIG.siteUrl` like its siblings, and
+extend the canonical-host audit to catch this construction.

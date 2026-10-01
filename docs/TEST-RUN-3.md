@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **100 / 255** |
-| Cases | **422 / 1847** (23%) |
+| Batches | **101 / 255** |
+| Cases | **424 / 1847** (23%) |
 | Cycle | 21 of 51 |
 | Next deploy | batch 125 |
-| Last updated | 2026-10-01 17:06 UTC |
+| Last updated | 2026-10-01 17:11 UTC |
 
 ```
-pass 181 · fail 61 · null 180
-fixed 25/61 · deferred 28 · open 8 · needs-human 7
+pass 181 · fail 63 · null 180
+fixed 25/63 · deferred 29 · open 9 · needs-human 7
 ```
 
-> ▸ **8 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **9 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -537,5 +537,7 @@ untouched list is one nobody reads by milestone three.
 | 98 | 420 | `checklist-page-wiring-reachability-user-tester-hub-reachable-from-user-sidebar` | A tester reaches the Tester Hub from their OWN sidebar | page-wiring/reachability--admin | admin | ⬜ null | The non-tester half PASSES and is the case's expectedData; the tester half is refused on the run's safety rule. testingGroupVisibleForNonTester is FALSE, measured: signed in as a buyer who does not carry the tester flag, /user renders si… | [shot](../tester/.tester-runs/run-3/shots/carousel-renamed-restored.png) | — | — | no | — |
 | 99 | 421 | `checklist-page-wiring-reachability-grouped-listing-members-editable-from-its-own-page` | A grouped listing's MEMBERS can be picked while creating it | page-wiring/reachability--seller | seller | ❌ fail | The cover-image control DOES NOT EXIST - it renders a developer message where an input should be - so 'all three controls are present' fails and step 6 is impossible. The member half I could not test, for a reason that is about the harne… | [shot](../tester/.tester-runs/run-3/shots/grouped-listing-picker-no-results.png) | The grouped-listing editor's Cover Image field renders the developer string 'Provide a renderer for "coverImage" - this field needs a custom control.' instead of an input, so a cover image cannot be attached. GroupedListingEditorView.tsx… | `GroupedListingEditorView.tsx` | no | deferred-to-milestone |
 | 100 | 422 | `checklist-page-wiring-reachability-public-nav-and-footer-resolve` | Every header, sidebar-support and footer link opens a real page | page-wiring/reachability--guest | guest | ✅ pass | No broken link, measured across every public destination a signed-out visitor can reach from the chrome: brokenLinkCount is 0. WHAT I COLLECTED. Signed out on /, I harvested every same-origin href from the <header>, from the slide-out me… | [shot](../tester/.tester-runs/run-3/shots/nav-footer-links-resolve.png) | — | — | no | — |
+| 101 | 423 | `checklist-search-and-nav-settings-deep-links-tab-query-param-opens-that-tab` | ?tab= opens the named tab | search-and-nav/settings-deep-links | admin | ❌ fail | The ROUTING half passes and both expectedData values are confirmed; the 'with its fields on screen' half fails. ?tab=fees selects Fees - the tab control's value and the panel heading both read Fees. With NO parameter the page opens Brand… | [shot](../tester/.tester-runs/run-3/shots/admin-site-tab-deeplink.png) | SEVERE: /admin/site renders NO editable fields on ANY tab, so no site setting can be changed in production. <main> totals 530-534 chars - the tab <select>, the selected tab's name, and a 'Save all changes' button - and the count of visib… | `page.tsx` | no | deferred-to-milestone |
+| 101 | 424 | `checklist-search-and-nav-settings-deep-links-unknown-tab-falls-back-quietly` | An unknown ?tab= falls back to the default without an error | search-and-nav/settings-deep-links | admin | ❌ fail | The fallback behaviour is exactly right - quiet, no error, no broken chrome - and the case still fails on its last clause. WHAT PASSES: ?tab=nonsense opens Branding and ?tab= (empty value) opens Branding, so fallbackTab is 'branding' for… | [shot](../tester/.tester-runs/run-3/shots/admin-site-tab-deeplink.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
