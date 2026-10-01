@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **76 / 255** |
-| Cases | **351 / 1847** (19%) |
+| Batches | **79 / 255** |
+| Cases | **357 / 1847** (19%) |
 | Cycle | 16 of 51 |
 | Next deploy | batch 100 |
-| Last updated | 2026-10-01 14:32 UTC |
+| Last updated | 2026-10-01 14:41 UTC |
 
 ```
-pass 154 · fail 55 · null 142
+pass 155 · fail 55 · null 147
 fixed 24/55 · deferred 24 · open 7 · needs-human 7
 ```
 
@@ -466,5 +466,11 @@ untouched list is one nobody reads by milestone three.
 | 75 | 349 | `checklist-community-support-public-profile-view-seller-store` | Viewing a seller's public store page works | community-support/public-profile | guest | ✅ pass | None of the four secret fields reaches the public HTML. Signed out on /stores/store-beyblade-arena (which redirects to /products): the header renders 'Beyblade Arena' with its banner image, and I scanned the FULL rendered document - 642,… | [shot](../tester/.tester-runs/run-3/shots/profile-no-pii.png) | — | — | no | — |
 | 75 | 350 | `checklist-community-support-public-profile-view-public-profile` | Viewing another user's public profile works | community-support/public-profile | guest | ✅ pass | No email address and no phone number appear anywhere - neither rendered nor in source. Signed out on /profile/user-tyson-blader. The page renders an avatar, a bio and populated tabs (Catalogue, Listings, Reviews). I searched the full doc… | [shot](../tester/.tester-runs/run-3/shots/profile-no-pii.png) | — | — | no | — |
 | 76 | 351 | `checklist-cta-layout-editor-action-bar-four-buttons-wrap-not-overflow` | Discard / Preview / Save draft / Publish wrap instead of overflowing | cta-layout/editor-action-bar | seller | ✅ pass | Nothing overflows at 375px, on either form, and all three expectedData keys match. QUICK FORM (/store/products/new as tyson@beybladearena.in, viewport 375): exactly TWO action buttons - Publish spanning x37-211 and Save Draft x223-335 - … | [shot](../tester/.tester-runs/run-3/shots/editor-bar-375.png) | — | — | no | — |
+| 77 | 352 | `checklist-page-wiring-data-loss-admin-grouped-listing-title-actually-saves` | 🛑 An admin renaming a grouped listing actually persists it | page-wiring/data-loss--admin | admin | ✅ pass | The title saves and survives a reload - the documented strip is fixed. Drove it as admin@letitrip.in on /admin/grouped-listings/group-beyblade-original-lineage/edit. Original title read 'Original Series Lineage'. Replaced it with the cas… | [shot](../tester/.tester-runs/run-3/shots/group-title-persists.png) | — | — | no | — |
+| 77 | 353 | `checklist-page-wiring-data-loss-lottery-edit-preserves-bookings` | 🛑 Editing a lottery does NOT wipe slots people already pulled | page-wiring/data-loss--admin | admin | ⬜ null | Not driven, and the reason is the risk rather than the time. Both lottery cases operate on event-pokemon-number-draw-july-2026, whose slots 1 to 5 are BOOKED in the seed with real buyer names and lottery numbers. Root Cause #76 is explic… | [shot](../tester/.tester-runs/run-3/shots/group-title-persists.png) | — | — | no | — |
+| 77 | 354 | `checklist-page-wiring-data-loss-lottery-booked-slot-cannot-be-deleted` | Removing a slot somebody already pulled is refused, by number | page-wiring/data-loss--admin | admin | ⬜ null | Not driven, and the reason is the risk rather than the time. Both lottery cases operate on event-pokemon-number-draw-july-2026, whose slots 1 to 5 are BOOKED in the seed with real buyer names and lottery numbers. Root Cause #76 is explic… | [shot](../tester/.tester-runs/run-3/shots/group-title-persists.png) | — | — | no | — |
+| 78 | 355 | `checklist-page-wiring-data-loss-store-address-landmark-survives-edit` | 🛑 A store address keeps its landmark through an edit | page-wiring/data-loss--seller | seller | ⬜ null | REFUSED ON THE RUN'S SAFETY RULE, not blocked by a defect - but the root cause the case hunts is demonstrably fixed, and that is worth more than the refusal. WHY I DID NOT RUN IT: step 2 CREATES a store pickup address. Store addresses ar… | [shot](../tester/.tester-runs/run-3/shots/store-addr-landmark-field.png) | — | — | no | — |
+| 79 | 356 | `checklist-search-and-nav-employee-permissions-employee-sidebar-never-empty` | No permission preset produces a completely empty sidebar | search-and-nav/employee-permissions | admin | ⬜ null | Two of the three numbers match exactly; the third I did not measure, so this is a null rather than a pass on a two-thirds result. VERIFIED: /admin/team as admin@letitrip.in renders both seeded employees - 'Mock Employee 1 / employee-blog… | [shot](../tester/.tester-runs/run-3/shots/team-presets-20.png) | — | — | no | — |
+| 79 | 357 | `checklist-search-and-nav-employee-permissions-employee-sees-only-their-permissions` | An employee's sidebar shows only what their permissions allow | search-and-nav/employee-permissions | admin | ⬜ null | Blocked on identity. Step 1 is 'Sign in as employee-blog@letitrip.in' and the harness resolves four sessions only - admin, buyer, seller and guest - with no employee among them; the run forbids calling /api/auth/* to make one. The accoun… | [shot](../tester/.tester-runs/run-3/shots/team-presets-20.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
