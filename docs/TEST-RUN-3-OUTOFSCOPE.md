@@ -1308,3 +1308,52 @@ Per CLAUDE.md the fix is to **remove the light class** and use one theme-inverti
 token — never to add another `dark:` variant, which cannot break the tie.
 
 Screenshot: `tester/.tester-runs/run-3/shots/badge-dark-preorder-now.png`
+
+## Store reviews search: the placeholder describes the opposite of what it does
+
+Found while running `content-discovery/store-reviews-aggregate`; **no case covers it**
+(the case that found it asserts body-text search, which works).
+
+`/stores/store-beyblade-arena/reviews`, signed out. Input placeholder:
+
+> **"Search reviews by product name..."**
+
+Measured against the same 12-card list:
+
+| query | kind | cards |
+|---|---|---|
+| *(none)* | — | 12 |
+| `genuine` | **body text** of card 1, absent from its title | **1** |
+| `Valkyrie` | **product name** — real item in this store's catalogue | **0** |
+| `zzzznope` | nonsense control | 0 + empty state |
+
+So the box searches **body text** (which the placeholder never mentions) and appears
+**not** to search **product names** (the only thing it promises). A user who follows
+the on-screen instruction gets an empty list.
+
+Not excluded: that no review in this store is attached to the Valkyrie product, which
+would make the 0 correct and the placeholder merely unverified. One query settles it.
+
+Screenshot: `tester/.tester-runs/run-3/shots/store-reviews-74.png`
+
+## `money-flows/payment-methods` names a buyer the harness cannot be
+
+All 11 cases on this page begin "Sign in as the buyer **ash@pokemonpalace.in**".
+The harness resolves exactly one buyer — `TESTER_BUYER_EMAIL=rehan.sheikh@gmail.com`
+(`tester/.env`, required by `fetch-cases.mjs:69`) — and there are four session files
+only: admin / buyer / guest / seller.
+
+**Not a dangling reference.** I suspected Root Cause #26 (a persona left behind when
+the catalogue was narrowed to Beyblade) because of the `pokemonpalace.in` domain, and
+checked: `ash@pokemonpalace.in` is genuinely seeded at
+`appkit/src/seed/users-seed-data.ts:140`. Several seeded personas keep old-franchise
+domains (`priya@cardgamehub.in`, `megumi@tokyotoys.in`, `amuro@gundamgalaxy.in`) — the
+*users* were kept when the *catalogue* was narrowed.
+
+So the cases are runnable **by substitution**, with one caveat worth stating before
+someone does it blindly: `coupon-applies-and-persists` applies **ARENA25**, and coupon
+limits are per-user (`perUserLimit`), so a substituted buyer's redemption history is
+not the one the case was written against.
+
+**The cheap fix** is to re-point these 11 cases at `rehan.sheikh@gmail.com`, or to add
+an `ash` session to the harness. Either makes the page runnable as written.
