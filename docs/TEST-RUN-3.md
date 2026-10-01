@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **96 / 255** |
-| Cases | **415 / 1847** (22%) |
+| Batches | **97 / 255** |
+| Cases | **417 / 1847** (23%) |
 | Cycle | 20 of 51 |
 | Next deploy | batch 100 |
-| Last updated | 2026-10-01 15:51 UTC |
+| Last updated | 2026-10-01 15:56 UTC |
 
 ```
-pass 179 · fail 60 · null 176
+pass 179 · fail 60 · null 178
 fixed 24/60 · deferred 28 · open 8 · needs-human 7
 ```
 
@@ -530,5 +530,7 @@ untouched list is one nobody reads by milestone three.
 | 95 | 413 | `checklist-money-flows-blockers-out-of-stock-blocked` | A sold-out item cannot be added to the cart or checked out | money-flows/blockers | main | ✅ pass | A sold-out product cannot be bought, and the page says why. Signed in as a buyer at 1280px on /products/product-beyblade-burst-valtryek-v3-sold-out. BOTH purchase controls are REPLACED, not merely greyed: the two buttons that would be Ad… | [shot](../tester/.tester-runs/run-3/shots/blockers-sold-out.png) | — | — | no | — |
 | 95 | 414 | `checklist-money-flows-blockers-classified-has-no-cart` | A classified listing offers contact, never Add to Cart | money-flows/blockers | main | ✅ pass | A classified offers exactly one way to act and no way to buy - the capability contract holds. Signed in as a buyer at 1280px on /classified/classified-beyblade-stadium-set ('Used Beyblade Stadium Set — Local Pickup Only'). PRESENT: exact… | [shot](../tester/.tester-runs/run-3/shots/blockers-classified-no-cart.png) | — | — | no | — |
 | 96 | 415 | `checklist-money-flows-blockers-cross-store-group-refused` | A bundle whose members span two stores is refused when saved | money-flows/blockers--admin | admin | ❌ fail | The cross-store guard NEVER RAN, and the reason is worse than the case anticipated: the admin bundle editor cannot save ANY bundle at all. This is step 5's trap in a form the case did not predict - it warned that a minimum-members refusa… | [shot](../tester/.tester-runs/run-3/shots/bundle-create-blocked.png) | Admin bundle CREATION is impossible, so the cross-store guard is unreachable and UNVERIFIED. dynamicRule (bundle-form.ts:117) wraps a non-optional z.object (line 58) with only a UI-level when: ruleType==='dynamic'; hidden controls are no… | `bundle-form.ts` | no | deferred-to-milestone |
+| 97 | 416 | `checklist-money-flows-blockers-guest-gated-action-prompts-signin` | A gated action while signed out prompts sign-in and then completes the original action | money-flows/blockers--guest | guest | ⬜ null | THE GATE ITSELF WORKS - the half of this case with a real failure mode. Signed out on /products/product-beyblade-burst-valkyrie (confirmed guest: a 'Sign in' header link, and prices showing 'Sign in to see price'). Clicked the page's 'Ad… | [shot](../tester/.tester-runs/run-3/shots/guest-wishlist-signin-prompt.png) | — | — | no | — |
+| 97 | 417 | `checklist-money-flows-blockers-banned-account-blocked` | A disabled account cannot sign in and is told why | money-flows/blockers--guest | guest | ⬜ null | NO FIXTURE EXISTS, and creating one is the single thing this run must not do. MEASURED, not assumed: of the 19 seeded users, `disabled: true` appears ZERO times and `disabled: false` appears 19 times. I also grepped every seed file and e… | [shot](../tester/.tester-runs/run-3/shots/guest-wishlist-signin-prompt.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->

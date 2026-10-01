@@ -1526,3 +1526,36 @@ FIX: seed one dedicated disabled persona (e.g. `user-qa-disabled`, `disabled: tr
 That also unblocks the soft-ban cases declined elsewhere in this run. Same shape as
 Root Cause #90 — a case reports "nothing here" because the catalogue never seeded its
 fixture, not because the feature is broken.
+
+## FIX: `createEvent` bypasses the repository write hooks — two defects, one line
+Found while performing `page-wiring/reachability--admin` →
+`lottery-can-be-created-without-seeding` (which creates an event through the UI).
+
+[events.repository.ts:194](appkit/src/features/events/repository/events.repository.ts#L194)
+calls `this.getCollection().add(data)` **directly**, so it never runs `this.create()`,
+never runs `applyWriteHooks`, and never uses `createWithId(slug)`. Consequences:
+
+1. **A UI-created event is invisible to admin event search, permanently.** `list()`
+   filters on `where(SEARCH_TXT, "array-contains", head)`, and `SEARCH_TXT` is written
+   by the `buildSearchTxtFor` hook that never fires. Measured: searching `QA Event`
+   and `seeding` (7 letters — rules out short-token truncation) both return
+   "No events found" while the event is in the unfiltered list; control `Beyblade`
+   returns the seeded events.
+2. **Its document id is a Firestore auto-id** (`SJHlHFAs5BHMLQwH8MdM`) while every
+   seeded event uses its slug (`event-pokemon-number-draw-july-2026`). CLAUDE.md's
+   slug table lists events under "Pure slugs (`id === slug`)". The public URL becomes
+   `/lottery/SJHlHFAs5BHMLQwH8MdM`, and any lookup by slug misses it.
+
+Root Cause #9's shape in a new spelling. Note the hook's own docstring claims it is
+"derived on every write path via `applyWriteHooks`" — it is not derived on this one,
+and that comment is what would stop a reviewer looking.
+
+FIX: route `createEvent` through `this.createWithId(slug, data)` (or `this.create()`),
+so both the hook and the slug-as-id convention apply. Correct the docstring.
+
+## The lottery creation case needs a publish step
+`lottery-can-be-created-without-seeding` requires the public page to render "a pullable
+grid" and slot 1 to become booked, but its steps never set the event's status and the
+create form defaults to **draft**. A draft lottery correctly renders its slots
+non-interactive, so the case as written can never reach its own last assertion.
+FIX: add a publish step between steps 6 and 8.
