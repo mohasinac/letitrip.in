@@ -33,15 +33,15 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **90 / 255** |
-| Cases | **407 / 1847** (22%) |
+| Batches | **92 / 255** |
+| Cases | **410 / 1847** (22%) |
 | Cycle | 19 of 51 |
 | Next deploy | batch 100 |
-| Last updated | 2026-10-01 15:17 UTC |
+| Last updated | 2026-10-01 15:25 UTC |
 
 ```
-pass 175 · fail 57 · null 175
-fixed 24/57 · deferred 25 · open 8 · needs-human 7
+pass 176 · fail 58 · null 176
+fixed 24/58 · deferred 26 · open 8 · needs-human 7
 ```
 
 > ▸ **8 failure(s) not yet fixed.** Fixes land in one phase at the
@@ -522,5 +522,8 @@ untouched list is one nobody reads by milestone three.
 | 89 | 405 | `checklist-public-pages-stores-sellers-directories-scam-related-profiles-sections` | A scammer profile page shows a "Related Profiles" section (explicit same-person cross-link | public-pages/stores-sellers-directories--p2 | guest | ⬜ null | Not driven. Batch room went on the sellers-directory PII scan, which is the assertion with a real failure history on this route family - Root Cause #70 records a raw StoreDocument reaching a Client Component and publishing a decrypted Me… | [shot](../tester/.tester-runs/run-3/shots/sellers-no-pii.png) | — | — | no | — |
 | 90 | 406 | `checklist-selling-become-seller-sell-redirect` | Visiting /sell redirects to the Become a Seller page — it must NOT show "Something went wr | selling/become-seller | main | ✅ pass | A signed-out visitor is redirected to the sign-in page and gets a real form - no 404, no error, not left stranded on /sell. Drove /sell in the browser with no session: it lands on /auth/login rendering h1 'Sign In' with Email address and… | [shot](../tester/.tester-runs/run-3/shots/sell-redirects-login.png) | — | — | no | — |
 | 90 | 407 | `checklist-selling-become-seller-apply-seller` | Applying to become a seller works | selling/become-seller | main | ⬜ null | REFUSED ON THE RUN'S SAFETY RULE. It signs in as karthik.new@gmail.com and submits a seller application, and becomeSeller writes to the USER document - CLAUDE.md is explicit that becomeSeller and createStore branch BOTH UserDocument.stor… | [shot](../tester/.tester-runs/run-3/shots/sell-redirects-login.png) | — | — | no | — |
+| 91 | 408 | `checklist-selling-become-seller-store-setup` | Setting up store name/description/logo works | selling/become-seller--seller | seller | ❌ fail | The dashboard loads fine, but the seller CANNOT SAVE a storefront edit - validation rejects branding values the seller never typed. WHAT PASSES: /store loads a real dashboard with no pending-approval gate (the case's first assertion), an… | [shot](../tester/.tester-runs/run-3/shots/storefront-branding-blocks-save.png) | the store's seeded logo/banner are placehold.co URLs wrapped by seedExtMedia through /api/media/ext - neither a /media/<slug> reference nor an approved CDN domain - and the branding rule is applied to values LOADED FROM THE DB rather tha… | `storefront` `seller` | no | deferred-to-milestone |
+| 91 | 409 | `checklist-selling-become-seller-store-address` | Adding a pickup address for the store works | selling/become-seller--seller | seller | ⬜ null | Not driven. It creates a store pickup address, and store addresses are written into the same top-level `addresses` collection as buyer addresses (ownerType 'store') - PRESERVE tier, never wiped, never restored, and appkit-seed load is a … | [shot](../tester/.tester-runs/run-3/shots/storefront-branding-blocks-save.png) | — | — | no | — |
+| 92 | 410 | `checklist-addresses-address-filters-filters-actually-filter` | Every filter in the drawer changes the list | addresses/address-filters | main | ✅ pass | The search genuinely filters and the nonsense control is clean - both expectedData values match. MEASURED on /user/addresses as rehan.sheikh@gmail.com, counting rendered addresses by their pincode: unfiltered 1, searching 'Indore' leaves… | [shot](../tester/.tester-runs/run-3/shots/addr-filter-control.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
