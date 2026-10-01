@@ -1668,3 +1668,18 @@ cart state.
 FIX: give the page a step 0 that empties the cart (`carts` is CASCADE-tier and freely
 mutable, so this is permitted), or rewrite the assertions as deltas rather than
 absolutes.
+
+## FIX (case authoring): the EMI case points at the wrong route for a live item
+Found reading `buying/buying-checkout--p2` → `emi-checkout-flow`.
+
+Step 3 says *"Open **/products/**live-golden-retriever-puppy"*. Live items serve from
+**`/live/{slug}`** — confirmed this run, `/live/live-golden-retriever-puppy` resolves
+and carries its own og:image. The `/products/` spelling 404s, so the case cannot be
+driven at all as written.
+
+This is Root Cause #48's class: a listing type whose detail route is not the standard
+product page. Worth grepping the catalogue for other `/products/{non-product-prefix}`
+spellings — `classified-`, `digitalcode-`, `live-`, `auction-`, `preorder-`,
+`prizedraw-` all have their own routes.
+
+FIX: change the URL to `/live/live-golden-retriever-puppy`.
