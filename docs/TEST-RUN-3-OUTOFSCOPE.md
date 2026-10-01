@@ -1508,3 +1508,21 @@ Seen on `/admin/bundles/{slug}/edit` and `/admin/bundles/new`:
 
 Visible UI copy addressed to a developer. (First noted in
 `cta-layout/dialog-footers--admin`; repeated here as it is on the create form too.)
+
+## FIX (seeding gap): no seeded account has `disabled: true`
+Found by `money-flows/blockers--guest` → `banned-account-blocked`, which is
+untestable without one.
+
+Measured: across the 19 seeded users, `disabled: true` occurs **0** times and
+`disabled: false` **19** times. A grep of `appkit/src/seed/` and
+`appkit/src/features/tester/seed-data/` finds the string only in a prose comment at
+`authored/admin__bans-and-trust.ts:28`.
+
+So every case about a disabled/banned login is unrunnable, because producing one
+means disabling a **real** account — a write to the PRESERVE-tier `users` collection
+and its Firebase Auth record, which no reseed undoes.
+
+FIX: seed one dedicated disabled persona (e.g. `user-qa-disabled`, `disabled: true`).
+That also unblocks the soft-ban cases declined elsewhere in this run. Same shape as
+Root Cause #90 — a case reports "nothing here" because the catalogue never seeded its
+fixture, not because the feature is broken.

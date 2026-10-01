@@ -33,15 +33,15 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **95 / 255** |
-| Cases | **414 / 1847** (22%) |
+| Batches | **96 / 255** |
+| Cases | **415 / 1847** (22%) |
 | Cycle | 20 of 51 |
 | Next deploy | batch 100 |
-| Last updated | 2026-10-01 15:42 UTC |
+| Last updated | 2026-10-01 15:51 UTC |
 
 ```
-pass 179 · fail 59 · null 176
-fixed 24/59 · deferred 27 · open 8 · needs-human 7
+pass 179 · fail 60 · null 176
+fixed 24/60 · deferred 28 · open 8 · needs-human 7
 ```
 
 > ▸ **8 failure(s) not yet fixed.** Fixes land in one phase at the
@@ -529,5 +529,6 @@ untouched list is one nobody reads by milestone three.
 | 94 | 412 | `checklist-cta-layout-dialog-footers-filter-drawer-footer-stacks-when-narrow` | Filter drawer's Reset all / Apply stack rather than shrink when narrow | cta-layout/dialog-footers--guest | guest | ✅ pass | The footer holds up at 320px - both buttons fully readable, neither truncated, and the layout has a real mechanism for stacking rather than relying on luck. Measured signed out at a 320x720 viewport on /products with the filter drawer op… | [shot](../tester/.tester-runs/run-3/shots/filter-drawer-footer-320.png) | — | — | no | — |
 | 95 | 413 | `checklist-money-flows-blockers-out-of-stock-blocked` | A sold-out item cannot be added to the cart or checked out | money-flows/blockers | main | ✅ pass | A sold-out product cannot be bought, and the page says why. Signed in as a buyer at 1280px on /products/product-beyblade-burst-valtryek-v3-sold-out. BOTH purchase controls are REPLACED, not merely greyed: the two buttons that would be Ad… | [shot](../tester/.tester-runs/run-3/shots/blockers-sold-out.png) | — | — | no | — |
 | 95 | 414 | `checklist-money-flows-blockers-classified-has-no-cart` | A classified listing offers contact, never Add to Cart | money-flows/blockers | main | ✅ pass | A classified offers exactly one way to act and no way to buy - the capability contract holds. Signed in as a buyer at 1280px on /classified/classified-beyblade-stadium-set ('Used Beyblade Stadium Set — Local Pickup Only'). PRESENT: exact… | [shot](../tester/.tester-runs/run-3/shots/blockers-classified-no-cart.png) | — | — | no | — |
+| 96 | 415 | `checklist-money-flows-blockers-cross-store-group-refused` | A bundle whose members span two stores is refused when saved | money-flows/blockers--admin | admin | ❌ fail | The cross-store guard NEVER RAN, and the reason is worse than the case anticipated: the admin bundle editor cannot save ANY bundle at all. This is step 5's trap in a form the case did not predict - it warned that a minimum-members refusa… | [shot](../tester/.tester-runs/run-3/shots/bundle-create-blocked.png) | Admin bundle CREATION is impossible, so the cross-store guard is unreachable and UNVERIFIED. dynamicRule (bundle-form.ts:117) wraps a non-optional z.object (line 58) with only a UI-level when: ruleType==='dynamic'; hidden controls are no… | `bundle-form.ts` | no | deferred-to-milestone |
 
 <!-- TEST-RUN-3-TABLE:END -->
