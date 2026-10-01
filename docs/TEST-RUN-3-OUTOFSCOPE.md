@@ -1559,3 +1559,24 @@ grid" and slot 1 to become booked, but its steps never set the event's status an
 create form defaults to **draft**. A draft lottery correctly renders its slots
 non-interactive, so the case as written can never reach its own last assertion.
 FIX: add a publish step between steps 6 and 8.
+
+## An admin event cannot be deleted (and its rows have no actions)
+Found attempting the cleanup `lottery-can-be-created-without-seeding`'s `endResult`
+requires ("Delete the event afterwards").
+
+- `/admin/events/{id}/edit` renders "Edit Event" with **no delete control** (scanned
+  every button and link for /delete/i).
+- `/admin/events` rows have **no per-row controls whatsoever** — walking 5 levels up
+  from a row's text reaches the page container, and the only controls found are the
+  toolbar's (Search, Grid/List/Table view, Add Event, Hide Toolbar). No edit, no
+  delete, no view action.
+
+So an event created by mistake cannot be removed by an admin, and the list is a
+Root Cause #56 instance (rows that can be seen but not acted on).
+
+The event left behind is `SJHlHFAs5BHMLQwH8MdM` ("QA Event
+lottery-created-without-seeding", draft, 3 slots). `events` is SEED_OWNED, so the
+run's teardown wipes it; it is draft and therefore not live to buyers.
+
+FIX: add a delete row action (with the `confirmation` config Rule #7 requires) and a
+row-level detail affordance to the admin events list.
