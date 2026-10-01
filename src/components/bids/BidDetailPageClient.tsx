@@ -35,6 +35,9 @@ import {
   apiClient,
   buildBidDetailFields,
   bidStatusBadge,
+  ADMIN_ENDPOINTS,
+  SELLER_ENDPOINTS,
+  ACCOUNT_ENDPOINTS,
   type BidDetailViewer,
 } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
@@ -50,15 +53,31 @@ const TONE_TO_VARIANT: Record<string, "success" | "warning" | "danger" | "info" 
   neutral: "default",
 };
 
+/**
+ * The portal's own single-bid URL — each has different scoping.
+ *
+ * 🛑 Derived from `viewer`, NOT passed in as a prop. The three page shims are
+ * SERVER components, and a function cannot cross the RSC boundary as a prop —
+ * `endpoint={ADMIN_ENDPOINTS.BID_BY_ID}` made all three pages throw React #441
+ * and render the error boundary instead of the bid. `viewer` already decides
+ * the endpoint, so the function prop was redundant as well as illegal.
+ * Found by checklist-page-wiring-detail-pages-detail-page-matches-list-modal.
+ *
+ * `ACCOUNT_ENDPOINTS` had to be added to appkit's `client.ts` for this — it was
+ * reachable only from `index.ts`, which a Client Component must not import.
+ */
+const BID_ENDPOINT: Record<BidDetailViewer, (id: string) => string> = {
+  admin: (id) => ADMIN_ENDPOINTS.BID_BY_ID(id),
+  seller: (id) => SELLER_ENDPOINTS.BID_BY_ID(id),
+  buyer: (id) => ACCOUNT_ENDPOINTS.BID_BY_ID(id),
+};
+
 export function BidDetailPageClient({
   viewer,
-  endpoint,
   backHref,
   backLabel,
 }: {
   viewer: BidDetailViewer;
-  /** Builds the portal's own single-bid URL — each has different scoping. */
-  endpoint: (id: string) => string;
   backHref: string;
   backLabel: string;
 }) {
@@ -68,7 +87,7 @@ export function BidDetailPageClient({
   const { data, isLoading, isError } = useQuery({
     queryKey: ["bid-detail", viewer, id],
     queryFn: async () => {
-      const res = await apiClient.get(endpoint(id));
+      const res = await apiClient.get(BID_ENDPOINT[viewer](id));
       const payload = res as { data?: unknown };
       return (payload.data ?? res) as Parameters<typeof buildBidDetailFields>[0];
     },

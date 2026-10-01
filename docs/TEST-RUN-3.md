@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **74 / 255** |
-| Cases | **348 / 1847** (19%) |
-| Cycle | 15 of 51 |
-| Next deploy | batch 75 |
-| Last updated | 2026-10-01 13:55 UTC |
+| Batches | **75 / 255** |
+| Cases | **350 / 1847** (19%) |
+| Cycle | 16 of 51 |
+| Next deploy | batch 100 |
+| Last updated | 2026-10-01 13:58 UTC |
 
 ```
-pass 151 · fail 55 · null 142
+pass 153 · fail 55 · null 142
 fixed 23/55 · deferred 25 · open 7 · needs-human 7
 ```
 
@@ -463,5 +463,7 @@ untouched list is one nobody reads by milestone three.
 | 73 | 346 | `checklist-public-pages-core-listing-pages-category-brand-highlights-faq-grouped-listings` | A category detail page shows a highlights list + FAQ accordion right after the hero, a bra | public-pages/core-listing-pages--p2 | guest | ⬜ null | Not driven - context went on case 1, whose counter disagreement was the measurable claim on this page. Recorded as pending rather than omitted. Needs the FAQ accordion actually expanded to confirm the answers are real rather than empty, … | [shot](../tester/.tester-runs/run-3/shots/cat-xparts-0-vs-58.png) | — | — | no | — |
 | 74 | 347 | `checklist-addresses-state-picker-state-is-a-picker-for-india` | State is a searchable picker for India, free text for countries without one | addresses/state-picker | main | ✅ pass | India's state list is exactly right and the field genuinely cannot be typed into. MEASURED on /user/addresses/new as rehan.sheikh@gmail.com with Country already reading India: opening the State / region control yields exactly 36 UNIQUE o… | [shot](../tester/.tester-runs/run-3/shots/state-picker-36.png) | — | — | no | — |
 | 74 | 348 | `checklist-addresses-state-picker-changing-country-clears-state` | Changing country clears the state you had chosen | addresses/state-picker | main | ⬜ null | Not driven. It needs the country switched India -> Canada -> India while watching the state field clear and re-populate, and its expectedData is specific: canadaOptionCount 13 (10 provinces plus 3 territories) and stateAfterCountryChange… | [shot](../tester/.tester-runs/run-3/shots/state-picker-36.png) | — | — | no | — |
+| 75 | 349 | `checklist-community-support-public-profile-view-seller-store` | Viewing a seller's public store page works | community-support/public-profile | guest | ✅ pass | None of the four secret fields reaches the public HTML. Signed out on /stores/store-beyblade-arena (which redirects to /products): the header renders 'Beyblade Arena' with its banner image, and I scanned the FULL rendered document - 642,… | [shot](../tester/.tester-runs/run-3/shots/profile-no-pii.png) | — | — | no | — |
+| 75 | 350 | `checklist-community-support-public-profile-view-public-profile` | Viewing another user's public profile works | community-support/public-profile | guest | ✅ pass | No email address and no phone number appear anywhere - neither rendered nor in source. Signed out on /profile/user-tyson-blader. The page renders an avatar, a bio and populated tabs (Catalogue, Listings, Reviews). I searched the full doc… | [shot](../tester/.tester-runs/run-3/shots/profile-no-pii.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
