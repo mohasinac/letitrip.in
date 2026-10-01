@@ -1646,3 +1646,25 @@ passes; what fails is host consistency with the rest of the site.
 
 FIX: derive the bundle route's URL from `SEO_CONFIG.siteUrl` like its siblings, and
 extend the canonical-host audit to catch this construction.
+
+## FIX (case authoring): every checkout case assumes an empty cart and none clears it
+Found driving `buying/buying-checkout--p1` → `add-to-cart`, which could not be scored.
+
+All 12 cases on that page begin "add to cart" and then assert an **absolute** quantity
+or subtotal — `cartLineQuantity: 1`, `cartLinePrice: 999`, the ₹5,996 subtotal the OTP
+threshold case depends on, the two-order multi-seller split. None of them clears the
+cart first.
+
+The seeded buyer's cart is **not empty**: measured 2026-10-01 it already held 3 lines
+under Beyblade Arena — Valkyrie ×2, Dranzer S, X App Starter Pack Code — a ₹4,695.00
+seller subtotal and a ₹77.00 shipping line. So one add made the Valkyrie line read
+qty **3** / ₹2,997.00, and the case's expected 1 / ₹999 was unmeasurable.
+
+This is not a product defect — the arithmetic was right (999 × 3) and the badge
+incremented correctly. It makes the whole page unscoreable as written, and worse, it
+would make a *wrong* total look plausible: nobody can tell a pricing bug from leftover
+cart state.
+
+FIX: give the page a step 0 that empties the cart (`carts` is CASCADE-tier and freely
+mutable, so this is permitted), or rewrite the assertions as deltas rather than
+absolutes.

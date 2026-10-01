@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **101 / 255** |
-| Cases | **424 / 1847** (23%) |
+| Batches | **102 / 255** |
+| Cases | **430 / 1847** (23%) |
 | Cycle | 21 of 51 |
 | Next deploy | batch 125 |
-| Last updated | 2026-10-01 17:11 UTC |
+| Last updated | 2026-10-01 17:15 UTC |
 
 ```
-pass 181 · fail 63 · null 180
+pass 185 · fail 63 · null 182
 fixed 25/63 · deferred 29 · open 9 · needs-human 7
 ```
 
@@ -539,5 +539,11 @@ untouched list is one nobody reads by milestone three.
 | 100 | 422 | `checklist-page-wiring-reachability-public-nav-and-footer-resolve` | Every header, sidebar-support and footer link opens a real page | page-wiring/reachability--guest | guest | ✅ pass | No broken link, measured across every public destination a signed-out visitor can reach from the chrome: brokenLinkCount is 0. WHAT I COLLECTED. Signed out on /, I harvested every same-origin href from the <header>, from the slide-out me… | [shot](../tester/.tester-runs/run-3/shots/nav-footer-links-resolve.png) | — | — | no | — |
 | 101 | 423 | `checklist-search-and-nav-settings-deep-links-tab-query-param-opens-that-tab` | ?tab= opens the named tab | search-and-nav/settings-deep-links | admin | ❌ fail | The ROUTING half passes and both expectedData values are confirmed; the 'with its fields on screen' half fails. ?tab=fees selects Fees - the tab control's value and the panel heading both read Fees. With NO parameter the page opens Brand… | [shot](../tester/.tester-runs/run-3/shots/admin-site-tab-deeplink.png) | SEVERE: /admin/site renders NO editable fields on ANY tab, so no site setting can be changed in production. <main> totals 530-534 chars - the tab <select>, the selected tab's name, and a 'Save all changes' button - and the count of visib… | `page.tsx` | no | deferred-to-milestone |
 | 101 | 424 | `checklist-search-and-nav-settings-deep-links-unknown-tab-falls-back-quietly` | An unknown ?tab= falls back to the default without an error | search-and-nav/settings-deep-links | admin | ❌ fail | The fallback behaviour is exactly right - quiet, no error, no broken chrome - and the case still fails on its last clause. WHAT PASSES: ?tab=nonsense opens Branding and ?tab= (empty value) opens Branding, so fallbackTab is 'branding' for… | [shot](../tester/.tester-runs/run-3/shots/admin-site-tab-deeplink.png) | — | — | no | — |
+| 102 | 425 | `checklist-seo-og-images-og-image-renders-homepage` | The homepage's social preview image renders as a real image, not a blank or errored one | seo/og-images | guest | ✅ pass | A real, branded image. /'s og:image is https://www.letitrip.in/opengraph-image - it returns HTTP 200 with content-type image/png and 123,696 bytes, and I opened it and LOOKED at it: a 1200x630 card with a teal-to-magenta gradient, the Le… | [shot](../tester/.tester-runs/run-3/shots/og-homepage-card.png) | — | — | no | — |
+| 102 | 426 | `checklist-seo-og-images-og-image-product` | A product's social preview image shows that product's own title and image | seo/og-images | guest | ✅ pass | The card is the product's OWN image carrying the product's OWN name, not a generic site card. /products/product-beyblade-burst-valkyrie declares og:image = /api/media/ext?url=https%3A%2F%2Fplacehold.co%2F900x900%2F334155%2Ff8fafc%2Fpng%3… | [shot](../tester/.tester-runs/run-3/shots/og-homepage-card.png) | — | — | no | — |
+| 102 | 427 | `checklist-seo-og-images-og-image-carries-no-price` | No social preview image renders a ₹ amount — product, bundle, classified, digital code, li | seo/og-images | guest | ✅ pass | cardsShowingRupee is 0, across all six listing types the case names. I resolved every one of the six og:image URLs and decoded them. Each is /api/media/ext?url=placehold.co/...?text=<LISTING NAME> and NOTHING ELSE - the only text any of … | [shot](../tester/.tester-runs/run-3/shots/og-homepage-card.png) | — | — | no | — |
+| 102 | 428 | `checklist-seo-og-images-og-image-brand-logo-present` | A brand's social preview card shows the brand's cover image rather than an empty slot | seo/og-images | guest | ✅ pass | Both brands' images are present, neither slot is empty. /brands/brand-takara-tomy declares og:image = /api/media/ext?url=placehold.co/800x800/...?text=Takara%20Tomy, returning 200 image/png at 27,767 bytes; /brands/brand-beyblade declare… | [shot](../tester/.tester-runs/run-3/shots/og-homepage-card.png) | — | — | no | — |
+| 102 | 429 | `checklist-seo-og-images-og-tags-present-and-absolute` | Open Graph and Twitter tags are present on public pages and their URLs are absolute, on th | seo/og-images | guest | ⬜ null | All four tags are present and absolute everywhere I looked - but I did not cover the case's third page, so this is a null rather than a pass, and I found a host defect worth more than the case asked for. WHAT I VERIFIED, across TEN pages… | [shot](../tester/.tester-runs/run-3/shots/og-homepage-card.png) | — | — | no | — |
+| 102 | 430 | `checklist-seo-og-images-og-image-missing-media-fallback` | A record with no image of its own still produces a readable social card rather than a brok | seo/og-images | guest | ⬜ null | Answered null exactly as step 1 instructs: '🛑 THIS BRANCH CANNOT BE REACHED THROUGH THE UI — answer null and record why, rather than...'. The case tests the fallback artwork used when a listing has NO media, and there is no way through … | [shot](../tester/.tester-runs/run-3/shots/og-homepage-card.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
