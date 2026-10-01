@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **105 / 255** |
-| Cases | **460 / 1847** (25%) |
+| Batches | **106 / 255** |
+| Cases | **462 / 1847** (25%) |
 | Cycle | 22 of 51 |
 | Next deploy | batch 125 |
-| Last updated | 2026-10-01 20:22 UTC |
+| Last updated | 2026-10-01 20:27 UTC |
 
 ```
-pass 193 · fail 64 · null 203
+pass 194 · fail 64 · null 204
 fixed 25/64 · deferred 29 · open 10 · needs-human 7
 ```
 
@@ -575,5 +575,7 @@ untouched list is one nobody reads by milestone three.
 | 105 | 458 | `checklist-buying-buying-checkout-checkout-cash-payment-no-validation-error` | Checking the consent box and clicking "Pay via UPI / Cash" places the order successfully — | buying/buying-checkout--p3 | main | ✅ pass | No validation error - validationErrorShown is false. With consent ticked I clicked 'Pay via UPI / Cash' and it went straight through: order order-1-20261001-1t5ysh created, redirected to /user/orders/order-1-20261001-1t5ysh/payment with … | [shot](../tester/.tester-runs/run-3/shots/order-total-vs-payment-page.png) | — | — | no | — |
 | 105 | 459 | `checklist-buying-buying-checkout-checkout-order-summary-full-breakdown` | The checkout Order Summary panel shows Shipping, COD handling fee (when COD is the likely  | buying/buying-checkout--p3 | main | ✅ pass | Every add-on appears as its own named line and the arithmetic is exact. BEFORE ticking anything, Step 2's summary read: Subtotal ₹999.00, Shipping ₹77.00, Platform fee ₹10.00, GST ₹1.80, Total ₹1,087.80. I ticked 'WhatsApp order updates … | [shot](../tester/.tester-runs/run-3/shots/checkout-addons-consent.png) | — | — | no | — |
 | 105 | 460 | `checklist-buying-buying-checkout-checkout-phonepe-charge-includes-shipping` | When PhonePe online payment is enabled, the amount charged in the PhonePe checkout iframe  | buying/buying-checkout--p3 | main | ⬜ null | NOT DRIVEN, and it is blocked twice over - the second blocker is itself one of this run's findings. FIRST: 'Pay Online (PhonePe)' is NOT among the offered payment methods. Step 3 offers exactly two, 'Pay via UPI / Cash' and 'Cash on Deli… | [shot](../tester/.tester-runs/run-3/shots/order-total-vs-payment-page.png) | — | — | no | — |
+| 106 | 461 | `checklist-buying-buying-checkout-checkout-guest-redirected-to-signin` | A signed-out visitor opening /checkout directly is sent to sign in, and is not shown a che | buying/buying-checkout--guest | guest | ✅ pass | A signed-out visitor never reaches checkout, and nothing half-renders on the way. Opening /checkout by URL while signed out lands on **/auth/login?redirect=/checkout** - note the redirect parameter, which preserves the intended destinati… | [shot](../tester/.tester-runs/run-3/shots/guest-cart-price-leak.png) | — | — | no | — |
+| 106 | 462 | `checklist-buying-buying-checkout-checkout-guest-returns-after-signin` | After signing in from that prompt the visitor lands back on checkout with their cart intac | buying/buying-checkout--guest | guest | ⬜ null | The guest half works and I verified it; the sign-in half I cannot perform, so this is a null with the ground covered spelled out. WHAT I CONFIRMED. Signed out, I added product-beyblade-burst-valkyrie: the cart holds exactly ONE line ('Ca… | [shot](../tester/.tester-runs/run-3/shots/guest-cart-price-leak.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->

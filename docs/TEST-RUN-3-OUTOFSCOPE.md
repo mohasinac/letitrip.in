@@ -1732,3 +1732,28 @@ FIX: gate the cart's money the same way the listing does — `<GatedPrice>` for 
 price, `<PricesOnly>` for add-on amounts — or, if cart prices are considered acceptable
 exposure, drop the gate on the listing too. The present split gives the protection of
 neither while implying both. `audit-guest-price-leak` should cover `features/cart`.
+
+## FIX: `/admin/prize-draws/{id}/edit` is the generic product editor — no prize-draw fields
+Found driving `admin/prize-draws-lotteries` → `prizedraw-scam-guard`, and it blocks three
+further cases in that same batch (`prizedraw-create`, `prizedraw-reveal-winner`,
+`prizedraw-lock-on-reveal`).
+
+The route renders the ordinary product editor: sections **Basic Info / Media / Pricing /
+Shipping / Returns / Publish**, fields `title`, `description`, `condition`, tags,
+`barcodeId`, `externalVideoUrl`, `youtubeId`, `price`, `compareAtPrice`,
+`shippingPaidBy`, `gstRate`, `hsnCode`, `returnPolicy`, `status`.
+
+**Not one prize-draw-specific control**: no prize list, no entry count, no per-entry
+price, no `prizeDrawMode` (reveal/lottery) selector, and **no reveal trigger** (no button
+matches `/reveal/i`).
+
+So an admin cannot configure a prize draw's prizes, cannot set entries or per-entry
+price, and cannot perform a reveal from the screen the cases name.
+
+Worth contrasting with the **lottery** side, which is complete: `/admin/lotteries/{id}/edit`
+carries slot numbers, prize names, images, per-slot prices, draw rules and a working save
+that preserves bookings (verified this batch). A prize-draw equivalent may exist on a
+route the cases don't name — that is the first thing to check before building anything.
+
+FIX: either point these cases at the real prize-draw configuration surface, or build it —
+the lottery slot editor is the obvious model.
