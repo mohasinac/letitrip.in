@@ -33,15 +33,15 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **98 / 255** |
-| Cases | **420 / 1847** (23%) |
+| Batches | **99 / 255** |
+| Cases | **421 / 1847** (23%) |
 | Cycle | 20 of 51 |
 | Next deploy | batch 100 |
-| Last updated | 2026-10-01 16:13 UTC |
+| Last updated | 2026-10-01 16:20 UTC |
 
 ```
-pass 180 · fail 60 · null 180
-fixed 24/60 · deferred 28 · open 8 · needs-human 7
+pass 180 · fail 61 · null 180
+fixed 24/61 · deferred 29 · open 8 · needs-human 7
 ```
 
 > ▸ **8 failure(s) not yet fixed.** Fixes land in one phase at the
@@ -535,5 +535,6 @@ untouched list is one nobody reads by milestone three.
 | 98 | 418 | `checklist-page-wiring-reachability-lottery-can-be-created-without-seeding` | An admin can create a lottery end to end, with no seed script | page-wiring/reachability--admin | admin | ⬜ null | THREE OF THE FOUR CLAUSES PASS, and the fourth is unreachable as the steps are written - not broken. LOTTERY IS IN THE PICKER, which is the documented gap and the expectedData: /admin/events/new offers all eight EventType values - Sale, … | [shot](../tester/.tester-runs/run-3/shots/lottery-created-with-slots.png) | — | — | no | — |
 | 98 | 419 | `checklist-page-wiring-reachability-carousel-can-be-renamed` | A named carousel can be renamed after it is created | page-wiring/reachability--admin | admin | ✅ pass | Full pass including the restore, verified by reload at every step. editControlPresent is true. THE LIST IS A NAMED-CAROUSEL LIST, not a bare slide editor - /admin/carousels renders a 'Named Carousels' table with Name \| Status \| Slides \| … | [shot](../tester/.tester-runs/run-3/shots/carousel-renamed-restored.png) | — | — | no | — |
 | 98 | 420 | `checklist-page-wiring-reachability-user-tester-hub-reachable-from-user-sidebar` | A tester reaches the Tester Hub from their OWN sidebar | page-wiring/reachability--admin | admin | ⬜ null | The non-tester half PASSES and is the case's expectedData; the tester half is refused on the run's safety rule. testingGroupVisibleForNonTester is FALSE, measured: signed in as a buyer who does not carry the tester flag, /user renders si… | [shot](../tester/.tester-runs/run-3/shots/carousel-renamed-restored.png) | — | — | no | — |
+| 99 | 421 | `checklist-page-wiring-reachability-grouped-listing-members-editable-from-its-own-page` | A grouped listing's MEMBERS can be picked while creating it | page-wiring/reachability--seller | seller | ❌ fail | The cover-image control DOES NOT EXIST - it renders a developer message where an input should be - so 'all three controls are present' fails and step 6 is impossible. The member half I could not test, for a reason that is about the harne… | [shot](../tester/.tester-runs/run-3/shots/grouped-listing-picker-no-results.png) | The grouped-listing editor's Cover Image field renders the developer string 'Provide a renderer for "coverImage" - this field needs a custom control.' instead of an input, so a cover image cannot be attached. GroupedListingEditorView.tsx… | `GroupedListingEditorView.tsx` | no | deferred-to-milestone |
 
 <!-- TEST-RUN-3-TABLE:END -->

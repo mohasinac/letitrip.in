@@ -1601,3 +1601,23 @@ Any seller case naming specific product slugs is unrunnable as written.
 FIX: point `session-seller.json` at `tyson@beybladearena.in`, or re-write the seller
 cases against slugs the harness's actual seller owns. Also worth giving seeded accounts
 distinct display names so the identity is readable off any page.
+
+## 12 public pages serve the generic site title
+Found while sweeping the chrome's 53 destinations in
+`page-wiring/reachability--guest` → `public-nav-and-footer-resolve` (which passes).
+
+These serve `LetItRip — India's Collectibles Marketplace` instead of a page-specific
+`<title>`:
+
+`/wishlist` · `/cart` · `/auth/login` · `/auth/register` · `/user/profile` ·
+**`/classified`** · **`/digital-codes`** · **`/live`** · `/item-requests` · `/report` ·
+`/user/become-seller` · `/store`
+
+The three bolded ones are **public listing pages whose siblings all have real titles**
+(`/products` → "Collectibles for Sale — LetItRip", `/auctions` → "Live Collectibles
+Auctions — LetItRip"), so this is a browser-tab and SERP defect on indexable pages, not
+only on gated ones. Note `/classified`, `/digital-codes` and `/live` are exactly the
+three types whose only discovery path is the general catalogue (see CLAUDE.md
+"inGeneralCatalogue"), which makes their SERP presence matter more, not less.
+
+FIX: give each a `generateMetadata`/`metadata` title, as the sibling listing routes have.
