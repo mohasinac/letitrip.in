@@ -1708,3 +1708,27 @@ the buyer is asked to pay include shipping and fees? Here it does not.
 
 FIX: render the order's grand total prominently beside the UPI ID — and ideally encode
 it in a UPI deep link (`upi://pay?pa=…&am=1146.80`) so the amount cannot be mistyped.
+
+## FIX (guest price gate bypassed): the cart shows a guest the price the listing hides
+Found driving `buying/buying-checkout--guest` → `checkout-guest-returns-after-signin`.
+
+Same signed-out visitor, two pages, measured minutes apart:
+
+| page | shows |
+|---|---|
+| `/products/product-beyblade-burst-valkyrie` | **"Sign in to see price"** — zero rupee figures anywhere in the document |
+| `/cart` after clicking Add to Cart | **₹999.00** on the line, plus **₹10.00** and **₹49.00** for add-ons |
+
+…while `/cart` *still* renders "Sign in to see price" for the totals. So the gate is
+both **bypassable** and **internally inconsistent**: a guest who cannot read a price on
+the listing reads it by adding the item to their cart — two clicks, no account.
+
+This defeats the gate's stated purpose (Root Cause #93: stop the catalogue being read at
+scale without an account). The documented reason cart surfaces are ungated is that they
+are *"signed-in by definition"* — but a **guest cart exists** (localStorage-backed, and
+`mergeGuestCart` exists precisely to merge it on login), so that assumption is false.
+
+FIX: gate the cart's money the same way the listing does — `<GatedPrice>` for the line
+price, `<PricesOnly>` for add-on amounts — or, if cart prices are considered acceptable
+exposure, drop the gate on the listing too. The present split gives the protection of
+neither while implying both. `audit-guest-price-leak` should cover `features/cart`.

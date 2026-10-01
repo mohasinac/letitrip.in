@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **104 / 255** |
-| Cases | **454 / 1847** (25%) |
-| Cycle | 21 of 51 |
+| Batches | **105 / 255** |
+| Cases | **460 / 1847** (25%) |
+| Cycle | 22 of 51 |
 | Next deploy | batch 125 |
-| Last updated | 2026-10-01 20:14 UTC |
+| Last updated | 2026-10-01 20:22 UTC |
 
 ```
-pass 189 · fail 63 · null 202
-fixed 25/63 · deferred 29 · open 9 · needs-human 7
+pass 193 · fail 64 · null 203
+fixed 25/64 · deferred 29 · open 10 · needs-human 7
 ```
 
-> ▸ **9 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **10 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -569,5 +569,11 @@ untouched list is one nobody reads by milestone three.
 | 104 | 452 | `checklist-buying-buying-checkout-out-of-stock-policy-skip` | With the "skip unavailable items" policy, checkout proceeds with only the still-available  | buying/buying-checkout--p2 | main | ⬜ null | NOT DRIVEN - it needs two sessions acting concurrently. The case requires reducing a product's stock BETWEEN my selecting the out-of-stock policy and my submitting the checkout, which means a second identity mutating the catalogue inside… | [shot](../tester/.tester-runs/run-3/shots/payment-proof-under-review.png) | — | — | no | — |
 | 104 | 453 | `checklist-buying-buying-checkout-order-confirmation` | Order confirmation page/email shows correct order details | buying/buying-checkout--p2 | main | ⬜ null | PARTIALLY OBSERVED, recorded as null because its distinguishing assertion is the email and I did not check the mailbox. WHAT I SAW: completing checkout with manual payment does NOT land on a generic 'order confirmation' page - it redirec… | [shot](../tester/.tester-runs/run-3/shots/payment-proof-under-review.png) | — | — | no | — |
 | 104 | 454 | `checklist-buying-buying-checkout-payment-auto-approve-dispute` | An auto-approved order (2h, no admin review) shows the badge, and "Raise a dispute" submit | buying/buying-checkout--p2 | main | ⬜ null | NOT TESTABLE IN A SESSION. This case requires waiting out a real timer - the 15-minute payment window for the expiry case, two hours for the auto-approve case - and neither can be shortened from the UI. I verified the mechanism exists ra… | [shot](../tester/.tester-runs/run-3/shots/payment-proof-under-review.png) | — | — | no | — |
+| 105 | 455 | `checklist-buying-buying-checkout-checkout-mobile-responsive` | The full checkout flow (cart → address → payment → confirmation) is usable and correctly l | buying/buying-checkout--p3 | main | ✅ pass | No horizontal scroll at any step - horizontalScrollPresent is false. Measured at a real 390x844 viewport by comparing document.documentElement.scrollWidth against innerWidth at every stage: the product page 390/390, Step 1 390/390, Step … | [shot](../tester/.tester-runs/run-3/shots/checkout-mobile-step3.png) | — | — | no | — |
+| 105 | 456 | `checklist-buying-buying-checkout-checkout-back-navigation` | Using the browser back button mid-checkout does not lose cart state or double-submit the o | buying/buying-checkout--p3 | main | ❌ fail | The browser back button does NOT return the buyer to the previous step - it leaves checkout entirely, and the progress is lost. Both halves of the expected UI state fail. EXPECTED: 'After pressing back from Step 2, Step 1 is shown with t… | [shot](../tester/.tester-runs/run-3/shots/checkout-mobile-step3.png) | — | — | no | — |
+| 105 | 457 | `checklist-buying-buying-checkout-checkout-manual-payment-consent` | Choosing manual payment (UPI/Cash) at checkout shows a how-it-works guide (payment steps,  | buying/buying-checkout--p3 | main | ✅ pass | The consent gate works exactly as specified - submitEnabledBeforeConsent is false. On Step 3 with the consent checkbox UNCHECKED, 'Pay via UPI / Cash' carries the real disabled attribute (element.disabled === true). I then ticked the che… | [shot](../tester/.tester-runs/run-3/shots/checkout-addons-consent.png) | — | — | no | — |
+| 105 | 458 | `checklist-buying-buying-checkout-checkout-cash-payment-no-validation-error` | Checking the consent box and clicking "Pay via UPI / Cash" places the order successfully — | buying/buying-checkout--p3 | main | ✅ pass | No validation error - validationErrorShown is false. With consent ticked I clicked 'Pay via UPI / Cash' and it went straight through: order order-1-20261001-1t5ysh created, redirected to /user/orders/order-1-20261001-1t5ysh/payment with … | [shot](../tester/.tester-runs/run-3/shots/order-total-vs-payment-page.png) | — | — | no | — |
+| 105 | 459 | `checklist-buying-buying-checkout-checkout-order-summary-full-breakdown` | The checkout Order Summary panel shows Shipping, COD handling fee (when COD is the likely  | buying/buying-checkout--p3 | main | ✅ pass | Every add-on appears as its own named line and the arithmetic is exact. BEFORE ticking anything, Step 2's summary read: Subtotal ₹999.00, Shipping ₹77.00, Platform fee ₹10.00, GST ₹1.80, Total ₹1,087.80. I ticked 'WhatsApp order updates … | [shot](../tester/.tester-runs/run-3/shots/checkout-addons-consent.png) | — | — | no | — |
+| 105 | 460 | `checklist-buying-buying-checkout-checkout-phonepe-charge-includes-shipping` | When PhonePe online payment is enabled, the amount charged in the PhonePe checkout iframe  | buying/buying-checkout--p3 | main | ⬜ null | NOT DRIVEN, and it is blocked twice over - the second blocker is itself one of this run's findings. FIRST: 'Pay Online (PhonePe)' is NOT among the offered payment methods. Step 3 offers exactly two, 'Pay via UPI / Cash' and 'Cash on Deli… | [shot](../tester/.tester-runs/run-3/shots/order-total-vs-payment-page.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
