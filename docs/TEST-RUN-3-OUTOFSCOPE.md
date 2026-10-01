@@ -1757,3 +1757,29 @@ route the cases don't name — that is the first thing to check before building 
 
 FIX: either point these cases at the real prize-draw configuration surface, or build it —
 the lottery slot editor is the obvious model.
+
+## The public events listing has no status filter
+Found driving `content-discovery/events--guest` → `events-listing-cards-images`, whose
+steps 4–5 ("read every status filter offered and select each in turn") have nothing to
+act on.
+
+`/events` offers exactly one sort select (`startsAt` / `-startsAt` / `title` / `-title` /
+`-stats.totalEntries`) and one **"Show expired"** toggle. There are no Active / Draft /
+Ended / Paused / Cancelled chips — searched every visible button for those labels.
+
+The data exists: this run established the seed carries `paused` and `cancelled` event
+fixtures (added so the admin chips had rows). It is the public filter UI that is missing.
+
+FIX: either add the status chips, or rewrite the case around "Show expired" — but note
+the admin surface filters by status, so the public/admin split is currently inconsistent.
+
+## Event status badge renders the raw enum "Spin_wheel"
+Noticed on `/events/daily-beyblade-pull-wheel` while driving
+`content-discovery/events--guest` → `spin-results-tab`.
+
+The badge reads **`Spin_wheel`** — the raw `EventType` value, underscore and all — rather
+than a humanised label such as "Spin the Wheel". The admin event type picker *does* label
+it correctly ("Spin the Wheel", verified in batch 98), so the mapping exists and the
+public badge simply isn't using it.
+
+FIX: run the public badge through the same label map the admin picker uses.

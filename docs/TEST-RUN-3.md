@@ -33,15 +33,15 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **106 / 255** |
-| Cases | **462 / 1847** (25%) |
+| Batches | **107 / 255** |
+| Cases | **468 / 1847** (25%) |
 | Cycle | 22 of 51 |
 | Next deploy | batch 125 |
-| Last updated | 2026-10-01 20:27 UTC |
+| Last updated | 2026-10-01 20:33 UTC |
 
 ```
-pass 194 · fail 64 · null 204
-fixed 25/64 · deferred 29 · open 10 · needs-human 7
+pass 195 · fail 65 · null 208
+fixed 25/65 · deferred 30 · open 10 · needs-human 7
 ```
 
 > ▸ **10 failure(s) not yet fixed.** Fixes land in one phase at the
@@ -577,5 +577,11 @@ untouched list is one nobody reads by milestone three.
 | 105 | 460 | `checklist-buying-buying-checkout-checkout-phonepe-charge-includes-shipping` | When PhonePe online payment is enabled, the amount charged in the PhonePe checkout iframe  | buying/buying-checkout--p3 | main | ⬜ null | NOT DRIVEN, and it is blocked twice over - the second blocker is itself one of this run's findings. FIRST: 'Pay Online (PhonePe)' is NOT among the offered payment methods. Step 3 offers exactly two, 'Pay via UPI / Cash' and 'Cash on Deli… | [shot](../tester/.tester-runs/run-3/shots/order-total-vs-payment-page.png) | — | — | no | — |
 | 106 | 461 | `checklist-buying-buying-checkout-checkout-guest-redirected-to-signin` | A signed-out visitor opening /checkout directly is sent to sign in, and is not shown a che | buying/buying-checkout--guest | guest | ✅ pass | A signed-out visitor never reaches checkout, and nothing half-renders on the way. Opening /checkout by URL while signed out lands on **/auth/login?redirect=/checkout** - note the redirect parameter, which preserves the intended destinati… | [shot](../tester/.tester-runs/run-3/shots/guest-cart-price-leak.png) | — | — | no | — |
 | 106 | 462 | `checklist-buying-buying-checkout-checkout-guest-returns-after-signin` | After signing in from that prompt the visitor lands back on checkout with their cart intac | buying/buying-checkout--guest | guest | ⬜ null | The guest half works and I verified it; the sign-in half I cannot perform, so this is a null with the ground covered spelled out. WHAT I CONFIRMED. Signed out, I added product-beyblade-burst-valkyrie: the cart holds exactly ONE line ('Ca… | [shot](../tester/.tester-runs/run-3/shots/guest-cart-price-leak.png) | — | — | no | — |
+| 107 | 463 | `checklist-admin-prize-draws-lotteries-lottery-edit-preserves-bookings` | Editing a lottery's prizes leaves its bookings intact -- booked slots stay booked, against | admin/prize-draws-lotteries | admin | ✅ pass | Bookings survive a save and prices are the real stored amounts - bookedSlotsAfterSave 5, slotsPricedZero 0. This is Root Cause #76 (W22) confirmed fixed in production, and it is the defect that used to mark every purchased slot available… | [shot](../tester/.tester-runs/run-3/shots/lottery-bookings-preserved.png) | — | — | no | — |
+| 107 | 464 | `checklist-admin-prize-draws-lotteries-prizedraw-entries-view` | Admin and the owning seller can view the prize-draw winner mapping (which item went to whi | admin/prize-draws-lotteries | admin | ❌ fail | FAILS on two of the case's own checks: there is no way to VIEW an entry, and there is no filter or search at all - so the nonsense control cannot be run and nonsenseResultCount is unmeasurable rather than 0. WHAT RENDERS. /admin/prize-dr… | [shot](../tester/.tester-runs/run-3/shots/lottery-bookings-preserved.png) | The prize-draw entries view has NO row actions and NO filter/search. Enumerated every button and link on /admin/prize-draws/prizedraw-beyblade-metal-closed-revealed/entries reading innerText AND aria-label: all are sidebar navigation, no… | `page.tsx` | no | deferred-to-milestone |
+| 107 | 465 | `checklist-admin-prize-draws-lotteries-prizedraw-scam-guard` | A prize draw with active entries cannot be unpublished, archived, or deleted, and an alrea | admin/prize-draws-lotteries | admin | ⬜ null | The two anti-scam properties the case cares about HOLD, but the reveal half cannot be driven from this editor, so I am not recording a pass. WHAT I CONFIRMED on /admin/prize-draws/prizedraw-beyblade-burst-collectors-draw/edit: (step 3) t… | [shot](../tester/.tester-runs/run-3/shots/lottery-bookings-preserved.png) | — | — | no | — |
+| 107 | 466 | `checklist-admin-prize-draws-lotteries-prizedraw-create` | Admin can create a prize-draw listing, choosing instant or scheduled reveal mode and a 1–1 | admin/prize-draws-lotteries | admin | ⬜ null | NOT DRIVEN, and there is a structural obstacle worth recording before anyone tries. Step 3 is 'Define at least two prizes with names and save', and the prize-draw editor has no prize-list field: /admin/prize-draws/{id}/edit renders the g… | [shot](../tester/.tester-runs/run-3/shots/lottery-bookings-preserved.png) | — | — | no | — |
+| 107 | 467 | `checklist-admin-prize-draws-lotteries-prizedraw-reveal-winner` | Winners are assigned automatically via crypto.randomInt (on payment confirmation for insta | admin/prize-draws-lotteries | admin | ⬜ null | NOT DRIVEN - it spans two identities and a purchase, and its admin half has no control to use. The buyer must buy an entry in the prize draw created by the sibling case (which I could not create, see that verdict), then an admin must tri… | [shot](../tester/.tester-runs/run-3/shots/lottery-bookings-preserved.png) | — | — | no | — |
+| 107 | 468 | `checklist-admin-prize-draws-lotteries-prizedraw-lock-on-reveal` | Lock-on-reveal correctly blocks further entries after the draw | admin/prize-draws-lotteries | admin | ⬜ null | NOT DRIVEN - it depends on the two cases before it. It opens 'QA Prize Draw admin-create' after a prize has been revealed, and neither the creation nor the reveal could be performed (no prize-list field and no reveal control on the prize… | [shot](../tester/.tester-runs/run-3/shots/lottery-bookings-preserved.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
