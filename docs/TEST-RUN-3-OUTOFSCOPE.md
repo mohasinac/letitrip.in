@@ -1386,3 +1386,28 @@ first automated check reported `hasStreetish: true` — a false positive, matchi
 digits of `₹1,799.00` inside the scan window rather than any street.
 
 Screenshot: `tester/.tester-runs/run-3/shots/order-cash01-address.png`
+# The State / region picker's trigger is an unlabelled chevron
+
+Found while running `addresses/state-picker`. The case it came from **passes** on its
+own assertion (36 India options), so no case covers this.
+
+`/user/addresses/new`. The two adjacent controls render very differently:
+
+| field | trigger's visible text |
+|---|---|
+| `Country *` | `India ▾` |
+| `State / region *` | `▾` |
+
+No selected value, no placeholder — the entire button is a chevron. The
+`State / region *` label sits **outside** the button, so the control itself reads as
+decoration.
+
+It is also why an automated search for the control fails: looking for a trigger whose
+text contains "State" or "region" finds nothing, which is how I initially concluded the
+picker was absent from this form altogether. A human scanning the form has a milder
+version of the same problem.
+
+**Cheap fix**: give it a placeholder (`Select a state…`), matching how `Country` shows
+its current value.
+
+Screenshot: `tester/.tester-runs/run-3/shots/state-picker-36.png`
