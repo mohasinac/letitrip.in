@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **85 / 255** |
-| Cases | **384 / 1847** (21%) |
+| Batches | **87 / 255** |
+| Cases | **389 / 1847** (21%) |
 | Cycle | 18 of 51 |
 | Next deploy | batch 100 |
-| Last updated | 2026-10-01 15:01 UTC |
+| Last updated | 2026-10-01 15:09 UTC |
 
 ```
-pass 168 · fail 57 · null 159
+pass 172 · fail 57 · null 160
 fixed 24/57 · deferred 25 · open 8 · needs-human 7
 ```
 
@@ -499,5 +499,10 @@ untouched list is one nobody reads by milestone three.
 | 85 | 382 | `checklist-content-discovery-blog-blog-cover-image-display` | A blog post's cover image displays on both its listing card and its detail page | content-discovery/blog | guest | ⬜ null | Not driven. Batch room went on the search case - the one Root Cause #99 names, where the fix had to be verified on the SSR first paint rather than the hydrated client - and on the draft-visibility count. Recorded as pending rather than o… | [shot](../tester/.tester-runs/run-3/shots/blog-search-control.png) | — | — | no | — |
 | 85 | 383 | `checklist-content-discovery-blog-blog-youtube-embed` | A blog post with a YouTube video ID set shows a working embedded video player above the ar | content-discovery/blog | guest | ⬜ null | Not driven. Batch room went on the search case - the one Root Cause #99 names, where the fix had to be verified on the SSR first paint rather than the hydrated client - and on the draft-visibility count. Recorded as pending rather than o… | [shot](../tester/.tester-runs/run-3/shots/blog-search-control.png) | — | — | no | — |
 | 85 | 384 | `checklist-content-discovery-blog-blog-related-posts-sections` | A blog post detail page shows three "related" sections below the article — Related Posts ( | content-discovery/blog | guest | ⬜ null | Not driven. Batch room went on the search case - the one Root Cause #99 names, where the fix had to be verified on the SSR first paint rather than the hydrated client - and on the draft-visibility count. Recorded as pending rather than o… | [shot](../tester/.tester-runs/run-3/shots/blog-search-control.png) | — | — | no | — |
+| 86 | 385 | `checklist-design-ux-back-to-top-button-above-sticky-buy-bar` | On a product page scrolled far enough for BOTH the sticky buy bar and the back-to-top arro | design-ux/back-to-top-button--guest | guest | ✅ pass | The control sits fully above the buy bar with a real gap, at BOTH widths, and the gap is the same 16px each time. MEASURED AT 1280x800: back-to-top is 40x40 at top 610 / bottom 650; the buy bar spans top 666 to bottom 800, height 134px, … | [shot](../tester/.tester-runs/run-3/shots/b2t-above-bar.png) | — | — | no | — |
+| 86 | 386 | `checklist-design-ux-back-to-top-button-appears-and-clickable-on-long-page` | Scrolling down a long listing page, the floating back-to-top arrow appears in the bottom c | design-ux/back-to-top-button--guest | guest | ✅ pass | Nothing before scrolling, the control appears after scrolling, and it responds to a click. Opened /products/product-beyblade-original-dranzer-s signed out at 1280x800: before any scroll there is NO element with aria-label 'Back to top' i… | [shot](../tester/.tester-runs/run-3/shots/b2t-above-bar.png) | — | — | no | — |
+| 86 | 387 | `checklist-design-ux-back-to-top-button-scrolls-to-top` | Clicking the back-to-top arrow smoothly scrolls the page back to the very top | design-ux/back-to-top-button--guest | guest | ✅ pass | The page ends at the top, the URL is unchanged, and the header is visible. Clicked the control from scrollY 900: scrollY afterwards is 0, so it reached the top rather than stopping short. location.href is byte-identical before and after … | [shot](../tester/.tester-runs/run-3/shots/b2t-above-bar.png) | — | — | no | — |
+| 86 | 388 | `checklist-design-ux-back-to-top-button-dismiss-returns-on-navigation` | Clicking the small X next to the back-to-top arrow hides it for the current page, and navi | design-ux/back-to-top-button--guest | guest | ⬜ null | Not driven, and I am flagging an observation that bears directly on it rather than leaving it blank. The case wants: dismiss the control, confirm it stays hidden on /products however much you scroll, then navigate to /auctions by CLICKIN… | [shot](../tester/.tester-runs/run-3/shots/b2t-above-bar.png) | — | — | no | — |
+| 87 | 389 | `checklist-design-ux-back-to-top-button-not-covering-toast-or-modal-actions` | The back-to-top arrow does not cover anything you need to click — check that a toast messa | design-ux/back-to-top-button | main | ✅ pass | Neither the toast nor the modal's controls are obstructed - measured, in both cases, with the geometry rather than from the picture. THE TOAST: signed in as rehan.sheikh@gmail.com, scrolled past 400px so the control was showing, then cli… | [shot](../tester/.tester-runs/run-3/shots/b2t-toast-modal.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->

@@ -1411,3 +1411,40 @@ version of the same problem.
 its current value.
 
 Screenshot: `tester/.tester-runs/run-3/shots/state-picker-36.png`
+
+## Store search cannot find Beyblade Arena — one of two stores is absent from the index
+
+Found while running `public-pages/stores-sellers-directories--p1`; **no case in that
+batch asserts store search**, and the case it came from passes on its own claim.
+
+`/stores`, signed out, measured on served HTML (distinct `/stores/{slug}` links):
+
+| query | stores found |
+|---|---|
+| *(none)* | 2 — `store-beyblade-arena`, `store-letitrip-official` |
+| `official` | 1 — `store-letitrip-official` |
+| `LetItRip` | 1 — `store-letitrip-official` |
+| `a` (single letter) | 1 — `store-letitrip-official` |
+| `Beyblade` | **0** |
+| `Arena` | **0** |
+| `arena` | **0** |
+| `Beyblade Arena` | **0** |
+| `bey` | **0** |
+
+`GET /api/stores?q=Arena` agrees: **200** with `items: 0`.
+
+**The search plumbing is not the fault.** Root Cause #99 records `StoresIndexPageView`
+never reading `q` at all; that is fixed — `official` and `LetItRip` filter correctly and
+`zzzznope` returns 0. The defect is that **`store-beyblade-arena` matches nothing**, not
+even its own exact name.
+
+**The single-letter probe is the tell.** `q=a` returns only `store-letitrip-official`.
+Both store names contain an "a", so a substring or token search over a populated field
+would match both. One matching means only one store **has** the searched field populated
+— pointing at a missing or empty `searchTxt`/token field on `store-beyblade-arena`
+rather than at the query logic.
+
+Worth noting this is the store with essentially all the content: 14 products, 9 auctions,
+7 pre-orders, 74 reviews. A buyer searching the store directory for it finds nothing.
+
+Screenshot: `tester/.tester-runs/run-3/shots/stores-arena-not-found.png`
