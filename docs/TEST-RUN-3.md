@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **83 / 255** |
-| Cases | **377 / 1847** (20%) |
-| Cycle | 17 of 51 |
+| Batches | **85 / 255** |
+| Cases | **384 / 1847** (21%) |
+| Cycle | 18 of 51 |
 | Next deploy | batch 100 |
-| Last updated | 2026-10-01 14:55 UTC |
+| Last updated | 2026-10-01 15:01 UTC |
 
 ```
-pass 165 · fail 57 · null 155
+pass 168 · fail 57 · null 159
 fixed 24/57 · deferred 25 · open 8 · needs-human 7
 ```
 
@@ -492,5 +492,12 @@ untouched list is one nobody reads by milestone three.
 | 82 | 375 | `checklist-buying-image-tile-layout-bundle-badge-position` | The #1 / #2 / #3 badge sits at the TOP-LEFT corner of each bundle tile, not floating in th | buying/image-tile-layout--guest | guest | ⬜ null | Not driven. Batch room went on the two collage cases, which are the ones Root Cause #68 names as having rendered blank or squeezed, and both now measure clean. Recorded as pending rather than omitted. Its assertion needs both widths AND … | [shot](../tester/.tester-runs/run-3/shots/tiles-collage.png) | — | — | no | — |
 | 82 | 376 | `checklist-buying-image-tile-layout-bundle-tile-opens-lightbox` | Clicking a bundle tile opens the lightbox at that item and cycles through the others; the  | buying/image-tile-layout--guest | guest | ⬜ null | Not driven. Batch room went on the two collage cases, which are the ones Root Cause #68 names as having rendered blank or squeezed, and both now measure clean. Recorded as pending rather than omitted. Its failure modes are specific and w… | [shot](../tester/.tester-runs/run-3/shots/tiles-collage.png) | — | — | no | — |
 | 83 | 377 | `checklist-buying-image-tile-layout-media-picker-existing-grid` | In any media field, "Choose existing" shows each file as a square thumbnail with the filen | buying/image-tile-layout--seller | seller | ⬜ null | Step 3 has no target: there is no existing-files grid on this form to switch to. Signed in as tyson@beybladearena.in on /store/products/new and enumerated every media control, on the quick form AND after expanding 'Show all fields (advan… | [shot](../tester/.tester-runs/run-3/shots/media-picker-no-existing.png) | — | — | no | — |
+| 84 | 378 | `checklist-buying-image-tile-layout-icon-button-spacing` | Buttons that combine an icon and a label still have normal spacing between them, and a loa | buying/image-tile-layout | main | ✅ pass | Three of the four assertions hold and the fourth is not demonstrable on this page - so I am recording a pass on what was checkable and saying plainly which claim had no evidence available. GAP IS PRESENT: the one icon-and-label control, … | [shot](../tester/.tester-runs/run-3/shots/icon-button-spacing.png) | — | — | no | — |
+| 85 | 379 | `checklist-content-discovery-blog-blog-search-filters-the-list` | The blog listing's search box actually filters, and the filtered result survives a reload | content-discovery/blog | guest | ✅ pass | Search filters, the nonsense control is clean, and - the part that matters - it works on the SSR FIRST PAINT rather than only after a client refetch. Measured the server-rendered HTML directly, counting distinct /blog/{slug} links: no qu… | [shot](../tester/.tester-runs/run-3/shots/blog-search-control.png) | — | — | no | — |
+| 85 | 380 | `checklist-content-discovery-blog-blog-listing` | Blog listing page shows all published posts | content-discovery/blog | guest | ✅ pass | The unfiltered list returns exactly the published count, so no draft or archived post is leaking - draftPostsVisible is 0. /blog with no query serves 17 distinct post links, and the seed ships 17 published, 2 draft and 1 archived (its ow… | [shot](../tester/.tester-runs/run-3/shots/blog-search-control.png) | — | — | no | — |
+| 85 | 381 | `checklist-content-discovery-blog-read-post` | Reading a blog post renders correctly (images, formatting) | content-discovery/blog | guest | ⬜ null | Not driven. Batch room went on the search case - the one Root Cause #99 names, where the fix had to be verified on the SSR first paint rather than the hydrated client - and on the draft-visibility count. Recorded as pending rather than o… | [shot](../tester/.tester-runs/run-3/shots/blog-search-control.png) | — | — | no | — |
+| 85 | 382 | `checklist-content-discovery-blog-blog-cover-image-display` | A blog post's cover image displays on both its listing card and its detail page | content-discovery/blog | guest | ⬜ null | Not driven. Batch room went on the search case - the one Root Cause #99 names, where the fix had to be verified on the SSR first paint rather than the hydrated client - and on the draft-visibility count. Recorded as pending rather than o… | [shot](../tester/.tester-runs/run-3/shots/blog-search-control.png) | — | — | no | — |
+| 85 | 383 | `checklist-content-discovery-blog-blog-youtube-embed` | A blog post with a YouTube video ID set shows a working embedded video player above the ar | content-discovery/blog | guest | ⬜ null | Not driven. Batch room went on the search case - the one Root Cause #99 names, where the fix had to be verified on the SSR first paint rather than the hydrated client - and on the draft-visibility count. Recorded as pending rather than o… | [shot](../tester/.tester-runs/run-3/shots/blog-search-control.png) | — | — | no | — |
+| 85 | 384 | `checklist-content-discovery-blog-blog-related-posts-sections` | A blog post detail page shows three "related" sections below the article — Related Posts ( | content-discovery/blog | guest | ⬜ null | Not driven. Batch room went on the search case - the one Root Cause #99 names, where the fix had to be verified on the SSR first paint rather than the hydrated client - and on the draft-visibility count. Recorded as pending rather than o… | [shot](../tester/.tester-runs/run-3/shots/blog-search-control.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
