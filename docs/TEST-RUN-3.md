@@ -33,15 +33,15 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **110 / 255** |
-| Cases | **487 / 1847** (26%) |
+| Batches | **111 / 255** |
+| Cases | **490 / 1847** (27%) |
 | Cycle | 23 of 51 |
 | Next deploy | batch 125 |
-| Last updated | 2026-10-01 20:52 UTC |
+| Last updated | 2026-10-01 20:59 UTC |
 
 ```
-pass 201 · fail 67 · null 219
-fixed 25/67 · deferred 32 · open 10 · needs-human 7
+pass 202 · fail 69 · null 219
+fixed 25/69 · deferred 34 · open 10 · needs-human 7
 ```
 
 > ▸ **10 failure(s) not yet fixed.** Fixes land in one phase at the
@@ -602,5 +602,8 @@ untouched list is one nobody reads by milestone three.
 | 110 | 485 | `checklist-content-discovery-events-raffle-entry-top-n-participants` | Entering a top_n_participants raffle event works | content-discovery/events--admin | admin | ⬜ null | NOT DRIVEN - it is a four-stage multi-identity flow with a mandatory restore, and the harness drives one identity at a time. The case has an admin edit the raffle type on event-win-burst-regalia-genesis, then a BUYER enter and read the L… | [shot](../tester/.tester-runs/run-3/shots/event-entries-request-failed.png) | — | — | no | — |
 | 110 | 486 | `checklist-content-discovery-events-spin-wheel-window-blocked` | A second spin attempt within the same spinWindow is blocked with a clear message | content-discovery/events--admin | admin | ⬜ null | NOT DRIVEN, and it is blocked by something this run already established rather than by the harness. The case asks an admin to close the spin window, then has a buyer attempt a spin and read a refusal that 'names the window rather than a … | [shot](../tester/.tester-runs/run-3/shots/event-entries-request-failed.png) | — | — | no | — |
 | 110 | 487 | `checklist-content-discovery-events-event-guest-participation-toggle` | An event created with "allow guest participation" enabled accepts one anonymous entry per  | content-discovery/events--admin | admin | ⬜ null | NOT DRIVEN - it needs an admin create, then a GUEST participating from a private window, then an admin edit to disable guest participation, then the guest re-attempting. Three identity changes around a live event, and the guest half depe… | [shot](../tester/.tester-runs/run-3/shots/event-entries-request-failed.png) | — | — | no | — |
+| 111 | 488 | `checklist-design-ux-form-validation-errors-error-summary-shows-beside-submit` | Submitting an admin/seller form (e.g. new product, new blog post, new event) with missing/ | design-ux/form-validation-errors | main | ❌ fail | The regression this case exists to guard is FIXED - errorsBeforeSubmit is 0 - but the positioning clause fails, and it fails geometrically rather than marginally. THE PRE-SUBMIT SILENCE HOLDS, which the case calls half the case: opening … | [shot](../tester/.tester-runs/run-3/shots/address-form-error-summary.png) | The error summary renders ~930px from the Save button, so after a failed submit the user sees neither. Measured on /user/addresses/new: the summary occupies document y261-601 and its appearance pushes Save to y1532 - in an 800px viewport… | `FormErrorSummary.tsx` | no | deferred-to-milestone |
+| 111 | 489 | `checklist-design-ux-form-validation-errors-error-summary-live-on-change` | The error summary beside Publish/Save updates live as you fix a field (the error disappear | design-ux/form-validation-errors | main | ✅ pass | Passes exactly as specified - the count falls as each field is filled, with no second submit needed. MEASURED: after clicking Save on an empty form the summary listed SEVEN items. I typed 'QA Address error-summary-live' into the label fi… | [shot](../tester/.tester-runs/run-3/shots/address-form-error-summary.png) | — | — | no | — |
+| 111 | 490 | `checklist-design-ux-form-validation-errors-error-summary-supplements-inline` | Field-level inline error messages (shown directly under/beside the input) still appear as  | design-ux/form-validation-errors | main | ❌ fail | Half of it holds and half of it does not: after Save the summary and the inline marks coexist correctly, but a field visited and left empty is NOT marked on blur - so the case's first assertion fails. WHAT FAILS (steps 3-4): 'Leaving the… | [shot](../tester/.tester-runs/run-3/shots/address-form-error-summary.png) | A field visited and left empty is not marked on blur. Clicked into city on /user/addresses/new then into postalCode, leaving city empty: ZERO [role=alert] on the page, no error under city, city aria-invalid null. Verified twice - once wi… | `FieldInput.tsx` | no | deferred-to-milestone |
 
 <!-- TEST-RUN-3-TABLE:END -->

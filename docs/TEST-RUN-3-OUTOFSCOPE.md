@@ -1581,26 +1581,36 @@ run's teardown wipes it; it is draft and therefore not live to buyers.
 FIX: add a delete row action (with the `confirmation` config Rule #7 requires) and a
 row-level detail affordance to the admin events list.
 
-## The harness's seller session is not the seller the cases name
-Found while performing `page-wiring/reachability--seller` — it nearly produced a false
-"the seller product picker is broken" finding.
+## ~~The harness's seller session is not the seller the cases name~~ — RETRACTED
+**This entry was wrong. Retracted 2026-10-01, same day it was written.**
 
-Seller cases are written against **`tyson@beybladearena.in`** (store-beyblade-arena,
-whose catalogue is the Beyblade standard products). The harness's `session-seller.json`
-signs in as a different seeded seller whose `/store/products` holds **prize draws** and
-contains no Valkyrie and no Wizard Arrow.
+I claimed `session-seller.json` signs in as a seeded seller whose catalogue is prize
+draws rather than `tyson@beybladearena.in`. It does not. **It is Beyblade Arena's owner.**
 
-Two things make this hard to notice:
-- The profile chip reads **"Mock User 1"** — the *same* display name the admin session
-  shows, so the account name cannot distinguish them.
-- The symptom is a picker returning "No results" for slugs that resolve fine in the
-  admin picker, which reads exactly like a broken seller-scoped search.
+Verified: the seller session's profile reads **"Mock User 6"**, `/store` reports
+**65 active listings** and **4.1★** (matching Beyblade Arena's public card: 4.1, 74
+reviews), `/store/products?q=Valkyrie` lists **"Beyblade Burst B-01 Valkyrie"** as that
+store's own product, and the grouped-listing member picker returns **2 results** for
+"Valkyrie".
 
-Any seller case naming specific product slugs is unrunnable as written.
+**What actually went wrong in batch 99:** the session swap had not taken effect, and the
+profile chip read **"Mock User 1"** — the *admin's* display name, carried over from the
+preceding batch. I noted that at the time and explained it away as "a shared seeded
+display name" instead of treating it as the identity failure it was. Signed in as admin,
+the store was **LetItRip Official**, whose catalogue genuinely is the prize draws I saw
+and genuinely lacks Valkyrie — so the picker was right and my explanation was wrong.
 
-FIX: point `session-seller.json` at `tyson@beybladearena.in`, or re-write the seller
-cases against slugs the harness's actual seller owns. Also worth giving seeded accounts
-distinct display names so the identity is readable off any page.
+The same swap failure recurred at the start of batch 109 (`signedOut: true` after copying
+the file) where I did catch it, closed the browser and re-copied before acting.
+
+**The real lesson is the one the skill already states and I under-weighted: verify the
+identity on the first page of every batch, and treat an unexpected profile name as a
+stop-and-fix signal rather than a curiosity.** Two unrelated accounts sharing a "Mock User
+N" display name is exactly the condition that makes a wrong identity hard to notice — so
+that part of the entry stands as a real (if minor) seeding complaint:
+
+FIX (unchanged, and the only surviving ask here): give seeded accounts distinct display
+names so the identity is readable off any page.
 
 ## 12 public pages serve the generic site title
 Found while sweeping the chrome's 53 destinations in
@@ -1838,3 +1848,31 @@ displaying seven errors.
 
 FIX: set `aria-invalid={!!error}` on the input in the Field* primitives, alongside the
 existing `aria-describedby`.
+
+## FIX: the submit path bypasses `zodErrorMap`, so raw zod text reaches users
+Found driving `design-ux/form-validation-errors--seller` → `error-summary-step-tagged`.
+
+On `/store/products/new`, publishing an empty form renders these as field errors:
+
+    Invalid input: expected string, received undefined     (x2)
+    Invalid input: expected number, received undefined
+
+That is zod's own type-error text, shown to a seller. `zodErrorMap`
+([validation/zod-error-map.ts](appkit/src/validation/zod-error-map.ts)) exists precisely
+to turn `invalid_type` with `undefined` input into **"This field is required"**, and
+`audit-raw-error-text` reports *"0 raw error strings reach a user"* — both are bypassed
+on this path.
+
+**The two validation paths disagree, which localises the bug:** *before* submit the Title
+field's error reads the friendly "This field is required"; *after* submit the same
+empty-field condition renders the raw string. So on-change validation routes through the
+error map and the submit-time parse does not — most likely a `safeParse` whose issues are
+mapped straight to messages without the custom error map installed.
+
+Worth checking whether `audit-raw-error-text` can see this at all: the string is produced
+at runtime by zod, not written in source, so a source-scanning audit would pass while the
+UI shows it.
+
+FIX: install the custom error map on the submit-time parse (or route its issues through
+`toUserMessage`), and consider asserting the mapped text in a tester case rather than
+relying on a source-level audit.
