@@ -33,15 +33,15 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **109 / 255** |
-| Cases | **482 / 1847** (26%) |
-| Cycle | 22 of 51 |
+| Batches | **110 / 255** |
+| Cases | **487 / 1847** (26%) |
+| Cycle | 23 of 51 |
 | Next deploy | batch 125 |
-| Last updated | 2026-10-01 20:49 UTC |
+| Last updated | 2026-10-01 20:52 UTC |
 
 ```
-pass 201 · fail 66 · null 215
-fixed 25/66 · deferred 31 · open 10 · needs-human 7
+pass 201 · fail 67 · null 219
+fixed 25/67 · deferred 32 · open 10 · needs-human 7
 ```
 
 > ▸ **10 failure(s) not yet fixed.** Fixes land in one phase at the
@@ -597,5 +597,10 @@ untouched list is one nobody reads by milestone three.
 | 109 | 480 | `checklist-content-discovery-events-leaderboard-live-refresh` | After voting/entering an event, navigating to its Leaderboard tab shows the updated standi | content-discovery/events | main | ⬜ null | NOT DRIVEN - it requires two browser windows acting at once, and this harness drives one context at a time. The case has window A watching the Leaderboard un-reloaded while window B signs in as a DIFFERENT user and votes, then watches A … | [shot](../tester/.tester-runs/run-3/shots/poll-vote-once.png) | — | — | no | — |
 | 109 | 481 | `checklist-content-discovery-events-survey-feedback-submit` | Submitting a survey or feedback event's Participate form works, enforces required fields,  | content-discovery/events | main | ⬜ null | NOT DRIVEN - I reached the end of the time I could give this batch after the poll, spin and coupon cases. Recording it as pending rather than guessing. WHAT IS WORTH KNOWING FOR THE NEXT ATTEMPT: its step 3 is the valuable one - submit t… | [shot](../tester/.tester-runs/run-3/shots/poll-vote-once.png) | — | — | no | — |
 | 109 | 482 | `checklist-content-discovery-events-raffle-entry` | Entering an open_raffle event works and the Participate tab shows the prize hero, eligibil | content-discovery/events | main | ⬜ null | NOT DRIVEN - same reason, batch time spent on the poll, spin and coupon cases. ITS STRUCTURE IS THE SAME AS THE POLL CASE I DID DRIVE, which is some comfort: enter once, confirm the immediate state without reloading, reload, then attempt… | [shot](../tester/.tester-runs/run-3/shots/poll-vote-once.png) | — | — | no | — |
+| 110 | 483 | `checklist-content-discovery-events-admin-event-entries-export` | On an event's admin entries page, admin can view poll/form responses inline and download a | content-discovery/events--admin | admin | ❌ fail | The export WORKS and the data EXISTS - but the entries cannot be read on screen, so steps 3 and 6 fail and the comparison the case is built around is impossible. 🛑 THE PAGE CONTRADICTS ITSELF IN ONE VIEW. /admin/events/event-favourite-b… | [shot](../tester/.tester-runs/run-3/shots/event-entries-request-failed.png) | The event entries list fails while its own stat tiles succeed, on the same screen. /admin/events/event-favourite-blader-poll/entries shows 'Total entries 11 / Approved 11 / Flagged 0' and directly beneath 'Request failed' + 'No entries f… | `page.tsx` | no | deferred-to-milestone |
+| 110 | 484 | `checklist-content-discovery-events-raffle-entry-top-n-scorers` | Entering a top_n_scorers raffle event works and the leaderboard reflects entries | content-discovery/events--admin | admin | ⬜ null | NOT DRIVEN - it is a four-stage multi-identity flow with a mandatory restore, and the harness drives one identity at a time. The case has an admin edit the raffle type on event-win-burst-regalia-genesis, then a BUYER enter and read the L… | [shot](../tester/.tester-runs/run-3/shots/event-entries-request-failed.png) | — | — | no | — |
+| 110 | 485 | `checklist-content-discovery-events-raffle-entry-top-n-participants` | Entering a top_n_participants raffle event works | content-discovery/events--admin | admin | ⬜ null | NOT DRIVEN - it is a four-stage multi-identity flow with a mandatory restore, and the harness drives one identity at a time. The case has an admin edit the raffle type on event-win-burst-regalia-genesis, then a BUYER enter and read the L… | [shot](../tester/.tester-runs/run-3/shots/event-entries-request-failed.png) | — | — | no | — |
+| 110 | 486 | `checklist-content-discovery-events-spin-wheel-window-blocked` | A second spin attempt within the same spinWindow is blocked with a clear message | content-discovery/events--admin | admin | ⬜ null | NOT DRIVEN, and it is blocked by something this run already established rather than by the harness. The case asks an admin to close the spin window, then has a buyer attempt a spin and read a refusal that 'names the window rather than a … | [shot](../tester/.tester-runs/run-3/shots/event-entries-request-failed.png) | — | — | no | — |
+| 110 | 487 | `checklist-content-discovery-events-event-guest-participation-toggle` | An event created with "allow guest participation" enabled accepts one anonymous entry per  | content-discovery/events--admin | admin | ⬜ null | NOT DRIVEN - it needs an admin create, then a GUEST participating from a private window, then an admin edit to disable guest participation, then the guest re-attempting. Three identity changes around a live event, and the guest half depe… | [shot](../tester/.tester-runs/run-3/shots/event-entries-request-failed.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->

@@ -1818,3 +1818,23 @@ The tally is safe. The user is invited to re-vote and then told off for it.
 
 FIX: render the user's existing vote on load (selected + disabled, or a "you voted for X"
 summary), as the post-submit state already does.
+
+## FIX: `aria-invalid` is never set on errored form fields
+Found while counting errors in `design-ux/form-validation-errors` (both failing cases
+reference it).
+
+On `/user/addresses/new`, after submitting an empty form, **7 fields show visible
+`role="alert"` error text and `aria-invalid` is set on 0 of them** — before *or* after
+submit. 6 fields do carry `aria-describedby`, so half the wiring is present.
+
+CLAUDE.md Rule #9 states FieldInput "already wires `aria-invalid` + the error
+`<Text role="alert">` block". Only the second half is true.
+
+Consequence: a screen-reader user hears the error text but the fields are never announced
+as invalid, and nothing programmatically associates "this input is in an error state" with
+the control — so assistive tech and any `[aria-invalid]`-based styling or testing both
+miss it. It is also why an `[aria-invalid="true"]` probe reports a clean form on a page
+displaying seven errors.
+
+FIX: set `aria-invalid={!!error}` on the input in the Field* primitives, alongside the
+existing `aria-describedby`.
