@@ -3245,3 +3245,22 @@ coupon was found unusable in an earlier batch, and it blocked its sibling
 remove-coupon case. If that is still true, `coupon-remove-one-of-many` and
 `coupon-summary-total-matches-sum` inherit the block — check one `ARENA25`
 apply before planning the rest.
+
+## FAQ category pages — three findings from the index re-drive (2026-10-03)
+
+Found while re-driving the FAQ index fix. No case owned any of them, so per G4
+they are recorded and NOT chased.
+
+1. **An unknown category slug silently falls back to ALL FAQs.** `/faqs/shipping`
+   (not a real slug — the real one is `shipping_delivery`) returns HTTP 200 and
+   renders all 63 questions rather than 404ing or showing an empty state. This is
+   the returning-everything shape: a mistyped or stale category link looks like a
+   working page. It also cost me a turn — I read the 63 as a filtering bug before
+   checking the slug.
+2. **The page title leaks the raw slug.** `<title>` reads
+   "Shipping_delivery FAQs — LetItRip Help" — underscore and all — while the
+   sidebar renders the same category as "Shipping & Delivery". User-visible in the
+   browser tab and in any search result for the page.
+3. **Two different totals on the all-FAQs view.** The sidebar reads "All FAQs 50"
+   and its per-category counts sum to exactly 50, while the body reads
+   "63 questions". One of the two is wrong; the 13-row gap is unexplained.
