@@ -903,7 +903,22 @@ const milestone = deployDue
     `     Then set lastDeployAtRecorded=${doneCount} in ${STATE} — that marker is what\n` +
     `     releases this prompt, exactly as lastFixAtRecorded releases the fix gate.\n` +
     `     Without it the gate re-fires every turn, and obeying a stale one publishes\n` +
-    `     an appkit patch with no source change behind it.\n\n`
+    `     an appkit patch with no source change behind it.\n` +
+    `\n` +
+    `     ▸ CHECK BEFORE RUNNING IT, or you ship that empty patch yourself. The\n` +
+    `       script decides by git-diffing the appkit submodule against\n` +
+    `       lastMilestoneSha, so a pointer that was already PUBLISHED outside a\n` +
+    `       milestone still reads as changed and it bumps anyway:\n` +
+    `         node -e "const a=require('./appkit/package.json').version,\\\n` +
+    `           p=require('./package.json').dependencies['@mohasinac/appkit'];\\\n` +
+    `           console.log(a,p)"   &&  npm view @mohasinac/appkit version\n` +
+    `       Local version == pin == npm latest, with a clean appkit tree?\n` +
+    `       Then pass --skip-appkit. Bumping would publish a version identical in\n` +
+    `       source to the one already live.\n` +
+    `     ▸ The marker asserts a VERIFIED deploy. Set it only after the smoke test\n` +
+    `       of /, /en/products and /api/site-settings passes — a green Vercel build\n` +
+    `       is not proof the site runs (Root Cause #69: READY, 500 on every route).\n` +
+    `       Never set it to silence this prompt.\n\n`
   : cycleDue
     ? `  ▸ CYCLE COMPLETE — ${doneCount} batches. Do NOT hand-write rows into\n` +
       `    ${CHECKLIST_DOC} — this hook already regenerated its table from the\n` +
