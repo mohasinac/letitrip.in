@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **151 / 255** |
-| Cases | **673 / 1847** (36%) |
+| Batches | **152 / 255** |
+| Cases | **679 / 1847** (37%) |
 | Cycle | 31 of 51 |
 | Next deploy | batch 175 |
-| Last updated | 2026-10-02 15:22 UTC |
+| Last updated | 2026-10-02 15:34 UTC |
 
 ```
-pass 263 · fail 125 · null 285
-fixed 35/125 · deferred 36 · open 54 · needs-human 7
+pass 268 · fail 126 · null 285
+fixed 35/126 · deferred 36 · open 55 · needs-human 7
 ```
 
-> ▸ **54 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **55 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -788,5 +788,11 @@ untouched list is one nobody reads by milestone three.
 | 151 | 671 | `checklist-content-discovery-faq-help-faq-bottom-borders` | FAQ question rows show a clear bottom-border divider on the homepage and the FAQs page | content-discovery/faq-help | guest | ❌ fail | NO — but only on the mechanism, and everything a visitor actually sees is right. I want that proportion clear, because a flat 'fail' here would send someone looking for a missing divider. ✅ A DIVIDER SITS BETWEEN CONSECUTIVE ROWS. Comput… | [shot](../tester/.tester-runs/run-3/shots/faq-dividers-dark-hardcoded-neutral200.png) | — | — | no | — |
 | 151 | 672 | `checklist-content-discovery-faq-help-faq-mobile-count` | Homepage FAQ section shows a good number of questions on mobile, not just 1-2 | content-discovery/faq-help | guest | ❌ fail | NO — the counts do not match, they are hidden entirely at 390px, and chasing the mismatch turned up a CRITICAL defect that I then fixed at this milestone. 🛑 I FOUND THE CATEGORY PAGES WERE ALL EMPTY. Step 5 is 'Open one category and cou… | [shot](../tester/.tester-runs/run-3/shots/faq-badges-sum-to-50-not-63.png) | — | — | no | — |
 | 151 | 673 | `checklist-content-discovery-faq-help-tabs-mobile-dropdown` | Tabs on category/brand/product/event detail pages collapse into a colored dropdown on mobi | content-discovery/faq-help | guest | ❌ fail | NO — the case describes a mechanism this page does not use, and I am recording that rather than bending the words to fit. WHAT /faqs ACTUALLY DOES. At 1280px the categories are NOT a tab strip: there are zero [role=tablist] elements and … | [shot](../tester/.tester-runs/run-3/shots/faq-badges-sum-to-50-not-63.png) | — | — | no | — |
+| 152 | 674 | `checklist-design-ux-footer-theme-footer-dark-mode` | Footer background and all link/text colors switch correctly between light and dark mode | design-ux/footer-theme | guest | ✅ pass | YES on every clause the case states — and step 5 told me to write down anything that becomes unreadable, which turned up a real defect I then fixed. Both halves below. ✅ EVERY LINK, HEADING AND PARAGRAPH IS LEGIBLE IN DARK. All footer te… | [shot](../tester/.tester-runs/run-3/shots/footer-dark-mode-readable.png) | — | — | no | — |
+| 152 | 675 | `checklist-design-ux-footer-theme-footer-github-icon` | The footer's social icon row (brand column, bottom-left) shows a GitHub icon alongside Ins | design-ux/footer-theme | guest | ✅ pass | YES — all five steps, and the case's own notes made each one checkable rather than a judgement call. ✅ EXACTLY TWO SOCIAL LINKS, as the case says to expect: WhatsApp and GitHub. ✅ IDENTICAL SIZES. Both are inline SVGs measuring 16x16 px.… | [shot](../tester/.tester-runs/run-3/shots/footer-dark-mode-readable.png) | — | — | no | — |
+| 152 | 676 | `checklist-design-ux-footer-theme-footer-text-weight-readable` | Footer text is comfortably readable, not thin and washed out — the link lists, the brand d | design-ux/footer-theme | guest | ✅ pass | YES — at both widths, and the 'more than colour alone' clause holds for a specific measurable reason. ✅ THE WEIGHTS ARE DELIBERATE AND THE LINKS ARE HEAVIER THAN THE PROSE AROUND THEM. Measured at 1280px: column links 13px at weight 500;… | [shot](../tester/.tester-runs/run-3/shots/footer-mobile-accordions-390.png) | — | — | no | — |
+| 152 | 677 | `checklist-design-ux-footer-theme-footer-column-headings-stand-out` | On DESKTOP, each footer link column's heading (Shop, Company, Support, etc.) clearly stand | design-ux/footer-theme | guest | ❌ fail | NO — and it is measurable rather than a matter of taste: every heading is SMALLER and LIGHTER than the links beneath it, in the same colour. 🛑 THE NUMBERS, at 1280px. Headings SHOP / SUPPORT / FOR SELLERS / LEARN / LEGAL: 11px, weight 4… | [shot](../tester/.tester-runs/run-3/shots/footer-dark-mode-readable.png) | — | — | no | — |
+| 152 | 678 | `checklist-design-ux-footer-theme-footer-weight-both-themes` | The footer text weight change looks right in BOTH light and dark mode — heavier but not bo | design-ux/footer-theme | guest | ✅ pass | YES — the hierarchy is identical in both themes, and the divider clause specifically holds because every colour here is a token rather than a literal. ✅ I WROTE THE THREE THINGS DOWN IN LIGHT FIRST, as the case asks, then switched WITHOU… | [shot](../tester/.tester-runs/run-3/shots/footer-dark-mode-readable.png) | — | — | no | — |
+| 152 | 679 | `checklist-design-ux-footer-theme-footer-mobile-accordions` | ON MOBILE, the footer's collapsible link sections still open and close correctly, and thei | design-ux/footer-theme | guest | ✅ pass | YES — every clause, including the one the case singles out about height, which I measured rather than eyeballed. ✅ COLLAPSED BY DEFAULT. At 390px the five columns become five <button aria-expanded="false"> accordions — Shop, Support, For… | [shot](../tester/.tester-runs/run-3/shots/footer-mobile-accordions-390.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
