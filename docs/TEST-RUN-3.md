@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **138 / 255** |
-| Cases | **610 / 1847** (33%) |
+| Batches | **139 / 255** |
+| Cases | **616 / 1847** (33%) |
 | Cycle | 28 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 12:27 UTC |
+| Last updated | 2026-10-02 12:33 UTC |
 
 ```
-pass 241 · fail 107 · null 262
+pass 247 · fail 107 · null 262
 fixed 35/107 · deferred 36 · open 36 · needs-human 7
 ```
 
@@ -725,5 +725,11 @@ untouched list is one nobody reads by milestone three.
 | 138 | 608 | `checklist-design-ux-hand-mode-layout-drawers-flip` | With Left-hand mode ON, side drawers/panels (filters, quick-add forms, cart, edit/create p | design-ux/hand-mode-layout--p1 | main | ⬜ null | NULL — my measurement technique cannot settle this one and I would rather say so than report a side-effect of my own method. WHAT I SAW: with the mode genuinely ON (real toggle, fresh page load), the /products filter drawer opened LEFT —… | [shot](../tester/.tester-runs/run-3/shots/left-hand-titlebar-mirrored.png) | — | — | no | — |
 | 138 | 609 | `checklist-design-ux-hand-mode-layout-quick-links-unaffected` | Turning on Left-hand mode does not reorder or mirror the My Account / Admin dashboard quic | design-ux/hand-mode-layout--p1 | main | ⬜ null | NULL — not driven. The case needs the /user dashboard's quick-link tile grid compared in both modes to confirm the TILES keep their order while only the surrounding column shifts. I spent this batch's budget on the eleven other cases, se… | [shot](../tester/.tester-runs/run-3/shots/left-hand-titlebar-mirrored.png) | — | — | no | — |
 | 138 | 610 | `checklist-design-ux-hand-mode-layout-gallery-arrows-unaffected` | Left-hand mode does NOT change a product image gallery/lightbox's Prev/Next arrows — Prev  | design-ux/hand-mode-layout--p1 | main | ⬜ null | NULL on the component the case names, with strong adjacent evidence I am reporting rather than passing off as the real thing. The case is about a PRODUCT IMAGE GALLERY / LIGHTBOX on /products/product-beyblade-burst-valkyrie — Prev must s… | [shot](../tester/.tester-runs/run-3/shots/left-hand-titlebar-mirrored.png) | — | — | no | — |
+| 139 | 611 | `checklist-design-ux-hand-mode-layout-bottom-nav-mirror` | With Left-hand mode ON, the mobile bottom tab bar's slots appear in reverse order (Profile | design-ux/hand-mode-layout--p2 | main | ✅ pass | YES — an exact reversal, with the slot widths untouched. Measured at 390px, both modes from one page load: • DEFAULT: Home(x=0) \| Products(78) \| Auctions(156) \| Cart(234) \| More(312) • LEFT-HAND: More(x=0) \| Cart(78) \| Auctions(156) \| Pr… | [shot](../tester/.tester-runs/run-3/shots/lefthand-bottom-nav-reversed.png) | — | — | no | — |
+| 139 | 612 | `checklist-design-ux-hand-mode-layout-dashboard-bottom-nav-mirror` | On admin/store/user routes, the mobile bottom tab bar is the exact same shared bar the pub | design-ux/hand-mode-layout--p2 | main | ✅ pass | YES — and this is the case that would have caught a regression of the batch-130 finding. On /user at 390px there is EXACTLY ONE bottom bar (bottomNavCount 1), and it is the shared public bar: its slots read More \| Cart \| Auctions \| Produ… | [shot](../tester/.tester-runs/run-3/shots/lefthand-bottom-nav-reversed.png) | — | — | no | — |
+| 139 | 613 | `checklist-design-ux-hand-mode-layout-count-badges-mirror` | With Left-hand mode ON, the red count bubbles on the cart / wishlist / notification icons  | design-ux/hand-mode-layout--p2 | main | ✅ pass | YES on the top bar, measured; the bottom-bar half could not be measured and I am saying which is which rather than reporting one as both. ✅ THE TOP-BAR BADGES MOVE CORNER. Measuring each bubble's centre against its own icon button's cent… | [shot](../tester/.tester-runs/run-3/shots/lefthand-bottom-nav-reversed.png) | — | — | no | — |
+| 139 | 614 | `checklist-design-ux-hand-mode-layout-nav-scroll-arrows-unaffected` | Left-hand mode does NOT flip the main navigation bar's overflow scroll chevrons — the left | design-ux/hand-mode-layout--p2 | main | ✅ pass | YES — the nav overflow chevron does not move, and I have it at the same pixel in both modes. At 1280px the main navigation row overflows its container, and its scroll control renders as 'Scroll navigation right' at x=1231 — the RIGHT sid… | [shot](../tester/.tester-runs/run-3/shots/lefthand-bottom-nav-reversed.png) | — | — | no | — |
+| 139 | 615 | `checklist-design-ux-hand-mode-layout-header-tab-order-sane` | With Left-hand mode ON, pressing Tab repeatedly from the top of the page still reaches eve | design-ux/hand-mode-layout--p2 | main | ✅ pass | YES — every top-bar control is reachable, nothing skipped, nothing trapped. I walked focus from the top of the page with a real Tab press and then followed the focusable sequence, and it reached ALL ELEVEN header controls in order: wordm… | [shot](../tester/.tester-runs/run-3/shots/lefthand-bottom-nav-reversed.png) | — | — | no | — |
+| 139 | 616 | `checklist-design-ux-hand-mode-layout-hand-mode-no-fouc` | On a hard page reload with Left-hand mode already ON, panels/sidebars AND the top bar / bo | design-ux/hand-mode-layout--p2 | main | ✅ pass | YES — no flash, and the evidence is that there is no frame without it. I hard-navigated to /user at 390px with the mode already on and polled from t=0 WITHOUT waiting first — ten samples at 400ms intervals, 0ms through 3600ms. Every sing… | [shot](../tester/.tester-runs/run-3/shots/lefthand-bottom-nav-reversed.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
