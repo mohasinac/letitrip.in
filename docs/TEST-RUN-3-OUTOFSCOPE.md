@@ -1,5 +1,20 @@
 # Test Run 3 — noticed, not chased
 
+> 🛑 **TRIAGE DEBT, measured 2026-10-03: 146 sections, 2 resolved, 144 open**
+> (3 of those are the document's own structure headings, so ~141 real findings).
+>
+> **This list has already cost a turn.** Section 6 is
+> " vs the stored " — an earlier batch
+> recorded it, nobody decided on it, and on 2026-10-03 I rediscovered the same
+> defect from scratch and spent several steps proving it before noticing the
+> entry. That is exactly the failure the fix-cycle hook warns about: an
+> untouched list is not a backlog, it is a guarantee of repeated work.
+>
+> **Before the next fix cycle, do a DECISION PASS** — every section gets one of
+> three: promoted to a gap case, fixed, or explicitly left standing WITH a
+> reason. Not read. Decided. Mark decided sections with ✅ so the open count is
+> computable () rather than estimated.
+
 **G4.** Every fix in [TEST-RUN-3.md](TEST-RUN-3.md) names the case id that found
 it. Anything noticed that **no case found** is recorded here and left alone.
 
@@ -3301,7 +3316,14 @@ Not chased now (G4 — no case owns it).
    returning 0 reads exactly like "no orders", which is how a false finding gets
    written.
 
-## 🛑 Live order documents do not match the documented OrderDocument shape (2026-10-03)
+## ✅ RESOLVED — Live order documents do not match the documented OrderDocument shape (2026-10-03)
+
+> **RESOLVED same day, commit 035d9200b.** CLAUDE.md was wrong, the code was
+> right. Schema confirms userId:313, items?:318 (OPTIONAL), totalPrice:335,
+> flat productId:311; checkout writes userId: buyerUid (checkout/actions.ts:221).
+> The orders row in CLAUDE.md is corrected and carries the reasoning.
+> My framing below calling the flat fields Root Cause #60 residue was ALSO
+> wrong — they are the schema. Left in place as the record of the mistake.
 
 Measured on `orders/order-1-20261002-sngvk5`, a real order placed during this run.
 Its actual keys:
