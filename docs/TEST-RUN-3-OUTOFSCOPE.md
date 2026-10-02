@@ -1913,3 +1913,50 @@ picks test residue, and a seller using the live admin would see them too.
 FIX: nothing in the product. Worth a teardown between runs, and worth noting that cases
 which create named records should delete them (several in this catalogue do; the ones that
 don't are how this accumulated).
+
+## The "All" chip on /admin/banned-addresses can never return a row
+
+`GET /api/admin/addresses` (`src/app/api/admin/addresses/route.ts`) branches
+three ways: `banStatus` → `listByBanStatus(...)`; `ownerType && ownerId` →
+`listByOwner(...)`; **otherwise → a hard-coded `successResponse({ items: [],
+total: 0 })`**.
+
+The "All" chip is the page's default and sends neither, so it is not "all
+addresses" — it is a literal empty array, every time, for every dataset. Found
+2026-10-02 via `checklist-addresses-unban-request-empty-note-says-why`. Either
+make it mean "every row with any ban status" (the union of the three), or drop
+the chip; a default chip that is structurally incapable of returning data reads
+as "the queue is empty" on a queue that may not be.
+
+## Banning a single address is unreachable: the dependency is circular
+
+`ACTIONS.ADMIN["ban-address"]` exists, `PATCH /api/admin/addresses/{id}
+{action:"ban"}` implements it, and `AdminAddressesView.renderRowActions` renders
+it — but only on rows of the `/admin/banned-addresses` queue, which lists only
+addresses that **already** carry a `banStatus`. The sole UI route to acquiring
+one is "Flag Suspicious" on `/admin/address-clusters`, which lists only
+addresses **shared by 2+ accounts**.
+
+So: to ban an address you need its row; to get its row it must already be
+flagged; to get it flagged it must be shared. An ordinary single address on an
+otherwise-active account is reachable from no admin path. `/admin/addresses` is
+a lookup-by-owner-ID whose only row action is Edit.
+
+Consequence beyond this one case: the whole unban-request feature — the request
+drawer, its 20-character note minimum, the "Unban Requested" chip, and
+`approve_unban`/`reject_unban` — sits behind a state the product cannot enter,
+so none of it has ever been exercised. The cheapest fix is a Ban action on the
+`/admin/addresses` lookup result row, where an admin already has the address in
+front of them. Note `/admin/address-clusters` states "Flagging is informational
+only — users are not blocked", so this may be a deliberate design position; if
+it is, the ban action and the unban-request UI are dead code and should go.
+
+## An error state and an empty state render simultaneously
+
+`/admin/address-clusters` showed "Failed to load clusters." *and* "No shared
+addresses found." together while its API 409'd. The empty state is the louder
+of the two and is the misleading one — a reader concludes there is nothing to
+see. The underlying 409 is fixed (missing index, 2026-10-02), but the rendering
+pattern is unchanged: an error branch and an empty branch that are not mutually
+exclusive. Worth sweeping for elsewhere — same family as Root Cause #59, where
+a swallowed query failure is indistinguishable from an empty result.
