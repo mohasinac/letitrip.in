@@ -242,3 +242,35 @@ because (2) may still leave a gap.
 
 Same family as Root Cause #57: a value exists on the document, is declared on
 the type, and no surface renders it — so the page looks complete and lies.
+
+#### Invoice gap FULLY accounted for (same day) — the arithmetic, exactly
+
+Live document `order-1-20261002-rw7jw6`:
+
+    unitPrice      999.00  x qty 1
+    shippingFee     77.00
+    platformFee     10.00   <- rendered NOWHERE
+    codHandlingFee 200.00   <- rendered NOWHERE
+    ------------------------
+    sum           1286.00
+    totalPrice    1287.80
+    residue          1.80   = 18% GST on the Rs 10 platform fee
+
+So the Rs 211.80 the buyer cannot account for is 10 + 200 + 1.80.
+
+**Strand 1 — src/ only, shippable with `node scripts/deploy.mjs`.**
+`platformFee` and `codHandlingFee` are mapped by the adapter
+(`_internal/server/features/orders/adapters.ts:156` and alongside) and declared
+on the client type, and `renderOrderPayment` has no row for either. Add two
+rows. This recovers Rs 210.00 of the Rs 211.80.
+
+**Strand 2 — NOT the adapter, and not src/.** The adapter already maps
+`tax: doc.gstAmount` (adapters.ts:172) and its own comment shows an earlier
+batch diagnosed this. The problem is upstream: **0 of 40 sampled orders have a
+`gstAmount` field at all**, so `tax` is always undefined and the Tax row
+(page.tsx:320) can never fire. GST is computed at checkout and never persisted
+on the order. Fixing it means writing `gstAmount` in the order-creation path
+(appkit) and back-filling, or accepting that the residue stays unexplained.
+
+🛑 Do NOT ship strand 1 and close the case. It leaves Rs 1.80 unaccounted for,
+and a summary that is short by a rupee is the same defect at a smaller scale.
