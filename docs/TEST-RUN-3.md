@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **171 / 255** |
-| Cases | **830 / 1847** (45%) |
+| Batches | **172 / 255** |
+| Cases | **836 / 1847** (45%) |
 | Cycle | 35 of 51 |
 | Next deploy | batch 175 |
-| Last updated | 2026-10-02 21:11 UTC |
+| Last updated | 2026-10-02 21:22 UTC |
 
 ```
-pass 330 · fail 162 · null 338
-fixed 35/162 · deferred 36 · open 91 · needs-human 7
+pass 330 · fail 163 · null 343
+fixed 35/163 · deferred 36 · open 92 · needs-human 7
 ```
 
-> ▸ **91 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **92 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -945,5 +945,11 @@ untouched list is one nobody reads by milestone three.
 | 171 | 828 | `checklist-design-ux-homepage-carousels-homepage-newsletter-enter-key` | Typing an email into the homepage newsletter box and pressing ENTER subscribes — you do no | design-ux/homepage-carousels--guest--p2 | guest | ✅ pass | ENTER SUBSCRIBES WITHOUT TOUCHING THE BUTTON, which is the label's claim. Typing qa-newsletter-1@mailnull.com into the homepage newsletter field (the one in the 'Get new listings first' section, distinct from the footer's) and pressing E… | [shot](../tester/.tester-runs/run-3/shots/b171-newsletter-enter-confirm.png) | — | — | no | — |
 | 171 | 829 | `checklist-design-ux-homepage-carousels-footer-newsletter-inline-error` | Typing `not-an-email` into the FOOTER newsletter box and submitting shows an inline error  | design-ux/homepage-carousels--guest--p2 | guest | ⬜ null | Not driven - capacity, after the sibling homepage case consumed the turn's remaining room. I did locate the form precisely, which is worth recording because the two are genuinely separate: there are exactly two email fields on the page, … | [shot](../tester/.tester-runs/run-3/shots/b171-newsletter-enter-confirm.png) | — | — | no | — |
 | 171 | 830 | `checklist-design-ux-homepage-carousels-homepage-faq-structured-data` | The homepage HTML contains FAQPage structured data matching the FAQs actually shown in the | design-ux/homepage-carousels--guest--p2 | guest | ❌ fail | THE MARKUP DESCRIBES 16 QUESTIONS AND THE PAGE RENDERS 6 - not one for one, which is precisely the mismatch the case warns a search engine will eventually penalise. The FAQPage block's mainEntity carries sixteen entries; the rendered FAQ… | [shot](../tester/.tester-runs/run-3/shots/b171-newsletter-enter-confirm.png) | — | — | no | — |
+| 172 | 831 | `checklist-design-ux-homepage-carousels-homepage-section-order` | Homepage section order reads: welcome hero → promo carousel → trust bar → Shop by Category | design-ux/homepage-carousels--admin | admin | ❌ fail | The rendered order follows the configured order exactly - for every enabled section except one, which is absent from the public page entirely. The editor lists 22 sections: welcome #1, carousel #2, trust-indicators #3, categories #4, pro… | [shot](../tester/.tester-runs/run-3/shots/b172-sections-editor.png) | — | — | no | — |
+| 172 | 832 | `checklist-design-ux-homepage-carousels-section-config-actually-renders` | A section's Subtitle and 'View all link label' set in /admin/sections actually appear on t | design-ux/homepage-carousels--admin | admin | ⬜ null | The fields the case is about do not exist as controls, so its premise could not be exercised. Step 2 asks me to open a section's configuration and write down every field it offers. /admin/sections offers exactly one editor, the 'Manage H… | [shot](../tester/.tester-runs/run-3/shots/b172-sections-editor.png) | — | — | no | — |
+| 172 | 833 | `checklist-design-ux-homepage-carousels-section-save-preserves-other-fields` | Saving one field on a homepage section does NOT blank that section's other settings | design-ux/homepage-carousels--admin | admin | ⬜ null | NOT DRIVEN DELIBERATELY, and the reason is the finding. The editor's Content panel states, in its own words, 'Generated config (JSON preview) - This JSON is generated from typed controls above.' The typed controls above it are only Mode,… | [shot](../tester/.tester-runs/run-3/shots/b172-sections-editor.png) | — | — | no | — |
+| 172 | 834 | `checklist-design-ux-homepage-carousels-carousel-toggles-take-effect` | Turning the hero carousel's dots / arrows / pause-on-hover off in /admin/sections actually | design-ux/homepage-carousels--admin | admin | ⬜ null | Not driven - capacity, after the sections editor consumed the turn. Recording what is already established so the next attempt starts ahead rather than from scratch. The three behaviours the case wants toggled OFF were all measured workin… | [shot](../tester/.tester-runs/run-3/shots/b172-sections-editor.png) | — | — | no | — |
+| 172 | 835 | `checklist-design-ux-homepage-carousels-banner-buttons-from-config` | The seller CTA banner shows its two configured buttons ('Start selling →' and 'Browse the  | design-ux/homepage-carousels--admin | admin | ⬜ null | Not driven - capacity, and it is a mutating case on the live hero (it asks me to retitle a button to 'QA Banner buttons-from-config' and repoint it at /about), so starting it without room to restore both the label and the destination wou… | [shot](../tester/.tester-runs/run-3/shots/b172-sections-editor.png) | — | — | no | — |
+| 172 | 836 | `checklist-design-ux-homepage-carousels-trust-and-security-from-config` | The trust bar and the 'Security You Can Trust' section show the four seeded items each, no | design-ux/homepage-carousels--admin | admin | ⬜ null | The public half is verified and the configuration half is not. Both sections render real, specific copy rather than a generic built-in list. The trust bar under 'Why buyers trust us' holds exactly FOUR items as the case expects: AUTHENTI… | [shot](../tester/.tester-runs/run-3/shots/b172-control-pass.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
