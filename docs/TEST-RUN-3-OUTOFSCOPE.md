@@ -3059,3 +3059,32 @@ through it:
 | Stored buyer session ages out around 55 minutes | **Promote to a gap case**, as already written there: stay on one page for over an hour with the tab active and see whether the session survives. Until someone runs it, whether a live user is signed out after an hour is genuinely unknown, and that is the sort of thing that should not stay unknown. |
 | My milestone script skipping the appkit publish | **Fixed at the time**, in the same cycle it was found. Left here as the record of why `gitChanged` now treats an absent baseline as "changed". |
 | Committed `TempPass123!` / `admin@letitrip.in` in README and four seed scripts | **Still needs your decision** — it is the one entry I cannot resolve myself, because rotating the seeded password also changes `tester/.env` and every session file. |
+
+## Precondition map for `admin/orders-fulfillment--p1` (measured 2026-10-02, batch 167 claimed then released)
+
+Claimed the batch, measured the data, released it unrecorded rather than
+recording a partial — a recorded batch counts as complete, and twelve mutating
+cases need more capacity than remained. The map below is the expensive part and
+is preserved so the next turn does not re-derive it.
+
+**62 orders** · by payment method: `cash` 55, `cod` 6, `upi_manual` 1
+· by status: pending 7, confirmed 6, processing 9, shipped 8, delivered 9,
+return_requested 5, returned 4, refunded 3, cancelled 11 (all nine present).
+
+| State the batch needs | Count | Which cases it gates |
+|---|---|---|
+| manual-payment orders | 56 | most of the batch |
+| …with a proof uploaded | **4** | `admin-orders-view-payment-proof` ✅ testable |
+| …awaiting verification (proof, no decision) | **3** | `admin-orders-verify-payment`, `…-request-reupload`, `…-reject-fraud` ✅ testable |
+| `paymentStatus: paid` | 31 | `admin-decided-order-no-live-buttons` steps 3–4 ✅ |
+| `status: cancelled` | 11 | same case, step 6 ✅ |
+| `paymentReviewOutcome: reupload_requested` | **0** | `admin-orders-payment-state-on-row` step 5 — but the sibling case *creates* this state at its own step 2, so run `request-reupload` first and this becomes testable |
+| `paymentReviewOutcome: rejected_fraud` | **0** | `admin-decided-order-no-live-buttons` step 5 and `…-payment-state-on-row` step 6 — same trick: `reject-fraud` creates it |
+| `paymentMethod: emi` | **0** | `admin-emi-order-reviewable` — **no fixture and none creatable**: EMI is not among the two payment methods checkout offers (only "Pay via UPI / Cash" and "Cash on Delivery"), so an EMI order cannot be placed through the UI at all. This is a seed gap, not a capacity one. |
+
+**Ordering that unblocks the most cases**: run `request-reupload` and
+`reject-fraud` early, because each manufactures the state a later read-only case
+needs, and there are only 3 awaiting-verification orders to spend. Note
+`reject-fraud` enqueues `hardBanCascade` with a 7-day expiry against the buyer —
+on a seeded persona, so recoverable by reseed, but it is the one genuinely
+consequential action in the batch and should be the last one run.
