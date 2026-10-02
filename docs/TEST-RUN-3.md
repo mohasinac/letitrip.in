@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **125 / 255** |
-| Cases | **545 / 1847** (30%) |
+| Batches | **126 / 255** |
+| Cases | **550 / 1847** (30%) |
 | Cycle | 26 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 10:18 UTC |
+| Last updated | 2026-10-02 10:27 UTC |
 
 ```
-pass 216 · fail 89 · null 240
-fixed 35/89 · deferred 36 · open 18 · needs-human 7
+pass 216 · fail 92 · null 242
+fixed 35/92 · deferred 36 · open 21 · needs-human 7
 ```
 
-> ▸ **18 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **21 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -660,5 +660,10 @@ untouched list is one nobody reads by milestone three.
 | 125 | 543 | `checklist-admin-bundles-bundle-brand-picker` | The bundle editor has a "Brand" select (Takara-Tomy / Beyblade / No specific brand) that s | admin/bundles | admin | ❌ fail | NO at step 4, on its own merits and before the create blocker even matters. 🛑 THE BRAND SELECT OFFERS EXACTLY ONE OPTION: 'No specific brand', value ''. I read the <select name="brandSlug"> directly rather than eyeballing the closed con… | [shot](../tester/.tester-runs/run-3/shots/bundle-price-required-while-filled.png) | FIXED AND RE-VERIFIED IN PRODUCTION (appkit 4.42.6). The Brand select offered ONLY 'No specific brand' because brandsQuery read res?.data?.items behind a hand-written 'as { data?: { items?: CategoryDocument[] } }' while apiClient already… | `AdminBundleEditorView.tsx` | no | pass |
 | 125 | 544 | `checklist-admin-bundles-bundle-stock-sync` | Bundle stock correctly syncs when a component product's stock changes | admin/bundles | admin | ⬜ null | NULL - this case READS the bundle that admin-bundles-bundle-create is supposed to leave behind, and that bundle does not exist: creation is blocked by the price-field defect reported there ('This field is required' on input[name=priceRup… | [shot](../tester/.tester-runs/run-3/shots/bundle-price-required-while-filled.png) | — | — | no | — |
 | 125 | 545 | `checklist-admin-bundles-bundle-edit-delete` | Admin can edit and delete a bundle | admin/bundles | admin | ⬜ null | NULL - this case READS the bundle that admin-bundles-bundle-create is supposed to leave behind, and that bundle does not exist: creation is blocked by the price-field defect reported there ('This field is required' on input[name=priceRup… | [shot](../tester/.tester-runs/run-3/shots/bundle-price-required-while-filled.png) | — | — | no | — |
+| 126 | 546 | `checklist-content-discovery-coupons-view-claimed-coupons` | Claimed coupons list shows accurate coupons | content-discovery/coupons | main | ❌ fail | IDENTITY NOTE, stated up front: the case names vivaan.kapoor@gmail.com and the harness holds no session for that account — its four identities are guest / buyer / seller / admin. I drove it as the harness buyer (verified 'Profile — Mock … | [shot](../tester/.tester-runs/run-3/shots/coupon-arena25-cannot-apply.png) | — | — | no | — |
+| 126 | 547 | `checklist-content-discovery-coupons-coupon-discount-applied` | Coupon discount is correctly reflected in the order total | content-discovery/coupons | main | ❌ fail | IDENTITY NOTE, stated up front: the case names vivaan.kapoor@gmail.com and the harness holds no session for that account — its four identities are guest / buyer / seller / admin. I drove it as the harness buyer (verified 'Profile — Mock … | [shot](../tester/.tester-runs/run-3/shots/coupon-arena25-cannot-apply.png) | — | — | no | — |
+| 126 | 548 | `checklist-content-discovery-coupons-coupon-below-min-purchase` | Applying a coupon below its minPurchase threshold is rejected with a clear message | content-discovery/coupons | main | ❌ fail | IDENTITY NOTE, stated up front: the case names vivaan.kapoor@gmail.com and the harness holds no session for that account — its four identities are guest / buyer / seller / admin. I drove it as the harness buyer (verified 'Profile — Mock … | [shot](../tester/.tester-runs/run-3/shots/coupon-arena25-cannot-apply.png) | — | — | no | — |
+| 126 | 549 | `checklist-content-discovery-coupons-coupon-not-combinable` | A seller-scoped coupon that isn't combinable with another seller's coupon is rejected when | content-discovery/coupons | main | ⬜ null | IDENTITY NOTE, stated up front: the case names vivaan.kapoor@gmail.com and the harness holds no session for that account — its four identities are guest / buyer / seller / admin. I drove it as the harness buyer (verified 'Profile — Mock … | [shot](../tester/.tester-runs/run-3/shots/coupon-arena25-cannot-apply.png) | — | — | no | — |
+| 126 | 550 | `checklist-content-discovery-coupons-coupon-per-user-limit` | Re-applying a coupon after hitting its perUserLimit is rejected | content-discovery/coupons | main | ⬜ null | IDENTITY NOTE, stated up front: the case names vivaan.kapoor@gmail.com and the harness holds no session for that account — its four identities are guest / buyer / seller / admin. I drove it as the harness buyer (verified 'Profile — Mock … | [shot](../tester/.tester-runs/run-3/shots/coupon-arena25-cannot-apply.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->

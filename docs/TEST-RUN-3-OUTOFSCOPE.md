@@ -2708,3 +2708,71 @@ applies ARENAVIP, whose card says **"Min. order: ₹2000"**. So ARENAVIP would b
 rejected for the *minimum* rather than for the non-combinable rule — a refusal
 that looks like a pass. The cart needs to clear ₹2,000 for the assertion to mean
 what it says.
+
+## 🛑 RETRACTION — "Coupons cannot be applied at checkout" is WRONG
+
+The entry above with that heading overstated the defect badly, and the
+generalisation in it is false. Correcting it here rather than editing it away,
+per G6.
+
+**Coupons apply fine.** On the same ₹2,298 single-seller cart that refused
+ARENA25:
+
+| Code | Result |
+|---|---|
+| **BLADER50** | **200 applied, `discountAmount: 500`** |
+| **BUYNOW10** | **200 applied** (`discountAmount: 0`, `eligibleSubtotal: 2298`) |
+| ARENAVIP | 400 — "This coupon does not apply to any of the categories in your cart" |
+| SEALED20 | 400 — "You have reached the usage limit for this coupon" |
+| TOURNAMENT2026 | 400 — "Only one platform-wide coupon can be applied at a time (**BLADER50**). Remove it first." |
+| ARENA25 / LIMITEDSET | 400 — "Coupon is not currently valid" |
+
+**Four of six messages are specific, and one names the conflicting code** — which
+is precisely what `coupon-not-combinable` asks for, and which I had recorded as
+unreachable. "Coupon is not currently valid" is **one branch among several**, not
+the catch-all I claimed.
+
+**What survives, narrower and still real**: ARENA25 is refused with the generic
+string while meeting every condition its card *and* its document state — window
+open (2026-08-26 → 2026-10-25), `minPurchase` 1000 against ₹2,298, `storeId`
+`store-beyblade-arena` matching the cart's single seller,
+`restrictions.firstTimeUserOnly` false, `usage` 0/200 with `perUserLimit` 2.
+LIMITEDSET hits the same branch. Why those two and not the others is the open
+question.
+
+**Also retracted**: I suspected seeded seller-scoped coupons had no seller
+identifier. They do. All 12 are correctly scoped — 6 admin-scoped with no
+`storeId`, 6 seller-scoped each with a real one (`store-beyblade-arena` ×5,
+`store-letitrip-official` ×1). The field is **`storeId`, not `sellerId`**, and I
+only avoided filing that as a second wrong diagnosis by dumping ARENA25's full
+key list instead of trusting one absent name.
+
+**Still standing from the original entry**: the UI showed no message at all when
+ARENA25 was refused through the checkout field — the server's 400 and its text
+were both swallowed. That half was measured independently and is unaffected by
+this retraction.
+
+### Method note
+
+Three wrong diagnoses in two batches, all from the same habit: reading one
+negative result and generalising. The fix each time was the same — **probe the
+neighbours**. One coupon refusing proves nothing about coupons; six coupons
+against one cart told the whole story in a single call.
+
+## `coupon-expired-rejected` cannot discriminate, and the case says so itself
+
+Its `expectedUiState` states: *"Today it reads 'Coupon is not currently valid',
+which names nothing — record that as the failure."* So the author already knew
+the generic string existed — but attributed it to the **expiry** path.
+
+Measured: SEALED20 (not expired; `endDate` 2026-10-15) returns **"You have
+reached the usage limit for this coupon"**. So the generic string is not this
+coupon's message, and the expiry branch's actual wording is **still unknown** —
+reaching it needs the end-date mutation the steps describe. I declined that
+mutation: the case's own `endResult` warns that leaving the date in the past
+"silently breaks every later coupon case", and the evidence about message
+specificity was obtainable without it.
+
+Worth a re-run **with the restore step honoured**, because "Coupon is not
+currently valid" is plausibly the expiry branch's own wording — in which case the
+case is right about the message and merely wrong about which coupons reach it.
