@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **174 / 255** |
-| Cases | **849 / 1847** (46%) |
-| Cycle | 35 of 51 |
-| Next deploy | batch 175 |
-| Last updated | 2026-10-02 21:51 UTC |
+| Batches | **175 / 255** |
+| Cases | **856 / 1847** (46%) |
+| Cycle | 36 of 51 |
+| Next deploy | batch 200 |
+| Last updated | 2026-10-02 22:01 UTC |
 
 ```
-pass 335 · fail 165 · null 349
-fixed 35/165 · deferred 36 · open 94 · needs-human 7
+pass 338 · fail 166 · null 352
+fixed 35/166 · deferred 36 · open 95 · needs-human 7
 ```
 
-> ▸ **94 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **95 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -964,5 +964,12 @@ untouched list is one nobody reads by milestone three.
 | 173 | 847 | `checklist-content-discovery-search-search-store-event-blog-review` | Store, event, blog and review searches each return matches | content-discovery/search--guest | guest | ⬜ null | Not driven - capacity, and this is the case I would run next of the four outstanding, because its own expectedBehaviour names the shape precisely: 'Each is a separate wiring - a search that renders on all four and works on three is the n… | [shot](../tester/.tester-runs/run-3/shots/b173-control-fail.png) | — | — | no | — |
 | 174 | 848 | `checklist-content-discovery-search-search-keeps-sort` | Changing the sort while a search term is active re-orders the results and keeps the term | content-discovery/search | main | ❌ fail | 🛑 THE SORT IS SILENTLY IGNORED THE MOMENT A SEARCH TERM IS PRESENT. The precondition passes first, which is what makes the finding clean. With NO term, signed in as rehan.sheikh@gmail.com: 'Price: Low to High' wrote ?sort=price and rend… | [shot](../tester/.tester-runs/run-3/shots/b174-sort-ignored-with-search.png) | — | — | no | — |
 | 174 | 849 | `checklist-content-discovery-search-search-keeps-facets` | On /products, searching keeps the price, tag and availability facets working | content-discovery/search | main | ❌ fail | 🛑 THE PRICE-RANGE FACET MATCHES NOTHING AT ALL, and only one of the three named facets even exists. Baseline: /products?q=beyblade renders 24 cards with prices including 1,099, 949, 899, 799, 450 and 1,599. Setting the facet's minimum t… | [shot](../tester/.tester-runs/run-3/shots/b174-price-facet-returns-zero.png) | — | — | no | — |
+| 175 | 850 | `checklist-content-discovery-search-search-scam-partial-and-upi` | On /admin/scammers, searching "Vikram" finds "Vikram Mehta", and searching a UPI id also f | content-discovery/search--admin | admin | ✅ pass | Partial-name matching works and the nonsense control is clean. The registry holds 5 profiles unfiltered (scammer-fake-takara-tomy-preorder, scammer-fake-metal-fusion-backup-account, scammer-mistaken-identity-case, scammer-fake-metal-fusi… | [shot](../tester/.tester-runs/run-3/shots/b175-control-pass.png) | — | — | no | — |
+| 175 | 851 | `checklist-content-discovery-search-search-admin-exact-match` | On /admin/reviews a FULL reviewer name matches, a partial one matches nothing, and the box | content-discovery/search--admin | admin | ⬜ null | Not driven - capacity. The case needs a specific sequence I could not shortcut: read a real reviewer's full name off a row, read the box's placeholder or helper text, search the full name, then search only the first half of it. Every ste… | [shot](../tester/.tester-runs/run-3/shots/b175-control-pass.png) | — | — | no | — |
+| 175 | 852 | `checklist-content-discovery-search-search-admin-degraded-sort` | Searching on /admin/payouts shows a notice that results are not sorted while searching | content-discovery/search--admin | admin | ⬜ null | Not driven - I did not look for the notice, which is the entire assertion. What I did measure, and it is the precondition the notice would explain: /admin/payouts returns 0 rows for q=Beyblade even though payout rows carry seller names l… | [shot](../tester/.tester-runs/run-3/shots/b175-control-pass.png) | — | — | no | — |
+| 175 | 853 | `checklist-content-discovery-search-search-admin-team-filter-chip` | On /admin/team, applying any filter chip still returns employees | content-discovery/search--admin | admin | ✅ pass | THE CONCATENATION BUG IS FIXED. This is the case that exists for Root Cause #83 - a filter builder that concatenated its clauses into one malformed clause, so any chip emptied the whole team list, and whose unit test asserted the correct… | [shot](../tester/.tester-runs/run-3/shots/b175-control-pass.png) | — | — | no | — |
+| 175 | 854 | `checklist-content-discovery-search-search-no-empty-toolbar-gap` | A listing page whose search box was removed shows no empty gap in its toolbar | content-discovery/search--admin | admin | ⬜ null | Not driven - capacity. This is a purely visual case across four named listings at two widths, so it needs eight screenshots read by eye and cannot be shortened by probing anything. Recording the one piece of directly relevant evidence I … | [shot](../tester/.tester-runs/run-3/shots/b175-control-pass.png) | — | — | no | — |
+| 175 | 855 | `checklist-content-discovery-search-search-nonsense-term-returns-nothing` | Searching "zzzznope" anywhere returns ZERO results | content-discovery/search--admin | admin | ✅ pass | No surface returns rows for a term that cannot match. Each measured with its own unfiltered control, so the comparison is real rather than assumed: /admin/products 50 rows (total 76) -> 0; /admin/orders 50 -> 0; /admin/users 50 (total 81… | [shot](../tester/.tester-runs/run-3/shots/b175-control-pass.png) | — | — | no | — |
+| 175 | 856 | `checklist-content-discovery-search-search-finds-older-records` | An OLDER listing - one that existed before this feature shipped - is findable by name | content-discovery/search--admin | admin | ❌ fail | 🛑 THE BACKFILL GAP IS LIVE, and the fixture detected exactly what it exists to detect. On /admin/products, searching the word 'untokenised' returns ZERO rows - product-w1-untokenised is not found by a word from its own title. The contro… | [shot](../tester/.tester-runs/run-3/shots/b175-control-fail.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
