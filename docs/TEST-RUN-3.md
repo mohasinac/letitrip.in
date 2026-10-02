@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **144 / 255** |
-| Cases | **637 / 1847** (34%) |
-| Cycle | 29 of 51 |
+| Batches | **145 / 255** |
+| Cases | **642 / 1847** (35%) |
+| Cycle | 30 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 13:00 UTC |
+| Last updated | 2026-10-02 13:09 UTC |
 
 ```
-pass 251 · fail 112 · null 274
+pass 252 · fail 112 · null 278
 fixed 35/112 · deferred 36 · open 41 · needs-human 7
 ```
 
@@ -752,5 +752,10 @@ untouched list is one nobody reads by milestone three.
 | 143 | 635 | `checklist-content-discovery-notifications-notification-email-opt-out-respected` | Turning email OFF for a notification type stops the emails but still shows the in-app noti | content-discovery/notifications | main | ⬜ null | NULL — unmeasurable for this identity, and it is the harder of the two email cases because it asserts an ABSENCE (emailsReceived: 0). ⚠️ WHY THE EMAIL HALF IS UNVERIFIABLE FOR THIS IDENTITY, stated once: the buyer is rehan.sheikh@gmail.c… | [shot](../tester/.tester-runs/run-3/shots/notifications-filter-drawer.png) | — | — | no | — |
 | 143 | 636 | `checklist-content-discovery-notifications-notification-ineligible-types-bell-only` | Being outbid fills the notification bell and sends NO email | content-discovery/notifications | main | ⬜ null | NULL on the email half, with the in-app half confirmed. ✅ BEING OUTBID DOES FILL THE BELL: the buyer holds a bid_outbid notification, and separately I watched the mechanism work in the bidding batches — placing a higher bid flipped all t… | [shot](../tester/.tester-runs/run-3/shots/notifications-filter-drawer.png) | — | — | no | — |
 | 144 | 637 | `checklist-content-discovery-notifications-notification-losing-bidder-no-email` | When an auction settles, every losing bidder gets a bell entry and zero emails — but the W | content-discovery/notifications--admin | admin | ⬜ null | NULL — the settlement cannot be staged, but chasing this case turned up something more useful than the verdict would have been: ONE OF THE TWO EMAIL INSTRUMENTS DOES NOT WORK IN PRODUCTION, which is why every email clause in this run is … | [shot](../tester/.tester-runs/run-3/shots/notification-rows-not-clickable.png) | — | — | no | — |
+| 145 | 638 | `checklist-public-pages-auth-error-pages-register-page` | The register page loads and account creation works | public-pages/auth-error-pages--guest | guest | ✅ pass | YES — the page loads, validation rejects the bad input client-side, and account creation works end to end. I captured every request, so this is the whole chain rather than a 'it seemed to work'. ✅ THE PAGE RENDERS FOR A GUEST: h1 'Create… | [shot](../tester/.tester-runs/run-3/shots/register-mismatch-refused.png) | — | — | no | — |
+| 145 | 639 | `checklist-public-pages-auth-error-pages-forgot-reset-password-pages` | Forgot-password and reset-password pages both work | public-pages/auth-error-pages--guest | guest | ⬜ null | NULL — and this is a deliberate refusal, not a blocker I ran into. THE CASE WOULD CHANGE A REAL SEEDED LOGIN AND CANNOT RESTORE IT. Its inputs are email 'divya.funko@gmail.com', newPassword 'QaAuthPages654!' and restoredPassword 'TempPas… | [shot](../tester/.tester-runs/run-3/shots/register-mismatch-refused.png) | — | — | no | — |
+| 145 | 640 | `checklist-public-pages-auth-error-pages-verify-email-page` | The verify-email page correctly confirms a pending verification | public-pages/auth-error-pages--guest | guest | ⬜ null | NULL — needs the verification link out of an inbox the harness cannot read. ✅ THE SEND HALF IS CONFIRMED, and better than the case asks: registering qa-register-1@mailnull.com in this same batch fired accounts:sendOobCode → 200 against F… | [shot](../tester/.tester-runs/run-3/shots/register-mismatch-refused.png) | — | — | no | — |
+| 145 | 641 | `checklist-public-pages-auth-error-pages-oauth-loading-redirect` | The OAuth-loading redirect page transitions correctly after a Google sign-in | public-pages/auth-error-pages--guest | guest | ⬜ null | NULL — requires an interactive Google account, which is the one channel this harness definitively has not got. The case asks me to complete a Google sign-in and then watch the OAuth-loading page transition. That needs a real Google crede… | [shot](../tester/.tester-runs/run-3/shots/register-mismatch-refused.png) | — | — | no | — |
+| 145 | 642 | `checklist-public-pages-auth-error-pages-auth-close-terminates-popup` | The OAuth popup-close page closes its own window and hands the result back to the page tha | public-pages/auth-error-pages--guest | guest | ⬜ null | NULL — same channel, and structurally harder. This case is about a popup window closing itself and handing its result back to the opener via postMessage. Reaching it requires a completed Google OAuth round trip to have opened that popup … | [shot](../tester/.tester-runs/run-3/shots/register-mismatch-refused.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->

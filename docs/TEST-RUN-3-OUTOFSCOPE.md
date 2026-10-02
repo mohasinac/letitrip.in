@@ -2927,3 +2927,31 @@ else**, which is Root Cause #38's shape on the nested-map axis.
 is PRESERVE-tier and the save's blast radius is wider than the case describes.
 `tester/.tester-runs/run-3/sitesettings-presave-snapshot.json` holds the three
 keys verbatim plus a 37-key fingerprint, so whoever runs it next can restore.
+
+## Two throwaway accounts this run created, and cannot delete
+
+Batch 145 (`public-pages/auth-error-pages`) drove the real registration flow,
+because that is the only way to test it. It worked — `POST /api/auth/register`
+returned 201 — which means a permanent account now exists:
+
+| | |
+|---|---|
+| email | `qa-register-1@mailnull.com` |
+| uid | `pGCSjOm7Qec9LPcFUio2VbrD98O2` |
+| role | `user` |
+
+**I did not delete it, deliberately.** `users` is PRESERVE-tier, so no lifecycle
+step removes it, and the standing rule is never to delete a user account — I am
+not going to make an exception for one I created, because the risk that rule
+guards against is deleting the *wrong* uid. Deleting it is a one-line decision
+for a human who can check the uid twice.
+
+A re-run of that case hits "already exists" rather than creating a second, so it
+does not accumulate.
+
+**Separately: the case's own address choice is wrong for its sibling.**
+`register-page` registers on `@mailnull.com`, which is null-routed and has no
+inbox — and `verify-email-page`, the very next case, needs to open the
+verification mail. Registering on a plus-address of the harness mailbox instead
+would make both testable from one signup. That is a case rewrite, not a product
+fix.
