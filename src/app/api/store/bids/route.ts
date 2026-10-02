@@ -87,9 +87,23 @@ const __GET__g = withProviders(createRouteHandler({
     // The pipe-joined productId group is a single-field OR, which the enhanced
     // Firebase adapter upgrades to a Firestore `in` query. AND-ing the status /
     // search clauses onto it keeps that upgrade intact.
+    //
+    // 🛑 THE FIELD NAME GOES ONCE, BEFORE THE `==`. NOT ONCE PER VALUE.
+    //
+    // This read `productIds.map((id) => `productId==${id}`).join("|")` until
+    // 2026-10-02, which spells the field name into every value after the first.
+    // Sieve parses `productId==a|productId==b` as ONE clause on `productId`
+    // whose values are ["a", "productId==b"] — the field name lands INSIDE the
+    // second value — so the `in` query looked for a bid whose productId is
+    // literally the string "productId==b". Measured on production: the seller
+    // saw zero of the 37 bids on their own auctions, with a 200 and an empty
+    // list. `parseFilters('productId==a|b|c')` yields values ["a","b","c"],
+    // which is what this now builds.
+    //
+    // Swept both repos for the same spelling: this was the only site.
     const result = await bidRepository.list({
       filters: sieveAnd(
-        productIds.map((id) => `productId==${id}`).join("|"),
+        sieveFilter(BID_FIELDS.PRODUCT_ID, SIEVE_OP.EQ, productIds.join("|")),
         statusClause,
         qClause,
       ),
