@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **135 / 255** |
-| Cases | **587 / 1847** (32%) |
+| Batches | **136 / 255** |
+| Cases | **597 / 1847** (32%) |
 | Cycle | 28 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 12:05 UTC |
+| Last updated | 2026-10-02 12:13 UTC |
 
 ```
-pass 230 · fail 102 · null 255
-fixed 35/102 · deferred 36 · open 31 · needs-human 7
+pass 234 · fail 104 · null 259
+fixed 35/104 · deferred 36 · open 33 · needs-human 7
 ```
 
-> ▸ **31 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **33 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -702,5 +702,15 @@ untouched list is one nobody reads by milestone three.
 | 135 | 585 | `checklist-buying-bidding-auction-below-reserve-no-winner` | An auction that ends below its reserve price declares no winner and archives the listing,  | buying/bidding--p1 | main | ⬜ null | NULL — not driven. The fixture auction-beyblade-burst-lord-spryzen-ended-unsold is the right shape for it (CLAUDE.md records it as deliberately non-canonical: ended with isSold false, so it is the one row that proves the per-type branch … | [shot](../tester/.tester-runs/run-3/shots/currentbid-1650-vs-history-1850.png) | — | — | no | — |
 | 135 | 586 | `checklist-buying-bidding-auction-win-unpaid-forfeit` | A won auction left unpaid past its 48-hour checkout window is removed from the cart and th | buying/bidding--p1 | main | ⬜ null | NULL — not driven, and it is time-bound in a way one session cannot shorten. The case asserts that a won auction left unpaid past its 48-hour checkout window is removed from the cart and the bid marked forfeited. That window is swept by … | [shot](../tester/.tester-runs/run-3/shots/currentbid-1650-vs-history-1850.png) | — | — | no | — |
 | 135 | 587 | `checklist-buying-bidding-bid-increment-override-floor-raising` | A seller's per-listing "Minimum Bid Increment" can require MORE than the admin tier, but c | buying/bidding--p1 | main | ⬜ null | NULL — the fixture does not carry the override the case needs. It asserts that a seller's per-listing 'Minimum Bid Increment' can require MORE than the admin tier but can never let a bid undercut it, using auction-beyblade-original-seabo… | [shot](../tester/.tester-runs/run-3/shots/currentbid-1650-vs-history-1850.png) | — | — | no | — |
+| 136 | 588 | `checklist-buying-bidding-first-bid-can-equal-starting-bid` | On an auction with NO bids yet, the seller's starting bid is itself an acceptable opening  | buying/bidding--p2 | main | ❌ fail | 🛑 THE OPENING BID IS THE ONE BROKEN CASE, and the whole batch turns on it, so it is set out once here. On auction-beyblade-x-shark-edge (starting bid ₹799, increment ₹100, ZERO bids) I drove three amounts through the real modal and capt… | [shot](../tester/.tester-runs/run-3/shots/opening-bid-at-starting-price-refused.png) | — | — | no | — |
+| 136 | 589 | `checklist-buying-bidding-first-bid-displays-at-starting-price` | The opening bid displays at the starting price, even when the opening bidder's maximum is  | buying/bidding--p2 | main | ❌ fail | 🛑 THE OPENING BID IS THE ONE BROKEN CASE, and the whole batch turns on it, so it is set out once here. On auction-beyblade-x-shark-edge (starting bid ₹799, increment ₹100, ZERO bids) I drove three amounts through the real modal and capt… | [shot](../tester/.tester-runs/run-3/shots/opening-bid-at-starting-price-refused.png) | — | — | no | — |
+| 136 | 590 | `checklist-buying-bidding-bid-presets-are-increment-multiples` | The quick-bid buttons above the amount field are multiples of the auction's OWN minimum in | buying/bidding--p2 | main | ✅ pass | YES — on both auctions I looked at, and never a flat +₹1 / +₹5 / +₹10. presetCount 3. ✅ AFTER THE FIRST BID (shark-edge, current ₹899, increment ₹100) the three presets are +₹100.00 → ₹999.00, +₹500.00 → ₹1,399.00, +₹1,000.00 → ₹1,899.00… | [shot](../tester/.tester-runs/run-3/shots/opening-bid-at-starting-price-refused.png) | — | — | no | — |
+| 136 | 591 | `checklist-buying-bidding-bid-below-current-plus-increment-rejected` | A bid below current bid + minimum increment is rejected with a clear inline error on the a | buying/bidding--p2 | main | ✅ pass | YES — both too-low shapes are refused with a clear inline error on the amount field, and nothing is written. One qualification about WHERE the message is clear, which I am recording because it is the difference between this case and the … | [shot](../tester/.tester-runs/run-3/shots/opening-bid-at-starting-price-refused.png) | — | — | no | — |
+| 136 | 592 | `checklist-buying-bidding-bid-custom-need-not-be-exact-multiple` | In Custom mode any amount at or above the minimum is accepted — it does NOT have to be an  | buying/bidding--p2 | main | ✅ pass | YES — proven with a real bid, not inferred from the copy. ✅ I PLACED ₹1,037 on shark-edge when the current bid was ₹899 and the increment ₹100. 1037 − 899 = 138, which is not a multiple of 100, so it is exactly the shape the case asks ab… | [shot](../tester/.tester-runs/run-3/shots/opening-bid-at-starting-price-refused.png) | — | — | no | — |
+| 136 | 593 | `checklist-buying-bidding-bid-count-increments-by-one` | Placing one bid increases the auction's bid count by exactly ONE, and the current bid neve | buying/bidding--p2 | main | ✅ pass | YES on the half that one identity can measure, and I am separating it from the half that needs two. ✅ EXACTLY ONE, AND NEVER BACKWARDS. Before my opening bid shark-edge read currentBid 799, bidCount 0, and ZERO bid documents. After one b… | [shot](../tester/.tester-runs/run-3/shots/opening-bid-at-starting-price-refused.png) | — | — | no | — |
+| 136 | 594 | `checklist-buying-bidding-bid-succeeds-and-outbids-previous-winner` | Placing a valid bid actually records it — the current bid rises and the previous high bid  | buying/bidding--p2 | main | ⬜ null | NULL — the case's auction has ENDED and its sequence needs two bids from one buyer against a previous winner. auction-beyblade-burst-cho-z-achilles reads 'Ended 10/2/2026, 2:09:21 AM' with a disabled 'Auction Ended' CTA and no bid contro… | [shot](../tester/.tester-runs/run-3/shots/opening-bid-at-starting-price-refused.png) | — | — | no | — |
+| 136 | 595 | `checklist-buying-bidding-bid-increment-live-tier-change` | The displayed "min increment" on an open auction updates live (without a page refresh) if  | buying/bidding--p2 | main | ⬜ null | NULL — needs a second bidder AND the live update that is already broken. The case wants another bidder's bid to push the current bid across ₹5,000 so the displayed increment changes from ₹200 to ₹500 WITHOUT a page refresh. TWO SEPARATE … | [shot](../tester/.tester-runs/run-3/shots/opening-bid-at-starting-price-refused.png) | — | — | no | — |
+| 136 | 596 | `checklist-buying-bidding-bid-preset-follows-live-price` | With a quick-bid preset selected, another bidder raising the price updates the amount in t | buying/bidding--p2 | main | ⬜ null | NULL — same two blockers, and the second one makes the case's premise worth re-examining rather than just retrying. It asks that with a preset selected, another bidder raising the price updates the amount in the field so no stale, too-lo… | [shot](../tester/.tester-runs/run-3/shots/opening-bid-at-starting-price-refused.png) | — | — | no | — |
+| 136 | 597 | `checklist-buying-bidding-outbid-notification-goes-to-outbid-user` | The outbid notification goes to the bidder who actually lost the lead — and only when some | buying/bidding--p2 | main | ⬜ null | NULL — needs two bidders and another user's notification inbox, and I would not read the latter even if I could. The case asserts the outbid notification reaches the bidder who actually lost the lead and only when someone genuinely takes… | [shot](../tester/.tester-runs/run-3/shots/opening-bid-at-starting-price-refused.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
