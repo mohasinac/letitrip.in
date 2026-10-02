@@ -2256,3 +2256,45 @@ ineligibility from a broken page.
 
 Working on the same surface, checked in passing: reviewer identities are masked
 ("M\*\*\* U\*\*\* 2\*\*\*"), so `maskPublicReview` is doing its job.
+
+## 🛑 A payout shows two different amounts on two screens
+
+`/store/payouts` list row: **₹11,400.00**. The same payout's detail panel:
+**Amount ₹10,925.00**. Payout `payout-beyblade-arena-may-2026-pending`, both read
+off the DOM 2026-10-02.
+
+The breakdown makes the cause unambiguous — Gross ₹12,000.00, Platform fee
+−₹600.00, Refund deductions −₹475.00. `12,000 − 600 = 11,400` (the list);
+`− 475 = 10,925` (the detail). **The list amount omits refund deductions.**
+
+A seller scanning their payouts believes they are owed ₹11,400 and only learns
+it is ₹10,925 by opening the row. This is the mirror-vs-derived shape on a money
+field: one surface subtracts a deduction the other does not. Found by
+`checklist-public-pages-help-how-it-works-how-payouts-work-matches-product`.
+
+## Three documents describe three different seller deduction sets
+
+| Surface | Deductions named |
+|---|---|
+| `/how-payouts-work` | platform commission **only** |
+| `/fees` | Platform Commission 5%, **Payment Gateway Fee 2.36%**, **GST on Commission 18%** |
+| A real payout breakdown | Platform fee −₹600 (5%) **and Refund deductions −₹475** |
+
+So the **refund deduction** — the line a seller is most likely to dispute,
+because it is tied to a named buyer complaint ("Piece arrived with a chipped bit
+— buyer requested partial refund") — is documented nowhere. And the gateway fee
+and GST that `/fees` tells sellers they pay do not appear on the payout at all.
+
+## `/how-payouts-work` contradicts itself about whether payouts are automatic
+
+Its five numbered steps describe a **manual request**: "select the delivered
+orders you want to include in a payout request", "Admin Reviews Your Request".
+Its closing CTA says "payouts run **automatically** after each delivered order".
+Those are different products, on one page.
+
+Two more schedule mismatches on the same page: it promises admin review in "1–3
+business days" while the real payout reads "Requested 14 Sept 2026 · Expected by
+21 Sept 2026" (seven), and its **₹500 minimum appears nowhere on
+`/store/payouts`** — the page shows only "Available for Payout ₹0.00 / 0
+eligible orders / Set up payout details first", so a seller cannot tell how
+close they are to being able to request.

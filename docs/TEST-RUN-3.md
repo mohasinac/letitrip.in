@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **119 / 255** |
-| Cases | **522 / 1847** (28%) |
-| Cycle | 24 of 51 |
+| Batches | **120 / 255** |
+| Cases | **526 / 1847** (28%) |
+| Cycle | 25 of 51 |
 | Next deploy | batch 125 |
-| Last updated | 2026-10-02 07:28 UTC |
+| Last updated | 2026-10-02 07:35 UTC |
 
 ```
-pass 212 · fail 79 · null 231
-fixed 26/79 · deferred 38 · open 15 · needs-human 7
+pass 212 · fail 83 · null 231
+fixed 26/83 · deferred 38 · open 19 · needs-human 7
 ```
 
-> ▸ **15 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **19 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -637,5 +637,9 @@ untouched list is one nobody reads by milestone three.
 | 119 | 520 | `checklist-public-pages-help-how-it-works-how-auctions-work-matches-product` | What /how-auctions-work says about bidding, increments and what happens at the end matches | public-pages/help-how-it-works--guest | guest | ❌ fail | NO. The guide renders fully and is substantive, but one of its three claims names a UI affordance that does not exist, and the page contradicts itself about a deadline that forfeits a purchase. FIRST, A FIXTURE CORRECTION I MADE RATHER T… | [shot](../tester/.tester-runs/run-3/shots/contact-form-sent.png) | — | — | no | — |
 | 119 | 521 | `checklist-public-pages-help-how-it-works-how-pre-orders-work-matches-product` | What /how-pre-orders-work says about deposits and cancellation matches a real pre-order li | public-pages/help-how-it-works--guest | guest | ❌ fail | NO. The cancellation half matches exactly; the deposit half does not, and I proved it is absence rather than price-gating by reading the fixture's own data. THE GUIDE says: 'you pay a deposit (typically 20–50%) or the full price upfront'… | [shot](../tester/.tester-runs/run-3/shots/contact-form-sent.png) | — | — | no | — |
 | 119 | 522 | `checklist-public-pages-help-how-it-works-track-order-page-works` | The order-tracking page at /track is reachable from the footer and does something useful f | public-pages/help-how-it-works--guest | guest | ❌ fail | NO - and the blocker is not a harness limit. THE TRACKING FORM DOES NOT EXIST. STEPS 1-2 PASS: the footer's Support group does carry 'Track Order' -> /track, and it lands on /track, which renders a hero 'Track Your Order'. STEP 3 IS UNPE… | [shot](../tester/.tester-runs/run-3/shots/track-page-no-form.png) | — | — | no | — |
+| 120 | 523 | `checklist-public-pages-help-how-it-works-how-checkout-works-matches-product` | What /how-checkout-works describes as the checkout steps matches the steps checkout actual | public-pages/help-how-it-works | main | ❌ fail | NO. The step COUNT matches - checkoutSteps is 3 on both the indicator and the expectation - but the guide's list does not, and the step it omits is the one that costs money. THE GUIDE NAMES FIVE, in order: '🛒 1. Build Your Cart', '📍 2.… | [shot](../tester/.tester-runs/run-3/shots/checkout-3-steps-vs-guide-5.png) | — | — | no | — |
+| 120 | 524 | `checklist-public-pages-help-how-it-works-how-offers-work-matches-product` | What /how-offers-work says about making, countering and accepting an offer matches the off | public-pages/help-how-it-works | main | ❌ fail | NO. The form states its own limits clearly - and the one number comparable to the guide DISAGREES with it, while the guide's other three numbers appear nowhere on the form. THE GUIDE'S NEGOTIATION RULES, quoted: '• Your counter offer mus… | [shot](../tester/.tester-runs/run-3/shots/checkout-3-steps-vs-guide-5.png) | — | — | no | — |
+| 120 | 525 | `checklist-public-pages-help-how-it-works-how-orders-work-matches-product` | The order statuses named on /how-orders-work are the statuses an order can actually hold | public-pages/help-how-it-works | main | ❌ fail | NO - and the comparison fails in BOTH directions, which is what the case asks for, plus it surfaces a product gap that is not a documentation problem at all. THE GUIDE NAMES SEVEN lifecycle cards: '⏳ Pending Payment', '✅ Confirmed', '📦 … | [shot](../tester/.tester-runs/run-3/shots/checkout-3-steps-vs-guide-5.png) | — | — | no | — |
+| 120 | 526 | `checklist-public-pages-help-how-it-works-how-reviews-work-matches-product` | What /how-reviews-work says about who may review and when matches what the review form act | public-pages/help-how-it-works | main | ❌ fail | NO. There is no 'Write a Review' control on the Reviews tab and no refusal message either - and expectedUiState names exactly that silence as the failure ('Either the review form opens, OR a refusal states its reason'). THE GUIDE SAYS, q… | [shot](../tester/.tester-runs/run-3/shots/checkout-3-steps-vs-guide-5.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
