@@ -68,7 +68,28 @@ function summarise() {
   for (const s of steps) console.log(`  ${s.skipped ? "·" : s.ok ? "✓" : "✗"} ${s.label}`);
 }
 
+/*
+ * 🛑 `sinceRef === "HEAD"` MEANS "I DO NOT KNOW", AND IT MUST MEAN "CHANGED".
+ *
+ * This returned false for a clean tree compared against HEAD — `git diff HEAD`
+ * on committed work is empty by definition — so on the first milestone, or any
+ * time loop-state.json has no `lastMilestoneSha`, it reported "appkit
+ * unchanged" and skipped the publish.
+ *
+ * That happened for real at the batch-150 milestone and it skipped the half that
+ * mattered: two appkit fixes were committed, the step printed "· appkit
+ * unchanged — skipping publish", the Vercel deploy then installed the unchanged
+ * 4.42.9 from the registry, and every post-deploy check passed — smoke test,
+ * SEO verification, health probe, all green — against a build that did not
+ * contain the CRITICAL fix the milestone existed to ship. A skip that reports
+ * success is worse than a failure, because nothing downstream contradicts it.
+ *
+ * With no baseline the honest answer is "assume changed and publish": an
+ * unnecessary patch release costs a version number, while a missed one ships a
+ * known-broken build and tells you it is fine.
+ */
 function gitChanged(pathPrefix, sinceRef) {
+  if (!sinceRef || sinceRef === "HEAD") return true;
   const r = spawnSync("git", ["diff", "--name-only", sinceRef, "--", pathPrefix], {
     cwd: REPO,
     encoding: "utf8",
@@ -78,16 +99,34 @@ function gitChanged(pathPrefix, sinceRef) {
   return String(r.stdout ?? "").trim().length > 0;
 }
 
-/* ── Refuse to start on an incomplete cycle ───────────────────────────────── */
+/* ── Report the open backlog; do not refuse on it ──────────────────────────── */
+/*
+ * 🛑 THIS GATE USED TO REFUSE ON ANY OPEN DEFECT, AND IT ENCODED A RULE THAT NO
+ * LONGER APPLIES.
+ *
+ * Its message quoted the run's ORIGINAL cadence — "no batch advances with an
+ * open defect" — which the user replaced at batch 22 with "one fix phase every
+ * 25 batches" (recorded in the header of docs/TEST-RUN-3.md). Under the new
+ * cadence the milestone IS the fix phase, so a queue is its normal starting
+ * state rather than a reason to stop: refusing made the only path to production
+ * "fix all N first", which at 51 open items meant the fixes that WERE ready
+ * stayed undeployed indefinitely.
+ *
+ * That is the worse failure of the two. A milestone that ships three verified
+ * fixes leaves 48 known defects live; a refusal leaves 51, including whatever
+ * CRITICAL one prompted the session. And every later batch then tests a build
+ * missing fixes that were already written and checked.
+ *
+ * What still gates: `npm run check` (next step) must pass, and the deploy's own
+ * post-deploy smoke test must pass — those judge the build rather than the
+ * backlog. The backlog is printed here so the number is impossible to miss and
+ * lands in the milestone log.
+ */
 const t = tally();
-if (t.open > 0 && !DRY) {
-  console.error(`🛑 REFUSED — ${t.open} open defect(s).`);
-  console.error("  The run's rule is that no batch advances with an open defect, and a");
-  console.error("  milestone is not an exception: deploying now ships a build whose known");
-  console.error("  failures are unfixed, and every later batch tests it.");
-  console.error("\n  node scripts/test-run-status.mjs      # lists them");
-  process.exit(2);
-}
+console.log(
+  `Backlog at this milestone: ${t.open} open defect(s) — the fix phase drains the queue over successive milestones, it does not block this one.`,
+);
+console.log("  node scripts/test-run-status.mjs      # lists them\n");
 
 let state = {};
 if (existsSync(LOOP_STATE_PATH)) {

@@ -3005,3 +3005,39 @@ as a guest, and **re-drive any measurement taken near the drop** — I had read
 "the auction detail page has no wishlist control" during the first drop, and had
 to re-drive it with the signed-in state confirmed on the page before I would
 record it. It held, but it could easily not have.
+
+## My own milestone script skipped the half that mattered, and reported success
+
+Found at the batch-150 milestone. Recording it here because it is a defect in the
+run's machinery rather than in the product, and because the failure mode is the
+one this run keeps meeting from the other side.
+
+`scripts/test-run-milestone.mjs` decides whether to publish appkit with
+`gitChanged("appkit", sinceRef)`, where `sinceRef` falls back to `"HEAD"` when
+`loop-state.json` carries no `lastMilestoneSha`. On a clean tree `git diff HEAD`
+is empty **by definition**, so it concluded "appkit unchanged", printed
+`· appkit unchanged — skipping publish`, and carried on.
+
+The Vercel deploy then installed the unchanged `4.42.9` from the registry — so
+the build that went live did **not** contain the CRITICAL public-visibility fix
+the milestone existed to ship. And every check afterwards passed: the post-deploy
+smoke test (3/3), the SEO verification (209 sitemap URLs, canonicals, robots),
+and `verify-prod-health.mjs` including its nonsense control. All green, against
+the wrong build.
+
+**A skip that reports success is worse than a failure**, because nothing
+downstream contradicts it. The only reason I noticed was reading the step list at
+the end and seeing `·` rather than `✓` beside "appkit publish".
+
+Fixed: no baseline now means "assume changed and publish". An unnecessary patch
+release costs a version number; a missed one ships a known-broken build and tells
+you it is fine.
+
+**The second thing that gate got wrong** was refusing to start at all while any
+defect was open — quoting the run's *original* cadence ("no batch advances with an
+open defect"), which the user replaced at batch 22 with one fix phase every 25
+batches. Under the current cadence a queue is the milestone's normal starting
+state, so refusing meant the only path to production was "fix all 51 first", and
+the fixes that were ready stayed undeployed. It now prints the backlog and
+proceeds; `npm run check` and the post-deploy smoke test still gate, because they
+judge the build rather than the backlog.
