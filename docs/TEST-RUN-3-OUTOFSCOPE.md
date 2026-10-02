@@ -2518,3 +2518,20 @@ modal was open because Playwright reported the backdrop intercepting a click.
 That is the third probe shape to have produced a false "the control does
 nothing" this run, after `offsetParent` on fixed overlays and a synthetic
 `input` event on a search box.
+
+### Navbar marker — re-verified on 4.42.6, including the regression risk
+
+`/products/product-beyblade-original-dranzer-s` now marks **Products**
+(`aria-current="page"`), and the two links are no longer identical:
+
+| | Products | Home |
+|---|---|---|
+| colour | `rgb(17, 94, 89)` | `rgb(91, 91, 99)` |
+| weight | 600 | 500 |
+| background | `rgb(240, 253, 250)` | transparent |
+| bottom border | 2px | 0px |
+
+And the thing that could have gone wrong with a prefix match did not: exactly
+one entry is marked on each of `/` (Home), `/events` (Events) and `/stores`
+(Stores) — the root entry does **not** light up everywhere, because
+`findActiveNavItem` breaks ties by longest href.

@@ -33,15 +33,15 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **124 / 255** |
-| Cases | **541 / 1847** (29%) |
-| Cycle | 25 of 51 |
-| Next deploy | batch 125 |
-| Last updated | 2026-10-02 08:13 UTC |
+| Batches | **125 / 255** |
+| Cases | **545 / 1847** (30%) |
+| Cycle | 26 of 51 |
+| Next deploy | batch 150 |
+| Last updated | 2026-10-02 08:53 UTC |
 
 ```
-pass 216 · fail 87 · null 238
-fixed 27/87 · deferred 38 · open 22 · needs-human 7
+pass 216 · fail 89 · null 240
+fixed 29/89 · deferred 38 · open 22 · needs-human 7
 ```
 
 > ▸ **22 failure(s) not yet fixed.** Fixes land in one phase at the
@@ -656,5 +656,9 @@ untouched list is one nobody reads by milestone three.
 | 122 | 539 | `checklist-buying-my-orders-manual-payment-rejected-state` | An order rejected as fraudulent shows a "Payment rejected" panel with the admin's reason,  | buying/my-orders--p1 | main | ⬜ null | NOT DRIVEN - no order in this account is AWAITING manual payment, which is this case's precondition, and I established that rather than assuming it. The two cash orders (#CASH01, #CASH02) are both past that state: #CASH01's detail page r… | [shot](../tester/.tester-runs/run-3/shots/orders-sort-total-fixed.png) | — | — | no | — |
 | 123 | 540 | `checklist-buying-my-orders-order-lifecycle-emails-arrive` | As a buyer you get an email at each real order milestone — placed, shipped, delivered, can | buying/my-orders--p2 | main | ⬜ null | NULL at step 6 - but the first half is a real, fully evidenced PASS and the reason the second half is out of reach is a legitimate business rule rather than a defect. ✅ THE ORDER-PLACED EMAIL ARRIVES, AND IT NAMES THE RIGHT ORDER. I did … | [shot](../tester/.tester-runs/run-3/shots/manual-payment-page-upi-countdown.png) | — | — | no | — |
 | 124 | 541 | `checklist-buying-my-orders-manual-payment-reupload-note-visible-to-buyer` | When an admin requests a proof re-upload, the buyer's order detail page shows "Payment pro | buying/my-orders--admin | admin | ⬜ null | NULL at step 1, and the blocker is the SAME missing fixture that blocked four cases last batch - which makes it a pattern worth naming rather than four separate abstentions. WHAT THIS CASE NEEDS: an order whose proof has been SUBMITTED b… | [shot](../tester/.tester-runs/run-3/shots/admin-orders-awaiting-payment-row.png) | — | — | no | — |
+| 125 | 542 | `checklist-admin-bundles-bundle-create` | Admin can create a bundle from existing products | admin/bundles | admin | ❌ fail | NO - a bundle still cannot be created, and I have now ATTRIBUTED the remaining half of this defect rather than leaving it unexplained as I had to at batch 100. 🛑 THE PRICE FIELD REPORTS 'This field is required' WHILE CONTAINING 1500. I … | [shot](../tester/.tester-runs/run-3/shots/bundle-price-required-while-filled.png) | FIXED AND RE-VERIFIED IN PRODUCTION (appkit 4.42.6). Two independent defects, both attributed before being touched. (1) CREATE: bundle-form declared priceRupees as z.string().regex(), but build-sections' number control is onChange={(v) =… | `bundle-form.ts` `AdminBundleEditorView.tsx` | no | pass |
+| 125 | 543 | `checklist-admin-bundles-bundle-brand-picker` | The bundle editor has a "Brand" select (Takara-Tomy / Beyblade / No specific brand) that s | admin/bundles | admin | ❌ fail | NO at step 4, on its own merits and before the create blocker even matters. 🛑 THE BRAND SELECT OFFERS EXACTLY ONE OPTION: 'No specific brand', value ''. I read the <select name="brandSlug"> directly rather than eyeballing the closed con… | [shot](../tester/.tester-runs/run-3/shots/bundle-price-required-while-filled.png) | FIXED AND RE-VERIFIED IN PRODUCTION (appkit 4.42.6). The Brand select offered ONLY 'No specific brand' because brandsQuery read res?.data?.items behind a hand-written 'as { data?: { items?: CategoryDocument[] } }' while apiClient already… | `AdminBundleEditorView.tsx` | no | pass |
+| 125 | 544 | `checklist-admin-bundles-bundle-stock-sync` | Bundle stock correctly syncs when a component product's stock changes | admin/bundles | admin | ⬜ null | NULL - this case READS the bundle that admin-bundles-bundle-create is supposed to leave behind, and that bundle does not exist: creation is blocked by the price-field defect reported there ('This field is required' on input[name=priceRup… | [shot](../tester/.tester-runs/run-3/shots/bundle-price-required-while-filled.png) | — | — | no | — |
+| 125 | 545 | `checklist-admin-bundles-bundle-edit-delete` | Admin can edit and delete a bundle | admin/bundles | admin | ⬜ null | NULL - this case READS the bundle that admin-bundles-bundle-create is supposed to leave behind, and that bundle does not exist: creation is blocked by the price-field defect reported there ('This field is required' on input[name=priceRup… | [shot](../tester/.tester-runs/run-3/shots/bundle-price-required-while-filled.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
