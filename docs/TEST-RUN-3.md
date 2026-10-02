@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **175 / 255** |
-| Cases | **856 / 1847** (46%) |
+| Batches | **176 / 255** |
+| Cases | **858 / 1847** (46%) |
 | Cycle | 36 of 51 |
 | Next deploy | batch 200 |
-| Last updated | 2026-10-02 22:01 UTC |
+| Last updated | 2026-10-02 22:29 UTC |
 
 ```
-pass 338 · fail 166 · null 352
-fixed 35/166 · deferred 36 · open 95 · needs-human 7
+pass 339 · fail 167 · null 352
+fixed 35/167 · deferred 36 · open 96 · needs-human 7
 ```
 
-> ▸ **95 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **96 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -971,5 +971,7 @@ untouched list is one nobody reads by milestone three.
 | 175 | 854 | `checklist-content-discovery-search-search-no-empty-toolbar-gap` | A listing page whose search box was removed shows no empty gap in its toolbar | content-discovery/search--admin | admin | ⬜ null | Not driven - capacity. This is a purely visual case across four named listings at two widths, so it needs eight screenshots read by eye and cannot be shortened by probing anything. Recording the one piece of directly relevant evidence I … | [shot](../tester/.tester-runs/run-3/shots/b175-control-pass.png) | — | — | no | — |
 | 175 | 855 | `checklist-content-discovery-search-search-nonsense-term-returns-nothing` | Searching "zzzznope" anywhere returns ZERO results | content-discovery/search--admin | admin | ✅ pass | No surface returns rows for a term that cannot match. Each measured with its own unfiltered control, so the comparison is real rather than assumed: /admin/products 50 rows (total 76) -> 0; /admin/orders 50 -> 0; /admin/users 50 (total 81… | [shot](../tester/.tester-runs/run-3/shots/b175-control-pass.png) | — | — | no | — |
 | 175 | 856 | `checklist-content-discovery-search-search-finds-older-records` | An OLDER listing - one that existed before this feature shipped - is findable by name | content-discovery/search--admin | admin | ❌ fail | 🛑 THE BACKFILL GAP IS LIVE, and the fixture detected exactly what it exists to detect. On /admin/products, searching the word 'untokenised' returns ZERO rows - product-w1-untokenised is not found by a word from its own title. The contro… | [shot](../tester/.tester-runs/run-3/shots/b175-control-fail.png) | — | — | no | — |
+| 176 | 857 | `checklist-public-pages-bug-hunters-leaderboard-loads` | The public Bug Hunters leaderboard (/bug-hunters) loads and lists testers ranked by confir | public-pages/bug-hunters--guest | guest | ✅ pass | The board loads and the bot exclusion holds, which is the part that matters. Signed out (/api/user/profile 401), /bug-hunters serves a page titled 'Bug Hunters Leaderboard - LetItRip' with the heading 'Bug Hunters Leaderboard' and the su… | [shot](../tester/.tester-runs/run-3/shots/b176-bug-hunters-board.png) | — | — | no | — |
+| 176 | 858 | `checklist-public-pages-bug-hunters-leaderboard-footer-link` | A "Bug Hunters" link is present in the site footer's Support column and navigates to /bug- | public-pages/bug-hunters--guest | guest | ❌ fail | 🛑 THERE IS NO 'BUG HUNTERS' LINK IN THE FOOTER, OR ANYWHERE ON THE HOMEPAGE. The footer's SUPPORT column holds ten links and none of them is it: Help Centre (/help), FAQs (/faqs), Contact Us (/contact), Track Order (/track), About Us (/… | [shot](../tester/.tester-runs/run-3/shots/b176-footer-no-bug-hunters.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
