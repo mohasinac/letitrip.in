@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **168 / 255** |
-| Cases | **800 / 1847** (43%) |
+| Batches | **169 / 255** |
+| Cases | **810 / 1847** (44%) |
 | Cycle | 34 of 51 |
 | Next deploy | batch 175 |
-| Last updated | 2026-10-02 20:27 UTC |
+| Last updated | 2026-10-02 20:44 UTC |
 
 ```
-pass 317 · fail 159 · null 324
-fixed 35/159 · deferred 36 · open 88 · needs-human 7
+pass 318 · fail 161 · null 331
+fixed 35/161 · deferred 36 · open 90 · needs-human 7
 ```
 
-> ▸ **88 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **90 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -915,5 +915,15 @@ untouched list is one nobody reads by milestone three.
 | 168 | 798 | `checklist-admin-orders-fulfillment-admin-order-list-item-and-detail` | Admin order list rows show the order's item (thumbnail + title), not a raw order id, and c | admin/orders-fulfillment--p2 | admin | ✅ pass | Both halves hold, and this is the surface the fulfilment queue should be copying. LIST: every row leads with the product title and carries a real 48px product thumbnail - 26 of them on the page - with the order id, buyer and amount on th… | [shot](../tester/.tester-runs/run-3/shots/b168-orders-list-items.png) | — | — | no | — |
 | 168 | 799 | `checklist-admin-orders-fulfillment-admin-order-detail-standalone-page` | An admin order's "Open full page" action lands on a real bookmarkable /admin/orders/[id]/v | admin/orders-fulfillment--p2 | admin | ❌ fail | THE TWO SURFACES DO NOT SHOW THE SAME FIELDS, which is precisely the drift the case exists to catch. Same order (order-3-20260928-xw4vdn), read from the row panel and then from /admin/orders/order-3-20260928-xw4vdn/view. The PANEL shows … | [shot](../tester/.tester-runs/run-3/shots/b168-standalone-missing-lines.png) | — | — | no | — |
 | 168 | 800 | `checklist-admin-orders-fulfillment-admin-payout-detail-view` | Every admin payout row has an "Open full page" action + a working "Mark as paid" action, l | admin/orders-fulfillment--p2 | admin | ❌ fail | The breakdown is real and reconciles, so expectedData holds - but two expectedUiState clauses fail, one of them a PII exposure. WHAT WORKS: the row menu offers View full page and the page itself carries a Mark as paid button; the Amount … | [shot](../tester/.tester-runs/run-3/shots/b168-payout-upi-unmasked.png) | — | — | no | — |
+| 169 | 801 | `checklist-selling-seller-shipping-payouts-setup-shipping-page` | Store shipping settings page saves correctly | selling/seller-shipping-payouts-setup | seller | ❌ fail | GET /api/store/shipping returns {"shippingConfig":{"method":"custom","isConfigured":false}} - it flattens the stored shape into two fields, drops the provider list, the flat rate and the threshold, and asserts the store is unconfigured. … | [shot](../tester/.tester-runs/run-3/shots/b169-shipping-premature-errors.png) | — | — | no | — |
+| 169 | 802 | `checklist-selling-seller-shipping-payouts-setup-shipping-configs-crud` | Creating, editing, and listing shipping configs works | selling/seller-shipping-payouts-setup | seller | ⬜ null | Not driven - I ran out of capacity in this batch. Six steps spanning a create, a reload-and-read, a single-field edit with a second reload, a cross-page check that the new config reaches a product editor's shipping choices, and a delete.… | [shot](../tester/.tester-runs/run-3/shots/b169-shipping-premature-errors.png) | — | — | no | — |
+| 169 | 803 | `checklist-selling-seller-shipping-payouts-setup-payout-methods-crud` | Adding, editing, and listing payout methods works | selling/seller-shipping-payouts-setup | seller | ⬜ null | Not driven, and there is a fixture gap on top of the capacity one worth recording precisely. store-beyblade-arena has NO payoutDetails field at all - measured directly on the document - so steps 2 and 3 ('read the existing ones', 'note h… | [shot](../tester/.tester-runs/run-3/shots/b169-old-urls-land-on-tabs.png) | — | — | no | — |
+| 169 | 804 | `checklist-selling-seller-shipping-payouts-setup-payout-settings-page` | Payout settings page saves correctly | selling/seller-shipping-payouts-setup | seller | ⬜ null | Not driven - capacity. What I can confirm without driving it, from reaching the page via the old-URL case: /store/payouts renders three tabs (Payouts, Methods, Settings), the Settings tab exists and is reachable both by click and by deep… | [shot](../tester/.tester-runs/run-3/shots/b169-old-urls-land-on-tabs.png) | — | — | no | — |
+| 169 | 805 | `checklist-selling-seller-shipping-payouts-setup-consolidated-tabs-old-urls` | Each absorbed URL still lands on the right TAB, not just the right page | selling/seller-shipping-payouts-setup | seller | ✅ pass | All eight absorbed URLs resolve, none 404s, and every one lands on its own tab rather than the default - several doing more than the case asks. Measured one at a time by real navigation with a wait, reading the settled URL and the aria-s… | [shot](../tester/.tester-runs/run-3/shots/b169-old-urls-land-on-tabs.png) | — | — | no | — |
+| 169 | 806 | `checklist-selling-seller-shipping-payouts-setup-consolidated-tabs-url-writeback` | Clicking a tab updates ?tab= in the address bar | selling/seller-shipping-payouts-setup | seller | ❌ fail | Three of the four clauses hold; BACK DOES NOT WALK THE TABS. What works: clicking a tab writes it to the URL (clicking Named configs on /store/shipping produced ?tab=configs; clicking Methods and Settings on /store/payouts produced ?tab=… | [shot](../tester/.tester-runs/run-3/shots/b169-old-urls-land-on-tabs.png) | — | — | no | — |
+| 169 | 807 | `checklist-selling-seller-shipping-payouts-setup-print-center-selection-deeplink` | Print labels for a selection still carries the selection through the redirect | selling/seller-shipping-payouts-setup | seller | ⬜ null | The mechanism the case depends on is verified; the selection half is not driven. Step 2's premise holds exactly: /store/print-center?orders=order-1-20260729-cash01 redirects to /store/fulfillment?orders=order-1-20260729-cash01&tab=print … | [shot](../tester/.tester-runs/run-3/shots/b169-old-urls-land-on-tabs.png) | — | — | no | — |
+| 169 | 808 | `checklist-selling-seller-shipping-payouts-setup-search-box-promises-match-corpus` | Every dashboard search box matches what its placeholder promises | selling/seller-shipping-payouts-setup | seller | ⬜ null | Not driven - capacity. This case spans every store listing page that has a search box, reading each placeholder, searching a value of every kind it names, and recording any kind that returns nothing - which is several pages of work rathe… | [shot](../tester/.tester-runs/run-3/shots/b169-old-urls-land-on-tabs.png) | — | — | no | — |
+| 169 | 809 | `checklist-selling-seller-shipping-payouts-setup-exact-search-boxes-commit-on-enter` | The two exact-match boxes say so and do not search while you type | selling/seller-shipping-payouts-setup | seller | ⬜ null | Not driven - capacity. The case needs careful timing work rather than a quick look: type a full value and deliberately WAIT five seconds without pressing Enter to prove nothing fires, then Enter, then a partial value, then nonsense. The … | [shot](../tester/.tester-runs/run-3/shots/b169-old-urls-land-on-tabs.png) | — | — | no | — |
+| 169 | 810 | `checklist-selling-seller-shipping-payouts-setup-consolidated-tabs-command-palette` | The absorbed surfaces are still findable by name in search | selling/seller-shipping-payouts-setup | seller | ⬜ null | Could not get the search into a visible, stable state, so anything I concluded would be an artefact of my own reads rather than a fact about the product - that makes this a null, not a no. What happened: /store exposes a sidebar nav sear… | [shot](../tester/.tester-runs/run-3/shots/b169-palette-payout.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
