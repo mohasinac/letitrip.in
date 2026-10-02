@@ -3371,3 +3371,26 @@ still live. Same class as the three QA category rows deleted this turn.
 This is the second collection confirmed polluted, which upgrades the teardown
 gap above from 'plausible' to 'observed in two places'. A post-run
 reconciliation against the seed baseline per collection would catch both.
+
+### QA pollution confirmed in a THIRD collection — and one row was PUBLISHED (2026-10-03)
+
+`products` held 3 QA leftovers from earlier batches of this run:
+
+    qa-listing-seller-listing-1   draft       store-beyblade-arena
+    qa-listing-seller-listing-2   PUBLISHED   store-beyblade-arena
+    qa-product-list-standard-1    draft       store-beyblade-arena
+
+The published one was live in the PUBLIC catalogue — it was the first row
+returned by `GET /api/products?pageSize=3`, so it was reaching real visitors
+ahead of real stock. Deleted (73 → 70).
+
+Three collections now confirmed: `categories` (3 rows), `supportTickets`
+(1 row), `products` (3 rows). This is no longer a curiosity about one feature;
+**every create-flow case in the catalogue leaks**, and one leak reached the
+public storefront. The remedy already recorded above — a post-run
+reconciliation against the per-collection seed baseline — would have caught
+all seven without anyone predicting which collections to watch.
+
+Deletion is within the tier boundary: `products` is SEED_OWNED, and CLAUDE.md's
+own cleanup rationale notes orders/reviews/wishlists/history denormalize what
+they display, so at worst a 'view product' link 404s on disposable test data.
