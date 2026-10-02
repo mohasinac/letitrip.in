@@ -77,3 +77,36 @@ Total pending-deploy: 19 (appkit 17 / src-only 2)
       files: src/components/routing/CheckoutRouteClient.tsx
 - [ ] `checklist-happy-path-buyer-addresses-set-default-address` b? — Setting a default address has never worked: src/app/api/user/addresses/[id]/set-default/route.ts was a copy of the addresses COLLECTION route - header  
       files: src/app/api/user/addresses/[id]/set-default/route.ts
+
+---
+
+## 🛑 OPEN: /categories tier sort — fix is LIVE but NOT WORKING (2026-10-03)
+
+Re-driven as guest after deploy. **Still broken in production.** Page 1 reads
+Battle Gear, Beyblade, Beyblade Burst, Beyblade Metal Fight, Beyblade Original,
+Beyblade X, Beyblade X Parts, Beyblade X Tops, Bits, Blades — plainly name ASC,
+with BOTH roots (Spinning Tops, Living Collectibles) absent from page 1. That is
+the original symptom, unchanged.
+Shot: tester/.tester-runs/run-3/shots/categories-sort-STILL-BROKEN.png
+
+### Hypotheses ELIMINATED — do not re-check these
+
+- **Not unpublished.** `node_modules/@mohasinac/appkit/dist/features/categories/
+  components/CategoriesIndexListing.js` contains "Top level first", so the fix is
+  in the installed package and was built into the deploy.
+- **Not a missing SSR half.** `CategoriesIndexPageView.tsx:57` reads
+  `sp(searchParams,"sort") || sortBy(CATEGORY_FIELDS.TIER,"ASC")` — the SSR
+  default is already tier ASC.
+- **Not Root Cause #63** (a sort on a non-sortable field being silently dropped).
+  `categories.repository.ts:40` declares `tier: { canFilter: true, canSort: true }`.
+
+### Where to look next
+
+1. A **stale cached prerender** — /categories declares no `revalidate`, so it is
+   cached indefinitely. Confirm against `.next/prerender-manifest.json` which
+   bucket it is in, and check `X-Vercel-Cache` on the response.
+2. A **missing composite index** for the tier-ordered query throwing
+   FAILED_PRECONDITION into a `.catch(() => null)` fallback (Root Cause #59/#2).
+   The index deploy this turn did not add one for this shape.
+3. Whether `sort` is reaching the query at all — instrument the built query, do
+   not infer it from source. Three source reads already said it should work.
