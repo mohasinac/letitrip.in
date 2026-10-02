@@ -3300,3 +3300,41 @@ Not chased now (G4 — no case owns it).
    assertion keyed on buyerId is unreliable until this is settled — and a query
    returning 0 reads exactly like "no orders", which is how a false finding gets
    written.
+
+## 🛑 Live order documents do not match the documented OrderDocument shape (2026-10-03)
+
+Measured on `orders/order-1-20261002-sngvk5`, a real order placed during this run.
+Its actual keys:
+
+    codHandlingFee, codRemainingAmount, createdAt, currency, depositAmount,
+    imageUrls, items, orderDate, orderType, outOfStockPolicy, paymentMethod,
+    paymentStatus, platformFee, productId, productTitle, quantity, searchTxt,
+    shippingAddress, shippingFee, sourceContext, status, storeId, storeName,
+    totalPrice, unitPrice, updatedAt, userEmail, userEmailIndex, userId,
+    userName, userNameIndex
+
+Three mismatches against CLAUDE.md § Seed Data Reference, which documents
+`buyerId`, `items[]` and `totalAmount`:
+
+1. **`buyerId` DOES NOT EXIST** — the field is `userId` (= `user-yugi-muto`).
+2. **`totalAmount` does not exist** — it is `totalPrice`.
+3. **The document carries BOTH shapes**: flat `productId` / `productTitle` /
+   `quantity` / `unitPrice` / `totalPrice` **and** an `items` array.
+
+Point 3 is the shape Root Cause #60 describes as the unpayable auction order
+that `createFromAuction` used to write — and CLAUDE.md records that function as
+DELETED. So either a write path still emits the legacy shape, or the real
+checkout has always written `userId`/`totalPrice` and the documentation has
+been wrong for a long time. **Not established — do not guess which.**
+
+### Why this matters more than a doc nit
+
+`orders.where("buyerId","==",uid)` returns **ZERO** and raises no error. That is
+indistinguishable from "this buyer has no orders", which is exactly how a
+confident false finding gets written — the same trap as the batch-178
+retraction, where a missing document was read as a missing account. Any
+Firestore assertion in a tester case keyed on `buyerId` or `totalAmount` is
+currently unreliable.
+
+Next: grep the order write paths for which field they set, then correct either
+the code or CLAUDE.md — whichever is actually wrong.
