@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **154 / 255** |
-| Cases | **696 / 1847** (38%) |
-| Cycle | 31 of 51 |
+| Batches | **155 / 255** |
+| Cases | **697 / 1847** (38%) |
+| Cycle | 32 of 51 |
 | Next deploy | batch 175 |
-| Last updated | 2026-10-02 16:41 UTC |
+| Last updated | 2026-10-02 17:04 UTC |
 
 ```
-pass 273 · fail 135 · null 288
+pass 274 · fail 135 · null 288
 fixed 35/135 · deferred 36 · open 64 · needs-human 7
 ```
 
@@ -811,5 +811,9 @@ untouched list is one nobody reads by milestone three.
 | 154 | 694 | `checklist-public-pages-help-scams-guides-subpages-help-auctions-matches-product` | What /help/auctions tells a buyer about bidding and losing matches what an auction page an | public-pages/help-scams-guides-subpages | main | ❌ fail | NO — and one of the unmet claims is a whole mechanism with a worked example that the product does not have. 🛑 PROXY BIDDING DOES NOT EXIST. /help/auctions says: 'Max bid (proxy bidding) — enter the maximum you're willing to pay. LetItRi… | [shot](../tester/.tester-runs/run-3/shots/scam-report-inline-field-errors.png) | — | — | no | — |
 | 154 | 695 | `checklist-public-pages-help-scams-guides-subpages-help-orders-matches-product` | What /help/orders says about cancelling, returning and tracking matches the actions on a r | public-pages/help-scams-guides-subpages | main | ❌ fail | NO — and the clearest finding needs no comparison with the product at all, because the help page contradicts itself. 🛑 TWO RETURN WINDOWS ON ONE PAGE. /help/orders says 'open a return request WITHIN 2 DAYS of delivery' and, a few lines … | [shot](../tester/.tester-runs/run-3/shots/scam-report-inline-field-errors.png) | — | — | no | — |
 | 154 | 696 | `checklist-public-pages-help-scams-guides-subpages-help-shopping-matches-product` | What /help/shopping says about carts, wishlists and coupons matches what those surfaces do | public-pages/help-scams-guides-subpages | main | ❌ fail | NO — four wrong claims, and the coupon rule the case predicted would be stale turns out to be missing instead. 🛑 THE PAYMENT METHODS ARE WRONG, and this is the most consequential one. Help says: 'Payment methods — UPI, credit/debit card… | [shot](../tester/.tester-runs/run-3/shots/scam-report-inline-field-errors.png) | — | — | no | — |
+| 155 | 697 | `checklist-public-pages-help-scams-guides-subpages-scams-report-reaches-admin` | A submitted scam report reaches an admin surface where it can be actioned | public-pages/help-scams-guides-subpages--admin | admin | ✅ pass | Drove the whole thing. As rehan.sheikh@gmail.com submitted a report at /scams/report (displayName QA_Routing_Probe_DoNotVerify, UPI qa.routing.probe@qa, scamType fake_preorder_listing, platform Other); it redirected to /scams at 1.4s. As… | [shot](../tester/.tester-runs/run-3/shots/scams-report-admin-review-qa.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
+| 155 | 697 | `checklist-public-pages-help-scams-guides-subpages-scams-report-reaches-admin` | A submitted scam report reaches an admin surface where it can be actioned | public-pages/help-scams-guides-subpages | buyer → admin | ✅ pass | YES, and the worst shape the case was written to catch — a public form with nothing behind it — is absent. Submitted as `rehan.sheikh@gmail.com`; redirected to /scams at 1.4s. As `admin@letitrip.in` it was the TOP card at /admin/scammers, `pending_review`, "1m ago" — 6 cards where there had been 5. Row actions → Review showed the description VERBATIM, "Reported by: user-yugi-muto", a status select carrying the four real `ScammerStatus` values, an internal verification-note field, Save changes and Delete. Deleted it: 5 cards, absent after reload, `scammerProfiles`=5 with 0 residue. A useful contrast across the two records — the seeded `pending_review` fixture has `reportedByAnon: true` and the same modal reads "Reported by: Anonymous", so the anonymity flag IS honoured. **I first declined this case in batch 154** on the grounds that the registry is public and indexed. That premise was wrong and I had not measured it: `scam-actions.ts:45,94` and `scammer.repository.ts:324` all enforce `status == "verified"`, `firestore.ts:19` says "admin must verify before public display", and the submitted report was confirmed absent from the public /scams page. Retracted and driven in full. | [shot](../tester/.tester-runs/run-3/shots/scams-report-admin-review-qa.png) | — (3 product defects + 1 case defect queued) | — | no | ✅ reload + Firestore |
+| 155 | 698 | `control-pass-run-3` | The site homepage renders with a visible site header and at least one navigation link | public-pages/help-scams-guides-subpages | admin | ✅ pass | `<header>` present and visible at top:0, 1280×57, with 14 links in `nav[aria-label="Main navigation"]` (/, /products, /auctions, /pre-orders, /bundles, /prize-draws …). Read at 5s to clear hydration. Observed as admin rather than guest because this is the admin slice; the claim is about chrome and is identity-independent. | [shot](../tester/.tester-runs/run-3/shots/control-pass-run-3-home-header.png) | — | — | no | ✅ |
+| 155 | 699 | `control-fail-run-3` | The page at /__tester-control-run-3 renders a product listing grid with at least one product card | public-pages/help-scams-guides-subpages | admin | ❌ fail | Correctly false. `/__tester-control-run-3` serves **HTTP 404** and renders the not-found page: "404 — Page not found / The page you are looking for does not exist, or it may have moved." with Go to homepage, Browse products, Help centre. Zero product cards, no card grid, read at 5s. | [shot](../tester/.tester-runs/run-3/shots/control-fail-run-3-404.png) | — | — | no | ✅ |
