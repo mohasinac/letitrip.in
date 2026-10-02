@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **167 / 255** |
-| Cases | **792 / 1847** (43%) |
+| Batches | **168 / 255** |
+| Cases | **800 / 1847** (43%) |
 | Cycle | 34 of 51 |
 | Next deploy | batch 175 |
-| Last updated | 2026-10-02 20:16 UTC |
+| Last updated | 2026-10-02 20:27 UTC |
 
 ```
-pass 316 · fail 155 · null 321
-fixed 35/155 · deferred 36 · open 84 · needs-human 7
+pass 317 · fail 159 · null 324
+fixed 35/159 · deferred 36 · open 88 · needs-human 7
 ```
 
-> ▸ **84 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **88 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -907,5 +907,13 @@ untouched list is one nobody reads by milestone three.
 | 167 | 790 | `checklist-admin-orders-fulfillment-admin-orders-payment-actions-hidden-when-paid` | Once a payment is verified, the Verify / Request re-upload / Reject buttons are replaced b | admin/orders-fulfillment--p1 | admin | ✅ pass | The label claim holds exactly: once a payment is verified the decision buttons are gone and a Payment verified badge stands in their place, and an already-paid order cannot be re-verified or rejected. Three orders, three visibly differen… | [shot](../tester/.tester-runs/run-3/shots/b167-proof-zero-height.png) | — | — | no | — |
 | 167 | 791 | `checklist-admin-orders-fulfillment-bids-admin-view` | Admin bids view shows accurate bid data | admin/orders-fulfillment--p1 | admin | ❌ fail | Two independent failures. (1) SEARCH DOES NOT FILTER: expectedData asks for 0 on zzzznope and the UI returned 25 rows - a full page. /api/admin/bids returns 44 items, the entire collection, identically for a real term (Spriggan) and for … | [shot](../tester/.tester-runs/run-3/shots/b167-bids-lost-no-chip.png) | — | — | no | — |
 | 167 | 792 | `checklist-admin-orders-fulfillment-return-requests-triage` | Admin can triage return requests | admin/orders-fulfillment--p1 | admin | ❌ fail | /admin/return-requests renders No return requests while FIVE orders hold status return_requested. Re-driven before recording, per the rule about whole-page-empty claims: fresh navigation, polled every 1.75s from t=0 to 14s, empty at ever… | [shot](../tester/.tester-runs/run-3/shots/b167-returns-empty.png) | — | — | no | — |
+| 168 | 793 | `checklist-admin-orders-fulfillment-fulfillment-queue-admin` | Admin fulfillment queue shows accurate pending items | admin/orders-fulfillment--p2 | admin | ❌ fail | Two of the four expectedUiState clauses fail, and the contrast with /admin/orders is the point: both read the same denormalised order data and only one of them uses it well. The queue is store-scoped (you pick a store first, which the st… | [shot](../tester/.tester-runs/run-3/shots/b168-fulfillment-queue.png) | — | — | no | — |
+| 168 | 794 | `checklist-admin-orders-fulfillment-shipments-crud` | Admin can create/edit shipments, including lots/items and projections | admin/orders-fulfillment--p2 | admin | ⬜ null | Not driven - I ran out of capacity in this batch and this is the most expensive case in it: eight steps spanning a create, a child lot and item, a parent-only edit, three separate reload-and-read verifications, a money-plausibility read … | [shot](../tester/.tester-runs/run-3/shots/b168-fulfillment-queue.png) | — | — | no | — |
+| 168 | 795 | `checklist-admin-orders-fulfillment-print-center-admin` | Admin print-center generates labels/invoices correctly | admin/orders-fulfillment--p2 | admin | ⬜ null | Not driven - capacity. Recording what makes this case worth prioritising rather than leaving it as a bare skip: its real assertion is the multi-store one, that where orders from different stores are printed together each label carries IT… | [shot](../tester/.tester-runs/run-3/shots/b168-orders-list-items.png) | — | — | no | — |
+| 168 | 796 | `checklist-admin-orders-fulfillment-payouts-export-admin` | Admin can export payouts | admin/orders-fulfillment--p2 | admin | ❌ fail | The export works and is fast, but it is not the mechanism the case describes and the file has a hole. Pressing Export CSV downloaded payouts-2026-10-02.csv IMMEDIATELY as a direct file - there is no job, no job-accepted response and no p… | [shot](../tester/.tester-runs/run-3/shots/b168-payout-upi-unmasked.png) | — | — | no | — |
+| 168 | 797 | `checklist-admin-orders-fulfillment-bulk-action-realtime-progress` | A bulk admin action (e.g. bulk order status update) shows live progress via the bulk_event | admin/orders-fulfillment--p2 | admin | ⬜ null | Not driven - capacity. This one genuinely needs its turns rather than a quick look: eight steps, and the substantive ones are a live run with progress watched mid-flight, a navigate-away-and-back while it is still going, and then undoing… | [shot](../tester/.tester-runs/run-3/shots/b168-orders-list-items.png) | — | — | no | — |
+| 168 | 798 | `checklist-admin-orders-fulfillment-admin-order-list-item-and-detail` | Admin order list rows show the order's item (thumbnail + title), not a raw order id, and c | admin/orders-fulfillment--p2 | admin | ✅ pass | Both halves hold, and this is the surface the fulfilment queue should be copying. LIST: every row leads with the product title and carries a real 48px product thumbnail - 26 of them on the page - with the order id, buyer and amount on th… | [shot](../tester/.tester-runs/run-3/shots/b168-orders-list-items.png) | — | — | no | — |
+| 168 | 799 | `checklist-admin-orders-fulfillment-admin-order-detail-standalone-page` | An admin order's "Open full page" action lands on a real bookmarkable /admin/orders/[id]/v | admin/orders-fulfillment--p2 | admin | ❌ fail | THE TWO SURFACES DO NOT SHOW THE SAME FIELDS, which is precisely the drift the case exists to catch. Same order (order-3-20260928-xw4vdn), read from the row panel and then from /admin/orders/order-3-20260928-xw4vdn/view. The PANEL shows … | [shot](../tester/.tester-runs/run-3/shots/b168-standalone-missing-lines.png) | — | — | no | — |
+| 168 | 800 | `checklist-admin-orders-fulfillment-admin-payout-detail-view` | Every admin payout row has an "Open full page" action + a working "Mark as paid" action, l | admin/orders-fulfillment--p2 | admin | ❌ fail | The breakdown is real and reconciles, so expectedData holds - but two expectedUiState clauses fail, one of them a PII exposure. WHAT WORKS: the row menu offers View full page and the page itself carries a Mark as paid button; the Amount … | [shot](../tester/.tester-runs/run-3/shots/b168-payout-upi-unmasked.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
