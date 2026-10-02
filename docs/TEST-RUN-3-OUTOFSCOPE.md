@@ -3152,3 +3152,25 @@ would release it on a false premise. Set it only once deploy.mjs reports a
 clean smoke test. Note also that the previous milestone was at batch **150**
 (`lastMilestoneBatches: 150`), not 153 — 153 is `lastFixAtRecorded`, a
 different marker, and I conflated the two once.
+
+### Corroboration: `audit-guest-price-leak` reports 0 while a real leak is live
+
+Observed in the deploy pre-flight output at this milestone:
+
+```
+[audit-guest-price-leak] OK: 0 violations (11 public dirs, OG images, offer pages, selector parity)
+```
+
+Batch 173 measured, from a screenshot with the header reading "Sign in /
+Register", four header-typeahead suggestions each showing an amount — 899, 149,
+599, 1,499 — while the /products cards for those same items render "Sign in to
+see price". So the audit built to block exactly this passes while the defect
+ships.
+
+That is confirmation of the guess recorded in the queue entry ("evidently does
+not scan this file"), now from the audit's own output rather than inference. Its
+scan roots are "11 public dirs" and the typeahead component is not among them.
+**When fixing the leak, widen the audit in the same change** — otherwise the
+next instance is equally invisible. Same lesson as Root Cause #84: a measurement
+narrower than the rule it feeds, and a rule that goes quiet is as likely to have
+stopped looking as to have been satisfied.
