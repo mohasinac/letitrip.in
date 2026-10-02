@@ -54,7 +54,35 @@ function reason(v) {
   const cause = raw.match(/CAUSE:\s*([^.]+(?:\.[^.]+){0,2}\.)/);
   const text = cause ? cause[1] : raw;
   const cut = text.length > 240 ? `${text.slice(0, 237)}…` : text;
-  return cut.replace(/\|/g, "\\|");
+  return cell(cut);
+}
+
+/*
+ * Make a string safe to sit between two ` | ` separators.
+ *
+ * Pipe escaping was ALREADY correct before this helper existed — `reason()`
+ * did it, and the table has always rendered right. This consolidates it and
+ * extends it to the label / key / identity / reverified cells, which were
+ * unescaped only because none of them has yet contained a pipe.
+ *
+ * The trailing-backslash strip is defensive, for a real but unobserved hazard:
+ * `reason()` truncates at a fixed character count, so a cut could land ON a
+ * backslash, and a cell ending in `\` would escape the separator after it and
+ * merge two columns. Order matters — strip trailing backslashes BEFORE escaping
+ * pipes, or you strip the backslash off a legitimately escaped trailing `\|`
+ * and leave a bare pipe, which breaks the row just as thoroughly.
+ *
+ * 🛑 A MEASUREMENT WARNING, because it cost a turn and nearly a false commit.
+ * Verifying this table by `row.split("|")` reports ~18 of 856 rows as having
+ * shifted columns. They have not. A naive split also splits the escaped `\|`
+ * inside a reason cell, so every row whose comment contained a pipe looks
+ * mangled, with the leftover `\` stranded on the preceding field. Split the way
+ * a renderer does — `row.split(/(?<!\\)\|/)` — and all 856 rows have exactly 15
+ * fields with Manual? yes/no on every one. Measure with the lookbehind or do
+ * not measure at all.
+ */
+function cell(s) {
+  return String(s ?? "—").replace(/\\+$/, "").replace(/\|/g, "\\|") || "—";
 }
 
 function shotCell(v) {
@@ -106,16 +134,16 @@ function main() {
           batchNo,
           caseNo,
           `\`${a.id}\``,
-          (c?.label ?? "—").replace(/\|/g, "\\|").slice(0, 90),
-          key,
-          identity,
-          RESULT[answer] ?? answer,
+          cell((c?.label ?? "—").slice(0, 90)),
+          cell(key),
+          cell(identity),
+          RESULT[answer] ?? cell(answer),
           reason(a),
           shotCell(a),
           fix ? reason({ comment: fix.summary }) : "—",
           fix?.files?.length ? fix.files.map((f) => `\`${f.split("/").pop()}\``).join(" ") : "—",
           c?.requiresHumanChannel ? "yes" : "no",
-          fix?.reverified ?? "—",
+          cell(fix?.reverified ?? "—"),
         ].join(" | ") +
         " |",
       );
