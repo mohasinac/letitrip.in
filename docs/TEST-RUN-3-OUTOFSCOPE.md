@@ -2535,3 +2535,73 @@ And the thing that could have gone wrong with a prefix match did not: exactly
 one entry is marked on each of `/` (Home), `/events` (Events) and `/stores`
 (Stores) — the root entry does **not** light up everywhere, because
 `findActiveNavItem` breaks ties by longest href.
+
+## 🛑 RETRACTION — `/admin/site` was never "rendering no fields". It was crashing.
+
+Two earlier entries above said the Site Settings editor rendered no editable
+fields for any section, and one of them went further and said "the section body
+is what is missing". **Both were wrong about the mechanism**, and the right one
+matters because it changes the fix completely.
+
+Expanding any section threw **`TypeError: e.startsWith is not a function`** and
+the body never rendered. Root cause: `resolveMediaUrl`
+(`appkit/src/utils/media-url.ts`) guards only `!url`, so null/undefined/`""` are
+handled while an **object or array is truthy** and falls straight through to
+`.startsWith`. It sits on the render path — `MediaImage`, every logo, avatar and
+card — so a throw there takes out the whole subtree, and the Branding panel
+renders Logo and Favicon through it.
+
+Fixed in **4.42.8** and re-verified: Branding renders 6 inputs and 1 switch
+(Site name, Tagline, Logo, Favicon, Maintenance mode, Maintenance message) with
+**zero** console errors, and Announcement renders its real controls — "Show
+announcement bar", "Announcement text", "Link URL (optional)".
+
+**I got this wrong twice before getting it right**, and both mistakes are worth
+keeping:
+
+1. I read the 20 section names out of `innerText` and reported an "inert text tab
+   strip". The screenshot showed one `<select>`; they were its `<option>`s.
+2. I then guarded `isStoredMediaRef` — a plausible candidate with the identical
+   hole — **without locating the call site**, published 4.42.7, re-drove, and the
+   TypeError was still there. Rule #4 is about not trusting a report; it applies
+   just as much to not trusting your own diagnosis.
+
+**Still open from this**: some caller is passing a non-string into these helpers
+(a `{ url }` object where its `.url` was meant is the obvious candidate). Both
+guards now `console.warn` the received shape so the call site stays findable.
+That is a separate fix.
+
+## Decided this milestone — the standing OUTOFSCOPE entries
+
+Per-entry decisions, so the list stops being one nobody reads:
+
+**Fixed this phase** — `/fees` buyer-fee contradiction; the `/how-auctions-work`
+48h-vs-3-days contradiction and its mis-pasted "If You Are Outbid" tile;
+`/track`'s subtitle; `/admin/site`'s crash; bundle create / edit-load / brand
+picker; the navbar active marker; four crop-editor i18n keys.
+
+**Left standing, with the reason** — not forgotten, just not this phase's work:
+
+| Entry | Why it waits |
+|---|---|
+| `⚠ Reserve not met` indicator absent | needs a UI affordance on the auction page, not a copy change |
+| Pre-order listing shows no deposit terms | needs a render change plus a decision about the gated reserve flow |
+| Payout list vs detail amount (₹11,400 / ₹10,925) | money display; wants its own change with a test, not a drive-by |
+| Order status filter omits `confirmed` / `returned` | one-line-ish, but in a filter config I have not read yet |
+| Type tabs cannot partition All (pre-orders have no tab) | a product decision: add buckets or stop presenting a partition |
+| `purchasedItemNumber`, `maxBudget` still `z.string()` under `kind:"number"` | same latent defect as the bundle price, but **no case drives them** — Rule #4 |
+| `coverImage` renderer placeholder shown to admins | the `renderers` map gap; shared with `GroupedListingEditorView` |
+| Confirm-delete modal has no `role="dialog"` | a11y; batch with the other aria gaps |
+| `aria-invalid` never set on Field\* primitives | same batch |
+| `/user/settings` has no heading element | same batch |
+| Account-menu sections lack `aria-expanded` | same batch |
+| Seller order rows show no order id | real support-workflow gap; needs the row config |
+| `/store/orders?q=` does not match order ids | same surface, same change |
+| Guest cart leaks gated prices | needs care — a gating change, easy to get half-right |
+| Checkout step 1 does not preselect the only address | small, but touches the money path |
+| `/fees` figures are hardcoded | cannot track `siteSettings.commissions`; wants a data source |
+| Committed `TempPass123!` / `admin@letitrip.in` | **awaiting the user's decision** — rotating also changes `tester/.env` |
+| Orphaned `payoutBatch` cloud function | **awaiting the user's decision** — blocks `--only functions` deploys |
+| `TESTER_THROWAWAY_*` identity | **awaiting the user's decision** — would unblock the sign-out and manual-payment families |
+| Five manual-payment cases | blocked on a fixture that no static seed can provide |
+| No 4+ item order fixture | blocks the "+N more" assertion |
