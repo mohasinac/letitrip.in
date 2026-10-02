@@ -623,7 +623,37 @@ function renderPaymentStep({
           {/* The per-store add-on pickers used to live here. They moved to the
               Extras & fees step, which is reachable before payment and shows
               each seller's fees next to its own checkboxes. */}
-          {showCashOption && (
+          {/*
+            * 🛑 THE GUIDE AND THE CONSENT BOX GATE EVERY MANUAL METHOD, NOT JUST
+            * UPI/CASH — AND UNTIL 2026-10-02 THEY LIVED INSIDE `showCashOption`.
+            *
+            * Consequence, measured on production: with the consent box UNTICKED
+            * I pressed "Cash on Delivery" and the order was placed —
+            * POST /api/checkout -> 200, a real order, no validation message
+            * anywhere. The box was never disabled and carried no aria-disabled.
+            * Only the UPI/Cash button checked `!manualPaymentConsent`; COD and
+            * EMI did not, and both are manual methods
+            * (MANUAL_PAYMENT_METHODS = cash | upi_manual | emi).
+            *
+            * That matters because everything the box attests to is adverse to the
+            * buyer and is disclosed directly above it: a short payment window,
+            * auto-cancellation if it lapses, stock released, and "platform fees
+            * may be non-recoverable". A tick-box that records nothing is not a
+            * weaker consent record than a real one — it is a misleading one,
+            * because the interface implies the acknowledgement was taken.
+            *
+            * 🛑 WHY THIS IS HOISTED RATHER THAN THE BUTTONS JUST GATED. Gating COD
+            * on a control that only renders when CASH is offered would make COD
+            * permanently unclickable on any store where cash is off — a gate
+            * whose condition is invisible is worse than no gate. So the block now
+            * renders whenever ANY manual method is on offer, and the order the
+            * buyer reads stays guide -> consent -> button.
+            *
+            * PhonePe and the admin bypass are deliberately NOT gated: the first
+            * is an online gateway with no manual step, the second is a
+            * testing escape hatch that already logs its actor and reason.
+            */}
+          {(showCashOption || showCod || emiVisible) && (
             <Stack gap="sm">
               <Div border="default" padding="md" rounded="lg" surface="subtle">
                 <Text weight="semibold" size="sm" className="mb-2">
@@ -648,6 +678,10 @@ function renderPaymentStep({
                 checked={manualPaymentConsent}
                 onChange={setManualPaymentConsent}
               />
+            </Stack>
+          )}
+          {showCashOption && (
+            <Stack gap="sm">
               <Button
                 type="button"
                 onClick={handlePlaceCashOrder}
@@ -728,7 +762,9 @@ function renderPaymentStep({
               <Button
                 type="button"
                 onClick={handlePlaceCodOrder}
-                disabled={isProcessingPayment || cartIsEmpty}
+                // Manual method — consent required, same as UPI/Cash. See the
+                // hoisted guide block above for why this was missing.
+                disabled={isProcessingPayment || cartIsEmpty || !manualPaymentConsent}
                 className="w-full border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] dark:bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-bg)] dark:hover:bg-[var(--appkit-color-surface-elevated)]"
               >
                 <Row gap="xs" align="center" justify="center">
@@ -759,7 +795,9 @@ function renderPaymentStep({
               <Button
                 type="button"
                 onClick={handlePlaceEmiOrder}
-                disabled={isProcessingPayment || cartIsEmpty}
+                // Manual method (MANUAL_PAYMENT_METHODS includes emi) — consent
+                // required, same as UPI/Cash.
+                disabled={isProcessingPayment || cartIsEmpty || !manualPaymentConsent}
                 className={`mt-3 ${PRIMARY_BTN_CLS}`}
               >
                 {CK.PAYMENT_EMI_BTN}
