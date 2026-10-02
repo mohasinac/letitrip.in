@@ -214,3 +214,31 @@ unverified, which is a different and more useful statement than 'passed'.
 General rule for the remaining queue: before re-driving, ask which tier the
 case writes to. SEED_OWNED and CASCADE are fair game; PRESERVE is not, and no
 amount of care makes it so.
+
+### 🛑 OPEN: buyer invoice is short Rs 211.80 — root-caused, NOT yet fixed (2026-10-03)
+
+Live on /user/orders/view/order-1-20261002-rw7jw6:
+`Subtotal Rs 999.00 | Shipping Rs 77.00 | Total Rs 1,287.80` — Rs 211.80 with
+no line naming it.
+
+Root cause is in `renderOrderPayment`,
+`src/app/[locale]/user/orders/view/[id]/page.tsx:278-333`. It renders Subtotal,
+Shipping, Discounts, Tax and Total — and NOTHING else. Two distinct problems:
+
+1. **`platformFee` and `codHandlingFee` have NO row at all**, yet both exist on
+   the Firestore document (confirmed in the key dump of a live order) and both
+   are declared on the client type (`features/orders/types/index.ts:173,175`).
+   Pure rendering gap — the data is there and reaches the component.
+2. **The Tax row EXISTS (line 320) and did not render**, so `order.tax` is
+   undefined or 0. `tax` is declared at types:125, but the live order document
+   has no `tax`/`gst` key at all. So either the adapter never maps it or GST is
+   not persisted per order. NOT established — check `orderDocumentToOrder`
+   before assuming either.
+
+**This is a src/-only fix** (`node scripts/deploy.mjs`, no appkit publish) IF
+it turns out to be (1) alone. Do not ship a platformFee row and call the case
+closed — verify the arithmetic actually reconciles to the total afterwards,
+because (2) may still leave a gap.
+
+Same family as Root Cause #57: a value exists on the document, is declared on
+the type, and no surface renders it — so the page looks complete and lies.
