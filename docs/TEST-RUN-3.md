@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **150 / 255** |
-| Cases | **669 / 1847** (36%) |
+| Batches | **151 / 255** |
+| Cases | **673 / 1847** (36%) |
 | Cycle | 31 of 51 |
 | Next deploy | batch 175 |
-| Last updated | 2026-10-02 15:03 UTC |
+| Last updated | 2026-10-02 15:22 UTC |
 
 ```
-pass 262 · fail 122 · null 285
-fixed 35/122 · deferred 36 · open 51 · needs-human 7
+pass 263 · fail 125 · null 285
+fixed 35/125 · deferred 36 · open 54 · needs-human 7
 ```
 
-> ▸ **51 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **54 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -784,5 +784,9 @@ untouched list is one nobody reads by milestone three.
 | 150 | 667 | `checklist-admin-blog-faqs-faq-create-edit-category` | Admin can create and edit an FAQ, including category assignment | admin/blog-faqs | admin | ❌ fail | NO — and the case called it. It predicted the category half would fail and the answer half would pass, and that is exactly what happened; the only surprise is that the category failure is worse than predicted. ✅ THE ANSWER HALF PASSES, b… | [shot](../tester/.tester-runs/run-3/shots/faqs-64-headline-50-listed.png) | — | — | no | — |
 | 150 | 668 | `checklist-admin-blog-faqs-blog-create-edit-publish` | Admin can create, edit, and publish a blog post | admin/blog-faqs | admin | ⬜ null | NULL — I ran out of session budget before driving it, and I would rather say so than record a verdict I did not earn. This is a nine-step case and the steps are not cheap: create a post with a rich-text body, save as draft, SIGN OUT and … | [shot](../tester/.tester-runs/run-3/shots/faqs-64-headline-50-listed.png) | — | — | no | — |
 | 150 | 669 | `checklist-admin-blog-faqs-blog-media-step-save` | On the blog editor's Media step, setting a Cover Image and/or a YouTube Video ID and savin | admin/blog-faqs | admin | ⬜ null | NULL — same reason, and this one additionally needs real file uploads I have not verified the harness can perform. The case asks me to upload /test-media/sample-image.png as a cover image, set a YouTube id, insert /test-media/sample-imag… | [shot](../tester/.tester-runs/run-3/shots/faqs-64-headline-50-listed.png) | — | — | no | — |
+| 151 | 670 | `checklist-content-discovery-faq-help-faq-search-filters-and-survives-reload` | The FAQ search box filters the questions, the term round-trips through ?q=, and a nonsense | content-discovery/faq-help | guest | ✅ pass | YES — every step, and the nonsense control is unambiguous. ✅ I WAITED, as the case insists. Polled at 2/4/6/8/10/12s: 50 questions at every sample. The hydration lag the case warns about (zero at 2.5s, 62 at 6s) does not occur today — it… | [shot](../tester/.tester-runs/run-3/shots/faq-badges-sum-to-50-not-63.png) | — | — | no | — |
+| 151 | 671 | `checklist-content-discovery-faq-help-faq-bottom-borders` | FAQ question rows show a clear bottom-border divider on the homepage and the FAQs page | content-discovery/faq-help | guest | ❌ fail | NO — but only on the mechanism, and everything a visitor actually sees is right. I want that proportion clear, because a flat 'fail' here would send someone looking for a missing divider. ✅ A DIVIDER SITS BETWEEN CONSECUTIVE ROWS. Comput… | [shot](../tester/.tester-runs/run-3/shots/faq-dividers-dark-hardcoded-neutral200.png) | — | — | no | — |
+| 151 | 672 | `checklist-content-discovery-faq-help-faq-mobile-count` | Homepage FAQ section shows a good number of questions on mobile, not just 1-2 | content-discovery/faq-help | guest | ❌ fail | NO — the counts do not match, they are hidden entirely at 390px, and chasing the mismatch turned up a CRITICAL defect that I then fixed at this milestone. 🛑 I FOUND THE CATEGORY PAGES WERE ALL EMPTY. Step 5 is 'Open one category and cou… | [shot](../tester/.tester-runs/run-3/shots/faq-badges-sum-to-50-not-63.png) | — | — | no | — |
+| 151 | 673 | `checklist-content-discovery-faq-help-tabs-mobile-dropdown` | Tabs on category/brand/product/event detail pages collapse into a colored dropdown on mobi | content-discovery/faq-help | guest | ❌ fail | NO — the case describes a mechanism this page does not use, and I am recording that rather than bending the words to fit. WHAT /faqs ACTUALLY DOES. At 1280px the categories are NOT a tab strip: there are zero [role=tablist] elements and … | [shot](../tester/.tester-runs/run-3/shots/faq-badges-sum-to-50-not-63.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
