@@ -2298,3 +2298,75 @@ business days" while the real payout reads "Requested 14 Sept 2026 · Expected b
 `/store/payouts`** — the page shows only "Available for Payout ₹0.00 / 0
 eligible orders / Set up payout details first", so a seller cannot tell how
 close they are to being able to request.
+
+## An order's delivery address renders its document id
+
+`/user/orders/view/order-1-20260729-cash01` shows:
+
+> **Delivery Address**
+> addr-yugi-home
+> India
+
+The raw address document id where the address should be, with only the country
+resolved beneath it. A buyer cannot see where their own order is going.
+
+Same family as Root Cause #52 (an identifier rendered where denormalised data
+is already available) — `OrderDocument.shippingAddress` carries the real
+fullName / line / city / state / postcode, and the page is showing the key
+instead. Found 2026-10-02 while driving
+`checklist-buying-my-orders-orders-view-details-button`.
+
+## The order tracking timeline renders no upcoming steps
+
+`/user/orders/{id}/track` on a Shipped order shows only what has happened:
+"Order placed 28/09/2026, 18:05:03 / Shipped 29/09/2026, 14:36:22". There is no
+"Out for delivery" or "Delivered" row, so the buyer cannot see what is still to
+come.
+
+**The fix is to render the remaining phases as upcoming, not to start filling in
+dates for them** — the page currently invents nothing, which is CLAUDE.md's
+Status History rule working as intended. `OrderStatusTimeline` is documented to
+render a known phase sequence with unreached steps shown as upcoming and an
+em-dash where no date exists; that half is not reaching this page.
+
+## The type tabs on My Orders cannot partition All — pre-orders have no tab
+
+`OrderDocument.orderType` has five values (standard / auction / offer /
+pre-order / prize-draw) and `/user/orders` exposes three buckets: Normal,
+Auction wins, Offer wins. Measured: All 35, Normal 34, Auction 0, Offer 0 —
+and the one order in no tab is `#PREORDR`, a pre-order, correctly excluded from
+`standard`.
+
+So a pre-order (and presumably a prize-draw) order is reachable only from the
+All tab. Either add the missing buckets or stop presenting the three as a
+partition.
+
+Noted without a conclusion, for whoever picks this up: the buyer's profile panel
+reads "5 Auctions Won" while Auction wins shows 0 orders. Not necessarily
+inconsistent — an unpaid win lapses rather than becoming an order — but worth
+confirming that a settled win does get `orderType: "auction"`.
+
+## No fixture exists for a manual payment that is still awaiting proof
+
+Four cases in `buying/my-orders` need an order whose payment is pending: the
+proof-upload page, the UPI id and countdown, the awaiting-review state and the
+rejected state. Both cash fixtures (`#CASH01`, `#CASH02`) are already past it —
+`#CASH01` reads "Payment verified / UTR: UPI-DEMO-20260728-PROOF" and "Payment
+auto-confirmed — Nobody manually reviewed this payment within 2 hours".
+
+That is the 2-hour auto-approve sweep doing its job, and it means a **static**
+fixture can never be testable. The seed needs one with `paymentProofUrl` unset
+and `paymentDeadline` in the future via `windowOffset()` — the mechanism the
+catalogue already uses for time-bound fixtures (`audit-tester-plugin-wiring` R4).
+
+Confirmed in passing, so the gap is only a fixture gap: the post-verification
+panel renders correctly and explains itself, so Root Cause #57 (the adapter
+dropping `paymentMethod`, telling every buyer "This order does not require
+manual payment upload") is **not** present.
+
+## No order in the seed has more than three items
+
+So the "+N more" suffix on a My Orders row — asserted by
+`checklist-buying-my-orders-orders-item-summary` — cannot be exercised. Maximum
+observed is 3 items, and both 3-item orders list all three titles in full, which
+is correct behaviour. A 4+ item order fixture would make the assertion testable.

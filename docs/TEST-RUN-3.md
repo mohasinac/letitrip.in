@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **120 / 255** |
-| Cases | **526 / 1847** (28%) |
+| Batches | **121 / 255** |
+| Cases | **527 / 1847** (29%) |
 | Cycle | 25 of 51 |
 | Next deploy | batch 125 |
-| Last updated | 2026-10-02 07:35 UTC |
+| Last updated | 2026-10-02 07:39 UTC |
 
 ```
-pass 212 · fail 83 · null 231
-fixed 26/83 · deferred 38 · open 19 · needs-human 7
+pass 212 · fail 84 · null 231
+fixed 26/84 · deferred 38 · open 20 · needs-human 7
 ```
 
-> ▸ **19 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **20 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -641,5 +641,6 @@ untouched list is one nobody reads by milestone three.
 | 120 | 524 | `checklist-public-pages-help-how-it-works-how-offers-work-matches-product` | What /how-offers-work says about making, countering and accepting an offer matches the off | public-pages/help-how-it-works | main | ❌ fail | NO. The form states its own limits clearly - and the one number comparable to the guide DISAGREES with it, while the guide's other three numbers appear nowhere on the form. THE GUIDE'S NEGOTIATION RULES, quoted: '• Your counter offer mus… | [shot](../tester/.tester-runs/run-3/shots/checkout-3-steps-vs-guide-5.png) | — | — | no | — |
 | 120 | 525 | `checklist-public-pages-help-how-it-works-how-orders-work-matches-product` | The order statuses named on /how-orders-work are the statuses an order can actually hold | public-pages/help-how-it-works | main | ❌ fail | NO - and the comparison fails in BOTH directions, which is what the case asks for, plus it surfaces a product gap that is not a documentation problem at all. THE GUIDE NAMES SEVEN lifecycle cards: '⏳ Pending Payment', '✅ Confirmed', '📦 … | [shot](../tester/.tester-runs/run-3/shots/checkout-3-steps-vs-guide-5.png) | — | — | no | — |
 | 120 | 526 | `checklist-public-pages-help-how-it-works-how-reviews-work-matches-product` | What /how-reviews-work says about who may review and when matches what the review form act | public-pages/help-how-it-works | main | ❌ fail | NO. There is no 'Write a Review' control on the Reviews tab and no refusal message either - and expectedUiState names exactly that silence as the failure ('Either the review form opens, OR a refusal states its reason'). THE GUIDE SAYS, q… | [shot](../tester/.tester-runs/run-3/shots/checkout-3-steps-vs-guide-5.png) | — | — | no | — |
+| 121 | 527 | `checklist-public-pages-help-how-it-works-how-payouts-work-matches-product` | The payout schedule and deductions described on /how-payouts-work match what a seller's pa | public-pages/help-how-it-works--seller | seller | ❌ fail | NO, and the most serious thing I found is not a documentation gap at all - THE SAME PAYOUT SHOWS TWO DIFFERENT AMOUNTS ON TWO SCREENS. 🛑 ₹11,400.00 ON THE LIST, ₹10,925.00 IN THE DETAIL, for payout-beyblade-arena-may-2026-pending. I rea… | [shot](../tester/.tester-runs/run-3/shots/payout-detail-10925-vs-list-11400.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
