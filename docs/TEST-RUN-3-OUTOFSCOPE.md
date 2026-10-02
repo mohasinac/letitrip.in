@@ -2848,3 +2848,82 @@ causing the duplicate.
 
 Not chased here: no case in this batch is about notifications, and the guest
 experience is correct. Worth a look when the notification hook is next opened.
+
+---
+
+# 🛑 RETRACTION — "admin Site Settings renders no fields on any tab" (batch 101)
+
+**Retracted at batch 132, 2026-10-02.** The page works. The measurement was
+wrong, and I reproduced the wrong measurement today before catching it, which is
+the only reason I can describe it precisely.
+
+**What batch 101 recorded**: `/admin/site` renders no editable fields on any of
+its twenty tabs, so no site setting can be changed through the UI.
+
+**What is actually true**: every tab's fields sit inside a **collapsed section**.
+A fresh load of any tab shows the tab picker, the section's name, and "Save all
+changes" — and `querySelectorAll('textarea')` returns **0**, because a collapsed
+accordion body is not in the DOM. Clicking the section header — a `<button>`
+whose label is the tab's own name — expands it:
+
+| Tab | After clicking the section header |
+|---|---|
+| Legal | **7 textareas**: Terms of Service, Privacy Policy, Refund Policy, Shipping Policy, Cookie Policy, Our Ethics, Code of Conduct |
+| Branding | **6 inputs + 1 switch**, with Site name reading `LetItRip` — matching `GET /api/admin/site` |
+
+That Branding reading is also what reconciles the record: the 4.42.8 verification
+that reported "6 inputs + 1 switch" was correct and had the section expanded. It
+was never measuring a different page.
+
+**The same false-negative shape has now bitten four times in this run** — a DOM
+query against a collapsed accordion, `offsetParent` on a fixed overlay,
+`[role="dialog"]` on a modal with `role: null`, and a synthetic `input` event on
+a React search box. The common factor is a probe that cannot distinguish *absent*
+from *not-rendered-yet*. **If a page looks empty, click something before
+believing it.**
+
+## The real defect is smaller, and still worth fixing
+
+`SettingsTabForm` (`AdminSiteSettingsView.tsx:122`) wraps each tab's fields in a
+`SectionForm` with a **single** section and passes no `openIds`, so it defaults
+closed. A tab the admin has just clicked into, showing only its own name repeated
+and a Save button, reads as a blank page — which is exactly how it got reported.
+
+One section inside a tab panel should default **open**: there is nothing for the
+collapse to usefully hide, and the tab already is the grouping.
+
+## And a second, sharper one: `legalPages` has two generations of keys
+
+Measured from `GET /api/admin/site` at batch 132 — `legalPages` holds **ten**
+keys, not seven:
+
+```
+privacyPolicy   : '{"type":"doc","content":[{"type":"heading" …   ← raw TipTap JSON
+termsOfService  : '{"type":"doc","content":[{"type":"heading" …   ← raw TipTap JSON
+shippingPolicy  : '{"type":"doc","content":[{"type":"heading" …   ← raw TipTap JSON
+terms, privacy, refundPolicy, shipping, cookies, ethics, codeOfConduct : ""
+```
+
+Two consequences, and the second is a hazard rather than untidiness:
+
+1. **The raw JSON the `refund-policy-not-raw-json` case hunts is really in the
+   database** — just under keys nothing reads. `PolicyPageView` reads the short
+   names, which is why `/privacy`, `/terms` and `/shipping-policy` all rendered
+   clean default prose in batch 131. The stored JSON is inert.
+2. 🛑 **The first save from the admin form silently deletes all three.**
+   `buildFullPayload()` sends `legalPages` as exactly the seven short keys, and
+   `updateSingleton` writes through Firestore's `.update()`, which **replaces a
+   nested map wholesale** — the repository's own comment says so, in the context
+   of a different near-miss (`featureFlags.listingTypes`). So an admin saving any
+   unrelated tab drops three keys, and the admin form's own "clear it and save
+   again" restore cannot bring them back.
+
+Whether those three keys *deserve* to survive is a separate question — they are
+dead and hold content that would render as braces if anything read it. The
+problem is that they would go **as an undeclared side effect of saving something
+else**, which is Root Cause #38's shape on the nested-map axis.
+
+**This is why batch 132 is recorded `null` rather than attempted.** Site Settings
+is PRESERVE-tier and the save's blast radius is wider than the case describes.
+`tester/.tester-runs/run-3/sitesettings-presave-snapshot.json` holds the three
+keys verbatim plus a 37-key fingerprint, so whoever runs it next can restore.

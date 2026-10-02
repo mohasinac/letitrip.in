@@ -171,3 +171,7 @@ scripts/set-razorpay-keys.mjs
 public/test-media/oversized.png
 docs/*TESTING-*
 docs/TRIAGE-*
+
+# Tester screenshots land at the repo root from the Playwright MCP.
+# They are evidence for a run, not source — never commit them.
+/*.png

@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **131 / 255** |
-| Cases | **566 / 1847** (31%) |
+| Batches | **132 / 255** |
+| Cases | **567 / 1847** (31%) |
 | Cycle | 27 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 11:03 UTC |
+| Last updated | 2026-10-02 11:11 UTC |
 
 ```
-pass 225 · fail 96 · null 245
+pass 225 · fail 96 · null 246
 fixed 35/96 · deferred 36 · open 25 · needs-human 7
 ```
 
@@ -681,5 +681,6 @@ untouched list is one nobody reads by milestone three.
 | 131 | 564 | `checklist-public-pages-legal-policy-pages-ethics-page-loads` | The Our Ethics page loads, and its live-animal section describes vendor verification, a la | public-pages/legal-policy-pages--guest | guest | ✅ pass | Guest confirmed visually and programmatically throughout: the header renders Sign in / Register (visible in the cited screenshot) and no 'Log out' appears anywhere; the session file copied over was the empty one. YES on all four commitme… | [shot](../tester/.tester-runs/run-3/shots/ethics-live-items-four-commitments.png) | — | — | no | — |
 | 131 | 565 | `checklist-public-pages-legal-policy-pages-code-of-conduct-loads` | The Code of Conduct page loads and covers listing honestly, bidding in good faith, review  | public-pages/legal-policy-pages--guest | guest | ✅ pass | Guest confirmed visually and programmatically throughout: the header renders Sign in / Register (visible in the cited screenshot) and no 'Log out' appears anywhere; the session file copied over was the empty one. YES on all four topics a… | [shot](../tester/.tester-runs/run-3/shots/ethics-live-items-four-commitments.png) | — | — | no | — |
 | 131 | 566 | `checklist-public-pages-legal-policy-pages-policy-related-links-exclude-self` | On EVERY policy page, the "Related Policies" footer lists the other five policies and neve | public-pages/legal-policy-pages--guest | guest | ✅ pass | Guest confirmed visually and programmatically throughout: the header renders Sign in / Register (visible in the cited screenshot) and no 'Log out' appears anywhere; the session file copied over was the empty one. YES — all six pages, eac… | [shot](../tester/.tester-runs/run-3/shots/ethics-live-items-four-commitments.png) | — | — | no | — |
+| 132 | 567 | `checklist-public-pages-legal-policy-pages-policy-admin-html-override` | As an admin: pasting HTML into Site Settings → Legal → "Our Ethics" and saving replaces th | public-pages/legal-policy-pages--admin | admin | ⬜ null | NULL — I got as far as step 3 and stopped deliberately at step 5, because the only way to press Save is to write the WHOLE siteSettings singleton, and that write has a side effect this case does not describe and its own restore step cann… | [shot](../tester/.tester-runs/run-3/shots/admin-site-legal-expanded-7-textareas.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
