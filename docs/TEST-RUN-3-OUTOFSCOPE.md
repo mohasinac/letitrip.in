@@ -2638,3 +2638,73 @@ All four original G5 overflows are resolved or retracted:
 | Code-filter opengraph flood | superseded — the finding it blocked was re-measured by driving the control in the UI |
 | `SectionForm` `submitAttempted` | superseded — Root Cause #74's gate was confirmed working on the address form this run |
 | Listing-type redirect into `src/proxy.ts` | left standing: it is a routing change, and the entry's own next-step says to confirm each pair renders before touching anything |
+
+## 🛑 Coupons cannot be applied at checkout, and the UI says nothing
+
+The headline finding of `content-discovery/coupons`, and it is a money path.
+
+**ARENA25 is refused on a cart that satisfies every condition its own card
+states.** The card on `/promotions/coupons` reads 25% off, "Maximum discount
+₹500", "Min. order: ₹1000", "Expires: 25/10/2026", "0/200 used", badged
+**ACTIVE**. The cart was single-seller Beyblade Arena with "Subtotal (2 items)
+**₹2,298.00**" — 2.3× the minimum. `POST /api/cart/coupon {code:"ARENA25"}`
+returns:
+
+```
+400 VALIDATION_FAILED — "Coupon is not currently valid"
+```
+
+Three separate problems:
+
+1. **The coupon cannot be applied at all**, so no discount ever reaches an
+   order.
+2. **The message misattributes the reason.** "Not currently valid" describes a
+   validity window, while the card says ACTIVE with a fortnight to run and 0 of
+   200 uses consumed. The *identical* message comes back on a ₹899 cart, so it
+   is not the minimum-purchase branch either — the same string covers at least
+   two different conditions.
+3. **The checkout surface shows nothing.** Typing a code and pressing Apply
+   produces no alert, no toast and no inline error across 11s of polling — the
+   server's 400 and its message are both swallowed. Indistinguishable from a
+   dead button, and the fourth time this run has seen that shape.
+
+Not established, and deliberately not guessed at: *why* the coupon is refused.
+Undisclosed `applicableProducts` / `applicableCategories` narrowing,
+`firstTimeUserOnly`, or the seller-scope check are the candidates, and
+separating them needs the coupon document rather than another click.
+
+**Blast radius**: this blocks three more cases in the same batch
+(`coupon-not-combinable`, `coupon-per-user-limit`, and the acceptance half of
+`coupon-discount-applied`), because every one of them needs a coupon to apply
+first.
+
+## A claimed coupon's row omits the minimum spend
+
+`/user/coupons` shows a claimed NEWBLADER row with its code, "20% off", title,
+description, "Claimed 2 Oct 2026 · Expires 14 Dec 2026", "Apply at checkout" and
+"Remove" — but **no minimum spend**, while the public card on
+`/promotions/coupons` states "Min. order: ₹1000". Tested rather than eyeballed:
+no `min order` / `minimum` match anywhere in the row.
+
+So a buyer cannot see the threshold on a coupon they already hold, and meets it
+as a checkout rejection instead — which, per the entry above, currently arrives
+with no message at all.
+
+## "Claim" on a coupon card navigates into an empty checkout
+
+Clicking Claim on `/promotions/coupons` registers the claim correctly (Active
+went 2 → 3 and survived a reload) **and then navigates away** —
+`/cart?coupon=NEWBLADER` → `/checkout?coupon=NEWBLADER` — with an empty cart, so
+the buyer lands on "Step 1 of 3: Shipping Address" with "Subtotal ₹0.00".
+
+Claiming a coupon for later is a browsing action; it should not start a checkout,
+least of all one that cannot be completed. The redirect also made the claim look
+like it had failed, which is why I went to `/user/coupons` to check.
+
+## Fixture gap: `coupon-not-combinable` builds a cart below ARENAVIP's minimum
+
+The case adds only `product-beyblade-burst-regalia-genesis` (₹1,399) and then
+applies ARENAVIP, whose card says **"Min. order: ₹2000"**. So ARENAVIP would be
+rejected for the *minimum* rather than for the non-combinable rule — a refusal
+that looks like a pass. The cart needs to clear ₹2,000 for the assertion to mean
+what it says.
