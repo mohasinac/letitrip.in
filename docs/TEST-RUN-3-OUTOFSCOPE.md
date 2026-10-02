@@ -2426,3 +2426,51 @@ This closes the question left open by `buying/my-orders--p1`: those four
 manual-payment cases are passable, and the only thing missing is a **pending**
 fixture — the seeded cash orders have all been consumed by the 2-hour
 auto-approve sweep, which a static fixture can never survive.
+
+## 🛑 Five cases blocked by one missing fixture — and no static fixture can fix it
+
+Cases blocked, all in `buying/my-orders`:
+`manual-payment-panel-on-order-detail`, `manual-payment-page-renders-upi-and-countdown`,
+`manual-payment-awaiting-review-state`, `manual-payment-rejected-state`,
+`manual-payment-reupload-note-visible-to-buyer`.
+
+All five need an order whose payment proof has been **submitted but not yet
+reviewed**. Verified empty from the admin side:
+`/admin/orders?paymentReview=awaiting_verification` returns "No orders found",
+which is the *correct* answer — both seeded cash fixtures were consumed by the
+documented 2-hour auto-approve sweep (`#CASH01` reads "Payment auto-confirmed —
+Nobody manually reviewed this payment within 2 hours").
+
+**A static seed fixture can never survive that sweep**, so this is not a
+"re-seed and retry" problem. Two things are needed:
+
+1. A fixture with `paymentProofUrl` **set** and `paymentReviewOutcome` **unset**,
+   whose `paymentDeadline` comes from `windowOffset()` — the mechanism the
+   catalogue already uses for time-bound fixtures (`audit-tester-plugin-wiring`
+   R4). It still auto-approves eventually, so the run has to reach it inside the
+   window, which is an argument for putting these cases early in a phase.
+2. A **session file for a throwaway buyer** the harness may drive. The one order
+   currently in the manual flow belongs to the account registered on the harness
+   mailbox, and the harness holds only guest/buyer/seller/admin sessions — so
+   nothing can upload the proof that would create the state.
+
+Same decision this run already parked for the sign-out cases: a
+`TESTER_THROWAWAY_*` identity would unblock both families.
+
+## Admin order rows get the manual-payment state right
+
+Recorded as a positive, and as the contrast that makes the seller-side gap
+legible. One admin row:
+
+> Beyblade Burst B-01 Valkyrie / replysitelir+run3b@gmail.com · **₹1,087.80** ·
+> **order-1-20261002-od3ign** · **Awaiting payment** / pending / 5m ago
+
+Order id present, the derived manual-payment state rendered as its own phrase,
+total matching the buyer side. And `?paymentReview=awaiting_verification`
+genuinely filters — empty while the unfiltered list shows the order — so the
+derived-state queue described in CLAUDE.md is wired.
+
+Not a finding, recorded so nobody re-derives it: the **row** action menu offers
+only "View full details" / "Open full page" / "Update status". Verify, Request
+re-upload and Reject-as-fraud are documented to live on the order drawer and
+`/admin/orders/[id]/view`, so open the drawer before concluding they are absent.
