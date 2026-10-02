@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **123 / 255** |
-| Cases | **540 / 1847** (29%) |
+| Batches | **124 / 255** |
+| Cases | **541 / 1847** (29%) |
 | Cycle | 25 of 51 |
 | Next deploy | batch 125 |
-| Last updated | 2026-10-02 08:10 UTC |
+| Last updated | 2026-10-02 08:13 UTC |
 
 ```
-pass 216 · fail 87 · null 237
+pass 216 · fail 87 · null 238
 fixed 27/87 · deferred 38 · open 22 · needs-human 7
 ```
 
@@ -655,5 +655,6 @@ untouched list is one nobody reads by milestone three.
 | 122 | 538 | `checklist-buying-my-orders-manual-payment-awaiting-review-state` | After submitting proof, the order detail page switches to a "Payment under review" panel a | buying/my-orders--p1 | main | ⬜ null | NOT DRIVEN - no order in this account is AWAITING manual payment, which is this case's precondition, and I established that rather than assuming it. The two cash orders (#CASH01, #CASH02) are both past that state: #CASH01's detail page r… | [shot](../tester/.tester-runs/run-3/shots/orders-sort-total-fixed.png) | — | — | no | — |
 | 122 | 539 | `checklist-buying-my-orders-manual-payment-rejected-state` | An order rejected as fraudulent shows a "Payment rejected" panel with the admin's reason,  | buying/my-orders--p1 | main | ⬜ null | NOT DRIVEN - no order in this account is AWAITING manual payment, which is this case's precondition, and I established that rather than assuming it. The two cash orders (#CASH01, #CASH02) are both past that state: #CASH01's detail page r… | [shot](../tester/.tester-runs/run-3/shots/orders-sort-total-fixed.png) | — | — | no | — |
 | 123 | 540 | `checklist-buying-my-orders-order-lifecycle-emails-arrive` | As a buyer you get an email at each real order milestone — placed, shipped, delivered, can | buying/my-orders--p2 | main | ⬜ null | NULL at step 6 - but the first half is a real, fully evidenced PASS and the reason the second half is out of reach is a legitimate business rule rather than a defect. ✅ THE ORDER-PLACED EMAIL ARRIVES, AND IT NAMES THE RIGHT ORDER. I did … | [shot](../tester/.tester-runs/run-3/shots/manual-payment-page-upi-countdown.png) | — | — | no | — |
+| 124 | 541 | `checklist-buying-my-orders-manual-payment-reupload-note-visible-to-buyer` | When an admin requests a proof re-upload, the buyer's order detail page shows "Payment pro | buying/my-orders--admin | admin | ⬜ null | NULL at step 1, and the blocker is the SAME missing fixture that blocked four cases last batch - which makes it a pattern worth naming rather than four separate abstentions. WHAT THIS CASE NEEDS: an order whose proof has been SUBMITTED b… | [shot](../tester/.tester-runs/run-3/shots/admin-orders-awaiting-payment-row.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->

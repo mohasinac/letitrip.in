@@ -2474,3 +2474,47 @@ Not a finding, recorded so nobody re-derives it: the **row** action menu offers
 only "View full details" / "Open full page" / "Update status". Verify, Request
 re-upload and Reject-as-fraud are documented to live on the order drawer and
 `/admin/orders/[id]/view`, so open the drawer before concluding they are absent.
+
+## Milestone 125 — what shipped, and the three things it left open
+
+appkit **4.42.6** published and deployed; `node scripts/deploy.mjs` smoke-tested
+`/`, `/en/products`, `/api/site-settings` (all 200) and verified the canonical
+host, robots and all 209 sitemap URLs.
+
+Fixed and re-verified in production: bundle **create**, bundle **edit-load**
+(which was rendering blank and would have written that blank over a live bundle
+on save), the bundle **Brand picker**, the desktop **navbar active marker**, and
+four missing **crop-editor i18n keys** (`cropRotateLeft`, `cropRotateRight`,
+`cropFlipH`, `cropFlipV`).
+
+Still open from the same surface:
+
+**1. `kind: "number"` has no contract, and two more fields still break it.**
+`build-sections.tsx` coerces every number-kind field with
+`set(v === "" ? undefined : Number(v))`. Of the 30 `kind: "number"` annotations,
+~10 are plain `z.number()` (they need the coercion), ~11 are
+`z.coerce.number()` (fine either way) and **three declared `z.string()`** —
+`priceRupees` (fixed), **`purchasedItemNumber`** (`admin-user-form.ts`) and
+**`maxBudget`** (`item-request-create-form.ts`). The latter two have the same
+latent defect and were **not** changed, because no case has driven them (Rule
+#4). Either fix them the same way or make the control's contract explicit.
+
+**2. `Provide a renderer for "coverImage" — this field needs a custom control.`**
+A developer placeholder rendered to the admin as page copy, under "Cover image
+URL" in the bundle editor. Same shape as the `GroupedListingEditorView`
+renderers-map gap logged earlier: the `renderers` map covers `productIds` and
+`coverImage` falls through. Still present in 4.42.6.
+
+**3. The confirm-delete modal is not announced as a dialog.**
+`<div data-testid="confirm-delete-modal" class="appkit-confirm-modal__backdrop">`
+has `role: null` and `aria-modal: null`. The confirmation itself is correct and
+works — "Delete this bundle? This action cannot be undone. / Cancel / Delete",
+and confirming deleted the bundle and returned to `/admin/bundles` — but a
+screen reader is never told a modal opened.
+
+**Method note worth keeping**: `[role="dialog"]` is not a reliable way to find a
+modal in this codebase. It missed this one entirely, and I only learned the
+modal was open because Playwright reported the backdrop intercepting a click.
+That is the third probe shape to have produced a false "the control does
+nothing" this run, after `offsetParent` on fixed overlays and a synthetic
+`input` event on a search box.
