@@ -3281,3 +3281,22 @@ has this shape.
 Worth a mechanism before the next run: either a `QA `-prefix sweep in teardown,
 or a post-run reconciliation against the seed baseline count per collection.
 Not chased now (G4 — no case owns it).
+
+## Two findings from resolving the cod/manual-payment ambiguity (2026-10-03)
+
+1. **Does a `cod` order need a proof-upload path for its token?** CLAUDE.md
+   § Buyer-Facing Fees says cod takes a **10% token deposit** plus a handling fee.
+   But `isManualPaymentMethod()` is `cash | upi_manual | emi` — `cod` is NOT in
+   it — so `/user/orders/{id}/payment` tells a cod buyer the order "does not
+   require manual payment". If that 10% token is ever collected outside the
+   gateway, the buyer has no way to evidence it. Verified live on
+   order-1-20261002-sngvk5 (paymentMethod cod, paymentStatus pending, no proof).
+   NOT chased — may be correct if the token always goes through Razorpay.
+
+2. **`buyerId` is not the uid I assumed.** The buyer UI shows 30 orders, yet
+   `orders.where("buyerId","==","user-yugi-muto")` returns **zero**. So either
+   the signed-in buyer is a different uid than the session file implies, or
+   `buyerId` holds something other than the Auth uid. Any future Firestore
+   assertion keyed on buyerId is unreliable until this is settled — and a query
+   returning 0 reads exactly like "no orders", which is how a false finding gets
+   written.
