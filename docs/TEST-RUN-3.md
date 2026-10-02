@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **149 / 255** |
-| Cases | **666 / 1847** (36%) |
-| Cycle | 30 of 51 |
-| Next deploy | batch 150 |
-| Last updated | 2026-10-02 14:03 UTC |
+| Batches | **150 / 255** |
+| Cases | **669 / 1847** (36%) |
+| Cycle | 31 of 51 |
+| Next deploy | batch 175 |
+| Last updated | 2026-10-02 14:15 UTC |
 
 ```
-pass 262 · fail 121 · null 283
-fixed 35/121 · deferred 36 · open 50 · needs-human 7
+pass 262 · fail 122 · null 285
+fixed 35/122 · deferred 36 · open 51 · needs-human 7
 ```
 
-> ▸ **50 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **51 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -781,5 +781,8 @@ untouched list is one nobody reads by milestone three.
 | 148 | 664 | `checklist-buying-wishlist-history-history-guest-merge-on-login` | Guest browsing history (localStorage) merges correctly with the account's history after lo | buying/wishlist-history--p2 | main | ⬜ null | NULL — same missing identity, and here substituting the buyer would actively destroy the thing being measured. Step 3 is 'Sign in as karthik.new@gmail.com from that same window', and there is no stored session for him. WHY I DID NOT SUBS… | [shot](../tester/.tester-runs/run-3/shots/history-newest-first-28-of-50.png) | — | — | no | — |
 | 149 | 665 | `checklist-buying-wishlist-history-wishlist-guest-heart-prompts-signin` | A signed-out visitor tapping the heart on product-beyblade-burst-valkyrie is asked to sign | buying/wishlist-history--guest | guest | ✅ pass | YES — every clause, including the one the case cares most about: it refuses without pretending to have saved. ✅ BEFORE: the heart is empty — 'Add to Wishlist' with svg fill='none'. Header confirmed signed out ('Sign in \| Register'). ✅ TA… | [shot](../tester/.tester-runs/run-3/shots/guest-wishlist-signin-required.png) | — | — | no | — |
 | 149 | 666 | `checklist-buying-wishlist-history-wishlist-guest-page-signed-out` | A signed-out visitor opening /wishlist is asked to sign in rather than shown a permanently | buying/wishlist-history--guest | guest | ❌ fail | NO — it shows exactly the generic empty wishlist the case exists to rule out, and offers no way to sign in. 🛑 WHAT THE PAGE SAYS, quoted in full as expectedUiState demands: the heading 'My Wishlist', a 'Filters' button, a 'Search wishli… | [shot](../tester/.tester-runs/run-3/shots/guest-wishlist-generic-empty-state.png) | — | — | no | — |
+| 150 | 667 | `checklist-admin-blog-faqs-faq-create-edit-category` | Admin can create and edit an FAQ, including category assignment | admin/blog-faqs | admin | ❌ fail | NO — and the case called it. It predicted the category half would fail and the answer half would pass, and that is exactly what happened; the only surprise is that the category failure is worse than predicted. ✅ THE ANSWER HALF PASSES, b… | [shot](../tester/.tester-runs/run-3/shots/faqs-64-headline-50-listed.png) | — | — | no | — |
+| 150 | 668 | `checklist-admin-blog-faqs-blog-create-edit-publish` | Admin can create, edit, and publish a blog post | admin/blog-faqs | admin | ⬜ null | NULL — I ran out of session budget before driving it, and I would rather say so than record a verdict I did not earn. This is a nine-step case and the steps are not cheap: create a post with a rich-text body, save as draft, SIGN OUT and … | [shot](../tester/.tester-runs/run-3/shots/faqs-64-headline-50-listed.png) | — | — | no | — |
+| 150 | 669 | `checklist-admin-blog-faqs-blog-media-step-save` | On the blog editor's Media step, setting a Cover Image and/or a YouTube Video ID and savin | admin/blog-faqs | admin | ⬜ null | NULL — same reason, and this one additionally needs real file uploads I have not verified the harness can perform. The case asks me to upload /test-media/sample-image.png as a cover image, set a YouTube id, insert /test-media/sample-imag… | [shot](../tester/.tester-runs/run-3/shots/faqs-64-headline-50-listed.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
