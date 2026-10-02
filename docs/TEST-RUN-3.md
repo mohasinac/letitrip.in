@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **153 / 255** |
-| Cases | **688 / 1847** (37%) |
+| Batches | **154 / 255** |
+| Cases | **696 / 1847** (38%) |
 | Cycle | 31 of 51 |
 | Next deploy | batch 175 |
-| Last updated | 2026-10-02 16:24 UTC |
+| Last updated | 2026-10-02 16:41 UTC |
 
 ```
-pass 272 · fail 131 · null 285
-fixed 35/131 · deferred 36 · open 60 · needs-human 7
+pass 273 · fail 135 · null 288
+fixed 35/135 · deferred 36 · open 64 · needs-human 7
 ```
 
-> ▸ **60 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **64 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -803,5 +803,13 @@ untouched list is one nobody reads by milestone three.
 | 153 | 686 | `checklist-public-pages-help-scams-guides-subpages-public-seller-guide-loads` | The PUBLIC seller guide at /seller-guide loads and is distinct from the seller dashboard's | public-pages/help-scams-guides-subpages--guest | guest | ❌ fail | NO — it renders no content at all. Not thin, not a copy of the dashboard manual: empty. 🛑 WHAT A VISITOR SEES: header, the breadcrumb 'Home / Seller guide', a blank white gap, the trust strip, the footer. The screenshot shows exactly th… | [shot](../tester/.tester-runs/run-3/shots/seller-guide-empty-shell.png) | — | — | no | — |
 | 153 | 687 | `checklist-public-pages-help-scams-guides-subpages-public-seller-guide-subpages-load` | The seller-guide bundles and prize-draws pages load with real content and are linked from  | public-pages/help-scams-guides-subpages--guest | guest | ❌ fail | NO — both sub-pages are good; the clause that fails is 'linked from /seller-guide', and it fails because the parent has no body to link from. ✅ BOTH LOAD WITH REAL CONTENT, verified in the browser rather than from fetched HTML: /seller-g… | [shot](../tester/.tester-runs/run-3/shots/seller-guide-empty-shell.png) | — | — | no | — |
 | 153 | 688 | `checklist-public-pages-help-scams-guides-subpages-seller-guide-reachable-signed-out` | A signed-out visitor can reach the public seller guide from the site, without being asked  | public-pages/help-scams-guides-subpages--guest | guest | ❌ fail | NO — the route is reachable and no sign-in is demanded, but the page it reaches is blank, so the call to action the case requires does not exist. Two clauses of three. ✅ IT IS DISCOVERABLE WITHOUT SIGNING IN. From the homepage footer's F… | [shot](../tester/.tester-runs/run-3/shots/seller-guide-empty-shell.png) | — | — | no | — |
+| 154 | 689 | `checklist-public-pages-help-scams-guides-subpages-scams-report-form-submits` | The scam report form validates its fields and submits, and the reporter is told what happe | public-pages/help-scams-guides-subpages | main | ⬜ null | NULL — a deliberate refusal, and the reason is about what the submission CREATES rather than about any blocker I hit. SUBMITTING THIS FORM PUBLISHES AN ACCUSATION. The scam registry is public and indexed — /scams renders named scammer pr… | [shot](../tester/.tester-runs/run-3/shots/scam-report-inline-field-errors.png) | — | — | no | — |
+| 154 | 690 | `checklist-public-pages-help-scams-guides-subpages-scams-report-errors-inline` | Submitting the scam report form with a required field empty shows the error on that field, | public-pages/help-scams-guides-subpages | main | ✅ pass | YES — all five steps, and the error handling here is the best I have seen on this site. ✅ SUBMITTING EMPTY FIRES NO REQUEST AT ALL. I instrumented fetch before clicking 'Submit Report' and captured ZERO non-GET requests, so it is refused… | [shot](../tester/.tester-runs/run-3/shots/scam-report-inline-field-errors.png) | — | — | no | — |
+| 154 | 691 | `checklist-public-pages-help-scams-guides-subpages-public-seller-guide-matches-product` | What the public seller guide promises about bundles and prize draws matches what the produ | public-pages/help-scams-guides-subpages | main | ⬜ null | NULL on the comparison — I did not create a bundle or a prize draw, so I cannot report which claims the editors keep. But one thing is worth recording rather than leaving blank. WHY I DID NOT DRIVE IT: steps 2 and 5 require creating a re… | [shot](../tester/.tester-runs/run-3/shots/scam-report-inline-field-errors.png) | — | — | no | — |
+| 154 | 692 | `checklist-public-pages-help-scams-guides-subpages-item-requests-new-form-opens` | Opening the new-item-request page directly shows the form already open, and a submitted re | public-pages/help-scams-guides-subpages | main | ⬜ null | NULL — not driven. I ran out of session budget before it, and I would rather say that than record a verdict I did not earn. WHAT THE CASE NEEDS: open /item-requests/new directly, confirm the form is already open rather than the page bein… | [shot](../tester/.tester-runs/run-3/shots/scam-report-inline-field-errors.png) | — | — | no | — |
+| 154 | 693 | `checklist-public-pages-help-scams-guides-subpages-help-account-matches-product` | What /help/account says about changing a password, an email and closing an account matches | public-pages/help-scams-guides-subpages | main | ❌ fail | NO — and the failures are documentation gaps rather than a broken product, which is worth saying first because the product side of this comparison is genuinely well built. ✅ THE PASSWORD MECHANISM IS DESCRIBED CORRECTLY, and this is the … | [shot](../tester/.tester-runs/run-3/shots/scam-report-inline-field-errors.png) | — | — | no | — |
+| 154 | 694 | `checklist-public-pages-help-scams-guides-subpages-help-auctions-matches-product` | What /help/auctions tells a buyer about bidding and losing matches what an auction page an | public-pages/help-scams-guides-subpages | main | ❌ fail | NO — and one of the unmet claims is a whole mechanism with a worked example that the product does not have. 🛑 PROXY BIDDING DOES NOT EXIST. /help/auctions says: 'Max bid (proxy bidding) — enter the maximum you're willing to pay. LetItRi… | [shot](../tester/.tester-runs/run-3/shots/scam-report-inline-field-errors.png) | — | — | no | — |
+| 154 | 695 | `checklist-public-pages-help-scams-guides-subpages-help-orders-matches-product` | What /help/orders says about cancelling, returning and tracking matches the actions on a r | public-pages/help-scams-guides-subpages | main | ❌ fail | NO — and the clearest finding needs no comparison with the product at all, because the help page contradicts itself. 🛑 TWO RETURN WINDOWS ON ONE PAGE. /help/orders says 'open a return request WITHIN 2 DAYS of delivery' and, a few lines … | [shot](../tester/.tester-runs/run-3/shots/scam-report-inline-field-errors.png) | — | — | no | — |
+| 154 | 696 | `checklist-public-pages-help-scams-guides-subpages-help-shopping-matches-product` | What /help/shopping says about carts, wishlists and coupons matches what those surfaces do | public-pages/help-scams-guides-subpages | main | ❌ fail | NO — four wrong claims, and the coupon rule the case predicted would be stale turns out to be missing instead. 🛑 THE PAYMENT METHODS ARE WRONG, and this is the most consequential one. Help says: 'Payment methods — UPI, credit/debit card… | [shot](../tester/.tester-runs/run-3/shots/scam-report-inline-field-errors.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
