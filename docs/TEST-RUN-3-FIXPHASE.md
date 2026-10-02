@@ -110,3 +110,38 @@ Shot: tester/.tester-runs/run-3/shots/categories-sort-STILL-BROKEN.png
    The index deploy this turn did not add one for this shape.
 3. Whether `sort` is reaching the query at all — instrument the built query, do
    not infer it from source. Three source reads already said it should work.
+
+### /categories — narrowed further (same turn). The sort was never the problem.
+
+Measured, not inferred:
+
+- `X-Vercel-Cache: MISS`, `Age: 0`, `Cache-Control: private, no-cache` — **not a
+  stale cache**. Lead 1 from above is eliminated.
+- The **raw SSR HTML is CORRECT**: `curl` shows "Spinning Tops" first, then
+  "Living Collectibles". The server renders roots on page 1 exactly as the fix
+  intended. The browser then hydrates and the list becomes name ASC with both
+  roots gone — **the client overwrites a correct server render.**
+- `CategoriesIndexListing.tsx:102` `DEFAULT_SORT = sortBy(TIER,"ASC")` and the
+  "Top level first" option exists at :106. Both halves of the fix are right.
+- An explicit `?sort=tier:ASC` in the URL is ALSO ignored by the hydrated page.
+- `GET /api/categories?sort=tier:ASC` **does** honour the sort — but its tier-0
+  rows are: `QA Brand inline-create`, `Original Collector's Set`,
+  `Beyblade Burst`, `QA Category admin-crud RENAMED`, `QA Category inline-create`,
+  `Takara-Tomy`.
+
+### So there are TWO defects tangled here, and neither is the sort
+
+1. **The categories collection is polluted with QA leftovers at tier 0** —
+   `QA Category inline-create`, `QA Category admin-crud RENAMED`,
+   `QA Brand inline-create` are rows earlier batches created and never cleaned up.
+   They are real documents on the live site, visible to the public.
+2. **/api/categories does not scope by `categoryType`** — brands (`Takara-Tomy`)
+   and bundles (`Original Collector's Set`) come back mixed in with listing
+   categories. Per CLAUDE.md the collection holds four discriminators and a
+   category listing must filter to one.
+
+Whether the client's name-ASC ordering is a third defect or a consequence of
+reading a differently-shaped payload is NOT yet established. Do not assume.
+Next: instrument what the client actually requests on hydration (network panel),
+rather than reading the source a fifth time — four reads have now all said the
+code is correct while the page says otherwise.
