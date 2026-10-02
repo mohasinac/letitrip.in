@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **133 / 255** |
-| Cases | **571 / 1847** (31%) |
+| Batches | **134 / 255** |
+| Cases | **575 / 1847** (31%) |
 | Cycle | 27 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 11:30 UTC |
+| Last updated | 2026-10-02 11:55 UTC |
 
 ```
-pass 226 · fail 99 · null 246
-fixed 35/99 · deferred 36 · open 28 · needs-human 7
+pass 226 · fail 101 · null 248
+fixed 35/101 · deferred 36 · open 30 · needs-human 7
 ```
 
-> ▸ **28 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **30 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -686,5 +686,9 @@ untouched list is one nobody reads by milestone three.
 | 133 | 569 | `checklist-selling-seller-bids-bundles-filters-seller-bids-sort-dropdown` | Changing the Sort dropdown on the seller Bids page reorders the rows | selling/seller-bids-bundles-filters | seller | ❌ fail | NO. One clause passes outright and the rest cannot be satisfied, for two separate reasons. ✅ THE DEFAULT IS VALID — step 5's check. The dropdown opens on 'Newest' and its value is `-bidDate`, which is one of the four options offered: -bi… | [shot](../tester/.tester-runs/run-3/shots/seller-bids-raw-firestore-error.png) | — | — | no | — |
 | 133 | 570 | `checklist-selling-seller-bids-bundles-filters-seller-bids-bidder-search` | Typing a bidder's name into the search box on the seller Bids page and pressing Enter narr | selling/seller-bids-bundles-filters | seller | ❌ fail | NO — and this is the most serious thing in the batch, because the page shows the seller a raw Firestore error. 🛑 TYPING A REAL BIDDER NAME RENDERS A SERVER ERROR IN THE PAGE BODY. I typed 'Mock User 14' and pressed Enter; the URL became… | [shot](../tester/.tester-runs/run-3/shots/seller-bids-raw-firestore-error.png) | — | — | no | — |
 | 133 | 571 | `checklist-selling-seller-bids-bundles-filters-seller-bundles-active-filter` | The Active / Inactive and "Sold out" chips on the seller Bundles page actually narrow the  | selling/seller-bids-bundles-filters | seller | ✅ pass | YES — partitionSumsToTotal true, members populated, both fixtures cleaned up. Four corrections to the case, and one of them is a correction to ME. 🛑 I FIRST CONCLUDED THERE WAS NO FILTER AT ALL, and that would have been a false severe f… | [shot](../tester/.tester-runs/run-3/shots/seller-bundles-inactive-filter-narrows.png) | — | — | no | — |
+| 134 | 572 | `checklist-admin-classifieds-digitalcodes-live-classified-create-moderate` | Admin can create and moderate classified listings | admin/classifieds-digitalcodes-live | admin | ❌ fail | 🛑 THE HEADLINE, and it is the most serious thing I have found in this run: AN ADMIN'S STATUS CHANGE DOES NOT REACH THE PUBLIC PAGE. I archived the listing, then opened its public URL SIGNED OUT, and it rendered in full — h1 'QA Classifi… | [shot](../tester/.tester-runs/run-3/shots/archived-classified-still-public-and-buyable.png) | — | — | no | — |
+| 134 | 573 | `checklist-admin-classifieds-digitalcodes-live-reject-status-has-no-chip` | After the Reject row action, the listing is still findable by an admin — some status chip  | admin/classifieds-digitalcodes-live | admin | ❌ fail | NO — and both halves of the case's prediction were right about the first half and WRONG about the second, which is the more important result. ✅ THE FILTER HALF FAILS EXACTLY AS PREDICTED. After Reject the row reads **'rejected'**, a valu… | [shot](../tester/.tester-runs/run-3/shots/archived-classified-still-public-and-buyable.png) | — | — | no | — |
+| 134 | 574 | `checklist-admin-classifieds-digitalcodes-live-digitalcode-create-moderate` | Admin can create and moderate digital-code listings | admin/classifieds-digitalcodes-live | admin | ⬜ null | NULL — not driven, and I want to be precise about why rather than imply it was attempted. The case's step 1 and 2 require creating a digital-code listing through /store/digital-codes/new and then REOPENING it in edit mode to add three co… | [shot](../tester/.tester-runs/run-3/shots/store-classified-rows-have-no-titles.png) | — | — | no | — |
+| 134 | 575 | `checklist-admin-classifieds-digitalcodes-live-live-create-moderate` | Admin can create and moderate live-item listings | admin/classifieds-digitalcodes-live | admin | ⬜ null | NULL — not driven. Same reason as the digital-code case: its step 1 needs a live listing created through the seller form (species, jurisdiction list, a video attachment) and I established the classified half instead, where the create flo… | [shot](../tester/.tester-runs/run-3/shots/classified-crop-modal-missing-keys.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
