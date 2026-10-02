@@ -3041,3 +3041,21 @@ state, so refusing meant the only path to production was "fix all 51 first", and
 the fixes that were ready stayed undeployed. It now prints the backlog and
 proceeds; `npm run check` and the post-deploy smoke test still gate, because they
 judge the build rather than the backlog.
+
+## Fix cycle at batch 153 — what I decided about this file
+
+The hook asks for a decision per entry rather than an untouched list. Going
+through it:
+
+| Entry | Decision |
+|---|---|
+| Guest `/api/notifications` double-401 on every page | **Promote to a gap case.** It is two wasted requests on every signed-out page load and it makes a guest's console permanently dirty, which is what cost the `/scams/faqs` case its "clean console" clause. A case should assert that a signed-out visitor's console is clean on a public page. |
+| `/admin/payouts` React #418 | **Already promoted** — merged into the queued `react-418-hydration-mismatch-on-public-pages` entry when `/scams/faqs` turned up the second instance. Two routes means a shared cause. |
+| Batch 101 retraction (admin Site Settings "renders no fields") | **Leave standing as the record.** It is a correction, not a defect, and the fields-in-a-collapsed-section lesson has since saved me twice — on `/admin/faqs/new` and on the blog editor note. |
+| `legalPages` two-key-generation hazard | **Leave standing** with the pre-save snapshot already written to `run-3/sitesettings-presave-snapshot.json`. Fixing it means touching the Site Settings save path, which writes the whole singleton; that is its own session, not a drive-by. |
+| `qa-register-1@mailnull.com` residue | **Leave standing.** `users` is PRESERVE-tier and deleting an account is forbidden; it needs a human who can check the uid twice. |
+| Cart "Remove all" does nothing | **Promote to a gap case.** A destructive-sounding control that silently no-ops is worth a case of its own, and one already exists about the remove-all confirmation for it to join. |
+| Cart money formatter omits the thousands separator (`₹1898.00` beside `₹1,898.00`) | **Leave standing.** One screen, two formatters, no data risk. |
+| Stored buyer session ages out around 55 minutes | **Promote to a gap case**, as already written there: stay on one page for over an hour with the tab active and see whether the session survives. Until someone runs it, whether a live user is signed out after an hour is genuinely unknown, and that is the sort of thing that should not stay unknown. |
+| My milestone script skipping the appkit publish | **Fixed at the time**, in the same cycle it was found. Left here as the record of why `gitChanged` now treats an absent baseline as "changed". |
+| Committed `TempPass123!` / `admin@letitrip.in` in README and four seed scripts | **Still needs your decision** — it is the one entry I cannot resolve myself, because rotating the seeded password also changes `tester/.env` and every session file. |
