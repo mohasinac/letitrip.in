@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **141 / 255** |
-| Cases | **625 / 1847** (34%) |
+| Batches | **142 / 255** |
+| Cases | **627 / 1847** (34%) |
 | Cycle | 29 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 12:45 UTC |
+| Last updated | 2026-10-02 12:51 UTC |
 
 ```
-pass 250 · fail 108 · null 267
-fixed 35/108 · deferred 36 · open 37 · needs-human 7
+pass 250 · fail 110 · null 267
+fixed 35/110 · deferred 36 · open 39 · needs-human 7
 ```
 
-> ▸ **37 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **39 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -740,5 +740,7 @@ untouched list is one nobody reads by milestone three.
 | 140 | 623 | `checklist-selling-seller-orders-seller-auction-forfeit-notification` | When a winning bidder fails to pay by the deadline, the SELLER also receives a notificatio | selling/seller-orders--seller | seller | ⬜ null | NULL — the event it depends on cannot be staged in a session. The case needs a winning bidder to MISS a payment deadline, after which the seller should be notified that the win was forfeited and the item is unsold. That transition is mad… | [shot](../tester/.tester-runs/run-3/shots/seller-order-shipped-tracking-not-shown.png) | — | — | no | — |
 | 141 | 624 | `checklist-selling-seller-orders-request-reupload` | Requesting a proof re-upload (honest-mistake tier) clears the proof and extends the buyer' | selling/seller-orders--admin | admin | ⬜ null | WHAT I ESTABLISHED, AND WHY BOTH CASES STOP AT THE SAME PLACE. ✅ STEP 2 PASSES ON BOTH — the seller has no such control. I verified that in the sibling seller batch, first-hand: on both a 'Awaiting payment' order and a 'Verified' one, th… | [shot](../tester/.tester-runs/run-3/shots/admin-payment-proof-404-no-review-controls.png) | — | — | no | — |
 | 141 | 625 | `checklist-selling-seller-orders-reject-fraud` | Rejecting a proof as fraudulent cancels the order, restores stock, and bans the buyer's ac | selling/seller-orders--admin | admin | ⬜ null | WHAT I ESTABLISHED, AND WHY BOTH CASES STOP AT THE SAME PLACE. ✅ STEP 2 PASSES ON BOTH — the seller has no such control. I verified that in the sibling seller batch, first-hand: on both a 'Awaiting payment' order and a 'Verified' one, th… | [shot](../tester/.tester-runs/run-3/shots/admin-payment-proof-404-no-review-controls.png) | — | — | no | — |
+| 142 | 626 | `checklist-selling-seller-orders-tracking-visible` | Buyer sees updated tracking status after seller ships | selling/seller-orders | main | ❌ fail | NO on 'both sides', YES on everything the buyer sees — and the split REFRAMES the defect I filed in the sibling seller batch, which is the most useful thing here. ✅ THE BUYER SEES IT ALL. /user/orders/view/order-1-20261001-mk6qv6 renders… | [shot](../tester/.tester-runs/run-3/shots/buyer-tracking-real-dates.png) | — | — | no | — |
+| 142 | 627 | `checklist-selling-seller-orders-seller-new-order-notification-reaches-seller` | A seller is actually told when an order lands — in-app AND by email — without having to si | selling/seller-orders | main | ❌ fail | NO — the notification arrives, reads well, and is a dead end. Two of the three clauses pass and the third fails outright. ✅ THE BELL SHOWS AN UNREAD COUNT: aria-label 'Notifications, 32 unread', with the badge rendering 32. ✅ THE NEWEST … | [shot](../tester/.tester-runs/run-3/shots/notification-rows-not-clickable.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
