@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **145 / 255** |
-| Cases | **642 / 1847** (35%) |
+| Batches | **146 / 255** |
+| Cases | **644 / 1847** (35%) |
 | Cycle | 30 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 13:09 UTC |
+| Last updated | 2026-10-02 13:20 UTC |
 
 ```
-pass 252 · fail 112 · null 278
-fixed 35/112 · deferred 36 · open 41 · needs-human 7
+pass 252 · fail 114 · null 278
+fixed 35/114 · deferred 36 · open 43 · needs-human 7
 ```
 
-> ▸ **41 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **43 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -757,5 +757,7 @@ untouched list is one nobody reads by milestone three.
 | 145 | 640 | `checklist-public-pages-auth-error-pages-verify-email-page` | The verify-email page correctly confirms a pending verification | public-pages/auth-error-pages--guest | guest | ⬜ null | NULL — needs the verification link out of an inbox the harness cannot read. ✅ THE SEND HALF IS CONFIRMED, and better than the case asks: registering qa-register-1@mailnull.com in this same batch fired accounts:sendOobCode → 200 against F… | [shot](../tester/.tester-runs/run-3/shots/register-mismatch-refused.png) | — | — | no | — |
 | 145 | 641 | `checklist-public-pages-auth-error-pages-oauth-loading-redirect` | The OAuth-loading redirect page transitions correctly after a Google sign-in | public-pages/auth-error-pages--guest | guest | ⬜ null | NULL — requires an interactive Google account, which is the one channel this harness definitively has not got. The case asks me to complete a Google sign-in and then watch the OAuth-loading page transition. That needs a real Google crede… | [shot](../tester/.tester-runs/run-3/shots/register-mismatch-refused.png) | — | — | no | — |
 | 145 | 642 | `checklist-public-pages-auth-error-pages-auth-close-terminates-popup` | The OAuth popup-close page closes its own window and hands the result back to the page tha | public-pages/auth-error-pages--guest | guest | ⬜ null | NULL — same channel, and structurally harder. This case is about a popup window closing itself and handing its result back to the opener via postMessage. Reaching it requires a completed Google OAuth round trip to have opened that popup … | [shot](../tester/.tester-runs/run-3/shots/register-mismatch-refused.png) | — | — | no | — |
+| 146 | 643 | `checklist-public-pages-auth-error-pages-checkout-success-page` | The checkout-success page shows correct order details after payment | public-pages/auth-error-pages | main | ❌ fail | NO — and it fails on the clause the case cares most about. I drove the whole purchase rather than simulating it, so every number below is from a real order. ✅ THE PURCHASE ITSELF WORKS, end to end, in the UI. Added 'Beyblade Burst B-01 V… | [shot](../tester/.tester-runs/run-3/shots/checkout-success-placeholder.png) | — | — | no | — |
+| 146 | 644 | `checklist-public-pages-auth-error-pages-unauthorized-404-pages` | Unauthorized and 404 error pages render correctly instead of crashing | public-pages/auth-error-pages | main | ❌ fail | NO — but on the weakest of its clauses, and I want the nuance unmissable because a flat 'fail' here would send someone chasing the wrong thing. ✅ THE UNAUTHORIZED PAGE PASSES EVERYTHING. As the signed-in buyer, /admin/site redirected to … | [shot](../tester/.tester-runs/run-3/shots/404-no-site-chrome.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
