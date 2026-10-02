@@ -145,3 +145,32 @@ reading a differently-shaped payload is NOT yet established. Do not assume.
 Next: instrument what the client actually requests on hydration (network panel),
 rather than reading the source a fifth time — four reads have now all said the
 code is correct while the page says otherwise.
+
+### ✅ ROOT CAUSE FOUND — /categories (network capture, not source reading)
+
+The hydration refetch is:
+
+    GET /api/categories?flat=true
+
+**No `sort` parameter.** `DEFAULT_SORT = sortBy(TIER,"ASC")`
+(CategoriesIndexListing.tsx:102) is declared and never reaches the wire, so the
+API applies its own name-ASC default and that payload replaces the CORRECT
+tier-ordered SSR render. This is Root Cause #30's family: the SSR default and
+the client default must be computed from one place, and here the client default
+exists as a constant that nothing sends.
+
+Four separate source reads all said the code was correct. One network capture
+settled it in a single call. **For a "code looks right, page is wrong" defect,
+capture the request before reading the source again.**
+
+The same trace confirms defect 2 is live and PUBLIC — the rendered list issues
+prefetches for `/categories/brand-beyblade` and
+`/categories/bundle-burst-battlers-pack`, i.e. a brand row and a bundle row are
+being shown to visitors as listing categories.
+
+### The fix (appkit — needs publish, poll, repin, deploy)
+
+`CategoriesIndexListing.tsx` must send the sort on the query it builds, and the
+listing must scope `categoryType`. Verify by re-running the network capture:
+request 70 must carry `sort=tier%3AASC`, and no `brand-` or `bundle-` prefixed
+id may appear in the rendered list.
