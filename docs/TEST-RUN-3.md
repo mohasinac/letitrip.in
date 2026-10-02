@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **143 / 255** |
-| Cases | **636 / 1847** (34%) |
+| Batches | **144 / 255** |
+| Cases | **637 / 1847** (34%) |
 | Cycle | 29 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 12:57 UTC |
+| Last updated | 2026-10-02 13:00 UTC |
 
 ```
-pass 251 · fail 112 · null 273
+pass 251 · fail 112 · null 274
 fixed 35/112 · deferred 36 · open 41 · needs-human 7
 ```
 
@@ -751,5 +751,6 @@ untouched list is one nobody reads by milestone three.
 | 143 | 634 | `checklist-content-discovery-notifications-notification-email-actually-arrives` | With email enabled for a notification type, the email really lands in your inbox — and com | content-discovery/notifications | main | ⬜ null | NULL — unmeasurable for this identity. The case needs an email to land in the buyer's inbox AND to be checked for the site's configured sender name and address. ⚠️ WHY THE EMAIL HALF IS UNVERIFIABLE FOR THIS IDENTITY, stated once: the bu… | [shot](../tester/.tester-runs/run-3/shots/notifications-filter-drawer.png) | — | — | no | — |
 | 143 | 635 | `checklist-content-discovery-notifications-notification-email-opt-out-respected` | Turning email OFF for a notification type stops the emails but still shows the in-app noti | content-discovery/notifications | main | ⬜ null | NULL — unmeasurable for this identity, and it is the harder of the two email cases because it asserts an ABSENCE (emailsReceived: 0). ⚠️ WHY THE EMAIL HALF IS UNVERIFIABLE FOR THIS IDENTITY, stated once: the buyer is rehan.sheikh@gmail.c… | [shot](../tester/.tester-runs/run-3/shots/notifications-filter-drawer.png) | — | — | no | — |
 | 143 | 636 | `checklist-content-discovery-notifications-notification-ineligible-types-bell-only` | Being outbid fills the notification bell and sends NO email | content-discovery/notifications | main | ⬜ null | NULL on the email half, with the in-app half confirmed. ✅ BEING OUTBID DOES FILL THE BELL: the buyer holds a bid_outbid notification, and separately I watched the mechanism work in the bidding batches — placing a higher bid flipped all t… | [shot](../tester/.tester-runs/run-3/shots/notifications-filter-drawer.png) | — | — | no | — |
+| 144 | 637 | `checklist-content-discovery-notifications-notification-losing-bidder-no-email` | When an auction settles, every losing bidder gets a bell entry and zero emails — but the W | content-discovery/notifications--admin | admin | ⬜ null | NULL — the settlement cannot be staged, but chasing this case turned up something more useful than the verdict would have been: ONE OF THE TWO EMAIL INSTRUMENTS DOES NOT WORK IN PRODUCTION, which is why every email clause in this run is … | [shot](../tester/.tester-runs/run-3/shots/notification-rows-not-clickable.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
