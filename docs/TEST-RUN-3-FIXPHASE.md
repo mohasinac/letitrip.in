@@ -192,3 +192,25 @@ Write the script to a file with a quoted heredoc and run it:
 
 The quoted delimiter is what disables substitution. Then READ BACK the edited
 region — a mangled doc edit that reports success is worse than a failed one.
+
+### 🛑 Some cases are NOT automatable, and that is a finding (2026-10-03)
+
+Two pending-deploy entries cannot be re-driven by this harness at all:
+`buyer-addresses-edit-address-persists` and `buyer-addresses-set-default-address`.
+Both require MODIFYING a saved address, and `addresses` is PRESERVE tier.
+
+The tempting workaround — create a throwaway address, edit that — is wrong
+twice over. It still writes to a PRESERVE collection on a real buyer, and the
+QA-pollution sweep this same session proved nothing cleans it up: 7 leaked
+rows across `categories`, `supportTickets` and `products`, one of them a
+PUBLISHED listing in the public catalogue. An orphaned address on a real
+account is precisely the residue the rule exists to prevent.
+
+**These need `requiresHumanChannel: true` on the cases**, or a disposable
+account the harness is explicitly permitted to mutate. Until one of those
+exists, the honest verdict is abstention — the fix is shipped in 4.42.11 and
+unverified, which is a different and more useful statement than 'passed'.
+
+General rule for the remaining queue: before re-driving, ask which tier the
+case writes to. SEED_OWNED and CASCADE are fair game; PRESERVE is not, and no
+amount of care makes it so.
