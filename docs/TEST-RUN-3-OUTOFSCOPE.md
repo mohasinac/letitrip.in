@@ -3174,3 +3174,32 @@ scan roots are "11 public dirs" and the typeahead component is not among them.
 next instance is equally invisible. Same lesson as Root Cause #84: a measurement
 narrower than the rule it feeds, and a rule that goes quiet is as likely to have
 stopped looking as to have been satisfied.
+
+### Milestone 175 is self-completing — check before re-running anything
+
+Two background tasks are chained so the milestone finishes without another
+session:
+
+1. `node scripts/deploy.mjs` → writes `DEPLOY_EXIT=<code>` to
+   `<scratchpad>/deploy175.log`
+2. a waiter that polls for that marker and then, **only if the code is 0**,
+   runs `node scripts/finish-milestone-175.mjs --skip-deploy` — which re-reads
+   production health independently and writes `lastDeployAtRecorded=175`.
+   Result lands in `<scratchpad>/finish175.log`.
+
+**On a non-zero deploy it sets nothing** and copies the last 40 log lines into
+`finish175.log`. Production stays on the previous build, which is the safe
+state.
+
+**So before touching the milestone again, read `finish175.log`.** If
+`lastDeployAtRecorded` is already 175 the hook prompt will have stopped and
+there is nothing to do. If the deploy failed, fix the cause and run
+`node scripts/finish-milestone-175.mjs` (without `--skip-deploy`).
+
+🛑 Do NOT re-run `scripts/test-run-milestone.mjs` to "finish the job" — it
+would redo the firebase steps (already done and verified) and, unless given
+`--skip-appkit`, publish an appkit patch with no source change behind it.
+
+**Still outstanding regardless:** the FIX phase. 123 queued defects,
+`lastFixAtRecorded` is 153. That gate is separate from the deploy gate and this
+script does not touch it.
