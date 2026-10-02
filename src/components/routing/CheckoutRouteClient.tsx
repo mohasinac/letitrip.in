@@ -631,9 +631,16 @@ function renderPaymentStep({
             * I pressed "Cash on Delivery" and the order was placed —
             * POST /api/checkout -> 200, a real order, no validation message
             * anywhere. The box was never disabled and carried no aria-disabled.
-            * Only the UPI/Cash button checked `!manualPaymentConsent`; COD and
-            * EMI did not, and both are manual methods
-            * (MANUAL_PAYMENT_METHODS = cash | upi_manual | emi).
+            * Only the UPI/Cash button checked `!manualPaymentConsent`. EMI did
+            * not, and EMI *is* one (MANUAL_PAYMENT_METHODS = cash | upi_manual
+            * | emi), so that was a real gap and is now closed.
+            *
+            * 🛑 I FIRST GATED COD TOO, AND THAT WAS WRONG — see the long note on
+            * the COD button below. COD is not a manual-payment method by
+            * design, so the measurement that started this ("I pressed Cash on
+            * Delivery with the box unticked and the order was placed") was
+            * correct behaviour, not the defect I took it for. The defect was
+            * EMI alone.
             *
             * That matters because everything the box attests to is adverse to the
             * buyer and is disclosed directly above it: a short payment window,
@@ -653,7 +660,7 @@ function renderPaymentStep({
             * is an online gateway with no manual step, the second is a
             * testing escape hatch that already logs its actor and reason.
             */}
-          {(showCashOption || showCod || emiVisible) && (
+          {(showCashOption || emiVisible) && (
             <Stack gap="sm">
               <Div border="default" padding="md" rounded="lg" surface="subtle">
                 <Text weight="semibold" size="sm" className="mb-2">
@@ -762,9 +769,29 @@ function renderPaymentStep({
               <Button
                 type="button"
                 onClick={handlePlaceCodOrder}
-                // Manual method — consent required, same as UPI/Cash. See the
-                // hoisted guide block above for why this was missing.
-                disabled={isProcessingPayment || cartIsEmpty || !manualPaymentConsent}
+                /*
+                 * 🛑 COD IS DELIBERATELY *NOT* GATED ON `manualPaymentConsent`,
+                 * AND I BRIEFLY GATED IT BY MISTAKE.
+                 *
+                 * MANUAL_PAYMENT_METHODS is ["cash","upi_manual","emi"] and its
+                 * docstring says why: those are the methods that "settle
+                 * out-of-band and therefore require a buyer-uploaded proof + a
+                 * human review pass". COD settles at the door, so
+                 * isManualPaymentMethod("cod") is false by design.
+                 *
+                 * The consent box above attests to that proof flow specifically —
+                 * "we'll show a UPI ID", "15 minutes to pay and upload your
+                 * UTR + a screenshot", "the seller manually confirms". Asking a
+                 * COD buyer to acknowledge a flow they will not use is not a
+                 * stricter gate, it is a misleading one, and it would block COD
+                 * behind an irrelevant checkbox.
+                 *
+                 * COD's own terms — the handling fee, the deposit payable now,
+                 * the balance on delivery — are disclosed on its own button
+                 * block. If they should carry an acknowledgement it needs to be
+                 * its own control with its own words.
+                 */
+                disabled={isProcessingPayment || cartIsEmpty}
                 className="w-full border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] dark:bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-bg)] dark:hover:bg-[var(--appkit-color-surface-elevated)]"
               >
                 <Row gap="xs" align="center" justify="center">
