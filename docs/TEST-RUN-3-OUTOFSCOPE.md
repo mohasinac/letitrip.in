@@ -3113,3 +3113,42 @@ listed in the batch-175 turn. Four are PII or guest-gate exposures
 (payout VPA shown in full, typeahead prices to signed-out visitors, the
 store-settings leak, the proof panel), and two are "the control updates and
 nothing happens" (the dropped sort, the dead price facet).
+
+## Milestone 175 — in-progress state (read this before re-running it)
+
+`scripts/test-run-milestone.mjs` was run with **`--skip-appkit`**, deliberately.
+Do the same on any re-run until appkit source actually changes.
+
+**Why skip appkit.** The script decides via `gitChanged("appkit", lastMilestoneSha)`
+and the submodule pointer HAS moved since `56a050f3f` — so it would bump and
+publish. But measured before running: `appkit/package.json` = **4.42.10**,
+`npm view` latest = **4.42.10**, consumer pin = `^4.42.10`, lockfile resolves
+from the registry, `tsconfig` has **0** `appkit/src` references, appkit tree
+clean. That pointer move was already published outside a milestone, so a bump
+would ship 4.42.11 identical in source to 4.42.10 — exactly the "appkit patch
+with no source change behind it" the Stop hook warns about.
+
+**Completed, verified:**
+- `npm run check` green (ran twice — once in the milestone, once in deploy pre-flight)
+- firebase generate + **indexes deployed and settled** (`CREATING=0, READY=28864`)
+- **rules deployed** — firestore, storage and RTDB all released, 3 artifacts recorded
+- functions correctly skipped (unchanged since the sha, and `--skip-appkit`
+  means the inlining bundle needs no rebuild)
+- production healthy throughout the interruption
+
+**Not yet done:** the Vercel deploy. The first milestone invocation hit the
+10-minute tool ceiling — most likely inside `wait-for-indexes.mjs`, which polls
+every 15s with **no timeout by design**. Nothing was left half-applied: the
+dangerous states (bumped-but-unpublished, relinked lockfile, `appkit/src`
+re-included) are all absent because the appkit branch never ran.
+
+**To finish:** `node scripts/deploy.mjs` alone — it carries its own pre-flight
+and the post-deploy smoke test of `/`, `/en/products` and `/api/site-settings`.
+Run it in the background; it exceeds the foreground ceiling.
+
+🛑 **`lastDeployAtRecorded` is deliberately NOT set to 175 yet.** That marker
+releases the hook's milestone gate, and setting it on an unverified deploy
+would release it on a false premise. Set it only once deploy.mjs reports a
+clean smoke test. Note also that the previous milestone was at batch **150**
+(`lastMilestoneBatches: 150`), not 153 — 153 is `lastFixAtRecorded`, a
+different marker, and I conflated the two once.
