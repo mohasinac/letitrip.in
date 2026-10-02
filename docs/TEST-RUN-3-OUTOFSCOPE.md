@@ -2370,3 +2370,59 @@ So the "+N more" suffix on a My Orders row — asserted by
 `checklist-buying-my-orders-orders-item-summary` — cannot be exercised. Maximum
 observed is 3 items, and both 3-item orders list all three titles in full, which
 is correct behaviour. A 4+ item order fixture would make the assertion testable.
+
+## ✅ Confirmed working: the order-confirmation email
+
+Recorded as a positive because it is the first end-to-end proof in this run that
+the notification-email chain reaches a real inbox after the 2026-09
+`EMAIL_ELIGIBLE_TYPES` gating.
+
+Registered a fresh account on the harness mailbox with a run-stamped
+plus-address, captured a timestamp **before** acting, placed a manual-payment
+order, then asked the mailbox:
+
+```
+subject: "Order Confirmed — order-1-20261002-od3ign"
+from:    noreply@letitrip.in
+to:      replysitelir+run3b@gmail.com
+```
+
+The subject carries the exact order id and it went to the plus-address, so it is
+unambiguously that order's mail rather than a leftover.
+
+**Gap in the tooling, not the product**: `check-inbox.mjs` reports
+subject/from/to/date only. The From **display name** (the case asks for exactly
+"LetItRip"), the templated body, and clicking a link inside the email are all
+unverifiable without a `--show-body` option. Worth adding — three checklist
+assertions hang on it.
+
+## `/store/orders` rows show the buyer's email but no order id
+
+The seller's order list renders rows as
+`🧾 <product> / <buyer email> / <status> / <relative time>` — e.g.
+"🧾 Beyblade Burst B-01 Valkyrie / replysitelir+run3b@gmail.com / pending / 1m
+ago". There is **no order id anywhere on the row**, and `?q=od3ign` (a real
+substring of the order's id) returns "No orders yet".
+
+So a seller cannot find an order by the id a buyer quotes them, which is the
+first thing any support conversation starts with. It is the mirror of Root Cause
+#52 on the seller side: the buyer's list de-emphasises the id but shows it, and
+the seller's list omits it entirely.
+
+Noted alongside, not as a defect: the rows display the buyer's raw email, which
+a seller legitimately needs — but it means the list surface carries PII, so it
+should never gain a share/export affordance without masking.
+
+## The manual-payment page is fully alive — the earlier abstention was a fixture gap
+
+Placing a UPI/Cash order lands on `/user/orders/{id}/payment`, which renders
+"Complete Payment / Order #order-1-20261002-od3ign / **Time remaining: 14:36**",
+a real UPI target (`mohsin0502@okicici`), a "Share this order for faster review
+on WhatsApp" link, Step 1 transfer instructions, Step 2 screenshot upload with
+**Upload File / Use Camera**, optional UTR and payer-UPI fields, and two
+confirmation checkboxes before Submit Proof.
+
+This closes the question left open by `buying/my-orders--p1`: those four
+manual-payment cases are passable, and the only thing missing is a **pending**
+fixture — the seeded cash orders have all been consumed by the 2-hour
+auto-approve sweep, which a static fixture can never survive.
