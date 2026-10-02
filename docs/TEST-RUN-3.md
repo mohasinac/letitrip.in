@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **132 / 255** |
-| Cases | **567 / 1847** (31%) |
+| Batches | **133 / 255** |
+| Cases | **571 / 1847** (31%) |
 | Cycle | 27 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 11:11 UTC |
+| Last updated | 2026-10-02 11:30 UTC |
 
 ```
-pass 225 · fail 96 · null 246
-fixed 35/96 · deferred 36 · open 25 · needs-human 7
+pass 226 · fail 99 · null 246
+fixed 35/99 · deferred 36 · open 28 · needs-human 7
 ```
 
-> ▸ **25 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **28 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -682,5 +682,9 @@ untouched list is one nobody reads by milestone three.
 | 131 | 565 | `checklist-public-pages-legal-policy-pages-code-of-conduct-loads` | The Code of Conduct page loads and covers listing honestly, bidding in good faith, review  | public-pages/legal-policy-pages--guest | guest | ✅ pass | Guest confirmed visually and programmatically throughout: the header renders Sign in / Register (visible in the cited screenshot) and no 'Log out' appears anywhere; the session file copied over was the empty one. YES on all four topics a… | [shot](../tester/.tester-runs/run-3/shots/ethics-live-items-four-commitments.png) | — | — | no | — |
 | 131 | 566 | `checklist-public-pages-legal-policy-pages-policy-related-links-exclude-self` | On EVERY policy page, the "Related Policies" footer lists the other five policies and neve | public-pages/legal-policy-pages--guest | guest | ✅ pass | Guest confirmed visually and programmatically throughout: the header renders Sign in / Register (visible in the cited screenshot) and no 'Log out' appears anywhere; the session file copied over was the empty one. YES — all six pages, eac… | [shot](../tester/.tester-runs/run-3/shots/ethics-live-items-four-commitments.png) | — | — | no | — |
 | 132 | 567 | `checklist-public-pages-legal-policy-pages-policy-admin-html-override` | As an admin: pasting HTML into Site Settings → Legal → "Our Ethics" and saving replaces th | public-pages/legal-policy-pages--admin | admin | ⬜ null | NULL — I got as far as step 3 and stopped deliberately at step 5, because the only way to press Save is to write the WHOLE siteSettings singleton, and that write has a side effect this case does not describe and its own restore step cann… | [shot](../tester/.tester-runs/run-3/shots/admin-site-legal-expanded-7-textareas.png) | — | — | no | — |
+| 133 | 568 | `checklist-selling-seller-bids-bundles-filters-seller-bids-status-filter` | The status filter on the seller Bids page actually narrows the list | selling/seller-bids-bundles-filters | seller | ❌ fail | 🛑 THE ROOT CAUSE, since all three bids cases share it. The page says 'No bids found for your auctions.' while Firestore holds 40 bids, 37 of them on 7 of this store's own auctions. /api/store/bids returns 200 with auctions:9 (resolved c… | [shot](../tester/.tester-runs/run-3/shots/seller-bids-raw-firestore-error.png) | — | — | no | — |
+| 133 | 569 | `checklist-selling-seller-bids-bundles-filters-seller-bids-sort-dropdown` | Changing the Sort dropdown on the seller Bids page reorders the rows | selling/seller-bids-bundles-filters | seller | ❌ fail | NO. One clause passes outright and the rest cannot be satisfied, for two separate reasons. ✅ THE DEFAULT IS VALID — step 5's check. The dropdown opens on 'Newest' and its value is `-bidDate`, which is one of the four options offered: -bi… | [shot](../tester/.tester-runs/run-3/shots/seller-bids-raw-firestore-error.png) | — | — | no | — |
+| 133 | 570 | `checklist-selling-seller-bids-bundles-filters-seller-bids-bidder-search` | Typing a bidder's name into the search box on the seller Bids page and pressing Enter narr | selling/seller-bids-bundles-filters | seller | ❌ fail | NO — and this is the most serious thing in the batch, because the page shows the seller a raw Firestore error. 🛑 TYPING A REAL BIDDER NAME RENDERS A SERVER ERROR IN THE PAGE BODY. I typed 'Mock User 14' and pressed Enter; the URL became… | [shot](../tester/.tester-runs/run-3/shots/seller-bids-raw-firestore-error.png) | — | — | no | — |
+| 133 | 571 | `checklist-selling-seller-bids-bundles-filters-seller-bundles-active-filter` | The Active / Inactive and "Sold out" chips on the seller Bundles page actually narrow the  | selling/seller-bids-bundles-filters | seller | ✅ pass | YES — partitionSumsToTotal true, members populated, both fixtures cleaned up. Four corrections to the case, and one of them is a correction to ME. 🛑 I FIRST CONCLUDED THERE WAS NO FILTER AT ALL, and that would have been a false severe f… | [shot](../tester/.tester-runs/run-3/shots/seller-bundles-inactive-filter-narrows.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
