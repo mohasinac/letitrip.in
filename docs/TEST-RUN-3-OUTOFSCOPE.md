@@ -3203,3 +3203,45 @@ would redo the firebase steps (already done and verified) and, unless given
 **Still outstanding regardless:** the FIX phase. 123 queued defects,
 `lastFixAtRecorded` is 153. That gate is separate from the deploy gate and this
 script does not touch it.
+
+## Precondition map for buying/buying-coupons--p1 (batch 178, not yet run)
+
+12 buyer cases, all coupon stacking. **Not claimed** — it needs a full context
+window, and the analysis below is cheaper to read than to rediscover.
+
+**Classify these by COUPON CODE, not by phrasing.** A keyword sweep for "two
+stores" / "second store" / "cross-store" over the steps finds NOTHING, because
+the cases express the requirement through which codes they use. Per CLAUDE.md
+§ Coupon Scoping, `ARENA25` belongs to `store-beyblade-arena`, `OFFICIAL10` to
+`store-letitrip-official`, and every other seller coupon to beyblade-arena;
+`FREESHIP499` / `BLADER50` are admin-scope (global).
+
+So any case using **both ARENA25 and OFFICIAL10 needs a cart spanning two
+sellers** — which the run has already established is impossible, and filed as
+a FIXTURE GAP: a cart cannot hold two stores, and the picker stands itself down
+on a cross-store group while the server rejects it again.
+
+| case | codes | blocked? |
+|---|---|---|
+| coupon-stack-two-stores-plus-global | ARENA25 + OFFICIAL10 + FREESHIP499 | **YES — two stores** |
+| coupon-store-scope-limited-to-its-own-items | ARENA25 | likely — needs a non-ARENA item in cart to prove the limit |
+| coupon-stack-second-store-coupon-rejected | ARENA25 + SEALED20 | no — both are beyblade-arena, so this tests one-per-store |
+| coupon-stack-second-global-rejected | FREESHIP499 + BLADER50 | no — both admin-scope |
+| coupon-stack-duplicate-code-rejected | ARENA25 twice | no |
+| coupon-min-purchase-uses-eligible-subtotal | ARENA25 | no |
+| coupon-category-restriction-{rejects,accepts} | SEALED20 | no |
+| coupon-remove-one-of-many | ARENA25 + FREESHIP499 | no — one store + one global stacks fine |
+| coupon-help-visible-{cart,checkout} | ARENAVIP | no — read-only |
+| coupon-summary-total-matches-sum | ARENA25 + FREESHIP499 | no |
+
+**So ~10 of 12 are runnable today.** Start with the two read-only help cases
+and `coupon-summary-total-matches-sum` (the arithmetic one — the run has
+already found a cart line showing `copies × member sum`, so a total that does
+not reconcile is live territory). Leave the two-store case as a blocked null
+citing the existing fixture gap rather than rediscovering it.
+
+🛑 Relevant earlier finding to re-verify first (Rule #4): a live, applicable
+coupon was found unusable in an earlier batch, and it blocked its sibling
+remove-coupon case. If that is still true, `coupon-remove-one-of-many` and
+`coupon-summary-total-matches-sum` inherit the block — check one `ARENA25`
+apply before planning the rest.
