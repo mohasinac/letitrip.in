@@ -905,9 +905,11 @@ const milestone = deployDue
     `     Without it the gate re-fires every turn, and obeying a stale one publishes\n` +
     `     an appkit patch with no source change behind it.\n\n`
   : cycleDue
-    ? `  ▸ CYCLE COMPLETE — ${doneCount} batches. Append the rows to ${CHECKLIST_DOC},\n` +
-      `    then: node ${STATUS_SCRIPT}\n` +
-      `    Never type a count into the document; the block is rewritten from disk.\n\n`
+    ? `  ▸ CYCLE COMPLETE — ${doneCount} batches. Do NOT hand-write rows into\n` +
+      `    ${CHECKLIST_DOC} — this hook already regenerated its table from the\n` +
+      `    verdict files. To refresh it yourself: node scripts/test-run-table.mjs\n` +
+      `    (idempotent; --check exits 1 when the document is stale).\n` +
+      `    Neither a row nor a count is ever typed; both come from disk.\n\n`
     : "";
 
 /*

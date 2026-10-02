@@ -197,16 +197,28 @@ products. A retraction is a **new row** marked `retracted`, never a silent edit.
 
 ### Every 5 batches
 
-Append the rows to `docs/TEST-RUN-3.md`, then:
-
 ```bash
-node scripts/test-run-status.mjs
+node scripts/test-run-table.mjs    # the ROWS, regenerated from the verdict files
+node scripts/test-run-status.mjs   # the COUNTER block, same source
 ```
 
-**Never type a count into the document.** The counter block is rewritten from the
-verdict files. A hand-kept tally once reported 17 failures where the files held
-15 — it had been counting calibration controls, and nothing could catch it,
-because the only other copy of the number was the prose.
+**Never type a row or a count into the document.** Both are generated, and the
+`reason` column comes from each verdict's own `comment`, so writing a row by
+hand adds nothing the verdict file did not already carry.
+
+🛑 **Do not append rows by hand — it does not merge, it duplicates.**
+`test-run-table.mjs` REPLACES everything between the `TEST-RUN-3-TABLE` markers,
+so a hand-appended row lands *outside* them, survives every regeneration, and
+becomes a permanent second copy of a case with a different case number. That is
+not hypothetical: batches 155–167 were hand-appended against this script's
+output and left **122 orphan rows** — 26 of them for batch 167 alone, where the
+generated row and the typed row disagreed on the case number and the group key.
+Removing them was a `--check`-verified deletion, not a judgement call.
+
+The same rule for the same reason as the counter: a hand-kept tally once
+reported 17 failures where the files held 15 — it had been counting calibration
+controls, and nothing could catch it, because the only other copy of the number
+was the prose.
 
 ### Every 25 batches
 
