@@ -2810,3 +2810,41 @@ Two reasons it is worth a look later rather than now:
 
 Not reproduced on any other admin page during this run; the console was clean on
 `/admin/products`, `/admin/orders` and `/admin/users` in batch 128.
+
+---
+
+## A signed-out visitor fires `/api/notifications` twice on every page, for a 401
+
+Observed on **eight consecutive guest page loads** during batch 131
+(`/refund-policy`, `/shipping-policy`, `/privacy`, `/cookies`, `/security`,
+`/ethics`, `/code-of-conduct`, `/terms`, `/about`) — the console was exactly two
+errors on each, always the same pair:
+
+```
+[2278ms] Failed to load resource: 401 @ /api/notifications?limit=1
+[2773ms] Failed to load resource: 401 @ /api/notifications?limit=1
+```
+
+Nothing is broken for the visitor: the header's bell simply has no count, which
+is correct for a guest. Logged because of what it costs rather than what it
+breaks, and because it is two separate problems in one line.
+
+**1. It runs at all.** The notification hook mounts from `TitleBar`, i.e. on
+every page, and does not check whether there is a session first. Each call is a
+billed function invocation on the Hobby quota that Rule #6 exists to protect, and
+it is spent arriving at 401 — the one answer that could have been known without
+asking. On a public catalogue most traffic is signed out, so this is the common
+case, not the edge.
+
+**2. It runs TWICE, ~500ms apart.** Two identical requests for `limit=1` within
+half a second is a double-mount or an effect without its guard. Whatever the
+cause, it doubles the bill of a call that should not be happening.
+
+The adjacent fix already landed once: Root Cause #94 moved this same hook from a
+30-second poll to 5 minutes plus `refetchOnWindowFocus`, which addressed the
+*frequency* for signed-in users. The signed-out case was not part of that change
+and is cheaper still to fix — a session check before the query, and whatever is
+causing the duplicate.
+
+Not chased here: no case in this batch is about notifications, and the guest
+experience is correct. Worth a look when the notification hook is next opened.

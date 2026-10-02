@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **130 / 255** |
-| Cases | **560 / 1847** (30%) |
+| Batches | **131 / 255** |
+| Cases | **566 / 1847** (31%) |
 | Cycle | 27 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 10:56 UTC |
+| Last updated | 2026-10-02 11:03 UTC |
 
 ```
-pass 219 · fail 96 · null 245
+pass 225 · fail 96 · null 245
 fixed 35/96 · deferred 36 · open 25 · needs-human 7
 ```
 
@@ -675,5 +675,11 @@ untouched list is one nobody reads by milestone three.
 | 128 | 558 | `checklist-design-ux-dashboard-layout-collapsible-admin` | Admin dashboard sections expand/collapse and remember their state on reload | design-ux/dashboard-layout--admin | admin | ⬜ null | NOT DRIVEN. The sidebar collapse/expand and its persistence across navigation and reload need a sequence of clicks on the twelve group headings plus two reloads, and I spent this batch's budget on the six cases that could be settled by m… | [shot](../tester/.tester-runs/run-3/shots/admin-products-390-cards.png) | — | — | no | — |
 | 129 | 559 | `checklist-design-ux-dashboard-layout-collapsible-store` | Store dashboard sections expand/collapse and remember their state on reload | design-ux/dashboard-layout--seller | seller | ❌ fail | NO — the sections expand and collapse, but they do NOT remember their state on reload, which is the second half of the label. I proved that with a control rather than inferring it, and the same control proves the parity half PASSES, so t… | [shot](../tester/.tester-runs/run-3/shots/store-sidebar-autoopen-listings.png) | — | — | no | — |
 | 130 | 560 | `checklist-design-ux-dashboard-layout-collapsible-user` | User profile dashboard sections expand/collapse and remember their state on reload | design-ux/dashboard-layout | main | ❌ fail | NO on 'remember their state on reload', YES on the parity claim — and this is now the THIRD portal measured identically in a row, which turns a per-portal suspicion into one shared behaviour. SIGNED IN AS THE RIGHT PERSON: rehan.sheikh@g… | [shot](../tester/.tester-runs/run-3/shots/user-sidebar-four-groups-accordion.png) | — | — | no | — |
+| 131 | 561 | `checklist-public-pages-legal-policy-pages-shipping-refund-policy` | Shipping-policy and refund-policy pages load correctly | public-pages/legal-policy-pages--guest | guest | ✅ pass | Guest confirmed visually and programmatically throughout: the header renders Sign in / Register (visible in the cited screenshot) and no 'Log out' appears anywhere; the session file copied over was the empty one. YES — the two are plainl… | [shot](../tester/.tester-runs/run-3/shots/ethics-live-items-four-commitments.png) | — | — | no | — |
+| 131 | 562 | `checklist-public-pages-legal-policy-pages-refund-policy-not-raw-json` | The Refund Policy page shows readable policy text — NOT a wall of raw JSON starting with { | public-pages/legal-policy-pages--guest | guest | ✅ pass | Guest confirmed visually and programmatically throughout: the header renders Sign in / Register (visible in the cited screenshot) and no 'Log out' appears anywhere; the session file copied over was the empty one. YES — the body is Englis… | [shot](../tester/.tester-runs/run-3/shots/ethics-live-items-four-commitments.png) | — | — | no | — |
+| 131 | 563 | `checklist-public-pages-legal-policy-pages-privacy-cookies-security` | Privacy, cookies, and security pages load correctly | public-pages/legal-policy-pages--guest | guest | ✅ pass | Guest confirmed visually and programmatically throughout: the header renders Sign in / Register (visible in the cited screenshot) and no 'Log out' appears anywhere; the session file copied over was the empty one. YES — three pages, three… | [shot](../tester/.tester-runs/run-3/shots/ethics-live-items-four-commitments.png) | — | — | no | — |
+| 131 | 564 | `checklist-public-pages-legal-policy-pages-ethics-page-loads` | The Our Ethics page loads, and its live-animal section describes vendor verification, a la | public-pages/legal-policy-pages--guest | guest | ✅ pass | Guest confirmed visually and programmatically throughout: the header renders Sign in / Register (visible in the cited screenshot) and no 'Log out' appears anywhere; the session file copied over was the empty one. YES on all four commitme… | [shot](../tester/.tester-runs/run-3/shots/ethics-live-items-four-commitments.png) | — | — | no | — |
+| 131 | 565 | `checklist-public-pages-legal-policy-pages-code-of-conduct-loads` | The Code of Conduct page loads and covers listing honestly, bidding in good faith, review  | public-pages/legal-policy-pages--guest | guest | ✅ pass | Guest confirmed visually and programmatically throughout: the header renders Sign in / Register (visible in the cited screenshot) and no 'Log out' appears anywhere; the session file copied over was the empty one. YES on all four topics a… | [shot](../tester/.tester-runs/run-3/shots/ethics-live-items-four-commitments.png) | — | — | no | — |
+| 131 | 566 | `checklist-public-pages-legal-policy-pages-policy-related-links-exclude-self` | On EVERY policy page, the "Related Policies" footer lists the other five policies and neve | public-pages/legal-policy-pages--guest | guest | ✅ pass | Guest confirmed visually and programmatically throughout: the header renders Sign in / Register (visible in the cited screenshot) and no 'Log out' appears anywhere; the session file copied over was the empty one. YES — all six pages, eac… | [shot](../tester/.tester-runs/run-3/shots/ethics-live-items-four-commitments.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
