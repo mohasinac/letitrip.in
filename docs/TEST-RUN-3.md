@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **128 / 255** |
-| Cases | **558 / 1847** (30%) |
+| Batches | **129 / 255** |
+| Cases | **559 / 1847** (30%) |
 | Cycle | 26 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 10:44 UTC |
+| Last updated | 2026-10-02 10:52 UTC |
 
 ```
-pass 219 · fail 94 · null 245
-fixed 35/94 · deferred 36 · open 23 · needs-human 7
+pass 219 · fail 95 · null 245
+fixed 35/95 · deferred 36 · open 24 · needs-human 7
 ```
 
-> ▸ **23 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **24 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -673,5 +673,6 @@ untouched list is one nobody reads by milestone three.
 | 128 | 556 | `checklist-design-ux-dashboard-layout-list-card-row-actions` | Row-level action buttons (the same ones in the table's overflow menu — edit, approve, dele | design-ux/dashboard-layout--admin | admin | ⬜ null | NULL on the comparison, which is the case's actual assertion — I read the LIST menu but never opened the TABLE one, so I cannot say whether the two agree. WHAT I DID READ, on /admin/products in list view: the overflow menu offers Approve… | [shot](../tester/.tester-runs/run-3/shots/admin-products-390-cards.png) | — | — | no | — |
 | 128 | 557 | `checklist-design-ux-dashboard-layout-row-table-click-consistency` | For any given dashboard listing, table rows, grid cards, and list cards all agree on wheth | design-ux/dashboard-layout--admin | admin | ⬜ null | NULL on the comparison — the LIST half is verified and clickable, the TABLE half is not driven, and the case is specifically about the two agreeing. THE LIST CARD IS NOT INERT, which is the failure this case hunts. Clicking the row TITLE… | [shot](../tester/.tester-runs/run-3/shots/admin-products-390-cards.png) | — | — | no | — |
 | 128 | 558 | `checklist-design-ux-dashboard-layout-collapsible-admin` | Admin dashboard sections expand/collapse and remember their state on reload | design-ux/dashboard-layout--admin | admin | ⬜ null | NOT DRIVEN. The sidebar collapse/expand and its persistence across navigation and reload need a sequence of clicks on the twelve group headings plus two reloads, and I spent this batch's budget on the six cases that could be settled by m… | [shot](../tester/.tester-runs/run-3/shots/admin-products-390-cards.png) | — | — | no | — |
+| 129 | 559 | `checklist-design-ux-dashboard-layout-collapsible-store` | Store dashboard sections expand/collapse and remember their state on reload | design-ux/dashboard-layout--seller | seller | ❌ fail | NO — the sections expand and collapse, but they do NOT remember their state on reload, which is the second half of the label. I proved that with a control rather than inferring it, and the same control proves the parity half PASSES, so t… | [shot](../tester/.tester-runs/run-3/shots/store-sidebar-autoopen-listings.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->

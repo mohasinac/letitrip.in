@@ -2776,3 +2776,37 @@ specificity was obtainable without it.
 Worth a re-run **with the restore step honoured**, because "Coupon is not
 currently valid" is plausibly the expiry branch's own wording — in which case the
 case is right about the message and merely wrong about which coupons reach it.
+
+---
+
+## Hydration mismatch on `/admin/payouts` — React #418, noticed not hunted
+
+Found while driving batch 129 (`design-ux/dashboard-layout--seller`), which is a
+sidebar case and has nothing to do with payouts. Logged here per G4 rather than
+chased: no case found it, so it is not this run's work.
+
+```
+Error: Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]=
+    at rJ (chunks/0dig7ty8i30-k.js:31:45781)
+```
+
+`#418` is a **hydration mismatch** — the server HTML did not match the first
+client render — and `args[]=HTML` says the disagreement was a tag, not just text.
+React recovers by re-rendering the subtree client-side, which is why the page
+looks correct and the only trace is this console line.
+
+Two reasons it is worth a look later rather than now:
+
+1. **It is a silent correctness risk, not a cosmetic one.** A recovered
+   hydration mismatch throws away the server tree, so anything that depends on
+   first paint — a measured height published to a CSS variable, a `ResizeObserver`
+   reading an element that was replaced — can latch a stale value. The bottom-edge
+   tier (§ CSS Variable Reference) is exactly that shape.
+2. **A tag-level mismatch usually means a date, a currency or a locale-formatted
+   number rendered differently on the two sides**, and this page is wall-to-wall
+   both: five payout rows carrying `₹3,040.00`-style amounts and `17 Sept 2026`
+   dates. That is a guess about the cause and is labelled as one — I did not open
+   the component.
+
+Not reproduced on any other admin page during this run; the console was clean on
+`/admin/products`, `/admin/orders` and `/admin/users` in batch 128.
