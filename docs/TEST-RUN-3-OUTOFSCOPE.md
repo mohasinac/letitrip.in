@@ -1876,3 +1876,40 @@ UI shows it.
 FIX: install the custom error map on the submit-time parse (or route its issues through
 `toUserMessage`), and consider asserting the mapped text in a tester case rather than
 relying on a source-level audit.
+
+## FIX: a UI-created product slug has no `product-` prefix
+Found as a by-product of `selling/listing-a-product--seller` → `list-standard`
+(that case passes).
+
+Publishing through `/store/products/new` produced the slug
+**`qa-product-list-standard-2`** — public URL `/products/qa-product-list-standard-2`.
+
+Every seeded product carries the prefix: `/products/product-beyblade-burst-valkyrie`.
+CLAUDE.md's slug table lists products under "Pure slugs (`id === slug`)" with a
+`product-` prefix, and `generateProductId` exists for exactly that.
+
+This is the **same family as the `createEvent` defect** found in batch 98 and fixed at the
+batch-100 milestone: a record created through the UI not following the id convention the
+seeder does. There the symptom was a Firestore auto-id *and* an unsearchable event;
+here it is a missing prefix. Worth checking the other create paths (auction, pre-order,
+classified, digital-code, live, art, stickers) for the same gap — each has its own
+documented prefix.
+
+FIX: derive the slug through the id generator on the product create path, as the event
+repository now does.
+
+## Leftover QA records from earlier runs are polluting pickers
+Noticed while selecting a category in `list-standard`.
+
+The category picker's first page of 20 offers **"QA Category admin-crud RENAMED"**,
+**"QA Category inline-create"** and **"QA Brand inline-create"**; the brand picker offers
+**"QA Brand inline-create"**; and `/store/products` still holds
+**`qa-product-list-standard-1`** from a previous run.
+
+These are SEED_OWNED and a teardown clears them, but while a run is in progress they sit
+above real options in a 20-item first page — so a tester picking "the first category"
+picks test residue, and a seller using the live admin would see them too.
+
+FIX: nothing in the product. Worth a teardown between runs, and worth noting that cases
+which create named records should delete them (several in this catalogue do; the ones that
+don't are how this accumulated).
