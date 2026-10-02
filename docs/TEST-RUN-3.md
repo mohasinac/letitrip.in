@@ -33,15 +33,15 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **115 / 255** |
-| Cases | **506 / 1847** (27%) |
+| Batches | **116 / 255** |
+| Cases | **509 / 1847** (28%) |
 | Cycle | 24 of 51 |
 | Next deploy | batch 125 |
-| Last updated | 2026-10-02 06:42 UTC |
+| Last updated | 2026-10-02 06:57 UTC |
 
 ```
-pass 203 · fail 73 · null 230
-fixed 26/73 · deferred 37 · open 10 · needs-human 7
+pass 205 · fail 74 · null 230
+fixed 26/74 · deferred 38 · open 10 · needs-human 7
 ```
 
 > ▸ **10 failure(s) not yet fixed.** Fixes land in one phase at the
@@ -621,5 +621,8 @@ untouched list is one nobody reads by milestone three.
 | 114 | 504 | `checklist-selling-listing-a-product-store-rename-updates-cards` | Renaming your store updates the seller name on all your existing listing cards | selling/listing-a-product | main | ❌ fail | The rename cannot be saved, so nothing can propagate - blocked at step 2 by a PRODUCT defect, not by the harness, and I re-verified that defect rather than citing it. WHAT I DID: /store/storefront as the real Beyblade Arena owner (profil… | [shot](../tester/.tester-runs/run-3/shots/storefront-branding-blocks-rename.png) | RE-VERIFIED on production: the storefront branding validator blocks every storefront edit for any seller whose logo/banner came from the seed. Changed ONLY storeName to 'QA Store rename-updates-cards' and clicked Save Storefront: refused… | `schemas` | no | deferred-to-milestone |
 | 114 | 505 | `checklist-selling-listing-a-product-media-upload-video-both-sources-render` | A video attached by file upload AND a video attached via the YouTube tab both play on the  | selling/listing-a-product | main | ⬜ null | NOT DRIVEN. It edits a seeded product's video field through two different sources, saves twice, and restores - and I reached the end of what I could give this batch after re-verifying the storefront blocker above. Recording it as pending… | [shot](../tester/.tester-runs/run-3/shots/storefront-branding-blocks-rename.png) | — | — | no | — |
 | 115 | 506 | `checklist-addresses-unban-request-empty-note-says-why` | Submitting an empty unban request explains what is missing | addresses/unban-request | main | ❌ fail | NO, on the precondition, exactly as the case's own 🛑 instructs - and the reason is sharper than 'no banned address exists'. THERE IS A BAN ACTION, AND IT IS UNREACHABLE. STEP 1-2, THE QUEUE. /admin/banned-addresses as the real admin (pr… | [shot](../tester/.tester-runs/run-3/shots/banned-addresses-queue-empty-all-chips.png) | GET /api/admin/addresses/clusters returned 409 PRECONDITION_FAILED 'Failed to list addresses by ownerType=user' — a Firestore FAILED_PRECONDITION (code 9), i.e. a missing composite index. | `firestore.indexes.json` `firestore.indexes.json` `addresses.repository.ts` | no | pass |
+| 116 | 507 | `checklist-cta-layout-navbar-ctas-header-ctas-all-navigate` | Every control in the public header navigates somewhere real — none is inert | cta-layout/navbar-ctas--guest | guest | ✅ pass | YES - zero dead header controls, and I clicked every one rather than reading hrefs. IDENTITY VERIFIED FIRST: signed out. The header offers 'Sign in' and 'Register'; no account menu (scoped the check to the header's own account area, beca… | [shot](../tester/.tester-runs/run-3/shots/guest-header-ctas-all-live.png) | — | — | no | — |
+| 116 | 508 | `checklist-cta-layout-navbar-ctas-mobile-nav-opens-and-closes` | The mobile navigation opens, closes, and closes again after a link is followed | cta-layout/navbar-ctas--guest | guest | ✅ pass | YES on all three halves - it opens, it closes on its own control, and it closes itself after a link is followed, which is the half this case exists for. AT 390px (the case's literal input) the drawer opens from the header hamburger: a 31… | [shot](../tester/.tester-runs/run-3/shots/mobile-menu-open-state.png) | — | — | no | — |
+| 116 | 509 | `checklist-cta-layout-navbar-ctas-nav-active-state-correct` | The navigation marks the section the visitor is actually in | cta-layout/navbar-ctas--guest | guest | ❌ fail | NO - the marker is correct on every listing page and follows the back button, but it is ABSENT on the product detail page, which the case's expectedUiState names explicitly ('including the detail page'). WHAT I MEASURED, step by step: / … | [shot](../tester/.tester-runs/run-3/shots/nav-marker-absent-on-detail-page.png) | FIXED IN SOURCE, re-verification deferred to the batch-125 milestone because it is an appkit change and needs a publish+deploy to observe. ROOT CAUSE located exactly: NavbarLayout.tsx resolved its active item with 'activeHref === item.hr… | `NavbarLayout.tsx` | no | deferred-to-milestone |
 
 <!-- TEST-RUN-3-TABLE:END -->

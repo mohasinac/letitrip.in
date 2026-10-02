@@ -1988,3 +1988,47 @@ unexamined: `BottomNavbar`'s Home/Shop/Cart/Wishlist/Profile tabs use strict
 equality (lines 212, 233, 163, 292, 320), so e.g. `/user/profile/edit` would
 lose the Profile marker. Not driven by any case, so not claimed as a defect —
 listed so a sweep has a starting point.
+
+## Method note: `offsetParent !== null` cannot see a fixed overlay
+
+Recorded here because it nearly produced a severe false finding on a
+destructive control, and the same probe shape has been reused all run.
+
+`offsetParent` is **`null` by spec** for a `position: fixed` element. A
+visibility filter built on it therefore excludes *every* fixed overlay —
+modals, confirmation dialogs, toasts, drawers. On 2026-10-02 that made the
+cart's "Remove all" confirmation invisible to a 4.8s poll while the dialog was
+open the whole time, with the cart still showing 1 item: indistinguishable from
+"Remove all does nothing".
+
+What caught it was Playwright, not the probe — a retried click reported
+`<div role="dialog" aria-modal="true" aria-labelledby="appkit-action-confirm-title">
+intercepts pointer events`.
+
+Use instead:
+
+```js
+const vis = (e) => { const r = e.getBoundingClientRect(); const c = getComputedStyle(e);
+  return r.width > 0 && r.height > 0 && c.visibility !== "hidden" && c.display !== "none"; };
+```
+
+Two sibling traps from the same batch, both of which also inverted on measurement:
+a drawer that is `position: static` inside a positioned ancestor is invisible to
+a `z-index > 10` filter, and a closed drawer that slid off-screen still reports
+`offsetParent !== null` — only its `getBoundingClientRect().x` against
+`window.innerWidth` says whether it is really gone.
+
+## Signing out is off-limits for the harness: logout revokes refresh tokens
+
+`POST /api/auth/logout` calls `auth.revokeRefreshTokens(decodedClaims.uid)`
+([route.ts:42](src/app/api/auth/logout/route.ts#L42)). That is correct for the
+product, and it means a tester who signs out invalidates the stored session file
+the harness re-copies for every later batch of that identity.
+
+Consequence: every case whose steps include a sign-out — the signed-out↔signed-in
+header switch is the first — is unreachable without a **throwaway account** the
+run is permitted to log out of. Both end states can still be verified separately
+(guest slice vs signed-in slice); only the no-reload *transition* cannot, which
+is unfortunate because the transition is the part that fails silently in a
+non-remounting shell. Worth deciding before the next run: add a
+`TESTER_THROWAWAY_*` identity, or mark these cases human-only.
