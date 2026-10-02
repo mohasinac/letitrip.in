@@ -317,6 +317,32 @@ function renderOrderPayment(order: NonNullable<OrderData>) {
                 </Text>
               </Row>
             )}
+        {/*
+          Every charge the total includes must have a line here, or the summary
+          silently does not add up. Measured 2026-10-03 on a real order:
+          999 + 77 shipping = 1,076 against a total of 1,287.80, because the
+          ₹10 platform fee and ₹200 COD handling fee were charged and rendered
+          nowhere. Both are mapped by the adapter and declared on the client
+          type — only the rows were missing.
+        */}
+        {order.platformFee !== undefined && order.platformFee > 0 && (
+          <Row justify="between">
+            <Text variant="secondary" size="sm">Platform fee</Text>
+            <Text size="sm">{formatCurrency(order.platformFee, order.currency)}</Text>
+          </Row>
+        )}
+        {order.codHandlingFee !== undefined && order.codHandlingFee > 0 && (
+          <Row justify="between">
+            <Text variant="secondary" size="sm">COD handling fee</Text>
+            <Text size="sm">{formatCurrency(order.codHandlingFee, order.currency)}</Text>
+          </Row>
+        )}
+        {/*
+          🛑 This row has never fired in production. `tax` maps from
+          `doc.gstAmount` (adapters.ts:172) and 0 of 40 sampled orders carry
+          that field — GST is computed at checkout and never persisted. Keep
+          the row; fixing it means writing gstAmount in the order-creation path.
+        */}
         {order.tax !== undefined && order.tax > 0 && (
           <Row justify="between">
             <Text variant="secondary" size="sm">Tax</Text>
