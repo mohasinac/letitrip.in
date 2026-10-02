@@ -3264,3 +3264,20 @@ they are recorded and NOT chased.
 3. **Two different totals on the all-FAQs view.** The sidebar reads "All FAQs 50"
    and its per-category counts sum to exactly 50, while the body reads
    "63 questions". One of the two is wrong; the 13-row gap is unexplained.
+
+## The tester run pollutes the live public catalogue (2026-10-03)
+
+Three rows created by earlier batches of THIS run were still on the public site
+days later: `QA Brand inline-create`, `QA Category admin-crud RENAMED`,
+`QA Category inline-create` — all tier 0, so they sorted to the TOP of any
+tier-ordered category listing. Deleted this turn (61 -> 58, the seed baseline).
+
+The gap is structural, not a slip: inline-create and admin-CRUD cases create
+real rows through the UI, and nothing in the batch lifecycle removes them.
+`seed-batch-fixtures.mjs --teardown` only undoes what IT seeded, and these were
+created by the test actions themselves. Every create-flow case in the catalogue
+has this shape.
+
+Worth a mechanism before the next run: either a `QA `-prefix sweep in teardown,
+or a post-run reconciliation against the seed baseline count per collection.
+Not chased now (G4 — no case owns it).
