@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **142 / 255** |
-| Cases | **627 / 1847** (34%) |
+| Batches | **143 / 255** |
+| Cases | **636 / 1847** (34%) |
 | Cycle | 29 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 12:51 UTC |
+| Last updated | 2026-10-02 12:57 UTC |
 
 ```
-pass 250 · fail 110 · null 267
-fixed 35/110 · deferred 36 · open 39 · needs-human 7
+pass 251 · fail 112 · null 273
+fixed 35/112 · deferred 36 · open 41 · needs-human 7
 ```
 
-> ▸ **39 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **41 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -742,5 +742,14 @@ untouched list is one nobody reads by milestone three.
 | 141 | 625 | `checklist-selling-seller-orders-reject-fraud` | Rejecting a proof as fraudulent cancels the order, restores stock, and bans the buyer's ac | selling/seller-orders--admin | admin | ⬜ null | WHAT I ESTABLISHED, AND WHY BOTH CASES STOP AT THE SAME PLACE. ✅ STEP 2 PASSES ON BOTH — the seller has no such control. I verified that in the sibling seller batch, first-hand: on both a 'Awaiting payment' order and a 'Verified' one, th… | [shot](../tester/.tester-runs/run-3/shots/admin-payment-proof-404-no-review-controls.png) | — | — | no | — |
 | 142 | 626 | `checklist-selling-seller-orders-tracking-visible` | Buyer sees updated tracking status after seller ships | selling/seller-orders | main | ❌ fail | NO on 'both sides', YES on everything the buyer sees — and the split REFRAMES the defect I filed in the sibling seller batch, which is the most useful thing here. ✅ THE BUYER SEES IT ALL. /user/orders/view/order-1-20261001-mk6qv6 renders… | [shot](../tester/.tester-runs/run-3/shots/buyer-tracking-real-dates.png) | — | — | no | — |
 | 142 | 627 | `checklist-selling-seller-orders-seller-new-order-notification-reaches-seller` | A seller is actually told when an order lands — in-app AND by email — without having to si | selling/seller-orders | main | ❌ fail | NO — the notification arrives, reads well, and is a dead end. Two of the three clauses pass and the third fails outright. ✅ THE BELL SHOWS AN UNREAD COUNT: aria-label 'Notifications, 32 unread', with the badge rendering 32. ✅ THE NEWEST … | [shot](../tester/.tester-runs/run-3/shots/notification-rows-not-clickable.png) | — | — | no | — |
+| 143 | 628 | `checklist-content-discovery-notifications-receive-notification` | In-app notifications appear for order/bid/message events | content-discovery/notifications | main | ✅ pass | YES — notifications arrive for order and bid events, in volume, with readable copy. ✅ 700 NOTIFICATIONS for this buyer, 597 unread (the bell reads 'Notifications, 597 unread'), spanning seventeen-plus distinct types. The order family is … | [shot](../tester/.tester-runs/run-3/shots/notifications-filter-drawer.png) | — | — | no | — |
+| 143 | 629 | `checklist-content-discovery-notifications-notification-links-to-right-entity` | Clicking a notification opens the exact order / bid / message it refers to — not a generic | content-discovery/notifications | main | ❌ fail | NO — and this is the same defect I found on the seller side, so it is not role-specific. 🛑 THE ROWS ARE NOT CLICKABLE AT ALL. Measured on /user/notifications as the buyer: the row's computed cursor is 'auto' (not pointer), it carries no… | [shot](../tester/.tester-runs/run-3/shots/notification-rows-not-clickable.png) | — | — | no | — |
+| 143 | 630 | `checklist-content-discovery-notifications-notification-tab-filters` | Notification tab filters correctly narrow the list | content-discovery/notifications | main | ❌ fail | NO — three of the four type filters return zero rows while matching notifications demonstrably exist, and the one that works is the tell that hides it. 🛑 MEASURED, EACH FILTER AGAINST THE REAL DATA: • Type = Orders → total 0. The buyer … | [shot](../tester/.tester-runs/run-3/shots/notifications-filter-drawer.png) | — | — | no | — |
+| 143 | 631 | `checklist-content-discovery-notifications-mark-read` | Marking a notification as read works | content-discovery/notifications | main | ⬜ null | NULL — not driven, and the reason is a deliberate choice rather than a failure to reach it. The case's expectedData is unreadCountAfterMarkAll: 0, which requires pressing 'Mark all read' on an account holding 597 unread notifications. Th… | [shot](../tester/.tester-runs/run-3/shots/notifications-filter-drawer.png) | — | — | no | — |
+| 143 | 632 | `checklist-content-discovery-notifications-notification-channel-prefs` | Per-channel notification preferences (in-app / email / WhatsApp) save and are respected | content-discovery/notifications | main | ⬜ null | NULL — the save half is reachable but the 'are respected' half is not, and splitting them would be reporting half a case as a whole one. The case asks that per-channel preferences (in-app / email / WhatsApp) save AND are respected. Provi… | [shot](../tester/.tester-runs/run-3/shots/notifications-filter-drawer.png) | — | — | no | — |
+| 143 | 633 | `checklist-content-discovery-notifications-notification-type-sample` | A sample of notification types each trigger correctly end-to-end — and the bell-only ones  | content-discovery/notifications | main | ⬜ null | NULL — the case's whole point is the email half. It asks that a sample of types each trigger end-to-end AND that the bell-only ones produce NO email, with expectedData untemplatedEntryCount: 0. THE IN-APP HALF IS ALREADY STRONG, from the… | [shot](../tester/.tester-runs/run-3/shots/notifications-filter-drawer.png) | — | — | no | — |
+| 143 | 634 | `checklist-content-discovery-notifications-notification-email-actually-arrives` | With email enabled for a notification type, the email really lands in your inbox — and com | content-discovery/notifications | main | ⬜ null | NULL — unmeasurable for this identity. The case needs an email to land in the buyer's inbox AND to be checked for the site's configured sender name and address. ⚠️ WHY THE EMAIL HALF IS UNVERIFIABLE FOR THIS IDENTITY, stated once: the bu… | [shot](../tester/.tester-runs/run-3/shots/notifications-filter-drawer.png) | — | — | no | — |
+| 143 | 635 | `checklist-content-discovery-notifications-notification-email-opt-out-respected` | Turning email OFF for a notification type stops the emails but still shows the in-app noti | content-discovery/notifications | main | ⬜ null | NULL — unmeasurable for this identity, and it is the harder of the two email cases because it asserts an ABSENCE (emailsReceived: 0). ⚠️ WHY THE EMAIL HALF IS UNVERIFIABLE FOR THIS IDENTITY, stated once: the buyer is rehan.sheikh@gmail.c… | [shot](../tester/.tester-runs/run-3/shots/notifications-filter-drawer.png) | — | — | no | — |
+| 143 | 636 | `checklist-content-discovery-notifications-notification-ineligible-types-bell-only` | Being outbid fills the notification bell and sends NO email | content-discovery/notifications | main | ⬜ null | NULL on the email half, with the in-app half confirmed. ✅ BEING OUTBID DOES FILL THE BELL: the buyer holds a bid_outbid notification, and separately I watched the mechanism work in the bidding batches — placing a higher bid flipped all t… | [shot](../tester/.tester-runs/run-3/shots/notifications-filter-drawer.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
