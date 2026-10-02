@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **117 / 255** |
-| Cases | **511 / 1847** (28%) |
+| Batches | **118 / 255** |
+| Cases | **514 / 1847** (28%) |
 | Cycle | 24 of 51 |
 | Next deploy | batch 125 |
-| Last updated | 2026-10-02 07:03 UTC |
+| Last updated | 2026-10-02 07:12 UTC |
 
 ```
-pass 206 · fail 74 · null 231
-fixed 26/74 · deferred 38 · open 10 · needs-human 7
+pass 208 · fail 75 · null 231
+fixed 26/75 · deferred 38 · open 11 · needs-human 7
 ```
 
-> ▸ **10 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **11 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -626,5 +626,8 @@ untouched list is one nobody reads by milestone three.
 | 116 | 509 | `checklist-cta-layout-navbar-ctas-nav-active-state-correct` | The navigation marks the section the visitor is actually in | cta-layout/navbar-ctas--guest | guest | ❌ fail | NO - the marker is correct on every listing page and follows the back button, but it is ABSENT on the product detail page, which the case's expectedUiState names explicitly ('including the detail page'). WHAT I MEASURED, step by step: / … | [shot](../tester/.tester-runs/run-3/shots/nav-marker-absent-on-detail-page.png) | FIXED IN SOURCE, re-verification deferred to the batch-125 milestone because it is an appkit change and needs a publish+deploy to observe. ROOT CAUSE located exactly: NavbarLayout.tsx resolved its active item with 'activeHref === item.hr… | `NavbarLayout.tsx` | no | deferred-to-milestone |
 | 117 | 510 | `checklist-cta-layout-navbar-ctas-header-cart-badge-live` | The header's cart control shows a live item count that follows the cart | cta-layout/navbar-ctas | main | ✅ pass | YES - the badge tracked every single change with no reload, and stayed correct across navigation. IDENTITY VERIFIED FIRST: signed in as the buyer, header reads 'Profile — Mock User 3', no sign-in link. STEP 1, THE PRECONDITION THE CASE I… | [shot](../tester/.tester-runs/run-3/shots/cart-badge-tracks-live.png) | — | — | no | — |
 | 117 | 511 | `checklist-cta-layout-navbar-ctas-header-signed-out-vs-in` | The header offers sign-in when signed out and an account menu when signed in, and switches | cta-layout/navbar-ctas | main | ⬜ null | NULL at step 3, and the reason is a deliberate harness constraint I verified in source rather than guessed at. WHAT THE CASE NEEDS: sign in from the header control (step 3), then SIGN OUT (step 6), reading the header after each without r… | [shot](../tester/.tester-runs/run-3/shots/cart-badge-tracks-live.png) | — | — | no | — |
+| 118 | 512 | `checklist-cta-layout-navbar-ctas-account-menu-links-resolve` | Every item in the account menu lands on a real page for that role | cta-layout/navbar-ctas--admin | admin | ✅ pass | YES across all three roles, 0 dead menu links. I drove all three by swapping the harness session file (with browser_close between each, so the MCP re-reads it at context creation) - never by signing in or out, which would revoke refresh … | [shot](../tester/.tester-runs/run-3/shots/buyer-account-menu-no-dashboard.png) | — | — | no | — |
+| 118 | 513 | `checklist-cta-layout-navbar-ctas-role-specific-nav-entries` | A seller sees the store entry and a buyer does not, and an admin sees the admin entry | cta-layout/navbar-ctas--admin | admin | ✅ pass | YES - the three lists differ exactly as the case requires, and I compared them directly rather than inferring from one role. The role-specific entries are NOT in the top navbar - that bar is identical for every identity (the same 14 publ… | [shot](../tester/.tester-runs/run-3/shots/buyer-account-menu-no-dashboard.png) | — | — | no | — |
+| 118 | 514 | `checklist-cta-layout-navbar-ctas-announcement-bar-message-renders` | An announcement configured by an admin appears in the announcement bar | cta-layout/navbar-ctas--admin | admin | ❌ fail | NO at step 2 - and the blocker is a PRODUCT defect, not the PRESERVE-tier rule, which means I never had to touch Site Settings at all. 🛑 /admin/site RENDERS NO EDITABLE FIELDS FOR ANY SECTION. As the verified admin, the page shows the '… | [shot](../tester/.tester-runs/run-3/shots/admin-site-settings-inert-tabs.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->

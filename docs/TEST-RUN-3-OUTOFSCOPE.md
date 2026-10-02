@@ -2078,3 +2078,99 @@ info, Change Email / Linked Accounts / Change Password, 3 inputs), so this is a
 document-semantics gap rather than a broken page — but it leaves the route with
 no accessible or machine-readable title. Adjacent to the "12 generic page
 titles" entry above.
+
+## `/track` advertises a form it does not render
+
+The hero reads **"Enter your order ID or tracking number to get real-time
+updates on your shipment."** There is no field, no button and no form anywhere
+in `<main>` — verified across 10s of polling (0 inputs / 0 buttons / 0 forms;
+the only `<input>` in the document is the footer newsletter box). What renders
+instead is a card saying "Sign in to your account to view all your orders and
+their status in one place."
+
+Two problems, and the second is the product one: the subtitle instructs an
+action the page cannot perform, and **track-by-order-id without an account does
+not exist**. A guest who checked out as a guest, or who has only the id from a
+confirmation email, has no path. Either build the lookup or change the copy —
+but the current state promises the feature and then asks for a login.
+Found 2026-10-02 via `checklist-public-pages-help-how-it-works-track-order-page-works`.
+
+## `/fees` tells the buyer they pay no platform fee, and then they do
+
+The fee table states **"Buyer Fee 0%"** and attributes Platform Commission (5%)
+to the *seller*. But the buyer is charged a platform fee: `Platform fee ₹10.00`
+appears on a real cart summary and again on a ₹25,000 checkout, both measured
+this run. The ₹10 cap (`platformFeeMax`) that makes it that amount is never
+mentioned on the page.
+
+Separately, every figure in `FeesView.tsx` is **hardcoded** (translation keys and
+literals — `(2.36%)`, `− ₹23.60`, `= ₹917.40`), so the page performs no data
+fetch and cannot track `siteSettings.commissions`: an admin changing the
+commission leaves it asserting 5% forever. Same family as a mirror field no
+write path updates.
+
+Note what this is *not*: it is **not** a projection leak. The gateway fee 2.36%
+and the whole "Seller receives = ₹917.40" breakdown are published deliberately
+as copy, not read from the private `commissions` document. Whether to publish
+seller commissions is a business call; the buyer-fee contradiction is the bug.
+
+## `/how-auctions-work` contradicts itself on the payment window
+
+Three places say **48 hours** ("you have 48 hours to complete payment",
+"Winning starts a 48-hour payment window", "Pay within 48 hours to secure the
+item"); one numbered step in the same page says **"If you do not pay within 3
+days your bid will be forfeited."** Missing the window forfeits the item, so the
+two figures are not interchangeable.
+
+Also on that page: the at-a-glance strip's **"📦 If You Are Outbid"** tile carries
+shipping copy — "The seller ships within their handling time. Track it from your
+Orders page." The prose version of the same step is correct, so this is a
+copy/paste error in the summary strip.
+
+And the guide promises an affordance that does not exist: "You will see **'⚠
+Reserve not met'** if the current bid is below the reserve." On the live reserve
+auction (`auction-beyblade-original-seaborg`, 4 bids) no such indicator renders;
+the only signal is a sentence the seller happened to write into the description.
+
+## A "hidden" reserve price is published by the public products API
+
+`/how-auctions-work` says sellers set a **hidden** reserve. `GET
+/api/products?listingType=auction` returns `reservePrice: 4000` for
+`auction-beyblade-original-seaborg` in the public, guest-scoped payload. The
+page does not render the amount, so this is an API-surface issue rather than a
+visible one — but "hidden" is a promise about the value, not about one renderer.
+
+## A pre-order listing shows no deposit terms although a deposit is configured
+
+`preorder-beyblade-x-bx-08-wave` carries `preOrderDepositPercent: 25` and the
+listing states no deposit term of any kind — no "deposit", no "balance", no
+"full price upfront". `/how-pre-orders-work` tells buyers to expect those terms
+on the listing.
+
+This is not the guest price gate: a **percentage is not an amount**, so "25%
+deposit" could be shown to a signed-out visitor without disclosing any price.
+Worth checking on a signed-in re-run whether the gated "Reserve Now" flow
+discloses it before the buyer commits; if it does not, a buyer is charged a
+deposit they were never shown.
+
+## `/how-emi-works` states no eligibility threshold
+
+The page's job is to explain who can use EMI, and it says only "EMI is available
+on eligible orders **above a minimum value** when the seller opts in" — no figure
+anywhere, closing with "Illustrative example only … may vary by seller and site
+settings."
+
+Recorded as a content gap, **not** a defect: nothing it says is wrong, and the
+measured behaviour is correct on both sides of the real ₹10,000 `minOrderValue`
+(offered at ₹25,000, absent at ₹999). Its worked example also matches live
+checkout to the rupee on all five tenures. But a buyer cannot learn before
+reaching checkout whether their cart qualifies.
+
+## Checkout step 1 does not preselect the buyer's only saved address
+
+With exactly one saved address — the buyer's default — the card renders but is
+not selected, so **Continue is disabled on arrival with no message saying why**.
+The card is also a bare `<div>` with `cursor: pointer`, no `role`, no
+`aria-selected` and no radio, so it is neither announced as selectable nor
+reachable by keyboard in the usual way. Noticed 2026-10-02 while driving the EMI
+case; belongs to a checkout case rather than that one.
