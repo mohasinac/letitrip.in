@@ -33,15 +33,15 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **114 / 255** |
-| Cases | **505 / 1847** (27%) |
-| Cycle | 23 of 51 |
+| Batches | **115 / 255** |
+| Cases | **506 / 1847** (27%) |
+| Cycle | 24 of 51 |
 | Next deploy | batch 125 |
-| Last updated | 2026-10-02 06:16 UTC |
+| Last updated | 2026-10-02 06:42 UTC |
 
 ```
-pass 203 · fail 72 · null 230
-fixed 25/72 · deferred 37 · open 10 · needs-human 7
+pass 203 · fail 73 · null 230
+fixed 26/73 · deferred 37 · open 10 · needs-human 7
 ```
 
 > ▸ **10 failure(s) not yet fixed.** Fixes land in one phase at the
@@ -620,5 +620,6 @@ untouched list is one nobody reads by milestone three.
 | 113 | 503 | `checklist-selling-listing-a-product-seller-quick-add-drawer-flips` | With Left-hand mode ON, the seller's quick-add-listing side drawer opens from the left ins | selling/listing-a-product--seller | seller | ⬜ null | Not driven - it toggles 'Left-hand mode' in /user/settings and checks the drawer's edge and close-control corner, then restores the setting. That is a write to the user's own preferences; `users` is PRESERVE-tier, so I did not touch it. … | [shot](../tester/.tester-runs/run-3/shots/seller-listed-product-public.png) | — | — | no | — |
 | 114 | 504 | `checklist-selling-listing-a-product-store-rename-updates-cards` | Renaming your store updates the seller name on all your existing listing cards | selling/listing-a-product | main | ❌ fail | The rename cannot be saved, so nothing can propagate - blocked at step 2 by a PRODUCT defect, not by the harness, and I re-verified that defect rather than citing it. WHAT I DID: /store/storefront as the real Beyblade Arena owner (profil… | [shot](../tester/.tester-runs/run-3/shots/storefront-branding-blocks-rename.png) | RE-VERIFIED on production: the storefront branding validator blocks every storefront edit for any seller whose logo/banner came from the seed. Changed ONLY storeName to 'QA Store rename-updates-cards' and clicked Save Storefront: refused… | `schemas` | no | deferred-to-milestone |
 | 114 | 505 | `checklist-selling-listing-a-product-media-upload-video-both-sources-render` | A video attached by file upload AND a video attached via the YouTube tab both play on the  | selling/listing-a-product | main | ⬜ null | NOT DRIVEN. It edits a seeded product's video field through two different sources, saves twice, and restores - and I reached the end of what I could give this batch after re-verifying the storefront blocker above. Recording it as pending… | [shot](../tester/.tester-runs/run-3/shots/storefront-branding-blocks-rename.png) | — | — | no | — |
+| 115 | 506 | `checklist-addresses-unban-request-empty-note-says-why` | Submitting an empty unban request explains what is missing | addresses/unban-request | main | ❌ fail | NO, on the precondition, exactly as the case's own 🛑 instructs - and the reason is sharper than 'no banned address exists'. THERE IS A BAN ACTION, AND IT IS UNREACHABLE. STEP 1-2, THE QUEUE. /admin/banned-addresses as the real admin (pr… | [shot](../tester/.tester-runs/run-3/shots/banned-addresses-queue-empty-all-chips.png) | GET /api/admin/addresses/clusters returned 409 PRECONDITION_FAILED 'Failed to list addresses by ownerType=user' — a Firestore FAILED_PRECONDITION (code 9), i.e. a missing composite index. | `firestore.indexes.json` `firestore.indexes.json` `addresses.repository.ts` | no | pass |
 
 <!-- TEST-RUN-3-TABLE:END -->

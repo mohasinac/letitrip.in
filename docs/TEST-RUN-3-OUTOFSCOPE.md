@@ -1960,3 +1960,31 @@ see. The underlying 409 is fixed (missing index, 2026-10-02), but the rendering
 pattern is unchanged: an error branch and an empty branch that are not mutually
 exclusive. Worth sweeping for elsewhere — same family as Root Cause #59, where
 a swallowed query failure is indistinguishable from an empty result.
+
+## The mobile header's only "Sign in" points at /user/profile
+
+The public header carries two controls labelled "Sign in". The desktop one
+links to `/auth/login`. The compact icon variant — hidden above `lg`, and **the
+only one visible at 390px** — links to `/user/profile`.
+
+Clicking it as a guest does land on `/auth/login`, because `RoleGuard`
+redirects, so the destination is right and nothing is broken for a tapping
+user. What is wrong is the `href` itself: an extra client-side hop, a
+misleading URL for anyone who middle-clicks or copies the link, and a crawlable
+link from the public header into a signed-in-only route. Found 2026-10-02 via
+`checklist-cta-layout-navbar-ctas-header-ctas-all-navigate`; not recorded as
+that case's failure, because the control is not dead.
+
+## The nav active-state predicate now has three implementations
+
+`findActiveNavItem` (`appkit/src/_internal/client/features/layout/navActive.ts`)
+is the canonical one — prefix match, longest href wins. `NavbarLayout` was
+fixed to call it 2026-10-02. But `BottomNavbar.tsx:148` still carries an inline
+copy (`pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href + "/"))`),
+which is a correct re-derivation and therefore the kind that drifts silently.
+
+That is three copies — the Duplication Framework's Rule-of-Three trigger. Also
+unexamined: `BottomNavbar`'s Home/Shop/Cart/Wishlist/Profile tabs use strict
+equality (lines 212, 233, 163, 292, 320), so e.g. `/user/profile/edit` would
+lose the Profile marker. Not driven by any case, so not claimed as a defect —
+listed so a sweep has a starting point.
