@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **148 / 255** |
-| Cases | **664 / 1847** (36%) |
+| Batches | **149 / 255** |
+| Cases | **666 / 1847** (36%) |
 | Cycle | 30 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 13:58 UTC |
+| Last updated | 2026-10-02 14:03 UTC |
 
 ```
-pass 261 · fail 120 · null 283
-fixed 35/120 · deferred 36 · open 49 · needs-human 7
+pass 262 · fail 121 · null 283
+fixed 35/121 · deferred 36 · open 50 · needs-human 7
 ```
 
-> ▸ **49 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **50 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -779,5 +779,7 @@ untouched list is one nobody reads by milestone three.
 | 148 | 662 | `checklist-buying-wishlist-history-history-revisit-reorders` | Re-visiting a product already in history removes the old entry and moves it to the front,  | buying/wishlist-history--p2 | main | ✅ pass | YES — all three clauses, measured against a target I chose before acting. I noted the third entry from the top first: product-beyblade-burst-spryzen-video-demo. Then I reopened only that product and returned to /user/history. ✅ IT IS NOW… | [shot](../tester/.tester-runs/run-3/shots/history-newest-first-28-of-50.png) | — | — | no | — |
 | 148 | 663 | `checklist-buying-wishlist-history-history-fifo-cap` | History silently evicts the oldest entry once more than 50 items have been viewed (no erro | buying/wishlist-history--p2 | main | ⬜ null | NULL — the named account has no stored session, and the test needs more than fifty distinct product views. Step 1 is 'Sign in as karthik.new@gmail.com, an account with little history'; the harness has sessions for admin, buyer, seller an… | [shot](../tester/.tester-runs/run-3/shots/history-newest-first-28-of-50.png) | — | — | no | — |
 | 148 | 664 | `checklist-buying-wishlist-history-history-guest-merge-on-login` | Guest browsing history (localStorage) merges correctly with the account's history after lo | buying/wishlist-history--p2 | main | ⬜ null | NULL — same missing identity, and here substituting the buyer would actively destroy the thing being measured. Step 3 is 'Sign in as karthik.new@gmail.com from that same window', and there is no stored session for him. WHY I DID NOT SUBS… | [shot](../tester/.tester-runs/run-3/shots/history-newest-first-28-of-50.png) | — | — | no | — |
+| 149 | 665 | `checklist-buying-wishlist-history-wishlist-guest-heart-prompts-signin` | A signed-out visitor tapping the heart on product-beyblade-burst-valkyrie is asked to sign | buying/wishlist-history--guest | guest | ✅ pass | YES — every clause, including the one the case cares most about: it refuses without pretending to have saved. ✅ BEFORE: the heart is empty — 'Add to Wishlist' with svg fill='none'. Header confirmed signed out ('Sign in \| Register'). ✅ TA… | [shot](../tester/.tester-runs/run-3/shots/guest-wishlist-signin-required.png) | — | — | no | — |
+| 149 | 666 | `checklist-buying-wishlist-history-wishlist-guest-page-signed-out` | A signed-out visitor opening /wishlist is asked to sign in rather than shown a permanently | buying/wishlist-history--guest | guest | ❌ fail | NO — it shows exactly the generic empty wishlist the case exists to rule out, and offers no way to sign in. 🛑 WHAT THE PAGE SAYS, quoted in full as expectedUiState demands: the heading 'My Wishlist', a 'Filters' button, a 'Search wishli… | [shot](../tester/.tester-runs/run-3/shots/guest-wishlist-generic-empty-state.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
