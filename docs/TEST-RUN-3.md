@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **176 / 255** |
-| Cases | **858 / 1847** (46%) |
+| Batches | **177 / 255** |
+| Cases | **859 / 1847** (47%) |
 | Cycle | 36 of 51 |
 | Next deploy | batch 200 |
-| Last updated | 2026-10-02 22:29 UTC |
+| Last updated | 2026-10-02 22:32 UTC |
 
 ```
-pass 339 · fail 167 · null 352
+pass 339 · fail 167 · null 353
 fixed 35/167 · deferred 36 · open 96 · needs-human 7
 ```
 
@@ -973,5 +973,6 @@ untouched list is one nobody reads by milestone three.
 | 175 | 856 | `checklist-content-discovery-search-search-finds-older-records` | An OLDER listing - one that existed before this feature shipped - is findable by name | content-discovery/search--admin | admin | ❌ fail | 🛑 THE BACKFILL GAP IS LIVE, and the fixture detected exactly what it exists to detect. On /admin/products, searching the word 'untokenised' returns ZERO rows - product-w1-untokenised is not found by a word from its own title. The contro… | [shot](../tester/.tester-runs/run-3/shots/b175-control-fail.png) | — | — | no | — |
 | 176 | 857 | `checklist-public-pages-bug-hunters-leaderboard-loads` | The public Bug Hunters leaderboard (/bug-hunters) loads and lists testers ranked by confir | public-pages/bug-hunters--guest | guest | ✅ pass | The board loads and the bot exclusion holds, which is the part that matters. Signed out (/api/user/profile 401), /bug-hunters serves a page titled 'Bug Hunters Leaderboard - LetItRip' with the heading 'Bug Hunters Leaderboard' and the su… | [shot](../tester/.tester-runs/run-3/shots/b176-bug-hunters-board.png) | — | — | no | — |
 | 176 | 858 | `checklist-public-pages-bug-hunters-leaderboard-footer-link` | A "Bug Hunters" link is present in the site footer's Support column and navigates to /bug- | public-pages/bug-hunters--guest | guest | ❌ fail | 🛑 THERE IS NO 'BUG HUNTERS' LINK IN THE FOOTER, OR ANYWHERE ON THE HOMEPAGE. The footer's SUPPORT column holds ten links and none of them is it: Help Centre (/help), FAQs (/faqs), Contact Us (/contact), Track Order (/track), About Us (/… | [shot](../tester/.tester-runs/run-3/shots/b176-footer-no-bug-hunters.png) | — | — | no | — |
+| 177 | 859 | `checklist-public-pages-bug-hunters-leaderboard-empty-state` | If no bugs have been confirmed yet, the leaderboard shows a clear "No confirmed bugs yet"  | public-pages/bug-hunters--admin | admin | ⬜ null | Step 3 cannot be performed: THERE IS NO UN-CONFIRM CONTROL. /admin/tester-feedback → Main Issues shows Phase 1 (2 issues), both reported by Mock User 3. The first is the already-confirmed v1 fixture and its status renders as STATIC TEXT … | [shot](../tester/.tester-runs/run-3/shots/b177-no-unconfirm-control.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
