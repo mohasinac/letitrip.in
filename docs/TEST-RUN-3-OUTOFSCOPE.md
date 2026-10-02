@@ -3361,3 +3361,13 @@ currently unreliable.
 
 Next: grep the order write paths for which field they set, then correct either
 the code or CLAUDE.md — whichever is actually wrong.
+
+### Corroboration: QA pollution is not limited to categories (2026-10-03)
+
+While re-driving the admin support queue, the first row rendered was
+'QA Ticket create-ticket' — a ticket an earlier batch created through the UI,
+still live. Same class as the three QA category rows deleted this turn.
+
+This is the second collection confirmed polluted, which upgrades the teardown
+gap above from 'plausible' to 'observed in two places'. A post-run
+reconciliation against the seed baseline per collection would catch both.
