@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **170 / 255** |
-| Cases | **822 / 1847** (45%) |
+| Batches | **171 / 255** |
+| Cases | **830 / 1847** (45%) |
 | Cycle | 35 of 51 |
 | Next deploy | batch 175 |
-| Last updated | 2026-10-02 20:59 UTC |
+| Last updated | 2026-10-02 21:11 UTC |
 
 ```
-pass 325 · fail 161 · null 336
-fixed 35/161 · deferred 36 · open 90 · needs-human 7
+pass 330 · fail 162 · null 338
+fixed 35/162 · deferred 36 · open 91 · needs-human 7
 ```
 
-> ▸ **90 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **91 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -937,5 +937,13 @@ untouched list is one nobody reads by milestone three.
 | 170 | 820 | `checklist-design-ux-homepage-carousels-sections-social-proof-render` | Verified stores, tournaments & events, and collector reviews sections render correctly | design-ux/homepage-carousels--guest--p1 | guest | ⬜ null | There is no social-proof section on the homepage to evaluate, so the claims about masked attributions and review photos are vacuous rather than passing or failing. Measured across the whole rendered page: the word 'review' appears six ti… | [shot](../tester/.tester-runs/run-3/shots/b170-welcome-hero-logo.png) | — | — | no | — |
 | 170 | 821 | `checklist-design-ux-homepage-carousels-sections-social-feed-hidden` | The social-feed section type is correctly hidden on the homepage since it's disabled in Si | design-ux/homepage-carousels--guest--p1 | guest | ✅ pass | The social-feed section is absent and nothing is loaded on its behalf. Signed out with no session: scanning the whole rendered page text for instagram, twitter, x.com and facebook returns zero matches; there are ZERO iframes in the docum… | [shot](../tester/.tester-runs/run-3/shots/b170-welcome-hero-logo.png) | — | — | no | — |
 | 170 | 822 | `checklist-design-ux-homepage-carousels-hero-welcome-logo-sized-padded` | The homepage welcome hero's brand mark/logo panel (desktop, right side) is appropriately s | design-ux/homepage-carousels--guest--p1 | guest | ⬜ null | The desktop half passes and the structural claim is verified, but two of the four observations the case asks for - 390 wide, and both widths in dark mode - were not driven, so I am not recording a pass. At 1280 the welcome hero's logo pa… | [shot](../tester/.tester-runs/run-3/shots/b170-welcome-hero-logo.png) | — | — | no | — |
+| 171 | 823 | `checklist-design-ux-homepage-carousels-welcome-hero-no-gap` | There is no large empty gap between the sticky header/navbar (or the expanded search bar)  | design-ux/homepage-carousels--guest--p2 | guest | ✅ pass | At 1280 the joins are clean, judged from the screenshot rather than from a number - and the number is why. Reading the image: the title bar meets a secondary category-nav strip, which meets the teal announcement bar, which meets the welc… | [shot](../tester/.tester-runs/run-3/shots/b171-newsletter-enter-confirm.png) | — | — | no | — |
+| 171 | 824 | `checklist-design-ux-homepage-carousels-promo-banner-overlay` | The promotion/announcement banner overlays the top of the first homepage section (transluc | design-ux/homepage-carousels--guest--p2 | guest | ⬜ null | Not driven to the standard the case sets. The 1280 light-mode half is satisfied from what I read: the hero's copy sits over a photographic/video background with a visible dim layer between them, and every word of the slide heading, the e… | [shot](../tester/.tester-runs/run-3/shots/b171-newsletter-enter-confirm.png) | — | — | no | — |
+| 171 | 825 | `checklist-design-ux-homepage-carousels-hero-slides-have-copy` | Every hero carousel slide shows a headline, a supporting line and a working CTA button on  | design-ux/homepage-carousels--guest--p2 | guest | ✅ pass | Every one of the five slides carries a headline and a supporting line, so expectedData holds at 0. Read per slide by clicking its indicator and taking only the elements whose boxes fall inside the carousel's visible bounds: (1) 'Ready to… | [shot](../tester/.tester-runs/run-3/shots/b171-newsletter-enter-confirm.png) | — | — | no | — |
+| 171 | 826 | `checklist-design-ux-homepage-carousels-homepage-single-h1` | The homepage has exactly ONE <h1> — the welcome hero headline. Carousel slide headlines ar | design-ux/homepage-carousels--guest--p2 | guest | ✅ pass | Exactly one h1 on all three pages, and the right one each time. Homepage: a single visible h1 reading 'Buy, Sell & Auction Collectibles' - the welcome hero headline - and the carousel slide headlines are h2, confirmed by finding 'Win it … | [shot](../tester/.tester-runs/run-3/shots/b171-newsletter-enter-confirm.png) | — | — | no | — |
+| 171 | 827 | `checklist-design-ux-homepage-carousels-homepage-no-franchise-specific-strips` | The homepage has no brand-specific product strip, and no section copy names a single franc | design-ux/homepage-carousels--guest--p2 | guest | ✅ pass | No section heading names a franchise, and no strip is empty. The twenty-two visible h2 headings down the page are all either generic category/state labels or configured collections: Shop by Category, Featured Products, Live Auctions, Res… | [shot](../tester/.tester-runs/run-3/shots/b171-newsletter-enter-confirm.png) | — | — | no | — |
+| 171 | 828 | `checklist-design-ux-homepage-carousels-homepage-newsletter-enter-key` | Typing an email into the homepage newsletter box and pressing ENTER subscribes — you do no | design-ux/homepage-carousels--guest--p2 | guest | ✅ pass | ENTER SUBSCRIBES WITHOUT TOUCHING THE BUTTON, which is the label's claim. Typing qa-newsletter-1@mailnull.com into the homepage newsletter field (the one in the 'Get new listings first' section, distinct from the footer's) and pressing E… | [shot](../tester/.tester-runs/run-3/shots/b171-newsletter-enter-confirm.png) | — | — | no | — |
+| 171 | 829 | `checklist-design-ux-homepage-carousels-footer-newsletter-inline-error` | Typing `not-an-email` into the FOOTER newsletter box and submitting shows an inline error  | design-ux/homepage-carousels--guest--p2 | guest | ⬜ null | Not driven - capacity, after the sibling homepage case consumed the turn's remaining room. I did locate the form precisely, which is worth recording because the two are genuinely separate: there are exactly two email fields on the page, … | [shot](../tester/.tester-runs/run-3/shots/b171-newsletter-enter-confirm.png) | — | — | no | — |
+| 171 | 830 | `checklist-design-ux-homepage-carousels-homepage-faq-structured-data` | The homepage HTML contains FAQPage structured data matching the FAQs actually shown in the | design-ux/homepage-carousels--guest--p2 | guest | ❌ fail | THE MARKUP DESCRIBES 16 QUESTIONS AND THE PAGE RENDERS 6 - not one for one, which is precisely the mismatch the case warns a search engine will eventually penalise. The FAQPage block's mainEntity carries sixteen entries; the rendered FAQ… | [shot](../tester/.tester-runs/run-3/shots/b171-newsletter-enter-confirm.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
