@@ -2974,3 +2974,34 @@ confirmation; this belongs with it.
 **One money formatter on the cart omits the thousands separator.** The
 per-seller subtotal renders `₹1898.00` while the summary directly below renders
 `₹1,898.00` for the same number. Two formatters on one screen, disagreeing.
+
+## The stored buyer session ages out around the 55-minute mark
+
+Operational note for whoever runs the next batches, and a flag for a case that
+does not exist yet.
+
+Twice during batch 148 the signed-in buyer was suddenly rendered as a guest —
+header "Sign in | Register", `/wishlist` showing no saved count, and once a
+redirect from `/user/history` straight to `/auth/login`. Both times the fix was
+the same: `browser_close`, re-copy `session-buyer.json` over `session.json`,
+reopen. The restored context immediately read "6 saved items" again.
+
+**It is not a cookie expiry.** `__session` and `__session_id` in the stored file
+carry `expires` of 2026-10-07 — five days out. The captured session was minted
+at 13:01 UTC and the first drop was observed around 13:47, the second around
+13:54, so the lifetime looks closer to the **one-hour Firebase ID-token** window
+than to the cookie's own.
+
+**Why this matters beyond the harness.** If the app is signing a user out when
+the underlying ID token ages rather than refreshing it, that is a real defect: a
+buyer browsing for an hour gets logged out mid-flow. If instead the activity
+ping refreshes a live session correctly and only a *captured, replayed* session
+cannot refresh, it is purely a harness artefact. **I did not establish which**,
+and the distinction needs a dedicated case: stay signed in on one page for over
+an hour with the tab active, and see whether the session survives.
+
+Until then: re-copy the session file whenever a signed-in page starts rendering
+as a guest, and **re-drive any measurement taken near the drop** — I had read
+"the auction detail page has no wishlist control" during the first drop, and had
+to re-drive it with the signed-in state confirmed on the page before I would
+record it. It held, but it could easily not have.

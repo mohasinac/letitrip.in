@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **147 / 255** |
-| Cases | **656 / 1847** (36%) |
+| Batches | **148 / 255** |
+| Cases | **664 / 1847** (36%) |
 | Cycle | 30 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 13:44 UTC |
+| Last updated | 2026-10-02 13:58 UTC |
 
 ```
-pass 255 · fail 120 · null 281
+pass 261 · fail 120 · null 283
 fixed 35/120 · deferred 36 · open 49 · needs-human 7
 ```
 
@@ -771,5 +771,13 @@ untouched list is one nobody reads by milestone three.
 | 147 | 654 | `checklist-buying-wishlist-history-wishlist-empty-state` | The empty-wishlist state renders correctly with no items | buying/wishlist-history--p1 | main | ⬜ null | NULL — testing it would have required destroying the evidence for six other verdicts in this same batch. Step 1 names karthik.new@gmail.com, for whom the harness has no stored session (admin / buyer / seller / guest only). Step 2 is 'rem… | [shot](../tester/.tester-runs/run-3/shots/wishlist-sold-out-unmarked.png) | — | — | no | — |
 | 147 | 655 | `checklist-buying-wishlist-history-wishlist-add-to-cart-from-list` | Adding a wishlist item directly to the cart from the wishlist page works | buying/wishlist-history--p1 | main | ❌ fail | NO — on the badge, and only on the badge. Both substantive clauses pass and I want the proportion clear. ✅ THE ITEM IS NOT REMOVED FROM THE WISHLIST, which is the case's actual argument ('those are two different intentions'). Count staye… | [shot](../tester/.tester-runs/run-3/shots/wishlist-sold-out-unmarked.png) | — | — | no | — |
 | 147 | 656 | `checklist-buying-wishlist-history-wishlist-card-clickable` | Tapping/clicking a wishlist card (not the heart icon) navigates to that product's detail p | buying/wishlist-history--p1 | main | ✅ pass | YES — all three regions open the right page, driven as three separate real clicks rather than inferred from the markup. ✅ IMAGE: clicked the entry's <img> -> /products/product-beyblade-burst-valkyrie. ✅ TITLE: went back, clicked the titl… | [shot](../tester/.tester-runs/run-3/shots/wishlist-sold-out-unmarked.png) | — | — | no | — |
+| 148 | 657 | `checklist-buying-wishlist-history-wishlist-heart-solid-red` | The wishlist heart icon on a saved item renders as a clearly visible solid red heart, not  | buying/wishlist-history--p2 | main | ✅ pass | YES — every clause of expectedUiState holds, and I checked the one that matters most (that the two states differ by more than colour) in both themes. ✅ IT IS A REAL ICON, NOT A TEXT CHARACTER. The control contains an <svg class='lucide l… | [shot](../tester/.tester-runs/run-3/shots/wishlist-sold-out-unmarked.png) | — | — | no | — |
+| 148 | 658 | `checklist-buying-wishlist-history-wishlist-view-remove-buttons` | Each wishlist card shows explicit "View" and "Remove" buttons below it, in addition to the | buying/wishlist-history--p2 | main | ✅ pass | YES — and I deliberately pressed the THIRD entry's Remove rather than the first, because the case's whole argument is about a remove keyed on array position. ✅ BOTH CONTROLS ARE PRESENT on every entry. Enumerated on one card: a 'Select' … | [shot](../tester/.tester-runs/run-3/shots/wishlist-sold-out-unmarked.png) | — | — | no | — |
+| 148 | 659 | `checklist-buying-wishlist-history-wishlist-sync-item` | Tapping the per-card "Sync" button on a wishlist item refreshes its stored price/title/ima | buying/wishlist-history--p2 | main | ✅ pass | YES — two tabs, one document, and the change crossed after a reload exactly as the case predicts. I used two browser tabs as the two windows (same session, which is what the case describes — 'sign in as the same account'). ✅ TAB B ADDED,… | [shot](../tester/.tester-runs/run-3/shots/wishlist-sold-out-unmarked.png) | — | — | no | — |
+| 148 | 660 | `checklist-buying-wishlist-history-wishlist-sync-all` | The "Sync all" button in the wishlist header syncs every item and shows a toast summarizin | buying/wishlist-history--p2 | main | ✅ pass | YES on every clause, including the toast — which I nearly recorded as missing, so the method note matters. ✅ THE CONTROL EXISTS AND DOES REAL WORK. 'Sync all' in the page header fires POST /api/user/wishlist/validate -> 200 with the body… | [shot](../tester/.tester-runs/run-3/shots/wishlist-sold-out-unmarked.png) | — | — | no | — |
+| 148 | 661 | `checklist-buying-wishlist-history-view-history` | Recently viewed history shows accurate items in most-recent-first order | buying/wishlist-history--p2 | main | ✅ pass | YES — and this is the best-behaved surface I have measured in this pair of batches, which is worth saying plainly after six wishlist failures. I opened three products in a known order — spryzen-video-demo, then dran-sword-video-demo, the… | [shot](../tester/.tester-runs/run-3/shots/history-newest-first-28-of-50.png) | — | — | no | — |
+| 148 | 662 | `checklist-buying-wishlist-history-history-revisit-reorders` | Re-visiting a product already in history removes the old entry and moves it to the front,  | buying/wishlist-history--p2 | main | ✅ pass | YES — all three clauses, measured against a target I chose before acting. I noted the third entry from the top first: product-beyblade-burst-spryzen-video-demo. Then I reopened only that product and returned to /user/history. ✅ IT IS NOW… | [shot](../tester/.tester-runs/run-3/shots/history-newest-first-28-of-50.png) | — | — | no | — |
+| 148 | 663 | `checklist-buying-wishlist-history-history-fifo-cap` | History silently evicts the oldest entry once more than 50 items have been viewed (no erro | buying/wishlist-history--p2 | main | ⬜ null | NULL — the named account has no stored session, and the test needs more than fifty distinct product views. Step 1 is 'Sign in as karthik.new@gmail.com, an account with little history'; the harness has sessions for admin, buyer, seller an… | [shot](../tester/.tester-runs/run-3/shots/history-newest-first-28-of-50.png) | — | — | no | — |
+| 148 | 664 | `checklist-buying-wishlist-history-history-guest-merge-on-login` | Guest browsing history (localStorage) merges correctly with the account's history after lo | buying/wishlist-history--p2 | main | ⬜ null | NULL — same missing identity, and here substituting the buyer would actively destroy the thing being measured. Step 3 is 'Sign in as karthik.new@gmail.com from that same window', and there is no stored session for him. WHY I DID NOT SUBS… | [shot](../tester/.tester-runs/run-3/shots/history-newest-first-28-of-50.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
