@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **126 / 255** |
-| Cases | **550 / 1847** (30%) |
+| Batches | **128 / 255** |
+| Cases | **558 / 1847** (30%) |
 | Cycle | 26 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 10:27 UTC |
+| Last updated | 2026-10-02 10:44 UTC |
 
 ```
-pass 216 · fail 92 · null 242
-fixed 35/92 · deferred 36 · open 21 · needs-human 7
+pass 219 · fail 94 · null 245
+fixed 35/94 · deferred 36 · open 23 · needs-human 7
 ```
 
-> ▸ **21 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **23 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -665,5 +665,13 @@ untouched list is one nobody reads by milestone three.
 | 126 | 548 | `checklist-content-discovery-coupons-coupon-below-min-purchase` | Applying a coupon below its minPurchase threshold is rejected with a clear message | content-discovery/coupons | main | ❌ fail | IDENTITY NOTE, stated up front: the case names vivaan.kapoor@gmail.com and the harness holds no session for that account — its four identities are guest / buyer / seller / admin. I drove it as the harness buyer (verified 'Profile — Mock … | [shot](../tester/.tester-runs/run-3/shots/coupon-arena25-cannot-apply.png) | — | — | no | — |
 | 126 | 549 | `checklist-content-discovery-coupons-coupon-not-combinable` | A seller-scoped coupon that isn't combinable with another seller's coupon is rejected when | content-discovery/coupons | main | ⬜ null | IDENTITY NOTE, stated up front: the case names vivaan.kapoor@gmail.com and the harness holds no session for that account — its four identities are guest / buyer / seller / admin. I drove it as the harness buyer (verified 'Profile — Mock … | [shot](../tester/.tester-runs/run-3/shots/coupon-arena25-cannot-apply.png) | — | — | no | — |
 | 126 | 550 | `checklist-content-discovery-coupons-coupon-per-user-limit` | Re-applying a coupon after hitting its perUserLimit is rejected | content-discovery/coupons | main | ⬜ null | IDENTITY NOTE, stated up front: the case names vivaan.kapoor@gmail.com and the harness holds no session for that account — its four identities are guest / buyer / seller / admin. I drove it as the harness buyer (verified 'Profile — Mock … | [shot](../tester/.tester-runs/run-3/shots/coupon-arena25-cannot-apply.png) | — | — | no | — |
+| 127 | 551 | `checklist-content-discovery-coupons-coupon-expired-rejected` | Applying an expired coupon at checkout shows a specific expiry rejection message, not a ge | content-discovery/coupons--admin | admin | ❌ fail | NO on the case's own terms — the expiry rejection does not name expiry — but I reached that by a different route than the steps describe, and the route matters because it OVERTURNS what I recorded in the previous batch. I DID NOT MUTATE … | [shot](../tester/.tester-runs/run-3/shots/coupon-messages-are-specific.png) | — | — | no | — |
+| 128 | 552 | `checklist-design-ux-dashboard-layout-list-view-default` | A dashboard listing you haven't set a view preference for opens in list (row-card) view by | design-ux/dashboard-layout--admin | admin | ✅ pass | YES. All three open in LIST view with nothing in the URL. I had to read the ACTIVE view from computed style rather than aria, because aria-pressed is null on all three toggles (logged separately) — the active one carries bg rgb(13,148,13… | [shot](../tester/.tester-runs/run-3/shots/admin-products-390-cards.png) | — | — | no | — |
+| 128 | 553 | `checklist-design-ux-dashboard-layout-listing-toolbar-consistency` | Every admin/seller/user dashboard listing page uses the exact same search+filter-drawer+so | design-ux/dashboard-layout--admin | admin | ✅ pass | YES. The same controls in the same order on all three, and no empty gap anywhere. /admin/products: Search · Filters · Grid/List/Table · Add Product · Hide Toolbar · Available/Sold & Ended/All · pagination · selects 'Sort by' + 'Rows per … | [shot](../tester/.tester-runs/run-3/shots/admin-products-390-cards.png) | — | — | no | — |
+| 128 | 554 | `checklist-design-ux-dashboard-layout-view-mode-persist` | Switching the dashboard table/card view mode is remembered on your next visit (filters/sea | design-ux/dashboard-layout--admin | admin | ❌ fail | NO on the URL clause, YES on everything else — and the thing that works is more useful than the thing that does not. 🛑 THE URL CARRIES NOTHING. Switching /admin/products from List to Table left the address at a bare '/admin/products' — … | [shot](../tester/.tester-runs/run-3/shots/admin-products-390-cards.png) | — | — | no | — |
+| 128 | 555 | `checklist-design-ux-dashboard-layout-mobile-table-cards` | Admin/seller listing tables show full-row cards by default on mobile, with a working switc | design-ux/dashboard-layout--admin | admin | ✅ pass | YES on every clause the case can test, with one nuance about its 1280 premise that I am stating rather than quietly passing. AT 390px /admin/products renders ROW CARDS, and I read the screenshot to confirm what they carry: a selection ch… | [shot](../tester/.tester-runs/run-3/shots/admin-products-390-cards.png) | — | — | no | — |
+| 128 | 556 | `checklist-design-ux-dashboard-layout-list-card-row-actions` | Row-level action buttons (the same ones in the table's overflow menu — edit, approve, dele | design-ux/dashboard-layout--admin | admin | ⬜ null | NULL on the comparison, which is the case's actual assertion — I read the LIST menu but never opened the TABLE one, so I cannot say whether the two agree. WHAT I DID READ, on /admin/products in list view: the overflow menu offers Approve… | [shot](../tester/.tester-runs/run-3/shots/admin-products-390-cards.png) | — | — | no | — |
+| 128 | 557 | `checklist-design-ux-dashboard-layout-row-table-click-consistency` | For any given dashboard listing, table rows, grid cards, and list cards all agree on wheth | design-ux/dashboard-layout--admin | admin | ⬜ null | NULL on the comparison — the LIST half is verified and clickable, the TABLE half is not driven, and the case is specifically about the two agreeing. THE LIST CARD IS NOT INERT, which is the failure this case hunts. Clicking the row TITLE… | [shot](../tester/.tester-runs/run-3/shots/admin-products-390-cards.png) | — | — | no | — |
+| 128 | 558 | `checklist-design-ux-dashboard-layout-collapsible-admin` | Admin dashboard sections expand/collapse and remember their state on reload | design-ux/dashboard-layout--admin | admin | ⬜ null | NOT DRIVEN. The sidebar collapse/expand and its persistence across navigation and reload need a sequence of clicks on the twelve group headings plus two reloads, and I spent this batch's budget on the six cases that could be settled by m… | [shot](../tester/.tester-runs/run-3/shots/admin-products-390-cards.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
