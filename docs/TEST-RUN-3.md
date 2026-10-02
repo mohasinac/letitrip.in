@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **152 / 255** |
-| Cases | **679 / 1847** (37%) |
+| Batches | **153 / 255** |
+| Cases | **688 / 1847** (37%) |
 | Cycle | 31 of 51 |
 | Next deploy | batch 175 |
-| Last updated | 2026-10-02 15:34 UTC |
+| Last updated | 2026-10-02 15:46 UTC |
 
 ```
-pass 268 · fail 126 · null 285
-fixed 35/126 · deferred 36 · open 55 · needs-human 7
+pass 272 · fail 131 · null 285
+fixed 35/131 · deferred 36 · open 60 · needs-human 7
 ```
 
-> ▸ **55 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **60 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -794,5 +794,14 @@ untouched list is one nobody reads by milestone three.
 | 152 | 677 | `checklist-design-ux-footer-theme-footer-column-headings-stand-out` | On DESKTOP, each footer link column's heading (Shop, Company, Support, etc.) clearly stand | design-ux/footer-theme | guest | ❌ fail | NO — and it is measurable rather than a matter of taste: every heading is SMALLER and LIGHTER than the links beneath it, in the same colour. 🛑 THE NUMBERS, at 1280px. Headings SHOP / SUPPORT / FOR SELLERS / LEARN / LEGAL: 11px, weight 4… | [shot](../tester/.tester-runs/run-3/shots/footer-dark-mode-readable.png) | — | — | no | — |
 | 152 | 678 | `checklist-design-ux-footer-theme-footer-weight-both-themes` | The footer text weight change looks right in BOTH light and dark mode — heavier but not bo | design-ux/footer-theme | guest | ✅ pass | YES — the hierarchy is identical in both themes, and the divider clause specifically holds because every colour here is a token rather than a literal. ✅ I WROTE THE THREE THINGS DOWN IN LIGHT FIRST, as the case asks, then switched WITHOU… | [shot](../tester/.tester-runs/run-3/shots/footer-dark-mode-readable.png) | — | — | no | — |
 | 152 | 679 | `checklist-design-ux-footer-theme-footer-mobile-accordions` | ON MOBILE, the footer's collapsible link sections still open and close correctly, and thei | design-ux/footer-theme | guest | ✅ pass | YES — every clause, including the one the case singles out about height, which I measured rather than eyeballed. ✅ COLLAPSED BY DEFAULT. At 390px the five columns become five <button aria-expanded="false"> accordions — Shop, Support, For… | [shot](../tester/.tester-runs/run-3/shots/footer-mobile-accordions-390.png) | — | — | no | — |
+| 153 | 680 | `checklist-public-pages-help-scams-guides-subpages-help-subpages-load` | All four help sub-pages — account, auctions, orders, shopping — load with real content and | public-pages/help-scams-guides-subpages--guest | guest | ✅ pass | YES — all four load with real, distinct content and all four are linked from the parent. ✅ FOUR 200s WITH SUBSTANTIAL BODIES: /help/account (4,999 chars, h1 'Account & Safety'), /help/auctions (5,476, 'Auctions & Pre-orders'), /help/orde… | [shot](../tester/.tester-runs/run-3/shots/seller-guide-empty-shell.png) | — | — | no | — |
+| 153 | 681 | `checklist-public-pages-help-scams-guides-subpages-help-subpages-linked-both-ways` | Each help sub-page links back to /help, and /help links forward to each of them | public-pages/help-scams-guides-subpages--guest | guest | ✅ pass | YES — both directions, checked per page rather than sampled. ✅ FORWARD: /help links to all four — /help/shopping, /help/auctions, /help/orders, /help/account. ✅ BACK: every one of the four carries a link to /help. I checked each individu… | [shot](../tester/.tester-runs/run-3/shots/seller-guide-empty-shell.png) | — | — | no | — |
+| 153 | 682 | `checklist-public-pages-help-scams-guides-subpages-help-subpage-content-matches-title` | Each help sub-page's content is about its own topic rather than repeating the parent page' | public-pages/help-scams-guides-subpages--guest | guest | ✅ pass | YES — four distinct bodies, and I measured the overlap rather than skim-reading for difference. ✅ EACH IS ON ITS OWN TOPIC, visible in the h1 and title pairs: 'Account & Safety', 'Auctions & Pre-orders', 'Orders, Returns & Support', 'Sho… | [shot](../tester/.tester-runs/run-3/shots/seller-guide-empty-shell.png) | — | — | no | — |
+| 153 | 683 | `checklist-public-pages-help-scams-guides-subpages-scams-types-page-loads` | The scam types page lists the real scam categories the registry uses, not a shorter hand-w | public-pages/help-scams-guides-subpages--guest | guest | ✅ pass | YES — the page lists the full canonical set, not a subset, and I settled it against the type union rather than by counting what looked like enough. ✅ IT RENDERS 7 CATEGORY GROUPS AND 27 NAMED SCAM TYPES. The groups (h2) are Price Manipul… | [shot](../tester/.tester-runs/run-3/shots/seller-guide-empty-shell.png) | — | — | no | — |
+| 153 | 684 | `checklist-public-pages-help-scams-guides-subpages-scams-faqs-page-loads` | The scams FAQ page loads with real questions and answers rather than an empty accordion | public-pages/help-scams-guides-subpages--guest | guest | ❌ fail | NO — but only on the console clause, and the content clause passes handsomely. I very nearly recorded the opposite and the near-miss is worth recording. 🛑 I FIRST MEASURED ZERO QUESTIONS and was about to report an empty accordion — the … | [shot](../tester/.tester-runs/run-3/shots/seller-guide-empty-shell.png) | — | — | no | — |
+| 153 | 685 | `checklist-public-pages-help-scams-guides-subpages-scams-subpages-linked-from-registry` | The /scams registry page links to the types, FAQ and report pages | public-pages/help-scams-guides-subpages--guest | guest | ❌ fail | NO — the registry links to neither its types page nor its FAQ page. Counted in the browser: linksToTypes 0, linksToFaqs 0. expectedData.unlinkedScamSubpages = 2. WHAT /scams DOES LINK TO: /scams/report (twice) and three scammer detail pa… | [shot](../tester/.tester-runs/run-3/shots/seller-guide-empty-shell.png) | — | — | no | — |
+| 153 | 686 | `checklist-public-pages-help-scams-guides-subpages-public-seller-guide-loads` | The PUBLIC seller guide at /seller-guide loads and is distinct from the seller dashboard's | public-pages/help-scams-guides-subpages--guest | guest | ❌ fail | NO — it renders no content at all. Not thin, not a copy of the dashboard manual: empty. 🛑 WHAT A VISITOR SEES: header, the breadcrumb 'Home / Seller guide', a blank white gap, the trust strip, the footer. The screenshot shows exactly th… | [shot](../tester/.tester-runs/run-3/shots/seller-guide-empty-shell.png) | — | — | no | — |
+| 153 | 687 | `checklist-public-pages-help-scams-guides-subpages-public-seller-guide-subpages-load` | The seller-guide bundles and prize-draws pages load with real content and are linked from  | public-pages/help-scams-guides-subpages--guest | guest | ❌ fail | NO — both sub-pages are good; the clause that fails is 'linked from /seller-guide', and it fails because the parent has no body to link from. ✅ BOTH LOAD WITH REAL CONTENT, verified in the browser rather than from fetched HTML: /seller-g… | [shot](../tester/.tester-runs/run-3/shots/seller-guide-empty-shell.png) | — | — | no | — |
+| 153 | 688 | `checklist-public-pages-help-scams-guides-subpages-seller-guide-reachable-signed-out` | A signed-out visitor can reach the public seller guide from the site, without being asked  | public-pages/help-scams-guides-subpages--guest | guest | ❌ fail | NO — the route is reachable and no sign-in is demanded, but the page it reaches is blank, so the call to action the case requires does not exist. Two clauses of three. ✅ IT IS DISCOVERABLE WITHOUT SIGNING IN. From the homepage footer's F… | [shot](../tester/.tester-runs/run-3/shots/seller-guide-empty-shell.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
