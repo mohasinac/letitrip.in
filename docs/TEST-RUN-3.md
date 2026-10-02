@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **139 / 255** |
-| Cases | **616 / 1847** (33%) |
-| Cycle | 28 of 51 |
+| Batches | **140 / 255** |
+| Cases | **623 / 1847** (34%) |
+| Cycle | 29 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 12:33 UTC |
+| Last updated | 2026-10-02 12:40 UTC |
 
 ```
-pass 247 · fail 107 · null 262
-fixed 35/107 · deferred 36 · open 36 · needs-human 7
+pass 250 · fail 108 · null 265
+fixed 35/108 · deferred 36 · open 37 · needs-human 7
 ```
 
-> ▸ **36 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **37 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -731,5 +731,12 @@ untouched list is one nobody reads by milestone three.
 | 139 | 614 | `checklist-design-ux-hand-mode-layout-nav-scroll-arrows-unaffected` | Left-hand mode does NOT flip the main navigation bar's overflow scroll chevrons — the left | design-ux/hand-mode-layout--p2 | main | ✅ pass | YES — the nav overflow chevron does not move, and I have it at the same pixel in both modes. At 1280px the main navigation row overflows its container, and its scroll control renders as 'Scroll navigation right' at x=1231 — the RIGHT sid… | [shot](../tester/.tester-runs/run-3/shots/lefthand-bottom-nav-reversed.png) | — | — | no | — |
 | 139 | 615 | `checklist-design-ux-hand-mode-layout-header-tab-order-sane` | With Left-hand mode ON, pressing Tab repeatedly from the top of the page still reaches eve | design-ux/hand-mode-layout--p2 | main | ✅ pass | YES — every top-bar control is reachable, nothing skipped, nothing trapped. I walked focus from the top of the page with a real Tab press and then followed the focusable sequence, and it reached ALL ELEVEN header controls in order: wordm… | [shot](../tester/.tester-runs/run-3/shots/lefthand-bottom-nav-reversed.png) | — | — | no | — |
 | 139 | 616 | `checklist-design-ux-hand-mode-layout-hand-mode-no-fouc` | On a hard page reload with Left-hand mode already ON, panels/sidebars AND the top bar / bo | design-ux/hand-mode-layout--p2 | main | ✅ pass | YES — no flash, and the evidence is that there is no frame without it. I hard-navigated to /user at 390px with the mode already on and polled from t=0 WITHOUT waiting first — ten samples at 400ms intervals, 0ms through 3600ms. Every sing… | [shot](../tester/.tester-runs/run-3/shots/lefthand-bottom-nav-reversed.png) | — | — | no | — |
+| 140 | 617 | `checklist-selling-seller-orders-view-orders` | Seller order list shows accurate incoming orders | selling/seller-orders--seller | seller | ✅ pass | YES — and worth contrasting with /store/classified from batch 134, which renders rows with no titles at all. This list is properly wired. EVERY ROW CARRIES FOUR REAL FIELDS: an item thumbnail, the product title (with a '+1 more' suffix o… | [shot](../tester/.tester-runs/run-3/shots/seller-order-shipped-tracking-not-shown.png) | — | — | no | — |
+| 140 | 618 | `checklist-selling-seller-orders-seller-order-manual-payment-badge` | A manual-payment (UPI/Cash) order's seller detail shows a payment badge — Awaiting payment | selling/seller-orders--seller | seller | ✅ pass | YES on both halves, and I saw two different badge states rather than assuming the set. ✅ THE BADGE IS THERE AND IT IS ONE OF THE FIVE THE CASE NAMES. On order-1-20261002-od3ign the Payment block reads 'Awaiting payment' with method 'Cash… | [shot](../tester/.tester-runs/run-3/shots/seller-order-shipped-tracking-not-shown.png) | — | — | no | — |
+| 140 | 619 | `checklist-selling-seller-orders-seller-order-detail-full-page` | Every seller order row has an "Open full page" action landing on a real bookmarkable /stor | selling/seller-orders--seller | seller | ✅ pass | YES — a real, bookmarkable page, and I proved the bookmarkable part the only way that counts: by typing the URL rather than by clicking the action. ✅ THE ACTION EXISTS ON EVERY ROW. Each row carries two reveal buttons: 'View order detail… | [shot](../tester/.tester-runs/run-3/shots/seller-order-shipped-tracking-not-shown.png) | — | — | no | — |
+| 140 | 620 | `checklist-selling-seller-orders-mark-shipped` | Marking an order shipped with tracking info works | selling/seller-orders--seller | seller | ❌ fail | NO — the write is perfect and the seller cannot see what they wrote. Those are worth keeping apart, so here they are in order. ✅ THE SAVE WORKS, with the case's literal inputs. I set New status to Shipped, typed trackingNumber 'QATRACK11… | [shot](../tester/.tester-runs/run-3/shots/seller-order-shipped-tracking-not-shown.png) | — | — | no | — |
+| 140 | 621 | `checklist-selling-seller-orders-confirm-payment` | Approving a buyer's manual payment proof works | selling/seller-orders--seller | seller | ⬜ null | NULL — and the reason is that the case's premise does not match the product's design, which is more useful than a fail. The case asks a SELLER to approve a buyer's manual payment proof. There is no such control on any seller surface. I r… | [shot](../tester/.tester-runs/run-3/shots/seller-order-shipped-tracking-not-shown.png) | — | — | no | — |
+| 140 | 622 | `checklist-selling-seller-orders-whatsapp-admin-share` | Uploading payment proof pings the admin WhatsApp numbers, and the buyer's "Share for revie | selling/seller-orders--seller | seller | ⬜ null | NULL — needs the buyer to upload a proof and a WhatsApp account, neither of which this batch's identity can supply. The case has two halves and both are out of reach from a seller session: an upload by the BUYER triggers the admin WhatsA… | [shot](../tester/.tester-runs/run-3/shots/seller-order-shipped-tracking-not-shown.png) | — | — | no | — |
+| 140 | 623 | `checklist-selling-seller-orders-seller-auction-forfeit-notification` | When a winning bidder fails to pay by the deadline, the SELLER also receives a notificatio | selling/seller-orders--seller | seller | ⬜ null | NULL — the event it depends on cannot be staged in a session. The case needs a winning bidder to MISS a payment deadline, after which the seller should be notified that the win was forfeited and the item is unsold. That transition is mad… | [shot](../tester/.tester-runs/run-3/shots/seller-order-shipped-tracking-not-shown.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
