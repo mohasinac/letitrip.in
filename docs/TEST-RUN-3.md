@@ -37,14 +37,14 @@ what still needs a human.
 | Cases | **871 / 1847** (47%) |
 | Cycle | 36 of 51 |
 | Next deploy | batch 200 |
-| Last updated | 2026-10-02 22:38 UTC |
+| Last updated | 2026-10-02 22:59 UTC |
 
 ```
 pass 339 · fail 167 · null 365
-fixed 35/167 · deferred 36 · open 96 · needs-human 7
+fixed 36/167 · deferred 36 · open 95 · needs-human 7
 ```
 
-> ▸ **96 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **95 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -972,7 +972,7 @@ untouched list is one nobody reads by milestone three.
 | 175 | 855 | `checklist-content-discovery-search-search-nonsense-term-returns-nothing` | Searching "zzzznope" anywhere returns ZERO results | content-discovery/search--admin | admin | ✅ pass | No surface returns rows for a term that cannot match. Each measured with its own unfiltered control, so the comparison is real rather than assumed: /admin/products 50 rows (total 76) -> 0; /admin/orders 50 -> 0; /admin/users 50 (total 81… | [shot](../tester/.tester-runs/run-3/shots/b175-control-pass.png) | — | — | no | — |
 | 175 | 856 | `checklist-content-discovery-search-search-finds-older-records` | An OLDER listing - one that existed before this feature shipped - is findable by name | content-discovery/search--admin | admin | ❌ fail | 🛑 THE BACKFILL GAP IS LIVE, and the fixture detected exactly what it exists to detect. On /admin/products, searching the word 'untokenised' returns ZERO rows - product-w1-untokenised is not found by a word from its own title. The contro… | [shot](../tester/.tester-runs/run-3/shots/b175-control-fail.png) | — | — | no | — |
 | 176 | 857 | `checklist-public-pages-bug-hunters-leaderboard-loads` | The public Bug Hunters leaderboard (/bug-hunters) loads and lists testers ranked by confir | public-pages/bug-hunters--guest | guest | ✅ pass | The board loads and the bot exclusion holds, which is the part that matters. Signed out (/api/user/profile 401), /bug-hunters serves a page titled 'Bug Hunters Leaderboard - LetItRip' with the heading 'Bug Hunters Leaderboard' and the su… | [shot](../tester/.tester-runs/run-3/shots/b176-bug-hunters-board.png) | — | — | no | — |
-| 176 | 858 | `checklist-public-pages-bug-hunters-leaderboard-footer-link` | A "Bug Hunters" link is present in the site footer's Support column and navigates to /bug- | public-pages/bug-hunters--guest | guest | ❌ fail | 🛑 THERE IS NO 'BUG HUNTERS' LINK IN THE FOOTER, OR ANYWHERE ON THE HOMEPAGE. The footer's SUPPORT column holds ten links and none of them is it: Help Centre (/help), FAQs (/faqs), Contact Us (/contact), Track Order (/track), About Us (/… | [shot](../tester/.tester-runs/run-3/shots/b176-footer-no-bug-hunters.png) | — | — | no | — |
+| 176 | 858 | `checklist-public-pages-bug-hunters-leaderboard-footer-link` | A "Bug Hunters" link is present in the site footer's Support column and navigates to /bug- | public-pages/bug-hunters--guest | guest | ❌ fail | 🛑 THERE IS NO 'BUG HUNTERS' LINK IN THE FOOTER, OR ANYWHERE ON THE HOMEPAGE. The footer's SUPPORT column holds ten links and none of them is it: Help Centre (/help), FAQs (/faqs), Contact Us (/contact), Track Order (/track), About Us (/… | [shot](../tester/.tester-runs/run-3/shots/b176-footer-no-bug-hunters.png) | Added the missing Bug Hunters entry to the footer Support column. The page and ROUTES.PUBLIC.BUG_HUNTERS both already existed; nothing linked to them. | `navigation.tsx` | no | ✅ pass |
 | 177 | 859 | `checklist-public-pages-bug-hunters-leaderboard-empty-state` | If no bugs have been confirmed yet, the leaderboard shows a clear "No confirmed bugs yet"  | public-pages/bug-hunters--admin | admin | ⬜ null | Step 3 cannot be performed: THERE IS NO UN-CONFIRM CONTROL. /admin/tester-feedback → Main Issues shows Phase 1 (2 issues), both reported by Mock User 3. The first is the already-confirmed v1 fixture and its status renders as STATIC TEXT … | [shot](../tester/.tester-runs/run-3/shots/b177-no-unconfirm-control.png) | — | — | no | — |
 | 178 | 860 | `checklist-buying-buying-coupons-coupon-help-visible-cart` | The cart's order summary has an expandable "How coupons work" panel, collapsed by default | buying/buying-coupons--p1 | main | ⬜ null | 🛑 CORRECTED. My first record of this batch said the identity does not exist. That was WRONG and the error was in my check, not the data: I looked up users/user-vivaan-kapoor and read its absence as the user's absence. The account EXISTS… | [shot](../tester/.tester-runs/run-3/shots/b178-control-pass.png) | — | — | no | — |
 | 178 | 861 | `checklist-buying-buying-coupons-coupon-help-visible-checkout` | The checkout coupon box has the same "How coupons work" panel, and it mentions re-checking | buying/buying-coupons--p1 | main | ⬜ null | 🛑 CORRECTED. My first record of this batch said the identity does not exist. That was WRONG and the error was in my check, not the data: I looked up users/user-vivaan-kapoor and read its absence as the user's absence. The account EXISTS… | [shot](../tester/.tester-runs/run-3/shots/b178-control-pass.png) | — | — | no | — |
