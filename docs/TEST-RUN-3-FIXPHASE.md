@@ -174,3 +174,21 @@ being shown to visitors as listing categories.
 listing must scope `categoryType`. Verify by re-running the network capture:
 request 70 must carry `sort=tier%3AASC`, and no `brand-` or `bundle-` prefixed
 id may appear in the rendered list.
+
+### 🛑 Shell trap, hit TWICE on 2026-10-03 — use a heredoc, not `node -e "..."`
+
+Writing markdown that contains backticks through `node -e "..."` in Bash lets
+the shell run the backticked spans as command substitution BEFORE node sees
+the string. Both times it silently deleted the code spans and left mangled
+prose (`" vs the stored "`), and the second time it actually executed `grep`.
+The script still printed its success message, so nothing looked wrong.
+
+Write the script to a file with a quoted heredoc and run it:
+
+    cat > /tmp/edit.mjs <<'ENDOFSCRIPT'
+    ...script with backticks, safe...
+    ENDOFSCRIPT
+    node /tmp/edit.mjs
+
+The quoted delimiter is what disables substitution. Then READ BACK the edited
+region — a mangled doc edit that reports success is worse than a failed one.

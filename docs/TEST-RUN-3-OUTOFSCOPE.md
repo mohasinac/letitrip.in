@@ -4,7 +4,7 @@
 > (3 of those are the document's own structure headings, so ~141 real findings).
 >
 > **This list has already cost a turn.** Section 6 is
-> " vs the stored " — an earlier batch
+> "`OrderDocument.totalAmount` vs the stored `totalPrice`" — an earlier batch
 > recorded it, nobody decided on it, and on 2026-10-03 I rediscovered the same
 > defect from scratch and spent several steps proving it before noticing the
 > entry. That is exactly the failure the fix-cycle hook warns about: an
@@ -13,7 +13,8 @@
 > **Before the next fix cycle, do a DECISION PASS** — every section gets one of
 > three: promoted to a gap case, fixed, or explicitly left standing WITH a
 > reason. Not read. Decided. Mark decided sections with ✅ so the open count is
-> computable () rather than estimated.
+> computable (count `^## ` headings, subtract those starting `## ✅`) rather
+> than estimated.
 
 **G4.** Every fix in [TEST-RUN-3.md](TEST-RUN-3.md) names the case id that found
 it. Anything noticed that **no case found** is recorded here and left alone.
