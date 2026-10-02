@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **173 / 255** |
-| Cases | **847 / 1847** (46%) |
+| Batches | **174 / 255** |
+| Cases | **849 / 1847** (46%) |
 | Cycle | 35 of 51 |
 | Next deploy | batch 175 |
-| Last updated | 2026-10-02 21:38 UTC |
+| Last updated | 2026-10-02 21:51 UTC |
 
 ```
-pass 335 · fail 163 · null 349
-fixed 35/163 · deferred 36 · open 92 · needs-human 7
+pass 335 · fail 165 · null 349
+fixed 35/165 · deferred 36 · open 94 · needs-human 7
 ```
 
-> ▸ **92 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **94 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -962,5 +962,7 @@ untouched list is one nobody reads by milestone three.
 | 173 | 845 | `checklist-content-discovery-search-search-faq-category-page` | Opening a FAQ category page renders its questions | content-discovery/search--guest | guest | ⬜ null | Not driven - capacity. The case is explicit that reading the counters on /faqs is not an answer to it, so a partial attempt would have been worthless: it requires clicking into the Shipping category page, expanding an answer, reading the… | [shot](../tester/.tester-runs/run-3/shots/b173-control-fail.png) | — | — | no | — |
 | 173 | 846 | `checklist-content-discovery-search-search-scams-listing` | /scams lists the verified scammer profiles | content-discovery/search--guest | guest | ⬜ null | Not driven - capacity. Recording the specific thing the case points at, because it is more precise than the case text makes obvious: its expectedBehaviour warns that the status values shown must be ones the documents actually hold, and t… | [shot](../tester/.tester-runs/run-3/shots/b173-control-fail.png) | — | — | no | — |
 | 173 | 847 | `checklist-content-discovery-search-search-store-event-blog-review` | Store, event, blog and review searches each return matches | content-discovery/search--guest | guest | ⬜ null | Not driven - capacity, and this is the case I would run next of the four outstanding, because its own expectedBehaviour names the shape precisely: 'Each is a separate wiring - a search that renders on all four and works on three is the n… | [shot](../tester/.tester-runs/run-3/shots/b173-control-fail.png) | — | — | no | — |
+| 174 | 848 | `checklist-content-discovery-search-search-keeps-sort` | Changing the sort while a search term is active re-orders the results and keeps the term | content-discovery/search | main | ❌ fail | 🛑 THE SORT IS SILENTLY IGNORED THE MOMENT A SEARCH TERM IS PRESENT. The precondition passes first, which is what makes the finding clean. With NO term, signed in as rehan.sheikh@gmail.com: 'Price: Low to High' wrote ?sort=price and rend… | [shot](../tester/.tester-runs/run-3/shots/b174-sort-ignored-with-search.png) | — | — | no | — |
+| 174 | 849 | `checklist-content-discovery-search-search-keeps-facets` | On /products, searching keeps the price, tag and availability facets working | content-discovery/search | main | ❌ fail | 🛑 THE PRICE-RANGE FACET MATCHES NOTHING AT ALL, and only one of the three named facets even exists. Baseline: /products?q=beyblade renders 24 cards with prices including 1,099, 949, 899, 799, 450 and 1,599. Setting the facet's minimum t… | [shot](../tester/.tester-runs/run-3/shots/b174-price-facet-returns-zero.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
