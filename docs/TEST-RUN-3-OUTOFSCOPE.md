@@ -2605,3 +2605,36 @@ picker; the navbar active marker; four crop-editor i18n keys.
 | `TESTER_THROWAWAY_*` identity | **awaiting the user's decision** — would unblock the sign-out and manual-payment families |
 | Five manual-payment cases | blocked on a fixture that no static seed can provide |
 | No 4+ item order fixture | blocks the "+N more" assertion |
+
+## RETRACTION — store Capabilities was never broken; "Platform 0/7" is a per-category counter
+
+The G5 overflow carried since milestone 1 had two halves, and re-driving
+production settled both. The **capabilities** half was a false finding of mine.
+
+The group renders **"Capabilities(5 active) · LISTINGS 4/7 · TRUST & VISIBILITY
+1/4 · PLATFORM 0/7"** against a document holding exactly five. `0/7` is the
+**Platform category's** count, and none of this store's five capabilities belong
+to it. The original batch-6 symptom — reported as "Platform 0/7" — was one
+category's counter read as the whole control's state.
+
+The queued next-step had itself warned about this: *"the batch-6 symptom was
+'Platform 0/7', which is neither the stored 5 NOR the 2-item default, so confirm
+what the capabilities GROUP renders from before assuming the value is the
+problem."* That instinct was right, and it is why the entry was overflowed rather
+than fixed on a guess.
+
+**The adminNotes half was real** and is fixed in 4.42.9 — the textarea now reads
+the stored `RT3-probe` where it previously read `""`, and a note can now be
+cleared (the payload sent `|| undefined`, which the route skipped, so clearing
+was impossible). See the fix ledger.
+
+### `fixQueue` is now empty
+
+All four original G5 overflows are resolved or retracted:
+
+| Overflow | Outcome |
+|---|---|
+| Store `adminNotes` / `capabilities` | adminNotes **fixed** (4.42.9); capabilities **retracted** as a false finding |
+| Code-filter opengraph flood | superseded — the finding it blocked was re-measured by driving the control in the UI |
+| `SectionForm` `submitAttempted` | superseded — Root Cause #74's gate was confirmed working on the address form this run |
+| Listing-type redirect into `src/proxy.ts` | left standing: it is a routing change, and the entry's own next-step says to confirm each pair renders before touching anything |
