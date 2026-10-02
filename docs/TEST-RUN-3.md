@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **136 / 255** |
-| Cases | **597 / 1847** (32%) |
+| Batches | **137 / 255** |
+| Cases | **598 / 1847** (32%) |
 | Cycle | 28 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 12:13 UTC |
+| Last updated | 2026-10-02 12:17 UTC |
 
 ```
-pass 234 · fail 104 · null 259
+pass 235 · fail 104 · null 259
 fixed 35/104 · deferred 36 · open 33 · needs-human 7
 ```
 
@@ -712,5 +712,6 @@ untouched list is one nobody reads by milestone three.
 | 136 | 595 | `checklist-buying-bidding-bid-increment-live-tier-change` | The displayed "min increment" on an open auction updates live (without a page refresh) if  | buying/bidding--p2 | main | ⬜ null | NULL — needs a second bidder AND the live update that is already broken. The case wants another bidder's bid to push the current bid across ₹5,000 so the displayed increment changes from ₹200 to ₹500 WITHOUT a page refresh. TWO SEPARATE … | [shot](../tester/.tester-runs/run-3/shots/opening-bid-at-starting-price-refused.png) | — | — | no | — |
 | 136 | 596 | `checklist-buying-bidding-bid-preset-follows-live-price` | With a quick-bid preset selected, another bidder raising the price updates the amount in t | buying/bidding--p2 | main | ⬜ null | NULL — same two blockers, and the second one makes the case's premise worth re-examining rather than just retrying. It asks that with a preset selected, another bidder raising the price updates the amount in the field so no stale, too-lo… | [shot](../tester/.tester-runs/run-3/shots/opening-bid-at-starting-price-refused.png) | — | — | no | — |
 | 136 | 597 | `checklist-buying-bidding-outbid-notification-goes-to-outbid-user` | The outbid notification goes to the bidder who actually lost the lead — and only when some | buying/bidding--p2 | main | ⬜ null | NULL — needs two bidders and another user's notification inbox, and I would not read the latter even if I could. The case asserts the outbid notification reaches the bidder who actually lost the lead and only when someone genuinely takes… | [shot](../tester/.tester-runs/run-3/shots/opening-bid-at-starting-price-refused.png) | — | — | no | — |
+| 137 | 598 | `checklist-buying-bidding-server-error-copy-is-never-raw` | A server failure shows plain-English copy — never a file path, stack trace or "Cannot find | buying/bidding--admin | admin | ✅ pass | YES on both halves, and the second half independently corroborated a finding I made earlier in this run, which is the best kind of confirmation. ✅ THE USER-FACING COPY IS CLEAN. Every bid rejection I have driven in this session — and I d… | [shot](../tester/.tester-runs/run-3/shots/server-errors-80pct-og-pipe-failures.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
