@@ -2955,3 +2955,22 @@ inbox — and `verify-email-page`, the very next case, needs to open the
 verification mail. Registering on a plus-address of the harness mailbox instead
 would make both testable from one signup. That is a case rewrite, not a product
 fix.
+
+## Two smaller things noticed on the cart while cleaning up after batch 147
+
+Neither was in that batch's scope. Both are one-line observations with the
+measurement attached, not investigations.
+
+**"Remove all" on /cart did nothing.** Two items in the cart, clicked the
+`Remove all` button, waited: no confirmation dialog appeared and the cart still
+held 2 items with the badge reading "Cart, 2 items". Removing the lines
+individually with their ✕ buttons worked immediately and emptied the cart. It
+may be that `Remove all` requires a prior selection (the page also has
+"Select all (2 items)"), in which case the label is the problem rather than the
+handler — but a destructive-sounding control that silently does nothing is worth
+a case either way. There is already a catalogue case about the remove-all
+confirmation; this belongs with it.
+
+**One money formatter on the cart omits the thousands separator.** The
+per-seller subtotal renders `₹1898.00` while the summary directly below renders
+`₹1,898.00` for the same number. Two formatters on one screen, disagreeing.
