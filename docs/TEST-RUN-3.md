@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **116 / 255** |
-| Cases | **509 / 1847** (28%) |
+| Batches | **117 / 255** |
+| Cases | **511 / 1847** (28%) |
 | Cycle | 24 of 51 |
 | Next deploy | batch 125 |
-| Last updated | 2026-10-02 06:57 UTC |
+| Last updated | 2026-10-02 07:03 UTC |
 
 ```
-pass 205 · fail 74 · null 230
+pass 206 · fail 74 · null 231
 fixed 26/74 · deferred 38 · open 10 · needs-human 7
 ```
 
@@ -624,5 +624,7 @@ untouched list is one nobody reads by milestone three.
 | 116 | 507 | `checklist-cta-layout-navbar-ctas-header-ctas-all-navigate` | Every control in the public header navigates somewhere real — none is inert | cta-layout/navbar-ctas--guest | guest | ✅ pass | YES - zero dead header controls, and I clicked every one rather than reading hrefs. IDENTITY VERIFIED FIRST: signed out. The header offers 'Sign in' and 'Register'; no account menu (scoped the check to the header's own account area, beca… | [shot](../tester/.tester-runs/run-3/shots/guest-header-ctas-all-live.png) | — | — | no | — |
 | 116 | 508 | `checklist-cta-layout-navbar-ctas-mobile-nav-opens-and-closes` | The mobile navigation opens, closes, and closes again after a link is followed | cta-layout/navbar-ctas--guest | guest | ✅ pass | YES on all three halves - it opens, it closes on its own control, and it closes itself after a link is followed, which is the half this case exists for. AT 390px (the case's literal input) the drawer opens from the header hamburger: a 31… | [shot](../tester/.tester-runs/run-3/shots/mobile-menu-open-state.png) | — | — | no | — |
 | 116 | 509 | `checklist-cta-layout-navbar-ctas-nav-active-state-correct` | The navigation marks the section the visitor is actually in | cta-layout/navbar-ctas--guest | guest | ❌ fail | NO - the marker is correct on every listing page and follows the back button, but it is ABSENT on the product detail page, which the case's expectedUiState names explicitly ('including the detail page'). WHAT I MEASURED, step by step: / … | [shot](../tester/.tester-runs/run-3/shots/nav-marker-absent-on-detail-page.png) | FIXED IN SOURCE, re-verification deferred to the batch-125 milestone because it is an appkit change and needs a publish+deploy to observe. ROOT CAUSE located exactly: NavbarLayout.tsx resolved its active item with 'activeHref === item.hr… | `NavbarLayout.tsx` | no | deferred-to-milestone |
+| 117 | 510 | `checklist-cta-layout-navbar-ctas-header-cart-badge-live` | The header's cart control shows a live item count that follows the cart | cta-layout/navbar-ctas | main | ✅ pass | YES - the badge tracked every single change with no reload, and stayed correct across navigation. IDENTITY VERIFIED FIRST: signed in as the buyer, header reads 'Profile — Mock User 3', no sign-in link. STEP 1, THE PRECONDITION THE CASE I… | [shot](../tester/.tester-runs/run-3/shots/cart-badge-tracks-live.png) | — | — | no | — |
+| 117 | 511 | `checklist-cta-layout-navbar-ctas-header-signed-out-vs-in` | The header offers sign-in when signed out and an account menu when signed in, and switches | cta-layout/navbar-ctas | main | ⬜ null | NULL at step 3, and the reason is a deliberate harness constraint I verified in source rather than guessed at. WHAT THE CASE NEEDS: sign in from the header control (step 3), then SIGN OUT (step 6), reading the header after each without r… | [shot](../tester/.tester-runs/run-3/shots/cart-badge-tracks-live.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->

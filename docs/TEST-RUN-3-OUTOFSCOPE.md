@@ -2032,3 +2032,49 @@ run is permitted to log out of. Both end states can still be verified separately
 is unfortunate because the transition is the part that fails silently in a
 non-remounting shell. Worth deciding before the next run: add a
 `TESTER_THROWAWAY_*` identity, or mark these cases human-only.
+
+## `/admin/site` — the section body renders nothing, for every section
+
+Re-verified 2026-10-02 (previously logged, now with the mechanism right). As a
+confirmed admin the page renders: the "Site Settings" heading, a section
+`<select>` carrying all 20 options (⓪ About … ③ Announcement … ⑱ Listings), a
+collapsed "① Branding" accordion header — and no fields at all. One `<input>`
+on the whole page, and that one is the sidebar's nav search box. A live **"Save
+all changes"** button sits below the void.
+
+Switching the select to `announcement` and polling 8s changes nothing: 1 input,
+0 `role="switch"`, 0 `<label>`. So it is not Branding-specific — **no section
+renders a body**, and an admin can press Save on a form with no fields.
+
+🛑 **Correction to the earlier entry's mechanism.** Reading `innerText` makes
+the 20 section names look like an inert text "tab strip", and that is what I
+nearly filed. The screenshot shows a single dropdown, and the DOM confirms the
+names are `<option>`s of one `<select>` — which is also why a search for a
+clickable element containing "Announcement" returned nothing. **The tab
+mechanism is fine; the section body is what is missing.** Those are different
+bugs with different fixes.
+
+What still works, so the blast radius is bounded: `GET /api/site-settings`
+returns `announcementBar = { enabled: true, message: "🎉 Up to 25% off select
+listings + free shipping on orders above ₹999 — See Events for codes", link:
+"/events" }` — canonical `message` key, no stale `text` key — and the bar
+renders that exact copy. Stored value correct, renderer correct, editor
+unusable. Every Site-Settings-authoring case in the catalogue is blocked behind
+this one defect.
+
+## The account menu's collapsible sections announce no state
+
+PROFILE / DASHBOARD / BROWSE / SUPPORT in the public account drawer are
+`<button>`s with **no `aria-expanded` and no `aria-controls`**, so a screen
+reader is not told they are collapsible or whether they are open. They work
+visually — all four expand on click. Found 2026-10-02 while enumerating the menu
+for `checklist-cta-layout-navbar-ctas-role-specific-nav-entries`.
+
+## `/user/settings` has no heading element
+
+Zero `h1`–`h4` anywhere in `<main>`; the visible "Settings" is not a heading.
+The page itself works (Account/Notifications/Privacy/Appearance tabs, account
+info, Change Email / Linked Accounts / Change Password, 3 inputs), so this is a
+document-semantics gap rather than a broken page — but it leaves the route with
+no accessible or machine-readable title. Adjacent to the "12 generic page
+titles" entry above.
