@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **140 / 255** |
-| Cases | **623 / 1847** (34%) |
+| Batches | **141 / 255** |
+| Cases | **625 / 1847** (34%) |
 | Cycle | 29 of 51 |
 | Next deploy | batch 150 |
-| Last updated | 2026-10-02 12:40 UTC |
+| Last updated | 2026-10-02 12:45 UTC |
 
 ```
-pass 250 · fail 108 · null 265
+pass 250 · fail 108 · null 267
 fixed 35/108 · deferred 36 · open 37 · needs-human 7
 ```
 
@@ -738,5 +738,7 @@ untouched list is one nobody reads by milestone three.
 | 140 | 621 | `checklist-selling-seller-orders-confirm-payment` | Approving a buyer's manual payment proof works | selling/seller-orders--seller | seller | ⬜ null | NULL — and the reason is that the case's premise does not match the product's design, which is more useful than a fail. The case asks a SELLER to approve a buyer's manual payment proof. There is no such control on any seller surface. I r… | [shot](../tester/.tester-runs/run-3/shots/seller-order-shipped-tracking-not-shown.png) | — | — | no | — |
 | 140 | 622 | `checklist-selling-seller-orders-whatsapp-admin-share` | Uploading payment proof pings the admin WhatsApp numbers, and the buyer's "Share for revie | selling/seller-orders--seller | seller | ⬜ null | NULL — needs the buyer to upload a proof and a WhatsApp account, neither of which this batch's identity can supply. The case has two halves and both are out of reach from a seller session: an upload by the BUYER triggers the admin WhatsA… | [shot](../tester/.tester-runs/run-3/shots/seller-order-shipped-tracking-not-shown.png) | — | — | no | — |
 | 140 | 623 | `checklist-selling-seller-orders-seller-auction-forfeit-notification` | When a winning bidder fails to pay by the deadline, the SELLER also receives a notificatio | selling/seller-orders--seller | seller | ⬜ null | NULL — the event it depends on cannot be staged in a session. The case needs a winning bidder to MISS a payment deadline, after which the seller should be notified that the win was forfeited and the item is unsold. That transition is mad… | [shot](../tester/.tester-runs/run-3/shots/seller-order-shipped-tracking-not-shown.png) | — | — | no | — |
+| 141 | 624 | `checklist-selling-seller-orders-request-reupload` | Requesting a proof re-upload (honest-mistake tier) clears the proof and extends the buyer' | selling/seller-orders--admin | admin | ⬜ null | WHAT I ESTABLISHED, AND WHY BOTH CASES STOP AT THE SAME PLACE. ✅ STEP 2 PASSES ON BOTH — the seller has no such control. I verified that in the sibling seller batch, first-hand: on both a 'Awaiting payment' order and a 'Verified' one, th… | [shot](../tester/.tester-runs/run-3/shots/admin-payment-proof-404-no-review-controls.png) | — | — | no | — |
+| 141 | 625 | `checklist-selling-seller-orders-reject-fraud` | Rejecting a proof as fraudulent cancels the order, restores stock, and bans the buyer's ac | selling/seller-orders--admin | admin | ⬜ null | WHAT I ESTABLISHED, AND WHY BOTH CASES STOP AT THE SAME PLACE. ✅ STEP 2 PASSES ON BOTH — the seller has no such control. I verified that in the sibling seller batch, first-hand: on both a 'Awaiting payment' order and a 'Verified' one, th… | [shot](../tester/.tester-runs/run-3/shots/admin-payment-proof-404-no-review-controls.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
