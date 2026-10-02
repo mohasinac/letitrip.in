@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **118 / 255** |
-| Cases | **514 / 1847** (28%) |
+| Batches | **119 / 255** |
+| Cases | **522 / 1847** (28%) |
 | Cycle | 24 of 51 |
 | Next deploy | batch 125 |
-| Last updated | 2026-10-02 07:12 UTC |
+| Last updated | 2026-10-02 07:28 UTC |
 
 ```
-pass 208 · fail 75 · null 231
-fixed 26/75 · deferred 38 · open 11 · needs-human 7
+pass 212 · fail 79 · null 231
+fixed 26/79 · deferred 38 · open 15 · needs-human 7
 ```
 
-> ▸ **11 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **15 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -629,5 +629,13 @@ untouched list is one nobody reads by milestone three.
 | 118 | 512 | `checklist-cta-layout-navbar-ctas-account-menu-links-resolve` | Every item in the account menu lands on a real page for that role | cta-layout/navbar-ctas--admin | admin | ✅ pass | YES across all three roles, 0 dead menu links. I drove all three by swapping the harness session file (with browser_close between each, so the MCP re-reads it at context creation) - never by signing in or out, which would revoke refresh … | [shot](../tester/.tester-runs/run-3/shots/buyer-account-menu-no-dashboard.png) | — | — | no | — |
 | 118 | 513 | `checklist-cta-layout-navbar-ctas-role-specific-nav-entries` | A seller sees the store entry and a buyer does not, and an admin sees the admin entry | cta-layout/navbar-ctas--admin | admin | ✅ pass | YES - the three lists differ exactly as the case requires, and I compared them directly rather than inferring from one role. The role-specific entries are NOT in the top navbar - that bar is identical for every identity (the same 14 publ… | [shot](../tester/.tester-runs/run-3/shots/buyer-account-menu-no-dashboard.png) | — | — | no | — |
 | 118 | 514 | `checklist-cta-layout-navbar-ctas-announcement-bar-message-renders` | An announcement configured by an admin appears in the announcement bar | cta-layout/navbar-ctas--admin | admin | ❌ fail | NO at step 2 - and the blocker is a PRODUCT defect, not the PRESERVE-tier rule, which means I never had to touch Site Settings at all. 🛑 /admin/site RENDERS NO EDITABLE FIELDS FOR ANY SECTION. As the verified admin, the page shows the '… | [shot](../tester/.tester-runs/run-3/shots/admin-site-settings-inert-tabs.png) | — | — | no | — |
+| 119 | 515 | `checklist-public-pages-help-how-it-works-contact-page` | The contact page loads and the form submits correctly | public-pages/help-how-it-works--guest | guest | ✅ pass | YES on both halves, and the empty-submit half is a useful CONTRAST to the seller product form this run already failed: the primitives do the right thing here, so that form's missing summary was per-form, not a missing capability. Signed … | [shot](../tester/.tester-runs/run-3/shots/contact-form-sent.png) | — | — | no | — |
+| 119 | 516 | `checklist-public-pages-help-how-it-works-help-page` | The help page loads correctly | public-pages/help-how-it-works--guest | guest | ✅ pass | YES. Real content, and every link lands somewhere real - I checked the destinations rather than trusting the hrefs. /help renders h1 'How can we help you?' with h2 'Browse Topics' and 'Still need help?', plus a real body: six topic cards… | [shot](../tester/.tester-runs/run-3/shots/contact-form-sent.png) | — | — | no | — |
+| 119 | 517 | `checklist-public-pages-help-how-it-works-how-it-works-pages` | All 7 how-it-works pages (auctions, checkout, offers, orders, payouts, pre-orders, reviews | public-pages/help-how-it-works--guest | guest | ✅ pass | YES - all seven load, each with its own topic-specific heading set, and no two share copy. I compared the heading sets rather than skimming, because 'repeats another page's copy' is the failure mode that survives a casual read. /how-auct… | [shot](../tester/.tester-runs/run-3/shots/contact-form-sent.png) | — | — | no | — |
+| 119 | 518 | `checklist-public-pages-help-how-it-works-how-emi-works-page` | The how-EMI-works page loads and its worked example matches what checkout actually charges | public-pages/help-how-it-works--guest | guest | ✅ pass | YES on the claim this case exists to settle - the worked example matches what checkout actually charges, to the rupee, on every tenure. I derived each figure independently from the guide's own model before comparing, rather than reading … | [shot](../tester/.tester-runs/run-3/shots/checkout-emi-offered-25000.png) | — | — | no | — |
+| 119 | 519 | `checklist-public-pages-help-how-it-works-fees-page` | The fees page loads correctly | public-pages/help-how-it-works--guest | guest | ❌ fail | NO. The page publishes seller-side figures the case names as forbidden, and - more seriously than the case anticipated - it contradicts what checkout actually charges a buyer. WHAT IS THERE (full fee table): Platform Commission 5% / Sell… | [shot](../tester/.tester-runs/run-3/shots/contact-form-sent.png) | — | — | no | — |
+| 119 | 520 | `checklist-public-pages-help-how-it-works-how-auctions-work-matches-product` | What /how-auctions-work says about bidding, increments and what happens at the end matches | public-pages/help-how-it-works--guest | guest | ❌ fail | NO. The guide renders fully and is substantive, but one of its three claims names a UI affordance that does not exist, and the page contradicts itself about a deadline that forfeits a purchase. FIRST, A FIXTURE CORRECTION I MADE RATHER T… | [shot](../tester/.tester-runs/run-3/shots/contact-form-sent.png) | — | — | no | — |
+| 119 | 521 | `checklist-public-pages-help-how-it-works-how-pre-orders-work-matches-product` | What /how-pre-orders-work says about deposits and cancellation matches a real pre-order li | public-pages/help-how-it-works--guest | guest | ❌ fail | NO. The cancellation half matches exactly; the deposit half does not, and I proved it is absence rather than price-gating by reading the fixture's own data. THE GUIDE says: 'you pay a deposit (typically 20–50%) or the full price upfront'… | [shot](../tester/.tester-runs/run-3/shots/contact-form-sent.png) | — | — | no | — |
+| 119 | 522 | `checklist-public-pages-help-how-it-works-track-order-page-works` | The order-tracking page at /track is reachable from the footer and does something useful f | public-pages/help-how-it-works--guest | guest | ❌ fail | NO - and the blocker is not a harness limit. THE TRACKING FORM DOES NOT EXIST. STEPS 1-2 PASS: the footer's Support group does carry 'Track Order' -> /track, and it lands on /track, which renders a hero 'Track Your Order'. STEP 3 IS UNPE… | [shot](../tester/.tester-runs/run-3/shots/track-page-no-form.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->

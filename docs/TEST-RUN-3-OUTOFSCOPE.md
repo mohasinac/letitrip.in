@@ -2174,3 +2174,85 @@ The card is also a bare `<div>` with `cursor: pointer`, no `role`, no
 `aria-selected` and no radio, so it is neither announced as selectable nor
 reachable by keyboard in the usual way. Noticed 2026-10-02 while driving the EMI
 case; belongs to a checkout case rather than that one.
+
+## The order status filter omits `confirmed` and `returned`
+
+`/user/orders` → Filters → "All statuses" offers exactly seven: Pending,
+Processing, Shipped, Delivered, Cancelled, Refunded, Return requested.
+
+**`confirmed` is missing, and rows genuinely display it** — one of the buyer's
+own rows reads "Confirmed" right now. So a buyer cannot filter for the orders
+they are waiting on the seller to start, which is arguably the most useful
+filter on the page. `returned`, the terminal return status, is also absent.
+
+Both are real members of the 9-value `OrderStatus` union. Found 2026-10-02 via
+`checklist-public-pages-help-how-it-works-how-orders-work-matches-product`,
+which compares the guide's status list against the product's in both directions
+— this is the product side of that comparison, not a documentation problem.
+
+## `/how-orders-work` documents two statuses that do not exist, and omits the returns branch
+
+Named by the guide but not real `OrderStatus` values: **"Out for Delivery"** (a
+full lifecycle card) and **"Completed"** (presented in the flow strip as the end
+of the lifecycle — "Return window closes, order fully complete"). Nothing can
+ever hold either.
+
+Never named by the guide but offered by the product: **`refunded`** and
+**`return_requested`** — the latter sitting on a real order row. So the entire
+returns/refunds branch, and `/user/returns` behind it, is undocumented for
+buyers.
+
+## `/how-checkout-works` omits the "Extras & fees" step
+
+The guide narrates five steps (Build Your Cart → Choose Delivery Address →
+Select Payment Method → Confirm Your Order → Order Confirmed). Real checkout
+presents three: **Shipping Address → Extras & fees → Payment**.
+
+The omitted step is the chargeable one — it is where per-seller add-ons and fee
+lines are chosen (WhatsApp +₹10.00, Gift wrap +₹49.00, Shipment protection, plus
+shipping and the platform fee). A buyer following the guide expects to go from
+address straight to payment and is instead asked to make charges they were never
+told about.
+
+Lesser, and separate: the guide counts "Build Your Cart" (before checkout) and
+"Order Confirmed" (after it) as steps, so its numbering can never align with the
+indicator.
+
+**Untested claim on the same page**: "if you're shipping to someone else, you'll
+need to verify consent via a one-time email OTP before proceeding." Not
+exercised — a saved own-address was used. Deserves its own case.
+
+## The Make-an-Offer form's band is 30% below list; the guide says ±20%
+
+On `product-beyblade-burst-valkyrie` (₹999) the form states "Minimum offer:
+₹699.3" and "Must be between ₹699.3 and ₹998.99", enforced in markup
+(`min=699.3 max=998.99`). 699.3 = 999 × 0.70, so the floor is **30% below** list
+and the ceiling is a rupee under it (**0% above**).
+
+`/how-offers-work` tells buyers "within 20% above or below". The guide's 20% is
+written about *counter* offers while this is the *initial* offer form — but the
+guide states no initial-offer bound at all, so ±20% is the only number a buyer
+has and it is wrong for the form they actually meet.
+
+Also absent from the form entirely: the 3-offers-per-product cap, the
+one-active-offer rule, and the **48-hour expiry**. The buyer commits without
+being shown the deadline the guide promises.
+
+Minor, same surface: money renders unrounded — "₹699.3", "₹899.1" instead of
+₹699.30 / ₹899.10 — so `formatCurrency` is not used there.
+
+## An ineligible reviewer is shown nothing at all, not a reason
+
+`/how-reviews-work` says to "click 'Write a Review' in the Reviews tab". For a
+buyer whose order for that product is `Processing` rather than `delivered`, the
+Reviews tab renders the rating, the sort controls and the existing reviews — and
+**no write control and no explanation**.
+
+Hiding the form is correct per the guide's own rule (delivered order required).
+What is missing is the single line that turns a dead end into an explanation
+("You can review this once your order is delivered"). As it stands the buyer
+follows the documented instruction, finds no button, and cannot tell
+ineligibility from a broken page.
+
+Working on the same surface, checked in passing: reviewer identities are masked
+("M\*\*\* U\*\*\* 2\*\*\*"), so `maskPublicReview` is doing its job.
