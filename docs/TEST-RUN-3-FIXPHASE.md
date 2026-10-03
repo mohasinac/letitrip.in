@@ -425,3 +425,35 @@ no adapter file and no PRIVATE list.
 🛑 Do not shortcut step 2 by spreading the schema into the private list. The
 point of the triage is that each field was CONSIDERED — a generated private
 list silently re-publishes nothing and silently hides everything.
+
+### Spec: `audit-theme-contrast` (not written — write it deliberately)
+
+The `bg-primary` contrast defect recurs the moment anyone adds a theme, so it
+wants an audit. **Do not write it as strict-zero**: it fails on three known
+offenders today and would break `npm run check` on the first run.
+
+**What it should do**: parse every `:root` / `[data-theme=...]` block in
+`appkit/src/tokens/tokens.css`, and for each declared pairing compute the WCAG
+relative-luminance ratio. The pairings that matter are the ones the variant
+system actually emits together — `--appkit-color-primary` with
+`--appkit-color-text-on-primary`, each `{status}-solid` with its
+`{status}-on-solid`, and each `{status}-surface` with its `{status}` ink
+(Root Cause #67 defines those two pairings).
+
+**Make it a RATCHET, seeded from a run of its own rule.** CLAUDE.md is
+explicit that seeding from the grep you wrote while designing it understates
+the backlog — `listing-delegation` was seeded at 45 and the audit found 61.
+The three primary failures below are what I measured by hand and are almost
+certainly NOT the full set, because I checked one pairing out of three.
+
+    #0d9488 vs white  3.74:1   :root (default light)
+    #ef4444 vs white  3.76:1   tokens.css:376
+    #5992ff vs white  3.01:1   tokens.css:513 (dark)
+
+**Thresholds**: 4.5 normal text, 3.0 large. Judge against 4.5 — a token pair
+cannot know what size it will render at, and the component library pairs them
+at body size by default.
+
+🛑 **Verify it by breaking it** (Root Cause #87): add a deliberately failing
+token pair and confirm the audit fails. An audit nobody has seen fail is
+decoration — `audit-observability-registration` shipped with exactly this bug.
