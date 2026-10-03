@@ -796,3 +796,32 @@ every one was caught by checking rather than by anything external.
 The costliest near-miss was "checkout is blocked" — a synthesised click
 missing a card. That would have triggered an incident response over a
 harness error.
+
+## Next session starts here — batch 179 of 255
+
+`buying/buying-coupons--p2` is **already fetched** to
+`tester/.tester-runs/run-3/batches/buying__buying-coupons--p2.json`.
+Inflight clean, preflight green on all six checks. Nothing to set up.
+
+**identity**: `undefined` in the batch file → the default (buyer) session.
+Those are re-minted and verified authenticating. **fixtures**: none.
+
+**5 real cases + 2 controls. Three need real preconditions — read these
+before starting, because two of them cannot be satisfied by browsing alone:**
+
+| case | precondition |
+|---|---|
+| coupon-persists-across-reload | apply a coupon at checkout, reload |
+| coupon-split-across-per-store-orders | a **MULTI-STORE** order — the cart must hold items from two stores, and only `store-beyblade-arena` (65 products) and `store-letitrip-official` (7) have any |
+| coupon-all-codes-listed-on-order | an order placed with **several** coupons stacked — one seller + one admin coupon, per the stacking rule |
+| coupon-wallet-apply-lands-on-checkout | a claimed coupon in My Coupons |
+| auction-offer-lane-no-coupon-field | an **auction win or accepted offer** in the cart — the locked-line lanes |
+
+🛑 The last one needs a cart in the auction or offer LANE, which a buyer
+cannot create by shopping: settlement writes those lines. If no such line
+exists, that case is a `null` with the reason — not a `no`.
+
+Useful context from this phase: a working checkout run is
+address card → "Continue to payment" → tick the manual-payment consent
+checkbox → "Pay via UPI / Cash". Use `browser_snapshot` + `browser_click`
+with refs; synthesised `el.click()` silently fails on these cards.
