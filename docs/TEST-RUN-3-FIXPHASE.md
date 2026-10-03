@@ -684,7 +684,24 @@ the fix that persists `gstAmount` at order creation. It is the ONLY remaining
 names the seller). Checkout shows **GST ₹1.80**, confirming the value exists
 at that moment. I did not reach step 3.
 
-**Why it stalled, and it is not a product defect**: advancing needs a real
+**CORRECTION — my stall diagnosis was wrong.** I blamed the synthesised
+click. The real cause was my SELECTOR: step 2's button is labelled
+**"Continue to payment"**, and I matched `/^continue$/i`, which is exact. A
+`browser_snapshot` showed the label immediately and the click then worked
+first time. Check the actual label before blaming the mechanism.
+
+**Progress after the correction**: reached **Step 3 of 3: Payment**, which
+offers "Pay via UPI / Cash" and "Cash on Delivery". The submit button is
+**disabled until a method CARD is selected** — the same pattern as the
+address step — and the other locator match is the mobile bottom-bar button,
+hidden on desktop (hence a visibility timeout if you target it).
+
+**Remaining: ~3 clicks.** Select the method card, submit, then open the new
+order and confirm its Payment Summary lines sum exactly to the total. I
+stopped rather than place an order I lacked the context to verify — an
+unverified real order is worse than none.
+
+**Superseded note**: advancing needs a real
 `browser_click` on the Continue ref from a fresh `browser_snapshot`. A
 synthesised `el.click()` from `browser_evaluate` does not reliably trigger
 it — the SAME instrument failure that earlier produced a false
