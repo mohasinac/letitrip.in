@@ -14,21 +14,30 @@ here by hand you have broken the one rule this project keeps relearning.
 
 ## The question: can we launch?
 
-**The core money path works.** It did not, eight hours ago, and the defect that
-blocked it was not visible from source, from `npm run check`, or from a build —
-only from placing a real order.
+**Money reaches the seller; goods do not reach the buyer.** Placement, payment
+proof and admin verification all work end to end — I drove a real order through
+all three. Fulfilment does not: the seller cannot mark it shipped, so it is
+stranded at `processing`.
 
-**Four things should be fixed first**, all found by driving real paths. One freezes a buyer's cart permanently; one stops a seller creating a listing
-from the quick-add form; one stops a seller SHIPPING a paid order; and the last
-makes every cart and checkout error invisible.
+The checkout defect that blocked placement was fixed today. It was invisible to
+source review, to `npm run check` and to a full build — only placing a real
+order surfaced it.
+
+**Four things should be fixed first**, all found by driving real paths:
+
+1. a buyer's cart can be **frozen permanently**;
+2. a seller **cannot publish** from the quick-add form;
+3. a seller **cannot ship** a paid order;
+4. every cart and checkout error is **invisible**.
+
 None is speculative — each was reproduced on production and is written up with
 a root cause in `tester/.tester-runs/run-4/fixes.jsonl`.
 
-Three of the four are **marketplace-fundamental**: a buyer who cannot clear
-their cart cannot buy again, a seller who cannot publish cannot supply the
-catalogue, and a seller who cannot ship leaves every paid order stranded at
-. The last is what makes all of them look like dead buttons rather
-than errors.
+The first three are marketplace-fundamental: a buyer who cannot clear their cart
+cannot buy again, a seller who cannot publish cannot supply the catalogue, and a
+seller who cannot ship leaves every paid order stranded. The fourth is what makes
+all of them look like dead buttons rather than errors — which is why they
+survived this long.
 
 🛑 **The money path is verified only as far as `paid`.** Placement, payment
 proof and admin verification all work end to end; fulfilment does not.
