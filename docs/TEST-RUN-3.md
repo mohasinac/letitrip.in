@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **204 / 255** |
-| Cases | **1069 / 1847** (58%) |
-| Cycle | 41 of 51 |
+| Batches | **205 / 255** |
+| Cases | **1081 / 1847** (59%) |
+| Cycle | 42 of 51 |
 | Next deploy | batch 225 |
-| Last updated | 2026-10-03 09:18 UTC |
+| Last updated | 2026-10-03 09:26 UTC |
 
 ```
-pass 397 · fail 186 · null 486
+pass 402 · fail 186 · null 493
 fixed 37/186 · deferred 36 · open 113 · needs-human 7
 ```
 
@@ -1196,5 +1196,12 @@ untouched list is one nobody reads by milestone three.
 | 205 | 1079 | `checklist-admin-site-system-notifications-user-search` | The search box on /admin/notifications narrows results to one user, and its placeholder re | admin/site-system--p3 | admin | ✅ pass | The search is exact-match, it scopes to one user, and the placeholder says so — all three halves of the case. /admin/notifications carries an input placeholdered 'Search by user ID (exact)', which is the part about the placeholder reflec… | [shot](../tester/.tester-runs/run-3/shots/b205-audit-log-search.png) | — | — | no | — |
 | 205 | 1080 | `checklist-admin-site-system-carousel-edit-and-delete` | A named carousel can be renamed, switched between draft and active, and deleted after it h | admin/site-system--p3 | admin | ⬜ null | Not driven — /admin/carousels returns 200 but the case is a full lifecycle (rename, draft↔active, then delete) on a named carousel, which mutates live homepage content with no teardown defined in this batch. Note the related trap recorde… | [shot](../tester/.tester-runs/run-3/shots/b205-audit-log-search.png) | — | — | no | — |
 | 205 | 1081 | `checklist-admin-site-system-guide-pages-admin` | The 8 admin guide pages all load correctly | admin/site-system--p3 | admin | ⬜ null | COULD NOT ENUMERATE THE REAL ROUTES, and I am explicitly NOT reporting the 404s I got. I guessed eight paths under /admin/guides/* and all eight returned 404 — but they were my invention, and the project's own rule is that a route 404ing… | [shot](../tester/.tester-runs/run-3/shots/b205-audit-log-search.png) | — | — | no | — |
+| 206 | 1082 | `checklist-admin-site-system-tester-checklist-crud-admin` | Admin can create, edit, and toggle adminOnly on tester checklist items | admin/site-system--p4 | admin | ⬜ null | Not driven — creating, editing and toggling adminOnly on checklist items mutates the live test catalogue that this very run is being driven from, and nothing in this batch tears those edits down. That is a sharper conflict than the usual… | [shot](../tester/.tester-runs/run-3/shots/b206-tester-feedback-detail.png) | — | — | no | — |
+| 206 | 1083 | `checklist-admin-site-system-tester-feedback-report-export` | Admin tester-feedback report shows Yes/No analytics grouped correctly and the Download Rep | admin/site-system--p4 | admin | ✅ pass | The analytics are grouped correctly and the export control is present. /admin/tester-feedback renders 'Total test cases 2 · Answers recorded 2 · Pass rate 0% · Issues (No) 2' with a Yes/No chart (axis 0–4, legend No/Yes) and two tabs, 'M… | [shot](../tester/.tester-runs/run-3/shots/b206-tester-feedback-detail.png) | — | — | no | — |
+| 206 | 1084 | `checklist-admin-site-system-tester-feedback-view-before-confirming-bug` | Admin → Tester Feedback rows have a "View details" action (and are click-openable) showing | admin/site-system--p4 | admin | ✅ pass | The admin can read the submission before deciding on it — which is exactly the failure this case exists to catch. Each row on the All Submissions tab carries a row-actions menu, and its items are ordered 'View details', 'Mark Reviewed', … | [shot](../tester/.tester-runs/run-3/shots/b206-tester-feedback-detail.png) | — | — | no | — |
+| 206 | 1085 | `checklist-admin-site-system-admin-audit-log-page` | The new /admin/audit-log page (Finance nav group) lists real entries — actor, action, targ | admin/site-system--p4 | admin | ✅ pass | The page lists real entries with all four attributes the case names. /admin/audit-log renders 11 rows spanning three action types — offer_cancel, store_status_change, user_role_change — each showing ACTOR (user-admin-letitrip), ACTION (t… | [shot](../tester/.tester-runs/run-3/shots/b205-audit-log-search.png) | — | — | no | — |
+| 206 | 1086 | `checklist-admin-site-system-admin-notification-detail-modal` | Admin Notifications rows have a "View details" action (and the row itself is clickable) op | admin/site-system--p4 | admin | ✅ pass | The detail modal exists and carries the whole record. /admin/notifications shows 25 rows each with a row-actions menu ordered 'View details', 'Resend', 'Delete' — read first, destructive last. Opening it renders 'Notification Details' co… | [shot](../tester/.tester-runs/run-3/shots/b206-notification-detail-modal.png) | — | — | no | — |
+| 206 | 1087 | `checklist-admin-site-system-admin-sidebar-logout-button` | The admin dashboard sidebar has a visible "Log out" action at the bottom (not just the hea | admin/site-system--p4 | admin | ✅ pass | There is a visible Log out action in the sidebar, not only in the header. Measured structurally rather than by eye: two controls whose accessible text is exactly 'Log out' are present, BOTH visible with non-zero boxes, and for both the a… | [shot](../tester/.tester-runs/run-3/shots/b206-tester-feedback-detail.png) | — | — | no | — |
+| 206 | 1088 | `checklist-admin-site-system-dashboard-tables-colors-avatars-icons` | Admin/store/user dashboard tables and list/grid cards show color-coded status badges (gree | admin/site-system--p4 | admin | ✅ pass | Badges, avatars and icons all render as real UI rather than plain text. /admin/users shows 25 status badges that each carry their OWN background colour and a pill radius — not bare words — alongside 10 avatar images and 46 icon SVGs. 🛑 … | [shot](../tester/.tester-runs/run-3/shots/b206-users-badges-avatars.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
