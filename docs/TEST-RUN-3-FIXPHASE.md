@@ -368,3 +368,29 @@ projection.
 Register the route with `audit-public-projection-parity`. It does not cover
 this path today, which is why the gap survived — a projection nothing audits
 drifts the first time a field is added.
+
+### ⏳ IN FLIGHT at session end: the seller-order PII fix
+
+**Committed**: `bc8727677` — `toSellerOrder()` allow-list on
+`GET /api/store/orders/[id]`. `npm run check` exits 0.
+
+**NOT confirmed live.** `node scripts/deploy.mjs` exceeded the 600s tool
+window and was moved to the background (task `bww6hodnn`); its capture file
+was still 0 bytes when the session ended. That is most likely output
+buffering rather than a stall — deploy.mjs prints its pre-flight immediately
+in the foreground, and `npm run check` alone takes minutes.
+
+**Production is safe either way**: `/` and `/api/site-settings` both 200 on
+the previous build throughout. A Vercel build that stalls or fails leaves the
+prior deployment serving.
+
+**Next session, in order:**
+1. Read the task output file. If it ends with "Deployed, verified serving",
+   the fix is live — go to step 3.
+2. If it stalled (no output, still Building): per CLAUDE.md run `npx next
+   build` locally; if that completes normally the build is stalled remotely,
+   so `npx vercel remove <url> --yes` and redeploy. **Do not tune the config.**
+3. RE-DRIVE it: as the seller, open a store order and confirm the response
+   carries no `userEmail`, `userEmailIndex`, `userNameIndex`, `userId` or
+   `searchTxt`, while `shippingAddress` and `userName` ARE still present —
+   stripping those two would break fulfilment and is the likely over-correction.
