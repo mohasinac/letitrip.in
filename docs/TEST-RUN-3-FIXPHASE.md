@@ -897,3 +897,30 @@ clear their minimums on this cart.
 a perUserLimit of 2 — measured earlier this session. It will be refused for
 the LIMIT, which in a coupon test reads exactly like the feature under test
 rejecting it. That is the false-pass shape this run keeps hitting.
+
+## Next session: batch 182 `admin/users-trust--admin--p1` (14 cases, analysed)
+
+Fetched and analysed; claim released cleanly (no stale INFLIGHT). Admin
+identity, no fixtures. It is the biggest batch so far — budget for it.
+
+**3 cases are FORBIDDEN, not merely hard — answer `null`, do not attempt:**
+
+| case | why |
+|---|---|
+| `admin-delete-user-complete` | **DELETES a user**, their sessions and profile. `users` is PRESERVE tier: "damage there is the only permanent damage you can do". |
+| `users-role-change` | mutates a user account (role + isTester flags) — same tier. Also names `karthik.new@gmail.com`, another identity with no session file. |
+| `sessions-revoke` | revokes a live session AND needs two concurrent windows, which this single-context harness cannot stage. |
+
+**9 are read-only admin listings and ARE runnable** — each is roughly
+"open the page, read every column": `admin-user-detail-enriched`,
+`roles-crud` (read the roles; creating one is a non-PRESERVE mutation and is
+allowed), `scammers-registry-admin`, `banned-addresses-admin`,
+`address-clusters-admin`, `moderation-queue-admin`,
+`support-tickets-triage-admin`, `item-requests-admin`, `reports-admin`.
+
+🛑 Two of these have known history worth re-checking rather than assuming:
+`/admin/support-tickets` was SEVERELY broken (empty queue) and was verified
+fixed this session — it should list rows, starting with a QA ticket. And
+`/admin/addresses` is the startPage for two cases whose steps say
+`/admin/banned-addresses` and `/admin/address-clusters`; confirm which route
+actually exists before recording a 404 as a defect (Rule #4).
