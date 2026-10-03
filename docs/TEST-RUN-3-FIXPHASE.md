@@ -717,3 +717,30 @@ tool for every click that must take effect.
    against a ₹1,287.80 total, short by precisely the ₹1.80 GST
 
 An abandoned checkout writes nothing, so attempting this is safe at any point.
+
+#### Zero-discovery recipe for the last GST check
+
+Checkout is at **Step 3 of 3: Payment** in the live session. The structure,
+captured so the next session needs no exploration:
+
+    main > ...                      heading "Choose Payment Method"  f1e668
+                                    method container               f1e669
+    Order Summary                                                  f1e294
+      Shipping to / Mock User 3 / 123 Stadium Lane, Indore         f1e576
+      Subtotal ₹2,098 | Shipping ₹77 | WhatsApp ₹10
+      Platform fee ₹10 | GST ₹1.80 | Total ₹2,196.80
+
+**Three steps, in order:**
+1. Snapshot `f1e669` (the method container) and `browser_click` the
+   "Pay via UPI / Cash" CARD inside it — not the submit button, which is
+   disabled until a card is chosen.
+2. `browser_click` the now-enabled submit. 🛑 Two locators match
+   "Pay via UPI / Cash": the desktop submit, and a mobile bottom-bar button
+   that is NOT VISIBLE on desktop and will time out. Disambiguate by role
+   and enabled-state, not by text.
+3. Open the new order's detail page. **Assert the Payment Summary lines SUM
+   EXACTLY to the total.** Before the fix they summed ₹1,286.00 against a
+   ₹1,287.80 total; the ₹1.80 should now appear as a Tax row.
+
+Checkout totals ₹2,196.80 with GST ₹1.80 — so the new order is expected to
+carry `gstAmount: 1.8`, which is precisely what 4.42.12 added.
