@@ -440,7 +440,30 @@ Two questions it needs to settle:
    `maskPublicBid` was made to actually call `maskName`. A prize-winner feed showing
    full display names beside what each person won is the same shape.
 
-## Harness: `session.json` accumulates cookies DURING a batch
+## ⏳ ATTEMPTED, INCONCLUSIVE — Harness: `session.json` accumulates cookies DURING a batch
+
+> **Tested 2026-10-03 and the test does not settle it.** I copied
+> `session-guest.json` (0 cookies) over `session.json`, browsed ~6 pages
+> including event detail and API-backed views, and `session.json` still read
+> **0 cookies, 0 origins**. That looks like "no write-back", i.e. does not
+> reproduce.
+>
+> **The control kills it.** `document.cookie` in the live page is also EMPTY —
+> the site set no cookies for a signed-out visitor at all. So there was
+> nothing to accumulate, and the zero says nothing about whether the MCP
+> writes state back. Same shape as the offer-button check earlier today: an
+> absence is only evidence once you show the thing COULD have appeared.
+>
+> **To decide**: run it with a SIGNED-IN identity, where `__session` exists
+> (HttpOnly, so read it from the storage-state file rather than
+> `document.cookie`). Snapshot `session.json`'s cookie count and mtime at the
+> start of a batch, drive several authenticated pages, and re-read. A change
+> in either is the accumulation the entry describes.
+>
+> Worth settling rather than dropping: if the MCP DOES write back, an
+> identity's storage file mutates mid-run, and the next batch inherits
+> whatever the last one left — which is the harness equivalent of the
+> fixture-state race that got `testerSandboxRefresh` deleted.
 
 **Found during** batch 16 setup, checking the identity before starting.
 
