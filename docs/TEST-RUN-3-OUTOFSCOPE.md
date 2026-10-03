@@ -3407,7 +3407,18 @@ the bias toward masking is deliberate and correct.
 Raising it, not changing it — this is a product decision about what a seller
 is entitled to see, not a bug. No case asserts either behaviour.
 
-### Missing fixtures: the cross-store guard has nothing that triggers it (2026-10-03)
+### ✅ RESOLVED — Missing fixtures: the cross-store guard now has data (2026-10-03)
+
+> **Fixed same day.** `product-tester-crossstore-a` and `-b` were written to
+> `products-standard-seed-data.ts` (appkit b9eba6ff) in deliberately
+> different stores — beyblade-arena and letitrip-official — and loaded:
+> products 70 → 72, both verified present by direct Firestore read. The guard
+> in all four bundle write routes can now be triggered. The CASE has not yet
+> been driven; that is tracked in the fix queue, not here.
+
+> ⚠ The WIDER gap stands: CLAUDE.md documents ~12 further tester-sandbox
+> fixtures (one per listing type) that still do not exist. Only the
+> cross-store pair was written.
 
 `product-tester-crossstore-a` and `product-tester-crossstore-b` are absent
 from production. They exist for one reason, stated in CLAUDE.md:
