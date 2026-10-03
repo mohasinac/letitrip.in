@@ -1716,3 +1716,48 @@ Confirmed again on `/admin/analytics`. Recorded instances now:
 plus a public category page.
 
 No case owns this. It needs one.
+
+## 🛑 CORRECTION — "the 500 left no serverErrors record" was WRONG
+
+I wrote that during the batch-203 fix phase. It is false, and the real finding
+is better.
+
+Measured across the whole collection (not the 12 most recent, which is all I
+looked at before):
+
+| | count |
+|---|---|
+| `serverErrors` total | **1606** |
+| `CLIENT_WINDOW_ERROR` (React #418) | **981** — 61% |
+| real server-side errors | 625 |
+| rows for `store/products` | **17** ← my sort 500 **was** recorded |
+| rows for `/api/faqs` | **33** |
+
+So the observability chain works fine. What actually happened is that the React
+#418 hydration flood **buries real server errors**: 981 client rows crowd the
+recent window, so a `limit(12)` ordered by `occurredAt desc` returns nothing but
+hydration noise and a real 500 looks unrecorded.
+
+**That promotes the #418 defect from cosmetic to operational.** It is not just
+console noise — it is degrading the error store that incident diagnosis depends
+on. Fix it, and consider whether client errors belong in the same collection as
+server errors at all, or need their own retention/rate limit.
+
+## NEW — `/api/faqs` has the same missing-index defect just fixed for sorts
+
+Surfaced by `/admin/maintenance/server-errors` working correctly
+(`checklist-admin-site-system-maintenance-error-lists-have-rows`).
+
+Live rows, 2026-10-02:
+
+    /api/faqs GET PRECONDITION_FAILED
+    9 FAILED_PRECONDITION: The query requires an index. You can create it here: …
+
+**33 recorded occurrences.** Same class as the `storeId + featured|isPromoted`
+indexes added this session — reproduce the FAQ query with a control, read the
+required index out of the error, add it to
+`appkit/firebase/base/firestore.indexes.json`, regenerate, deploy, re-drive.
+
+Also recorded alongside it:
+`/[locale]/bundles/[slug]/opengraph-image GET RSC_route failed to pipe response`
+and an "operation was aborted due to timeout".

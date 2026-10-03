@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **203 / 255** |
-| Cases | **1057 / 1847** (57%) |
+| Batches | **204 / 255** |
+| Cases | **1069 / 1847** (58%) |
 | Cycle | 41 of 51 |
 | Next deploy | batch 225 |
-| Last updated | 2026-10-03 09:08 UTC |
+| Last updated | 2026-10-03 09:12 UTC |
 
 ```
-pass 396 · fail 185 · null 476
-fixed 37/185 · deferred 36 · open 112 · needs-human 7
+pass 397 · fail 186 · null 486
+fixed 37/186 · deferred 36 · open 113 · needs-human 7
 ```
 
-> ▸ **112 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **113 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
