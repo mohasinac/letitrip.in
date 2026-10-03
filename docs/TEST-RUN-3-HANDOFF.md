@@ -1,72 +1,67 @@
-# Test Run 3 — handoff at batch 103
+# Test Run 3 — handoff at batch 204
 
-Written 2026-10-01 when the working session ran out of context. **Nothing is lost**:
-every count below is recomputed from the verdict files on disk by
-`node scripts/test-run-status.mjs`, never typed.
+## State (all computed from disk, nothing hand-typed)
 
-## Resume
+    204/255 batches · 1069/1847 cases · 51 outstanding
+    pass 397 · fail 186 · null 486
+    lastDeployAtRecorded 200   (verified: smoke test green)
+    lastFixAtRecorded    203   (verified: fix re-driven in production)
 
-```
-node scripts/test-run-inflight.mjs --check     # must say "nothing in flight"
-node scripts/test-run-preflight.mjs
-# then the next batch the loop names: buying/buying-checkout--p2
-```
+Working tree clean. Next batch: `admin/site-system--p3` — **not claimed**,
+cases already fetched to
+`tester/.tester-runs/run-3/batches/admin__site-system--p3.json`.
 
-Re-enable the loop by setting `active: true` in `tester/.tester-runs/loop-state.json`.
+## Start here — the cheapest high-value work
 
-## State
+### 1. `/api/faqs` missing index — same class fixed today, known remedy
 
-103/255 batches · 442/1847 cases · pass 186 · fail 63 · null 193 · fixed 25 ·
-deferred 29 · open 9.
+**33 recorded occurrences** of `9 FAILED_PRECONDITION: The query requires an
+index`, visible on `/admin/maintenance/server-errors`. Remedy is exactly what
+worked for the seller sorts this session:
 
-`lastFixAtRecorded = 100`, `lastDeployAtRecorded = 100` — the batch-100 fix phase is
-complete and **appkit 4.42.5 is deployed** (smoke + SEO verified).
+1. Reproduce the FAQ query against Firestore **with a control** (a query that
+   should succeed) — that is what pins the cause instead of guessing.
+2. Read the required index out of the thrown error.
+3. Add to `appkit/firebase/base/firestore.indexes.json`.
+4. `npm run firebase -- generate` → `deploy --only indexes` → `wait-for-indexes.mjs`.
+5. Re-drive. A fix nobody re-tested is a hypothesis.
 
-## 🛑 Do this FIRST on the checkout page (batches 103–10x)
+### 2. React #418 — now operational, not cosmetic, and still unowned
 
-**Clear the buyer's cart before the first case.** All 12 cases per page add to cart and
-then assert an *absolute* quantity or subtotal; none clears it. The seeded cart already
-holds 3 lines under Beyblade Arena (Valkyrie ×2, Dranzer S, X App Starter Pack Code —
-₹4,695.00 + ₹77.00 shipping), which made `add-to-cart`'s expected 1 / ₹999 unmeasurable
-(observed 3 / ₹2,997 — correct arithmetic, wrong precondition). `carts` is CASCADE-tier
-and freely mutable. See the OUTOFSCOPE entry.
+981 of 1606 `serverErrors` rows are `CLIENT_WINDOW_ERROR` hydration mismatches
+(**61%**). They crowd the recent window, so a `limit(12)` query returns only
+hydration noise and real 500s look unrecorded — which is exactly the mistake I
+made and corrected this session.
 
-Already confirmed on this page: **add-to-cart works**, **the sold-out block works**.
-Untested: the three-step checkout, GST, the OTP threshold, the multi-seller split.
+Recorded on: `/admin/{ads,contact,media,site,blog,events/new,offers,stores,
+notifications,analytics}`, `/admin/stores/{slug}/view`,
+`/brands/brand-independent-keepers`, and a public category page.
 
-## The worst open defect
+**No case owns this. Write one.** Consider whether client errors belong in the
+same collection as server errors, or need separate retention.
 
-**`/admin/site` renders no editable fields on any tab.** `<main>` is 530–534 chars —
-tab `<select>`, tab name, "Save all changes" — and the only input in `<main>` *is* the
-tab select. A React **#418 hydration mismatch** fires on every load. Routing is fine
-(`?tab=fees`→Fees, nonsense/empty→branding, 20 options). No site setting can be edited
-in production. Next step: reproduce locally, read the un-minified #418.
+### 3. Then work the triage index in `docs/TEST-RUN-3-FIXPHASE.md`
 
-## Partially fixed, needs finishing
+Ranked by blast radius — money/data integrity first, cosmetic last. 129
+`fixQueue` entries vs 113 open defects is past what one phase absorbs, so
+ranking matters more than draining in discovery order.
 
-**Admin bundle creation.** The symmetric `dynamicRule`/`productIds` fix shipped and
-halved the failure (two "required" errors → one), but creation is still blocked by a
-basics-section error: a price field showing `1000` reports "This field is required".
-`zodErrorMap` emits that text only for `invalid_type` on undefined/null, so a populated
-key is missing from the parsed object. Next step: instrument what `SectionForm` hands
-`safeParse` for that section — `priceRupees` is its only non-string-typed control.
-The cross-store guard the case exists to test is still unreachable.
+## Standing constraints — do not relax these
 
-## Harness issues blocking real coverage
+- **Never save Site Settings.** PRESERVE tier, one "Save all changes" over a
+  37-group singleton, 21 live API keys behind it. Refused all run. Baseline for
+  whoever does it with a human present: `docs/TEST-RUN-3-SITESETTINGS-BASELINE.json`.
+- **Never call** `/api/auth/login|session|me` — one 10-req/min IP bucket.
+- **Never modify** a user account, login, saved address, or Site Settings.
+- A claimed batch **restarts from case 1** (G1). Never resume mid-batch.
 
-1. **`session-seller.json` is not `tyson@beybladearena.in`.** It's a seeded seller whose
-   catalogue is prize draws, so every seller case naming a Beyblade product slug is
-   unrunnable. Nearly produced a false "the picker is broken" finding.
-2. **Seeded display names collide** — admin and the seller both render "Mock User 1", so
-   the account name can't identify the identity.
-3. **PRESERVE-tier recovery is better than recorded**: a targeted
-   `npx appkit-seed load --collections users` *restored* a display name an earlier run had
-   overwritten. That works for seeded uids; it does **not** extend to `addresses`, where a
-   created row has no seeded counterpart and `load` cannot delete.
+## Two traps that cost me time — don't repeat them
 
-## Backlog that needs its own pass
-
-**70 headings in `docs/TEST-RUN-3-OUTOFSCOPE.md`** and **4 `state.fixQueue` entries**.
-The hook's fix phase asks for a per-entry decision (promote to a gap case, or leave
-standing) and that has never been done — it is now the largest risk to this run ending
-with findings anyone acts on.
+- **Print the match context before filing a credential leak.** Twice a broad
+  regex matched i18n LABELS (`"metaPageAccessToken":"Meta Page Access Token"`),
+  not values. Both would have been false security findings.
+- **Bash cwd persists between calls.** A `cd` into the appkit submodule silently
+  broke a later root `git add` (and an `echo` printed success over the failure).
+  Use absolute paths.
+- **Include `\.` when scanning for float artifacts.** Without it
+  `227453.66999999998` reads as two separate implausible integers.
