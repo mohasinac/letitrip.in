@@ -3481,3 +3481,30 @@ the blocked/null verdicts recorded over 178 batches.
 testing: `npx appkit-seed load --collections products`. The durable fix is
 deciding who owns fixture state now that refresh is gone — CLAUDE.md warns
 against reinstating the job without answering that question.
+
+#### Confirmed: the fixture FILE does not exist, and cases reference its ids
+
+`find appkit/src -name '*tester*seed*'` returns only
+`tester-checklist-seed-data.ts` and `tester-responses-seed-data.ts`. There is
+**no `products-tester-seed-data.ts`**, though CLAUDE.md cites it by name
+(§ Tester QA Program, the `AUCTION_CYCLE_STAGGER_HOURS` reference).
+
+The only files containing `product-tester-sandbox-*` / `tester-crossstore-*`
+ids are authored CHECKLIST CASES — `authored/admin__bundles.ts` and
+`authored/buying__cart.ts`. So cases direct a tester to fixtures that nothing
+creates.
+
+Three things follow, in descending confidence:
+
+1. **Those cases cannot pass**, for anyone, ever, until the fixtures are
+   written. Not a flake and not an environment problem.
+2. **The cross-store refusal guard is unverifiable** — four write routes call
+   `findBundleMemberStores` and nothing can trigger it.
+3. **`audit-tester-checklist-hrefs` may be blind here.** Its known-id scan
+   validates dynamic-route hrefs against ids found in seed files; if those ids
+   live only in case files, a case pointing at a non-existent product passes
+   the audit. Worth checking before trusting that audit's clean run.
+
+Fix: write the fixtures. CLAUDE.md § Tester QA Program already specifies what
+they should be (12 products, one per listing type, plus the cross-store pair
+in the deliberately banned shape).
