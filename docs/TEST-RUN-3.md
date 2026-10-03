@@ -37,14 +37,14 @@ what still needs a human.
 | Cases | **1057 / 1847** (57%) |
 | Cycle | 41 of 51 |
 | Next deploy | batch 225 |
-| Last updated | 2026-10-03 09:07 UTC |
+| Last updated | 2026-10-03 09:08 UTC |
 
 ```
 pass 396 · fail 185 · null 476
-fixed 36/185 · deferred 36 · open 113 · needs-human 7
+fixed 37/185 · deferred 36 · open 112 · needs-human 7
 ```
 
-> ▸ **113 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **112 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
