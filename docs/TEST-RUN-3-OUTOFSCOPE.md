@@ -231,7 +231,28 @@ every reader should do. Deciding it from one seller drawer would be guessing.
 Note `shippingAddress` diverges the same way: a pre-formatted **string** in stored
 orders where the type declares an object.
 
-## The seller's single-order endpoint returns the raw order document
+## ✅ DECIDED — The seller's single-order endpoint returns the raw order document (CONFIRMED — promote)
+
+> **Verified in source 2026-10-03.** `src/app/api/store/orders/[id]/route.ts`:
+> `loadScopedOrder()` returns `orderRepository.findById(id)` unchanged and the
+> GET handler does `successResponse(order)`. **No projection anywhere.**
+>
+> **What that actually exposes** — scoped, because the obvious reading
+> overstates it. A seller legitimately needs the buyer's name and shipping
+> address to fulfil, so those are not the finding. The finding is everything
+> else the document carries: `userEmailIndex` and `userNameIndex` are **HMAC
+> blind indices** that exist only for server-side lookup and have no business
+> leaving the server, plus `userEmail` which `mapDoc` **decrypts on read** —
+> so the seller receives plaintext PII the projection was supposed to gate.
+>
+> This is Root Cause #70's exact shape on the orders axis: a document handed
+> to a client because nobody wrote the allow-list. The fix is an adapter
+> (`toSellerOrder`) with PUBLIC/PRIVATE field lists, matching
+> `toStoreDetail` / `toPublicSiteSettings`.
+>
+> **Decision: promote to a gap case.** It is a live PII exposure to a
+> semi-trusted party, not a cosmetic issue, and
+> `audit-public-projection-parity` does not cover this route today.
 
 **Found during** batch 10, `checklist-happy-path-seller-fulfil-seller-sees-no-payment-screenshot`.
 
