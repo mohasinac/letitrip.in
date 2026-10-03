@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **202 / 255** |
-| Cases | **1045 / 1847** (57%) |
+| Batches | **203 / 255** |
+| Cases | **1057 / 1847** (57%) |
 | Cycle | 41 of 51 |
 | Next deploy | batch 225 |
-| Last updated | 2026-10-03 08:48 UTC |
+| Last updated | 2026-10-03 09:07 UTC |
 
 ```
-pass 396 · fail 185 · null 464
+pass 396 · fail 185 · null 476
 fixed 36/185 · deferred 36 · open 113 · needs-human 7
 ```
 
