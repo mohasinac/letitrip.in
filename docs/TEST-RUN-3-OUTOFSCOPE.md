@@ -3508,3 +3508,26 @@ Three things follow, in descending confidence:
 Fix: write the fixtures. CLAUDE.md § Tester QA Program already specifies what
 they should be (12 products, one per listing type, plus the cross-store pair
 in the deliberately banned shape).
+
+#### CONFIRMED: `audit-tester-checklist-hrefs` cannot see this class
+
+Ran it directly: `clean ✓ (2405 href/startPage values checked across the seed
+and its authored overlays)` — while cases reference `product-tester-sandbox-*`
+ids that have **zero documents in Firestore**.
+
+The audit's premise (Root Cause #32) is that a dynamic-route deep link must
+end in "a known seed-data fixture id". It establishes *known* by scanning the
+sources for the id. When the id appears only in the CASE that links to it,
+that check is self-referential and always passes.
+
+So the audit proves the href is well-FORMED, never that the thing it points
+at EXISTS. A tester following it gets a 404 or an empty page and records
+"could not test", and nothing upstream ever flags it.
+
+Closing it means checking ids against the seeded DATA rather than against the
+source text — either by loading the seed arrays and asserting membership, or
+by querying Firestore. The second is more honest and much slower; the first
+is what the audit already almost does.
+
+This is Root Cause #84 again — a measurement narrower than the rule it feeds —
+and it is why the fixture gap survived 178 batches with a green audit.
