@@ -466,7 +466,33 @@ START of every batch, after `browser_close`, and verify the count — not once p
 identity change. Worth folding into `test-run-preflight.mjs` as a per-batch check
 rather than left to discipline.
 
-## `bg-primary` is too light for white text at small sizes (AA)
+## ✅ DECIDED — `bg-primary` is too light for white text at small sizes (AA) (CONFIRMED, quantified — promote)
+
+> **Measured 2026-10-03** — WCAG relative-luminance contrast of white on the
+> `--appkit-color-primary` token, in all three themes declared in `tokens.css`:
+>
+> | token | ratio vs white | normal AA 4.5 | large AA 3.0 |
+> |---|---|---|---|
+> | `#0d9488` (`:root`, default light) | **3.74:1** | FAIL | pass |
+> | `#ef4444` (line 376) | **3.76:1** | FAIL | pass |
+> | `#5992ff` (line 513, dark) | **3.01:1** | FAIL | pass, barely |
+>
+> So white on `bg-primary` fails AA for NORMAL-size text everywhere, and is
+> legal only for large text (≥18.66px bold / ≥24px). The entry's wording was
+> exactly right. `#5992ff` at 3.01 is within rounding of failing even the
+> large-text floor — any future darkening of white or lightening of that blue
+> breaks it outright.
+>
+> **Scope**: every primary button, badge and chip rendering white body text —
+> which is most of them, since `text-on-primary` pairs with `bg-primary` by
+> design.
+>
+> **Decision: promote to a gap case.** Two candidate fixes, and the choice is
+> a brand decision rather than a technical one: darken the primary ramp until
+> white clears 4.5, or keep the hue and restrict white-on-primary to large
+> text, using `text-primary` on a surface tint elsewhere. **Verify with a
+> computed ratio, not by eye** — 3.74 and 4.5 look identical in a screenshot,
+> which is why this survived a visual review.
 
 **Found during** batch 16, `checklist-design-ux-general-design-contrast-readability`
 and `…-section-cta-buttons-visible`.
