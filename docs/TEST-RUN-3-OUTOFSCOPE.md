@@ -150,7 +150,17 @@ detail route and suppressing the other, which is page-chrome architecture across
 category-label half (crumb 2 rendering the raw slug `category-burst-superking`) WAS in
 scope and is fixed.
 
-## Fixture gap: no second store owns a listing, so cross-seller ownership is untestable
+## ✅ DECIDED — ~~Fixture gap: no second store owns a listing, so cross-seller ownership is untestable~~ premise was false
+
+> **Measured 2026-10-03: the claim was wrong when written.** Products by
+> store: `store-beyblade-arena` 65, `store-letitrip-official` **7**. Only ONE
+> of those 7 is mine (`product-tester-crossstore-b`, added today) — the other
+> six predate this session. So a second store has owned listings all along
+> and cross-seller ownership was testable the whole time.
+>
+> Recording this as a false premise rather than as a fix, because it is not
+> one: anything blocked on this entry was blocked for no reason, and any case
+> that skipped cross-seller coverage citing it should be re-run.
 
 **Found during** batch 9, `checklist-selling-listing-edit-roundtrip-edit-other-sellers-listing-404s`.
 
