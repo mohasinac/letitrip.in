@@ -4281,3 +4281,27 @@ read the state select, touching nothing else. One minute, and it is a yes/no.
 
 (The created row was deleted and the buyer's default restored to Home, so no
 bad data survives.)
+
+## Product detail is a SOFT 404 — renders not-found, returns HTTP 200 (run-4, 2026-10-03)
+
+Noticed while driving `design-ux/general-design--guest` → `error-states`. Not
+chased, per the loop rule.
+
+| URL | Rendered | HTTP |
+|---|---|---|
+| `/this-page-does-not-exist-qa` | "404 — Page not found" | **404** ✓ |
+| `/products/zzzznope-no-such-product-42` | title "Product Not Found \| LetItRip", "404 — Page not found" | **200** 🛑 |
+
+The generic route gets it right; the product route returns 200 with 404 content.
+A soft 404 is **indexable** — a crawler can bank "Product Not Found" as a real
+URL, and Search Console reports it as a quality issue rather than a removal.
+This site has already lost its index once to a host mismatch (Root Cause #81),
+so the SEO surface is worth keeping clean.
+
+Both pages are otherwise correct: no stack trace, no file path, and real links
+back (`/`, `/products`, `/help`).
+
+**Likely one line**: the detail page renders a not-found component instead of
+calling `notFound()`. Worth checking the other `[slug]` detail routes at the
+same time — auctions, pre-orders, stores, blog — since whichever pattern this
+one follows, they probably follow too.
