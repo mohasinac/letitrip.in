@@ -3956,3 +3956,26 @@ verdicts live in the ledger.
    the data exists and the renderer drops it.
 
 Both are user-visible and cheap to fix; neither is a money or data defect.
+
+### A queue with no producer: listings cannot be reported from the listing (2026-10-03)
+
+Found by `report-submit-requires-detail` (batch 185), so the verdict lives in
+the ledger — noted here because the SHAPE recurs and is worth naming.
+
+`/admin/reports` is described as "Buyer-submitted reports against listings,
+stores, and users" and is permanently empty ("No open reports / All caught
+up"). The reason is upstream: **the listing page has no report control.** On
+`/products/product-beyblade-burst-valkyrie` the word "report" does not appear
+in the main content, no element carries a report/flag aria-label, and the only
+`/report` href is the footer's site-wide link.
+
+The capability is not missing — `/report` works and validates properly — but it
+demands an **Entity Type plus a raw Entity Id typed by hand**. A buyer does not
+know a product's internal id, so in practice nobody can file a listing report.
+
+This is the same shape as Root Cause #103 (a digital-code pool with readers and
+no writer) and #37 (a page with no nav entry): every piece exists except the
+one that connects them, so each half looks finished in isolation.
+
+Cheap fix: a "Report this listing" control on the product page that deep-links
+to `/report` with entityType and entityId prefilled.

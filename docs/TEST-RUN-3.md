@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **183 / 255** |
-| Cases | **903 / 1847** (49%) |
+| Batches | **184 / 255** |
+| Cases | **910 / 1847** (49%) |
 | Cycle | 37 of 51 |
 | Next deploy | batch 200 |
-| Last updated | 2026-10-03 06:08 UTC |
+| Last updated | 2026-10-03 06:18 UTC |
 
 ```
-pass 353 · fail 169 · null 381
+pass 355 · fail 169 · null 386
 fixed 36/169 · deferred 36 · open 97 · needs-human 7
 ```
 
@@ -1025,5 +1025,7 @@ untouched list is one nobody reads by milestone three.
 | 184 | 908 | `checklist-admin-users-trust-payment-methods-clusters-admin` | Admin can manage payment methods and payment-method clusters | admin/users-trust--admin--p3 | admin | ⬜ null | Both pages render correctly but hold NO DATA, so 'admin can manage' is unexercised. /admin/payment-methods shows 'No payment methods found'. /admin/payment-methods/clusters shows 'Payment Method Clusters - Multiple accounts sharing the s… | [shot](../tester/.tester-runs/run-3/shots/b184-payment-clusters.png) | — | — | no | — |
 | 184 | 909 | `checklist-admin-users-trust-analytics-alert-threshold-is-numeric` | An analytics alert refuses a non-numeric threshold and a zero/blank time window | admin/users-trust--admin--p3 | admin | ⬜ null | Could not locate the control on the case's own startPage. /admin/site is Site Settings and exposes 19 tabs - About, Branding, Appearance, Themes, Announcement, SEO, Contact & Social, Watermark, Fees, Integrations, Shipping, Auction, Limi… | [shot](../tester/.tester-runs/run-3/shots/b184-sections.png) | — | — | no | — |
 | 184 | 910 | `checklist-admin-users-trust-homepage-section-all-types-creatable` | EVERY section type in the New Section dropdown can actually be created — especially Featur | admin/users-trust--admin--p3 | admin | ⬜ null | Could not reach the New Section dropdown. The case's startPage /admin resolves to /admin/dashboard, and /admin/homepage 404s - my guess, not a defect. The real page is /admin/sections, found by reading the nav href: it renders 'Homepage … | [shot](../tester/.tester-runs/run-3/shots/b184-sections.png) | — | — | no | — |
+| 185 | 911 | `checklist-admin-users-trust-item-request-requires-title-and-description` | An item request cannot be submitted with an empty title or description | admin/users-trust | main | ✅ pass | Driven end to end as the buyer (identity confirmed via /api/user/profile -> rehan.sheikh@gmail.com). EMPTY SUBMIT: refused, stayed on /item-requests/new, and marked BOTH fields individually - one role=alert anchored to the title input ('… | [shot](../tester/.tester-runs/run-3/shots/b185-item-request-submitted.png) | — | — | no | — |
+| 185 | 912 | `checklist-admin-users-trust-report-submit-requires-detail` | Reporting a listing or store refuses an empty description and still files a normal report  | admin/users-trust | main | ❌ fail | FAILS STEP 2: there is NO report control on the listing page. On /products/product-beyblade-burst-valkyrie the word 'report' does not appear in the main content at all, no element carries a report/flag aria-label, and the only /report hr… | [shot](../tester/.tester-runs/run-3/shots/b185-report-validation.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
