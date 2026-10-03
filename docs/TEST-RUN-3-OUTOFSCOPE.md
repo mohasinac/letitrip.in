@@ -10,6 +10,26 @@
 > entry. That is exactly the failure the fix-cycle hook warns about: an
 > untouched list is not a backlog, it is a guarantee of repeated work.
 >
+> **MEASURED STALENESS RATE, 2026-10-03: 3 of the first 10 entries examined
+> were WRONG, not merely unfixed.**
+>
+> - "no second store owns a listing" — premise false when written
+>   (letitrip-official owned 6 listings already)
+> - "poll leaderboard says No votes yet" — no longer reproduces
+> - "spin-results asserts a private feed" — the case had already been split
+>   and fixed on 2026-09-29
+>
+> A fourth, the `totalPrice` mismatch, was rediscovered from scratch because
+> nobody had decided it. So **triage with the prior that an entry may be
+> stale, and VERIFY against live production before acting on it** — this list
+> is part backlog and part archive, and acting on the archive half costs
+> more than ignoring it. Three of my own conclusions this session had to be
+> retracted for exactly that reason.
+>
+> The counterweight: the same ten entries also yielded a LIVE PII EXPOSURE
+> (seller order endpoint, fixed and verified in `bc8727677`) that no tester
+> case would ever have caught. Do not skip the pass because of the noise.
+
 > **Before the next fix cycle, do a DECISION PASS** — every section gets one of
 > three: promoted to a gap case, fixed, or explicitly left standing WITH a
 > reason. Not read. Decided. Mark decided sections with ✅ so the open count is
