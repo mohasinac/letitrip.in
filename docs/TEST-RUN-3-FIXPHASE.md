@@ -546,3 +546,32 @@ test — and in both the tell was the same: I did not re-read the precondition.
 
 That is the argument for the skill's identity rule being mandatory. The
 verdicts that survive are exactly the ones that followed it.
+
+### 🔓 THE UNBLOCKER — and the trap in using it
+
+**`tester/scripts/fetch-cases.mjs` is the session minter.** It calls
+`/api/auth/login` for each identity and writes the Playwright storage-state
+files (`writeStorageState(buyerCookie, "session-buyer.json")` at :480, admin
+at :504, seller per the comment at :220). Re-minting the invalidated sessions
+means running it — that is the sanctioned path, and it is why the skill
+forbids ad-hoc `/api/auth/login` calls: the harness owns that budget.
+
+🛑 **DO NOT just run it. It ALSO WRITES `scope.json`.** The skill says so
+explicitly, and `record-verdicts --finish` gates the whole report on that
+file. A `--page`-scoped invocation could replace a scope covering 178 batches
+with one covering a single page — and the report would then look complete
+while silently excluding everything else. That is the same failure shape as
+the 122 orphan ledger rows earlier in this run.
+
+**Safe procedure:**
+1. `cp tester/.tester-runs/run-3/scope.json /tmp/scope.backup.json`
+2. Run `fetch-cases.mjs --run run-3` (no `--page`), or whatever invocation
+   the skill prescribes for a full-catalogue fetch.
+3. **Diff `scope.json` against the backup.** If the batch count dropped,
+   restore it — the sessions are still re-minted either way.
+4. Verify auth on a PROTECTED route (`/user/orders` must render orders, not
+   redirect to `/auth/login`). A page header cannot tell you.
+
+Note the login bucket is **10 requests/minute per IP, shared** across
+`/login`, `/session` and `/me`. Three or four logins is fine; a retry loop is
+not.
