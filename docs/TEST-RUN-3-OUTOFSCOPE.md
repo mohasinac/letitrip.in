@@ -4331,3 +4331,32 @@ that were indexed historically or are linked from outside.
 Not chased. But the two redirects being inconsistent is the kind of thing that
 is cheap to settle deliberately now and expensive to rediscover later — this
 codebase has already paid for a temporary-redirect mistake once.
+
+## `create-ticket` has leaked itself into permanent failure (run-4, 2026-10-03)
+
+The case opens a ticket titled **"QA Ticket create-ticket"** and never closes it.
+Two such rows are now open on rehan.sheikh@gmail.com from previous runs, and the
+product enforces an **open-ticket cap**:
+
+> "You already have 2 open tickets. Please wait for them to be resolved before
+> opening a new one."
+
+So the case passed once, left its row behind, and is now blocked by its own
+leftovers — for every future run, until someone clears them. Its sibling
+`reply-ticket` is blocked too, since its precondition is the ticket this one
+cannot create.
+
+**The product is behaving correctly.** The cap is sensible and the refusal is
+well-worded, shown both inline and in a summary. This is a fixture-hygiene
+problem, not a defect.
+
+**Two ways to fix it, and the second is better:**
+1. Delete the two leaked rows (unblocks the next run only — it will leak again).
+2. Give the case a teardown that closes the ticket it opens, so it is
+   self-cleaning the way `buyer-addresses` is (that batch creates `QA Addr
+   create` and deletes it in the same run).
+
+🛑 **Worth knowing before touching `supportTickets`**: it is CASCADE tier and
+cascades on a reference into seed-owned data. These QA tickets reference real
+orders, so a normal run teardown does **not** remove them — which is exactly why
+they survived.
