@@ -609,3 +609,36 @@ the 122 orphan ledger rows earlier in this run.
 Note the login bucket is **10 requests/minute per IP, shared** across
 `/login`, `/session` and `/me`. Three or four logins is fine; a retry loop is
 not.
+
+### 🛑 HIGH PRIORITY, UNRESOLVED: buyer may be unable to pass checkout step 1
+
+Found 2026-10-03 while re-driving the checkout extras step, with a VERIFIED
+authenticated buyer session (`/api/user/profile` 200, `rehan.sheikh@gmail.com`,
+cart holds 2 items / ₹2,098.00).
+
+`/checkout` opens on "Step 1 of 3: Shipping Address" and renders the saved
+address ("Home — 123 Stadium Lane, Vijay Nagar, Indore"). Measured:
+
+    Continue button exists .......... yes
+    Continue disabled ............... TRUE
+    radio inputs / role=radio ....... 0
+    clicking the address card ....... did not enable Continue
+
+So there is no standard selection control, and Continue stays disabled — the
+buyer appears unable to proceed. **If that is real it is SEVERE: checkout is
+unusable**, and it would also explain why the extras-step case has never been
+verifiable.
+
+🛑 **NOT yet confirmed, and do not report it as confirmed.** My click selected
+an element by text match (`/Stadium Lane/` with a height bound), which may
+have hit a wrapper rather than the real control. A card wired via `onClick`
+on a specific inner node would not respond to that.
+
+**To settle it**: take a `browser_snapshot`, find the address card's exact
+ref, click THAT via `browser_click` rather than a synthesised DOM click, and
+re-read `continueDisabled`. If it is still disabled, this is a production
+checkout blocker and outranks everything else in this file.
+
+A synthesised `el.click()` also bypasses React synthetic-event paths in some
+component shapes — another reason to use the real tool rather than
+`browser_evaluate` for the deciding click.
