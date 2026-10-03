@@ -870,3 +870,30 @@ not the coupon field misbehaving.
 That distinction is the same one that made `0 orders` look like "this buyer
 has none" earlier in this run: a missing precondition and a broken feature
 are indistinguishable from the screen.
+
+#### Coupon codes for batch 179 (measured live, 11 active)
+
+The restored cart is ₹1,099, which clears most minimums:
+
+| code | scope | store | minPurchase | usable at ₹1,099 |
+|---|---|---|---|---|
+| BUYNOW10 | seller | beyblade-arena | 0 | yes |
+| ARENA25 | seller | beyblade-arena | 1000 | yes |
+| SEALED20 | seller | beyblade-arena | 1000 | **NO — buyer is at 2/2 perUserLimit** |
+| REHAN10 | admin | — | 500 | yes |
+| FREESHIP499 | admin | — | 499 | yes |
+| NEWBLADER | admin | — | 1000 | yes |
+| TOURNAMENT2026 | admin | — | 1000 | yes |
+| ARENAVIP | seller | beyblade-arena | 2000 | no — cart too small |
+| BLADER50 | admin | — | 2000 | no — cart too small |
+| OFFICIAL10 | seller | letitrip-official | 500 | n/a — that store's item is unbuyable (see above) |
+
+**For `coupon-all-codes-listed-on-order`** (needs several stacked): use
+**BUYNOW10 + REHAN10**. The stacking rule is one seller coupon per store plus
+one admin coupon overall, so that pair is the minimal legal stack and both
+clear their minimums on this cart.
+
+🛑 **Do not reach for SEALED20.** This buyer has already used it twice against
+a perUserLimit of 2 — measured earlier this session. It will be refused for
+the LIMIT, which in a coupon test reads exactly like the feature under test
+rejecting it. That is the false-pass shape this run keeps hitting.
