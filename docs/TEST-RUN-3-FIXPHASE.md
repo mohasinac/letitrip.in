@@ -835,7 +835,26 @@ fix:
     accepted offers (any buyer) . 0
     won bids (any buyer) ........ 2   (not in this buyer's cart)
 
-**The cart being empty is my doing**, and four of batch 179's five cases need
+**UPDATE: cart partially restored.** I re-added
+`product-beyblade-metal-dark-bull-video-demo` (store-beyblade-arena, ₹1,099)
+through the real UI path, so the single-store coupon cases can run.
+
+🛑 **But the MULTI-STORE case is NOT satisfiable as the catalogue stands.**
+Measured: `store-letitrip-official` has exactly ONE buyable standard product
+— `product-tester-crossstore-b`, the fixture I seeded this session — and it
+carries `isTestData: true`, so `hidePublicTestData` hides it from a
+non-tester buyer. Its other 6 products are not buyable standard listings.
+
+So `coupon-split-across-per-store-orders` needs one of:
+- a real (non-test) standard product seeded into a second store, or
+- running that case as a tester identity, which sees test data, or
+- a `null` with this reason.
+
+**Do not solve it by dropping `isTestData` from the crossstore fixture** —
+that flag is what keeps it out of the public catalogue, and this session
+already deleted 7 leaked QA rows, one of them a PUBLISHED listing.
+
+Original note — **the cart being empty was my doing**, and four of batch 179's five cases need
 items at checkout. Re-add two products before starting, or every coupon case
 fails for the wrong reason. `store-beyblade-arena` has 65 products and
 `store-letitrip-official` has 7 — take one from each and the multi-store
