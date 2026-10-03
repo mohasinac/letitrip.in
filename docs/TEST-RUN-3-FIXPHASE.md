@@ -825,3 +825,29 @@ Useful context from this phase: a working checkout run is
 address card → "Continue to payment" → tick the manual-payment consent
 checkbox → "Pay via UPI / Cash". Use `browser_snapshot` + `browser_click`
 with refs; synthesised `el.click()` silently fails on these cards.
+
+### 🛑 State I changed, and what batch 179 needs because of it
+
+Measured just now, after I placed `order-2-20261003-gjdknf` to verify the GST
+fix:
+
+    buyer cart items ............ 0   <- MY ORDER CONSUMED IT
+    accepted offers (any buyer) . 0
+    won bids (any buyer) ........ 2   (not in this buyer's cart)
+
+**The cart being empty is my doing**, and four of batch 179's five cases need
+items at checkout. Re-add two products before starting, or every coupon case
+fails for the wrong reason. `store-beyblade-arena` has 65 products and
+`store-letitrip-official` has 7 — take one from each and the multi-store
+coupon-split case becomes satisfiable at the same time.
+
+**The offer lane is UNREACHABLE**: zero accepted offers exist. The two won
+bids are not in this buyer's cart, and only settlement writes a locked line.
+So `coupon-auction-offer-lane-no-coupon-field` is a **`null` with the
+reason** unless someone first accepts an offer as a seller, or a settlement
+runs. Do not record it as a `no` — the absence of the lane is a fixture gap,
+not the coupon field misbehaving.
+
+That distinction is the same one that made `0 orders` look like "this buyer
+has none" earlier in this run: a missing precondition and a broken feature
+are indistinguishable from the screen.
