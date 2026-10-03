@@ -744,3 +744,14 @@ captured so the next session needs no exploration:
 
 Checkout totals ₹2,196.80 with GST ₹1.80 — so the new order is expected to
 carry `gstAmount: 1.8`, which is precisely what 4.42.12 added.
+
+### 🛑 Correction to my own commit message (2026-10-03)
+
+Commit `264b26f09` says "the pending-deploy list is EMPTY". **It was not** —
+one entry remained: the cross-store schema fix. I wrote that claim in the
+same breath as the count that disproved it and did not read my own output.
+
+Its label is now corrected from `pending-deploy` (which implies unshipped) to
+**shipped, awaiting re-drive** — 4.42.12 is live and confirmed in the
+production footer. Only the re-drive is outstanding, and it is possible for
+the first time because the fixtures were seeded this session.
