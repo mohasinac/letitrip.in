@@ -3867,3 +3867,30 @@ is what the audit already almost does.
 
 This is Root Cause #84 again — a measurement narrower than the rule it feeds —
 and it is why the fixture gap survived 178 batches with a green audit.
+
+### 🛑 BOTH coupon batches are blocked by one missing session file (2026-10-03)
+
+Batch 178 (`buying-coupons--p1`, 12 cases) and batch 179 (`--p2`, 4 of 5)
+name **`vivaan.kapoor@gmail.com`** as the signing-in identity. That is uid
+`user-seto-kaiba` — the account EXISTS and is enabled — but the harness has
+only four session files: guest, buyer (`rehan.sheikh@gmail.com`), seller,
+admin. There is no way to browse as it.
+
+**16 cases are unrunnable for want of one file.** That is the single
+highest-yield unblock left in the catalogue.
+
+**Fix**: add `vivaan.kapoor@gmail.com` to the identity set in
+`tester/scripts/fetch-cases.mjs` (it already mints buyer/seller/admin via
+`writeStorageState`) and add the matching `TESTER_*` env vars. The seeded
+password is the same `TempPass123!` the cases quote.
+
+🛑 **Do NOT substitute the available buyer.** Three of these cases PLACE
+ORDERS or read per-user coupon-wallet state, so a substitute answers a
+different question while looking like a pass — and `rehan.sheikh` is already
+at 2/2 on SEALED20's per-user limit, which would read as the coupon rule
+rejecting a valid code.
+
+The 5th case of batch 179 is a separate FIXTURE gap: it names the available
+buyer but asserts a seeded cart holding a locked won-auction line and a
+locked accepted-offer line. Both lanes are empty, and Firestore has 0
+accepted offers for any buyer.
