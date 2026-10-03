@@ -3425,3 +3425,33 @@ for LOADING, so six collections held zero documents in every run ever). Worth
 checking whether the tester fixture set is reaching production at all, rather
 than fixing these two by hand: `npx appkit-seed status` per collection against
 the seed baseline would answer it in one command.
+
+### 🛑 ROOT CAUSE: the ENTIRE tester sandbox is absent from production (2026-10-03)
+
+Measured: 70 products, **0** with `tester` in the id, **0** with
+`isTestData === true`. CLAUDE.md documents 12 tester-sandbox product fixtures
+plus the cross-store pair. None of them exists.
+
+**Why**, and it is a design consequence rather than a bug in any one place:
+
+1. The fixtures are defined INSIDE the normal seed files
+   (`products-standard-seed-data.ts`, `products-live-items-seed-data.ts`,
+   `products-prize-draws-seed-data.ts`), so they load with an ordinary
+   `appkit-seed load`.
+2. `testerSandboxCleanup` runs DAILY and deletes `isTestData` rows past their
+   TTL.
+3. `testerSandboxRefresh` — which used to revert and restore them every 4h —
+   was REMOVED 2026-09-04 when the Claude tester took over fixture state.
+
+So one job deletes and nothing restores. The sandbox drains on a timer and
+stays empty until someone runs a seed.
+
+**Impact across this run**: every case that depends on a tester fixture has
+been testing against absent data — including the cross-store refusal (a guard
+on four write routes with nothing that triggers it), and plausibly a share of
+the blocked/null verdicts recorded over 178 batches.
+
+**Fix is one command**, and it is the first thing to run before any further
+testing: `npx appkit-seed load --collections products`. The durable fix is
+deciding who owns fixture state now that refresh is gone — CLAUDE.md warns
+against reinstating the job without answering that question.
