@@ -18,10 +18,16 @@ here by hand you have broken the one rule this project keeps relearning.
 blocked it was not visible from source, from `npm run check`, or from a build —
 only from placing a real order.
 
-**Three things should be fixed first**, both found by driving the same path. One freezes a buyer's cart permanently; one stops sellers creating listings
-from the quick-add form; the third makes every cart and checkout error
-invisible. Neither is speculative — both were reproduced on production and
-are written up with root causes in `tester/.tester-runs/run-4/fixes.jsonl`.
+**Three things should be fixed first**, all found by driving real paths. One
+freezes a buyer's cart permanently; one stops a seller creating a listing from
+the quick-add form; the third makes every cart and checkout error invisible.
+None is speculative — each was reproduced on production and is written up with
+a root cause in `tester/.tester-runs/run-4/fixes.jsonl`.
+
+Two of the three are **marketplace-fundamental**: a buyer who cannot clear their
+cart cannot buy anything again, and a seller who cannot publish cannot supply
+the catalogue. The third is what makes both of them look like dead buttons
+rather than errors.
 
 ---
 
