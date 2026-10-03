@@ -610,7 +610,36 @@ Note the login bucket is **10 requests/minute per IP, shared** across
 `/login`, `/session` and `/me`. Three or four logins is fine; a retry loop is
 not.
 
-### 🛑 HIGH PRIORITY, UNRESOLVED: buyer may be unable to pass checkout step 1
+### ✅ RETRACTED — checkout is NOT blocked (my click was wrong)
+
+> **Settled with `browser_snapshot` + `browser_click` as the procedure below
+> prescribed.** The address card is `ref=e573` and carries `[cursor=pointer]`.
+> Clicking it properly **enabled Continue immediately** (`disabled: false`)
+> and the fees calculated. My earlier synthesised `el.click()` missed the
+> control — exactly the caveat I attached and refused to drop.
+>
+> **Reporting this as a blocker would have been the most expensive wrong
+> finding available in this run**: "checkout is unusable" triggers an
+> incident response, and the cause was my test harness.
+>
+> ### It also CONFIRMS the invoice strand-2 diagnosis, exactly
+>
+> With the address selected, the checkout summary reads:
+>
+>     Subtotal      ₹2,098.00
+>     Shipping         ₹77.00
+>     WhatsApp         ₹10.00
+>     Platform fee     ₹10.00
+>     GST               ₹1.80   <-- the exact amount missing from the ORDER
+>     Total         ₹2,196.80
+>
+> So **GST is computed and DISPLAYED at checkout** and simply never persisted
+> onto the order document — 0 of 40 orders carry `gstAmount`, which is why
+> the order page's Tax row (which maps from it) has never once rendered.
+> The fix is to write `gstAmount` at order creation; the value already
+> exists at that moment, so nothing needs recomputing.
+
+### Original note (premise wrong, procedure right): buyer may be unable to pass checkout step 1
 
 Found 2026-10-03 while re-driving the checkout extras step, with a VERIFIED
 authenticated buyer session (`/api/user/profile` 200, `rehan.sheikh@gmail.com`,
