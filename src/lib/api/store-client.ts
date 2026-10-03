@@ -55,9 +55,15 @@ export function getStoreCategory(url: string): Promise<Response> {
   return fetch(url);
 }
 
+/**
+ * PATCH, not PUT. `src/app/api/store/categories/[id]/route.ts` exports GET,
+ * PATCH and DELETE only, so a PUT answered 405 and every storefront-category
+ * rename failed — surfacing as a bare "Save failed" because a 405 carries no
+ * body for the caller's `res.json()` to read.
+ */
 export function updateStoreCategory(url: string, body: JsonBody): Promise<Response> {
   return fetch(url, {
-    method: "PUT",
+    method: "PATCH",
     headers: JSON_HEADERS,
     body: JSON.stringify(body),
   });

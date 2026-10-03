@@ -20,6 +20,7 @@ garish so nothing here can be mistaken for real product media.
 | `sample-doc.pdf` | 627 | application/pdf | happy path — the PDF branch (invoices, payout docs, shipping proofs) |
 | `not-really-an-image.png` | 95 | — | rejection — declared PNG, actually text; must return 422 MIME_MISMATCH |
 | `empty.png` | 0 | — | rejection — zero-length file; must fail with a readable message, not a stack trace |
+| `oversized.png` | 11224775 | image/png | rejection — larger than the 10MB image cap |
 
 `oversized.png` is **not committed** — it is >10MB of incompressible noise, reproducible in a
 second with `--with-oversized`, and not worth carrying in git to assert a size check.

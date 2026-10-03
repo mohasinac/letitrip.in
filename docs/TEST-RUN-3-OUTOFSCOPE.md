@@ -4036,3 +4036,193 @@ page matched `AccessToken`; the context shows it is the i18n label pair
 the client translation bundle, not values. **Always print the match context
 before reporting a credential leak** — this has now happened twice in one run
 (batch 197 was the first).
+
+## Watermark Site Settings cases cannot be automated by this run (batch 216)
+
+`admin/media-watermark` carries 5 cases; **3 of them require writing to Site
+Settings** — the Size/Opacity sliders, the five Position presets, and the custom
+X/Y offset. Site Settings is **PRESERVE tier**: never modified, because it
+survives the run and damage there is the only permanent damage available. All
+three are recorded `null` with that reason, not as coverage gaps to be closed by
+trying harder.
+
+**Read-only baseline captured so a human run is cheap and reversible:**
+
+```
+watermark          { type: "text", imageUrl: "", text: "letitrip.in",
+                     size: 10, opacity: 10, position: "center",
+                     offsetX: 0, offsetY: 0 }
+effectiveWatermark { type: "image", imageUrl: "/logo.svg", size: 10, opacity: 10,
+                     position: "center",
+                     themeGradientStops: [rgb(15,118,110), rgb(20,184,166),
+                                          rgb(232,121,249)] }
+```
+
+Restore from `docs/TEST-RUN-3-SITESETTINGS-BASELINE.json` if a manual pass leaves
+anything changed.
+
+**What WAS verified read-only:** the theme-recolor case passes. With no uploaded
+override the resolver falls through to the bundled `/logo.svg` mark, and its three
+gradient stops (teal-700, teal-500, fuchsia-400) match the active `default-light`
+theme's own tokens — `--appkit-color-primary #0d9488` (teal) and
+`--appkit-color-secondary #c026d3` (fuchsia). The live palette is teal/fuchsia, not
+the cobalt+lime the docs call default-light, which makes the correspondence stronger
+evidence: the stops track the real palette rather than a documented default.
+
+**Unreachable, not failing:** the video-overlay parity case. The product's video is a
+gallery slide; clicking its "View video" thumbnail and the hero slide produced no
+`<video>` element programmatically — the same limitation as the file-chooser in batch
+210. Target numbers for a human: size 10, opacity 10, position center. Note the case
+EXPECTS `productVideoMarked: false`, so an unmarked product video is by design there.
+
+## Dead API constant: `API_ROUTES.EVENTS.PRODUCT_ENTRIES` (noted at milestone 225, not chased)
+
+`src/constants/api.ts:174` defines `PRODUCT_ENTRIES: (id) => "/api/products/${id}/lottery-entries"`.
+A repo-wide grep finds **no caller** other than that definition. The target route
+exists and exports `GET` only.
+
+Harmless today — unlike its neighbour `EVENTS.ENTRIES`, which points at a GET-only
+route that three call sites actively POST to (filed as a HIGH finding in
+TEST-RUN-3-FIXPHASE.md). Recorded here because no checklist case owns it and the run's
+rule is that such observations are written down, not pursued. Worth deleting or wiring
+up whenever someone is next in that file.
+
+---
+
+# Triage decisions — batch-236 fix cycle
+
+The fix cycle requires a DECISION per entry rather than an untouched list. Below are
+decisions for the entries **added during this session** (batches 199–236). The older
+~140 sections are **NOT triaged here** and I am saying so rather than implying
+otherwise — they predate this session and deciding them blind would be worse than
+leaving them visibly pending.
+
+| entry | decision |
+|---|---|
+| Prize-draw dashboard "empty" is CORRECT (b199) | **Leave standing — closed.** It records a non-defect so nobody re-files it. No action. |
+| PhonePe does not exist (b203) | **Promote to a case-catalogue change.** Two cases test an unbuilt feature; they should be retired or marked blocked at source, not answered every run. Not a product fix. |
+| Store PII leak fix VERIFIED holding (b203) | **Leave standing — closed.** Positive confirmation, re-confirmed independently at b211 (admin store page) and b224 (public store page), both zero hits. |
+| Watermark Site Settings un-automatable (b216) | **Leave standing — needs a human.** Three cases write PRESERVE-tier Site Settings. The read-only baseline is captured so a manual pass is cheap and reversible. |
+| Dead API constant `LOTTERY.PRODUCT_ENTRIES` (b225) | **Leave standing — harmless.** Zero callers, target route exists and serves GET. Delete it whenever someone is next in that file. 🛑 Note the heading originally called it `API_ROUTES.EVENTS.PRODUCT_ENTRIES`; that attribution was wrong for the same reason the EVENTS.ENTRIES finding was retracted — the constant lives in the `LOTTERY` block of `src/constants/api.ts`, not under `EVENTS`. |
+
+### One decision that became a fix
+
+The **`audit-client-verb-match` blind spot** (b225) is deliberately **not** left here —
+it is a real, recurring-class defect and sits in the fix queue as HIGH. Its sibling
+finding (the supposed event-entry 405) has been **retracted**; see the retraction
+section in TEST-RUN-3-FIXPHASE.md.
+
+## Cross-store QA fixtures appear in the live admin list, against today's CLAUDE.md correction
+
+Observed at batch 242 while counting rows on `/admin/products`. The first two
+rows are titled **"QA Cross-store B — LetItRip Official"** and **"QA Cross-store
+A — Beyblade Arena"**.
+
+CLAUDE.md's correction dated **2026-10-03** states that the cross-store bundle
+fixtures do not exist — that `appkit-seed load --collections products` writes
+"70 products, 0 of them tester fixtures", that no `products-tester-seed-data.ts`
+exists, and that consequently the four bundle write routes' cross-store guard
+"has nothing that can trigger it".
+
+Products under those titles are in the live admin list. That does not
+necessarily contradict the id-level claim — the correction counted ids
+containing `tester` and documents with `isTestData: true`, and these may carry
+neither — but it does bear directly on the conclusion drawn from it, because
+two authored cases were rewritten around the premise that no cross-store pair
+is available to test with.
+
+**Not chased** — resolving it means reading these two documents' ids, `storeId`s
+and `isTestData` flags and re-running the count the correction quotes. Flagged
+because a wrong premise there invalidates case rewrites, not just a table row.
+
+## OG image routes are failing in production, repeatedly, and only the error list shows it
+
+Surfaced at batch 247 while using `/admin/maintenance/server-errors` as the
+control for `function-errors-page-has-no-producer`. **No case asked about this**,
+so it is recorded here and not chased.
+
+The list holds **200 rows**, and its newest three are all the same shape, dated
+today:
+
+```
+2026-10-03 11:24:57  /[locale]/reviews/[id]/opengraph-image      GET  RSC_route failed to pipe response
+2026-10-03 09:10:54  /[locale]/reviews/[id]/opengraph-image      GET  RSC_route failed to pipe response
+2026-10-03 07:26:22  /[locale]/categories/[slug]/opengraph-image GET  RSC_route failed to pipe response
+```
+
+So at least two `opengraph-image` route families are erroring, recurrently,
+hours apart.
+
+**Why this is worth a row despite being out of scope.** An OG image failure is
+invisible to every visitor and to every page-level test: the page renders fine,
+nothing throws in the browser, and the only symptom is a missing or broken
+social-preview card when the URL is shared. There is no user to complain and no
+screen to look wrong. This error list is the sole place it is observable — which
+is also why it has presumably been failing for some time unnoticed.
+
+Two things make it more interesting than a cosmetic bug:
+
+- **`reviews/[id]/opengraph-image` and `categories/[slug]/opengraph-image` are
+  both dynamic-param OG routes**, so a shared cause is more likely than two
+  coincidences — something in how those renderers resolve their record, or in
+  what they do when it is missing.
+- **The money-stripping sweep touched all eight OG renderers recently.** Guest
+  price gating required every `og.tsx` to drop its `₹` amount, on the reasoning
+  that an OG image is a public URL with the figure burned into the pixels. That
+  is the most recent change to this exact surface, and a renderer that still
+  references a value it no longer receives would fail precisely like this.
+
+**Not chased** — confirming it means reading both `og.tsx` renderers and
+reproducing the pipe failure, which is a source investigation rather than a
+tester verdict. Flagged because the error is real, current, and structurally
+unobservable anywhere else.
+
+---
+
+# 🛑 How to read this file — it is NOT a 153-item defect backlog
+
+Measured at batch 250, because the final report will quote a number from here
+and the obvious number is wrong.
+
+| | count |
+|---|---|
+| `##` sections total | **153** |
+| ✅ already resolved / verified holding in production | 11 |
+| 🚫 explicitly "do not file this" (correct behaviour, unbuilt feature, un-automatable) | 3 |
+| ❓ everything else — **unclassified** | **139** |
+| Triage blocks written | **1** (the batch-236 fix cycle, covering 6 entries) |
+
+So roughly **139 entries have never been triaged**, and ~133 of those have
+never been looked at again since the moment they were written.
+
+**Three different kinds of thing live in here and they are not interchangeable:**
+
+1. **Real, unchased observations** — the intended contents. A defect noticed
+   while testing something else, recorded with evidence and deliberately not
+   pursued (G4: a fix must name the case that found it).
+2. **Explicit do-not-file notes** — e.g. *"Prize-draw dashboard 'empty' is
+   CORRECT — do not file it"*, *"PhonePe does not exist — two cases test an
+   unbuilt feature"*, *"Watermark Site Settings cases cannot be automated by
+   this run"*. These are **negative** findings and filing them as defects sends
+   someone hunting a bug that is not there.
+3. **Resolved confirmations** — e.g. *"Store PII leak fix VERIFIED holding in
+   production"*. These are good news recorded in the same place as bad news.
+
+Counting all 153 as open work overstates the backlog by at least 14 and
+mischaracterises 3 of them as defects when they are the opposite. The
+classification above is **keyword-based on section titles only** — it is a
+starting point for a real triage, not a substitute for one.
+
+### Why it was never drained, stated plainly
+
+The plan has out-of-scope entries reviewed **at each deploy milestone** and
+either promoted to a gap case or left standing. That review happened **once**,
+at the batch-236 cycle, for 6 entries. The remaining milestones were spent on
+the deploy itself and on the batches, and there is **no further fix phase
+before the run ends** (gate fires at 261, run ends at 255 — see the
+corresponding section in `TEST-RUN-3-FIXPHASE.md`).
+
+So this file is the run's largest single piece of unfinished business, and it is
+unfinished by accumulation rather than by any decision. The honest next step is
+one pass that sorts 139 entries into the three kinds above — cheap per entry,
+and it is what makes the difference between a backlog and a 278 KB log.

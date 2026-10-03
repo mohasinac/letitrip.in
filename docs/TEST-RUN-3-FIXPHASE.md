@@ -1761,3 +1761,3511 @@ required index out of the error, add it to
 Also recorded alongside it:
 `/[locale]/bundles/[slug]/opengraph-image GET RSC_route failed to pipe response`
 and an "operation was aborted due to timeout".
+
+---
+
+## B207 · Buyers cannot leave a review — the write path has NO UI entry point
+
+**Case:** `checklist-buying-reviews-leave-review` · batch 207 `buying/reviews` · buyer
+**Triage rank: HIGH.** Not money, but it is a whole advertised feature that cannot be
+used by anyone, and reviews are the primary signal a buyer judges a seller on.
+
+### Symptom, driven as `rehan.sheikh@gmail.com`
+
+Three surfaces, none of which offers a way in:
+
+| Surface | Observed |
+|---|---|
+| `/user/orders` | delivered orders are hidden under the **All** scope (Active shows none) |
+| order `#1GSVR8` detail — Delivered, standard product, "Payment verified" | **0** write-review controls, **0** links to the product |
+| `/products/product-beyblade-burst-regalia-genesis` | renders `★ 3.3 (4 reviews)` — reviews DISPLAY fine — and **0** write-review controls |
+
+### Cause — found in source after seeing it on screen
+
+- **`useCreateReview` has zero component callers.** Grep across `appkit/src` + `src`
+  returns only its own file, two barrels, and tester seed data. The hook, the Zod
+  schema and the API all exist; nothing in the product calls them.
+- **`ReviewModal.tsx` is not a write form.** It exports **`ViewReviewModal`** — a
+  read-only detail overlay (`review: Review | null`, images + comment + seller
+  response) whose single consumer is `AdminReviewsView.tsx:234`.
+
+So the 79 seeded reviews are the only reviews that can ever exist. This is Root
+Cause #103's exact shape — complete in every direction except the one that puts
+data in — and #37's unwired-feature shape.
+
+### Fix sketch (not attempted; beyond a mid-batch budget)
+
+1. A write form calling `useCreateReview` (rating / title / body / images), gated on
+   the viewer having a **delivered** order containing that product — which is what
+   sets `isVerifiedPurchase`, already a schema field with a renderer.
+2. An entry point on **both** surfaces the case names: the order detail row, and the
+   product page's reviews section.
+3. Give the order detail a **link to the product** — its absence is a second, smaller
+   defect: a buyer cannot navigate from a purchased item to its listing at all.
+
+### Two near-misses worth keeping
+
+- The first delivered order I opened was `#SWLA7T`, whose item is
+  `prizedraw-beyblade-mystery-box` — a **prize draw**, which plausibly should not be
+  reviewable. A failure filed there would have been false. The buyer has 4 delivered
+  orders, **3 of them standard**; I re-drove against one of those.
+- I then built the order URL from a truncated id as `order-1-…1gsvr8`; the real id is
+  `order-2-…1gsvr8`. The blank page that produced was my URL, not a defect.
+
+---
+
+## B208 · A product page advertises its reviews and renders none of them
+
+**Case:** `checklist-buying-reviews-review-detail-related-sections` (steps 1–2 could
+not be performed as written) · batch 208 `buying/reviews--guest` · guest
+**Triage rank: MEDIUM-HIGH.** Reviews are the main signal a buyer judges a seller
+on, and this makes every one of them unreachable from the place a buyer is standing.
+
+### Symptom
+
+`/products/product-beyblade-burst-valkyrie`, signed out, shows **`★ 5.0 (4 reviews)`**
+in its summary line — and the page contains:
+
+- **0** links matching `/reviews/`
+- **0** review rows (zero `***` masked-reviewer tokens anywhere in the text)
+- **no reviews section at all** — its only headings are the product title and four
+  related-item rails ("Burst & X Attackers You Might Like", "More in Superking",
+  "More by Beyblade", "You might also like", "More from Beyblade Arena")
+
+The 4 reviews are real: Firestore has `review-11/25/39/53` against that product, and
+the permalink pages render them perfectly. They simply cannot be reached from the
+product.
+
+### Not a rendering failure elsewhere — the rest of the feature is healthy
+
+Worth stating, so nobody widens this: `/reviews/review-25` renders the review, its
+photos, **"More reviews for Beyblade Burst Valkyrie"** (the other 3) and **"More
+reviews for this store"** (6), excluding itself both ways. The store tab
+`/stores/store-beyblade-arena/reviews` lists all 74 with correct masking. Only the
+product-page surface is missing.
+
+### Fix sketch
+
+Mount the existing `ReviewsList` / `ReviewsListingPanel`
+(`appkit/src/features/reviews/components/`) on `ProductDetailPageView`, below the
+description and above the related rails, and make each row link to its
+`/reviews/{id}` permalink. Pairs naturally with the B207 write-control fix — the same
+section is where a "Write a review" entry point belongs.
+
+### 🛑 Corrects my own B207 wording
+
+In batch 207 I wrote that the Regalia Genesis product page "renders a reviews section
+showing `★ 3.3 (4 reviews)`". It does not. That string is the **summary line beside
+the title**; there is no section on either product. B207's verdict (no write control
+anywhere) is unaffected — the control is absent either way — but the description
+overstated what was on the page.
+
+### Two near-misses in this batch, both from sampling
+
+- **Aggregate rating.** Page 1 of the store's reviews runs 4,3,2,1,5 repeating, mean
+  **3.08**, against a header of **4.1** — which looks like a denormalised mirror
+  drifting (Root Cause #42/#102). It is not. Those twelve are the newest-first seed
+  block; all 74 average **4.095**, matching `stats.averageRating` 4.1 exactly
+  (distribution `{1:3, 2:3, 3:12, 4:22, 5:34}`). A page-1 sample is not an aggregate.
+- **Seed copy reads wrong against its stars** — "Best seller on the platform (1★)",
+  "Arrived damaged (5★)". Titles and ratings are cycled independently by the seed.
+  The render is correct: the title suffix and the star widget's `aria-label` agree on
+  every row.
+
+---
+
+## B209 · A seller can NEVER rename a storefront category — the form PUTs, the route only has PATCH
+
+**Case:** `checklist-selling-seller-catalog-org-seller-categories-crud` · batch 209 · seller
+**Triage rank: HIGH.** Not money, but it is a CRUD operation that fails 100% of the
+time on every row, and the only feedback is the word "Save failed".
+
+### Symptom
+
+`/store/categories/{id}/edit` → change Label → Save:
+
+```
+Please fix the following: Category: Save failed
+Label *   [Save failed]
+```
+
+and the API still returns the old label after a reload. Create works; delete works;
+**rename never does**.
+
+### Cause — proven with a control, same URL, same body, same moment
+
+| verb | status |
+|---|---|
+| `PUT`   | **405**, empty body |
+| `PATCH` | **200** `{"success":true,…,"message":"Category updated"}` |
+
+- Client: [`src/lib/api/store-client.ts:58-64`](src/lib/api/store-client.ts#L58-L64) —
+  `updateStoreCategory` uses `method: "PUT"`.
+- Route: [`src/app/api/store/categories/[id]/route.ts`](src/app/api/store/categories/[id]/route.ts)
+  exports only `GET` (55), `PATCH` (68), `DELETE` (86).
+
+**The generic message is the same bug, one step on.** A 405 carries no body, so the
+edit page's `res.json()` throws, its `.catch(() => undefined)` yields `undefined`, and
+`setFieldError("label", detail ?? "Save failed")` prints the literal fallback. The
+handler's own comment says the server's objection should land on a field — a 405 has
+no objection to read.
+
+### Fix
+
+One word in `store-client.ts`: `PUT` → `PATCH`. Then re-drive the case.
+Optionally give the route a `PUT` alias too, but one verb is better than two.
+
+### 🛑 My first diagnosis was wrong, and the method that corrected it is the lesson
+
+I first reproduced a `400 "Unrecognized key(s) in object: 'storeId'"` and was about to
+file "the edit form echoes the whole document into a `.strict()` schema". That payload
+was **mine**, not the form's. Intercepting `window.fetch` and re-clicking Save showed
+the real body is clean — `{label, slug, description, coverImageUrl, displayOrder,
+isActive}`, no `storeId` — and the only difference was the verb. **Capture the request;
+do not reconstruct it.**
+
+### Three smaller findings from the same page
+
+1. **Grid view renders no label.** Same page, same moment: Grid → 3 rows, 3 `🏷️ —`,
+   zero labels; Table → all 3 labels. The data is fine (`label` is present in the API
+   and in `mapRows`); `COLUMNS` renders `row.label` only in Table view, and the card
+   renderer reads a field `mapRows` never supplies.
+2. **Delete is reachable only from inside the edit page.** The list's row menu offers
+   **only "Edit"**, and rows have no selection checkbox — so the bulk delete that
+   `SellerStoreCategoriesView` wires up (`buildBulkActions`) cannot be reached at all.
+3. **The delete confirmation is not `role="dialog"`.** It is a plain div with a
+   heading "Delete category?". My first programmatic pass therefore recorded "no
+   dialog appeared" — a false negative in my own measurement, and an a11y gap in the
+   component: a confirmation that assistive tech cannot identify as a dialog.
+
+### Cleanup done
+
+`/store/categories` held two leftover rows labelled "QA Category catalog-org" from a
+2026-09-13 run (description "Created by the automated tester."), sharing the byte-
+identical slug `qa-category-catalog-org` — so that collection has **no slug-uniqueness
+guard**. Both removed along with this batch's own fixture; the collection is back to 0.
+
+---
+
+## B210 · 🛑 NEEDS A HUMAN FIRST — the product-image upload never starts, which blocks publishing anything
+
+**Cases:** `…deep-category-chain-derived`, `…seller-category-inline-create-persists`
+(both null, blocked) · batch 210 · seller
+**Triage: INVESTIGATE BEFORE FIXING.** If it reproduces with a real mouse it is the
+most severe open item in the run; if it is a harness artefact it is nothing. Ten
+seconds of a human's time decides which.
+
+### What happens
+
+`/store/products/new`, signed in as tyson@beybladearena.in. Everything up to the image
+works: the category picker finds the seeded tier-3 **Heavy Metal System**, selecting it
+sets the picker label, and title / price / description / stock all take.
+
+Then `Product Image *` blocks publish, and the upload never begins:
+
+- clicked **Click to upload**, the file chooser resolved, `sample-image.jpg` landed on
+  the input (`input.files.length === 1`)
+- **no preview, no progress, no removal affordance**
+- **no `/api/media/sign` request anywhere in the network log** — the only POSTs are
+  three Server Action calls to `/store/products/new`
+- an explicit `change` event on the input changed nothing
+- `Product image is required` stays
+
+### Why I did not file it as a defect
+
+I cannot exclude an MCP limitation driving this particular widget, and
+"no seller can publish a product" is exactly the kind of severe claim this run has
+twice had to retract. What is established is that **the server is fine**:
+`POST /api/media/sign` answers `400 MEDIA_CONTEXT_REQUIRED` to a malformed probe, so
+the endpoint is reachable and validating. That narrows it to the client never calling
+it.
+
+**Ask a human to pick a file with a real mouse.** If the preview appears, this entry
+closes as a harness note. If it does not, it is a release blocker.
+
+### Real finding on the way past
+
+The first publish attempt surfaced five validation errors, **two of which name no
+field**: `Invalid input: expected string, received undefined` and `Invalid input:
+expected number, received undefined`. Raw Zod messages are reaching the user, which
+Rule #9 says should be mapped to readable copy via `toUserMessage`.
+
+### Scheduling note — a case pair is split across two batches
+
+`…inline-create` (creates the category) is in batch **209** `selling/seller-catalog-org--seller`;
+`…inline-create-persists` (reads it back) is in batch **210** `selling/seller-catalog-org`.
+The second cannot pass unless the first ran in the same session. Both were null here.
+Whoever picks them up should run them together and delete the product **and** the
+category afterwards — leftovers from a 2026-09-13 run were still present in
+`/store/categories` at the start of batch 209.
+
+---
+
+## B211 · Admin cart modal shows a slug where the title is sitting right there
+
+**Case:** `checklist-admin-buyer-data-admin-carts-admin-row-opens-items` · batch 211 · admin
+**Triage rank: MEDIUM.** Cosmetic in mechanism, but it makes an admin surface
+unreadable: you cannot tell what is in a cart without decoding slugs.
+
+The "Cart Details" modal is otherwise well built — badge, owner, cart id, last-updated,
+`Items in cart (N)`, Qty and price. The item line reads:
+
+```
+📦 product-beyblade-metal-dark-bull-video-demo   Qty: 1   ₹1,099.00
+```
+
+The cart line document already carries what it should be showing:
+
+| field | value |
+|---|---|
+| `productTitle` | `Metal Fight Beyblade BB-118 Dark Bull (Video Demo, YouTube)` |
+| `productImage` | a real `/api/media/ext?url=…` URL |
+
+So the renderer reads `productId` where `productTitle` exists, and paints a 📦 emoji
+where `productImage` exists. Same family as the documented "list row renders a raw id
+instead of the denormalized info on the same record".
+
+**Fixture gap alongside it:** across all 50 carts the maximum item count is **1**, and
+there are **0 guest carts**. So the case's own step ("find a row whose item count is
+greater than one") cannot be followed, and the guest-vs-authenticated badge branch has
+never been exercised by anyone. Seed one multi-item cart and one guest cart.
+
+---
+
+## B211 · `stats.totalProducts` is 0 for a store with 65 products
+
+**Found while verifying:** `checklist-admin-buyer-data-admin-admin-store-detail-page`
+(that case passed; this is a separate defect it surfaced) · batch 211
+**Triage rank: MEDIUM.** A wrong number is worse than a missing one — nothing errors
+and the page reads as authoritative.
+
+`/admin/stores/store-beyblade-arena/view` shows **"Products 0"** and **"Items sold 0"**.
+Measured against the data:
+
+| stat | shown | real |
+|---|---|---|
+| `totalProducts` | **0** | **65** (`/api/admin/products?storeId=…` → total 65) |
+| `itemsSold` | 0 | unverified |
+| `totalReviews` | 74 | 74 ✓ |
+| `averageRating` | 4.1 | 4.095 ✓ |
+
+Two of the four denormalized counters are maintained and two are not — the same shape
+as the category-metrics defect already recorded in this project (a derived counter whose
+writer never runs). Note `totalReviews`/`averageRating` being right is what makes this
+easy to miss: the panel looks maintained.
+
+**Also:** `adminNotes` on that store contains `RT3-probe`, a leftover from an earlier
+batch of this run. Harmless (admin-only) but it should be cleared at teardown.
+
+### What passed, so it is not re-tested needlessly
+
+The token-leak check is **clean**: zero occurrences of `accessToken`, `wabaId`,
+`catalogId`, `customCommissionRate`, `payoutDetails` or `upiVpa`, and zero `EAA…`-shaped
+strings, across 938 KB of HTML + inline scripts. The only `accountNumber` hits are i18n
+labels. The row menu does carry **"Open full page"**, and the page survives a direct URL
+load.
+
+---
+
+## 🛑 RETRACTION — B208 "a product page renders no reviews section" is WRONG
+
+**Retracted at batch 212, by me, against the same surface.** Recorded as a new entry
+rather than an edit of B208, so the mistake stays visible.
+
+### What I claimed
+
+That `/products/{slug}` has **no reviews section at all** — "its only headings are the
+product title and four related-item rails, zero masked reviewer tokens, zero
+`/reviews/` links" — and that its `★ 5.0 (4 reviews)` summary line advertised reviews
+the page never rendered. I filed it MEDIUM-HIGH and queued a fix to mount
+`ReviewsList` on `ProductDetailPageView`. **No such fix is needed.**
+
+### What is actually there
+
+A `role="tablist"` inside `<main>` with **Description | Specifications | Reviews**.
+Opening the Reviews tab on `/products/product-beyblade-original-dranzer-s` renders:
+
+- **10 reviews of 19**, with a working pager (page 2 holds the other 9, zero overlap)
+- dates descending 31 Aug → 22 Aug — newest first
+- reviewer names masked (`M*** U*** 1***`), 60 masked tokens on the page
+- the summary `3.4 (19 reviews)` above the list
+- the URL unchanged by paging
+
+### Why I got it wrong, and the rule that follows
+
+**The tablist renders only after scrolling**, and both of my batch-208 probes ran at
+the top of the page. I queried `a[href*="/reviews/"]`, masked tokens and `h2/h3`
+headings — none of which a collapsed tab panel contains — and read the absence as
+proof. It is the mirror of the "wait for the page before judging it" rule: I waited for
+the page, but not for the part of it I was about to make a claim about.
+
+**Scroll the full height before asserting a section is absent.** An element that
+renders on intersection is invisible to every selector until it does.
+
+A second signal was there and I misread it too: a control reading "Reviews" was present
+on the product page in batch 212's first probe. I clicked it, landed on `/reviews`, and
+concluded it was the site-nav link — which it was. There were **two** controls named
+"Reviews", and finding the nav one first is what let me believe there was no other.
+
+### What survives
+
+- **B207 stands.** There is still **no write-review control** — 0 on the order list, 0
+  on the order detail, and 0 inside this Reviews tab. `useCreateReview` still has no
+  component callers. A buyer still cannot leave a review.
+- **The missing product link on the order detail stands** — unrelated to this.
+- **B208's queue entry is withdrawn** (marked retracted in `loop-state.json`).
+
+---
+
+## B214 · The duplicate-brand 409 is correct and the UI throws it away
+
+**Case:** `checklist-selling-seller-custom-brands-seller-brand-inline-create-duplicate-rejected`
+· batch 214 · seller
+**Triage rank: MEDIUM.** Low blast radius, trivially fixable, and actively misleading.
+
+Creating a brand whose name already exists:
+
+```
+POST /api/admin/brands → 409
+{"ok":false,"code":"ALREADY_EXISTS","error":"A brand with this slug already exists"}
+```
+
+The server message is already user-readable. **Nothing like it reaches the screen.**
+The only alerts rendered are:
+
+- `This field is required` — on a name field that was filled; the duplicate rejection is
+  being reported as a missing value
+- `All prices in Indian Rupees (₹).` — an unrelated hint from the product form behind
+  the drawer
+
+So a seller typing an existing brand name is told to fill in a field they already
+filled, and is given no hint the brand exists.
+
+**Fix:** read the 409 body in the Create Brand drawer's submit handler and put its
+`error` on the name field — or map `ALREADY_EXISTS` through the error display map.
+
+**Separate the good news:** no raw server text leaks — no stack, no `/var/task` path,
+no `Error:` prefix. This is a dropped message, not the raw-5xx-to-the-user failure the
+project's form rules were written against.
+
+### What passed on the same surface
+
+Inline create works end to end: `+ Create new brand` appears on a no-match, the drawer
+saves (`POST /api/admin/brands` with name + derived slug + isActive), **the new brand is
+auto-selected without reopening the picker**, and it is still offered after a cold
+reload with exactly one distinct match. Teardown removed it (brand rows 5 → 4).
+
+**One thing for someone who knows the authorisation model:** a *seller's* inline create
+posts to an **`/api/admin/`** endpoint. It is consistent with this store holding a
+"suggest brands" capability, but an admin-namespaced route driven by a seller deserves
+a deliberate look rather than my assumption.
+
+---
+
+## B215 · The "Most Products" sort on /brands is inert — and fixing it will delete a brand from the page
+
+**Case:** `checklist-selling-seller-custom-brands-seller-brand-appears-on-public-brands-page`
+· batch 215 · guest
+**Triage rank: MEDIUM — but the two halves must ship together.**
+
+### 1. The sort does nothing
+
+Choosing **Most Products** rewrites the URL to `?sort=-metrics.productCount&page=1`
+and the rendered order does not move:
+
+| | item counts, in render order |
+|---|---|
+| default ("Top level first") | 30, 0, 4, 29 |
+| after "Most Products" | 30, 0, 4, 29 |
+| a correct descending sort | **30, 29, 4** |
+
+The order shown is simply alphabetical by id (Beyblade, Hasbro, Independent Keepers,
+Takara-Tomy). Ground truth from Firestore:
+
+| brand | `metrics.productCount` |
+|---|---|
+| `brand-beyblade` | 30 |
+| `brand-takara-tomy` | 29 |
+| `brand-independent-keepers` | 4 |
+| `brand-hasbro` | **no `metrics` object at all** |
+
+So the sort clause is being dropped, not applied — the shape of a sort whose field is
+not `canSort` in the Sieve config, which this project has hit before.
+
+### 2. 🛑 Making it work will make Hasbro disappear
+
+`brand-hasbro` has no `metrics` field, and **a Firestore `orderBy` excludes every
+document that lacks the ordering field** — the documented "orderBy on an optional field
+is a silent `WHERE field IS NOT NULL`". Today that is harmless because the sort never
+runs. The moment it does, `/brands` under that sort silently drops to three brands.
+
+**So the fix is not one line.** Either backfill `metrics` on every brand row (with
+`productCount: 0` where there are no products) *before* enabling the sort, or sort in
+memory over the bounded brand set — there are four of them.
+
+The case anticipated exactly this: *"A brand MISSING from this sort means the trigger
+did not run for its products."* Hasbro has no products, so no `onProductWrite` ever
+fired for it, so the field was never created.
+
+### Fixture note
+
+This case's own fixtures (`QA Brand inline-create`, `QA Product custom-brand`) do not
+exist — the sibling seller batch's brand was named differently and deleted at teardown,
+and the product could not be created because of the batch-210 image-upload blocker. So
+`productsOnBrandPage` is recorded **null (unmeasurable)**, not 0, and the failure is
+logged against step 5, which was performed.
+
+---
+
+## 🛑 PROCESS NOTE — two scripts write this ledger, and I was running only one
+
+`scripts/test-run-table.mjs` writes the **table body**. `scripts/test-run-status.mjs`
+writes the **header counter block** (`| Batches |`, `| Cases |`, `pass · fail · null`).
+They are separate programs over the same verdict files.
+
+For nine batches I ran only the first, so the table listed 215 batches while the header
+above it still read **206 / 255** and `1088 / 1847`. Both numbers were computed from
+disk — the rule was not broken — but one of them was computed nine batches ago, which
+is worse than either being obviously wrong: a stale number looks authoritative.
+
+**After recording a batch, run both:**
+
+```bash
+node scripts/test-run-table.mjs    # table body
+node scripts/test-run-status.mjs   # header counters
+```
+
+Corrected reading at batch 215: **215 / 255 batches · 1132 / 1847 cases (61%) ·
+pass 422 · fail 191 · null 519 · next deploy at batch 225.**
+
+---
+
+## B217 · The order timeline renders the DERIVED branch while richer recorded history sits unused
+
+**Case:** `checklist-buying-user-dashboard-extras-order-timeline-shows-real-events`
+· batch 217 · buyer
+**Triage rank: MEDIUM.** Not money, but "who did this to my order" is the question a
+tracking page exists to answer, and the answer is already stored.
+
+### Symptom
+
+`/user/orders/{id}/track` for order **#STDCTX** renders:
+
+```
+Order placed      05/09/2026, 18:40:19
+Shipped           08/09/2026, 18:40:19
+Delivered         15/09/2026, 18:40:19
+Return requested  —
+```
+
+Four steps, correct order, real dates — and **no actor against any of them**. Zero
+`buyer` / `seller` / `admin` / `system` tags on the page.
+
+### The data is there, and it is richer
+
+That order's stored `statusHistory` has **five** entries, every one carrying an actor:
+
+| # | actorRole | trigger | changes |
+|---|---|---|---|
+| 1 | buyer | `createCheckoutOrder` | status |
+| 2 | seller | `updateOrderStatus` | status, paymentStatus |
+| 3 | seller | `customShipOrder` | status, trackingNumber |
+| 4 | system | `deliveryConfirmation` | status |
+| 5 | system | `orderRepository.updateStatus` | status |
+
+So the page is on **Branch B** (derive the timeline from scalar date fields) while
+**Branch A** (the recorded history, which is what knows the actors) is populated.
+
+### 🛑 The em-dash is NOT the no-fabricated-timestamp rule working
+
+I nearly recorded `Return requested —` as correct behaviour, since the rule is to show
+an em-dash rather than invent a date. But **entry 5 timestamps exactly that transition**
+(epoch `1789650681`, ~16 Sep). There is no scalar `returnRequestedDate`, so the derived
+branch has nothing to show — while the recorded branch has both the date and the actor.
+The em-dash here means "looked in the wrong place", not "no data exists". Correct
+rendering: `Return requested · 16/09/2026 · system`.
+
+### Also on this surface
+
+- **The order DETAIL page carries no timeline at all** — `/user/orders/view/{id}` shows
+  items, address, payment summary and tracking, and the timeline lives only under
+  `/track`. Worth deciding whether that is intended.
+- **Delivery Address renders `addr-yugi-home`** — a raw document id. The order's
+  `shippingAddress` field *is* the bare string `"addr-yugi-home"`, where the schema
+  documents an embedded object with `fullName`/`phone`/lines. So the page faithfully
+  renders what is stored and the defect is upstream in the seeded order shape — but
+  the buyer still reads "addr-yugi-home India" as their delivery address.
+
+### Two cases passed on the same surface, one of them only provisionally
+
+`order-history-no-money-churn` **passes**: the `changes` keys across all five entries
+are only `status`, `paymentStatus`, `trackingNumber` — no discounts or add-ons, matching
+the design that money state is kept as final values and deliberately not tracked.
+
+`order-history-carries-no-personal-data` **passes**, with a caveat worth keeping: zero
+hits for the buyer's name or email on the page, and the stored entries carry only
+`actorRole` + `actorUid`. But the page currently renders **no actor at all**, so the
+pass is partly free — **re-run this case once the actor tag is added**, because the fix
+for the case above is exactly what creates the leak risk this one guards.
+
+### Fixture gaps found while measuring (seed, not code)
+
+- **0 of the buyer's 38 orders carry any refund** → the partial-refund timeline case is
+  untestable.
+- The five timeline-bearing orders are `standard` ×4 and `preorder` ×1 → **no auction
+  and no offer-sourced order**, so the won-vs-bought-out contrast and the
+  offer-vs-asking-price case both have nothing to read.
+
+---
+
+## B218 · The returns list omits the reason, and the reason is stored
+
+**Case:** `checklist-buying-user-dashboard-extras-my-returns` · batch 218 · buyer
+**Triage rank: LOW-MEDIUM.** The page is otherwise good; one column is missing.
+
+`/user/returns` lists three returns, each with order number, date, "Return Requested",
+item ×qty and total. **No reason on any row.** For the one order that has one:
+
+| field | value |
+|---|---|
+| `returnReasonCode` | `not_as_described` |
+| `returnReasonNote` | `item not as described` |
+| `returnRequestedAt` | epoch `1789650681` |
+
+The other two `return_requested` orders carry no reason fields at all (older seed
+rows), so the precise scope is: the page has no reason column, and the one order that
+*does* carry a reason proves the omission is in the rendering, not the data.
+
+### 🛑 Corrects my own B217 explanation
+
+In B217 I attributed the track page's dateless `Return requested —` to "there being no
+scalar `returnRequestedDate`". **Wrong on the field name.** The scalar exists — it is
+**`returnRequestedAt`** — and it holds the same instant as `statusHistory` entry 5. So
+that timeline has *two* sources for the date and renders neither. The B217 finding
+stands and is strengthened; the reason I gave for it was incorrect.
+
+---
+
+## B218 · Star ratings on /user/reviews have no accessible name
+
+**Found while verifying:** `checklist-buying-user-dashboard-extras-my-reviews`
+(that case passed) · batch 218
+**Triage rank: LOW** — accessibility, and an inconsistency between two surfaces.
+
+The review star widgets render five `★` glyphs and convey the rating **only by colour**
+— gold `rgb(250,204,21)` for filled, grey `rgb(111,111,120)` for empty. There is **no
+`aria-label`**, so a screen reader hears five identical star characters and no rating.
+The public store-reviews page does this correctly (`aria-label="4 out of 5 stars"`), so
+the two disagree.
+
+### Worth keeping: this nearly became a false bug report
+
+The page text reads `★ ★ ★ ★ ★ Terrible` next to a title ending `(1★)` — which looks
+exactly like five filled stars on a one-star review. It is not. `innerText` cannot see
+fill; reading the computed colour of each glyph showed 1 gold + 4 grey, matching the
+title. **Never read a rating off `innerText` when fill is done in CSS** — and note the
+missing `aria-label` is precisely why there was no text to read correctly.
+
+### What passed
+
+`my-reviews`: rows carry product, Verified/Approved badges, stars, title, body, date
+and helpful count; zero broken image tiles. `user-personal-listings-search-sort`:
+baseline **11** rows → `zzzznope` **0** → `packaging` **7**, with `?q=` in the URL —
+tested on My Reviews because it is the only one of that case's four surfaces with
+seeded data (My Digital Codes and My Offers are both known-empty for reasons already
+recorded, so a zero there would have proved nothing).
+
+---
+
+## B219 · The tester-checklist catalog search filters NOTHING
+
+**Found while verifying:** `checklist-admin-bug-hunter-rewards-catalog-default-active-filter`
+· batch 219 · admin
+**Triage rank: MEDIUM.** It is the only way to find one case among 1,339, and it is
+dead — which is also why that sibling case could not be answered at all.
+
+### Evidence, with the control that settles it
+
+`/admin/tester-checklist` on a **cold load** with `?q=zzzznope`:
+
+- **54 pages**, 25 rows, no empty state
+- first rows are "Sign up with email works", "Typing a complete PIN code fills City and
+  State", "Editing one field of a coupon saves it…" — entirely unrelated to the query
+
+A real multi-word query (`Bug Hunter demo fixture`) returns the identical full list.
+**A nonsense query returning the complete catalogue is the proof**; a real term alone
+would have looked plausible. The `q` reaches the URL and nothing reads it.
+
+### Why it blocked the sibling case
+
+That case asks whether the default view hides bug-confirmed cases. Exactly **one** of
+the 1,339 is the relevant shape — `checklist-admin-bug-hunter-rewards-demo-fixture`,
+`bugConfirmed: true`, `isActive: false`. Locating it needs either search (dead) or
+arithmetic — and arithmetic cannot help, because **1,339 ÷ 25 and 1,338 ÷ 25 both round
+to 54 pages**. So "all shown" and "one filtered out" are indistinguishable from the
+pager. Recorded `null`, not a guess.
+
+### Two facts worth carrying into the fix
+
+1. **There is no `status` field on checklist cases.** All 1,339 carry `isActive`; only
+   one carries `bugConfirmed` and only two carry `version`. Anyone writing a filter or
+   a chip against `status` will match nothing.
+2. **The v1→v2 reopen lifecycle already works in the data**: `…demo-fixture` is
+   version 1 / `bugConfirmed: true` / `isActive: false`, and `…demo-fixture-v2` is
+   version 2 / `isActive: true`. So a prior reopen did disable the original and leave
+   the successor answerable. What remains unverified is the **credit** handling.
+
+### 🛑 Why the other three cases in this batch were not driven
+
+They mutate the catalogue **this run is driven from** — batches are built from it at
+fetch time and 37 remain. Confirming a bug deactivates a case (removing it from the
+default view, per the sibling case); reopening *creates* one (`newVersion: 3`). The
+tier rules permit the write — `testerChecklistItems` is SEED_OWNED, not PRESERVE — so
+this is a **methodological** refusal, not a safety one: changing which cases the
+remaining run is served, mid-run, alters the experiment while it is running.
+
+Cover them in a dedicated pass after the run completes. The fixture is ready:
+`…demo-fixture-v2` is active and carries an unconfirmed "No" from Mock User 3.
+
+---
+
+## B222 · Signed-out redirect never remembers where the visitor was going
+
+**Case:** `checklist-buying-user-dashboard-navigation-logged-out-redirect` · batch 222 · guest
+**Triage rank: LOW-MEDIUM.** No security impact — purely a lost destination.
+
+### The security half is clean, and worth stating first
+
+Signed out, `/user` and `/user/orders` both land on `/auth/login` with the form
+rendered and **no spinner left running**. Probing the full source of each landed page
+(862 KB of outerHTML + every inline script) for `Rehan`, `Sheikh`, `rehan.sheikh`,
+`Yugi`, `Muto`, `user-yugi-muto`, `addr-yugi`, `STDCTX`, `1GSVR8`, `Valkyrie`,
+`Dranzer` → **zero hits**. `userDataInSource` is 0.
+
+Note the redirect is **client-side by design**: `/user/orders` and `/user/addresses`
+answer **200 as documents**, because the `/user` subtree prerenders a signed-out shell
+and resolves the session after hydration. The shell is empty of user data, which is
+the documented intent — so a 200 here is correct, not a missing guard.
+
+### What fails
+
+The claim includes *"then returns to the originally requested page after signing in"*.
+**Nothing captures the destination:**
+
+- login URL is a bare `/auth/login` — no `?redirect=`, `?returnTo=`, `?next=`, `?from=`
+- `sessionStorage` is **completely empty** (zero keys of any name)
+- no redirect-ish key in `localStorage` either
+
+So a buyer who deep-links to an order, gets bounced, and signs in will land on the
+default post-login page rather than the order they asked for.
+
+### Evidence limit, stated plainly
+
+I did **not** complete the sign-in round trip. Doing so would call the auth endpoints
+this run is forbidden from touching (one shared 10-req/min bucket) and would break the
+guest identity the batch is scoped to. So this is "no mechanism exists that could carry
+the destination" rather than "I signed in and landed in the wrong place" — weaker
+evidence for the conclusion, though a page cannot return somewhere it never recorded.
+
+**Fix:** capture the attempted path when the client-side guard redirects (query param
+or sessionStorage) and consume it after a successful sign-in.
+
+---
+
+## 🛑 CORRECTION — "the offers collection is empty" was stale, and I repeated it
+
+**Found at batch 223.** `/store/offers` renders **14 real offers**, `/api/store/offers`
+returns 14, and the `offers` collection in Firestore holds **14 documents**, all for
+`store-beyblade-arena` (expired 9, withdrawn 3, paid 1, declined 1).
+
+In **batch 217** (`my-offers`) and in **batch 210**'s notes I wrote that the offers
+collection was missing from the seeder's collection map and held **zero** documents,
+and used that to pre-explain any empty offers page. **Those notes are withdrawn.**
+
+Whether the figure was once true and has since been reseeded, or was never true of this
+environment, I cannot tell from here. What matters is the failure mode: I carried a
+**measured-once number forward as a current fact** across several batches without
+re-measuring it — the same class of mistake as quoting a stale counter, and exactly
+what the project's own guidance about recounting rather than quoting is for.
+
+**Useful fact that replaces it:** all 14 offers are in TERMINAL states. There is **no
+pending or countered offer**, so any case needing a live negotiation to accept, counter
+or decline still has no fixture — which is a real gap, just a different one.
+
+---
+
+## B223 · WhatsApp integration is capability-gated off for this store (not a defect)
+
+Four cases in this batch (`seller-whatsapp-catalog`, `…-import-runs-in-background`,
+`…-import-skips-already-synced`, `…-push-product-link-opens`) are **structurally
+unreachable**. `/store/whatsapp` renders exactly one message —
+
+> WhatsApp catalog sync is not enabled for your store. Contact LetItRip support to
+> request access to the WhatsApp Business integration.
+
+— and **zero** action controls (no Import, Push, Connect or Configure). That is
+consistent with `store-beyblade-arena`'s capability list (host auctions, host
+preorders, verified seller, create coupons, suggest brands — no WhatsApp), so the page
+is degrading correctly rather than failing.
+
+Recorded `null`, not `no`: a capability-gated page that explains itself is right.
+Running these needs a store capability change **plus** real Meta credentials, which the
+project seeds as empty strings on purpose so consumers skip cleanly instead of making a
+failed, billed call. The same reasoning almost certainly applies to
+`seller-google-reviews-sync` (`googleMapsApiKey` / `googlePlaceId` are seeded empty).
+
+---
+
+# 🛑 MILESTONE DUE AT BATCH 225 — fix phase + publish + deploy NOT started
+
+**Reached 2026-10-03 with 225/255 batches recorded (1186/1847 cases, 64%).**
+`pass 437 · fail 194 · null 555` · **153 fix-queue entries**.
+
+I am **not** starting the milestone in this session. The sequence is long, partly
+irreversible, and has a documented half-done failure mode: `npm publish` returns
+*before* the version is installable (~3.5 min), the consumer pin / lockfile / tsconfig
+toggle must all move together, and the correct response to the resulting `ETARGET` is
+to poll — not to republish or bump again. Beginning that with no headroom to finish and
+verify is how a broken publish happens.
+
+## What the milestone must do, in order
+
+```bash
+npm run check                                   # must exit 0 before anything
+# appkit changed?  (nothing in appkit/ was touched this session — likely skip)
+#   cd appkit && npm version patch && npm run build && npm publish
+#   poll until installable, THEN bump the consumer pin + relock + tsconfig
+# indexes/rules changed? (firestore.indexes.json WAS changed earlier this run: +8 composite)
+npm run firebase -- generate
+npm run firebase -- deploy --only indexes
+node scripts/wait-for-indexes.mjs               # no timeout; be ready to interrupt
+npm run firebase -- deploy --only rules
+node scripts/deploy.mjs                         # pre-flight + post-deploy smoke test
+```
+
+🛑 **`node scripts/deploy.mjs` is what actually proves the site works** — a green build
+is not a working site, and its smoke test of `/`, `/en/products` and
+`/api/site-settings` is the only automated gate that catches a Lambda module-load
+failure. Do not treat `READY` as success.
+
+## Fix-phase order — work the triage index, not the queue order
+
+The queue is 153 entries and chronological. Highest value first:
+
+1. **One-word fix, whole feature restored** — `src/lib/api/store-client.ts:58`
+   `updateStoreCategory` uses `PUT`; the route exports only `PATCH`. Every storefront
+   category rename fails with a 405 rendered as "Save failed". (B209)
+2. **Needs a human before any code** — the product-image upload never initiates, which
+   blocks publishing any product and currently blocks 4+ other cases. Endpoint verified
+   alive; may be an MCP limitation. One real mouse click settles it. (B210)
+3. **Whole feature unreachable** — buyers cannot leave a review: `useCreateReview` has
+   zero component callers. (B207)
+4. **Ships as a pair or not at all** — `/brands` "Most Products" sort is inert, and
+   enabling it would drop Hasbro from the page (`orderBy` excludes documents missing
+   the field). Backfill `metrics` first, or sort in memory. (B215)
+5. Then the read-side omissions: order timeline actor, returns reason, cart-modal
+   title, store `stats.totalProducts`, duplicate-brand 409, checklist search. (B217,
+   B218, B211, B214, B219)
+
+## Known-stale guards for whoever runs it
+
+- Run **both** ledger scripts after each batch — `test-run-table.mjs` (body) and
+  `test-run-status.mjs` (header counters). Running only the first let the header lag
+  nine batches while looking authoritative.
+- **Re-measure before quoting any count from these notes.** One figure in this run —
+  "the offers collection is empty" — was carried forward across several batches and was
+  wrong by the time I repeated it; the collection holds 14.
+
+---
+
+## 🛑 B209 FOLLOW-UP · The audit written to catch that exact bug is blind to where the calls live
+
+**Found during the batch-225 milestone**, reading `npm run check` output: the suite
+reports `audit-client-verb-match: clean ✓ (155 resolvable call(s); 0 known 404(s))` —
+while the live 405 found in batch 209 sits in the codebase untouched.
+
+### It is the right audit. It just cannot see the call.
+
+`scripts/audit-client-verb-match.mjs` exists for precisely this failure. Its own header:
+
+> *"…exports only `PUT`. Next answers **405**, and nothing catches it before a [user
+> hits it]"* — and it goes on to cite `/api/store/addresses/[id]` exporting PUT+DELETE
+> only, surviving because the user-side route happens to export PATCH, *"and would have
+> 405'd the moment the store pages reused it."*
+
+The miss is the matcher at line 197:
+
+```js
+/fetch\s*\(\s*([A-Z_]+)\.(\w+)\s*\([^)]*\)\s*,\s*\{[^}]*?method\s*:\s*["'](POST|PUT|PATCH|DELETE)["']/g
+```
+
+It requires the URL to be an **inline `UPPERCASE_CONST.member(...)` expression inside
+the `fetch()`**. The real helpers do not look like that:
+
+```ts
+export function updateStoreCategory(url: string, body: JsonBody): Promise<Response> {
+  return fetch(url, { method: "PUT", headers: JSON_HEADERS, body: JSON.stringify(body) });
+}
+```
+
+The URL is a **parameter**. The constant (`API_ROUTES.STORE.STORE_CATEGORY_BY_ID(id)`)
+is supplied by the *caller*, one file away. Nothing in the helper is matchable.
+
+### Scale of the blind spot — measured, not estimated
+
+| | |
+|---|---|
+| `src/lib/api/*-client.ts` files | **10** |
+| verb-carrying helpers in them | **69** (admin 10, cart 10, digital-content 6, events 2, items 2, payment 6, report 1, **store 22**, support 2, user 8) |
+| of those visible to the audit | **0** — all take `url: string` |
+
+So "155 resolvable calls, 0 problems" is true and misleading in the same breath: the
+canonical client-helper layer is unmatchable, and the audit never says so. **An audit
+that goes quiet is as likely to have stopped looking as to have been satisfied** — the
+same lesson this project already paid for when a narrowed matcher silently dropped
+whole files from a different rule.
+
+### Fix — two parts, and the second is the durable one
+
+1. Repair the defect: `src/lib/api/store-client.ts:58` `PUT` → `PATCH` (B209).
+2. **Teach the audit the helper shape.** Resolve one hop: for an exported function in
+   `src/lib/api/*-client.ts` whose body is `fetch(url, { method: "X" })`, take the verb
+   from the helper and the route from each **call site's** `API_ROUTES.*` argument.
+   Until then it should at minimum **report the count it cannot resolve**, so a zero
+   reads as "nothing matched" rather than "nothing wrong".
+
+**Do not close B209 by fixing only the one line** — 68 other helpers are currently
+unguarded by the rule that exists to guard them.
+
+---
+
+## 🛑 NEW · Event entry + poll voting POST to a GET-only route (405) — found via the B209 blind spot
+
+**Found at the batch-225 milestone**, by asking what *else* the blind
+`audit-client-verb-match` cannot see. Not attributable to a single checklist case —
+it was surfaced by the audit-gap investigation, so it is recorded here rather than
+against a case id.
+**Triage rank: HIGH — confirm live first (Rule #4), then fix.**
+
+### The mismatch, statically complete
+
+| | |
+|---|---|
+| `API_ROUTES.EVENTS.ENTRIES(id)` ([api.ts:172](src/constants/api.ts#L172)) | `/api/events/${id}/`**`lottery-entries`** |
+| `src/app/api/events/[id]/lottery-entries/route.ts` | exports **`GET`** and nothing else |
+| `submitEventEntry` ([events-client.ts:13](src/lib/api/events-client.ts#L13)) | sends **`POST`** |
+| `src/app/api/events/[id]/`**`entries`**`/route.ts` | exports **`POST`** — the obviously intended target |
+
+Three call sites go through it, all POSTing:
+
+- `events/[id]/participate/EventParticipateClient.tsx:86`
+- `events/[id]/participate/EventParticipateClient.tsx:584`
+- `events/[id]/PollInlineClient.tsx:93`
+
+So submitting an event entry and casting an inline poll vote should both answer **405**.
+A sibling route with the correct verb exists one path segment away, which is what makes
+this look like a constant pointing at the wrong neighbour rather than a missing handler.
+
+### 🛑 Confirm in the browser before fixing
+
+I have **not** driven this live — it was found statically while the deploy was in
+flight, and this run has already had one false "vote recorded" reading (a regex matched
+the instructional copy *"Cast your vote and see real-time results!"*). Open an event's
+Participate tab as a signed-in buyer, submit, and read the network response. A 405 with
+no user-visible error would be the worst case and is the likely one, since the helper
+returns the raw `Response` and the callers decide what to show.
+
+### Fix
+
+Point `API_ROUTES.EVENTS.ENTRIES` at `/api/events/${id}/entries`, **or** add `POST` to
+the lottery-entries route — whichever matches the intended split between the two. They
+are different endpoints, so pick deliberately rather than by whichever makes the error
+stop.
+
+### Why no audit caught it
+
+Same blind spot as B209: the call is `fetch(url, { method: "POST" })` inside a
+`src/lib/api/*-client.ts` helper, where the URL arrives as a parameter.
+`audit-client-verb-match`'s matcher requires the constant inline in the `fetch()`, so
+the whole helper layer — **69 verb-carrying functions across 10 files** — is invisible
+to it. Two live 405s have now been found there by hand. Teaching the audit the helper
+shape is worth more than either individual fix.
+
+### My own scan was NOT trustworthy, and that matters
+
+The script that surfaced this reported **8** candidates; **five were artifacts** of a
+400-character search window bleeding from one function into the next function's
+`method:` — which is why it claimed `getAdminItemRequests` was a PATCH and
+`getAdminRole` a PUT. A `get*` helper with a mutating verb is the tell. Of the
+remainder, one more (`getListingTemplate` PUT) is the same artifact, and this one
+survived because its name matched its verb and its route genuinely lacks POST. **Do not
+treat that script's output as a defect list** — it is a lead generator, and every lead
+needs the two-minute manual read this one got.
+
+### B209 fix de-risked — verified one caller, one target
+
+Checked at milestone 225 so the fix phase can apply it without re-investigating:
+
+- `updateStoreCategory` has **exactly one** caller —
+  `src/app/[locale]/store/categories/[id]/edit/page.tsx:97`
+- its only target route, `src/app/api/store/categories/[id]/route.ts`, exports
+  **GET (55), PATCH (68), DELETE (86)**
+
+So changing `method: "PUT"` → `"PATCH"` at
+[store-client.ts:58](src/lib/api/store-client.ts#L58) is complete: no other consumer
+depends on the PUT, and the target already serves PATCH. One word, zero blast radius.
+Re-drive `checklist-selling-seller-catalog-org-seller-categories-crud` after.
+
+### Watching a deploy: do not grep the log for "rollback"
+
+Noted at milestone 225 against my own tooling. I armed a waiter on
+`milestone complete|EXIT=|rollback|smoke test (passed|failed)` and it fired early — on
+the build's own route listing, which contains **`/admin/maintenance/payment-rollbacks`**.
+The deploy was still at "Deploying outputs…".
+
+Same class as the false findings this run has caught in the product: a pattern matching
+text that merely *contains* the word, rather than the event. Watch the **process exit**
+(`run_in_background` notifies on completion) instead of grepping its log for outcome
+words — the exit code is unambiguous and a route name cannot impersonate it.
+
+---
+
+## 🛑 B226 · FIXTURE GAP — the entire return-request flow is untestable (6 cases blocked by one fact)
+
+**Batch 226 `buying/return-request`, all six cases `null`.** Not a product defect —
+a seeding gap, and a cheap one to close.
+
+### The one fact
+
+Returns require a **delivered order inside the 7-day window**. The buyer has four
+delivered orders and **every one is far outside it**, measured from each order's own
+`deliveryDate`:
+
+| order | item | days since delivery |
+|---|---|---|
+| `#SWLA7T` | prizedraw-beyblade-mystery-box | **24** |
+| `#QO5LS3` | Dranzer S + Storm Pegasus (2 lines) | **36** |
+| `#1AYTBC` | Dranzer S | **36** |
+| `#1GSVR8` | Regalia Genesis | **63** |
+
+So no return panel can be opened at all, and the five cases about what the panel
+*offers* (final-sale vs change-of-mind, partial lines, prize-draw refusal, terms
+snapshot) have nothing to open.
+
+### What IS verified
+
+The negative half holds: `#QO5LS3` (36d) and `#SWLA7T` (24d) both render **zero**
+return controls — the only `/return/` match on either page is the sidebar's "My
+Returns" nav link. The gate is not leaking an affordance onto stale orders.
+
+### Why the prize-draw case is a `null` and not a pass
+
+`#SWLA7T` is delivered and shows no return control, which *looks* like the expected
+prize-draw refusal. But at 24 days the **window gate already refuses it**, and the
+case's whole claim is that a prize draw is refused by "a different, EARLIER gate".
+With both gates closed the attribution is unknowable, and recording a pass would
+assert something I did not observe.
+
+### Seed to close it — four orders, one line each unless noted
+
+1. **delivered 1–2 days ago, ordinary returnable product** → unblocks the positive half
+   of the CTA case and is the precondition for everything else
+2. **delivered in-window, FINAL SALE** → the "it never arrived" accept + change-of-mind
+   refuse pair
+3. **delivered in-window, MIXED**: one final-sale line + one returnable line →
+   `linesReturned: 1`
+4. **delivered in-window, PRIZE DRAW** → makes "still refused" attributable to the
+   prize-draw gate rather than the window
+
+Use a `Date.now()`-relative offset for `deliveryDate`, never a fixed date — these
+fixtures must stay in-window on every reseed, which is the same re-arming rule the
+tester window helper exists for.
+
+### Separate, real UX observation
+
+Neither out-of-window order says **why** there is no return option — no control and no
+sentence. A buyer 24 days past delivery cannot tell "your window closed" from "this
+page is missing a button". The final-sale case in this same batch expects exactly that
+kind of explanation ("the panel says why"), so the pattern is clearly intended
+somewhere; it is absent on the window gate.
+
+---
+
+## 🛑 B227 · The admin returns queue is EMPTY while five return requests are pending
+
+**Case:** `checklist-buying-return-request-return-reason-is-persisted` · batch 227 · admin
+**Triage rank: HIGH.** Staff cannot see, let alone action, any return request.
+
+### Symptom
+
+`/admin/return-requests` renders **"No return requests"** — zero rows. Meanwhile
+**five** orders are in `status: "return_requested"` platform-wide:
+
+| order | store | reason |
+|---|---|---|
+| `order-1-20260818-stdctx` | store-beyblade-arena | `not_as_described` / "item not as described" |
+| `order-2-20251030-djurgq` | store-beyblade-arena | — |
+| `order-2-20251108-mh8b2x` | store-beyblade-arena | — |
+| `order-2-20251126-cm5tbu` | store-beyblade-arena | — |
+| `order-2-20251117-t9mi9f` | store-letitrip-official | — |
+
+### Cause narrowed — it is NOT a missing collection
+
+Listing every collection in the database and filtering `/return/i` returns an **empty
+list**. There is no `returnRequests` collection: a return *is*
+`orders.status === "return_requested"`. So this is not the readers-with-no-writers
+shape (cf. the digital-code pool) — the page is reading `orders` and matching none of
+the five. **The filter it applies is where to look.**
+
+### The case's two halves split
+
+- **Stored — yes.** `returnReasonCode` and `returnReasonNote` are both present on
+  `#STDCTX`. `notePersisted: true` is recorded honestly.
+- **Visible to staff — no.** Nothing reaches the queue, so the reason cannot be read by
+  anyone who must act on it. The case fails on this half.
+
+Corroborated from **B218**: the *buyer's* `/user/returns` also omits the reason on this
+same order. So the note is written by the request flow and then rendered by **nobody** —
+neither the buyer who gave it nor the staff who need it.
+
+### 🛑 A near-miss worth copying
+
+My first guess at the URL was `/admin/returns`, which **404s** — and the admin sidebar
+does carry a "Returns" entry, so this looked exactly like the documented
+nav-points-at-a-missing-page defect. Reading the link's real `href` showed
+**`/admin/return-requests`**. The 404 was my own wrong URL. Read the href; never infer
+a route from the label.
+
+---
+
+## B228 · Seller-guide page titles duplicate the brand
+
+**Found while verifying:** `checklist-selling-seller-guide-seller-guide-pages`
+(that case **passed**) · batch 228
+**Triage rank: LOW** — cosmetic, but it is in the `<title>`, which is what search
+results and browser tabs show.
+
+```
+/store/guide               →  "Seller Guide | LetItRip | LetItRip"
+/store/guide/capabilities  →  "Capabilities Guide | LetItRip Seller | LetItRip"
+```
+
+Each page sets a title that **already carries the brand**, and the root template
+appends `| LetItRip` again. Fix in one place: either drop the brand from the per-page
+titles or stop the template appending when it is already present.
+
+### What passed, recorded so it is not re-tested
+
+All **7** in-guide links return 200 — index, Listings, Orders, Finance, Settings,
+Capabilities, **WhatsApp Catalog Sync**. `/store/guide/capabilities` was opened and
+read: 4,896 characters under six real headings with a back link, not a stub. Byte size
+was deliberately not used as the content check — the app shell dominates it.
+
+### The case text is stale against the guide set
+
+Its label says *"the 5 seller guide pages"* then names **six** in the parenthetical,
+and the live set is **six sub-pages plus an index**, including a WhatsApp guide the
+case never mentions. Worth correcting the case when someone is next in that file.
+
+(The WhatsApp guide loading while the integration is disabled for this store — B223 —
+is correct: documenting an ungranted feature is not a mismatch.)
+
+---
+
+## B229 + B230 · One fix closes two timeline failures — the page reads the wrong branch
+
+Two cases in consecutive batches fail for the **same single reason**, so they should be
+fixed together and re-driven together.
+
+| case | batch | what fails |
+|---|---|---|
+| `status-timeline-real-dates` | 229 | `Return requested —` is **dateless** on an order whose current status IS return-requested |
+| `status-history-actor-recorded` | 230 | the timeline shows **no actor at all** on any step |
+
+### The common cause
+
+`/user/orders/{id}/track` renders the **derive-from-scalar-dates** branch of the
+timeline. That branch has only dates to work with, so it cannot show an actor — and it
+misses the return date because it does not read the field that holds it.
+
+The **recorded-history** branch has both. On `#STDCTX`, `statusHistory` holds five
+entries, each with an `actorRole` (`buyer` → `createCheckoutOrder`, `seller` →
+`updateOrderStatus`, `seller` → `customShipOrder`, `system` → `deliveryConfirmation`,
+`system` → `orderRepository.updateStatus`) and an `actorUid`. Entry 5 timestamps the
+return, and the order *also* carries a scalar **`returnRequestedAt`** with the same
+instant.
+
+**So the date exists twice and the actor exists once, and the rendered timeline shows
+neither.** Read the recorded history.
+
+### 🛑 Re-run the PII case after fixing this
+
+`order-history-carries-no-personal-data` (batch 217) passed **partly for free**: there
+is currently no actor rendering, so no name can leak from one. The stored entries carry
+only `actorRole` + `actorUid` — the correct shape — but **the fix is what creates the
+exposure that case guards**. Re-drive it the moment actors appear on screen.
+
+### Fixture gap found alongside (B230)
+
+`refund-appears-in-timeline` is unrunnable, and emptier than it looks: three orders
+have `status: "refunded"`, but **none** has a `refunds` array, a `refundedAmount`, or
+any `statusHistory`. They are status-only rows — nothing records a refund happening.
+
+This is the timeline entry most likely to be silently missing, because **a partial
+refund changes no tracked status field**, so a plain diff leaves no trace and it has to
+be contributed to the history explicitly. Seed one full refund with an amount and
+reason, and one **partial** refund against a multi-line order.
+
+### Recorded as passing, so it is not re-investigated
+
+`orders-list-shows-item-not-id` **passes on both surfaces**. `/admin/orders`: 25 rows
+each leading with the product title plus `+N more`, 25 thumbnails with **0 broken**,
+and **0** id-only labels. Buyer list likewise names the item (b229). The documented
+"row renders a raw id instead of the denormalised item info" defect is staying fixed.
+
+---
+
+## 🛑 B231 · A seller has no way to change an order's status, and cannot open an order from the list
+
+**Case:** `checklist-buying-order-status-lifecycle-seller-status-controls-match-state`
+· batch 231 · seller
+**Triage rank: HIGH — but read the qualification below before treating it as total.**
+
+Tested against a **pending** order (`order-1-20251110-1typ9l`) — the status with the
+most legitimate onward moves. Every seller path checked:
+
+| path | result |
+|---|---|
+| `/store/orders/{id}/view` | renders the order correctly — "pending · 27 Jul 2026", item, total, "Awaiting payment" — with **0 selects and 0 status buttons** |
+| `/store/orders` rows | **no** row-actions menu, **no** `a[href*="/store/orders/"]`, and clicking a row is **inert** (URL unchanged, no drawer) |
+| bulk bar (after ticking "Select row") | **Print Packing Slips · Set Location · Request payout** — no Ship, Mark Delivered, Cancel or Confirm |
+
+The accessibility tree confirms the rows are real table rows whose only interactive
+child is the selection checkbox. So the standalone detail page is reachable **only by
+typing its URL** — the documented "row you can see but never open" shape.
+
+### 🛑 The qualification — check fulfilment before calling this total
+
+`/store/fulfillment` exists, reports **"14 orders in queue"**, and offers a Pick & Pack
+flow with a barcode scanner (verified in batch 220). **Shipping may be intended to
+happen there**, not through per-order status controls — which would explain a missing
+*Ship* action. It does **not** explain the absence of every other transition, nor the
+inability to open an order from its own list. I did not drive the fulfilment flow to
+completion, so decide how much of this is by design before fixing.
+
+### Two smaller defects on the same page
+
+- **Shipping address renders as a raw document id** — `addr-letitrip-hq`. Identical to
+  the buyer side (`addr-yugi-home`, B217), so this is not a one-surface slip: orders
+  store an address **reference** where the schema documents an embedded object.
+- **Status casing is inconsistent** — the seller page renders lowercase `pending` while
+  the buyer list renders `Pending` / `Return Requested`.
+
+---
+
+## 🛑 B236 · "My Pre-Orders" tells the buyer they have none, while they have two
+
+**Case:** `checklist-buying-user-uncovered-pages-user-preorders-renders` · batch 236 · buyer
+**Triage rank: HIGH.** Same family as the empty admin returns queue (B227): a list
+reading real data, matching none of it, and reporting the result to the user as fact.
+
+`/user/pre-orders` renders its chrome correctly — sort controls, no error boundary —
+and then: **"You haven't placed any pre-orders yet."**
+
+The buyer has two:
+
+| order | orderType | status | product |
+|---|---|---|---|
+| `order-1-20260819-preordr` | **`preorder`** | confirmed | `preorder-beyblade-x-bx-08-wave` |
+| `order-3-20251127-ljh4lx` | *(none)* | processing | `preorder-beyblade-x-bx-08-wave` |
+
+### A lead, not a conclusion — and it only explains half
+
+Across this buyer's 38 orders the `orderType` distribution is:
+
+```
+{ none: 25, standard: 12, preorder: 1 }
+```
+
+**25 of 38 carry no `orderType` at all**, so any Firestore equality on that field
+silently drops two thirds of the account. That is precisely the hazard the project
+already documents for the `"standard"` value — the fix there was to filter **in
+memory**, because orders written before the field existed have no value. That cleanly
+explains the second order's absence.
+
+**It does not explain the first.** `order-1-20260819-preordr` genuinely has
+`orderType: "preorder"` and still does not appear. So there is a second fault here;
+do not stop at the missing-field theory.
+
+### Recorded as passing
+
+`/user/addresses/add` resolves (→ `/user/addresses/new`, so `add` is an alias) and
+renders a complete sectioned form: **label, fullName, phone, addressLine1,
+addressLine2, landmark, city, postalCode** plus Country. The **landmark** field is
+present, which matters for the related CRUD cases — the documented
+"landmark vanishes on a street-only edit" trap would be in the save path, not a missing
+input. Not submitted: addresses are PRESERVE tier.
+
+---
+
+## 🛑 RETRACTION — the "event entry + poll voting 405" finding was WRONG
+
+**Filed HIGH at milestone 225. Retracted at the batch-236 fix cycle, one edit before
+I changed correct code.** Recorded as a new entry, not an edit of the original.
+
+### What I claimed
+
+That `API_ROUTES.EVENTS.ENTRIES` pointed at `/api/events/{id}/lottery-entries` (GET
+only) while `submitEventEntry` POSTs through it from three call sites — so event entry
+and inline poll voting should 405.
+
+### Why it is wrong
+
+`API_ROUTES.EVENTS` is `API_ENDPOINTS.EVENTS`, and `API_ENDPOINTS` comes from
+**appkit**, not from `src/constants/api.ts`. The real definition is
+[`appkit/src/constants/api-endpoints.ts:418`](appkit/src/constants/api-endpoints.ts#L418):
+
+```ts
+ENTRIES:         (id: string) => `/api/events/${id}/entries`,          // ← what EVENTS.ENTRIES is
+LOTTERY_ENTRIES: (id: string) => `/api/events/${id}/lottery-entries`,  // line 425, separate
+```
+
+So the call sites already POST to `/entries`, which **does** export POST. The code is
+correct and there is no defect.
+
+What I actually resolved was **`LOTTERY.ENTRIES`** at `src/constants/api.ts:172` — a
+different constant in a different object, which my scan's resolver matched because it
+keyed on the **suffix of the property name** (`ENTRIES`) and searched only the consumer
+file. It never looked in appkit, where the symbol is defined.
+
+### The live probe did not save me — and it is worth understanding why
+
+I ran what looked like a confirmation: `POST …/lottery-entries` → **405**,
+`POST …/entries` → **404**. I read that as proving the mismatch. Both results are
+equally consistent with **correct** code: `lottery-entries` legitimately does not serve
+POST (nothing asks it to), and `/entries` returned 404 only because I passed a
+nonexistent event id. **A probe that cannot distinguish the bug from its absence is not
+a confirmation**, however real the status codes are.
+
+### The rule this earns
+
+**Resolve a constant to its DEFINING module before reasoning about it.** A re-exported
+symbol (`API_ROUTES.X = API_ENDPOINTS.X`) is not findable by grepping the file that
+consumes it — which is the same import-chain lesson this project already records for
+`ValidationError`, where a barrel re-export silently resolved to a different class.
+
+**What survives:** the audit blind spot is still real and still filed — 69
+verb-carrying helpers in `src/lib/api/*-client.ts` are invisible to
+`audit-client-verb-match`. **B209 is still a genuine 405** and is re-verified live
+below. Only this second instance is withdrawn.
+
+---
+
+# Fix cycle at batch 236 — what it actually covered
+
+**Scope, stated honestly:** 125 defects are open (`pass 455 · fail 199 · null 581 ·
+fixed 38/199 · deferred 36`). This cycle did **not** drain that queue. It shipped one
+fix, withdrew one wrong finding, triaged the out-of-scope entries added this session,
+and repaired a data-loss bug in the run's own bookkeeping.
+
+### 1. Shipped — B209, the storefront-category rename
+
+Re-verified live **before** editing (Rule #4): `PUT /api/store/categories/{id}` → **405**,
+`PATCH` same URL → **403**. The 403 is the informative one — it means the route ran and
+rejected on ownership, so PATCH is served and PUT is not.
+
+`src/lib/api/store-client.ts:58` — `method: "PUT"` → `"PATCH"`. One caller, one target
+route already serving PATCH, so zero blast radius. `npm run check` exit 0.
+Shipped with `node scripts/deploy.mjs` (src-only).
+
+### 2. Withdrawn — the second 405 was not real
+
+See the retraction section above. `API_ROUTES.EVENTS.ENTRIES` resolves into **appkit**
+and already points at the POST-serving `/entries`. I had resolved `LOTTERY.ENTRIES` by
+name-suffix from the consumer file. **Caught one edit before changing correct code.**
+
+### 3. Repaired — a lost update in `loop-state.json`
+
+Two fix-queue entries appended during the batch-225 milestone had **silently
+disappeared**. `scripts/test-run-milestone.mjs` also writes that file; it read before
+my append and wrote after. Both of my `node -e` calls had reported success.
+
+**Rule: do not write `loop-state.json` while a milestone or deploy is in flight.** The
+markdown appends survived the same window because nothing else writes those files —
+which is why the findings themselves were never lost, only their queue rows.
+
+### 4. Triaged — out-of-scope entries from this session
+
+Six decided (see TEST-RUN-3-OUTOFSCOPE.md). The older ~140 are explicitly left
+untriaged rather than nominally cleared.
+
+### What the next cycle should take first
+
+1. **`audit-client-verb-match` blind spot** (HIGH, b225) — 69 verb-carrying helpers in
+   `src/lib/api/*-client.ts` are invisible to it. B209 was one of them; fixing the
+   single line leaves 68 unguarded.
+2. **`/admin/return-requests` empty** (HIGH, b227) and **`/user/pre-orders` empty**
+   (HIGH, b236) — same shape, both lists reading real data and matching none of it.
+3. **The order-timeline branch** (b229 + b230) — one fix closes two cases, and the PII
+   case must be re-run after it.
+
+## 🛑 Sixteen fixes are on disk and have never been re-verified
+
+Collected at the batch-236 cycle from `tester/.tester-runs/run-3/fixes.jsonl`. The hook
+asks for this list every cycle and it has been growing: **a fix nobody re-tested is a
+hypothesis**, and fifteen of these predate today.
+
+| # | case | touched |
+|---|---|---|
+| 1 | `…order-detail-actions-cancel-page-refuses-delivered-order` | `src/app/[locale]/user/orders/[id]/cancel/page.tsx` |
+| 2 | `…listing-edit-roundtrip-edit-category-preselected` | `appkit/…/ProductDetailPageView.tsx` |
+| 3–4 | `…edit-ancestor-pages-after-recategorise` | `src/app/api/admin/categories/route.ts`, `appkit/…/products.repository.ts` |
+| 5–6 | `…seller-fulfil-seller-order-detail-opens`, `…mark-shipped-with-tracking` | `appkit/…/SellerOrdersView.tsx` |
+| 7 | `…seller-fulfil-buyer-sees-shipped-status` | `appkit/…/orders/adapters.ts` |
+| 8,10 | `…participate-twice-is-refused`, `…spin-results-subroute` | `appkit/…/events/actions/event-actions.ts` |
+| 9 | `…participate-records-an-entry` | `src/app/[locale]/events/[id]/layout.tsx` |
+| 11 | `…leaderboard-ranks-by-a-real-number` | `src/app/[locale]/events/[id]/leaderboard/page.tsx` |
+| 12 | `…general-design-section-cta-buttons-visible` | `appkit/…/homepage/BrandsSection.tsx` |
+| 13 | `…general-design-empty-states` | `appkit/…/account/UserOrdersView.tsx` |
+| 14–15 | `…support-tickets-create-ticket`, `…reply-ticket` | `src/app/[locale]/user/support/…` |
+| 16 | `…seller-catalog-org-seller-categories-crud` | `src/lib/api/store-client.ts:58` (**this cycle**) |
+
+**They are all live now.** Items 2, 5–8, 10, 12, 13 are appkit changes, and appkit
+4.42.12 is published and pinned — the milestone pre-check confirmed local == pin ==
+npm latest. So nothing on this list is still blocked on a deploy; they are blocked on
+somebody re-driving them.
+
+### 🛑 Two of them should be re-driven FIRST, because this run contradicts them
+
+- **#5 `seller-order-detail-opens`** — batch 231 found the seller orders list has **no
+  row menu, no anchor, and an inert row click**, with the detail page reachable only by
+  typing its URL. Either the fix regressed or it never addressed the list.
+- **#6 `mark-shipped-with-tracking`** — batch 231 found **no status-transition control
+  anywhere** for a seller: not on the detail page, not in the row menu, not in the bulk
+  bar. A recorded "mark shipped" fix cannot be true at the same time, unless shipping
+  moved entirely into `/store/fulfillment`.
+
+That contradiction is the single most valuable thing on this list: a fix marked done
+and a later batch finding the opposite means one of the two records is wrong, and
+whichever it is, somebody is currently trusting a false statement.
+
+### Re-drive procedure for B209 (run the moment the deploy's smoke test passes)
+
+The fix is **client-side**, so the API will look identical before and after — `PUT`
+still 405s, `PATCH` still works. **Do not "verify" it with a status probe**; the only
+thing that changed is which verb the edit page sends, so it must be driven through the
+UI.
+
+```
+1. session: cp tester/.tester-runs/session-seller.json tester/.tester-runs/session.json
+   then browser_close()  (the MCP reads the session at context creation)
+2. create a shelf:  /store/categories → New Category → Label "QA Shelf b236-reverify"
+3. rename it:       open its /edit, change the Label only, Save
+4. RELOAD and read the label — this is the oracle; the pre-fix bug returned a
+   success-shaped page with the old value still stored
+5. confirm the slug is byte-identical (it must not be re-derived from the new label)
+6. delete the shelf (Delete on the edit page → "Delete category?" → confirm)
+7. confirm /store/categories is back to 0 rows
+```
+
+Expected after the fix: step 4 shows the NEW label, and no "Save failed" appears on
+the Label field. Expected before it: the old label, unchanged.
+
+Then, and only then, set `lastFixAtRecorded=236` — and **not while another writer is
+in flight**, per the lost-update note above.
+
+### 🛑 Do not pipe a long-running deploy through `tail`
+
+I launched this cycle's deploy as `node scripts/deploy.mjs 2>&1 | tail -40`. The pipe
+buffers the **entire** stream until the command exits, so the log sat at **0 bytes**
+for the whole run and there was no way to tell a healthy build from a stalled one —
+which is precisely the distinction that matters here, where a stalled "Deploying
+outputs…" is a known failure mode and the documented response is to cancel and retry
+rather than wait indefinitely.
+
+Second instance of the same class this session: earlier I armed a log watcher whose
+pattern matched the route name `/admin/maintenance/payment-rollbacks` and fired on
+"rollback" before the deploy had started.
+
+**Both have the same fix:** let the command write unbuffered and watch the **process
+exit** — `run_in_background` notifies on completion with the exit code, which no log
+string can impersonate and no pipe can swallow. If you want progress too, redirect to
+a file (`> deploy.log 2>&1`) and read the file; never pipe through `tail`/`head`.
+
+---
+
+## B239 · INVESTIGATE — a listing shows "Returnable" while no product has a return field
+
+**Found during:** `checklist-selling-final-sale-authoring-return-policy-authorable-by-seller`
+(recorded `null` — its own claim is unmeasurable) · batch 239 · guest
+**Triage: INVESTIGATE.** Not filed as a defect because I did not find what computes
+the badge — but one of the two surfaces is misleading a seller.
+
+### The tension
+
+| | |
+|---|---|
+| Authoring form (b238) | *"This is a FINAL SALE — the default."* Switch off on a new listing. |
+| Product data | **0 of 72 products carry ANY `/return/i` key.** Not one. |
+| `/products/product-beyblade-burst-valkyrie`, signed out | renders **"↺ Returnable"** |
+| other listings on the same page | render **"Final Sale"** |
+
+So products with **identical (absent) return data** render differently, and the badge
+cannot be coming from the product document. It must derive from something else — a
+store-level policy, the listing type, or a default that disagrees with the form's.
+
+**Either the form's stated default or the listing badge is wrong**, and a seller is
+being told one thing while buyers are shown another. Which one is correct needs a read
+of whatever computes that badge; I ran out of batch budget before finding it.
+
+### Why the case itself is `null`
+
+The seller-side input exists (b238 confirmed a "Return policy (optional)" field,
+captioned as shown on the listing). But with **zero** products carrying policy text,
+there is nothing to check the public rendering against — matching the case's own label,
+*"for the first time"*. Completing it needs a seller save plus a guest read, and I
+would not start a mutation I had no room to restore.
+
+---
+
+## B240 · Three surfaces give three different accounts of the returns setting
+
+**Found across:** b238 (seller form), b239 (public listing), b240 (admin editor).
+Each case passed or was null on its own terms; the **disagreement between them** is the
+finding, and it is invisible from any single batch.
+
+| surface | what it says |
+|---|---|
+| Seller form, `/store/products/new` | *"This is a **FINAL SALE — the default**. Buyers cannot return it for changing their mind. They can still claim if the item never arrived, arrived damaged, was the wrong item, was not as described, or was counterfeit."* |
+| Admin editor, `/admin/products/{id}/edit` | *"Buyers can return this listing within the platform return window **for any reason**."* |
+| Public listing, `product-beyblade-burst-valkyrie` | renders **"↺ Returnable"** — while **0 of 72 products carry any return field** |
+
+### Why this matters more than wording
+
+- The admin copy **never mentions that final sale is the default**, so an admin editing
+  a seller's listing cannot know the platform's baseline from their own screen.
+- *"For any reason"* **contradicts** the seller-side promise, which is explicit that a
+  final-sale listing still accepts non-delivery, damaged, wrong-item, not-as-described
+  and counterfeit claims. Those are the exact claims batch 226's return cases exist to
+  protect.
+- The public badge is a third answer again, and it cannot be derived from the product
+  document because **no product has the field**.
+
+Settle all three together: decide the real default, make the two editors describe it
+identically, and find what actually computes the listing badge.
+
+### Scope of the b240 pass, stated plainly
+
+I matched the admin control to the seller one by **label and companion field**, which
+establishes UI identity. I did **not** prove they write the same key — that needs a
+save on each surface and an at-rest comparison, and with zero products carrying a
+return field there was nothing to compare. "Same field" is established by the UI, not
+by a write test.
+
+---
+
+## B240 narrowed by batch 241 — the admin copy is the outlier, not one side of a split
+
+Recorded at b241. Nothing new broke; this removes an ambiguity from an existing
+entry, which changes what the fix should be.
+
+Three surfaces describe the final-sale setting. B239/B240 reported them as
+disagreeing, which left open *which* one to change. The buyer-facing surface
+settles it.
+
+| Surface | Wording | Found |
+|---|---|---|
+| Seller form, `/store/products/new` | "This is a FINAL SALE — the default. Buyers cannot return it for changing their mind. **They can still claim if the item never arrived, arrived damaged, was the wrong item, was not as described, or was counterfeit.**" | b238 |
+| **Buyer, product detail rail** | "Final sale — no change-of-mind returns. **You can still claim if it never arrives, arrives damaged, is the wrong item, is not as described, or is counterfeit.**" | **b241** |
+| Admin form, `/admin/products/{id}/edit` | "Buyers can return this listing within the platform return window **for any reason**." | b240 |
+
+Seller and buyer agree, clause for clause, including the five named claim
+grounds. **The admin copy is the single outlier** — and it is wrong in two
+distinct ways rather than merely differently worded:
+
+1. "for any reason" contradicts the other two, which exist precisely to separate
+   a change of mind from a genuine claim.
+2. It never states that final sale is the platform default, so an admin reading
+   only their own screen cannot know what they are changing *from*.
+
+**So the fix is to the admin string alone.** Before b241 this looked like it
+might need a product decision about which behaviour was intended; it does not —
+two of three surfaces already state the intended policy identically, and the
+buyer-facing one is the promise that actually binds.
+
+Still open and NOT answered by this: the b239 observation that
+`product-beyblade-burst-valkyrie` renders "↺ Returnable" while carrying no
+return field at all, when the form says the default is Final Sale. That is a
+derivation question (what computes the badge), separate from the copy.
+
+---
+
+## B242 — `/admin/products` splits the selection model across two views, so neither can express "all but three"
+
+Found at batch 242, case
+`checklist-admin-bulk-actions-select-all-count-matches-page`. The case itself
+**passes** — select-all reports `25 selected` against exactly 25 visible rows,
+so there is no over-selection. The defect is next to it.
+
+`/admin/products` has three view toggles (Grid / List / Table). The two halves
+of multi-select are in different ones:
+
+| View | Per-row checkboxes | Select-all | Total checkboxes on page |
+|---|---|---|---|
+| **Grid** | **25**, `aria-label="Select <title>"` | **none** — not in a header, not after a selection, not in the bulk bar | 25 |
+| **Table** | **none** | **yes**, `thead` `aria-label="Select all"` | **1** |
+
+In table view the per-row boxes are **absent from the DOM**, not hidden — the
+whole page carries one checkbox. So:
+
+- Grid view: an admin can select one row, or several, but never all.
+- Table view: an admin can select all, or none, and nothing in between.
+- **Neither view can express "all but three"**, which is the ordinary case for
+  a bulk edit over a page of 25.
+
+Nothing on screen indicates the capability depends on the view, so an admin
+hunting for select-all in grid view has no reason to think switching to table
+would produce it — and an admin in table view who wants to exclude one row has
+no reason to think switching to grid would let them.
+
+**Not a cosmetic split.** The bulk actions themselves (Toggle Featured / Toggle
+Promoted / Toggle On Sale) are offered identically in both, so the same action
+is reachable with two incompatible selection models behind it.
+
+**Fix direction**: whichever renderer is authoritative should carry both —
+`DataTable`'s `SelectableRow` already has the per-row shape and
+`AdminViewCards` already has the per-row shape, so the missing pieces are a
+header/toolbar select-all for the card renderers and per-row boxes for the
+table renderer. Worth checking whether the table renderer is passed an
+`onToggleSelect` at all, since the select-all it does render implies the
+selection state exists there.
+
+### Two case-catalogue corrections from the same batch
+
+1. **Label drift.** Two cases in this batch name the product bulk actions as
+   "Feature, Promote and Sale". The live labels all carry a `Toggle` prefix:
+   **Toggle Featured**, **Toggle Promoted**, **Toggle On Sale**. Since one of
+   those cases (`bulk-actions-from-registry`) exists specifically to compare
+   labels verbatim across admin and seller, its own expected labels being wrong
+   would make a correct product look like a finding.
+
+2. 🛑 **`checklist-admin-bulk-actions-bulk-users-actions` contradicts the run's
+   safety rule and cannot be automated as written.** Its steps instruct the
+   tester to run a bulk action over two real accounts on `/admin/users` and
+   then reverse it. `users` is PRESERVE-tier — the one place where damage is
+   permanent — and "reversible" is not a safeguard when the reversal is a
+   second mutation that may itself silently fail. It needs **two disposable
+   fixture accounts outside the PRESERVE set**, created and torn down with the
+   batch, or it should carry `requiresHumanChannel`. Recorded `null` with the
+   refusal stated, not attempted.
+
+---
+
+## B243 process note — an UNCOMMITTED media fixture cannot be fed to the page over HTTP
+
+Recorded at batch 243 (`selling/product-upload-details`) after a measurement of
+my own turned out to be void. Worth writing down because the failure produced a
+confident, plausible, completely meaningless number.
+
+`node tester/scripts/make-media-fixtures.mjs --with-oversized` writes
+`public/test-media/oversized.png` at **11,224,775 bytes**, and the fixture is
+deliberately **not committed** (11 MB of incompressible noise). I then tried to
+hand it to the Main Image field the cheap way — `fetch('/test-media/oversized.png')`
+inside the page, wrap the blob in a `File`, assign it via `DataTransfer` and
+dispatch `change`.
+
+**The file is not on the deployed site, so the fetch returned the 404 HTML page**
+— and `File.size` came back as **21,988 bytes**. The field accepted it without
+complaint, no refusal message appeared, and `/api/media/sign` was never called.
+Read uncritically that is a clean pass on "no sign request was made". It is
+nothing of the sort: a 21 KB file is *supposed* to be accepted, and the 10 MB
+cap was never approached.
+
+**The tell was `fileSizeBytes` in the output.** Had I not printed it, this would
+have been recorded as a measurement of the size cap.
+
+### The rule
+
+| Fixture | How to deliver it |
+|---|---|
+| **Committed** (`sample-image.png`, `sample-image-2/3.png`, `sample-vector.svg`, `sample-video.mp4`, `sample-doc.pdf`) | either way — in-page `fetch` works, because the file is deployed |
+| **Generated, uncommitted** (`oversized.png`) | **`browser_file_upload` with the local absolute path only.** It reads from the harness's disk, which is where the generator wrote it |
+
+Generalised: the in-page `fetch` + `DataTransfer` shortcut silently measures
+whatever the origin chose to serve. **Always assert the resulting `File.size`
+against the expected byte count before believing anything downstream of it** —
+and for any fixture the generator produces rather than git, use the real file
+chooser.
+
+### What this leaves open on batch 243
+
+All six real cases are unrecorded. Five of them (`main-image-crop-applies`,
+`gallery-order-persists`, `main-image-does-not-collide-with-gallery`,
+`video-upload-succeeds`, `disallowed-type-refused`) need real file-chooser
+uploads, and three of those also need a **Publish plus a delete afterwards** —
+against a form whose creation path batch 210 already recorded as blocked by an
+image-upload issue, which should be re-checked first since it may make three of
+these untestable for a reason that has nothing to do with their own claims.
+
+The oversize case additionally carries a pre-diagnosis worth preserving: it
+expects the message to state **50MB** rather than 10MB, because the gallery
+field passes `maxSizeMB={50}` — the video cap — to a field that also accepts
+`image/*`. Measured today, the **Main Image** field's visible caption does read
+`JPG PNG GIF WebP — max 10MB`, and the three file inputs are distinct
+(`image/*` single, `image/*,video/*` multiple, `image/*,video/*,application/pdf`
+single), so the 50MB claim is about the **second** input, not the first. Whoever
+runs it should read the limit text belonging to the gallery input specifically.
+
+---
+
+## B244 — three cases point at `/admin/sections`, which is a REORDER screen with no edit, delete or disable
+
+Found at batch 244. This is a **case-catalogue correction**, not a product
+defect — the affordances exist, just not where the cases say.
+
+`/admin/sections` as `admin@letitrip.in` offers ordering and nothing else:
+
+| | |
+|---|---|
+| Table | `Name` · `Status` · `Updated`, 22 rows |
+| Status | rendered as **text** ("Order: 1 • Enabled") — not a switch |
+| Controls | per-row **Up** / **Down**, plus **Reindex 1..N**, **Undo unsaved**, **Reset to server**, **Save order** |
+| Delete controls | **0** |
+| Disable/enable controls | **0** |
+| `[role=switch]` elements | **0** |
+| Row-action menus | **0** |
+| Buttons inside the first row | **0** |
+
+There is a separate **Manage Sections** button, which is presumably the route
+to the real editor.
+
+**Verified by enumerating all 63 buttons in `<main>`, not by regex filter.** My
+first probe matched button text against `/delete|remove|trash/` and
+`/disable|enable|toggle|activ/` and returned nothing — which is also exactly
+what a bad selector looks like, and "this whole page is missing its controls"
+is a claim this run has already been wrong about once. The absence is real.
+
+### What to change
+
+| Case | `startPage` | Verdict |
+|---|---|---|
+| `homepage-section-reorder` | `/admin/sections` | **correct** — this page has precisely the Up/Down + Save order controls it describes |
+| `homepage-section-edit-persists` | `/admin/sections` | **wrong** — step 2 "open a section for edit" has no affordance here |
+| `homepage-section-delete` | `/admin/sections` | **wrong** — no delete control |
+| `homepage-section-disable-vs-delete` | `/admin/sections` | **wrong** — neither of the two controls it compares is present |
+
+Repoint the last three at whatever **Manage Sections** opens. Recorded as a
+`no` rather than a `null` for the disable-vs-delete case specifically, because
+its claim is that *the interface makes which-is-which obvious* — and at the
+place it points, an admin finds neither control at all.
+
+`Save order` existing also settles an open question in the reorder case: its
+step 4 reads "save if a save is required", and a save **is** required.
+`Undo unsaved` and `Reset to server` imply the reorder is staged client-side
+before committing, which is both the interesting thing to test and the safety
+net for restoring the original order — provided you have not saved.
+
+### The one I would run first in that batch
+
+`carousel-active-limit-enforced`. Its `expectedData` encodes a
+**disagreement** rather than an assertion — `activeSlidesInAdmin: 6` against
+`slidesOnHomepage: 5` — which means the case already suspects the limit is
+enforced at RENDER rather than at SAVE. If so, the sixth activation succeeds,
+admin shows six active, and the homepage quietly rotates five, with no way for
+the admin to know which five were dropped. `MAX_ACTIVE_SLIDES` is 5 and the
+seed ships 6 slides with 5 active, so the fixture already exists and steps 2-3
+are read-only.
+
+---
+
+## B245 — row-action menus do not close, and accumulate in the DOM
+
+Found at batch 245 while sampling row menus on `/admin/products`, and
+reproduced across five successive rows. Opening a second menu does **not**
+dismiss the first, and clicking elsewhere on the page does not dismiss any of
+them. The menu item count grew **3 → 6 → 9 → 12** as they stacked.
+
+**Why this is more than cosmetic on these pages specifically.** The row menu is
+where a destructive action is expected to live. Several menus open
+simultaneously over a dense 25-row table means the Delete an admin clicks may
+not belong to the row they think it does — the visual association between a
+menu and its row is exactly what stacking destroys.
+
+It also has a measurement consequence worth carrying: **any probe that counts
+menu items must close the previous menu explicitly**, not by clicking outside.
+My own sampling reported cumulative lists until I noticed the counts were
+arithmetic rather than per-row.
+
+### Open question, NOT a finding — does a row-level delete exist at all?
+
+On the two pages reached, in the view each loads **by default**:
+
+| Page | Rows | Row menu contents | Delete controls page-wide |
+|---|---|---|---|
+| `/admin/products` | 25 | `Approve` · `Reject` · `Quick edit` (5 rows sampled) | **0** |
+| `/admin/blog` | 18 | *no row menu at all* | **0** (only Search, Grid view, List view) |
+
+`/admin/carousel` and `/admin/categories` were not reached.
+
+🛑 **I did not record this as "delete is missing", and the reason is a lesson
+from batch 242.** `/admin/products` renders three view modes and its selection
+model is *split across them* — grid view has 25 per-row checkboxes and no
+select-all; table view has a select-all and zero per-row checkboxes. A control
+genuinely absent in one view is genuinely present in another **on this same
+page**. `/admin/blog` likewise exposes Grid and List toggles.
+
+So the next step is to re-check all four pages in **every** view mode before
+concluding anything about delete's availability. What can be stated firmly is
+narrower: in the default view, an admin has no row-level delete on
+`/admin/products` or `/admin/blog`, so `delete-confirmations-name-the-record`
+cannot be performed as written and `delete-reflected-immediately`'s step 3
+("delete it from the list") has no target either.
+
+---
+
+## B246 — possible Root Cause #74 regression: a required-field error on an untouched quick-add form
+
+Observed at batch 246 on `/store/products/new`. **Flagged, not claimed** — see
+the clean check below before acting on it.
+
+The screenshot shows **"This field is required"** rendered in red under
+**Product Name** on a form nothing has been typed into. Only that field shows
+it; Price, Product Image and Description do not, despite all three carrying the
+same required asterisk.
+
+That is the shape of Root Cause #74 — a form accusing the user of mistakes
+before they have done anything. The recorded fix for #74 gated the *summary* on
+`submitAttemptCount` while leaving per-field inline errors on their own
+`touched` gate, with the explicit reasoning that *"a field the user visited and
+left empty should say so; it is the summary that must wait"*. A single
+**untouched** field showing its error is that per-field gate leaking.
+
+🛑 **Why this is a flag and not a finding.** I ran two DOM probes against this
+form before screenshotting it, and although the second one's field-matching
+found nothing and typed nothing, I cannot prove neither marked Product Name
+touched. **The clean check is one navigation:** load
+`/store/products/new` fresh, screenshot immediately, interact with nothing. If
+the message is present, it is a real regression of #74 and the gate is leaking
+on exactly one field — which is more interesting than all four leaking, because
+it points at that field's own wiring rather than at the gate itself.
+
+### Confirmed on the same form, and these are not in doubt
+
+- **Six fields, exactly as the case claims** — `Product Name *`, `Category`,
+  `Price (₹) *`, `Product Image *`, `Description *`, `Stock Quantity`, under the
+  caption *"Quick add — fill the essentials and publish. You can add more
+  details later."* with `Show all fields (advanced)` one click away.
+- **The Description requirement is disclosed honestly and better than its case
+  expects.** The placeholder reads *"What is it, what condition is it in, what
+  is included? (at least 20 characters)"* — so the 20-character minimum is
+  stated in the field itself, not merely implied by an asterisk.
+
+### Two probe rules this form taught
+
+1. **Counting `input`/`select`/`textarea` gives FOUR, not six.** `Category` is a
+   `PaginatedSelect` rendered as a button (`Search categories... ▾`) and
+   `Product Image` is a file input behind a `Click to upload` control. A DOM
+   element count reports the form as a third smaller than it is. The screenshot
+   is what corrected my own count.
+2. **Do not match these fields by placeholder or aria-label.** They carry no
+   `aria-label`, and their placeholders are example *values* — `e.g. Charizard
+   Base Set PSA 9`, `e.g. 499`. The human-readable names live in sibling
+   `<label>` elements. Matching `/product name/i` against placeholder text finds
+   nothing, which is why `advanced-flip-keeps-values` went undriven this batch
+   despite needing no save at all. Target by label-for/id, or by position.
+
+`advanced-flip-keeps-values` is the one to run first next time: it mutates
+nothing, and its fourth preserved value is **Category**, a PaginatedSelect —
+a different preservation mechanism from the three text inputs, and the most
+likely of the four to break.
+
+---
+
+## B248 — the Root Cause #92 re-verification has no oracle in the UI
+
+Found at batch 248, case `shipment-trigger-no-op-guard-holds`. Abstained rather
+than attempted, and the reason is worth keeping.
+
+That case is the **re-verification of Root Cause #92** — `onShipmentHeaderWrite`
+watched `procurementShipments` on `documentWritten` and wrote back to the same
+document, guarded by a `JSON.stringify` comparison that was **key-order
+sensitive**: Firestore returns map fields alphabetically while
+`allocateShipmentCosts` builds them in construction order, so the two strings
+could never match, every invocation wrote, and every write re-triggered.
+**1,017,548 invocations in 24 hours** against a 2M/month free quota, with
+`onShipmentDeleted` dragged along as collateral and `firebase deploy` blocked on
+a billing denial.
+
+Its step 3 asks the tester to *"note its computed totals and the timestamp
+showing when those totals were last computed"*, then press Save unchanged twice
+and watch that timestamp. **Neither value is rendered anywhere.**
+
+The Edit Shipment drawer (`?panel=edit&id=shipment-vintage-vault-usa-20260701-d4e5f6`,
+reached by clicking a row — there is no row link and no row-action menu) contains:
+
+| Section | |
+|---|---|
+| Shipment Required | Shipment number, Supplier, Origin country, Status, Notes |
+| Landed cost | — |
+| Tracking & dates | — |
+| Lots | `Lots (0/10)` · "No lots yet. Add a lot, then manage its items." |
+| History | — |
+
+One save control, `Save changes`. A scan for any `total`/`cost`/`margin`/`roi`
+figure returns **nothing**; a scan for `computed`/`updated`/`last` returns
+**nothing**. The shipment has zero lots so empty totals are legitimate — but
+`totalsComputedAt` is not surfaced either, and that field *is* the measurement
+`expectedData timestampMovementsOnUnchangedSave: 0` counts.
+
+🛑 **Pressing Save anyway would have been the wrong call.** It would mean poking
+the exact trigger behind a 12M-invocation incident while unable to observe
+whether it fired — the measurement would come back zero and the risk would not.
+
+### To make it testable
+
+Either use a shipment that **has lots**, so totals exist to display, or read
+`totalsComputedAt` straight out of Firestore around the two saves. The fix under
+test is a key-order-independent comparison **with a float tolerance** —
+`projectedMarginPercent` and `projectedRoiPercent` are unrounded divisions and a
+Firestore round-trip can return a last-bit difference, so exact inequality on
+those reintroduces the same loop by a different mechanism.
+
+**And a flat zero is not automatically a pass.** The inverse failure is a
+comparison that answers "equal" to everything, which silently *freezes*
+allocation instead of looping. `verify-shipment-allocation-guard` exists with
+negative controls for precisely that reason.
+
+### One positive confirmation in passing
+
+`/admin/shipments` lists **4 shipments**. Root Cause #90 recorded
+`procurementShipments`, `shipmentLots` and `shipmentItems` as three of six
+collections holding **zero documents in every run ever**, because they were
+never registered in the seeder's `COLLECTION_MAP`. Rows exist now, so that
+registration landed.
+
+---
+
+## B249 — the 50MB prediction in the oversize case is NOT borne out; every stated limit reads 10MB
+
+Measured at batch 249, read-only, and it corrects a **case's own
+pre-diagnosis** rather than the product.
+
+`oversize-image-refused-client-side` (batch 243) carries a 🛑 block instructing
+the tester to **expect 50MB and record it as a failure**, reasoning that the
+gallery field passes `maxSizeMB={50}` — the VIDEO cap — to a field accepting
+`image/*` and `video/*` alike, so a 12 MB image would be accepted client-side.
+
+**There is no 50MB string anywhere.** On both routes read today, every MB figure
+on the page is `max 10MB` / `max 10 MB`, including on the gallery input itself.
+
+| | `/store/products/new` (advanced) | `/store/auctions/new` |
+|---|---|---|
+| Advanced switch | required | **none** — renders the full form directly |
+| File inputs | 3 | 3 |
+| `accept` attributes | `image/*` · `image/*,video/*` · `image/*,video/*,application/pdf` | **identical, same order** |
+| Stated size limit | `JPG PNG GIF WebP — max 10MB` | `max 10MB` |
+| Count hints | `up to 10` · `0/10` | `up to 10` · `0/10` |
+| Any `50MB` | **no** | **no** |
+
+**One honest caveat on attribution.** My per-input caption walk climbs up to
+five ancestors, so if the second and third inputs carry no caption of their own
+it may have attributed the Main Image's text to them. That does not touch the
+finding — the **page-wide** scan is what rules 50MB out, and no element anywhere
+states it.
+
+So either `maxSizeMB={50}` is no longer passed, or it is passed and not
+reflected in the caption. Both differ from what the case predicts, and anyone
+revisiting the oversize case should read its 🛑 block against this table before
+expecting a 50MB message. **A stale pre-diagnosis is worse than none** — it
+tells the tester what to find, and Root Cause #83's lesson is that the
+expectation you assert against is always the one you believed in.
+
+### Flatness: supported on two routes, not established on six
+
+`media-caps-flat-across-types` asks for all six creation routes.
+`products` and `auctions` are byte-identical in media configuration, so the
+10-images-plus-1-video shape is one config rather than a per-type table on
+those two. **`pre-orders`, `classified`, `digital-codes` and `live` were not
+read**, and the case's label names pre-order explicitly — so it is recorded
+`null`, not a sampled pass.
+
+### A trap for the eleventh-image case, from batch 243
+
+`media-eleventh-image-refused-client-side` has `uploadRequestsForEleventh: 0`
+as its data point. Batch 243 found a disallowed file (an SVG) refused with
+**zero `/api/media/sign` calls AND zero message** — no toast, no
+accepted-types text, no preview. Measured naively that is a **pass** on this
+case's number while the seller is told nothing at all. Check for the message as
+carefully as for the absent request: a silent refusal satisfies the data and
+fails the label ("with a clear message").
+
+---
+
+## B250 — Root Cause #98 re-verified: the seller edit form opens populated AND reads the real status
+
+Measured at batch 250 on `/store/products/product-beyblade-burst-valkyrie/edit`
+as `tyson@beybladearena.in`. **Read-only.** Both symptoms of #98 are absent.
+
+Root Cause #98 recorded nine seller edit pages doing
+`const product = await getSellerProductAction(id)` and spreading the
+`ActionResult` **envelope** (`{ok, data}`) instead of its `data`. An envelope is
+always truthy, so the `notFound()` guard could never fire; every real field
+resolved `undefined` — the blank form — and one line further down:
+
+```ts
+status: product.status === "published" ? "published" : "draft"
+```
+
+evaluated `undefined === "published"` → **`"draft"`**, so pressing Save wrote
+draft over a live listing and removed it from every public surface.
+
+| Symptom | Measured today |
+|---|---|
+| Form opens blank | **No** — 10 of 18 editable fields carry values |
+| Title | `Beyblade Burst B-01 Valkyrie` |
+| Description | the real text |
+| `condition` | `new` |
+| SKU | `LIR-BEY-BURS-001` |
+| Price | `999` |
+| `shippingPaidBy` / `gstRate` | `buyer` / `0` |
+| **`status` defaults to draft** | **No** — `<select name="status">`, options `['draft','published']`, **value `published`** |
+
+That second row is the one that matters. The destructive half of #98 was never
+about the blank form — it was about what the blank form *saved*. A no-op save
+here would write `published`.
+
+### Recorded `null`, not `yes`, and deliberately
+
+The case's `expectedData` is `fieldsChangedByNoOpSave: 0`, which can only be
+observed by **actually saving and re-reading the public page** (steps 5-6). I
+did not. A `yes` with that key unmeasured is exactly the unverified pass this
+harness warns about, and on a case whose failure mode is silently unpublishing a
+live product, under-claiming is the right error to make.
+
+Two notes for whoever finishes it:
+
+- **The save is now low-risk**, given `status` reads `published`.
+- **Re-read the PUBLIC page, not the editor.** The broken version also showed
+  plausible values at read time in some fields; the editor agreeing with itself
+  proves nothing. Step 6's instruction to check status hardest is correct.
+
+Eight fields are empty and unaudited against the public page (steps 3-4 ask
+which are empty and whether that matches). At least one — SEO Title — is
+legitimately optional.
+
+### The case in this batch most likely to find something
+
+`roundtrip-digital-code-delivery`. Its step 4 is "add three codes to the pool",
+and **that writer is what Root Cause #103 recorded as a 501**: the digital-code
+pool had a claim path, a reveal API, a refund-revocation path, an email, a buyer
+panel and seller columns, and its one seller-facing route answered
+`501 Digital code management is not implemented yet.` Every purchase delivered
+nothing. If step 4 still cannot be performed, the verdict should name the 501
+rather than the form. Note also that `codesAvailable` is **derived** —
+`recountPool()` recomputes it from the subcollection on every add, remove and
+claim — so the typed pool size is not authoritative and the expected `3` must
+come from three codes actually added.
+
+---
+
+## Process risk at the batch-250 milestone — a VERIFIED fix is living only in the working tree
+
+Noticed during the pre-milestone check, and it is about this run's own hygiene
+rather than the product.
+
+`git status --porcelain` at batch 250:
+
+```
+ M docs/TEST-RUN-3-FIXPHASE.md
+ M docs/TEST-RUN-3-OUTOFSCOPE.md
+ M docs/TEST-RUN-3.md
+ M firebase-deployed.json
+ M public/test-media/README.md
+ M src/lib/api/store-client.ts        <-- the B209 fix
+```
+
+**`src/lib/api/store-client.ts` is the B209 fix and it is uncommitted.** That is
+the PATCH-not-PUT correction for storefront-category renames — the one defect
+this run has taken all the way through: deploy exit 0, smoke test green, then
+re-driven through the UI (PATCH 200, label persisted across reload, slug
+byte-identical, fixture deleted).
+
+It shipped to production anyway, because **`vercel --prod` uploads the working
+tree, not the committed tree.** So the deploy at batch 225 carried it, the site
+has it, and git does not. Anything that discards uncommitted changes in this
+directory loses a verified fix while production keeps running it — the worst
+version of that gap, because nothing would look broken until the next deploy
+quietly reverted it.
+
+**I have not committed it**, and that is deliberate: the standing authorisation
+for this run covers deploys, seed loads and Firebase deploys, and CLAUDE.md says
+to commit only when asked. Flagging rather than acting.
+
+🛑 **Do not fix this with `git add -A`.** This is a shared working tree and the
+concurrent-session rule is to verify per file via `git diff --numstat` and stage
+individually. `store-client.ts` is the only code file here; the three `docs/`
+entries are regenerated run artifacts, `firebase-deployed.json` is deploy
+bookkeeping, and `public/test-media/README.md` moved when
+`make-media-fixtures.mjs --with-oversized` ran this session.
+
+### Milestone configuration, for the record
+
+| | |
+|---|---|
+| Batches recorded | **250** |
+| `lastDeployAtRecorded` before | 225 |
+| Interval | 25 → this is the scheduled milestone |
+| appkit submodule | **clean** — `git -C appkit status --porcelain` empty |
+| appkit pin | `^4.42.12` (npm registry, not `file:`) |
+| Last appkit commit | `235c2e5d` 2026-10-03 — composite indexes for seller featured/isPromoted sorts |
+| Flag used | `--skip-appkit`, same as batch 225 |
+
+`--skip-appkit` is correct here **because the submodule is clean**, not by
+habit: with no appkit source change there is nothing to publish, and the
+consumer already resolves `^4.42.12` from the registry, so the `tsconfig`
+`appkit/src/**` toggle and the lockfile relink are both already in their
+npm-pin state. A publish with no source change would burn ~3.5 minutes of
+registry propagation to ship an identical tarball.
+
+---
+
+## 🛑 No further fix phase will fire before the run ends — the queue outlives the run
+
+Computed at batch 250, from `tester/.tester-runs/loop-state.json`:
+
+| | |
+|---|---|
+| `lastFixAtRecorded` | **236** |
+| `deployEveryBatches` | 25 |
+| **Next fix gate fires at** | **261** |
+| **Run ends at** | **255** |
+| `fixQueue` entries | **172** |
+| Open defects (status) | **128** |
+| Fixes never re-verified | **16** |
+
+**261 > 255, so the gate cannot fire again.** Everything currently queued lands
+*after* the run, not inside it. This is not a malfunction — the cadence was set
+to one fix phase every five cycles and the run simply ends mid-cycle — but it
+changes what "run complete" will mean, and it is better stated now than
+discovered when the final report reads as finished.
+
+### What that implies for the last five batches
+
+1. **Keep recording, do not start fixing.** A fix begun now has no phase to land
+   in, no deploy to make it re-drivable, and would consume the batches that are
+   still unrecorded. The hook says this every turn and it remains right.
+2. **The queue is the deliverable.** With no further fix phase, the value of
+   batches 251-255 is entirely in *evidence quality* — a defect recorded with a
+   reproducible procedure and a named file is actionable later; one recorded as
+   "looked wrong" is not.
+3. **The 16 unverified fixes are the sharpest item in the backlog**, because two
+   of them contradict batch 231. A fix nobody re-tested is a hypothesis, and a
+   hypothesis that disagrees with a recorded observation is worse than an open
+   defect — it reads as closed.
+
+### Recommended first actions after the run, in order
+
+1. **Re-verify the 16**, starting with the two that contradict b231. Cheapest
+   possible work with the highest chance of changing what the backlog says.
+2. **`counters-reconcile-effect-category-counts`** (batch 247) — entirely
+   read-only, and Root Cause #102 already records it failing (19 of 65 rows
+   wrong, all low, root 56 vs true 65) with a fix this run never re-verified.
+3. **The `/admin/products` selection-model split** (b242) and the **silent
+   disallowed-type rejection** (b243) — both confirmed, both small, both
+   user-facing.
+4. **`roundtrip-digital-code-delivery`** (batch 250) — most likely to find
+   something, since its step 4 *is* the pool writer that Root Cause #103
+   recorded as a `501`.
+
+### One item that is NOT a defect and should not be queued as one
+
+`checklist-admin-bulk-actions-bulk-users-actions` (b242) was refused, not
+failed. Its steps instruct mutating real accounts on `/admin/users`, which is
+PRESERVE-tier. It needs **two disposable fixture accounts** created and torn
+down with the batch, or `requiresHumanChannel`. Filing it as a product defect
+would send someone looking for a bug that is not there.
+
+---
+
+## 🛑 CORRECTION — it is 63 fixes not re-verified, not 16. And `reverified` is not a boolean.
+
+Measured at batch 250 against `tester/.tester-runs/run-3/fixes.jsonl`. This
+corrects **two** numbers, one of them written earlier in this very document and
+one I produced minutes before writing this.
+
+### What happened
+
+I first filtered with `!entry.reverified` and got **"101 of 102 re-verified,
+1 outstanding"** — which flatly contradicted the *"Sixteen fixes … never been
+re-verified"* section above (collected at the batch-236 cycle). Rather than pick
+the more convenient figure, I printed the **distinct values** of the field.
+
+**`reverified` is a free-text STATUS STRING**, not a boolean. So `!value` was
+true for exactly one entry — the single `undefined` — and every other value
+counted as verified, including the literal strings `"pending"`,
+`"deferred-to-milestone"` and **`"fail"`**.
+
+### The real distribution
+
+| count | `reverified` value |
+|---|---|
+| **37** | `deferred-to-milestone` |
+| **15** | `pending` |
+| 2 | `⬜ NOT re-drivable by this harness — PRESERVE-tier mutation` |
+| 2 | `deferred` |
+| **2** | `fail` |
+| 1 | `⚠ verified in SOURCE only — control not reachable in the default view` |
+| 1 | `⚠ PARTIAL — gap cut from ₹211.80 to ₹1.80, case STAYS OPEN` |
+| 1 | `⚠ guard wired + fixtures NOW SEEDED — runnable for the first time, not yet run` |
+| 1 | `⏳ SHIPPED (4.42.12 live) — awaiting re-drive` |
+| 1 | `undefined` |
+| **63** | **TOTAL not re-verified** |
+| 39 | genuinely passed (`pass` / `✅ pass …`) |
+
+**39 of 102 fixes have actually been re-driven. 63 have not.** The "16" figure
+was itself an undercount even at b236, and my "101" was off by a factor of 60.
+
+### Why this is the worst item in the backlog
+
+**37 entries read `deferred-to-milestone` — and there is no milestone left.**
+The fix gate next fires at batch **261**; the run ends at **255**. Those 37 were
+explicitly parked for a phase that will never arrive, so without someone acting
+on this they stay parked permanently while the ledger shows them as handled.
+
+**2 read `fail`.** A fix recorded as failing its own re-verification is not an
+open defect — it is a *change that was made and did not work*, which is worse,
+because the file has been edited and the symptom remains.
+
+### The lesson, which is Root Cause #84 twice in one turn
+
+The first measurement (`!e.reverified`) was **narrower than the thing it
+measured** and returned a flattering answer. The tell was that it disagreed with
+a figure already written down — and the correct response to two disagreeing
+measurements is to go and look at the raw values, not to prefer one. Printing
+`Object.keys` / distinct values cost one command and moved the number from 1 to
+63.
+
+**Do not re-derive this with a truthiness check.** The field is prose. Classify
+on `/^(✅|pass)/i` against the trimmed string, which is what produced the table
+above, and treat anything else — including a cheerful-looking `⚠` or `⏳` — as
+not done.
+
+### This supersedes the priority order recorded two sections above
+
+That list opened with "re-verify the 16". It should read: **re-verify the 63**,
+starting with the **2 marked `fail`** (a made change that did not work), then
+the **37 marked `deferred-to-milestone`** (parked for a phase that cannot fire),
+then the 15 `pending`. The two b231 contradictions called out in the Sixteen
+section remain the sharpest individual items within that set.
+
+---
+
+## Ledger integrity check at the batch-250 milestone
+
+Verified while the deploy ran, because the ledger is the run's primary
+deliverable and a 720 KB generated file is exactly the kind of artifact that
+can drift silently.
+
+| | |
+|---|---|
+| `docs/TEST-RUN-3.md` | 1,433 lines · **720 KB** |
+| Data rows in the table | **1,313** |
+| Cases recorded (from verdict files) | **1,313** |
+| Match | **exact** |
+
+The row count equalling the case count is the signal worth having: the table
+body is regenerated by `scripts/test-run-table.mjs` from the verdict files on
+disk, so an exact match means no case has been dropped from the rendering and no
+row has been invented. Neither number is typed anywhere (G2).
+
+**All 13 columns present**, including every field originally asked for:
+
+```
+| Batch | # | Case id | Test name | Group/Page | Role | Result |
+  Reason | Screenshot | Fix applied | Files changed | Manual? | Re-verified |
+```
+
+`Batch` · `#` · `Test name` · `Result` · `Reason` · `Screenshot` ·
+`Fix applied` · `Manual?` are the requested set. `Case id`, `Group/Page`,
+`Role`, `Files changed` and `Re-verified` were added for reviewability — the
+last one specifically so "fixed" and "fix re-tested" cannot be conflated, which
+is the distinction the 63-not-re-verified correction above turns on.
+
+🛑 **Never hand-write a row or a count into that file.** Both come from
+`test-run-table.mjs` and `test-run-status.mjs`, and the whole reason the figures
+in this document can be trusted is that they are recomputed from the verdict
+files rather than carried forward in prose. The one time a number *was* carried
+forward in prose — "sixteen unverified fixes" — it was wrong, and so was the
+first ad-hoc re-measurement of it.
+
+---
+
+## Batch 251 shape — 11 of 12 cases are full lifecycles, and that constrains the endgame
+
+Fetched (not claimed) while the batch-250 deploy built.
+`selling/listing-lifecycle--p1` is 14 cases: 12 real plus the two controls.
+
+**Eleven of the twelve mutate**, and not lightly — each is a create → publish →
+transact → teardown for one listing type:
+
+| | case |
+|---|---|
+| mutates | `standard-create-publish-sell` |
+| mutates | `auction-create-publish-bid-close` |
+| mutates | `auction-reserve-respected-at-close` |
+| mutates | `preorder-create-publish-deposit` |
+| mutates | `preorder-production-status-visible` |
+| mutates | `prizedraw-create-publish-close-reveal` |
+| mutates | `classified-create-publish-contact` |
+| mutates | `digitalcode-create-publish-claim` |
+| **read-only** | **`digitalcode-pool-depletes`** — starts at `/digital-codes` |
+| mutates | `live-create-publish-jurisdiction` |
+| mutates | `art-create-publish-sell` |
+| mutates | `sticker-create-publish-sell` |
+
+All eleven start at `/store/products`. Procedure coverage is 12/12.
+
+### Why this matters for the last five batches
+
+1. **Each lifecycle is a multi-step mutation with a mandatory teardown**, and
+   this run's standing rule has been not to begin one without room to finish
+   restoring. Several also sit on the **batch-210 product-creation blocker** —
+   if that still stands, eleven cases are blocked on one cause and should be
+   recorded against it once rather than as eleven independent failures.
+2. **`auction-reserve-respected-at-close` is the one with history.** Root Cause
+   #60 records `settleAuction` awarding `activeBids[0]` unconditionally and
+   **never checking `reservePrice`**, while the reserve was displayed, editable,
+   and promised in the buyer guide. That is a settlement-correctness case, not a
+   UI one.
+3. **`digitalcode-pool-depletes` is the read-only one and should be run first.**
+   It observes the pool emptying from the public side — and per Root Cause #103
+   the pool had **no writer at all** until recently (its one seller route
+   answered `501`), with `digitalCode.codesAvailable` also unwritten, so the
+   availability predicate could not notice a sell-out. Being read-only it needs
+   no fixture creation, and whatever it shows is informative either way.
+
+Given there is **no fix phase left** (gate 261 > run end 255), the endgame
+should favour evidence over attempts: a lifecycle begun and abandoned leaves
+catalogue pollution that changes what later cases see, while an honest `null`
+naming the blocker costs nothing and is actionable.
+
+---
+
+## Batch-250 milestone — gate results as they landed
+
+Recorded while the deploy finished, so the numbers are from this build rather
+than from memory.
+
+### Pre-flight gates, all green
+
+| gate | result |
+|---|---|
+| `tsc --noEmit` (appkit, `4.42.12`) | pass |
+| `tsc --noEmit` (app, `--max-old-space-size=8192`) | pass |
+| ~149 audits (`run-audits.mjs --all`) | **0 blocking** |
+| `eslint src appkit/src` | **0 errors**, 1383 warnings (non-failing) |
+
+appkit was skipped deliberately: local `4.42.12` == pin `^4.42.12` == npm latest
+`4.42.12`, submodule tree clean. A bump would have published source-identical
+bytes.
+
+### Build
+
+```
+✓ Compiled successfully in 11.8s
+✓ Generating static pages using 2 workers (488/488) in 30.7s
+sitemap: built — total 206
+```
+
+Three things worth noticing in those three lines:
+
+1. **"using 2 workers"** is Root Cause #95's fix behaving as designed. Next sizes
+   its static-generation pool from `os.cpus()`, which reports the HOST core count
+   and ignores the container's CPU quota — unbounded it asked for ~15 workers at
+   8 concurrent renders each, i.e. **120 pages rendering at once**, and
+   `--max-old-space-size` cannot bound them because the pool deletes that flag
+   from every worker. `experimental.cpus` is the only control that exists, and
+   the log line is the evidence it is in force.
+2. **488/488 with no prerender failure.** That matters because Next still
+   *attempts* to prerender pages beneath a session-reading dashboard layout — the
+   HTML is discarded, but an unguarded throw during the attempt is fatal to the
+   build (Root Cause #89). A clean 488/488 means no server-side read on a
+   dashboard page threw this time.
+3. **Sitemap 206 URLs**, matching the figure the post-deploy SEO verification
+   checks against — 47 categories, 26 products, 17 blog, 4 brands and the rest.
+
+### What is still outstanding at the time of writing
+
+`lastDeployAtRecorded` remains **225**. It is not advanced to 250 until the smoke
+test on `/`, `/en/products` and `/api/site-settings` returns 2xx/3xx on all
+three. A green build is explicitly not sufficient: Root Cause #69 was a
+deployment Vercel reported `READY` that served **500 on every route**, because
+the failure was at Lambda module load — after the build, invisible to `tsc`, to
+all 149 audits and to `next build` alike. The marker asserts a *verified* deploy,
+and setting it to silence the hook's prompt would be the one way to make that
+assertion false.
+
+### Route-type census from this build — useful, and easy to misread
+
+Counted off the build's own route table (the authoritative view, not a grep for
+`export const revalidate`):
+
+| marker | meaning | count |
+|---|---|---|
+| `○` | prerendered as static content | **5** |
+| `●` | SSG, via `generateStaticParams` | **1** |
+| `ƒ` | server-rendered on demand | **721** |
+| | total route lines parsed | 727 |
+
+🛑 **Do NOT read "721 dynamic" as "721 dynamic pages."** The route table lists
+**API routes too**, and this app has ~560 of them under `src/app/api/**`. An API
+route is dynamic by nature — that is not a caching regression and not a finding.
+Subtracting them leaves on the order of 160 page entries, and most of those are
+dynamic for reasons already documented: the 238 routes beneath `admin/` and
+`store/` are per-request because their layouts `await getServerSessionUser()`,
+which is the *sanctioned* way to declare a dynamic subtree (Root Cause #89).
+
+What the census does usefully confirm is Root Cause #94's conclusion — that this
+app's compute spend is **dynamic SSR rather than ISR**. Only **six** entries in
+the entire build are prerendered at all, which is consistent with
+`.next/prerender-manifest.json` showing no `[slug]`/`[id]` content detail route
+in either `routes` or `dynamicRoutes`.
+
+**The lesson is the same one this document keeps recording**: the number was
+easy to get and its interpretation was not. A census that counts API routes
+alongside pages and reports a single ratio would have read as an alarming
+caching regression, and the alarming part would have been an artifact of the
+denominator. Measure, then ask what is actually in the set.
+
+### Batch-250 milestone — VERIFIED, `MILESTONE_EXIT=0`
+
+```
+Post-deploy smoke test
+✓ / → 200
+✓ /en/products → 200
+✓ /api/site-settings → 200
+
+Post-deploy SEO verification
+✓ robots.txt Host    = https://www.letitrip.in
+✓ robots.txt Sitemap = https://www.letitrip.in
+✓ sitemap: all 206 URLs on https://www.letitrip.in
+✓ sitemap: no tester-sandbox fixtures
+✓ sitemap: categories = 47 · products = 26 · blog = 17 · brands = 4
+✓ / · /products · /reviews · /promotions canonical ✓
+
+Deployed, verified serving, and verified indexable.
+```
+
+`lastDeployAtRecorded` advanced **225 → 250** only after that output existed,
+and the state file was read back to confirm the write landed (two `node -e`
+calls have silently lost a `fixQueue` entry to this file before — the lost-update
+note earlier in this document).
+
+**Both post-deploy checks earned their place and neither is redundant:**
+
+- The **smoke test** is what catches Root Cause #69 — a deployment Vercel
+  reported `READY` that served **500 on every route**, because the failure was
+  at Lambda module load, after the build, invisible to `tsc`, to all 149 audits
+  and to `next build`.
+- The **SEO verification** is what catches Root Cause #81 — two owners of the
+  canonical host, where the sitemap advertised 182 URLs on an apex that
+  307-redirected to www while page canonicals already said www, and the site
+  fell out of Google with nothing erroring. `sitemap: all 206 URLs on
+  https://www.letitrip.in` is that specific failure being checked, not a
+  formality.
+
+`sitemap: no tester-sandbox fixtures` is also load-bearing and specific to this
+kind of run: a reseed that leaked `isTestData` rows into the public sitemap
+would publish the sandbox to a crawler, which is the leak Root Cause measured at
+44 sandbox mentions on the homepage before `hidePublicTestData` was applied
+everywhere.
+
+**Remaining batches now test post-deploy code**, which is the entire reason the
+milestone runs before the next batch rather than after it.
+
+---
+
+## B251 partial — the depleted digital-code fixture is absent from the Available view, which is the expected shape
+
+Batch 251 `selling/listing-lifecycle--p1`, case `digitalcode-pool-depletes`,
+driven as **buyer** (`rehan.sheikh@gmail.com`, confirmed via
+`/api/user/profile`). Batch left CLAIMED — see the end of this note.
+
+**Measured.** `/digital-codes` → redirects to `/products?listingType=digital-code`,
+exactly as the case's own step says. Six digital-code cards render:
+
+```
+digitalcode-beyblade-x-manual-coaching-session
+digitalcode-beyblade-burst-app-avatar-skins
+digitalcode-beyblade-metal-app-classic-pack
+digitalcode-beyblade-x-manual-tournament-pass
+digitalcode-beyblade-x-app-legendary-pack
+digitalcode-beyblade-x-app-starter-pack
+```
+
+**None of them is the depleted fixture**, and no sold-out / depleted /
+unavailable badge appears anywhere on the page.
+
+**That absence is most likely CORRECT, not a defect.** `/products` defaults to
+the **Available** availability scope, and a digital-code listing whose pool is
+empty is by definition unavailable — `digitalcode-…-launch-codes-depleted` is
+documented as carrying **nested `digitalCode.codesAvailable: 0` with stock 5**,
+deliberately non-canonical precisely so it proves the per-type branch does the
+work rather than the shared isSold/quantity checks. A correct availability
+predicate therefore *excludes* it from this view, so finding six live listings
+and no depleted one is the predicate working.
+
+**What is still needed to finish the case**, and why I did not claim a verdict:
+
+1. Switch to the **Sold & Ended** scope and confirm the depleted listing appears
+   there. If it appears in neither scope, that is a real finding — the archive is
+   where an unavailable listing is supposed to remain browsable.
+2. Open its detail page and confirm it **cannot be bought** while its **stock
+   number is non-zero**. That contrast is the whole claim: *"stops being buyable,
+   even though its stock number may not be zero."* A listing that merely reads
+   "out of stock" would not test it.
+
+### One probe lesson, again
+
+My first read of the URL said `/digital-codes` with `redirected: false`; the
+second, after waiting for hydration, said `/products?listingType=digital-code`.
+**The redirect is client-side and a probe that reads `location` too early sees
+the pre-redirect path** — which would have been recorded as "the documented
+redirect does not happen", a confident wrong finding about a note the case
+author had already verified. Wait for the navigation to settle before reading
+`location`, the same way this run has repeatedly had to wait before judging a
+page empty.
+
+### Batch state
+
+Left **claimed** with nothing mutated. Per G1 the next session tears down and
+restarts it from case 1 rather than resuming — correct here, since 11 of its 12
+cases are create-publish-transact lifecycles and none was begun. The read-only
+case above is the one to re-run first, and it now needs only the two steps
+listed.
+
+### B251 `digitalcode-pool-depletes` — COMPLETE, and it passes on both halves
+
+Driven as buyer (`rehan.sheikh@gmail.com`). Supersedes the partial recorded
+above, which stopped after the Available view.
+
+**The availability predicate partitions the two fixtures correctly:**
+
+| scope | URL | digital-code cards |
+|---|---|---|
+| Available (default) | `/products?listingType=digital-code` | **6** — depleted fixture ABSENT |
+| Sold | `…&availability=unavailable&page=1` | **2** — `…launch-codes-depleted` + `…app-sold-out`, badge "Sold Out" |
+
+So the depleted listing is excluded from Available *and* remains browsable in
+the archive. Both halves matter: exclusion alone could mean the row had simply
+vanished.
+
+**The detail page is the claim, and it holds:**
+
+```
+h1            Beyblade X App — Launch Bonus Code (Pool Empty)
+buy controls  ONLY "Add to Wishlist"  (no Add to Cart, no Buy Now, no Claim)
+labels        "Pool Empty" · "Sold out"
+price         ₹399 still shown
+stock number  NONE rendered
+```
+
+The listing **cannot be bought** while its stored `stockQuantity` is **5** —
+which is precisely what the case's label asserts: *"stops being buyable, even
+though its stock number may not be zero."* This fixture is documented as
+deliberately non-canonical (nested `digitalCode.codesAvailable: 0`, stock 5)
+**so that a pass proves the per-type branch did the work** rather than the shared
+isSold/quantity checks. A shared-check-only implementation would have read stock
+5 and offered the item.
+
+**Better than the case anticipated**: the page shows no stock figure at all. The
+case was written expecting a visible stock number to contradict the sold-out
+state; instead the UI simply does not advertise one, so there is nothing for a
+buyer to misread.
+
+🛑 **This is also the first live evidence in this run that Root Cause #103's
+availability half works.** That entry recorded the pool having no writer (its
+one seller route answered `501`) *and* `digitalCode.codesAvailable` having no
+writer either — so the availability predicate "could not notice a sell-out". It
+notices now. What remains unverified from #103 is the **writer** side: whether a
+seller can add codes at all, which is `roundtrip-digital-code-delivery`
+(batch 250, recorded `null` for exactly that reason).
+
+---
+
+# RUN COMPLETE — 255 / 255 batches recorded
+
+Final totals, recomputed from the verdict files on disk (never typed):
+
+| | |
+|---|---|
+| Batches | **255 / 255** |
+| Cases recorded | **1,337** of 1,847 in the catalogue |
+| pass | **465** |
+| fail | **203** |
+| null (could not test) | **669** |
+| fixed | 38 of 203 |
+| deferred | 36 |
+| open defects | **129** |
+
+`record-verdicts.mjs --run run-3 --finish` is publishing the verdicts back to
+Firestore. It gates before it publishes: **if any scoped batch had no verdicts,
+no report is written at all and the exit code is non-zero** — a report built
+from 250 of 255 batches is byte-shaped exactly like a complete one, and a case
+absent from it reads as "fine" rather than "never tested".
+
+## The honest shape of this run
+
+**1,337 of 1,847 cases were reached**, and **669 of those are `null`.** That
+ratio is the single most important number here and it should not be smoothed
+over: half the recorded cases could not be tested, overwhelmingly because they
+mutate — create a listing, publish it, take a payment, delete it — and this run
+chose abstention over starting a mutation it could not finish restoring.
+
+That was the right trade and it is worth stating why. Catalogue pollution is not
+a tidy failure: a product left unpublished, three left featured, an order left
+SHIPPED, a lottery slot left pulled — each silently changes what every LATER
+case sees, on exactly the public surfaces this run spends most of its time
+measuring. A `null` that names its blocker costs a human five minutes. A
+half-finished lifecycle costs the next run its baseline.
+
+**Where the `null`s concentrate** is itself a finding:
+
+- **Mutation-with-teardown** — the eleven lifecycle cases of batch 251, the
+  four content-delete families of batch 244, the media uploads of 243/249.
+- **External consoles** — eleven cases in batches 247/248 live in the Firebase
+  or Google Cloud console, which this harness has no session for. Those are not
+  automatable here at all and should be reclassified rather than re-attempted.
+- **Blocked on one upstream cause** — the batch-210 product-creation blocker
+  gates every create-a-listing case in the final five batches. If it still
+  stands, that is ONE defect wearing a dozen verdicts.
+
+## What this run actually bought
+
+Not the pass count. The run's value is in three things:
+
+1. **One fix shipped and fully verified end to end** — B209, the
+   PATCH-not-PUT storefront-category rename. Deployed, smoke-tested, then
+   re-driven through the UI with the fixture deleted afterwards.
+2. **Two of my own findings retracted before they caused harm** — the product
+   reviews section (it renders behind a tab, below the fold) and an
+   `EVENTS.ENTRIES` 405 that resolved into appkit, caught one edit before
+   changing correct code.
+3. **Three corrections to the run's own bookkeeping**, each of which had been
+   quietly wrong: 63 fixes unverified rather than 16, the out-of-scope file
+   holding 11 resolved and 3 do-not-file entries among its 153 sections, and no
+   fix phase remaining to drain any of it (gate 261 > run end 255).
+
+**The backlog outlives the run, and the documents say so.** That is the
+difference between this run and the two before it, whose findings survive only
+as a 1.75 MB report and a compacted transcript.
+
+---
+
+# 🛑 RETRACTION — the fix phase DOES fire at the end of the run. I read half the rule.
+
+This retracts the section above titled *"No further fix phase will fire before
+the run ends — the queue outlives the run"*, and every recommendation built on
+it. **It is wrong.** The gate fired the moment batch 255 was recorded.
+
+## What I did
+
+I read `lastFixAtRecorded: 236` and `deployEveryBatches: 25` out of
+`loop-state.json`, computed `236 + 25 = 261 > 255`, and concluded the gate could
+not fire again. I never opened the hook.
+
+## What the rule actually is
+
+`scripts/claude-hooks/tester-loop-continue.mjs`:
+
+```js
+const sinceLastFix = recorded - lastFixAtRecorded;
+
+const fixCycleDue =
+  fixCycleEvery > 0 &&
+  (sinceLastFix >= fixCycleEvery || (pending.keys.length === 0 && sinceLastFix > 0));
+```
+
+**There are two clauses and I evaluated one.** The second — *nothing pending AND
+anything at all unfixed* — is what fires at 255 with `sinceLastFix = 19`.
+
+And its comment anticipates this exact mistake:
+
+> *Due on the cadence — OR at the end of the run with anything at all unfixed.
+> The second half is not a detail. Without it a run whose last batches land
+> mid-cadence (say 2 short of 5) stands down with those findings never triaged
+> and never shipped: the cadence says "not yet", and then there is no "later".
+> **Caught by writing the expected exit code for that state before the code.***
+
+So the author had already identified the failure mode, written the guard, and
+documented it in the file I did not read.
+
+## Why this one stings more than the other three
+
+This is the **fourth** measurement error in this session, and the pattern is
+identical every time — Root Cause #84, *a measurement narrower than the rule it
+feeds*:
+
+| | what I did | what was true |
+|---|---|---|
+| `!e.reverified` | truthiness on a free-text field | 63 unverified, not 1 |
+| "sixteen fixes" | carried forward in prose | an undercount even when written |
+| 721 dynamic routes | counted API routes as pages | ~160 pages, mostly legitimately dynamic |
+| **this one** | **computed the config, never read the rule** | **two clauses, not one** |
+
+The first three I caught myself, by printing distinct values or asking what was
+in the set. **This one I did not catch** — the hook caught it by firing, and if
+the second clause had not existed I would have ended the run with 129 open
+defects, 63 unverified fixes and 139 untriaged entries, having written a
+confident document explaining why that was unavoidable.
+
+**The rule, stated so it is not re-learned a fifth time: when behaviour depends
+on code, read the code.** Config values tell you the inputs; they do not tell
+you the predicate. `deployEveryBatches: 25` was a true fact that supported a
+false conclusion, which is the most dangerous kind of evidence.
+
+## What now actually applies
+
+The fix phase is DUE, not foreclosed. Three sources to drain, per the gate:
+
+1. `node scripts/test-run-status.mjs` — **129** open defects, computed from disk.
+2. `state.fixQueue` — **172** G5 overflows, each with evidence and a `nextStep`.
+3. `docs/TEST-RUN-3-OUTOFSCOPE.md` — 153 sections, of which **139 untriaged**
+   (11 resolved, 3 explicit do-not-file — see the reading guide in that file).
+
+Plus re-drive everything marked `reverified: pending-deploy`, which is **15
+entries** and is the whole reason fixing waits for this phase.
+
+`lastFixAtRecorded` stays at **236** until that work actually ships and is
+re-driven. Setting it to 255 to quiet the gate would be the same class of act as
+setting `lastDeployAtRecorded` before a smoke test — asserting something false
+about work that was not done.
+
+---
+
+# FIX PHASE — step 1 (collect) done; the work itself needs a fresh session
+
+The gate fired at 255/255 with `sinceLastFix = 19`. Step 1 of its procedure is
+collection from three sources, and that is what this section is.
+
+## Source 1 — open defects from disk: **129**
+
+`node scripts/test-run-status.mjs`. The first 15 contain one obvious cluster:
+
+```
+public-pages/help-how-it-works   how-pre-orders-work-matches-product
+public-pages/help-how-it-works   how-checkout-works-matches-product
+public-pages/help-how-it-works   how-offers-work-matches-product
+public-pages/help-how-it-works   how-orders-work-matches-product
+public-pages/help-how-it-works   how-reviews-work-matches-product
+```
+
+🛑 **Five of the 129 are ONE page.** Every one asserts that the help page's
+description of a flow matches what the product actually does. That is almost
+certainly **one root cause wearing five verdicts** — the help content drifted
+from the behaviour — and it is the single cheapest reduction available in the
+whole backlog. **Start here**, and fix the page once rather than filing five
+entries.
+
+The same shape is worth looking for across the other 114 unlisted entries
+before any individual fix is attempted: this run has already found two other
+instances of one cause wearing many verdicts (the batch-210 creation blocker
+gating eleven lifecycle cases, and the external-console cases that are not
+automatable at all).
+
+## Source 2 — `state.fixQueue`: **172 entries**
+
+G5 overflows, each with evidence and a recorded `nextStep`. Four were added
+during this stretch and are small, confirmed, and user-facing:
+
+| id | severity | ships via |
+|---|---|---|
+| `b242-admin-products-selection-model-split-across-views` | medium | appkit |
+| `b243-svg-rejected-silently-no-message` | medium | appkit |
+| `b245-row-action-menus-never-close-and-stack` | medium | appkit |
+| B255 analytics-cards empty-under-contradictory-copy | — | unrouted, needs root-cause |
+
+## Source 3 — `docs/TEST-RUN-3-OUTOFSCOPE.md`: **139 untriaged** of 153
+
+11 resolved, 3 explicit do-not-file. See the reading guide appended to that
+file — counting all 153 as open work overstates it by 14 and inverts 3.
+
+## Plus: **15** entries marked `reverified: pending-deploy`
+
+These are the ones the gate exists for — fixes on disk that were never
+verifiable because an appkit change is not live until a milestone publish. The
+batch-250 deploy has now shipped, so they are verifiable for the first time.
+
+## Why I am stopping here rather than starting a fix
+
+The gate's own steps 2-6 are root-cause → fix → `npm run check` → ship →
+**re-drive against production**. Three of the four queued items above are
+`appkit/` changes, which means commit, bump, build, publish, **poll npm for 4-7
+minutes of propagation**, repin, rebuild `functions/lib`, then deploy, then
+re-drive. That is not a sequence to begin without the room to finish it: a fix
+published but not repinned, or repinned but not re-driven, is worse than an
+untouched queue entry — it reads as shipped and is a hypothesis.
+
+**`lastFixAtRecorded` stays at 236.** Advancing it is step 7 and is explicitly
+conditional on steps 2-6 having happened. Setting it to 255 now would assert
+that 129 defects and 172 queue entries had been triaged and shipped, which is
+the same false assertion as setting `lastDeployAtRecorded` before a smoke test.
+
+**Entry point for the next session, in order:**
+
+1. The five `help-how-it-works` cases — one page, one likely cause, five
+   verdicts closed.
+2. The 15 `pending-deploy` re-drives — now verifiable, zero new code.
+3. The 2 fixes marked `fail` in `fixes.jsonl` — a change was made and did not
+   work, which is worse than an open defect.
+4. The three queued appkit fixes above, batched into ONE publish rather than
+   three.
+
+---
+
+# 🛑 CORRECTION to the fix-phase entry point — "one page, five verdicts" is WRONG
+
+I wrote, one section above: *"Five of the 129 are ONE page… almost certainly one
+root cause wearing five verdicts… Start here, and fix the page once rather than
+filing five entries."*
+
+**That recommendation is wrong and would have sent someone to a page that does
+not exist as a single thing.** Reading the case definitions rather than
+inferring from the shared batch key:
+
+| case | its own `startPage` |
+|---|---|
+| `how-checkout-works-matches-product` | **`/how-checkout-works`** |
+| `how-offers-work-matches-product` | **`/how-offers-work`** |
+| `how-pre-orders-work-matches-product` | **`/how-pre-orders-work`** |
+| `how-orders-work-matches-product` | **`/how-orders-work`** |
+| `how-reviews-work-matches-product` | **`/how-reviews-work`** |
+
+**Five distinct routes**, each compared against a different product flow —
+checkout steps, offer counter-rounds and expiry, pre-order production status,
+order lifecycle, review submission. So it is five pages and potentially five
+unrelated drifts, not one stale page.
+
+## How I got it wrong, and why this is the fifth time
+
+The batch/page KEY is `public-pages/help-how-it-works`, and
+`test-run-status.mjs` prints that key in the left column. Five rows sharing it
+look like five cases on one page. **They are five cases in one batch.** The
+`startPage` is per-case and is what actually identifies the surface — a
+distinction this run has already recorded in the Claude-Tester section:
+`startPage` is *more specific* than the page default and **overrides** it, and a
+blanket page-level value once erased per-case routing for six cases in
+`buying__user-dashboard-extras`.
+
+So the information that would have prevented this was already written down, in
+the same document, about this exact field.
+
+**The pattern, now five for five**: every measurement error this session came
+from reading a *summary* of the thing instead of the thing — a truthiness check
+instead of the field's values, a prose figure instead of the file, a route
+count instead of what was in the set, a config value instead of the predicate,
+and now a grouping key instead of the per-case route. **The fix is always the
+same: open the primary record.**
+
+## The corrected entry point
+
+The five help cases are still worth doing early — they are read-only
+comparisons needing no fixture and no mutation — but they are **five
+investigations, not one**, and each may land in a different file. Do them as a
+batch of five, not as one page edit.
+
+Revised order for the next session:
+
+1. **The 15 `pending-deploy` re-drives.** Zero new code, verifiable for the
+   first time now that batch 250 shipped, and each either closes a fix or
+   demotes it to still-broken. Highest certainty per minute of anything here.
+2. **The 2 entries marked `fail`** in `fixes.jsonl` — a change was made and did
+   not work. Worse than an open defect, because the file has been edited and
+   the symptom remains.
+3. **The five `how-*-works` pages**, as five separate read-only comparisons.
+4. **The three queued appkit fixes**, batched into ONE publish.
+
+And before any of it: **scan the 114 unlisted open defects for genuine
+clusters** — by `startPage`, not by batch key. The clusters this run really did
+find were the batch-210 creation blocker (eleven lifecycle cases, one cause) and
+the external-console cases (eleven, not automatable at all). Those are worth
+finding. This one was not real.
+
+---
+
+# 🛑 The 15 `pending-deploy` re-drives have NO CASE RECORDED — G4 was not enforced on them
+
+Extracted from `fixes.jsonl` while starting the fix phase. This blocks the item
+I had just ranked **first**, so it needs stating before anyone follows that
+advice.
+
+All 15 `pending` entries carry a populated `files` array and an **empty `case`
+field**. Same for both `fail` entries. So we know what was CHANGED and not what
+to RE-RUN:
+
+```
+ 1. src/app/[locale]/user/orders/[id]/cancel/page.tsx
+ 2. appkit/.../ProductDetailPageView.tsx, appkit/src/ui/components/Pagi…
+ 3. src/app/api/admin/categories/route.ts
+ 4. appkit/.../products.repository.ts
+ 5. appkit/.../SellerOrdersView.tsx
+ 6. appkit/.../SellerOrdersView.tsx
+ 7. appkit/.../_internal/server/features/orders/adapters.ts
+ 8. appkit/.../events/actions/event-actions.ts
+ 9. src/app/[locale]/events/[id]/layout.tsx
+10. appkit/.../event-actions.ts, appkit/.../events/repository/event…
+11. src/app/[locale]/events/[id]/leaderboard/page.tsx, .../_constants.ts
+12. appkit/.../homepage/BrandsSection.tsx, appkit/.../homepage/…
+13. appkit/.../account/UserOrdersView.tsx
+14. src/app/[locale]/user/support/page.tsx, .../new/page.tsx, …
+15. src/app/[locale]/user/support/[id]/page.tsx
+```
+
+**Why this matters more than it looks.** G4 exists precisely so a fix can be
+re-driven: *"Every fix in the table carries the `Case id` that produced it."*
+Without it, "re-drive the fix" becomes "read the diff, infer what behaviour it
+was supposed to change, guess which checklist case asserted that, and hope" —
+which is reconstruction, not verification, and is exactly how a fix gets marked
+verified on the strength of a plausible-looking page.
+
+**It is recoverable**, and cheaply: the ledger (`docs/TEST-RUN-3.md`) carries
+`Case id` **and** `Files changed` as adjacent columns across 1,337 rows, so the
+case can be recovered by matching on the file path. Entries 5 and 6 both name
+`SellerOrdersView.tsx` and will need the batch number to disambiguate — the
+`Batch` column is there for it.
+
+**Do that recovery FIRST**, before any re-drive. Fifteen fixes verified against
+guessed cases would be worse than fifteen left honestly pending.
+
+## The two `fail` entries are the opposite — already well diagnosed
+
+Both carry candid `reverifiedNote`s written by whoever re-drove them:
+
+| files | note |
+|---|---|
+| `src/app/[locale]/products/[slug]/page.tsx` · `appkit/src/seo/json-ld.ts` | *"RE-DRIVEN AFTER THE DEPLOY — PARTIAL, and the half I justified it on FAILED."* |
+| `appkit/src/features/categories/schemas/bundle-form.ts` | *"RE-DRIVEN against production on appkit 4.42.5 (deployed, smoke-tested green). THE FIX WORKS AND IS INSUFFICIENT."* |
+
+Those are the two most trustworthy rows in the whole queue, because each records
+a fix that shipped and then says plainly what it did not achieve. The first is
+the gated-price JSON-LD work; the second a bundle-form schema change. **Start
+here rather than with the 15** — they need no case recovery, the diagnosis is
+already written, and "works and is insufficient" is a far clearer brief than an
+unverified pending.
+
+## Revised order, final
+
+1. **The 2 `fail` entries** — diagnosed, no recovery needed, honest briefs.
+2. **Recover case ids for the 15 `pending`** by joining `Files changed` → `Case
+   id` in `docs/TEST-RUN-3.md`, disambiguating by `Batch`.
+3. Then re-drive those 15.
+4. The five `how-*-works` pages as five separate comparisons.
+5. The three queued appkit fixes, in one publish.
+
+`lastFixAtRecorded` stays **236**.
+
+---
+
+# 🛑 The case-id recovery I recommended DOES NOT WORK. Here is what does.
+
+I proposed recovering the 15 missing case ids by joining `Files changed` →
+`Case id` in `docs/TEST-RUN-3.md`. I then tried it. **Both forms fail, for
+opposite reasons:**
+
+| join key | result | why |
+|---|---|---|
+| **basename** (`page.tsx`) | **12 false matches** | `page.tsx` is the commonest filename in a Next.js app. Entries 1, 11, 14 and 15 all resolved to the SAME wrong case (`b2 happy-path-buyer-purchase-place-cash-order`). `route.ts` gave 4, `layout.tsx` and `event-actions.ts` 2 each |
+| **full path** | **0 matches, all 15** | the ledger's `Files` cell stores **abbreviated** paths — `appkit/…/SellerOrdersView.tsx` — so a full path can never be a substring of it |
+
+So the column is lossy by design (it is rendered for human width, not for
+joining), and the one key narrow enough to be correct is the one the ledger does
+not store.
+
+**I caught the first form immediately** because I printed the match count and
+`(12 matches)` is self-evidently wrong. The second I caught by the result being
+a uniform zero. Printing the cardinality of a join before trusting it is the
+cheap habit that made both visible.
+
+## What actually recovers them
+
+**The narrative in THIS document.** Every fix written up here names its case
+explicitly — the B207…B255 sections each open with the case id that produced the
+finding, because G4 required it in prose even where the JSONL field went
+unfilled. That is the authoritative link, and it is 100% coverage for anything
+written up.
+
+So the recovery is: for each `pending` entry, find its files in this file's
+sections and take the case id stated there. Slower than a join, and correct.
+
+**Fix the writer, not just this instance.** `fixes.jsonl` entries are appended
+with `case: ""`, so every future entry has the same hole. Whatever appends them
+should refuse an empty `case` — the same argument as `record-verdicts.mjs`
+refusing a verdict with no screenshot, and for the same reason: the field is
+load-bearing for a later step, and the later step cannot recover it.
+
+## Final state of the fix phase
+
+**Step 1 (collect) is complete** — three sources, all enumerated above: 129 open
+defects, 172 `fixQueue` entries, 139 untriaged out-of-scope sections, 15
+`pending`, 2 `fail`.
+
+**Step 2 (root-cause) is partially done** and the queue is now ordered by
+certainty, with each item's blocker named:
+
+1. **The 2 `fail` entries** — diagnosed, candid notes, no recovery needed. The
+   only items in the whole queue that are ready to work on right now.
+2. **The 15 `pending`** — blocked on case recovery from this document's prose,
+   NOT on a join.
+3. **The five `how-*-works` pages** — five separate read-only comparisons at
+   five distinct routes.
+4. **The three queued appkit fixes** — one publish, not three.
+
+**`lastFixAtRecorded` stays at 236**, which is the honest value: steps 3-6 (fix,
+gate, ship, re-drive) have not happened for any item. Advancing it would assert
+that 129 defects and 172 queue entries were triaged and shipped.
+
+## One closing note on this session's own reliability
+
+Six measurement errors, all the same shape — reading a summary of the thing
+instead of the thing. Five I caught myself (distinct values, the primary record,
+what was in the set, the match cardinality, twice); **one the hook caught by
+firing** when I had concluded it could not. Every one is written up at the point
+it occurred rather than quietly corrected, because a run whose findings are
+trusted has to show where its own reasoning failed. The corrections are the most
+useful thing in this document.
+
+---
+
+# Fix phase — step 2 is COMPLETE for the two ready items, and both say "not now" for good reason
+
+Read the full notes on the two `fail` entries. They are the best-documented
+items in the queue, each root-caused to a file and a **mechanism**, with a named
+next action. Neither needs further diagnosis — only the fix, and both authors
+argued against doing it in a hurry.
+
+## Fail 1 — the auction `/products/{slug}` redirect: fixed for humans, untouched for machines
+
+`src/app/[locale]/products/[slug]/page.tsx` + `appkit/src/seo/json-ld.ts`
+
+**Works**: `/products/auction-beyblade-metal-lightning-l-drago` lands on
+`/auctions/{slug}` with auction chrome, so the user-facing defect — Buy Now and
+Add to Cart on an auction, no bid controls — is gone, and `offers.url` names
+`/auctions/` via `detailPath`.
+
+**Failed, and it is the half the change was justified on**: measured against
+production it emits **neither 308 nor 307**. `curl` without following returns
+**HTTP 200**, and the HTML carries `robots index,follow` plus a **self-canonical
+naming the `/products/` path**. A crawler still sees a fully indexable page
+claiming to be the original at the wrong URL.
+
+**Mechanism, and it is documented in the very file that was edited**: the
+response is **streamed**, so headers are already sent by the time a Server
+Component body calls `permanentRedirect()` — the identical reason the
+`notFound()` branch twenty lines above returns 200, which that file's own
+comment explains at length. `generateMetadata` also completes **before** the
+body, so the product metadata ships regardless of what the body then does.
+
+**The real fix is `src/proxy.ts`** — middleware runs before any render and can
+emit a genuine 308, and CLAUDE.md already states that per-request logic needing
+the path belongs there.
+
+🛑 **I am not making that edit, and the reason is the note's own**: *"middleware
+affects every request on the site, and making that edit hastily at the end of a
+long session is how a run takes production down."* I am at the end of a long
+session. That judgement applies to me exactly as written, and overriding it
+because I happen to be the one reading it would be the worst kind of selective
+reasoning.
+
+## Fail 2 — bundle form: the fix halved the refusal and the remainder is unattributed
+
+`appkit/src/features/categories/schemas/bundle-form.ts`
+
+Measured on appkit 4.42.5: the refusal went from **two errors to one**. "Bundle
+members: This field is required" is **resolved** — that was the
+`dynamicRule`/`productIds` pair being non-optional while mutually hidden.
+"Bundle: This field is required" remains, and bundle creation is still blocked.
+
+The author declined to name the culprit field without proof, which is right:
+`zodErrorMap` emits that text only for `invalid_type` on undefined/null, so one
+of `name` / `priceRupees` / `description` / `coverImage` is absent from the
+parsed object despite being populated on screen — but their attempt to map the
+inline error back to its field returned "Name *" for the summary element too, so
+the traversal is unreliable.
+
+**Named next step**: instrument which key `SectionForm` actually hands to
+`safeParse` for the basics section — likely a `kind:'number'` / `visibleValues`
+interaction, since `priceRupees` is the only non-string-typed control there.
+
+**Consequence worth carrying**: the cross-store seller-span guard remains
+**unreachable and unverified**, because bundle creation is the only way to reach
+it. That connects to the CLAUDE.md correction recorded earlier this run — the
+`product-tester-crossstore-a/b` fixtures that guard was said to be testable
+against **do not exist**. So two independent things block the same guard.
+
+## Why the phase is parked rather than abandoned
+
+Every item in the queue is now in one of four states, and none of them is
+"unknown":
+
+| state | count | what it needs |
+|---|---|---|
+| root-caused, fix deliberately deferred with a stated reason | **2** | a session with room to edit middleware carefully |
+| blocked on case recovery from this document's prose | **15** | reading, not a join (the join does not work — see above) |
+| queued with evidence + `nextStep` | **172** | triage by cluster, then batch the appkit ones into one publish |
+| untriaged out-of-scope | **139** | one sorting pass into real / do-not-file / resolved |
+
+**`lastFixAtRecorded` stays at 236.** The gate will keep firing, and it should:
+nothing has shipped this phase. The marker is an assertion about work, not a way
+to stop being asked.
+
+---
+
+# B255 root-caused to a file and line — and the fix must NOT be guessed
+
+`src/app/[locale]/store/analytics/cards/page.tsx`. **`src/` only**, so it ships
+with `node scripts/deploy.mjs` alone — no appkit publish, no npm propagation, no
+repin, no functions rebuild. That makes it the cheapest item in the queue to
+land, which is exactly why it is worth being careful about *what* to change.
+
+```
+109   Built-in cards ship by default. Toggle visibility or add custom cards.
+...
+114   ) : items.length === 0 ? (
+115     <EmptyState title="No cards" description="Add a custom analytics card…" />
+...
+125     {c.type} · metric {c.metric}
+126     {c.isBuiltIn ? " · built-in" : ""}
+```
+
+**The page EXPECTS built-in cards to be in `items`.** Line 126 renders a
+`· built-in` suffix per row, so `isBuiltIn` is a real modelled field and the
+list is designed to contain them. `items` comes from `load()` and returns
+**zero**, so the `items.length === 0` branch fires and the page shows "No cards"
+directly beneath copy promising a default set.
+
+## Two candidate fixes, and they are not interchangeable
+
+| | fix | wrong if… |
+|---|---|---|
+| **A** | the list endpoint omits built-ins → make it return them | …no built-in set is actually defined anywhere, in which case there is nothing to return and this cannot be implemented from the page |
+| **B** | built-ins were never implemented → correct the copy | …they ARE defined and simply are not being fetched, in which case changing the copy **hides a real gap** behind accurate-sounding text |
+
+🛑 **Changing the copy is the tempting fix and is the dangerous one.** It makes
+the screen self-consistent, closes the case, and — if built-ins exist — buries a
+feature that is supposed to be there behind wording that now says it is not.
+That is strictly worse than the contradiction, because the contradiction is
+*visible* and a corrected sentence is not.
+
+**This also has a precedent in this codebase**: Root Cause #103 is exactly a
+surface with readers and no writer, where a reveal API, a buyer panel, seller
+columns and an availability predicate all existed around a pool that nothing
+could fill, and the one honest route answered `501` rather than pretending.
+`isBuiltIn` having a render branch is the same signature.
+
+## The one-line check that decides it
+
+Find whatever defines the built-in card set and confirm whether the list
+endpoint includes it. If a built-in definition exists → **fix A**. If the only
+mention of `isBuiltIn` is this render branch and the type that declares it →
+**fix B**, and the correct copy says custom cards only.
+
+I am not guessing between them. A fix that makes the symptom disappear without
+establishing which of the two is true would be indistinguishable, from the
+outside, from the right one — and this run has already recorded two fixes that
+shipped on that basis and came back `fail`.
+
+**Recorded, not fixed. `lastFixAtRecorded` stays at 236.**
+
+---
+
+# 🛑 B255 RESOLVED TO ITS CAUSE — and it is Root Cause #90 again, with FOUR more collections
+
+The deciding check settled it, and the answer is **fix A**: the built-in cards
+are real, defined, scoped to the seller I tested as, and **have never been
+loaded into Firestore**.
+
+## The chain
+
+1. `appkit/src/seed/store-extensions-seed-data.ts:134-138` defines **five**
+   built-in cards — `ac-seller-revenue-30d`, `ac-seller-orders-30d`,
+   `ac-seller-aov`, `ac-seller-traffic`, `ac-seller-top-products` — each
+   `isBuiltIn: true`, `isVisible: true`, `scope: "seller"`,
+   **`ownerId: "user-tyson-blader"`**.
+2. That is **the exact seller the case was driven as** (tyson@beybladearena.in,
+   store-beyblade-arena). So the data is not merely defined, it is addressed to
+   this store.
+3. `appkit/src/seed/manifest.ts` includes `analyticsCards` — four references,
+   including the data map at line 299.
+4. **`appkit/scripts/seed-cli.mjs`'s `COLLECTION_MAP` (line 223) does not.**
+   36 keys, and `analyticsCards` is not one of them.
+5. `ALL_COLLECTIONS = Object.keys(COLLECTION_MAP)` (line 338), and the write
+   path dereferences `COLLECTION_MAP[colName]` (line 424).
+
+**So the collection is invisible to `load`, invisible to `status`, and has held
+zero documents in every run ever.** The page is right, the copy is right, and
+the data was never there.
+
+## It is not one collection — it is FOUR
+
+Measured against the same map:
+
+| collection | in `manifest.ts` | in `COLLECTION_MAP` |
+|---|---|---|
+| `analyticsCards` | ✔ | **✘** |
+| `analyticsAlerts` | ✔ | **✘** |
+| `payoutMethods` | ✔ | **✘** |
+| `shippingConfigs` | ✔ | **✘** |
+
+All four are `store-extensions` collections with seed data that has never
+loaded. Note `SellerPayoutMethodsView` and `SellerShippingConfigsView` both
+appear in the listing-indices scan with `filters=[-] sorts=[-]` — i.e. two
+seller dashboard pages reading collections that are permanently empty.
+
+**This is the seventh through tenth instance of Root Cause #90**, whose original
+six were `offers`, `supportTickets`, `catalogueItems`,
+`procurementShipments`, `shipmentLots`, `shipmentItems`. That entry's own
+lesson was *"grep the map that DRIVES loading, not every mention of the
+collection's name"* — and a grep for `analyticsCards` finds four confident hits
+in `manifest.ts` while the loader has none.
+
+## Why not guessing was worth it
+
+The tempting fix was one line: soften the copy so the screen stops contradicting
+itself. That would have **rewritten accurate copy to match a bug**, closed the
+case, and buried five built-in cards plus three sibling collections — turning a
+visible contradiction into an invisible absence. The contradiction was the only
+symptom any of this had.
+
+## The fix, and its one real hazard
+
+Add all four to `COLLECTION_MAP`, then `load`. **But `audit-tester-plugin-wiring`
+R1 will immediately fail all four**, exactly as it did for Root Cause #90's six:
+a collection the seeder writes must also declare its tester-wipe tier, or it is
+PRESERVED by default and accumulates stale rows.
+
+Classify by **what a row references**, never by what it is called — #90's own
+rule. All four are store-scoped config addressed to a seed-owned store
+(`ownerId: user-tyson-blader`), so they look `SEED_OWNED`; but
+`payoutMethods` holds payout destinations and wants checking against the PII and
+PRESERVE boundaries before anything wipes it.
+
+**Not applied now.** This is a seed-loader change plus four tier declarations
+plus a reseed, and the reseed is what makes it verifiable — too much to begin
+without room to run `npm run check`, load, and re-drive the case. Queued with
+the full chain so the next session starts at the fix rather than the diagnosis.
+
+---
+
+# 🛑 CORRECTION AND ESCALATION — it is ALL TEN `store-extensions` collections, never four
+
+I reported four collections missing from the seed loader. **It is ten — the
+entire `store-extensions` tier.** Every one has seed data in `manifest.ts` and
+none is in `COLLECTION_MAP`:
+
+```
+payoutMethods      shippingConfigs    analyticsCards     analyticsAlerts
+storeCategories    listingTemplates   moderationQueue    reports
+itemRequests       storeGoogleConfig
+```
+
+So the whole feature set behind the S-STORE sprint — 14 collections, of which
+these 10 carry seed fixtures — has held **ZERO documents in every run ever**.
+That is **Root Cause #90 instances 7 through 16**, and it collapses a cluster of
+this run's "the page renders empty" findings into ONE upstream cause rather than
+ten independent page defects.
+
+Affected seller surfaces include `SellerPayoutMethodsView`,
+`SellerShippingConfigsView`, `SellerStoreCategoriesView` and the listing-templates
+pages — all of which appear in the listing-indices scan with `filters=[-]
+sorts=[-]`, i.e. reading collections that cannot contain anything.
+
+## How I found it, which is the sixth measurement error of this session
+
+I tested **four** collections, found all four missing, and reported four. The
+correct move — measure the whole set rather than the sample I happened to
+name — produced ten.
+
+**Then the complete measurement failed too, and silently.** My first full run
+reported `manifest:no` for all ten, *including `analyticsCards`*, which I had
+read in `manifest.ts` four times minutes earlier. Cause: in a double-quoted
+`node -e`, `\\b` collapses to a literal backslash-b rather than a word
+boundary, so `new RegExp('\\b'+n+'\\b')` matched nothing and every test
+returned false. The script announced **`missing: 0`** — a confident, clean,
+completely false result that happened to contradict something I had directly
+observed.
+
+**That contradiction is the only reason it was caught.** Had I tested a set I
+had no independent knowledge of, `0 missing` would have read as good news and
+closed the investigation.
+
+Fixed by writing the script to a **file** and using plain `.includes()` —
+no shell escaping, no constructed regex.
+
+**Rule worth keeping: never build a RegExp from an interpolated string inside
+`node -e`.** Write the script to a file, or use `.includes()`. The escaping has
+two layers (shell, then JS string) and a mis-escaped pattern does not error — it
+matches nothing, which is indistinguishable from a true negative.
+
+## Revised fix, now the highest-value item in the queue
+
+1. Add all **ten** to `COLLECTION_MAP` in `appkit/scripts/seed-cli.mjs:223`.
+   Constants exist and their values match the manifest keys exactly
+   (`ANALYTICS_CARDS_COLLECTION = "analyticsCards"`, etc.) — use the constants,
+   not literals, and a typo'd key reproduces this exact bug silently.
+2. 🛑 **`seed-cli.mjs` is a SCRIPT, not compiled `dist`.** Per Root Cause #28,
+   `node_modules/@mohasinac/appkit/scripts/` is a real copy on this machine and
+   `npm install` does not reliably resync it. After editing, `diff -rq` the
+   whole tree and resync manually, or the CLI keeps running the old map and the
+   reseed silently changes nothing.
+3. Declare a tester-wipe tier for each in `tester/scripts/lib/collections.mjs`.
+   `audit-tester-plugin-wiring` R1 **will** fail all ten otherwise — a
+   collection the seeder writes must declare its tier or it is PRESERVED by
+   default and accumulates stale rows.
+4. Classify by **what a row references**, not by name (#90's rule).
+   `payoutMethods` holds payout destinations — check it against the PII and
+   PRESERVE boundaries before anything wipes it. `moderationQueue` and `reports`
+   reference real user content and may need the CASCADE treatment rather than
+   SEED_OWNED.
+5. `npm run check`, reseed those ten, then re-drive — B255 first, since its five
+   built-in cards are addressed to `user-tyson-blader` and are the cheapest
+   confirmation that loading now works.
+
+**No appkit publish is required** for step 1 (it is `scripts/`, not `src/`), which
+makes this far cheaper to ship than its blast radius suggests.
+
+## The edit is fully specified — and must NOT be made half-way
+
+`appkit/scripts/seed-cli.mjs:223` already documents the convention for exactly
+this case, in a comment covering the five collections added for Root Cause #90:
+
+> *"String literals, not constants, because `SUPPORT_TICKET_COLLECTION`,
+> `CATALOGUE_COLLECTION` and `SHIPMENT_COLLECTION` are NOT re-exported from
+> appkit's barrel — only their features' own schema files declare them. Adding
+> three barrel exports to fix a seeding gap is a public-API change for a private
+> need, so the names are duplicated here with the source named beside each. If
+> one is ever renamed, this is the site that breaks."*
+
+The ten `store-extensions` constants are in the same position — declared in
+`appkit/src/features/store-extensions/schemas/firestore.ts`, not re-exported
+from the barrel. **So follow the file's own precedent**: string literals with
+the source named beside each, appended to that same literal block.
+
+```js
+  // features/store-extensions/schemas/firestore.ts — none barrel-exported,
+  // same reasoning as the block above.
+  payoutMethods: "payoutMethods",         // :46
+  shippingConfigs: "shippingConfigs",     // :84
+  analyticsCards: "analyticsCards",       // :120
+  analyticsAlerts: "analyticsAlerts",     // :152
+  storeCategories: "storeCategories",     // :179
+  listingTemplates: "listingTemplates",   // :240
+  moderationQueue: "moderationQueue",     // :280
+  reports: "reports",                     // :372
+  itemRequests: "itemRequests",
+  storeGoogleConfig: "storeGoogleConfig",
+```
+
+🛑 **I am not making this edit now, and the reason is specific rather than
+general caution.** `audit-tester-plugin-wiring` R1 fails any collection the
+seeder writes that has no declared tester-wipe tier. Adding these ten keys
+*without* the ten tier declarations therefore turns **`npm run check` red** —
+and the Stop hook runs the full audit suite on **every turn**, so a red tree
+does not sit quietly until someone returns to it: it blocks the next turn, and
+the turn after, with a failure whose cause is a half-finished edit rather than a
+real defect.
+
+A half-applied fix here is strictly worse than no fix: the gap has existed since
+the S-STORE sprint and has cost nothing in the last hour, whereas a red gate
+costs every subsequent turn immediately.
+
+**So the unit of work is atomic and has five parts**: the map entries, the ten
+tier classifications, the `node_modules/@mohasinac/appkit/scripts/` resync
+(Root Cause #28 — `npm install` does not do it, and without it the CLI keeps
+reading the old map while the reseed reports success), `npm run check` green,
+then the reseed and the re-drive. It is perhaps twenty minutes with room to
+think, and it is the highest-value twenty minutes available in this backlog —
+ten collections, several seller dashboard pages, and a cluster of "renders
+empty" verdicts, all from one map.
+
+**`lastFixAtRecorded` stays at 236.** Step 2 is now complete for this item to
+the line and the literal; steps 3-6 are a single atomic change that wants a
+fresh session.
+
+## The blocker is a DESTRUCTIVE-RISK classification, not a shortage of time
+
+I read `tester/scripts/lib/collections.mjs` to do the ten tier declarations in
+the same turn as the map edit, so the Stop hook's own audit run would verify
+both. Seven classify cleanly. **Three do not, and getting those wrong destroys
+real data.**
+
+The file's documented reasoning for Root Cause #90's collections (lines 82-84):
+
+> *"SEED_OWNED rather than CASCADE because there is nothing to cascade ON:
+> their `createdBy` is a PRESERVE-tier user, so no row here references a
+> seed-owned document."*
+
+**Seven follow that exactly** — store/seller configuration scoped by
+`ownerId` / `scope:"seller"`, whose owner is `user-tyson-blader`, a PRESERVE-tier
+user. Nothing to cascade on → `SEED_OWNED`:
+
+```
+payoutMethods · shippingConfigs · analyticsCards · analyticsAlerts
+storeCategories · listingTemplates · storeGoogleConfig
+```
+
+🛑 **Three are different in kind and I will not guess them**:
+
+| collection | why it is not obviously SEED_OWNED |
+|---|---|
+| `reports` | holds **user-submitted reports** about content. A real report filed by a real person is not a fixture |
+| `moderationQueue` | holds items awaiting moderator action, referencing real user content |
+| `itemRequests` | buyer-submitted "find me this" requests — real user intent |
+
+**`SEED_OWNED` deletes wholesale.** Misclassifying `reports` as SEED_OWNED means
+every tester run silently destroys real user-submitted reports — and the tier
+system exists precisely to prevent that class of damage. These three look like
+`CASCADE` (delete only where a row references something seed-owned, the way
+`supportTickets` and `catalogueItems` are handled at lines 185-186 and 223-224
+with an explicit `{ collection, field, orphanSweep }` descriptor) — but that
+needs each one's schema read to name the referencing FIELD, which is what the
+descriptor requires.
+
+**So the atomic unit genuinely cannot close here.** Declaring seven and leaving
+three still fails `audit-tester-plugin-wiring` R1 for those three, so the tree
+goes red either way; and declaring all ten by guessing the last three trades a
+red gate for possible destruction of real user data on every subsequent tester
+run. Neither is acceptable, and the difference between them is not effort.
+
+**What the next session needs, in order — all of it now specified:**
+
+1. Read the schemas for `reports`, `moderationQueue`, `itemRequests` and find
+   the field each uses to reference a product/store/user.
+2. Classify: seed-owned reference → `CASCADE` with a
+   `{ collection, field, orphanSweep }` descriptor; no seed-owned reference →
+   `SEED_OWNED`. 🛑 If a row references only PRESERVE-tier data, it belongs in
+   **neither** and should stay unlisted — unlisted means PRESERVED, which
+   `assertDeletable` enforces, and that is the safe default by design.
+3. Then land all five parts in one change: map entries, ten tier declarations,
+   `node_modules/@mohasinac/appkit/scripts/` resync, green `npm run check`,
+   reseed + re-drive.
+
+**`lastFixAtRecorded` stays at 236.** The gate is correct to keep firing — this
+has not shipped. What has changed is that it is now a twenty-minute mechanical
+task with one genuine decision in it, rather than an open investigation.
+
+## The classification decision, now made with evidence — and the one subtlety left
+
+Reference fields, read off `store-extensions/schemas/firestore.ts`:
+
+| collection | reference fields | tier | reasoning |
+|---|---|---|---|
+| `itemRequests` | `authorId`, `opUserId` | **SEED_OWNED** | both are users, i.e. PRESERVE-tier. **Nothing to cascade on** — exactly the procurement precedent at lines 82-84 |
+| `moderationQueue` | `storeId`, `ownerId`, `entityId`, `reviewerId` | **CASCADE** on `storeId` | `storeId` points at `stores`, which IS seed-owned. Plus `SEED_TRANSACTIONAL`, since it carries fixtures |
+| `reports` | `entityId`, `reporterId` | **CASCADE** on `entityId` | `reporterId` is a PRESERVE user, but `entityId` points at the reported content. Plus `SEED_TRANSACTIONAL` |
+
+Combined with the seven config collections (all `SEED_OWNED` by the same
+nothing-to-cascade-on reasoning), **all ten are now classified**, and the earlier
+worry that `reports` might be wiped wholesale is resolved — it is CASCADE, so
+only rows referencing seed-owned content are touched and a real user's report
+about real content survives.
+
+🛑 **The subtlety, and it is a real one: `entityId` is POLYMORPHIC.**
+`moderationQueue` and `reports` both have an `entityId` with no accompanying
+type in the field list I read — these collections moderate/report *several*
+kinds of thing (a product, a review, a store, a user). A CASCADE descriptor is
+`{ collection, field, orphanSweep }` and sweeps orphans against **one**
+collection, so a naive `{ collection: "reports", field: "entityId" }` would
+compare a product id against a review id against a user id and delete on
+whichever happens not to resolve.
+
+**That is a deletion bug, not a classification one**, and it is the last thing
+to settle: find the discriminator (an `entityType`/`targetType` field) and
+confirm whether the descriptor supports a type-scoped sweep. If it does not,
+the honest options are to cascade on a non-polymorphic field — `storeId` for
+`moderationQueue`, which is exactly why I chose it over `entityId` — or to leave
+`reports` unlisted (PRESERVED by default, `assertDeletable` enforces it) and
+accept stale rows over destroyed ones.
+
+**For `reports` specifically, prefer PRESERVED over a polymorphic cascade.** A
+stale report is noise in an admin list; a wrongly-swept one is a user's
+complaint deleted without trace, and this run has no mechanism that would ever
+notice.
+
+## State of this item
+
+- Map entries: **specified**, literal-for-literal, following the file's own
+  documented convention.
+- Tier classifications: **8 of 10 settled** (`itemRequests` + the seven config
+  collections SEED_OWNED, `moderationQueue` CASCADE on `storeId`).
+- `reports`: **CASCADE on `entityId` OR unlisted** — one lookup (the
+  discriminator) decides, and the safe default is unlisted.
+- Remaining mechanics: resync `node_modules/.../scripts/`, green
+  `npm run check`, reseed, re-drive.
+
+**`lastFixAtRecorded` stays at 236** — still nothing shipped. But the open
+investigation is now one field lookup, and every other part is written down.
+
+## RESOLVED — all ten classified, and the file's own history supplied the last answer
+
+The final lookup closes it.
+
+**1. `reports.entityType` exists** — a `ReportEntityType` discriminator over
+`product | store | review | event | …`. So `entityId` is confirmed polymorphic.
+
+**2. The descriptor supports `refTarget`**, which names the collection a field
+points into:
+
+```js
+{ collection: "eventEntries", field: "eventId",  refTarget: "events",  orphanSweep: true },
+{ collection: "payouts",      field: "storeId",  refTarget: "stores",  orphanSweep: true },
+```
+
+**But `refTarget` does not filter by type.** `refTarget: "products"` on
+`reports` would still compare EVERY row's `entityId` against `products` —
+including rows whose `entityType` is `store` or `review`, which would then look
+like orphans and be swept. There is no `where` / `whenField` in the descriptor
+vocabulary.
+
+**3. The precedent is two lines above, and it is the answer**:
+
+```js
+// relatedId / relatedType, NOT entityId — the field this rule named for weeks
+// does not exist on the document, so the rule matched nothing.
+{ collection: "notifications", field: "relatedId" },
+```
+
+`notifications` is **also** polymorphic (`relatedId` / `relatedType`), and it is
+registered with **no `orphanSweep`** — unlike every neighbouring entry. That is
+the established convention for a polymorphic reference: **declare the tier,
+omit the sweep.** The collection is then known to the harness (so R1 passes)
+without any row being deleted on a reference the sweep cannot evaluate safely.
+
+That comment is also a warning worth heeding: a previous rule named `entityId`
+on a document that uses `relatedId`, and **matched nothing for weeks** — the
+same family of mistake, in the same file, on the same field name I was about to
+reach for.
+
+### Final classification — all ten
+
+```js
+// SEED_OWNED — nothing to cascade on (owner is a PRESERVE-tier user)
+payoutMethods · shippingConfigs · analyticsCards · analyticsAlerts
+storeCategories · listingTemplates · storeGoogleConfig · itemRequests
+
+// CASCADE — non-polymorphic reference into a seed-owned collection
+{ collection: "moderationQueue", field: "storeId", refTarget: "stores", orphanSweep: true }
+
+// CASCADE — polymorphic reference, NO sweep (the `notifications` convention)
+{ collection: "reports", field: "entityId" }
+```
+
+Both CASCADE entries also belong in `SEED_TRANSACTIONAL`, since both carry seed
+fixtures that must be restored after a wipe.
+
+**The investigation is closed.** Every part of this fix is now specified: the ten
+map entries (literals, per the file's convention), all ten tier declarations
+with their reasoning, the `node_modules/.../scripts/` resync, the green check,
+the reseed, and B255 as the re-drive that confirms loading works.
+
+**`lastFixAtRecorded` stays at 236** — specified is not shipped, and the marker
+means shipped. But there is no open question left in it, only execution.
